@@ -5,6 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import PrimerFoundation
+import PrimerUI
 import SwiftUI
 
 final class PrimerResultPaymentStatusViewModel: ObservableObject {
@@ -18,12 +19,11 @@ final class PrimerResultPaymentStatusViewModel: ObservableObject {
     }
 
     var title: String {
-        var paymentMethod: String
-        switch paymentMethodType {
+        var paymentMethod: String = switch paymentMethodType {
         case .stripeAch:
-            paymentMethod = "ACH"
+            "ACH"
         default:
-            paymentMethod = ""
+            ""
         }
 
         return String(format: Strings.ResultView.paymentTitle, paymentMethod)
@@ -32,11 +32,11 @@ final class PrimerResultPaymentStatusViewModel: ObservableObject {
     var subtitle: String {
         switch paymentStatus {
         case .success:
-            return Strings.ResultView.Subtitle.successful
+            Strings.ResultView.Subtitle.successful
         case .failed:
-            return Strings.ResultView.Subtitle.failed
+            Strings.ResultView.Subtitle.failed
         case .cancelled:
-            return Strings.ResultView.Subtitle.cancelled
+            Strings.ResultView.Subtitle.cancelled
         }
     }
 
@@ -47,20 +47,20 @@ final class PrimerResultPaymentStatusViewModel: ObservableObject {
     private var successMessage: String {
         switch paymentMethodType {
         case .stripeAch:
-            return Strings.ResultView.successMessage
+            Strings.ResultView.successMessage
         default:
-            return ""
+            ""
         }
     }
 
     private var errorMessage: String {
         switch paymentStatus {
         case .failed:
-            return error?.plainDescription ?? error.debugDescription
+            error?.plainDescription ?? error.debugDescription
         case .cancelled:
-            return Strings.ResultView.cancelMessage
+            Strings.ResultView.cancelMessage
         default:
-            return ""
+            ""
         }
     }
 
@@ -68,12 +68,12 @@ final class PrimerResultPaymentStatusViewModel: ObservableObject {
         if let error {
             switch error {
             case .cancelled:
-                return .cancelled
+                .cancelled
             default:
-                return .failed
+                .failed
             }
         } else {
-            return .success
+            .success
         }
     }
 

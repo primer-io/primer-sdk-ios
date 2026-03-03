@@ -6,6 +6,7 @@
 
 import Foundation
 import PrimerCore
+import PrimerFoundation
 
 /// Interactor for processing payments with vaulted payment methods
 @available(iOS 15.0, *)

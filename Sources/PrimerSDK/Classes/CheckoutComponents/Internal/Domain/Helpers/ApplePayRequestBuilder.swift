@@ -7,6 +7,7 @@
 import Foundation
 import PassKit
 import PrimerFoundation
+import PrimerUI
 
 /// Helper to construct ApplePayRequest from session data.
 /// Reuses logic from ApplePayTokenizationViewModel for order item construction.

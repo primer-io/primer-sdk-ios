@@ -1,18 +1,18 @@
 //
 //  PrimerPostalCodeFieldView.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import UIKit
 
 public final class PrimerPostalCodeFieldView: PrimerTextFieldView {
 
-    internal var postalCode: String? {
-        return textField.internalText
+    var postalCode: String? {
+        textField.internalText
     }
 
-    override func xibSetup() {
+    override public func xibSetup() {
         super.xibSetup()
         keyboardType = .namePhonePad
         isTextFieldAccessibilityElement = true
@@ -21,24 +21,24 @@ public final class PrimerPostalCodeFieldView: PrimerTextFieldView {
         isEditingAnalyticsEnabled = true
         isValid = { text in
             // todo: look into more sophisticated postal code validation, ascii check for now
-            return text.isValidPostalCode
+            text.isValidPostalCode
         }
     }
 
-    public override func textFieldDidBeginEditing(_ textField: UITextField) {
+    override public func textFieldDidBeginEditing(_ textField: UITextField) {
         super.textFieldDidBeginEditing(textField)
         let event = cardFormFieldDidBeginEditingEventWithObjectId(.billingAddressPostalCode)
         sendTextFieldDidEndEditingAnalyticsEventIfNeeded(event)
     }
 
-    public override func textFieldDidEndEditing(_ textField: UITextField) {
+    override public func textFieldDidEndEditing(_ textField: UITextField) {
         super.textFieldDidEndEditing(textField)
         let event = cardFormFieldDidEndEditingEventWithObjectId(.billingAddressPostalCode)
         sendTextFieldDidEndEditingAnalyticsEventIfNeeded(event)
     }
 
     // todo: refactor into separate functions somewhere
-    public override func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+    override public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         let positionOriginal = textField.beginningOfDocument
         let cursorLocation = textField.position(
             from: positionOriginal,
@@ -55,7 +55,7 @@ public final class PrimerPostalCodeFieldView: PrimerTextFieldView {
 
         let newText = (currentText as NSString).replacingCharacters(in: range, with: string) as String
 
-        switch self.isValid?(newText) {
+        switch isValid?(newText) {
         case true:
             validation = .valid
         case false:

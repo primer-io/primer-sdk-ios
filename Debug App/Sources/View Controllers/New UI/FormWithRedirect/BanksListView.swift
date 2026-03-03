@@ -5,6 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import PrimerSDK
+import PrimerUI
 import SwiftUI
 
 struct PaymentMethodModel {
@@ -134,12 +135,12 @@ extension BanksListView {
                     .padding(.horizontal, metrics.hPadding)
                     .addAccessibilityIdentifier(identifier: AccessibilityIdentifier.BanksComponent.searchBar.rawValue)
                     .onTapGesture {
-                        self.isEditing = true
+                        isEditing = true
                     }
                 if isEditing {
                     Button(action: {
-                        self.isEditing = false
-                        self.text = ""
+                        isEditing = false
+                        text = ""
                     }) {
                         Text("Cancel")
                     }

@@ -6,6 +6,7 @@
 
 import PrimerFoundation
 @testable import PrimerSDK
+import PrimerUI
 import XCTest
 
 final class FormPaymentMethodTokenizationViewModelTests: XCTestCase {
@@ -56,20 +57,20 @@ final class FormPaymentMethodTokenizationViewModelTests: XCTestCase {
         let delegate = MockPrimerHeadlessUniversalCheckoutDelegate()
         PrimerHeadlessUniversalCheckout.current.delegate = delegate
 
-        let expectDidShowPaymentMethod = self.expectation(description: "UI shows payment method")
+        let expectDidShowPaymentMethod = expectation(description: "UI shows payment method")
         uiDelegate.onUIDidShowPaymentMethod = { _ in
             self.sut.userInputCompletion?()
             expectDidShowPaymentMethod.fulfill()
         }
 
-        let expectWillCreatePaymentWithData = self.expectation(description: "Will create payment with data")
+        let expectWillCreatePaymentWithData = expectation(description: "Will create payment with data")
         delegate.onWillCreatePaymentWithData = { data, decision in
             XCTAssertEqual(data.paymentMethodType.type, "ADYEN_BLIK")
             decision(.abortPaymentCreation())
             expectWillCreatePaymentWithData.fulfill()
         }
 
-        let expectDidFail = self.expectation(description: "Payment flow fails")
+        let expectDidFail = expectation(description: "Payment flow fails")
         delegate.onDidFail = { error in
             switch error {
             case PrimerError.merchantError:
@@ -101,7 +102,7 @@ final class FormPaymentMethodTokenizationViewModelTests: XCTestCase {
         PrimerAPIConfigurationModule.apiClient = apiClient
         apiClient.fetchConfigurationWithActionsResult = (PrimerAPIConfiguration.current, nil)
 
-        let expectDidShowPaymentMethod = self.expectation(description: "UI shows payment method")
+        let expectDidShowPaymentMethod = expectation(description: "UI shows payment method")
         uiDelegate.onUIDidShowPaymentMethod = { _ in
             self.sut.userInputCompletion?()
             expectDidShowPaymentMethod.fulfill()
@@ -109,27 +110,27 @@ final class FormPaymentMethodTokenizationViewModelTests: XCTestCase {
 
         sut.inputs.append(MockInput(name: "blikCode", text: "123456"))
 
-        let expectWillCreatePaymentWithData = self.expectation(description: "Will create payment with data")
+        let expectWillCreatePaymentWithData = expectation(description: "Will create payment with data")
         delegate.onWillCreatePaymentWithData = { data, decision in
             XCTAssertEqual(data.paymentMethodType.type, "ADYEN_BLIK")
             decision(.continuePaymentCreation())
             expectWillCreatePaymentWithData.fulfill()
         }
 
-        let expectDidCompleteCheckout = self.expectation(description: "Checkout completes successfully")
+        let expectDidCompleteCheckout = expectation(description: "Checkout completes successfully")
         delegate.onDidCompleteCheckoutWithData = { data in
             XCTAssertEqual(data.payment?.id, "id")
             XCTAssertEqual(data.payment?.orderId, "order_id")
             expectDidCompleteCheckout.fulfill()
         }
 
-        let expectDidTokenize = self.expectation(description: "Payment method tokenizes")
+        let expectDidTokenize = expectation(description: "Payment method tokenizes")
         tokenizationService.onTokenize = { _ in
             expectDidTokenize.fulfill()
             return .success(self.tokenizationResponseBody)
         }
 
-        let expectDidCreatePayment = self.expectation(description: "Payment gets created")
+        let expectDidCreatePayment = expectation(description: "Payment gets created")
         createResumePaymentService.onCreatePayment = { _ in
             expectDidCreatePayment.fulfill()
             return self.paymentResponseBody
@@ -210,6 +211,6 @@ private final class MockInput: Input {
     init(name: String, text: String) {
         super.init()
         self.name = name
-        self.mockText = text
+        mockText = text
     }
 }

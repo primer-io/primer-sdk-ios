@@ -10,6 +10,7 @@ import Foundation
 import PassKit
 import PrimerCore
 import PrimerFoundation
+import PrimerUI
 import UIKit
 
 struct CardNetworkValidation {

@@ -21,7 +21,7 @@ public final class PrimerGenericFieldView: PrimerTextFieldView {
         }
     }
 
-    override func xibSetup() {
+    override public func xibSetup() {
         super.xibSetup()
         keyboardType = .namePhonePad
         isTextFieldAccessibilityElement = true
@@ -47,7 +47,7 @@ public final class PrimerGenericFieldView: PrimerTextFieldView {
 
         let newText = (currentText as NSString).replacingCharacters(in: range, with: string) as String
 
-        if let allowedCharacterSet = allowedCharacterSet {
+        if let allowedCharacterSet {
             if !string.isEmpty, newText.rangeOfCharacter(from: allowedCharacterSet.inverted) != nil {
                 return false
             }
@@ -58,7 +58,7 @@ public final class PrimerGenericFieldView: PrimerTextFieldView {
         let valid = PrimerTextField.Validation.valid
 
         let invalid = PrimerTextField.Validation.invalid(PrimerValidationError.invalidCardnumber(message: "Card number is not valid."))
-        validation = (self.isValid?(primerTextField.internalText?.withoutWhiteSpace ?? "") ?? false) ? valid : invalid
+        validation = (isValid?(primerTextField.internalText?.withoutWhiteSpace ?? "") ?? false) ? valid : invalid
 
         switch validation {
         case .valid:

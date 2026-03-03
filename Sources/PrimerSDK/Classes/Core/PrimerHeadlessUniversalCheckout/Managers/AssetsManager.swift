@@ -5,6 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import PrimerCore
+import PrimerUI
 import UIKit
 
 extension PrimerHeadlessUniversalCheckout {
@@ -216,16 +217,16 @@ public final class PrimerPaymentMethodBackgroundColor {
             return nil
         }
 
-        if let coloredStr = coloredStr {
-            self.colored = PrimerColor(hex: coloredStr)
+        if let coloredStr {
+            colored = PrimerColor(hex: coloredStr)
         }
 
-        if let lightStr = lightStr {
-            self.light = PrimerColor(hex: lightStr)
+        if let lightStr {
+            light = PrimerColor(hex: lightStr)
         }
 
-        if let darkStr = darkStr {
-            self.dark = PrimerColor(hex: darkStr)
+        if let darkStr {
+            dark = PrimerColor(hex: darkStr)
         }
     }
 

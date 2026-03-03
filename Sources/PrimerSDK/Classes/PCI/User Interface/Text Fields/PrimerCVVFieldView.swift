@@ -16,7 +16,7 @@ public final class PrimerCVVFieldView: PrimerTextFieldView {
     }
     public var cardNetwork: CardNetwork = .unknown
 
-    override func xibSetup() {
+    override public func xibSetup() {
         super.xibSetup()
         keyboardType = .numberPad
         isTextFieldAccessibilityElement = true
@@ -45,7 +45,7 @@ public final class PrimerCVVFieldView: PrimerTextFieldView {
         if !(newText.isNumeric || newText.isEmpty) { return false }
         if string != "", newText.withoutWhiteSpace.count >= 5 { return false }
 
-        switch self.isValid?(newText) {
+        switch isValid?(newText) {
         case true:
             validation = .valid
         case false:
@@ -61,11 +61,10 @@ public final class PrimerCVVFieldView: PrimerTextFieldView {
         primerTextField.internalText = newText
         primerTextField.text = newText
 
-        let isValidCVVLength: Bool?
-        if let cvvLength = cardNetwork.validation?.code.length {
-            isValidCVVLength = newText.count == cvvLength
+        let isValidCVVLength: Bool? = if let cvvLength = cardNetwork.validation?.code.length {
+            newText.count == cvvLength
         } else {
-            isValidCVVLength = nil
+            nil
         }
 
         switch validation {

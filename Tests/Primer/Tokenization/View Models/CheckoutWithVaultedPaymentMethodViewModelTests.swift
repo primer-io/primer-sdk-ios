@@ -6,6 +6,7 @@
 
 import PrimerFoundation
 @testable import PrimerSDK
+import PrimerUI
 import XCTest
 
 final class CheckoutWithVaultedPaymentMethodViewModelTests: XCTestCase {
@@ -88,14 +89,14 @@ final class CheckoutWithVaultedPaymentMethodViewModelTests: XCTestCase {
         let delegate = MockPrimerHeadlessUniversalCheckoutDelegate()
         PrimerHeadlessUniversalCheckout.current.delegate = delegate
 
-        let expectWillCreatePaymentWithData = self.expectation(description: "payment data creation requested")
+        let expectWillCreatePaymentWithData = expectation(description: "payment data creation requested")
         delegate.onWillCreatePaymentWithData = { data, decision in
             XCTAssertEqual(data.paymentMethodType.type, "PAYMENT_CARD")
             decision(.abortPaymentCreation())
             expectWillCreatePaymentWithData.fulfill()
         }
 
-        let expectDidFail = self.expectation(description: "flow fails with error")
+        let expectDidFail = expectation(description: "flow fails with error")
         delegate.onDidFail = { error in
             switch error {
             case PrimerError.merchantError:
@@ -124,27 +125,27 @@ final class CheckoutWithVaultedPaymentMethodViewModelTests: XCTestCase {
         PrimerAPIConfigurationModule.apiClient = apiClient
         apiClient.fetchConfigurationWithActionsResult = (PrimerAPIConfiguration.current, nil)
 
-        let expectWillCreatePaymentWithData = self.expectation(description: "payment data creation requested")
+        let expectWillCreatePaymentWithData = expectation(description: "payment data creation requested")
         delegate.onWillCreatePaymentWithData = { data, decision in
             XCTAssertEqual(data.paymentMethodType.type, "PAYMENT_CARD")
             decision(.continuePaymentCreation())
             expectWillCreatePaymentWithData.fulfill()
         }
 
-        let expectDidExchangeToken = self.expectation(description: "payment method token exchanged")
+        let expectDidExchangeToken = expectation(description: "payment method token exchanged")
         tokenizationService.onExchangePaymentMethodToken = { tokenId, _ in
             XCTAssertEqual(tokenId, "mock_payment_method_token_data_id")
             expectDidExchangeToken.fulfill()
             return Result.success(self.tokenizationResponseBody)
         }
 
-        let expectDidCreatePayment = self.expectation(description: "payment created")
+        let expectDidCreatePayment = expectation(description: "payment created")
         createResumePaymentService.onCreatePayment = { _ in
             expectDidCreatePayment.fulfill()
             return self.paymentResponseBody
         }
 
-        let expectDidCompleteCheckoutWithData = self.expectation(description: "checkout completes successfully")
+        let expectDidCompleteCheckoutWithData = expectation(description: "checkout completes successfully")
         delegate.onDidCompleteCheckoutWithData = { data in
             XCTAssertEqual(data.payment?.id, "id")
             XCTAssertEqual(data.payment?.orderId, "order_id")
