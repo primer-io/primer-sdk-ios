@@ -7,6 +7,7 @@
 import PrimerCore
 import PrimerFoundation
 @testable import PrimerSDK
+import PrimerUI
 import XCTest
 
 class UserInterfaceModuleTests: XCTestCase {

@@ -18,7 +18,7 @@ public final class PrimerCountryFieldView: PrimerSimpleCardFormTextFieldView {
 
     var onOpenCountriesListPressed: PrimerAction?
 
-    override func xibSetup() {
+    override public func xibSetup() {
         super.xibSetup()
         isTextFieldAccessibilityElement = true
         textFieldaccessibilityIdentifier = "country_txt_fld"
