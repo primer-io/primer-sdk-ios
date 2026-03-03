@@ -1,11 +1,13 @@
 //
 //  MerchantHeadlessVaultManagerViewController.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import UIKit
+import PrimerFoundation
 import PrimerSDK
+import PrimerUI
+import UIKit
 
 class MerchantHeadlessVaultManagerViewController: UIViewController, PrimerHeadlessUniversalCheckoutDelegate {
 
@@ -104,7 +106,7 @@ class MerchantHeadlessVaultManagerViewController: UIViewController, PrimerHeadle
     private func filterInvalidVaultedPaymentMethods(vaultedPaymentMethods: [PrimerHeadlessUniversalCheckout.VaultedPaymentMethod]) -> [PrimerHeadlessUniversalCheckout.VaultedPaymentMethod] {
         // Quick filter validating expiry year
         let expiredVaultedCards = vaultedPaymentMethods.filter({ $0.paymentMethodType == "PAYMENT_CARD" && Int($0.paymentInstrumentData.expirationYear ?? "") ?? 0 < 2023 })
-        let expiredVaultedCardsIds: [String] = expiredVaultedCards.compactMap({ $0.id })
+        let expiredVaultedCardsIds: [String] = expiredVaultedCards.compactMap(\.id)
         // To be returned when not testing CVV recapture
         return vaultedPaymentMethods.filter({ !expiredVaultedCardsIds.contains($0.id) })
         // Uncomment this line and comment out the above, when you are not testing CVV recapture
@@ -148,7 +150,7 @@ class MerchantHeadlessVaultManagerViewController: UIViewController, PrimerHeadle
 extension MerchantHeadlessVaultManagerViewController: UITableViewDataSource, UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return self.availablePaymentMethods.count
+        self.availablePaymentMethods.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
