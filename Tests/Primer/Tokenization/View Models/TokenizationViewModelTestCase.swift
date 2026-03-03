@@ -7,6 +7,7 @@
 import Foundation
 import PrimerFoundation
 @testable import PrimerSDK
+import PrimerUI
 
 protocol TokenizationViewModelTestCase {}
 

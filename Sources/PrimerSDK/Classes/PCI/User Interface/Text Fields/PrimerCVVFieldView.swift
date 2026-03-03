@@ -16,7 +16,7 @@ public final class PrimerCVVFieldView: PrimerTextFieldView {
     }
     public var cardNetwork: CardNetwork = .unknown
 
-    override func xibSetup() {
+    override public func xibSetup() {
         super.xibSetup()
         keyboardType = .numberPad
         isTextFieldAccessibilityElement = true

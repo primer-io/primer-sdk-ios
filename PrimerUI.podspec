@@ -17,4 +17,5 @@ Pod::Spec.new do |s|
     s.ios.frameworks  = "Foundation", "UIKit"
 
     s.dependency "PrimerFoundation"
+    s.dependency "PrimerResources"
 end
