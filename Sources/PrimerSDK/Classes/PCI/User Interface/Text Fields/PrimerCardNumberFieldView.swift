@@ -17,7 +17,7 @@ public final class PrimerCardNumberFieldView: PrimerTextFieldView {
         (textField.internalText ?? "").replacingOccurrences(of: " ", with: "").withoutWhiteSpace
     }
 
-    override func xibSetup() {
+    override public func xibSetup() {
         super.xibSetup()
         keyboardType = .numberPad
         isTextFieldAccessibilityElement = true

@@ -7,6 +7,7 @@
 // swiftlint:disable function_body_length
 
 import PrimerCore
+import PrimerUI
 import UIKit
 
 // MARK: MISSING_TESTS

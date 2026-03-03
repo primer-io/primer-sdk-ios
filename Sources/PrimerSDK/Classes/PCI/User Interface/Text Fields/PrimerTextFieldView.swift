@@ -8,6 +8,8 @@ import PrimerCore
 import PrimerFoundation
 import PrimerResources
 
+import PrimerUI
+
 // swiftlint:disable function_body_length
 import UIKit
 
@@ -137,7 +139,7 @@ public class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
 
     public var clearsOnInsertion: Bool = false { didSet { textField.clearsOnInsertion = clearsOnInsertion }}
 
-    override func loadNib() -> UIView {
+    override public func loadNib() -> UIView {
         let bundle = Bundle.primerResources
         let nib = UINib(nibName: PrimerTextFieldView.className, bundle: bundle)
         // swiftlint:disable force_cast
@@ -145,7 +147,7 @@ public class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
         // swiftlint:enable force_cast
     }
 
-    override func xibSetup() {
+    override public func xibSetup() {
         super.xibSetup()
         backgroundColor = .clear
         view.backgroundColor = .clear

@@ -13,6 +13,7 @@ import PassKit
 import PrimerCore
 import PrimerFoundation
 import PrimerNetworking
+import PrimerUI
 import UIKit
 
 extension PKPaymentMethodType {

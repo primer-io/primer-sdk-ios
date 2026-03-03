@@ -6,6 +6,7 @@
 
 import Foundation
 import PrimerCore
+import PrimerFoundation
 import PrimerNetworking
 
 typealias APIResult<T> = Result<T, Error>

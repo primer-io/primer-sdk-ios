@@ -8,6 +8,7 @@
 
 import Foundation
 import PrimerCore
+import PrimerFoundation
 import PrimerNetworking
 
 enum PrimerAPI: Endpoint, Equatable {
