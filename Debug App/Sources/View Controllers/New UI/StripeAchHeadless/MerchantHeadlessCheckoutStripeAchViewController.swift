@@ -7,6 +7,7 @@
 import Combine
 import PrimerFoundation
 import PrimerSDK
+import PrimerUI
 import SwiftUI
 import UIKit
 
