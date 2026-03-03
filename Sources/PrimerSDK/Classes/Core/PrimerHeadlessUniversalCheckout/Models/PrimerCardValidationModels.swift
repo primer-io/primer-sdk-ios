@@ -47,6 +47,10 @@ public final class PrimerCardNetwork: NSObject {
         [CardNetwork].allowedCardNetworks.contains(network)
     }
 
+    public var allowsUserSelection: Bool {
+        network.allowsUserSelection
+    }
+
     init(displayName: String,
          network: CardNetwork,
          issuerCountryCode: String? = nil,
