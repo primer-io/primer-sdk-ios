@@ -1,14 +1,14 @@
 //
 //  UIImage+Raw.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import UIKit.UIImage
 
 // MARK: Brand
 
-extension UIImage {
+public extension UIImage {
     static let apple = UIImage(primerResource: "appleIcon")
     static let amex = UIImage(primerResource: "amex")
     static let blikLight = UIImage(primerResource: "blik-logo-light")
@@ -26,7 +26,7 @@ extension UIImage {
 
 // MARK: Brand Colored
 
-extension UIImage {
+public extension UIImage {
     static let amexColored = UIImage(primerResource: "amex-card-icon-colored")
     static let cartesBancairesColored = UIImage(primerResource: "cartesbancaires-card-icon-colored")
     static let discoverColored = UIImage(primerResource: "discover-card-icon-colored")
@@ -38,7 +38,7 @@ extension UIImage {
 
 // MARK: Generic
 
-extension UIImage {
+public extension UIImage {
     static let back = UIImage(primerResource: "back")
     static let backRTL = UIImage(primerResource: "back-rtl")
     static let bank = UIImage(primerResource: "bank")
