@@ -16,8 +16,6 @@ swiftformat <file1.swift> <file2.swift> --config BuildTools/.swiftformat
 ### SwiftLint
 Config: `Debug App/.swiftlint.yml`. Key limits: line 150, file 500/800, function body 60/100, cyclomatic 12/20.
 
-Opt-in rules (CI warnings via Danger): `shorthand_optional_binding`, `implicit_return`, `empty_count`, `direct_return`, `redundant_type_annotation`, `final_test_case`, `contains_over_filter_count`, `first_where`, `redundant_self_in_closure`
-
 ```bash
 swiftlint lint --fix --config "Debug App/.swiftlint.yml"
 swiftlint lint --config "Debug App/.swiftlint.yml"
