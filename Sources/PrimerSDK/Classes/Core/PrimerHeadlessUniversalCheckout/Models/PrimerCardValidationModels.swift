@@ -1,7 +1,7 @@
 //
 //  PrimerCardValidationModels.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
@@ -32,14 +32,45 @@ public final class PrimerCardNumberEntryState: NSObject, PrimerValidationState {
 public final class PrimerCardNetwork: NSObject {
     public let displayName: String
     public let network: CardNetwork
+    public let issuerCountryCode: String?
+    public let issuerName: String?
+    public let accountFundingType: String?
+    public let prepaidReloadableIndicator: String?
+    public let productUsageType: String?
+    public let productCode: String?
+    public let productName: String?
+    public let issuerCurrencyCode: String?
+    public let regionalRestriction: String?
+    public let accountNumberType: String?
 
     public var allowed: Bool {
         [CardNetwork].allowedCardNetworks.contains(network)
     }
 
-    init(displayName: String, network: CardNetwork) {
+    init(displayName: String,
+         network: CardNetwork,
+         issuerCountryCode: String? = nil,
+         issuerName: String? = nil,
+         accountFundingType: String? = nil,
+         prepaidReloadableIndicator: String? = nil,
+         productUsageType: String? = nil,
+         productCode: String? = nil,
+         productName: String? = nil,
+         issuerCurrencyCode: String? = nil,
+         regionalRestriction: String? = nil,
+         accountNumberType: String? = nil) {
         self.displayName = displayName
         self.network = network
+        self.issuerCountryCode = issuerCountryCode
+        self.issuerName = issuerName
+        self.accountFundingType = accountFundingType
+        self.prepaidReloadableIndicator = prepaidReloadableIndicator
+        self.productUsageType = productUsageType
+        self.productCode = productCode
+        self.productName = productName
+        self.issuerCurrencyCode = issuerCurrencyCode
+        self.regionalRestriction = regionalRestriction
+        self.accountNumberType = accountNumberType
     }
 
     convenience init(network: CardNetwork) {
@@ -50,7 +81,7 @@ public final class PrimerCardNetwork: NSObject {
     }
 
     convenience init?(network: CardNetwork?) {
-        guard let network = network else { return nil }
+        guard let network else { return nil }
         self.init(network: network)
     }
 
@@ -89,7 +120,7 @@ public final class PrimerCardNumberEntryMetadata: NSObject, PrimerPaymentMethodM
          autoSelectedCardNetwork: PrimerCardNetwork? = nil) {
         self.source = source
 
-        if source == .remote, let selectableCardNetworks = selectableCardNetworks, !selectableCardNetworks.isEmpty {
+        if source == .remote, let selectableCardNetworks, !selectableCardNetworks.isEmpty {
             self.selectableCardNetworks = PrimerCardNetworksMetadata(
                 items: selectableCardNetworks,
                 preferred: selectableCardNetworks.first

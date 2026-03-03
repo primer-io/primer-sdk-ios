@@ -1,7 +1,7 @@
 //
 //  CardValidationService.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
@@ -34,6 +34,7 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
 
     private let metadataCacheQueue = DispatchQueue(label: "com.primer.cardValidationService.metadataCacheQueue", attributes: .concurrent)
     private var metadataCacheBacking: [String: PrimerCardNumberEntryMetadata] = [:]
+    private var binDataCacheBacking: [String: PrimerBinData] = [:]
 
     private func getCachedMetadata(for key: String) -> PrimerCardNumberEntryMetadata? {
         metadataCacheQueue.sync {
@@ -47,11 +48,22 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
         }
     }
 
+    private func getCachedBinData(for key: String) -> PrimerBinData? {
+        metadataCacheQueue.sync {
+            binDataCacheBacking[key]
+        }
+    }
+
+    private func setCachedBinData(_ binData: PrimerBinData, for key: String) {
+        metadataCacheQueue.async(flags: .barrier) {
+            self.binDataCacheBacking[key] = binData
+        }
+    }
+
     init(rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
          allowedCardNetworks: [CardNetwork] = [CardNetwork].allowedCardNetworks,
          apiClient: PrimerAPIClientBINDataProtocol = PrimerAPIClient(),
-         debouncer: Debouncer = .init(delay: 0.35))
-    {
+         debouncer: Debouncer = .init(delay: 0.35)) {
         self.rawDataManager = rawDataManager
         self.allowedCardNetworks = allowedCardNetworks
         self.apiClient = apiClient
@@ -67,10 +79,12 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
         let bin = String(sanitizedCardNumber.prefix(Self.maximumBinLength))
 
         if let mostRecent = mostRecentCardNumber,
-           mostRecent.prefix(Self.maximumBinLength) == bin
-        {
+           mostRecent.prefix(Self.maximumBinLength) == bin {
             if let cached = getCachedMetadata(for: bin) {
                 handle(cardMetadata: cached, forCardState: cardState)
+            }
+            if let cachedBin = getCachedBinData(for: bin) {
+                delegate?.primerRawDataManager?(rawDataManager, didReceiveBinData: cachedBin)
             }
             return
         }
@@ -94,21 +108,48 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
 
         let cacheKey = cardState.cardNumber
         if let cached = getCachedMetadata(for: cacheKey) {
-            return handle(cardMetadata: cached, forCardState: cardState)
+            handle(cardMetadata: cached, forCardState: cardState)
+            if let cachedBin = getCachedBinData(for: cacheKey) {
+                delegate?.primerRawDataManager?(rawDataManager, didReceiveBinData: cachedBin)
+            }
+            return
         }
 
         Task { @MainActor in
             do {
-                let result = try await listCardNetworks(cardState.cardNumber)
-                guard !result.networks.isEmpty else {
+                let result = try await fetchBinData(cardState.cardNumber)
+                guard !result.binData.isEmpty else {
                     useLocalValidation(withCardState: cardState, isFallback: true)
                     return
                 }
 
-                let networks = result.networks.map { CardNetwork(cardNetworkStr: $0.value) }
-                let metadata = createValidationMetadata(networks: networks, source: .remote)
+                let enrichedNetworks = result.binData.compactMap { item -> PrimerCardNetwork? in
+                    guard let networkStr = item.network else { return nil }
+                    let cardNetwork = CardNetwork(cardNetworkStr: networkStr)
+                    return PrimerCardNetwork(
+                        displayName: item.displayName ?? cardNetwork.displayName,
+                        network: cardNetwork,
+                        issuerCountryCode: item.issuerCountryCode,
+                        issuerName: item.issuerName,
+                        accountFundingType: item.accountFundingType,
+                        prepaidReloadableIndicator: item.prepaidReloadableIndicator,
+                        productUsageType: item.productUsageType,
+                        productCode: item.productCode,
+                        productName: item.productName,
+                        issuerCurrencyCode: item.issuerCurrencyCode,
+                        regionalRestriction: item.regionalRestriction,
+                        accountNumberType: item.accountNumberType
+                    )
+                }
+
+                let networks = enrichedNetworks.map(\.network)
+                let metadata = createValidationMetadata(networks: networks, source: .remote, enrichedNetworks: enrichedNetworks)
 
                 handle(cardMetadata: metadata, forCardState: cardState)
+
+                let binData = buildBinData(from: enrichedNetworks, firstDigits: result.firstDigits, status: .complete)
+                setCachedBinData(binData, for: cardState.cardNumber)
+                delegate?.primerRawDataManager?(rawDataManager, didReceiveBinData: binData)
             } catch {
                 sendEvent(forError: error)
                 logger.warn(message: "Remote card validation failed: \(error.localizedDescription)")
@@ -142,6 +183,11 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
         delegate?.primerRawDataManager?(rawDataManager,
                                         didReceiveMetadata: metadata,
                                         forState: cardState)
+
+        let localNetworks = networks.map(PrimerCardNetwork.init(network:))
+        let binData = buildBinData(from: localNetworks, firstDigits: nil, status: .partial)
+        delegate?.primerRawDataManager?(rawDataManager, didReceiveBinData: binData)
+
         if isFallback {
             Task {
                 try? await rawDataManager.validateRawData(withCardNetworksMetadata: metadata)
@@ -170,17 +216,45 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
         }
     }
 
+    private func buildBinData(from networks: [PrimerCardNetwork], firstDigits: String?, status: PrimerBinDataStatus) -> PrimerBinData {
+        let preferred = networks.first(where: \.allowed)
+        let alternatives = networks.filter { $0 !== preferred }
+        return PrimerBinData(
+            preferred: preferred,
+            alternatives: alternatives,
+            status: status,
+            firstDigits: firstDigits
+        )
+    }
+
     // MARK: Model generation
 
     func createValidationMetadata(networks: [CardNetwork],
-                                  source: PrimerCardValidationSource) -> PrimerCardNumberEntryMetadata
-    {
-        let selectable = allowedCardNetworks
-            .filter { networks.contains($0) }
-            .map { PrimerCardNetwork(network: $0) }
+                                  source: PrimerCardValidationSource) -> PrimerCardNumberEntryMetadata {
+        createValidationMetadata(networks: networks, source: source, enrichedNetworks: nil)
+    }
 
-        let detected = selectable + networks.filter { !allowedCardNetworks.contains($0) }
-            .map { PrimerCardNetwork(network: $0) }
+    private func createValidationMetadata(networks: [CardNetwork],
+                                          source: PrimerCardValidationSource,
+                                          enrichedNetworks: [PrimerCardNetwork]?) -> PrimerCardNumberEntryMetadata
+    {
+        let selectable: [PrimerCardNetwork]
+        let detected: [PrimerCardNetwork]
+
+        if let enrichedNetworks {
+            selectable = allowedCardNetworks.compactMap { allowed in
+                enrichedNetworks.first { $0.network == allowed }
+            }
+            let unallowed = enrichedNetworks.filter { !allowedCardNetworks.contains($0.network) }
+            detected = selectable + unallowed
+        } else {
+            selectable = allowedCardNetworks
+                .filter(networks.contains)
+                .map(PrimerCardNetwork.init(network:))
+
+            detected = selectable + networks.filter { !allowedCardNetworks.contains($0) }
+                .map(PrimerCardNetwork.init(network:))
+        }
 
         let containsDisallowedNetwork = networks.contains(where: [CardNetwork].selectionDisallowedCardNetworks.contains)
 
@@ -198,8 +272,7 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
         // Throttle analytics events to prevent queue backup during rapid validation
         let now = Date()
         if let lastEventTime = lastAnalyticsEventTime,
-           now.timeIntervalSince(lastEventTime) < 1.0
-        {
+           now.timeIntervalSince(lastEventTime) < 1.0 {
             return
         }
         lastAnalyticsEventTime = now
@@ -227,22 +300,22 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
 
     // MARK: API Logic
 
-    private var listCardNetworksTask: CancellableTask<Response.Body.Bin.Networks>?
+    private var fetchBinDataTask: CancellableTask<Response.Body.Bin.Data>?
 
-    private func listCardNetworks(_ cardNumber: String) async throws -> Response.Body.Bin.Networks {
+    private func fetchBinData(_ cardNumber: String) async throws -> Response.Body.Bin.Data {
         let bin = String(cardNumber.prefix(Self.maximumBinLength))
         guard let token = PrimerAPIConfigurationModule.decodedJWTToken else {
             throw PrimerError.invalidClientToken()
         }
 
-        await listCardNetworksTask?.cancel(with: handled(primerError: .unknown()))
+        await fetchBinDataTask?.cancel(with: handled(primerError: .unknown()))
         let task = CancellableTask {
-            try await self.apiClient.listCardNetworks(clientToken: token, bin: bin)
+            try await self.apiClient.fetchBinData(clientToken: token, bin: bin)
         }
-        listCardNetworksTask = task
+        fetchBinDataTask = task
 
         defer {
-            listCardNetworksTask = nil
+            fetchBinDataTask = nil
         }
 
         return try await task.wait()
