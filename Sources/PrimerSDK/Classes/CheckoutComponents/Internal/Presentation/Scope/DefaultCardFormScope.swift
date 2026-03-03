@@ -110,9 +110,9 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
 
   // Track if billing address has been sent to avoid duplicate requests
   private var billingAddressSent = false
-  // Gates whether preferredNetwork is included in tokenization.
-  // Set to true only when the user explicitly selects a network from the co-badge dropdown.
-  private var userDidSelectNetwork = false
+  // Set only when the user explicitly selects a network from the co-badge dropdown.
+  // Used as the preferredNetwork during tokenization.
+  private var preferredNetwork: CardNetwork?
   private var currentCardData: PrimerCardData?
   private var fieldValidationStates = FieldValidationStates()
   @Published var structuredState = PrimerCardFormState()
@@ -238,7 +238,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
             self.structuredState.selectedNetwork = nil
             self.updateSurchargeAmount(for: nil)
           }
-          self.userDidSelectNetwork = false
+          self.preferredNetwork = nil
         }
       }
     }
@@ -410,11 +410,11 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     if let cardNetwork = CardNetwork(rawValue: network) {
       if cardNetwork == .unknown {
         structuredState.selectedNetwork = nil
-        userDidSelectNetwork = false
+        preferredNetwork = nil
         updateSurchargeAmount(for: nil)
       } else {
         structuredState.selectedNetwork = PrimerCardNetwork(network: cardNetwork)
-        userDidSelectNetwork = true
+        preferredNetwork = cardNetwork
         updateSurchargeAmount(for: cardNetwork)
       }
     }
@@ -480,8 +480,8 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
         ? nil : structuredState.data[.cardholderName]
     )
 
-    if userDidSelectNetwork, let selectedNetwork = structuredState.selectedNetwork {
-      cardData.cardNetwork = selectedNetwork.network
+    if let preferredNetwork {
+      cardData.cardNetwork = preferredNetwork
     }
 
     currentCardData = cardData
@@ -602,8 +602,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
   }
 
   private func getSelectedCardNetwork() -> CardNetwork? {
-    guard userDidSelectNetwork else { return nil }
-    return structuredState.selectedNetwork?.network
+    preferredNetwork
   }
 
   private func processCardPayment(cardData: CardPaymentData) async throws -> PaymentResult {
