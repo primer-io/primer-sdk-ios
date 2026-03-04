@@ -73,7 +73,7 @@ final class MockBINDataAPIClient: PrimerAPIClientBINDataProtocol {
         }
     }
 
-    func fetchBinData(clientToken: PrimerSDK.DecodedJWTToken, bin: String) async throws -> PrimerSDK.Response.Body.Bin.Data {
+    func fetchBinData(clientToken: DecodedJWTToken, bin: String) async throws -> PrimerSDK.Response.Body.Bin.Data {
         try await Task.sleep(nanoseconds: 250_000_000) // 0.25 seconds
 
         if let error {
