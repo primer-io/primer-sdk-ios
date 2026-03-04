@@ -6,6 +6,7 @@
 
 import Foundation
 import PrimerCore
+import PrimerFoundation
 import UIKit
 
 extension PrimerTheme {
@@ -130,11 +131,13 @@ final class PrimerPaymentMethod: Codable, LogReporter {
     lazy var tokenizationModel: PaymentMethodTokenizationModelProtocol? = {
         switch internalPaymentMethodType {
         case .adyenIDeal:
-            return BanksTokenizationComponent(config: self,
-                                              uiManager: PrimerUIManager.shared,
-                                              tokenizationService: TokenizationService(),
-                                              createResumePaymentService: CreateResumePaymentService(paymentMethodType: self.type),
-                                              apiClient: PrimerAPIClient())
+            return BanksTokenizationComponent(
+                config: self,
+                uiManager: PrimerUIManager.shared,
+                tokenizationService: TokenizationService(),
+                createResumePaymentService: CreateResumePaymentService(paymentMethodType: self.type),
+                apiClient: PrimerAPIClient()
+            )
         default: return nil
         }
     }()
@@ -282,14 +285,18 @@ final class PrimerPaymentMethod: Codable, LogReporter {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
         id = (try? container.decode(String?.self, forKey: .id)) ?? nil
-        implementationType = try container.decode(PrimerPaymentMethod.ImplementationType.self,
-                                                  forKey: .implementationType)
+        implementationType = try container.decode(
+            PrimerPaymentMethod.ImplementationType.self,
+            forKey: .implementationType
+        )
         type = try container.decode(String.self, forKey: .type)
         name = try container.decode(String.self, forKey: .name)
         processorConfigId = (try? container.decode(String?.self, forKey: .processorConfigId)) ?? nil
         surcharge = (try? container.decode(Int?.self, forKey: .surcharge)) ?? nil
-        displayMetadata = (try? container.decode(PrimerPaymentMethod.DisplayMetadata?.self,
-                                                 forKey: .displayMetadata)) ?? nil
+        displayMetadata = (try? container.decode(
+            PrimerPaymentMethod.DisplayMetadata?.self,
+            forKey: .displayMetadata
+        )) ?? nil
 
         switch type {
         case "PAYMENT_CARD":
