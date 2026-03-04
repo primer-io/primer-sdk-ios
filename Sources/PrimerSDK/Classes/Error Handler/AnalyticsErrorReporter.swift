@@ -1,5 +1,5 @@
 //
-//  ErrorHandler.swift
+//  AnalyticsErrorReporter.swift
 //
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
@@ -8,28 +8,10 @@ import Foundation
 import PrimerCore
 import PrimerFoundation
 
-final class ErrorHandler: LogReporter {
+/// Bridges `ErrorHandler` (in PrimerCore) to the SDK's `Analytics.Service`.
+final class AnalyticsErrorReporter: ErrorEventReporting, LogReporter {
 
-    // Call this function to log any error to Analytics
-    static func handle(
-        error: Error,
-        file: String = #file,
-        line: Int = #line,
-        function: String = #function
-    ) {
-        ErrorHandler.shared.handle(error: error, file: file, line: line, function: function)
-    }
-
-    static var shared = ErrorHandler()
-
-    func handle(
-        error: Error,
-        file: String = #file,
-        line: Int = #line,
-        function: String = #function
-    ) {
-        self.logger.error(message: error.localizedDescription, file: file, line: line, function: function)
-
+    func reportError(_ error: Error) {
         // Check if error should be filtered from server reporting
         if shouldFilterError(error) {
             logger.warn(message: "Integration issue: \(error.localizedDescription)")
@@ -104,9 +86,9 @@ final class ErrorHandler: LogReporter {
         switch error {
         case .applePayNoCardsInWallet,
              .applePayDeviceNotSupported:
-            return .warning
+            .warning
         default:
-            return .error
+            .error
         }
     }
 }

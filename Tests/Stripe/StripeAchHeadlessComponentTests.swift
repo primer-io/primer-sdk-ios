@@ -5,6 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+@testable import PrimerCore
 import PrimerFoundation
 @testable import PrimerSDK
 import XCTest
@@ -266,7 +267,7 @@ final class StripeAchHeadlessComponentTests: XCTestCase {
 
         sut.start()
 
-        let expectation = self.expectation(description: "Waiting for the getClientSessionUserDetails method to update the step async.")
+        let expectation = expectation(description: "Waiting for the getClientSessionUserDetails method to update the step async.")
 
         DispatchQueue.global().async {
             sleep(2)
@@ -307,7 +308,7 @@ final class StripeAchHeadlessComponentTests: XCTestCase {
 
         sut.submit()
 
-        let expectation = self.expectation(description: "Waiting for the patchClientSessionIfNeeded method to update the step async.")
+        let expectation = expectation(description: "Waiting for the patchClientSessionIfNeeded method to update the step async.")
 
         DispatchQueue.global().async {
             sleep(2)
@@ -336,7 +337,7 @@ final class StripeAchHeadlessComponentTests: XCTestCase {
         sut.clientSessionUserDetails = expectedUserDetails
         sut.submit()
 
-        let expectation = self.expectation(description: "Waiting for the patchClientSessionIfNeeded method to update the step async.")
+        let expectation = expectation(description: "Waiting for the patchClientSessionIfNeeded method to update the step async.")
 
         DispatchQueue.global().async {
             sleep(2)

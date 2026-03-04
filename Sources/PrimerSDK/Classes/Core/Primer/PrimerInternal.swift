@@ -48,6 +48,7 @@ final class PrimerInternal: LogReporter {
         DependencyContainer.register(AppState() as AppStateProtocol)
         DependencyContainer.register(PrimerSettings() as PrimerSettingsProtocol)
         DependencyContainer.register(PrimerTheme() as PrimerThemeProtocol)
+        ErrorHandler.eventReporter = AnalyticsErrorReporter()
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(onAppStateChange),

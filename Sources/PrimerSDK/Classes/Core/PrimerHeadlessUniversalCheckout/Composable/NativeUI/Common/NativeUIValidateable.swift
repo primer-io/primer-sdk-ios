@@ -5,6 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+import PrimerCore
 import PrimerFoundation
 
 protocol NativeUIValidateable {
@@ -40,7 +41,7 @@ extension NativeUIValidateable {
             )
         }
 
-        if let intent = intent {
+        if let intent {
             if (intent == .vault && !paymentMethod.isVaultingEnabled) ||
                 (intent == .checkout && !paymentMethod.isCheckoutEnabled) {
                 throw handled(primerError: .unsupportedIntent(intent: intent))
