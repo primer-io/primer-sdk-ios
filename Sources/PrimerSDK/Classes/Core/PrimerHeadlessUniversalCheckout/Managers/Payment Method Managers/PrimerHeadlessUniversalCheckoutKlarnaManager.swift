@@ -8,6 +8,7 @@ import UIKit
 #if canImport(PrimerKlarnaSDK)
 import PrimerKlarnaSDK
 #endif
+import PrimerCore
 import PrimerFoundation
 
 extension PrimerHeadlessUniversalCheckout {
