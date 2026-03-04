@@ -1,7 +1,7 @@
 //
 //  MockWebAuthenticationService.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import AuthenticationServices
@@ -18,6 +18,7 @@ final class MockWebAuthenticationService: WebAuthenticationService {
         completion(.success(onConnect(url, scheme)))
     }
 
+    @MainActor
     func connect(paymentMethodType: String, url: URL, scheme: String) async throws -> URL {
         guard let onConnect else {
             throw PrimerError.unknown()
