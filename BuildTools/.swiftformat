@@ -1,5 +1,4 @@
 --swift-version 5.3
---rules isEmpty, preferCountWhere, redundantExtensionACL, modifierOrder, consecutiveBlankLines, blankLineAfterImports, andOperator, elseOnSameLine, fileHeader, hoistPatternLet, leadingDelimiters, modifiersOnSameLine, preferKeyPath, redundantInternal, redundantReturn, sortImports, wrapArguments, wrap
+--rules isEmpty, preferCountWhere, redundantExtensionACL, modifierOrder, consecutiveBlankLines, blankLineAfterImports, andOperator, elseOnSameLine, fileHeader, hoistPatternLet, leadingDelimiters, modifiersOnSameLine, preferKeyPath, redundantInternal, redundantReturn, sortImports, wrapArguments
 --header "\n {file}\n\n Copyright © {year} Primer API Ltd. All rights reserved. \n Licensed under the MIT License. See LICENSE file in the project root for full license information."
 --wrap-arguments before-first
---maxwidth 120
