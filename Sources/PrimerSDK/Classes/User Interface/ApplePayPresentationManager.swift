@@ -35,7 +35,7 @@ final class ApplePayPresentationManager: ApplePayPresenting, LogReporter, Sendab
         let request = try createRequest(for: applePayRequest)
         let paymentController = PKPaymentAuthorizationController(paymentRequest: request)
         paymentController.delegate = delegate
-        
+
         let logError: () -> PrimerError = {
             let err = PrimerError.unableToPresentApplePay()
             self.logger.error(message: "APPLE PAY")

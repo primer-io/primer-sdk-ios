@@ -1,0 +1,98 @@
+//
+//  MockValidationService.swift
+//
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
+
+import Foundation
+@testable import PrimerSDK
+
+@available(iOS 15.0, *)
+final class MockValidationService: ValidationService {
+
+    // MARK: - Configurable Return Values
+
+    var stubbedValidationResult = ValidationResult.valid
+    var stubbedResultsByType: [PrimerInputElementType: ValidationResult] = [:]
+
+    // MARK: - Call Tracking
+
+    private(set) var validateFieldCallCount = 0
+    private(set) var lastFieldType: PrimerInputElementType?
+    private(set) var lastFieldValue: String?
+
+    // MARK: - ValidationService Protocol
+
+    func validateCardNumber(_ number: String) -> ValidationResult {
+        validateFieldCallCount += 1
+        lastFieldType = .cardNumber
+        lastFieldValue = number
+        return stubbedResultsByType[.cardNumber] ?? stubbedValidationResult
+    }
+
+    func validateExpiry(month: String, year: String) -> ValidationResult {
+        validateFieldCallCount += 1
+        lastFieldType = .expiryDate
+        lastFieldValue = "\(month)/\(year)"
+        return stubbedResultsByType[.expiryDate] ?? stubbedValidationResult
+    }
+
+    func validateCVV(_ cvv: String, cardNetwork: CardNetwork) -> ValidationResult {
+        validateFieldCallCount += 1
+        lastFieldType = .cvv
+        lastFieldValue = cvv
+        return stubbedResultsByType[.cvv] ?? stubbedValidationResult
+    }
+
+    func validateCardholderName(_ name: String) -> ValidationResult {
+        validateFieldCallCount += 1
+        lastFieldType = .cardholderName
+        lastFieldValue = name
+        return stubbedResultsByType[.cardholderName] ?? stubbedValidationResult
+    }
+
+    func validateField(type: PrimerInputElementType, value: String?) -> ValidationResult {
+        validateFieldCallCount += 1
+        lastFieldType = type
+        lastFieldValue = value
+        return stubbedResultsByType[type] ?? stubbedValidationResult
+    }
+
+    func validate<T, R: ValidationRule>(input: T, with rule: R) -> ValidationResult where R.Input == T {
+        stubbedValidationResult
+    }
+
+    func validateFormData(_ formData: FormData, configuration: CardFormConfiguration) -> [FieldError] {
+        []
+    }
+
+    func validateFields(_ fieldTypes: [PrimerInputElementType], formData: FormData) -> [FieldError] {
+        []
+    }
+
+    func validateFieldWithStructuredResult(type: PrimerInputElementType, value: String?) -> FieldError? {
+        let result = validateField(type: type, value: value)
+        if result.isValid {
+            return nil
+        }
+        return FieldError(
+            fieldType: type,
+            message: result.errorMessage ?? "Validation failed",
+            errorCode: result.errorCode
+        )
+    }
+
+    // MARK: - Test Helpers
+
+    func reset() {
+        validateFieldCallCount = 0
+        lastFieldType = nil
+        lastFieldValue = nil
+        stubbedValidationResult = ValidationResult.valid
+        stubbedResultsByType = [:]
+    }
+
+    func stubResult(for type: PrimerInputElementType, result: ValidationResult) {
+        stubbedResultsByType[type] = result
+    }
+}

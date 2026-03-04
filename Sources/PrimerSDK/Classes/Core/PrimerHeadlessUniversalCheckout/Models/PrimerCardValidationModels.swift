@@ -28,6 +28,22 @@ public final class PrimerCardNumberEntryState: NSObject, PrimerValidationState {
     }
 }
 
+/// Represents a detected card network with display information and merchant allowance status.
+///
+/// `PrimerCardNetwork` wraps a `CardNetwork` enum value with additional context useful
+/// for UI display, including the human-readable name and whether the merchant supports
+/// this network for payments.
+///
+/// This class is used in co-badged card scenarios where multiple networks are detected
+/// and the user may need to select which network to use.
+///
+/// Example usage:
+/// ```swift
+/// let networks = metadata.selectableCardNetworks?.items ?? []
+/// for network in networks {
+///     print("\(network.displayName) - Allowed: \(network.allowed)")
+/// }
+/// ```
 @objc
 public final class PrimerCardNetwork: NSObject {
     public let displayName: String

@@ -1,10 +1,11 @@
 //
 //  MerchantSessionAndSettingsViewController.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import PrimerSDK
+import SwiftUI
 import UIKit
 
 var environment: Environment = .sandbox
@@ -34,6 +35,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     @IBOutlet weak var customerStackView: UIStackView!
     @IBOutlet weak var surchargeGroupStackView: UIStackView!
 
+    @IBOutlet weak var bottomButtonHolderStackView: UIStackView!
     // MARK: Testing Mode Inputs
 
     @IBOutlet weak var testingModeSegmentedControl: UISegmentedControl!
@@ -70,7 +72,6 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     @IBOutlet weak var disableInitScreenSwitch: UISwitch!
     @IBOutlet weak var enableCVVRecaptureFlowSwitch: UISwitch!
     @IBOutlet weak var addNewCardSwitch: UISwitch!
-
 
     // MARK: Apple Pay Inputs
     @IBOutlet weak var applePayCaptureBillingAddressSwitch: UISwitch!
@@ -135,6 +136,12 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     @IBOutlet weak var surchargeTextField: UITextField!
     @IBOutlet weak var primerSDKButton: UIButton!
     @IBOutlet weak var primerHeadlessSDKButton: UIButton!
+    
+    // CheckoutComponents button (unified - added programmatically)
+    var checkoutComponentsButton: UIButton!
+    
+    // CheckoutComponents delegate (stored as property to prevent deallocation)
+    private var checkoutComponentsDelegate: AnyObject?
 
     @IBOutlet weak var deepLinkStackView: UIStackView!
     @IBOutlet weak var dlClientTokenDisplay: UILabel!
@@ -143,10 +150,10 @@ class MerchantSessionAndSettingsViewController: UIViewController {
 
     var lineItems: [ClientSessionRequestBody.Order.LineItem] {
         get {
-            return self.clientSession.order?.lineItems ?? []
+            clientSession.order?.lineItems ?? []
         }
         set {
-            self.clientSession.order?.lineItems = newValue
+            clientSession.order?.lineItems = newValue
         }
     }
 
@@ -178,9 +185,9 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     private var deepLinkClientToken: String?
 
     func setAccessibilityIds() {
-        self.view.accessibilityIdentifier = "Background View"
-        self.testingModeSegmentedControl.accessibilityIdentifier = "Testing Mode Segmented Control"
-        self.clientTokenTextField.accessibilityIdentifier = "Client Token Text Field"
+        view.accessibilityIdentifier = "Background View"
+        testingModeSegmentedControl.accessibilityIdentifier = "Testing Mode Segmented Control"
+        clientTokenTextField.accessibilityIdentifier = "Client Token Text Field"
     }
 
     // MARK: - VIEW LIFE-CYCLE
@@ -188,7 +195,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        self.setAccessibilityIds()
+        setAccessibilityIds()
         testScenarioPicker.dataSource = self
         testScenarioPicker.delegate = self
         testScenarioTextField.inputView = testScenarioPicker
@@ -214,7 +221,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             environmentSegmentedControl.selectedSegmentIndex = 1
         }
 
-        self.apiKeyTextField.text = customDefinedApiKey
+        apiKeyTextField.text = customDefinedApiKey
 
         let viewTap = UITapGestureRecognizer(target: self, action: #selector(viewTapped))
         view.addGestureRecognizer(viewTap)
@@ -226,6 +233,9 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             self, action: #selector(customerIdChanged(_:)), for: .editingDidEnd)
 
         handleAppetizeIfNeeded(AppLinkConfigProvider())
+
+        setupCheckoutComponentsButtons()
+        fixLayoutConstraints()
 
         render()
 
@@ -242,14 +252,14 @@ class MerchantSessionAndSettingsViewController: UIViewController {
 
     private func handleAppetizeIfNeeded(_ configProvider: AppLinkConfigProvider) {
         if let settings = configProvider.fetchConfig() {
-            self.deepLinkSettings = settings
-            self.dlSettingsDisplay.text = prettyPrint(settings)
+            deepLinkSettings = settings
+            dlSettingsDisplay.text = prettyPrint(settings)
         }
         if let clientToken = configProvider.fetchClientToken() {
-            self.deepLinkClientToken = clientToken
+            deepLinkClientToken = clientToken
             clientTokenTextField.text = clientToken
-            self.dlClientTokenDisplay.text = clientToken
-            self.testingModeSegmentedControl.selectedSegmentIndex = RenderMode.deepLink.rawValue
+            dlClientTokenDisplay.text = clientToken
+            testingModeSegmentedControl.selectedSegmentIndex = RenderMode.deepLink.rawValue
             setRenderMode(.deepLink)
         }
     }
@@ -284,6 +294,8 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             surchargeGroupStackView.isHidden = false
             klarnaEMDStackView.isHidden = false
             deepLinkStackView.isHidden = true
+            // Show CheckoutComponents button
+            checkoutComponentsButton?.isHidden = false
 
         case .clientToken:
             environmentStackView.isHidden = false
@@ -296,6 +308,8 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             surchargeGroupStackView.isHidden = true
             klarnaEMDStackView.isHidden = true
             deepLinkStackView.isHidden = true
+            // Show CheckoutComponents button
+            checkoutComponentsButton?.isHidden = false
 
         case .testScenario:
             environmentStackView.isHidden = true
@@ -308,6 +322,8 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             surchargeGroupStackView.isHidden = false
             klarnaEMDStackView.isHidden = true
             deepLinkStackView.isHidden = true
+            // Show CheckoutComponents button
+            checkoutComponentsButton?.isHidden = false
 
             testParamsStackView.isHidden = (selectedTestScenario == nil)
 
@@ -338,6 +354,8 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             surchargeGroupStackView,
              klarnaEMDStackView].forEach { $0.isHidden = true }
             deepLinkStackView.isHidden = false
+            // Hide CheckoutComponents button in deepLink mode
+            checkoutComponentsButton?.isHidden = true
         }
 
         gesturesDismissalSwitch.isOn = true  // Default value
@@ -638,7 +656,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
 
         clientSession.paymentMethod = MerchantMockDataManager.getPaymentMethod(
             sessionType: paymentSessionType)
-        if paymentSessionType == .generic && enableCVVRecaptureFlowSwitch.isOn {
+        if paymentSessionType == .generic, enableCVVRecaptureFlowSwitch.isOn {
             let option = ClientSessionRequestBody.PaymentMethod.PaymentMethodOption(surcharge: nil,
                                                                                     instalmentDuration: nil,
                                                                                     extraMerchantData: nil,
@@ -742,7 +760,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     }
 
     func configureTestScenario() {
-        guard let selectedTestScenario = selectedTestScenario else {
+        guard let selectedTestScenario else {
             let alert = UIAlertController(
                 title: "Error", message: "Please choose Test Scenario", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "OK", style: .default))
@@ -758,7 +776,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             threeDS: nil)
 
         if testResultSegmentedControl.selectedSegmentIndex == 1 {
-            guard let selectedTestFlow = selectedTestFlow else {
+            guard let selectedTestFlow else {
                 let alert = UIAlertController(
                     title: "Error", message: "Please choose failure flow in the Failure Parameters",
                     preferredStyle: .alert)
@@ -776,7 +794,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             testParams.result = .failure(failure: failure)
 
         } else if case .testNative3DS = selectedTestScenario {
-            guard let selectedTest3DSScenario = selectedTest3DSScenario else {
+            guard let selectedTest3DSScenario else {
                 let alert = UIAlertController(
                     title: "Error", message: "Please choose 3DS scenario", preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: "OK", style: .default))
@@ -810,7 +828,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             navigationController?.pushViewController(vc, animated: true)
 
         case .deepLink:
-            if let clientToken = self.deepLinkClientToken, let settings = self.deepLinkSettings {
+            if let clientToken = deepLinkClientToken, let settings = deepLinkSettings {
                 let vc = MerchantDropInUIViewController.instantiate(
                     settings: settings, clientSession: nil, clientToken: clientToken)
                 navigationController?.pushViewController(vc, animated: true)
@@ -841,7 +859,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
                 clientToken: clientTokenTextField.text)
             navigationController?.pushViewController(vc, animated: true)
         case .deepLink:
-            if let clientToken = self.deepLinkClientToken, let settings = self.deepLinkSettings {
+            if let clientToken = deepLinkClientToken, let settings = deepLinkSettings {
                 let vc = MerchantHeadlessCheckoutAvailablePaymentMethodsViewController.instantiate(
                     settings: settings,
                     clientSession: nil,
@@ -852,20 +870,30 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     }
 
     private func populateSettingsFromUI(dropIn: Bool) -> PrimerSettings {
-        var uiOptions: PrimerUIOptions?
-        if dropIn {
-            let selectedDismissalMechanisms: [DismissalMechanism] = {
-                var mechanisms = [DismissalMechanism]()
-                if gesturesDismissalSwitch.isOn {
-                    mechanisms.append(.gestures)
-                }
-                if closeButtonDismissalSwitch.isOn {
-                    mechanisms.append(.closeButton)
-                }
-                return mechanisms
-            }()
+        // Build dismissalMechanism for both Drop-In and CheckoutComponents
+        let selectedDismissalMechanisms: [DismissalMechanism] = {
+            var mechanisms = [DismissalMechanism]()
+            if gesturesDismissalSwitch.isOn {
+                mechanisms.append(.gestures)
+            }
+            if closeButtonDismissalSwitch.isOn {
+                mechanisms.append(.closeButton)
+            }
+            return mechanisms
+        }()
 
-            uiOptions = PrimerUIOptions(
+        var uiOptions: PrimerUIOptions? = if dropIn {
+            PrimerUIOptions(
+                isInitScreenEnabled: !disableInitScreenSwitch.isOn,
+                isSuccessScreenEnabled: !disableSuccessScreenSwitch.isOn,
+                isErrorScreenEnabled: !disableErrorScreenSwitch.isOn,
+                dismissalMechanism: selectedDismissalMechanisms,
+                cardFormUIOptions: PrimerCardFormUIOptions(payButtonAddNewCard: addNewCardSwitch.isOn),
+                appearanceMode: .system,
+                theme: applyThemingSwitch.isOn ? CheckoutTheme.tropical : nil)
+        } else {
+            // CheckoutComponents: Also apply dismissalMechanism and other relevant settings
+            PrimerUIOptions(
                 isInitScreenEnabled: !disableInitScreenSwitch.isOn,
                 isSuccessScreenEnabled: !disableSuccessScreenSwitch.isOn,
                 isErrorScreenEnabled: !disableErrorScreenSwitch.isOn,
@@ -913,19 +941,112 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     }
 
     @IBAction func clearAppLinkButtonTapped(_ sender: Any) {
-        self.deepLinkClientToken = nil
-        self.deepLinkSettings = nil
-        self.testingModeSegmentedControl.selectedSegmentIndex = RenderMode.createClientSession.rawValue
+        deepLinkClientToken = nil
+        deepLinkSettings = nil
+        testingModeSegmentedControl.selectedSegmentIndex = RenderMode.createClientSession.rawValue
         setRenderMode(.createClientSession)
         dlSettingsDisplay.text = ""
         dlClientTokenDisplay.text = ""
+    }
+    
+    // MARK: - Layout Fixes
+    
+    private func fixLayoutConstraints() {
+        // Find the scroll view outlet and ensure it's connected to the bottom button stack view
+        view.setNeedsLayout()
+        view.layoutIfNeeded()
+        
+        // The white space issue should be resolved by proper storyboard constraints
+        // This method ensures the layout is properly refreshed
+    }
+    
+    // MARK: - CheckoutComponents Setup
+    
+    private func updateExistingButtonConstraints() {
+        // Update existing button heights to follow Apple HIG guidelines
+        // Remove existing height constraints and add new ones
+        for constraint in primerSDKButton.constraints where constraint.firstAttribute == .height {
+            constraint.isActive = false
+        }
+        for constraint in primerHeadlessSDKButton.constraints where constraint.firstAttribute == .height {
+            constraint.isActive = false
+        }
+        
+        // Add new height constraints following Apple HIG (minimum 32pt for compact)
+        NSLayoutConstraint.activate([
+            primerSDKButton.heightAnchor.constraint(equalToConstant: 32),
+            primerHeadlessSDKButton.heightAnchor.constraint(equalToConstant: 32)
+        ])
+    }
+    
+    private func setupCheckoutComponentsButtons() {
+        // First, update existing button heights to follow Apple HIG and create more space
+        updateExistingButtonConstraints()
+        
+        // Create unified CheckoutComponents button
+        checkoutComponentsButton = UIButton(type: .system)
+        checkoutComponentsButton.translatesAutoresizingMaskIntoConstraints = false
+        checkoutComponentsButton.setTitle("CheckoutComponents", for: .normal)
+        checkoutComponentsButton.backgroundColor = UIColor.systemPurple
+        checkoutComponentsButton.setTitleColor(.white, for: .normal)
+        checkoutComponentsButton.layer.cornerRadius = 5
+        checkoutComponentsButton.accessibilityIdentifier = "CheckoutComponents Button"
+        checkoutComponentsButton.addTarget(self, action: #selector(checkoutComponentsButtonTapped), for: .touchUpInside)
+        
+        // Add button to the bottomButtonHolderStackView
+        bottomButtonHolderStackView.addArrangedSubview(checkoutComponentsButton)
+        
+        // Setup height constraint for the button
+        NSLayoutConstraint.activate([
+            checkoutComponentsButton.heightAnchor.constraint(equalToConstant: 32)
+        ])
+    }
+    
+    // MARK: - CheckoutComponents Actions
+    
+    @objc private func checkoutComponentsButtonTapped() {
+        print("CheckoutComponents button tapped - navigating to menu")
+        
+        // Set up API key and settings to pass to the menu
+        customDefinedApiKey = (apiKeyTextField.text ?? "").isEmpty ? nil : apiKeyTextField.text
+        let settings = populateSettingsFromUI(dropIn: false)
+        
+        // Configure Primer with settings
+        Primer.shared.configure(settings: settings, delegate: nil)
+        
+        // IMPORTANT: Configure client session including surcharge settings from UI
+        configureClientSession()
+        
+        // Navigate to CheckoutComponents menu screen
+        presentCheckoutComponentsMenu(settings: settings)
+    }
+    
+    private func presentCheckoutComponentsMenu(settings: PrimerSettings) {
+        let menuViewController = CheckoutComponentsMenuViewController()
+        menuViewController.settings = settings
+        menuViewController.clientSession = clientSession
+        menuViewController.apiVersion = apiVersion
+        menuViewController.renderMode = renderMode
+        
+        // Pass client token if available
+        if renderMode == .clientToken {
+            menuViewController.clientToken = clientTokenTextField.text
+        }
+        
+        // Pass deep link client token if available
+        if renderMode == .deepLink {
+            menuViewController.deepLinkClientToken = deepLinkClientToken
+        }
+        
+        let navigationController = UINavigationController(rootViewController: menuViewController)
+        present(navigationController, animated: true)
     }
 }
 
 extension MerchantSessionAndSettingsViewController: UIPickerViewDataSource, UIPickerViewDelegate {
 
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
-        return 1
+        1
     }
 
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
@@ -985,5 +1106,281 @@ extension MerchantSessionAndSettingsViewController: UIPickerViewDataSource, UIPi
         }
 
         render()
+    }
+}
+
+/// Debug App delegate for CheckoutComponents that logs results and shows alerts
+@available(iOS 15.0, *)
+class DebugAppPrimerCheckoutPresenterDelegate: PrimerCheckoutPresenterDelegate {
+    
+    func primerCheckoutPresenterDidCompleteWithSuccess(_ result: PaymentResult) {
+        print("✅ [Debug App] CheckoutComponents payment completed successfully! Payment ID: \(result.paymentId)")
+        
+        DispatchQueue.main.async {
+            // Push the Debug App's result screen to navigation stack (following Drop-in pattern)
+            // This is called after CheckoutComponents modal has been dismissed
+            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+               let window = windowScene.windows.first,
+               let rootController = window.rootViewController {
+                
+                // Find the navigation controller in the main app (not the modal)
+                var navController: UINavigationController?
+                
+                if let nav = rootController as? UINavigationController {
+                    navController = nav
+                } else if let tabBar = rootController as? UITabBarController,
+                          let nav = tabBar.selectedViewController as? UINavigationController {
+                    navController = nav
+                } else if let nav = rootController.children.first as? UINavigationController {
+                    navController = nav
+                }
+                
+                guard let navigationController = navController else {
+                    print("❌ [Debug App] Could not find navigation controller to push result screen")
+                    return
+                }
+                
+                // Create success checkout data using the real payment result
+                // Note: CheckoutComponents doesn't have access to order ID like Drop-in does
+                let successPayment = PrimerCheckoutDataPayment(
+                    id: result.paymentId,
+                    orderId: "checkout-components-order", // CheckoutComponents doesn't track order ID
+                    paymentFailureReason: nil
+                )
+                let successData = PrimerCheckoutData(payment: successPayment)
+                
+                // Create realistic logs for CheckoutComponents success
+                var logs = ["primerCheckoutPresenterDidCompleteWithSuccess"]
+                logs.append("Payment ID: \(result.paymentId)")
+                logs.append("Status: \(result.status)")
+                if let token = result.token {
+                    logs.append("Token: \(token)")
+                }
+                if let amount = result.amount {
+                    logs.append("Amount: \(amount)")
+                }
+                if let paymentMethodType = result.paymentMethodType {
+                    logs.append("Payment Method: \(paymentMethodType)")
+                }
+                
+                // Push the Debug App's result screen to the navigation stack
+                let resultVC = MerchantResultViewController.instantiate(
+                    checkoutData: successData,
+                    error: nil,
+                    logs: logs
+                )
+                
+                navigationController.pushViewController(resultVC, animated: true)
+                print("✅ [Debug App] Pushed result screen to navigation stack with real payment data")
+                
+                // Also dismiss any presented CheckoutComponentsMenuViewController
+                if let presentedVC = navigationController.presentedViewController {
+                    presentedVC.dismiss(animated: true)
+                    print("✅ [Debug App] Dismissed CheckoutComponentsMenuViewController after successful payment")
+                }
+            }
+        }
+    }
+    
+    func primerCheckoutPresenterDidFailWithError(_ error: PrimerError) {
+        print("❌ [Debug App] CheckoutComponents payment failed: \(error.localizedDescription)")
+        
+        DispatchQueue.main.async {
+            // Push the Debug App's error result screen to navigation stack (following Drop-in pattern)
+            // This is called after CheckoutComponents modal has been dismissed
+            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+               let window = windowScene.windows.first,
+               let rootController = window.rootViewController {
+                
+                // Find the navigation controller in the main app (not the modal)
+                var navController: UINavigationController?
+                
+                if let nav = rootController as? UINavigationController {
+                    navController = nav
+                } else if let tabBar = rootController as? UITabBarController,
+                          let nav = tabBar.selectedViewController as? UINavigationController {
+                    navController = nav
+                } else if let nav = rootController.children.first as? UINavigationController {
+                    navController = nav
+                }
+                
+                guard let navigationController = navController else {
+                    print("❌ [Debug App] Could not find navigation controller to push error result screen")
+                    return
+                }
+                
+                // Create failure checkout data using the error information (matching Drop-in pattern)
+                let failurePayment = PrimerCheckoutDataPayment(
+                    id: error.diagnosticsId, // Use diagnostics ID as payment ID for errors
+                    orderId: "checkout-components-error-order",
+                    paymentFailureReason: nil // Will be shown in error details
+                )
+                let failureData = PrimerCheckoutData(payment: failurePayment)
+                
+                // Create realistic logs for CheckoutComponents failure (matching Drop-in pattern)
+                var logs = ["primerCheckoutPresenterDidFailWithError"]
+                logs.append("Error ID: \(error.errorId)")
+                logs.append("Diagnostics ID: \(error.diagnosticsId)")
+                logs.append("Description: \(error.localizedDescription)")
+                if let recoverySuggestion = error.recoverySuggestion {
+                    logs.append("Recovery: \(recoverySuggestion)")
+                }
+                
+                // Push the Debug App's result screen with error details
+                let resultVC = MerchantResultViewController.instantiate(
+                    checkoutData: failureData,
+                    error: error, // Pass the actual PrimerError
+                    logs: logs
+                )
+                
+                navigationController.pushViewController(resultVC, animated: true)
+                print("✅ [Debug App] Pushed error result screen to navigation stack with real error data")
+                
+                // Also dismiss any presented CheckoutComponentsMenuViewController
+                if let presentedVC = navigationController.presentedViewController {
+                    presentedVC.dismiss(animated: true)
+                    print("✅ [Debug App] Dismissed CheckoutComponentsMenuViewController after payment error")
+                }
+            }
+        }
+    }
+    
+    func primerCheckoutPresenterDidDismiss() {
+        print("🚪 [Debug App] CheckoutComponents was dismissed by user")
+        
+        DispatchQueue.main.async {
+            // Find the topmost view controller to present the alert
+            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+               let window = windowScene.windows.first,
+               let topController = Self.findTopViewController(from: window.rootViewController) {
+                
+                let alert = UIAlertController(
+                    title: "Checkout Dismissed",
+                    message: "CheckoutComponents was dismissed by user",
+                    preferredStyle: .alert
+                )
+                alert.addAction(UIAlertAction(title: "OK", style: .default))
+                topController.present(alert, animated: true)
+            }
+        }
+    }
+    
+    // MARK: - 3DS Delegate Methods
+
+    func primerCheckoutPresenterWillPresent3DSChallenge(_ paymentMethodTokenData: PrimerPaymentMethodTokenData) {
+        print("🔐 [Debug App] CheckoutComponents will present 3DS challenge")
+        print("🔐 [Debug App] Payment method type: \(String(describing: paymentMethodTokenData.paymentMethodType))")
+        if let token = paymentMethodTokenData.token {
+            print("🔐 [Debug App] Token: \(token)")
+        }
+        // Note: 3DS is handled at payment creation level, not tokenization level
+        print("🔐 [Debug App] 3DS will be handled during payment creation if required")
+    }
+
+    func primerCheckoutPresenterDidDismiss3DSChallenge() {
+        print("🔐 [Debug App] CheckoutComponents 3DS challenge was dismissed")
+    }
+
+    func primerCheckoutPresenterDidComplete3DSChallenge(success: Bool, resumeToken: String?, error: Error?) {
+        if success {
+            print("🔐✅ [Debug App] CheckoutComponents 3DS challenge completed successfully")
+            if let resumeToken {
+                print("🔐✅ [Debug App] Resume token: \(resumeToken)")
+            }
+        } else {
+            print("🔐❌ [Debug App] CheckoutComponents 3DS challenge failed")
+            if let error {
+                print("🔐❌ [Debug App] 3DS Error: \(error.localizedDescription)")
+            }
+        }
+        
+        // Show a debug alert with 3DS result
+        DispatchQueue.main.async {
+            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+               let window = windowScene.windows.first,
+               let topController = Self.findTopViewController(from: window.rootViewController) {
+                
+                let title = success ? "3DS Success" : "3DS Failed"
+                var message = success ? "3DS authentication completed successfully" : "3DS authentication failed"
+                
+                if success, let resumeToken {
+                    message += "\nResume token: \(String(resumeToken.prefix(20)))..."
+                } else if !success, let error {
+                    message += "\nError: \(error.localizedDescription)"
+                }
+                
+                let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                
+                topController.present(alert, animated: true, completion: nil)
+                print("🔐 [Debug App] Presented 3DS result alert")
+            }
+        }
+    }
+
+    private static func findTopViewController(from viewController: UIViewController?) -> UIViewController? {
+        guard let viewController else { return nil }
+        
+        if let presented = viewController.presentedViewController {
+            return findTopViewController(from: presented)
+        }
+        
+        if let navigation = viewController as? UINavigationController,
+           let top = navigation.topViewController {
+            return findTopViewController(from: top)
+        }
+        
+        if let tab = viewController as? UITabBarController,
+           let selected = tab.selectedViewController {
+            return findTopViewController(from: selected)
+        }
+        
+        return viewController
+    }
+}
+
+/// Inline test delegate for CheckoutComponents results
+@available(iOS 15.0, *)
+private class InlineTestPrimerCheckoutPresenterDelegate: PrimerCheckoutPresenterDelegate {
+    
+    enum TestResult {
+        case success(String)
+        case failure(String)
+    }
+    
+    private let onResult: (TestResult) -> Void
+    
+    init(onResult: @escaping (TestResult) -> Void) {
+        self.onResult = onResult
+    }
+    
+    func primerCheckoutPresenterDidCompleteWithSuccess(_ result: PaymentResult) {
+        onResult(.success("Payment completed successfully! ✅ Payment ID: \(result.paymentId)"))
+    }
+    
+    func primerCheckoutPresenterDidFailWithError(_ error: PrimerError) {
+        onResult(.failure("Payment failed: \(error.errorId) - \(error.localizedDescription)"))
+    }
+    
+    func primerCheckoutPresenterDidDismiss() {
+        onResult(.success("Checkout was dismissed by user"))
+    }
+
+    // MARK: - 3DS Delegate Methods
+
+    func primerCheckoutPresenterWillPresent3DSChallenge(_ paymentMethodTokenData: PrimerPaymentMethodTokenData) {
+        print("🔐 [Inline Test] CheckoutComponents will present 3DS challenge")
+    }
+
+    func primerCheckoutPresenterDidDismiss3DSChallenge() {
+        print("🔐 [Inline Test] CheckoutComponents 3DS challenge was dismissed")
+    }
+
+    func primerCheckoutPresenterDidComplete3DSChallenge(success: Bool, resumeToken: String?, error: Error?) {
+        if success {
+            print("🔐✅ [Inline Test] CheckoutComponents 3DS challenge completed successfully")
+        } else {
+            print("🔐❌ [Inline Test] CheckoutComponents 3DS challenge failed")
+        }
     }
 }

@@ -1,7 +1,7 @@
 //
 //  PrimerConfiguration.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable file_length
@@ -11,7 +11,6 @@ import PassKit
 
 typealias PrimerAPIConfiguration = Response.Body.Configuration
 
-// swiftlint:disable file_length
 extension Request.URLParameters {
 
     final class Configuration: Codable {
@@ -35,7 +34,7 @@ extension Request.URLParameters {
             self.skipPaymentMethodTypes = (try? container.decode([String]?.self, forKey: .skipPaymentMethodTypes)) ?? nil
             self.requestDisplayMetadata = (try? container.decode(Bool?.self, forKey: .requestDisplayMetadata)) ?? nil
 
-            if skipPaymentMethodTypes == nil && requestDisplayMetadata == nil {
+            if skipPaymentMethodTypes == nil, requestDisplayMetadata == nil {
                 throw InternalError.failedToDecode(message: "All values are nil")
             }
         }
@@ -43,7 +42,7 @@ extension Request.URLParameters {
         func encode(to encoder: Encoder) throws {
             var container = encoder.container(keyedBy: CodingKeys.self)
 
-            if skipPaymentMethodTypes == nil && requestDisplayMetadata == nil {
+            if skipPaymentMethodTypes == nil, requestDisplayMetadata == nil {
                 throw InternalError.failedToDecode(message: "All values are nil")
             }
 
@@ -81,23 +80,23 @@ extension Response.Body {
     struct Configuration: Codable, LogReporter {
 
         static var current: PrimerAPIConfiguration? {
-            return PrimerAPIConfigurationModule.apiConfiguration
+            PrimerAPIConfigurationModule.apiConfiguration
         }
 
         static var paymentMethodConfigs: [PrimerPaymentMethod]? {
-            return PrimerAPIConfigurationModule.apiConfiguration?.paymentMethods
+            PrimerAPIConfigurationModule.apiConfiguration?.paymentMethods
         }
 
         var hasSurchargeEnabled: Bool {
             let pmSurcharge = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.paymentMethod?.options?
-                .first(where: { $0["surcharge"] as? Int != nil })
+                .first(where: { $0["surcharge"] is Int })
 
             let options = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.paymentMethod?.options
             let cardSurcharge = options?
                 .first(where: {
                     (($0["networks"] as? [[String: Any]])?
                         .first(where: {
-                            $0["surcharge"] as? Int != nil
+                            $0["surcharge"] is Int
                         })) != nil
                 })
             return pmSurcharge != nil || cardSurcharge != nil
@@ -105,9 +104,9 @@ extension Response.Body {
 
         static var paymentMethodConfigViewModels: [PaymentMethodTokenizationViewModelProtocol] {
             var viewModels: [PaymentMethodTokenizationViewModelProtocol] = PrimerAPIConfiguration.paymentMethodConfigs?
-                .filter({ $0.isEnabled })
+                .filter(\.isEnabled)
                 .filter({ $0.baseLogoImage != nil })
-                .compactMap({ $0.tokenizationViewModel })
+                .compactMap(\.tokenizationViewModel)
                 ?? []
 
             let supportedNetworks = ApplePayUtils.supportedPKPaymentNetworks()
@@ -174,7 +173,7 @@ Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in you
                     var warningStr = "\(viewModel.config.type) configuration has been found, but it cannot be presented."
 
                     if let primerErr = error as? PrimerError {
-                        if case .underlyingErrors(let errors, _) = primerErr {
+                        if case let .underlyingErrors(errors, _) = primerErr {
                             for err in errors {
                                 if let primerErr = err as? PrimerError {
                                     var errLine: String = ""
@@ -183,7 +182,7 @@ Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in you
                                     }
 
                                     if let recoverySuggestion = primerErr.recoverySuggestion {
-                                        if errLine.count != 0 {
+                                        if !errLine.isEmpty {
                                             errLine += " | "
                                         } else {
                                             errLine += "\n-"
@@ -204,7 +203,7 @@ Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in you
                             }
 
                             if let recoverySuggestion = primerErr.recoverySuggestion {
-                                if errLine.count != 0 {
+                                if !errLine.isEmpty {
                                     errLine += " | "
                                 } else {
                                     errLine += "\n-"
@@ -252,11 +251,11 @@ Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in you
             self.assetsUrl = (try? container.decode(String?.self, forKey: .assetsUrl)) ?? nil
             self.clientSession = (try? container.decode(ClientSession.APIResponse?.self, forKey: .clientSession)) ?? nil
             let throwables = try container.decode([Throwable<PrimerPaymentMethod>].self, forKey: .paymentMethods)
-            self.paymentMethods = throwables.compactMap({ $0.value })
+            self.paymentMethods = throwables.compactMap(\.value)
             self.primerAccountId = (try? container.decode(String?.self, forKey: .primerAccountId)) ?? nil
             self.keys = (try? container.decode(ThreeDS.Keys?.self, forKey: .keys)) ?? nil
             let moduleThrowables = try container.decode([Throwable<CheckoutModule>].self, forKey: .checkoutModules)
-            self.checkoutModules = moduleThrowables.compactMap({ $0.value })
+            self.checkoutModules = moduleThrowables.compactMap(\.value)
 
             var hasCardSurcharge = false
             var paymentMethodSurcharges: [String: Int] = [:]
@@ -269,7 +268,7 @@ Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in you
                             for network in networks {
                                 guard network["type"] is String,
                                       network["surcharge"] is Int,
-                                    let surchargeValue = network["surcharge"] as? Int
+                                      let surchargeValue = network["surcharge"] as? Int
                                 else { continue }
                                 hasCardSurcharge = surchargeValue > 0
                             }
@@ -357,7 +356,7 @@ extension Response.Body.Configuration {
                 self.cardHolderName = (try? container.decode(Bool?.self, forKey: .cardHolderName)) ?? nil
                 self.saveCardCheckbox = (try? container.decode(Bool?.self, forKey: .saveCardCheckbox)) ?? nil
 
-                if self.cardHolderName == nil && self.saveCardCheckbox == nil {
+                if self.cardHolderName == nil, self.saveCardCheckbox == nil {
                     throw handled(error: InternalError.failedToDecode(message: "All fields are nil"))
                 }
             }
@@ -431,15 +430,15 @@ extension Response.Body.Configuration {
                 self.phoneNumber = (try? container.decode(Bool?.self, forKey: .phoneNumber)) ?? nil
                 self.state = (try? container.decode(Bool?.self, forKey: .state)) ?? nil
 
-                if self.firstName == nil &&
-                    self.lastName == nil &&
-                    self.city == nil &&
-                    self.postalCode == nil &&
-                    self.addressLine1 == nil &&
-                    self.addressLine2 == nil &&
-                    self.countryCode == nil &&
-                    self.phoneNumber == nil &&
-                    self.state == nil {
+                if self.firstName == nil,
+                   self.lastName == nil,
+                   self.city == nil,
+                   self.postalCode == nil,
+                   self.addressLine1 == nil,
+                   self.addressLine2 == nil,
+                   self.countryCode == nil,
+                   self.phoneNumber == nil,
+                   self.state == nil {
                     throw handled(error: InternalError.failedToDecode(message: "All fields are nil"))
                 }
             }

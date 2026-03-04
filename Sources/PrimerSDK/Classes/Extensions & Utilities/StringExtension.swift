@@ -1,7 +1,7 @@
 //
 //  StringExtension.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
@@ -10,10 +10,10 @@ public extension String {
     static var uuid: String {  UUID().uuidString }
 }
 
-internal extension String {
+extension String {
 
     var withoutWhiteSpace: String {
-        return self.replacingOccurrences(of: " ", with: "").trimmingCharacters(in: .whitespacesAndNewlines)
+        self.replacingOccurrences(of: " ", with: "").trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
     var isNumeric: Bool {
@@ -53,7 +53,7 @@ internal extension String {
     }
 
     var withoutNonNumericCharacters: String {
-        return withoutWhiteSpace.filter("0123456789".contains)
+        withoutWhiteSpace.filter("0123456789".contains)
     }
 
     var isValidExpiryDate: Bool {
@@ -85,9 +85,9 @@ internal extension String {
 
     func isTypingValidCVV(cardNetwork: CardNetwork?) -> Bool? {
         let maxDigits = cardNetwork?.validation?.code.length ?? 4
-        if !isNumeric && !isEmpty { return false }
+        if !isNumeric, !isEmpty { return false }
         if count > maxDigits { return false }
-        if count >= 3 && count <= maxDigits { return true }
+        if count >= 3, count <= maxDigits { return true }
         return nil
     }
 
@@ -168,7 +168,7 @@ internal extension String {
     }
 
     var base64RFC4648Format: Self {
-        return self.replacingOccurrences(of: "+", with: "-")
+        self.replacingOccurrences(of: "+", with: "-")
             .replacingOccurrences(of: "/", with: "_")
             .replacingOccurrences(of: "=", with: "")
     }
@@ -188,7 +188,7 @@ internal extension String {
     }
 
     func separate(every: Int, with separator: String) -> String {
-        return String(stride(from: 0, to: Array(self).count, by: every).map {
+        String(stride(from: 0, to: Array(self).count, by: every).map {
             Array(Array(self)[$0..<min($0 + every, Array(self).count)])
         }.joined(separator: separator))
     }
@@ -296,5 +296,63 @@ internal extension String {
         default:
             return nil
         }
+    }
+
+    // MARK: - NSRange Text Processing Utilities
+
+    /// Safely converts NSRange to Range<String.Index>
+    /// - Parameter nsRange: The NSRange to convert
+    /// - Returns: The corresponding Range<String.Index>, or nil if conversion fails
+    func range(from nsRange: NSRange) -> Range<String.Index>? {
+        print("[DEBUG] range(from:) input: '\(self)', nsRange: \(nsRange)")
+        let result = Range(nsRange, in: self)
+
+        if let result = result {
+            let substring = String(self[result])
+            print("[DEBUG] range(from:) converted successfully, substring: '\(substring)'")
+        } else {
+            print("[DEBUG] range(from:) conversion failed")
+        }
+
+        return result
+    }
+
+    /// Replaces characters in the given NSRange with a replacement string
+    /// - Parameters:
+    ///   - nsRange: The range of characters to replace
+    ///   - replacement: The string to insert in place of the characters
+    /// - Returns: A new string with the replacement applied, or the original string if the range is invalid
+    func replacingCharacters(in nsRange: NSRange, with replacement: String) -> String {
+        print("[DEBUG] replacingCharacters input: '\(self)', nsRange: \(nsRange), replacement: '\(replacement)'")
+
+        guard let range = self.range(from: nsRange) else {
+            print("[DEBUG] Failed to convert NSRange to Range, returning original string")
+            return self
+        }
+
+        let result = self.replacingCharacters(in: range, with: replacement)
+        print("[DEBUG] replacingCharacters result: '\(result)'")
+        return result
+    }
+
+    /// Calculates the unformatted position from a formatted text position
+    /// Useful for mapping cursor positions when text contains separator characters
+    /// - Parameters:
+    ///   - formattedIndex: The index in the formatted text (including separators)
+    ///   - separator: The separator character used in formatting (e.g., " " for card numbers, "/" for expiry dates)
+    /// - Returns: The corresponding index in the unformatted text (excluding separators)
+    func unformattedPosition(from formattedIndex: Int, separator: Character) -> Int {
+        print("[DEBUG] unformattedPosition input: '\(self)', formattedIndex: \(formattedIndex), separator: '\(separator)'")
+
+        var unformattedPos = 0
+        for i in 0..<min(formattedIndex, self.count) {
+            let charIndex = self.index(self.startIndex, offsetBy: i)
+            if self[charIndex] != separator {
+                unformattedPos += 1
+            }
+        }
+
+        print("[DEBUG] unformattedPosition result: \(unformattedPos)")
+        return unformattedPos
     }
 }

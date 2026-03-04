@@ -1,0 +1,132 @@
+//
+//  MockKlarnaRepository.swift
+//
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
+
+@testable import PrimerSDK
+import UIKit
+
+@available(iOS 15.0, *)
+@MainActor
+final class MockKlarnaRepository: KlarnaRepository {
+
+    // MARK: - Configurable Return Values
+
+    var sessionResultToReturn: KlarnaSessionResult?
+    var paymentViewToReturn: UIView?
+    var authorizationResultToReturn: KlarnaAuthorizationResult?
+    var finalizationResultToReturn: KlarnaAuthorizationResult?
+    var paymentResultToReturn: PaymentResult?
+
+    // MARK: - Error Configuration
+
+    var createSessionError: Error?
+    var configureForCategoryError: Error?
+    var authorizeError: Error?
+    var finalizeError: Error?
+    var tokenizeError: Error?
+
+    // MARK: - Call Tracking
+
+    private(set) var createSessionCallCount = 0
+    private(set) var configureForCategoryCallCount = 0
+    private(set) var authorizeCallCount = 0
+    private(set) var finalizeCallCount = 0
+    private(set) var tokenizeCallCount = 0
+
+    // MARK: - Captured Parameters
+
+    private(set) var lastClientToken: String?
+    private(set) var lastCategoryId: String?
+    private(set) var lastAuthToken: String?
+
+    // MARK: - KlarnaRepository Protocol
+
+    func createSession() async throws -> KlarnaSessionResult {
+        createSessionCallCount += 1
+
+        if let createSessionError {
+            throw createSessionError
+        }
+
+        guard let result = sessionResultToReturn else {
+            throw TestError.unknown
+        }
+        return result
+    }
+
+    func configureForCategory(clientToken: String, categoryId: String) async throws -> UIView? {
+        configureForCategoryCallCount += 1
+        lastClientToken = clientToken
+        lastCategoryId = categoryId
+
+        if let configureForCategoryError {
+            throw configureForCategoryError
+        }
+
+        return paymentViewToReturn
+    }
+
+    func authorize() async throws -> KlarnaAuthorizationResult {
+        authorizeCallCount += 1
+
+        if let authorizeError {
+            throw authorizeError
+        }
+
+        guard let result = authorizationResultToReturn else {
+            throw TestError.unknown
+        }
+        return result
+    }
+
+    func finalize() async throws -> KlarnaAuthorizationResult {
+        finalizeCallCount += 1
+
+        if let finalizeError {
+            throw finalizeError
+        }
+
+        guard let result = finalizationResultToReturn else {
+            throw TestError.unknown
+        }
+        return result
+    }
+
+    func tokenize(authToken: String) async throws -> PaymentResult {
+        tokenizeCallCount += 1
+        lastAuthToken = authToken
+
+        if let tokenizeError {
+            throw tokenizeError
+        }
+
+        guard let result = paymentResultToReturn else {
+            throw TestError.unknown
+        }
+        return result
+    }
+
+}
+
+// MARK: - Factory Methods
+
+@available(iOS 15.0, *)
+extension MockKlarnaRepository {
+
+    static func withSuccessfulSession() -> MockKlarnaRepository {
+        let repository = MockKlarnaRepository()
+        repository.sessionResultToReturn = KlarnaTestData.defaultSessionResult
+        return repository
+    }
+
+    static func withFullSuccessFlow() -> MockKlarnaRepository {
+        let repository = MockKlarnaRepository()
+        repository.sessionResultToReturn = KlarnaTestData.defaultSessionResult
+        repository.paymentViewToReturn = UIView()
+        repository.authorizationResultToReturn = .approved(authToken: KlarnaTestData.Constants.authToken)
+        repository.paymentResultToReturn = KlarnaTestData.successPaymentResult
+        return repository
+    }
+}
