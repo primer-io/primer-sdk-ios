@@ -6,6 +6,7 @@
 
 #if canImport(PrimerNolPaySDK)
 import PrimerFoundation
+import PrimerNetworking
 import PrimerNolPaySDK
 @testable import PrimerSDK
 import XCTest
