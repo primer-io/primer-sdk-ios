@@ -8,6 +8,7 @@
 // swiftlint:disable type_name
 
 import Foundation
+import PrimerCore
 import PrimerFoundation
 import PrimerNetworking
 
