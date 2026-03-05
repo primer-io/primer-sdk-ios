@@ -1,3 +1,13 @@
+## 2.46.0 (2026-03-05)
+
+### Feat
+
+- Add BIN data to Headless flow (#1569)
+
+### Fix
+
+- EFTPOS co-badge display and preferredNetwork fix (#1565)
+
 ## 2.45.0 (2026-02-20)
 
 ### Feat
