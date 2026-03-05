@@ -23,7 +23,7 @@ Create a pull request for the current branch. Jira ticket: $ARGUMENTS
 6. **Capture screenshots** (if UI changes): Follow the UI Verification steps in CLAUDE.md to capture screenshots for the PR body
 7. **Read the PR template**: Read `.github/pull_request_template.md`
 8. **Create the PR** using `gh pr create`:
-   - Title: short (<70 chars), conventional commit style
+   - Title: conventional commit style (aim for ~50 chars, max 72)
    - Body: fill in each section of the PR template:
      - **Description**: Jira ticket reference (`ACC-XXXX`) + summary of changes + any breaking changes
      - **Manual Testing**: steps to verify the changes, or remove section if N/A

@@ -34,29 +34,34 @@ Coding style rules are in `.claude/rules/coding-style.md` — automatically load
 
 ## Building and Testing
 
+First, find an available simulator:
+```bash
+xcrun simctl list devices available
+```
+
+Pick a recent iPhone simulator (e.g., `iPhone 16`). Omit the OS version to use the latest installed:
+
 ```bash
 # Build Debug App
 xcodebuild -workspace PrimerSDK.xcworkspace \
   -scheme "Debug App" \
-  -destination "platform=iOS Simulator,name=iPhone 16,OS=18.6" \
+  -destination "platform=iOS Simulator,name=iPhone 16" \
   build
 
 # Run all SDK unit tests
 xcodebuild -workspace PrimerSDK.xcworkspace \
   -scheme "PrimerSDKTests" \
-  -destination "platform=iOS Simulator,name=iPhone 16,OS=18.6" \
+  -destination "platform=iOS Simulator,name=iPhone 16" \
   test
 
 # Run specific test class
 xcodebuild -workspace PrimerSDK.xcworkspace \
   -scheme "PrimerSDKTests" \
-  -destination "platform=iOS Simulator,name=iPhone 16,OS=18.6" \
+  -destination "platform=iOS Simulator,name=iPhone 16" \
   -testPlan "UnitTestsTestPlan" \
   -only-testing:"Tests/SomeClassTests" \
   test
 ```
-
-Use `xcrun simctl list devices available` to find simulators. iOS version may vary by Xcode version.
 
 ## UI Verification
 

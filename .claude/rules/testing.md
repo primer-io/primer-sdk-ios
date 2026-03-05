@@ -35,7 +35,7 @@ Test target is `Tests` (not `PrimerSDKTests`). Use `-testPlan "UnitTestsTestPlan
 ```bash
 xcodebuild -workspace PrimerSDK.xcworkspace \
   -scheme "PrimerSDKTests" \
-  -destination "platform=iOS Simulator,name=iPhone 16,OS=18.6" \
+  -destination "platform=iOS Simulator,name=iPhone 16" \
   -testPlan "UnitTestsTestPlan" \
   -only-testing:"Tests/SomeClassTests" \
   test
