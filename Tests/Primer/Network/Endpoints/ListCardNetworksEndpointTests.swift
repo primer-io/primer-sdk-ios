@@ -129,7 +129,6 @@ final class ListCardNetworksEndpointTests: XCTestCase {
         XCTAssertEqual(result.binData[0].issuerCountryCode, "US")
         XCTAssertEqual(result.binData[0].issuerName, "Chase")
     }
-
 }
 
 extension Response.Body.Bin.Networks.Network: Equatable {

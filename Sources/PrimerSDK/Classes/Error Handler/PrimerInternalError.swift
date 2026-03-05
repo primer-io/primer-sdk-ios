@@ -10,7 +10,7 @@ enum InternalError: PrimerErrorProtocol {
     case failedToDecode(message: String?, diagnosticsId: String = .uuid)
     case invalidUrl(url: String?, diagnosticsId: String = .uuid)
     case invalidValue(key: String, value: Any? = nil, diagnosticsId: String = .uuid)
-    case invalidResponse(diagnosticsId: String = .uuid)
+    case missingHTTPResponse(underlyingError: Error? = nil, diagnosticsId: String = .uuid)
     case networkFailedAfterRetries(diagnosticsId: String = .uuid, lastError: Error?)
     case noData(diagnosticsId: String = .uuid)
     case serverError(status: Int, response: PrimerServerError? = nil, diagnosticsId: String = .uuid)
@@ -25,7 +25,7 @@ enum InternalError: PrimerErrorProtocol {
         case .failedToDecode: "failed-to-decode"
         case .invalidUrl: "invalid-url"
         case .invalidValue: "invalid-value"
-        case .invalidResponse: "invalid-response"
+        case .missingHTTPResponse: "invalid-response"
         case .networkFailedAfterRetries: "network-failed-after-retries"
         case .noData: "no-data"
         case .serverError: "server-error"
@@ -43,7 +43,7 @@ enum InternalError: PrimerErrorProtocol {
             let .failedToDecode(_, diagnosticsId),
             let .invalidUrl(_, diagnosticsId),
             let .invalidValue(_, _, diagnosticsId),
-            let .invalidResponse(diagnosticsId),
+            let .missingHTTPResponse(_, diagnosticsId),
             let .networkFailedAfterRetries(diagnosticsId, _),
             let .noData(diagnosticsId),
             let .serverError(_, _, diagnosticsId),
@@ -57,30 +57,31 @@ enum InternalError: PrimerErrorProtocol {
     var errorDescription: String? {
         switch self {
         case let .failedToDecode(message, _):
-            return "[\(errorId)] Failed to decode\(message == nil ? "" : " (\(message!)") (diagnosticsId: \(self.diagnosticsId))"
+            return "[\(errorId)] Failed to decode\(message == nil ? "" : " (\(message!)") (diagnosticsId: \(diagnosticsId))"
         case let .invalidUrl(url, _):
-            return "[\(errorId)] Invalid URL \(url ?? "nil") (diagnosticsId: \(self.diagnosticsId))"
+            return "[\(errorId)] Invalid URL \(url ?? "nil") (diagnosticsId: \(diagnosticsId))"
         case let .invalidValue(key, value, _):
-            return "[\(errorId)] Invalid value \(value ?? "nil") for key \(key) (diagnosticsId: \(self.diagnosticsId))"
-        case .invalidResponse:
-            return "[\(errorId)] Invalid response received. Expected HTTP response. (diagnosticsId: \(self.diagnosticsId)"
+            return "[\(errorId)] Invalid value \(value ?? "nil") for key \(key) (diagnosticsId: \(diagnosticsId))"
+        case let .missingHTTPResponse(error, _):
+            let errorMessage = error.map { "Error : \(String(describing: $0))" } ?? "No error provided"
+            return "[\(errorId)] Missing HTTP response. \(errorMessage) (diagnosticsId: \(diagnosticsId))"
         case let .networkFailedAfterRetries(_, lastError):
             let error = lastError?.localizedDescription ?? "UNKNOWN"
-            return "[\(errorId)] Network failed after retries. Last error: \(error) (diagnosticsId: \(self.diagnosticsId))"
+            return "[\(errorId)] Network failed after retries. Last error: \(error) (diagnosticsId: \(diagnosticsId))"
         case .noData:
             return "[\(errorId)] No data"
         case let .serverError(status, response, _):
             var resStr: String = "nil"
-            if let response = response,
+            if let response,
                let resData = try? JSONEncoder().encode(response),
                let str = resData.prettyPrintedJSONString as String? {
                 resStr = str
             }
-            return "[\(errorId)] Server error [\(status)] Response: \(resStr) (diagnosticsId: \(self.diagnosticsId))"
+            return "[\(errorId)] Server error [\(status)] Response: \(resStr) (diagnosticsId: \(diagnosticsId))"
         case let .unauthorized(url, _):
-            return "[\(errorId)] Unauthorized response for URL \(url) (diagnosticsId: \(self.diagnosticsId))"
+            return "[\(errorId)] Unauthorized response for URL \(url) (diagnosticsId: \(diagnosticsId))"
         case let .underlyingErrors(errors, _):
-            return "[\(errorId)] Multiple errors occured | Errors \(errors.combinedDescription) (diagnosticsId: \(self.diagnosticsId))"
+            return "[\(errorId)] Multiple errors occured | Errors \(errors.combinedDescription) (diagnosticsId: \(diagnosticsId))"
         case .failedToPerform3dsButShouldContinue:
             return "[\(errorId)] Failed to perform 3DS but should continue"
         case let .failedToPerform3dsAndShouldBreak(error):

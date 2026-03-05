@@ -77,7 +77,7 @@ jobs:
           xcode-version: '16.4.0'
 
       - name: Install SSH key
-        uses: shimataro/ssh-key-action@d4fffb50872869abe2d9a9098a6d9c5aa7d16be4 #v2.7.0
+        uses: shimataro/ssh-key-action@6b84f2e793b32fa0b03a379cadadec75cc539391 #v2.8.0
         with:
           key: ${{ secrets.SSH_KEY }}
           name: id_rsa_github_actions
@@ -87,7 +87,7 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_KEY }}
 
-      - uses: ruby/setup-ruby@8d27f39a5e7ad39aebbcbd1324f7af020229645c  # v1.287.0
+      - uses: ruby/setup-ruby@09a7688d3b55cf0e976497ff046b70949eeaccfd  # v1.288.0
         with:
           ruby-version: "3.2"
           bundler-cache: true
@@ -121,7 +121,7 @@ jobs:
           LAMBDATEST_ACCESS_KEY: ${{ secrets.LAMBDATEST_ACCESS_KEY }}
           SOURCE_BRANCH: ${{ github.ref }}
       - name: Save LambdaTest ID
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f #v6.0.0
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f #v7.0.0
         id: save_lambdatest_id_step
         with:
           name: lambdatest_id
@@ -129,7 +129,7 @@ jobs:
           path: /var/tmp/lambdatest_id.txt
       - name: Save App Artifact
         id: save_app_artifact_step
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: app_artifact_id
           retention-days: 1
