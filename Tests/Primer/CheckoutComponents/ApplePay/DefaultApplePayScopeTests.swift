@@ -13,7 +13,7 @@ final class DefaultApplePayScopeTests: XCTestCase {
 
     // MARK: - Properties
 
-    var mockPresentationManager: MockApplePayPresentationManager!
+    private var mockPresentationManager: MockApplePayPresentationManager!
 
     // MARK: - Setup
 
