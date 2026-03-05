@@ -161,7 +161,7 @@ final class PaymentMethodRegistryTests: XCTestCase {
     private func createMockCheckoutScope() async -> DefaultCheckoutScope {
         await MainActor.run {
             DefaultCheckoutScope(
-                clientToken: "mock_token",
+                clientToken: TestData.Tokens.valid,
                 settings: PrimerSettings(),
                 diContainer: DIContainer.shared,
                 navigator: CheckoutNavigator()

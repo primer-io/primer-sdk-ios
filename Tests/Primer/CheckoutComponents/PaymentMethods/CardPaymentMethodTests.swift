@@ -249,7 +249,7 @@ final class CardPaymentMethodTests: XCTestCase {
             paymentMethodOptions: PrimerPaymentMethodOptions()
         )
         let scope = DefaultCheckoutScope(
-            clientToken: "test-token",
+            clientToken: TestData.Tokens.valid,
             settings: settings,
             diContainer: DIContainer.shared,
             navigator: navigator
@@ -291,7 +291,7 @@ private final class MockInvalidCheckoutScopeForCardTests: PrimerCheckoutScope {
 @available(iOS 15.0, *)
 private final class MockProcessCardPaymentInteractor: ProcessCardPaymentInteractor {
     func execute(cardData: CardPaymentData) async throws -> PaymentResult {
-        PaymentResult(paymentId: "test-payment-id", status: .success)
+        PaymentResult(paymentId: TestData.PaymentIds.success, status: .success)
     }
 }
 

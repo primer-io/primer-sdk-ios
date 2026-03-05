@@ -34,7 +34,7 @@ final class DefaultPayPalScopeTests: XCTestCase {
 
     private final class MockProcessPayPalInteractor: ProcessPayPalPaymentInteractor {
         var executeResult: Result<PaymentResult, Error> = .success(
-            PaymentResult(paymentId: "mock-payment", status: .success)
+            PaymentResult(paymentId: TestData.PaymentIds.success, status: .success)
         )
 
         func execute() async throws -> PaymentResult {
@@ -80,7 +80,7 @@ final class DefaultPayPalScopeTests: XCTestCase {
             checkoutScope: mockCheckoutScope,
             processPayPalInteractor: mockInteractor
         )
-        mockInteractor.executeResult = .success(PaymentResult(paymentId: "success-id", status: .success))
+        mockInteractor.executeResult = .success(PaymentResult(paymentId: TestData.PaymentIds.success, status: .success))
 
         var receivedStates: [PrimerPayPalState.Step] = []
         let expectation = expectation(description: "Receive success state")
@@ -179,7 +179,7 @@ final class DefaultPayPalScopeTests: XCTestCase {
     @MainActor
     private func createCheckoutScope() -> DefaultCheckoutScope {
         DefaultCheckoutScope(
-            clientToken: "mock_token",
+            clientToken: TestData.Tokens.valid,
             settings: PrimerSettings(),
             diContainer: DIContainer.shared,
             navigator: CheckoutNavigator()

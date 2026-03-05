@@ -148,7 +148,7 @@ final class PayPalPaymentMethodTests: XCTestCase {
             paymentMethodOptions: PrimerPaymentMethodOptions()
         )
         let scope = DefaultCheckoutScope(
-            clientToken: "test-token",
+            clientToken: TestData.Tokens.valid,
             settings: settings,
             diContainer: DIContainer.shared,
             navigator: navigator
@@ -176,7 +176,7 @@ final class PayPalPaymentMethodTests: XCTestCase {
 @available(iOS 15.0, *)
 private final class MockProcessPayPalPaymentInteractor: ProcessPayPalPaymentInteractor {
     func execute() async throws -> PaymentResult {
-        PaymentResult(paymentId: "test-payment-id", status: .success)
+        PaymentResult(paymentId: TestData.PaymentIds.success, status: .success)
     }
 }
 
