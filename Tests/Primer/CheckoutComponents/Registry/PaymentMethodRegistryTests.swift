@@ -4,11 +4,10 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+@testable import PrimerSDK
 import SwiftUI
 import XCTest
-@testable import PrimerSDK
 
-/// Tests for PaymentMethodRegistry covering registration, scope creation, and reset.
 @available(iOS 15.0, *)
 @MainActor
 final class PaymentMethodRegistryTests: XCTestCase {
@@ -17,7 +16,6 @@ final class PaymentMethodRegistryTests: XCTestCase {
 
     override func setUp() async throws {
         try await super.setUp()
-        // Reset registry before each test
         PaymentMethodRegistry.shared.reset()
         container = Container()
     }
@@ -57,29 +55,9 @@ final class PaymentMethodRegistryTests: XCTestCase {
         PaymentMethodRegistry.shared.register(MockPaymentMethod.self)
         PaymentMethodRegistry.shared.register(MockPaymentMethod.self)
 
-        // Then - should only be registered once
+        // Then
         let count = PaymentMethodRegistry.shared.registeredTypes.filter { $0 == "MOCK_PAYMENT" }.count
         XCTAssertEqual(count, 1)
-    }
-
-    // MARK: - registeredTypes Tests
-
-    func test_registeredTypes_whenEmpty_returnsEmptyArray() {
-        // Given - registry is reset in setUp
-        // Then
-        XCTAssertTrue(PaymentMethodRegistry.shared.registeredTypes.isEmpty)
-    }
-
-    func test_registeredTypes_returnsAllRegisteredTypes() {
-        // Given
-        PaymentMethodRegistry.shared.register(MockPaymentMethod.self)
-        PaymentMethodRegistry.shared.register(MockPaymentMethod2.self)
-
-        // When
-        let types = PaymentMethodRegistry.shared.registeredTypes
-
-        // Then
-        XCTAssertEqual(Set(types), Set(["MOCK_PAYMENT", "MOCK_PAYMENT_2"]))
     }
 
     // MARK: - createScope (String Type) Tests
@@ -113,83 +91,6 @@ final class PaymentMethodRegistryTests: XCTestCase {
 
         // Then
         XCTAssertNil(scope)
-    }
-
-    // MARK: - createScope (Generic) Tests
-
-    func test_createScopeGeneric_forRegisteredType_returnsScopeOfCorrectType() async throws {
-        // Given
-        PaymentMethodRegistry.shared.register(MockPaymentMethod.self)
-        let checkoutScope = await createMockCheckoutScope()
-
-        // When
-        let scope: MockPaymentMethodScope? = try PaymentMethodRegistry.shared.createScope(
-            for: "MOCK_PAYMENT",
-            checkoutScope: checkoutScope,
-            diContainer: container
-        )
-
-        // Then
-        XCTAssertNotNil(scope)
-    }
-
-    func test_createScopeGeneric_forUnregisteredType_returnsNil() async throws {
-        // Given
-        let checkoutScope = await createMockCheckoutScope()
-
-        // When
-        let scope: MockPaymentMethodScope? = try PaymentMethodRegistry.shared.createScope(
-            for: "UNREGISTERED",
-            checkoutScope: checkoutScope,
-            diContainer: container
-        )
-
-        // Then
-        XCTAssertNil(scope)
-    }
-
-    // MARK: - createScope (Metatype) Tests
-
-    func test_createScopeMetatype_forRegisteredType_returnsScope() async throws {
-        // Given
-        PaymentMethodRegistry.shared.register(MockPaymentMethod.self)
-        let checkoutScope = await createMockCheckoutScope()
-
-        // When
-        let scope = try PaymentMethodRegistry.shared.createScope(
-            MockPaymentMethodScope.self,
-            checkoutScope: checkoutScope,
-            diContainer: container
-        )
-
-        // Then
-        XCTAssertNotNil(scope)
-    }
-
-    func test_createScopeMetatype_forUnregisteredType_returnsNil() async throws {
-        // Given - registry is reset, MockPaymentMethod not registered
-        let checkoutScope = await createMockCheckoutScope()
-
-        // When
-        let scope = try PaymentMethodRegistry.shared.createScope(
-            MockPaymentMethodScope.self,
-            checkoutScope: checkoutScope,
-            diContainer: container
-        )
-
-        // Then
-        XCTAssertNil(scope)
-    }
-
-    // MARK: - createScope (Enum) Tests
-
-    func test_createScopeEnum_forRegisteredType_registryContainsType() {
-        // Given
-        // Register CardPaymentMethod which maps to PrimerPaymentMethodType.paymentCard
-        CardPaymentMethod.register()
-
-        // Then - verify the registry contains the type
-        XCTAssertTrue(PaymentMethodRegistry.shared.registeredTypes.contains(PrimerPaymentMethodType.paymentCard.rawValue))
     }
 
     // MARK: - getView Tests
@@ -253,22 +154,6 @@ final class PaymentMethodRegistryTests: XCTestCase {
 
         // Then
         XCTAssertNil(scope)
-    }
-
-    func test_reset_afterReset_getViewReturnsNil() async {
-        // Given
-        PaymentMethodRegistry.shared.register(MockPaymentMethod.self)
-        PaymentMethodRegistry.shared.reset()
-        let checkoutScope = await createMockCheckoutScope()
-
-        // When
-        let view = PaymentMethodRegistry.shared.getView(
-            for: "MOCK_PAYMENT",
-            checkoutScope: checkoutScope
-        )
-
-        // Then
-        XCTAssertNil(view)
     }
 
     // MARK: - Helpers

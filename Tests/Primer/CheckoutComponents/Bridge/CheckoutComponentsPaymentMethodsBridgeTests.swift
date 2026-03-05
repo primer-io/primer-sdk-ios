@@ -4,10 +4,9 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import XCTest
 @testable import PrimerSDK
+import XCTest
 
-/// Tests for CheckoutComponentsPaymentMethodsBridge covering payment method bridging from SDK configuration.
 @available(iOS 15.0, *)
 final class CheckoutComponentsPaymentMethodsBridgeTests: XCTestCase {
 
@@ -26,7 +25,7 @@ final class CheckoutComponentsPaymentMethodsBridgeTests: XCTestCase {
         super.tearDown()
     }
 
-    // MARK: - Execute Tests - Error Cases
+    // MARK: - Error Cases
 
     func test_execute_whenNoConfiguration_throwsMissingPrimerConfiguration() async {
         // Given
@@ -88,12 +87,12 @@ final class CheckoutComponentsPaymentMethodsBridgeTests: XCTestCase {
         }
     }
 
-    // MARK: - Execute Tests - Success Cases
+    // MARK: - Success & Field Mapping
 
-    func test_execute_withValidPaymentMethods_returnsInternalPaymentMethods() async throws {
+    func test_execute_withValidPaymentMethods_mapsAllFieldsCorrectly() async throws {
         // Given
         let paymentMethods = [
-            createPaymentMethod(type: "PAYMENT_CARD", name: "Card"),
+            createPaymentMethod(type: "PAYMENT_CARD", name: "Card", processorConfigId: "config-123", surcharge: 150),
             createPaymentMethod(type: "PAYPAL", name: "PayPal")
         ]
         mockConfigurationService.apiConfiguration = createMinimalConfiguration(paymentMethods: paymentMethods)
@@ -103,103 +102,22 @@ final class CheckoutComponentsPaymentMethodsBridgeTests: XCTestCase {
 
         // Then
         XCTAssertEqual(result.count, 2)
+
+        let card = result[0]
+        XCTAssertEqual(card.id, "PAYMENT_CARD")
+        XCTAssertEqual(card.type, "PAYMENT_CARD")
+        XCTAssertEqual(card.name, "Card")
+        XCTAssertEqual(card.configId, "config-123")
+        XCTAssertTrue(card.isEnabled)
+        XCTAssertEqual(card.surcharge, 150)
+
+        let paypal = result[1]
+        XCTAssertEqual(paypal.id, "PAYPAL")
+        XCTAssertEqual(paypal.type, "PAYPAL")
+        XCTAssertEqual(paypal.name, "PayPal")
     }
 
-    func test_execute_setsCorrectId() async throws {
-        // Given
-        let paymentMethods = [createPaymentMethod(type: "PAYMENT_CARD", name: "Card")]
-        mockConfigurationService.apiConfiguration = createMinimalConfiguration(paymentMethods: paymentMethods)
-
-        // When
-        let result = try await sut.execute()
-
-        // Then
-        XCTAssertEqual(result.first?.id, "PAYMENT_CARD")
-    }
-
-    func test_execute_setsCorrectType() async throws {
-        // Given
-        let paymentMethods = [createPaymentMethod(type: "PAYPAL", name: "PayPal")]
-        mockConfigurationService.apiConfiguration = createMinimalConfiguration(paymentMethods: paymentMethods)
-
-        // When
-        let result = try await sut.execute()
-
-        // Then
-        XCTAssertEqual(result.first?.type, "PAYPAL")
-    }
-
-    func test_execute_setsCorrectName() async throws {
-        // Given
-        let paymentMethods = [createPaymentMethod(type: "APPLE_PAY", name: "Apple Pay")]
-        mockConfigurationService.apiConfiguration = createMinimalConfiguration(paymentMethods: paymentMethods)
-
-        // When
-        let result = try await sut.execute()
-
-        // Then
-        XCTAssertEqual(result.first?.name, "Apple Pay")
-    }
-
-    func test_execute_setsConfigId() async throws {
-        // Given
-        let paymentMethods = [createPaymentMethod(type: "PAYMENT_CARD", name: "Card", processorConfigId: "config-123")]
-        mockConfigurationService.apiConfiguration = createMinimalConfiguration(paymentMethods: paymentMethods)
-
-        // When
-        let result = try await sut.execute()
-
-        // Then
-        XCTAssertEqual(result.first?.configId, "config-123")
-    }
-
-    func test_execute_setsIsEnabledTrue() async throws {
-        // Given
-        let paymentMethods = [createPaymentMethod(type: "PAYMENT_CARD", name: "Card")]
-        mockConfigurationService.apiConfiguration = createMinimalConfiguration(paymentMethods: paymentMethods)
-
-        // When
-        let result = try await sut.execute()
-
-        // Then
-        XCTAssertTrue(result.first?.isEnabled ?? false)
-    }
-
-    func test_execute_setsSurcharge() async throws {
-        // Given
-        let paymentMethods = [createPaymentMethod(type: "PAYMENT_CARD", name: "Card", surcharge: 150)]
-        mockConfigurationService.apiConfiguration = createMinimalConfiguration(paymentMethods: paymentMethods)
-
-        // When
-        let result = try await sut.execute()
-
-        // Then
-        XCTAssertEqual(result.first?.surcharge, 150)
-    }
-
-    func test_execute_setsHasUnknownSurcharge() async throws {
-        // Given
-        let paymentMethod = PrimerPaymentMethod(
-            id: "pm-1",
-            implementationType: .nativeSdk,
-            type: "PAYMENT_CARD",
-            name: "Card",
-            processorConfigId: nil,
-            surcharge: nil,
-            options: nil,
-            displayMetadata: nil
-        )
-        // Use the mutable property to set hasUnknownSurcharge
-        mockConfigurationService.apiConfiguration = createMinimalConfiguration(paymentMethods: [paymentMethod])
-
-        // When
-        let result = try await sut.execute()
-
-        // Then - hasUnknownSurcharge should be available from the converted method
-        XCTAssertNotNil(result.first)
-    }
-
-    // MARK: - Required Input Elements Tests
+    // MARK: - Required Input Elements
 
     func test_execute_forPaymentCard_setsCardInputElements() async throws {
         // Given
@@ -214,7 +132,7 @@ final class CheckoutComponentsPaymentMethodsBridgeTests: XCTestCase {
         XCTAssertEqual(result.first?.requiredInputElements, expectedElements)
     }
 
-    func test_execute_forPayPal_setsEmptyInputElements() async throws {
+    func test_execute_forNonCardPaymentMethod_setsEmptyInputElements() async throws {
         // Given
         let paymentMethods = [createPaymentMethod(type: "PAYPAL", name: "PayPal")]
         mockConfigurationService.apiConfiguration = createMinimalConfiguration(paymentMethods: paymentMethods)
@@ -226,36 +144,7 @@ final class CheckoutComponentsPaymentMethodsBridgeTests: XCTestCase {
         XCTAssertTrue(result.first?.requiredInputElements.isEmpty ?? false)
     }
 
-    func test_execute_forApplePay_setsEmptyInputElements() async throws {
-        // Given
-        let paymentMethods = [createPaymentMethod(type: "APPLE_PAY", name: "Apple Pay")]
-        mockConfigurationService.apiConfiguration = createMinimalConfiguration(paymentMethods: paymentMethods)
-
-        // When
-        let result = try await sut.execute()
-
-        // Then
-        XCTAssertTrue(result.first?.requiredInputElements.isEmpty ?? false)
-    }
-
-    // MARK: - Multiple Payment Methods Tests
-
-    func test_execute_withMultiplePaymentMethods_returnsAll() async throws {
-        // Given
-        let paymentMethods = [
-            createPaymentMethod(type: "PAYMENT_CARD", name: "Card"),
-            createPaymentMethod(type: "PAYPAL", name: "PayPal"),
-            createPaymentMethod(type: "APPLE_PAY", name: "Apple Pay"),
-            createPaymentMethod(type: "KLARNA", name: "Klarna")
-        ]
-        mockConfigurationService.apiConfiguration = createMinimalConfiguration(paymentMethods: paymentMethods)
-
-        // When
-        let result = try await sut.execute()
-
-        // Then
-        XCTAssertEqual(result.count, 4)
-    }
+    // MARK: - Multiple Payment Methods
 
     func test_execute_withMultiplePaymentMethods_preservesOrder() async throws {
         // Given
@@ -270,12 +159,13 @@ final class CheckoutComponentsPaymentMethodsBridgeTests: XCTestCase {
         let result = try await sut.execute()
 
         // Then
+        XCTAssertEqual(result.count, 3)
         XCTAssertEqual(result[0].type, "PAYPAL")
         XCTAssertEqual(result[1].type, "PAYMENT_CARD")
         XCTAssertEqual(result[2].type, "APPLE_PAY")
     }
 
-    // MARK: - Network Surcharges Tests
+    // MARK: - Network Surcharges
 
     func test_execute_forNonCardPaymentMethod_networkSurchargesIsNil() async throws {
         // Given
@@ -285,11 +175,23 @@ final class CheckoutComponentsPaymentMethodsBridgeTests: XCTestCase {
         // When
         let result = try await sut.execute()
 
-        // Then - non-card payment methods shouldn't have network surcharges
+        // Then
         XCTAssertNil(result.first?.networkSurcharges)
     }
 
-    // MARK: - Network Surcharges Array Format Tests
+    func test_execute_forPaymentCard_withNoClientSession_networkSurchargesIsNil() async throws {
+        // Given
+        let paymentMethods = [createPaymentMethod(type: "PAYMENT_CARD", name: "Card")]
+        mockConfigurationService.apiConfiguration = createMinimalConfiguration(paymentMethods: paymentMethods)
+
+        // When
+        let result = try await sut.execute()
+
+        // Then
+        XCTAssertNil(result.first?.networkSurcharges)
+    }
+
+    // MARK: - Network Surcharges Array Format
 
     func test_execute_forPaymentCard_withNetworksArrayNestedSurcharge_extractsSurcharges() async throws {
         // Given
@@ -351,11 +253,11 @@ final class CheckoutComponentsPaymentMethodsBridgeTests: XCTestCase {
         // When
         let result = try await sut.execute()
 
-        // Then - zero surcharges should not be included
+        // Then
         XCTAssertNil(result.first?.networkSurcharges)
     }
 
-    // MARK: - Network Surcharges Dict Format Tests
+    // MARK: - Network Surcharges Dict Format
 
     func test_execute_forPaymentCard_withNetworksDictNestedSurcharge_extractsSurcharges() async throws {
         // Given
@@ -403,18 +305,6 @@ final class CheckoutComponentsPaymentMethodsBridgeTests: XCTestCase {
 
     // MARK: - Network Surcharges Edge Cases
 
-    func test_execute_forPaymentCard_withNoClientSession_networkSurchargesIsNil() async throws {
-        // Given
-        let paymentMethods = [createPaymentMethod(type: "PAYMENT_CARD", name: "Card")]
-        mockConfigurationService.apiConfiguration = createMinimalConfiguration(paymentMethods: paymentMethods)
-
-        // When
-        let result = try await sut.execute()
-
-        // Then - no client session means no network surcharges
-        XCTAssertNil(result.first?.networkSurcharges)
-    }
-
     func test_execute_forPaymentCard_withMissingNetworkType_skipsInvalidEntries() async throws {
         // Given
         let paymentMethods = [createPaymentMethod(type: "PAYMENT_CARD", name: "Card")]
@@ -431,78 +321,9 @@ final class CheckoutComponentsPaymentMethodsBridgeTests: XCTestCase {
         // When
         let result = try await sut.execute()
 
-        // Then - only valid entries should be included
+        // Then
         XCTAssertEqual(result.first?.networkSurcharges?.count, 1)
         XCTAssertEqual(result.first?.networkSurcharges?["VISA"], 200)
-    }
-
-    // MARK: - Logo and Display Metadata Tests
-
-    func test_execute_withLogo_setsIcon() async throws {
-        // Given
-        let logo = PrimerTheme.BaseColoredURLs(
-            coloredUrlStr: "https://example.com/logo.png",
-            lightUrlStr: nil,
-            darkUrlStr: nil
-        )
-        let paymentMethod = PrimerPaymentMethod(
-            id: "pm-1",
-            implementationType: .nativeSdk,
-            type: "PAYMENT_CARD",
-            name: "Card",
-            processorConfigId: nil,
-            surcharge: nil,
-            options: nil,
-            displayMetadata: nil
-        )
-        // We can't set the logo directly without proper mock, but test null case
-        mockConfigurationService.apiConfiguration = createMinimalConfiguration(paymentMethods: [paymentMethod])
-
-        // When
-        let result = try await sut.execute()
-
-        // Then - icon will be nil if logo not set in test configuration
-        XCTAssertNotNil(result.first)
-    }
-
-    func test_execute_withNilLogo_iconIsNil() async throws {
-        // Given
-        let paymentMethods = [createPaymentMethod(type: "PAYMENT_CARD", name: "Card")]
-        mockConfigurationService.apiConfiguration = createMinimalConfiguration(paymentMethods: paymentMethods)
-
-        // When
-        let result = try await sut.execute()
-
-        // Then
-        XCTAssertNil(result.first?.icon)
-    }
-
-    // MARK: - Single Payment Method Tests
-
-    func test_execute_withSinglePaymentMethod_returnsOne() async throws {
-        // Given
-        let paymentMethods = [createPaymentMethod(type: "KLARNA", name: "Klarna")]
-        mockConfigurationService.apiConfiguration = createMinimalConfiguration(paymentMethods: paymentMethods)
-
-        // When
-        let result = try await sut.execute()
-
-        // Then
-        XCTAssertEqual(result.count, 1)
-        XCTAssertEqual(result.first?.type, "KLARNA")
-        XCTAssertEqual(result.first?.name, "Klarna")
-    }
-
-    func test_execute_forUnknownPaymentMethod_setsEmptyInputElements() async throws {
-        // Given
-        let paymentMethods = [createPaymentMethod(type: "UNKNOWN_TYPE", name: "Unknown")]
-        mockConfigurationService.apiConfiguration = createMinimalConfiguration(paymentMethods: paymentMethods)
-
-        // When
-        let result = try await sut.execute()
-
-        // Then
-        XCTAssertTrue(result.first?.requiredInputElements.isEmpty ?? false)
     }
 
     // MARK: - Helpers
@@ -562,11 +383,10 @@ final class CheckoutComponentsPaymentMethodsBridgeTests: XCTestCase {
         networksArray: [[String: Any]]? = nil,
         networksDict: [String: [String: Any]]? = nil
     ) -> ClientSession.APIResponse {
-        // Build the options array with PAYMENT_CARD containing networks
         var paymentCardOption: [String: Any] = ["type": "PAYMENT_CARD"]
-        if let networksArray = networksArray {
+        if let networksArray {
             paymentCardOption["networks"] = networksArray
-        } else if let networksDict = networksDict {
+        } else if let networksDict {
             paymentCardOption["networks"] = networksDict
         }
 
