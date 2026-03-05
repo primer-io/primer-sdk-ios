@@ -413,7 +413,7 @@ final class ApplePayRequestBuilderTests: XCTestCase {
             order: ApplePayTestData.defaultOrder,
             checkoutModules: [shippingModule]
         )
-        registerApplePaySettings()
+        ApplePayTestData.registerApplePaySettings()
 
         // When
         let request = try ApplePayRequestBuilder.build()
@@ -445,7 +445,7 @@ final class ApplePayRequestBuilderTests: XCTestCase {
             order: ApplePayTestData.defaultOrder,
             checkoutModules: [shippingModule]
         )
-        registerApplePaySettings()
+        ApplePayTestData.registerApplePaySettings()
 
         // When
         let request = try ApplePayRequestBuilder.build()
@@ -478,7 +478,7 @@ final class ApplePayRequestBuilderTests: XCTestCase {
                 mockAppState.currency = Currency(code: "EUR", decimalDigits: 2)
             }
         )
-        registerApplePaySettings()
+        ApplePayTestData.registerApplePaySettings()
 
         // When
         let request = try ApplePayRequestBuilder.build()
@@ -489,20 +489,6 @@ final class ApplePayRequestBuilderTests: XCTestCase {
     }
 
     // MARK: - Helpers
-
-    private func registerApplePaySettings() {
-        let settings = PrimerSettings(
-            paymentMethodOptions: PrimerPaymentMethodOptions(
-                applePayOptions: PrimerApplePayOptions(
-                    merchantIdentifier: ApplePayTestData.Constants.merchantIdentifier,
-                    merchantName: ApplePayTestData.Constants.merchantName
-                )
-            )
-        )
-        DependencyContainer.register(settings as PrimerSettingsProtocol)
-    }
-
-    // MARK: - Original Helpers
 
     private func setupValidConfiguration() {
         setupConfiguration(withOrder: ApplePayTestData.defaultOrder)
