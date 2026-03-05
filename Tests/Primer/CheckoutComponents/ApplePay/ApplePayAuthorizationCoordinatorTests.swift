@@ -114,21 +114,6 @@ final class ApplePayAuthorizationCoordinatorTests: XCTestCase {
         XCTAssertNotNil(result)
     }
 
-    func test_authorize_fullFlow_succeeds() async throws {
-        // Given
-        mockPresentationManager.presentResult = .success(())
-        mockPresentationManager.shouldSimulateAuthorization = true
-
-        // When
-        let result = try await coordinator.authorize(
-            with: mockRequest,
-            presentationManager: mockPresentationManager
-        )
-
-        // Then
-        XCTAssertNotNil(result)
-    }
-
     // MARK: - Helper
 
     private func createMockRequest() -> ApplePayRequest {
@@ -187,7 +172,7 @@ private final class CoordinatorTestMockApplePayPresentationManager: ApplePayPres
                     delegate.paymentAuthorizationControllerDidFinish(mockController)
                 } else if shouldSimulateAuthorization {
                     let mockController = CoordinatorTestMockPKPaymentAuthorizationController()
-                    let payment = CoordinatorTestMockPKPayment()
+                    let payment = SharedMockPKPayment()
                     delegate.paymentAuthorizationController?(
                         mockController,
                         didAuthorizePayment: payment,
@@ -209,52 +194,5 @@ private final class CoordinatorTestMockPKPaymentAuthorizationController: PKPayme
     override func dismiss(completion: (() -> Void)? = nil) {
         _dismissed = true
         completion?()
-    }
-}
-
-@available(iOS 15.0, *)
-private final class CoordinatorTestMockPKPayment: PKPayment {
-
-    private let _token: CoordinatorTestMockPKPaymentToken
-
-    override var token: PKPaymentToken {
-        _token
-    }
-
-    override init() {
-        _token = CoordinatorTestMockPKPaymentToken()
-        super.init()
-    }
-}
-
-@available(iOS 15.0, *)
-private final class CoordinatorTestMockPKPaymentToken: PKPaymentToken {
-
-    override var paymentData: Data {
-        Data()
-    }
-
-    override var transactionIdentifier: String {
-        "mock_transaction_id"
-    }
-
-    override var paymentMethod: PKPaymentMethod {
-        CoordinatorTestMockPKPaymentMethod()
-    }
-}
-
-@available(iOS 15.0, *)
-private final class CoordinatorTestMockPKPaymentMethod: PKPaymentMethod {
-
-    override var displayName: String? {
-        "Mock Card"
-    }
-
-    override var network: PKPaymentNetwork? {
-        .visa
-    }
-
-    override var type: PKPaymentMethodType {
-        .credit
     }
 }

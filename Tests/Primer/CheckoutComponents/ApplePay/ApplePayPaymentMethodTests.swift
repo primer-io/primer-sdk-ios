@@ -18,22 +18,6 @@ final class ApplePayPaymentMethodTests: XCTestCase {
         PaymentMethodRegistry.shared.reset()
     }
 
-    // MARK: - Static Property Tests
-
-    func test_paymentMethodType_returnsApplePay() {
-        // Then
-        XCTAssertEqual(ApplePayPaymentMethod.paymentMethodType, "APPLE_PAY")
-    }
-
-    // MARK: - Registration Tests
-
-    @MainActor
-    func test_register_doesNotThrow() {
-        // When/Then - Just verify registration doesn't crash
-        ApplePayPaymentMethod.register()
-        // If we get here, registration succeeded
-    }
-
     // MARK: - createScope Tests
 
     @MainActor

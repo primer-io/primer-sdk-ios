@@ -40,20 +40,6 @@ enum ApplePayTestData {
         )
     }
 
-    // MARK: - Settings
-
-    static var applePaySettings: PrimerSettings {
-        PrimerSettings(
-            paymentMethodOptions: PrimerPaymentMethodOptions(
-                urlScheme: "testapp://",
-                applePayOptions: PrimerApplePayOptions(
-                    merchantIdentifier: Constants.merchantIdentifier,
-                    merchantName: Constants.merchantName
-                )
-            )
-        )
-    }
-
     // MARK: - Order
 
     static var defaultOrder: ClientSession.Order {
@@ -117,6 +103,20 @@ enum ApplePayTestData {
             requestUrlStr: nil,
             options: shippingOptions
         )
+    }
+
+    // MARK: - Settings Registration
+
+    static func registerApplePaySettings() {
+        let settings = PrimerSettings(
+            paymentMethodOptions: PrimerPaymentMethodOptions(
+                applePayOptions: PrimerApplePayOptions(
+                    merchantIdentifier: Constants.merchantIdentifier,
+                    merchantName: Constants.merchantName
+                )
+            )
+        )
+        DependencyContainer.register(settings as PrimerSettingsProtocol)
     }
 
     // MARK: - Response Bodies
