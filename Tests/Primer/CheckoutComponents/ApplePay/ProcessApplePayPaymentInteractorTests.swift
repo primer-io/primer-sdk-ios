@@ -48,7 +48,7 @@ final class ProcessApplePayPaymentInteractorTests: XCTestCase {
             ApplePayTestData.paymentResponse(status: .success)
         }
 
-        let mockPayment = createSharedMockPKPayment()
+        let mockPayment = SharedMockPKPayment()
 
         // When
         let result = try await sut.execute(payment: mockPayment)
@@ -71,7 +71,7 @@ final class ProcessApplePayPaymentInteractorTests: XCTestCase {
             ApplePayTestData.paymentResponse(status: .pending)
         }
 
-        let mockPayment = createSharedMockPKPayment()
+        let mockPayment = SharedMockPKPayment()
 
         // When
         let result = try await sut.execute(payment: mockPayment)
@@ -92,7 +92,7 @@ final class ProcessApplePayPaymentInteractorTests: XCTestCase {
             ApplePayTestData.paymentResponse(status: .failed)
         }
 
-        let mockPayment = createSharedMockPKPayment()
+        let mockPayment = SharedMockPKPayment()
 
         // When
         let result = try await sut.execute(payment: mockPayment)
@@ -112,7 +112,7 @@ final class ProcessApplePayPaymentInteractorTests: XCTestCase {
         )
         ApplePayTestData.registerApplePaySettings()
 
-        let mockPayment = createSharedMockPKPayment()
+        let mockPayment = SharedMockPKPayment()
 
         // When/Then
         do {
@@ -134,11 +134,10 @@ final class ProcessApplePayPaymentInteractorTests: XCTestCase {
             order: ApplePayTestData.defaultOrder,
             showTestId: true
         )
-        // Register settings without apple pay options
         let settings = PrimerSettings()
         DependencyContainer.register(settings as PrimerSettingsProtocol)
 
-        let mockPayment = createSharedMockPKPayment()
+        let mockPayment = SharedMockPKPayment()
 
         // When/Then
         do {
@@ -178,7 +177,7 @@ final class ProcessApplePayPaymentInteractorTests: XCTestCase {
         )
         ApplePayTestData.registerApplePaySettings()
 
-        let mockPayment = createSharedMockPKPayment()
+        let mockPayment = SharedMockPKPayment()
 
         // When/Then
         do {
@@ -202,7 +201,7 @@ final class ProcessApplePayPaymentInteractorTests: XCTestCase {
             .failure(tokenizationError)
         }
 
-        let mockPayment = createSharedMockPKPayment()
+        let mockPayment = SharedMockPKPayment()
 
         // When/Then
         do {
@@ -234,7 +233,7 @@ final class ProcessApplePayPaymentInteractorTests: XCTestCase {
             .success(tokenResponse)
         }
 
-        let mockPayment = createSharedMockPKPayment()
+        let mockPayment = SharedMockPKPayment()
 
         // When/Then
         do {
@@ -261,7 +260,7 @@ final class ProcessApplePayPaymentInteractorTests: XCTestCase {
             nil // Will cause unknown error
         }
 
-        let mockPayment = createSharedMockPKPayment()
+        let mockPayment = SharedMockPKPayment()
 
         // When/Then
         do {
@@ -283,10 +282,4 @@ final class ProcessApplePayPaymentInteractorTests: XCTestCase {
         ApplePayTestData.registerApplePaySettings()
     }
 
-    private func createSharedMockPKPayment() -> PKPayment {
-        // PKPayment cannot be directly instantiated, but the interactor
-        // handles this in DEBUG mode by using mock payment data when testId is present
-        // or when payment data is empty. We'll use a minimal approach here.
-        SharedMockPKPayment()
-    }
 }

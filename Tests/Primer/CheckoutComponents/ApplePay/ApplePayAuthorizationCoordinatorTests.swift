@@ -165,7 +165,6 @@ private final class CoordinatorTestMockApplePayPresentationManager: ApplePayPres
 
         switch presentResult {
         case .success:
-            // Simulate async behavior on main actor
             await MainActor.run {
                 if shouldSimulateCancellation {
                     let mockController = CoordinatorTestMockPKPaymentAuthorizationController()
