@@ -207,5 +207,6 @@ private final class MockNonDefaultCheckoutScope: PrimerCheckoutScope {
     func getPaymentMethodScope<T: PrimerPaymentMethodScope>(for methodType: PrimerPaymentMethodType) -> T? { nil }
     func getPaymentMethodScope<T: PrimerPaymentMethodScope>(for paymentMethodType: String) -> T? { nil }
 
+    // No-op: mock stub for protocol conformance
     func onDismiss() {}
 }

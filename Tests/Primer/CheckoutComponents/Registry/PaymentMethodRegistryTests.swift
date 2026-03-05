@@ -184,6 +184,7 @@ final class MockPaymentMethodScope: PrimerPaymentMethodScope {
         }
     }
 
+    // No-op: mock stub for protocol conformance
     func start() {}
     func submit() {}
     func cancel() {}
@@ -236,6 +237,7 @@ final class MockPaymentMethod2Scope: PrimerPaymentMethodScope {
         }
     }
 
+    // No-op: mock stub for protocol conformance
     func start() {}
     func submit() {}
     func cancel() {}

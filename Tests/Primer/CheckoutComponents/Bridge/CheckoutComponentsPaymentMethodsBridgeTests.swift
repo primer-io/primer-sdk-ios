@@ -49,7 +49,7 @@ final class CheckoutComponentsPaymentMethodsBridgeTests: XCTestCase {
 
     func test_execute_whenNoPaymentMethods_throwsMisconfiguredPaymentMethods() async {
         // Given
-        mockConfigurationService.apiConfiguration = createMinimalConfiguration(paymentMethods: nil)
+        mockConfigurationService.apiConfiguration = createConfiguration(paymentMethods: nil)
 
         // When/Then
         do {
@@ -69,7 +69,7 @@ final class CheckoutComponentsPaymentMethodsBridgeTests: XCTestCase {
 
     func test_execute_whenEmptyPaymentMethods_throwsMisconfiguredPaymentMethods() async {
         // Given
-        mockConfigurationService.apiConfiguration = createMinimalConfiguration(paymentMethods: [])
+        mockConfigurationService.apiConfiguration = createConfiguration(paymentMethods: [])
 
         // When/Then
         do {
@@ -95,7 +95,7 @@ final class CheckoutComponentsPaymentMethodsBridgeTests: XCTestCase {
             createPaymentMethod(type: "PAYMENT_CARD", name: "Card", processorConfigId: "config-123", surcharge: 150),
             createPaymentMethod(type: "PAYPAL", name: "PayPal")
         ]
-        mockConfigurationService.apiConfiguration = createMinimalConfiguration(paymentMethods: paymentMethods)
+        mockConfigurationService.apiConfiguration = createConfiguration(paymentMethods: paymentMethods)
 
         // When
         let result = try await sut.execute()
@@ -122,7 +122,7 @@ final class CheckoutComponentsPaymentMethodsBridgeTests: XCTestCase {
     func test_execute_forPaymentCard_setsCardInputElements() async throws {
         // Given
         let paymentMethods = [createPaymentMethod(type: "PAYMENT_CARD", name: "Card")]
-        mockConfigurationService.apiConfiguration = createMinimalConfiguration(paymentMethods: paymentMethods)
+        mockConfigurationService.apiConfiguration = createConfiguration(paymentMethods: paymentMethods)
 
         // When
         let result = try await sut.execute()
@@ -135,7 +135,7 @@ final class CheckoutComponentsPaymentMethodsBridgeTests: XCTestCase {
     func test_execute_forNonCardPaymentMethod_setsEmptyInputElements() async throws {
         // Given
         let paymentMethods = [createPaymentMethod(type: "PAYPAL", name: "PayPal")]
-        mockConfigurationService.apiConfiguration = createMinimalConfiguration(paymentMethods: paymentMethods)
+        mockConfigurationService.apiConfiguration = createConfiguration(paymentMethods: paymentMethods)
 
         // When
         let result = try await sut.execute()
@@ -153,7 +153,7 @@ final class CheckoutComponentsPaymentMethodsBridgeTests: XCTestCase {
             createPaymentMethod(type: "PAYMENT_CARD", name: "Card"),
             createPaymentMethod(type: "APPLE_PAY", name: "Apple Pay")
         ]
-        mockConfigurationService.apiConfiguration = createMinimalConfiguration(paymentMethods: paymentMethods)
+        mockConfigurationService.apiConfiguration = createConfiguration(paymentMethods: paymentMethods)
 
         // When
         let result = try await sut.execute()
@@ -170,7 +170,7 @@ final class CheckoutComponentsPaymentMethodsBridgeTests: XCTestCase {
     func test_execute_forNonCardPaymentMethod_networkSurchargesIsNil() async throws {
         // Given
         let paymentMethods = [createPaymentMethod(type: "PAYPAL", name: "PayPal")]
-        mockConfigurationService.apiConfiguration = createMinimalConfiguration(paymentMethods: paymentMethods)
+        mockConfigurationService.apiConfiguration = createConfiguration(paymentMethods: paymentMethods)
 
         // When
         let result = try await sut.execute()
@@ -182,7 +182,7 @@ final class CheckoutComponentsPaymentMethodsBridgeTests: XCTestCase {
     func test_execute_forPaymentCard_withNoClientSession_networkSurchargesIsNil() async throws {
         // Given
         let paymentMethods = [createPaymentMethod(type: "PAYMENT_CARD", name: "Card")]
-        mockConfigurationService.apiConfiguration = createMinimalConfiguration(paymentMethods: paymentMethods)
+        mockConfigurationService.apiConfiguration = createConfiguration(paymentMethods: paymentMethods)
 
         // When
         let result = try await sut.execute()
@@ -201,7 +201,7 @@ final class CheckoutComponentsPaymentMethodsBridgeTests: XCTestCase {
             ["type": "MASTERCARD", "surcharge": ["amount": 150]]
         ]
         let clientSession = createClientSessionWithNetworks(networksArray: networksArray)
-        mockConfigurationService.apiConfiguration = createConfigurationWithClientSession(
+        mockConfigurationService.apiConfiguration = createConfiguration(
             paymentMethods: paymentMethods,
             clientSession: clientSession
         )
@@ -223,7 +223,7 @@ final class CheckoutComponentsPaymentMethodsBridgeTests: XCTestCase {
             ["type": "AMEX", "surcharge": 300]
         ]
         let clientSession = createClientSessionWithNetworks(networksArray: networksArray)
-        mockConfigurationService.apiConfiguration = createConfigurationWithClientSession(
+        mockConfigurationService.apiConfiguration = createConfiguration(
             paymentMethods: paymentMethods,
             clientSession: clientSession
         )
@@ -245,7 +245,7 @@ final class CheckoutComponentsPaymentMethodsBridgeTests: XCTestCase {
             ["type": "MASTERCARD", "surcharge": ["amount": 0]]
         ]
         let clientSession = createClientSessionWithNetworks(networksArray: networksArray)
-        mockConfigurationService.apiConfiguration = createConfigurationWithClientSession(
+        mockConfigurationService.apiConfiguration = createConfiguration(
             paymentMethods: paymentMethods,
             clientSession: clientSession
         )
@@ -267,7 +267,7 @@ final class CheckoutComponentsPaymentMethodsBridgeTests: XCTestCase {
             "MASTERCARD": ["surcharge": ["amount": 200]]
         ]
         let clientSession = createClientSessionWithNetworks(networksDict: networksDict)
-        mockConfigurationService.apiConfiguration = createConfigurationWithClientSession(
+        mockConfigurationService.apiConfiguration = createConfiguration(
             paymentMethods: paymentMethods,
             clientSession: clientSession
         )
@@ -289,7 +289,7 @@ final class CheckoutComponentsPaymentMethodsBridgeTests: XCTestCase {
             "DISCOVER": ["surcharge": 250]
         ]
         let clientSession = createClientSessionWithNetworks(networksDict: networksDict)
-        mockConfigurationService.apiConfiguration = createConfigurationWithClientSession(
+        mockConfigurationService.apiConfiguration = createConfiguration(
             paymentMethods: paymentMethods,
             clientSession: clientSession
         )
@@ -313,7 +313,7 @@ final class CheckoutComponentsPaymentMethodsBridgeTests: XCTestCase {
             ["type": "VISA", "surcharge": 200]
         ]
         let clientSession = createClientSessionWithNetworks(networksArray: networksArray)
-        mockConfigurationService.apiConfiguration = createConfigurationWithClientSession(
+        mockConfigurationService.apiConfiguration = createConfiguration(
             paymentMethods: paymentMethods,
             clientSession: clientSession
         )
@@ -328,15 +328,16 @@ final class CheckoutComponentsPaymentMethodsBridgeTests: XCTestCase {
 
     // MARK: - Helpers
 
-    private func createMinimalConfiguration(
-        paymentMethods: [PrimerPaymentMethod]?
+    private func createConfiguration(
+        paymentMethods: [PrimerPaymentMethod]?,
+        clientSession: ClientSession.APIResponse? = nil
     ) -> PrimerAPIConfiguration {
         PrimerAPIConfiguration(
             coreUrl: "https://core.primer.io",
             pciUrl: "https://pci.primer.io",
             binDataUrl: "https://bindata.primer.io",
             assetsUrl: "https://assets.staging.core.primer.io",
-            clientSession: nil,
+            clientSession: clientSession,
             paymentMethods: paymentMethods,
             primerAccountId: nil,
             keys: nil,
@@ -359,23 +360,6 @@ final class CheckoutComponentsPaymentMethodsBridgeTests: XCTestCase {
             surcharge: surcharge,
             options: nil,
             displayMetadata: nil
-        )
-    }
-
-    private func createConfigurationWithClientSession(
-        paymentMethods: [PrimerPaymentMethod],
-        clientSession: ClientSession.APIResponse
-    ) -> PrimerAPIConfiguration {
-        PrimerAPIConfiguration(
-            coreUrl: "https://core.primer.io",
-            pciUrl: "https://pci.primer.io",
-            binDataUrl: "https://bindata.primer.io",
-            assetsUrl: "https://assets.staging.core.primer.io",
-            clientSession: clientSession,
-            paymentMethods: paymentMethods,
-            primerAccountId: nil,
-            keys: nil,
-            checkoutModules: nil
         )
     }
 

@@ -282,6 +282,7 @@ private final class MockInvalidCheckoutScopeForCardTests: PrimerCheckoutScope {
     func getPaymentMethodScope<T: PrimerPaymentMethodScope>(_ scopeType: T.Type) -> T? { nil }
     func getPaymentMethodScope<T: PrimerPaymentMethodScope>(for methodType: PrimerPaymentMethodType) -> T? { nil }
     func getPaymentMethodScope<T: PrimerPaymentMethodScope>(for paymentMethodType: String) -> T? { nil }
+    // No-op: mock stub for protocol conformance
     func onDismiss() {}
 }
 
@@ -315,6 +316,7 @@ private final class MockCardNetworkDetectionInteractor: CardNetworkDetectionInte
         AsyncStream { $0.finish() }
     }
 
+    // No-op: mock stub for protocol conformance
     func detectNetworks(for cardNumber: String) async {}
     func selectNetwork(_ network: CardNetwork) async {}
 }
