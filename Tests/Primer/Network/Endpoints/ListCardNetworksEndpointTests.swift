@@ -4,6 +4,7 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+@testable import PrimerNetworking
 @testable import PrimerSDK
 import XCTest
 
@@ -42,18 +43,20 @@ final class ListCardNetworksEndpointTests: XCTestCase {
 
         networkService.mockedResult = Response.Body.Bin.Data(
             firstDigits: "123456",
-            binData: [.init(displayName: "Test",
-                            network: "Test",
-                            issuerCountryCode: nil,
-                            issuerName: nil,
-                            accountFundingType: nil,
-                            prepaidReloadableIndicator: nil,
-                            productUsageType: nil,
-                            productCode: nil,
-                            productName: nil,
-                            issuerCurrencyCode: nil,
-                            regionalRestriction: nil,
-                            accountNumberType: nil)]
+            binData: [.init(
+                displayName: "Test",
+                network: "Test",
+                issuerCountryCode: nil,
+                issuerName: nil,
+                accountFundingType: nil,
+                prepaidReloadableIndicator: nil,
+                productUsageType: nil,
+                productCode: nil,
+                productName: nil,
+                issuerCurrencyCode: nil,
+                regionalRestriction: nil,
+                accountNumberType: nil
+            )]
         )
 
         _ = apiClient.listCardNetworks(clientToken: mockClientToken, bin: bin) { result in
@@ -108,18 +111,20 @@ final class ListCardNetworksEndpointTests: XCTestCase {
 
         networkService.mockedResult = Response.Body.Bin.Data(
             firstDigits: "123456",
-            binData: [.init(displayName: "Visa",
-                            network: "VISA",
-                            issuerCountryCode: "US",
-                            issuerName: "Chase",
-                            accountFundingType: "DEBIT",
-                            prepaidReloadableIndicator: nil,
-                            productUsageType: nil,
-                            productCode: nil,
-                            productName: nil,
-                            issuerCurrencyCode: "USD",
-                            regionalRestriction: nil,
-                            accountNumberType: nil)]
+            binData: [.init(
+                displayName: "Visa",
+                network: "VISA",
+                issuerCountryCode: "US",
+                issuerName: "Chase",
+                accountFundingType: "DEBIT",
+                prepaidReloadableIndicator: nil,
+                productUsageType: nil,
+                productCode: nil,
+                productName: nil,
+                issuerCurrencyCode: "USD",
+                regionalRestriction: nil,
+                accountNumberType: nil
+            )]
         )
 
         let result = try await apiClient.fetchBinData(clientToken: mockClientToken, bin: bin)
@@ -132,7 +137,10 @@ final class ListCardNetworksEndpointTests: XCTestCase {
 }
 
 extension Response.Body.Bin.Networks.Network: @retroactive Equatable {
-    public static func == (lhs: PrimerSDK.Response.Body.Bin.Networks.Network, rhs: PrimerSDK.Response.Body.Bin.Networks.Network) -> Bool {
+    public static func == (
+        lhs: Response.Body.Bin.Networks.Network,
+        rhs: Response.Body.Bin.Networks.Network
+    ) -> Bool {
             lhs.value == rhs.value
     }
 }

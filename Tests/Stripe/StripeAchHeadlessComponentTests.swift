@@ -7,6 +7,7 @@
 import Foundation
 @testable import PrimerCore
 import PrimerFoundation
+import PrimerNetworking
 @testable import PrimerSDK
 import XCTest
 
@@ -24,14 +25,18 @@ final class StripeAchHeadlessComponentTests: XCTestCase {
     override func setUp() {
         super.setUp()
         // The user details that are already in the client session
-        let currentUserDetails = ACHUserDetails(firstName: "firstname-test",
-                                                lastName: "lastname-test",
-                                                emailAddress: "test@mail.com")
+        let currentUserDetails = ACHUserDetails(
+            firstName: "firstname-test",
+            lastName: "lastname-test",
+            emailAddress: "test@mail.com"
+        )
 
         // Prepare the client session with the current user details
-        prepareConfigurations(firstName: currentUserDetails.firstName,
-                              lastName: currentUserDetails.lastName,
-                              email: currentUserDetails.emailAddress)
+        prepareConfigurations(
+            firstName: currentUserDetails.firstName,
+            lastName: currentUserDetails.lastName,
+            email: currentUserDetails.emailAddress
+        )
     }
 
     override func tearDown() {
@@ -137,9 +142,11 @@ final class StripeAchHeadlessComponentTests: XCTestCase {
     }
 
     func test_didFetchUserDetails_step() {
-        let expectedUserDetails = ACHUserDetails(firstName: "test-firstname",
-                                                 lastName: "test-lastname",
-                                                 emailAddress: "test-email")
+        let expectedUserDetails = ACHUserDetails(
+            firstName: "test-firstname",
+            lastName: "test-lastname",
+            emailAddress: "test-email"
+        )
 
         let expectedStep: ACHUserDetailsStep = .retrievedUserDetails(expectedUserDetails)
         sut.stepDelegate?.didReceiveStep(step: expectedStep)
@@ -169,17 +176,23 @@ final class StripeAchHeadlessComponentTests: XCTestCase {
         let lastName = "test-lastname-user1"
         let emailAddress = "test-email-user1"
 
-        let userOne = ACHUserDetails(firstName: firstName,
-                                     lastName: lastName,
-                                     emailAddress: emailAddress)
+        let userOne = ACHUserDetails(
+            firstName: firstName,
+            lastName: lastName,
+            emailAddress: emailAddress
+        )
 
-        let userTwo = ACHUserDetails(firstName: firstName,
-                                     lastName: lastName,
-                                     emailAddress: emailAddress)
+        let userTwo = ACHUserDetails(
+            firstName: firstName,
+            lastName: lastName,
+            emailAddress: emailAddress
+        )
 
-        let userThree = ACHUserDetails(firstName: "",
-                                       lastName: "",
-                                       emailAddress: "")
+        let userThree = ACHUserDetails(
+            firstName: "",
+            lastName: "",
+            emailAddress: ""
+        )
 
         XCTAssertTrue(ACHUserDetails.compare(lhs: userOne, rhs: userTwo).areEqual)
         XCTAssertFalse(ACHUserDetails.compare(lhs: userOne, rhs: userThree).areEqual)
@@ -190,13 +203,17 @@ final class StripeAchHeadlessComponentTests: XCTestCase {
         let updatedLastName = "test-updated-lastname-user1"
         let updatedEmailAddress = "test-updated-email-user1"
 
-        let currentUserDetails = ACHUserDetails(firstName: "test-firstname-user1",
-                                                lastName: "test-lastname-user1",
-                                                emailAddress: "test-email-user1")
+        let currentUserDetails = ACHUserDetails(
+            firstName: "test-firstname-user1",
+            lastName: "test-lastname-user1",
+            emailAddress: "test-email-user1"
+        )
 
-        let expectedUpdatedUserDetails = ACHUserDetails(firstName: updatedFirstName,
-                                                        lastName: updatedLastName,
-                                                        emailAddress: updatedEmailAddress)
+        let expectedUpdatedUserDetails = ACHUserDetails(
+            firstName: updatedFirstName,
+            lastName: updatedLastName,
+            emailAddress: updatedEmailAddress
+        )
 
         let updateCollectableFirstName = ACHUserDetailsCollectableData.firstName(updatedFirstName)
         let updateCollectableLastName = ACHUserDetailsCollectableData.lastName(updatedLastName)
@@ -215,13 +232,17 @@ final class StripeAchHeadlessComponentTests: XCTestCase {
         let updatedLastName = "test-updated-lastname-user1"
         let updatedEmailAddress = "test-updated-email-user1"
 
-        let currentUserDetails = ACHUserDetails(firstName: "test-firstname-user1",
-                                                lastName: "test-lastname-user1",
-                                                emailAddress: "test-email-user1")
+        let currentUserDetails = ACHUserDetails(
+            firstName: "test-firstname-user1",
+            lastName: "test-lastname-user1",
+            emailAddress: "test-email-user1"
+        )
 
-        let expectedUpdatedUserDetails = ACHUserDetails(firstName: updatedFirstName,
-                                                        lastName: updatedLastName,
-                                                        emailAddress: updatedEmailAddress)
+        let expectedUpdatedUserDetails = ACHUserDetails(
+            firstName: updatedFirstName,
+            lastName: updatedLastName,
+            emailAddress: updatedEmailAddress
+        )
 
         let updateCollectableLastName = ACHUserDetailsCollectableData.lastName(updatedLastName)
         let updateCollectableEmailAddress = ACHUserDetailsCollectableData.emailAddress(updatedEmailAddress)
@@ -240,9 +261,11 @@ final class StripeAchHeadlessComponentTests: XCTestCase {
     }
 
     func test_userDetails_empty() {
-        let expectedUserDetails = ACHUserDetails(firstName: "",
-                                                 lastName: "",
-                                                 emailAddress: "")
+        let expectedUserDetails = ACHUserDetails(
+            firstName: "",
+            lastName: "",
+            emailAddress: ""
+        )
 
         let emptyUserDetails = ACHUserDetails.emptyUserDetails()
         XCTAssertTrue(ACHUserDetails.compare(lhs: emptyUserDetails, rhs: expectedUserDetails).areEqual)
@@ -261,9 +284,11 @@ final class StripeAchHeadlessComponentTests: XCTestCase {
     }
 
     func test_component_start() {
-        let expectedUserDetails = ACHUserDetails(firstName: "firstname-test",
-                                                 lastName: "lastname-test",
-                                                 emailAddress: "test@mail.com")
+        let expectedUserDetails = ACHUserDetails(
+            firstName: "firstname-test",
+            lastName: "lastname-test",
+            emailAddress: "test@mail.com"
+        )
 
         sut.start()
 
@@ -289,20 +314,26 @@ final class StripeAchHeadlessComponentTests: XCTestCase {
     }
 
     func test_component_submit_with_patching() {
-        let outdatedUserDetails = ACHUserDetails(firstName: "firstname-test",
-                                                 lastName: "lastname-test",
-                                                 emailAddress: "test@mail.com")
+        let outdatedUserDetails = ACHUserDetails(
+            firstName: "firstname-test",
+            lastName: "lastname-test",
+            emailAddress: "test@mail.com"
+        )
 
-        let newUserDetails = ACHUserDetails(firstName: "new-firstname-test",
-                                            lastName: "new-lastname-test",
-                                            emailAddress: "new-test@mail.com")
+        let newUserDetails = ACHUserDetails(
+            firstName: "new-firstname-test",
+            lastName: "new-lastname-test",
+            emailAddress: "new-test@mail.com"
+        )
 
         sut.clientSessionUserDetails = outdatedUserDetails
         sut.inputUserDetails = newUserDetails
 
-        let configurationsFetchWithActions = getFetchConfiguration(firstName: newUserDetails.firstName,
-                                                                   lastName: newUserDetails.lastName,
-                                                                   email: newUserDetails.emailAddress)
+        let configurationsFetchWithActions = getFetchConfiguration(
+            firstName: newUserDetails.firstName,
+            lastName: newUserDetails.lastName,
+            email: newUserDetails.emailAddress
+        )
 
         mockApiClient.fetchConfigurationWithActionsResult = (configurationsFetchWithActions, nil)
 
@@ -329,9 +360,11 @@ final class StripeAchHeadlessComponentTests: XCTestCase {
     }
 
     func test_component_submit_without_patching() {
-        let expectedUserDetails = ACHUserDetails(firstName: "firstname-test",
-                                                 lastName: "lastname-test",
-                                                 emailAddress: "test@mail.com")
+        let expectedUserDetails = ACHUserDetails(
+            firstName: "firstname-test",
+            lastName: "lastname-test",
+            emailAddress: "test@mail.com"
+        )
 
         sut.inputUserDetails = expectedUserDetails
         sut.clientSessionUserDetails = expectedUserDetails
@@ -411,7 +444,8 @@ extension StripeAchHeadlessComponentTests {
 
         let mockPrimerApiConfiguration = Mocks.createMockAPIConfiguration(
             clientSession: clientSession,
-            paymentMethods: [ACHMocks.stripeACHPaymentMethod])
+            paymentMethods: [ACHMocks.stripeACHPaymentMethod]
+        )
 
         mockPrimerApiConfiguration.paymentMethods?[0].baseLogoImage = PrimerTheme.BaseImage(colored: UIImage(), light: nil, dark: nil)
         return mockPrimerApiConfiguration

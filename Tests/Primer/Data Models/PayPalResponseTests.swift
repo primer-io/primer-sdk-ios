@@ -1,11 +1,12 @@
 //
 //  PayPalResponseTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import XCTest
+import PrimerNetworking
 @testable import PrimerSDK
+import XCTest
 
 final class PayPalResponseTests: XCTestCase {
 
@@ -74,10 +75,12 @@ final class PayPalResponseTests: XCTestCase {
     }
 
     func test_jsonEncoding() async {
-        let payerInfo = PayPalResponse.ExternalPayerInfo(externalPayerId: "external-id",
-                                                         email: "john@example.com",
-                                                         firstName: "John",
-                                                         lastName: "Doe")
+        let payerInfo = PayPalResponse.ExternalPayerInfo(
+            externalPayerId: "external-id",
+            email: "john@example.com",
+            firstName: "John",
+            lastName: "Doe"
+        )
 
         do {
             let encoder = JSONEncoder()

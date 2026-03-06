@@ -7,6 +7,7 @@
 import Foundation
 import PrimerCore
 import PrimerFoundation
+import PrimerNetworking
 
 protocol CardValidationService {
     func validateCardNetworks(withCardNumber cardNumber: String)
@@ -62,10 +63,12 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
         }
     }
 
-    init(rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
-         allowedCardNetworks: [CardNetwork] = [CardNetwork].allowedCardNetworks,
-         apiClient: PrimerAPIClientBINDataProtocol = PrimerAPIClient(),
-         debouncer: Debouncer = .init(delay: 0.35)) {
+    init(
+        rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
+        allowedCardNetworks: [CardNetwork] = [CardNetwork].allowedCardNetworks,
+        apiClient: PrimerAPIClientBINDataProtocol = PrimerAPIClient(),
+        debouncer: Debouncer = .init(delay: 0.35)
+    ) {
         self.rawDataManager = rawDataManager
         self.allowedCardNetworks = allowedCardNetworks
         self.apiClient = apiClient
@@ -105,8 +108,10 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
     }
 
     private func useRemoteValidation(withCardState cardState: PrimerCardNumberEntryState) {
-        delegate?.primerRawDataManager?(rawDataManager,
-                                        willFetchMetadataForState: cardState)
+        delegate?.primerRawDataManager?(
+            rawDataManager,
+            willFetchMetadataForState: cardState
+        )
 
         let cacheKey = cardState.cardNumber
         if let cached = getCachedMetadata(for: cacheKey) {
@@ -182,9 +187,11 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
             Analytics.Service.fire(event: event)
         }
 
-        delegate?.primerRawDataManager?(rawDataManager,
-                                        didReceiveMetadata: metadata,
-                                        forState: cardState)
+        delegate?.primerRawDataManager?(
+            rawDataManager,
+            didReceiveMetadata: metadata,
+            forState: cardState
+        )
 
         let localNetworks = networks.map(PrimerCardNetwork.init(network:))
         let binData = buildBinData(from: localNetworks, firstDigits: nil, status: .partial)
@@ -204,9 +211,11 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
         let trackable = cardMetadata.selectableCardNetworks ?? cardMetadata.detectedCardNetworks
         sendEvent(forNetworks: trackable.items, source: cardMetadata.source)
 
-        delegate?.primerRawDataManager?(rawDataManager,
-                                        didReceiveMetadata: cardMetadata,
-                                        forState: cardState)
+        delegate?.primerRawDataManager?(
+            rawDataManager,
+            didReceiveMetadata: cardMetadata,
+            forState: cardState
+        )
 
         guard lastValidatedCardNumber != cardState.cardNumber else {
             return
@@ -231,14 +240,18 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
 
     // MARK: Model generation
 
-    func createValidationMetadata(networks: [CardNetwork],
-                                  source: PrimerCardValidationSource) -> PrimerCardNumberEntryMetadata {
+    func createValidationMetadata(
+        networks: [CardNetwork],
+        source: PrimerCardValidationSource
+    ) -> PrimerCardNumberEntryMetadata {
         createValidationMetadata(networks: networks, source: source, enrichedNetworks: nil)
     }
 
-    private func createValidationMetadata(networks: [CardNetwork],
-                                          source: PrimerCardValidationSource,
-                                          enrichedNetworks: [PrimerCardNetwork]?) -> PrimerCardNumberEntryMetadata
+    private func createValidationMetadata(
+        networks: [CardNetwork],
+        source: PrimerCardValidationSource,
+        enrichedNetworks: [PrimerCardNetwork]?
+    ) -> PrimerCardNumberEntryMetadata
     {
         let selectable: [PrimerCardNetwork]
         let detected: [PrimerCardNetwork]

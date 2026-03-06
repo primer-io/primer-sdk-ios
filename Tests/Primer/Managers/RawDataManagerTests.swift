@@ -5,7 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import PrimerFoundation
-import PrimerNetworking
+@testable import PrimerNetworking
 @testable import PrimerSDK
 import PrimerUI
 import XCTest
@@ -71,10 +71,12 @@ final class RawDataManagerTests: XCTestCase {
             XCTFail("Failed with error: \(error.localizedDescription)")
         }
 
-        sut.rawData = PrimerCardData(cardNumber: "4111 1111 1111 1111",
-                                     expiryDate: "03/2030",
-                                     cvv: "123",
-                                     cardholderName: "John Appleseed")
+        sut.rawData = PrimerCardData(
+            cardNumber: "4111 1111 1111 1111",
+            expiryDate: "03/2030",
+            cvv: "123",
+            cardholderName: "John Appleseed"
+        )
 
         sut.submit()
 
@@ -127,10 +129,12 @@ final class RawDataManagerTests: XCTestCase {
             XCTFail("Failed with error: \(error.localizedDescription)")
         }
 
-        sut.rawData = PrimerCardData(cardNumber: "4111 1111 1111 1111",
-                                     expiryDate: "03/2030",
-                                     cvv: "123",
-                                     cardholderName: "John Appleseed")
+        sut.rawData = PrimerCardData(
+            cardNumber: "4111 1111 1111 1111",
+            expiryDate: "03/2030",
+            cvv: "123",
+            cardholderName: "John Appleseed"
+        )
 
         sut.submit()
 
@@ -153,10 +157,12 @@ final class RawDataManagerTests: XCTestCase {
             expectDidFail.fulfill()
         }
 
-        sut.rawData = PrimerCardData(cardNumber: "4111 1111 1111 1111",
-                                     expiryDate: "03/2030",
-                                     cvv: "123",
-                                     cardholderName: "John Appleseed")
+        sut.rawData = PrimerCardData(
+            cardNumber: "4111 1111 1111 1111",
+            expiryDate: "03/2030",
+            cvv: "123",
+            cardholderName: "John Appleseed"
+        )
 
         sut.submit()
 
@@ -181,8 +187,10 @@ final class RawDataManagerTests: XCTestCase {
         let expectDidValidate = self.expectation(description: "Did validate")
         rawDataManagerDelegate.onDataIsValid = { _, isValid, errors in
             XCTAssertFalse(isValid)
-            XCTAssertTrue(errors!.first!.localizedDescription.starts(
-                with: "[invalid-value] Invalid value 'nil' for key 'rawData' ")
+            XCTAssertTrue(
+                errors!.first!.localizedDescription.starts(
+                    with: "[invalid-value] Invalid value 'nil' for key 'rawData' "
+                )
             )
             expectDidValidate.fulfill()
         }
@@ -206,10 +214,12 @@ final class RawDataManagerTests: XCTestCase {
         }
 
         // Act
-        sut.rawData = PrimerCardData(cardNumber: "4111111111111111",
-                                     expiryDate: "03/2030",
-                                     cvv: "123",
-                                     cardholderName: "Test Name")
+        sut.rawData = PrimerCardData(
+            cardNumber: "4111111111111111",
+            expiryDate: "03/2030",
+            cvv: "123",
+            cardholderName: "Test Name"
+        )
 
         // Assert
         waitForExpectations(timeout: 3.0)
@@ -240,19 +250,23 @@ final class RawDataManagerTests: XCTestCase {
         }
 
         // Act - First set valid data
-        sut.rawData = PrimerCardData(cardNumber: "4111111111111111",
-                                     expiryDate: "03/2030",
-                                     cvv: "123",
-                                     cardholderName: "Test Name")
+        sut.rawData = PrimerCardData(
+            cardNumber: "4111111111111111",
+            expiryDate: "03/2030",
+            cvv: "123",
+            cardholderName: "Test Name"
+        )
 
         // Wait for first validation
         wait(for: [expectFirstValidation], timeout: 3.0)
 
         // Act - Then set identical data to ensure delegate is still called
-        sut.rawData = PrimerCardData(cardNumber: "4111111111111111",
-                                     expiryDate: "03/2030",
-                                     cvv: "123",
-                                     cardholderName: "Test Name")
+        sut.rawData = PrimerCardData(
+            cardNumber: "4111111111111111",
+            expiryDate: "03/2030",
+            cvv: "123",
+            cardholderName: "Test Name"
+        )
 
         // Assert
         wait(for: [expectSecondValidation], timeout: 3.0)
@@ -262,89 +276,111 @@ final class RawDataManagerTests: XCTestCase {
     // MARK: Helpers
 
     var tokenizationResponseBody: Response.Body.Tokenization {
-        .init(analyticsId: "analytics_id",
-              id: "id",
-              isVaulted: false,
-              isAlreadyVaulted: false,
-              paymentInstrumentType: .offSession,
-              paymentMethodType: Mocks.Static.Strings.webRedirectPaymentMethodType,
-              paymentInstrumentData: nil,
-              threeDSecureAuthentication: nil,
-              token: "token",
-              tokenType: .singleUse,
-              vaultData: nil)
+        .init(
+            analyticsId: "analytics_id",
+            id: "id",
+            isVaulted: false,
+            isAlreadyVaulted: false,
+            paymentInstrumentType: .offSession,
+            paymentMethodType: Mocks.Static.Strings.webRedirectPaymentMethodType,
+            paymentInstrumentData: nil,
+            threeDSecureAuthentication: nil,
+            token: "token",
+            tokenType: .singleUse,
+            vaultData: nil
+        )
     }
 
     var paymentResponseBody: Response.Body.Payment {
-        .init(id: "id",
-                     paymentId: "payment_id",
-                     amount: 123,
-                     currencyCode: "GBP",
-                     customer: .init(firstName: "first_name",
-                                     lastName: "last_name",
-                                     emailAddress: "email_address",
-                                     mobileNumber: "+44(0)7891234567",
-                                     billingAddress: .init(firstName: "billing_first_name",
-                                                           lastName: "billing_last_name",
-                                                           addressLine1: "billing_line_1",
-                                                           addressLine2: "billing_line_2",
-                                                           city: "billing_city",
-                                                           state: "billing_state",
-                                                           countryCode: "billing_country_code",
-                                                           postalCode: "billing_postal_code"),
-                                     shippingAddress: .init(firstName: "shipping_first_name",
-                                                            lastName: "shipping_last_name",
-                                                            addressLine1: "shipping_line_1",
-                                                            addressLine2: "shipping_line_2",
-                                                            city: "shipping_city",
-                                                            state: "shipping_state",
-                                                            countryCode: "shipping_country_code",
-                                                            postalCode: "shipping_postal_code")),
-                     customerId: "customer_id",
-                     orderId: "order_id",
-                     status: .success)
+        .init(
+            id: "id",
+            paymentId: "payment_id",
+            amount: 123,
+            currencyCode: "GBP",
+            customer: .init(
+                firstName: "first_name",
+                lastName: "last_name",
+                emailAddress: "email_address",
+                mobileNumber: "+44(0)7891234567",
+                billingAddress: .init(
+                    firstName: "billing_first_name",
+                    lastName: "billing_last_name",
+                    addressLine1: "billing_line_1",
+                    addressLine2: "billing_line_2",
+                    city: "billing_city",
+                    state: "billing_state",
+                    countryCode: "billing_country_code",
+                    postalCode: "billing_postal_code"
+                ),
+                shippingAddress: .init(
+                    firstName: "shipping_first_name",
+                    lastName: "shipping_last_name",
+                    addressLine1: "shipping_line_1",
+                    addressLine2: "shipping_line_2",
+                    city: "shipping_city",
+                    state: "shipping_state",
+                    countryCode: "shipping_country_code",
+                    postalCode: "shipping_postal_code"
+                )
+            ),
+            customerId: "customer_id",
+            orderId: "order_id",
+            status: .success
+        )
     }
 
     var paymentResponseBodyWithRedirectAction: Response.Body.Payment {
-        .init(id: "id",
-                     paymentId: "payment_id",
-                     amount: 123,
-                     currencyCode: "GBP",
-                     customer: .init(firstName: "first_name",
-                                     lastName: "last_name",
-                                     emailAddress: "email_address",
-                                     mobileNumber: "+44(0)7891234567",
-                                     billingAddress: .init(firstName: "billing_first_name",
-                                                           lastName: "billing_last_name",
-                                                           addressLine1: "billing_line_1",
-                                                           addressLine2: "billing_line_2",
-                                                           city: "billing_city",
-                                                           state: "billing_state",
-                                                           countryCode: "billing_country_code",
-                                                           postalCode: "billing_postal_code"),
-                                     shippingAddress: .init(firstName: "shipping_first_name",
-                                                            lastName: "shipping_last_name",
-                                                            addressLine1: "shipping_line_1",
-                                                            addressLine2: "shipping_line_2",
-                                                            city: "shipping_city",
-                                                            state: "shipping_state",
-                                                            countryCode: "shipping_country_code",
-                                                            postalCode: "shipping_postal_code")),
-                     customerId: "customer_id",
-                     orderId: "order_id",
-                     requiredAction: .init(clientToken: MockAppState.mockClientTokenWithRedirect,
-                                           name: .checkout,
-                                           description: "description"),
-                     status: .success)
+        .init(
+            id: "id",
+            paymentId: "payment_id",
+            amount: 123,
+            currencyCode: "GBP",
+            customer: .init(
+                firstName: "first_name",
+                lastName: "last_name",
+                emailAddress: "email_address",
+                mobileNumber: "+44(0)7891234567",
+                billingAddress: .init(
+                    firstName: "billing_first_name",
+                    lastName: "billing_last_name",
+                    addressLine1: "billing_line_1",
+                    addressLine2: "billing_line_2",
+                    city: "billing_city",
+                    state: "billing_state",
+                    countryCode: "billing_country_code",
+                    postalCode: "billing_postal_code"
+                ),
+                shippingAddress: .init(
+                    firstName: "shipping_first_name",
+                    lastName: "shipping_last_name",
+                    addressLine1: "shipping_line_1",
+                    addressLine2: "shipping_line_2",
+                    city: "shipping_city",
+                    state: "shipping_state",
+                    countryCode: "shipping_country_code",
+                    postalCode: "shipping_postal_code"
+                )
+            ),
+            customerId: "customer_id",
+            orderId: "order_id",
+            requiredAction: .init(
+                clientToken: MockAppState.mockClientTokenWithRedirect,
+                name: .checkout,
+                description: "description"
+            ),
+            status: .success
+        )
     }
 
     var paymentResponseAfterResume: Response.Body.Payment {
-        .init(id: "id",
-              paymentId: "payment_id",
-              amount: 1234,
-              currencyCode: "GBP",
-              customerId: "customer_id",
-              orderId: "order_id",
-              status: .success)
+        .init(
+            id: "id",
+            paymentId: "payment_id",
+            amount: 1234,
+            currencyCode: "GBP",
+            customerId: "customer_id",
+            orderId: "order_id",
+            status: .success
+        )
     }
 }
