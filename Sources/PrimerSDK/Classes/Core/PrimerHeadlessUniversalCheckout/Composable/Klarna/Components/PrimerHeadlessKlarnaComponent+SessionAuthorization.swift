@@ -1,7 +1,7 @@
 //
 //  PrimerHeadlessKlarnaComponent+SessionAuthorization.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 #if canImport(PrimerKlarnaSDK)
@@ -70,7 +70,9 @@ extension PrimerHeadlessKlarnaComponent: PrimerKlarnaProviderAuthorizationDelega
             return
         }
 
-        if let authToken = authToken {
+        if finalizeRequired {
+            stepDelegate?.didReceiveStep(step: KlarnaStep.paymentSessionFinalizationRequired)
+        } else if let authToken {
             if PrimerInternal.shared.sdkIntegrationType == .headless {
                 finalizeSession(token: authToken, fromAuthorization: true)
             } else {
@@ -78,11 +80,6 @@ extension PrimerHeadlessKlarnaComponent: PrimerKlarnaProviderAuthorizationDelega
                 let step = KlarnaStep.paymentSessionAuthorized(authToken: authToken, checkoutData: checkoutData)
                 stepDelegate?.didReceiveStep(step: step)
             }
-        }
-
-        if finalizeRequired {
-            let step = KlarnaStep.paymentSessionFinalizationRequired
-            stepDelegate?.didReceiveStep(step: step)
         }
     }
 
