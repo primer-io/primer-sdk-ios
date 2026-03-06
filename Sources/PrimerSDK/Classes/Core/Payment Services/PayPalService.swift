@@ -9,6 +9,7 @@
 
 import Foundation
 import PrimerCore
+import PrimerFoundation
 import PrimerNetworking
 
 protocol PayPalServiceProtocol {
@@ -155,8 +156,10 @@ final class PayPalService: PayPalServiceProtocol {
             cancelUrl: "\(scheme)://paypal-cancel"
         )
 
-        apiClient.createPayPalBillingAgreementSession(clientToken: decodedJWTToken,
-                                                      payPalCreateBillingAgreementRequest: body) { [weak self] (result) in
+        apiClient.createPayPalBillingAgreementSession(
+            clientToken: decodedJWTToken,
+            payPalCreateBillingAgreementRequest: body
+        ) { [weak self] (result) in
             switch result {
             case let .failure(err):
                 completion(.failure(handled(primerError: .failedToCreateSession(error: err))))
@@ -210,8 +213,10 @@ final class PayPalService: PayPalServiceProtocol {
 
         let body = Request.Body.PayPal.ConfirmBillingAgreement(paymentMethodConfigId: configId, tokenId: paypalTokenId)
 
-        apiClient.confirmPayPalBillingAgreement(clientToken: decodedJWTToken,
-                                                payPalConfirmBillingAgreementRequest: body) { result in
+        apiClient.confirmPayPalBillingAgreement(
+            clientToken: decodedJWTToken,
+            payPalConfirmBillingAgreementRequest: body
+        ) { result in
             switch result {
             case let .failure(err):
                 completion(.failure(handled(primerError: .failedToCreateSession(error: err))))

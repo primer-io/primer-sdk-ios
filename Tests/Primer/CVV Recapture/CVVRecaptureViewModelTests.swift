@@ -4,6 +4,7 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+import PrimerNetworking
 @testable import PrimerSDK
 import PrimerUI
 import XCTest
@@ -18,7 +19,7 @@ struct MockCardButtonViewModel: CardButtonViewModelProtocol {
 
     var imageName: ImageName
 
-    var paymentMethodType: PrimerSDK.PaymentInstrumentType
+    var paymentMethodType: PaymentInstrumentType
 
     var surCharge: Int?
 
@@ -33,12 +34,14 @@ class CVVRecaptureViewModelTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        mockCardButtonViewModel = MockCardButtonViewModel(cardholder: "John Doe",
-                                                          last4: "4444",
-                                                          expiry: "13/05",
-                                                          imageName: ImageName.genericCard,
-                                                          paymentMethodType: PaymentInstrumentType.paymentCard,
-                                                          network: "VISA")
+        mockCardButtonViewModel = MockCardButtonViewModel(
+            cardholder: "John Doe",
+            last4: "4444",
+            expiry: "13/05",
+            imageName: ImageName.genericCard,
+            paymentMethodType: PaymentInstrumentType.paymentCard,
+            network: "VISA"
+        )
         viewModel = CVVRecaptureViewModel()
         viewModel.cardButtonViewModel = mockCardButtonViewModel
     }

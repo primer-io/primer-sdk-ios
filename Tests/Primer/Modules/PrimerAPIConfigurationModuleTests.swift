@@ -4,7 +4,7 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import PrimerNetworking
+@testable import PrimerNetworking
 @testable import PrimerSDK
 import XCTest
 
@@ -74,12 +74,14 @@ class PrimerAPIConfigurationModuleTests: XCTestCase {
 
         // Create a mock ApiClient and set it to the configuration module as a static property
         let mockApiClient = MockPrimerAPIClient(responseHeaders: [ConfigurationCachedData.CacheHeaderKey: "3600"])
-        mockApiClient.fetchConfigurationResult = (nil,
-                                                  NSError(
-                                                      domain: "com.primer.sdk",
-                                                      code: 500,
-                                                      userInfo: [NSLocalizedDescriptionKey: "Failed to fetch configuration."]
-                                                  ))
+        mockApiClient.fetchConfigurationResult = (
+            nil,
+            NSError(
+                domain: "com.primer.sdk",
+                code: 500,
+                userInfo: [NSLocalizedDescriptionKey: "Failed to fetch configuration."]
+            )
+        )
         PrimerAPIConfigurationModule.apiClient = mockApiClient
 
         // Create ApiConfigurationModule
@@ -400,11 +402,13 @@ class PrimerAPIConfigurationModuleTests: XCTestCase {
             XCTAssert(PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.clientSessionId == config_pre.clientSession?.clientSessionId)
             XCTAssert(PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules?.first?.type == config_pre.checkoutModules?.first?.type)
 
-            try await apiConfigurationModule.updateSession(withActions:
+            try await apiConfigurationModule.updateSession(
+                withActions:
                 ClientSessionUpdateRequest(actions: ClientSessionAction(actions: [ClientSession.Action(
                     type: .selectPaymentMethod,
                     params: ["": ""]
-                )])))
+                )]))
+            )
 
             // Verify the configurations are still matching with the config_pre
             XCTAssert(PrimerAPIConfigurationModule.clientToken == MockAppState.mockClientToken)

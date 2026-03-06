@@ -12,6 +12,7 @@
 import Foundation
 import PrimerCore
 import PrimerFoundation
+import PrimerNetworking
 import UIKit
 
 #if canImport(PrimerKlarnaSDK)
@@ -33,15 +34,19 @@ final class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
     private var klarnaPaymentSessionCompletion: ((Result<String, Error>) -> Void)?
     private var authorizationToken: String?
 
-    override init(config: PrimerPaymentMethod,
-                  uiManager: PrimerUIManaging,
-                  tokenizationService: TokenizationServiceProtocol,
-                  createResumePaymentService: CreateResumePaymentServiceProtocol) {
+    override init(
+        config: PrimerPaymentMethod,
+        uiManager: PrimerUIManaging,
+        tokenizationService: TokenizationServiceProtocol,
+        createResumePaymentService: CreateResumePaymentServiceProtocol
+    ) {
         tokenizationComponent = KlarnaTokenizationComponent(paymentMethod: config)
-        super.init(config: config,
-                   uiManager: uiManager,
-                   tokenizationService: tokenizationService,
-                   createResumePaymentService: createResumePaymentService)
+        super.init(
+            config: config,
+            uiManager: uiManager,
+            tokenizationService: tokenizationService,
+            createResumePaymentService: createResumePaymentService
+        )
     }
 
     override func validate() throws {
