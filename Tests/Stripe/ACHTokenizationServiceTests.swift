@@ -7,6 +7,7 @@
 import Foundation
 import PrimerCore
 import PrimerFoundation
+import PrimerNetworking
 @testable import PrimerSDK
 import XCTest
 
@@ -165,29 +166,37 @@ extension ACHTokenizationServiceTests {
         sut = ACHTokenizationService(paymentMethod: paymentMethod, tokenizationService: tokenizationService)
     }
 
-    private func prepareConfigurations(isClientSessionEmpty: Bool = false,
-                                       hasDecodedToken: Bool = true,
-                                       emptyMerchantAmmount: Bool = false,
-                                       emptyTotalOrderAmmount: Bool = false,
-                                       emptyLineItems: Bool = false,
-                                       emptyOrderAmount: Bool = false,
-                                       emptyCurrencyCode: Bool = false) {
+    private func prepareConfigurations(
+        isClientSessionEmpty: Bool = false,
+        hasDecodedToken: Bool = true,
+        emptyMerchantAmmount: Bool = false,
+        emptyTotalOrderAmmount: Bool = false,
+        emptyLineItems: Bool = false,
+        emptyOrderAmount: Bool = false,
+        emptyCurrencyCode: Bool = false
+    ) {
         mockApiClient = MockPrimerAPIClient()
-
-        let settings = PrimerSettings(paymentMethodOptions:
-                                        PrimerPaymentMethodOptions(urlScheme: "test://primer.io",
-                                                                   stripeOptions: PrimerStripeOptions(publishableKey: "test-pk-1234")))
+        
+        let settings = PrimerSettings(
+            paymentMethodOptions:
+                PrimerPaymentMethodOptions(
+                    urlScheme: "test://primer.io",
+                    stripeOptions: PrimerStripeOptions(publishableKey: "test-pk-1234")
+                )
+        )
 
         DependencyContainer.register(settings as PrimerSettingsProtocol)
 
         var clientSession: ClientSession.APIResponse?
 
         if isClientSessionEmpty {
-            clientSession = ACHMocks.getEmptyClientSession(emptyMerchantAmmount: emptyMerchantAmmount,
-                                                           emptyTotalOrderAmmount: emptyTotalOrderAmmount,
-                                                           emptyLineItems: emptyLineItems,
-                                                           emptyOrderAmount: emptyOrderAmount,
-                                                           emptyCurrencyCode: emptyCurrencyCode)
+            clientSession = ACHMocks.getEmptyClientSession(
+                emptyMerchantAmmount: emptyMerchantAmmount,
+                emptyTotalOrderAmmount: emptyTotalOrderAmmount,
+                emptyLineItems: emptyLineItems,
+                emptyOrderAmount: emptyOrderAmount,
+                emptyCurrencyCode: emptyCurrencyCode
+            )
         } else {
             clientSession = ACHMocks.getClientSession()
         }
@@ -197,7 +206,8 @@ extension ACHTokenizationServiceTests {
 
         let mockPrimerApiConfiguration = Mocks.createMockAPIConfiguration(
             clientSession: clientSession,
-            paymentMethods: [ACHMocks.stripeACHPaymentMethod])
+            paymentMethods: [ACHMocks.stripeACHPaymentMethod]
+        )
 
         mockPrimerApiConfiguration.paymentMethods?[0].baseLogoImage = PrimerTheme.BaseImage(colored: UIImage(), light: nil, dark: nil)
         setupPrimerConfiguration(paymentMethod: ACHMocks.stripeACHPaymentMethod, apiConfiguration: mockPrimerApiConfiguration, hasDecodedToken: hasDecodedToken)

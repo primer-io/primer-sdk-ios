@@ -7,6 +7,7 @@
 #if canImport(PrimerKlarnaSDK)
 import PrimerFoundation
 import PrimerKlarnaSDK
+@testable import PrimerNetworking
 @testable import PrimerSDK
 import XCTest
 
@@ -34,7 +35,8 @@ class KlarnaTestsMocks {
         threeDSecureAuthentication: nil,
         token: "mock_payment_method_token",
         tokenType: .singleUse,
-        vaultData: nil)
+        vaultData: nil
+    )
 
     static var extraMerchantData: [String: Any] = [
         "subscription": [
@@ -55,24 +57,28 @@ class KlarnaTestsMocks {
     ]
 
     static var klarnaOrder: ClientSession.Order {
-        .init(id: "order_id",
-              merchantAmount: 1234,
-              totalOrderAmount: 1234,
-              totalTaxAmount: nil,
-              countryCode: .de,
-              currencyCode: Currency(code: "EUR", decimalDigits: 2),
-              fees: nil,
-              lineItems: [
-                .init(itemId: "item_id",
-                      quantity: 1,
-                      amount: 1234,
-                      discountAmount: nil,
-                      name: "my_item",
-                      description: "item_description",
-                      taxAmount: nil,
-                      taxCode: nil,
-                      productType: nil)
-              ])
+        .init(
+            id: "order_id",
+            merchantAmount: 1234,
+            totalOrderAmount: 1234,
+            totalTaxAmount: nil,
+            countryCode: .de,
+            currencyCode: Currency(code: "EUR", decimalDigits: 2),
+            fees: nil,
+            lineItems: [
+                .init(
+                    itemId: "item_id",
+                    quantity: 1,
+                    amount: 1234,
+                    discountAmount: nil,
+                    name: "my_item",
+                    description: "item_description",
+                    taxAmount: nil,
+                    taxCode: nil,
+                    productType: nil
+                )
+            ]
+        )
     }
 
     static func getClientSession(
@@ -97,7 +103,8 @@ class KlarnaTestsMocks {
                 countryCode: .de,
                 currencyCode: hasCurrency ? CurrencyLoader().getCurrency("EUR") : nil,
                 fees: nil,
-                lineItems: hasItems ? [getLineItem(hasAmount: hasLineItemAmout)] : nil),
+                lineItems: hasItems ? [getLineItem(hasAmount: hasLineItemAmout)] : nil
+            ),
             customer: nil,
             testId: nil
         )
@@ -121,12 +128,15 @@ class KlarnaTestsMocks {
                         merchantId: "merchant-id",
                         merchantAccountId: "merchant-account-id",
                         appId: "app-id",
-                        extraMerchantData: extraMerchantData),
-                    displayMetadata: nil)
+                        extraMerchantData: extraMerchantData
+                    ),
+                    displayMetadata: nil
+                )
             ],
             primerAccountId: "mock-primer-account-id",
             keys: nil,
-            checkoutModules: nil)
+            checkoutModules: nil
+        )
     }
 
     static func getLineItem(hasAmount: Bool) -> ClientSession.Order.LineItem {
@@ -139,7 +149,8 @@ class KlarnaTestsMocks {
             description: "mock-description-1",
             taxAmount: nil,
             taxCode: nil,
-            productType: nil)
+            productType: nil
+        )
     }
 
     static func getMockFinalizeKlarnaPaymentSession(isValid: Bool) -> Response.Body.Klarna.CustomerToken {
@@ -159,7 +170,8 @@ class KlarnaTestsMocks {
                         quantity: 1,
                         unitPrice: 100,
                         totalAmount: 100,
-                        totalDiscountAmount: 0)
+                        totalDiscountAmount: 0
+                    )
                 ],
                 billingAddress: Response.Body.Klarna.BillingAddress(
                     addressLine1: "Mock address line 1",
@@ -173,56 +185,71 @@ class KlarnaTestsMocks {
                     phoneNumber: "+447812345678",
                     postalCode: "PC123456",
                     state: "Greater London",
-                    title: "Mock title"),
+                    title: "Mock title"
+                ),
                 shippingAddress: nil,
-                tokenDetails: nil))
+                tokenDetails: nil
+            )
+        )
     }
 
     static var tokenizationResponseBody: Response.Body.Tokenization {
-        .init(analyticsId: "analytics_id",
-              id: "id",
-              isVaulted: false,
-              isAlreadyVaulted: false,
-              paymentInstrumentType: .klarna,
-              paymentMethodType: "KLARNA",
-              paymentInstrumentData: nil,
-              threeDSecureAuthentication: nil,
-              token: "token",
-              tokenType: .singleUse,
-              vaultData: nil)
+        .init(
+            analyticsId: "analytics_id",
+            id: "id",
+            isVaulted: false,
+            isAlreadyVaulted: false,
+            paymentInstrumentType: .klarna,
+            paymentMethodType: "KLARNA",
+            paymentInstrumentData: nil,
+            threeDSecureAuthentication: nil,
+            token: "token",
+            tokenType: .singleUse,
+            vaultData: nil
+        )
     }
 
     static var paymentResponseBody: Response.Body.Payment {
-        .init(id: "id",
-                     paymentId: "payment_id",
-                     amount: 123,
-                     currencyCode: "EUR",
-                     customer: .init(firstName: "first_name",
-                                     lastName: "last_name",
-                                     emailAddress: "email_address",
-                                     mobileNumber: "+44(0)7891234567",
-                                     billingAddress: .init(firstName: "billing_first_name",
-                                                           lastName: "billing_last_name",
-                                                           addressLine1: "billing_line_1",
-                                                           addressLine2: "billing_line_2",
-                                                           city: "billing_city",
-                                                           state: "billing_state",
-                                                           countryCode: "billing_country_code",
-                                                           postalCode: "billing_postal_code"),
-                                     shippingAddress: .init(firstName: "shipping_first_name",
-                                                            lastName: "shipping_last_name",
-                                                            addressLine1: "shipping_line_1",
-                                                            addressLine2: "shipping_line_2",
-                                                            city: "shipping_city",
-                                                            state: "shipping_state",
-                                                            countryCode: "shipping_country_code",
-                                                            postalCode: "shipping_postal_code")),
-                     customerId: "customer_id",
-                     orderId: "order_id",
-                     requiredAction: .init(clientToken: MockAppState.mockClientToken,
-                                           name: .checkout,
-                                           description: "description"),
-                     status: .success)
+        .init(
+            id: "id",
+            paymentId: "payment_id",
+            amount: 123,
+            currencyCode: "EUR",
+            customer: .init(
+                firstName: "first_name",
+                lastName: "last_name",
+                emailAddress: "email_address",
+                mobileNumber: "+44(0)7891234567",
+                billingAddress: .init(
+                    firstName: "billing_first_name",
+                    lastName: "billing_last_name",
+                    addressLine1: "billing_line_1",
+                    addressLine2: "billing_line_2",
+                    city: "billing_city",
+                    state: "billing_state",
+                    countryCode: "billing_country_code",
+                    postalCode: "billing_postal_code"
+                ),
+                shippingAddress: .init(
+                    firstName: "shipping_first_name",
+                    lastName: "shipping_last_name",
+                    addressLine1: "shipping_line_1",
+                    addressLine2: "shipping_line_2",
+                    city: "shipping_city",
+                    state: "shipping_state",
+                    countryCode: "shipping_country_code",
+                    postalCode: "shipping_postal_code"
+                )
+            ),
+            customerId: "customer_id",
+            orderId: "order_id",
+            requiredAction: .init(
+                clientToken: MockAppState.mockClientToken,
+                name: .checkout,
+                description: "description"
+            ),
+            status: .success
+        )
     }
 }
 

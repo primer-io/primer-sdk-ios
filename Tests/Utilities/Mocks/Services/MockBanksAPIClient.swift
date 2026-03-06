@@ -14,7 +14,7 @@ final class MockBanksAPIClient: PrimerAPIClientBanksProtocol {
 
     var error: Error?
 
-    func listAdyenBanks(clientToken: DecodedJWTToken, request: Request.Body.Adyen.BanksList, completion: @escaping PrimerSDK.APICompletion<BanksListSessionResponse>) {
+    func listAdyenBanks(clientToken: DecodedJWTToken, request: Request.Body.Adyen.BanksList, completion: @escaping APICompletion<BanksListSessionResponse>) {
         if let error = error {
             completion(.failure(error))
         } else if let result = result {

@@ -7,6 +7,7 @@
 import PassKit
 import PrimerCore
 import PrimerFoundation
+@testable import PrimerNetworking
 @testable import PrimerSDK
 import PrimerUI
 import XCTest
@@ -134,8 +135,10 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
             createResumePaymentService: createResumePaymentService
         )
 
-        let settings = PrimerSettings(paymentMethodOptions:
-            PrimerPaymentMethodOptions(applePayOptions:
+        let settings = PrimerSettings(
+            paymentMethodOptions:
+            PrimerPaymentMethodOptions(
+                applePayOptions:
                 PrimerApplePayOptions(merchantIdentifier: "merchant_id", merchantName: "merchant_name")
             )
         )
@@ -180,8 +183,10 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
             let settings = PrimerSettings(paymentMethodOptions: PrimerPaymentMethodOptions())
             DependencyContainer.register(settings as PrimerSettingsProtocol)
             XCTAssertThrowsError(try sut.validate())
-            let resetSettings = PrimerSettings(paymentMethodOptions:
-                PrimerPaymentMethodOptions(applePayOptions:
+            let resetSettings = PrimerSettings(
+                paymentMethodOptions:
+                PrimerPaymentMethodOptions(
+                    applePayOptions:
                     PrimerApplePayOptions(merchantIdentifier: "merchant_id", merchantName: "merchant_name")
                 )
             )
@@ -603,8 +608,10 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
         XCTAssertNotNil(update2.errors)
 
         // Test Error when no shipping methods and Settings requireShippingMethod
-        let settings = PrimerSettings(paymentMethodOptions:
-            PrimerPaymentMethodOptions(applePayOptions:
+        let settings = PrimerSettings(
+            paymentMethodOptions:
+            PrimerPaymentMethodOptions(
+                applePayOptions:
                 PrimerApplePayOptions(
                     merchantIdentifier: "merchant_id",
                     merchantName: "merchant_name",

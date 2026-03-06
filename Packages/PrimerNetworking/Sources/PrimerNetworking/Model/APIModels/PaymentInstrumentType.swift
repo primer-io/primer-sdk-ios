@@ -1,0 +1,114 @@
+//
+//  PaymentInstrumentType.swift
+//
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
+
+import Foundation
+
+/**
+ Enum exposing available payment methods
+
+ *Values*
+
+ `PAYMENT_CARD`: Used for card payments.
+
+ `PAYPAL_ORDER`: Used for a one-off payment through PayPal. It cannot be stored in the vault.
+
+ `PAYPAL_BILLING_AGREEMENT`: Used for a billing agreement through PayPal. It can be stored in the vault.
+
+ `APPLE_PAY`: Used for a payment through Apple Pay.
+
+ `GOOGLE_PAY`: Used for a payment through Google Pay.
+
+ `GOCARDLESS_MANDATE`: Used for a Debit Direct payment.
+
+ `KLARNA_PAYMENT_SESSION`:
+
+ `KLARNA_CUSTOMER_TOKEN`: Used for vaulted Klarna payment methods.
+
+ `KLARNA`:
+
+ `unknown`: Unknown payment instrument..
+
+ - Author:
+ Primer
+ - Version:
+ 1.2.2
+ */
+
+public enum PaymentInstrumentType: String, Codable {
+
+    case paymentCard            = "PAYMENT_CARD"
+    case offSession             = "OFF_SESSION_PAYMENT"
+    case cardOffSession         = "CARD_OFF_SESSION_PAYMENT"
+    case payPalOrder            = "PAYPAL_ORDER"
+    case payPalBillingAgreement = "PAYPAL_BILLING_AGREEMENT"
+    case applePay               = "APPLE_PAY"
+    case googlePay              = "GOOGLE_PAY"
+    case goCardlessMandate      = "GOCARDLESS_MANDATE"
+    case klarna                 = "KLARNA_AUTHORIZATION_TOKEN"
+    case klarnaPaymentSession   = "KLARNA_PAYMENT_SESSION"
+    case klarnaCustomerToken    = "KLARNA_CUSTOMER_TOKEN"
+    case hoolah                 = "HOOLAH"
+    case stripeAch              = "AUTOMATED_CLEARING_HOUSE"
+    case unknown                = "UNKNOWN"
+
+    public init(from decoder: Decoder) throws {
+        self = try PaymentInstrumentType(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ?? .unknown
+    }
+}
+
+/**
+ Contains extra information about the payment method.
+
+ - Author:
+ Primer
+ - Version:
+ 1.2.2
+ */
+
+public struct BinData: Codable {
+    public var network: String?
+    public var issuerCountryCode: String?
+    public var issuerName: String?
+    public var issuerCurrencyCode: String?
+    public var regionalRestriction: String?
+    public var accountNumberType: String?
+    public var accountFundingType: String?
+    public var prepaidReloadableIndicator: String?
+    public var productUsageType: String?
+    public var productCode: String?
+    public var productName: String?
+
+    public init(
+        network: String? = nil,
+        issuerCountryCode: String? = nil,
+        issuerName: String? = nil,
+        issuerCurrencyCode: String? = nil,
+        regionalRestriction: String? = nil,
+        accountNumberType: String? = nil,
+        accountFundingType: String? = nil,
+        prepaidReloadableIndicator: String? = nil,
+        productUsageType: String? = nil,
+        productCode: String? = nil,
+        productName: String? = nil
+    ) {
+        self.network = network
+        self.issuerCountryCode = issuerCountryCode
+        self.issuerName = issuerName
+        self.issuerCurrencyCode = issuerCurrencyCode
+        self.regionalRestriction = regionalRestriction
+        self.accountNumberType = accountNumberType
+        self.accountFundingType = accountFundingType
+        self.prepaidReloadableIndicator = prepaidReloadableIndicator
+        self.productUsageType = productUsageType
+        self.productCode = productCode
+        self.productName = productName
+    }
+}
+
+public enum TokenType: String, Codable {
+    case multiUse = "MULTI_USE"
+    case singleUse = "SINGLE_USE"
+}

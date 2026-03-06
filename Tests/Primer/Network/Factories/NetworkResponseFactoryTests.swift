@@ -5,7 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import PrimerFoundation
-import PrimerNetworking
+@testable import PrimerNetworking
 @testable import PrimerSDK
 import XCTest
 
@@ -24,8 +24,10 @@ final class NetworkResponseFactoryTests: XCTestCase {
         let metadata = ResponseMetadataModel(responseUrl: "a_url", statusCode: 200, headers: nil)
 
         let jsonNetworkResponseFactory = JSONNetworkResponseFactory()
-        let responseModel: TestCodable = try jsonNetworkResponseFactory.model(for: data,
-                                                                              forMetadata: metadata)
+        let responseModel: TestCodable = try jsonNetworkResponseFactory.model(
+            for: data,
+            forMetadata: metadata
+        )
 
         XCTAssertEqual(model, responseModel)
     }
@@ -35,8 +37,10 @@ final class NetworkResponseFactoryTests: XCTestCase {
         let metadata = ResponseMetadataModel(responseUrl: "a_url", statusCode: 200, headers: nil)
 
         let successResponseFactory = SuccessResponseFactory()
-        let responseModel: SuccessResponse = try successResponseFactory.model(for: Data(),
-                                                                              forMetadata: metadata)
+        let responseModel: SuccessResponse = try successResponseFactory.model(
+            for: Data(),
+            forMetadata: metadata
+        )
         XCTAssertEqual(model, responseModel)
     }
 
@@ -46,8 +50,10 @@ final class NetworkResponseFactoryTests: XCTestCase {
 
         let jsonNetworkResponseFactory = SuccessResponseFactory()
         let string = "<html><head></head><body><a>test</a></body></html>"
-        let responseModel: SuccessResponse = try jsonNetworkResponseFactory.model(for: string.data(using: .utf8)!,
-                                                                                  forMetadata: metadata)
+        let responseModel: SuccessResponse = try jsonNetworkResponseFactory.model(
+            for: string.data(using: .utf8)!,
+            forMetadata: metadata
+        )
 
         XCTAssertEqual(model, responseModel)
     }
@@ -82,8 +88,10 @@ final class NetworkResponseFactoryTests: XCTestCase {
         """
 
         do {
-            let _: TestCodable = try jsonNetworkResponseFactory.model(for: string.data(using: .utf8)!,
-                                                                          forMetadata: metadata)
+            let _: TestCodable = try jsonNetworkResponseFactory.model(
+                for: string.data(using: .utf8)!,
+                forMetadata: metadata
+            )
             XCTFail("Expected serverError, but decoding succeeded")
         } catch let error as InternalError {
             switch error {
