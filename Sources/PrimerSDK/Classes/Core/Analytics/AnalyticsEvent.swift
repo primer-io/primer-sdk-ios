@@ -116,6 +116,8 @@ extension Analytics {
                 try? container.encode(networkConnectivityEventProperties, forKey: .properties)
             } else if let sdkEventProperties = properties as? SDKEventProperties {
                 try? container.encode(sdkEventProperties, forKey: .properties)
+            } else if let appLifecycleEventProperties = properties as? AppLifecycleEventProperties {
+                try? container.encode(appLifecycleEventProperties, forKey: .properties)
             } else if let timerEventProperties = properties as? TimerEventProperties {
                 try? container.encode(timerEventProperties, forKey: .properties)
             } else if let uiEventProperties = properties as? UIEventProperties {
@@ -167,6 +169,8 @@ extension Analytics {
                 properties = networkConnectivityEventProperties
             } else if let sdkEventProperties = (try? container.decode(SDKEventProperties?.self, forKey: .properties)) {
                 properties = sdkEventProperties
+            } else if let appLifecycleEventProperties = (try? container.decode(AppLifecycleEventProperties?.self, forKey: .properties)) {
+                properties = appLifecycleEventProperties
             } else if let timerEventProperties = (try? container.decode(TimerEventProperties?.self, forKey: .properties)) {
                 properties = timerEventProperties
             } else if let uiEventProperties = (try? container.decode(UIEventProperties?.self, forKey: .properties)) {
@@ -188,6 +192,7 @@ extension Analytics.Event {
         case networkConnectivity            = "NETWORK_CONNECTIVITY_EVENT"
         case sdkEvent                       = "SDK_FUNCTION_EVENT"
         case timerEvent                     = "TIMER_EVENT"
+        case appLifecycle                   = "APP_LIFECYCLE_EVENT"
         case paymentMethodImageLoading      = "PM_IMAGE_LOADING_DURATION"
         case paymentMethodAllImagesLoading  = "PM_ALL_IMAGES_LOADING_DURATION"
     }
@@ -488,6 +493,26 @@ struct NetworkConnectivityEventProperties: AnalyticsEventProperties {
         try container.encode(networkType, forKey: .networkType)
         try container.encodeIfPresent(params, forKey: .params)
     }
+}
+
+struct AppLifecycleEventProperties: AnalyticsEventProperties {
+
+    enum LifecycleType: String, Codable {
+        case backgrounded = "APP_DID_ENTER_BACKGROUND"
+        case foregrounded = "APP_WILL_ENTER_FOREGROUND"
+    }
+
+    let lifecycleType: LifecycleType
+    var params: [String: AnyCodable]?
+
+    fileprivate init(lifecycleType: LifecycleType) {
+        self.lifecycleType = lifecycleType
+        let sdkProperties = SDKProperties()
+        let dict = try? sdkProperties.asDictionary()
+        let data = try? JSONSerialization.data(withJSONObject: dict as Any, options: .fragmentsAllowed)
+        data.map { params = try? JSONDecoder().decode([String: AnyCodable].self, from: $0) }
+    }
+    
 }
 
 struct SDKEventProperties: AnalyticsEventProperties {
@@ -820,6 +845,13 @@ extension Analytics.Event {
         .init(
             eventType: .networkConnectivity,
             properties: NetworkConnectivityEventProperties(networkType: networkType)
+        )
+    }
+
+    static func appLifecycle(_ lifecycleType: AppLifecycleEventProperties.LifecycleType) -> Self {
+        Analytics.Event(
+            eventType: .appLifecycle,
+            properties: AppLifecycleEventProperties(lifecycleType: lifecycleType)
         )
     }
 

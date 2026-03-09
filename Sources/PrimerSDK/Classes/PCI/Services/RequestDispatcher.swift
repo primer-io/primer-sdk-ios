@@ -66,7 +66,7 @@ final class DefaultRequestDispatcher: RequestDispatcher, LogReporter {
             let requestDuration = Double(endTime.uptimeNanoseconds - startTime.uptimeNanoseconds) / 1_000_000 // Convert to milliseconds
 
             guard let httpResponse = urlResponse as? HTTPURLResponse else {
-                return completion(.failure(InternalError.invalidResponse()))
+                return completion(.failure(InternalError.missingHTTPResponse(underlyingError: error)))
             }
 
             let metadata = ResponseMetadataModel(responseUrl: httpResponse.responseUrl,

@@ -1,11 +1,11 @@
 //
 //  PrimerCardNetworkTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import XCTest
 @testable import PrimerSDK
+import XCTest
 
 final class PrimerCardNetworkTests: XCTestCase {
 
@@ -41,4 +41,12 @@ final class PrimerCardNetworkTests: XCTestCase {
         XCTAssertTrue(description.contains("displayName: Mastercard"), "Description should contain displayName")
         XCTAssertTrue(description.contains("network: masterCard"), "Description should contain network")
     }
+
+    // MARK: - allowsUserSelection
+
+    func test_allowsUserSelection_returnsFalseForEftpos() {
+        let eftpos = PrimerCardNetwork(network: .eftpos)
+        XCTAssertFalse(eftpos.allowsUserSelection)
+    }
+
 }
