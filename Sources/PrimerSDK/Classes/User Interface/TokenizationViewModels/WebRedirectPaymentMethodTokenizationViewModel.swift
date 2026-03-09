@@ -124,8 +124,9 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
             place: .paymentMethodPopup
         ))
 
+        let imageView = await uiModule.makeIconImageView(withDimension: 24.0)
         await uiManager.primerRootViewController?.showLoadingScreenIfNeeded(
-            imageView: uiModule.makeIconImageView(withDimension: 24.0),
+            imageView: imageView,
             message: nil
         )
 

@@ -113,8 +113,9 @@ final class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
     }
 
     override func performPreTokenizationSteps() async throws {
+        let imageView = await uiModule.makeIconImageView(withDimension: 24.0)
         await PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(
-            imageView: uiModule.makeIconImageView(withDimension: 24.0),
+            imageView: imageView,
             message: nil
         )
 
@@ -187,7 +188,7 @@ final class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
 
             await PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
 
-            self.backendCallbackUrl = callbackUrl
+            backendCallbackUrl = callbackUrl
             self.primerTransactionId = primerTransactionId
             self.statusUrl = statusUrl
 
@@ -401,7 +402,7 @@ extension IPay88TokenizationViewModel: PrimerIPay88ViewControllerDelegate {
             primerIPay88Payment = payment
         }
 
-        if let error = error {
+        if let error {
             switch error {
             case let .iPay88Error(description, _):
                 didFail?(handled(primerError: .failedToCreatePayment(

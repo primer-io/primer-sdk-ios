@@ -16,14 +16,14 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
 
     var rawData: PrimerRawData? {
         didSet {
-            if let rawCardData = self.rawData as? PrimerCardData {
+            if let rawCardData = rawData as? PrimerCardData {
                 rawCardData.onDataDidChange = { [weak self] in
                     guard let self else { return }
                     Task { try? await self.validateRawData(rawCardData) }
 
                     let newCardNetwork = CardNetwork(cardNumber: rawCardData.cardNumber)
-                    if newCardNetwork != self.cardNetwork {
-                        self.cardNetwork = newCardNetwork
+                    if newCardNetwork != cardNetwork {
+                        cardNetwork = newCardNetwork
                     }
                 }
 
@@ -33,12 +33,12 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
                 rawCardData.onDataDidChange?()
 
                 let newCardNetwork = CardNetwork(cardNumber: rawCardData.cardNumber)
-                if newCardNetwork != self.cardNetwork {
-                    self.cardNetwork = newCardNetwork
+                if newCardNetwork != cardNetwork {
+                    cardNetwork = newCardNetwork
                 }
             } else {
-                if self.cardNetwork != .unknown {
-                    self.cardNetwork = .unknown
+                if cardNetwork != .unknown {
+                    cardNetwork = .unknown
                 }
             }
         }
@@ -86,13 +86,20 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
         return mutableRequiredInputElementTypes
     }
 
+    static func preferredNetwork(from cardNetwork: CardNetwork?) -> String? {
+        guard PrimerInternal.shared.sdkIntegrationType == .headless else {
+            return cardNetwork?.rawValue
+        }
+        return cardNetwork?.allowsUserSelection == true ? cardNetwork?.rawValue : nil
+    }
+
     required init(paymentMethodType: String) {
         self.paymentMethodType = paymentMethodType
     }
 
     func configure(withRawDataManager rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager) {
         self.rawDataManager = rawDataManager
-        self.cardValidationService = DefaultCardValidationService(rawDataManager: rawDataManager)
+        cardValidationService = DefaultCardValidationService(rawDataManager: rawDataManager)
     }
 
     func makeRequestBodyWithRawData(_ data: PrimerRawData) async throws -> Request.Body.Tokenization {
@@ -109,7 +116,7 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
         // Use user-selected network if available (for co-badged cards), otherwise auto-detect
         if !rawData.cardNumber.isEmpty, rawData.cardNumber.isValidCardNumber {
             let cardNetwork = rawData.cardNetwork ?? CardNetwork(cardNumber: rawData.cardNumber)
-            if !self.allowedCardNetworks.contains(cardNetwork) {
+            if !allowedCardNetworks.contains(cardNetwork) {
                 throw handled(primerError: .invalidValue(key: "cardNetwork",
                                                          value: cardNetwork.displayName))
             }
@@ -131,7 +138,7 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
                 expirationMonth: expiryMonth,
                 expirationYear: expiryYear,
                 cardholderName: rawData.cardholderName,
-                preferredNetwork: rawData.cardNetwork?.rawValue
+                preferredNetwork: Self.preferredNetwork(from: rawData.cardNetwork)
             )
         )
     }
@@ -155,7 +162,7 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
         var cardNetwork = rawData.cardNetwork ?? CardNetwork(cardNumber: rawData.cardNumber)
 
         // Remotely validated card network
-        if let cardNetworksMetadata = cardNetworksMetadata {
+        if let cardNetworksMetadata {
             let didDetectNetwork = !cardNetworksMetadata.detectedCardNetworks.items.isEmpty &&
                 cardNetworksMetadata.detectedCardNetworks.items.map(\.network) != [.unknown]
 
@@ -171,7 +178,7 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
         // - >= 8 digits: remote BIN lookup
         // - Empty: local validation with empty networks
         // This ensures picker appears as user types, not just when card is fully valid
-        self.cardValidationService?.validateCardNetworks(withCardNumber: rawData.cardNumber)
+        cardValidationService?.validateCardNetworks(withCardNumber: rawData.cardNumber)
 
         // Invalid card number error - check this FIRST before network type validation
         if rawData.cardNumber.isEmpty {
@@ -183,7 +190,7 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
             // This prevents "unsupported-card-type" errors for empty/partial cards
             if cardNetworksMetadata != nil {
                 // Unsupported card type error
-                if !self.allowedCardNetworks.contains(cardNetwork) {
+                if !allowedCardNetworks.contains(cardNetwork) {
                     let err = PrimerValidationError.invalidCardType(
                         message: "Unsupported card type detected: \(cardNetwork.displayName)"
                     )
@@ -192,7 +199,7 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
             } else {
                 // When BIN data is not available, validate locally detected network against allowed networks
                 // This ensures consistent behavior with Web SDK where network validation always happens
-                if !self.allowedCardNetworks.contains(cardNetwork) {
+                if !allowedCardNetworks.contains(cardNetwork) {
                     let err = PrimerValidationError.invalidCardType(
                         message: "Unsupported card type detected: \(cardNetwork.displayName)"
                     )
@@ -215,7 +222,7 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
             errors.append(PrimerValidationError.invalidCvv(message: "CVV is not valid."))
         }
 
-        if self.requiredInputElementTypes.contains(PrimerInputElementType.cardholderName) {
+        if requiredInputElementTypes.contains(PrimerInputElementType.cardholderName) {
             if (rawData.cardholderName ?? "").isEmpty {
                 errors.append(PrimerValidationError.invalidCardholderName(message: "Cardholder name cannot be blank."))
             } else if !(rawData.cardholderName ?? "").isValidNonDecimalString {

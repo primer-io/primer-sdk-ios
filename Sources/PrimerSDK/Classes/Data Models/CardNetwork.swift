@@ -95,7 +95,7 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
     var validation: CardNetworkValidation? {
         switch self {
         case .amex:
-            return CardNetworkValidation(
+            CardNetworkValidation(
                 niceType: "American Express",
                 patterns: [[34], [37]],
                 gaps: [4, 10],
@@ -105,10 +105,10 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
                     length: 4))
 
         case .bancontact, .cartesBancaires, .eftpos:
-            return nil
+            nil
 
         case .diners:
-            return CardNetworkValidation(
+            CardNetworkValidation(
                 niceType: "Diners",
                 patterns: [[300, 305], [36], [38], [39]],
                 gaps: [4, 10],
@@ -118,7 +118,7 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
                     length: 3))
 
         case .discover:
-            return CardNetworkValidation(
+            CardNetworkValidation(
                 niceType: "Discover",
                 patterns: [[6011], [644, 649], [65]],
                 gaps: [4, 8, 12],
@@ -128,7 +128,7 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
                     length: 3))
 
         case .elo:
-            return CardNetworkValidation(
+            CardNetworkValidation(
                 niceType: "Elo",
                 patterns: [
                     [401178],
@@ -164,7 +164,7 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
                     length: 3))
 
         case .hiper:
-            return CardNetworkValidation(
+            CardNetworkValidation(
                 niceType: "Hiper",
                 patterns: [[637095], [63737423], [63743358], [637568], [637599], [637609], [637612]],
                 gaps: [4, 8, 12],
@@ -174,7 +174,7 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
                     length: 3))
 
         case .hipercard:
-            return CardNetworkValidation(
+            CardNetworkValidation(
                 niceType: "Hiper",
                 patterns: [[606282]],
                 gaps: [4, 8, 12],
@@ -184,7 +184,7 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
                     length: 3))
 
         case .jcb:
-            return CardNetworkValidation(
+            CardNetworkValidation(
                 niceType: "JCB",
                 patterns: [[2131], [1800], [3528, 3589]],
                 gaps: [4, 8, 12],
@@ -194,17 +194,17 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
                     length: 3))
 
         case .masterCard:
-            return CardNetworkValidation(
+            CardNetworkValidation(
                 niceType: "Mastercard",
                 patterns: [[51, 55], [2221, 2229], [223, 229], [23, 26], [270, 271], [2720]],
-                gaps: [4, 10],
+                gaps: [4, 8, 12],
                 lengths: [16],
                 code: CardNetworkCode(
                     name: "CVC",
                     length: 3))
 
         case .maestro:
-            return CardNetworkValidation(
+            CardNetworkValidation(
                 niceType: "Maestro",
                 patterns: [
                     [493698],
@@ -223,7 +223,7 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
                     length: 3))
 
         case .mir:
-            return CardNetworkValidation(
+            CardNetworkValidation(
                 niceType: "Mir",
                 patterns: [[2200, 2204]],
                 gaps: [4, 8, 12],
@@ -233,7 +233,7 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
                     length: 3))
 
         case .visa:
-            return CardNetworkValidation(
+            CardNetworkValidation(
                 niceType: "Visa",
                 patterns: [[4]],
                 gaps: [4, 8, 12],
@@ -243,7 +243,7 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
                     length: 3))
 
         case .unionpay:
-            return CardNetworkValidation(
+            CardNetworkValidation(
                 niceType: "UnionPay",
                 patterns: [
                     [620],
@@ -278,12 +278,12 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
                     name: "CVN",
                     length: 3))
         case .unknown:
-            return nil
+            nil
         }
     }
 
     public var displayName: String {
-        if let displayName = self.validation?.niceType {
+        if let displayName = validation?.niceType {
             return displayName
         }
 
