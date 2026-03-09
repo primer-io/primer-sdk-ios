@@ -11,6 +11,7 @@ import SafariServices
 protocol WebAuthenticationService {
     var session: ASWebAuthenticationSession? { get }
     func connect(paymentMethodType: String, url: URL, scheme: String, _ completion: @escaping (Result<URL, Error>) -> Void)
+    @MainActor
     func connect(paymentMethodType: String, url: URL, scheme: String) async throws -> URL
 }
 // MARK: MISSING_TESTS
@@ -23,7 +24,7 @@ final class DefaultWebAuthenticationService: NSObject, WebAuthenticationService 
             url: url,
             callbackURLScheme: scheme,
             completionHandler: { (url, error) in
-                if let url = url {
+                if let url {
                     completion(.success(url))
                 } else if error != nil {
                     completion(.failure(PrimerError.cancelled(paymentMethodType: paymentMethodType)))
@@ -38,6 +39,7 @@ final class DefaultWebAuthenticationService: NSObject, WebAuthenticationService 
         webAuthSession.start()
     }
 
+    @MainActor
     func connect(
         paymentMethodType: String,
         url: URL,
@@ -77,7 +79,7 @@ extension DefaultWebAuthenticationService: ASWebAuthenticationPresentationContex
 
 extension UIApplication {
     var windows: [UIWindow] {
-        let windowScene = self.connectedScenes.compactMap { $0 as? UIWindowScene }.first
+        let windowScene = connectedScenes.compactMap { $0 as? UIWindowScene }.first
         guard let windows = windowScene?.windows else {
             return []
         }

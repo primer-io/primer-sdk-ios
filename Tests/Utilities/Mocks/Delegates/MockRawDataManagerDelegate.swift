@@ -9,7 +9,7 @@ import Foundation
 
 typealias RawDataManager = PrimerHeadlessUniversalCheckout.RawDataManager
 
-class MockRawDataManagerDelegate: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate {
+final class MockRawDataManagerDelegate: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate {
 
     // MARK: metadataDidChange
 

@@ -18,12 +18,12 @@ Create a pull request for the current branch. Jira ticket: $ARGUMENTS
    ```
 2. **Code review**: Use the Agent tool to launch the `swift-reviewer` subagent to review all Swift files changed on this branch (`git diff --name-only master...HEAD -- '*.swift'`). Present the review findings to the user. If CRITICAL or HIGH severity issues are found, stop and ask the user how to proceed before continuing.
 3. **Review changes**: `git diff` to verify all changes are intentional
-4. **Stage and commit** any remaining changes (conventional commit format)
+4. **Stage and commit** any remaining changes (conventional commit format, 50/72 rule: subject ≤50 chars, body wraps at 72)
 5. **Push** the branch: `git push -u origin HEAD`
 6. **Capture screenshots** (if UI changes): Follow the UI Verification steps in CLAUDE.md to capture screenshots for the PR body
 7. **Read the PR template**: Read `.github/pull_request_template.md`
 8. **Create the PR** using `gh pr create`:
-   - Title: short (<70 chars), conventional commit style
+   - Title: conventional commit style (aim for ~50 chars, max 72)
    - Body: fill in each section of the PR template:
      - **Description**: Jira ticket reference (`ACC-XXXX`) + summary of changes + any breaking changes
      - **Manual Testing**: steps to verify the changes, or remove section if N/A

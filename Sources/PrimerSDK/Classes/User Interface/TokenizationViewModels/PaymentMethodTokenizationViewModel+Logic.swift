@@ -57,7 +57,7 @@ extension PaymentMethodTokenizationViewModel {
 
     @MainActor
     func processVaultPaymentMethodTokenData() {
-        PrimerDelegateProxy.primerDidTokenizePaymentMethod(self.paymentMethodTokenData!) { _ in }
+        PrimerDelegateProxy.primerDidTokenizePaymentMethod(paymentMethodTokenData!) { _ in }
         handleSuccessfulFlow()
     }
 
@@ -66,8 +66,9 @@ extension PaymentMethodTokenizationViewModel {
         didStartPayment = nil
 
         if config.internalPaymentMethodType != .klarna {
+            let imageView = await uiModule.makeIconImageView(withDimension: 24.0)
             await PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(
-                imageView: uiModule.makeIconImageView(withDimension: 24.0),
+                imageView: imageView,
                 message: nil
             )
         }
@@ -106,10 +107,10 @@ extension PaymentMethodTokenizationViewModel {
                case .cancelled = primerErr,
                PrimerInternal.shared.sdkIntegrationType == .dropIn,
                PrimerInternal.shared.selectedPaymentMethodType == nil,
-               self.config.implementationType == .webRedirect ||
-                self.config.type == PrimerPaymentMethodType.applePay.rawValue ||
-                self.config.type == PrimerPaymentMethodType.adyenIDeal.rawValue ||
-                self.config.type == PrimerPaymentMethodType.payPal.rawValue {
+               config.implementationType == .webRedirect ||
+                config.type == PrimerPaymentMethodType.applePay.rawValue ||
+                config.type == PrimerPaymentMethodType.adyenIDeal.rawValue ||
+                config.type == PrimerPaymentMethodType.payPal.rawValue {
                 await PrimerUIManager.primerRootViewController?.popToMainScreen(completion: nil)
             } else {
                 let primerErr = error.asPrimerError
@@ -200,11 +201,10 @@ extension PaymentMethodTokenizationViewModel {
                 return decodedJWTToken
 
             case let .fail(message):
-                let merchantErr: Error
-                if let message {
-                    merchantErr = PrimerError.merchantError(message: message)
+                let merchantErr: Error = if let message {
+                    PrimerError.merchantError(message: message)
                 } else {
-                    merchantErr = NSError.emptyDescriptionError
+                    NSError.emptyDescriptionError
                 }
                 throw merchantErr
             }
@@ -271,11 +271,10 @@ extension PaymentMethodTokenizationViewModel {
         if let resumeDecisionType = resumeDecision.type as? PrimerResumeDecision.DecisionType {
             switch resumeDecisionType {
             case let .fail(message):
-                let merchantErr: Error
-                if let message {
-                    merchantErr = PrimerError.merchantError(message: message)
+                let merchantErr: Error = if let message {
+                    PrimerError.merchantError(message: message)
                 } else {
-                    merchantErr = NSError.emptyDescriptionError
+                    NSError.emptyDescriptionError
                 }
                 throw merchantErr
 
@@ -371,13 +370,13 @@ extension PaymentMethodTokenizationViewModel {
     }
 
     func nullifyEventCallbacks() {
-        self.didStartPayment = nil
-        self.didFinishPayment = nil
+        didStartPayment = nil
+        didFinishPayment = nil
     }
 
     func setCheckoutDataFromError(_ error: PrimerError) {
         if let checkoutData = error.checkoutData {
-            self.paymentCheckoutData = checkoutData
+            paymentCheckoutData = checkoutData
         }
     }
 }
@@ -386,12 +385,12 @@ extension PrimerError {
     var checkoutData: PrimerCheckoutData? {
         switch self {
         case let .paymentFailed(_, paymentId, orderId, _, _):
-            return PrimerCheckoutData(
+            PrimerCheckoutData(
                 payment: PrimerCheckoutDataPayment(id: paymentId,
                                                    orderId: orderId,
                                                    paymentFailureReason: PrimerPaymentErrorCode.failed))
         default:
-            return nil
+            nil
         }
     }
 }

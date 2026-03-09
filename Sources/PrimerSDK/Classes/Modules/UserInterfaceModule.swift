@@ -17,7 +17,9 @@ protocol UserInterfaceModuleProtocol {
     var submitButton: PrimerButton? { get }
 
     init(paymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModelProtocol)
+    @MainActor
     func makeLogoImageView(withSize size: CGSize?) -> UIImageView?
+    @MainActor
     func makeIconImageView(withDimension dimension: CGFloat) -> UIImageView?
 }
 
@@ -40,7 +42,7 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
 
     var navigationBarLogo: UIImage? {
 
-        guard let internaPaymentMethodType = PrimerPaymentMethodType(rawValue: self.paymentMethodTokenizationViewModel.config.type) else {
+        guard let internaPaymentMethodType = PrimerPaymentMethodType(rawValue: paymentMethodTokenizationViewModel.config.type) else {
             return logo
         }
 
@@ -57,7 +59,7 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                                                with: "-")
         fileName += "-icon"
 
-        switch self.themeMode {
+        switch themeMode {
         case .colored:
             fileName += "-colored"
         case .dark:
@@ -98,7 +100,7 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
     }
 
     var localDisplayMetadata: PrimerPaymentMethod.DisplayMetadata? {
-        let type = self.paymentMethodTokenizationViewModel.config.type
+        let type = paymentMethodTokenizationViewModel.config.type
         guard let internaPaymentMethodType = PrimerPaymentMethodType(rawValue: type)
         else { return nil }
 
@@ -776,7 +778,7 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
     var buttonTitle: String? {
 
         let metadataButtonText = paymentMethodTokenizationViewModel.config.displayMetadata?.button.text
-            ?? self.localDisplayMetadata?.button.text
+            ?? localDisplayMetadata?.button.text
 
         switch paymentMethodTokenizationViewModel.config.type {
 
@@ -809,7 +811,7 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
     }
 
     var buttonImage: UIImage? {
-        self.logo
+        logo
     }
 
     lazy var buttonFont: UIFont? = {
@@ -818,7 +820,7 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
 
     var buttonCornerRadius: CGFloat? {
         let cornerRadius = paymentMethodTokenizationViewModel.config.displayMetadata?.button.cornerRadius
-            ?? self.localDisplayMetadata?.button.cornerRadius
+            ?? localDisplayMetadata?.button.cornerRadius
         guard cornerRadius != nil else { return 4.0 }
         return CGFloat(cornerRadius!)
     }
@@ -831,7 +833,7 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
             return nil
         }
 
-        switch self.themeMode {
+        switch themeMode {
         case .colored:
             if let coloredColorHex = baseBackgroundColor!.coloredHex {
                 return PrimerColor(hex: coloredColorHex)
@@ -851,13 +853,13 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
 
     var buttonTitleColor: UIColor? {
         let baseTextColor = paymentMethodTokenizationViewModel.config.displayMetadata?.button.textColor
-            ?? self.localDisplayMetadata?.button.textColor
+            ?? localDisplayMetadata?.button.textColor
 
         guard baseTextColor != nil else {
             return nil
         }
 
-        switch self.themeMode {
+        switch themeMode {
         case .colored:
             if let coloredColorHex = baseTextColor!.coloredHex {
                 return PrimerColor(hex: coloredColorHex)
@@ -877,12 +879,12 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
 
     var buttonBorderWidth: CGFloat {
         let baseBorderWidth = paymentMethodTokenizationViewModel.config.displayMetadata?.button.borderWidth
-            ?? self.localDisplayMetadata?.button.borderWidth
+            ?? localDisplayMetadata?.button.borderWidth
         guard baseBorderWidth != nil else {
             return 0.0
         }
 
-        switch self.themeMode {
+        switch themeMode {
         case .colored:
             return baseBorderWidth!.colored ?? 0.0
         case .light:
@@ -894,12 +896,12 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
 
     var buttonBorderColor: UIColor? {
         let baseBorderColor = paymentMethodTokenizationViewModel.config.displayMetadata?.button.borderColor
-            ?? self.localDisplayMetadata?.button.borderColor
+            ?? localDisplayMetadata?.button.borderColor
         guard baseBorderColor != nil else {
             return nil
         }
 
-        switch self.themeMode {
+        switch themeMode {
         case .colored:
             if let coloredColorHex = baseBorderColor!.coloredHex {
                 return PrimerColor(hex: coloredColorHex)
@@ -945,12 +947,12 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
         paymentMethodButton.contentMode = .scaleAspectFit
         paymentMethodButton.imageView?.contentMode = .scaleAspectFit
         paymentMethodButton.titleLabel?.font = buttonFont
-        if let buttonCornerRadius = buttonCornerRadius {
+        if let buttonCornerRadius {
             paymentMethodButton.layer.cornerRadius = buttonCornerRadius
         }
         paymentMethodButton.backgroundColor = buttonColor
-        paymentMethodButton.setTitle(self.buttonTitle, for: .normal)
-        paymentMethodButton.setImage(self.buttonImage, for: .normal)
+        paymentMethodButton.setTitle(buttonTitle, for: .normal)
+        paymentMethodButton.setImage(buttonImage, for: .normal)
         paymentMethodButton.setTitleColor(buttonTitleColor, for: .normal)
         paymentMethodButton.tintColor = buttonTintColor
         paymentMethodButton.layer.borderWidth = buttonBorderWidth
@@ -1040,8 +1042,9 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
         return submitButton
     }
 
+    @MainActor
     func makeLogoImageView(withSize size: CGSize?) -> UIImageView? {
-        guard let logo = self.logo else { return nil }
+        guard let logo else { return nil }
 
         var tmpSize: CGSize! = size
         if size == nil {
@@ -1057,8 +1060,9 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
         return imgView
     }
 
+    @MainActor
     func makeIconImageView(withDimension dimension: CGFloat) -> UIImageView? {
-        guard let squareLogo = self.icon else { return nil }
+        guard let squareLogo = icon else { return nil }
 
         let createImageView: () -> UIImageView = {
             let imgView = UIImageView()
@@ -1078,11 +1082,11 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
     }
 
     @IBAction private func paymentMethodButtonTapped(_ sender: UIButton) {
-        self.paymentMethodTokenizationViewModel.start()
+        paymentMethodTokenizationViewModel.start()
     }
 
     @IBAction private func submitButtonTapped(_ sender: UIButton) {
-        self.paymentMethodTokenizationViewModel.submitButtonTapped()
+        paymentMethodTokenizationViewModel.submitButtonTapped()
     }
 }
 // swiftlint:enable type_body_length

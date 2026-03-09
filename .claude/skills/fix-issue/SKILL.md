@@ -15,10 +15,12 @@ Fix the issue: $ARGUMENTS
 4. **Search the codebase**: Find relevant files, understand current behavior, identify root cause
 5. **Implement the fix**: Make the minimal necessary changes to resolve the issue
 6. **Write tests**: Add or update tests to cover the fix — follow project test patterns (see `.claude/rules/testing.md`)
-7. **Verify code quality** (hooks auto-run SwiftFormat + SwiftLint --fix on every edit, but verify no warnings remain):
+7. **Verify code quality** on changed Swift files:
    ```bash
+   swiftformat <file.swift> --config BuildTools/.swiftformat
+   swiftlint lint --fix --config "Debug App/.swiftlint.yml"
    swiftlint lint --config "Debug App/.swiftlint.yml"
    ```
 8. **Run tests** for touched/new test classes using the xcodebuild command from CLAUDE.md, with `-only-testing:"Tests/{TestClassName}"` for each class
 9. **Verify UI changes** (if applicable): Follow the UI Verification steps in CLAUDE.md
-10. **Commit**: Use conventional commit format (`fix: Description of fix`)
+10. **Commit**: Use conventional commit format. Aim for ~50 char subject lines (including prefix) and wrap body text at ~72 chars when possible, but prioritize clarity over strict limits. Example: `fix: Add nil check for card validation`

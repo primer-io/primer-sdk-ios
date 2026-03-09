@@ -7,7 +7,7 @@ See @PrimerSDK.podspec for current version.
 ## Code Quality
 
 ### SwiftFormat (CI-enforced, auto-fixes on commit)
-Config: `BuildTools/.swiftformat` (`--swift-version 5.9`). Rules: `isEmpty`, `preferCountWhere`, `redundantExtensionACL`, `modifierOrder`, `consecutiveBlankLines`, `blankLineAfterImports`, `andOperator`, `elseOnSameLine`, `fileHeader`, `hoistPatternLet`, `leadingDelimiters`, `modifiersOnSameLine`, `preferKeyPath`, `redundantInternal`, `redundantReturn`, `sortImports`, `redundantOptionalBinding`, `redundantSelf`, `duplicateImports`, `conditionalAssignment`
+Config: `BuildTools/.swiftformat` (`--swift-version 5.9`).
 
 ```bash
 swiftformat <file1.swift> <file2.swift> --config BuildTools/.swiftformat
@@ -16,15 +16,15 @@ swiftformat <file1.swift> <file2.swift> --config BuildTools/.swiftformat
 ### SwiftLint
 Config: `Debug App/.swiftlint.yml`. Key limits: line 150, file 500/800, function body 60/100, cyclomatic 12/20.
 
-Opt-in rules (CI warnings via Danger): `shorthand_optional_binding`, `implicit_return`, `empty_count`, `direct_return`, `redundant_type_annotation`, `final_test_case`, `contains_over_filter_count`, `first_where`, `redundant_self_in_closure`
-
 ```bash
 swiftlint lint --fix --config "Debug App/.swiftlint.yml"
 swiftlint lint --config "Debug App/.swiftlint.yml"
 ```
 
-Hooks auto-run SwiftFormat + SwiftLint --fix on every file edit. Before committing, verify no warnings remain:
+Before committing, run code quality checks on changed files:
 ```bash
+swiftformat <file.swift> --config BuildTools/.swiftformat
+swiftlint lint --fix --config "Debug App/.swiftlint.yml"
 swiftlint lint --config "Debug App/.swiftlint.yml"
 ```
 
@@ -34,29 +34,34 @@ Coding style rules are in `.claude/rules/coding-style.md` — automatically load
 
 ## Building and Testing
 
+First, find an available simulator:
+```bash
+xcrun simctl list devices available
+```
+
+Pick a recent iPhone simulator (e.g., `iPhone 16`). Omit the OS version to use the latest installed:
+
 ```bash
 # Build Debug App
 xcodebuild -workspace PrimerSDK.xcworkspace \
   -scheme "Debug App" \
-  -destination "platform=iOS Simulator,name=iPhone 16,OS=18.6" \
+  -destination "platform=iOS Simulator,name=iPhone 16" \
   build
 
 # Run all SDK unit tests
 xcodebuild -workspace PrimerSDK.xcworkspace \
   -scheme "PrimerSDKTests" \
-  -destination "platform=iOS Simulator,name=iPhone 16,OS=18.6" \
+  -destination "platform=iOS Simulator,name=iPhone 16" \
   test
 
 # Run specific test class
 xcodebuild -workspace PrimerSDK.xcworkspace \
   -scheme "PrimerSDKTests" \
-  -destination "platform=iOS Simulator,name=iPhone 16,OS=18.6" \
+  -destination "platform=iOS Simulator,name=iPhone 16" \
   -testPlan "UnitTestsTestPlan" \
   -only-testing:"Tests/SomeClassTests" \
   test
 ```
-
-Use `xcrun simctl list devices available` to find simulators. iOS version may vary by Xcode version.
 
 ## UI Verification
 
@@ -65,6 +70,7 @@ The `ios-simulator` MCP server (configured in `.mcp.json`) provides simulator to
 ## Commit & PR Conventions
 
 - **Conventional Commits**: `fix:`, `feat:`, `chore:`, `refactor:`, `ci:`, `docs:`, `test:`, `perf:`
+- Aim for ~50 char subject lines and ~72 char body lines, but prioritize clarity over strict limits
 - Sentence-case, imperative mood: `fix: Add retry logic for polling`
 - PR template (`.github/pull_request_template.md`) requires Jira ticket (`ACC-XXXX`)
 
