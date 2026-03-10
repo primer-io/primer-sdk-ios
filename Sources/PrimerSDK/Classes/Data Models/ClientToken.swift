@@ -8,13 +8,6 @@ import Foundation
 import PrimerCore
 import PrimerNetworking
 
-extension Request.Body {
-
-    struct ClientTokenValidation: Encodable {
-        let clientToken: String
-    }
-}
-
 extension DecodedJWTToken {
     
     var isValid: Bool {

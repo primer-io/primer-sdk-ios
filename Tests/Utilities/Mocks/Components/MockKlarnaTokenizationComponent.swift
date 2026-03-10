@@ -5,13 +5,14 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import PrimerFoundation
+import PrimerNetworking
 @testable import PrimerSDK
 
 class MockKlarnaTokenizationComponent: KlarnaTokenizationComponentProtocol {
     var validateResult: Result<Void, Error>?
-    var createPaymentSessionResult: Result<PrimerSDK.Response.Body.Klarna.PaymentSession, Error>?
+    var createPaymentSessionResult: Result<Response.Body.Klarna.PaymentSession, Error>?
     var tokenizeHeadlessResult: Result<PrimerSDK.PrimerCheckoutData, Error>?
-    var authorizePaymentSessionResult: Result<PrimerSDK.Response.Body.Klarna.CustomerToken, Error>?
+    var authorizePaymentSessionResult: Result<Response.Body.Klarna.CustomerToken, Error>?
     var tokenizeDropInResult: Result<PrimerSDK.PrimerPaymentMethodTokenData, Error>?
 
     private(set) var authorizePaymentSessionCallCount = 0
@@ -25,7 +26,7 @@ class MockKlarnaTokenizationComponent: KlarnaTokenizationComponentProtocol {
         }
     }
 
-    func createPaymentSession() async throws -> PrimerSDK.Response.Body.Klarna.PaymentSession {
+    func createPaymentSession() async throws -> Response.Body.Klarna.PaymentSession {
         switch createPaymentSessionResult {
         case let .success(paymentSession): return paymentSession
         case let .failure(error): throw error
@@ -45,7 +46,7 @@ class MockKlarnaTokenizationComponent: KlarnaTokenizationComponentProtocol {
     }
 
     func tokenizeHeadless(
-        customerToken: PrimerSDK.Response.Body.Klarna.CustomerToken?,
+        customerToken: Response.Body.Klarna.CustomerToken?,
         offSessionAuthorizationId: String?
     ) async throws -> PrimerSDK.PrimerCheckoutData {
         tokenizeHeadlessCallCount += 1
@@ -57,7 +58,7 @@ class MockKlarnaTokenizationComponent: KlarnaTokenizationComponentProtocol {
     }
 
     func tokenizeDropIn(
-        customerToken: PrimerSDK.Response.Body.Klarna.CustomerToken?,
+        customerToken: Response.Body.Klarna.CustomerToken?,
         offSessionAuthorizationId: String?
     ) async throws -> PrimerSDK.PrimerPaymentMethodTokenData {
         switch tokenizeDropInResult {

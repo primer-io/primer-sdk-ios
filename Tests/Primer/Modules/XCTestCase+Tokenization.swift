@@ -1,11 +1,12 @@
 //
 //  XCTestCase+Tokenization.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import XCTest
+import PrimerNetworking
 @testable import PrimerSDK
+import XCTest
 
 protocol TokenizationTestDelegate {
     var availablePaymentMethodsLoadedCompletion: (([PrimerHeadlessUniversalCheckout.PaymentMethod]?, Error?) -> Void)? { get set }
@@ -41,7 +42,8 @@ extension XCTestCase {
         )
         let mockPrimerApiConfiguration = Mocks.createMockAPIConfiguration(
             clientSession: clientSession,
-            paymentMethods: mockPaymentMethods)
+            paymentMethods: mockPaymentMethods
+        )
 
         let vaultedPaymentMethods = Response.Body.VaultedPaymentMethods(data: [])
 
