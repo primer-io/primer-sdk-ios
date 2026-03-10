@@ -56,8 +56,10 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
             guard let rawDataManager else { return }
 
             DispatchQueue.main.async {
-                rawDataManager.delegate?.primerRawDataManager?(rawDataManager,
-                                                               metadataDidChange: ["cardNetwork": self.cardNetwork.rawValue])
+                rawDataManager.delegate?.primerRawDataManager?(
+                    rawDataManager,
+                    metadataDidChange: ["cardNetwork": self.cardNetwork.rawValue]
+                )
             }
         }
     }
@@ -117,8 +119,10 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
         if !rawData.cardNumber.isEmpty, rawData.cardNumber.isValidCardNumber {
             let cardNetwork = rawData.cardNetwork ?? CardNetwork(cardNumber: rawData.cardNumber)
             if !self.allowedCardNetworks.contains(cardNetwork) {
-                throw handled(primerError: .invalidValue(key: "cardNetwork",
-                                                         value: cardNetwork.displayName))
+                throw handled(primerError: .invalidValue(
+                    key: "cardNetwork",
+                    value: cardNetwork.displayName
+                ))
             }
         }
 
@@ -231,9 +235,8 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
         }
 
         guard errors.isEmpty else {
-            let err = handled(primerError: .underlyingErrors(errors: errors))
             notifyDelegateOfValidationResult(isValid: false, errors: errors)
-            throw err
+            throw PrimerError.underlyingErrors(errors: errors)
         }
 
         notifyDelegateOfValidationResult(isValid: true, errors: nil)

@@ -1,7 +1,7 @@
 //
 //  InternalCardComponentsManager.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable file_length
@@ -18,19 +18,27 @@ protocol InternalCardComponentsManagerDelegate {
     /// This delegate function is optional since you can initialize the CardComponentsManager with an access token.
     /// Still, if the access token is not valid, the CardComponentsManager will try to acquire
     /// an access token through this function.
-    @objc optional func cardComponentsManager(_ cardComponentsManager: InternalCardComponentsManager,
-                                              clientTokenCallback completion: @escaping (String?, Error?) -> Void)
+    @objc optional func cardComponentsManager(
+        _ cardComponentsManager: InternalCardComponentsManager,
+        clientTokenCallback completion: @escaping (String?, Error?) -> Void
+    )
     /// The cardComponentsManager(_:onTokenizeSuccess:) is the only required method, and it will return the payment method token (which
     /// contains all the information needed)
-    func cardComponentsManager(_ cardComponentsManager: InternalCardComponentsManager,
-                               onTokenizeSuccess paymentMethodToken: PrimerPaymentMethodTokenData)
+    func cardComponentsManager(
+        _ cardComponentsManager: InternalCardComponentsManager,
+        onTokenizeSuccess paymentMethodToken: PrimerPaymentMethodTokenData
+    )
     /// The cardComponentsManager(_:tokenizationFailedWith:) will return any tokenization errors that have occured.
-    @objc optional func cardComponentsManager(_ cardComponentsManager: InternalCardComponentsManager,
-                                              tokenizationFailedWith errors: [Error])
+    @objc optional func cardComponentsManager(
+        _ cardComponentsManager: InternalCardComponentsManager,
+        tokenizationFailedWith errors: [Error]
+    )
     /// The cardComponentsManager(_:isLoading:) will return true when the CardComponentsManager
     /// is performing an async operation and waiting for a result, false when loading has finished.
-    @objc optional func cardComponentsManager(_ cardComponentsManager: InternalCardComponentsManager,
-                                              isLoading: Bool)
+    @objc optional func cardComponentsManager(
+        _ cardComponentsManager: InternalCardComponentsManager,
+        isLoading: Bool
+    )
 }
 
 protocol InternalCardComponentsManagerProtocol {
@@ -50,9 +58,11 @@ protocol InternalCardComponentsManagerProtocol {
     func tokenize()
 }
 
-typealias BillingAddressField = (fieldView: PrimerTextFieldView,
-                                 containerFieldView: PrimerCustomFieldView,
-                                 isFieldHidden: Bool)
+typealias BillingAddressField = (
+    fieldView: PrimerTextFieldView,
+    containerFieldView: PrimerCustomFieldView,
+    isFieldHidden: Bool
+)
 
 @objc
 final class InternalCardComponentsManager: NSObject, InternalCardComponentsManagerProtocol, LogReporter {
@@ -71,7 +81,7 @@ final class InternalCardComponentsManager: NSObject, InternalCardComponentsManag
     var amount: Int?
     var currency: Currency?
     var decodedJWTToken: DecodedJWTToken? {
-        return PrimerAPIConfigurationModule.decodedJWTToken
+        PrimerAPIConfigurationModule.decodedJWTToken
     }
     var paymentMethodsConfig: PrimerAPIConfiguration?
     var primerPaymentMethodType: PrimerPaymentMethodType
@@ -129,7 +139,7 @@ final class InternalCardComponentsManager: NSObject, InternalCardComponentsManag
     }
 
     private func fetchClientToken() async throws -> DecodedJWTToken {
-        return try await withCheckedThrowingContinuation { continuation in
+        try await withCheckedThrowingContinuation { continuation in
             delegate.cardComponentsManager?(self, clientTokenCallback: { clientToken, error in
                 guard error == nil, let clientToken = clientToken else {
                     return continuation.resume(throwing: error!)
@@ -211,7 +221,7 @@ and 4 characters for expiry year separated by '/'.
         }
 
         if !errors.isEmpty {
-            throw handled(primerError: .underlyingErrors(errors: errors))
+            throw PrimerError.underlyingErrors(errors: errors)
         }
     }
 
@@ -233,23 +243,27 @@ and 4 characters for expiry year separated by '/'.
 
         if isRequiringCVVInput {
 
-            let cardPaymentInstrument = CardPaymentInstrument(number: cardnumberField.cardnumber,
-                                                              cvv: cvvField.cvv,
-                                                              expirationMonth: expiryMonth,
-                                                              expirationYear: cardExpirationYear,
-                                                              cardholderName: cardholderField?.cardholderName,
-                                                              preferredNetwork: selectedCardNetwork?.rawValue)
+            let cardPaymentInstrument = CardPaymentInstrument(
+                number: cardnumberField.cardnumber,
+                cvv: cvvField.cvv,
+                expirationMonth: expiryMonth,
+                expirationYear: cardExpirationYear,
+                cardholderName: cardholderField?.cardholderName,
+                preferredNetwork: selectedCardNetwork?.rawValue
+            )
             return cardPaymentInstrument
 
         } else if let configId = AppState.current.apiConfiguration?.getConfigId(for: primerPaymentMethodType.rawValue),
                   let cardholderName = cardholderField?.cardholderName {
 
-            let cardOffSessionPaymentInstrument = CardOffSessionPaymentInstrument(paymentMethodConfigId: configId,
-                                                                                  paymentMethodType: primerPaymentMethodType.rawValue,
-                                                                                  number: cardnumberField.cardnumber,
-                                                                                  expirationMonth: expiryMonth,
-                                                                                  expirationYear: cardExpirationYear,
-                                                                                  cardholderName: cardholderName)
+            let cardOffSessionPaymentInstrument = CardOffSessionPaymentInstrument(
+                paymentMethodConfigId: configId,
+                paymentMethodType: primerPaymentMethodType.rawValue,
+                number: cardnumberField.cardnumber,
+                expirationMonth: expiryMonth,
+                expirationYear: cardExpirationYear,
+                cardholderName: cardholderName
+            )
             return cardOffSessionPaymentInstrument
         }
 
@@ -277,11 +291,11 @@ and 4 characters for expiry year separated by '/'.
 
                     // If the auto-detected network is not allowed but this might be a co-badged card,
                     // try to find an allowed network for this card number
-                    if !allowedCardNetworks.contains(cardNetwork) && self.selectedCardNetwork == nil {
+                    if !allowedCardNetworks.contains(cardNetwork), self.selectedCardNetwork == nil {
                         // For co-badged cards, we need to check if there are other networks this card supports
                         // that are in the allowed list. Common co-badged scenarios:
                         // - Visa/Cartes Bancaires co-badged cards
-                        if autoDetectedNetwork == .visa && allowedCardNetworks.contains(.cartesBancaires) {
+                        if autoDetectedNetwork == .visa, allowedCardNetworks.contains(.cartesBancaires) {
                             // Check if this card could be Cartes Bancaires (starts with 4035, 4360, etc.)
                             let cardNumber = cardPaymentInstrument.number
                             if cardNumber.hasPrefix("4035") || cardNumber.hasPrefix("4360") {
@@ -302,8 +316,10 @@ and 4 characters for expiry year separated by '/'.
                     )
 
                     if !allowedCardNetworks.contains(cardNetwork) {
-                        let err = handled(primerError: .invalidValue(key: "cardNetwork",
-                                                                     value: cardNetwork.displayName))
+                        let err = handled(primerError: .invalidValue(
+                            key: "cardNetwork",
+                            value: cardNetwork.displayName
+                        ))
                         self.delegate.cardComponentsManager?(self, tokenizationFailedWith: [err])
                         return
                     }
