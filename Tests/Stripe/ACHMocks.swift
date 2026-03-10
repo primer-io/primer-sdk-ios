@@ -6,6 +6,7 @@
 
 import Foundation
 import PrimerFoundation
+@testable import PrimerNetworking
 @testable import PrimerSDK
 import XCTest
 

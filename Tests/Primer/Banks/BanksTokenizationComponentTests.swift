@@ -5,7 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import PrimerFoundation
-import PrimerNetworking
+@testable import PrimerNetworking
 @testable import PrimerSDK
 import XCTest
 
@@ -67,11 +67,13 @@ final class BanksTokenizationComponentTests: XCTestCase {
         tokenizationService = MockTokenizationService()
         createResumePaymentService = MockCreateResumePaymentService()
         uiManager = MockPrimerUIManager()
-        sut = BanksTokenizationComponent(config: paymentMethod,
-                                         uiManager: uiManager,
-                                         tokenizationService: tokenizationService,
-                                         createResumePaymentService: createResumePaymentService,
-                                         apiClient: apiClient)
+        sut = BanksTokenizationComponent(
+            config: paymentMethod,
+            uiManager: uiManager,
+            tokenizationService: tokenizationService,
+            createResumePaymentService: createResumePaymentService,
+            apiClient: apiClient
+        )
 
         stepDelegate = MockBanksStepDelegate()
         validationDelegate = MockBanksValidationDelegate()
@@ -144,11 +146,15 @@ final class BanksTokenizationComponentTests: XCTestCase {
         DependencyContainer.register(appState as AppStateProtocol)
 
         let expectDidFinishFlow = expectation(description: "Should finish")
-        let defaultBanksComponent = DefaultBanksComponent(paymentMethodType: .adyenIDeal,
-                                                          tokenizationProvidingModel: sut) {
+        let defaultBanksComponent = DefaultBanksComponent(
+            paymentMethodType: .adyenIDeal,
+            tokenizationProvidingModel: sut
+        ) {
             expectDidFinishFlow.fulfill()
-            return WebRedirectComponent(paymentMethodType: .adyenIDeal,
-                                        tokenizationModelDelegate: self.sut)
+            return WebRedirectComponent(
+                paymentMethodType: .adyenIDeal,
+                tokenizationModelDelegate: self.sut
+            )
         }
         defaultBanksComponent.stepDelegate = stepDelegate
         defaultBanksComponent.validationDelegate = validationDelegate
@@ -237,11 +243,15 @@ final class BanksTokenizationComponentTests: XCTestCase {
         DependencyContainer.register(settings as PrimerSettingsProtocol)
 
         let expectDidFinishFlow = expectation(description: "Should finish")
-        let defaultBanksComponent = DefaultBanksComponent(paymentMethodType: .adyenIDeal,
-                                                          tokenizationProvidingModel: sut) {
+        let defaultBanksComponent = DefaultBanksComponent(
+            paymentMethodType: .adyenIDeal,
+            tokenizationProvidingModel: sut
+        ) {
             expectDidFinishFlow.fulfill()
-            return WebRedirectComponent(paymentMethodType: .adyenIDeal,
-                                        tokenizationModelDelegate: self.sut)
+            return WebRedirectComponent(
+                paymentMethodType: .adyenIDeal,
+                tokenizationModelDelegate: self.sut
+            )
         }
         defaultBanksComponent.stepDelegate = stepDelegate
         defaultBanksComponent.validationDelegate = validationDelegate

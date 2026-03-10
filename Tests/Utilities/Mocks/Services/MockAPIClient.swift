@@ -6,7 +6,7 @@
 
 import PrimerCore
 import PrimerFoundation
-import PrimerNetworking
+@testable import PrimerNetworking
 @testable import PrimerSDK
 import XCTest
 
@@ -76,9 +76,11 @@ final class MockPrimerAPIClient: PrimerAPIClientProtocol, @unchecked Sendable {
         throw NSError(domain: "MockPrimerAPIClient", code: 1, userInfo: nil)
     }
 
-    func fetchConfiguration(clientToken: DecodedJWTToken,
-                            requestParameters: Request.URLParameters.Configuration?,
-                            completion: @escaping PrimerSDK.ConfigurationCompletion) {
+    func fetchConfiguration(
+        clientToken: DecodedJWTToken,
+        requestParameters: Request.URLParameters.Configuration?,
+        completion: @escaping PrimerSDK.ConfigurationCompletion
+    ) {
         guard let result = fetchConfigurationResult,
               result.0 != nil || result.1 != nil
         else {
@@ -569,7 +571,7 @@ final class MockPrimerAPIClient: PrimerAPIClientProtocol, @unchecked Sendable {
     func listAdyenBanks(
         clientToken: DecodedJWTToken,
         request: Request.Body.Adyen.BanksList,
-        completion: @escaping APICompletion<PrimerSDK.BanksListSessionResponse>
+        completion: @escaping APICompletion<BanksListSessionResponse>
     ) {
         guard let result = listAdyenBanksResult,
               result.0 != nil || result.1 != nil
@@ -590,7 +592,7 @@ final class MockPrimerAPIClient: PrimerAPIClientProtocol, @unchecked Sendable {
     func listAdyenBanks(
         clientToken: DecodedJWTToken,
         request: Request.Body.Adyen.BanksList
-    ) async throws -> PrimerSDK.BanksListSessionResponse {
+    ) async throws -> BanksListSessionResponse {
         guard let result = listAdyenBanksResult else {
             XCTAssert(false, "Set 'listAdyenBanksResult' on your MockPrimerAPIClient")
             throw NSError(domain: "MockPrimerAPIClient", code: 1, userInfo: nil)
@@ -643,7 +645,7 @@ final class MockPrimerAPIClient: PrimerAPIClientProtocol, @unchecked Sendable {
         clientToken: DecodedJWTToken?,
         url: String,
         retryConfig: RetryConfig? = nil,
-        completion: @escaping PrimerSDK.APICompletion<PrimerSDK.PollingResponse>
+        completion: @escaping APICompletion<PrimerSDK.PollingResponse>
     ) {
         guard let pollingResults = pollingResults,
               !pollingResults.isEmpty
@@ -899,8 +901,11 @@ final class MockPrimerAPIClient: PrimerAPIClientProtocol, @unchecked Sendable {
         if let errorResult = result.1 { throw errorResult }
     }
 
-    func listCardNetworks(clientToken: DecodedJWTToken, bin: String,
-                          completion: @escaping (Result<Response.Body.Bin.Networks, Error>) -> Void) -> PrimerCancellable? {
+    func listCardNetworks(
+        clientToken: DecodedJWTToken,
+        bin: String,
+        completion: @escaping (Result<Response.Body.Bin.Networks, Error>) -> Void
+    ) -> PrimerCancellable? {
         guard let result = listCardNetworksResult, result.0 != nil || result.1 != nil else {
             XCTFail("Set 'listCardNetworksResult' on your MockPrimerAPIClient")
             return nil
@@ -944,12 +949,20 @@ final class MockPrimerAPIClient: PrimerAPIClientProtocol, @unchecked Sendable {
             return Response.Body.Bin.Data(
                 firstDigits: String(bin.prefix(6)),
                 binData: successResult.networks.map {
-                    .init(displayName: nil, network: $0.value,
-                          issuerCountryCode: nil, issuerName: nil,
-                          accountFundingType: nil, prepaidReloadableIndicator: nil,
-                          productUsageType: nil, productCode: nil,
-                          productName: nil, issuerCurrencyCode: nil,
-                          regionalRestriction: nil, accountNumberType: nil)
+                    .init(
+                        displayName: nil,
+                        network: $0.value,
+                        issuerCountryCode: nil,
+                        issuerName: nil,
+                        accountFundingType: nil,
+                        prepaidReloadableIndicator: nil,
+                        productUsageType: nil,
+                        productCode: nil,
+                        productName: nil,
+                        issuerCurrencyCode: nil,
+                        regionalRestriction: nil,
+                        accountNumberType: nil
+                    )
                 }
             )
         }
@@ -960,7 +973,7 @@ final class MockPrimerAPIClient: PrimerAPIClientProtocol, @unchecked Sendable {
     func fetchNolSdkSecret(
         clientToken: DecodedJWTToken,
         paymentRequestBody: Request.Body.NolPay.NolPaySecretDataRequest,
-        completion: @escaping (Result<PrimerSDK.Response.Body.NolPay.NolPaySecretDataResponse, Error>) -> Void
+        completion: @escaping (Result<Response.Body.NolPay.NolPaySecretDataResponse, Error>) -> Void
     ) {
         guard let result = fetchNolSdkSecretResult?() else {
             XCTAssert(false, "Set 'testFetchNolSdkSecretResult' on your MockPrimerAPIClient")
@@ -1006,7 +1019,7 @@ final class MockPrimerAPIClient: PrimerAPIClientProtocol, @unchecked Sendable {
     func getPhoneMetadata(
         clientToken: DecodedJWTToken,
         paymentRequestBody: Request.Body.PhoneMetadata.PhoneMetadataDataRequest,
-        completion: @escaping (Result<PrimerSDK.Response.Body.PhoneMetadata.PhoneMetadataDataResponse, Error>) -> Void
+        completion: @escaping (Result<Response.Body.PhoneMetadata.PhoneMetadataDataResponse, Error>) -> Void
     ) {
         guard let result = getPhoneMetadataResult else {
             XCTAssert(false, "Set 'getPhoneMetadataResult' on your MockPrimerAPIClient")
@@ -1039,7 +1052,7 @@ final class MockPrimerAPIClient: PrimerAPIClientProtocol, @unchecked Sendable {
         clientToken: DecodedJWTToken,
         url: URL,
         paymentRequest: Request.Body.Payment.Complete,
-        completion: @escaping PrimerSDK.APICompletion<PrimerSDK.Response.Body.Complete>
+        completion: @escaping APICompletion<Response.Body.Complete>
     ) {
         guard let result = sdkCompleteUrlResult,
               result.0 != nil || result.1 != nil
@@ -1061,7 +1074,7 @@ final class MockPrimerAPIClient: PrimerAPIClientProtocol, @unchecked Sendable {
         clientToken: DecodedJWTToken,
         url: URL,
         paymentRequest: Request.Body.Payment.Complete
-    ) async throws -> PrimerSDK.Response.Body.Complete {
+    ) async throws -> Response.Body.Complete {
         guard let result = sdkCompleteUrlResult else {
             XCTAssert(false, "Set 'completePayment' on your MockPrimerAPIClient")
             throw NSError(domain: "MockPrimerAPIClient", code: 1, userInfo: nil)
@@ -1405,18 +1418,20 @@ extension MockPrimerAPIClient {
         static let mockBinNetworks = Response.Body.Bin.Networks(networks: [.init(value: "MOCK_NETWORK")])
         static let mockBinData = Response.Body.Bin.Data(
             firstDigits: "123456",
-            binData: [.init(displayName: "Mock Network",
-                            network: "MOCK_NETWORK",
-                            issuerCountryCode: nil,
-                            issuerName: nil,
-                            accountFundingType: nil,
-                            prepaidReloadableIndicator: nil,
-                            productUsageType: nil,
-                            productCode: nil,
-                            productName: nil,
-                            issuerCurrencyCode: nil,
-                            regionalRestriction: nil,
-                            accountNumberType: nil)]
+            binData: [.init(
+                displayName: "Mock Network",
+                network: "MOCK_NETWORK",
+                issuerCountryCode: nil,
+                issuerName: nil,
+                accountFundingType: nil,
+                prepaidReloadableIndicator: nil,
+                productUsageType: nil,
+                productCode: nil,
+                productName: nil,
+                issuerCurrencyCode: nil,
+                regionalRestriction: nil,
+                accountNumberType: nil
+            )]
         )
         static let mockPhoneMetadataResponse = Response.Body.PhoneMetadata.PhoneMetadataDataResponse(
             isValid: true,

@@ -7,6 +7,7 @@
 #if canImport(PrimerKlarnaSDK)
 import PrimerFoundation
 import PrimerKlarnaSDK
+@testable import PrimerNetworking
 @testable import PrimerSDK
 import XCTest
 

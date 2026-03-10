@@ -1,11 +1,12 @@
 //
 //  HeadlessUniversalCheckoutAPIConfigurationTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import XCTest
+import PrimerNetworking
 @testable import PrimerSDK
+import XCTest
 
 class HeadlessUniversalCheckoutAPIConfigurationTests: XCTestCase {
 
@@ -38,10 +39,13 @@ class HeadlessUniversalCheckoutAPIConfigurationTests: XCTestCase {
                         description: "mock-description-1",
                         taxAmount: nil,
                         taxCode: nil,
-                        productType: nil)
-                ]),
+                        productType: nil
+                    )
+                ]
+            ),
             customer: nil,
-            testId: nil)
+            testId: nil
+        )
 
         let mockPrimerApiConfiguration = Response.Body.Configuration(
             coreUrl: "https://primer.io/core",
@@ -58,7 +62,8 @@ class HeadlessUniversalCheckoutAPIConfigurationTests: XCTestCase {
                     processorConfigId: "mock-processor-config-id-1",
                     surcharge: nil,
                     options: nil,
-                    displayMetadata: nil),
+                    displayMetadata: nil
+                ),
                 PrimerPaymentMethod(
                     id: "mock-id-2",
                     implementationType: .webRedirect,
@@ -67,11 +72,13 @@ class HeadlessUniversalCheckoutAPIConfigurationTests: XCTestCase {
                     processorConfigId: "mock-processor-config-id-2",
                     surcharge: nil,
                     options: nil,
-                    displayMetadata: nil)
+                    displayMetadata: nil
+                )
             ],
             primerAccountId: "mock-primer-account-id",
             keys: nil,
-            checkoutModules: nil)
+            checkoutModules: nil
+        )
         let vaultedPaymentMethods = Response.Body.VaultedPaymentMethods(data: [])
 
         let mockApiClient = MockPrimerAPIClient()
@@ -131,8 +138,10 @@ class HeadlessUniversalCheckoutAPIConfigurationTests: XCTestCase {
                         description: "mock-description-1",
                         taxAmount: nil,
                         taxCode: nil,
-                        productType: nil)
-                ]),
+                        productType: nil
+                    )
+                ]
+            ),
             customer: ClientSession.Customer(
                 id: "mock-customer-id",
                 firstName: "mock-first-name",
@@ -140,7 +149,8 @@ class HeadlessUniversalCheckoutAPIConfigurationTests: XCTestCase {
                 emailAddress: "mock@email.com",
                 mobileNumber: "12345678"
             ),
-            testId: nil)
+            testId: nil
+        )
 
         let mockPrimerApiConfiguration = Response.Body.Configuration(
             coreUrl: "https://primer.io/core",
@@ -157,7 +167,8 @@ class HeadlessUniversalCheckoutAPIConfigurationTests: XCTestCase {
                     processorConfigId: "mock-processor-config-id-1",
                     surcharge: nil,
                     options: nil,
-                    displayMetadata: nil),
+                    displayMetadata: nil
+                ),
                 PrimerPaymentMethod(
                     id: "mock-id-2",
                     implementationType: .nativeSdk,
@@ -166,7 +177,8 @@ class HeadlessUniversalCheckoutAPIConfigurationTests: XCTestCase {
                     processorConfigId: "mock-processor-config-id-2",
                     surcharge: nil,
                     options: nil,
-                    displayMetadata: nil),
+                    displayMetadata: nil
+                ),
                 PrimerPaymentMethod(
                     id: "mock-id-3",
                     implementationType: .nativeSdk,
@@ -175,11 +187,13 @@ class HeadlessUniversalCheckoutAPIConfigurationTests: XCTestCase {
                     processorConfigId: "mock-processor-config-id-3",
                     surcharge: nil,
                     options: nil,
-                    displayMetadata: nil)
+                    displayMetadata: nil
+                )
             ],
             primerAccountId: "mock-primer-account-id",
             keys: nil,
-            checkoutModules: nil)
+            checkoutModules: nil
+        )
         let vaultedPaymentMethods = Response.Body.VaultedPaymentMethods(data: [])
 
         let mockApiClient = MockPrimerAPIClient()
