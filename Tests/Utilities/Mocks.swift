@@ -6,7 +6,7 @@
 
 import PrimerCore
 import PrimerFoundation
-import PrimerNetworking
+@testable import PrimerNetworking
 @testable import PrimerSDK
 import PrimerUI
 import XCTest
@@ -53,7 +53,8 @@ class Mocks {
         threeDSecureAuthentication: nil,
         token: "mock_payment_method_token",
         tokenType: .singleUse,
-        vaultData: nil)
+        vaultData: nil
+    )
 
     static var primerPaymentMethodInstrumentationData = Response.Body.Tokenization.PaymentInstrumentData(
         paypalBillingAgreementId: nil,
@@ -89,7 +90,8 @@ class Mocks {
         amount: 1000,
         currencyCode: "EUR",
         customerId: "mock_customer_id",
-        status: .success)
+        status: .success
+    )
     
     static let tokenizationRequestBody = Request.Body.Tokenization(paymentInstrument: MockTokenizationRequestBodyPaymentInstrument())
 
@@ -106,7 +108,8 @@ class Mocks {
             paymentMethods: paymentMethods,
             primerAccountId: nil,
             keys: nil,
-            checkoutModules: nil)
+            checkoutModules: nil
+        )
     }
 
     static var apiConfiguration = PrimerAPIConfiguration(
@@ -118,7 +121,8 @@ class Mocks {
         paymentMethods: [],
         primerAccountId: nil,
         keys: nil,
-        checkoutModules: nil)
+        checkoutModules: nil
+    )
 
     static var listCardNetworksData = Response.Body.Bin.Networks(networks: [])
 
@@ -168,7 +172,8 @@ class Mocks {
             processorConfigId: Mocks.Static.Strings.processorConfigId,
             surcharge: 99,
             options: nil,
-            displayMetadata: nil)
+            displayMetadata: nil
+        )
 
         static var paymentCardPaymentMethod = PrimerPaymentMethod(
             id: Mocks.Static.Strings.paymentCardPaymentMethodId,
@@ -178,7 +183,8 @@ class Mocks {
             processorConfigId: Mocks.Static.Strings.processorConfigId,
             surcharge: 0,
             options: nil,
-            displayMetadata: nil)
+            displayMetadata: nil
+        )
 
         static var nolPaymentMethod = PrimerPaymentMethod(
             id: Mocks.Static.Strings.nolPaymentMethodId,
@@ -188,7 +194,8 @@ class Mocks {
             processorConfigId: Mocks.Static.Strings.processorConfigId,
             surcharge: 0,
             options: MerchantOptions(merchantId: "user8", merchantAccountId: "123", appId: "test"),
-            displayMetadata: nil)
+            displayMetadata: nil
+        )
 
         static var adyenGiroPayRedirectPaymentMethod = PrimerPaymentMethod(
             id: Mocks.Static.Strings.adyenGiroPayRedirectPaymentMethodId,
@@ -198,7 +205,8 @@ class Mocks {
             processorConfigId: Mocks.Static.Strings.processorConfigId,
             surcharge: 199,
             options: nil,
-            displayMetadata: nil)
+            displayMetadata: nil
+        )
 
         static var adyenBlikPaymentMethod = PrimerPaymentMethod(
             id: Mocks.Static.Strings.adyenBlikPaymentMethodId,
@@ -208,7 +216,8 @@ class Mocks {
             processorConfigId: Mocks.Static.Strings.processorConfigId,
             surcharge: nil,
             options: nil,
-            displayMetadata: nil)
+            displayMetadata: nil
+        )
 
         static var adyenVippsPaymentMethod = PrimerPaymentMethod(
             id: Mocks.Static.Strings.adyenVippsPaymentMethodId,
@@ -218,7 +227,8 @@ class Mocks {
             processorConfigId: Mocks.Static.Strings.processorConfigId,
             surcharge: nil,
             options: nil,
-            displayMetadata: nil)
+            displayMetadata: nil
+        )
 
         static var adyenIDealPaymentMethod = PrimerPaymentMethod(
             id: Mocks.Static.Strings.adyenBlikPaymentMethodId,
@@ -228,7 +238,8 @@ class Mocks {
             processorConfigId: Mocks.Static.Strings.processorConfigId,
             surcharge: nil,
             options: nil,
-            displayMetadata: nil)
+            displayMetadata: nil
+        )
 
         static var klarnaRedirectPaymentMethod = PrimerPaymentMethod(
             id: Mocks.Static.Strings.klarnaPaymentMethodId,
@@ -238,7 +249,8 @@ class Mocks {
             processorConfigId: Mocks.Static.Strings.processorConfigId,
             surcharge: 299,
             options: nil,
-            displayMetadata: nil)
+            displayMetadata: nil
+        )
 
         static var idealFormWithRedirectPaymentMethod = PrimerPaymentMethod(
             id: Mocks.Static.Strings.idealPaymentMethodId,
@@ -248,7 +260,8 @@ class Mocks {
             processorConfigId: Mocks.Static.Strings.processorConfigId,
             surcharge: 0,
             options: nil,
-            displayMetadata: nil)
+            displayMetadata: nil
+        )
 
         static var klarnaPaymentMethod = PrimerPaymentMethod(
             id: Mocks.Static.Strings.klarnaPaymentMethodId,
@@ -258,7 +271,8 @@ class Mocks {
             processorConfigId: Mocks.Static.Strings.processorConfigId,
             surcharge: 299,
             options: nil,
-            displayMetadata: nil)
+            displayMetadata: nil
+        )
 
         static var paypalPaymentMethod = PrimerPaymentMethod(
             id: Mocks.Static.Strings.paypalPaymentMethodId,
@@ -268,7 +282,8 @@ class Mocks {
             processorConfigId: Mocks.Static.Strings.processorConfigId,
             surcharge: 0,
             options: nil,
-            displayMetadata: nil)
+            displayMetadata: nil
+        )
 
         static var xenditPaymentMethod = PrimerPaymentMethod(
             id: Mocks.Static.Strings.xenditPaymentMethodId,
@@ -278,7 +293,8 @@ class Mocks {
             processorConfigId: Mocks.Static.Strings.processorConfigId,
             surcharge: 0,
             options: nil,
-            displayMetadata: nil)
+            displayMetadata: nil
+        )
     }
 }
 

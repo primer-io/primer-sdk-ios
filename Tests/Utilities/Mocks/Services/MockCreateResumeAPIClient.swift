@@ -5,7 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import PrimerFoundation
-import PrimerNetworking
+@testable import PrimerNetworking
 @testable import PrimerSDK
 import XCTest
 
@@ -14,9 +14,11 @@ final class MockCreateResumeAPIClient: PrimerAPIClientCreateResumePaymentProtoco
     var createResponse: APIResult<Response.Body.Payment>?
     var completeResponse: APIResult<Response.Body.Complete>?
 
-    init(resumeResponse: APIResult<Response.Body.Payment>? = nil,
-         createResponse: APIResult<Response.Body.Payment>? = nil,
-         completeResponse: APIResult<Response.Body.Complete>? = nil) {
+    init(
+        resumeResponse: APIResult<Response.Body.Payment>? = nil,
+        createResponse: APIResult<Response.Body.Payment>? = nil,
+        completeResponse: APIResult<Response.Body.Complete>? = nil
+    ) {
         self.resumeResponse = resumeResponse
         self.createResponse = createResponse
         self.completeResponse = completeResponse
@@ -33,8 +35,10 @@ final class MockCreateResumeAPIClient: PrimerAPIClientCreateResumePaymentProtoco
         completion(createResponse)
     }
 
-    func createPayment(clientToken: DecodedJWTToken,
-                       paymentRequestBody: Request.Body.Payment.Create) async throws -> Response.Body.Payment {
+    func createPayment(
+        clientToken: DecodedJWTToken,
+        paymentRequestBody: Request.Body.Payment.Create
+    ) async throws -> Response.Body.Payment {
         guard let createResponse else {
             throw PrimerError.unknown()
         }
@@ -56,8 +60,11 @@ final class MockCreateResumeAPIClient: PrimerAPIClientCreateResumePaymentProtoco
         completion(resumeResponse)
     }
 
-    func resumePayment(clientToken: DecodedJWTToken, paymentId: String,
-                       paymentResumeRequest: Request.Body.Payment.Resume) async throws -> Response.Body.Payment {
+    func resumePayment(
+        clientToken: DecodedJWTToken,
+        paymentId: String,
+        paymentResumeRequest: Request.Body.Payment.Resume
+    ) async throws -> Response.Body.Payment {
         guard let resumeResponse else {
             throw PrimerError.unknown()
         }
@@ -67,18 +74,23 @@ final class MockCreateResumeAPIClient: PrimerAPIClientCreateResumePaymentProtoco
         }
     }
 
-    func completePayment(clientToken: DecodedJWTToken,
-                         url: URL, paymentRequest: Request.Body.Payment.Complete,
-                         completion: @escaping APICompletion<Response.Body.Complete>) {
+    func completePayment(
+        clientToken: DecodedJWTToken,
+        url: URL,
+        paymentRequest: Request.Body.Payment.Complete,
+        completion: @escaping APICompletion<Response.Body.Complete>
+    ) {
         guard let completeResponse else {
             return XCTFail("No complete response set")
         }
         completion(completeResponse)
     }
 
-    func completePayment(clientToken: DecodedJWTToken,
-                         url completeUrl: URL,
-                         paymentRequest body: Request.Body.Payment.Complete) async throws -> Response.Body.Complete {
+    func completePayment(
+        clientToken: DecodedJWTToken,
+        url completeUrl: URL,
+        paymentRequest body: Request.Body.Payment.Complete
+    ) async throws -> Response.Body.Complete {
         guard let completeResponse else {
             throw PrimerError.unknown()
         }

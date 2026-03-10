@@ -6,6 +6,7 @@
 
 import Foundation
 import PrimerFoundation
+@testable import PrimerNetworking
 @testable import PrimerSDK
 import XCTest
 
@@ -34,7 +35,8 @@ final class ACHMocks {
                 vaultOnSuccess: false,
                 options: nil,
                 orderedAllowedCardNetworks: nil,
-                descriptor: nil),
+                descriptor: nil
+            ),
             order: ClientSession.Order(
                 id: "mock-client-session-order-stripe-ach_id",
                 merchantAmount: 1050,
@@ -44,18 +46,20 @@ final class ACHMocks {
                 currencyCode: CurrencyLoader().getCurrency("USD"),
                 fees: nil,
                 lineItems: [ClientSession.Order.LineItem(
-                                itemId: "mock-item-id-1",
-                                quantity: 1,
-                                amount: 1000,
-                                discountAmount: nil,
-                                name: "mock-name-1",
-                                description: "mock-description-1",
-                                taxAmount: 50,
-                                taxCode: nil,
-                                productType: nil)
-                ]),
+                    itemId: "mock-item-id-1",
+                    quantity: 1,
+                    amount: 1000,
+                    discountAmount: nil,
+                    name: "mock-name-1",
+                    description: "mock-description-1",
+                    taxAmount: 50,
+                    taxCode: nil,
+                    productType: nil
+                )]
+            ),
             customer: getClientSessionCustomer(firstName: firstName, lastName: lastName, email: email),
-            testId: nil)
+            testId: nil
+        )
     }
 
     static func getEmptyClientSession(
@@ -71,7 +75,8 @@ final class ACHMocks {
                 vaultOnSuccess: false,
                 options: nil,
                 orderedAllowedCardNetworks: nil,
-                descriptor: nil),
+                descriptor: nil
+            ),
             order: ClientSession.Order(
                 id: "mock-client-session-order-stripe-ach_id",
                 merchantAmount: emptyMerchantAmmount ? nil: 1000,
@@ -80,9 +85,11 @@ final class ACHMocks {
                 countryCode: .us,
                 currencyCode: emptyCurrencyCode ? nil : CurrencyLoader().getCurrency("USD"),
                 fees: nil,
-                lineItems: emptyLineItems ? nil : [getLineItem(hasAmount: !emptyOrderAmount)]),
+                lineItems: emptyLineItems ? nil : [getLineItem(hasAmount: !emptyOrderAmount)]
+            ),
             customer: getClientSessionCustomer(firstName: "firstname", lastName: "lastname", email: "email"),
-            testId: nil)
+            testId: nil
+        )
     }
 
     static func getLineItem(hasAmount: Bool) -> ClientSession.Order.LineItem {
@@ -95,7 +102,8 @@ final class ACHMocks {
             description: "mock-description-1",
             taxAmount: nil,
             taxCode: nil,
-            productType: nil)
+            productType: nil
+        )
     }
 
     static let primerPaymentMethodTokenData = PrimerPaymentMethodTokenData(
@@ -109,7 +117,8 @@ final class ACHMocks {
         threeDSecureAuthentication: nil,
         token: "mock_payment_method_token",
         tokenType: .singleUse,
-        vaultData: nil)
+        vaultData: nil
+    )
 
     static let stripeACHPaymentMethod = PrimerPaymentMethod(
         id: stripeACHPaymentMethodId,
@@ -119,7 +128,8 @@ final class ACHMocks {
         processorConfigId: processorConfigId,
         surcharge: 299,
         options: nil,
-        displayMetadata: nil)
+        displayMetadata: nil
+    )
 
     static let klarnaPaymentMethod = PrimerPaymentMethod(
         id: "klarna-test",
@@ -132,8 +142,10 @@ final class ACHMocks {
             merchantId: "merchant-id",
             merchantAccountId: "merchant-account-id",
             appId: "app-id",
-            extraMerchantData: nil),
-        displayMetadata: nil)
+            extraMerchantData: nil
+        ),
+        displayMetadata: nil
+    )
 
     static func getClientSessionCustomer(firstName: String, lastName: String, email: String) -> ClientSession.Customer {
         ClientSession.Customer(
@@ -143,7 +155,8 @@ final class ACHMocks {
             emailAddress: email,
             mobileNumber: "",
             billingAddress: nil,
-            shippingAddress: nil)
+            shippingAddress: nil
+        )
     }
 
     static func getInvalidPaymentMethod() -> PrimerPaymentMethod {
@@ -155,7 +168,8 @@ final class ACHMocks {
             processorConfigId: "invalid-processor-config-id",
             surcharge: nil,
             options: nil,
-            displayMetadata: nil)
+            displayMetadata: nil
+        )
     }
 
     static func getPayment(id: String, status: Response.Body.Payment.Status) -> Response.Body.Payment {
@@ -165,6 +179,7 @@ final class ACHMocks {
             amount: 1000,
             currencyCode: "USD",
             customerId: "mock_customer_id",
-            status: status)
+            status: status
+        )
     }
 }

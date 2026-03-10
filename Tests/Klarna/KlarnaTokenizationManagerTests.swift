@@ -7,6 +7,7 @@
 #if canImport(PrimerKlarnaSDK)
 import PrimerFoundation
 import PrimerKlarnaSDK
+import PrimerNetworking
 @testable import PrimerSDK
 import XCTest
 
@@ -226,18 +227,20 @@ final class KlarnaTokenizationManagerTests: XCTestCase {
 
 extension KlarnaTokenizationManagerTests {
     private var address: Response.Body.Klarna.BillingAddress {
-        .init(addressLine1: "address_line_1",
-              addressLine2: "address_line_2",
-              addressLine3: "address_line_3",
-              city: "city",
-              countryCode: "gb",
-              email: "john@appleseed.com",
-              firstName: "John",
-              lastName: "Appleseed",
-              phoneNumber: "01515551234",
-              postalCode: "EC4M 7RF",
-              state: "state",
-              title: "Mr")
+        .init(
+            addressLine1: "address_line_1",
+            addressLine2: "address_line_2",
+            addressLine3: "address_line_3",
+            city: "city",
+            countryCode: "gb",
+            email: "john@appleseed.com",
+            firstName: "John",
+            lastName: "Appleseed",
+            phoneNumber: "01515551234",
+            postalCode: "EC4M 7RF",
+            state: "state",
+            title: "Mr"
+        )
     }
 
     private var customerToken: Response.Body.Klarna.CustomerToken {

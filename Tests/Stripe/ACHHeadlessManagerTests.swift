@@ -7,6 +7,7 @@
 import Foundation
 @testable import PrimerCore
 import PrimerFoundation
+import PrimerNetworking
 @testable import PrimerSDK
 import XCTest
 
@@ -19,9 +20,11 @@ final class ACHHeadlessManagerTests: XCTestCase {
     override func setUp() {
         super.setUp()
         // Prepare the client session with the current user details
-        prepareConfigurations(firstName: "firstname",
-                              lastName: "lastname",
-                              email: "email")
+        prepareConfigurations(
+            firstName: "firstname",
+            lastName: "lastname",
+            email: "email"
+        )
     }
 
     override func tearDown() {
@@ -85,7 +88,8 @@ extension ACHHeadlessManagerTests {
         let mockPrimerApiConfiguration = Mocks.createMockAPIConfiguration(
             clientSession: clientSession,
             paymentMethods: [ACHMocks.stripeACHPaymentMethod,
-                             ACHMocks.klarnaPaymentMethod])
+                             ACHMocks.klarnaPaymentMethod]
+        )
 
         mockPrimerApiConfiguration.paymentMethods?[0].baseLogoImage = PrimerTheme.BaseImage(colored: UIImage(), light: nil, dark: nil)
         return mockPrimerApiConfiguration
