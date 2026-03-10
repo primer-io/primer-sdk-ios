@@ -5,9 +5,8 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
-import PrimerNetworking
 
-protocol PrimerAPIClientAchProtocol {
+public protocol PrimerAPIClientAchProtocol {
 
     // MARK: ACH SDK Complete Payment
 
@@ -15,7 +14,8 @@ protocol PrimerAPIClientAchProtocol {
         clientToken: DecodedJWTToken,
         url: URL,
         paymentRequest: Request.Body.Payment.Complete,
-        completion: @escaping APICompletion<Response.Body.Complete>)
+        completion: @escaping APICompletion<Response.Body.Complete>
+    )
 
     func completePayment(
         clientToken: DecodedJWTToken,

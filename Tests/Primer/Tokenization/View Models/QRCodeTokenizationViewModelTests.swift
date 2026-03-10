@@ -5,7 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import PrimerFoundation
-import PrimerNetworking
+@testable import PrimerNetworking
 @testable import PrimerSDK
 import PrimerUI
 import XCTest
@@ -79,10 +79,12 @@ final class QRCodeTokenizationViewModelTests: XCTestCase {
         tokenizationService = MockTokenizationService()
         createResumePaymentService = MockCreateResumePaymentService()
 
-        sut = QRCodeTokenizationViewModel(config: Mocks.PaymentMethods.adyenIDealPaymentMethod,
-                                          uiManager: uiManager,
-                                          tokenizationService: tokenizationService,
-                                          createResumePaymentService: createResumePaymentService)
+        sut = QRCodeTokenizationViewModel(
+            config: Mocks.PaymentMethods.adyenIDealPaymentMethod,
+            uiManager: uiManager,
+            tokenizationService: tokenizationService,
+            createResumePaymentService: createResumePaymentService
+        )
     }
 
     override func tearDownWithError() throws {
