@@ -1,9 +1,10 @@
 //
 //  DefaultBanksComponentTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+@testable import PrimerNetworking
 @testable import PrimerSDK
 import XCTest
 
@@ -106,7 +107,7 @@ final class DefaultBanksComponentTests: XCTestCase {
         let banksRetrievedExpectation = expectation(description: "banks_retrieved")
         mockSteppableDelegate.onReceiveBanks = { banks in
             // Then - verify banks are loaded correctly
-            XCTAssertEqual(banks.map { $0.name }, mockModel.mockBanks.map { $0.name })
+            XCTAssertEqual(banks.map(\.name), mockModel.mockBanks.map(\.name))
 
             // When - update with bank ID
             bankComponent.updateCollectedData(collectableData: .bankId(bankId: expectedBankId))
@@ -138,8 +139,8 @@ final class DefaultBanksComponentTests: XCTestCase {
         let expectation = expectation(description: "banks_retrieved")
         mockSteppableDelegate.onReceiveBanks = { banks in
             // Then - verify retrieved banks match mock data
-            XCTAssertEqual(banks.map { $0.name }, mockModel.mockBanks.map { $0.name })
-            XCTAssertEqual(banks.map { $0.id }, mockModel.mockBanks.map { $0.id })
+            XCTAssertEqual(banks.map(\.name), mockModel.mockBanks.map(\.name))
+            XCTAssertEqual(banks.map(\.id), mockModel.mockBanks.map(\.id))
 
             // Verify correct step sequence
             let expectedSteps: [BanksStep] = [
@@ -176,14 +177,14 @@ final class DefaultBanksComponentTests: XCTestCase {
         let expectation = expectation(description: "banks_filtered")
         mockSteppableDelegate.onReceiveBanks = { banks in
             // Then - verify initial banks load
-            XCTAssertEqual(banks.map { $0.name }, mockModel.mockBanks.map { $0.name })
+            XCTAssertEqual(banks.map(\.name), mockModel.mockBanks.map(\.name))
 
             // Setup for filter test
             self.mockSteppableDelegate.onReceiveBanks = { filteredBanks in
                 // Then - verify filtering worked
                 XCTAssertTrue(mockModel.didCallFilter, "Filter should have been called")
                 XCTAssertEqual(
-                    filteredBanks.map { $0.name },
+                    filteredBanks.map(\.name),
                     [MockBankSelectorTokenizationModel.bankNameToBeFiltered]
                 )
 
@@ -348,7 +349,7 @@ private final class MockSteppableDelegate: PrimerHeadlessSteppableDelegate {
         case .loading:
             break
         case let .banksRetrieved(banks: banks):
-            self.onReceiveBanks?(banks)
+            onReceiveBanks?(banks)
             self.banks = banks
         }
     }

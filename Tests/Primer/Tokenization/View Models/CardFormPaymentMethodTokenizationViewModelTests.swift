@@ -6,6 +6,7 @@
 
 import PrimerCore
 import PrimerFoundation
+import PrimerNetworking
 @testable import PrimerSDK
 import PrimerUI
 import XCTest
@@ -29,10 +30,12 @@ final class CardFormPaymentMethodTokenizationViewModelTests: XCTestCase, Tokeniz
         createResumePaymentService = MockCreateResumePaymentService()
         uiManager = MockPrimerUIManager()
         uiManager.primerRootViewController = MockPrimerRootViewController()
-        sut = CardFormPaymentMethodTokenizationViewModel(config: Mocks.PaymentMethods.paymentCardPaymentMethod,
-                                                         uiManager: uiManager,
-                                                         tokenizationService: tokenizationService,
-                                                         createResumePaymentService: createResumePaymentService)
+        sut = CardFormPaymentMethodTokenizationViewModel(
+            config: Mocks.PaymentMethods.paymentCardPaymentMethod,
+            uiManager: uiManager,
+            tokenizationService: tokenizationService,
+            createResumePaymentService: createResumePaymentService
+        )
 
         delegate = MockPrimerHeadlessUniversalCheckoutDelegate()
         PrimerHeadlessUniversalCheckout.current.delegate = delegate
@@ -178,20 +181,24 @@ final class CardFormPaymentMethodTokenizationViewModelTests: XCTestCase, Tokeniz
     // MARK: - Error Handling Tests
 
     func test_setCheckoutDataFromError_shouldSetCorrectPaymentData() throws {
-        let sut = PaymentMethodTokenizationViewModel(config: PrimerPaymentMethod(id: "id",
-                                                                                 implementationType: .nativeSdk,
-                                                                                 type: "PMT",
-                                                                                 name: "",
-                                                                                 processorConfigId: nil,
-                                                                                 surcharge: nil,
-                                                                                 options: nil,
-                                                                                 displayMetadata: nil))
+        let sut = PaymentMethodTokenizationViewModel(config: PrimerPaymentMethod(
+            id: "id",
+            implementationType: .nativeSdk,
+            type: "PMT",
+            name: "",
+            processorConfigId: nil,
+            surcharge: nil,
+            options: nil,
+            displayMetadata: nil
+        ))
 
-        let error = PrimerError.paymentFailed(paymentMethodType: "PMT",
-                                              paymentId: "123",
-                                              orderId: "OrderId",
-                                              status: "FAILED",
-                                              diagnosticsId: "id")
+        let error = PrimerError.paymentFailed(
+            paymentMethodType: "PMT",
+            paymentId: "123",
+            orderId: "OrderId",
+            status: "FAILED",
+            diagnosticsId: "id"
+        )
         sut.setCheckoutDataFromError(error)
 
         XCTAssertEqual(sut.paymentCheckoutData?.payment?.id, "123")
@@ -296,9 +303,11 @@ final class CardFormPaymentMethodTokenizationViewModelTests: XCTestCase, Tokeniz
             phoneNumber: true,
             state: true
         )
-        return PrimerAPIConfiguration.CheckoutModule(type: "BILLING_ADDRESS",
-                                                     requestUrlStr: "request_url_str",
-                                                     options: options)
+        return PrimerAPIConfiguration.CheckoutModule(
+            type: "BILLING_ADDRESS",
+            requestUrlStr: "request_url_str",
+            options: options
+        )
     }
 
     private func fillFormFields() {

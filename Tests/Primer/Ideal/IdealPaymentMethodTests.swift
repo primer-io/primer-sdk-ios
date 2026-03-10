@@ -1,11 +1,12 @@
 //
 //  IdealPaymentMethodTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import XCTest
+import PrimerNetworking
 @testable import PrimerSDK
+import XCTest
 
 final class IdealPaymentMethodTests: XCTestCase {
 
@@ -16,7 +17,7 @@ final class IdealPaymentMethodTests: XCTestCase {
 
         PrimerInternal.shared.sdkIntegrationType = .headless
 
-        self.resetTestingEnvironment()
+        resetTestingEnvironment()
 
         let clientSession = ClientSession.APIResponse(
             clientSessionId: "mock_client_session_ideal_id",
@@ -45,16 +46,16 @@ final class IdealPaymentMethodTests: XCTestCase {
         let expectation = XCTestExpectation(description: "Successful HUC initialization")
 
         PrimerHeadlessUniversalCheckout.current.start(withClientToken: MockAppState.mockClientToken, delegate: self, uiDelegate: self) { availablePaymentMethods, err in
-            if let err = err {
+            if let err {
                 XCTAssert(false, "SDK failed with error \(err.localizedDescription) while it should have succeeded.")
-            } else if let availablePaymentMethods = availablePaymentMethods {
+            } else if let availablePaymentMethods {
                 XCTAssert(availablePaymentMethods.count == mockPrimerApiConfiguration.paymentMethods?.count, "SDK should have returned the mocked payment methods.")
             } else {
                 XCTAssert(false, "SDK should have returned an error or payment methods.")
             }
             expectation.fulfill()
         }
-        self.availablePaymentMethodsLoadedCompletion = { _, _ in
+        availablePaymentMethodsLoadedCompletion = { _, _ in
             XCTAssertTrue(subject.listAvailablePaymentMethodsTypes()?.contains(PrimerPaymentMethodType.adyenIDeal.rawValue) ?? false)
         }
         wait(for: [expectation], timeout: 10)
@@ -63,7 +64,7 @@ final class IdealPaymentMethodTests: XCTestCase {
 
     override func tearDown() {
         PrimerInternal.shared.sdkIntegrationType = .dropIn
-        self.resetTestingEnvironment()
+        resetTestingEnvironment()
     }
 
 }
@@ -71,7 +72,7 @@ final class IdealPaymentMethodTests: XCTestCase {
 extension IdealPaymentMethodTests: PrimerHeadlessUniversalCheckoutDelegate {
     func primerHeadlessUniversalCheckoutDidCompleteCheckoutWithData(_ data: PrimerSDK.PrimerCheckoutData) {}
     func primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods(_ paymentMethods: [PrimerHeadlessUniversalCheckout.PaymentMethod]) {
-        self.availablePaymentMethodsLoadedCompletion?(paymentMethods, nil)
+        availablePaymentMethodsLoadedCompletion?(paymentMethods, nil)
     }
 }
 
@@ -80,6 +81,6 @@ extension IdealPaymentMethodTests: PrimerHeadlessUniversalCheckoutUIDelegate {
 
 extension IdealPaymentMethodTests: TokenizationTestDelegate {
     func cleanup() {
-        self.availablePaymentMethodsLoadedCompletion = nil
+        availablePaymentMethodsLoadedCompletion = nil
     }
 }

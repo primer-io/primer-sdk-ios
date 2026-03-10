@@ -7,6 +7,7 @@
 import Foundation
 import PassKit
 import PrimerFoundation
+import PrimerNetworking
 import PrimerUI
 
 /// Helper to construct ApplePayRequest from session data.

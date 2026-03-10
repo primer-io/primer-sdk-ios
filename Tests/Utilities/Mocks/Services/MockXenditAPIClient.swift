@@ -12,7 +12,7 @@ final class MockXenditAPIClient: PrimerAPIClientXenditProtocol {
 
     var onListRetailOutlets: ((DecodedJWTToken, String) -> RetailOutletsList)?
 
-    func listRetailOutlets(clientToken: DecodedJWTToken, paymentMethodId: String, completion: @escaping PrimerSDK.APICompletion<PrimerSDK.RetailOutletsList>) {
+    func listRetailOutlets(clientToken: DecodedJWTToken, paymentMethodId: String, completion: @escaping APICompletion<PrimerSDK.RetailOutletsList>) {
         if let onListRetailOutlets {
             completion(.success(onListRetailOutlets(clientToken, paymentMethodId)))
         } else {

@@ -6,7 +6,6 @@
 
 import Foundation
 import PrimerFoundation
-import PrimerNetworking
 
 // TODO: Revisit access control once methods have been brought in here
 public final class RetryHandler {

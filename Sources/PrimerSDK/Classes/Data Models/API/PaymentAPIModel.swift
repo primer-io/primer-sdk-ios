@@ -9,136 +9,6 @@ import Foundation
 import PrimerFoundation
 import PrimerNetworking
 
-public struct PaymentAPIModelAddress: Codable {
-    let firstName: String?
-    let lastName: String?
-    let addressLine1: String?
-    let addressLine2: String?
-    let city: String?
-    let state: String?
-    let countryCode: String?
-    let postalCode: String?
-
-    public init(
-        firstName: String?,
-        lastName: String?,
-        addressLine1: String,
-        addressLine2: String?,
-        city: String,
-        state: String?,
-        countryCode: String,
-        postalCode: String
-    ) {
-        self.addressLine1 = addressLine1
-        self.addressLine2 = addressLine2
-        self.city = city
-        self.countryCode = countryCode
-        self.postalCode = postalCode
-        self.firstName = firstName
-        self.lastName = lastName
-        self.state = state
-    }
-
-}
-
-extension Request.Body {
-    final class Payment {}
-}
-
-extension Request.Body.Payment {
-
-    public struct Create: Encodable {
-        let paymentMethodToken: String
-
-        public init(token: String) {
-            paymentMethodToken = token
-        }
-    }
-
-    public struct Resume: Encodable {
-        let resumeToken: String
-
-        public init(token: String) {
-            resumeToken = token
-        }
-    }
-
-    public struct Complete: Encodable {
-        let mandateSignatureTimestamp: String
-        let paymentMethodId: String?
-
-        public init(mandateSignatureTimestamp: String,
-                    paymentMethodId: String? = nil) {
-            self.mandateSignatureTimestamp = mandateSignatureTimestamp
-            self.paymentMethodId = paymentMethodId
-        }
-    }
-}
-
-extension Response.Body {
-
-    public struct Payment: Codable {
-        public var id: String?
-        public var paymentId: String?
-        public var amount: Int?
-        public var currencyCode: String?
-        public var customer: Request.Body.ClientSession.Customer?
-        public var customerId: String?
-        public var dateStr: String?
-        public var date: Date? {
-            dateStr?.toDate()
-        }
-        public var order: Request.Body.ClientSession.Order?
-        public var orderId: String?
-        public var requiredAction: Response.Body.Payment.RequiredAction?
-        public let status: Status
-        public var paymentFailureReason: PrimerPaymentErrorCode.RawValue?
-        public var showSuccessCheckoutOnPendingPayment: Bool?
-        public var checkoutOutcome: CheckoutOutcome?
-
-        // swiftlint:disable:next nesting
-        public enum CodingKeys: String, CodingKey {
-            case id,
-                 paymentId,
-                 amount,
-                 currencyCode,
-                 customer,
-                 customerId,
-                 order,
-                 orderId,
-                 requiredAction,
-                 status,
-                 paymentFailureReason,
-                 showSuccessCheckoutOnPendingPayment,
-                 checkoutOutcome
-            case dateStr = "date"
-        }
-
-        // swiftlint:disable:next nesting
-        public struct RequiredAction: Codable {
-            public let clientToken: String
-            public let name: RequiredActionName
-            public let description: String?
-        }
-
-        // swiftlint:disable:next nesting
-        public enum Status: String, Codable {
-            case failed = "FAILED"
-            case pending = "PENDING"
-            case success = "SUCCESS"
-        }
-
-        // swiftlint:disable:next nesting
-        public enum CheckoutOutcome: String, Codable {
-            case complete = "CHECKOUT_COMPLETE"
-            case failure = "CHECKOUT_FAILURE"
-            case determineFromPaymentStatus = "DETERMINE_FROM_PAYMENT_STATUS"
-        }
-    }
-
-    public struct Complete: Codable {}
-}
-
 public struct Payment {
 
 }
@@ -201,36 +71,6 @@ extension PrimerCheckoutDataPayment {
     }
 }
 
-// MARK: Checkout Data Payment Error
-
-@objc public enum PrimerPaymentErrorCode: Int, RawRepresentable, Codable {
-
-    case failed
-    case cancelledByCustomer
-
-    public typealias RawValue = String
-
-    public var rawValue: RawValue {
-        switch self {
-        case .failed:
-            "payment-failed"
-        case .cancelledByCustomer:
-            "cancelled-by-customer"
-        }
-    }
-
-    public init?(rawValue: RawValue) {
-        switch rawValue {
-        case "payment-failed":
-            self = .failed
-        case "cancelled-by-customer":
-            self = .cancelledByCustomer
-        default:
-            return nil
-        }
-    }
-}
-
 // MARK: Client Session Order
 
 @objc public final class PrimerOrder: NSObject, Codable {
@@ -245,10 +85,12 @@ extension PrimerCheckoutDataPayment {
 
     convenience init(clientSessionOrder: ClientSession.Order?) {
         if let shippingMethod = clientSessionOrder?.shippingMethod {
-            let shippingMethod = PrimerShipping(amount: shippingMethod.amount,
-                                                methodId: shippingMethod.methodId,
-                                                methodName: shippingMethod.methodName,
-                                                methodDescription: shippingMethod.methodDescription)
+            let shippingMethod = PrimerShipping(
+                amount: shippingMethod.amount,
+                methodId: shippingMethod.methodId,
+                methodName: shippingMethod.methodName,
+                methodDescription: shippingMethod.methodDescription
+            )
             self.init(countryCode: clientSessionOrder?.countryCode?.rawValue, shipping: shippingMethod)
             return
         }
@@ -264,10 +106,12 @@ extension PrimerCheckoutDataPayment {
     public let methodName: String?
     public let methodDescription: String?
 
-    public init(amount: Int?,
-                methodId: String?,
-                methodName: String?,
-                methodDescription: String?) {
+    public init(
+        amount: Int?,
+        methodId: String?,
+        methodName: String?,
+        methodDescription: String?
+    ) {
         self.amount = amount
         self.methodId = methodId
         self.methodName = methodName
@@ -292,7 +136,8 @@ extension PrimerCheckoutDataPayment {
         firstName: String?,
         lastName: String?,
         billingAddress: PrimerAddress?,
-        shippingAddress: PrimerAddress?) {
+        shippingAddress: PrimerAddress?
+    ) {
         self.emailAddress = emailAddress
         self.mobileNumber = mobileNumber
         self.firstName = firstName

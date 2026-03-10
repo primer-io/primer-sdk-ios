@@ -5,7 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import PrimerFoundation
-import PrimerNetworking
+@testable import PrimerNetworking
 @testable import PrimerSDK
 import XCTest
 
@@ -415,98 +415,120 @@ final class CreateResumePaymentServiceTests: XCTestCase {
 
 private extension Response.Body.Payment {
     static var noId: Response.Body.Payment {
-        .init(id: nil,
-              paymentId: "paymentId",
-              amount: 1,
-              currencyCode: "EUR",
-              status: .success)
+        .init(
+            id: nil,
+            paymentId: "paymentId",
+            amount: 1,
+            currencyCode: "EUR",
+            status: .success
+        )
     }
 
     static var successStatus: Response.Body.Payment {
-        .init(id: "id",
-              paymentId: "paymentId",
-              amount: 1,
-              currencyCode: "EUR",
-              status: .success)
+        .init(
+            id: "id",
+            paymentId: "paymentId",
+            amount: 1,
+            currencyCode: "EUR",
+            status: .success
+        )
     }
 
     static var failedStatus: Response.Body.Payment {
-        .init(id: "id",
-              paymentId: "paymentId",
-              amount: 1,
-              currencyCode: "EUR",
-              status: .failed)
+        .init(
+            id: "id",
+            paymentId: "paymentId",
+            amount: 1,
+            currencyCode: "EUR",
+            status: .failed
+        )
     }
 
     static var pendingStatus: Response.Body.Payment {
-        .init(id: "id",
-              paymentId: "paymentId",
-              amount: 1,
-              currencyCode: "EUR",
-              status: .pending)
+        .init(
+            id: "id",
+            paymentId: "paymentId",
+            amount: 1,
+            currencyCode: "EUR",
+            status: .pending
+        )
     }
 
     static var pendingStatusWithShowSuccess: Response.Body.Payment {
-        .init(id: "id",
-              paymentId: "paymentId",
-              amount: 1,
-              currencyCode: "EUR",
-              status: .pending,
-              showSuccessCheckoutOnPendingPayment: true)
+        .init(
+            id: "id",
+            paymentId: "paymentId",
+            amount: 1,
+            currencyCode: "EUR",
+            status: .pending,
+            showSuccessCheckoutOnPendingPayment: true
+        )
     }
 
     static var checkoutComplete: Response.Body.Payment {
-        .init(id: "id",
-              paymentId: "paymentId",
-              amount: 1,
-              currencyCode: "EUR",
-              status: .success,
-              checkoutOutcome: .complete)
+        .init(
+            id: "id",
+            paymentId: "paymentId",
+            amount: 1,
+            currencyCode: "EUR",
+            status: .success,
+            checkoutOutcome: .complete
+        )
     }
 
     static var checkoutFailure: Response.Body.Payment {
-        .init(id: "id",
-              paymentId: "paymentId",
-              amount: 1,
-              currencyCode: "EUR",
-              status: .failed,
-              checkoutOutcome: .failure)
+        .init(
+            id: "id",
+            paymentId: "paymentId",
+            amount: 1,
+            currencyCode: "EUR",
+            status: .failed,
+            checkoutOutcome: .failure
+        )
     }
 
     static var fallbackWithSuccessStatus: Response.Body.Payment {
-        .init(id: "id",
-              paymentId: "paymentId",
-              amount: 1,
-              currencyCode: "EUR",
-              status: .success,
-              checkoutOutcome: .determineFromPaymentStatus)
+        .init(
+            id: "id",
+            paymentId: "paymentId",
+            amount: 1,
+            currencyCode: "EUR",
+            status: .success,
+            checkoutOutcome: .determineFromPaymentStatus
+        )
     }
 
     static var fallbackWithFailedStatus: Response.Body.Payment {
-        .init(id: "id",
-              paymentId: "paymentId",
-              amount: 1,
-              currencyCode: "EUR",
-              status: .failed,
-              checkoutOutcome: .determineFromPaymentStatus)
+        .init(
+            id: "id",
+            paymentId: "paymentId",
+            amount: 1,
+            currencyCode: "EUR",
+            status: .failed,
+            checkoutOutcome: .determineFromPaymentStatus
+        )
     }
 
     static var fallbackWithPendingStatus: Response.Body.Payment {
-        .init(id: "id",
-              paymentId: "paymentId",
-              amount: 1,
-              currencyCode: "EUR",
-              status: .pending,
-              checkoutOutcome: .determineFromPaymentStatus)
+        .init(
+            id: "id",
+            paymentId: "paymentId",
+            amount: 1,
+            currencyCode: "EUR",
+            status: .pending,
+            checkoutOutcome: .determineFromPaymentStatus
+        )
     }
 
     static var fallbackWithPendingStatusWithShowSuccess: Response.Body.Payment {
-        .init(id: "id",
-              paymentId: "paymentId",
-              amount: 1,
-              currencyCode: "EUR",
-              status: .pending,
-              showSuccessCheckoutOnPendingPayment: true,
-              checkoutOutcome: .determineFromPaymentStatus)
+        .init(
+            id: "id",
+            paymentId: "paymentId",
+            amount: 1,
+            currencyCode: "EUR",
+            status: .pending,
+            showSuccessCheckoutOnPendingPayment: true,
+            checkoutOutcome: .determineFromPaymentStatus
+        )
     }
 }

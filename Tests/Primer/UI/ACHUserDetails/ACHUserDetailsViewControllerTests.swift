@@ -5,6 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import PrimerFoundation
+@testable import PrimerNetworking
 @testable import PrimerSDK
 import XCTest
 
@@ -74,7 +75,7 @@ final class ACHUserDetailsViewControllerTests: XCTestCase {
     func test_achUserDetails_firstName_valid() {
         var didReceiveStepCalled = false
 
-        let expectDidReceiveStep = self.expectation(description: "expectDidReceiveStep called")
+        let expectDidReceiveStep = expectation(description: "expectDidReceiveStep called")
         sut.didReceiveStepCompletion = { step in
             switch step {
             case .retrievedUserDetails:
@@ -86,7 +87,7 @@ final class ACHUserDetailsViewControllerTests: XCTestCase {
             }
         }
 
-        let expectUpdateFirstName = self.expectation(description: "expectUpdateFirstName called")
+        let expectUpdateFirstName = expectation(description: "expectUpdateFirstName called")
         sut.didUpdateCompletion = {
             if didReceiveStepCalled {
                 XCTAssertTrue(self.sut.achUserDetailsViewModel.isFirstNameValid)
@@ -106,7 +107,7 @@ final class ACHUserDetailsViewControllerTests: XCTestCase {
     func test_achUserDetails_lastName_valid() {
         var didReceiveStepCalled = false
 
-        let expectDidReceiveStep = self.expectation(description: "expectDidReceiveStep called")
+        let expectDidReceiveStep = expectation(description: "expectDidReceiveStep called")
         sut.didReceiveStepCompletion = { step in
             switch step {
             case .retrievedUserDetails:
@@ -118,7 +119,7 @@ final class ACHUserDetailsViewControllerTests: XCTestCase {
             }
         }
 
-        let expectUpdateFirstName = self.expectation(description: "expectUpdateFirstName called")
+        let expectUpdateFirstName = expectation(description: "expectUpdateFirstName called")
         sut.didUpdateCompletion = {
             if didReceiveStepCalled {
                 XCTAssertTrue(self.sut.achUserDetailsViewModel.isLastNameValid)
@@ -138,7 +139,7 @@ final class ACHUserDetailsViewControllerTests: XCTestCase {
     func test_achUserDetails_emailAddress_valid() {
         var didReceiveStepCalled = false
 
-        let expectDidReceiveStep = self.expectation(description: "expectDidReceiveStep called")
+        let expectDidReceiveStep = expectation(description: "expectDidReceiveStep called")
         sut.didReceiveStepCompletion = { step in
             switch step {
             case .retrievedUserDetails:
@@ -150,7 +151,7 @@ final class ACHUserDetailsViewControllerTests: XCTestCase {
             }
         }
 
-        let expectUpdateFirstName = self.expectation(description: "expectUpdateFirstName called")
+        let expectUpdateFirstName = expectation(description: "expectUpdateFirstName called")
         sut.didUpdateCompletion = {
             if didReceiveStepCalled {
                 XCTAssertTrue(self.sut.achUserDetailsViewModel.isEmailAddressValid)
@@ -170,7 +171,7 @@ final class ACHUserDetailsViewControllerTests: XCTestCase {
     func test_achUserDetails_firstName_invalid() {
         var didReceiveStepCalled = false
 
-        let expectDidReceiveStep = self.expectation(description: "expectDidReceiveStep called")
+        let expectDidReceiveStep = expectation(description: "expectDidReceiveStep called")
         sut.didReceiveStepCompletion = { step in
             switch step {
             case .retrievedUserDetails:
@@ -182,7 +183,7 @@ final class ACHUserDetailsViewControllerTests: XCTestCase {
             }
         }
 
-        let expectUpdateFirstName = self.expectation(description: "expectUpdateFirstName called")
+        let expectUpdateFirstName = expectation(description: "expectUpdateFirstName called")
         sut.didUpdateCompletion = {
             if didReceiveStepCalled {
                 XCTAssertFalse(self.sut.achUserDetailsViewModel.isFirstNameValid)
@@ -202,7 +203,7 @@ final class ACHUserDetailsViewControllerTests: XCTestCase {
     func test_achUserDetails_lastName_invalid() {
         var didReceiveStepCalled = false
 
-        let expectDidReceiveStep = self.expectation(description: "expectDidReceiveStep called")
+        let expectDidReceiveStep = expectation(description: "expectDidReceiveStep called")
         sut.didReceiveStepCompletion = { step in
             switch step {
             case .retrievedUserDetails:
@@ -214,7 +215,7 @@ final class ACHUserDetailsViewControllerTests: XCTestCase {
             }
         }
 
-        let expectUpdateFirstName = self.expectation(description: "expectUpdateFirstName called")
+        let expectUpdateFirstName = expectation(description: "expectUpdateFirstName called")
         sut.didUpdateCompletion = {
             if didReceiveStepCalled {
                 XCTAssertFalse(self.sut.achUserDetailsViewModel.isLastNameValid)
@@ -234,7 +235,7 @@ final class ACHUserDetailsViewControllerTests: XCTestCase {
     func test_achUserDetails_emailAddress_invalid() {
         var didReceiveStepCalled = false
 
-        let expectDidReceiveStep = self.expectation(description: "expectDidReceiveStep called")
+        let expectDidReceiveStep = expectation(description: "expectDidReceiveStep called")
         sut.didReceiveStepCompletion = { step in
             switch step {
             case .retrievedUserDetails:
@@ -246,7 +247,7 @@ final class ACHUserDetailsViewControllerTests: XCTestCase {
             }
         }
 
-        let expectUpdateFirstName = self.expectation(description: "expectUpdateFirstName called")
+        let expectUpdateFirstName = expectation(description: "expectUpdateFirstName called")
         sut.didUpdateCompletion = {
             if didReceiveStepCalled {
                 XCTAssertFalse(self.sut.achUserDetailsViewModel.isEmailAddressValid)
@@ -268,7 +269,7 @@ final class ACHUserDetailsViewControllerTests: XCTestCase {
     }
 
     func test_retrievedUserDetails_values() {
-        let expectDidReceiveStep = self.expectation(description: "expectDidReceiveStep called")
+        let expectDidReceiveStep = expectation(description: "expectDidReceiveStep called")
 
         sut.didReceiveStepCompletion = { step in
             switch step {
@@ -318,27 +319,32 @@ final class ACHUserDetailsViewControllerTests: XCTestCase {
         processorConfigId: "mock_processor_config_id",
         surcharge: 299,
         options: nil,
-        displayMetadata: nil)
+        displayMetadata: nil
+    )
 
     var order: ClientSession.Order {
-        .init(id: "order_id",
-              merchantAmount: 1234,
-              totalOrderAmount: 1234,
-              totalTaxAmount: nil,
-              countryCode: .us,
-              currencyCode: Currency(code: "USD", decimalDigits: 2),
-              fees: nil,
-              lineItems: [
-                .init(itemId: "item_id",
-                      quantity: 1,
-                      amount: 1234,
-                      discountAmount: nil,
-                      name: "my_item",
-                      description: "item_description",
-                      taxAmount: nil,
-                      taxCode: nil,
-                      productType: nil)
-              ])
+        .init(
+            id: "order_id",
+            merchantAmount: 1234,
+            totalOrderAmount: 1234,
+            totalTaxAmount: nil,
+            countryCode: .us,
+            currencyCode: Currency(code: "USD", decimalDigits: 2),
+            fees: nil,
+            lineItems: [
+                .init(
+                    itemId: "item_id",
+                    quantity: 1,
+                    amount: 1234,
+                    discountAmount: nil,
+                    name: "my_item",
+                    description: "item_description",
+                    taxAmount: nil,
+                    taxCode: nil,
+                    productType: nil
+                )
+            ]
+        )
     }
 
     var customer = ClientSession.Customer(
@@ -350,50 +356,62 @@ final class ACHUserDetailsViewControllerTests: XCTestCase {
     )
 
     var paymentResponseBody: Response.Body.Payment {
-        .init(id: "id",
-                     paymentId: "payment_id",
-                     amount: 123,
-                     currencyCode: "USD",
-                     customer: .init(firstName: "first_name",
-                                     lastName: "last_name",
-                                     emailAddress: "email_address",
-                                     mobileNumber: "+44(0)7891234567",
-                                     billingAddress: .init(firstName: "billing_first_name",
-                                                           lastName: "billing_last_name",
-                                                           addressLine1: "billing_line_1",
-                                                           addressLine2: "billing_line_2",
-                                                           city: "billing_city",
-                                                           state: "billing_state",
-                                                           countryCode: "billing_country_code",
-                                                           postalCode: "billing_postal_code"),
-                                     shippingAddress: .init(firstName: "shipping_first_name",
-                                                            lastName: "shipping_last_name",
-                                                            addressLine1: "shipping_line_1",
-                                                            addressLine2: "shipping_line_2",
-                                                            city: "shipping_city",
-                                                            state: "shipping_state",
-                                                            countryCode: "shipping_country_code",
-                                                            postalCode: "shipping_postal_code")),
-                     customerId: "customer_id",
-                     orderId: "order_id",
-                     requiredAction: .init(clientToken: stripeACHToken,
-                                           name: .checkout,
-                                           description: "description"),
-                     status: .success)
+        .init(
+            id: "id",
+            paymentId: "payment_id",
+            amount: 123,
+            currencyCode: "USD",
+            customer: .init(
+                firstName: "first_name",
+                lastName: "last_name",
+                emailAddress: "email_address",
+                mobileNumber: "+44(0)7891234567",
+                billingAddress: .init(
+                    firstName: "billing_first_name",
+                    lastName: "billing_last_name",
+                    addressLine1: "billing_line_1",
+                    addressLine2: "billing_line_2",
+                    city: "billing_city",
+                    state: "billing_state",
+                    countryCode: "billing_country_code",
+                    postalCode: "billing_postal_code"
+                ),
+                shippingAddress: .init(
+                    firstName: "shipping_first_name",
+                    lastName: "shipping_last_name",
+                    addressLine1: "shipping_line_1",
+                    addressLine2: "shipping_line_2",
+                    city: "shipping_city",
+                    state: "shipping_state",
+                    countryCode: "shipping_country_code",
+                    postalCode: "shipping_postal_code"
+                )
+            ),
+            customerId: "customer_id",
+            orderId: "order_id",
+            requiredAction: .init(
+                clientToken: stripeACHToken,
+                name: .checkout,
+                description: "description"
+            ),
+            status: .success
+        )
     }
 
     var tokenizationResponseBody: Response.Body.Tokenization {
-        .init(analyticsId: "analytics_id",
-              id: "id",
-              isVaulted: false,
-              isAlreadyVaulted: false,
-              paymentInstrumentType: .stripeAch,
-              paymentMethodType: stripeACHPaymentMethodType,
-              paymentInstrumentData: nil,
-              threeDSecureAuthentication: nil,
-              token: "token",
-              tokenType: .singleUse,
-              vaultData: nil)
+        .init(
+            analyticsId: "analytics_id",
+            id: "id",
+            isVaulted: false,
+            isAlreadyVaulted: false,
+            paymentInstrumentType: .stripeAch,
+            paymentMethodType: stripeACHPaymentMethodType,
+            paymentInstrumentData: nil,
+            threeDSecureAuthentication: nil,
+            token: "token",
+            tokenType: .singleUse,
+            vaultData: nil
+        )
     }
 
     var stripeACHToken: String {

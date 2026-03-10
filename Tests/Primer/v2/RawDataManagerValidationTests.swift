@@ -5,6 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import PrimerFoundation
+import PrimerNetworking
 @testable import PrimerSDK
 import XCTest
 
@@ -59,10 +60,13 @@ class RawDataManagerValidationTests: XCTestCase {
                         description: "mock-description-1",
                         taxAmount: nil,
                         taxCode: nil,
-                        productType: nil)
-                ]),
+                        productType: nil
+                    )
+                ]
+            ),
             customer: nil,
-            testId: nil)
+            testId: nil
+        )
 
         let mockPrimerApiConfiguration = Response.Body.Configuration(
             coreUrl: "https://primer.io/core",
@@ -79,11 +83,13 @@ class RawDataManagerValidationTests: XCTestCase {
                     processorConfigId: "mock-processor-config-id-1",
                     surcharge: nil,
                     options: nil,
-                    displayMetadata: nil)
+                    displayMetadata: nil
+                )
             ],
             primerAccountId: "mock-primer-account-id",
             keys: nil,
-            checkoutModules: nil)
+            checkoutModules: nil
+        )
 
         let vaultedPaymentMethods = Response.Body.VaultedPaymentMethods(data: [])
 
@@ -104,10 +110,12 @@ class RawDataManagerValidationTests: XCTestCase {
 
     func test_validateRawData_withAllInvalidFields_shouldFailWithMultipleErrors()  {
         // Given
-        let cardData = PrimerCardData(cardNumber: "",
-                                      expiryDate: "",
-                                      cvv: "",
-                                      cardholderName: nil)
+        let cardData = PrimerCardData(
+            cardNumber: "",
+            expiryDate: "",
+            cvv: "",
+            cardholderName: nil
+        )
 
         // When
         let validation = expectation(description: "Await validation")
@@ -128,10 +136,12 @@ class RawDataManagerValidationTests: XCTestCase {
     func test_validateRawData_withAllValidFields_shouldSucceed()  {
         // Given
         print("1")
-        let cardData = PrimerCardData(cardNumber: "4242424242424242",
-                                      expiryDate: "03/2030",
-                                      cvv: "123",
-                                      cardholderName: "Test")
+        let cardData = PrimerCardData(
+            cardNumber: "4242424242424242",
+            expiryDate: "03/2030",
+            cvv: "123",
+            cardholderName: "Test"
+        )
         print("2")
         // When
         let validation = expectation(description: "Await validation")
@@ -152,10 +162,12 @@ class RawDataManagerValidationTests: XCTestCase {
 
     func test_validateRawData_withShortCardNumber_shouldFailWithCardNumberError()  {
         // Given
-        let cardData = PrimerCardData(cardNumber: "424242424242424",
-                                      expiryDate: "03/2030",
-                                      cvv: "123",
-                                      cardholderName: "Test")
+        let cardData = PrimerCardData(
+            cardNumber: "424242424242424",
+            expiryDate: "03/2030",
+            cvv: "123",
+            cardholderName: "Test"
+        )
 
         // When
         let validation = expectation(description: "Await validation")
@@ -172,10 +184,12 @@ class RawDataManagerValidationTests: XCTestCase {
 
     func test_validateRawData_withLongCardNumber_shouldFailWithCardNumberError()  {
         // Given
-        let cardData = PrimerCardData(cardNumber: "42424242424242424242",
-                                      expiryDate: "03/2030",
-                                      cvv: "123",
-                                      cardholderName: "Test")
+        let cardData = PrimerCardData(
+            cardNumber: "42424242424242424242",
+            expiryDate: "03/2030",
+            cvv: "123",
+            cardholderName: "Test"
+        )
 
         // When
         let validation = expectation(description: "Await validation")
@@ -192,10 +206,12 @@ class RawDataManagerValidationTests: XCTestCase {
 
     func test_validateRawData_withEmptyCardNumber_shouldFailWithCardNumberError()  {
         // Given
-        let cardData = PrimerCardData(cardNumber: "",
-                                      expiryDate: "03/2030",
-                                      cvv: "123",
-                                      cardholderName: "Test")
+        let cardData = PrimerCardData(
+            cardNumber: "",
+            expiryDate: "03/2030",
+            cvv: "123",
+            cardholderName: "Test"
+        )
 
         // When
         let validation = expectation(description: "Await validation")
@@ -212,10 +228,12 @@ class RawDataManagerValidationTests: XCTestCase {
 
     func test_validateRawData_withLuhnFailureCardNumber_shouldFailWithCardNumberError()  {
         // Given
-        let cardData = PrimerCardData(cardNumber: "4242424242424243",
-                                      expiryDate: "03/2030",
-                                      cvv: "123",
-                                      cardholderName: "Test")
+        let cardData = PrimerCardData(
+            cardNumber: "4242424242424243",
+            expiryDate: "03/2030",
+            cvv: "123",
+            cardholderName: "Test"
+        )
 
         // When
         let validation = expectation(description: "Await validation")
@@ -234,10 +252,12 @@ class RawDataManagerValidationTests: XCTestCase {
 
     func test_validateRawData_withInvalidExpiryMonth_shouldFailWithExpiryError()  {
         // Given
-        let cardData = PrimerCardData(cardNumber: "4242424242424242",
-                                      expiryDate: "0/2030",
-                                      cvv: "123",
-                                      cardholderName: "Test")
+        let cardData = PrimerCardData(
+            cardNumber: "4242424242424242",
+            expiryDate: "0/2030",
+            cvv: "123",
+            cardholderName: "Test"
+        )
 
         // When
         let validation = expectation(description: "Await validation")
@@ -254,10 +274,12 @@ class RawDataManagerValidationTests: XCTestCase {
 
     func test_validateRawData_withMissingExpiryMonth_shouldFailWithExpiryError()  {
         // Given
-        let cardData = PrimerCardData(cardNumber: "4242424242424242",
-                                      expiryDate: "/2030",
-                                      cvv: "123",
-                                      cardholderName: "Test")
+        let cardData = PrimerCardData(
+            cardNumber: "4242424242424242",
+            expiryDate: "/2030",
+            cvv: "123",
+            cardholderName: "Test"
+        )
 
         // When
         let validation = expectation(description: "Await validation")
@@ -274,10 +296,12 @@ class RawDataManagerValidationTests: XCTestCase {
 
     func test_validateRawData_withYearOnlyExpiry_shouldFailWithExpiryError()  {
         // Given
-        let cardData = PrimerCardData(cardNumber: "4242424242424242",
-                                      expiryDate: "2030",
-                                      cvv: "123",
-                                      cardholderName: "Test")
+        let cardData = PrimerCardData(
+            cardNumber: "4242424242424242",
+            expiryDate: "2030",
+            cvv: "123",
+            cardholderName: "Test"
+        )
 
         // When
         let validation = expectation(description: "Await validation")
@@ -294,10 +318,12 @@ class RawDataManagerValidationTests: XCTestCase {
 
     func test_validateRawData_withSlashOnlyExpiry_shouldFailWithExpiryError()  {
         // Given
-        let cardData = PrimerCardData(cardNumber: "4242424242424242",
-                                      expiryDate: "/",
-                                      cvv: "123",
-                                      cardholderName: "Test")
+        let cardData = PrimerCardData(
+            cardNumber: "4242424242424242",
+            expiryDate: "/",
+            cvv: "123",
+            cardholderName: "Test"
+        )
 
         // When
         let validation = expectation(description: "Await validation")
@@ -314,10 +340,12 @@ class RawDataManagerValidationTests: XCTestCase {
 
     func test_validateRawData_withPastExpiryDate_shouldFailWithExpiryError()  {
         // Given
-        let cardData = PrimerCardData(cardNumber: "4242424242424242",
-                                      expiryDate: "01/2022",
-                                      cvv: "123",
-                                      cardholderName: "Test")
+        let cardData = PrimerCardData(
+            cardNumber: "4242424242424242",
+            expiryDate: "01/2022",
+            cvv: "123",
+            cardholderName: "Test"
+        )
 
         // When
         let validation = expectation(description: "Await validation")
@@ -334,10 +362,12 @@ class RawDataManagerValidationTests: XCTestCase {
 
     func test_validateRawData_withAnotherPastExpiryDate_shouldFailWithExpiryError()  {
         // Given
-        let cardData = PrimerCardData(cardNumber: "4242424242424242",
-                                      expiryDate: "05/2022",
-                                      cvv: "123",
-                                      cardholderName: "Test")
+        let cardData = PrimerCardData(
+            cardNumber: "4242424242424242",
+            expiryDate: "05/2022",
+            cvv: "123",
+            cardholderName: "Test"
+        )
 
         // When
         let validation = expectation(description: "Await validation")
@@ -354,10 +384,12 @@ class RawDataManagerValidationTests: XCTestCase {
 
     func test_validateRawData_withMonthOnlyExpiry_shouldFailWithExpiryError()  {
         // Given
-        let cardData = PrimerCardData(cardNumber: "4242424242424242",
-                                      expiryDate: "02",
-                                      cvv: "123",
-                                      cardholderName: "Test")
+        let cardData = PrimerCardData(
+            cardNumber: "4242424242424242",
+            expiryDate: "02",
+            cvv: "123",
+            cardholderName: "Test"
+        )
 
         // When
         let validation = expectation(description: "Await validation")
@@ -374,10 +406,12 @@ class RawDataManagerValidationTests: XCTestCase {
 
     func test_validateRawData_withNonNumericExpiry_shouldFailWithExpiryError()  {
         // Given
-        let cardData = PrimerCardData(cardNumber: "4242424242424242",
-                                      expiryDate: "aa",
-                                      cvv: "123",
-                                      cardholderName: "Test")
+        let cardData = PrimerCardData(
+            cardNumber: "4242424242424242",
+            expiryDate: "aa",
+            cvv: "123",
+            cardholderName: "Test"
+        )
 
         // When
         let validation = expectation(description: "Await validation")
@@ -394,10 +428,12 @@ class RawDataManagerValidationTests: XCTestCase {
 
     func test_validateRawData_withReversedExpiryOrder_shouldFailWithExpiryError()  {
         // Given
-        let cardData = PrimerCardData(cardNumber: "4242424242424242",
-                                      expiryDate: "2030/03",
-                                      cvv: "123",
-                                      cardholderName: "Test")
+        let cardData = PrimerCardData(
+            cardNumber: "4242424242424242",
+            expiryDate: "2030/03",
+            cvv: "123",
+            cardholderName: "Test"
+        )
 
         // When
         let validation = expectation(description: "Await validation")
@@ -414,10 +450,12 @@ class RawDataManagerValidationTests: XCTestCase {
 
     func test_validateRawData_withShortYearFormat_shouldSucceed()  {
         // Given
-        let cardData = PrimerCardData(cardNumber: "4242424242424242",
-                                      expiryDate: "03/30",
-                                      cvv: "123",
-                                      cardholderName: "Test")
+        let cardData = PrimerCardData(
+            cardNumber: "4242424242424242",
+            expiryDate: "03/30",
+            cvv: "123",
+            cardholderName: "Test"
+        )
 
         // When
         let validation = expectation(description: "Await validation")
@@ -433,10 +471,12 @@ class RawDataManagerValidationTests: XCTestCase {
 
     func test_validateRawData_withMalformedYear_shouldFailWithExpiryError()  {
         // Given
-        let cardData = PrimerCardData(cardNumber: "4242424242424242",
-                                      expiryDate: "03/203030",
-                                      cvv: "123",
-                                      cardholderName: "Test")
+        let cardData = PrimerCardData(
+            cardNumber: "4242424242424242",
+            expiryDate: "03/203030",
+            cvv: "123",
+            cardholderName: "Test"
+        )
 
         // When
         let validation = expectation(description: "Await validation")
@@ -455,10 +495,12 @@ class RawDataManagerValidationTests: XCTestCase {
 
     func test_validateRawData_withShortCVV_shouldFailWithCVVError()  {
         // Given
-        let cardData = PrimerCardData(cardNumber: "4242424242424242",
-                                      expiryDate: "03/2030",
-                                      cvv: "12",
-                                      cardholderName: "Test")
+        let cardData = PrimerCardData(
+            cardNumber: "4242424242424242",
+            expiryDate: "03/2030",
+            cvv: "12",
+            cardholderName: "Test"
+        )
 
         // When
         let validation = expectation(description: "Await validation")
@@ -475,10 +517,12 @@ class RawDataManagerValidationTests: XCTestCase {
 
     func test_validateRawData_withNonNumericCVV_shouldFailWithCVVError()  {
         // Given
-        let cardData = PrimerCardData(cardNumber: "4242424242424242",
-                                      expiryDate: "03/2030",
-                                      cvv: "abc",
-                                      cardholderName: "Test")
+        let cardData = PrimerCardData(
+            cardNumber: "4242424242424242",
+            expiryDate: "03/2030",
+            cvv: "abc",
+            cardholderName: "Test"
+        )
 
         // When
         let validation = expectation(description: "Await validation")
@@ -495,10 +539,12 @@ class RawDataManagerValidationTests: XCTestCase {
 
     func test_validateRawData_withLongCVV_shouldFailWithCVVError()  {
         // Given
-        let cardData = PrimerCardData(cardNumber: "4242424242424242",
-                                      expiryDate: "03/2030",
-                                      cvv: "12345",
-                                      cardholderName: "Test")
+        let cardData = PrimerCardData(
+            cardNumber: "4242424242424242",
+            expiryDate: "03/2030",
+            cvv: "12345",
+            cardholderName: "Test"
+        )
 
         // When
         let validation = expectation(description: "Await validation")
@@ -515,10 +561,12 @@ class RawDataManagerValidationTests: XCTestCase {
 
     func test_validateRawData_withSingleDigitCVV_shouldFailWithCVVError()  {
         // Given
-        let cardData = PrimerCardData(cardNumber: "4242424242424242",
-                                      expiryDate: "03/2030",
-                                      cvv: "1",
-                                      cardholderName: "Test")
+        let cardData = PrimerCardData(
+            cardNumber: "4242424242424242",
+            expiryDate: "03/2030",
+            cvv: "1",
+            cardholderName: "Test"
+        )
 
         // When
         let validation = expectation(description: "Await validation")
@@ -564,9 +612,9 @@ extension RawDataManagerValidationTests {
     private func startHeadlessUniversalCheckout(clientToken: String) async throws -> [PrimerHeadlessUniversalCheckout.PaymentMethod] {
         try await withCheckedThrowingContinuation { continuation in
             PrimerHeadlessUniversalCheckout.current.start(withClientToken: clientToken) { paymentMethods, error in
-                if let error = error {
+                if let error {
                     continuation.resume(throwing: error)
-                } else if let paymentMethods = paymentMethods {
+                } else if let paymentMethods {
                     continuation.resume(returning: paymentMethods)
                 }
             }

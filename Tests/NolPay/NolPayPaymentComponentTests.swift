@@ -6,6 +6,7 @@
 
 #if canImport(PrimerNolPaySDK)
 import PrimerFoundation
+@testable import PrimerNetworking
 import PrimerNolPaySDK
 @testable import PrimerSDK
 import XCTest
@@ -284,7 +285,7 @@ class NolPayPaymentComponentTests: XCTestCase {
         mockNolPay.requestPaymentResult = .success(false)
         sut.nolPay = mockNolPay
 
-        let expectation = self.expectation(description: "Async payment request should fail")
+        let expectation = expectation(description: "Async payment request should fail")
 
         mockNolPayTokenizationViewModel.onStartCalled = { [weak self] in
             guard let self else { return }
@@ -334,7 +335,7 @@ class NolPayPaymentComponentTests: XCTestCase {
         mockNolPay.requestPaymentResult = .failure(PrimerNolPayError(description: expectedErrorDescription))
         sut.nolPay = mockNolPay
 
-        let expectation = self.expectation(description: "Async payment request should fail")
+        let expectation = expectation(description: "Async payment request should fail")
 
         mockNolPayTokenizationViewModel.onStartCalled = { [weak self] in
             guard let self else { return }
@@ -381,7 +382,7 @@ class NolPayPaymentComponentTests: XCTestCase {
         mockNolPay.requestPaymentResult = .success(true)
         sut.nolPay = mockNolPay
 
-        let expectation = self.expectation(description: "Async payment request should succeed")
+        let expectation = expectation(description: "Async payment request should succeed")
 
         mockNolPayTokenizationViewModel.onStartCalled = { [weak self] in
             guard let self else { return }
