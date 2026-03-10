@@ -9,11 +9,6 @@ import PrimerCore
 import PrimerFoundation
 import PrimerNetworking
 
-public enum TokenType: String, Codable {
-    case multiUse = "MULTI_USE"
-    case singleUse = "SINGLE_USE"
-}
-
 extension Request.Body {
 
     final class Tokenization: Encodable {
