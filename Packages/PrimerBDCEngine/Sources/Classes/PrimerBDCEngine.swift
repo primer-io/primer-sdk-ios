@@ -44,40 +44,20 @@ public extension PrimerBDCEngine {
         return try await runScript(script, continuationPath: \.initializeContinuation)
     }
     
-    func applyEvent<State: Encodable>(
-        _ event: CodableValue,
-        schema: String,
-        screenId: String = "first",
-        state: [String: State]
-    ) async throws -> [String: Any]  {
+    func applyEvent<State: Encodable>(_ event: CodableValue, schema: String, state: State) async throws -> [String: Any]  {
         await checkIfReady()
-        let script = eventsScript(
-            schema: schema,
-            screenId: screenId,
-            state: try state.literal(encoder),
-            event: try event.jsonString
-        )
+        let script = eventScript(schema: schema, state: try state.literal(encoder), event: try event.jsonString)
         return try await runScript(script, continuationPath: \.applyEventContination)
     }
     
-    func applyWorkflowStepResponse<State: Encodable>(
-        schema: String,
-        state: State,
-        workflowId: String,
-		screenId: String = "first",
-        stepId: String,
-        response: Data?
-	) async throws  -> [String: Any] {
+    func applyResult<State: Encodable>(schema: String, state: State, outcome: String, data: Data?) async throws  -> [String: Any] {
 		await checkIfReady()
-		let state = try state.literal(encoder)
-		let script = actionsScript(
-			schema: schema,
-			screenId: screenId,
-			state: state,
-			workflowId: workflowId,
-			stepId: stepId,
-            response: response.flatMap { String(data: $0, encoding: .utf8) }
-		)
+        let script = resultScript(
+            schema: schema,
+            state: try state.literal(encoder),
+            outcome: outcome,
+            data: data.flatMap { String(data: $0, encoding: .utf8) }
+        )
         return try await runScript(script, continuationPath: \.executeActionContinuation)
     }
 }
