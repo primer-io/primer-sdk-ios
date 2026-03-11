@@ -1,3 +1,10 @@
+## 2.46.1 (2026-03-11)
+
+### Fix
+
+- Apple Pay availability check ignores checkProvidedNetworks setting (ESC-883) (#1597)
+- Fix dupe /payments calls in Klarna headless (#1587)
+
 ## 2.46.0 (2026-03-05)
 
 ### Feat
