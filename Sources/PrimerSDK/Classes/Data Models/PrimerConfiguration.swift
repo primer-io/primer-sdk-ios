@@ -110,15 +110,7 @@ extension Response.Body {
                 .compactMap({ $0.tokenizationViewModel })
                 ?? []
 
-            let supportedNetworks = ApplePayUtils.supportedPKPaymentNetworks()
-            var canMakePayment: Bool
-            if PrimerSettings.current.paymentMethodOptions.applePayOptions?.checkProvidedNetworks == true {
-                canMakePayment = PKPaymentAuthorizationController.canMakePayments(usingNetworks: supportedNetworks)
-            } else {
-                canMakePayment = PKPaymentAuthorizationController.canMakePayments()
-            }
-
-            if !canMakePayment {
+            if !ApplePayUtils.canMakeApplePayPayments() {
                 if let applePayViewModel = viewModels.filter({ $0.config.type == PrimerPaymentMethodType.applePay.rawValue }).first,
                    let applePayViewModelIndex = viewModels.firstIndex(where: { $0 == applePayViewModel }) {
                     viewModels.remove(at: applePayViewModelIndex)

@@ -4,9 +4,18 @@
 //  Copyright © 2025 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import struct PassKit.PKPaymentNetwork
+import PassKit
 
 enum ApplePayUtils {
+
+    static func canMakeApplePayPayments() -> Bool {
+        if PrimerSettings.current.paymentMethodOptions.applePayOptions?.checkProvidedNetworks == true {
+            let supportedNetworks = supportedPKPaymentNetworks()
+            return PKPaymentAuthorizationController.canMakePayments(usingNetworks: supportedNetworks)
+        } else {
+            return PKPaymentAuthorizationController.canMakePayments()
+        }
+    }
 
     private static let networkMap: [CardNetwork: PKPaymentNetwork?] = [
         .amex: .amex,
