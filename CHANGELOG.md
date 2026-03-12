@@ -1,3 +1,97 @@
+## 2.47.0-b0 (2026-03-12)
+
+### Feat
+
+- Filter unsupported payment methods and map display metadata (#1564)
+- Add onBinDataAvailable support (Headless + CheckoutComponents) (#1528)
+- Add analytics events for QR Code APM (#1544)
+- Add translations and accessibility strings for QR Code APM (#1540)
+- Add QR Code APM to Checkout Components (#1537)
+- Add analytics events for FormRedirect APM (#1536)
+- Add translations and accessibility for FormRedirect APM (#1535)
+- Add FormRedirect APM to Checkout Components (#1529)
+- Add analytics events for WebRedirect APM (#1543)
+- Add translations and accessibility strings for WebRedirect APM (#1539)
+- Add WebRedirect APM to Checkout Components (#1515)
+- Add idempotency key support for to CheckoutComponents (#1526)
+- ACC-6691 ACH on Checkout Components (#1520)
+- Add idempotency key support for Drop-In and Headless flows
+- ACC-6684 Klarna on Checkout Components (#1514)
+- Add Datadog logging for CheckoutComponents (#1493)
+- Add Vault functionality to Checkout Components (#1438)
+- Add Apple Pay to CheckoutComponents (#1440)
+- Add Apple Pay support for CheckoutComponents
+- Add co-badged card network selection for CheckoutComponents (#1400)
+- Implement dynamic sheet height for UIKit CheckoutComponents
+- Add comprehensive PrimerSettings integration and enhance CheckoutComponents
+- Convert CheckoutComponents showcase demos from mock to real SDK fields
+- Clean console logs in CheckoutComponents per ACC-5726
+- Simplify CheckoutComponents UI customization API for Android parity
+- Enable full UI customization for PaymentMethodSelectionScreen in CheckoutComponents
+- Add comprehensive iOS CheckoutComponents demo suite
+- Rename ColorfulThemedCardFormDemo to SingleFieldCustomisationDemo
+- Complete ViewBuilder refactoring for CheckoutComponents
+- Standardize all CheckoutComponents input fields with design tokens and PrimerModifier support
+- Complete CheckoutComponents interface consolidation with production-ready architecture
+- Enhance CheckoutComponents showcase with production-ready modal presentations and complete scope integration
+- Complete CheckoutComponents production implementation with comprehensive enhancements
+- Implement comprehensive CheckoutComponents showcase with 18 demo components
+- Implement complete SwiftUI country selector and improve billing address UX
+- Complete 3DS authentication support for CheckoutComponents
+- Implement complete Android parity error message system for CheckoutComponents
+- Complete CheckoutComponents success/error flow with proper result screen navigation
+- Remove try again functionality from failure screen
+- Implement co-badged cards support in CheckoutComponents
+- Add comprehensive CheckoutComponents code review and fix modal presentation
+- Implement SwiftUI bridge for traditional UI integration
+- Complete CheckoutComponents payment processing implementation
+- Add centralized localization and clean up empty directories
+- Complete CheckoutComponents implementation with compilation fixes
+- Integrate CheckoutComponents with UIKit entry point
+- Implement scope classes and screens
+- Add UI components and input fields
+- Add domain layer and data repositories
+- Add core infrastructure (DI, validation, design tokens)
+- Add CheckoutComponents foundation and public API
+
+### Fix
+
+- Correct Mastercard card number formatting gaps (ACC-6816) (#1583)
+- Apply Turkish language rules to tr translations
+- Resolve flaky test in DefaultApplePayScopeTests
+- Enable dark mode in checkout components (#1376)
+- Ensure Cancel button dismisses checkout sheet (#1364)
+- Add 'any' keyword to PrimerCardFormScope protocol type declarations
+- Add SwiftLint disable for function body length in CheckoutComponentsPrimer
+- Add onCompletion parameter support to PrimerCheckout internal initializers
+- Complete UIKit Integration auto-dismissal for CheckoutComponents
+- Resolve dynamic surcharge display in CheckoutComponents SwiftUI examples
+- Implement reliable auto-dismiss for CheckoutComponents success and error screens
+- Complete surcharge integration for CheckoutComponents with preserved payment method settings
+- Resolve CheckoutComponents navigation and Apple Pay scope issues
+- Resolve card number validation disconnect and implement Android parity error messaging
+- Add missing client session update for CheckoutComponents surcharge payments
+- Resolve CheckoutComponents payment method spacing and surcharge handling
+- Resolve infinite loop in SwiftUIBridgeViewController and update Debug App buttons
+- Integrate CheckoutComponents with traditional Primer UI system
+- Enable pay button with proper form validation
+- Complete card number input field implementation with proper validation
+- Enable DI container and add navigation buttons
+- Implement CheckoutComponents payment methods bridge and fix selection scope
+
+### Refactor
+
+- Improve CheckoutComponents code quality and safety (#1566)
+- Consolidate Datadog logging into LoggingService (#1502)
+- Address PR review feedback for Datadog logging (#1498)
+- Reorganize TestData into domain-focused extensions
+- Implement design tokens and pixel-perfect input UI (#1393)
+- Address code review feedback for checkout components (#1378)
+- Implement dynamic sheet height for UIKit CheckoutComponents (#1374)
+- Remove dual state system from CheckoutComponents for simplified architecture
+- Complete CheckoutComponents billing address customization and cleanup
+- Remove placeholder code and clean up CheckoutComponents references
+
 ## 2.46.1 (2026-03-11)
 
 ### Fix
