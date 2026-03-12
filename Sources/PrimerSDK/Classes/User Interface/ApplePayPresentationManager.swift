@@ -10,8 +10,10 @@ import PassKit
 protocol ApplePayPresenting {
     var isPresentable: Bool { get }
     var errorForDisplay: Error { get }
-    func present(withRequest applePayRequest: ApplePayRequest,
-                 delegate: PKPaymentAuthorizationControllerDelegate) async throws
+    func present(
+        withRequest applePayRequest: ApplePayRequest,
+        delegate: PKPaymentAuthorizationControllerDelegate
+    ) async throws
 }
 
 final class ApplePayPresentationManager: ApplePayPresenting, LogReporter, Sendable {
@@ -21,17 +23,13 @@ final class ApplePayPresentationManager: ApplePayPresenting, LogReporter, Sendab
     }
 
     var isPresentable: Bool {
-        var canMakePayment: Bool
-        if PrimerSettings.current.paymentMethodOptions.applePayOptions?.checkProvidedNetworks == true {
-            canMakePayment = PKPaymentAuthorizationController.canMakePayments(usingNetworks: supportedNetworks)
-        } else {
-            canMakePayment = PKPaymentAuthorizationController.canMakePayments()
-        }
-        return canMakePayment
+        ApplePayUtils.canMakeApplePayPayments()
     }
 
-    func present(withRequest applePayRequest: ApplePayRequest,
-                 delegate: PKPaymentAuthorizationControllerDelegate) async throws {
+    func present(
+        withRequest applePayRequest: ApplePayRequest,
+        delegate: PKPaymentAuthorizationControllerDelegate
+    ) async throws {
         let request = try createRequest(for: applePayRequest)
         let paymentController = PKPaymentAuthorizationController(paymentRequest: request)
         paymentController.delegate = delegate
@@ -148,8 +146,8 @@ final class ApplePayPresentationManager: ApplePayPresenting, LogReporter, Sendab
     var errorForDisplay: Error {
         // Check if device supports Apple Pay at all
         guard PKPaymentAuthorizationController.canMakePayments() else {
-            self.logger.error(message: "APPLE PAY")
-            self.logger.error(message: "Device does not support Apple Pay")
+            logger.error(message: "APPLE PAY")
+            logger.error(message: "Device does not support Apple Pay")
             let err = PrimerError.applePayDeviceNotSupported()
             return err
         }
@@ -157,15 +155,15 @@ final class ApplePayPresentationManager: ApplePayPresenting, LogReporter, Sendab
         // Check if we're checking specific networks
         guard PrimerSettings.current.paymentMethodOptions.applePayOptions?.checkProvidedNetworks != true else {
             // Device supports Apple Pay but no cards for our supported networks
-            self.logger.error(message: "APPLE PAY")
-            self.logger.error(message: "No cards available for supported networks")
+            logger.error(message: "APPLE PAY")
+            logger.error(message: "No cards available for supported networks")
             let err = PrimerError.applePayNoCardsInWallet()
             return err
         }
 
         // Generic error - shouldn't reach here in normal flow
-        self.logger.error(message: "APPLE PAY")
-        self.logger.error(message: "Cannot present Apple Pay")
+        logger.error(message: "APPLE PAY")
+        logger.error(message: "Cannot present Apple Pay")
         let err = PrimerError.unableToPresentApplePay()
         return err
     }
@@ -175,13 +173,13 @@ extension PrimerApplePayOptions.RequiredContactField {
     func toPKContact() -> PKContactField {
         switch self {
         case .name:
-            return .name
+            .name
         case .emailAddress:
-            return .emailAddress
+            .emailAddress
         case .phoneNumber:
-            return .phoneNumber
+            .phoneNumber
         case .postalAddress:
-            return .postalAddress
+            .postalAddress
         }
     }
 }

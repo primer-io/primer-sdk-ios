@@ -1,7 +1,7 @@
 //
 //  PrimerHeadlessKlarnaComponentTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 #if canImport(PrimerKlarnaSDK)
@@ -21,7 +21,7 @@ final class PrimerHeadlessKlarnaComponentTests: XCTestCase {
 
     var errorResult: PrimerSDK.PrimerError? {
         didSet {
-            guard let errorResult = errorResult,
+            guard let errorResult,
                   let handler = receiveErrorDecisionHandler else { return }
             handler(errorResult)
         }
@@ -29,7 +29,7 @@ final class PrimerHeadlessKlarnaComponentTests: XCTestCase {
 
     var stepType: StepDelegationType? {
         didSet {
-            guard let stepType = stepType,
+            guard let stepType,
                   let handler = stepTypeDecisionHandler else { return }
             handler(stepType)
         }
@@ -111,7 +111,7 @@ final class PrimerHeadlessKlarnaComponentTests: XCTestCase {
         sut?.updateCollectedData(collectableData: collectableData)
 
         switch validationResult {
-        case .invalid(let errors):
+        case let .invalid(errors):
             XCTAssertTrue(!errors.isEmpty)
         default:
             break
@@ -419,6 +419,37 @@ final class PrimerHeadlessKlarnaComponentTests: XCTestCase {
     func test_primerKlarnaWrapperAuthorized_Headless_AuthToken_FinalizeRequired() {
         // Arrange
         PrimerInternal.shared.sdkIntegrationType = .headless
+        let expectStep = expectation(description: "Finalization step is received")
+        stepTypeDecisionHandler = { stepType in
+            if case .finalizationRequiredStep = stepType {
+                expectStep.fulfill()
+            }
+        }
+
+        // Act
+        sut.primerKlarnaWrapperAuthorized(
+            approved: true,
+            authToken: UUID().uuidString,
+            finalizeRequired: true
+        )
+
+        // Assert
+        wait(for: [expectStep], timeout: 5.0)
+        XCTAssertEqual(
+            tokenizationComponent.authorizePaymentSessionCallCount,
+            0,
+            "authorizePaymentSession should not be called when finalizeRequired is true"
+        )
+        XCTAssertEqual(
+            tokenizationComponent.tokenizeHeadlessCallCount,
+            0,
+            "tokenizeHeadless should not be called when finalizeRequired is true"
+        )
+    }
+
+    func test_primerKlarnaWrapperAuthorized_DropIn_AuthToken_FinalizeRequired() {
+        // Arrange
+        PrimerInternal.shared.sdkIntegrationType = .dropIn
         let approved = true
         let authToken: String? = UUID().uuidString
         let finalizeRequired = true
@@ -428,46 +459,22 @@ final class PrimerHeadlessKlarnaComponentTests: XCTestCase {
                 expectStep.fulfill()
             }
         }
-        tokenizationComponent.authorizePaymentSessionResult = .success(MockPrimerAPIClient.Samples.mockCreateKlarnaCustomerToken)
-        tokenizationComponent.tokenizeHeadlessResult = .success(.init(payment: .init(
-            id: "MOCK_ID",
-            orderId: "MOCK_ORDER_ID",
-            paymentFailureReason: nil
-        )))
 
         // Act
         sut.primerKlarnaWrapperAuthorized(approved: approved, authToken: authToken, finalizeRequired: finalizeRequired)
 
         // Assert
         wait(for: [expectStep], timeout: 5.0)
-    }
-
-    func test_primerKlarnaWrapperAuthorized_DropIn_AuthToken_FinalizeRequired() {
-        // Arrange
-        PrimerInternal.shared.sdkIntegrationType = .dropIn
-        let approved = true
-        let authToken: String? = UUID().uuidString
-        let finalizeRequired = true
-        let expectAuthorizationStep = expectation(description: "Authorization step is received")
-        let expectFinalizationRequiredStep = expectation(description: "Finalization required step is received")
-        stepTypeDecisionHandler = { _ in
-            if let stepType = self.stepType {
-                switch stepType {
-                case .authorizationStep:
-                    expectAuthorizationStep.fulfill()
-                case .finalizationRequiredStep:
-                    expectFinalizationRequiredStep.fulfill()
-                default:
-                    break
-                }
-            }
-        }
-
-        // Act
-        sut.primerKlarnaWrapperAuthorized(approved: approved, authToken: authToken, finalizeRequired: finalizeRequired)
-
-        // Assert
-        wait(for: [expectAuthorizationStep, expectFinalizationRequiredStep], timeout: 5.0)
+        XCTAssertEqual(
+            tokenizationComponent.authorizePaymentSessionCallCount,
+            0,
+            "authorizePaymentSession should not be called when finalizeRequired is true"
+        )
+        XCTAssertEqual(
+            tokenizationComponent.tokenizeHeadlessCallCount,
+            0,
+            "tokenizeHeadless should not be called when finalizeRequired is true"
+        )
     }
 
     func test_primerKlarnaWrapperAuthorized_Headless_NoAuthToken_NoFinalizeRequired() {
@@ -621,7 +628,7 @@ extension PrimerHeadlessKlarnaComponentTests: PrimerHeadlessErrorableDelegate,
     func didReceiveStep(step: PrimerSDK.PrimerHeadlessStep) {
         if let step = step as? KlarnaStep {
             switch step {
-            case .paymentSessionCreated(clientToken: let clientToken, paymentCategories: let paymentCategories):
+            case let .paymentSessionCreated(clientToken: clientToken, paymentCategories: paymentCategories):
                 stepType = .creationStep
             case .paymentSessionAuthorized:
                 stepType = .authorizationStep

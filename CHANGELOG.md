@@ -1,3 +1,26 @@
+## 3.0.0-b0 (2026-03-12)
+
+### Feat
+
+- Checkout Components
+
+## 2.46.1 (2026-03-11)
+
+### Fix
+
+- Apple Pay availability check ignores checkProvidedNetworks setting (ESC-883) (#1597)
+- Fix dupe /payments calls in Klarna headless (#1587)
+
+## 2.46.0 (2026-03-05)
+
+### Feat
+
+- Add BIN data to Headless flow (#1569)
+
+### Fix
+
+- EFTPOS co-badge display and preferredNetwork fix (#1565)
+
 ## 2.45.0 (2026-02-20)
 
 ### Feat
