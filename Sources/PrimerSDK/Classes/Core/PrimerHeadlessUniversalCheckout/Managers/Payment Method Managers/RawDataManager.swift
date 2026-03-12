@@ -235,6 +235,7 @@ extension PrimerHeadlessUniversalCheckout {
                     await PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: self.paymentMethodType)
 
                     let paymentMethodTokenData = try await self.tokenizationService.tokenize(requestBody: requestBody)
+                    (self.rawData as? PrimerCardData)?.wipe()
                     self.paymentMethodTokenData = paymentMethodTokenData
 
                     let checkoutData = try await self.startPaymentFlow(withPaymentMethodTokenData: paymentMethodTokenData)
