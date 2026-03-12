@@ -690,7 +690,6 @@ struct UIEventProperties: AnalyticsEventProperties {
 
 struct SDKProperties: Codable {
 
-    let clientToken: String?
     let integrationType: String?
     let paymentMethodType: String?
     let sdkIntegrationType: PrimerSDKIntegrationType?
@@ -703,7 +702,6 @@ struct SDKProperties: Codable {
     let context: [String: AnyCodable]?
 
     private enum CodingKeys: String, CodingKey {
-        case clientToken
         case integrationType
         case paymentMethodType
         case sdkIntegrationType
@@ -717,7 +715,6 @@ struct SDKProperties: Codable {
     }
 
     fileprivate init() {
-        clientToken = AppState.current.clientToken
         sdkIntegrationType = PrimerInternal.shared.sdkIntegrationType
         #if COCOAPODS
         integrationType = "COCOAPODS"
@@ -746,7 +743,6 @@ struct SDKProperties: Codable {
 
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        clientToken = try container.decodeIfPresent(String.self, forKey: .clientToken)
         integrationType = try container.decodeIfPresent(String.self, forKey: .integrationType)
         paymentMethodType = try container.decodeIfPresent(String.self, forKey: .paymentMethodType)
         sdkIntegrationType = try container.decodeIfPresent(PrimerSDKIntegrationType.self, forKey: .sdkIntegrationType)
@@ -762,7 +758,6 @@ struct SDKProperties: Codable {
 
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encodeIfPresent(clientToken, forKey: .clientToken)
         try container.encodeIfPresent(integrationType, forKey: .integrationType)
         try container.encodeIfPresent(paymentMethodType, forKey: .paymentMethodType)
         try container.encodeIfPresent(sdkIntent, forKey: .sdkIntent)
