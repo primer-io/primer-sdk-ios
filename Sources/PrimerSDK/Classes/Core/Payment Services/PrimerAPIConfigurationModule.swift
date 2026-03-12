@@ -170,13 +170,6 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
 
         let previousDecodedToken = PrimerAPIConfigurationModule.decodedJWTToken
 
-        currentDecodedToken.configurationUrl = currentDecodedToken.configurationUrl?.replacingOccurrences(of: "10.0.2.2:8080",
-                                                                                                          with: "localhost:8080")
-        currentDecodedToken.coreUrl = currentDecodedToken.coreUrl?.replacingOccurrences(of: "10.0.2.2:8080",
-                                                                                        with: "localhost:8080")
-        currentDecodedToken.pciUrl = currentDecodedToken.pciUrl?.replacingOccurrences(of: "10.0.2.2:8080",
-                                                                                      with: "localhost:8080")
-
         if currentDecodedToken.env == nil {
             currentDecodedToken.env = previousDecodedToken?.env
         }
