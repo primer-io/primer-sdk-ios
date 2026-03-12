@@ -2,7 +2,6 @@
 name: swift-reviewer
 description: Reviews Swift code for quality, style, and best practices. Use proactively after code changes to catch issues early.
 tools: Read, Grep, Glob
-model: sonnet
 memory: project
 ---
 

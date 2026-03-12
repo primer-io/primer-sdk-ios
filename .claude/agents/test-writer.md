@@ -2,7 +2,6 @@
 name: test-writer
 description: Writes unit tests following Primer iOS SDK patterns. Use when adding tests for new or existing code.
 tools: Read, Grep, Glob, Write, Edit, Bash
-model: opus
 memory: project
 ---
 
