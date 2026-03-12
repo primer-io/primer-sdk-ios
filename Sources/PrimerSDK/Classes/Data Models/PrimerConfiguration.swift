@@ -31,8 +31,8 @@ extension Request.URLParameters {
 
         required init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
-            self.skipPaymentMethodTypes = (try? container.decode([String]?.self, forKey: .skipPaymentMethodTypes)) ?? nil
-            self.requestDisplayMetadata = (try? container.decode(Bool?.self, forKey: .requestDisplayMetadata)) ?? nil
+            skipPaymentMethodTypes = (try? container.decode([String]?.self, forKey: .skipPaymentMethodTypes)) ?? nil
+            requestDisplayMetadata = (try? container.decode(Bool?.self, forKey: .requestDisplayMetadata)) ?? nil
 
             if skipPaymentMethodTypes == nil, requestDisplayMetadata == nil {
                 throw InternalError.failedToDecode(message: "All values are nil")
@@ -46,11 +46,11 @@ extension Request.URLParameters {
                 throw InternalError.failedToDecode(message: "All values are nil")
             }
 
-            if let skipPaymentMethodTypes = skipPaymentMethodTypes {
+            if let skipPaymentMethodTypes {
                 try container.encode(skipPaymentMethodTypes, forKey: .skipPaymentMethodTypes)
             }
 
-            if let requestDisplayMetadata = requestDisplayMetadata {
+            if let requestDisplayMetadata {
                 try container.encode(requestDisplayMetadata, forKey: .requestDisplayMetadata)
             }
         }
@@ -58,14 +58,14 @@ extension Request.URLParameters {
         func toDictionary() -> [String: String]? {
             var dict: [String: String] = [:]
 
-            if let skipPaymentMethodTypes = skipPaymentMethodTypes, !skipPaymentMethodTypes.isEmpty {
+            if let skipPaymentMethodTypes, !skipPaymentMethodTypes.isEmpty {
                 dict[CodingKeys.skipPaymentMethodTypes.rawValue] = skipPaymentMethodTypes.joined(separator: ",")
 
-                if let requestDisplayMetadata = requestDisplayMetadata {
+                if let requestDisplayMetadata {
                     dict[CodingKeys.requestDisplayMetadata.rawValue] = requestDisplayMetadata ? "true" : "false"
                 }
             } else {
-                if let requestDisplayMetadata = requestDisplayMetadata {
+                if let requestDisplayMetadata {
                     dict[CodingKeys.requestDisplayMetadata.rawValue] = requestDisplayMetadata ? "true" : "false"
                 }
             }
@@ -94,10 +94,12 @@ extension Response.Body {
             let options = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.paymentMethod?.options
             let cardSurcharge = options?
                 .first(where: {
-                    (($0["networks"] as? [[String: Any]])?
+                    (
+                        ($0["networks"] as? [[String: Any]])?
                         .first(where: {
-                            $0["surcharge"] is Int
-                        })) != nil
+                            $0["surcharge"] as? Int != nil
+                        })
+                    ) != nil
                 })
             return pmSurcharge != nil || cardSurcharge != nil
         }
@@ -109,15 +111,7 @@ extension Response.Body {
                 .compactMap(\.tokenizationViewModel)
                 ?? []
 
-            let supportedNetworks = ApplePayUtils.supportedPKPaymentNetworks()
-            var canMakePayment: Bool
-            if PrimerSettings.current.paymentMethodOptions.applePayOptions?.checkProvidedNetworks == true {
-                canMakePayment = PKPaymentAuthorizationController.canMakePayments(usingNetworks: supportedNetworks)
-            } else {
-                canMakePayment = PKPaymentAuthorizationController.canMakePayments()
-            }
-
-            if !canMakePayment {
+            if !ApplePayUtils.canMakeApplePayPayments() {
                 if let applePayViewModel = viewModels.filter({ $0.config.type == PrimerPaymentMethodType.applePay.rawValue }).first,
                    let applePayViewModelIndex = viewModels.firstIndex(where: { $0 == applePayViewModel }) {
                     viewModels.remove(at: applePayViewModelIndex)
@@ -245,17 +239,17 @@ Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in you
 
         public init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
-            self.coreUrl = (try? container.decode(String?.self, forKey: .coreUrl)) ?? nil
-            self.pciUrl = (try? container.decode(String?.self, forKey: .pciUrl)) ?? nil
-            self.binDataUrl = (try? container.decode(String?.self, forKey: .binDataUrl)) ?? nil
-            self.assetsUrl = (try? container.decode(String?.self, forKey: .assetsUrl)) ?? nil
-            self.clientSession = (try? container.decode(ClientSession.APIResponse?.self, forKey: .clientSession)) ?? nil
+            coreUrl = (try? container.decode(String?.self, forKey: .coreUrl)) ?? nil
+            pciUrl = (try? container.decode(String?.self, forKey: .pciUrl)) ?? nil
+            binDataUrl = (try? container.decode(String?.self, forKey: .binDataUrl)) ?? nil
+            assetsUrl = (try? container.decode(String?.self, forKey: .assetsUrl)) ?? nil
+            clientSession = (try? container.decode(ClientSession.APIResponse?.self, forKey: .clientSession)) ?? nil
             let throwables = try container.decode([Throwable<PrimerPaymentMethod>].self, forKey: .paymentMethods)
-            self.paymentMethods = throwables.compactMap(\.value)
-            self.primerAccountId = (try? container.decode(String?.self, forKey: .primerAccountId)) ?? nil
-            self.keys = (try? container.decode(ThreeDS.Keys?.self, forKey: .keys)) ?? nil
+            paymentMethods = throwables.compactMap(\.value)
+            primerAccountId = (try? container.decode(String?.self, forKey: .primerAccountId)) ?? nil
+            keys = (try? container.decode(ThreeDS.Keys?.self, forKey: .keys)) ?? nil
             let moduleThrowables = try container.decode([Throwable<CheckoutModule>].self, forKey: .checkoutModules)
-            self.checkoutModules = moduleThrowables.compactMap(\.value)
+            checkoutModules = moduleThrowables.compactMap(\.value)
 
             var hasCardSurcharge = false
             var paymentMethodSurcharges: [String: Int] = [:]
@@ -280,14 +274,14 @@ Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in you
                     }
                 }
 
-                if let paymentMethod = self.paymentMethods?.filter({ $0.type == PrimerPaymentMethodType.paymentCard.rawValue }).first {
+                if let paymentMethod = paymentMethods?.filter({ $0.type == PrimerPaymentMethodType.paymentCard.rawValue }).first {
                     paymentMethod.hasUnknownSurcharge = hasCardSurcharge
                     paymentMethod.surcharge = nil
                 }
 
                 // Process other payment method surcharges
                 for (paymentMethodType, surchargeValue) in paymentMethodSurcharges {
-                    if let paymentMethod = self.paymentMethods?.first(where: { $0.type == paymentMethodType }) {
+                    if let paymentMethod = paymentMethods?.first(where: { $0.type == paymentMethodType }) {
                         paymentMethod.surcharge = surchargeValue
                     }
                 }
@@ -317,7 +311,7 @@ Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in you
         }
 
         func getConfigId(for type: String) -> String? {
-            guard let method = self.paymentMethods?.filter({ $0.type == type }).first else { return nil }
+            guard let method = paymentMethods?.filter({ $0.type == type }).first else { return nil }
             return method.id
         }
 
@@ -353,10 +347,10 @@ extension Response.Body.Configuration {
 
             init(from decoder: Decoder) throws {
                 let container = try decoder.container(keyedBy: CodingKeys.self)
-                self.cardHolderName = (try? container.decode(Bool?.self, forKey: .cardHolderName)) ?? nil
-                self.saveCardCheckbox = (try? container.decode(Bool?.self, forKey: .saveCardCheckbox)) ?? nil
+                cardHolderName = (try? container.decode(Bool?.self, forKey: .cardHolderName)) ?? nil
+                saveCardCheckbox = (try? container.decode(Bool?.self, forKey: .saveCardCheckbox)) ?? nil
 
-                if self.cardHolderName == nil, self.saveCardCheckbox == nil {
+                if cardHolderName == nil, saveCardCheckbox == nil {
                     throw handled(error: InternalError.failedToDecode(message: "All fields are nil"))
                 }
             }
@@ -398,15 +392,17 @@ extension Response.Body.Configuration {
                 case state
             }
 
-            init(firstName: Bool? = nil,
-                 lastName: Bool? = nil,
-                 city: Bool? = nil,
-                 postalCode: Bool? = nil,
-                 addressLine1: Bool? = nil,
-                 addressLine2: Bool? = nil,
-                 countryCode: Bool? = nil,
-                 phoneNumber: Bool? = nil,
-                 state: Bool? = nil) {
+            init(
+                firstName: Bool? = nil,
+                lastName: Bool? = nil,
+                city: Bool? = nil,
+                postalCode: Bool? = nil,
+                addressLine1: Bool? = nil,
+                addressLine2: Bool? = nil,
+                countryCode: Bool? = nil,
+                phoneNumber: Bool? = nil,
+                state: Bool? = nil
+            ) {
                 self.firstName = firstName
                 self.lastName = lastName
                 self.city = city
@@ -420,25 +416,25 @@ extension Response.Body.Configuration {
 
             init(from decoder: Decoder) throws {
                 let container = try decoder.container(keyedBy: CodingKeys.self)
-                self.firstName = (try? container.decode(Bool?.self, forKey: .firstName)) ?? nil
-                self.lastName = (try? container.decode(Bool?.self, forKey: .lastName)) ?? nil
-                self.city = (try? container.decode(Bool?.self, forKey: .city)) ?? nil
-                self.postalCode = (try? container.decode(Bool?.self, forKey: .postalCode)) ?? nil
-                self.addressLine1 = (try? container.decode(Bool?.self, forKey: .addressLine1)) ?? nil
-                self.addressLine2 = (try? container.decode(Bool?.self, forKey: .addressLine2)) ?? nil
-                self.countryCode = (try? container.decode(Bool?.self, forKey: .countryCode)) ?? nil
-                self.phoneNumber = (try? container.decode(Bool?.self, forKey: .phoneNumber)) ?? nil
-                self.state = (try? container.decode(Bool?.self, forKey: .state)) ?? nil
+                firstName = (try? container.decode(Bool?.self, forKey: .firstName)) ?? nil
+                lastName = (try? container.decode(Bool?.self, forKey: .lastName)) ?? nil
+                city = (try? container.decode(Bool?.self, forKey: .city)) ?? nil
+                postalCode = (try? container.decode(Bool?.self, forKey: .postalCode)) ?? nil
+                addressLine1 = (try? container.decode(Bool?.self, forKey: .addressLine1)) ?? nil
+                addressLine2 = (try? container.decode(Bool?.self, forKey: .addressLine2)) ?? nil
+                countryCode = (try? container.decode(Bool?.self, forKey: .countryCode)) ?? nil
+                phoneNumber = (try? container.decode(Bool?.self, forKey: .phoneNumber)) ?? nil
+                state = (try? container.decode(Bool?.self, forKey: .state)) ?? nil
 
-                if self.firstName == nil,
-                   self.lastName == nil,
-                   self.city == nil,
-                   self.postalCode == nil,
-                   self.addressLine1 == nil,
-                   self.addressLine2 == nil,
-                   self.countryCode == nil,
-                   self.phoneNumber == nil,
-                   self.state == nil {
+                if firstName == nil,
+                    lastName == nil,
+                    city == nil,
+                    postalCode == nil,
+                    addressLine1 == nil,
+                    addressLine2 == nil,
+                    countryCode == nil,
+                    phoneNumber == nil,
+                    state == nil {
                     throw handled(error: InternalError.failedToDecode(message: "All fields are nil"))
                 }
             }
@@ -452,8 +448,8 @@ extension Response.Body.Configuration {
 
         init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
-            self.type = try container.decode(String.self, forKey: .type)
-            self.requestUrlStr = (try? container.decode(String?.self, forKey: .requestUrlStr)) ?? nil
+            type = try container.decode(String.self, forKey: .type)
+            requestUrlStr = (try? container.decode(String?.self, forKey: .requestUrlStr)) ?? nil
 
             if let options = (try? container.decode(CardInformationOptions.self, forKey: .options)) {
                 self.options = options
@@ -462,7 +458,7 @@ extension Response.Body.Configuration {
             } else if let options = (try? container.decode(ShippingMethodOptions.self, forKey: .options)) {
                 self.options = options
             } else {
-                self.options = nil
+                options = nil
             }
         }
 

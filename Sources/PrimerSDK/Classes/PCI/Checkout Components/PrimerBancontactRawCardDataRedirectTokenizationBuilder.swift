@@ -1,7 +1,7 @@
 //
 //  PrimerBancontactRawCardDataRedirectTokenizationBuilder.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
@@ -15,29 +15,29 @@ final class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDat
 
     var rawData: PrimerRawData? {
         didSet {
-            if let rawCardData = self.rawData as? PrimerBancontactCardData {
+            if let rawCardData = rawData as? PrimerBancontactCardData {
                 rawCardData.onDataDidChange = { [weak self] in
-                    guard let self = self else { return }
+                    guard let self else { return }
                     Task { try? await self.validateRawData(rawCardData) }
 
                     let newCardNetwork = CardNetwork(cardNumber: rawCardData.cardNumber)
-                    if newCardNetwork != self.cardNetwork {
-                        self.cardNetwork = newCardNetwork
+                    if newCardNetwork != cardNetwork {
+                        cardNetwork = newCardNetwork
                     }
                 }
 
                 let newCardNetwork = CardNetwork(cardNumber: rawCardData.cardNumber)
-                if newCardNetwork != self.cardNetwork {
-                    self.cardNetwork = newCardNetwork
+                if newCardNetwork != cardNetwork {
+                    cardNetwork = newCardNetwork
                 }
 
             } else {
-                if self.cardNetwork != .unknown {
-                    self.cardNetwork = .unknown
+                if cardNetwork != .unknown {
+                    cardNetwork = .unknown
                 }
             }
 
-            if let rawData = self.rawData {
+            if let rawData {
                 Task { try? await self.validateRawData(rawData) }
             }
         }
@@ -49,7 +49,7 @@ final class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDat
 
     public private(set) var cardNetwork: CardNetwork = .unknown {
         didSet {
-            guard let rawDataManager = rawDataManager else {
+            guard let rawDataManager else {
                 return
             }
 
@@ -126,7 +126,7 @@ final class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDat
             }
         }
 
-        if self.requiredInputElementTypes.contains(PrimerInputElementType.cardholderName) {
+        if requiredInputElementTypes.contains(PrimerInputElementType.cardholderName) {
             if rawData.cardholderName.isEmpty {
                 errors.append(PrimerValidationError.invalidCardholderName(
                     message: "Cardholder name cannot be blank."
@@ -140,8 +140,6 @@ final class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDat
 
         guard errors.isEmpty else {
             let err = PrimerError.underlyingErrors(errors: errors)
-            ErrorHandler.handle(error: err)
-
             notifyDelegateOfValidationResult(isValid: false, errors: errors)
             throw err
         }
