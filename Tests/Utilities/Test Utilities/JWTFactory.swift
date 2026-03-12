@@ -58,7 +58,11 @@ struct JWTPayloadSegment: Encodable {
 
 class JWTFactory {
 
-    let encoder: JSONEncoder = JSONEncoder()
+    let encoder: JSONEncoder = {
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = .sortedKeys
+        return encoder
+    }()
 
     func create(
         accessToken: String = "00000000-0000-0000-0000-000000000000",
