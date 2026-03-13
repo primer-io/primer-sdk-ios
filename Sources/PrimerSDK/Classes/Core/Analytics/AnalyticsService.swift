@@ -8,6 +8,7 @@
 // swiftlint:disable file_length
 
 import Foundation
+import PrimerCore
 
 protocol AnalyticsServiceProtocol: Actor {
     func record(events: [Analytics.Event]) async throws
@@ -195,7 +196,7 @@ extension Analytics {
                 return
             }
 
-            if url.absoluteString != self.sdkLogsUrl.absoluteString,
+            if url.absoluteString != sdkLogsUrl.absoluteString,
                PrimerAPIConfigurationModule.clientToken?.decodedJWTToken == nil {
                 // Skip sending events that require client token when no token is available
                 // (This is already handled at record() level, but we double-check here as a safety measure)
@@ -208,7 +209,7 @@ extension Analytics {
 
             logger.debug(message: "📚 Analytics: Sending \(events.count) events to \(url.absoluteString)")
 
-            self.apiClient.sendAnalyticsEvents(
+            apiClient.sendAnalyticsEvents(
                 clientToken: decodedJWTToken,
                 url: url,
                 body: events
@@ -218,12 +219,12 @@ extension Analytics {
                     let messageContent = "\(events.count) events on URL \(url.absoluteString)"
                     switch result {
                     case .success:
-                        self.storage.delete(events)
-                        self.logger.debug(message: "📚 Analytics: Finished sending \(messageContent)")
+                        storage.delete(events)
+                        logger.debug(message: "📚 Analytics: Finished sending \(messageContent)")
                         completion(nil)
                     case let .failure(err):
-                        self.logger.error(message: "📚 Analytics: Failed to send \(messageContent) with error \(err)")
-                        await self.handleFailedEvents(forUrl: url)
+                        logger.error(message: "📚 Analytics: Failed to send \(messageContent) with error \(err)")
+                        await handleFailedEvents(forUrl: url)
                         completion(handled(error: err))
                     }
                 }
@@ -243,13 +244,13 @@ extension Analytics {
         }
 
         private func handleFailedEvents(forUrl url: URL) {
-            self.eventSendFailureCount += 1
+            eventSendFailureCount += 1
             if eventSendFailureCount >= 3 {
                 logger.error(message: "Failed to send events three or more times. Deleting analytics file ...")
                 storage.deleteAnalyticsFile()
                 eventSendFailureCount = 0
             } else {
-                self.storage.delete(eventsWithUrl: url)
+                storage.delete(eventsWithUrl: url)
             }
         }
 

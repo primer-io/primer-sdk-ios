@@ -5,6 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+import PrimerCore
 import PrimerSDK
 
 /// Unified networking utilities for CheckoutComponents demos
@@ -21,9 +22,9 @@ enum NetworkingUtils {
         var errorDescription: String? {
             switch self {
             case .invalidResponse:
-                return "Invalid response from server"
+                "Invalid response from server"
             case .noToken:
-                return "No client token received"
+                "No client token received"
             }
         }
     }
@@ -45,9 +46,9 @@ enum NetworkingUtils {
                 requestBody: body,
                 apiVersion: apiVersion
             ) { clientToken, error in
-                if let error = error {
+                if let error {
                     continuation.resume(throwing: error)
-                } else if let clientToken = clientToken {
+                } else if let clientToken {
                     continuation.resume(returning: clientToken)
                 } else {
                     continuation.resume(throwing: NetworkingError.noToken)
