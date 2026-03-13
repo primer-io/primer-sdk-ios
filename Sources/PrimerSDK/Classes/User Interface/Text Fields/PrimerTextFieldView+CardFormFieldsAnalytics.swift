@@ -5,6 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import PrimerCore
+import PrimerFoundation
 import UIKit
 
 extension PrimerTextFieldView {
@@ -15,7 +16,8 @@ extension PrimerTextFieldView {
             context: Analytics.Event.Property.Context(
                 issuerId: nil,
                 paymentMethodType: PrimerPaymentMethodType.paymentCard.rawValue,
-                url: nil),
+                url: nil
+            ),
             extra: nil,
             objectType: .input,
             objectId: objectId,
@@ -30,7 +32,8 @@ extension PrimerTextFieldView {
             context: Analytics.Event.Property.Context(
                 issuerId: nil,
                 paymentMethodType: PrimerPaymentMethodType.paymentCard.rawValue,
-                url: nil),
+                url: nil
+            ),
             extra: nil,
             objectType: .input,
             objectId: objectId,
