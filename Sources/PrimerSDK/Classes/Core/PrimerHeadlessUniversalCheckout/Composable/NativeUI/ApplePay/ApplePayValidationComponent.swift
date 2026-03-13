@@ -6,6 +6,7 @@
 
 import Foundation
 import PrimerCore
+import PrimerFoundation
 
 struct ApplePayValidationComponent: NativeUIValidateable {
     let paymentMethodType = PrimerPaymentMethodType.applePay.rawValue

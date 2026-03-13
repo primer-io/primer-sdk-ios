@@ -36,7 +36,7 @@ class MockKlarnaTokenizationComponent: KlarnaTokenizationComponentProtocol {
 
     func authorizePaymentSession(
         authorizationToken: String
-    ) async throws -> PrimerSDK.Response.Body.Klarna.CustomerToken {
+    ) async throws -> Response.Body.Klarna.CustomerToken {
         authorizePaymentSessionCallCount += 1
         switch authorizePaymentSessionResult {
         case let .success(customerToken): return customerToken
