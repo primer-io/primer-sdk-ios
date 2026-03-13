@@ -10,13 +10,6 @@
 import Foundation
 import PrimerCore
 
-protocol AnalyticsServiceProtocol: Actor {
-    func record(events: [Analytics.Event]) async throws
-    func fire(events: [Analytics.Event])
-    func record(event: Analytics.Event) async throws
-    func fire(event: Analytics.Event)
-}
-
 extension Analytics {
 
     final actor Service: AnalyticsServiceProtocol, LogReporter {

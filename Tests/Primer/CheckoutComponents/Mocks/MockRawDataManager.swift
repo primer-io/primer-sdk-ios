@@ -5,6 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+import PrimerFoundation
 @testable import PrimerSDK
 
 @available(iOS 15.0, *)
@@ -56,7 +57,7 @@ final class MockRawDataManager: RawDataManagerProtocol {
 
         DispatchQueue.main.async { [weak self] in
             guard let self else { return }
-            completion(self.initializationData, self.configureError)
+            completion(initializationData, configureError)
         }
     }
 
@@ -75,8 +76,8 @@ final class MockRawDataManager: RawDataManagerProtocol {
                 let rawDataManager = try PrimerHeadlessUniversalCheckout.RawDataManager(paymentMethodType: "PAYMENT_CARD")
                 delegate.primerRawDataManager?(
                     rawDataManager,
-                    dataIsValid: self.isDataValid,
-                    errors: self.validationErrors
+                    dataIsValid: isDataValid,
+                    errors: validationErrors
                 )
             } catch {
                 // Expected in unit tests without full SDK configuration

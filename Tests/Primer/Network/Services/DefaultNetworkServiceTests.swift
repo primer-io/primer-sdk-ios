@@ -15,7 +15,7 @@ final class MockRequestDispatcher: RequestDispatcher, @unchecked Sendable {
 
     var responseModel: DispatcherResponse!
 
-    func dispatch(request: URLRequest) async throws -> any PrimerSDK.DispatcherResponse {
+    func dispatch(request: URLRequest) async throws -> any DispatcherResponse {
         if let error {
             throw error
         }

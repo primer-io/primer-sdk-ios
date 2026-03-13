@@ -31,7 +31,7 @@ final class MockPrimerAPIAnalyticsClient: PrimerAPIClientAnalyticsProtocol, @unc
         onSendAnalyticsEvent?(body)
     }
 
-    func sendAnalyticsEvents(clientToken: PrimerSDK.DecodedJWTToken?, url: URL, body: [Analytics.Event]?) async throws -> Analytics.Service.Response {
+    func sendAnalyticsEvents(clientToken: DecodedJWTToken?, url: URL, body: [Analytics.Event]?) async throws -> Analytics.Service.Response {
         guard let body else {
             XCTFail();
             throw PrimerError.unknown()

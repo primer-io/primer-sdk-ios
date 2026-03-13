@@ -91,4 +91,13 @@ public enum InternalError: Error {
     }
 
     public var analyticsContext: [String: Any] { [AnalyticsContextKeys.errorId: errorId] }
+
+    public var isReportable: Bool {
+        switch self {
+        case .serverError, .failedToPerform3dsAndShouldBreak:
+            true
+        default:
+            false
+        }
+    }
 }
