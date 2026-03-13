@@ -4,10 +4,9 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import Foundation
-import PrimerFoundation
+import Foundation   
 
-enum InternalError: PrimerErrorProtocol {
+public enum InternalError {
     case failedToDecode(message: String?, diagnosticsId: String = .uuid)
     case invalidUrl(url: String?, diagnosticsId: String = .uuid)
     case invalidValue(key: String, value: Any? = nil, diagnosticsId: String = .uuid)
@@ -17,11 +16,11 @@ enum InternalError: PrimerErrorProtocol {
     case serverError(status: Int, response: PrimerServerError? = nil, diagnosticsId: String = .uuid)
     case unauthorized(url: String, diagnosticsId: String = .uuid)
     case underlyingErrors(errors: [Error], diagnosticsId: String = .uuid)
-    case failedToPerform3dsButShouldContinue(error: Primer3DSErrorContainer)
+    case failedToPerform3dsButShouldContinue(error: Error)
     case failedToPerform3dsAndShouldBreak(error: Error)
     case noNeedToPerform3ds(status: String)
 
-    var errorId: String {
+    public var errorId: String {
         switch self {
         case .failedToDecode: "failed-to-decode"
         case .invalidUrl: "invalid-url"
@@ -37,25 +36,27 @@ enum InternalError: PrimerErrorProtocol {
         case .noNeedToPerform3ds: "no-need-to-perform-3ds"
         }
     }
-    
-    var diagnosticsId: String {
+
+    public var diagnosticsId: String {
         switch self {
-        case
-            let .failedToDecode(_, diagnosticsId),
-            let .invalidUrl(_, diagnosticsId),
-            let .invalidValue(_, _, diagnosticsId),
-            let .missingHTTPResponse(_, diagnosticsId),
-            let .networkFailedAfterRetries(diagnosticsId, _),
-            let .noData(diagnosticsId),
-            let .serverError(_, _, diagnosticsId),
-            let .unauthorized(_, diagnosticsId),
-            let .underlyingErrors(_, diagnosticsId):
+        case let .failedToDecode(_, diagnosticsId),
+                let .invalidUrl(_, diagnosticsId),
+                let .invalidValue(_, _, diagnosticsId),
+                let .missingHTTPResponse(_, diagnosticsId),
+                let .networkFailedAfterRetries(diagnosticsId, _),
+                let .noData(diagnosticsId),
+                let .serverError(_, _, diagnosticsId),
+                let .unauthorized(_, diagnosticsId),
+                let .underlyingErrors(_, diagnosticsId):
             diagnosticsId
-        default: UUID().uuidString
+        case .failedToPerform3dsButShouldContinue,
+                .failedToPerform3dsAndShouldBreak,
+                .noNeedToPerform3ds:
+            UUID().uuidString
         }
     }
 
-    var errorDescription: String? {
+    public var errorDescription: String? {
         switch self {
         case let .failedToDecode(message, _):
             return "[\(errorId)] Failed to decode\(message == nil ? "" : " (\(message!)") (diagnosticsId: \(diagnosticsId))"
@@ -92,33 +93,5 @@ enum InternalError: PrimerErrorProtocol {
         }
     }
 
-    public var exposedError: Error {
-        switch self {
-        case let .failedToPerform3dsButShouldContinue(error): error.normalizedForSDK
-        case let .failedToPerform3dsAndShouldBreak(error): error.normalizedForSDK
-        case .serverError: shouldExposeServerError ? self : PrimerError.unknown(diagnosticsId: diagnosticsId)
-        default: PrimerError.unknown(diagnosticsId: diagnosticsId)
-        }
-    }
-
     public var analyticsContext: [String: Any] { [AnalyticsContextKeys.errorId: errorId] }
-
-    public var isReportable: Bool {
-        switch self {
-        case .serverError, .failedToPerform3dsAndShouldBreak:
-            true
-        default:
-            false
-        }
-    }
-}
-
-private extension InternalError {
-    var shouldExposeServerError: Bool {
-        #if DEBUG
-        true
-        #else
-        false
-        #endif
-    }
 }
