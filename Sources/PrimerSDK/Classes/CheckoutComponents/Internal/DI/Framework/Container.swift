@@ -7,10 +7,11 @@
 // swiftlint:disable file_length
 
 import Foundation
+import PrimerCore
 
 final class WeakBox<T: AnyObject> {
   weak var instance: T?
-  init(_ inst: T) { self.instance = inst }
+  init(_ inst: T) { instance = inst }
 }
 
 /// Thread-safe container for storing values across async boundaries
@@ -46,7 +47,7 @@ public actor Container: ContainerProtocol, LogReporter {
 
     init(policy: ContainerRetainPolicy, buildSync: @escaping (ContainerProtocol) throws -> Any) {
       self.policy = policy
-      self.buildAsync = { container in
+      buildAsync = { container in
         try buildSync(container)
       }
     }
@@ -69,17 +70,17 @@ public actor Container: ContainerProtocol, LogReporter {
     }
 
     public func asSingleton() -> Self {
-      self.policy = .singleton
+      policy = .singleton
       return self
     }
 
     public func asWeak() -> Self {
-      self.policy = .weak
+      policy = .weak
       return self
     }
 
     public func asTransient() -> Self {
-      self.policy = .transient
+      policy = .transient
       return self
     }
 
@@ -250,7 +251,7 @@ public actor Container: ContainerProtocol, LogReporter {
 
     let finalResult = resultContainer.value
 
-    guard timeoutResult == .success, let finalResult = finalResult else {
+    guard timeoutResult == .success, let finalResult else {
       throw ContainerError.factoryFailed(
         TypeKey(type, name: name),
         underlyingError: NSError(

@@ -5,6 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+import PrimerCore
 import UIKit
 
 /// Core analytics event service responsible for orchestrating event tracking.
@@ -55,7 +56,7 @@ actor AnalyticsEventService: CheckoutComponentsAnalyticsServiceProtocol, LogRepo
   // MARK: - AnalyticsServiceProtocol
 
   func initialize(config: AnalyticsSessionConfig) async {
-    self.sessionConfig = config
+    sessionConfig = config
 
     // Flush any events that arrived before initialization completed
     let bufferedEvents = await eventBuffer.flush()

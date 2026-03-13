@@ -5,6 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+import PrimerCore
 
 /// Responsible for buffering analytics events before the service is fully initialized.
 /// Once initialization completes, buffered events are flushed in order.

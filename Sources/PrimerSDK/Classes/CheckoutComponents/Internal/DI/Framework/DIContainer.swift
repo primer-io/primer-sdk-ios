@@ -5,6 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+import PrimerCore
 
 /// Provides global access to the current DI container with context management
 @available(iOS 15.0, *)
@@ -61,8 +62,8 @@ public final class DIContainer: LogReporter {
 
   private init() {
     let container = Container()
-    self.storage = ContainerStorage(container: container)
-    self.cachedContainer = container
+    storage = ContainerStorage(container: container)
+    cachedContainer = container
   }
 
   public static func createContainer() -> any ContainerProtocol {

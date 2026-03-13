@@ -6,6 +6,7 @@
 
 // swiftlint:disable all
 #if DEBUG
+  import PrimerCore
   import SwiftUI
 
   /// Mock implementation of PrimerCardFormScope for SwiftUI previews

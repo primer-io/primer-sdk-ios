@@ -5,6 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+import PrimerCore
 
 /// Implementation of PayPalRepository that wraps the existing PayPalService and WebAuthenticationService.
 @available(iOS 15.0, *)
@@ -83,14 +84,14 @@ final class PayPalRepositoryImpl: PayPalRepository, LogReporter {
   {
     switch data {
     case let .order(orderId, payerInfo):
-      return PayPalPaymentInstrument(
+      PayPalPaymentInstrument(
         paypalOrderId: orderId,
         paypalBillingAgreementId: nil,
         shippingAddress: nil,
         externalPayerInfo: mapToExternalPayerInfo(payerInfo)
       )
     case let .billingAgreement(result):
-      return PayPalPaymentInstrument(
+      PayPalPaymentInstrument(
         paypalOrderId: nil,
         paypalBillingAgreementId: result.billingAgreementId,
         shippingAddress: mapToShippingAddress(result.shippingAddress),

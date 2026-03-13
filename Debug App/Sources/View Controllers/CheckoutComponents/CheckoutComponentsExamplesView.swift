@@ -4,6 +4,7 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+import PrimerCore
 import PrimerSDK
 import SwiftUI
 
@@ -14,7 +15,7 @@ struct CheckoutComponentsExamplesView: View {
     @State private var selectedDemoId: UUID?
 
     init(settings: PrimerSettings, apiVersion: PrimerApiVersion, clientSession: ClientSessionRequestBody? = nil, clientToken: String? = nil) {
-        self.configuration = DemoConfiguration(
+        configuration = DemoConfiguration(
             settings: settings,
             apiVersion: apiVersion,
             clientSession: clientSession,

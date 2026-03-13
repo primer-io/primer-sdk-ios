@@ -6,6 +6,7 @@
 
 // swiftlint:disable identifier_name
 
+import PrimerCore
 import SwiftUI
 
 /// Scope interface for the card payment form, providing field management and UI customization.

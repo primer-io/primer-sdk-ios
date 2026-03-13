@@ -5,6 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+import PrimerCore
 
 /// The main DI container for CheckoutComponents module.
 /// Registers all dependencies needed for the checkout flow.

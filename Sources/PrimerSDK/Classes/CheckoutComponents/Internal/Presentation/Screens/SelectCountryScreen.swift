@@ -4,6 +4,7 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+import PrimerCore
 import SwiftUI
 
 /// Default country selection screen for CheckoutComponents
@@ -166,7 +167,7 @@ struct SelectCountryScreen: View, LogReporter {
     Task {
       for await state in await scope.state {
         await MainActor.run {
-          self.countryState = state
+          countryState = state
         }
       }
     }

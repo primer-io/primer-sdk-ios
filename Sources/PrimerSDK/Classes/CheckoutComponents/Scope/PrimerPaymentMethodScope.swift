@@ -5,6 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+import PrimerCore
 import SwiftUI
 
 /// Base protocol for all payment method scopes, providing common lifecycle and state management.

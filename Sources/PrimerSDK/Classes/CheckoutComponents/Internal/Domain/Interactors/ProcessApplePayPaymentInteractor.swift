@@ -6,6 +6,7 @@
 
 import Foundation
 import PassKit
+import PrimerCore
 import PrimerFoundation
 
 /// Protocol for processing Apple Pay payments.
