@@ -5,6 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+import PrimerCore
 import PrimerFoundation
 
 // swiftlint:disable all
@@ -45,7 +46,7 @@ extension Analytics {
             clientSessionId = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.clientSessionId
             createdAt = Date().millisecondsSince1970
             customerId = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.customer?.id
-            device = Device()
+            device = Device(uniqueDeviceIdentifier: Device.uniqueDeviceIdentifier)
             self.eventType = eventType
             primerAccountId = PrimerAPIConfigurationModule.apiConfiguration?.primerAccountId
             self.properties = properties
