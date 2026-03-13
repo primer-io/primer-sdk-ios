@@ -4,6 +4,7 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+import PrimerFoundation
 @testable import PrimerSDK
 import XCTest
 
@@ -12,14 +13,16 @@ final class PrimerPaymentMethodTests: XCTestCase {
     var paymentMethod: PrimerPaymentMethod!
 
     override func setUpWithError() throws {
-        paymentMethod = PrimerPaymentMethod(id: "id",
-                                            implementationType: .nativeSdk,
-                                            type: "type",
-                                            name: "name",
-                                            processorConfigId: "processor_config_id",
-                                            surcharge: 123,
-                                            options: nil,
-                                            displayMetadata: nil)
+        paymentMethod = PrimerPaymentMethod(
+            id: "id",
+            implementationType: .nativeSdk,
+            type: "type",
+            name: "name",
+            processorConfigId: "processor_config_id",
+            surcharge: 123,
+            options: nil,
+            displayMetadata: nil
+        )
     }
 
     func testLogo_NoImage() {
@@ -32,25 +35,31 @@ final class PrimerPaymentMethodTests: XCTestCase {
     }
 
     func testLogo_coloredImage() {
-        paymentMethod.baseLogoImage = PrimerTheme.BaseImage(colored: UIImage(systemName: "paintbrush"),
-                                                            light: UIImage(systemName: "sun.max"),
-                                                            dark: UIImage(systemName: "sun.min"))
+        paymentMethod.baseLogoImage = PrimerTheme.BaseImage(
+            colored: UIImage(systemName: "paintbrush"),
+            light: UIImage(systemName: "sun.max"),
+            dark: UIImage(systemName: "sun.min")
+        )
 
         XCTAssertEqual(paymentMethod.logo!, UIImage(systemName: "paintbrush"))
     }
 
     func testLogo_LightImage() {
-        paymentMethod.baseLogoImage = PrimerTheme.BaseImage(colored: nil,
-                                                            light: UIImage(systemName: "sun.max"),
-                                                            dark: UIImage(systemName: "sun.min"))
+        paymentMethod.baseLogoImage = PrimerTheme.BaseImage(
+            colored: nil,
+            light: UIImage(systemName: "sun.max"),
+            dark: UIImage(systemName: "sun.min")
+        )
 
         XCTAssertEqual(paymentMethod.logo!, UIImage(systemName: "sun.max"))
     }
 
     func testLogo_DarkImage() {
-        paymentMethod.baseLogoImage = PrimerTheme.BaseImage(colored: nil,
-                                                            light: nil,
-                                                            dark: UIImage(systemName: "sun.min"))
+        paymentMethod.baseLogoImage = PrimerTheme.BaseImage(
+            colored: nil,
+            light: nil,
+            dark: UIImage(systemName: "sun.min")
+        )
 
         XCTAssertEqual(paymentMethod.logo!, UIImage(systemName: "sun.min"))
     }
@@ -112,8 +121,10 @@ final class PrimerPaymentMethodTests: XCTestCase {
             .adyenMultibanco
         ]
         formPaymentMethods.forEach { type in
-            let paymentMethod = createPaymentMethod(withImplementationType: .nativeSdk,
-                                                    paymentType: type)
+            let paymentMethod = createPaymentMethod(
+                withImplementationType: .nativeSdk,
+                paymentType: type
+            )
             XCTAssertTrue(paymentMethod.tokenizationViewModel is FormPaymentMethodTokenizationViewModel)
         }
 
@@ -122,8 +133,10 @@ final class PrimerPaymentMethodTests: XCTestCase {
             .adyenDotPay
         ]
         banksPaymentMethods.forEach { type in
-            let paymentMethod = createPaymentMethod(withImplementationType: .nativeSdk,
-                                                    paymentType: type)
+            let paymentMethod = createPaymentMethod(
+                withImplementationType: .nativeSdk,
+                paymentType: type
+            )
             XCTAssertTrue(paymentMethod.tokenizationViewModel is BankSelectorTokenizationViewModel)
         }
 
@@ -132,8 +145,10 @@ final class PrimerPaymentMethodTests: XCTestCase {
             .adyenBancontactCard
         ]
         cardPaymentMethods.forEach { type in
-            let paymentMethod = createPaymentMethod(withImplementationType: .nativeSdk,
-                                                    paymentType: type)
+            let paymentMethod = createPaymentMethod(
+                withImplementationType: .nativeSdk,
+                paymentType: type
+            )
             XCTAssertTrue(paymentMethod.tokenizationViewModel is CardFormPaymentMethodTokenizationViewModel)
         }
 
@@ -143,8 +158,10 @@ final class PrimerPaymentMethodTests: XCTestCase {
             .omisePromptPay
         ]
         qrCodePaymentMethods.forEach { type in
-            let paymentMethod = createPaymentMethod(withImplementationType: .nativeSdk,
-                                                    paymentType: type)
+            let paymentMethod = createPaymentMethod(
+                withImplementationType: .nativeSdk,
+                paymentType: type
+            )
             XCTAssertTrue(paymentMethod.tokenizationViewModel is QRCodeTokenizationViewModel)
         }
 
@@ -154,8 +171,10 @@ final class PrimerPaymentMethodTests: XCTestCase {
             .primerTestPayPal
         ]
         testPaymentMethods.forEach { type in
-            let paymentMethod = createPaymentMethod(withImplementationType: .nativeSdk,
-                                                    paymentType: type)
+            let paymentMethod = createPaymentMethod(
+                withImplementationType: .nativeSdk,
+                paymentType: type
+            )
             XCTAssertTrue(paymentMethod.tokenizationViewModel is PrimerTestPaymentMethodTokenizationViewModel)
         }
 
@@ -239,8 +258,10 @@ final class PrimerPaymentMethodTests: XCTestCase {
 
     // MARK: Helpers
 
-    private func createPaymentMethod(withImplementationType implementationType: PrimerPaymentMethod.ImplementationType,
-                                     paymentType: PrimerPaymentMethodType = .paymentCard) -> PrimerPaymentMethod {
+    private func createPaymentMethod(
+        withImplementationType implementationType: PrimerPaymentMethod.ImplementationType,
+        paymentType: PrimerPaymentMethodType = .paymentCard
+    ) -> PrimerPaymentMethod {
         PrimerPaymentMethod(
             id: "id",
             implementationType: implementationType,
@@ -257,9 +278,9 @@ final class PrimerPaymentMethodTests: XCTestCase {
         var paymentMethod: PrimerPaymentMethod
         func paymentMethod(for paymentMethodType: String) -> PrimerPaymentMethod? {
             if paymentMethod.type == paymentMethodType {
-                return paymentMethod
+                paymentMethod
             } else {
-                return nil
+                nil
             }
         }
     }

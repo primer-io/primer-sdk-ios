@@ -6,6 +6,7 @@
 
 import Foundation
 import PrimerCore
+import PrimerFoundation
 import SwiftUI
 
 /// Base protocol for all payment method scopes, providing common lifecycle and state management.

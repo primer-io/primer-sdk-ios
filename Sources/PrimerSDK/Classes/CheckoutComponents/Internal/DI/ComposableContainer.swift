@@ -6,6 +6,7 @@
 
 import Foundation
 import PrimerCore
+import PrimerFoundation
 
 /// The main DI container for CheckoutComponents module.
 /// Registers all dependencies needed for the checkout flow.

@@ -6,6 +6,7 @@
 
 import Foundation
 import PrimerCore
+import PrimerFoundation
 
 protocol PrimerHeadlessRedirectComponent: PrimerHeadlessStartable {}
 final class WebRedirectComponent: PrimerHeadlessRedirectComponent {
@@ -18,7 +19,7 @@ final class WebRedirectComponent: PrimerHeadlessRedirectComponent {
     init(paymentMethodType: PrimerPaymentMethodType, tokenizationModelDelegate: WebRedirectTokenizationDelegate) {
         self.paymentMethodType = paymentMethodType
         self.tokenizationModelDelegate = tokenizationModelDelegate
-        self.stepDelegate = self
+        stepDelegate = self
         self.tokenizationModelDelegate.didPresentPaymentMethodUI = {
             self.step = .loaded
             self.stepDelegate?.didReceiveStep(step: self.step)
@@ -36,7 +37,7 @@ final class WebRedirectComponent: PrimerHeadlessRedirectComponent {
 
     func start() {
         step = .loading
-        self.stepDelegate?.didReceiveStep(step: self.step)
+        stepDelegate?.didReceiveStep(step: step)
     }
 }
 
@@ -62,11 +63,11 @@ extension WebRedirectComponent: LogReporter {
 extension WebStep {
     func logMessage(paymentMethodType: String) -> String {
         switch self {
-        case .loading: return "Web redirect is loading for '\(paymentMethodType)'"
-        case .loaded: return "Web redirect has loaded for '\(paymentMethodType)'"
-        case .dismissed: return "Payment for '\(paymentMethodType)' was dismissed by user"
-        case .success: return "Payment for '\(paymentMethodType)' was successfull"
-        case .failure: return "Payment for '\(paymentMethodType)' was not successfull"
+        case .loading: "Web redirect is loading for '\(paymentMethodType)'"
+        case .loaded: "Web redirect has loaded for '\(paymentMethodType)'"
+        case .dismissed: "Payment for '\(paymentMethodType)' was dismissed by user"
+        case .success: "Payment for '\(paymentMethodType)' was successfull"
+        case .failure: "Payment for '\(paymentMethodType)' was not successfull"
         }
     }
 }

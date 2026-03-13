@@ -33,7 +33,7 @@ import Foundation
 ///     // Handle Apple Pay specific logic
 /// }
 /// ```
-public enum PrimerPaymentMethodType: String, Codable, CaseIterable, Equatable, Hashable {
+public enum PrimerPaymentMethodType: String, Codable, CaseIterable, Equatable, Hashable, Sendable {
     case adyenAlipay                    = "ADYEN_ALIPAY"
     case adyenBlik                      = "ADYEN_BLIK"
     case adyenBancontactCard            = "ADYEN_BANCONTACT_CARD"
@@ -90,7 +90,7 @@ public enum PrimerPaymentMethodType: String, Codable, CaseIterable, Equatable, H
     case fintechtureImmediateTransfer   = "FINTECHTURE_IMMEDIATE_TRANSFER"
     case stripeAch                      = "STRIPE_ACH"
 
-    var provider: String {
+    public var provider: String {
         switch self {
         case .adyenAlipay,
              .adyenBlik,
@@ -108,7 +108,7 @@ public enum PrimerPaymentMethodType: String, Codable, CaseIterable, Equatable, H
              .adyenTrustly,
              .adyenTwint,
              .adyenVipps:
-            return "ADYEN"
+            "ADYEN"
 
         case .applePay,
              .atome,
@@ -121,56 +121,56 @@ public enum PrimerPaymentMethodType: String, Codable, CaseIterable, Equatable, H
              .paymentCard,
              .payPal,
              .twoCtwoP:
-            return rawValue
+            rawValue
 
         case .buckarooBancontact,
              .buckarooEps,
              .buckarooGiropay,
              .buckarooIdeal,
              .buckarooSofort:
-            return "BUCKAROO"
+            "BUCKAROO"
 
         case .iPay88Card:
-            return "IPAY88"
+            "IPAY88"
 
         case .mollieBankcontact,
              .mollieIdeal:
-            return "MOLLIE"
+            "MOLLIE"
 
         case .payNLBancontact,
              .payNLGiropay,
              .payNLIdeal,
              .payNLPayconiq:
-            return "PAY_NL"
+            "PAY_NL"
 
         case .primerTestKlarna,
              .primerTestPayPal,
              .primerTestSofort:
-            return "PRIMER_TEST"
+            "PRIMER_TEST"
 
         case .rapydFast,
              .rapydGCash,
              .rapydGrabPay,
              .rapydPoli,
              .rapydPromptPay:
-            return "RAPYD"
+            "RAPYD"
 
         case .omisePromptPay:
-            return "OMISE"
+            "OMISE"
 
         case .xenditOvo,
              .xenditRetailOutlets:
-            return "XENDIT"
+            "XENDIT"
 
         case .xfersPayNow:
-            return "XFERS"
+            "XFERS"
         case .nolPay:
-            return "NOL_PAY"
+            "NOL_PAY"
         case .stripeAch:
-            return "STRIPE"
+            "STRIPE"
 
         case .fintechtureSmartTransfer, .fintechtureImmediateTransfer:
-            return "FINTECHTURE"
+            "FINTECHTURE"
         }
     }
 }

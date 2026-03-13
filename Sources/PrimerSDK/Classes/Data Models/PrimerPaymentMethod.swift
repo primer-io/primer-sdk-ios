@@ -6,6 +6,7 @@
 
 import Foundation
 import PrimerCore
+import PrimerFoundation
 import UIKit
 
 extension PrimerTheme {
@@ -36,7 +37,7 @@ final class PrimerPaymentMethod: Codable, LogReporter {
     }()
 
     var logo: UIImage? {
-        guard let baseLogoImage = baseLogoImage else { return nil }
+        guard let baseLogoImage else { return nil }
         let isDarkModeEnabled = UIScreen.isDarkModeEnabled
         return (
             (isDarkModeEnabled ? baseLogoImage.dark : baseLogoImage.colored) ??
@@ -46,7 +47,7 @@ final class PrimerPaymentMethod: Codable, LogReporter {
     }
 
     var invertedLogo: UIImage? {
-        guard let baseLogoImage = baseLogoImage else { return nil }
+        guard let baseLogoImage else { return nil }
 
         if UIScreen.isDarkModeEnabled {
             if let lightImage = baseLogoImage.light {
@@ -77,7 +78,7 @@ final class PrimerPaymentMethod: Codable, LogReporter {
         } else if implementationType == .iPay88Sdk {
             return IPay88TokenizationViewModel(config: self, apiClient: apiClient)
 
-        } else if let internalPaymentMethodType = internalPaymentMethodType {
+        } else if let internalPaymentMethodType {
             switch internalPaymentMethodType {
             case PrimerPaymentMethodType.adyenBlik,
                  PrimerPaymentMethodType.rapydFast,
@@ -130,21 +131,23 @@ final class PrimerPaymentMethod: Codable, LogReporter {
     lazy var tokenizationModel: PaymentMethodTokenizationModelProtocol? = {
         switch internalPaymentMethodType {
         case .adyenIDeal:
-            return BanksTokenizationComponent(config: self,
-                                              uiManager: PrimerUIManager.shared,
-                                              tokenizationService: TokenizationService(),
-                                              createResumePaymentService: CreateResumePaymentService(paymentMethodType: self.type),
-                                              apiClient: PrimerAPIClient())
-        default: return nil
+            BanksTokenizationComponent(
+                config: self,
+                uiManager: PrimerUIManager.shared,
+                tokenizationService: TokenizationService(),
+                createResumePaymentService: CreateResumePaymentService(paymentMethodType: self.type),
+                apiClient: PrimerAPIClient()
+            )
+        default: nil
         }
     }()
 
     var isCheckoutEnabled: Bool {
-        guard self.baseLogoImage != nil else {
+        guard baseLogoImage != nil else {
             return false
         }
 
-        guard let internalPaymentMethodType = internalPaymentMethodType else {
+        guard let internalPaymentMethodType else {
             return true
         }
 
@@ -158,15 +161,15 @@ final class PrimerPaymentMethod: Codable, LogReporter {
     }
 
     var isVaultingEnabled: Bool {
-        guard self.baseLogoImage != nil else {
+        guard baseLogoImage != nil else {
             return false
         }
 
-        if self.implementationType == .webRedirect || self.implementationType == .iPay88Sdk {
+        if implementationType == .webRedirect || implementationType == .iPay88Sdk {
             return false
         }
 
-        switch self.type {
+        switch type {
         case PrimerPaymentMethodType.applePay.rawValue,
              PrimerPaymentMethodType.goCardless.rawValue,
              PrimerPaymentMethodType.googlePay.rawValue,
@@ -282,14 +285,18 @@ final class PrimerPaymentMethod: Codable, LogReporter {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
         id = (try? container.decode(String?.self, forKey: .id)) ?? nil
-        implementationType = try container.decode(PrimerPaymentMethod.ImplementationType.self,
-                                                  forKey: .implementationType)
+        implementationType = try container.decode(
+            PrimerPaymentMethod.ImplementationType.self,
+            forKey: .implementationType
+        )
         type = try container.decode(String.self, forKey: .type)
         name = try container.decode(String.self, forKey: .name)
         processorConfigId = (try? container.decode(String?.self, forKey: .processorConfigId)) ?? nil
         surcharge = (try? container.decode(Int?.self, forKey: .surcharge)) ?? nil
-        displayMetadata = (try? container.decode(PrimerPaymentMethod.DisplayMetadata?.self,
-                                                 forKey: .displayMetadata)) ?? nil
+        displayMetadata = (try? container.decode(
+            PrimerPaymentMethod.DisplayMetadata?.self,
+            forKey: .displayMetadata
+        )) ?? nil
 
         switch type {
         case "PAYMENT_CARD":
@@ -314,7 +321,7 @@ final class PrimerPaymentMethod: Codable, LogReporter {
         try container.encode(surcharge, forKey: .surcharge)
         try container.encode(displayMetadata, forKey: .displayMetadata)
 
-        if let options = options {
+        if let options {
             try container.encode(options, forKey: .options)
         }
     }
