@@ -148,7 +148,7 @@ public enum PrimerValidationError: PrimerErrorProtocol, Encodable {
         return context
     }
 
-    var isReportable: Bool { false }
+    public var isReportable: Bool { false }
 
     private var paymentMethodType: String? {
         switch self {

@@ -7,6 +7,7 @@
 // swiftlint:disable cyclomatic_complexity
 
 import Foundation
+import PrimerFoundation
 import SwiftUI
 
 @available(iOS 15.0, *)
@@ -17,7 +18,7 @@ final class DesignTokensManager: ObservableObject {
   // MARK: - Theme Override API
 
   func applyTheme(_ theme: PrimerCheckoutTheme) {
-    self.themeOverrides = theme
+    themeOverrides = theme
   }
 
   // Merchant overrides take precedence over internal tokens
@@ -400,16 +401,16 @@ final class DesignTokensManager: ObservableObject {
 
   private func fontWeightToCGFloat(_ weight: Font.Weight) -> CGFloat {
     switch weight {
-    case .ultraLight: return 100
-    case .thin: return 200
-    case .light: return 300
-    case .regular: return 400
-    case .medium: return 500
-    case .semibold: return 600
-    case .bold: return 700
-    case .heavy: return 800
-    case .black: return 900
-    default: return 400
+    case .ultraLight: 100
+    case .thin: 200
+    case .light: 300
+    case .regular: 400
+    case .medium: 500
+    case .semibold: 600
+    case .bold: 700
+    case .heavy: 800
+    case .black: 900
+    default: 400
     }
   }
 

@@ -4,6 +4,7 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+import PrimerFoundation
 import SwiftUI
 
 @available(iOS 15.0, *)
@@ -36,13 +37,12 @@ struct PayPalPaymentMethod: PaymentMethodProtocol {
     let logger = PrimerLogging.shared.logger
     let availableMethodsCount = defaultCheckoutScope.availablePaymentMethods.count
 
-    let paymentMethodContext: PresentationContext
-    if availableMethodsCount > 1 {
+    let paymentMethodContext: PresentationContext = if availableMethodsCount > 1 {
       // Multiple payment methods means we came from payment selection - show back button
-      paymentMethodContext = .fromPaymentSelection
+      .fromPaymentSelection
     } else {
       // Single payment method means direct navigation - no back button needed
-      paymentMethodContext = .direct
+      .direct
     }
 
     do {

@@ -6,6 +6,7 @@
 
 import Foundation
 import PassKit
+import PrimerFoundation
 
 /// Protocol for processing Apple Pay payments.
 @available(iOS 15.0, *)
@@ -123,9 +124,8 @@ final class ProcessApplePayPaymentInteractorImpl: ProcessApplePayPaymentInteract
     #endif
 
     // Parse payment data
-    let tokenPaymentData: ApplePayPaymentResponseTokenPaymentData
-    if isMockedBE {
-      tokenPaymentData = ApplePayPaymentResponseTokenPaymentData(
+    let tokenPaymentData: ApplePayPaymentResponseTokenPaymentData = if isMockedBE {
+      ApplePayPaymentResponseTokenPaymentData(
         data: "apple-pay-payment-response-mock-data",
         signature: "apple-pay-mock-signature",
         version: "apple-pay-mock-version",
@@ -136,7 +136,7 @@ final class ProcessApplePayPaymentInteractorImpl: ProcessApplePayPaymentInteract
         )
       )
     } else {
-      tokenPaymentData = try JSONDecoder().decode(
+      try JSONDecoder().decode(
         ApplePayPaymentResponseTokenPaymentData.self,
         from: payment.token.paymentData
       )

@@ -4,6 +4,7 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+import PrimerFoundation
 import SwiftUI
 
 @available(iOS 15.0, *)
@@ -28,11 +29,10 @@ struct KlarnaPaymentMethod: PaymentMethodProtocol {
 
     let availableMethodsCount = defaultCheckoutScope.availablePaymentMethods.count
 
-    let paymentMethodContext: PresentationContext
-    if availableMethodsCount > 1 {
-      paymentMethodContext = .fromPaymentSelection
+    let paymentMethodContext: PresentationContext = if availableMethodsCount > 1 {
+      .fromPaymentSelection
     } else {
-      paymentMethodContext = .direct
+      .direct
     }
 
     do {

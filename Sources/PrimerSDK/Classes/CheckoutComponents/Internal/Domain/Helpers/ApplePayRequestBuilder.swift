@@ -6,6 +6,7 @@
 
 import Foundation
 import PassKit
+import PrimerFoundation
 
 /// Helper to construct ApplePayRequest from session data.
 /// Reuses logic from ApplePayTokenizationViewModel for order item construction.
@@ -150,11 +151,10 @@ struct ApplePayRequestBuilder {
       return ShippingMethodsInfo(methods: nil, selectedItem: nil)
     }
 
-    var factor: NSDecimalNumber
-    if AppState.current.currency?.isZeroDecimal == true {
-      factor = 1
+    var factor: NSDecimalNumber = if AppState.current.currency?.isZeroDecimal == true {
+      1
     } else {
-      factor = 100
+      100
     }
 
     // Convert to PKShippingMethods

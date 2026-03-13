@@ -4,6 +4,7 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+import PrimerFoundation
 import SwiftUI
 
 /// Apple Pay payment method implementation conforming to PaymentMethodProtocol.
@@ -38,13 +39,12 @@ struct ApplePayPaymentMethod: PaymentMethodProtocol {
     }
 
     // Determine presentation context based on available payment methods
-    let paymentMethodContext: PresentationContext
-    if defaultCheckoutScope.availablePaymentMethods.count > 1 {
+    let paymentMethodContext: PresentationContext = if defaultCheckoutScope.availablePaymentMethods.count > 1 {
       // Multiple payment methods - came from payment selection, show back button
-      paymentMethodContext = .fromPaymentSelection
+      .fromPaymentSelection
     } else {
       // Single payment method - direct navigation, no back button
-      paymentMethodContext = .direct
+      .direct
     }
 
     return DefaultApplePayScope(
