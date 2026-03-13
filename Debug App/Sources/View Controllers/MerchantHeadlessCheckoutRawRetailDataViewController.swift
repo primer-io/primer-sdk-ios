@@ -1,9 +1,10 @@
 //
 //  MerchantHeadlessCheckoutRawRetailDataViewController.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+import PrimerFoundation
 import PrimerSDK
 import UIKit
 
@@ -21,7 +22,7 @@ class MerchantHeadlessCheckoutRawRetailDataViewController: UIViewController {
     var rawData: PrimerRawData?
     private let cellIdentifier = "RetailDataTableViewCell"
 
-    internal lazy var tableView: UITableView = {
+    lazy var tableView: UITableView = {
 
         let tableView = UITableView()
         tableView.showsVerticalScrollIndicator = false
@@ -133,13 +134,13 @@ extension MerchantHeadlessCheckoutRawRetailDataViewController: UITableViewDataSo
     }
 
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return "Select a retailer"
+        "Select a retailer"
     }
 
     // MARK: - Table View data source methods
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return retailers.count
+        retailers.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
