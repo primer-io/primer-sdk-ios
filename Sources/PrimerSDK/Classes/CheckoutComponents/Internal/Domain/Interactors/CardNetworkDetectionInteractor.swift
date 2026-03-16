@@ -6,6 +6,7 @@
 
 import Foundation
 import PrimerCore
+import PrimerFoundation
 
 protocol CardNetworkDetectionInteractor {
   var networkDetectionStream: AsyncStream<[CardNetwork]> { get }

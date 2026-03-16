@@ -5,6 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import PrimerCore
+import PrimerFoundation
 import SwiftUI
 
 /// Default card form screen for CheckoutComponents with dynamic field rendering

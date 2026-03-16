@@ -137,7 +137,7 @@ final class InternalCardComponentsManagerTests: XCTestCase {
 }
 
 class MockCardComponentsManager: InternalCardComponentsManagerProtocol {
-    var selectedCardNetwork: PrimerSDK.CardNetwork?
+    var selectedCardNetwork: CardNetwork?
 
     var cardnumberField: PrimerCardNumberFieldView
 

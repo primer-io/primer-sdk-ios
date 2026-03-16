@@ -4,6 +4,7 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+import PrimerFoundation
 @testable import PrimerSDK
 import XCTest
 
@@ -200,11 +201,11 @@ final class CVVBorderColorLogicTests: XCTestCase {
     /// Mirrors the cvvBorderColor logic from VaultedCardCVVInput
     private func borderState(hasError: Bool, isFocused: Bool) -> BorderState {
         if hasError {
-            return .error
+            .error
         } else if isFocused {
-            return .focus
+            .focus
         } else {
-            return .defaultState
+            .defaultState
         }
     }
 

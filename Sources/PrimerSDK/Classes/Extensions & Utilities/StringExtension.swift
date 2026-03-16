@@ -173,56 +173,6 @@ extension String {
         }
     }
 
-    func compareWithVersion(_ otherVersion: String) -> ComparisonResult {
-        let versionDelimiter = "."
-
-        var versionComponents = components(separatedBy: versionDelimiter)
-        var otherVersionComponents = otherVersion.components(separatedBy: versionDelimiter)
-
-        let zeroDiff = versionComponents.count - otherVersionComponents.count
-
-        if zeroDiff == 0 {
-            return compare(otherVersion, options: .numeric)
-        } else {
-            let zeros = Array(repeating: "0", count: abs(zeroDiff))
-            if zeroDiff > 0 {
-                otherVersionComponents.append(contentsOf: zeros)
-            } else {
-                versionComponents.append(contentsOf: zeros)
-            }
-            return versionComponents.joined(separator: versionDelimiter)
-                .compare(otherVersionComponents.joined(separator: versionDelimiter), options: .numeric)
-        }
-    }
-
-    var isValidOTP: Bool {
-        let pattern = "^\\d{6}$"
-        let regex = try? NSRegularExpression(pattern: pattern, options: [])
-        let matches = regex?.matches(in: self, options: [], range: NSRange(location: 0, length: count))
-        return matches?.count ?? 0 > 0
-    }
-
-    /// Normalizes a year string to 4-digit format
-    /// - Returns: A 4-digit year string, or nil if the input is not a valid 2-digit or 4-digit year
-    /// - Note: 2-digit years (e.g., "30") are converted using current century (e.g., "2030")
-    ///         4-digit years (e.g., "2030") are returned as-is
-    ///         Invalid inputs return nil
-    func normalizedFourDigitYear() -> String? {
-        guard allSatisfy(\.isNumber) else { return nil }
-
-        switch count {
-        case 4:
-            return self
-        case 2:
-            // Convert 2-digit year to 4-digit using current century
-            let currentYear = Calendar.current.component(.year, from: Date())
-            let century = String(currentYear).prefix(2)
-            return "\(century)\(self)"
-        default:
-            return nil
-        }
-    }
-
     // MARK: - NSRange Text Processing Utilities
 
     /// Safely converts NSRange to Range<String.Index>

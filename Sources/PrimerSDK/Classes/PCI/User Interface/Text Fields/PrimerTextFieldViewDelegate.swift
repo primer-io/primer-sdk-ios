@@ -1,10 +1,11 @@
 //
 //  PrimerTextFieldViewDelegate.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+import PrimerFoundation
 
 /// The PrimerTextFieldViewDelegate protocol can be used to retrieve information about the text input.
 /// PrimerCardNumberFieldView, PrimerExpiryDateFieldView, PrimerCVVFieldView & PrimerCardholderNameFieldView
@@ -35,7 +36,7 @@ public extension PrimerTextFieldViewDelegate {
     func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView,
                              validationDidFailWithError error: Error) {}
     func primerTextFieldViewDidBeginEditing(_ primerTextFieldView: PrimerTextFieldView) {}
-    func primerTextFieldViewShouldBeginEditing(_ primerTextFieldView: PrimerTextFieldView) -> Bool { return true }
-    func primerTextFieldViewShouldEndEditing(_ primerTextFieldView: PrimerTextFieldView) -> Bool { return true }
+    func primerTextFieldViewShouldBeginEditing(_ primerTextFieldView: PrimerTextFieldView) -> Bool { true }
+    func primerTextFieldViewShouldEndEditing(_ primerTextFieldView: PrimerTextFieldView) -> Bool { true }
     func primerTextFieldViewDidEndEditing(_ primerTextFieldView: PrimerTextFieldView) {}
 }

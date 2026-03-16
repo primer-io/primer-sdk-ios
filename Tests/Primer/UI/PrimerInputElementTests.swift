@@ -4,8 +4,9 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import XCTest
+import PrimerFoundation
 @testable import PrimerSDK
+import XCTest
 
 final class PrimerInputElementTests: XCTestCase {
 
@@ -107,7 +108,7 @@ private extension CardNetwork {
     var testCvvCodes: [String] {
         switch self {
         case .amex:
-            return ["1234", "4567", "8901"]
+            ["1234", "4567", "8901"]
         case .bancontact,
              .cartesBancaires,
              .diners,
@@ -123,7 +124,7 @@ private extension CardNetwork {
              .unionpay,
              .eftpos,
              .unknown:
-            return ["123", "345", "456"]
+            ["123", "345", "456"]
         }
     }
 }

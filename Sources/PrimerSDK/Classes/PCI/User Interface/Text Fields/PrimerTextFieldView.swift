@@ -7,7 +7,6 @@
 import PrimerCore
 import PrimerFoundation
 import PrimerResources
-
 import PrimerUI
 
 // swiftlint:disable function_body_length

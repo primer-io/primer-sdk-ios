@@ -769,6 +769,9 @@
                   location = "group:Primer3DSErrorContainer.swift">
                </FileRef>
                <FileRef
+                  location = "group:PrimerInternalError.swift">
+               </FileRef>
+               <FileRef
                   location = "group:PrimerKlarnaError+Extension.swift">
                </FileRef>
                <FileRef

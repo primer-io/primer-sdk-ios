@@ -4,6 +4,7 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+import PrimerFoundation
 import SwiftUI
 
 /// Inline CVV input component for vaulted card payments.
@@ -132,11 +133,11 @@ struct VaultedCardCVVInput: View {
 
   private var cvvBorderColor: Color {
     if errorMessage != nil {
-      return CheckoutColors.borderError(tokens: tokens)
+      CheckoutColors.borderError(tokens: tokens)
     } else if isFocused {
-      return CheckoutColors.borderFocus(tokens: tokens)
+      CheckoutColors.borderFocus(tokens: tokens)
     } else {
-      return CheckoutColors.borderDefault(tokens: tokens)
+      CheckoutColors.borderDefault(tokens: tokens)
     }
   }
 }

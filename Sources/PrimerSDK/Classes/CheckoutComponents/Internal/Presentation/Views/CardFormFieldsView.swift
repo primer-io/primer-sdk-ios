@@ -8,6 +8,7 @@
 // swiftlint:disable cyclomatic_complexity
 // swiftlint:disable function_body_length
 
+import PrimerFoundation
 import SwiftUI
 
 /// Reusable card form fields view that renders card input fields and billing address fields.

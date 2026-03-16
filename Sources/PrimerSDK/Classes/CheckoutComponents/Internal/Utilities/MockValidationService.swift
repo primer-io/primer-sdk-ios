@@ -5,6 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 #if DEBUG
+import PrimerFoundation
   import SwiftUI
 
   /// Mock implementation of ValidationService for SwiftUI previews

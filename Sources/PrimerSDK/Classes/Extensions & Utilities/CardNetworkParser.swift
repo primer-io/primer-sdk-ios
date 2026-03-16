@@ -6,6 +6,7 @@
 
 import Foundation
 import PrimerCore
+import PrimerFoundation
 
 final class CardNetworkParser {
 
@@ -39,7 +40,7 @@ Ensure ranges have exactly one or exactly two bounds.
             }
         }
         self.mapping = mapping
-        self.index = mapping.keys.sorted(by: { range1, range2 in
+        index = mapping.keys.sorted(by: { range1, range2 in
             let max1 = max(range1.lowerBound, range1.upperBound)
             let max2 = max(range2.lowerBound, range2.upperBound)
             return max1 > max2

@@ -6,6 +6,7 @@
 
 import Foundation
 import PrimerCore
+import PrimerFoundation
 
 struct CardPaymentData {
   let cardNumber: String

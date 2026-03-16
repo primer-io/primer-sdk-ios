@@ -1,11 +1,12 @@
 //
 //  PrimerCardNumberFieldViewTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import XCTest
+import PrimerFoundation
 @testable import PrimerSDK
+import XCTest
 
 final class PrimerCardNumberFieldViewTests: XCTestCase {
 
@@ -29,7 +30,7 @@ final class PrimerCardNumberFieldViewTests: XCTestCase {
         let delegate = MockTextFieldViewDelegate()
         view.delegate = delegate
 
-        let expectation = self.expectation(description: "onIsValid is called")
+        let expectation = expectation(description: "onIsValid is called")
         delegate.onIsValid = { isValid in
             XCTAssertNotNil(isValid)
             XCTAssertTrue(isValid!)
@@ -52,12 +53,12 @@ final class PrimerCardNumberFieldViewTests: XCTestCase {
     func testValidationInvalidCardNumber() throws {
         view.text = ""
 
-        let expectation = self.expectation(description: "onIsValid is called")
+        let expectation = expectation(description: "onIsValid is called")
         delegate.onIsValid = { isValid in
             XCTAssertNotNil(isValid)
             XCTAssertFalse(isValid!)
             switch self.view.validation {
-            case .invalid(let error):
+            case let .invalid(error):
                 XCTAssertEqual(error?.localizedDescription, "[invalid-card-number] Card number is not valid.")
             default:
                 XCTFail()
@@ -75,11 +76,11 @@ final class PrimerCardNumberFieldViewTests: XCTestCase {
     func testValidationInvalidCardNumber_Empty() throws {
         view.text = "4111"
 
-        let expectation = self.expectation(description: "onIsValid is called")
+        let expectation = expectation(description: "onIsValid is called")
         delegate.onIsValid = { isValid in
             XCTAssertNil(isValid)
             switch self.view.validation {
-            case .invalid(let error):
+            case let .invalid(error):
                 XCTAssertEqual(error?.localizedDescription, "[invalid-card-number] Card number can not be blank.")
             default:
                 XCTFail()
@@ -97,11 +98,11 @@ final class PrimerCardNumberFieldViewTests: XCTestCase {
     func testValidationInvalidCardNumber_Partial() throws {
         view.text = ""
 
-        let expectation = self.expectation(description: "onIsValid is called")
+        let expectation = expectation(description: "onIsValid is called")
         delegate.onIsValid = { isValid in
             XCTAssertNil(isValid)
             switch self.view.validation {
-            case .invalid(let error):
+            case let .invalid(error):
                 XCTAssertEqual(error?.localizedDescription, "[invalid-card-number] Card number is not valid.")
             default:
                 XCTFail()
