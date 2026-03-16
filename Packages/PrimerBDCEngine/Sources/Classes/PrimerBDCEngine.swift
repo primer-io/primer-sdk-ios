@@ -4,12 +4,14 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+import CryptoKit
 import JavaScriptCore
 import PrimerFoundation
 import PrimerStepResolver
 
 private enum EngineError: Error {
     case jsonToDataFailed
+    case sha256Mismatch
 }
 
 @MainActor
@@ -21,6 +23,7 @@ public final class PrimerBDCEngine: NSObject {
     private typealias JSStringBlock = @convention(block) (String) -> Void
     private typealias JSVoidBlock = @convention(block) () -> Void
     
+    private let manifest: Manifest
     private let encoder = JSONEncoder()
     private var isReady = false
     private var loadingContinuations: [CheckedContinuation<Void, Never>] = []
@@ -29,7 +32,8 @@ public final class PrimerBDCEngine: NSObject {
     private var evaluateTreeContinuation: Continuation?
     private var executeActionContinuation: Continuation?
     
-    override public init() {
+    public init(manifest: Manifest) {
+        self.manifest = manifest
         context = JSContext()!
         super.init()
         setupContext()
@@ -96,10 +100,10 @@ private extension PrimerBDCEngine {
     }
     
     func setupEngine() async throws  {
-        try await evaluate { try await fetch(jsURL) }
-        try await evaluate { try await fetch(stateProcessorURL) }
+        try await evaluate { try await fetch(manifest.celWrapperJSURLContainer.url, sha256: manifest.celWrapperJSURLContainer.sha256) }
+        try await evaluate { try await fetch(manifest.stateProcessorContainer.url, sha256: manifest.stateProcessorContainer.sha256) }
         
-        let wasmData = try await fetch(wasmURL)
+        let wasmData = try await fetch(manifest.celWrapperWASMURLContainer.br, sha256: manifest.celWrapperWASMURLContainer.sha256)
         let byteArray = [UInt8](wasmData)
         let jsByteArray = JSValue(object: byteArray, in: context)!
         
@@ -107,9 +111,12 @@ private extension PrimerBDCEngine {
         context.evaluateScript(instantiate)
     }
     
-    func fetch(_ urlString: String) async throws -> Data {
+    func fetch(_ urlString: String, sha256: String) async throws -> Data {
         let url = URL(string: urlString)!
         let (data, _) = try await URLSession.shared.data(for: URLRequest(url: url))
+        let digest = SHA256.hash(data: data)
+        let computedSHA256 = Data(digest).base64EncodedString()
+        guard computedSHA256 == sha256 else { throw EngineError.sha256Mismatch }
         return data
     }
     
