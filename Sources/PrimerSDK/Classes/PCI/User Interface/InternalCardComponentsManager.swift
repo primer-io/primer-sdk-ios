@@ -330,6 +330,10 @@ and 4 characters for expiry year separated by '/'.
 
                 do {
                     let paymentMethodTokenData = try await tokenizationService.tokenize(requestBody: requestBody)
+                    cardnumberField.textField.wipe()
+                    expiryDateField.textField.wipe()
+                    cvvField.textField.wipe()
+                    cardholderField?.textField.wipe()
                     self.delegate.cardComponentsManager(self, onTokenizeSuccess: paymentMethodTokenData)
                 } catch {
                     throw handled(primerError: error.asPrimerError)

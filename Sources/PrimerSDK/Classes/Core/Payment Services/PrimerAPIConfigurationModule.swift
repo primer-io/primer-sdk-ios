@@ -4,6 +4,7 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+import CryptoKit
 import Foundation
 
 typealias JWTToken = String
@@ -77,10 +78,9 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
     }
 
     static var cacheKey: String? {
-        guard let cacheKey = Self.clientToken else {
-            return nil
-        }
-        return cacheKey
+        guard let token = Self.clientToken else { return nil }
+        let hash = SHA256.hash(data: Data(token.utf8))
+        return hash.prefix(8).map { String(format: "%02x", $0) }.joined()
     }
 
     static func resetSession() {
@@ -170,13 +170,6 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
 
         let previousDecodedToken = PrimerAPIConfigurationModule.decodedJWTToken
 
-        currentDecodedToken.configurationUrl = currentDecodedToken.configurationUrl?.replacingOccurrences(of: "10.0.2.2:8080",
-                                                                                                          with: "localhost:8080")
-        currentDecodedToken.coreUrl = currentDecodedToken.coreUrl?.replacingOccurrences(of: "10.0.2.2:8080",
-                                                                                        with: "localhost:8080")
-        currentDecodedToken.pciUrl = currentDecodedToken.pciUrl?.replacingOccurrences(of: "10.0.2.2:8080",
-                                                                                      with: "localhost:8080")
-
         if currentDecodedToken.env == nil {
             currentDecodedToken.env = previousDecodedToken?.env
         }
@@ -205,9 +198,9 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
             tmpSecondSegment = dataStr
         }
 
-        if segments.count > 1, let tmpSecondSegment = tmpSecondSegment {
+        if segments.count > 1, let tmpSecondSegment {
             segments[1] = tmpSecondSegment
-        } else if segments.count == 1, let tmpSecondSegment = tmpSecondSegment {
+        } else if segments.count == 1, let tmpSecondSegment {
             segments.append(tmpSecondSegment)
         }
 
