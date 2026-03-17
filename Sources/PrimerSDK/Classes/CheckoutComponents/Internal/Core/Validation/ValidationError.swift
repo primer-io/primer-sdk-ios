@@ -10,7 +10,7 @@ public struct ValidationError: Equatable, Hashable, Codable {
   let code: String
   let message: String
 
-  let inputElementType: InputElementType  // ?? Is this needed
+  let inputElementType: InputElementType
   let errorId: String
   let fieldNameKey: String?  // Localization key for field name
   let errorMessageKey: String?  // Localization key for error message
@@ -58,11 +58,11 @@ public struct ValidationError: Equatable, Hashable, Codable {
   public init(code: String, message: String) {
     self.code = code
     self.message = message
-    self.inputElementType = .unknown
-    self.errorId = code
-    self.fieldNameKey = nil
-    self.errorMessageKey = nil
-    self.errorFormatKey = nil
+    inputElementType = .unknown
+    errorId = code
+    fieldNameKey = nil
+    errorMessageKey = nil
+    errorFormatKey = nil
   }
 }
 

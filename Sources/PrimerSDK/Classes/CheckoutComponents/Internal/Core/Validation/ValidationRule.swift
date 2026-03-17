@@ -22,7 +22,7 @@ public struct RequiredFieldRule: ValidationRule {
   }
 
   public func validate(_ input: String?) -> ValidationResult {
-    guard let input = input, !input.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+    guard let input, !input.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
       return .invalid(
         code: errorCode,
         message: "\(fieldName) is required"
