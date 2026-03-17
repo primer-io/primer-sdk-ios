@@ -7,9 +7,6 @@
 import PrimerSDK
 import SwiftUI
 
-// MARK: - Demo Configuration
-
-/// Configuration passed from parent to each demo
 @available(iOS 15.0, *)
 struct DemoConfiguration {
     let settings: PrimerSettings
@@ -18,9 +15,6 @@ struct DemoConfiguration {
     let clientToken: String?
 }
 
-// MARK: - Demo Metadata
-
-/// Metadata for demo discovery and display in the examples list
 struct DemoMetadata: Identifiable {
     let id = UUID()
     let name: String
@@ -29,15 +23,8 @@ struct DemoMetadata: Identifiable {
     let isCustom: Bool
 }
 
-// MARK: - Demo Protocol
-
-/// Protocol for self-contained CheckoutComponents demos.
-/// Each demo handles its own session creation, PrimerCheckout initialization, and UI.
 @available(iOS 15.0, *)
 protocol CheckoutComponentsDemo: View {
-    /// Metadata for display in the examples list
     static var metadata: DemoMetadata { get }
-
-    /// Initialize the demo with configuration from parent
     init(configuration: DemoConfiguration)
 }

@@ -10,8 +10,6 @@ import UIKit
 
 final class CheckoutComponentsMenuViewController: UIViewController {
     
-    // MARK: - Properties
-    
     var settings: PrimerSettings!
     var clientSession: ClientSessionRequestBody!
     var apiVersion: PrimerApiVersion!
@@ -19,15 +17,11 @@ final class CheckoutComponentsMenuViewController: UIViewController {
     var clientToken: String?
     var deepLinkClientToken: String?
     
-    // UI Elements (programmatic)
     private var uikitIntegrationButton: UIButton!
     private var swiftUIExamplesButton: UIButton!
     private var stackView: UIStackView!
     
-    // CheckoutComponents delegate (stored as property to prevent deallocation)
     private var checkoutComponentsDelegate: AnyObject?
-    
-    // MARK: - View Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -35,13 +29,10 @@ final class CheckoutComponentsMenuViewController: UIViewController {
         setupConstraints()
     }
     
-    // MARK: - UI Setup
-    
     private func setupUI() {
         view.backgroundColor = .systemBackground
         title = "CheckoutComponents"
         
-        // Create buttons programmatically
         uikitIntegrationButton = createButton(
             title: "UIKit Integration",
             backgroundColor: .systemBlue,
@@ -54,7 +45,6 @@ final class CheckoutComponentsMenuViewController: UIViewController {
             action: #selector(swiftUIExamplesTapped)
         )
         
-        // Create stack view
         stackView = UIStackView(arrangedSubviews: [uikitIntegrationButton, swiftUIExamplesButton])
         stackView.axis = .vertical
         stackView.spacing = 20
@@ -62,7 +52,6 @@ final class CheckoutComponentsMenuViewController: UIViewController {
         stackView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(stackView)
         
-        // Add navigation bar items
         navigationItem.leftBarButtonItem = UIBarButtonItem(
             barButtonSystemItem: .cancel,
             target: self,
@@ -94,15 +83,11 @@ final class CheckoutComponentsMenuViewController: UIViewController {
         ])
     }
     
-    // MARK: - Actions
-    
     @objc private func cancelTapped() {
         dismiss(animated: true)
     }
     
     @objc private func uikitIntegrationTapped() {
-        // Use existing checkoutComponentsUIKitButton logic
-        // Set up CheckoutComponents delegate before presenting
         if #available(iOS 15.0, *) {
             let delegate = DebugAppPrimerCheckoutPresenterDelegate()
             checkoutComponentsDelegate = delegate
@@ -114,8 +99,7 @@ final class CheckoutComponentsMenuViewController: UIViewController {
             let ccSession = clientSession!
 
             if #available(iOS 15.0, *) {
-                Task { [weak self] in
-                    guard let self else { return }
+                Task { [self] in
                     do {
                         let clientToken = try await NetworkingUtils.requestClientSession(
                             body: ccSession,
@@ -131,7 +115,6 @@ final class CheckoutComponentsMenuViewController: UIViewController {
                     }
                 }
             } else {
-                // Fallback for iOS < 15.0
                 Networking.requestClientSession(requestBody: ccSession, apiVersion: apiVersion) { [weak self] (clientToken, error) in
                     DispatchQueue.main.async {
                         if let error {
@@ -144,7 +127,6 @@ final class CheckoutComponentsMenuViewController: UIViewController {
             }
 
         case .clientToken:
-            // Use provided client token directly
             if let clientToken, !clientToken.isEmpty {
                 presentUIKitIntegration(with: clientToken)
             } else {
@@ -192,8 +174,6 @@ final class CheckoutComponentsMenuViewController: UIViewController {
         }
     }
     
-    // MARK: - Helper Methods
-
     private func presentUIKitIntegration(with clientToken: String) {
         if #available(iOS 15.0, *) {
             PrimerCheckoutPresenter.presentCheckout(clientToken: clientToken, from: self, primerSettings: settings)

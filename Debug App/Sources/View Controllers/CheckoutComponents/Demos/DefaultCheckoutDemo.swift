@@ -7,14 +7,8 @@
 import PrimerSDK
 import SwiftUI
 
-// MARK: - Default Checkout Demo
-
-/// Self-contained demo showing the default PrimerCheckout with SDK-provided UI.
-/// This demo handles its own session creation and PrimerCheckout initialization.
 @available(iOS 15.0, *)
 struct DefaultCheckoutDemo: View, CheckoutComponentsDemo {
-
-    // MARK: - Metadata
 
     static var metadata: DemoMetadata {
         DemoMetadata(
@@ -25,24 +19,16 @@ struct DefaultCheckoutDemo: View, CheckoutComponentsDemo {
         )
     }
 
-    // MARK: - Configuration
-
     private let configuration: DemoConfiguration
-
-    // MARK: - State
 
     @SwiftUI.Environment(\.dismiss) private var dismiss
     @State private var clientToken: String?
     @State private var isLoading = true
     @State private var error: String?
 
-    // MARK: - Init
-
     init(configuration: DemoConfiguration) {
         self.configuration = configuration
     }
-
-    // MARK: - Body
 
     var body: some View {
         NavigationView {
@@ -119,8 +105,6 @@ struct DefaultCheckoutDemo: View, CheckoutComponentsDemo {
             alignment: .bottom
         )
     }
-
-    // MARK: - Session Creation
 
     private func createSession() async {
         isLoading = true
