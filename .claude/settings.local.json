@@ -1,9 +1,23 @@
 {
   "permissions": {
-    "allow": []
+    "allow": [
+      "mcp__claude_ai_Slack__slack_read_thread",
+      "mcp__claude_ai_Atlassian__getJiraIssue",
+      "mcp__claude_ai_Notion__notion-fetch",
+      "Bash(for dir:*)",
+      "Bash(do echo:*)",
+      "Read(//Users/borisnikolic/WORK/primer-sdk-ios/Sources/PrimerSDK/Classes/CheckoutComponents/PaymentMethods/**)",
+      "Bash(done)",
+      "Bash(wc -l /Users/borisnikolic/WORK/primer-sdk-ios/Sources/PrimerSDK/Classes/CheckoutComponents/Internal/Presentation/Scope/Default*Scope.swift)",
+      "mcp__claude_ai_Notion__notion-query-data-sources",
+      "mcp__claude_ai_Notion__notion-update-page",
+      "mcp__claude_ai_Slack__slack_send_message_draft",
+      "mcp__claude_ai_Atlassian__getTransitionsForJiraIssue",
+      "mcp__claude_ai_Atlassian__addCommentToJiraIssue"
+    ]
   },
+  "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
     "ios-simulator"
-  ],
-  "enableAllProjectMcpServers": true
+  ]
 }

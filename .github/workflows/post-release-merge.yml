@@ -27,7 +27,7 @@ jobs:
       - name: Extract changelog for current release
         run: awk '/^## /{if(n++)exit}1' CHANGELOG.md > release.md
       - name: Create release
-        uses: ncipollo/release-action@b7eabc95ff50cbeeedec83973935c8f306dfcd0b #v1.20.0
+        uses: ncipollo/release-action@339a81892b84b4eeb0f6e744e4574d79d0d9b8dd #v1.21.0
         with:
           name: "Release ${{ env.RELEASE_VERSION }}"
           tag: ${{ env.RELEASE_VERSION }}
@@ -39,7 +39,7 @@ jobs:
     name: "Build and upload app to Appetize"
     steps:
       - name: Cancel previous jobs
-        uses: styfle/cancel-workflow-action@3155a141048f8f89c06b4cdae32e7853e97536bc # v0.13.0
+        uses: styfle/cancel-workflow-action@d07a454dad7609a92316b57b23c9ccfd4f59af66 # v0.13.1
         with:
           access_token: ${{ github.token }}
       - name: Git - Checkout

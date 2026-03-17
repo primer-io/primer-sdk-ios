@@ -1,7 +1,7 @@
 //
 //  JWTFactory.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
@@ -29,17 +29,19 @@ struct JWTPayloadSegment: Encodable {
     let threeDSecureToken: String
     let paymentFlow: String
 
-    init(exp: UInt64 = 2625901334,
-         accessToken: String = "00000000-0000-0000-0000-000000000000",
-         analyticsUrl: String = "https://analytics.api.sandbox.core.primer.io/mixpanel",
-         intent: String = "CHECKOUT",
-         configurationUrl: String = "https://api.sandbox.primer.io/client-sdk/configuration",
-         coreUrl: String = "https://api.sandbox.primer.io",
-         pciUrl: String = "https://sdk.api.sandbox.primer.io",
-         env: String = "SANDBOX",
-         threeDSecureInitUrl: String = "https://songbirdstag.cardinalcommerce.com/cardinalcruise/v1/songbird.js",
-         threeDSecureToken: String = "abc123",
-         paymentFlow: String = "PREFER_VAULT") {
+    init(
+        exp: UInt64 = 2625901334,
+        accessToken: String = "00000000-0000-0000-0000-000000000000",
+        analyticsUrl: String = "https://analytics.api.sandbox.core.primer.io/mixpanel",
+        intent: String = "CHECKOUT",
+        configurationUrl: String = "https://api.sandbox.primer.io/client-sdk/configuration",
+        coreUrl: String = "https://api.sandbox.primer.io",
+        pciUrl: String = "https://sdk.api.sandbox.primer.io",
+        env: String = "SANDBOX",
+        threeDSecureInitUrl: String = "https://songbirdstag.cardinalcommerce.com/cardinalcruise/v1/songbird.js",
+        threeDSecureToken: String = "abc123",
+        paymentFlow: String = "PREFER_VAULT"
+    ) {
         self.exp = exp
         self.accessToken = accessToken
         self.analyticsUrl = analyticsUrl
@@ -56,14 +58,37 @@ struct JWTPayloadSegment: Encodable {
 
 class JWTFactory {
 
-    let encoder: JSONEncoder = JSONEncoder()
+    let encoder: JSONEncoder = {
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = .sortedKeys
+        return encoder
+    }()
 
-    func create(accessToken: String = "00000000-0000-0000-0000-000000000000",
-                expiry: UInt64 = 2625901334) throws -> String {
+    func create(
+        accessToken: String = "00000000-0000-0000-0000-000000000000",
+        expiry: UInt64 = 2625901334
+    ) throws -> String {
         let header = String(data: try encoder.encode(JWTHeaderSegment()).base64EncodedData(), encoding: .utf8)!
         let payloadModel = JWTPayloadSegment(exp: expiry, accessToken: accessToken)
         let payload = String(data: try encoder.encode(payloadModel).base64EncodedData(), encoding: .utf8)!
         let signature = "5CZOemFCcuoQQEvlNqCb-aiKf7zwT7jXJxZZhHySM_o"
         return "\(header).\(payload).\(signature)"
+    }
+
+    func create(payload: [String: Any]) throws -> String {
+        let headerData = try encoder.encode(JWTHeaderSegment())
+        let header = headerData.base64URLEncodedString()
+        let payloadData = try JSONSerialization.data(withJSONObject: payload, options: .sortedKeys)
+        let body = payloadData.base64URLEncodedString()
+        return "\(header).\(body).mock-signature"
+    }
+}
+
+private extension Data {
+    func base64URLEncodedString() -> String {
+        base64EncodedString()
+            .replacingOccurrences(of: "+", with: "-")
+            .replacingOccurrences(of: "/", with: "_")
+            .replacingOccurrences(of: "=", with: "")
     }
 }
