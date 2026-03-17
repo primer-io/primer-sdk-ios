@@ -8,8 +8,6 @@ import SwiftUI
 
 @available(iOS 15.0, *)
 struct CountrySelectionButton: View {
-  // MARK: - Properties
-
   let countryName: String
   let placeholder: String
   let styling: PrimerFieldStyling?

@@ -9,8 +9,6 @@ import UIKit
 
 @available(iOS 15.0, *)
 struct PostalCodeInputField: View, LogReporter {
-  // MARK: - Public Properties
-
   let label: String?
   let placeholder: String
   let countryCode: String?

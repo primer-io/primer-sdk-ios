@@ -60,7 +60,7 @@ struct AddressLineTextField: UIViewRepresentable, LogReporter {
     )
   }
 
-  class Coordinator: NSObject, UITextFieldDelegate, LogReporter {
+  final class Coordinator: NSObject, UITextFieldDelegate, LogReporter {
     private let validationService: ValidationService
     @Binding private var addressLine: String
     @Binding private var isValid: Bool
@@ -169,7 +169,7 @@ struct AddressLineTextField: UIViewRepresentable, LogReporter {
 
       // Empty field handling - don't show errors for empty fields
       if trimmedAddress.isEmpty {
-        isValid = isRequired ? false : true  // Required fields are invalid when empty, optional fields are valid
+        isValid = !isRequired
         errorMessage = nil  // Never show error message for empty fields
         onValidationChange?(isValid)
 

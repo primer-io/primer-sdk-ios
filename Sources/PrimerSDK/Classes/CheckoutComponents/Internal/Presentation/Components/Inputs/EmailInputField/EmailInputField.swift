@@ -8,8 +8,6 @@ import SwiftUI
 
 @available(iOS 15.0, *)
 struct EmailInputField: View, LogReporter {
-  // MARK: - Public Properties
-
   let label: String?
   let placeholder: String
   let initialValue: String

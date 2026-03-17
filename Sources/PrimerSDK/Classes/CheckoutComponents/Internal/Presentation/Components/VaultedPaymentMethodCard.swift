@@ -6,12 +6,6 @@
 
 import SwiftUI
 
-// MARK: - VaultedPaymentMethodCard View
-
-/// Card component displaying a vaulted payment method with brand icon, masked data, and selection state.
-/// Uses `VaultedPaymentMethodDisplayData` for normalized rendering across payment types.
-///
-/// In edit mode, the card shows a delete button instead of a selection checkmark, and row taps are disabled.
 @available(iOS 15.0, *)
 struct VaultedPaymentMethodCard: View {
   let vaultedPaymentMethod: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod

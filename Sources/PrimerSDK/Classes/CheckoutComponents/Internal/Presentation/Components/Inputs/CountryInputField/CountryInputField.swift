@@ -9,8 +9,6 @@ import UIKit
 
 @available(iOS 15.0, *)
 struct CountryInputField: View, LogReporter {
-  // MARK: - Public Properties
-
   let label: String?
   let placeholder: String
   let styling: PrimerFieldStyling?

@@ -6,7 +6,6 @@
 
 import SwiftUI
 
-/// Section displaying available payment methods with loading and empty states
 @available(iOS 15.0, *)
 struct PaymentMethodsSection: View {
   let state: PrimerPaymentMethodSelectionState

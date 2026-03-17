@@ -29,9 +29,7 @@ struct SDKInitializationErrorView: View {
         .multilineTextAlignment(.center)
         .padding(.horizontal, PrimerSpacing.large(tokens: tokens))
 
-      Button(CheckoutComponentsStrings.retryButton) {
-        onRetry()
-      }
+      Button(CheckoutComponentsStrings.retryButton, action: onRetry)
       .buttonStyle(.borderedProminent)
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity)

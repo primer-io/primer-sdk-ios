@@ -6,7 +6,6 @@
 
 import SwiftUI
 
-/// A button component for displaying a payment method in the selection list
 @available(iOS 15.0, *)
 struct PaymentMethodButton: View {
   let method: CheckoutPaymentMethod

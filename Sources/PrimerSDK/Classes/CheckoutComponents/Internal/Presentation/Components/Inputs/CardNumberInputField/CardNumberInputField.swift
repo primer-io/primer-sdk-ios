@@ -8,8 +8,6 @@ import SwiftUI
 
 @available(iOS 15.0, *)
 struct CardNumberInputField: View, LogReporter {
-  // MARK: - Properties
-
   let label: String?
   let placeholder: String
   let scope: any PrimerCardFormScope

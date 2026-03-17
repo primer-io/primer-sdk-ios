@@ -6,31 +6,11 @@
 
 import SwiftUI
 
-/// A reusable SwiftUI component that displays a card network badge
-/// with either an icon or abbreviated text.
-///
-/// The badge features:
-/// - Card network icon (if available) or abbreviated text (first 2 characters)
-/// - Consistent sizing based on design tokens
-/// - Border and corner radius styling
-/// - Design token-driven colors and typography
-///
-/// Usage:
-/// ```swift
-/// CardNetworkBadge(network: .visa)
-/// CardNetworkBadge(network: .masterCard)
-/// ```
 @available(iOS 15.0, *)
 struct CardNetworkBadge: View, LogReporter {
-  // MARK: - Properties
-
   let network: CardNetwork
 
-  // MARK: - Private Properties
-
   @Environment(\.designTokens) private var tokens
-
-  // MARK: - Body
 
   @ViewBuilder
   var body: some View {
@@ -56,8 +36,6 @@ struct CardNetworkBadge: View, LogReporter {
     }
   }
 }
-
-// MARK: - Previews
 
 #if DEBUG
   @available(iOS 15.0, *)

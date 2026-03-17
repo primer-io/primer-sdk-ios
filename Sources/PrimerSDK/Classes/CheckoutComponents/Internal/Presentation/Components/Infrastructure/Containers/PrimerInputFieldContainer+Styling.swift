@@ -6,7 +6,6 @@
 
 import SwiftUI
 
-// MARK: - Colors
 @available(iOS 15.0, *)
 extension PrimerInputFieldContainer {
   var borderColor: Color {
@@ -38,7 +37,6 @@ extension PrimerInputFieldContainer {
   }
 }
 
-// MARK: - Fonts
 @available(iOS 15.0, *)
 extension PrimerInputFieldContainer {
   var errorMessageFont: Font { PrimerFont.bodySmall(tokens: tokens) }
@@ -47,7 +45,6 @@ extension PrimerInputFieldContainer {
   }
 }
 
-// MARK: - Spacing & Frame
 @available(iOS 15.0, *)
 extension PrimerInputFieldContainer {
   var fieldCornerRadius: CGFloat { styling?.cornerRadius ?? PrimerRadius.small(tokens: tokens) }

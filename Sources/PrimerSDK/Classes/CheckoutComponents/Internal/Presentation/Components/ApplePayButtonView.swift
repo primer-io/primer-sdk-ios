@@ -7,26 +7,13 @@
 import PassKit
 import SwiftUI
 
-/// SwiftUI wrapper for PKPaymentButton.
-/// Provides a native Apple Pay button with customizable style, type, and corner radius.
 @available(iOS 15.0, *)
 public struct ApplePayButtonView: View {
-
-  // MARK: - Properties
-
   private let style: PKPaymentButtonStyle
   private let type: PKPaymentButtonType
   private let cornerRadius: CGFloat
   private let action: () -> Void
 
-  // MARK: - Initialization
-
-  /// Creates an Apple Pay button view.
-  /// - Parameters:
-  ///   - style: The button style (.black, .white, .whiteOutline, .automatic)
-  ///   - type: The button type (.plain, .buy, .setUp, .checkout, etc.)
-  ///   - cornerRadius: The corner radius of the button
-  ///   - action: The action to perform when the button is tapped
   public init(
     style: PKPaymentButtonStyle = .black,
     type: PKPaymentButtonType = .plain,
@@ -38,8 +25,6 @@ public struct ApplePayButtonView: View {
     self.cornerRadius = cornerRadius
     self.action = action
   }
-
-  // MARK: - Body
 
   public var body: some View {
     ApplePayButtonRepresentable(
@@ -54,11 +39,8 @@ public struct ApplePayButtonView: View {
   }
 }
 
-// MARK: - UIViewRepresentable
-
 @available(iOS 15.0, *)
 private struct ApplePayButtonRepresentable: UIViewRepresentable {
-
   let style: PKPaymentButtonStyle
   let type: PKPaymentButtonType
   let cornerRadius: CGFloat
@@ -73,8 +55,6 @@ private struct ApplePayButtonRepresentable: UIViewRepresentable {
   }
 
   func updateUIView(_ uiView: PKPaymentButton, context: Context) {
-    // PKPaymentButton doesn't support updating style/type after creation
-    // Corner radius can be updated
     uiView.cornerRadius = cornerRadius
   }
 
@@ -82,9 +62,7 @@ private struct ApplePayButtonRepresentable: UIViewRepresentable {
     Coordinator(action: action)
   }
 
-  // MARK: - Coordinator
-
-  class Coordinator: NSObject {
+  final class Coordinator: NSObject {
     let action: () -> Void
 
     init(action: @escaping () -> Void) {
@@ -96,8 +74,6 @@ private struct ApplePayButtonRepresentable: UIViewRepresentable {
     }
   }
 }
-
-// MARK: - Preview
 
 #if DEBUG
   @available(iOS 15.0, *)
