@@ -10,8 +10,6 @@ import XCTest
 @available(iOS 15.0, *)
 final class VaultedPaymentMethodDisplayDataTests: XCTestCase {
 
-    // MARK: - Test Helpers
-
     private func makePaymentInstrumentData(
         last4Digits: String? = nil,
         expirationMonth: String? = nil,
@@ -53,10 +51,10 @@ final class VaultedPaymentMethodDisplayDataTests: XCTestCase {
         )
     }
 
-    // MARK: - Card Display Data Tests
+    // MARK: - Card Display Data
 
-    func testCardDisplayData_WithAllFields() {
-        // Given: A card with all fields populated
+    func test_cardDisplayData_withAllFields() {
+        // Given
         let vaultedMethod = makeVaultedPaymentMethod(
             paymentMethodType: PrimerPaymentMethodType.paymentCard.rawValue,
             paymentInstrumentType: .paymentCard,
@@ -69,10 +67,10 @@ final class VaultedPaymentMethodDisplayDataTests: XCTestCase {
             )
         )
 
-        // When: Getting display data
+        // When
         let displayData = vaultedMethod.displayData
 
-        // Then: All fields should be populated correctly
+        // Then
         XCTAssertEqual(displayData.name, "John Appleseed")
         XCTAssertEqual(displayData.brandName, "Visa")
         XCTAssertNotNil(displayData.brandIcon)
@@ -82,8 +80,8 @@ final class VaultedPaymentMethodDisplayDataTests: XCTestCase {
         XCTAssertFalse(displayData.accessibilityLabel.isEmpty)
     }
 
-    func testCardDisplayData_WithoutCardholderName() {
-        // Given: A card without cardholder name
+    func test_cardDisplayData_withoutCardholderName() {
+        // Given
         let vaultedMethod = makeVaultedPaymentMethod(
             paymentMethodType: PrimerPaymentMethodType.paymentCard.rawValue,
             paymentInstrumentType: .paymentCard,
@@ -95,17 +93,17 @@ final class VaultedPaymentMethodDisplayDataTests: XCTestCase {
             )
         )
 
-        // When: Getting display data
+        // When
         let displayData = vaultedMethod.displayData
 
-        // Then: Name should be nil, other fields populated
+        // Then
         XCTAssertNil(displayData.name)
         XCTAssertEqual(displayData.brandName, "Mastercard")
         XCTAssertEqual(displayData.primaryValue, "•••• 5678")
     }
 
-    func testCardDisplayData_WithFourDigitYear() {
-        // Given: A card with 4-digit expiration year
+    func test_cardDisplayData_withFourDigitYear() {
+        // Given
         let vaultedMethod = makeVaultedPaymentMethod(
             paymentMethodType: PrimerPaymentMethodType.paymentCard.rawValue,
             paymentInstrumentType: .paymentCard,
@@ -117,15 +115,12 @@ final class VaultedPaymentMethodDisplayDataTests: XCTestCase {
             )
         )
 
-        // When: Getting display data
-        let displayData = vaultedMethod.displayData
-
-        // Then: Year should be formatted to 2 digits
-        XCTAssertTrue(displayData.secondaryValue?.contains("06/28") ?? false)
+        // When / Then
+        XCTAssertTrue(vaultedMethod.displayData.secondaryValue?.contains("06/28") ?? false)
     }
 
-    func testCardDisplayData_WithTwoDigitYear() {
-        // Given: A card with 2-digit expiration year
+    func test_cardDisplayData_withTwoDigitYear() {
+        // Given
         let vaultedMethod = makeVaultedPaymentMethod(
             paymentMethodType: PrimerPaymentMethodType.paymentCard.rawValue,
             paymentInstrumentType: .paymentCard,
@@ -137,15 +132,12 @@ final class VaultedPaymentMethodDisplayDataTests: XCTestCase {
             )
         )
 
-        // When: Getting display data
-        let displayData = vaultedMethod.displayData
-
-        // Then: Year should remain as-is
-        XCTAssertTrue(displayData.secondaryValue?.contains("06/28") ?? false)
+        // When / Then
+        XCTAssertTrue(vaultedMethod.displayData.secondaryValue?.contains("06/28") ?? false)
     }
 
-    func testCardDisplayData_WithoutExpiry() {
-        // Given: A card without expiry
+    func test_cardDisplayData_withoutExpiry() {
+        // Given
         let vaultedMethod = makeVaultedPaymentMethod(
             paymentMethodType: PrimerPaymentMethodType.paymentCard.rawValue,
             paymentInstrumentType: .paymentCard,
@@ -155,15 +147,12 @@ final class VaultedPaymentMethodDisplayDataTests: XCTestCase {
             )
         )
 
-        // When: Getting display data
-        let displayData = vaultedMethod.displayData
-
-        // Then: Secondary value should be nil
-        XCTAssertNil(displayData.secondaryValue)
+        // When / Then
+        XCTAssertNil(vaultedMethod.displayData.secondaryValue)
     }
 
-    func testCardDisplayData_CardOffSessionType() {
-        // Given: A card with cardOffSession instrument type
+    func test_cardDisplayData_cardOffSessionType() {
+        // Given
         let vaultedMethod = makeVaultedPaymentMethod(
             paymentMethodType: PrimerPaymentMethodType.paymentCard.rawValue,
             paymentInstrumentType: .cardOffSession,
@@ -173,18 +162,18 @@ final class VaultedPaymentMethodDisplayDataTests: XCTestCase {
             )
         )
 
-        // When: Getting display data
+        // When
         let displayData = vaultedMethod.displayData
 
-        // Then: Should be handled as card
+        // Then
         XCTAssertEqual(displayData.brandName, "Visa")
         XCTAssertEqual(displayData.primaryValue, "•••• 4242")
     }
 
-    // MARK: - PayPal Display Data Tests
+    // MARK: - PayPal Display Data
 
-    func testPayPalDisplayData_WithEmailAndName() {
-        // Given: PayPal with email and name
+    func test_payPalDisplayData_withEmailAndName() {
+        // Given
         let vaultedMethod = makeVaultedPaymentMethod(
             paymentMethodType: PrimerPaymentMethodType.payPal.rawValue,
             paymentInstrumentType: .payPalBillingAgreement,
@@ -197,10 +186,10 @@ final class VaultedPaymentMethodDisplayDataTests: XCTestCase {
             )
         )
 
-        // When: Getting display data
+        // When
         let displayData = vaultedMethod.displayData
 
-        // Then: Name and masked email should be present
+        // Then
         XCTAssertEqual(displayData.name, "John Appleseed")
         XCTAssertEqual(displayData.brandName, "PayPal account")
         XCTAssertNotNil(displayData.primaryValue)
@@ -209,84 +198,74 @@ final class VaultedPaymentMethodDisplayDataTests: XCTestCase {
         XCTAssertNil(displayData.secondaryValue)
     }
 
-    func testPayPalDisplayData_WithOnlyFirstName() {
-        // Given: PayPal with only first name
+    func test_payPalDisplayData_withOnlyFirstName() {
+        // Given
         let vaultedMethod = makeVaultedPaymentMethod(
             paymentMethodType: PrimerPaymentMethodType.payPal.rawValue,
             paymentInstrumentType: .payPalBillingAgreement,
             paymentInstrumentData: makePaymentInstrumentData(
-                externalPayerInfo: [
-                    "firstName": "John"
-                ]
+                externalPayerInfo: ["firstName": "John"]
             )
         )
 
-        // When: Getting display data
-        let displayData = vaultedMethod.displayData
-
-        // Then: Name should be just first name
-        XCTAssertEqual(displayData.name, "John")
+        // Then
+        XCTAssertEqual(vaultedMethod.displayData.name, "John")
     }
 
-    func testPayPalDisplayData_WithOnlyLastName() {
-        // Given: PayPal with only last name
+    func test_payPalDisplayData_withOnlyLastName() {
+        // Given
         let vaultedMethod = makeVaultedPaymentMethod(
             paymentMethodType: PrimerPaymentMethodType.payPal.rawValue,
             paymentInstrumentType: .payPalBillingAgreement,
             paymentInstrumentData: makePaymentInstrumentData(
-                externalPayerInfo: [
-                    "lastName": "Appleseed"
-                ]
+                externalPayerInfo: ["lastName": "Appleseed"]
             )
         )
 
-        // When: Getting display data
-        let displayData = vaultedMethod.displayData
-
-        // Then: Name should be just last name
-        XCTAssertEqual(displayData.name, "Appleseed")
+        // Then
+        XCTAssertEqual(vaultedMethod.displayData.name, "Appleseed")
     }
 
-    func testPayPalDisplayData_WithoutPayerInfo() {
-        // Given: PayPal without payer info
+    func test_payPalDisplayData_withoutPayerInfo() {
+        // Given
         let vaultedMethod = makeVaultedPaymentMethod(
             paymentMethodType: PrimerPaymentMethodType.payPal.rawValue,
             paymentInstrumentType: .payPalBillingAgreement,
             paymentInstrumentData: makePaymentInstrumentData()
         )
 
-        // When: Getting display data
+        // When
         let displayData = vaultedMethod.displayData
 
-        // Then: Name and primary value should be nil
+        // Then
         XCTAssertNil(displayData.name)
         XCTAssertNil(displayData.primaryValue)
         XCTAssertEqual(displayData.brandName, "PayPal account")
     }
 
-    // MARK: - Klarna Display Data Tests
+    // MARK: - Klarna Display Data
 
-    func testKlarnaDisplayData() {
-        // Given: Klarna payment method
+    func test_klarnaDisplayData() {
+        // Given
         let vaultedMethod = makeVaultedPaymentMethod(
             paymentMethodType: PrimerPaymentMethodType.klarna.rawValue,
             paymentInstrumentType: .klarnaCustomerToken,
             paymentInstrumentData: makePaymentInstrumentData()
         )
 
-        // When: Getting display data
+        // When
         let displayData = vaultedMethod.displayData
 
-        // Then: Should show Klarna brand
+        // Then
         XCTAssertNil(displayData.name)
         XCTAssertEqual(displayData.brandName, "Klarna")
         XCTAssertNotNil(displayData.brandIcon)
     }
 
-    // MARK: - ACH Display Data Tests
+    // MARK: - ACH Display Data
 
-    func testACHDisplayData_WithAllFields() {
-        // Given: ACH with all fields
+    func test_achDisplayData_withAllFields() {
+        // Given
         let vaultedMethod = makeVaultedPaymentMethod(
             paymentMethodType: PrimerPaymentMethodType.stripeAch.rawValue,
             paymentInstrumentType: .stripeAch,
@@ -297,18 +276,18 @@ final class VaultedPaymentMethodDisplayDataTests: XCTestCase {
             )
         )
 
-        // When: Getting display data
+        // When
         let displayData = vaultedMethod.displayData
 
-        // Then: All fields should be populated
+        // Then
         XCTAssertEqual(displayData.name, "Jane Smith")
         XCTAssertTrue(displayData.brandName.contains("Chase"))
         XCTAssertTrue(displayData.brandName.contains("Bank account"))
         XCTAssertEqual(displayData.primaryValue, "•••• 9876")
     }
 
-    func testACHDisplayData_WithoutBankName() {
-        // Given: ACH without bank name
+    func test_achDisplayData_withoutBankName() {
+        // Given
         let vaultedMethod = makeVaultedPaymentMethod(
             paymentMethodType: PrimerPaymentMethodType.stripeAch.rawValue,
             paymentInstrumentType: .stripeAch,
@@ -317,17 +296,14 @@ final class VaultedPaymentMethodDisplayDataTests: XCTestCase {
             )
         )
 
-        // When: Getting display data
-        let displayData = vaultedMethod.displayData
-
-        // Then: Should use default bank name
-        XCTAssertTrue(displayData.brandName.contains("Bank"))
+        // Then
+        XCTAssertTrue(vaultedMethod.displayData.brandName.contains("Bank"))
     }
 
-    // MARK: - GoCardless Display Data Tests
+    // MARK: - GoCardless Display Data
 
-    func testGoCardlessDisplayData() {
-        // Given: GoCardless mandate
+    func test_goCardlessDisplayData() {
+        // Given
         let vaultedMethod = makeVaultedPaymentMethod(
             paymentMethodType: PrimerPaymentMethodType.goCardless.rawValue,
             paymentInstrumentType: .goCardlessMandate,
@@ -337,78 +313,76 @@ final class VaultedPaymentMethodDisplayDataTests: XCTestCase {
             )
         )
 
-        // When: Getting display data
+        // When
         let displayData = vaultedMethod.displayData
 
-        // Then: Should show Direct Debit
+        // Then
         XCTAssertTrue(displayData.brandName.contains("Barclays"))
         XCTAssertTrue(displayData.brandName.contains("Direct Debit"))
         XCTAssertEqual(displayData.primaryValue, "•••• 5678")
     }
 
-    // MARK: - Apple Pay Display Data Tests
+    // MARK: - Apple Pay / Google Pay Display Data
 
-    func testApplePayDisplayData() {
-        // Given: Apple Pay
+    func test_applePayDisplayData() {
+        // Given
         let vaultedMethod = makeVaultedPaymentMethod(
             paymentMethodType: PrimerPaymentMethodType.applePay.rawValue,
             paymentInstrumentType: .applePay,
             paymentInstrumentData: makePaymentInstrumentData()
         )
 
-        // When: Getting display data
+        // When
         let displayData = vaultedMethod.displayData
 
-        // Then: Should show Apple Pay
+        // Then
         XCTAssertNil(displayData.name)
         XCTAssertEqual(displayData.brandName, "Apple Pay")
         XCTAssertNil(displayData.primaryValue)
         XCTAssertNil(displayData.secondaryValue)
     }
 
-    // MARK: - Google Pay Display Data Tests
-
-    func testGooglePayDisplayData() {
-        // Given: Google Pay
+    func test_googlePayDisplayData() {
+        // Given
         let vaultedMethod = makeVaultedPaymentMethod(
             paymentMethodType: PrimerPaymentMethodType.googlePay.rawValue,
             paymentInstrumentType: .googlePay,
             paymentInstrumentData: makePaymentInstrumentData()
         )
 
-        // When: Getting display data
+        // When
         let displayData = vaultedMethod.displayData
 
-        // Then: Should show Google Pay
+        // Then
         XCTAssertNil(displayData.name)
         XCTAssertEqual(displayData.brandName, "Google Pay")
         XCTAssertNil(displayData.primaryValue)
         XCTAssertNil(displayData.secondaryValue)
     }
 
-    // MARK: - Generic/Fallback Display Data Tests
+    // MARK: - Generic/Fallback Display Data
 
-    func testGenericDisplayData_UnknownType() {
-        // Given: Unknown payment method type
+    func test_genericDisplayData_unknownType() {
+        // Given
         let vaultedMethod = makeVaultedPaymentMethod(
             paymentMethodType: "UNKNOWN_TYPE",
             paymentInstrumentType: .unknown,
             paymentInstrumentData: makePaymentInstrumentData()
         )
 
-        // When: Getting display data
+        // When
         let displayData = vaultedMethod.displayData
 
-        // Then: Should use payment method type as brand name
+        // Then
         XCTAssertNil(displayData.name)
         XCTAssertEqual(displayData.brandName, "UNKNOWN_TYPE")
-        XCTAssertNotNil(displayData.brandIcon) // Should have fallback icon
+        XCTAssertNotNil(displayData.brandIcon)
     }
 
-    // MARK: - Accessibility Label Tests
+    // MARK: - Accessibility Label
 
-    func testAccessibilityLabel_Card_NotEmpty() {
-        // Given: A card
+    func test_accessibilityLabel_card_notEmpty() {
+        // Given
         let vaultedMethod = makeVaultedPaymentMethod(
             paymentMethodType: PrimerPaymentMethodType.paymentCard.rawValue,
             paymentInstrumentType: .paymentCard,
@@ -420,17 +394,17 @@ final class VaultedPaymentMethodDisplayDataTests: XCTestCase {
             )
         )
 
-        // When: Getting display data
+        // When
         let displayData = vaultedMethod.displayData
 
-        // Then: Accessibility label should not be empty
+        // Then
         XCTAssertFalse(displayData.accessibilityLabel.isEmpty)
         XCTAssertTrue(displayData.accessibilityLabel.contains("Visa"))
         XCTAssertTrue(displayData.accessibilityLabel.contains("4242"))
     }
 
-    func testAccessibilityLabel_PayPal_NotEmpty() {
-        // Given: PayPal
+    func test_accessibilityLabel_payPal_notEmpty() {
+        // Given
         let vaultedMethod = makeVaultedPaymentMethod(
             paymentMethodType: PrimerPaymentMethodType.payPal.rawValue,
             paymentInstrumentType: .payPalBillingAgreement,
@@ -439,11 +413,8 @@ final class VaultedPaymentMethodDisplayDataTests: XCTestCase {
             )
         )
 
-        // When: Getting display data
-        let displayData = vaultedMethod.displayData
-
-        // Then: Accessibility label should contain PayPal
-        XCTAssertTrue(displayData.accessibilityLabel.contains("PayPal"))
+        // Then
+        XCTAssertTrue(vaultedMethod.displayData.accessibilityLabel.contains("PayPal"))
     }
 }
 
@@ -452,7 +423,6 @@ final class VaultedPaymentMethodDisplayDataTests: XCTestCase {
 @available(iOS 15.0, *)
 final class EmailMaskingTests: XCTestCase {
 
-    // Helper to access the private maskEmail function via display data
     private func getMaskedEmail(_ email: String) -> String? {
         let data = try! JSONSerialization.data(withJSONObject: [ // swiftlint:disable:this force_try
             "externalPayerInfo": ["email": email]
@@ -473,59 +443,31 @@ final class EmailMaskingTests: XCTestCase {
         return vaultedMethod.displayData.primaryValue
     }
 
-    func testEmailMasking_StandardEmail() {
-        // Given: A standard email
-        let masked = getMaskedEmail("john.appleseed@gmail.com")
-
-        // Then: Should mask with first 2 characters visible
-        XCTAssertEqual(masked, "jo••••@gmail.com")
+    func test_emailMasking_standardEmail() {
+        XCTAssertEqual(getMaskedEmail("john.appleseed@gmail.com"), "jo••••@gmail.com")
     }
 
-    func testEmailMasking_ShortLocalPart_TwoChars() {
-        // Given: Email with 2-character local part
-        let masked = getMaskedEmail("jo@example.com")
-
-        // Then: Should show both characters plus mask
-        XCTAssertEqual(masked, "jo••••@example.com")
+    func test_emailMasking_shortLocalPart_twoChars() {
+        XCTAssertEqual(getMaskedEmail("jo@example.com"), "jo••••@example.com")
     }
 
-    func testEmailMasking_ShortLocalPart_OneChar() {
-        // Given: Email with 1-character local part
-        let masked = getMaskedEmail("j@example.com")
-
-        // Then: Should show character plus mask
-        XCTAssertEqual(masked, "j••••@example.com")
+    func test_emailMasking_shortLocalPart_oneChar() {
+        XCTAssertEqual(getMaskedEmail("j@example.com"), "j••••@example.com")
     }
 
-    func testEmailMasking_LongLocalPart() {
-        // Given: Email with long local part
-        let masked = getMaskedEmail("verylongemail@domain.org")
-
-        // Then: Should only show first 2 characters
-        XCTAssertEqual(masked, "ve••••@domain.org")
+    func test_emailMasking_longLocalPart() {
+        XCTAssertEqual(getMaskedEmail("verylongemail@domain.org"), "ve••••@domain.org")
     }
 
-    func testEmailMasking_WithSubdomain() {
-        // Given: Email with subdomain
-        let masked = getMaskedEmail("user@mail.company.co.uk")
-
-        // Then: Should preserve full domain
-        XCTAssertEqual(masked, "us••••@mail.company.co.uk")
+    func test_emailMasking_withSubdomain() {
+        XCTAssertEqual(getMaskedEmail("user@mail.company.co.uk"), "us••••@mail.company.co.uk")
     }
 
-    func testEmailMasking_WithPlusSign() {
-        // Given: Email with plus addressing
-        let masked = getMaskedEmail("user+tag@gmail.com")
-
-        // Then: Should mask normally
-        XCTAssertEqual(masked, "us••••@gmail.com")
+    func test_emailMasking_withPlusSign() {
+        XCTAssertEqual(getMaskedEmail("user+tag@gmail.com"), "us••••@gmail.com")
     }
 
-    func testEmailMasking_WithNumbers() {
-        // Given: Email with numbers
-        let masked = getMaskedEmail("user123@test.com")
-
-        // Then: Should mask normally
-        XCTAssertEqual(masked, "us••••@test.com")
+    func test_emailMasking_withNumbers() {
+        XCTAssertEqual(getMaskedEmail("user123@test.com"), "us••••@test.com")
     }
 }

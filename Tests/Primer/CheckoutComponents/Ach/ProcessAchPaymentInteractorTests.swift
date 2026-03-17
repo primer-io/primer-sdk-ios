@@ -413,10 +413,10 @@ final class ProcessAchPaymentInteractorTests: XCTestCase {
 // MARK: - Mock Bank Collector Delegate
 
 @available(iOS 15.0, *)
-private class MockBankCollectorDelegate: AchBankCollectorDelegate {
-    var didSucceedPaymentId: String?
-    var didCancelCalled = false
-    var didFailError: PrimerError?
+private final class MockBankCollectorDelegate: AchBankCollectorDelegate {
+    private(set) var didSucceedPaymentId: String?
+    private(set) var didCancelCalled = false
+    private(set) var didFailError: PrimerError?
 
     func achBankCollectorDidSucceed(paymentId: String) {
         didSucceedPaymentId = paymentId

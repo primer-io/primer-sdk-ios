@@ -10,13 +10,9 @@ import PassKit
 @available(iOS 15.0, *)
 final class MockProcessApplePayPaymentInteractor: ProcessApplePayPaymentInteractor {
 
-    // MARK: - Properties
-
     var onExecute: ((PKPayment) async throws -> PaymentResult)?
-    var executeCallCount = 0
-    var lastPaymentReceived: PKPayment?
-
-    // MARK: - ProcessApplePayPaymentInteractor
+    private(set) var executeCallCount = 0
+    private(set) var lastPaymentReceived: PKPayment?
 
     func execute(payment: PKPayment) async throws -> PaymentResult {
         executeCallCount += 1

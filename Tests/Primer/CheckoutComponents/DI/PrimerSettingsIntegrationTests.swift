@@ -30,7 +30,7 @@ final class PrimerSettingsIntegrationTests: XCTestCase {
 
     // MARK: - End-to-End Settings Integration Tests
 
-    func testSettingsFlowThroughEntireStack() async throws {
+    func test_settings_fullConfiguration_flowsThroughEntireStack() async throws {
         // Given: Custom settings with full configuration
         let klarnaOptions = PrimerKlarnaOptions(
             recurringPaymentDescription: TestData.PaymentMethodOptions.testSubscription
@@ -86,7 +86,7 @@ final class PrimerSettingsIntegrationTests: XCTestCase {
 
     // MARK: - Settings Immutability Tests
 
-    func testSettingsReferenceStabilityAcrossResolutions() async throws {
+    func test_settings_multipleResolutions_returnsSameInstance() async throws {
         // Given: Configured container
         let settings = PrimerSettings(paymentHandling: .auto)
         let composableContainer = ComposableContainer(settings: settings)
@@ -110,7 +110,7 @@ final class PrimerSettingsIntegrationTests: XCTestCase {
 
     // MARK: - Payment Method Options Integration Tests
 
-    func testAllPaymentMethodOptionsAccessible() async throws {
+    func test_paymentMethodOptions_allConfigured_areAccessible() async throws {
         // Given: Settings with all payment method options configured
         let klarnaOptions = PrimerKlarnaOptions(
             recurringPaymentDescription: TestData.PaymentMethodOptions.subscription
@@ -157,7 +157,7 @@ final class PrimerSettingsIntegrationTests: XCTestCase {
 
     // MARK: - UI Options Integration Tests
 
-    func testAllUIOptionsAccessible() async throws {
+    func test_uiOptions_allConfigured_areAccessible() async throws {
         // Given: Settings with all UI options configured
         let cardFormOptions = PrimerCardFormUIOptions(payButtonAddNewCard: true)
 
@@ -193,7 +193,7 @@ final class PrimerSettingsIntegrationTests: XCTestCase {
 
     // MARK: - Locale Integration Tests
 
-    func testLocaleDataPropagation() async throws {
+    func test_localeData_withLanguageAndRegion_propagatesCorrectly() async throws {
         // Given: Settings with specific locale
         let localeData = PrimerLocaleData(languageCode: TestData.Locale.german, regionCode: TestData.Locale.germany)
         let settings = PrimerSettings(localeData: localeData)
@@ -214,7 +214,7 @@ final class PrimerSettingsIntegrationTests: XCTestCase {
         XCTAssertEqual(resolved.localeData.localeCode, TestData.Locale.germanGermany)
     }
 
-    func testLocaleDataWithLanguageOnly() async throws {
+    func test_localeData_withLanguageOnly_usesLanguageCode() async throws {
         // Given: Settings with language code only
         let localeData = PrimerLocaleData(languageCode: TestData.Locale.japanese, regionCode: nil)
         let settings = PrimerSettings(localeData: localeData)
@@ -237,7 +237,7 @@ final class PrimerSettingsIntegrationTests: XCTestCase {
 
     // MARK: - Container Lifecycle Tests
 
-    func testSettingsPersisThroughContainerLifecycle() async throws {
+    func test_settings_reconfiguredWithoutClearing_updatesToNewSettings() async throws {
         // Given: Initial configuration
         let settings1 = PrimerSettings(paymentHandling: .auto)
         let container1 = ComposableContainer(settings: settings1)
@@ -257,7 +257,7 @@ final class PrimerSettingsIntegrationTests: XCTestCase {
         XCTAssertEqual(afterResolve?.paymentHandling, .manual)
     }
 
-    func testContainerClearRemovesSettings() async throws {
+    func test_containerClear_afterConfiguration_removesContainer() async throws {
         // Given: Configured container
         let settings = PrimerSettings()
         let composableContainer = ComposableContainer(settings: settings)
@@ -277,7 +277,7 @@ final class PrimerSettingsIntegrationTests: XCTestCase {
 
     // MARK: - Error Handling Tests
 
-    func testSettingsResolutionFailsWhenContainerNotConfigured() async {
+    func test_settingsResolution_containerNotConfigured_returnsNil() async {
         // Given: No container configured
         await DIContainer.clearContainer()
 
@@ -290,7 +290,7 @@ final class PrimerSettingsIntegrationTests: XCTestCase {
 
     // MARK: - Default Values Tests
 
-    func testDefaultSettingsValues() async throws {
+    func test_defaultSettings_resolved_hasCorrectDefaults() async throws {
         // Given: Default settings (no customization)
         let settings = PrimerSettings()
         let composableContainer = ComposableContainer(settings: settings)

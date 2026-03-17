@@ -10,19 +10,13 @@ import Foundation
 @available(iOS 15.0, *)
 final class MockClientSessionActionsModule: ClientSessionActionsProtocol {
 
-    // MARK: - Error Configuration
-
     var selectPaymentMethodError: Error?
     var unselectPaymentMethodError: Error?
     var dispatchActionsError: Error?
 
-    // MARK: - Call Tracking
-
     private(set) var selectPaymentMethodCalls: [(type: String, network: String?)] = []
     private(set) var unselectPaymentMethodCallCount = 0
     private(set) var dispatchActionsCalls: [[ClientSession.Action]] = []
-
-    // MARK: - Test Helpers
 
     var lastSelectPaymentMethodCall: (type: String, network: String?)? {
         selectPaymentMethodCalls.last
@@ -40,8 +34,6 @@ final class MockClientSessionActionsModule: ClientSessionActionsProtocol {
         unselectPaymentMethodError = nil
         dispatchActionsError = nil
     }
-
-    // MARK: - Protocol Implementation
 
     func selectPaymentMethodIfNeeded(_ paymentMethodType: String, cardNetwork: String?) async throws {
         selectPaymentMethodCalls.append((paymentMethodType, cardNetwork))

@@ -11,7 +11,7 @@ import XCTest
 @available(iOS 15.0, *)
 final class AccessibilityAnnouncementServiceTests: XCTestCase {
 
-    var service: AccessibilityAnnouncementService!
+    private var service: AccessibilityAnnouncementService!
 
     override func setUp() {
         super.setUp()
@@ -25,10 +25,10 @@ final class AccessibilityAnnouncementServiceTests: XCTestCase {
 
     // MARK: - Thread Safety Tests
 
-    func testConcurrentAnnouncements_DoNotCrash() {
+    func test_concurrentAnnouncements_multipleThreads_doNotCrash() {
         // Given: Multiple concurrent announcement operations
         let concurrentOperationCount = TestData.Accessibility.concurrentOperationCount
-        let expectation = self.expectation(description: TestData.Accessibility.concurrentExpectationDescription)
+        let expectation = expectation(description: TestData.Accessibility.concurrentExpectationDescription)
         expectation.expectedFulfillmentCount = concurrentOperationCount
 
         let queue = DispatchQueue(label: TestData.Accessibility.testQueueLabel, attributes: .concurrent)
@@ -48,7 +48,7 @@ final class AccessibilityAnnouncementServiceTests: XCTestCase {
 
     // MARK: - Notification Type Verification Tests
 
-    func testAnnouncements_UseCorrectNotificationTypes() {
+    func test_announcements_eachType_usesCorrectNotificationType() {
         // Given: Test cases for each announcement type with expected notification
         let testCases: [(
             method: (DefaultAccessibilityAnnouncementService, String) -> Void,

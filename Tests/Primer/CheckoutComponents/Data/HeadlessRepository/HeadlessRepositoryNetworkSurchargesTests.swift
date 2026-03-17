@@ -7,8 +7,6 @@
 @testable import PrimerSDK
 import XCTest
 
-// MARK: - Extract Network Surcharges Edge Cases Tests
-
 @available(iOS 15.0, *)
 final class ExtractNetworkSurchargesEdgeCasesTests: XCTestCase {
 
@@ -23,8 +21,6 @@ final class ExtractNetworkSurchargesEdgeCasesTests: XCTestCase {
         repository = nil
         super.tearDown()
     }
-
-    // MARK: - extractFromNetworksArray Tests
 
     func testExtractFromNetworksArray_WithMissingType_SkipsEntry() {
         // Given - Network entry without type
@@ -131,8 +127,6 @@ final class ExtractNetworkSurchargesEdgeCasesTests: XCTestCase {
         XCTAssertEqual(result?["MASTERCARD"], 50)
     }
 
-    // MARK: - extractFromNetworksDict Tests
-
     func testExtractFromNetworksDict_WithEmptyDict_ReturnsNil() {
         // Given
         let networksDict: [String: [String: Any]] = [:]
@@ -207,8 +201,6 @@ final class ExtractNetworkSurchargesEdgeCasesTests: XCTestCase {
         XCTAssertEqual(result?["MASTERCARD"], 50)
     }
 }
-
-// MARK: - Extract Networks Dict Additional Tests
 
 @available(iOS 15.0, *)
 final class ExtractNetworksDictAdditionalTests: XCTestCase {
@@ -316,8 +308,6 @@ final class ExtractNetworksDictAdditionalTests: XCTestCase {
         XCTAssertEqual(result?["MASTERCARD"], 100)
     }
 }
-
-// MARK: - Extract Networks Array Additional Edge Cases
 
 @available(iOS 15.0, *)
 final class ExtractNetworksArrayAdditionalTests: XCTestCase {

@@ -67,7 +67,6 @@ final class MockPrimerAchScope: PrimerAchScope, ObservableObject {
         }
     }
 
-    /// Returns the current internal state
     var currentState: PrimerAchState {
         internalState
     }
@@ -88,7 +87,6 @@ final class MockPrimerAchScope: PrimerAchScope, ObservableObject {
 
     // MARK: - State Emission
 
-    /// Emits a new state to all active observers
     func emit(_ state: PrimerAchState) {
         internalState = state
         continuation?.yield(state)

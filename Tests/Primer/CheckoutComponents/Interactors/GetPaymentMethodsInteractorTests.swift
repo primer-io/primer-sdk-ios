@@ -25,8 +25,6 @@ final class GetPaymentMethodsInteractorTests: XCTestCase {
         super.tearDown()
     }
 
-    // MARK: - Success Tests
-
     func test_execute_returnsPaymentMethodsFromRepository() async throws {
         // Given
         let expectedMethods = [
