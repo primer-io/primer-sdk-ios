@@ -27,8 +27,6 @@ enum QRCodePaymentMethod {
     }
   }
 
-  // MARK: - Scope Creation
-
   @MainActor
   private static func createScope(
     paymentMethodType: String,
@@ -74,8 +72,6 @@ enum QRCodePaymentMethod {
       )
     }
   }
-
-  // MARK: - View Creation
 
   @MainActor
   static func createView(checkoutScope: any PrimerCheckoutScope) -> AnyView? {
