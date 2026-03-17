@@ -6,7 +6,6 @@
 
 import Foundation
 
-/// Implementation of PayPalRepository that wraps the existing PayPalService and WebAuthenticationService.
 @available(iOS 15.0, *)
 final class PayPalRepositoryImpl: PayPalRepository, LogReporter {
 
@@ -83,14 +82,14 @@ final class PayPalRepositoryImpl: PayPalRepository, LogReporter {
   {
     switch data {
     case let .order(orderId, payerInfo):
-      return PayPalPaymentInstrument(
+      PayPalPaymentInstrument(
         paypalOrderId: orderId,
         paypalBillingAgreementId: nil,
         shippingAddress: nil,
         externalPayerInfo: mapToExternalPayerInfo(payerInfo)
       )
     case let .billingAgreement(result):
-      return PayPalPaymentInstrument(
+      PayPalPaymentInstrument(
         paypalOrderId: nil,
         paypalBillingAgreementId: result.billingAgreementId,
         shippingAddress: mapToShippingAddress(result.shippingAddress),

@@ -282,8 +282,6 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
   }
 
   private func extractNetworkSurcharges(for paymentMethodType: String) -> [String: Int]? {
-
-    // Only card payment methods have network-specific surcharges
     guard paymentMethodType == PrimerPaymentMethodType.paymentCard.rawValue else {
       return nil
     }
@@ -303,7 +301,6 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
       return nil
     }
 
-    // Check for networks data - handle both array and dictionary formats
     if let networksArray = paymentCardOption["networks"] as? [[String: Any]] {
       return extractFromNetworksArray(networksArray)
     } else if let networksDict = paymentCardOption["networks"] as? [String: [String: Any]] {
@@ -321,19 +318,15 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         continue
       }
 
-      // Handle nested surcharge structure: surcharge.amount
       if let surchargeData = networkData["surcharge"] as? [String: Any],
         let surchargeAmount = surchargeData["amount"] as? Int,
         surchargeAmount > 0
       {
         networkSurcharges[networkType] = surchargeAmount
-      }
-      // Fallback: handle direct surcharge integer format
-      else if let surcharge = networkData["surcharge"] as? Int,
+      } else if let surcharge = networkData["surcharge"] as? Int,
         surcharge > 0
       {
         networkSurcharges[networkType] = surcharge
-      } else {
       }
     }
 
@@ -344,19 +337,15 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
     var networkSurcharges: [String: Int] = [:]
 
     for (networkType, networkData) in networksDict {
-      // Handle nested surcharge structure: surcharge.amount
       if let surchargeData = networkData["surcharge"] as? [String: Any],
         let surchargeAmount = surchargeData["amount"] as? Int,
         surchargeAmount > 0
       {
         networkSurcharges[networkType] = surchargeAmount
-      }
-      // Fallback: handle direct surcharge integer format
-      else if let surcharge = networkData["surcharge"] as? Int,
+      } else if let surcharge = networkData["surcharge"] as? Int,
         surcharge > 0
       {
         networkSurcharges[networkType] = surcharge
-      } else {
       }
     }
 
@@ -876,7 +865,7 @@ extension HeadlessRepositoryImpl: PrimerHeadlessUniversalCheckoutRawDataManagerD
     }
 
     // Extract networks following traditional SDK pattern
-    var primerNetworks: [PrimerCardNetwork] = if metadataModel.source == .remote,
+    let primerNetworks: [PrimerCardNetwork] = if metadataModel.source == .remote,
       let selectable = metadataModel.selectableCardNetworks?.items,
       !selectable.isEmpty
     {

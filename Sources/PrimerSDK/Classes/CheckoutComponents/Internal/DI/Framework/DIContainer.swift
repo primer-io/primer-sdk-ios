@@ -6,7 +6,6 @@
 
 import Foundation
 
-/// Provides global access to the current DI container with context management
 @available(iOS 15.0, *)
 @MainActor
 public final class DIContainer: LogReporter {
@@ -61,8 +60,8 @@ public final class DIContainer: LogReporter {
 
   private init() {
     let container = Container()
-    self.storage = ContainerStorage(container: container)
-    self.cachedContainer = container
+    storage = ContainerStorage(container: container)
+    cachedContainer = container
   }
 
   public static func createContainer() -> any ContainerProtocol {

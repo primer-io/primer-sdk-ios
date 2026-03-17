@@ -6,8 +6,6 @@
 
 import Foundation
 
-/// The main DI container for CheckoutComponents module.
-/// Registers all dependencies needed for the checkout flow.
 @available(iOS 15.0, *)
 final class ComposableContainer: LogReporter {
 

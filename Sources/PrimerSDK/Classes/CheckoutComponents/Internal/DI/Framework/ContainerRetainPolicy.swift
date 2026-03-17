@@ -14,12 +14,9 @@ public enum ContainerRetainPolicy: String, Equatable, Sendable, Codable {
 
   func makeStrategy() -> RetentionStrategy {
     switch self {
-    case .transient:
-      return TransientStrategy()
-    case .singleton:
-      return SingletonStrategy()
-    case .weak:
-      return WeakStrategy()
+    case .transient: TransientStrategy()
+    case .singleton: SingletonStrategy()
+    case .weak: WeakStrategy()
     }
   }
 }

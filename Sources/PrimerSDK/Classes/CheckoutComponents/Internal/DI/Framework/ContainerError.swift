@@ -6,7 +6,6 @@
 
 import Foundation
 
-/// Enhanced errors with more context and recovery suggestions
 public enum ContainerError: Error, Sendable, LocalizedError {
   /// The requested dependency was not registered
   case dependencyNotRegistered(TypeKey, suggestions: [String] = [])
@@ -70,21 +69,19 @@ public enum ContainerError: Error, Sendable, LocalizedError {
   public var recoverySuggestion: String? {
     switch self {
     case .dependencyNotRegistered:
-      return
-        "Register the dependency using container.register(_:) or check the type name and spelling"
+      "Register the dependency using container.register(_:) or check the type name and spelling"
 
     case .circularDependency:
-      return
-        "Break the circular dependency by using factories, lazy injection, or restructuring your dependencies"
+      "Break the circular dependency by using factories, lazy injection, or restructuring your dependencies"
 
     case .typeCastFailed:
-      return "Ensure the registered type matches the requested type exactly"
+      "Ensure the registered type matches the requested type exactly"
 
     case .weakUnsupported:
-      return "Use .singleton or .transient retention policy for value types"
+      "Use .singleton or .transient retention policy for value types"
 
     default:
-      return nil
+      nil
     }
   }
 
@@ -93,18 +90,18 @@ public enum ContainerError: Error, Sendable, LocalizedError {
   public var isUserError: Bool {
     switch self {
     case .dependencyNotRegistered, .typeCastFailed, .weakUnsupported:
-      return true
+      true
     default:
-      return false
+      false
     }
   }
 
   public var isSystemError: Bool {
     switch self {
     case .containerUnavailable:
-      return true
+      true
     default:
-      return false
+      false
     }
   }
 }
