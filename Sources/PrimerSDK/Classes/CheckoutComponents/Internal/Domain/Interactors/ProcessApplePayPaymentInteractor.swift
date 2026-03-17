@@ -7,26 +7,16 @@
 import Foundation
 import PassKit
 
-/// Protocol for processing Apple Pay payments.
 @available(iOS 15.0, *)
 protocol ProcessApplePayPaymentInteractor {
-  /// Processes an Apple Pay payment.
-  /// - Parameter payment: The PKPayment from Apple Pay authorization
-  /// - Returns: The payment result
   func execute(payment: PKPayment) async throws -> PaymentResult
 }
 
-/// Default implementation of ProcessApplePayPaymentInteractor.
-/// Handles the full Apple Pay flow: tokenization and payment creation.
 @available(iOS 15.0, *)
 final class ProcessApplePayPaymentInteractorImpl: ProcessApplePayPaymentInteractor, LogReporter {
 
-  // MARK: - Dependencies
-
   private let tokenizationService: TokenizationServiceProtocol
   private let createPaymentService: CreateResumePaymentServiceProtocol
-
-  // MARK: - Initialization
 
   init(
     tokenizationService: TokenizationServiceProtocol,
@@ -36,21 +26,16 @@ final class ProcessApplePayPaymentInteractorImpl: ProcessApplePayPaymentInteract
     self.createPaymentService = createPaymentService
   }
 
-  // MARK: - ProcessApplePayPaymentInteractor
-
   func execute(payment: PKPayment) async throws -> PaymentResult {
     do {
-      // Get Apple Pay configuration
       let (configId, merchantIdentifier) = try getApplePayConfiguration()
 
-      // Build payment instrument
       let paymentInstrument = try buildPaymentInstrument(
         from: payment,
         configId: configId,
         merchantIdentifier: merchantIdentifier
       )
 
-      // Tokenize
       let tokenData = try await tokenizationService.tokenize(
         requestBody: Request.Body.Tokenization(paymentInstrument: paymentInstrument)
       )
@@ -59,7 +44,6 @@ final class ProcessApplePayPaymentInteractorImpl: ProcessApplePayPaymentInteract
         throw PrimerError.invalidValue(key: "paymentMethodTokenData.token")
       }
 
-      // Create payment
       let paymentRequest = Request.Body.Payment.Create(token: token)
       let paymentResponse = try await createPaymentService.createPayment(
         paymentRequest: paymentRequest)
@@ -80,8 +64,6 @@ final class ProcessApplePayPaymentInteractorImpl: ProcessApplePayPaymentInteract
       throw error
     }
   }
-
-  // MARK: - Private Helpers
 
   private func getApplePayConfiguration() throws -> (configId: String, merchantIdentifier: String) {
     guard
@@ -111,7 +93,6 @@ final class ProcessApplePayPaymentInteractorImpl: ProcessApplePayPaymentInteract
     configId: String,
     merchantIdentifier: String
   ) throws -> ApplePayPaymentInstrument {
-    // Check for mock/test mode
     var isMockedBE = false
     #if DEBUG
       if PrimerAPIConfiguration.current?.clientSession?.testId != nil {
@@ -122,10 +103,8 @@ final class ProcessApplePayPaymentInteractorImpl: ProcessApplePayPaymentInteract
       }
     #endif
 
-    // Parse payment data
-    let tokenPaymentData: ApplePayPaymentResponseTokenPaymentData
-    if isMockedBE {
-      tokenPaymentData = ApplePayPaymentResponseTokenPaymentData(
+    let tokenPaymentData: ApplePayPaymentResponseTokenPaymentData = if isMockedBE {
+      ApplePayPaymentResponseTokenPaymentData(
         data: "apple-pay-payment-response-mock-data",
         signature: "apple-pay-mock-signature",
         version: "apple-pay-mock-version",
@@ -136,7 +115,7 @@ final class ProcessApplePayPaymentInteractorImpl: ProcessApplePayPaymentInteract
         )
       )
     } else {
-      tokenPaymentData = try JSONDecoder().decode(
+      try JSONDecoder().decode(
         ApplePayPaymentResponseTokenPaymentData.self,
         from: payment.token.paymentData
       )

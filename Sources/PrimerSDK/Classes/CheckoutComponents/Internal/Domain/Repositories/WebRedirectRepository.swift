@@ -8,9 +8,13 @@ import Foundation
 
 @available(iOS 15.0, *)
 protocol WebRedirectRepository {
-    func tokenize(paymentMethodType: String, sessionInfo: WebRedirectSessionInfo) async throws -> (redirectUrl: URL, statusUrl: URL)
+    func tokenize(
+        paymentMethodType: String, sessionInfo: WebRedirectSessionInfo
+    ) async throws -> (redirectUrl: URL, statusUrl: URL)
     func openWebAuthentication(paymentMethodType: String, url: URL) async throws -> URL
     func pollForCompletion(statusUrl: URL) async throws -> String
-    func resumePayment(paymentMethodType: String, resumeToken: String) async throws -> PaymentResult
+    func resumePayment(
+        paymentMethodType: String, resumeToken: String
+    ) async throws -> PaymentResult
     func cancelPolling(paymentMethodType: String)
 }

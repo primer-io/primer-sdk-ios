@@ -19,7 +19,6 @@ struct AchMandateResult {
   let templateMandateText: String?
 }
 
-/// Result of tokenization and payment creation, containing Stripe-specific data needed for bank collection
 @available(iOS 15.0, *)
 struct AchStripeData {
   let stripeClientSecret: String
@@ -31,17 +30,10 @@ struct AchStripeData {
 @available(iOS 15.0, *)
 @MainActor
 protocol AchRepository {
-
   func loadUserDetails() async throws -> AchUserDetailsResult
-
   func patchUserDetails(firstName: String, lastName: String, emailAddress: String) async throws
-
   func validate() async throws
-
-  /// Tokenizes, creates payment, and extracts Stripe data from the requiredAction response
   func startPaymentAndGetStripeData() async throws -> AchStripeData
-
-  /// Creates the bank collector with the provided Stripe client secret
   func createBankCollector(
     firstName: String,
     lastName: String,
@@ -49,14 +41,9 @@ protocol AchRepository {
     clientSecret: String,
     delegate: AchBankCollectorDelegate
   ) async throws -> UIViewController
-
   func getMandateData() async throws -> AchMandateResult
-
   func tokenize() async throws -> PrimerPaymentMethodTokenData
-
   func createPayment(tokenData: PrimerPaymentMethodTokenData) async throws -> PaymentResult
-
-  /// Completes the payment after mandate acceptance by calling the sdkCompleteUrl
   func completePayment(stripeData: AchStripeData) async throws -> PaymentResult
 }
 

@@ -6,15 +6,8 @@
 
 import Foundation
 
-/// Interactor for processing payments with vaulted payment methods
 @available(iOS 15.0, *)
 protocol SubmitVaultedPaymentInteractor {
-  /// Executes payment with a vaulted payment method
-  /// - Parameters:
-  ///   - vaultedPaymentMethodId: The ID of the vaulted payment method to use
-  ///   - paymentMethodType: The type of the vaulted payment method
-  ///   - additionalData: Optional additional data (e.g., CVV for cards)
-  /// - Returns: The payment result
   func execute(
     vaultedPaymentMethodId: String,
     paymentMethodType: String,
@@ -36,29 +29,20 @@ final class SubmitVaultedPaymentInteractorImpl: SubmitVaultedPaymentInteractor, 
     paymentMethodType: String,
     additionalData: PrimerVaultedPaymentMethodAdditionalData?
   ) async throws -> PaymentResult {
-    logger.info(message: "[Vault] Processing vaulted payment method: \(vaultedPaymentMethodId)")
-
     do {
       let startTime = CFAbsoluteTimeGetCurrent()
-
       let result = try await repository.processVaultedPayment(
         vaultedPaymentMethodId: vaultedPaymentMethodId,
         paymentMethodType: paymentMethodType,
         additionalData: additionalData
       )
-
       let duration = (CFAbsoluteTimeGetCurrent() - startTime) * 1000
       logger.info(
-        message:
-          "[PERF] Vaulted payment processed in \(String(format: "%.0f", duration))ms: \(result.paymentId)"
+        message: "[PERF] Vaulted payment processed in \(String(format: "%.0f", duration))ms: \(result.paymentId)"
       )
-
       return result
     } catch {
-      logger.error(
-        message: "[Vault] Vaulted payment processing failed: \(error)",
-        error: error
-      )
+      logger.error(message: "[Vault] Vaulted payment processing failed: \(error)", error: error)
       throw error
     }
   }

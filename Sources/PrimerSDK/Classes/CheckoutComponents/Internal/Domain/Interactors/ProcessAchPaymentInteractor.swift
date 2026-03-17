@@ -35,12 +35,8 @@ final class ProcessAchPaymentInteractorImpl: ProcessAchPaymentInteractor, LogRep
   }
 
   func loadUserDetails() async throws -> AchUserDetailsResult {
-    logger.debug(message: "Loading ACH user details")
-
     do {
-      let result = try await repository.loadUserDetails()
-      logger.debug(message: "ACH user details loaded successfully")
-      return result
+      return try await repository.loadUserDetails()
     } catch {
       logger.error(message: "ACH user details loading failed: \(error)", error: error)
       throw error
@@ -48,15 +44,12 @@ final class ProcessAchPaymentInteractorImpl: ProcessAchPaymentInteractor, LogRep
   }
 
   func patchUserDetails(firstName: String, lastName: String, emailAddress: String) async throws {
-    logger.debug(message: "Patching ACH user details")
-
     do {
       try await repository.patchUserDetails(
         firstName: firstName,
         lastName: lastName,
         emailAddress: emailAddress
       )
-      logger.debug(message: "ACH user details patched successfully")
     } catch {
       logger.error(message: "ACH user details patch failed: \(error)", error: error)
       throw error
@@ -64,11 +57,8 @@ final class ProcessAchPaymentInteractorImpl: ProcessAchPaymentInteractor, LogRep
   }
 
   func validate() async throws {
-    logger.debug(message: "Validating ACH payment configuration")
-
     do {
       try await repository.validate()
-      logger.debug(message: "ACH payment configuration validated successfully")
     } catch {
       logger.error(message: "ACH validation failed: \(error)", error: error)
       throw error
@@ -76,14 +66,10 @@ final class ProcessAchPaymentInteractorImpl: ProcessAchPaymentInteractor, LogRep
   }
 
   func startPaymentAndGetStripeData() async throws -> AchStripeData {
-    logger.debug(message: "Starting ACH payment and getting Stripe data")
-
     do {
-      let stripeData = try await repository.startPaymentAndGetStripeData()
-      logger.debug(message: "ACH payment created successfully, obtained Stripe data")
-      return stripeData
+      return try await repository.startPaymentAndGetStripeData()
     } catch {
-      logger.error(message: "ACH payment creation and Stripe data retrieval failed: \(error)", error: error)
+      logger.error(message: "ACH Stripe data retrieval failed: \(error)", error: error)
       throw error
     }
   }
@@ -95,18 +81,14 @@ final class ProcessAchPaymentInteractorImpl: ProcessAchPaymentInteractor, LogRep
     clientSecret: String,
     delegate: AchBankCollectorDelegate
   ) async throws -> UIViewController {
-    logger.debug(message: "Creating ACH bank collector")
-
     do {
-      let viewController = try await repository.createBankCollector(
+      return try await repository.createBankCollector(
         firstName: firstName,
         lastName: lastName,
         emailAddress: emailAddress,
         clientSecret: clientSecret,
         delegate: delegate
       )
-      logger.debug(message: "ACH bank collector created successfully")
-      return viewController
     } catch {
       logger.error(message: "ACH bank collector creation failed: \(error)", error: error)
       throw error
@@ -114,12 +96,8 @@ final class ProcessAchPaymentInteractorImpl: ProcessAchPaymentInteractor, LogRep
   }
 
   func getMandateData() async throws -> AchMandateResult {
-    logger.debug(message: "Getting ACH mandate data")
-
     do {
-      let result = try await repository.getMandateData()
-      logger.debug(message: "ACH mandate data retrieved successfully")
-      return result
+      return try await repository.getMandateData()
     } catch {
       logger.error(message: "ACH mandate data retrieval failed: \(error)", error: error)
       throw error
@@ -127,12 +105,8 @@ final class ProcessAchPaymentInteractorImpl: ProcessAchPaymentInteractor, LogRep
   }
 
   func tokenize() async throws -> PrimerPaymentMethodTokenData {
-    logger.debug(message: "Starting ACH tokenization")
-
     do {
-      let result = try await repository.tokenize()
-      logger.debug(message: "ACH tokenization completed successfully")
-      return result
+      return try await repository.tokenize()
     } catch {
       logger.error(message: "ACH tokenization failed: \(error)", error: error)
       throw error
@@ -140,12 +114,8 @@ final class ProcessAchPaymentInteractorImpl: ProcessAchPaymentInteractor, LogRep
   }
 
   func createPayment(tokenData: PrimerPaymentMethodTokenData) async throws -> PaymentResult {
-    logger.debug(message: "Creating ACH payment")
-
     do {
-      let result = try await repository.createPayment(tokenData: tokenData)
-      logger.debug(message: "ACH payment completed successfully")
-      return result
+      return try await repository.createPayment(tokenData: tokenData)
     } catch {
       logger.error(message: "ACH payment creation failed: \(error)", error: error)
       throw error
@@ -153,12 +123,8 @@ final class ProcessAchPaymentInteractorImpl: ProcessAchPaymentInteractor, LogRep
   }
 
   func completePayment(stripeData: AchStripeData) async throws -> PaymentResult {
-    logger.debug(message: "Completing ACH payment after mandate acceptance")
-
     do {
-      let result = try await repository.completePayment(stripeData: stripeData)
-      logger.debug(message: "ACH payment completed successfully")
-      return result
+      return try await repository.completePayment(stripeData: stripeData)
     } catch {
       logger.error(message: "ACH payment completion failed: \(error)", error: error)
       throw error

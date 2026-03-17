@@ -5,33 +5,24 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
-import SwiftUI
 
-// MARK: - Presentation Context
 @available(iOS 15.0, *)
 public enum PresentationContext {
-  case direct  // Presented directly (e.g., single payment method)
-  case fromPaymentSelection  // Reached from payment method selection
+  case direct
+  case fromPaymentSelection
 
   var shouldShowBackButton: Bool {
-    switch self {
-    case .direct:
-      false
-    case .fromPaymentSelection:
-      true
-    }
+    self == .fromPaymentSelection
   }
 }
 
-// MARK: - Navigation Behavior
 @available(iOS 15.0, *)
 enum NavigationBehavior {
-  case push  // Add to stack
-  case reset  // Replace entire stack
-  case replace  // Replace current route
+  case push
+  case reset
+  case replace
 }
 
-// MARK: - Checkout Route Implementation
 @available(iOS 15.0, *)
 enum CheckoutRoute: Hashable, Identifiable {
   case splash
@@ -60,7 +51,6 @@ enum CheckoutRoute: Hashable, Identifiable {
     }
   }
 
-  // Implement Hashable for NavigationPath compatibility
   func hash(into hasher: inout Hasher) {
     hasher.combine(id)
   }
@@ -69,26 +59,16 @@ enum CheckoutRoute: Hashable, Identifiable {
     lhs.id == rhs.id
   }
 
-  // MARK: - Route Properties
-
   var navigationBehavior: NavigationBehavior {
     switch self {
-    case .splash:
-      .reset
-    case .loading:
-      .replace
-    case .paymentMethodSelection:
-      .reset
-    case .vaultedPaymentMethods:
-      .push
-    case .deleteVaultedPaymentMethodConfirmation:
-      .push
-    case .paymentMethod:
-      .push
-    case .processing:
-      .replace
-    case .success, .failure:
-      .replace
+    case .splash: .reset
+    case .loading: .replace
+    case .paymentMethodSelection: .reset
+    case .vaultedPaymentMethods: .push
+    case .deleteVaultedPaymentMethodConfirmation: .push
+    case .paymentMethod: .push
+    case .processing: .replace
+    case .success, .failure: .replace
     }
   }
 }

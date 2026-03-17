@@ -25,12 +25,8 @@ final class ProcessKlarnaPaymentInteractorImpl: ProcessKlarnaPaymentInteractor, 
   }
 
   func createSession() async throws -> KlarnaSessionResult {
-    logger.debug(message: "Starting Klarna session creation")
-
     do {
-      let result = try await repository.createSession()
-      logger.debug(message: "Klarna session created with \(result.categories.count) categories")
-      return result
+      return try await repository.createSession()
     } catch {
       logger.error(message: "Klarna session creation failed: \(error)", error: error)
       throw error
@@ -38,13 +34,9 @@ final class ProcessKlarnaPaymentInteractorImpl: ProcessKlarnaPaymentInteractor, 
   }
 
   func configureForCategory(clientToken: String, categoryId: String) async throws -> UIView? {
-    logger.debug(message: "Configuring Klarna for category: \(categoryId)")
-
     do {
-      let view = try await repository.configureForCategory(
+      return try await repository.configureForCategory(
         clientToken: clientToken, categoryId: categoryId)
-      logger.debug(message: "Klarna payment view loaded for category: \(categoryId)")
-      return view
     } catch {
       logger.error(message: "Klarna category configuration failed: \(error)", error: error)
       throw error
@@ -52,12 +44,8 @@ final class ProcessKlarnaPaymentInteractorImpl: ProcessKlarnaPaymentInteractor, 
   }
 
   func authorize() async throws -> KlarnaAuthorizationResult {
-    logger.debug(message: "Authorizing Klarna payment")
-
     do {
-      let result = try await repository.authorize()
-      logger.debug(message: "Klarna authorization result: \(result)")
-      return result
+      return try await repository.authorize()
     } catch {
       logger.error(message: "Klarna authorization failed: \(error)", error: error)
       throw error
@@ -65,12 +53,8 @@ final class ProcessKlarnaPaymentInteractorImpl: ProcessKlarnaPaymentInteractor, 
   }
 
   func finalize() async throws -> KlarnaAuthorizationResult {
-    logger.debug(message: "Finalizing Klarna payment")
-
     do {
-      let result = try await repository.finalize()
-      logger.debug(message: "Klarna finalization result: \(result)")
-      return result
+      return try await repository.finalize()
     } catch {
       logger.error(message: "Klarna finalization failed: \(error)", error: error)
       throw error
@@ -78,12 +62,8 @@ final class ProcessKlarnaPaymentInteractorImpl: ProcessKlarnaPaymentInteractor, 
   }
 
   func tokenize(authToken: String) async throws -> PaymentResult {
-    logger.debug(message: "Tokenizing Klarna payment")
-
     do {
-      let result = try await repository.tokenize(authToken: authToken)
-      logger.debug(message: "Klarna payment completed successfully")
-      return result
+      return try await repository.tokenize(authToken: authToken)
     } catch {
       logger.error(message: "Klarna tokenization failed: \(error)", error: error)
       throw error

@@ -4,11 +4,8 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import Foundation
 import UIKit
 
-/// Internal representation of a payment method with full details.
-/// This is used internally and mapped to the public CheckoutPaymentMethod.
 struct InternalPaymentMethod: Equatable {
   let id: String
   let type: String
@@ -19,16 +16,15 @@ struct InternalPaymentMethod: Equatable {
   let supportedCurrencies: [String]?
   let requiredInputElements: [PrimerInputElementType]
   let metadata: [String: Any]?
-  // Surcharge support
-  let surcharge: Int?  // Raw amount in minor currency units
-  let hasUnknownSurcharge: Bool  // "Fee may apply" flag
-  let networkSurcharges: [String: Int]?  // Card network-specific surcharges
-  let backgroundColor: UIColor?  // Dynamic background color from server
-  let buttonText: String?  // Custom button text from displayMetadata
-  let textColor: UIColor?  // Theme-aware text color from displayMetadata
-  let borderColor: UIColor?  // Theme-aware border color from displayMetadata
-  let borderWidth: CGFloat?  // Theme-aware border width from displayMetadata
-  let cornerRadius: CGFloat?  // Custom corner radius from displayMetadata
+  let surcharge: Int?
+  let hasUnknownSurcharge: Bool
+  let networkSurcharges: [String: Int]?
+  let backgroundColor: UIColor?
+  let buttonText: String?
+  let textColor: UIColor?
+  let borderColor: UIColor?
+  let borderWidth: CGFloat?
+  let cornerRadius: CGFloat?
 
   init(
     id: String,
