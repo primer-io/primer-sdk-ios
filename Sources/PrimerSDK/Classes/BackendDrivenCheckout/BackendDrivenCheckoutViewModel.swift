@@ -16,6 +16,7 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
     override func start() {
         Task { @MainActor in
             do {
+                PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: nil, message: nil)
                 let manifest = try await manifestRepository.fetchManifest()
                 let date = Date()
                 orchestrator = PrimerStepOrchestrator(manifest: manifest)
@@ -24,6 +25,11 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
                 let response: ClientSessionInstructionResponse = try await request(.pay(paymentMethod: config))
                 print("7898 Response time taken - \(Date().timeIntervalSince(date2))s")
                 try await processClientInstruction(response)
+                uiManager.dismissOrShowResultScreen(
+                    type: .success,
+                    paymentMethodManagerCategories: config.paymentMethodManagerCategories ?? [],
+                    withMessage: nil
+                )
             } catch {
                 let event = Analytics.Event.message(
                     message: "BDC Failed: \(error)",
@@ -31,6 +37,11 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
                     severity: .error
                 )
                 Analytics.Service.fire(event: event)
+                uiManager.dismissOrShowResultScreen(
+                    type: .failure,
+                    paymentMethodManagerCategories: config.paymentMethodManagerCategories ?? [],
+                    withMessage: error.localizedDescription
+                )
             }
         }
     }
