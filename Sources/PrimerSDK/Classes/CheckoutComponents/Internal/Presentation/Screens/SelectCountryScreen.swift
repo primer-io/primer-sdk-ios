@@ -21,9 +21,7 @@ struct SelectCountryScreen: View, LogReporter {
       mainContent
     }
     .environment(\.primerSelectCountryScope, scope)
-    .onAppear {
-      observeState()
-    }
+    .onAppear(perform: observeState)
   }
 
   private var mainContent: some View {
@@ -163,11 +161,9 @@ struct SelectCountryScreen: View, LogReporter {
   }
 
   private func observeState() {
-    Task {
+    Task { [self] in
       for await state in await scope.state {
-        await MainActor.run {
-          self.countryState = state
-        }
+        countryState = state
       }
     }
   }

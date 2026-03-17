@@ -56,7 +56,6 @@ struct ErrorScreen: View {
     .background(CheckoutColors.background(tokens: tokens))
   }
 
-  @ViewBuilder
   private func makeRetryButton() -> some View {
     Button {
       onRetry?()
@@ -72,7 +71,6 @@ struct ErrorScreen: View {
     }
   }
 
-  @ViewBuilder
   private func makeOtherPaymentButton() -> some View {
     Button {
       onChooseOtherPaymentMethods?()

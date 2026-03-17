@@ -88,7 +88,7 @@ struct PaymentMethodSelectionScreen: View, LogReporter {
   }
 
   private func makeShowOtherWaysToPayButton() -> some View {
-    Button(action: { scope.showOtherWaysToPay() }) {
+    Button(action: scope.showOtherWaysToPay) {
       Text(CheckoutComponentsStrings.showOtherWaysToPay)
         .font(PrimerFont.titleLarge(tokens: tokens))
         .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))

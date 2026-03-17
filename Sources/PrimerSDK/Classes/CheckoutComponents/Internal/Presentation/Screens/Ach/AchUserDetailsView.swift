@@ -34,35 +34,35 @@ struct AchUserDetailsView: View, LogReporter {
     .accessibilityIdentifier(AccessibilityIdentifiers.Ach.userDetailsContainer)
   }
 
-  @ViewBuilder private var firstNameField: some View {
+  private var firstNameField: some View {
     NameInputField(
       label: CheckoutComponentsStrings.firstNameLabel,
       placeholder: CheckoutComponentsStrings.firstNamePlaceholder,
       inputType: .firstName,
       initialValue: achState.userDetails.firstName,
-      onNameChange: { scope.updateFirstName($0) }
+      onNameChange: scope.updateFirstName
     )
     .accessibilityIdentifier(AccessibilityIdentifiers.Ach.firstNameField)
   }
 
-  @ViewBuilder private var lastNameField: some View {
+  private var lastNameField: some View {
     NameInputField(
       label: CheckoutComponentsStrings.lastNameLabel,
       placeholder: CheckoutComponentsStrings.lastNamePlaceholder,
       inputType: .lastName,
       initialValue: achState.userDetails.lastName,
-      onNameChange: { scope.updateLastName($0) }
+      onNameChange: scope.updateLastName
     )
     .accessibilityIdentifier(AccessibilityIdentifiers.Ach.lastNameField)
   }
 
-  @ViewBuilder private var emailField: some View {
+  private var emailField: some View {
     VStack(alignment: .leading, spacing: PrimerSpacing.xsmall(tokens: tokens)) {
       EmailInputField(
         label: CheckoutComponentsStrings.emailLabel,
         placeholder: CheckoutComponentsStrings.emailPlaceholder,
         initialValue: achState.userDetails.emailAddress,
-        onEmailChange: { scope.updateEmailAddress($0) }
+        onEmailChange: scope.updateEmailAddress
       )
       .accessibilityIdentifier(AccessibilityIdentifiers.Ach.emailField)
 

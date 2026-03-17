@@ -62,9 +62,7 @@ struct FormRedirectScreen: View {
         }
         .background(CheckoutColors.screenBackground(tokens: tokens))
         .accessibilityIdentifier(AccessibilityIdentifiers.FormRedirect.screen)
-        .onAppear {
-            scope.start()
-        }
+        .onAppear(perform: scope.start)
     }
 
     // MARK: - Header

@@ -6,8 +6,6 @@
 
 import SwiftUI
 
-// MARK: - AchView
-
 @available(iOS 15.0, *)
 struct AchView: View, LogReporter {
   let scope: any PrimerAchScope
@@ -51,22 +49,17 @@ struct AchView: View, LogReporter {
     }
   }
 
-  // MARK: - Header Section
-
   @ViewBuilder private var headerSection: some View {
     HStack {
       if scope.presentationContext.shouldShowBackButton {
-        Button(
-          action: scope.onBack,
-          label: {
-            HStack(spacing: PrimerSpacing.xsmall(tokens: tokens)) {
-              Image(systemName: RTLIcon.backChevron)
-                .font(PrimerFont.bodyMedium(tokens: tokens))
-              Text(CheckoutComponentsStrings.backButton)
-            }
-            .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
+        Button(action: scope.onBack) {
+          HStack(spacing: PrimerSpacing.xsmall(tokens: tokens)) {
+            Image(systemName: RTLIcon.backChevron)
+              .font(PrimerFont.bodyMedium(tokens: tokens))
+            Text(CheckoutComponentsStrings.backButton)
           }
-        )
+          .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
+        }
         .accessibility(
           config: AccessibilityConfiguration(
             identifier: AccessibilityIdentifiers.Common.backButton,
@@ -84,25 +77,20 @@ struct AchView: View, LogReporter {
       Spacer()
 
       if scope.dismissalMechanism.contains(.closeButton) {
-        Button(
-          CheckoutComponentsStrings.cancelButton,
-          action: scope.cancel
-        )
-        .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
-        .accessibility(
-          config: AccessibilityConfiguration(
-            identifier: AccessibilityIdentifiers.Common.closeButton,
-            label: CheckoutComponentsStrings.a11yCancel,
-            traits: [.isButton]
-          ))
+        Button(CheckoutComponentsStrings.cancelButton, action: scope.cancel)
+          .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
+          .accessibility(
+            config: AccessibilityConfiguration(
+              identifier: AccessibilityIdentifiers.Common.closeButton,
+              label: CheckoutComponentsStrings.a11yCancel,
+              traits: [.isButton]
+            ))
       } else {
         Text(CheckoutComponentsStrings.cancelButton)
           .hidden()
       }
     }
   }
-
-  // MARK: - Content Section
 
   @ViewBuilder private var contentSection: some View {
     switch observer.achState.step {
@@ -115,7 +103,6 @@ struct AchView: View, LogReporter {
         AchUserDetailsView(scope: scope, achState: observer.achState)
       }
     case .bankAccountCollection:
-      // Bank collector is shown as fullScreenCover, show loading while it's presented
       makeLoadingContent()
     case .mandateAcceptance:
       if let customScreen = scope.mandateScreen {
@@ -127,8 +114,6 @@ struct AchView: View, LogReporter {
       makeLoadingContent()
     }
   }
-
-  // MARK: - Loading Content
 
   private func makeLoadingContent() -> some View {
     VStack(spacing: PrimerSpacing.small(tokens: tokens)) {
@@ -158,8 +143,6 @@ struct AchView: View, LogReporter {
   }
 
 }
-
-// MARK: - Preview
 
 #if DEBUG
   @available(iOS 15.0, *)

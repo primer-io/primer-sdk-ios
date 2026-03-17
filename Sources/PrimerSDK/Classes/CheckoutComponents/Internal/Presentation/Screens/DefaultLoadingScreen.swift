@@ -6,9 +6,6 @@
 
 import SwiftUI
 
-/// Default loading screen shown during payment processing.
-/// Displays a centered loading indicator with "Loading" text.
-/// Merchants can replace this with a custom view via `checkoutScope.loadingScreen`.
 @available(iOS 15.0, *)
 struct DefaultLoadingScreen: View {
   @Environment(\.designTokens) private var tokens
