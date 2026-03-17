@@ -9,37 +9,32 @@ import SwiftUI
 @available(iOS 15.0, *)
 @MainActor
 final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogReporter {
-  // MARK: - Internal Navigation State
 
   enum NavigationState: Equatable {
     case loading
     case paymentMethodSelection
-    case vaultedPaymentMethods  // All vaulted payment methods list
+    case vaultedPaymentMethods
     case deleteVaultedPaymentMethodConfirmation(
-      PrimerHeadlessUniversalCheckout.VaultedPaymentMethod)  // Delete confirmation
-    case paymentMethod(String)  // Dynamic payment method with type identifier
-    case processing  // Payment processing in progress
+      PrimerHeadlessUniversalCheckout.VaultedPaymentMethod)
+    case paymentMethod(String)
+    case processing
     case success(PaymentResult)
     case failure(PrimerError)
     case dismissed
 
     static func == (lhs: NavigationState, rhs: NavigationState) -> Bool {
       switch (lhs, rhs) {
-      case (.loading, .loading):
-        true
-      case (.paymentMethodSelection, .paymentMethodSelection):
-        true
-      case (.vaultedPaymentMethods, .vaultedPaymentMethods):
+      case (.loading, .loading),
+        (.paymentMethodSelection, .paymentMethodSelection),
+        (.vaultedPaymentMethods, .vaultedPaymentMethods),
+        (.processing, .processing),
+        (.dismissed, .dismissed):
         true
       case let (
         .deleteVaultedPaymentMethodConfirmation(lhsMethod),
         .deleteVaultedPaymentMethodConfirmation(rhsMethod)
       ):
         lhsMethod.id == rhsMethod.id
-      case (.processing, .processing):
-        true
-      case (.dismissed, .dismissed):
-        true
       case let (.paymentMethod(lhsType), .paymentMethod(rhsType)):
         lhsType == rhsType
       case let (.success(lhsResult), .success(rhsResult)):
@@ -52,19 +47,24 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
     }
   }
 
-  // MARK: - Properties
-
   @Published private var internalState = PrimerCheckoutState.initializing
   @Published var navigationState = NavigationState.loading
 
-  /// Provides direct access to the current checkout state for completion callbacks
-  var currentState: PrimerCheckoutState {
-    internalState
+  public var onBeforePaymentCreate: BeforePaymentCreateHandler?
+  public var container: ContainerComponent?
+  public var splashScreen: Component?
+  public var loadingScreen: Component?
+  public var successScreen: ((_ result: PaymentResult) -> AnyView)?
+  public var errorScreen: ErrorComponent?
+  public var paymentMethodSelectionScreen: PaymentMethodSelectionScreenComponent?
+
+  public var paymentHandling: PrimerPaymentHandling {
+    settings.paymentHandling
   }
 
   public var state: AsyncStream<PrimerCheckoutState> {
     AsyncStream { continuation in
-      let task = Task { @MainActor in
+      let task = Task { [self] in
         for await value in $internalState.values {
           continuation.yield(value)
         }
@@ -77,26 +77,29 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
     }
   }
 
-  // MARK: - Payment Callbacks
+  var currentState: PrimerCheckoutState { internalState }
 
-  public var onBeforePaymentCreate: BeforePaymentCreateHandler?
+  var checkoutNavigator: CheckoutNavigator { navigator }
 
-  // MARK: - UI Customization Properties
+  var availablePaymentMethods: [InternalPaymentMethod] = []
 
-  public var container: ContainerComponent?
-  public var splashScreen: Component?
-  public var loadingScreen: Component?
-  public var successScreen: ((_ result: PaymentResult) -> AnyView)?
-  public var errorScreen: ErrorComponent?
-  public var paymentMethodSelectionScreen: PaymentMethodSelectionScreenComponent?
+  @Published private(set) var vaultedPaymentMethods:
+    [PrimerHeadlessUniversalCheckout.VaultedPaymentMethod] = []
+  @Published private(set) var selectedVaultedPaymentMethod:
+    PrimerHeadlessUniversalCheckout.VaultedPaymentMethod?
 
-  // MARK: - Child Scopes
+  var isInitScreenEnabled: Bool { settings.uiOptions.isInitScreenEnabled }
+  var isSuccessScreenEnabled: Bool { settings.uiOptions.isSuccessScreenEnabled }
+  var isErrorScreenEnabled: Bool { settings.uiOptions.isErrorScreenEnabled }
+  var cardFormUIOptions: PrimerCardFormUIOptions? { settings.uiOptions.cardFormUIOptions }
+  var dismissalMechanism: [DismissalMechanism] { settings.uiOptions.dismissalMechanism }
+  var is3DSSanityCheckEnabled: Bool { settings.debugOptions.is3DSSanityCheckEnabled }
+
+  let presentationContext: PresentationContext
 
   private var _paymentMethodSelection: PrimerPaymentMethodSelectionScope?
   public var paymentMethodSelection: PrimerPaymentMethodSelectionScope {
-    if let existing = _paymentMethodSelection {
-      return existing
-    }
+    if let existing = _paymentMethodSelection { return existing }
     let scope = DefaultPaymentMethodSelectionScope(
       checkoutScope: self,
       analyticsInteractor: analyticsInteractor
@@ -105,79 +108,16 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
     return scope
   }
 
-  // MARK: - Dynamic Payment Method Scope
-
   private var currentPaymentMethodScope: (any PrimerPaymentMethodScope)?
   private var paymentMethodScopeCache: [String: any PrimerPaymentMethodScope] = [:]
-
-  // MARK: - Services
-
   private let navigator: CheckoutNavigator
   private var configurationService: ConfigurationService?
   private var paymentMethodsInteractor: GetPaymentMethodsInteractor?
   private var analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol?
   private var accessibilityAnnouncementService: AccessibilityAnnouncementService?
-
-  // Stores the API-provided display name for accessibility announcements
   private var selectedPaymentMethodName: String?
-
-  // MARK: - Internal Access
-
-  var checkoutNavigator: CheckoutNavigator {
-    navigator
-  }
-
-  // MARK: - Other Properties
-
   private let clientToken: String
   private let settings: PrimerSettings
-  var availablePaymentMethods: [InternalPaymentMethod] = []
-
-  // MARK: - Vaulted Payment Methods
-
-  @Published private(set) var vaultedPaymentMethods:
-    [PrimerHeadlessUniversalCheckout.VaultedPaymentMethod] = []
-  @Published private(set) var selectedVaultedPaymentMethod:
-    PrimerHeadlessUniversalCheckout.VaultedPaymentMethod?
-
-  // MARK: - UI Settings Access
-
-  var isInitScreenEnabled: Bool {
-    settings.uiOptions.isInitScreenEnabled
-  }
-
-  var isSuccessScreenEnabled: Bool {
-    settings.uiOptions.isSuccessScreenEnabled
-  }
-
-  var isErrorScreenEnabled: Bool {
-    settings.uiOptions.isErrorScreenEnabled
-  }
-
-  var cardFormUIOptions: PrimerCardFormUIOptions? {
-    settings.uiOptions.cardFormUIOptions
-  }
-
-  var dismissalMechanism: [DismissalMechanism] {
-    settings.uiOptions.dismissalMechanism
-  }
-
-  // MARK: - Debug Settings Access
-
-  // 3DS sanity checks - CRITICAL for security in production
-  var is3DSSanityCheckEnabled: Bool {
-    settings.debugOptions.is3DSSanityCheckEnabled
-  }
-
-  // MARK: - Payment Settings
-
-  public var paymentHandling: PrimerPaymentHandling {
-    settings.paymentHandling
-  }
-
-  let presentationContext: PresentationContext
-
-  // MARK: - Initialization
 
   init(
     clientToken: String,
@@ -193,7 +133,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
 
     registerPaymentMethods()
 
-    Task {
+    Task { [self] in
       await setupInteractors()
       await loadPaymentMethods()
     }
@@ -201,7 +141,6 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
     observeNavigationEvents()
   }
 
-  @MainActor
   private func registerPaymentMethods() {
     CardPaymentMethod.register()
     PayPalPaymentMethod.register()
@@ -211,15 +150,12 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
     FormRedirectPaymentMethod.register()
     QRCodePaymentMethod.registerAll([.xfersPayNow, .rapydPromptPay, .omisePromptPay])
 
-    // Dynamic: register any WEB_REDIRECT APM from API config
     let webRedirectTypes = PrimerAPIConfigurationModule.apiConfiguration?
       .paymentMethods?
       .filter { $0.implementationType == .webRedirect }
       .map(\.type) ?? []
     WebRedirectPaymentMethod.register(types: webRedirectTypes)
   }
-
-  // MARK: - Setup
 
   private func setupInteractors() async {
     do {
@@ -249,14 +185,12 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
   }
 
   private func loadPaymentMethods() async {
-    // Only show loading screen if enabled in settings (UI Options integration)
     if settings.uiOptions.isInitScreenEnabled {
       updateNavigationState(.loading)
     }
 
     do {
-      // Add a small delay to ensure SDK configuration is fully loaded
-      try await Task.sleep(nanoseconds: 500_000_000)  // 0.5 seconds
+      try await Task.sleep(nanoseconds: 500_000_000)
 
       guard let interactor = paymentMethodsInteractor else {
         throw PrimerError.invalidArchitecture(
@@ -272,8 +206,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
         updateNavigationState(.failure(error))
         updateState(.failure(error))
       } else {
-        // Get amount and currency from configuration
-        let totalAmount = configurationService?.amount ?? 0
+          let totalAmount = configurationService?.amount ?? 0
         let currencyCode = configurationService?.currency?.code ?? ""
         updateState(.ready(totalAmount: totalAmount, currencyCode: currencyCode))
 
@@ -297,12 +230,10 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
     }
   }
 
-  // MARK: - State Management
-
   private func updateState(_ newState: PrimerCheckoutState) {
     internalState = newState
 
-    Task {
+    Task { [self] in
       await trackStateChange(newState)
     }
   }

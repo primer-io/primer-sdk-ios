@@ -4,7 +4,6 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import Foundation
 import SwiftUI
 
 @available(iOS 15.0, *)
@@ -107,8 +106,7 @@ public final class DefaultFormRedirectScope: PrimerFormRedirectScope, Observable
         logger.debug(message: "Form redirect scope started for \(paymentMethodType)")
 
         Task {
-            let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
-            try? await clientSessionActionsModule.selectPaymentMethodIfNeeded(paymentMethodType, cardNetwork: nil)
+            try? await ClientSessionActionsModule().selectPaymentMethodIfNeeded(paymentMethodType, cardNetwork: nil)
         }
     }
 
@@ -272,10 +270,9 @@ public final class DefaultFormRedirectScope: PrimerFormRedirectScope, Observable
         } catch {
             logger.error(message: "Form redirect payment failed: \(error.localizedDescription)")
 
-            let errorMessage = error.localizedDescription
-            internalState.status = .failure(errorMessage)
+            internalState.status = .failure(error.localizedDescription)
 
-            let primerError = error as? PrimerError ?? PrimerError.unknown(message: errorMessage)
+            let primerError = error as? PrimerError ?? PrimerError.unknown(message: error.localizedDescription)
             checkoutScope?.handlePaymentError(primerError)
         }
     }

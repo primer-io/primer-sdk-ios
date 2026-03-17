@@ -4,15 +4,12 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import Foundation
 import SwiftUI
 import UIKit
 
 @available(iOS 15.0, *)
 @MainActor
 public final class DefaultAchScope: PrimerAchScope, ObservableObject, LogReporter {
-
-  // MARK: - Public Properties
 
   public var screen: AchScreenComponent?
   public var userDetailsScreen: AchScreenComponent?
@@ -28,7 +25,7 @@ public final class DefaultAchScope: PrimerAchScope, ObservableObject, LogReporte
 
   public var state: AsyncStream<PrimerAchState> {
     AsyncStream { continuation in
-      let task = Task { @MainActor in
+      let task = Task { [self] in
         for await _ in $internalState.values {
           continuation.yield(internalState)
         }
@@ -41,21 +38,17 @@ public final class DefaultAchScope: PrimerAchScope, ObservableObject, LogReporte
     }
   }
 
-  // MARK: - Private Properties
-
   private weak var checkoutScope: DefaultCheckoutScope?
   private let processAchInteractor: ProcessAchPaymentInteractor
   private let analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol?
 
   @Published private var internalState = PrimerAchState()
 
-  private var currentFirstName: String = ""
-  private var currentLastName: String = ""
-  private var currentEmailAddress: String = ""
+  private var currentFirstName = ""
+  private var currentLastName = ""
+  private var currentEmailAddress = ""
 
   private var stripeData: AchStripeData?
-
-  // MARK: - Initialization
 
   init(
     checkoutScope: DefaultCheckoutScope,
@@ -68,8 +61,6 @@ public final class DefaultAchScope: PrimerAchScope, ObservableObject, LogReporte
     self.processAchInteractor = processAchInteractor
     self.analyticsInteractor = analyticsInteractor
   }
-
-  // MARK: - PrimerPaymentMethodScope Methods
 
   public func start() {
     logger.debug(message: "ACH scope started")
@@ -90,8 +81,6 @@ public final class DefaultAchScope: PrimerAchScope, ObservableObject, LogReporte
     }
     checkoutScope.onDismiss()
   }
-
-  // MARK: - User Details Actions
 
   public func updateFirstName(_ value: String) {
     currentFirstName = value
@@ -120,8 +109,6 @@ public final class DefaultAchScope: PrimerAchScope, ObservableObject, LogReporte
       await patchUserDetailsAndCreateBankCollector()
     }
   }
-
-  // MARK: - Mandate Actions
 
   public func acceptMandate() {
     guard internalState.step == .mandateAcceptance else {
@@ -170,8 +157,6 @@ public final class DefaultAchScope: PrimerAchScope, ObservableObject, LogReporte
     checkoutScope.handlePaymentError(error)
   }
 
-  // MARK: - Navigation Methods
-
   public func onBack() {
     guard presentationContext.shouldShowBackButton else { return }
     guard let checkoutScope else {
@@ -180,8 +165,6 @@ public final class DefaultAchScope: PrimerAchScope, ObservableObject, LogReporte
     }
     checkoutScope.checkoutNavigator.navigateBack()
   }
-
-  // MARK: - Private Flow Methods
 
   private func loadInitialUserDetails() async {
     internalState = PrimerAchState(step: .loading)
@@ -239,11 +222,9 @@ public final class DefaultAchScope: PrimerAchScope, ObservableObject, LogReporte
   }
 
   private func validateCurrentFields() -> Bool {
-    let firstNameValid = ACHUserDetailsCollectableData.firstName(currentFirstName).isValid
-    let lastNameValid = ACHUserDetailsCollectableData.lastName(currentLastName).isValid
-    let emailValid = ACHUserDetailsCollectableData.emailAddress(currentEmailAddress).isValid
-
-    return firstNameValid && lastNameValid && emailValid
+    ACHUserDetailsCollectableData.firstName(currentFirstName).isValid
+      && ACHUserDetailsCollectableData.lastName(currentLastName).isValid
+      && ACHUserDetailsCollectableData.emailAddress(currentEmailAddress).isValid
   }
 
   private func getFieldErrors() -> PrimerAchState.FieldValidation? {
@@ -384,16 +365,14 @@ public final class DefaultAchScope: PrimerAchScope, ObservableObject, LogReporte
 
   private func handleError(_ error: Error, context: String) {
     logger.error(message: "ACH \(context) failed: \(error.localizedDescription)")
-    let primerError = error as? PrimerError ?? PrimerError.unknown(message: error.localizedDescription)
     guard let checkoutScope else {
       logger.error(message: "ACH checkout scope was deallocated during \(context)")
       return
     }
+    let primerError = error as? PrimerError ?? PrimerError.unknown(message: error.localizedDescription)
     checkoutScope.handlePaymentError(primerError)
   }
 }
-
-// MARK: - AchBankCollectorDelegate
 
 @available(iOS 15.0, *)
 extension DefaultAchScope: AchBankCollectorDelegate {
@@ -401,7 +380,7 @@ extension DefaultAchScope: AchBankCollectorDelegate {
   func achBankCollectorDidSucceed(paymentId: String) {
     logger.debug(message: "ACH bank collector succeeded with paymentId: \(paymentId)")
     bankCollectorViewController = nil
-    Task { @MainActor in
+    Task { [self] in
       await transitionToMandateAcceptance()
     }
   }

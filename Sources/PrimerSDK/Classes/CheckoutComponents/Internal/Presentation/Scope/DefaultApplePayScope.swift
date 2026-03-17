@@ -7,20 +7,15 @@
 import PassKit
 import SwiftUI
 
-/// Default implementation of PrimerApplePayScope.
-/// Manages Apple Pay state, button customization, and payment flow coordination.
 @available(iOS 15.0, *)
 @MainActor
 public final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
-
-  // MARK: - State
 
   @Published var structuredState: PrimerApplePayState
 
   public var state: AsyncStream<PrimerApplePayState> {
     AsyncStream { continuation in
-      let task = Task { @MainActor in
-        // Yield initial state immediately
+      let task = Task { [self] in
         continuation.yield(structuredState)
 
         for await _ in $structuredState.values {
@@ -35,23 +30,15 @@ public final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
     }
   }
 
-  // MARK: - UI Customization
-
   public var screen: ((_ scope: any PrimerApplePayScope) -> any View)?
   public var applePayButton: ((_ action: @escaping () -> Void) -> any View)?
 
-  // MARK: - Presentation Context
-
   public private(set) var presentationContext: PresentationContext = .fromPaymentSelection
-
-  // MARK: - Dependencies
 
   private weak var checkoutScope: DefaultCheckoutScope?
   private var processPaymentInteractor: ProcessApplePayPaymentInteractor?
   private let applePayPresentationManager: ApplePayPresenting
   private var authorizationCoordinator: ApplePayAuthorizationCoordinator?
-
-  // MARK: - Initialization
 
   init(
     checkoutScope: DefaultCheckoutScope,
@@ -62,21 +49,14 @@ public final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
     self.presentationContext = presentationContext
     self.applePayPresentationManager = applePayPresentationManager
 
-    // Initialize state based on availability
-    let isPresentable = applePayPresentationManager.isPresentable
-    let availabilityError = applePayPresentationManager.errorForDisplay
-    if isPresentable {
-      structuredState = .available()
-    } else {
-      structuredState = .unavailable(error: availabilityError.localizedDescription)
-    }
+    structuredState = applePayPresentationManager.isPresentable
+      ? .available()
+      : .unavailable(error: applePayPresentationManager.errorForDisplay.localizedDescription)
 
-    Task {
+    Task { [self] in
       await setupInteractors()
     }
   }
-
-  // MARK: - Setup
 
   private func setupInteractors() async {
     do {
@@ -89,8 +69,6 @@ public final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
     }
   }
 
-  // MARK: - PrimerPaymentMethodScope
-
   public func start() {
     if applePayPresentationManager.isPresentable {
       structuredState = .available(
@@ -99,8 +77,7 @@ public final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
         cornerRadius: structuredState.cornerRadius
       )
     } else {
-      let error = applePayPresentationManager.errorForDisplay
-      structuredState = .unavailable(error: error.localizedDescription)
+      structuredState = .unavailable(error: applePayPresentationManager.errorForDisplay.localizedDescription)
     }
   }
 
@@ -121,13 +98,10 @@ public final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
     checkoutScope?.onDismiss()
   }
 
-  // MARK: - Submit Action
-
   public func submit() {
-    guard structuredState.isAvailable else { return }
-    guard !structuredState.isLoading else { return }
+    guard structuredState.isAvailable, !structuredState.isLoading else { return }
 
-    Task {
+    Task { [self] in
       await performPayment()
     }
   }
@@ -140,27 +114,22 @@ public final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
         paymentMethodType: PrimerPaymentMethodType.applePay.rawValue
       )
 
-      // Select payment method
       let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
       try await clientSessionActionsModule.selectPaymentMethodIfNeeded(
         PrimerPaymentMethodType.applePay.rawValue,
         cardNetwork: nil
       )
 
-      // Build Apple Pay request
       let applePayRequest = try ApplePayRequestBuilder.build()
 
-      // Create coordinator and present Apple Pay
       let coordinator = ApplePayAuthorizationCoordinator()
       authorizationCoordinator = coordinator
 
-      // Present and await authorization
       let payment = try await coordinator.authorize(
         with: applePayRequest,
         presentationManager: applePayPresentationManager
       )
 
-      // Lazily resolve interactor if not already set
       var interactor = processPaymentInteractor
       if interactor == nil {
         if let container = await DIContainer.current {
@@ -207,8 +176,6 @@ public final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
     guard let checkoutScope else { return }
     checkoutScope.handlePaymentError(primerError)
   }
-
-  // MARK: - ViewBuilder
 
   // swiftlint:disable identifier_name
 

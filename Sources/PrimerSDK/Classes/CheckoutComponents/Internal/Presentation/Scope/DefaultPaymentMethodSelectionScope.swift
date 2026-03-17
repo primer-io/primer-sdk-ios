@@ -59,18 +59,11 @@ final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSelectionScop
 
     Task {
       await loadPaymentMethods()
-      await loadVaultedPaymentMethods()
+      await refreshVaultedPaymentMethods()
       await resolveAccessibilityService()
     }
   }
 
-  // MARK: - Vaulted Payment Methods
-
-  private func loadVaultedPaymentMethods() async {
-    await refreshVaultedPaymentMethods()
-  }
-
-  /// Refreshes the vaulted payment methods list from the server
   func refreshVaultedPaymentMethods() async {
     do {
       guard let container = await DIContainer.current else { return }
