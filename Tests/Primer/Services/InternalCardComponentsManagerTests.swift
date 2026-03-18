@@ -72,8 +72,10 @@ final class InternalCardComponentsManagerTests: XCTestCase {
     }
 
     func test_card_component_manager_initialization_with_invalid_access_token() throws {
-        let clientAccessToken = try JWTFactory().create(accessToken: "39edaba8-ba49-4c09-9936-a43334f69223",
-                                                        expiry: 1625901334)
+        let clientAccessToken = try JWTFactory().create(
+            accessToken: "39edaba8-ba49-4c09-9936-a43334f69223",
+            expiry: 1625901334
+        )
         AppState.current.clientToken = clientAccessToken
 
         let cardComponentManager = MockCardComponentsManager(cardnumber: nil)
@@ -137,7 +139,7 @@ final class InternalCardComponentsManagerTests: XCTestCase {
 }
 
 class MockCardComponentsManager: InternalCardComponentsManagerProtocol {
-    var selectedCardNetwork: PrimerSDK.CardNetwork?
+    var selectedCardNetwork: CardNetwork?
 
     var cardnumberField: PrimerCardNumberFieldView
 
@@ -175,9 +177,9 @@ class MockCardComponentsManager: InternalCardComponentsManagerProtocol {
         self.cardnumberField = cardnumberField
         self.expiryDateField = expiryDateField
         self.cvvField = cvvField
-        self.cardholderField = cardholderNameField
+        cardholderField = cardholderNameField
         self.postalCodeField = postalCodeField
-        self.delegate = MockCardComponentsManagerDelegate()
+        delegate = MockCardComponentsManagerDelegate()
     }
 
     convenience init(
@@ -200,7 +202,9 @@ class MockCardComponentsManager: InternalCardComponentsManagerProtocol {
 }
 
 class MockCardComponentsManagerDelegate: InternalCardComponentsManagerDelegate {
-    func cardComponentsManager(_ cardComponentsManager: InternalCardComponentsManager,
-                               onTokenizeSuccess paymentMethodToken: PrimerPaymentMethodTokenData) {
+    func cardComponentsManager(
+        _ cardComponentsManager: InternalCardComponentsManager,
+        onTokenizeSuccess paymentMethodToken: PrimerPaymentMethodTokenData
+    ) {
     }
 }
