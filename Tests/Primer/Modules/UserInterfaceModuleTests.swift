@@ -24,29 +24,29 @@ class UserInterfaceModuleTests: XCTestCase {
         PrimerInternal.shared.intent = .checkout
 
         let paymentMethodButton = PrimerPaymentMethod.DisplayMetadata.Button(
-            iconUrl: PrimerTheme.BaseColoredURLs(
+            iconUrl: BaseColoredURLs(
                 coloredUrlStr: nil,
                 lightUrlStr: nil,
                 darkUrlStr: nil
             ),
-            backgroundColor: PrimerTheme.BaseColors(
+            backgroundColor: BaseColors(
                 coloredHex: "#000000",
                 lightHex: "#000000",
                 darkHex: "#FFFFFF"
             ),
             cornerRadius: 4,
-            borderWidth: PrimerTheme.BaseBorderWidth(
+            borderWidth: BaseBorderWidth(
                 colored: 1,
                 light: 1,
                 dark: 1
             ),
-            borderColor: PrimerTheme.BaseColors(
+            borderColor: BaseColors(
                 coloredHex: "#FFFFFF",
                 lightHex: "#FFFFFF",
                 darkHex: "#000000"
             ),
             text: "Mock Payment Method",
-            textColor: PrimerTheme.BaseColors(
+            textColor: BaseColors(
                 coloredHex: "#FFFFFF",
                 lightHex: "#FFFFFF",
                 darkHex: "#000000"

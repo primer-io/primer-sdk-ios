@@ -5,6 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import PrimerFoundation
+import PrimerNetworking
 import PrimerUI
 import UIKit
 
@@ -39,7 +40,7 @@ extension PrimerCardholderNameField {
     static var isCardholderNameFieldEnabled: Bool {
         let cardInfoOptions = PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules?
             .first(where: { $0.type == "CARD_INFORMATION" })?
-            .options as? PrimerAPIConfiguration.CheckoutModule.CardInformationOptions
+            .options as? CheckoutModule.CardInformationOptions
         // swiftlint:disable:next identifier_name
         if let isCardHolderNameCheckoutModuleOptionEnabled = cardInfoOptions?.cardHolderName {
             return isCardHolderNameCheckoutModuleOptionEnabled

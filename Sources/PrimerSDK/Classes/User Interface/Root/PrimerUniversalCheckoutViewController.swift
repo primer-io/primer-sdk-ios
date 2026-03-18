@@ -10,6 +10,7 @@
 
 import PrimerCore
 import PrimerFoundation
+import PrimerNetworking
 import PrimerUI
 import UIKit
 
@@ -143,9 +144,11 @@ final class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 let err = PrimerError.invalidValue(key: "amount or currency")
                 Task {
                     let errMessage = await PrimerDelegateProxy.raisePrimerDidFailWithError(err, data: nil)
-                    PrimerUIManager.dismissOrShowResultScreen(type: .failure,
-                                                              paymentMethodManagerCategories: [],
-                                                              withMessage: errMessage)
+                    PrimerUIManager.dismissOrShowResultScreen(
+                        type: .failure,
+                        paymentMethodManagerCategories: [],
+                        withMessage: errMessage
+                    )
                 }
                 return
             }
@@ -272,7 +275,8 @@ final class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 configuration: config,
                 selectedPaymentMethodTokenData: selectedPaymentMethod,
                 additionalData: additionalData,
-                createResumePaymentService: CreateResumePaymentService(paymentMethodType: selectedPaymentMethodType))
+                createResumePaymentService: CreateResumePaymentService(paymentMethodType: selectedPaymentMethodType)
+            )
 
             Task {
                 try? await checkoutWithVaultedPaymentMethodVM.start()

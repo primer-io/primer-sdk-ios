@@ -210,7 +210,7 @@ final class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
 
     var isShowingBillingAddressFieldsRequired: Bool {
         let billingAddressModuleOptions = PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules?
-            .first { $0.type == "BILLING_ADDRESS" }?.options as? PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions
+            .first { $0.type == "BILLING_ADDRESS" }?.options as? CheckoutModule.PostalCodeOptions
         return billingAddressModuleOptions != nil
     }
 
@@ -380,10 +380,10 @@ final class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
 
     // MARK: All billing address fields
 
-    var billingAddressCheckoutModuleOptions: PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions? {
+    var billingAddressCheckoutModuleOptions: CheckoutModule.PostalCodeOptions? {
         PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules?
             .filter({ $0.type == "BILLING_ADDRESS" })
-            .first?.options as? PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions
+            .first?.options as? CheckoutModule.PostalCodeOptions
     }
 
     var billingAddressFields: [[BillingAddressField]] {
@@ -564,8 +564,10 @@ final class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
         }
 
         let paymentMethodType = PrimerPaymentMethodType(rawValue: config.type)
-        let isPaymentMethodNeedingExternalCompletion = (needingExternalCompletionPaymentMethodDictionary
-            .first { $0.key == paymentMethodType } != nil) == true
+        let isPaymentMethodNeedingExternalCompletion = (
+            needingExternalCompletionPaymentMethodDictionary
+            .first { $0.key == paymentMethodType } != nil
+        ) == true
 
         defer {
             didCancel = nil
@@ -668,7 +670,8 @@ final class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
             context: Analytics.Event.Property.Context(
                 issuerId: nil,
                 paymentMethodType: self.config.type,
-                url: nil),
+                url: nil
+            ),
             extra: nil,
             objectType: .button,
             objectId: .submit,
@@ -860,9 +863,11 @@ extension FormPaymentMethodTokenizationViewModel: UITableViewDataSource, UITable
 
 extension FormPaymentMethodTokenizationViewModel: UITextFieldDelegate {
 
-    func textField(_ textField: UITextField,
-                   shouldChangeCharactersIn range: NSRange,
-                   replacementString string: String) -> Bool {
+    func textField(
+        _ textField: UITextField,
+        shouldChangeCharactersIn range: NSRange,
+        replacementString string: String
+    ) -> Bool {
 
         if string == "\n" {
             // Keyboard's return button tapoped
@@ -886,11 +891,17 @@ extension FormPaymentMethodTokenizationViewModel: UITextFieldDelegate {
         var countryResults: [CountryCode] = []
 
         for country in countries where country.country.lowercased()
-            .folding(options: .diacriticInsensitive,
-                     locale: nil)
-            .contains(query.lowercased()
-                        .folding(options: .diacriticInsensitive,
-                                 locale: nil)) == true {
+            .folding(
+                options: .diacriticInsensitive,
+                locale: nil
+            )
+            .contains(
+                query.lowercased()
+                        .folding(
+                            options: .diacriticInsensitive,
+                            locale: nil
+                        )
+            ) == true {
             countryResults.append(country)
         }
 

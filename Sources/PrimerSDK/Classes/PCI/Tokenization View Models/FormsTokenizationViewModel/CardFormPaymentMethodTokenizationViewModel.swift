@@ -39,16 +39,20 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
 
     // Used for Co-Badged Cards feature
     private lazy var rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager? = {
-        let manager = try? PrimerHeadlessUniversalCheckout.RawDataManager(paymentMethodType: "PAYMENT_CARD",
-                                                                          delegate: self,
-                                                                          isUsedInDropIn: true)
+        let manager = try? PrimerHeadlessUniversalCheckout.RawDataManager(
+            paymentMethodType: "PAYMENT_CARD",
+            delegate: self,
+            isUsedInDropIn: true
+        )
         return manager
     }()
 
-    private var rawCardData = PrimerCardData(cardNumber: "",
-                                             expiryDate: "",
-                                             cvv: "",
-                                             cardholderName: "")
+    private var rawCardData = PrimerCardData(
+        cardNumber: "",
+        expiryDate: "",
+        cvv: "",
+        cardholderName: ""
+    )
     private var isRawDataInitialized = false
     fileprivate var currentlyAvailableCardNetworks: [PrimerCardNetwork]?
 
@@ -121,7 +125,7 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
         guard let billingAddressModule = PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules?
             .filter({ $0.type == "BILLING_ADDRESS" })
             .first else { return false }
-        let options = (billingAddressModule.options as? PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions)
+        let options = (billingAddressModule.options as? CheckoutModule.PostalCodeOptions)
         return options?.postalCode == true
     }
 
@@ -268,10 +272,10 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
 
     // MARK: All billing address fields
 
-    var billingAddressCheckoutModuleOptions: PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions? {
+    var billingAddressCheckoutModuleOptions: CheckoutModule.PostalCodeOptions? {
         PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules?
             .filter { $0.type == "BILLING_ADDRESS" }
-            .first?.options as? PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions
+            .first?.options as? CheckoutModule.PostalCodeOptions
     }
 
     var billingAddressFields: [[BillingAddressField]] {
@@ -486,8 +490,10 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
         }
     }
 
-    override func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken,
-                                                   paymentMethodTokenData: PrimerPaymentMethodTokenData) async throws -> String?
+    override func handleDecodedClientTokenIfNeeded(
+        _ decodedJWTToken: DecodedJWTToken,
+        paymentMethodTokenData: PrimerPaymentMethodTokenData
+    ) async throws -> String?
     {
         if decodedJWTToken.intent?.contains("_REDIRECTION") == true {
             return try await handleRedirectionForDecodedClientToken(decodedJWTToken)
@@ -657,14 +663,16 @@ extension CardFormPaymentMethodTokenizationViewModel {
 
         if isShowingBillingAddressFieldsRequired {
             let updatedBillingAddress = await MainActor.run {
-                ClientSession.Address(firstName: firstNameFieldView.firstName,
-                                      lastName: lastNameFieldView.lastName,
-                                      addressLine1: addressLine1FieldView.addressLine1,
-                                      addressLine2: addressLine2FieldView.addressLine2,
-                                      city: cityFieldView.city,
-                                      postalCode: postalCodeFieldView.postalCode,
-                                      state: stateFieldView.state,
-                                      countryCode: countryFieldView.countryCode)
+                ClientSession.Address(
+                    firstName: firstNameFieldView.firstName,
+                    lastName: lastNameFieldView.lastName,
+                    addressLine1: addressLine1FieldView.addressLine1,
+                    addressLine2: addressLine2FieldView.addressLine2,
+                    city: cityFieldView.city,
+                    postalCode: postalCodeFieldView.postalCode,
+                    state: stateFieldView.state,
+                    countryCode: countryFieldView.countryCode
+                )
             }
             if let billingAddress = try? updatedBillingAddress.asDictionary() {
                 let billingAddressAction: ClientSession.Action = .setBillingAddressActionWithParameters(billingAddress)
@@ -827,8 +835,10 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
         enableSubmitButtonIfNeeded()
     }
 
-    func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView,
-                             didDetectCardNetwork _: CardNetwork?)
+    func primerTextFieldView(
+        _ primerTextFieldView: PrimerTextFieldView,
+        didDetectCardNetwork _: CardNetwork?
+    )
     {
         if let text = primerTextFieldView.textField.internalText {
             let sanitizedText = text.replacingOccurrences(of: " ", with: "")
@@ -893,8 +903,10 @@ extension CardFormPaymentMethodTokenizationViewModel: UITableViewDataSource, UIT
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let country = dataSource[indexPath.row]
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: CountryTableViewCell.className,
-                                                       for: indexPath) as? CountryTableViewCell
+        guard let cell = tableView.dequeueReusableCell(
+            withIdentifier: CountryTableViewCell.className,
+            for: indexPath
+        ) as? CountryTableViewCell
         else {
             fatalError("Unexpected cell dequed in PrimerSDK.CardFormPaymentMethodTokenizationViewModel")
         }
@@ -913,9 +925,11 @@ extension CardFormPaymentMethodTokenizationViewModel: UITableViewDataSource, UIT
 }
 
 extension CardFormPaymentMethodTokenizationViewModel: UITextFieldDelegate {
-    func textField(_ textField: UITextField,
-                   shouldChangeCharactersIn _: NSRange,
-                   replacementString string: String) -> Bool
+    func textField(
+        _ textField: UITextField,
+        shouldChangeCharactersIn _: NSRange,
+        replacementString string: String
+    ) -> Bool
     {
         if string == "\n" {
             // Keyboard's return button tapoped
@@ -957,8 +971,10 @@ extension CardFormPaymentMethodTokenizationViewModel: UITextFieldDelegate {
 // MARK: - PrimerHeadlessUniversalCheckoutRawDataManagerDelegate
 
 extension CardFormPaymentMethodTokenizationViewModel: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate {
-    func primerRawDataManager(_: PrimerHeadlessUniversalCheckout.RawDataManager,
-                              willFetchMetadataForState cardState: PrimerValidationState)
+    func primerRawDataManager(
+        _: PrimerHeadlessUniversalCheckout.RawDataManager,
+        willFetchMetadataForState cardState: PrimerValidationState
+    )
     {
         guard cardState is PrimerCardNumberEntryState else {
             logger.error(message: "Received non-card metadata. Ignoring ...")
@@ -966,9 +982,11 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerHeadlessUniversalChe
         }
     }
 
-    func primerRawDataManager(_: PrimerHeadlessUniversalCheckout.RawDataManager,
-                              didReceiveMetadata metadata: PrimerPaymentMethodMetadata,
-                              forState cardState: PrimerValidationState)
+    func primerRawDataManager(
+        _: PrimerHeadlessUniversalCheckout.RawDataManager,
+        didReceiveMetadata metadata: PrimerPaymentMethodMetadata,
+        forState cardState: PrimerValidationState
+    )
     {
         guard let metadataModel = metadata as? PrimerCardNumberEntryMetadata,
               cardState is PrimerCardNumberEntryState

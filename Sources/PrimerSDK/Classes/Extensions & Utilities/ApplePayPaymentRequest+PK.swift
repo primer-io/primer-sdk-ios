@@ -7,6 +7,7 @@
 import PassKit
 import PrimerCore
 import PrimerFoundation
+import PrimerNetworking
 
 @available(iOS 15.0, *)
 extension ApplePayBillingBase {

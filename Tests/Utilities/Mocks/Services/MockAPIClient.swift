@@ -13,8 +13,8 @@ import XCTest
 final class MockPrimerAPIClient: PrimerAPIClientProtocol, @unchecked Sendable {
     var mockedNetworkDelay: TimeInterval = 0.5
     var validateClientTokenResult: (SuccessResponse?, Error?)?
-    var fetchConfigurationResult: (Response.Body.Configuration?, Error?)?
-    var fetchConfigurationWithActionsResult: (Response.Body.Configuration?, Error?)?
+    var fetchConfigurationResult: (PrimerAPIConfiguration?, Error?)?
+    var fetchConfigurationWithActionsResult: (PrimerAPIConfiguration?, Error?)?
     var fetchVaultedPaymentMethodsResult: (Response.Body.VaultedPaymentMethods?, Error?)?
     var deleteVaultedPaymentMethodResult: (Void?, Error?)?
     var createPayPalOrderSessionResult:  Result<Response.Body.PayPal.CreateOrder, Error>?

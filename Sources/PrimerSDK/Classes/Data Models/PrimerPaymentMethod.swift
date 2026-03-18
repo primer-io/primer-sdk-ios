@@ -7,6 +7,7 @@
 import Foundation
 import PrimerCore
 import PrimerFoundation
+import PrimerNetworking
 import UIKit
 
 extension PrimerTheme {
@@ -23,7 +24,7 @@ final class PrimerPaymentMethod: Codable, LogReporter {
     }
 
     let id: String? // Will be nil for cards
-    let implementationType: PrimerPaymentMethod.ImplementationType
+    let implementationType: PaymentMethodImplementationType
     let type: String
     var name: String
     let processorConfigId: String?
@@ -263,7 +264,7 @@ final class PrimerPaymentMethod: Codable, LogReporter {
 
     init(
         id: String?,
-        implementationType: PrimerPaymentMethod.ImplementationType,
+        implementationType: PaymentMethodImplementationType,
         type: String,
         name: String,
         processorConfigId: String?,
@@ -286,7 +287,7 @@ final class PrimerPaymentMethod: Codable, LogReporter {
 
         id = (try? container.decode(String?.self, forKey: .id)) ?? nil
         implementationType = try container.decode(
-            PrimerPaymentMethod.ImplementationType.self,
+            PaymentMethodImplementationType.self,
             forKey: .implementationType
         )
         type = try container.decode(String.self, forKey: .type)
@@ -327,18 +328,4 @@ final class PrimerPaymentMethod: Codable, LogReporter {
     }
 }
 
-extension PrimerPaymentMethod {
-
-    public enum ImplementationType: String, Codable, CaseIterable, Equatable, Hashable {
-
-        case nativeSdk      = "NATIVE_SDK"
-        case webRedirect    = "WEB_REDIRECT"
-        case iPay88Sdk      = "IPAY88_SDK"
-        case formWithRedirect = "FORM_WITH_REDIRECT"
-
-        var isEnabled: Bool {
-            true
-        }
-    }
-}
 // swiftlint:enable type_body_length

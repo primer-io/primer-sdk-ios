@@ -291,8 +291,8 @@ final class CardFormPaymentMethodTokenizationViewModelTests: XCTestCase, Tokeniz
 
     // MARK: - Test Helper Data
 
-    private var checkoutModule: PrimerAPIConfiguration.CheckoutModule {
-        let options = PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions(
+    private var checkoutModule: CheckoutModule {
+        let options = CheckoutModule.PostalCodeOptions(
             firstName: true,
             lastName: true,
             city: true,
@@ -303,7 +303,7 @@ final class CardFormPaymentMethodTokenizationViewModelTests: XCTestCase, Tokeniz
             phoneNumber: true,
             state: true
         )
-        return PrimerAPIConfiguration.CheckoutModule(
+        return CheckoutModule(
             type: "BILLING_ADDRESS",
             requestUrlStr: "request_url_str",
             options: options
