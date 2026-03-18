@@ -1,5 +1,5 @@
 //
-//  3DS.swift
+//  ThreeDS.swift
 //
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
@@ -9,9 +9,6 @@
 
 import Foundation
 import PrimerFoundation
-#if canImport(Primer3DS)
-import Primer3DS
-#endif
 
 public protocol ThreeDSAuthenticationProtocol: Codable {
     var acsReferenceNumber: String? { get }
@@ -32,44 +29,6 @@ protocol ThreeDSSDKAuthDataProtocol: Codable {
 }
 
 public final class ThreeDS {
-
-    #if canImport(Primer3DS)
-    public final class Cer: Primer3DSCertificate {
-
-        public var cardScheme: String
-        public var encryptionKey: String
-        public var rootCertificate: String
-
-        public init(cardScheme: String, rootCertificate: String, encryptionKey: String) {
-            self.cardScheme = cardScheme
-            self.rootCertificate = rootCertificate
-            self.encryptionKey = encryptionKey
-        }
-    }
-
-    public final class ServerAuthData: Primer3DSServerAuthData {
-
-        public var acsReferenceNumber: String?
-        public var acsSignedContent: String?
-        public var acsTransactionId: String?
-        public var responseCode: String
-        public var transactionId: String?
-
-        public init(
-            acsReferenceNumber: String?,
-            acsSignedContent: String?,
-            acsTransactionId: String?,
-            responseCode: String,
-            transactionId: String?
-        ) {
-            self.acsReferenceNumber = acsReferenceNumber
-            self.acsSignedContent = acsSignedContent
-            self.acsTransactionId = acsTransactionId
-            self.responseCode = responseCode
-            self.transactionId = transactionId
-        }
-    }
-    #endif
 
     public struct Keys: Codable {
         public let threeDSecureIoCertificates: [ThreeDS.Certificate]?
@@ -163,13 +122,17 @@ public final class ThreeDS {
                 self = ProtocolVersion.v_2_2_0
             } else {
                 if (rawValue.compareWithVersion("2.1") == .orderedSame) ||
-                    (rawValue.compareWithVersion("2.1") == .orderedDescending
-                        && rawValue.compareWithVersion("2.2") == .orderedAscending) {
+                    (
+                        rawValue.compareWithVersion("2.1") == .orderedDescending
+                        && rawValue.compareWithVersion("2.2") == .orderedAscending
+                    ) {
                     self = ProtocolVersion.v_2_1_0
 
                 } else if (rawValue.compareWithVersion("2.2") == .orderedSame) ||
-                            (rawValue.compareWithVersion("2.2") == .orderedDescending
-                                && rawValue.compareWithVersion("2.3") == .orderedAscending) {
+                            (
+                                rawValue.compareWithVersion("2.2") == .orderedDescending
+                                && rawValue.compareWithVersion("2.3") == .orderedAscending
+                            ) {
                     self = ProtocolVersion.v_2_2_0
                 } else {
                     return nil

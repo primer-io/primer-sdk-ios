@@ -7,6 +7,7 @@
 import Foundation
 import PrimerCore
 import PrimerFoundation
+import PrimerNetworking
 
 public struct Primer3DSErrorInfo {
     let errorId: String
