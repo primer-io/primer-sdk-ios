@@ -6,6 +6,7 @@
 
 import Foundation
 import PrimerFoundation
+import PrimerNetworking
 
 protocol ClientSessionActionsProtocol {
     func selectPaymentMethodIfNeeded(_ paymentMethodType: String, cardNetwork: String?) async throws
@@ -79,9 +80,11 @@ final class ClientSessionActionsModule: ClientSessionActionsProtocol {
         try await clientSessionActionsModule.dispatch(actions: [billingAddressAction])
     }
 
-    static func updateShippingDetailsViaClientSessionActionIfNeeded(address: ClientSession.Address?,
-                                                                    mobileNumber: String?,
-                                                                    emailAddress: String?) async throws {
+    static func updateShippingDetailsViaClientSessionActionIfNeeded(
+        address: ClientSession.Address?,
+        mobileNumber: String?,
+        emailAddress: String?
+    ) async throws {
         guard let unwrappedAddress = address, let shippingAddress = try? unwrappedAddress.asDictionary() else {
             return
         }
