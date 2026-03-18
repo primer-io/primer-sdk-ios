@@ -5,7 +5,6 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import SwiftUI
-import UIKit
 
 /// Delegate protocol for CheckoutComponents result handling
 @available(iOS 15.0, *)
@@ -228,8 +227,7 @@ extension PrimerCheckoutPresenterDelegate {
     
     func handlePaymentSuccess(_ result: PaymentResult) {
         logger.info(message: "Payment completed: \(result.paymentId)")
-        
-        // Dismiss CheckoutComponents first, then call delegate after dismissal completes
+
         dismissDirectly { [weak self] in
             if let delegate = self?.delegate {
                 delegate.primerCheckoutPresenterDidCompleteWithSuccess(result)
@@ -238,11 +236,10 @@ extension PrimerCheckoutPresenterDelegate {
             }
         }
     }
-    
+
     func handlePaymentFailure(_ error: PrimerError) {
         logger.error(message: "Payment failed: \(error)")
-        
-        // Dismiss CheckoutComponents first, then call delegate after dismissal completes
+
         dismissDirectly { [weak self] in
             if let delegate = self?.delegate {
                 delegate.primerCheckoutPresenterDidFailWithError(error)
@@ -416,7 +413,7 @@ extension PrimerCheckoutPresenter {
         else {
             return nil
         }
-        
+
         return findTopViewController(from: rootViewController)
     }
     
