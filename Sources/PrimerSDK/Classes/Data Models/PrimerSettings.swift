@@ -1,7 +1,7 @@
 //
 //  PrimerSettings.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
@@ -9,7 +9,7 @@ import PassKit
 
 // MARK: - PRIMER SETTINGS
 
-internal protocol PrimerSettingsProtocol {
+protocol PrimerSettingsProtocol {
     var paymentHandling: PrimerPaymentHandling { get }
     var localeData: PrimerLocaleData { get }
     var paymentMethodOptions: PrimerPaymentMethodOptions { get }
@@ -18,6 +18,20 @@ internal protocol PrimerSettingsProtocol {
     var apiVersion: PrimerApiVersion { get }
 }
 
+/// Configuration object for customizing the Primer SDK behavior.
+///
+/// `PrimerSettings` allows you to configure various aspects of the checkout experience,
+/// including payment handling mode, localization, payment method options, and UI customization.
+///
+/// Example usage:
+/// ```swift
+/// let settings = PrimerSettings(
+///     paymentHandling: .auto,
+///     localeData: PrimerLocaleData(languageCode: "en"),
+///     uiOptions: PrimerUIOptions(isSuccessScreenEnabled: true)
+/// )
+/// Primer.shared.configure(settings: settings)
+/// ```
 public final class PrimerSettings: PrimerSettingsProtocol, Codable {
 
     static var current: PrimerSettings {
@@ -25,12 +39,27 @@ public final class PrimerSettings: PrimerSettingsProtocol, Codable {
         guard let primerSettings = settings as? PrimerSettings else { fatalError() }
         return primerSettings
     }
+
+    /// Determines how payments are processed after tokenization.
+    /// Use `.auto` for automatic processing or `.manual` for server-side control.
     public let paymentHandling: PrimerPaymentHandling
+
+    /// Localization settings including language and region codes.
     public let localeData: PrimerLocaleData
+
+    /// Configuration options specific to individual payment methods (e.g., Apple Pay, Klarna).
     public let paymentMethodOptions: PrimerPaymentMethodOptions
+
+    /// UI customization options for the checkout screens.
     public let uiOptions: PrimerUIOptions
+
+    /// Debug and development options for testing.
     public let debugOptions: PrimerDebugOptions
+
+    /// Enables caching of client session data for improved performance.
     public let clientSessionCachingEnabled: Bool
+
+    /// The Primer API version to use for requests.
     public let apiVersion: PrimerApiVersion
 
     public init(
@@ -55,14 +84,27 @@ public final class PrimerSettings: PrimerSettingsProtocol, Codable {
 
 // MARK: - PAYMENT HANDLING
 
+/// Defines how payments are processed after the payment method has been tokenized.
+///
+/// Choose the appropriate handling mode based on your integration needs:
+/// - Use `.auto` for a streamlined experience where the SDK handles payment creation
+/// - Use `.manual` when you need to create payments from your backend for additional control
 public enum PrimerPaymentHandling: String, Codable {
+    /// Automatic payment handling (default).
+    /// The SDK automatically creates the payment after tokenization, providing the simplest integration.
+    /// Payment results are delivered through delegate callbacks.
     case auto   = "AUTO"
+
+    /// Manual payment handling.
+    /// After tokenization, your backend receives the payment method token and is responsible
+    /// for creating the payment via the Primer API. This mode provides more control over
+    /// the payment flow and allows for custom business logic.
     case manual = "MANUAL"
 }
 
 // MARK: - PAYMENT METHOD OPTIONS
 
-internal protocol PrimerPaymentMethodOptionsProtocol {
+protocol PrimerPaymentMethodOptionsProtocol {
     var applePayOptions: PrimerApplePayOptions? { get }
     var klarnaOptions: PrimerKlarnaOptions? { get }
     var threeDsOptions: PrimerThreeDsOptions? { get }
@@ -216,9 +258,9 @@ public final class PrimerKlarnaOptions: Codable {
 }
 
 // MARK: Stripe ACH
-public final class PrimerStripeOptions: Codable {
+public final class PrimerStripeOptions: Codable, Equatable {
 
-    public enum MandateData: Codable {
+    public enum MandateData: Codable, Equatable {
         case fullMandate(text: String)
         case templateMandate(merchantName: String)
     }
@@ -230,28 +272,54 @@ public final class PrimerStripeOptions: Codable {
         self.publishableKey = publishableKey
         self.mandateData = mandateData
     }
+
+    public static func == (lhs: PrimerStripeOptions, rhs: PrimerStripeOptions) -> Bool {
+        lhs.publishableKey == rhs.publishableKey &&
+            lhs.mandateData == rhs.mandateData
+    }
 }
 
 // MARK: Card Payment
+
+/// Defines how the card network selector is displayed for co-badged cards
+public enum CardNetworkSelectorStyle: String, Codable {
+    /// Inline badge buttons (legacy style)
+    case inline
+    /// Dropdown menu with chevron (default)
+    case dropdown
+}
 
 public final class PrimerCardPaymentOptions: Codable {
 
     let is3DSOnVaultingEnabled: Bool
 
+    /// The style of card network selector for co-badged cards (default: .dropdown)
+    public let networkSelectorStyle: CardNetworkSelectorStyle
+
     @available(swift, obsoleted: 4.0, message: "is3DSOnVaultingEnabled is obsoleted on v.2.14.0")
     public init(is3DSOnVaultingEnabled: Bool?) {
         self.is3DSOnVaultingEnabled = is3DSOnVaultingEnabled != nil ? is3DSOnVaultingEnabled! : true
+        self.networkSelectorStyle = .dropdown
     }
 
-    public init() {
+    public init(networkSelectorStyle: CardNetworkSelectorStyle = .dropdown) {
         self.is3DSOnVaultingEnabled = true
+        self.networkSelectorStyle = networkSelectorStyle
     }
 }
 
 // MARK: - UI OPTIONS
 
+/// Specifies how users can dismiss the checkout modal.
+///
+/// You can enable multiple dismissal mechanisms by passing an array to `PrimerUIOptions`.
+/// For example, `[.gestures, .closeButton]` allows both swipe gestures and a close button.
 public enum DismissalMechanism: Codable {
-    case gestures, closeButton
+    /// Allow dismissal via swipe-down gestures on the modal.
+    case gestures
+
+    /// Display a close button in the navigation area.
+    case closeButton
 }
 
 public enum PrimerAppearanceMode: String, Codable {
@@ -260,15 +328,48 @@ public enum PrimerAppearanceMode: String, Codable {
     case dark = "DARK"
 }
 
+/// Configuration options for customizing the checkout UI appearance and behavior.
+///
+/// Use `PrimerUIOptions` to control which screens are shown during the checkout flow,
+/// how users can dismiss the checkout, and the overall visual theme.
+///
+/// Example usage:
+/// ```swift
+/// let uiOptions = PrimerUIOptions(
+///     isInitScreenEnabled: true,
+///     isSuccessScreenEnabled: true,
+///     isErrorScreenEnabled: true,
+///     dismissalMechanism: [.gestures, .closeButton],
+///     appearanceMode: .system
+/// )
+/// ```
 public final class PrimerUIOptions: Codable {
 
+    /// Whether to show the initialization/loading screen when the SDK starts.
+    /// Default is `true`.
     public internal(set) var isInitScreenEnabled: Bool
+
+    /// Whether to show a success screen after payment completion.
+    /// Default is `true`.
     public internal(set) var isSuccessScreenEnabled: Bool
+
+    /// Whether to show an error screen when payment fails.
+    /// Default is `true`.
     public internal(set) var isErrorScreenEnabled: Bool
+
+    /// The mechanisms users can use to dismiss the checkout modal.
+    /// Default is `[.gestures]`.
     public internal(set) var dismissalMechanism: [DismissalMechanism]
+
+    /// Additional options specific to the card form UI.
     public internal(set) var cardFormUIOptions: PrimerCardFormUIOptions?
+
+    /// The appearance mode for the UI (system, light, or dark).
+    /// Default is `.system`, which follows the device setting.
     public internal(set) var appearanceMode: PrimerAppearanceMode
-    public let theme: PrimerTheme
+
+    /// The visual theme configuration for the checkout UI.
+    public var theme: PrimerTheme
 
     private enum CodingKeys: String, CodingKey {
         case isInitScreenEnabled,
@@ -344,7 +445,7 @@ public struct PrimerDebugOptions: Codable {
 
 // MARK: - 3DS OPTIONS
 
-public struct PrimerThreeDsOptions: Codable {
+public struct PrimerThreeDsOptions: Codable, Equatable {
     let threeDsAppRequestorUrl: String?
 
     public init(threeDsAppRequestorUrl: String? = nil) {
@@ -357,6 +458,6 @@ public struct PrimerThreeDsOptions: Codable {
 public enum PrimerApiVersion: String, Codable {
     case V2_4 = "2.4"
 
-    public static let latest = PrimerApiVersion.V2_4
+    public static let latest: PrimerApiVersion = .V2_4
 }
 // swiftlint:enable identifier_name

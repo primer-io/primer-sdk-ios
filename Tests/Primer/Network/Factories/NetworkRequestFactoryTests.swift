@@ -22,7 +22,7 @@ final class NetworkRequestFactoryTests: XCTestCase {
         if isPost {
             headers["Content-Type"] = "application/json"
         }
-        if let jwt = jwt {
+        if let jwt {
             headers["Primer-Client-Token"] = jwt
         }
         return headers

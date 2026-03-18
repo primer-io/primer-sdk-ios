@@ -176,7 +176,7 @@ final class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
         if decodedJWTToken.intent == "IPAY88_CARD_REDIRECTION" {
             guard let callbackRaw = decodedJWTToken.backendCallbackUrl,
                   let callbackStr = callbackRaw.addingPercentEncoding(
-                      withAllowedCharacters: .urlPasswordAllowed
+                    withAllowedCharacters: .urlPasswordAllowed
                   )?.replacingOccurrences(of: "=", with: "%3D"),
                   let callbackUrl = URL(string: callbackStr),
                   let statusUrlRaw = decodedJWTToken.statusUrl,
@@ -188,7 +188,7 @@ final class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
 
             await PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
 
-            self.backendCallbackUrl = callbackUrl
+            backendCallbackUrl = callbackUrl
             self.primerTransactionId = primerTransactionId
             self.statusUrl = statusUrl
 
@@ -402,7 +402,7 @@ extension IPay88TokenizationViewModel: PrimerIPay88ViewControllerDelegate {
             primerIPay88Payment = payment
         }
 
-        if let error = error {
+        if let error {
             switch error {
             case let .iPay88Error(description, _):
                 didFail?(handled(primerError: .failedToCreatePayment(

@@ -106,7 +106,7 @@ extension PrimerHeadlessUniversalCheckout {
                 do {
                     try await vaultService.fetchVaultedPaymentMethods()
                     self.vaultedPaymentMethods = AppState.current.paymentMethods.compactMap(\.vaultedPaymentMethod)
-                        completion(self.vaultedPaymentMethods, nil)
+                    completion(self.vaultedPaymentMethods, nil)
                 } catch {
                     DispatchQueue.main.async {
                         completion(nil, error)
@@ -581,12 +581,41 @@ extension PrimerHeadlessUniversalCheckout.VaultManager: SFSafariViewControllerDe
 
 extension PrimerHeadlessUniversalCheckout {
 
+    /// Represents a payment method that has been saved (vaulted) for a customer.
+    ///
+    /// `VaultedPaymentMethod` contains information about a previously saved payment method
+    /// that can be reused for subsequent payments. This enables returning customers to pay
+    /// with a single tap without re-entering their payment details.
+    ///
+    /// Vaulted payment methods are retrieved using `VaultManager.fetchVaultedPaymentMethods()`
+    /// and can be used to initiate payments via `VaultManager.startPaymentFlow()`.
+    ///
+    /// Example usage:
+    /// ```swift
+    /// let vaultManager = PrimerHeadlessUniversalCheckout.VaultManager()
+    /// vaultManager.fetchVaultedPaymentMethods { methods, error in
+    ///     if let methods = methods {
+    ///         for method in methods {
+    ///             print("\(method.paymentMethodType): \(method.id)")
+    ///         }
+    ///     }
+    /// }
+    /// ```
     public final class VaultedPaymentMethod: Codable {
 
+        /// The unique identifier for this vaulted payment method.
         public let id: String
+
+        /// The type of payment method (e.g., "PAYMENT_CARD", "PAYPAL").
         public let paymentMethodType: String
+
+        /// The type of payment instrument (e.g., card, bank account).
         public let paymentInstrumentType: PaymentInstrumentType
+
+        /// Detailed information about the payment instrument (card details, bank info, etc.).
         public let paymentInstrumentData: Response.Body.Tokenization.PaymentInstrumentData
+
+        /// Internal identifier used for analytics tracking.
         public let analyticsId: String
 
         public init(

@@ -113,15 +113,15 @@ final class InternalCardComponentsManager: NSObject, InternalCardComponentsManag
         self.cardnumberField = cardnumberField
         self.expiryDateField = expiryDateField
         self.cvvField = cvvField
-        self.cardholderField = cardholderNameField
+        cardholderField = cardholderNameField
         self.billingAddressFieldViews = billingAddressFieldViews
-        if let paymentMethodType = paymentMethodType,
+        if let paymentMethodType,
            let primerPaymentMethodType = PrimerPaymentMethodType(rawValue: paymentMethodType) {
             self.primerPaymentMethodType = primerPaymentMethodType
             self.paymentMethodType = primerPaymentMethodType.rawValue
         } else {
-            self.primerPaymentMethodType = .paymentCard
-            self.paymentMethodType = self.primerPaymentMethodType.rawValue
+            primerPaymentMethodType = .paymentCard
+            self.paymentMethodType = primerPaymentMethodType.rawValue
         }
         self.isRequiringCVVInput = isRequiringCVVInput
 
@@ -141,7 +141,7 @@ final class InternalCardComponentsManager: NSObject, InternalCardComponentsManag
     private func fetchClientToken() async throws -> DecodedJWTToken {
         try await withCheckedThrowingContinuation { continuation in
             delegate.cardComponentsManager?(self, clientTokenCallback: { clientToken, error in
-                guard error == nil, let clientToken = clientToken else {
+                guard error == nil, let clientToken else {
                     return continuation.resume(throwing: error!)
                 }
 
@@ -230,14 +230,14 @@ and 4 characters for expiry year separated by '/'.
     /// current year = "2022"
     /// first two digits = "20"
     private var cardExpirationYear: String? {
-        guard let expiryYear = self.expiryDateField.expiryYear else { return nil }
+        guard let expiryYear = expiryDateField.expiryYear else { return nil }
         return expiryYear.normalizedFourDigitYear()
     }
 
     private var tokenizationPaymentInstrument: TokenizationRequestBodyPaymentInstrument? {
 
-        guard let cardExpirationYear = cardExpirationYear,
-              let expiryMonth = self.expiryDateField.expiryMonth else {
+        guard let cardExpirationYear,
+              let expiryMonth = expiryDateField.expiryMonth else {
             return nil
         }
 
@@ -302,7 +302,7 @@ and 4 characters for expiry year separated by '/'.
                                 cardNetwork = .cartesBancaires
                                 self.logger.debug(
                                     message: "Co-badged card detected: Using Cartes Bancaires " +
-                                    "instead of Visa for card starting with \(String(cardNumber.prefix(4)))"
+                                        "instead of Visa for card starting with \(String(cardNumber.prefix(4)))"
                                 )
                             }
                         }
@@ -310,9 +310,9 @@ and 4 characters for expiry year separated by '/'.
 
                     self.logger.debug(
                         message: "Network validation - selectedCardNetwork: " +
-                        "\(self.selectedCardNetwork?.displayName ?? "nil"), " +
-                        "autoDetected: \(autoDetectedNetwork.displayName), " +
-                        "using: \(cardNetwork.displayName)"
+                            "\(self.selectedCardNetwork?.displayName ?? "nil"), " +
+                            "autoDetected: \(autoDetectedNetwork.displayName), " +
+                            "using: \(cardNetwork.displayName)"
                     )
 
                     if !allowedCardNetworks.contains(cardNetwork) {
@@ -330,6 +330,10 @@ and 4 characters for expiry year separated by '/'.
 
                 do {
                     let paymentMethodTokenData = try await tokenizationService.tokenize(requestBody: requestBody)
+                    cardnumberField.textField.wipe()
+                    expiryDateField.textField.wipe()
+                    cvvField.textField.wipe()
+                    cardholderField?.textField.wipe()
                     self.delegate.cardComponentsManager(self, onTokenizeSuccess: paymentMethodTokenData)
                 } catch {
                     throw handled(primerError: error.asPrimerError)

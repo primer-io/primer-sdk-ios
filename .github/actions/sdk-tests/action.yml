@@ -83,7 +83,7 @@ runs:
       run: |
         bash Scripts/xccov-to-sonarqube-generic.sh fastlane/test_output/PrimerSDKTests.xcresult/ > coverage.xml
         sed "s#$PWD/##g" coverage.xml > sonar-coverage-${{ inputs.sdk-name }}.xml
-    - uses: actions/upload-artifact@master
+    - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
       with:
         name: coverage-file-${{ inputs.sdk-name }}
         path: sonar-coverage-${{ inputs.sdk-name }}.xml

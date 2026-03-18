@@ -1,7 +1,7 @@
 //
 //  PrimerDelegate.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import UIKit
@@ -158,6 +158,9 @@ final class PrimerDelegateProxy: LogReporter {
                 } else {
                     continuation.resume(returning: .continuePaymentCreation())
                 }
+            } else if PrimerInternal.shared.sdkIntegrationType == .checkoutComponents {
+                // CheckoutComponents handles payment creation internally
+                continuation.resume(returning: .continuePaymentCreation())
             }
         }
     }
@@ -311,7 +314,7 @@ final class PrimerDelegateProxy: LogReporter {
                 } else {
                     Primer.shared.delegate?.primerDidFailWithError?(exposedError, data: data, decisionHandler: { errorDecision in
                         switch errorDecision.type {
-                        case .fail(let message):
+                        case let .fail(message):
                             DispatchQueue.main.async {
                                 decisionHandler(.fail(withErrorMessage: message))
                             }
@@ -341,7 +344,7 @@ final class PrimerDelegateProxy: LogReporter {
             PrimerUIManager.dismissPrimerUI(animated: true)
 
             guard let primerHeadlessUniversalCheckoutDidFail = PrimerHeadlessUniversalCheckout.current.delegate?
-                .primerHeadlessUniversalCheckoutDidFail else {
+                    .primerHeadlessUniversalCheckoutDidFail else {
                 logger.warn(message: "Delegate function 'primerHeadlessUniversalCheckoutDidFail' hasn't been implemented.")
                 return .fail(withErrorMessage: nil)
             }
@@ -362,7 +365,7 @@ final class PrimerDelegateProxy: LogReporter {
             return await withCheckedContinuation { continuation in
                 primerDidFailWithError(exposedError, data) { errorDecision in
                     switch errorDecision.type {
-                    case .fail(let message):
+                    case let .fail(message):
                         continuation.resume(returning: .fail(withErrorMessage: message))
                     }
                 }
@@ -379,7 +382,7 @@ final class PrimerDelegateProxy: LogReporter {
         await withCheckedContinuation { continuation in
             PrimerDelegateProxy.primerDidFailWithError(primerError, data: data) { errorDecision in
                 switch errorDecision.type {
-                case .fail(let message):
+                case let .fail(message):
                     continuation.resume(returning: message)
                 }
             }
@@ -435,7 +438,7 @@ final class PrimerDelegateProxy: LogReporter {
 
     @MainActor
     static func primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods(_ paymentMethods: [PrimerHeadlessUniversalCheckout
-            .PaymentMethod]) async {
+                                                                                .PaymentMethod]) async {
         if PrimerInternal.shared.sdkIntegrationType == .headless {
             PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods?(paymentMethods)
         }
