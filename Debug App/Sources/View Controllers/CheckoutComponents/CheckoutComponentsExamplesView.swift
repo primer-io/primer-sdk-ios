@@ -14,7 +14,7 @@ struct CheckoutComponentsExamplesView: View {
     @State private var selectedDemoId: UUID?
 
     init(settings: PrimerSettings, apiVersion: PrimerApiVersion, clientSession: ClientSessionRequestBody? = nil, clientToken: String? = nil) {
-        self.configuration = DemoConfiguration(
+        configuration = DemoConfiguration(
             settings: settings,
             apiVersion: apiVersion,
             clientSession: clientSession,
@@ -39,8 +39,6 @@ struct CheckoutComponentsExamplesView: View {
         }
     }
 }
-
-// MARK: - UUID Identifiable Conformance
 
 extension UUID: @retroactive Identifiable {
     public var id: UUID { self }

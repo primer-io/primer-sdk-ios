@@ -6,8 +6,6 @@
 
 import SwiftUI
 
-// MARK: - Error View
-
 @available(iOS 15.0, *)
 struct ErrorView: View {
     let error: String
