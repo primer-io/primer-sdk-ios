@@ -25,9 +25,9 @@ public final class DefaultAchScope: PrimerAchScope, ObservableObject, LogReporte
 
   public var state: AsyncStream<PrimerAchState> {
     AsyncStream { continuation in
-      let task = Task { [self] in
-        for await _ in $internalState.values {
-          continuation.yield(internalState)
+      let task = Task { @MainActor in
+        for await _ in self.$internalState.values {
+          continuation.yield(self.internalState)
         }
         continuation.finish()
       }
