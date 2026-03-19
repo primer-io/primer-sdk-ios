@@ -7,7 +7,7 @@
 import Foundation
 import PrimerCore
 import PrimerFoundation
-import PrimerNetworking
+@testable import PrimerNetworking
 
 // KlarnaHelpers: A utility structure to facilitate various operations related to Klarna payment sessions.
 struct KlarnaHelpers {
@@ -40,7 +40,8 @@ struct KlarnaHelpers {
     ) -> Request.Body.Klarna.FinalizePaymentSession {
         Request.Body.Klarna.FinalizePaymentSession(
             paymentMethodConfigId: paymentMethodConfigId,
-            sessionId: sessionId)
+            sessionId: sessionId
+        )
     }
 
     /// - Constructs the request body for creating a Klarna customer token.
@@ -56,7 +57,8 @@ struct KlarnaHelpers {
             sessionId: sessionId,
             authorizationToken: authorizationToken,
             description: recurringPaymentDescription,
-            localeData: PrimerSettings.current.localeData)
+            localeData: PrimerSettings.current.localeData
+        )
     }
 
     /// - Prepares the request body for creating a Klarna payment session.
@@ -65,7 +67,8 @@ struct KlarnaHelpers {
         with paymentMethodConfigId: String,
         clientSession: ClientSession.APIResponse?,
         recurringPaymentDescription: String?,
-        redirectUrl: String?) -> Request.Body.Klarna.CreatePaymentSession {
+        redirectUrl: String?
+    ) -> Request.Body.Klarna.CreatePaymentSession {
         let sessionType = getSessionType()
         let localeData = constructLocaleData(using: clientSession)
         var orderItems: [Request.Body.Klarna.OrderItem]?
@@ -98,7 +101,8 @@ struct KlarnaHelpers {
             totalAmount: totalAmount,
             orderItems: orderItems,
             billingAddress: billingAddress,
-            shippingAddress: shippingAddress)
+            shippingAddress: shippingAddress
+        )
     }
 
     /// - Returns a customer's address, either billing or shipping, based on the specified type.
@@ -119,7 +123,8 @@ struct KlarnaHelpers {
             phoneNumber: customerPhone,
             postalCode: type == .billing ? billingAddress?.postalCode : shippingAddress?.postalCode,
             state: type == .billing ? billingAddress?.state : shippingAddress?.state,
-            title: nil)
+            title: nil
+        )
     }
 
     /// - Converts a 'ClientSession.Order.LineItem' from the client session into a 'Request.Body.Klarna.OrderItem'.
@@ -132,7 +137,8 @@ struct KlarnaHelpers {
             quantity: item.quantity,
             discountAmount: item.discountAmount ?? 0,
             productType: item.productType,
-            taxAmount: item.taxAmount ?? 0)
+            taxAmount: item.taxAmount ?? 0
+        )
     }
 
     /// - Adds a surcharge item to the list of order items if applicable.
@@ -147,7 +153,8 @@ struct KlarnaHelpers {
             quantity: 1,
             discountAmount: nil,
             productType: "surcharge",
-            taxAmount: nil)
+            taxAmount: nil
+        )
         orderList.append(surchargeItem)
         return orderList
     }
@@ -180,7 +187,8 @@ struct KlarnaHelpers {
         return Request.Body.Klarna.KlarnaLocaleData(
             countryCode: countryCode,
             currencyCode: currencyCode,
-            localeCode: localeCode)
+            localeCode: localeCode
+        )
     }
 
     // MARK: - Error helpers
