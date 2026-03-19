@@ -8,161 +8,143 @@
 import XCTest
 
 @available(iOS 15.0, *)
-class CheckoutComponentsSettingsTests: XCTestCase {
+final class CheckoutComponentsSettingsTests: XCTestCase {
 
-    // MARK: - Klarna Options Tests
-
-    func testKlarnaOptionsNilHandling() {
-        // Given: Settings without klarnaOptions
+    func test_klarnaOptions_nilHandling() {
+        // Given
         let settings = PrimerSettings(
             paymentMethodOptions: PrimerPaymentMethodOptions(
                 klarnaOptions: nil
             )
         )
 
-        // Then: klarnaOptions should be nil and not crash
+        // Then
         XCTAssertNil(settings.paymentMethodOptions.klarnaOptions)
     }
 
-    // MARK: - Payment Handling Tests
-
-    func testPaymentHandlingDefaultsToAuto() {
-        // Given: Settings with default paymentHandling
+    func test_paymentHandling_defaultsToAuto() {
+        // Given
         let settings = PrimerSettings()
 
-        // Then: paymentHandling should default to .auto
+        // Then
         XCTAssertEqual(settings.paymentHandling, .auto)
     }
 
-    // MARK: - API Version Tests
-
-    func testApiVersionDefaultsToLatest() {
-        // Given: Settings with default apiVersion
+    func test_apiVersion_defaultsToLatest() {
+        // Given
         let settings = PrimerSettings()
 
-        // Then: apiVersion should be the SDK's latest version
+        // Then
         XCTAssertEqual(settings.apiVersion, PrimerApiVersion.latest)
     }
 
-    // MARK: - Card Form UI Options Tests
-
-    func testCardFormUIOptionsNilWhenUnset() {
-        // Given: Settings without cardFormUIOptions
+    func test_cardFormUIOptions_nilWhenUnset() {
+        // Given
         let settings = PrimerSettings()
 
-        // Then: cardFormUIOptions should be nil and not crash
+        // Then
         XCTAssertNil(settings.uiOptions.cardFormUIOptions)
     }
 
-    // MARK: - Client Session Caching Tests
-
-    func testClientSessionCachingDefaultsToFalse() {
-        // Given: Settings with default clientSessionCachingEnabled
+    func test_clientSessionCaching_defaultsToFalse() {
+        // Given
         let settings = PrimerSettings()
 
-        // Then: clientSessionCachingEnabled should default to false
+        // Then
         XCTAssertFalse(settings.clientSessionCachingEnabled)
     }
 
-    // MARK: - Theme Tests
-
-    func testThemeDefaultsToDefaultPrimerTheme() {
-        // Given: Settings with default theme
+    func test_theme_defaultsToDefaultPrimerTheme() {
+        // Given
         let settings = PrimerSettings()
 
-        // Then: theme should default to PrimerTheme
+        // Then
         XCTAssertNotNil(settings.uiOptions.theme)
     }
 
-    // MARK: - Locale Data Tests
-
-    func testLocaleDataDefaultsToDeviceLocale() {
-        // Given: Settings without custom localeData (uses device locale)
+    func test_localeData_defaultsToDeviceLocale() {
+        // Given
         let settings = PrimerSettings()
-
-        // Then: localeData should default to device locale
         let defaultLocale = PrimerLocaleData()
+
+        // Then
         XCTAssertEqual(settings.localeData.languageCode, defaultLocale.languageCode)
         XCTAssertEqual(settings.localeData.localeCode, defaultLocale.localeCode)
     }
 
-    func testLocaleDataCustomLanguageAndRegion() {
-        // Given: Settings with custom language and region codes
+    func test_localeData_customLanguageAndRegion() {
+        // Given
         let settings = PrimerSettings(
             localeData: PrimerLocaleData(languageCode: "es", regionCode: "MX")
         )
 
-        // Then: localeCode should be "es-MX" format
+        // Then
         XCTAssertEqual(settings.localeData.languageCode, "es")
         XCTAssertEqual(settings.localeData.regionCode, "MX")
         XCTAssertEqual(settings.localeData.localeCode, "es-MX")
     }
 
-    // MARK: - Dismissal Mechanism Tests
-
-    func testDismissalMechanismDefaultsToGestures() {
-        // Given: Settings with default dismissalMechanism
+    func test_dismissalMechanism_defaultsToGestures() {
+        // Given
         let settings = PrimerSettings()
 
-        // Then: dismissalMechanism should default to [.gestures] for backward compatibility with Drop-In UI
+        // Then
         XCTAssertEqual(settings.uiOptions.dismissalMechanism, [.gestures])
         XCTAssertTrue(settings.uiOptions.dismissalMechanism.contains(.gestures))
         XCTAssertFalse(settings.uiOptions.dismissalMechanism.contains(.closeButton))
     }
 
-    func testDismissalMechanismGesturesOnly() {
-        // Given: Settings with only gestures enabled
+    func test_dismissalMechanism_gesturesOnly() {
+        // Given
         let settings = PrimerSettings(
             uiOptions: PrimerUIOptions(
                 dismissalMechanism: [.gestures]
             )
         )
 
-        // Then: dismissalMechanism should contain only .gestures
+        // Then
         XCTAssertEqual(settings.uiOptions.dismissalMechanism.count, 1)
         XCTAssertTrue(settings.uiOptions.dismissalMechanism.contains(.gestures))
         XCTAssertFalse(settings.uiOptions.dismissalMechanism.contains(.closeButton))
     }
 
-    func testDismissalMechanismCloseButtonOnly() {
-        // Given: Settings with only close button enabled (APM use case)
+    func test_dismissalMechanism_closeButtonOnly() {
+        // Given
         let settings = PrimerSettings(
             uiOptions: PrimerUIOptions(
                 dismissalMechanism: [.closeButton]
             )
         )
 
-        // Then: dismissalMechanism should contain only .closeButton
+        // Then
         XCTAssertEqual(settings.uiOptions.dismissalMechanism.count, 1)
         XCTAssertTrue(settings.uiOptions.dismissalMechanism.contains(.closeButton))
         XCTAssertFalse(settings.uiOptions.dismissalMechanism.contains(.gestures))
     }
 
-    func testDismissalMechanismBothEnabled() {
-        // Given: Settings with both gestures and close button enabled
+    func test_dismissalMechanism_bothEnabled() {
+        // Given
         let settings = PrimerSettings(
             uiOptions: PrimerUIOptions(
                 dismissalMechanism: [.gestures, .closeButton]
             )
         )
 
-        // Then: dismissalMechanism should contain both options
+        // Then
         XCTAssertEqual(settings.uiOptions.dismissalMechanism.count, 2)
         XCTAssertTrue(settings.uiOptions.dismissalMechanism.contains(.gestures))
         XCTAssertTrue(settings.uiOptions.dismissalMechanism.contains(.closeButton))
     }
 
-    func testDismissalMechanismEmptyArrayBehavior() {
-        // Given: Settings with explicitly empty dismissalMechanism array
+    func test_dismissalMechanism_emptyArray_disablesBoth() {
+        // Given
         let settings = PrimerSettings(
             uiOptions: PrimerUIOptions(
                 dismissalMechanism: []
             )
         )
 
-        // Then: dismissalMechanism should be empty (both disabled - matches Drop-In behavior)
+        // Then
         XCTAssertTrue(settings.uiOptions.dismissalMechanism.isEmpty)
-        // Note: Empty array disables both gestures and close button (useful for embedding)
     }
-
 }

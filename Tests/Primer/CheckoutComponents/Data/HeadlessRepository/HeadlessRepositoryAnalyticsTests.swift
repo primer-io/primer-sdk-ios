@@ -7,8 +7,6 @@
 @testable import PrimerSDK
 import XCTest
 
-// MARK: - URL Extraction Tests
-
 @available(iOS 15.0, *)
 final class ExtractURLTests: XCTestCase {
 
@@ -99,8 +97,6 @@ final class ExtractURLTests: XCTestCase {
         XCTAssertNil(result)
     }
 }
-
-// MARK: - Is Likely URL Tests
 
 @available(iOS 15.0, *)
 final class IsLikelyURLTests: XCTestCase {
@@ -253,8 +249,6 @@ final class IsLikelyURLTests: XCTestCase {
         XCTAssertTrue(result)
     }
 }
-
-// MARK: - URL Extraction Edge Cases Tests
 
 @available(iOS 15.0, *)
 final class URLExtractionEdgeCasesTests: XCTestCase {

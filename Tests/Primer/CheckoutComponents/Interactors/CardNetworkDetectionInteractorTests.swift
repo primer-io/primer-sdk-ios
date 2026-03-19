@@ -25,8 +25,6 @@ final class CardNetworkDetectionInteractorTests: XCTestCase {
         super.tearDown()
     }
 
-    // MARK: - Network Detection Stream Tests
-
     func test_networkDetectionStream_emitsInitialValue() async {
         // Given
         mockRepository.networkDetectionToReturn = [.visa]
@@ -73,8 +71,6 @@ final class CardNetworkDetectionInteractorTests: XCTestCase {
         XCTAssertEqual(receivedValues[0], []) // Initial empty
         XCTAssertEqual(receivedValues[1], [.visa, .masterCard]) // Updated
     }
-
-    // MARK: - Detect Networks Tests
 
     func test_detectNetworks_callsRepositoryWithCardNumber() async {
         // Given
@@ -126,8 +122,6 @@ final class CardNetworkDetectionInteractorTests: XCTestCase {
         XCTAssertEqual(mockRepository.lastCardNumber, TestData.CardNumbers.validVisa)
     }
 
-    // MARK: - Select Network Tests
-
     func test_selectNetwork_callsRepositoryWithNetwork() async {
         // Given
         let network = CardNetwork.visa
@@ -139,8 +133,6 @@ final class CardNetworkDetectionInteractorTests: XCTestCase {
         XCTAssertEqual(mockRepository.selectCardNetworkCallCount, 1)
         XCTAssertEqual(mockRepository.lastSelectedNetwork, network)
     }
-
-    // MARK: - Co-badged Card Flow Tests
 
     func test_coBadgedFlow_detectThenSelect() async {
         // Given - simulate co-badged card detection
@@ -157,8 +149,6 @@ final class CardNetworkDetectionInteractorTests: XCTestCase {
         XCTAssertEqual(mockRepository.selectCardNetworkCallCount, 1)
         XCTAssertEqual(mockRepository.lastSelectedNetwork, .visa)
     }
-
-    // MARK: - Bin Data Stream Tests
 
     func test_binDataStream_emitsCompleteBinData() async {
         // Given

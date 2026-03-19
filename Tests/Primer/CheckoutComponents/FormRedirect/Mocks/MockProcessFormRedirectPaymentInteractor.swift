@@ -12,13 +12,13 @@ final class MockProcessFormRedirectPaymentInteractor: ProcessFormRedirectPayment
 
     // MARK: - Execute
 
-    var executeCallCount = 0
-    var executePaymentMethodType: String?
-    var executeSessionInfo: (any OffSessionPaymentSessionInfo)?
+    private(set) var executeCallCount = 0
+    private(set) var executePaymentMethodType: String?
+    private(set) var executeSessionInfo: (any OffSessionPaymentSessionInfo)?
     var executeResult: Result<PaymentResult, Error> = .success(FormRedirectTestData.successPaymentResult)
     var executeDelay: TimeInterval = 0
     var shouldCallOnPollingStarted: Bool = false
-    var executeOnPollingStarted: (() -> Void)?
+    private(set) var executeOnPollingStarted: (() -> Void)?
 
     func execute(
         paymentMethodType: String,
@@ -48,8 +48,8 @@ final class MockProcessFormRedirectPaymentInteractor: ProcessFormRedirectPayment
 
     // MARK: - Cancel Polling
 
-    var cancelPollingCallCount = 0
-    var cancelPollingPaymentMethodType: String?
+    private(set) var cancelPollingCallCount = 0
+    private(set) var cancelPollingPaymentMethodType: String?
 
     func cancelPolling(paymentMethodType: String) {
         cancelPollingCallCount += 1

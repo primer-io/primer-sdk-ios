@@ -10,10 +10,7 @@ import XCTest
 @available(iOS 15.0, *)
 final class AppearanceModeTests: XCTestCase {
 
-    // MARK: - Helper Classes
-
-    /// Test helper to access private applyAppearanceMode method
-    private class PrimerCheckoutPresenterTestable {
+    private enum TestableAppearanceMode {
         static func applyAppearanceMode(_ mode: PrimerAppearanceMode, to controller: UIViewController) {
             switch mode {
             case .system:
@@ -26,232 +23,181 @@ final class AppearanceModeTests: XCTestCase {
         }
     }
 
-    // MARK: - Appearance Mode Application Tests
+    // MARK: - Appearance Mode Application
 
-    func testSystemAppearanceModeAppliesUnspecifiedStyle() {
-        // Given: A view controller and system appearance mode
+    func test_systemAppearanceMode_appliesUnspecifiedStyle() {
+        // Given
         let viewController = UIViewController()
-        let mode: PrimerAppearanceMode = .system
 
-        // When: Apply appearance mode
-        PrimerCheckoutPresenterTestable.applyAppearanceMode(mode, to: viewController)
+        // When
+        TestableAppearanceMode.applyAppearanceMode(.system, to: viewController)
 
-        // Then: Interface style should be unspecified (follows system)
-        XCTAssertEqual(
-            viewController.overrideUserInterfaceStyle,
-            .unspecified,
-            "System mode should set overrideUserInterfaceStyle to .unspecified"
-        )
+        // Then
+        XCTAssertEqual(viewController.overrideUserInterfaceStyle, .unspecified)
     }
 
-    func testLightAppearanceModeAppliesLightStyle() {
-        // Given: A view controller and light appearance mode
+    func test_lightAppearanceMode_appliesLightStyle() {
+        // Given
         let viewController = UIViewController()
-        let mode: PrimerAppearanceMode = .light
 
-        // When: Apply appearance mode
-        PrimerCheckoutPresenterTestable.applyAppearanceMode(mode, to: viewController)
+        // When
+        TestableAppearanceMode.applyAppearanceMode(.light, to: viewController)
 
-        // Then: Interface style should be light
-        XCTAssertEqual(
-            viewController.overrideUserInterfaceStyle,
-            .light,
-            "Light mode should set overrideUserInterfaceStyle to .light"
-        )
+        // Then
+        XCTAssertEqual(viewController.overrideUserInterfaceStyle, .light)
     }
 
-    func testDarkAppearanceModeAppliesDarkStyle() {
-        // Given: A view controller and dark appearance mode
+    func test_darkAppearanceMode_appliesDarkStyle() {
+        // Given
         let viewController = UIViewController()
-        let mode: PrimerAppearanceMode = .dark
 
-        // When: Apply appearance mode
-        PrimerCheckoutPresenterTestable.applyAppearanceMode(mode, to: viewController)
+        // When
+        TestableAppearanceMode.applyAppearanceMode(.dark, to: viewController)
 
-        // Then: Interface style should be dark
-        XCTAssertEqual(
-            viewController.overrideUserInterfaceStyle,
-            .dark,
-            "Dark mode should set overrideUserInterfaceStyle to .dark"
-        )
+        // Then
+        XCTAssertEqual(viewController.overrideUserInterfaceStyle, .dark)
     }
 
-    func testAppearanceModeOverridesPreviousStyle() {
-        // Given: A view controller with initial dark style
+    func test_appearanceMode_overridesPreviousStyle() {
+        // Given
         let viewController = UIViewController()
         viewController.overrideUserInterfaceStyle = .dark
 
-        // When: Apply light appearance mode
-        PrimerCheckoutPresenterTestable.applyAppearanceMode(.light, to: viewController)
+        // When
+        TestableAppearanceMode.applyAppearanceMode(.light, to: viewController)
 
-        // Then: Interface style should be updated to light
-        XCTAssertEqual(
-            viewController.overrideUserInterfaceStyle,
-            .light,
-            "Applying new appearance mode should override previous style"
-        )
+        // Then
+        XCTAssertEqual(viewController.overrideUserInterfaceStyle, .light)
     }
 
-    func testAppearanceModeCanBeRevertedToSystem() {
-        // Given: A view controller with forced light style
+    func test_appearanceMode_canBeRevertedToSystem() {
+        // Given
         let viewController = UIViewController()
         viewController.overrideUserInterfaceStyle = .light
 
-        // When: Apply system appearance mode
-        PrimerCheckoutPresenterTestable.applyAppearanceMode(.system, to: viewController)
+        // When
+        TestableAppearanceMode.applyAppearanceMode(.system, to: viewController)
 
-        // Then: Interface style should revert to unspecified
-        XCTAssertEqual(
-            viewController.overrideUserInterfaceStyle,
-            .unspecified,
-            "System mode should revert to unspecified, following system appearance"
-        )
+        // Then
+        XCTAssertEqual(viewController.overrideUserInterfaceStyle, .unspecified)
     }
 
-    // MARK: - PrimerSettings Appearance Mode Tests
+    // MARK: - PrimerSettings Appearance Mode
 
-    func testPrimerSettingsDefaultAppearanceMode() {
-        // Given: Default PrimerSettings
+    func test_primerSettings_defaultAppearanceMode_isSystem() {
+        // Given
         let settings = PrimerSettings()
 
-        // Then: Default appearance mode should be system
-        XCTAssertEqual(
-            settings.uiOptions.appearanceMode,
-            .system,
-            "Default appearance mode should be system"
-        )
+        // Then
+        XCTAssertEqual(settings.uiOptions.appearanceMode, .system)
     }
 
-    func testPrimerSettingsWithLightAppearanceMode() {
-        // Given: Settings configured with light mode
-        let uiOptions = PrimerUIOptions(appearanceMode: .light)
-        let settings = PrimerSettings(uiOptions: uiOptions)
+    func test_primerSettings_lightAppearanceMode_isPreserved() {
+        // Given
+        let settings = PrimerSettings(uiOptions: PrimerUIOptions(appearanceMode: .light))
 
-        // Then: Appearance mode should be light
-        XCTAssertEqual(
-            settings.uiOptions.appearanceMode,
-            .light,
-            "Settings should preserve light appearance mode"
-        )
+        // Then
+        XCTAssertEqual(settings.uiOptions.appearanceMode, .light)
     }
 
-    func testPrimerSettingsWithDarkAppearanceMode() {
-        // Given: Settings configured with dark mode
-        let uiOptions = PrimerUIOptions(appearanceMode: .dark)
-        let settings = PrimerSettings(uiOptions: uiOptions)
+    func test_primerSettings_darkAppearanceMode_isPreserved() {
+        // Given
+        let settings = PrimerSettings(uiOptions: PrimerUIOptions(appearanceMode: .dark))
 
-        // Then: Appearance mode should be dark
-        XCTAssertEqual(
-            settings.uiOptions.appearanceMode,
-            .dark,
-            "Settings should preserve dark appearance mode"
-        )
+        // Then
+        XCTAssertEqual(settings.uiOptions.appearanceMode, .dark)
     }
 
-    func testPrimerSettingsWithSystemAppearanceMode() {
-        // Given: Settings explicitly configured with system mode
-        let uiOptions = PrimerUIOptions(appearanceMode: .system)
-        let settings = PrimerSettings(uiOptions: uiOptions)
+    func test_primerSettings_systemAppearanceMode_isPreserved() {
+        // Given
+        let settings = PrimerSettings(uiOptions: PrimerUIOptions(appearanceMode: .system))
 
-        // Then: Appearance mode should be system
-        XCTAssertEqual(
-            settings.uiOptions.appearanceMode,
-            .system,
-            "Settings should preserve system appearance mode"
-        )
+        // Then
+        XCTAssertEqual(settings.uiOptions.appearanceMode, .system)
     }
 
-    // MARK: - All Appearance Mode Enum Cases Tests
+    // MARK: - All Cases
 
-    func testAllAppearanceModeCasesApplyCorrectly() {
-        // Given: All appearance mode cases
+    func test_allAppearanceModeCases_applyCorrectly() {
+        // Given
         let allCases: [(PrimerAppearanceMode, UIUserInterfaceStyle)] = [
             (.system, .unspecified),
             (.light, .light),
             (.dark, .dark)
         ]
 
-        // When/Then: Each mode should apply the correct interface style
+        // When / Then
         for (mode, expectedStyle) in allCases {
             let viewController = UIViewController()
-            PrimerCheckoutPresenterTestable.applyAppearanceMode(mode, to: viewController)
-
-            XCTAssertEqual(
-                viewController.overrideUserInterfaceStyle,
-                expectedStyle,
-                "Mode \(mode) should apply style \(expectedStyle)"
-            )
+            TestableAppearanceMode.applyAppearanceMode(mode, to: viewController)
+            XCTAssertEqual(viewController.overrideUserInterfaceStyle, expectedStyle)
         }
     }
 
-    // MARK: - View Hierarchy Tests
+    // MARK: - View Hierarchy
 
-    func testAppearanceModeAppliesToEmbeddedViewControllers() {
-        // Given: A parent view controller with a child
+    func test_appearanceMode_appliesToParentOnly() {
+        // Given
         let parentVC = UIViewController()
         let childVC = UIViewController()
         parentVC.addChild(childVC)
         parentVC.view.addSubview(childVC.view)
         childVC.didMove(toParent: parentVC)
 
-        // When: Apply dark mode to parent
-        PrimerCheckoutPresenterTestable.applyAppearanceMode(.dark, to: parentVC)
+        // When
+        TestableAppearanceMode.applyAppearanceMode(.dark, to: parentVC)
 
-        // Then: Parent should have dark style
+        // Then
         XCTAssertEqual(parentVC.overrideUserInterfaceStyle, .dark)
-
-        // Note: Child inherits parent's style unless overridden
-        // The child's overrideUserInterfaceStyle is .unspecified by default
         XCTAssertEqual(childVC.overrideUserInterfaceStyle, .unspecified)
     }
 
-    func testAppearanceModeIndependentOnChildViewController() {
-        // Given: Parent and child view controllers
+    func test_appearanceMode_independentOnChildViewController() {
+        // Given
         let parentVC = UIViewController()
         let childVC = UIViewController()
         parentVC.addChild(childVC)
 
-        // When: Apply different modes to parent and child
-        PrimerCheckoutPresenterTestable.applyAppearanceMode(.light, to: parentVC)
-        PrimerCheckoutPresenterTestable.applyAppearanceMode(.dark, to: childVC)
+        // When
+        TestableAppearanceMode.applyAppearanceMode(.light, to: parentVC)
+        TestableAppearanceMode.applyAppearanceMode(.dark, to: childVC)
 
-        // Then: Each should have their respective styles
+        // Then
         XCTAssertEqual(parentVC.overrideUserInterfaceStyle, .light)
         XCTAssertEqual(childVC.overrideUserInterfaceStyle, .dark)
     }
 
-    // MARK: - Appearance Mode String Values Tests
+    // MARK: - Raw Values
 
-    func testAppearanceModeRawValues() {
-        // Verify raw string values for each case
+    func test_appearanceMode_rawValues() {
         XCTAssertEqual(PrimerAppearanceMode.system.rawValue, "SYSTEM")
         XCTAssertEqual(PrimerAppearanceMode.light.rawValue, "LIGHT")
         XCTAssertEqual(PrimerAppearanceMode.dark.rawValue, "DARK")
     }
 
-    func testAppearanceModeDecodingFromString() throws {
-        // Given: JSON strings for each appearance mode
+    func test_appearanceMode_decodingFromString() throws {
+        // Given
         let systemJSON = "\"SYSTEM\"".data(using: .utf8)!
         let lightJSON = "\"LIGHT\"".data(using: .utf8)!
         let darkJSON = "\"DARK\"".data(using: .utf8)!
 
-        // When: Decode from JSON
+        // When
         let systemMode = try JSONDecoder().decode(PrimerAppearanceMode.self, from: systemJSON)
         let lightMode = try JSONDecoder().decode(PrimerAppearanceMode.self, from: lightJSON)
         let darkMode = try JSONDecoder().decode(PrimerAppearanceMode.self, from: darkJSON)
 
-        // Then: Should decode correctly
+        // Then
         XCTAssertEqual(systemMode, .system)
         XCTAssertEqual(lightMode, .light)
         XCTAssertEqual(darkMode, .dark)
     }
 
-    func testAppearanceModeEncodingToString() throws {
-        // Given: Appearance mode values
+    func test_appearanceMode_encodingToString() throws {
+        // Given
         let modes: [PrimerAppearanceMode] = [.system, .light, .dark]
         let expectedValues = ["SYSTEM", "LIGHT", "DARK"]
 
-        // When/Then: Encode to JSON
+        // When / Then
         for (mode, expected) in zip(modes, expectedValues) {
             let encoded = try JSONEncoder().encode(mode)
             let jsonString = String(data: encoded, encoding: .utf8)
@@ -259,43 +205,32 @@ final class AppearanceModeTests: XCTestCase {
         }
     }
 
-    // MARK: - Integration with PrimerSettings Tests
+    // MARK: - Integration with PrimerSettings
 
-    func testAppearanceModeFromSettingsAppliedToViewController() {
-        // Given: Settings with dark mode
-        let uiOptions = PrimerUIOptions(appearanceMode: .dark)
-        let settings = PrimerSettings(uiOptions: uiOptions)
+    func test_appearanceModeFromSettings_appliedToViewController() {
+        // Given
+        let settings = PrimerSettings(uiOptions: PrimerUIOptions(appearanceMode: .dark))
         let viewController = UIViewController()
 
-        // When: Apply appearance mode from settings
-        PrimerCheckoutPresenterTestable.applyAppearanceMode(
-            settings.uiOptions.appearanceMode,
-            to: viewController
-        )
+        // When
+        TestableAppearanceMode.applyAppearanceMode(settings.uiOptions.appearanceMode, to: viewController)
 
-        // Then: View controller should have dark style
+        // Then
         XCTAssertEqual(viewController.overrideUserInterfaceStyle, .dark)
     }
 
-    func testMultipleViewControllersWithDifferentSettings() {
-        // Given: Two settings with different appearance modes
+    func test_multipleViewControllers_withDifferentSettings() {
+        // Given
         let lightSettings = PrimerSettings(uiOptions: PrimerUIOptions(appearanceMode: .light))
         let darkSettings = PrimerSettings(uiOptions: PrimerUIOptions(appearanceMode: .dark))
-
         let vc1 = UIViewController()
         let vc2 = UIViewController()
 
-        // When: Apply different modes from different settings
-        PrimerCheckoutPresenterTestable.applyAppearanceMode(
-            lightSettings.uiOptions.appearanceMode,
-            to: vc1
-        )
-        PrimerCheckoutPresenterTestable.applyAppearanceMode(
-            darkSettings.uiOptions.appearanceMode,
-            to: vc2
-        )
+        // When
+        TestableAppearanceMode.applyAppearanceMode(lightSettings.uiOptions.appearanceMode, to: vc1)
+        TestableAppearanceMode.applyAppearanceMode(darkSettings.uiOptions.appearanceMode, to: vc2)
 
-        // Then: Each view controller should have correct style
+        // Then
         XCTAssertEqual(vc1.overrideUserInterfaceStyle, .light)
         XCTAssertEqual(vc2.overrideUserInterfaceStyle, .dark)
     }

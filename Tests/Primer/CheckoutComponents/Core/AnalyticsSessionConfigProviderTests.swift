@@ -4,7 +4,6 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import Foundation
 @testable import PrimerSDK
 import XCTest
 
@@ -71,7 +70,7 @@ final class CheckoutSDKInitializerAnalyticsProviderTests: XCTestCase {
         PrimerInternal.shared.intent = nil
     }
 
-    func test_initialize_invokesAnalyticsConfigProvider() async throws {
+    func test_initialize_withValidToken_invokesAnalyticsConfigProvider() async throws {
         // Given
         let configurationModule = StubConfigurationModule()
         let initializer = CheckoutSDKInitializer(

@@ -25,8 +25,8 @@ final class MockProcessCardPaymentInteractor: ProcessCardPaymentInteractor {
     func execute(cardData: CardPaymentData) async throws -> PaymentResult {
         executeCallCount += 1
         lastCardData = cardData
-        if let error = errorToThrow {
-            throw error
+        if let errorToThrow {
+            throw errorToThrow
         }
         return resultToReturn
     }

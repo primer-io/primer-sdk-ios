@@ -30,7 +30,7 @@ final class PrimerSettingsDIIntegrationTests: XCTestCase {
 
     // MARK: - PrimerSettings Registration Tests
 
-    func testPrimerSettingsRegisteredInContainer() async throws {
+    func test_primerSettings_registeredInContainer_isResolvable() async throws {
         // Given: Custom settings with specific configuration
         let customSettings = PrimerSettings(
             paymentHandling: .manual,
@@ -52,7 +52,7 @@ final class PrimerSettingsDIIntegrationTests: XCTestCase {
         XCTAssertEqual(resolved.apiVersion, .V2_4)
     }
 
-    func testPrimerSettingsRegisteredAsSingleton() async throws {
+    func test_primerSettings_resolvedTwice_returnsSameInstance() async throws {
         // Given: Settings with unique configuration
         let settings = PrimerSettings(clientSessionCachingEnabled: true)
         let composableContainer = ComposableContainer(settings: settings)
@@ -72,7 +72,7 @@ final class PrimerSettingsDIIntegrationTests: XCTestCase {
         XCTAssertTrue(settings.clientSessionCachingEnabled)
     }
 
-    func testPrimerSettingsWithDefaultConfiguration() async throws {
+    func test_primerSettings_defaultConfiguration_hasExpectedDefaults() async throws {
         // Given: Default settings
         let defaultSettings = PrimerSettings()
         let composableContainer = ComposableContainer(settings: defaultSettings)
@@ -92,7 +92,7 @@ final class PrimerSettingsDIIntegrationTests: XCTestCase {
         XCTAssertFalse(resolved.clientSessionCachingEnabled)
     }
 
-    func testPrimerSettingsWithPaymentMethodOptions() async throws {
+    func test_primerSettings_withPaymentMethodOptions_preservesOptions() async throws {
         // Given: Settings with Klarna options
         let klarnaOptions = PrimerKlarnaOptions(
             recurringPaymentDescription: TestData.PaymentMethodOptions.monthlySubscription
@@ -123,7 +123,7 @@ final class PrimerSettingsDIIntegrationTests: XCTestCase {
 
     // MARK: - Settings Mutation Safety Tests
 
-    func testSettingsMutationDoesNotAffectRegisteredInstance() async throws {
+    func test_settingsMutation_afterRegistration_doesNotAffectResolvedInstance() async throws {
         // Given: Mutable settings
         let settings = PrimerSettings()
         let composableContainer = ComposableContainer(settings: settings)
@@ -148,7 +148,7 @@ final class PrimerSettingsDIIntegrationTests: XCTestCase {
 
     // MARK: - Locale Data Tests
 
-    func testSettingsWithCustomLocaleData() async throws {
+    func test_settings_withCustomLocaleData_preservesLocale() async throws {
         // Given: Settings with custom locale
         let localeData = PrimerLocaleData(languageCode: TestData.Locale.spanish, regionCode: TestData.Locale.mexico)
         let settings = PrimerSettings(localeData: localeData)
@@ -171,7 +171,7 @@ final class PrimerSettingsDIIntegrationTests: XCTestCase {
 
     // MARK: - UI Options Tests
 
-    func testSettingsWithCardFormUIOptions() async throws {
+    func test_settings_withCardFormUIOptions_preservesUIOptions() async throws {
         // Given: Settings with card form UI options
         let cardFormOptions = PrimerCardFormUIOptions(payButtonAddNewCard: true)
         let settings = PrimerSettings(
@@ -195,7 +195,7 @@ final class PrimerSettingsDIIntegrationTests: XCTestCase {
 
     // MARK: - Container Cleanup Tests
 
-    func testContainerClearsSuccessfully() async throws {
+    func test_container_afterClearing_isNil() async throws {
         // Given: Configured container
         let settings = PrimerSettings()
         let composableContainer = ComposableContainer(settings: settings)
@@ -213,7 +213,7 @@ final class PrimerSettingsDIIntegrationTests: XCTestCase {
         XCTAssertNil(clearedContainer, "Container should be nil after clearing")
     }
 
-    func testMultipleContainerConfigurations() async throws {
+    func test_container_reconfigured_resolvesNewSettings() async throws {
         // Given: First configuration
         let settings1 = PrimerSettings(paymentHandling: .auto)
         let container1 = ComposableContainer(settings: settings1)

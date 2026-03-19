@@ -11,11 +11,7 @@ import XCTest
 @available(iOS 15.0, *)
 final class AchStateObserverTests: XCTestCase {
 
-    // MARK: - Properties
-
-    var mockScope: MockPrimerAchScope!
-
-    // MARK: - Setup & Teardown
+    private var mockScope: MockPrimerAchScope!
 
     @MainActor
     override func setUp() {
