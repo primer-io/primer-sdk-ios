@@ -196,7 +196,7 @@ final class HeadlessVaultManagerTests: XCTestCase {
             testId: nil
         )
 
-        let mockPrimerApiConfiguration = Response.Body.Configuration(
+        let mockPrimerApiConfiguration = PrimerAPIConfiguration(
             coreUrl: "https://primer.io/core",
             pciUrl: "https://primer.io/pci",
             binDataUrl: "https://primer.io/bindata",

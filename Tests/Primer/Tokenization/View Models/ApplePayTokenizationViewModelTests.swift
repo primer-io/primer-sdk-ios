@@ -12,8 +12,8 @@ import PrimerFoundation
 import PrimerUI
 import XCTest
 
-private typealias ShippingMethodOptions = Response.Body.Configuration.CheckoutModule.ShippingMethodOptions
-private typealias ShippingMethod = Response.Body.Configuration.CheckoutModule.ShippingMethodOptions.ShippingMethod
+private typealias ShippingMethodOptions = CheckoutModule.ShippingMethodOptions
+private typealias ShippingMethod = CheckoutModule.ShippingMethodOptions.ShippingMethod
 
 final class ApplePayTokenizationViewModelTests: XCTestCase {
     // MARK: - Test Dependencies
@@ -99,7 +99,7 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
     )
 
     private let checkoutModules = [
-        Response.Body.Configuration.CheckoutModule(
+        CheckoutModule(
             type: "SHIPPING",
             requestUrlStr: nil,
             options: ShippingMethodOptions(
@@ -704,7 +704,7 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
         let apiClient = MockPrimerAPIClient()
         PrimerAPIConfigurationModule.apiClient = apiClient
 
-        config.checkoutModules = [Response.Body.Configuration.CheckoutModule(
+        config.checkoutModules = [CheckoutModule(
             type: "SHIPPING",
             requestUrlStr: nil,
             options: ShippingMethodOptions(

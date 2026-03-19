@@ -18,7 +18,7 @@ final class SDKSessionHelper {
         order: ClientSession.Order? = nil,
         customer: ClientSession.Customer? = nil,
         paymentMethodOptions: [[String: Any]]? = nil,
-        checkoutModules: [PrimerAPIConfiguration.CheckoutModule]? = nil,
+        checkoutModules: [CheckoutModule]? = nil,
         showTestId: Bool = false,
         configureAppState: (MockAppState) -> Void = { _ in }
     ) {

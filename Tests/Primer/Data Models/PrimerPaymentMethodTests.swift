@@ -5,6 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import PrimerFoundation
+import PrimerNetworking
 @testable import PrimerSDK
 import XCTest
 
@@ -259,7 +260,7 @@ final class PrimerPaymentMethodTests: XCTestCase {
     // MARK: Helpers
 
     private func createPaymentMethod(
-        withImplementationType implementationType: PrimerPaymentMethod.ImplementationType,
+        withImplementationType implementationType: PaymentMethodImplementationType,
         paymentType: PrimerPaymentMethodType = .paymentCard
     ) -> PrimerPaymentMethod {
         PrimerPaymentMethod(

@@ -7,6 +7,7 @@
 import Foundation
 import PrimerCore
 import PrimerFoundation
+import PrimerNetworking
 
 extension PrimerPaymentMethod {
 
@@ -21,13 +22,13 @@ extension PrimerPaymentMethod {
         // swiftlint:disable:next nesting
         final class Button: Codable {
 
-            var iconUrl: PrimerTheme.BaseColoredURLs?
-            var backgroundColor: PrimerTheme.BaseColors?
+            var iconUrl: BaseColoredURLs?
+            var backgroundColor: BaseColors?
             var cornerRadius: Int?
-            var borderWidth: PrimerTheme.BaseBorderWidth?
-            var borderColor: PrimerTheme.BaseColors?
+            var borderWidth: BaseBorderWidth?
+            var borderColor: BaseColors?
             var text: String?
-            var textColor: PrimerTheme.BaseColors?
+            var textColor: BaseColors?
 
             // swiftlint:disable:next nesting
             private enum CodingKeys: String, CodingKey {
@@ -41,13 +42,13 @@ extension PrimerPaymentMethod {
             }
 
             init(
-                iconUrl: PrimerTheme.BaseColoredURLs?,
-                backgroundColor: PrimerTheme.BaseColors?,
+                iconUrl: BaseColoredURLs?,
+                backgroundColor: BaseColors?,
                 cornerRadius: Int?,
-                borderWidth: PrimerTheme.BaseBorderWidth?,
-                borderColor: PrimerTheme.BaseColors?,
+                borderWidth: BaseBorderWidth?,
+                borderColor: BaseColors?,
                 text: String?,
-                textColor: PrimerTheme.BaseColors?
+                textColor: BaseColors?
             ) {
                 self.iconUrl = iconUrl
                 self.backgroundColor = backgroundColor
@@ -61,13 +62,13 @@ extension PrimerPaymentMethod {
             required init(from decoder: Decoder) throws {
                 let container = try decoder.container(keyedBy: CodingKeys.self)
 
-                iconUrl = (try? container.decode(PrimerTheme.BaseColoredURLs?.self, forKey: .iconUrl)) ?? nil
-                backgroundColor = (try? container.decode(PrimerTheme.BaseColors?.self, forKey: .backgroundColor)) ?? nil
+                iconUrl = (try? container.decode(BaseColoredURLs?.self, forKey: .iconUrl)) ?? nil
+                backgroundColor = (try? container.decode(BaseColors?.self, forKey: .backgroundColor)) ?? nil
                 cornerRadius = (try? container.decode(Int?.self, forKey: .cornerRadius)) ?? nil
-                borderWidth = (try? container.decode(PrimerTheme.BaseBorderWidth?.self, forKey: .borderWidth)) ?? nil
-                borderColor = (try? container.decode(PrimerTheme.BaseColors?.self, forKey: .borderColor)) ?? nil
+                borderWidth = (try? container.decode(BaseBorderWidth?.self, forKey: .borderWidth)) ?? nil
+                borderColor = (try? container.decode(BaseColors?.self, forKey: .borderColor)) ?? nil
                 text = (try? container.decode(String?.self, forKey: .text)) ?? nil
-                textColor = (try? container.decode(PrimerTheme.BaseColors?.self, forKey: .textColor)) ?? nil
+                textColor = (try? container.decode(BaseColors?.self, forKey: .textColor)) ?? nil
 
                 if iconUrl == nil,
                    backgroundColor == nil,

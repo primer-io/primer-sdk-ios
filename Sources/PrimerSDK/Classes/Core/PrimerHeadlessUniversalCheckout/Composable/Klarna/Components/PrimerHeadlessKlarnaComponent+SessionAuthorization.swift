@@ -8,6 +8,7 @@
 import Foundation
 import PrimerFoundation
 import PrimerKlarnaSDK
+import PrimerNetworking
 
 extension PrimerHeadlessKlarnaComponent {
     /// Sets Klarna provider authorization delegate

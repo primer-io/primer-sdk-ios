@@ -7,6 +7,7 @@
 #if DEBUG
 import PassKit
 import PrimerFoundation
+import PrimerNetworking
 @testable import PrimerSDK
 import XCTest
 

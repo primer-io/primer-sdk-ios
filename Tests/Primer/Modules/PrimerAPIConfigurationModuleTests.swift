@@ -446,12 +446,12 @@ extension ClientSession.APIResponse {
     }
 }
 
-extension Response.Body.Configuration.CheckoutModule {
-    static var mock_pre: Response.Body.Configuration.CheckoutModule {
+extension CheckoutModule {
+    static var mock_pre: CheckoutModule {
         .init(type: "mock_pre", requestUrlStr: nil, options: nil)
     }
 
-    static var mock_post: Response.Body.Configuration.CheckoutModule {
+    static var mock_post: CheckoutModule {
         .init(type: "mock_post", requestUrlStr: nil, options: nil)
     }
 }
