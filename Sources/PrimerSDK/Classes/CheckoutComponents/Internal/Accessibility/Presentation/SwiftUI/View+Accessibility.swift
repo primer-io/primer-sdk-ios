@@ -24,8 +24,7 @@ extension View {
   ///     ))
   /// ```
   func accessibility(config: AccessibilityConfiguration) -> some View {
-    self
-      .accessibilityElement(children: .ignore)
+    accessibilityElement(children: .ignore)
       .accessibilityIdentifier(config.identifier)
       .accessibilityLabel(config.label)
       .modifier(ConditionalAccessibilityHint(hint: config.hint))
@@ -36,15 +35,12 @@ extension View {
   }
 }
 
-// MARK: - Private Helper Modifiers
-
-/// Conditionally applies accessibility hint only if non-nil and non-empty
 @available(iOS 15.0, *)
 private struct ConditionalAccessibilityHint: ViewModifier {
   let hint: String?
 
   func body(content: Content) -> some View {
-    if let hint = hint, !hint.isEmpty {
+    if let hint, !hint.isEmpty {
       content.accessibilityHint(hint)
     } else {
       content
@@ -52,13 +48,12 @@ private struct ConditionalAccessibilityHint: ViewModifier {
   }
 }
 
-/// Conditionally applies accessibility value only if non-nil and non-empty
 @available(iOS 15.0, *)
 private struct ConditionalAccessibilityValue: ViewModifier {
   let value: String?
 
   func body(content: Content) -> some View {
-    if let value = value, !value.isEmpty {
+    if let value, !value.isEmpty {
       content.accessibilityValue(value)
     } else {
       content

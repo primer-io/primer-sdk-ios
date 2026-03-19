@@ -11,7 +11,7 @@ struct ExpiryDateInput {
   let year: String
 }
 
-class ExpiryDateRule: ValidationRule {
+final class ExpiryDateRule: ValidationRule {
 
   func validate(_ input: ExpiryDateInput) -> ValidationResult {
     let month = input.month.trimmingCharacters(in: .whitespacesAndNewlines)

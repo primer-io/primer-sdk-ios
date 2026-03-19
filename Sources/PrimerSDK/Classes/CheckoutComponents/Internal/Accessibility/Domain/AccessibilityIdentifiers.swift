@@ -4,8 +4,6 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import Foundation
-
 enum AccessibilityIdentifiers {
 
   enum CardForm {
@@ -116,8 +114,6 @@ enum AccessibilityIdentifiers {
   enum Ach {
     static let container = "checkout_components_ach_container"
     static let loadingIndicator = "checkout_components_ach_loading_indicator"
-
-    // User Details
     static let userDetailsContainer = "checkout_components_ach_user_details_container"
     static let userDetailsTitle = "checkout_components_ach_user_details_title"
     static let firstNameField = "checkout_components_ach_user_details_first_name_field"
@@ -125,11 +121,7 @@ enum AccessibilityIdentifiers {
     static let emailField = "checkout_components_ach_user_details_email_field"
     static let emailDisclaimer = "checkout_components_ach_user_details_email_disclaimer"
     static let submitButton = "checkout_components_ach_submit_button"
-
-    // Bank Collector
     static let bankCollectorContainer = "checkout_components_ach_bank_collector_container"
-
-    // Mandate
     static let mandateContainer = "checkout_components_ach_mandate_container"
     static let mandateTitle = "checkout_components_ach_mandate_title"
     static let mandateTextContainer = "checkout_components_ach_mandate_text_container"

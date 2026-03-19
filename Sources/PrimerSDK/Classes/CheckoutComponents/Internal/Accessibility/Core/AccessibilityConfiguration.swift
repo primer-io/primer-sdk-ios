@@ -6,31 +6,16 @@
 
 import SwiftUI
 
-/// Container for all accessibility metadata associated with a UI component
 struct AccessibilityConfiguration {
 
   let identifier: String
   let label: String
   let hint: String?
-
-  /// Current value of element (e.g., "50%" for progress)
   let value: String?
-
   let traits: SwiftUI.AccessibilityTraits
   let isHidden: Bool
-
-  /// Custom focus order priority (higher values appear first)
   let sortPriority: Int
 
-  /// Create accessibility configuration
-  /// - Parameters:
-  ///   - identifier: Unique identifier for testing (must not be empty)
-  ///   - label: Human-readable description (must not be empty)
-  ///   - hint: Optional interaction guidance
-  ///   - value: Optional current state value
-  ///   - traits: SwiftUI semantic traits (e.g., .isButton, .isHeader)
-  ///   - isHidden: Hide from VoiceOver (default: false)
-  ///   - sortPriority: Custom focus order (default: 0)
   init(
     identifier: String,
     label: String,
