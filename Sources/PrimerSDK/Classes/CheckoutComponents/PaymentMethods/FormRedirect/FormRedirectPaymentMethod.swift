@@ -6,7 +6,6 @@
 
 import SwiftUI
 
-/// Shared scope creation and view logic for form-based redirect payments (BLIK, MBWay).
 @available(iOS 15.0, *)
 enum FormRedirectPaymentMethodHelper {
 
@@ -16,15 +15,8 @@ enum FormRedirectPaymentMethodHelper {
         checkoutScope: DefaultCheckoutScope,
         diContainer: any ContainerProtocol
     ) throws -> DefaultFormRedirectScope {
-        let logger = PrimerLogging.shared.logger
-
-        let availableMethodsCount = checkoutScope.availablePaymentMethods.count
-
-        let paymentMethodContext: PresentationContext = if availableMethodsCount > 1 {
-            .fromPaymentSelection
-        } else {
-            .direct
-        }
+        let paymentMethodContext: PresentationContext =
+            checkoutScope.availablePaymentMethods.count > 1 ? .fromPaymentSelection : .direct
 
         do {
             let processPaymentInteractor: ProcessFormRedirectPaymentInteractor = try diContainer.resolveSync(
@@ -48,7 +40,7 @@ enum FormRedirectPaymentMethodHelper {
         } catch let primerError as PrimerError {
             throw primerError
         } catch {
-            logger.error(
+            PrimerLogging.shared.logger.error(
                 message: "[FormRedirectPaymentMethod] Failed to resolve dependencies for \(paymentMethodType): \(error)"
             )
             throw PrimerError.invalidArchitecture(
@@ -60,25 +52,19 @@ enum FormRedirectPaymentMethodHelper {
 
     @MainActor
     static func createView(checkoutScope: any PrimerCheckoutScope) -> AnyView? {
-        guard let formRedirectScope = checkoutScope.getPaymentMethodScope(DefaultFormRedirectScope.self) else {
-            return nil
-        }
-
-        if let customScreen = formRedirectScope.screen {
-            return AnyView(customScreen(formRedirectScope))
-        } else {
-            return AnyView(FormRedirectContainerView(scope: formRedirectScope))
-        }
+        checkoutScope.getPaymentMethodScope(DefaultFormRedirectScope.self)
+            .map { scope in
+                scope.screen.map { AnyView($0(scope)) }
+                    ?? AnyView(FormRedirectContainerView(scope: scope))
+            }
     }
 }
-
-// MARK: - Container View
 
 @available(iOS 15.0, *)
 private struct FormRedirectContainerView: View {
 
     @ObservedObject var scope: DefaultFormRedirectScope
-    @State private var currentState: PrimerFormRedirectState = PrimerFormRedirectState()
+    @State private var currentState = PrimerFormRedirectState()
 
     var body: some View {
         Group {
@@ -96,8 +82,6 @@ private struct FormRedirectContainerView: View {
         }
     }
 }
-
-// MARK: - BLIK Payment Method
 
 @available(iOS 15.0, *)
 struct BlikPaymentMethod: PaymentMethodProtocol {
@@ -140,8 +124,6 @@ struct BlikPaymentMethod: PaymentMethodProtocol {
     }
 }
 
-// MARK: - MBWay Payment Method
-
 @available(iOS 15.0, *)
 struct MBWayPaymentMethod: PaymentMethodProtocol {
     typealias ScopeType = DefaultFormRedirectScope
@@ -183,24 +165,12 @@ struct MBWayPaymentMethod: PaymentMethodProtocol {
     }
 }
 
-// MARK: - Registration Helper
-
 @available(iOS 15.0, *)
 enum FormRedirectPaymentMethod {
 
     @MainActor
-    static func registerBlik() {
-        PaymentMethodRegistry.shared.register(BlikPaymentMethod.self)
-    }
-
-    @MainActor
-    static func registerMBWay() {
-        PaymentMethodRegistry.shared.register(MBWayPaymentMethod.self)
-    }
-
-    @MainActor
     static func register() {
-        registerBlik()
-        registerMBWay()
+        PaymentMethodRegistry.shared.register(BlikPaymentMethod.self)
+        PaymentMethodRegistry.shared.register(MBWayPaymentMethod.self)
     }
 }
