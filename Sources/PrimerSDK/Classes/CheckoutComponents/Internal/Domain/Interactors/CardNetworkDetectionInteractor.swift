@@ -10,7 +10,6 @@ protocol CardNetworkDetectionInteractor {
   var networkDetectionStream: AsyncStream<[CardNetwork]> { get }
   var binDataStream: AsyncStream<PrimerBinData> { get }
   func detectNetworks(for cardNumber: String) async
-  /// For co-badged cards with multiple networks
   func selectNetwork(_ network: CardNetwork) async
 }
 
@@ -29,12 +28,9 @@ final class CardNetworkDetectionInteractorImpl: CardNetworkDetectionInteractor, 
 
   init(repository: HeadlessRepository) {
     self.repository = repository
-    logger.debug(message: "CardNetworkDetectionInteractor initialized")
   }
 
   func detectNetworks(for cardNumber: String) async {
-    // Always call repository to allow cache clearing logic to run
-    // The repository will handle the < 8 digit case by clearing networks
     await repository.updateCardNumberInRawDataManager(cardNumber)
   }
 

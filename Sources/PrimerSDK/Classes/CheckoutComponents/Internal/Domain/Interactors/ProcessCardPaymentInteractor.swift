@@ -41,17 +41,11 @@ final class ProcessCardPaymentInteractorImpl: ProcessCardPaymentInteractor, LogR
   }
 
   func execute(cardData: CardPaymentData) async throws -> PaymentResult {
-    logger.info(message: "Processing card payment")
-
     do {
-      // First, send billing address if provided
       if let billingAddress = cardData.billingAddress {
-        logger.debug(message: "Sending billing address")
         try await repository.setBillingAddress(billingAddress)
       }
 
-      // Then process the card payment
-      logger.debug(message: "Processing card tokenization and payment")
       let startTime = CFAbsoluteTimeGetCurrent()
       let result = try await repository.processCardPayment(
         cardNumber: cardData.cardNumber,
@@ -64,16 +58,11 @@ final class ProcessCardPaymentInteractorImpl: ProcessCardPaymentInteractor, LogR
 
       let duration = (CFAbsoluteTimeGetCurrent() - startTime) * 1000
       logger.info(
-        message:
-          "[PERF] Card payment processed in \(String(format: "%.0f", duration))ms: \(result.paymentId)"
+        message: "[PERF] Card payment processed in \(String(format: "%.0f", duration))ms: \(result.paymentId)"
       )
       return result
-
     } catch {
-      logger.error(
-        message: "Card payment processing failed: \(error)",
-        error: error
-      )
+      logger.error(message: "Card payment processing failed: \(error)", error: error)
       throw error
     }
   }

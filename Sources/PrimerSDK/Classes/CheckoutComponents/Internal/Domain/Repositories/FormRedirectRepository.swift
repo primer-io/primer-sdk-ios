@@ -6,11 +6,8 @@
 
 import Foundation
 
-// MARK: - Repository Protocol
-
 @available(iOS 15.0, *)
 protocol FormRedirectRepository {
-
     func tokenize(
         paymentMethodType: String,
         sessionInfo: any OffSessionPaymentSessionInfo
@@ -25,8 +22,6 @@ protocol FormRedirectRepository {
     func cancelPolling(error: PrimerError)
 }
 
-// MARK: - Response Models
-
 @available(iOS 15.0, *)
 struct FormRedirectTokenizationResponse {
     let tokenData: PrimerPaymentMethodTokenData
@@ -36,7 +31,5 @@ struct FormRedirectTokenizationResponse {
 struct FormRedirectPaymentResponse {
     let paymentId: String
     let status: Response.Body.Payment.Status
-
-    /// Present when status is PENDING; URL to poll for payment completion
     let statusUrl: URL?
 }
