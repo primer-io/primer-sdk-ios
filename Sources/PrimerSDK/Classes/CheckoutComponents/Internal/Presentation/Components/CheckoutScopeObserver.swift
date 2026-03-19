@@ -30,9 +30,7 @@ struct CheckoutScopeObserver: View, LogReporter {
       makeContentView()
         .background(CheckoutColors.background(tokens: designTokensManager.tokens))
     } else {
-      BackportedNavigationStack {
-        makeContentView()
-      }
+      BackportedNavigationStack(content: makeContentView)
       .background(CheckoutColors.background(tokens: designTokensManager.tokens))
     }
   }
