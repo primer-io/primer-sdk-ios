@@ -6,6 +6,7 @@
 
 import PrimerCore
 import PrimerFoundation
+@testable import PrimerNetworking
 @testable import PrimerSDK
 import PrimerUI
 import XCTest
@@ -26,25 +27,30 @@ class UserInterfaceModuleTests: XCTestCase {
             iconUrl: PrimerTheme.BaseColoredURLs(
                 coloredUrlStr: nil,
                 lightUrlStr: nil,
-                darkUrlStr: nil),
+                darkUrlStr: nil
+            ),
             backgroundColor: PrimerTheme.BaseColors(
                 coloredHex: "#000000",
                 lightHex: "#000000",
-                darkHex: "#FFFFFF"),
+                darkHex: "#FFFFFF"
+            ),
             cornerRadius: 4,
             borderWidth: PrimerTheme.BaseBorderWidth(
                 colored: 1,
                 light: 1,
-                dark: 1),
+                dark: 1
+            ),
             borderColor: PrimerTheme.BaseColors(
                 coloredHex: "#FFFFFF",
                 lightHex: "#FFFFFF",
-                darkHex: "#000000"),
+                darkHex: "#000000"
+            ),
             text: "Mock Payment Method",
             textColor: PrimerTheme.BaseColors(
                 coloredHex: "#FFFFFF",
                 lightHex: "#FFFFFF",
-                darkHex: "#000000")
+                darkHex: "#000000"
+            )
         )
 
         let paymentMethodDisplayMetadata = PrimerPaymentMethod.DisplayMetadata(button: paymentMethodButton)
@@ -65,25 +71,28 @@ class UserInterfaceModuleTests: XCTestCase {
             intent: .checkout,
             validationError: nil,
             tokenizationResult: (PrimerPaymentMethodTokenData(
-                                    analyticsId: "mock_analytics_id",
-                                    id: "mock_id",
-                                    isVaulted: false,
-                                    isAlreadyVaulted: false,
-                                    paymentInstrumentType: .unknown,
-                                    paymentMethodType: "MOCK_PAYMENT_METHOD",
-                                    paymentInstrumentData: nil,
-                                    threeDSecureAuthentication: nil,
-                                    token: "mock_payment_method_token",
-                                    tokenType: .singleUse,
-                                    vaultData: nil), nil),
+                analyticsId: "mock_analytics_id",
+                id: "mock_id",
+                isVaulted: false,
+                isAlreadyVaulted: false,
+                paymentInstrumentType: .unknown,
+                paymentMethodType: "MOCK_PAYMENT_METHOD",
+                paymentInstrumentData: nil,
+                threeDSecureAuthentication: nil,
+                token: "mock_payment_method_token",
+                tokenType: .singleUse,
+                vaultData: nil
+            ), nil),
             paymentCreationDecision: .continuePaymentCreation(),
             paymentResult: (
                 PrimerCheckoutData(
                     payment: PrimerCheckoutDataPayment(
                         id: "mock_payment_id",
                         orderId: "mock_order_id",
-                        paymentFailureReason: nil),
-                    additionalInfo: nil),
+                        paymentFailureReason: nil
+                    ),
+                    additionalInfo: nil
+                ),
                 nil
             )
         )
@@ -111,7 +120,8 @@ class UserInterfaceModuleTests: XCTestCase {
             processorConfigId: "mock",
             surcharge: 0,
             options: nil,
-            displayMetadata: PrimerPaymentMethod.DisplayMetadata(button:
+            displayMetadata: PrimerPaymentMethod.DisplayMetadata(
+                button:
                 PrimerPaymentMethod.DisplayMetadata.Button(
                     iconUrl: .init(coloredUrlStr: nil, lightUrlStr: nil, darkUrlStr: nil),
                     backgroundColor: .init(coloredHex: "#000", lightHex: "#000", darkHex: "#FFF"),
@@ -129,7 +139,8 @@ class UserInterfaceModuleTests: XCTestCase {
             tokenizationResult: (PrimerPaymentMethodTokenData(
                 analyticsId: "", id: "", isVaulted: false, isAlreadyVaulted: false,
                 paymentInstrumentType: .unknown, paymentMethodType: "", paymentInstrumentData: nil,
-                threeDSecureAuthentication: nil, token: "", tokenType: .singleUse, vaultData: nil), nil),
+                threeDSecureAuthentication: nil, token: "", tokenType: .singleUse, vaultData: nil
+            ), nil),
             paymentCreationDecision: .continuePaymentCreation(),
             paymentResult: (PrimerCheckoutData(payment: .init(id: "", orderId: "", paymentFailureReason: nil), additionalInfo: nil), nil)
         )
@@ -158,7 +169,8 @@ class UserInterfaceModuleTests: XCTestCase {
             processorConfigId: "mock",
             surcharge: 0,
             options: nil,
-            displayMetadata: PrimerPaymentMethod.DisplayMetadata(button:
+            displayMetadata: PrimerPaymentMethod.DisplayMetadata(
+                button:
                 PrimerPaymentMethod.DisplayMetadata.Button(
                     iconUrl: .init(coloredUrlStr: nil, lightUrlStr: nil, darkUrlStr: nil),
                     backgroundColor: .init(coloredHex: "#000", lightHex: "#000", darkHex: "#FFF"),
@@ -176,7 +188,8 @@ class UserInterfaceModuleTests: XCTestCase {
             tokenizationResult: (PrimerPaymentMethodTokenData(
                 analyticsId: "", id: "", isVaulted: false, isAlreadyVaulted: false,
                 paymentInstrumentType: .unknown, paymentMethodType: "", paymentInstrumentData: nil,
-                threeDSecureAuthentication: nil, token: "", tokenType: .singleUse, vaultData: nil), nil),
+                threeDSecureAuthentication: nil, token: "", tokenType: .singleUse, vaultData: nil
+            ), nil),
             paymentCreationDecision: .continuePaymentCreation(),
             paymentResult: (PrimerCheckoutData(payment: .init(id: "", orderId: "", paymentFailureReason: nil), additionalInfo: nil), nil)
         )

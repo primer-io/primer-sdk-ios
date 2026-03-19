@@ -1,11 +1,12 @@
 //
 //  VaultPaymentMethodViewModelTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import XCTest
+@testable import PrimerNetworking
 @testable import PrimerSDK
+import XCTest
 
 final class VaultPaymentMethodViewModelTests: XCTestCase {
 
@@ -124,18 +125,20 @@ final class VaultPaymentMethodViewModelTests: XCTestCase {
 
     func setupAPIClientWithVaultedPaymentMethod() {
         apiClient.onFetchVaultedPaymentMethods = { _ in
-            return .init(data: [
-                .init(analyticsId: "analytics_id",
-                      id: "id",
-                      isVaulted: true,
-                      isAlreadyVaulted: true,
-                      paymentInstrumentType: .paymentCard,
-                      paymentMethodType: "CARD_PAYMENT",
-                      paymentInstrumentData: nil,
-                      threeDSecureAuthentication: nil,
-                      token: "token",
-                      tokenType: .multiUse,
-                      vaultData: nil)
+            .init(data: [
+                .init(
+                    analyticsId: "analytics_id",
+                    id: "id",
+                    isVaulted: true,
+                    isAlreadyVaulted: true,
+                    paymentInstrumentType: .paymentCard,
+                    paymentMethodType: "CARD_PAYMENT",
+                    paymentInstrumentData: nil,
+                    threeDSecureAuthentication: nil,
+                    token: "token",
+                    tokenType: .multiUse,
+                    vaultData: nil
+                )
             ])
         }
     }
