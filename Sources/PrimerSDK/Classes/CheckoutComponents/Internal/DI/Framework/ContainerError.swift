@@ -7,28 +7,13 @@
 import Foundation
 
 public enum ContainerError: Error, Sendable, LocalizedError {
-  /// The requested dependency was not registered
   case dependencyNotRegistered(TypeKey, suggestions: [String] = [])
-
-  /// A circular dependency was detected
   case circularDependency(TypeKey, path: [TypeKey])
-
-  /// The container has been terminated and is no longer available
   case containerUnavailable
-
-  /// The requested scope was not found
   case scopeNotFound(String, availableScopes: [String] = [])
-
-  /// The dependency could not be cast to the requested type
   case typeCastFailed(TypeKey, expected: Any.Type, actual: Any.Type)
-
-  /// Factory failed with an error
   case factoryFailed(TypeKey, underlyingError: Error)
-
-  /// Tried to register or resolve a `.weak` dependency for a non‐class type
   case weakUnsupported(TypeKey)
-
-  // MARK: - Error with Context
 
   public var errorDescription: String? {
     switch self {

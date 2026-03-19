@@ -64,8 +64,6 @@ struct SlideInModifier: ViewModifier {
   }
 }
 
-// MARK: - View Extension
-
 extension View {
   func slideIn(
     isVisible: Bool,
