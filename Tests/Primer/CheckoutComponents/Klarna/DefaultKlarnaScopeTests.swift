@@ -11,11 +11,7 @@ import XCTest
 @available(iOS 15.0, *)
 final class DefaultKlarnaScopeTests: XCTestCase {
 
-    // MARK: - Properties
-
-    var mockInteractor: MockProcessKlarnaPaymentInteractor!
-
-    // MARK: - Setup & Teardown
+    private var mockInteractor: MockProcessKlarnaPaymentInteractor!
 
     override func setUp() {
         super.setUp()
@@ -26,8 +22,6 @@ final class DefaultKlarnaScopeTests: XCTestCase {
         mockInteractor = nil
         super.tearDown()
     }
-
-    // MARK: - Initialization Tests
 
     @MainActor
     func test_init_defaultPresentationContext_isFromPaymentSelection() {

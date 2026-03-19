@@ -62,13 +62,9 @@ final class MockValidationService: ValidationService {
         stubbedValidationResult
     }
 
-    func validateFormData(_ formData: FormData, configuration: CardFormConfiguration) -> [FieldError] {
-        []
-    }
+    func validateFormData(_ formData: FormData, configuration: CardFormConfiguration) -> [FieldError] { [] }
 
-    func validateFields(_ fieldTypes: [PrimerInputElementType], formData: FormData) -> [FieldError] {
-        []
-    }
+    func validateFields(_ fieldTypes: [PrimerInputElementType], formData: FormData) -> [FieldError] { [] }
 
     func validateFieldWithStructuredResult(type: PrimerInputElementType, value: String?) -> FieldError? {
         let result = validateField(type: type, value: value)

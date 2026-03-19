@@ -6,18 +6,13 @@
 
 import Foundation
 
-/// Protocol for accessing API configuration in a testable way
 @available(iOS 15.0, *)
 protocol ConfigurationService {
   var apiConfiguration: PrimerAPIConfiguration? { get }
   var checkoutModules: [PrimerAPIConfiguration.CheckoutModule]? { get }
   var billingAddressOptions: PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions? { get }
   var currency: Currency? { get }
-
-  /// Get the current amount from the client session (merchant amount or total order amount)
   var amount: Int? { get }
-
-  /// Returns true if CVV capture is required for vaulted cards (server-controlled flag)
   var captureVaultedCardCvv: Bool { get }
 }
 

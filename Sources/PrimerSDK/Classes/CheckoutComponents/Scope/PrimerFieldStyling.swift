@@ -123,8 +123,8 @@ public struct PrimerFieldStyling {
   }
 
   func resolvedLabelFont(tokens: DesignTokens?) -> Font {
-    if let fontName = labelFontName {
-      let uiFont = PrimerFont.uiFont(family: fontName, weight: labelFontWeight, size: labelFontSize)
+    if let labelFontName {
+      let uiFont = PrimerFont.uiFont(family: labelFontName, weight: labelFontWeight, size: labelFontSize)
       return Font(uiFont)
     }
     return PrimerFont.bodySmall(tokens: tokens)

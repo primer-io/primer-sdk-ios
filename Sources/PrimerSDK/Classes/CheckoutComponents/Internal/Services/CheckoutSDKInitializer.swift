@@ -137,9 +137,6 @@ final class CheckoutSDKInitializer {
         sdkVersion: sdkVersion
       )
     else {
-      #if DEBUG
-        print("⚠️ Unable to create analytics session config")
-      #endif
       return
     }
 

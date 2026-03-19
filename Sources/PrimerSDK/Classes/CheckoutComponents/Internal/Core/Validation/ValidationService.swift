@@ -102,22 +102,16 @@ final class ValidationResultCache {
   }
 }
 
-public class DefaultValidationService: ValidationService {
-  // MARK: - Properties
+public final class DefaultValidationService: ValidationService {
 
   private let rulesFactory: RulesFactory
-
-  // MARK: - Initialization
 
   init(rulesFactory: RulesFactory = DefaultRulesFactory()) {
     self.rulesFactory = rulesFactory
   }
 }
 
-// MARK: - DefaultValidationService Public Methods Extension
 extension DefaultValidationService {
-
-  // MARK: - Public Methods
 
   public func validateCardNumber(_ number: String) -> ValidationResult {
     // INTERNAL OPTIMIZATION: Use caching for card number validation

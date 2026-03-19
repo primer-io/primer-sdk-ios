@@ -6,18 +6,13 @@
 
 import SwiftUI
 
-/// Reusable header view for checkout screens with back button and optional right action button
 @available(iOS 15.0, *)
 struct CheckoutHeaderView: View {
-  // MARK: - Configuration
-
   let showBackButton: Bool
   let onBack: () -> Void
   let rightButton: RightButtonConfig?
 
   @Environment(\.designTokens) private var tokens
-
-  // MARK: - Right Button Configuration
 
   struct RightButtonConfig {
     let title: String
@@ -57,8 +52,6 @@ struct CheckoutHeaderView: View {
     }
   }
 
-  // MARK: - Initialization
-
   init(
     showBackButton: Bool = true,
     onBack: @escaping () -> Void,
@@ -68,8 +61,6 @@ struct CheckoutHeaderView: View {
     self.onBack = onBack
     self.rightButton = rightButton
   }
-
-  // MARK: - Body
 
   var body: some View {
     HStack {

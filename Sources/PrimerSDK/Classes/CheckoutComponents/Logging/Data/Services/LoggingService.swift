@@ -108,13 +108,9 @@ actor LoggingService: LogReporter {
   }
 
   private static func extractDatadogMessage(from error: Error) -> String {
-    guard let errorId = extractErrorId(from: error) else {
-      return "Unknown error"
-    }
-    return
-      errorId
+    extractErrorId(from: error)?
       .replacingOccurrences(of: "-", with: " ")
-      .capitalized
+      .capitalized ?? "Unknown error"
   }
 
   private static func extractErrorId(from error: Error) -> String? {

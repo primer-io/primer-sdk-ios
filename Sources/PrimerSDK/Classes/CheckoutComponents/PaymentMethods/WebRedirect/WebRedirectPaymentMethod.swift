@@ -9,157 +9,122 @@ import SwiftUI
 @available(iOS 15.0, *)
 struct WebRedirectPaymentMethod: PaymentMethodProtocol {
 
-    typealias ScopeType = DefaultWebRedirectScope
+  typealias ScopeType = DefaultWebRedirectScope
 
-    static var paymentMethodType: String { "WEB_REDIRECT" }
+  static var paymentMethodType: String { "WEB_REDIRECT" }
 
-    @MainActor
-    static func register(types: [String]) {
-        for type in types {
-            PaymentMethodRegistry.shared.register(
-                paymentMethodType: type,
-                scopeCreator: createScope(for:checkoutScope:container:),
-                viewCreator: createView(for:checkoutScope:)
-            )
-        }
+  @MainActor
+  static func register(types: [String]) {
+    for type in types {
+      PaymentMethodRegistry.shared.register(
+        paymentMethodType: type,
+        scopeCreator: createScope(for:checkoutScope:container:),
+        viewCreator: createView(for:checkoutScope:)
+      )
+    }
+  }
+
+  @MainActor
+  private static func createScope(
+    for paymentMethodType: String,
+    checkoutScope: any PrimerCheckoutScope,
+    container: any ContainerProtocol
+  ) throws -> DefaultWebRedirectScope {
+    guard let defaultCheckoutScope = checkoutScope as? DefaultCheckoutScope else {
+      throw PrimerError.invalidArchitecture(
+        description: "WebRedirectPaymentMethod requires DefaultCheckoutScope",
+        recoverSuggestion: "Ensure you're using the default CheckoutComponents implementation"
+      )
     }
 
-    @MainActor
-    private static func createScope(
-        for paymentMethodType: String,
-        checkoutScope: any PrimerCheckoutScope,
-        container: any ContainerProtocol
-    ) throws -> DefaultWebRedirectScope {
-        guard let defaultCheckoutScope = checkoutScope as? DefaultCheckoutScope else {
-            throw PrimerError.invalidArchitecture(
-                description: "WebRedirectPaymentMethod requires DefaultCheckoutScope",
-                recoverSuggestion: "Ensure you're using the default CheckoutComponents implementation"
-            )
-        }
+    let paymentMethodContext: PresentationContext =
+      defaultCheckoutScope.availablePaymentMethods.count > 1 ? .fromPaymentSelection : .direct
 
-        // Determine presentation context
-        let availableMethodsCount = defaultCheckoutScope.availablePaymentMethods.count
-        let paymentMethodContext: PresentationContext = availableMethodsCount > 1
-            ? .fromPaymentSelection
-            : .direct
+    let paymentMethod: CheckoutPaymentMethod? = defaultCheckoutScope.availablePaymentMethods
+      .first { $0.type == paymentMethodType }
+      .flatMap { method in
+        (try? container.resolveSync(PaymentMethodMapper.self))?.mapToPublic(method)
+      }
 
-        // Get payment method info from checkout scope and map to public type
-        let internalPaymentMethod = defaultCheckoutScope.availablePaymentMethods
-            .first { $0.type == paymentMethodType }
+    let processWebRedirectInteractor = try container.resolveSync(ProcessWebRedirectPaymentInteractor.self)
+    let accessibilityService = try? container.resolveSync(AccessibilityAnnouncementService.self)
+    let analyticsInteractor = try? container.resolveSync(CheckoutComponentsAnalyticsInteractorProtocol.self)
+    let repository = try? container.resolveSync(WebRedirectRepository.self)
 
-        // Map internal payment method to public CheckoutPaymentMethod
-        var paymentMethod: CheckoutPaymentMethod?
-        if let internalMethod = internalPaymentMethod {
-            let mapper = try? container.resolveSync(PaymentMethodMapper.self)
-            paymentMethod = mapper?.mapToPublic(internalMethod)
-        }
+    return DefaultWebRedirectScope(
+      paymentMethodType: paymentMethodType,
+      checkoutScope: defaultCheckoutScope,
+      presentationContext: paymentMethodContext,
+      processWebRedirectInteractor: processWebRedirectInteractor,
+      accessibilityService: accessibilityService,
+      analyticsInteractor: analyticsInteractor,
+      repository: repository,
+      paymentMethod: paymentMethod,
+      surchargeAmount: paymentMethod?.formattedSurcharge
+    )
+  }
 
-        let surchargeAmount = paymentMethod?.formattedSurcharge
-
-        let processWebRedirectInteractor = try container.resolveSync(ProcessWebRedirectPaymentInteractor.self)
-        let accessibilityService = try? container.resolveSync(AccessibilityAnnouncementService.self)
-        let analyticsInteractor = try? container.resolveSync(CheckoutComponentsAnalyticsInteractorProtocol.self)
-        let repository = try? container.resolveSync(WebRedirectRepository.self)
-
-        return DefaultWebRedirectScope(
-            paymentMethodType: paymentMethodType,
-            checkoutScope: defaultCheckoutScope,
-            presentationContext: paymentMethodContext,
-            processWebRedirectInteractor: processWebRedirectInteractor,
-            accessibilityService: accessibilityService,
-            analyticsInteractor: analyticsInteractor,
-            repository: repository,
-            paymentMethod: paymentMethod,
-            surchargeAmount: surchargeAmount
-        )
+  @MainActor
+  private static func createView(
+    for paymentMethodType: String,
+    checkoutScope: any PrimerCheckoutScope
+  ) -> AnyView? {
+    guard let webRedirectScope: DefaultWebRedirectScope = checkoutScope.getPaymentMethodScope(for: paymentMethodType) else {
+      return nil
     }
 
-    @MainActor
-    private static func createView(
-        for paymentMethodType: String,
-        checkoutScope: any PrimerCheckoutScope
-    ) -> AnyView? {
-        guard let webRedirectScope: DefaultWebRedirectScope = checkoutScope.getPaymentMethodScope(for: paymentMethodType) else {
-            return nil
-        }
+    return webRedirectScope.screen.map { AnyView($0(webRedirectScope)) }
+      ?? AnyView(WebRedirectScreen(scope: webRedirectScope))
+  }
 
-        if let customScreen = webRedirectScope.screen {
-            return AnyView(customScreen(webRedirectScope))
-        } else {
-            return AnyView(WebRedirectScreen(scope: webRedirectScope))
-        }
-    }
+  @MainActor
+  static func createScope(
+    checkoutScope: PrimerCheckoutScope,
+    diContainer: any ContainerProtocol
+  ) throws -> DefaultWebRedirectScope {
+    throw PrimerError.invalidArchitecture(
+      description: "WebRedirectPaymentMethod.createScope requires a payment method type parameter",
+      recoverSuggestion: "Use register(types:) for dynamic registration instead"
+    )
+  }
 
-    // MARK: - PaymentMethodProtocol Conformance
+  @MainActor
+  static func createView(checkoutScope: any PrimerCheckoutScope) -> AnyView? {
+    nil
+  }
 
-    @MainActor
-    static func createScope(
-        checkoutScope: PrimerCheckoutScope,
-        diContainer: any ContainerProtocol
-    ) throws -> DefaultWebRedirectScope {
-        throw PrimerError.invalidArchitecture(
-            description: "WebRedirectPaymentMethod.createScope requires a payment method type parameter",
-            recoverSuggestion: "Use register(types:) for dynamic registration instead"
-        )
-    }
+  @MainActor
+  func content<V: View>(@ViewBuilder content: @escaping (DefaultWebRedirectScope) -> V) -> AnyView {
+    fatalError("Use register(types:) for dynamic registration instead")
+  }
 
-    @MainActor
-    static func createView(checkoutScope: any PrimerCheckoutScope) -> AnyView? {
-        nil
-    }
-
-    @MainActor
-    func content<V: View>(@ViewBuilder content: @escaping (DefaultWebRedirectScope) -> V) -> AnyView {
-        fatalError("Use register(types:) for dynamic registration instead")
-    }
-
-    @MainActor
-    func defaultContent() -> AnyView {
-        fatalError("Use register(types:) for dynamic registration instead")
-    }
-
+  @MainActor
+  func defaultContent() -> AnyView {
+    fatalError("Use register(types:) for dynamic registration instead")
+  }
 }
-
-// MARK: - PaymentMethodRegistry Extension for Parameterized Registration
 
 @available(iOS 15.0, *)
 extension PaymentMethodRegistry {
 
-    @MainActor
-    func register(
-        paymentMethodType: String,
-        scopeCreator: @escaping @MainActor (String, any PrimerCheckoutScope, any ContainerProtocol) throws -> any PrimerPaymentMethodScope,
-        viewCreator: @escaping @MainActor (String, any PrimerCheckoutScope) -> AnyView?
-    ) {
-        // Wrap the parameterized creators to match the standard signature
-        let wrappedScopeCreator: @MainActor (PrimerCheckoutScope, any ContainerProtocol) throws -> any PrimerPaymentMethodScope = { checkoutScope, container in
-            try scopeCreator(paymentMethodType, checkoutScope, container)
-        }
-
-        let wrappedViewCreator: @MainActor (any PrimerCheckoutScope) -> AnyView? = { checkoutScope in
-            viewCreator(paymentMethodType, checkoutScope)
-        }
-
-        // Store the payment method type in the internal registrations
-        registerWithType(
-            paymentMethodType: paymentMethodType,
-            scopeCreator: wrappedScopeCreator,
-            viewCreator: wrappedViewCreator
-        )
+  @MainActor
+  func register(
+    paymentMethodType: String,
+    scopeCreator: @escaping @MainActor (String, any PrimerCheckoutScope, any ContainerProtocol) throws -> any PrimerPaymentMethodScope,
+    viewCreator: @escaping @MainActor (String, any PrimerCheckoutScope) -> AnyView?
+  ) {
+    let wrappedScopeCreator: @MainActor (PrimerCheckoutScope, any ContainerProtocol) throws -> any PrimerPaymentMethodScope = { checkoutScope, container in
+      try scopeCreator(paymentMethodType, checkoutScope, container)
     }
 
-    @MainActor
-    private func registerWithType(
-        paymentMethodType: String,
-        scopeCreator: @escaping @MainActor (PrimerCheckoutScope, any ContainerProtocol) throws -> any PrimerPaymentMethodScope,
-        viewCreator: @escaping @MainActor (any PrimerCheckoutScope) -> AnyView?
-    ) {
-        // Create a temporary type to satisfy the register method
-        // This is a workaround since PaymentMethodProtocol requires a type, not an instance
-        registerInternal(
-            typeKey: paymentMethodType,
-            scopeCreator: scopeCreator,
-            viewCreator: viewCreator
-        )
+    let wrappedViewCreator: @MainActor (any PrimerCheckoutScope) -> AnyView? = { checkoutScope in
+      viewCreator(paymentMethodType, checkoutScope)
     }
+
+    registerInternal(
+      typeKey: paymentMethodType,
+      scopeCreator: wrappedScopeCreator,
+      viewCreator: wrappedViewCreator
+    )
+  }
 }

@@ -6,9 +6,6 @@
 
 import SwiftUI
 
-// MARK: - Country Model
-
-/// Simple country model with essential information
 struct SimpleCountry: Identifiable, Equatable {
     let id: String // ISO country code
     let name: String
@@ -17,14 +14,9 @@ struct SimpleCountry: Identifiable, Equatable {
     var code: String { id }
 }
 
-// MARK: - Country Data Provider
-
-/// Provides a list of countries with their codes, names, and flags
 enum CountryDataProvider {
 
-    /// Returns all available countries sorted alphabetically by name
     static var allCountries: [SimpleCountry] {
-        // Use NSLocale API which is available on iOS 13+
         let countryCodes = NSLocale.isoCountryCodes
 
         return countryCodes.compactMap { code in
@@ -39,7 +31,6 @@ enum CountryDataProvider {
         .sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
     }
 
-    /// Converts country code to flag emoji
     private static func flagEmoji(for countryCode: String) -> String {
         let base: UInt32 = 127397
         var emoji = ""
@@ -51,15 +42,11 @@ enum CountryDataProvider {
         return emoji
     }
 
-    /// Find a country by its code
     static func country(for code: String) -> SimpleCountry? {
         allCountries.first { $0.code.uppercased() == code.uppercased() }
     }
 }
 
-// MARK: - Country Picker View
-
-/// A simple, plug-and-play country picker sheet
 @available(iOS 15.0, *)
 struct SimpleCountryPicker: View {
     @SwiftUI.Environment(\.presentationMode) private var presentationMode
@@ -99,10 +86,10 @@ struct SimpleCountryPicker: View {
                         }
                         .contentShape(Rectangle())
                     }
-                    .buttonStyle(PlainButtonStyle())
+                    .buttonStyle(.plain)
                 }
             }
-            .listStyle(PlainListStyle())
+            .listStyle(.plain)
             .searchable(text: $searchText, prompt: "Search countries")
             .navigationTitle("Select Country")
             .navigationBarTitleDisplayMode(.inline)
@@ -135,9 +122,6 @@ struct SimpleCountryPicker: View {
     }
 }
 
-// MARK: - Country Picker Button
-
-/// A button that displays the selected country and opens the picker
 @available(iOS 15.0, *)
 struct CountryPickerButton: View {
     @Binding var selectedCountryCode: String?
@@ -167,10 +151,10 @@ struct CountryPickerButton: View {
                     .foregroundColor(.secondary)
             }
             .padding()
-            .background(Color(UIColor.systemBackground))
+            .background(Color(.systemBackground))
             .cornerRadius(12)
         }
-        .buttonStyle(PlainButtonStyle())
+        .buttonStyle(.plain)
         .sheet(isPresented: $showPicker) {
             SimpleCountryPicker(
                 selectedCountryCode: selectedCountryCode,
@@ -182,9 +166,6 @@ struct CountryPickerButton: View {
     }
 }
 
-// MARK: - Themed Country Picker Button
-
-/// A country picker button that uses the demo theme colors
 @available(iOS 15.0, *)
 struct ThemedCountryPickerButton: View {
     @Binding var selectedCountryCode: String?
@@ -217,7 +198,7 @@ struct ThemedCountryPickerButton: View {
             .background(Color.white)
             .cornerRadius(16)
         }
-        .buttonStyle(PlainButtonStyle())
+        .buttonStyle(.plain)
         .sheet(isPresented: $showPicker) {
             SimpleCountryPicker(
                 selectedCountryCode: selectedCountryCode,
@@ -228,8 +209,6 @@ struct ThemedCountryPickerButton: View {
         }
     }
 }
-
-// MARK: - Preview
 
 #if DEBUG
 @available(iOS 15.0, *)
@@ -260,7 +239,7 @@ struct ThemedCountryPickerButton: View {
                 }
             }
             .padding()
-            .background(Color(UIColor.systemGroupedBackground))
+            .background(Color(.systemGroupedBackground))
         }
     }
 

@@ -8,8 +8,6 @@ import SwiftUI
 
 @available(iOS 15.0, *)
 struct OTPCodeInputField: View, LogReporter {
-  // MARK: - Public Properties
-
   let label: String?
   let placeholder: String
   let expectedLength: Int

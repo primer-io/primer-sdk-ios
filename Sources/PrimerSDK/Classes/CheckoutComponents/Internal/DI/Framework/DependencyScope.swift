@@ -6,7 +6,6 @@
 
 import Foundation
 
-/// Protocol defining a scoped dependency container lifecycle
 public protocol DependencyScope: AnyObject {
   var scopeId: String { get }
   func setupContainer() async

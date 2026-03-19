@@ -12,7 +12,6 @@ final class ErrorMessageResolverFieldErrorTests: XCTestCase {
 
     // MARK: - Test Data
 
-    /// Expected error message keys for required field errors
     private let requiredErrorMessageKeys: [ValidationError.InputElementType: String] = [
         .firstName: TestData.ErrorMessageKeys.firstNameRequired,
         .lastName: TestData.ErrorMessageKeys.lastNameRequired,
@@ -27,7 +26,6 @@ final class ErrorMessageResolverFieldErrorTests: XCTestCase {
         .retailOutlet: TestData.ErrorMessageKeys.retailOutletRequired
     ]
 
-    /// Expected error message keys for invalid field errors
     private let invalidErrorMessageKeys: [ValidationError.InputElementType: String] = [
         .cardNumber: TestData.ErrorMessageKeys.cardNumberInvalid,
         .cvv: TestData.ErrorMessageKeys.cvvInvalid,
@@ -46,12 +44,10 @@ final class ErrorMessageResolverFieldErrorTests: XCTestCase {
         .retailOutlet: TestData.ErrorMessageKeys.retailOutletInvalid
     ]
 
-    /// Types that support required field errors
     private var typesWithRequiredErrors: [ValidationError.InputElementType] {
         Array(requiredErrorMessageKeys.keys)
     }
 
-    /// Types that support invalid field errors
     private var typesWithInvalidErrors: [ValidationError.InputElementType] {
         Array(invalidErrorMessageKeys.keys)
     }

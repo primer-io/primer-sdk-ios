@@ -6,23 +6,15 @@
 
 import SwiftUI
 
-/// Simple navigation wrapper that delegates to CheckoutCoordinator
-/// This provides a simpler API for basic navigation needs while the coordinator handles complex state
 @available(iOS 15.0, *)
 @MainActor
 final class CheckoutNavigator: ObservableObject, LogReporter {
 
-  // MARK: - Private Properties
-
   private let coordinator: CheckoutCoordinator
 
-  // MARK: - Properties
-
-  /// Navigation state as AsyncStream (NO Combine)
   var navigationEvents: AsyncStream<CheckoutRoute> {
     AsyncStream { continuation in
-      let task = Task { @MainActor in
-        // Observe coordinator's navigation stack changes
+      let task = Task { @MainActor [self] in
         for await _ in coordinator.$navigationStack.values {
           continuation.yield(coordinator.currentRoute)
         }
@@ -35,14 +27,13 @@ final class CheckoutNavigator: ObservableObject, LogReporter {
     }
   }
 
-  // MARK: - Initialization
+  var checkoutCoordinator: CheckoutCoordinator {
+    coordinator
+  }
 
   init(coordinator: CheckoutCoordinator? = nil) {
     self.coordinator = coordinator ?? CheckoutCoordinator()
-    // Initialized with state-driven navigation
   }
-
-  // MARK: - Navigation Methods
 
   func navigateToLoading() {
     coordinator.navigate(to: .loading)
@@ -86,14 +77,5 @@ final class CheckoutNavigator: ObservableObject, LogReporter {
 
   func dismiss() {
     coordinator.dismiss()
-  }
-
-  // MARK: - Coordinator Access
-
-  /// Access to the underlying coordinator for advanced navigation scenarios.
-  /// This property provides direct access to the coordinator for cases where
-  /// higher-level navigation methods are insufficient.
-  var checkoutCoordinator: CheckoutCoordinator {
-    coordinator
   }
 }

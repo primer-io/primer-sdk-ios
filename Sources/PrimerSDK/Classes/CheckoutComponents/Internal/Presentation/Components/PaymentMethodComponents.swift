@@ -6,9 +6,6 @@
 
 import SwiftUI
 
-// MARK: - Generic Payment Method Screen
-
-/// Generic payment method screen that dynamically resolves and displays any payment method
 @available(iOS 15.0, *)
 @MainActor
 struct PaymentMethodScreen: View {

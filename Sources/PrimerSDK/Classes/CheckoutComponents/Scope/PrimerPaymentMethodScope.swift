@@ -4,7 +4,6 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import Foundation
 import SwiftUI
 
 /// Base protocol for all payment method scopes, providing common lifecycle and state management.
@@ -134,7 +133,7 @@ public protocol PaymentMethodProtocol {
 /// Provides dynamic scope creation based on payment method types.
 @available(iOS 15.0, *)
 @MainActor
-class PaymentMethodRegistry: LogReporter {
+final class PaymentMethodRegistry: LogReporter {
 
   private typealias ScopeCreator =
     @MainActor (PrimerCheckoutScope, any ContainerProtocol) throws -> any PrimerPaymentMethodScope

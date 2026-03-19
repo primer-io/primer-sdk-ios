@@ -25,12 +25,8 @@ final class ProcessQRCodePaymentInteractorImpl: ProcessQRCodePaymentInteractor, 
   }
 
   func startPayment() async throws -> QRCodePaymentData {
-    logger.debug(message: "Starting QR code payment flow for \(paymentMethodType)")
-
     do {
-      let paymentData = try await repository.startPayment(paymentMethodType: paymentMethodType)
-      logger.debug(message: "QR code payment data received, statusUrl: \(paymentData.statusUrl)")
-      return paymentData
+      return try await repository.startPayment(paymentMethodType: paymentMethodType)
     } catch {
       logger.error(message: "QR code start payment failed: \(error)", error: error)
       throw error
@@ -38,19 +34,13 @@ final class ProcessQRCodePaymentInteractorImpl: ProcessQRCodePaymentInteractor, 
   }
 
   func pollAndComplete(statusUrl: URL, paymentId: String) async throws -> PaymentResult {
-    logger.debug(message: "Starting polling for QR code payment completion")
-
     do {
       let resumeToken = try await repository.pollForCompletion(statusUrl: statusUrl)
-      logger.debug(message: "Polling complete, resuming payment")
-
-      let result = try await repository.resumePayment(
+      return try await repository.resumePayment(
         paymentId: paymentId,
         resumeToken: resumeToken,
         paymentMethodType: paymentMethodType
       )
-      logger.debug(message: "QR code payment completed successfully")
-      return result
     } catch {
       logger.error(message: "QR code poll/complete failed: \(error)", error: error)
       throw error
@@ -58,7 +48,6 @@ final class ProcessQRCodePaymentInteractorImpl: ProcessQRCodePaymentInteractor, 
   }
 
   func cancelPolling() {
-    logger.debug(message: "Cancelling QR code polling")
     repository.cancelPolling(paymentMethodType: paymentMethodType)
   }
 }

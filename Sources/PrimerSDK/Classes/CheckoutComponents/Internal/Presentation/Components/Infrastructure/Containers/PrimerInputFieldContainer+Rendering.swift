@@ -6,7 +6,6 @@
 
 import SwiftUI
 
-// MARK: - Label
 @available(iOS 15.0, *)
 extension PrimerInputFieldContainer {
   func makeLabel(_ label: String) -> some View {
@@ -17,7 +16,6 @@ extension PrimerInputFieldContainer {
   }
 }
 
-// MARK: - TextField Container
 @available(iOS 15.0, *)
 extension PrimerInputFieldContainer {
   func makeTextFieldContainer() -> some View {
@@ -62,7 +60,6 @@ extension PrimerInputFieldContainer {
   }
 }
 
-// MARK: - Error
 @available(iOS 15.0, *)
 extension PrimerInputFieldContainer {
   func makeErrorMessage(_ errorMessage: String) -> some View {

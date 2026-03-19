@@ -6,8 +6,6 @@
 
 import Foundation
 
-// MARK: - Repository Implementation
-
 @available(iOS 15.0, *)
 final class FormRedirectRepositoryImpl: FormRedirectRepository, LogReporter {
 

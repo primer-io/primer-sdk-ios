@@ -12,11 +12,7 @@ import XCTest
 @MainActor
 final class AchMandateViewTests: XCTestCase {
 
-    // MARK: - Properties
-
     private var mockScope: MockPrimerAchScope!
-
-    // MARK: - Setup & Teardown
 
     override func setUp() {
         super.setUp()
@@ -27,8 +23,6 @@ final class AchMandateViewTests: XCTestCase {
         mockScope = nil
         super.tearDown()
     }
-
-    // MARK: - View Creation Tests
 
     func test_viewCreation_doesNotCrash() {
         let achState = PrimerAchState(
@@ -72,8 +66,6 @@ final class AchMandateViewTests: XCTestCase {
         XCTAssertNotNil(AchMandateView(scope: mockScope, achState: achState))
     }
 
-    // MARK: - Scope Interaction Tests
-
     func test_acceptMandate_callsScope() {
         mockScope.acceptMandate()
 
@@ -100,8 +92,6 @@ final class AchMandateViewTests: XCTestCase {
 
         XCTAssertEqual(mockScope.declineMandateCallCount, 2)
     }
-
-    // MARK: - Mandate Text Tests
 
     func test_mandateText_isDisplayedCorrectly() {
         let mandateText = "By clicking 'I Agree', you authorize Test Merchant to debit your bank account."
@@ -130,8 +120,6 @@ final class AchMandateViewTests: XCTestCase {
         XCTAssertEqual(mandateResult.templateMandateText, AchTestData.Constants.merchantName)
     }
 
-    // MARK: - Button State Tests
-
     func test_acceptButton_isEnabledWhenSubmitEnabled() {
         let achState = PrimerAchState(
             step: .mandateAcceptance,
@@ -139,7 +127,6 @@ final class AchMandateViewTests: XCTestCase {
             isSubmitEnabled: true
         )
 
-        // View renders with enabled accept button
         XCTAssertNotNil(AchMandateView(scope: mockScope, achState: achState))
         XCTAssertTrue(achState.isSubmitEnabled)
     }
@@ -151,14 +138,10 @@ final class AchMandateViewTests: XCTestCase {
             isSubmitEnabled: false
         )
 
-        // Decline button should always be available regardless of isSubmitEnabled
         XCTAssertNotNil(AchMandateView(scope: mockScope, achState: achState))
-        // Decline can always be called
         mockScope.declineMandate()
         XCTAssertEqual(mockScope.declineMandateCallCount, 1)
     }
-
-    // MARK: - State Tests
 
     func test_state_mandateAcceptance_isCorrectStep() {
         let achState = PrimerAchState(
@@ -188,8 +171,6 @@ final class AchMandateViewTests: XCTestCase {
         XCTAssertEqual(achState.userDetails.emailAddress, "john@example.com")
     }
 
-    // MARK: - Integration Tests
-
     func test_acceptMandate_thenDeclineMandate_tracksBothCalls() {
         mockScope.acceptMandate()
         mockScope.reset()
@@ -207,8 +188,6 @@ final class AchMandateViewTests: XCTestCase {
         XCTAssertEqual(mockScope.acceptMandateCallCount, 1)
     }
 
-    // MARK: - Accessibility Tests
-
     func test_viewAccessibility_mandateTextIsAccessible() {
         let mandateText = "Test mandate for accessibility"
         let achState = PrimerAchState(
@@ -217,7 +196,6 @@ final class AchMandateViewTests: XCTestCase {
             isSubmitEnabled: true
         )
 
-        // The view should render with accessible mandate text
         XCTAssertNotNil(AchMandateView(scope: mockScope, achState: achState))
         XCTAssertEqual(achState.mandateText, mandateText)
     }

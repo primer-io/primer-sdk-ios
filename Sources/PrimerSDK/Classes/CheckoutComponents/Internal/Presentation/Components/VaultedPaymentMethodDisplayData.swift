@@ -6,9 +6,6 @@
 
 import UIKit
 
-/// Normalized display data for vaulted payment methods across different payment types.
-/// This struct provides a unified interface for rendering vaulted payment method cards
-/// regardless of the underlying payment instrument type (card, PayPal, ACH, etc.).
 @available(iOS 15.0, *)
 struct VaultedPaymentMethodDisplayData {
   /// Cardholder or account holder name. When nil, the name row should be hidden entirely.

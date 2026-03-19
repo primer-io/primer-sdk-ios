@@ -7,8 +7,6 @@
 @testable import PrimerSDK
 import XCTest
 
-// MARK: - Fetch Vaulted Payment Methods Edge Case Tests
-
 @available(iOS 15.0, *)
 final class FetchVaultedPaymentMethodsEdgeCaseTests: XCTestCase {
 
@@ -37,8 +35,6 @@ final class FetchVaultedPaymentMethodsEdgeCaseTests: XCTestCase {
         }
     }
 }
-
-// MARK: - Process Vaulted Payment Edge Case Tests
 
 @available(iOS 15.0, *)
 final class ProcessVaultedPaymentEdgeCaseTests: XCTestCase {
@@ -110,8 +106,6 @@ final class ProcessVaultedPaymentEdgeCaseTests: XCTestCase {
         }
     }
 }
-
-// MARK: - Delete Vaulted Payment Method Edge Case Tests
 
 @available(iOS 15.0, *)
 final class DeleteVaultedPaymentMethodEdgeCaseTests: XCTestCase {

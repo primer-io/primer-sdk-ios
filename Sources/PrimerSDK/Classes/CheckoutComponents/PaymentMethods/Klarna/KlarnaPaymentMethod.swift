@@ -26,14 +26,8 @@ struct KlarnaPaymentMethod: PaymentMethodProtocol {
       )
     }
 
-    let availableMethodsCount = defaultCheckoutScope.availablePaymentMethods.count
-
-    let paymentMethodContext: PresentationContext
-    if availableMethodsCount > 1 {
-      paymentMethodContext = .fromPaymentSelection
-    } else {
-      paymentMethodContext = .direct
-    }
+    let paymentMethodContext: PresentationContext =
+      defaultCheckoutScope.availablePaymentMethods.count > 1 ? .fromPaymentSelection : .direct
 
     do {
       let processKlarnaInteractor: ProcessKlarnaPaymentInteractor = try diContainer.resolveSync(
@@ -63,16 +57,12 @@ struct KlarnaPaymentMethod: PaymentMethodProtocol {
   @MainActor
   static func createView(checkoutScope: any PrimerCheckoutScope) -> AnyView? {
     guard let klarnaScope = checkoutScope.getPaymentMethodScope(DefaultKlarnaScope.self) else {
-      let logger = PrimerLogging.shared.logger
-      logger.error(message: "Failed to retrieve Klarna scope from checkout scope")
+      PrimerLogging.shared.logger.error(message: "Failed to retrieve Klarna scope from checkout scope")
       return nil
     }
 
-    if let customScreen = klarnaScope.screen {
-      return AnyView(customScreen(klarnaScope))
-    } else {
-      return AnyView(KlarnaView(scope: klarnaScope))
-    }
+    return klarnaScope.screen.map { AnyView($0(klarnaScope)) }
+      ?? AnyView(KlarnaView(scope: klarnaScope))
   }
 
   @MainActor
@@ -85,8 +75,6 @@ struct KlarnaPaymentMethod: PaymentMethodProtocol {
     fatalError("Default content method should be implemented by the CheckoutComponents framework")
   }
 }
-
-// MARK: - Registration Helper
 
 @available(iOS 15.0, *)
 extension KlarnaPaymentMethod {
@@ -101,8 +89,6 @@ extension KlarnaPaymentMethod {
   }
 }
 
-// MARK: - Test Klarna Payment Method (DEBUG only)
-
 #if DEBUG
   @available(iOS 15.0, *)
   struct TestKlarnaPaymentMethod: PaymentMethodProtocol {
@@ -116,7 +102,6 @@ extension KlarnaPaymentMethod {
       checkoutScope: PrimerCheckoutScope,
       diContainer: any ContainerProtocol
     ) throws -> DefaultKlarnaScope {
-      // Reuse the same scope creation as real Klarna
       try KlarnaPaymentMethod.createScope(checkoutScope: checkoutScope, diContainer: diContainer)
     }
 

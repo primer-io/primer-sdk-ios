@@ -150,7 +150,7 @@ final class ConfigureRawDataManagerFlowTests: XCTestCase {
             rawDataWasSet = true
         }
 
-        let task = Task {
+        let task = Task { [self] in
             _ = try? await repository.processCardPayment(
                 cardNumber: "4242424242424242",
                 cvv: "123",
@@ -174,7 +174,7 @@ final class ConfigureRawDataManagerFlowTests: XCTestCase {
             capturedCardData = rawData as? PrimerCardData
         }
 
-        let task = Task {
+        let task = Task { [self] in
             _ = try? await repository.processCardPayment(
                 cardNumber: "4242 4242 4242 4242",
                 cvv: "123",
@@ -201,7 +201,7 @@ final class ConfigureRawDataManagerFlowTests: XCTestCase {
             capturedCardData = rawData as? PrimerCardData
         }
 
-        let task = Task {
+        let task = Task { [self] in
             _ = try? await repository.processCardPayment(
                 cardNumber: "4242424242424242",
                 cvv: "123",
@@ -224,7 +224,7 @@ final class ConfigureRawDataManagerFlowTests: XCTestCase {
             capturedCardData = rawData as? PrimerCardData
         }
 
-        let task = Task {
+        let task = Task { [self] in
             _ = try? await repository.processCardPayment(
                 cardNumber: "4242424242424242",
                 cvv: "123",
@@ -285,7 +285,7 @@ final class CardNetworkSelectionInPaymentTests: XCTestCase {
                 capturedNetwork = (rawData as? PrimerCardData)?.cardNetwork
             }
 
-            let task = Task {
+            let task = Task { [self] in
                 _ = try? await repository.processCardPayment(
                     cardNumber: "4242424242424242",
                     cvv: "123",
@@ -309,7 +309,7 @@ final class CardNetworkSelectionInPaymentTests: XCTestCase {
             capturedCardData = rawData as? PrimerCardData
         }
 
-        let task = Task {
+        let task = Task { [self] in
             _ = try? await repository.processCardPayment(
                 cardNumber: "4242424242424242",
                 cvv: "123",
@@ -366,7 +366,7 @@ final class PaymentInputSanitizationTests: XCTestCase {
             capturedCardNumber = (rawData as? PrimerCardData)?.cardNumber
         }
 
-        let task = Task {
+        let task = Task { [self] in
             _ = try? await repository.processCardPayment(
                 cardNumber: "4242 4242 4242 4242",
                 cvv: "123",
@@ -389,7 +389,7 @@ final class PaymentInputSanitizationTests: XCTestCase {
             capturedExpiryDate = (rawData as? PrimerCardData)?.expiryDate
         }
 
-        let task = Task {
+        let task = Task { [self] in
             _ = try? await repository.processCardPayment(
                 cardNumber: "4242424242424242",
                 cvv: "123",

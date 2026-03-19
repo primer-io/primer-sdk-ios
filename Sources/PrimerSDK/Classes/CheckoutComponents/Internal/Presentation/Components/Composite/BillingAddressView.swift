@@ -22,15 +22,11 @@ struct BillingAddressConfiguration {
 
 @available(iOS 15.0, *)
 struct BillingAddressView: View, LogReporter {
-  // MARK: - Properties
-
   let cardFormScope: DefaultCardFormScope
   let configuration: BillingAddressConfiguration
   let styling: PrimerFieldStyling?
 
   @Environment(\.designTokens) private var tokens
-
-  // MARK: - Initialization
 
   init(
     cardFormScope: DefaultCardFormScope,
@@ -42,11 +38,8 @@ struct BillingAddressView: View, LogReporter {
     self.styling = styling
   }
 
-  // MARK: - Body
-
   var body: some View {
     VStack(spacing: 0) {
-      // Name fields (horizontal layout)
       if configuration.showFirstName || configuration.showLastName {
         HStack(spacing: PrimerSpacing.medium(tokens: tokens)) {
           if configuration.showFirstName {
@@ -59,51 +52,40 @@ struct BillingAddressView: View, LogReporter {
         }
       }
 
-      // Country - Show first to match Drop-in layout
       if configuration.showCountry {
         defaultCountryField()
       }
 
-      // Address Line 1
       if configuration.showAddressLine1 {
         defaultAddressLine1Field()
       }
 
-      // Postal Code - Show before state to match Drop-in layout
       if configuration.showPostalCode {
         defaultPostalCodeField()
       }
 
-      // State/Region - Show after postal code to match Drop-in layout
       if configuration.showState {
         defaultStateField()
       }
 
-      // Address Line 2 (Optional)
       if configuration.showAddressLine2 {
         defaultAddressLine2Field()
       }
 
-      // City - After address fields
       if configuration.showCity {
         defaultCityField()
       }
 
-      // Email - Near the end
       if configuration.showEmail {
         defaultEmailField()
       }
 
-      // Phone Number - Last field
       if configuration.showPhoneNumber {
         defaultPhoneNumberField()
       }
     }
   }
 
-  // MARK: - Default Field Implementations
-
-  @ViewBuilder
   private func defaultFirstNameField() -> some View {
     NameInputField(
       label: CheckoutComponentsStrings.firstNameLabel,
@@ -114,7 +96,6 @@ struct BillingAddressView: View, LogReporter {
     )
   }
 
-  @ViewBuilder
   private func defaultLastNameField() -> some View {
     NameInputField(
       label: CheckoutComponentsStrings.lastNameLabel,
@@ -125,7 +106,6 @@ struct BillingAddressView: View, LogReporter {
     )
   }
 
-  @ViewBuilder
   private func defaultCountryField() -> some View {
     CountryInputField(
       label: CheckoutComponentsStrings.countryLabel,
@@ -135,7 +115,6 @@ struct BillingAddressView: View, LogReporter {
     )
   }
 
-  @ViewBuilder
   private func defaultAddressLine1Field() -> some View {
     AddressLineInputField(
       label: CheckoutComponentsStrings.addressLine1Label,
@@ -147,7 +126,6 @@ struct BillingAddressView: View, LogReporter {
     )
   }
 
-  @ViewBuilder
   private func defaultAddressLine2Field() -> some View {
     AddressLineInputField(
       label: CheckoutComponentsStrings.addressLine2Label,
@@ -159,7 +137,6 @@ struct BillingAddressView: View, LogReporter {
     )
   }
 
-  @ViewBuilder
   private func defaultCityField() -> some View {
     CityInputField(
       label: CheckoutComponentsStrings.cityLabel,
@@ -169,7 +146,6 @@ struct BillingAddressView: View, LogReporter {
     )
   }
 
-  @ViewBuilder
   private func defaultStateField() -> some View {
     StateInputField(
       label: CheckoutComponentsStrings.stateLabel,
@@ -179,7 +155,6 @@ struct BillingAddressView: View, LogReporter {
     )
   }
 
-  @ViewBuilder
   private func defaultPostalCodeField() -> some View {
     PostalCodeInputField(
       label: CheckoutComponentsStrings.postalCodeLabel,
@@ -189,7 +164,6 @@ struct BillingAddressView: View, LogReporter {
     )
   }
 
-  @ViewBuilder
   private func defaultEmailField() -> some View {
     EmailInputField(
       label: CheckoutComponentsStrings.emailLabel,
@@ -199,9 +173,7 @@ struct BillingAddressView: View, LogReporter {
     )
   }
 
-  @ViewBuilder
   private func defaultPhoneNumberField() -> some View {
-    // Using NameInputField with phoneNumber type for phone number input
     NameInputField(
       label: CheckoutComponentsStrings.phoneNumberLabel,
       placeholder: CheckoutComponentsStrings.phoneNumberPlaceholder,

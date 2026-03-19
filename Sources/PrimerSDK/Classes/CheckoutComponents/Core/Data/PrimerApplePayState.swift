@@ -7,38 +7,16 @@
 import Foundation
 import PassKit
 
-// MARK: - Apple Pay Form State
-
-/// State model for Apple Pay payment method in CheckoutComponents.
-/// Manages the UI state and configuration for Apple Pay button and payment flow.
 @available(iOS 15.0, *)
 public struct PrimerApplePayState: Equatable {
 
-  // MARK: - Loading States
-
-  /// Indicates if the Apple Pay flow is currently processing
   public internal(set) var isLoading: Bool
-
-  // MARK: - Availability
-
-  /// Indicates if Apple Pay is available on this device
   public internal(set) var isAvailable: Bool
-
-  /// Error message if Apple Pay is not available
   public internal(set) var availabilityError: String?
 
-  // MARK: - Button Customization
-
-  /// The style of the Apple Pay button (.black, .white, .whiteOutline, .automatic)
   public internal(set) var buttonStyle: PKPaymentButtonStyle
-
-  /// The type of the Apple Pay button (.plain, .buy, .setUp, .checkout, etc.)
   public internal(set) var buttonType: PKPaymentButtonType
-
-  /// The corner radius of the Apple Pay button
   public internal(set) var cornerRadius: CGFloat
-
-  // MARK: - Initialization
 
   public init(
     isLoading: Bool = false,
@@ -56,14 +34,10 @@ public struct PrimerApplePayState: Equatable {
     self.cornerRadius = cornerRadius
   }
 
-  // MARK: - Static Factory Methods
-
-  /// Default state for Apple Pay
   public static var `default`: PrimerApplePayState {
     PrimerApplePayState()
   }
 
-  /// State when Apple Pay is available and ready
   public static func available(
     buttonStyle: PKPaymentButtonStyle = .black,
     buttonType: PKPaymentButtonType = .plain,
@@ -79,7 +53,6 @@ public struct PrimerApplePayState: Equatable {
     )
   }
 
-  /// State when Apple Pay is not available
   public static func unavailable(error: String) -> PrimerApplePayState {
     PrimerApplePayState(
       isLoading: false,
@@ -88,7 +61,6 @@ public struct PrimerApplePayState: Equatable {
     )
   }
 
-  /// State when Apple Pay is loading/processing
   public static var loading: PrimerApplePayState {
     PrimerApplePayState(
       isLoading: true,

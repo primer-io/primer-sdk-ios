@@ -6,18 +6,12 @@
 
 import SwiftUI
 
-// MARK: - Inline Card Network Button
-
 @available(iOS 15.0, *)
 struct InlineCardNetworkButton: View {
-  // MARK: - Properties
-
   let network: CardNetwork
   let isSelected: Bool
   let tokens: DesignTokens?
   let onTap: () -> Void
-
-  // MARK: - Body
 
   var body: some View {
     Button(action: onTap) {
@@ -38,8 +32,6 @@ struct InlineCardNetworkButton: View {
     .accessibilityAddTraits(isSelected ? [.isButton, .isSelected] : [.isButton])
   }
 
-  // MARK: - Private Properties
-
   private var backgroundColor: Color {
     isSelected
       ? CheckoutColors.gray100(tokens: tokens)
@@ -48,7 +40,6 @@ struct InlineCardNetworkButton: View {
 }
 
 #if DEBUG
-  // MARK: - Preview
   @available(iOS 15.0, *)
   #Preview("Selected Button") {
     HStack(spacing: 0) {

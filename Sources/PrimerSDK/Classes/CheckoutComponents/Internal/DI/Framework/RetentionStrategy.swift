@@ -4,12 +4,6 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-//
-//  RetentionStrategy.swift
-//
-//
-//  Created by Boris on 14. 5. 2025..
-//
 import Foundation
 
 protocol RetentionStrategy: Sendable {
@@ -26,8 +20,7 @@ struct TransientStrategy: RetentionStrategy {
     registration: Container.FactoryRegistration,
     in container: Container
   ) async throws -> Any {
-    let any = try await registration.buildAsync(container)
-    return any
+    try await registration.buildAsync(container)
   }
 }
 

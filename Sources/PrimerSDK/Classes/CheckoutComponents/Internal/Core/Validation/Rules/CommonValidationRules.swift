@@ -6,7 +6,7 @@
 
 import Foundation
 
-class NameRule: ValidationRule {
+final class NameRule: ValidationRule {
   typealias Input = String
 
   private let inputElementType: ValidationError.InputElementType
@@ -40,7 +40,7 @@ class NameRule: ValidationRule {
   }
 
   func validate(_ value: String?) -> ValidationResult {
-    guard let value = value else {
+    guard let value else {
       let error = ErrorMessageResolver.createRequiredFieldError(for: inputElementType)
       return .invalid(error: error)
     }
@@ -48,7 +48,7 @@ class NameRule: ValidationRule {
   }
 }
 
-class FirstNameRule: ValidationRule {
+final class FirstNameRule: ValidationRule {
   typealias Input = String?
   private let nameRule = NameRule(inputElementType: .firstName)
 
@@ -57,7 +57,7 @@ class FirstNameRule: ValidationRule {
   }
 }
 
-class LastNameRule: ValidationRule {
+final class LastNameRule: ValidationRule {
   typealias Input = String?
   private let nameRule = NameRule(inputElementType: .lastName)
 
@@ -66,7 +66,7 @@ class LastNameRule: ValidationRule {
   }
 }
 
-class AddressRule: ValidationRule {
+final class AddressRule: ValidationRule {
   typealias Input = String
   private let inputElementType: ValidationError.InputElementType
   private let isRequired: Bool
@@ -104,7 +104,7 @@ class AddressRule: ValidationRule {
   }
 
   func validate(_ value: String?) -> ValidationResult {
-    guard let value = value else {
+    guard let value else {
       if isRequired {
         let error = ErrorMessageResolver.createRequiredFieldError(for: inputElementType)
         return .invalid(error: error)
@@ -115,12 +115,12 @@ class AddressRule: ValidationRule {
   }
 }
 
-class AddressFieldRule: ValidationRule {
+final class AddressFieldRule: ValidationRule {
   typealias Input = String?
   private let addressRule: AddressRule
 
   init(inputType: ValidationError.InputElementType, isRequired: Bool = true) {
-    self.addressRule = AddressRule(inputElementType: inputType, isRequired: isRequired)
+    addressRule = AddressRule(inputElementType: inputType, isRequired: isRequired)
   }
 
   func validate(_ value: String?) -> ValidationResult {
@@ -128,7 +128,7 @@ class AddressFieldRule: ValidationRule {
   }
 }
 
-class CityRule: ValidationRule {
+final class CityRule: ValidationRule {
   typealias Input = String
 
   func validate(_ value: String) -> ValidationResult {
@@ -156,7 +156,7 @@ class CityRule: ValidationRule {
   }
 }
 
-class StateRule: ValidationRule {
+final class StateRule: ValidationRule {
   typealias Input = String
 
   func validate(_ value: String) -> ValidationResult {
@@ -177,7 +177,7 @@ class StateRule: ValidationRule {
   }
 }
 
-class PostalCodeRule: ValidationRule {
+final class PostalCodeRule: ValidationRule {
   typealias Input = String
 
   private let countryCode: String?
@@ -235,7 +235,7 @@ class PostalCodeRule: ValidationRule {
   }
 
   func validate(_ value: String?) -> ValidationResult {
-    guard let value = value else {
+    guard let value else {
       let error = ErrorMessageResolver.createRequiredFieldError(for: .postalCode)
       return .invalid(error: error)
     }
@@ -243,7 +243,7 @@ class PostalCodeRule: ValidationRule {
   }
 }
 
-class BillingPostalCodeRule: ValidationRule {
+final class BillingPostalCodeRule: ValidationRule {
   typealias Input = String?
   private let postalCodeRule = PostalCodeRule()
 
@@ -252,7 +252,7 @@ class BillingPostalCodeRule: ValidationRule {
   }
 }
 
-class CountryCodeRule: ValidationRule {
+final class CountryCodeRule: ValidationRule {
   typealias Input = String
 
   func validate(_ value: String) -> ValidationResult {
@@ -273,7 +273,7 @@ class CountryCodeRule: ValidationRule {
   }
 
   func validate(_ value: String?) -> ValidationResult {
-    guard let value = value else {
+    guard let value else {
       let error = ErrorMessageResolver.createRequiredFieldError(for: .countryCode)
       return .invalid(error: error)
     }
@@ -281,7 +281,7 @@ class CountryCodeRule: ValidationRule {
   }
 }
 
-class BillingCountryCodeRule: ValidationRule {
+final class BillingCountryCodeRule: ValidationRule {
   typealias Input = String?
   private let countryCodeRule = CountryCodeRule()
 
@@ -290,7 +290,7 @@ class BillingCountryCodeRule: ValidationRule {
   }
 }
 
-class EmailRule: ValidationRule {
+final class EmailRule: ValidationRule {
   typealias Input = String
 
   func validate(_ value: String) -> ValidationResult {
@@ -318,7 +318,7 @@ class EmailRule: ValidationRule {
   }
 
   func validate(_ value: String?) -> ValidationResult {
-    guard let value = value else {
+    guard let value else {
       let error = ErrorMessageResolver.createRequiredFieldError(for: .email)
       return .invalid(error: error)
     }
@@ -326,7 +326,7 @@ class EmailRule: ValidationRule {
   }
 }
 
-class EmailValidationRule: ValidationRule {
+final class EmailValidationRule: ValidationRule {
   typealias Input = String?
   private let emailRule = EmailRule()
 
@@ -335,7 +335,7 @@ class EmailValidationRule: ValidationRule {
   }
 }
 
-class PhoneNumberRule: ValidationRule {
+final class PhoneNumberRule: ValidationRule {
   typealias Input = String
 
   func validate(_ value: String) -> ValidationResult {
@@ -366,7 +366,7 @@ class PhoneNumberRule: ValidationRule {
   }
 
   func validate(_ value: String?) -> ValidationResult {
-    guard let value = value else {
+    guard let value else {
       let error = ErrorMessageResolver.createRequiredFieldError(for: .phoneNumber)
       return .invalid(error: error)
     }
@@ -374,7 +374,7 @@ class PhoneNumberRule: ValidationRule {
   }
 }
 
-class PhoneNumberValidationRule: ValidationRule {
+final class PhoneNumberValidationRule: ValidationRule {
   typealias Input = String?
   private let phoneNumberRule = PhoneNumberRule()
 
@@ -383,7 +383,7 @@ class PhoneNumberValidationRule: ValidationRule {
   }
 }
 
-class OTPCodeRule: ValidationRule {
+final class OTPCodeRule: ValidationRule {
   typealias Input = String
 
   private let expectedLength: Int

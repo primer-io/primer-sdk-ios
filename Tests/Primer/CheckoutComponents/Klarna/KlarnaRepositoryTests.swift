@@ -12,11 +12,7 @@ import XCTest
 @MainActor
 final class KlarnaRepositoryTests: XCTestCase {
 
-    // MARK: - Properties
-
-    var sut: MockKlarnaRepository!
-
-    // MARK: - Setup & Teardown
+    private var sut: MockKlarnaRepository!
 
     override func setUp() {
         super.setUp()
@@ -27,8 +23,6 @@ final class KlarnaRepositoryTests: XCTestCase {
         sut = nil
         super.tearDown()
     }
-
-    // MARK: - createSession Tests
 
     func test_createSession_success_returnsSessionWithCategories() async throws {
         // Given

@@ -7,8 +7,6 @@
 @testable import PrimerSDK
 import XCTest
 
-// MARK: - Process Card Payment Tests
-
 @available(iOS 15.0, *)
 final class ProcessCardPaymentTests: XCTestCase {
 
@@ -32,8 +30,6 @@ final class ProcessCardPaymentTests: XCTestCase {
         repository = nil
         super.tearDown()
     }
-
-    // MARK: - Factory Tests
 
     func testProcessCardPayment_CallsFactoryWithCorrectPaymentMethodType() async throws {
         // Given
@@ -275,8 +271,6 @@ final class ProcessCardPaymentTests: XCTestCase {
         }
     }
 
-    // MARK: - Card Data Formatting Tests
-
     func testProcessCardPayment_FormatsExpiryDateCorrectly() async throws {
         // Given
         let rawDataSetExpectation = XCTestExpectation(description: "RawData set")
@@ -349,8 +343,6 @@ final class ProcessCardPaymentTests: XCTestCase {
         XCTAssertEqual(capturedCardData?.cardNumber, "4242424242424242")
     }
 }
-
-// MARK: - Update Client Session Before Payment Tests
 
 @available(iOS 15.0, *)
 final class UpdateClientSessionBeforePaymentTests: XCTestCase {
@@ -429,8 +421,6 @@ final class UpdateClientSessionBeforePaymentTests: XCTestCase {
         XCTAssertEqual(mockClientSessionActions.lastSelectPaymentMethodCall?.network, "DISCOVER")
     }
 }
-
-// MARK: - Process Card Payment Additional Edge Cases
 
 @available(iOS 15.0, *)
 final class ProcessCardPaymentEdgeCasesTests: XCTestCase {
@@ -925,8 +915,6 @@ final class ProcessCardPaymentEdgeCasesTests: XCTestCase {
         XCTAssertEqual(capturedCardData?.cardNumber, "4242424242424242")
     }
 }
-
-// MARK: - Create Card Data Direct Tests
 
 @available(iOS 15.0, *)
 final class CreateCardDataDirectTests: XCTestCase {

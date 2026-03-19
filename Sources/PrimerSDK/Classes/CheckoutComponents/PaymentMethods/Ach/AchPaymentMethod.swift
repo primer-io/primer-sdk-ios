@@ -57,16 +57,12 @@ struct AchPaymentMethod: PaymentMethodProtocol {
   @MainActor
   static func createView(checkoutScope: any PrimerCheckoutScope) -> AnyView? {
     guard let achScope = checkoutScope.getPaymentMethodScope(DefaultAchScope.self) else {
-      let logger = PrimerLogging.shared.logger
-      logger.error(message: "Failed to retrieve ACH scope from checkout scope")
+      PrimerLogging.shared.logger.error(message: "Failed to retrieve ACH scope from checkout scope")
       return nil
     }
 
-    if let customScreen = achScope.screen {
-      return AnyView(customScreen(achScope))
-    } else {
-      return AnyView(AchView(scope: achScope))
-    }
+    return achScope.screen.map { AnyView($0(achScope)) }
+      ?? AnyView(AchView(scope: achScope))
   }
 
   @MainActor
@@ -80,8 +76,6 @@ struct AchPaymentMethod: PaymentMethodProtocol {
   }
 }
 
-// MARK: - Registration Helper
-
 @available(iOS 15.0, *)
 extension AchPaymentMethod {
 
@@ -94,8 +88,6 @@ extension AchPaymentMethod {
     #endif
   }
 }
-
-// MARK: - Test ACH Payment Method (DEBUG only)
 
 #if DEBUG
   @available(iOS 15.0, *)
