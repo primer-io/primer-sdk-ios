@@ -83,10 +83,8 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
 
   var availablePaymentMethods: [InternalPaymentMethod] = []
 
-  @Published private(set) var vaultedPaymentMethods:
-    [PrimerHeadlessUniversalCheckout.VaultedPaymentMethod] = []
-  @Published private(set) var selectedVaultedPaymentMethod:
-    PrimerHeadlessUniversalCheckout.VaultedPaymentMethod?
+  @Published private(set) var vaultedPaymentMethods: [PrimerHeadlessUniversalCheckout.VaultedPaymentMethod] = []
+  @Published private(set) var selectedVaultedPaymentMethod: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod?
 
   var isInitScreenEnabled: Bool { settings.uiOptions.isInitScreenEnabled }
   var isSuccessScreenEnabled: Bool { settings.uiOptions.isSuccessScreenEnabled }
@@ -99,7 +97,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
 
   private var _paymentMethodSelection: PrimerPaymentMethodSelectionScope?
   public var paymentMethodSelection: PrimerPaymentMethodSelectionScope {
-    if let existing = _paymentMethodSelection { return existing }
+    if let _paymentMethodSelection { return _paymentMethodSelection }
     let scope = DefaultPaymentMethodSelectionScope(
       checkoutScope: self,
       analyticsInteractor: analyticsInteractor
