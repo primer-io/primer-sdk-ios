@@ -1136,7 +1136,7 @@ extension MockPrimerAPIClient {
                     totalOrderAmount: 100,
                     totalTaxAmount: nil,
                     countryCode: .gb,
-                    currencyCode: CurrencyLoader().getCurrency("GBP"),
+                    currencyCode: "GBP",
                     fees: nil,
                     lineItems: [
                         ClientSession.Order.LineItem(

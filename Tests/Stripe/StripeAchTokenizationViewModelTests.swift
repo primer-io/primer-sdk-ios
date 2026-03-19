@@ -42,7 +42,7 @@ final class StripeAchTokenizationViewModelTests: XCTestCase {
         totalOrderAmount: 1234,
         totalTaxAmount: nil,
         countryCode: .us,
-        currencyCode: Currency(code: "USD", decimalDigits: 2),
+        currencyCode: "USD",
         fees: nil,
         lineItems: [
             .init(

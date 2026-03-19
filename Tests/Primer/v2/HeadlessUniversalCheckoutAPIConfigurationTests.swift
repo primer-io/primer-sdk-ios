@@ -4,7 +4,7 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import PrimerNetworking
+@testable import PrimerNetworking
 @testable import PrimerSDK
 import XCTest
 
@@ -27,7 +27,7 @@ class HeadlessUniversalCheckoutAPIConfigurationTests: XCTestCase {
                 totalOrderAmount: 100,
                 totalTaxAmount: nil,
                 countryCode: .gb,
-                currencyCode: CurrencyLoader().getCurrency("GBP"),
+                currencyCode: "GBP",
                 fees: nil,
                 lineItems: [
                     ClientSession.Order.LineItem(
@@ -102,7 +102,7 @@ class HeadlessUniversalCheckoutAPIConfigurationTests: XCTestCase {
         XCTAssert(availablePaymentMethods?.first(where: { $0.paymentMethodType == "ADYEN_DOTPAY" }) != nil, "Primer Headless Universal Checkout should not include ADYEN_DOTPAY in its available payment methods")
         XCTAssert(apiConfiguration?.clientSession?.clientSessionId == clientSession.clientSessionId, "Primer configuration's client session's id should be \(clientSession.clientSessionId ?? "nil")")
         XCTAssert(apiConfiguration?.clientSession?.order != nil, "Primer configuration's client session's order should not be null")
-        XCTAssert(apiConfiguration?.clientSession?.order?.currencyCode == clientSession.order?.currencyCode, "Primer configuration's client session's order currency should be \(clientSession.order?.currencyCode?.code ?? "nil")")
+        XCTAssert(apiConfiguration?.clientSession?.order?.currencyCode == clientSession.order?.currencyCode, "Primer configuration's client session's order currency should be \(clientSession.order?.currencyCode ?? "nil")")
         XCTAssert(apiConfiguration?.clientSession?.order?.lineItems?.count == clientSession.order?.lineItems?.count, "Primer configuration's client session's order's line items should include \(clientSession.order?.lineItems?.count ?? 0) item(s)")
         XCTAssert(apiConfiguration?.clientSession?.customer == nil, "Primer configuration's client session's customer should be nil")
     }
@@ -126,7 +126,7 @@ class HeadlessUniversalCheckoutAPIConfigurationTests: XCTestCase {
                 totalOrderAmount: 100,
                 totalTaxAmount: nil,
                 countryCode: .gb,
-                currencyCode: CurrencyLoader().getCurrency("GBP"),
+                currencyCode: "GBP",
                 fees: nil,
                 lineItems: [
                     ClientSession.Order.LineItem(

@@ -36,7 +36,7 @@ final class AppState: AppStateProtocol {
     }
 
     var currency: Currency? {
-        PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.currencyCode
+        PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.currency
     }
 
     var clientToken: String?
