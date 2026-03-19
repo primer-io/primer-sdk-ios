@@ -10,7 +10,7 @@ import Security
 
 enum ManifestValidator {
     static func isValid(_ manifest: SignedManifest) -> Bool {
-        let publicKeyB64 = "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEMkeBFaS68rs8NwyCHXRNORJ70HvFw0eKm6uAdiEJaZ4M9ic9IV02lxiKbsxJ09Qjm69TJPKiQK9z8+8P499hmg=="
+        let publicKeyB64 = "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEr/hPwfYKRinlqlXvvGmMqca/ueQ/YqaZW7A29i0Z4wnAmY4oSemPAEZdCx/hRGSfuEyoC/OVyymUmDHqpn2+BQ=="
         let signatureB64 = manifest.signature
         
         guard

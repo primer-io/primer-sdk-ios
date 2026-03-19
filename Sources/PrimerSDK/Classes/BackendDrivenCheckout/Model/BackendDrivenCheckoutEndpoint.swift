@@ -22,7 +22,7 @@ extension BackendDrivenCheckoutEndpoint: Endpoint {
     
     var path: String {
         switch self {
-        case .manifest: "state-processor/pr-3/signed_manifest.json"
+        case .manifest: "state-processor/pr-4/manifest.json"
         case .pay: "client-session/\(PrimerAPIConfigurationModule.clientSessionId):pay"
         case .expandClientSession: "client-session/\(PrimerAPIConfigurationModule.clientSessionId)"
         }
@@ -43,7 +43,7 @@ extension BackendDrivenCheckoutEndpoint: Endpoint {
             "Primer-SDK-Client": PrimerSource.defaultSourceType,
             "Content-Type": "application/json",
             "x-primer-branch": "part-922",
-            "Primer-SDK-Version": VersionUtils.releaseVersionNumber!
+            "Primer-SDK-Version": VersionUtils.releaseVersionNumber
         ]
     }
     

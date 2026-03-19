@@ -10,7 +10,7 @@ import PrimerStepResolver
 // processing result
 public struct StateProcessorResponse: Decodable {
     public let newState: CodableState
-    public let nextToExecute: WorkflowStep?
+    public let action: WorkflowStep?
     public let terminal: Terminal?
 }
 

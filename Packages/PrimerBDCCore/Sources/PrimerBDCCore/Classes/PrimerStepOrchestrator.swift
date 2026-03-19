@@ -29,9 +29,9 @@ public final class PrimerStepOrchestrator {
         httpHandler = HTTPInteractionStepHandler(registry: registry)
     }
     
-    public func start(rawSchema: String, initialState: CodableValue) async throws {
+    public func start(rawSchema: String, context: SDKContext, initialState: CodableValue) async throws {
         do {
-            let result = try await engine.start(schema: rawSchema, state: initialState)
+            let result = try await engine.start(schema: rawSchema, context: context, state: initialState)
             self.rawSchema = rawSchema
             try await decodeResult(result)
         } catch {
@@ -43,7 +43,7 @@ public final class PrimerStepOrchestrator {
         do {
             let response = try JSONDecoder().decode(StateProcessorResponse.self, from: try result.data())
             state = response.newState
-            if let next = response.nextToExecute {
+            if let next = response.action {
                 try await resolveStepResponse(next, completion: applyResult)
             }
         } catch {
@@ -60,21 +60,45 @@ public final class PrimerStepOrchestrator {
             case let .log(value):
                 logger.info("Received instruction; executing log step")
                 let response = try await analyticsHandler.resolve(value)
-                try await completion(StepResponse(outcome: .success, data: response))
+                try await completion(
+                    StepResponse(
+                        outcome: .success,
+                        data: response,
+                        actionId: step.id
+                    )
+                )
             case let .httpCall(value):
                 logger.info("Received instruction; executing http step")
                 let response = try await httpHandler.resolve(value)
-                try await completion(StepResponse(outcome: .success, data: response))
+                try await completion(
+                    StepResponse(
+                        outcome: .success,
+                        data: response,
+                        actionId: step.id
+                    )
+                )
             case let .urlOpen(value):
                 logger.info("Received instruction; executing web view step")
                 let response = try await urlOpenHandler.resolve(value)
                 
                 urlOpenHandler.onClose = { [weak self] in
-                    try await completion(StepResponse(outcome: .cancelled, data: response))
+                    try await completion(
+                        StepResponse(
+                            outcome: .cancelled,
+                            data: response,
+                            actionId: step.id
+                        )
+                    )
                 }
                 
                 urlOpenHandler.onComplete = { [weak self] in
-                    try await completion(StepResponse(outcome: .success, data: response))
+                    try await completion(
+                        StepResponse(
+                            outcome: .success,
+                            data: response,
+                            actionId: step.id
+                        )
+                    )
                 }
             }
         } catch {
@@ -86,7 +110,13 @@ public final class PrimerStepOrchestrator {
         do {
             let data = try response.data?.casted(to: Data.self)
             let outcome = response.outcome.rawValue
-            let result = try await engine.applyResult(schema: rawSchema, state: state, outcome: outcome, data: data)
+            let result = try await engine.applyResult(
+                schema: rawSchema,
+                actionId: response.actionId,
+                state: state,
+                outcome: outcome,
+                data: data
+            )
             try await decodeResult(result)
         } catch {
             throw PrimerStepOrchestratorError.applyWorkflowStepResponseFailed(error: error)
@@ -104,6 +134,7 @@ extension PrimerStepOrchestrator {
 private struct StepResponse {
     let outcome: TerminalOutcome
     let data: CodableValue?
+    let actionId: String
 }
 
 private enum PrimerStepOrchestratorError: LocalizedError {

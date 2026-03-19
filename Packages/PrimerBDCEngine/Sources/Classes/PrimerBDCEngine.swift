@@ -42,9 +42,9 @@ public final class PrimerBDCEngine: NSObject {
 }
 
 public extension PrimerBDCEngine {
-    func start(schema: String, state: CodableValue) async throws -> [String: Any] {
+    func start(schema: String, context: SDKContext, state: CodableValue) async throws -> [String: Any] {
         await checkIfReady()
-        let script = initialize(schema: schema, state: try state.literal(encoder))
+        let script = initialize(schema: schema, context: try context.literal(encoder), state: try state.literal(encoder))
         return try await runScript(script, continuationPath: \.initializeContinuation)
     }
     
@@ -54,10 +54,17 @@ public extension PrimerBDCEngine {
         return try await runScript(script, continuationPath: \.applyEventContination)
     }
     
-    func applyResult<State: Encodable>(schema: String, state: State, outcome: String, data: Data?) async throws  -> [String: Any] {
+    func applyResult<State: Encodable>(
+        schema: String,
+        actionId: String,
+        state: State,
+        outcome: String,
+        data: Data?
+    ) async throws  -> [String: Any] {
 		await checkIfReady()
         let script = resultScript(
             schema: schema,
+            actionId: actionId,
             state: try state.literal(encoder),
             outcome: outcome,
             data: data.flatMap { String(data: $0, encoding: .utf8) }

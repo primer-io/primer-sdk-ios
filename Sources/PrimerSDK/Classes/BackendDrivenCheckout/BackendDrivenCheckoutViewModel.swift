@@ -6,6 +6,8 @@
 
 import Foundation
 import PrimerBDCCore
+import PrimerFoundation
+import UIKit
 
 @MainActor
 final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
@@ -18,30 +20,16 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
             do {
                 PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: nil, message: nil)
                 let manifest = try await manifestRepository.fetchManifest()
-                let date = Date()
                 orchestrator = PrimerStepOrchestrator(manifest: manifest)
-                print("7898 Init time taken - \(Date().timeIntervalSince(date))s")
-                let date2 = Date()
                 let response: ClientSessionInstructionResponse = try await request(.pay(paymentMethod: config))
-                print("7898 Response time taken - \(Date().timeIntervalSince(date2))s")
                 try await processClientInstruction(response)
-                uiManager.dismissOrShowResultScreen(
-                    type: .success,
-                    paymentMethodManagerCategories: config.paymentMethodManagerCategories ?? [],
-                    withMessage: nil
-                )
+                let categories = config.paymentMethodManagerCategories ?? []
+                uiManager.dismissOrShowResultScreen(type: .success, paymentMethodManagerCategories: categories, withMessage: nil)
             } catch {
-                let event = Analytics.Event.message(
-                    message: "BDC Failed: \(error)",
-                    messageType: .error,
-                    severity: .error
-                )
-                Analytics.Service.fire(event: event)
-                uiManager.dismissOrShowResultScreen(
-                    type: .failure,
-                    paymentMethodManagerCategories: config.paymentMethodManagerCategories ?? [],
-                    withMessage: error.localizedDescription
-                )
+                Analytics.Service.fire(event: .message(message: "BDC Failed: \(error)", messageType: .error, severity: .error))
+                let categories = config.paymentMethodManagerCategories ?? []
+                let message = error.localizedDescription
+                uiManager.dismissOrShowResultScreen(type: .failure, paymentMethodManagerCategories: categories, withMessage: message)
             }
         }
     }
@@ -74,14 +62,27 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
     private func startBackendDrivenCheckout(with response: ClientInstructionExecuteResponse) async throws {
         let rawSchema = try response.schema.jsonString
         let initialState = response.parameters
-        try await orchestrator?.start(
-            rawSchema: rawSchema,
-            initialState: initialState,
-        )
+        try await orchestrator?.start(rawSchema: rawSchema, context: generateContext(), initialState: initialState)
     }
     
     private func request<T: Decodable>(_ endpoint: BackendDrivenCheckoutEndpoint) async throws -> T {
         try await defaultNetworkService.request(endpoint)
+    }
+    
+    private func generateContext() -> SDKContext {
+        let apiConfiguration = PrimerAPIConfigurationModule.apiConfiguration
+        let analyticsUrl = PrimerAPIConfigurationModule.decodedJWTToken?.analyticsUrlV2
+        let checkoutSessionId = PrimerInternal.shared.checkoutSessionId
+
+        return SDKContext(
+            sdk: SDK(),
+            device: SDKDevice(),
+            app: SDKApp(identifier: Bundle.primerFrameworkIdentifier),
+            session: SDKSession(configuration: apiConfiguration, sessionId: checkoutSessionId),
+            payment: SDKPayment(paymentMethodType: config.type),
+            merchant: SDKMerchant(primerAccountId: apiConfiguration?.primerAccountId),
+            analytics: SDKAnalytics(url: analyticsUrl)
+        )
     }
 }
 
@@ -93,4 +94,46 @@ enum BackendDrivenCheckoutError: LocalizedError {
         case .missingPayload: "Missing payload"
         }
     }
+}
+
+private extension SDK {
+    init() {
+        self.init(
+            type: PrimerSource.defaultSourceType,
+            version: VersionUtils.releaseVersionNumber,
+            integrationType: PrimerSource.defaultSourceType,
+            paymentHandling: PrimerSettings.current.paymentHandling.rawValue
+        )
+    }
+}
+
+private extension SDKSession {
+    init(configuration: PrimerAPIConfiguration?, sessionId: String?) {
+        self.init(
+            checkoutSessionId: sessionId,
+            clientSessionId: configuration?.clientSession?.clientSessionId,
+            customerId: configuration?.clientSession?.customer?.id
+        )
+    }
+}
+
+private extension SDKDevice {
+    init() {
+        let device = Device()
+        self.init(
+            type: UIDevice.deviceTypeName,
+            make: "Apple",
+            model: device.modelName,
+            modelIdentifier: device.modelIdentifier,
+            platformVersion: device.platformVersion,
+            uniqueDeviceIdentifier: device.uniqueDeviceIdentifier,
+            locale: device.locale
+        )
+    }
+}
+
+private extension UIDevice {
+    static var isIPad: Bool {  UIDevice.current.userInterfaceIdiom == .pad }
+    static var isIPhone: Bool { UIDevice.current.userInterfaceIdiom == .phone }
+    static var deviceTypeName: String? { isIPad ? "tablet" : isIPhone ? "phone" : nil }
 }
