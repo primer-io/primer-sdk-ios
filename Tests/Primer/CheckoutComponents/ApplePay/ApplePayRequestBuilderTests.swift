@@ -14,7 +14,6 @@ final class ApplePayRequestBuilderTests: XCTestCase {
 
     override func tearDown() async throws {
         SDKSessionHelper.tearDown()
-        // Reset settings to default
         DependencyContainer.register(PrimerSettings() as PrimerSettingsProtocol)
         try await super.tearDown()
     }
@@ -151,7 +150,7 @@ final class ApplePayRequestBuilderTests: XCTestCase {
                 ClientSession.Order.LineItem(
                     itemId: "item_1",
                     quantity: 1,
-                    amount: 1000,
+                    amount: TestData.Amounts.standard,
                     discountAmount: nil,
                     name: "Test Item",
                     description: nil,
@@ -204,7 +203,7 @@ final class ApplePayRequestBuilderTests: XCTestCase {
     }
 
     func test_build_failure_whenMerchantIdentifierMissing_throwsError() {
-        // Given - Valid order but no applePayOptions
+        // Given
         SDKSessionHelper.setUp(
             withPaymentMethods: [ApplePayTestData.applePayPaymentMethod],
             order: ApplePayTestData.defaultOrder
@@ -413,7 +412,7 @@ final class ApplePayRequestBuilderTests: XCTestCase {
             order: ApplePayTestData.defaultOrder,
             checkoutModules: [shippingModule]
         )
-        registerApplePaySettings()
+        ApplePayTestData.registerApplePaySettings()
 
         // When
         let request = try ApplePayRequestBuilder.build()
@@ -445,7 +444,7 @@ final class ApplePayRequestBuilderTests: XCTestCase {
             order: ApplePayTestData.defaultOrder,
             checkoutModules: [shippingModule]
         )
-        registerApplePaySettings()
+        ApplePayTestData.registerApplePaySettings()
 
         // When
         let request = try ApplePayRequestBuilder.build()
@@ -478,7 +477,7 @@ final class ApplePayRequestBuilderTests: XCTestCase {
                 mockAppState.currency = Currency(code: "EUR", decimalDigits: 2)
             }
         )
-        registerApplePaySettings()
+        ApplePayTestData.registerApplePaySettings()
 
         // When
         let request = try ApplePayRequestBuilder.build()
@@ -490,20 +489,6 @@ final class ApplePayRequestBuilderTests: XCTestCase {
 
     // MARK: - Helpers
 
-    private func registerApplePaySettings() {
-        let settings = PrimerSettings(
-            paymentMethodOptions: PrimerPaymentMethodOptions(
-                applePayOptions: PrimerApplePayOptions(
-                    merchantIdentifier: ApplePayTestData.Constants.merchantIdentifier,
-                    merchantName: ApplePayTestData.Constants.merchantName
-                )
-            )
-        )
-        DependencyContainer.register(settings as PrimerSettingsProtocol)
-    }
-
-    // MARK: - Original Helpers
-
     private func setupValidConfiguration() {
         setupConfiguration(withOrder: ApplePayTestData.defaultOrder)
     }
@@ -513,15 +498,7 @@ final class ApplePayRequestBuilderTests: XCTestCase {
             withPaymentMethods: [ApplePayTestData.applePayPaymentMethod],
             order: order
         )
-        let settings = PrimerSettings(
-            paymentMethodOptions: PrimerPaymentMethodOptions(
-                applePayOptions: PrimerApplePayOptions(
-                    merchantIdentifier: ApplePayTestData.Constants.merchantIdentifier,
-                    merchantName: ApplePayTestData.Constants.merchantName
-                )
-            )
-        )
-        DependencyContainer.register(settings as PrimerSettingsProtocol)
+        ApplePayTestData.registerApplePaySettings()
     }
 
     private func setupConfigurationWithShipping(withOrder order: ClientSession.Order) {
@@ -530,15 +507,7 @@ final class ApplePayRequestBuilderTests: XCTestCase {
             order: order,
             checkoutModules: [ApplePayTestData.shippingCheckoutModule]
         )
-        let settings = PrimerSettings(
-            paymentMethodOptions: PrimerPaymentMethodOptions(
-                applePayOptions: PrimerApplePayOptions(
-                    merchantIdentifier: ApplePayTestData.Constants.merchantIdentifier,
-                    merchantName: ApplePayTestData.Constants.merchantName
-                )
-            )
-        )
-        DependencyContainer.register(settings as PrimerSettingsProtocol)
+        ApplePayTestData.registerApplePaySettings()
     }
 
     private func setupConfigurationWithZeroDecimalCurrency(withOrder order: ClientSession.Order) {
@@ -550,14 +519,6 @@ final class ApplePayRequestBuilderTests: XCTestCase {
                 mockAppState.currency = Currency(code: "JPY", decimalDigits: 0)
             }
         )
-        let settings = PrimerSettings(
-            paymentMethodOptions: PrimerPaymentMethodOptions(
-                applePayOptions: PrimerApplePayOptions(
-                    merchantIdentifier: ApplePayTestData.Constants.merchantIdentifier,
-                    merchantName: ApplePayTestData.Constants.merchantName
-                )
-            )
-        )
-        DependencyContainer.register(settings as PrimerSettingsProtocol)
+        ApplePayTestData.registerApplePaySettings()
     }
 }
