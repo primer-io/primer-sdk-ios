@@ -68,8 +68,7 @@ final class ProcessWebRedirectPaymentInteractorImpl: ProcessWebRedirectPaymentIn
       logger.debug(message: "[WebRedirect] Payment completed: \(result.status)")
       return result
     } catch {
-      ErrorHandler.handle(error: error)
-      throw error
+      throw handled(error: error)
     }
   }
 
