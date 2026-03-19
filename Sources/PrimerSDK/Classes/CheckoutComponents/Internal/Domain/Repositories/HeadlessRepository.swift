@@ -6,11 +6,8 @@
 
 import Foundation
 
-/// Abstracts the PrimerHeadlessUniversalCheckout SDK.
 protocol HeadlessRepository {
-
   func getPaymentMethods() async throws -> [InternalPaymentMethod]
-
   func processCardPayment(
     cardNumber: String,
     cvv: String,
@@ -19,25 +16,17 @@ protocol HeadlessRepository {
     cardholderName: String,
     selectedNetwork: CardNetwork?
   ) async throws -> PaymentResult
-
   func setBillingAddress(_ billingAddress: BillingAddress) async throws
-
   func getNetworkDetectionStream() -> AsyncStream<[CardNetwork]>
-
   func getBinDataStream() -> AsyncStream<PrimerBinData>
-
   func updateCardNumberInRawDataManager(_ cardNumber: String) async
-
   func selectCardNetwork(_ cardNetwork: CardNetwork) async
-
   func fetchVaultedPaymentMethods() async throws -> [PrimerHeadlessUniversalCheckout
     .VaultedPaymentMethod]
-
   func processVaultedPayment(
     vaultedPaymentMethodId: String,
     paymentMethodType: String,
     additionalData: PrimerVaultedPaymentMethodAdditionalData?
   ) async throws -> PaymentResult
-
   func deleteVaultedPaymentMethod(_ id: String) async throws
 }

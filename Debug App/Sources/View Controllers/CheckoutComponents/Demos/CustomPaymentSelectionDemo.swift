@@ -643,7 +643,6 @@ private struct CustomPaymentSelectionContent: View {
                         Spacer()
                         Button(action: {
                             appliedPromoCode = nil
-                            print("[PromoCode] Removed promo code")
                         }) {
                             Image(systemName: "xmark.circle.fill")
                                 .foregroundColor(DemoColors.textSecondary)
@@ -667,7 +666,6 @@ private struct CustomPaymentSelectionContent: View {
             PromoCodeModal(
                 onApply: { code in
                     appliedPromoCode = code
-                    print("[PromoCode] Applied promo code: \(code)")
                 }
             )
         }

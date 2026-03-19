@@ -5,11 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import SwiftUI
-import UIKit
 
-// MARK: - Environment Key for Bridge Controller Access
-
-/// Environment key to allow SwiftUI views to access the bridge controller
 @available(iOS 15.0, *)
 private struct BridgeControllerKey: EnvironmentKey {
   static let defaultValue: PrimerSwiftUIBridgeViewController? = nil

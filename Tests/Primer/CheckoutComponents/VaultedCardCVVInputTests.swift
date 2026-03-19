@@ -9,9 +9,6 @@ import XCTest
 
 // MARK: - CVV Filtering Logic Tests
 
-/// Tests for the CVV input filtering logic used in VaultedCardCVVInput.
-/// The filtering logic ensures only numeric characters are accepted and the length is limited
-/// based on the card network's expected CVV length.
 @available(iOS 15.0, *)
 final class CVVFilteringLogicTests: XCTestCase {
 
@@ -86,8 +83,6 @@ final class CVVFilteringLogicTests: XCTestCase {
 
 // MARK: - Expected CVV Length Tests
 
-/// Tests for the expected CVV length calculation based on card network.
-/// Different card networks require different CVV lengths (3 or 4 digits).
 @available(iOS 15.0, *)
 final class CVVExpectedLengthTests: XCTestCase {
 
@@ -149,8 +144,6 @@ final class CVVExpectedLengthTests: XCTestCase {
 
 // MARK: - CVV Placeholder Tests
 
-/// Tests for CVV placeholder string generation.
-/// The placeholder should show the expected number of placeholder digits.
 @available(iOS 15.0, *)
 final class CVVPlaceholderTests: XCTestCase {
 
@@ -182,8 +175,6 @@ final class CVVPlaceholderTests: XCTestCase {
 
 // MARK: - CVV Border Color Logic Tests
 
-/// Tests for the CVV input border color determination logic.
-/// Border color changes based on error state, focus state, and default state.
 @available(iOS 15.0, *)
 final class CVVBorderColorLogicTests: XCTestCase {
 
@@ -200,11 +191,11 @@ final class CVVBorderColorLogicTests: XCTestCase {
     /// Mirrors the cvvBorderColor logic from VaultedCardCVVInput
     private func borderState(hasError: Bool, isFocused: Bool) -> BorderState {
         if hasError {
-            return .error
+            .error
         } else if isFocused {
-            return .focus
+            .focus
         } else {
-            return .defaultState
+            .defaultState
         }
     }
 

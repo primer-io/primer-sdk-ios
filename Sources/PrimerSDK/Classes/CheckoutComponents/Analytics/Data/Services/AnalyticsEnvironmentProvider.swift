@@ -6,20 +6,7 @@
 
 import Foundation
 
-/// Provides analytics endpoint URLs for each environment
 struct AnalyticsEnvironmentProvider {
-
-  /// Get the analytics endpoint URL for a given environment
-  /// - Parameter environment: The analytics environment
-  /// - Returns: Full URL for the analytics endpoint
-  func getEndpointURL(for environment: AnalyticsEnvironment) -> URL? {
-    guard let urlString = endpoints[environment] else {
-      return nil
-    }
-    return URL(string: urlString)
-  }
-
-  // MARK: - Private
 
   private let endpoints: [AnalyticsEnvironment: String] = [
     .dev: "https://analytics.dev.data.primer.io/v1/sdk-analytic-events",
@@ -27,4 +14,8 @@ struct AnalyticsEnvironmentProvider {
     .sandbox: "https://analytics.sandbox.data.primer.io/v1/sdk-analytic-events",
     .production: "https://analytics.production.data.primer.io/v1/sdk-analytic-events",
   ]
+
+  func getEndpointURL(for environment: AnalyticsEnvironment) -> URL? {
+    endpoints[environment].flatMap(URL.init(string:))
+  }
 }

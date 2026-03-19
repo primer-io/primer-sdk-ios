@@ -6,16 +6,11 @@
 
 import Foundation
 
-/// Interactor protocol for processing PayPal payments.
 @available(iOS 15.0, *)
 protocol ProcessPayPalPaymentInteractor {
-  /// Executes the PayPal payment flow (checkout or vault based on intent).
-  /// - Returns: The payment result upon successful completion.
-  /// - Throws: Error if any step of the flow fails.
   func execute() async throws -> PaymentResult
 }
 
-/// Implementation of ProcessPayPalPaymentInteractor that handles both checkout and vault flows.
 @available(iOS 15.0, *)
 final class ProcessPayPalPaymentInteractorImpl: ProcessPayPalPaymentInteractor, LogReporter {
 
@@ -37,8 +32,6 @@ final class ProcessPayPalPaymentInteractorImpl: ProcessPayPalPaymentInteractor, 
       return try await executeCheckoutFlow()
     }
   }
-
-  // MARK: - Private Flow Methods
 
   private func executeCheckoutFlow() async throws -> PaymentResult {
     logger.debug(message: "Executing PayPal checkout (order) flow")

@@ -6,8 +6,6 @@
 
 import SwiftUI
 
-// MARK: - Loading View
-
 @available(iOS 15.0, *)
 struct LoadingView: View {
     var body: some View {

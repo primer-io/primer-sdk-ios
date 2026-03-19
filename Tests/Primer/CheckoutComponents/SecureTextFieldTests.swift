@@ -9,48 +9,48 @@ import XCTest
 
 final class SecureTextFieldTests: XCTestCase {
 
-  func testTextPropertyReturnsMaskedValue() {
-    let textField = SecureTextField()
-    textField.internalText = "4242424242424242"
+    func test_textProperty_returnssMaskedValue() {
+        let textField = SecureTextField()
+        textField.internalText = "4242424242424242"
 
-    XCTAssertEqual(textField.text, "****")
-  }
+        XCTAssertEqual(textField.text, "****")
+    }
 
-  func testInternalTextReturnsActualValue() {
-    let textField = SecureTextField()
-    textField.internalText = "4242424242424242"
+    func test_internalText_returnsActualValue() {
+        let textField = SecureTextField()
+        textField.internalText = "4242424242424242"
 
-    XCTAssertEqual(textField.internalText, "4242424242424242")
-  }
+        XCTAssertEqual(textField.internalText, "4242424242424242")
+    }
 
-  func testSettingTextViaTextPropertyUpdatesInternalText() {
-    let textField = SecureTextField()
-    textField.text = "4111111111111111"
+    func test_settingTextViaTextProperty_updatesInternalText() {
+        let textField = SecureTextField()
+        textField.text = "4111111111111111"
 
-    XCTAssertEqual(textField.internalText, "4111111111111111")
-    XCTAssertEqual(textField.text, "****")
-  }
+        XCTAssertEqual(textField.internalText, "4111111111111111")
+        XCTAssertEqual(textField.text, "****")
+    }
 
-  func testInternalTextIsEmptyByDefault() {
-    let textField = SecureTextField()
+    func test_internalText_isEmptyByDefault() {
+        let textField = SecureTextField()
 
-    XCTAssertEqual(textField.internalText, "")
-    XCTAssertEqual(textField.text, "****")
-  }
+        XCTAssertEqual(textField.internalText, "")
+        XCTAssertEqual(textField.text, "****")
+    }
 
-  func testCVVValueIsMasked() {
-    let textField = SecureTextField()
-    textField.internalText = "123"
+    func test_cvvValue_isMasked() {
+        let textField = SecureTextField()
+        textField.internalText = "123"
 
-    XCTAssertEqual(textField.text, "****")
-    XCTAssertEqual(textField.internalText, "123")
-  }
+        XCTAssertEqual(textField.text, "****")
+        XCTAssertEqual(textField.internalText, "123")
+    }
 
-  func testEmptyStringIsMasked() {
-    let textField = SecureTextField()
-    textField.internalText = ""
+    func test_emptyString_isMasked() {
+        let textField = SecureTextField()
+        textField.internalText = ""
 
-    XCTAssertEqual(textField.text, "****")
-    XCTAssertEqual(textField.internalText, "")
-  }
+        XCTAssertEqual(textField.text, "****")
+        XCTAssertEqual(textField.internalText, "")
+    }
 }

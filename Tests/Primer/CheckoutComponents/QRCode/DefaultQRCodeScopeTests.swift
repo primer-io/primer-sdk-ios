@@ -8,17 +8,16 @@
 import XCTest
 
 @available(iOS 15.0, *)
+@MainActor
 final class DefaultQRCodeScopeTests: XCTestCase {
 
     private var mockInteractor: MockProcessQRCodePaymentInteractor!
 
-    @MainActor
     override func setUp() {
         super.setUp()
         mockInteractor = MockProcessQRCodePaymentInteractor()
     }
 
-    @MainActor
     override func tearDown() {
         mockInteractor = nil
         super.tearDown()
@@ -26,7 +25,6 @@ final class DefaultQRCodeScopeTests: XCTestCase {
 
     // MARK: - Full Success Flow
 
-    @MainActor
     func test_start_fullFlow_transitionsLoadingToDisplayingToSuccess() async throws {
         mockInteractor.startPaymentResult = .success(QRCodeTestData.defaultPaymentData)
         mockInteractor.pollAndCompleteResult = .success(QRCodeTestData.successPaymentResult)
@@ -44,7 +42,6 @@ final class DefaultQRCodeScopeTests: XCTestCase {
 
     // MARK: - Displaying State
 
-    @MainActor
     func test_start_afterStartPayment_transitionsToDisplayingWithQRImage() async throws {
         mockInteractor.startPaymentResult = .success(QRCodeTestData.defaultPaymentData)
         mockInteractor.onPollAndComplete = {
@@ -62,7 +59,6 @@ final class DefaultQRCodeScopeTests: XCTestCase {
 
     // MARK: - Error Handling
 
-    @MainActor
     func test_start_startPaymentError_transitionsToFailure() async throws {
         mockInteractor.startPaymentResult = .failure(
             PrimerError.invalidValue(key: "test", value: nil, reason: "Tokenization failed")
@@ -83,7 +79,6 @@ final class DefaultQRCodeScopeTests: XCTestCase {
         XCTAssertEqual(mockInteractor.pollAndCompleteCallCount, 0)
     }
 
-    @MainActor
     func test_start_pollingError_transitionsToFailure() async throws {
         mockInteractor.startPaymentResult = .success(QRCodeTestData.defaultPaymentData)
         mockInteractor.pollAndCompleteResult = .failure(
@@ -107,7 +102,6 @@ final class DefaultQRCodeScopeTests: XCTestCase {
 
     // MARK: - Cancellation
 
-    @MainActor
     func test_cancel_cancelsPollingOnInteractor() {
         let sut = createScope()
 
@@ -116,7 +110,6 @@ final class DefaultQRCodeScopeTests: XCTestCase {
         XCTAssertEqual(mockInteractor.cancelPollingCallCount, 1)
     }
 
-    @MainActor
     func test_onBack_cancelsPolling() {
         let sut = createScope(presentationContext: .fromPaymentSelection)
 
@@ -125,7 +118,6 @@ final class DefaultQRCodeScopeTests: XCTestCase {
         XCTAssertEqual(mockInteractor.cancelPollingCallCount, 1)
     }
 
-    @MainActor
     func test_cancel_cancelsPolling() {
         let sut = createScope()
 
@@ -136,7 +128,6 @@ final class DefaultQRCodeScopeTests: XCTestCase {
 
     // MARK: - Helpers
 
-    @MainActor
     private func createScope(
         presentationContext: PresentationContext = .fromPaymentSelection
     ) -> DefaultQRCodeScope {

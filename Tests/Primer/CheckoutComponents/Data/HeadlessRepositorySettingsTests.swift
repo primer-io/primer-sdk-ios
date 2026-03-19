@@ -10,8 +10,6 @@ import XCTest
 @available(iOS 15.0, *)
 final class HeadlessRepositorySettingsTests: XCTestCase {
 
-    // MARK: - Setup & Teardown
-
     override func setUp() async throws {
         try await super.setUp()
         // Ensure clean state
@@ -22,8 +20,6 @@ final class HeadlessRepositorySettingsTests: XCTestCase {
         await DIContainer.clearContainer()
         try await super.tearDown()
     }
-
-    // MARK: - Settings Injection Tests
 
     func testSettingsInjectedFromDIContainer() async throws {
         // Given: Configured DI container with settings
@@ -79,8 +75,6 @@ final class HeadlessRepositorySettingsTests: XCTestCase {
         XCTAssertNil(container, "Container should not exist when not configured")
     }
 
-    // MARK: - Payment Handling Mode Tests
-
     func testPaymentHandlingDefaultsToAuto() async throws {
         // Given: Settings without explicit payment handling (uses default)
         let settings = PrimerSettings()
@@ -97,8 +91,6 @@ final class HeadlessRepositorySettingsTests: XCTestCase {
         // Then: Payment handling should default to auto
         XCTAssertEqual(resolved.paymentHandling, .auto)
     }
-
-    // MARK: - Payment Method Options Tests
 
     func testURLSchemeAccessibleFromSettings() async throws {
         // Given: Settings with URL scheme
@@ -123,8 +115,6 @@ final class HeadlessRepositorySettingsTests: XCTestCase {
         XCTAssertEqual(urlScheme, TestData.PaymentMethodOptions.myAppScheme)
     }
 
-    // MARK: - Settings Isolation Tests
-
     func testSettingsIsolatedBetweenContainerInstances() async throws {
         // Given: First container with auto mode
         let settings1 = PrimerSettings(paymentHandling: .auto)
@@ -148,8 +138,6 @@ final class HeadlessRepositorySettingsTests: XCTestCase {
         XCTAssertFalse(resolved1 === resolved2, "Should be different instances")
     }
 
-    // MARK: - API Version Tests
-
     func testAPIVersionDefaultsToLatest() async throws {
         // Given: Settings without explicit API version
         let settings = PrimerSettings()
@@ -166,8 +154,6 @@ final class HeadlessRepositorySettingsTests: XCTestCase {
         // Then: API version should default to latest
         XCTAssertEqual(resolved.apiVersion, PrimerApiVersion.latest)
     }
-
-    // MARK: - Client Session Caching Tests
 
     func testClientSessionCachingDisabledByDefault() async throws {
         // Given: Settings without explicit caching configuration

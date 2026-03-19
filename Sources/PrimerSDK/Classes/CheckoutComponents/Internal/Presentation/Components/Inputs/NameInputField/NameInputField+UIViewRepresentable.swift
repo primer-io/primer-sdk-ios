@@ -59,7 +59,7 @@ struct NameTextField: UIViewRepresentable, LogReporter {
     )
   }
 
-  class Coordinator: NSObject, UITextFieldDelegate, LogReporter {
+  final class Coordinator: NSObject, UITextFieldDelegate, LogReporter {
     private let validationService: ValidationService
     @Binding private var name: String
     @Binding private var isValid: Bool

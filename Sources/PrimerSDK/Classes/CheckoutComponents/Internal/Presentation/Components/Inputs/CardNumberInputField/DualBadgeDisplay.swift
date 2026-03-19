@@ -6,25 +6,9 @@
 
 import SwiftUI
 
-/// A non-interactive SwiftUI component that displays multiple card network badges
-/// side by side for co-badged cards when user selection is disallowed.
-///
-/// This component is used when one of the detected card networks (e.g., EFTPOS)
-/// does not allow user selection. In this case, the merchant's preferred network
-/// is auto-selected and this view simply displays all available networks
-/// without any interaction capability.
-///
-/// Usage:
-/// ```swift
-/// DualBadgeDisplay(networks: [.visa, .eftpos])
-/// ```
 @available(iOS 15.0, *)
 struct DualBadgeDisplay: View {
-  // MARK: - Properties
-
   let networks: [CardNetwork]
-
-  // MARK: - Private Properties
 
   @Environment(\.designTokens) private var tokens
 

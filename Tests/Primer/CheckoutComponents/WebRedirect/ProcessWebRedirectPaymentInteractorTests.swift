@@ -238,9 +238,9 @@ final class ProcessWebRedirectPaymentInteractorTests: XCTestCase {
 @available(iOS 15.0, *)
 private final class WebRedirectMockClientSessionActions: ClientSessionActionsProtocol {
 
-    var selectPaymentMethodCallCount = 0
-    var lastSelectedPaymentMethodType: String?
-    var lastSelectedCardNetwork: String?
+    private(set) var selectPaymentMethodCallCount = 0
+    private(set) var lastSelectedPaymentMethodType: String?
+    private(set) var lastSelectedCardNetwork: String?
 
     var dispatchError: Error?
     var selectPaymentMethodError: Error?

@@ -6,37 +6,23 @@
 
 import Foundation
 
-/// State model for PayPal payment method scope.
-/// Tracks the current step of the PayPal payment flow.
+/// PayPal flow: `idle` -> `loading` -> `redirecting` -> `processing` -> `success` | `failure`
 @available(iOS 15.0, *)
 public struct PrimerPayPalState: Equatable {
 
-  /// The current step of the PayPal payment flow.
   public enum Step: Equatable {
-    /// Initial state, ready to start payment
     case idle
-    /// Creating PayPal session
     case loading
-    /// Web authentication session is open
     case redirecting
-    /// Processing payment after user approval
     case processing
-    /// Payment completed successfully
     case success
-    /// Payment failed with error message
     case failure(String)
   }
 
-  /// Current step of the PayPal flow
   public internal(set) var step: Step
-
-  /// The PayPal payment method information
   public internal(set) var paymentMethod: CheckoutPaymentMethod?
-
-  /// Formatted surcharge amount if applicable (e.g., "+ $1.50")
   public internal(set) var surchargeAmount: String?
 
-  /// Default initializer
   public init(
     step: Step = .idle,
     paymentMethod: CheckoutPaymentMethod? = nil,

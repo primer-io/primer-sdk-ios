@@ -7,8 +7,6 @@
 @testable import PrimerSDK
 import XCTest
 
-// MARK: - Network Detection Stream Tests
-
 @available(iOS 15.0, *)
 final class NetworkDetectionStreamTests: XCTestCase {
 
@@ -42,8 +40,6 @@ final class NetworkDetectionStreamTests: XCTestCase {
         XCTAssertNotNil(stream2)
     }
 }
-
-// MARK: - Set Billing Address Tests
 
 @available(iOS 15.0, *)
 final class SetBillingAddressTests: XCTestCase {
@@ -133,8 +129,6 @@ final class SetBillingAddressTests: XCTestCase {
     }
 }
 
-// MARK: - Select Card Network Tests
-
 @available(iOS 15.0, *)
 final class SelectCardNetworkDelegateTests: XCTestCase {
 
@@ -155,11 +149,9 @@ final class SelectCardNetworkDelegateTests: XCTestCase {
         super.tearDown()
     }
 
-    func testSelectCardNetwork_WithVisa_DispatchesCorrectAction() async {
+    func test_selectCardNetwork_withVisa_dispatchesCorrectAction() async {
         // When
         await repository.selectCardNetwork(.visa)
-
-        // Wait for async dispatch
         try? await Task.sleep(nanoseconds: 100_000_000)
 
         // Then
@@ -167,97 +159,79 @@ final class SelectCardNetworkDelegateTests: XCTestCase {
         XCTAssertEqual(mockClientSessionActions.lastSelectPaymentMethodCall?.network, "VISA")
     }
 
-    func testSelectCardNetwork_WithMastercard_DispatchesCorrectAction() async {
+    func test_selectCardNetwork_withMastercard_dispatchesCorrectAction() async {
         // When
         await repository.selectCardNetwork(.masterCard)
-
-        // Wait for async dispatch
         try? await Task.sleep(nanoseconds: 100_000_000)
 
         // Then
         XCTAssertEqual(mockClientSessionActions.lastSelectPaymentMethodCall?.network, "MASTERCARD")
     }
 
-    func testSelectCardNetwork_WithAmex_DispatchesCorrectAction() async {
+    func test_selectCardNetwork_withAmex_dispatchesCorrectAction() async {
         // When
         await repository.selectCardNetwork(.amex)
-
-        // Wait for async dispatch
         try? await Task.sleep(nanoseconds: 100_000_000)
 
         // Then
         XCTAssertEqual(mockClientSessionActions.lastSelectPaymentMethodCall?.network, "AMEX")
     }
 
-    func testSelectCardNetwork_WithDiscover_DispatchesCorrectAction() async {
+    func test_selectCardNetwork_withDiscover_dispatchesCorrectAction() async {
         // When
         await repository.selectCardNetwork(.discover)
-
-        // Wait for async dispatch
         try? await Task.sleep(nanoseconds: 100_000_000)
 
         // Then
         XCTAssertEqual(mockClientSessionActions.lastSelectPaymentMethodCall?.network, "DISCOVER")
     }
 
-    func testSelectCardNetwork_WithJCB_DispatchesCorrectAction() async {
+    func test_selectCardNetwork_withJCB_dispatchesCorrectAction() async {
         // When
         await repository.selectCardNetwork(.jcb)
-
-        // Wait for async dispatch
         try? await Task.sleep(nanoseconds: 100_000_000)
 
         // Then
         XCTAssertEqual(mockClientSessionActions.lastSelectPaymentMethodCall?.network, "JCB")
     }
 
-    func testSelectCardNetwork_WithDiners_DispatchesCorrectAction() async {
+    func test_selectCardNetwork_withDiners_dispatchesCorrectAction() async {
         // When
         await repository.selectCardNetwork(.diners)
-
-        // Wait for async dispatch
         try? await Task.sleep(nanoseconds: 100_000_000)
 
         // Then
         XCTAssertEqual(mockClientSessionActions.lastSelectPaymentMethodCall?.network, "DINERS_CLUB")
     }
 
-    func testSelectCardNetwork_WithCartesBancaires_DispatchesCorrectAction() async {
+    func test_selectCardNetwork_withCartesBancaires_dispatchesCorrectAction() async {
         // When
         await repository.selectCardNetwork(.cartesBancaires)
-
-        // Wait for async dispatch
         try? await Task.sleep(nanoseconds: 100_000_000)
 
         // Then
         XCTAssertEqual(mockClientSessionActions.lastSelectPaymentMethodCall?.network, "CARTES_BANCAIRES")
     }
 
-    func testSelectCardNetwork_MultipleCalls_DispatchesAll() async {
+    func test_selectCardNetwork_multipleCalls_dispatchesAll() async {
         // When
         await repository.selectCardNetwork(.visa)
         await repository.selectCardNetwork(.masterCard)
-
-        // Wait for async dispatch
         try? await Task.sleep(nanoseconds: 200_000_000)
 
         // Then
         XCTAssertEqual(mockClientSessionActions.selectPaymentMethodCalls.count, 2)
     }
 
-    func testSelectCardNetwork_AlwaysPassesPaymentCard() async {
+    func test_selectCardNetwork_always_passesPaymentCard() async {
         // When
         await repository.selectCardNetwork(.visa)
-
-        // Wait for async dispatch
         try? await Task.sleep(nanoseconds: 100_000_000)
 
         // Then
         XCTAssertEqual(mockClientSessionActions.lastSelectPaymentMethodCall?.type, "PAYMENT_CARD")
     }
 }
-
-// MARK: - Update Card Number Tests
 
 @available(iOS 15.0, *)
 final class UpdateCardNumberTests: XCTestCase {
@@ -319,8 +293,6 @@ final class UpdateCardNumberTests: XCTestCase {
         await repository.updateCardNumberInRawDataManager("")
     }
 }
-
-// MARK: - Get Required Input Elements Tests
 
 @available(iOS 15.0, *)
 final class GetRequiredInputElementsDelegateTests: XCTestCase {

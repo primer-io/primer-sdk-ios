@@ -386,7 +386,7 @@ final class FormRedirectRepositoryImplTests: XCTestCase {
         ]
 
         // Start polling in a task
-        let pollingTask = Task {
+        let pollingTask = Task { [self] in
             try await sut.pollForCompletion(statusUrl: FormRedirectTestData.Constants.statusUrl)
         }
 

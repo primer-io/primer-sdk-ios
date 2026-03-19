@@ -17,6 +17,8 @@ struct QRCodePaymentData {
 protocol QRCodeRepository {
   func startPayment(paymentMethodType: String) async throws -> QRCodePaymentData
   func pollForCompletion(statusUrl: URL) async throws -> String
-  func resumePayment(paymentId: String, resumeToken: String, paymentMethodType: String) async throws -> PaymentResult
+  func resumePayment(
+    paymentId: String, resumeToken: String, paymentMethodType: String
+  ) async throws -> PaymentResult
   func cancelPolling(paymentMethodType: String)
 }

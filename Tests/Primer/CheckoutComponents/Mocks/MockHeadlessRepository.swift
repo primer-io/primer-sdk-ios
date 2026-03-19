@@ -77,7 +77,6 @@ final class MockHeadlessRepository: HeadlessRepository {
     ) async throws -> PaymentResult {
         processCardPaymentCallCount += 1
 
-        // Capture parameters
         lastCardNumber = cardNumber
         lastCVV = cvv
         lastExpiryMonth = expiryMonth
@@ -145,7 +144,6 @@ final class MockHeadlessRepository: HeadlessRepository {
     ) async throws -> PaymentResult {
         processVaultedPaymentCallCount += 1
 
-        // Capture parameters
         lastVaultedPaymentMethodId = vaultedPaymentMethodId
         lastVaultedPaymentMethodType = paymentMethodType
         lastVaultedPaymentAdditionalData = additionalData
@@ -242,7 +240,7 @@ extension MockHeadlessRepository {
         let repository = MockHeadlessRepository()
         repository.paymentResultToReturn = PaymentResult(
             paymentId: TestData.PaymentIds.success,
-            status: PaymentStatus.success
+            status: .success
         )
         return repository
     }

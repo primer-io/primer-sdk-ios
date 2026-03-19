@@ -6,8 +6,6 @@
 
 import SwiftUI
 
-// MARK: - Demo Row View
-
 @available(iOS 15.0, *)
 struct DemoRow: View {
     let metadata: DemoMetadata

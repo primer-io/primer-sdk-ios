@@ -12,9 +12,9 @@ final class MockFormRedirectRepository: FormRedirectRepository {
 
     // MARK: - Tokenize
 
-    var tokenizeCallCount = 0
-    var tokenizePaymentMethodType: String?
-    var tokenizeSessionInfo: (any OffSessionPaymentSessionInfo)?
+    private(set) var tokenizeCallCount = 0
+    private(set) var tokenizePaymentMethodType: String?
+    private(set) var tokenizeSessionInfo: (any OffSessionPaymentSessionInfo)?
     var tokenizeResult: Result<FormRedirectTokenizationResponse, Error> = .success(FormRedirectTestData.tokenizationResponse)
 
     func tokenize(
@@ -35,9 +35,9 @@ final class MockFormRedirectRepository: FormRedirectRepository {
 
     // MARK: - Create Payment
 
-    var createPaymentCallCount = 0
-    var createPaymentToken: String?
-    var createPaymentPaymentMethodType: String?
+    private(set) var createPaymentCallCount = 0
+    private(set) var createPaymentToken: String?
+    private(set) var createPaymentPaymentMethodType: String?
     var createPaymentResult: Result<FormRedirectPaymentResponse, Error> = .success(FormRedirectTestData.successPaymentResponse)
 
     func createPayment(token: String, paymentMethodType: String) async throws -> FormRedirectPaymentResponse {
@@ -55,10 +55,10 @@ final class MockFormRedirectRepository: FormRedirectRepository {
 
     // MARK: - Resume Payment
 
-    var resumePaymentCallCount = 0
-    var resumePaymentPaymentId: String?
-    var resumePaymentResumeToken: String?
-    var resumePaymentPaymentMethodType: String?
+    private(set) var resumePaymentCallCount = 0
+    private(set) var resumePaymentPaymentId: String?
+    private(set) var resumePaymentResumeToken: String?
+    private(set) var resumePaymentPaymentMethodType: String?
     var resumePaymentResult: Result<FormRedirectPaymentResponse, Error> = .success(FormRedirectTestData.successPaymentResponse)
 
     func resumePayment(paymentId: String, resumeToken: String, paymentMethodType: String) async throws -> FormRedirectPaymentResponse {
@@ -77,8 +77,8 @@ final class MockFormRedirectRepository: FormRedirectRepository {
 
     // MARK: - Poll for Completion
 
-    var pollForCompletionCallCount = 0
-    var pollForCompletionStatusUrl: URL?
+    private(set) var pollForCompletionCallCount = 0
+    private(set) var pollForCompletionStatusUrl: URL?
     var pollForCompletionResult: Result<String, Error> = .success(FormRedirectTestData.Constants.resumeToken)
 
     func pollForCompletion(statusUrl: URL) async throws -> String {
@@ -95,8 +95,8 @@ final class MockFormRedirectRepository: FormRedirectRepository {
 
     // MARK: - Cancel Polling
 
-    var cancelPollingCallCount = 0
-    var cancelPollingError: PrimerError?
+    private(set) var cancelPollingCallCount = 0
+    private(set) var cancelPollingError: PrimerError?
 
     func cancelPolling(error: PrimerError) {
         cancelPollingCallCount += 1

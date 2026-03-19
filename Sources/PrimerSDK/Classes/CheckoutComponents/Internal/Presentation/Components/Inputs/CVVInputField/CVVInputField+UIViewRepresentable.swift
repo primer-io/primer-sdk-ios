@@ -55,7 +55,7 @@ struct CVVTextField: UIViewRepresentable, LogReporter {
     )
   }
 
-  class Coordinator: NSObject, UITextFieldDelegate, LogReporter {
+  final class Coordinator: NSObject, UITextFieldDelegate, LogReporter {
     private let validationService: ValidationService
     private let cardNetwork: CardNetwork
     @Binding private var cvv: String

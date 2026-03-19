@@ -45,23 +45,20 @@ struct PrimerFont {
     let fontSize = size ?? 14
     let fontWeight = weight ?? 400
 
-    let baseFont: UIFont
-
-    // Attempt to load the specified font family
-    if fontFamily == "Inter" {
+    let baseFont: UIFont = if fontFamily == "Inter" {
       if let customUIFont = variableInterFont(weight: fontWeight, size: fontSize) {
-        baseFont = customUIFont
+        customUIFont
       } else {
         // Fallback to system font
-        baseFont = .systemFont(ofSize: fontSize, weight: uiFontWeightFromNumber(fontWeight))
+        .systemFont(ofSize: fontSize, weight: uiFontWeightFromNumber(fontWeight))
       }
     } else {
       // Attempt to load custom font family
       if let customFont = UIFont(name: fontFamily, size: fontSize) {
-        baseFont = customFont
+        customFont
       } else {
         // Fallback to system font if custom font is not available
-        baseFont = .systemFont(ofSize: fontSize, weight: uiFontWeightFromNumber(fontWeight))
+        .systemFont(ofSize: fontSize, weight: uiFontWeightFromNumber(fontWeight))
       }
     }
 
@@ -73,7 +70,7 @@ struct PrimerFont {
 
   /// Title extra large (24pt, weight 500) - for major section titles
   static func uiFontTitleXLarge(tokens: DesignTokens?) -> UIFont {
-    guard let tokens = tokens else {
+    guard let tokens else {
       return uiFont(family: "Inter", weight: 500, size: 24)
     }
     return uiFont(
@@ -85,7 +82,7 @@ struct PrimerFont {
 
   /// Title large (16pt, weight 500) - for subsection titles
   static func uiFontTitleLarge(tokens: DesignTokens?) -> UIFont {
-    guard let tokens = tokens else {
+    guard let tokens else {
       return uiFont(family: "Inter", weight: 500, size: 16)
     }
     return uiFont(
@@ -97,7 +94,7 @@ struct PrimerFont {
 
   /// Body large (16pt, weight 400) - for large body text
   static func uiFontBodyLarge(tokens: DesignTokens?) -> UIFont {
-    guard let tokens = tokens else {
+    guard let tokens else {
       return uiFont(family: "Inter", weight: 400, size: 16)
     }
     return uiFont(
@@ -109,7 +106,7 @@ struct PrimerFont {
 
   /// Body medium (14pt, weight 400) - for standard body text
   static func uiFontBodyMedium(tokens: DesignTokens?) -> UIFont {
-    guard let tokens = tokens else {
+    guard let tokens else {
       return uiFont(family: "Inter", weight: 400, size: 14)
     }
     return uiFont(
@@ -121,7 +118,7 @@ struct PrimerFont {
 
   /// Body small (12pt, weight 400) - for small body text and captions
   static func uiFontBodySmall(tokens: DesignTokens?) -> UIFont {
-    guard let tokens = tokens else {
+    guard let tokens else {
       return uiFont(family: "Inter", weight: 400, size: 12)
     }
     return uiFont(
@@ -257,17 +254,17 @@ struct PrimerFont {
   /// - Returns: Corresponding UIFont.Weight value
   private static func uiFontWeightFromNumber(_ weight: CGFloat) -> UIFont.Weight {
     switch weight {
-    case 100: return .ultraLight
-    case 200: return .thin
-    case 300: return .light
-    case 400: return .regular
-    case 500: return .medium
-    case 550: return .medium  // Design tokens use 550
-    case 600: return .semibold
-    case 700: return .bold
-    case 800: return .heavy
-    case 900: return .black
-    default: return .regular
+    case 100: .ultraLight
+    case 200: .thin
+    case 300: .light
+    case 400: .regular
+    case 500: .medium
+    case 550: .medium
+    case 600: .semibold
+    case 700: .bold
+    case 800: .heavy
+    case 900: .black
+    default: .regular
     }
   }
 }

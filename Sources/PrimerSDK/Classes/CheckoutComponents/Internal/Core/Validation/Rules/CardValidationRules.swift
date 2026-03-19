@@ -6,7 +6,7 @@
 
 import Foundation
 
-class CardNumberRule: ValidationRule {
+final class CardNumberRule: ValidationRule {
 
   private let allowedCardNetworks: Set<CardNetwork>
 
@@ -89,7 +89,7 @@ class CardNumberRule: ValidationRule {
   }
 }
 
-class CVVRule: ValidationRule {
+final class CVVRule: ValidationRule {
 
   private let cardNetwork: CardNetwork?
 
@@ -118,7 +118,7 @@ class CVVRule: ValidationRule {
   }
 }
 
-class CardholderNameRule: ValidationRule {
+final class CardholderNameRule: ValidationRule {
 
   func validate(_ value: String) -> ValidationResult {
     let trimmedValue = value.trimmingCharacters(in: .whitespacesAndNewlines)

@@ -58,7 +58,7 @@ final class ApplePayAuthorizationCoordinatorTests: XCTestCase {
         mockPresentationManager.shouldSimulateAuthorization = true
 
         // When
-        let task = Task {
+        let task = Task { [self] in
             try await coordinator.authorize(
                 with: mockRequest,
                 presentationManager: mockPresentationManager

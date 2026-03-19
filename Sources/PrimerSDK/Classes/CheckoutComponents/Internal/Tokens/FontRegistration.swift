@@ -7,14 +7,11 @@
 import CoreText
 import UIKit
 
-/// Utility for registering custom fonts bundled with the SDK
 enum FontRegistration: LogReporter {
 
   private static var isRegistered = false
   private static let lock = NSLock()
 
-  /// Register all custom fonts used by the SDK
-  /// This method is idempotent and safe to call multiple times
   static func registerFonts() {
     lock.lock()
     defer { lock.unlock() }

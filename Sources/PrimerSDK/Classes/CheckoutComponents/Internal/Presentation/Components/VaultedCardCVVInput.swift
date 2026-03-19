@@ -6,12 +6,8 @@
 
 import SwiftUI
 
-/// Inline CVV input component for vaulted card payments.
-/// Shows a lock icon, instruction text, and CVV text field.
 @available(iOS 15.0, *)
 struct VaultedCardCVVInput: View {
-  // MARK: - Properties
-
   @Binding var cvv: String
   @Binding var isValid: Bool
   @Binding var errorMessage: String?
@@ -132,11 +128,11 @@ struct VaultedCardCVVInput: View {
 
   private var cvvBorderColor: Color {
     if errorMessage != nil {
-      return CheckoutColors.borderError(tokens: tokens)
+      CheckoutColors.borderError(tokens: tokens)
     } else if isFocused {
-      return CheckoutColors.borderFocus(tokens: tokens)
+      CheckoutColors.borderFocus(tokens: tokens)
     } else {
-      return CheckoutColors.borderDefault(tokens: tokens)
+      CheckoutColors.borderDefault(tokens: tokens)
     }
   }
 }

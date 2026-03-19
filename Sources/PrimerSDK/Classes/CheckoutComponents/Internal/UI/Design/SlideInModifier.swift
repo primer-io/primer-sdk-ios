@@ -15,31 +15,26 @@ enum SlideDirection {
   var axis: Axis {
     switch self {
     case .leading, .trailing:
-      return .horizontal
+      .horizontal
     case .top, .bottom:
-      return .vertical
+      .vertical
     }
   }
 
   var offsetMultiplier: CGFloat {
     switch self {
     case .leading, .top:
-      return -1
+      -1
     case .trailing, .bottom:
-      return 1
+      1
     }
   }
 }
 
-/// A view modifier that animates a view sliding in/out with fade effect
 struct SlideInModifier: ViewModifier {
   let isVisible: Bool
   let direction: SlideDirection
-
-  /// The distance to slide (default uses AnimationConstants.errorSlideOffset)
   let slideDistance: CGFloat
-
-  /// The animation to use (default uses AnimationConstants.errorSpringAnimation)
   let animation: Animation
 
   init(
@@ -69,17 +64,7 @@ struct SlideInModifier: ViewModifier {
   }
 }
 
-// MARK: - View Extension
-
 extension View {
-  /// Applies a slide-in animation effect
-  ///
-  /// - Parameters:
-  ///   - isVisible: Whether the view should be visible
-  ///   - direction: The direction from which the view slides in
-  ///   - slideDistance: The distance to slide (default uses AnimationConstants.errorSlideOffset)
-  ///   - animation: The animation to use (default uses AnimationConstants.errorSpringAnimation)
-  /// - Returns: A view with the slide-in animation applied
   func slideIn(
     isVisible: Bool,
     from direction: SlideDirection,

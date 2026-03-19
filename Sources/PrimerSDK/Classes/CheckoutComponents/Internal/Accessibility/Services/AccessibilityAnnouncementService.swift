@@ -6,7 +6,6 @@
 
 import Foundation
 
-/// Wraps UIAccessibility.post() with semantic methods that indicate intent and timing requirements.
 protocol AccessibilityAnnouncementService {
 
   /// **Notification type**: `.announcement` (interrupts current speech)

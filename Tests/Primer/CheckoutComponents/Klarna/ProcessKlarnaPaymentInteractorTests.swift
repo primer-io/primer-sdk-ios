@@ -12,12 +12,8 @@ import XCTest
 @MainActor
 final class ProcessKlarnaPaymentInteractorTests: XCTestCase {
 
-    // MARK: - Properties
-
-    var sut: ProcessKlarnaPaymentInteractorImpl!
-    var mockRepository: MockKlarnaRepository!
-
-    // MARK: - Setup & Teardown
+    private var sut: ProcessKlarnaPaymentInteractorImpl!
+    private var mockRepository: MockKlarnaRepository!
 
     override func setUp() {
         super.setUp()
@@ -30,8 +26,6 @@ final class ProcessKlarnaPaymentInteractorTests: XCTestCase {
         mockRepository = nil
         super.tearDown()
     }
-
-    // MARK: - createSession Tests
 
     func test_createSession_success_returnsSessionResult() async throws {
         // Given

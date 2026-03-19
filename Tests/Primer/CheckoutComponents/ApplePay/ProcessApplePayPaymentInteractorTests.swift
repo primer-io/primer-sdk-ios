@@ -11,13 +11,9 @@ import XCTest
 @available(iOS 15.0, *)
 final class ProcessApplePayPaymentInteractorTests: XCTestCase {
 
-    // MARK: - Properties
-
-    var sut: ProcessApplePayPaymentInteractorImpl!
-    var mockTokenizationService: MockTokenizationService!
-    var mockCreatePaymentService: MockCreateResumePaymentService!
-
-    // MARK: - Setup & Teardown
+    private var sut: ProcessApplePayPaymentInteractorImpl!
+    private var mockTokenizationService: MockTokenizationService!
+    private var mockCreatePaymentService: MockCreateResumePaymentService!
 
     override func setUp() async throws {
         try await super.setUp()

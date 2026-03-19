@@ -10,16 +10,12 @@ import Foundation
 @available(iOS 15.0, *)
 final class MockConfigurationService: ConfigurationService {
 
-    // MARK: - Configurable Return Values
-
     var apiConfiguration: PrimerAPIConfiguration?
     var checkoutModules: [PrimerAPIConfiguration.CheckoutModule]?
     var billingAddressOptions: PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions?
     var currency: Currency?
     var amount: Int?
     var captureVaultedCardCvv: Bool = false
-
-    // MARK: - Initialization
 
     init(
         apiConfiguration: PrimerAPIConfiguration? = nil,
@@ -36,8 +32,6 @@ final class MockConfigurationService: ConfigurationService {
         self.amount = amount
         self.captureVaultedCardCvv = captureVaultedCardCvv
     }
-
-    // MARK: - Test Helpers
 
     func reset() {
         apiConfiguration = nil

@@ -92,10 +92,7 @@ class CheckoutComponentsPaymentMethodsBridge: GetPaymentMethodsInteractor, LogRe
     return convertedMethods
   }
 
-  // MARK: - Surcharge Extraction Methods
-
   private func extractNetworkSurcharges(for paymentMethodType: String) -> [String: Int]? {
-    // Only card payment methods have network-specific surcharges
     guard paymentMethodType == PrimerPaymentMethodType.paymentCard.rawValue else {
       return nil
     }
@@ -132,19 +129,15 @@ class CheckoutComponentsPaymentMethodsBridge: GetPaymentMethodsInteractor, LogRe
         continue
       }
 
-      // Handle nested surcharge structure: surcharge.amount
       if let surchargeData = networkData["surcharge"] as? [String: Any],
         let surchargeAmount = surchargeData["amount"] as? Int,
         surchargeAmount > 0
       {
         networkSurcharges[networkType] = surchargeAmount
-      }
-      // Fallback: handle direct surcharge integer format
-      else if let surcharge = networkData["surcharge"] as? Int,
+      } else if let surcharge = networkData["surcharge"] as? Int,
         surcharge > 0
       {
         networkSurcharges[networkType] = surcharge
-      } else {
       }
     }
 
@@ -155,19 +148,15 @@ class CheckoutComponentsPaymentMethodsBridge: GetPaymentMethodsInteractor, LogRe
     var networkSurcharges: [String: Int] = [:]
 
     for (networkType, networkData) in networksDict {
-      // Handle nested surcharge structure: surcharge.amount
       if let surchargeData = networkData["surcharge"] as? [String: Any],
         let surchargeAmount = surchargeData["amount"] as? Int,
         surchargeAmount > 0
       {
         networkSurcharges[networkType] = surchargeAmount
-      }
-      // Fallback: handle direct surcharge integer format
-      else if let surcharge = networkData["surcharge"] as? Int,
+      } else if let surcharge = networkData["surcharge"] as? Int,
         surcharge > 0
       {
         networkSurcharges[networkType] = surcharge
-      } else {
       }
     }
 

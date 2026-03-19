@@ -107,7 +107,6 @@ public struct PrimerCheckout: View {
 
 // MARK: - Internal Implementation
 
-/// Internal checkout implementation that coordinates SDK initialization and UI presentation.
 @available(iOS 15.0, *)
 @MainActor
 struct InternalCheckout: View, LogReporter {
@@ -278,12 +277,8 @@ struct InternalCheckout: View, LogReporter {
 
   private func initializeSDK(isRetry: Bool = false) async {
     switch initializationState {
-    case .idle:
-      break
-    case .failed:
-      break
-    default:
-      return
+    case .idle, .failed: break
+    default: return
     }
 
     initializationState = isRetry ? .retrying : .initializing

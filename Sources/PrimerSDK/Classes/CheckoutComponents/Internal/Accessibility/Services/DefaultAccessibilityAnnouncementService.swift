@@ -9,19 +9,13 @@ import UIKit
 @available(iOS 15.0, *)
 final class DefaultAccessibilityAnnouncementService: AccessibilityAnnouncementService, LogReporter {
 
-  // MARK: - Properties
-
   private let publisher: UIAccessibilityNotificationPublisher
-
-  // MARK: - Initialization
 
   init(
     publisher: UIAccessibilityNotificationPublisher = DefaultUIAccessibilityNotificationPublisher()
   ) {
     self.publisher = publisher
   }
-
-  // MARK: - AccessibilityAnnouncementService
 
   func announceError(_ message: String) {
     logger.debug(message: "[A11Y] Announcing error: \(message)")

@@ -12,10 +12,6 @@ final class WebRedirectRepositoryTests: XCTestCase {
 
     private var sut: WebRedirectRepositoryImpl!
 
-    override func setUp() {
-        super.setUp()
-    }
-
     override func tearDown() {
         sut = nil
         super.tearDown()
