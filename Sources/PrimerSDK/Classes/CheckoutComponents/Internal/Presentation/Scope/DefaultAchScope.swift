@@ -380,7 +380,7 @@ extension DefaultAchScope: AchBankCollectorDelegate {
   func achBankCollectorDidSucceed(paymentId: String) {
     logger.debug(message: "ACH bank collector succeeded with paymentId: \(paymentId)")
     bankCollectorViewController = nil
-    Task { [self] in
+    Task { @MainActor in
       await transitionToMandateAcceptance()
     }
   }
