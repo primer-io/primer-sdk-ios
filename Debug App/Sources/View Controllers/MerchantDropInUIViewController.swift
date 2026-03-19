@@ -6,16 +6,21 @@
 
 import PrimerCore
 import PrimerFoundation
+import PrimerNetworking
 import PrimerSDK
 import UIKit
 
 class MerchantDropInUIViewController: UIViewController, PrimerDelegate {
 
-    class func instantiate(settings: PrimerSettings,
-                           clientSession: ClientSessionRequestBody?,
-                           clientToken: String?) -> MerchantDropInUIViewController {
-        let mcvc = UIStoryboard(name: "Main",
-                                bundle: nil).instantiateViewController(withIdentifier: "MerchantCheckoutViewController") as! MerchantDropInUIViewController
+    class func instantiate(
+        settings: PrimerSettings,
+        clientSession: ClientSessionRequestBody?,
+        clientToken: String?
+    ) -> MerchantDropInUIViewController {
+        let mcvc = UIStoryboard(
+            name: "Main",
+            bundle: nil
+        ).instantiateViewController(withIdentifier: "MerchantCheckoutViewController") as! MerchantDropInUIViewController
         mcvc.settings = settings
         mcvc.clientSession = clientSession
         mcvc.clientToken = clientToken
@@ -55,8 +60,10 @@ class MerchantDropInUIViewController: UIViewController, PrimerDelegate {
         if let clientToken = clientToken {
             Primer.shared.showVaultManager(clientToken: clientToken)
         } else if let clientSession = clientSession {
-            Networking.requestClientSession(requestBody: clientSession,
-                                            apiVersion: settings.apiVersion) { (clientToken, err) in
+            Networking.requestClientSession(
+                requestBody: clientSession,
+                apiVersion: settings.apiVersion
+            ) { (clientToken, err) in
                 if let err = err {
                     print(err)
                     let merchantErr = NSError(domain: "merchant-domain", code: 1, userInfo: [NSLocalizedDescriptionKey: "Failed to fetch client token"])
@@ -78,8 +85,10 @@ class MerchantDropInUIViewController: UIViewController, PrimerDelegate {
             Primer.shared.showUniversalCheckout(clientToken: clientToken)
 
         } else if let clientSession = clientSession {
-            Networking.requestClientSession(requestBody: clientSession,
-                                            apiVersion: settings.apiVersion) { (clientToken, err) in
+            Networking.requestClientSession(
+                requestBody: clientSession,
+                apiVersion: settings.apiVersion
+            ) { (clientToken, err) in
                 if let err = err {
                     print(err)
                     let merchantErr = NSError(domain: "merchant-domain", code: 1, userInfo: [NSLocalizedDescriptionKey: "Failed to fetch client token"])
@@ -102,20 +111,26 @@ class MerchantDropInUIViewController: UIViewController, PrimerDelegate {
         self.logs.append(#function)
 
         if let clientToken = clientToken {
-            Primer.shared.showPaymentMethod(paymentMethod,
-                                            intent: paymentMethodTypeSessionIntent,
-                                            clientToken: clientToken)
+            Primer.shared.showPaymentMethod(
+                paymentMethod,
+                intent: paymentMethodTypeSessionIntent,
+                clientToken: clientToken
+            )
         } else if let clientSession = clientSession {
-            Networking.requestClientSession(requestBody: clientSession,
-                                            apiVersion: settings.apiVersion) { (clientToken, err) in
+            Networking.requestClientSession(
+                requestBody: clientSession,
+                apiVersion: settings.apiVersion
+            ) { (clientToken, err) in
                 if let err = err {
                     print(err)
                     let merchantErr = NSError(domain: "merchant-domain", code: 1, userInfo: [NSLocalizedDescriptionKey: "Failed to fetch client token"])
                     print(merchantErr)
                 } else if let clientToken = clientToken {
-                    Primer.shared.showPaymentMethod(paymentMethod,
-                                                    intent: self.paymentMethodTypeSessionIntent,
-                                                    clientToken: clientToken)
+                    Primer.shared.showPaymentMethod(
+                        paymentMethod,
+                        intent: self.paymentMethodTypeSessionIntent,
+                        clientToken: clientToken
+                    )
                 }
             }
         }
@@ -195,7 +210,9 @@ extension MerchantDropInUIViewController {
                     payment: PrimerCheckoutDataPayment(
                         id: res.id,
                         orderId: res.orderId,
-                        paymentFailureReason: nil))
+                        paymentFailureReason: nil
+                    )
+                )
 
                 if res.status == .declined {
                     decisionHandler(.fail(withErrorMessage: "Oh no, payment was declined :("))
