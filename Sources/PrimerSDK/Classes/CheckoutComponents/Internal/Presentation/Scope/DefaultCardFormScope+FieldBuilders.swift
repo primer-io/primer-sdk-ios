@@ -8,8 +8,6 @@
 
 import SwiftUI
 
-// MARK: - ViewBuilder Method Implementations
-
 @available(iOS 15.0, *)
 extension DefaultCardFormScope {
 

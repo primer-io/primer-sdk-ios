@@ -6,8 +6,6 @@
 
 import Foundation
 
-// MARK: - Field Validation State Update
-
 @available(iOS 15.0, *)
 extension DefaultCardFormScope {
 
