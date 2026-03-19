@@ -336,7 +336,7 @@ class MockAppState: AppStateProtocol {
     }()
 
     lazy var currency: Currency? = {
-        MockAppState.current.apiConfiguration?.clientSession?.order?.currencyCode
+        MockAppState.current.apiConfiguration?.clientSession?.order?.currency
     }()
 
     var clientToken: String?

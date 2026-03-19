@@ -1,10 +1,11 @@
 //
 //  PrimerClientSession.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+import PrimerNetworking
 
 @objc public final class PrimerClientSession: NSObject, Codable {
 
@@ -41,7 +42,7 @@ extension PrimerClientSession {
         self.init(
             customerId: session?.customer?.id,
             orderId: session?.order?.id,
-            currencyCode: session?.order?.currencyCode?.code,
+            currencyCode: session?.order?.currencyCode,
             totalAmount: session?.order?.totalOrderAmount,
             lineItems: session?.order?.lineItems?.compactMap { PrimerLineItem(lineItem: $0, session: session) },
             orderDetails: PrimerOrder(clientSessionOrder: session?.order),

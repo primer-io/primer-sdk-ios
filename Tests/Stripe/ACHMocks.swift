@@ -56,7 +56,7 @@ final class ACHMocks {
                 totalOrderAmount: 1000,
                 totalTaxAmount: 50,
                 countryCode: .us,
-                currencyCode: CurrencyLoader().getCurrency("USD"),
+                currencyCode: "USD",
                 fees: nil,
                 lineItems: [ClientSession.Order.LineItem(
                     itemId: "mock-item-id-1",
@@ -96,7 +96,7 @@ final class ACHMocks {
                 totalOrderAmount: emptyTotalOrderAmmount ? nil : 1000,
                 totalTaxAmount: nil,
                 countryCode: .us,
-                currencyCode: emptyCurrencyCode ? nil : CurrencyLoader().getCurrency("USD"),
+                currencyCode: "USD",
                 fees: nil,
                 lineItems: emptyLineItems ? nil : [getLineItem(hasAmount: !emptyOrderAmount)]
             ),

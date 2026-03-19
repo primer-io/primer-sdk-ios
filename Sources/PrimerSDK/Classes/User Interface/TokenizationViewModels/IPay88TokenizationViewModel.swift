@@ -213,7 +213,7 @@ final class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
               let primerTransactionId = decodedJWTToken.primerTransactionId,
               let iPay88PaymentMethodId = decodedJWTToken.iPay88PaymentMethodId,
               let supportedCurrency = decodedJWTToken.supportedCurrencyCode,
-              supportedCurrency.uppercased() == PrimerAPIConfiguration.current?.clientSession?.order?.currencyCode?.code.uppercased(),
+              supportedCurrency.uppercased() == PrimerAPIConfiguration.current?.clientSession?.order?.currencyCode?.uppercased(),
               let supportedCountry = decodedJWTToken.supportedCountry,
               supportedCountry.uppercased() == PrimerAPIConfiguration.current?.clientSession?.order?.countryCode?.rawValue.uppercased()
         else {
@@ -399,8 +399,10 @@ final class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
 extension IPay88TokenizationViewModel: PrimerIPay88ViewControllerDelegate {
     func primerIPay88ViewDidLoad() {}
 
-    func primerIPay88PaymentSessionCompleted(payment: PrimerIPay88MYSDK.PrimerIPay88Payment?,
-                                             error: PrimerIPay88MYSDK.PrimerIPay88Error?) {
+    func primerIPay88PaymentSessionCompleted(
+        payment: PrimerIPay88MYSDK.PrimerIPay88Payment?,
+        error: PrimerIPay88MYSDK.PrimerIPay88Error?
+    ) {
         if let payment {
             primerIPay88Payment = payment
         }
