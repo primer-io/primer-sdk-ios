@@ -8,8 +8,6 @@ import SwiftUI
 
 @available(iOS 15.0, *)
 struct NameInputField: View, LogReporter {
-  // MARK: - Public Properties
-
   let label: String?
   let placeholder: String
   let inputType: PrimerInputElementType

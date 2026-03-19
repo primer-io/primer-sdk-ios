@@ -6,7 +6,6 @@
 
 import SwiftUI
 
-/// A SwiftUI component for selecting between co-badged card networks using a segmented control
 @available(iOS 15.0, *)
 struct InlineCardNetworkSelector: View {
   // MARK: - Properties

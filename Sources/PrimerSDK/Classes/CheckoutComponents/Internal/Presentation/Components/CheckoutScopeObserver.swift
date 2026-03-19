@@ -6,9 +6,6 @@
 
 import SwiftUI
 
-// MARK: - Checkout Scope Observer
-
-/// Wrapper view that properly observes the DefaultCheckoutScope as an ObservableObject
 @available(iOS 15.0, *)
 struct CheckoutScopeObserver: View, LogReporter {
   @ObservedObject private var scope: DefaultCheckoutScope
@@ -16,8 +13,6 @@ struct CheckoutScopeObserver: View, LogReporter {
   private let onCompletion: ((PrimerCheckoutState) -> Void)?
   @Environment(\.colorScheme) private var colorScheme
   @Environment(\.bridgeController) private var bridgeController
-
-  // Design tokens state
   @StateObject private var designTokensManager = DesignTokensManager()
 
   init(
@@ -31,28 +26,17 @@ struct CheckoutScopeObserver: View, LogReporter {
   }
 
   var body: some View {
-    Group {
-      if bridgeController != nil {
-        makeContentView()  // NO navigation wrapper - for UIKit bridge (prevents sizing issues)
-      } else {
-        // Pure SwiftUI - use BackportedNavigationStack for iOS 16+ NavigationStack
-        BackportedNavigationStack {
-          makeContentView()
-        }
-      }
+    if bridgeController != nil {
+      makeContentView()
+        .background(CheckoutColors.background(tokens: designTokensManager.tokens))
+    } else {
+      BackportedNavigationStack(content: makeContentView)
+      .background(CheckoutColors.background(tokens: designTokensManager.tokens))
     }
-    .background(CheckoutColors.background(tokens: designTokensManager.tokens))
   }
 
   private func makeContentView() -> some View {
     VStack(spacing: 0) {
-      // MARK: - Navigation Content
-      // Simple fade transition between screens
-      // TODO: Future improvements could include:
-      // - Respect UIAccessibility.isReduceMotionEnabled for users with motion sensitivity
-      // - Add directional transitions (slide left/right) based on navigation direction
-      // - Implement custom per-route transitions (e.g., scale for success screen)
-      // - Add interactive gesture-based navigation
       getCurrentView()
         .animation(.easeInOut(duration: 0.3), value: scope.navigationState)
     }
@@ -67,14 +51,11 @@ struct CheckoutScopeObserver: View, LogReporter {
       }
     }
     .onChange(of: colorScheme) { newColorScheme in
-      // Reload design tokens when color scheme changes
       Task {
         await loadDesignTokens(for: newColorScheme)
       }
     }
   }
-
-  // MARK: - View Builder
 
   private func getCurrentView() -> AnyView {
     switch scope.navigationState {
@@ -98,8 +79,6 @@ struct CheckoutScopeObserver: View, LogReporter {
       makeDismissedView()
     }
   }
-
-  // MARK: - View Factory Methods
 
   private func makeLoadingView() -> AnyView {
     if scope.isInitScreenEnabled {
@@ -249,8 +228,6 @@ struct CheckoutScopeObserver: View, LogReporter {
         }
       })
   }
-
-  // MARK: - Design Token Management
 
   private func setupDesignTokens() async {
     logger.info(message: "Setting up design tokens...")

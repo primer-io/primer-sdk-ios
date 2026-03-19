@@ -57,7 +57,7 @@ struct EmailTextField: UIViewRepresentable, LogReporter {
     )
   }
 
-  class Coordinator: NSObject, UITextFieldDelegate, LogReporter {
+  final class Coordinator: NSObject, UITextFieldDelegate, LogReporter {
     private let validationService: ValidationService
     @Binding private var email: String
     @Binding private var isValid: Bool

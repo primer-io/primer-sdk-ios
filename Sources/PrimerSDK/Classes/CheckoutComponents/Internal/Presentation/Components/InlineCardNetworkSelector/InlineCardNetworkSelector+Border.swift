@@ -6,19 +6,13 @@
 
 import SwiftUI
 
-// MARK: - Rounded Corners Shape
-
 @available(iOS 15.0, *)
 struct RoundedCorners: InsettableShape {
-  // MARK: - Private Properties
-
   private let topLeft: CGFloat
   private let topRight: CGFloat
   private let bottomLeft: CGFloat
   private let bottomRight: CGFloat
   private var insetAmount: CGFloat = 0
-
-  // MARK: - Init
 
   init(topLeft: CGFloat, topRight: CGFloat, bottomLeft: CGFloat, bottomRight: CGFloat) {
     self.topLeft = topLeft

@@ -6,7 +6,6 @@
 
 import SwiftUI
 
-/// A wrapper view that properly observes the DefaultCardFormScope and ensures UI updates
 @available(iOS 15.0, *)
 struct CountryInputFieldWrapper: View, LogReporter {
   @ObservedObject var scope: DefaultCardFormScope

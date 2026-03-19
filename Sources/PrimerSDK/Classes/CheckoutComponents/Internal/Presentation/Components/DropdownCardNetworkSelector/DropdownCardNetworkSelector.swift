@@ -6,21 +6,13 @@
 
 import SwiftUI
 
-/// A dropdown-style card network selector for co-badged cards.
-/// Displays the selected network badge with a chevron, and shows a menu on tap.
 @available(iOS 15.0, *)
 struct DropdownCardNetworkSelector: View {
-  // MARK: - Properties
-
   let availableNetworks: [CardNetwork]
   @Binding var selectedNetwork: CardNetwork
   let onNetworkSelected: ((CardNetwork) -> Void)?
 
-  // MARK: - Private Properties
-
   @Environment(\.designTokens) private var tokens
-
-  // MARK: - Body
 
   var body: some View {
     Menu {

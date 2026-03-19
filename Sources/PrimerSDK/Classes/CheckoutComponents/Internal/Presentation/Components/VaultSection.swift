@@ -6,7 +6,6 @@
 
 import SwiftUI
 
-/// Section displaying vaulted/saved payment methods with a placeholder card
 @available(iOS 15.0, *)
 struct VaultSection: View {
   let vaultedPaymentMethod: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod
