@@ -97,11 +97,11 @@ struct ApplePayScreen: View {
   @ViewBuilder
   private func makeApplePayButton() -> some View {
     if let customButton = scope.applePayButton {
-      AnyView(customButton { scope.submit() })
+      AnyView(customButton(action: scope.submit))
         .frame(height: 50)
         .padding(.horizontal, 16)
     } else {
-      scope.PrimerApplePayButton { scope.submit() }
+      scope.PrimerApplePayButton(action: scope.submit)
         .frame(height: 50)
         .padding(.horizontal, 16)
     }
