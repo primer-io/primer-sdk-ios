@@ -6,18 +6,8 @@
 
 import Foundation
 
-/// Responsible for sending analytics payloads via HTTP to the analytics service.
-/// Handles request construction, authorization, and response validation.
 actor AnalyticsNetworkClient: LogReporter {
 
-  // MARK: - Public Methods
-
-  /// Send an analytics payload to the specified endpoint
-  /// - Parameters:
-  ///   - payload: The analytics payload to send
-  ///   - endpoint: The target analytics endpoint URL
-  ///   - token: Optional client session token for authorization
-  /// - Throws: `AnalyticsError.requestFailed` if the request fails
   func send(payload: AnalyticsPayload, to endpoint: URL, token: String?) async throws {
     let request = buildRequest(payload: payload, endpoint: endpoint, token: token)
 
@@ -39,30 +29,20 @@ actor AnalyticsNetworkClient: LogReporter {
     logger.info(message: "✅ [Analytics] \(payload.eventName) acknowledged")
   }
 
-  // MARK: - Private Methods
-
-  private func buildRequest(payload: AnalyticsPayload, endpoint: URL, token: String?) -> URLRequest
-  {
+  private func buildRequest(payload: AnalyticsPayload, endpoint: URL, token: String?) -> URLRequest {
     var request = URLRequest(url: endpoint)
     request.httpMethod = "POST"
     request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
-    // Add Authorization header if token is available
     if let token {
       request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
     }
 
-    // Encode payload (no pretty printing to match Android behavior)
     let encoder = JSONEncoder()
-
-    // IMPORTANT: Disable forward slash escaping - server may reject escaped slashes
-    if #available(iOS 13.0, *) {
-      encoder.outputFormatting = [.withoutEscapingSlashes]
-    }
+    encoder.outputFormatting = [.withoutEscapingSlashes]
 
     do {
-      let jsonData = try encoder.encode(payload)
-      request.httpBody = jsonData
+      request.httpBody = try encoder.encode(payload)
     } catch {
       logger.error(message: "❌ [Analytics] Failed to encode payload: \(error)")
     }

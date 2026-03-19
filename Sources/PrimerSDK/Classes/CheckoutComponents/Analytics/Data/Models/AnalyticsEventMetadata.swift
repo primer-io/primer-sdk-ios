@@ -27,18 +27,10 @@ public struct GeneralEvent {
     self.locale = locale
   }
 
-  /// Get a properly formatted locale string (e.g., "en-US") without modifiers
-  /// Public so it can be used in default parameter values
   public static var formattedCurrentLocale: String {
     let locale = Locale.current
-    if let languageCode = locale.languageCode {
-      if let regionCode = locale.regionCode {
-        return "\(languageCode)-\(regionCode)"
-      } else {
-        return languageCode
-      }
-    }
-    return "en-US"  // Fallback
+    guard let languageCode = locale.languageCode else { return "en-US" }
+    return locale.regionCode.map { "\(languageCode)-\($0)" } ?? languageCode
   }
 }
 
@@ -99,51 +91,46 @@ extension AnalyticsEventMetadata {
   /// User locale in ISO format (e.g., "en-GB")
   var locale: String {
     switch self {
-    case let .general(event): return event.locale
-    case let .payment(event): return event.locale
-    case let .threeDS(event): return event.locale
-    case let .redirect(event): return event.locale
+    case let .general(event): event.locale
+    case let .payment(event): event.locale
+    case let .threeDS(event): event.locale
+    case let .redirect(event): event.locale
     }
   }
 
-  /// Selected payment method (e.g., "PAYMENT_CARD", "APPLE_PAY")
   var paymentMethod: String? {
     switch self {
-    case let .payment(event): return event.paymentMethod
-    case let .threeDS(event): return event.paymentMethod
-    default: return nil
+    case let .payment(event): event.paymentMethod
+    case let .threeDS(event): event.paymentMethod
+    default: nil
     }
   }
 
-  /// Identifier from payments API (e.g., "pay_01HZXGT7N5V1ASDFG987654321")
   var paymentId: String? {
     switch self {
-    case let .payment(event): return event.paymentId
-    default: return nil
+    case let .payment(event): event.paymentId
+    default: nil
     }
   }
 
-  /// 3DS provider name (e.g., "Netcetera")
   var threedsProvider: String? {
     switch self {
-    case let .threeDS(event): return event.provider
-    default: return nil
+    case let .threeDS(event): event.provider
+    default: nil
     }
   }
 
-  /// ECI value or 3DS response data (e.g., "05")
   var threedsResponse: String? {
     switch self {
-    case let .threeDS(event): return event.response
-    default: return nil
+    case let .threeDS(event): event.response
+    default: nil
     }
   }
 
-  /// Third-party redirection target URL
   var redirectDestinationUrl: String? {
     switch self {
-    case let .redirect(event): return event.destinationUrl
-    default: return nil
+    case let .redirect(event): event.destinationUrl
+    default: nil
     }
   }
 }
