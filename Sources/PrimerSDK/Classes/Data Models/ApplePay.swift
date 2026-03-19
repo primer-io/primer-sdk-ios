@@ -6,6 +6,7 @@
 
 import PassKit
 import PrimerFoundation
+import PrimerNetworking
 
 public enum MerchantCapability {
     case capability3DS

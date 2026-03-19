@@ -63,7 +63,7 @@ class KlarnaTestsMocks {
             totalOrderAmount: 1234,
             totalTaxAmount: nil,
             countryCode: .de,
-            currencyCode: Currency(code: "EUR", decimalDigits: 2),
+            currencyCode: "EUR",
             fees: nil,
             lineItems: [
                 .init(
@@ -101,7 +101,7 @@ class KlarnaTestsMocks {
                 totalOrderAmount: hasAmount ? 100: nil,
                 totalTaxAmount: nil,
                 countryCode: .de,
-                currencyCode: hasCurrency ? CurrencyLoader().getCurrency("EUR") : nil,
+                currencyCode: hasCurrency ? "EUR" : nil,
                 fees: nil,
                 lineItems: hasItems ? [getLineItem(hasAmount: hasLineItemAmout)] : nil
             ),

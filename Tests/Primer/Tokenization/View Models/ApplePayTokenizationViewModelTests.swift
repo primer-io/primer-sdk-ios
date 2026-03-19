@@ -30,7 +30,7 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
         totalOrderAmount: 1234,
         totalTaxAmount: nil,
         countryCode: .gb,
-        currencyCode: Currency(code: "GBP", decimalDigits: 2),
+        currencyCode: "GBP",
         fees: nil,
         lineItems: [
             .init(
@@ -357,7 +357,7 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
                 totalOrderAmount: itemAmount + surchargeAmount,
                 totalTaxAmount: nil,
                 countryCode: .init(rawValue: "GB"),
-                currencyCode: .init(code: "GBP", decimalDigits: 2),
+                currencyCode: "GBP",
                 fees: fees,
                 lineItems: [
                     .init(
@@ -450,7 +450,7 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
                 totalOrderAmount: itemAmount + shippingAmount,
                 totalTaxAmount: nil,
                 countryCode: .init(rawValue: "GB"),
-                currencyCode: .init(code: "GBP", decimalDigits: 2),
+                currencyCode: "GBP",
                 fees: nil,
                 lineItems: [
                     .init(
@@ -555,7 +555,7 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
                 totalOrderAmount: 1200,
                 totalTaxAmount: nil,
                 countryCode: .init(rawValue: "GB"),
-                currencyCode: .init(code: "GBP", decimalDigits: 2),
+                currencyCode: "GBP",
                 fees: nil,
                 lineItems: [
                     .init(
@@ -674,7 +674,7 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
                 totalOrderAmount: 1200,
                 totalTaxAmount: nil,
                 countryCode: .init(rawValue: "GB"),
-                currencyCode: .init(code: "GBP", decimalDigits: 2),
+                currencyCode: "GBP",
                 fees: nil,
                 lineItems: [
                     .init(

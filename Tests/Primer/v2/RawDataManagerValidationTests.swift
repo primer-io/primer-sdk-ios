@@ -5,7 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import PrimerFoundation
-import PrimerNetworking
+@testable import PrimerNetworking
 @testable import PrimerSDK
 import XCTest
 
@@ -48,7 +48,7 @@ class RawDataManagerValidationTests: XCTestCase {
                 totalOrderAmount: 100,
                 totalTaxAmount: nil,
                 countryCode: .gb,
-                currencyCode: CurrencyLoader().getCurrency("GBP"),
+                currencyCode: "GBP",
                 fees: nil,
                 lineItems: [
                     ClientSession.Order.LineItem(

@@ -6,6 +6,7 @@
 
 import Foundation
 import PrimerFoundation
+import PrimerNetworking
 
 /**
  * Protocol defining the operations required to manage user details within a client session for ACH transactions.
@@ -26,8 +27,10 @@ final class ACHClientSessionService: ACHUserDetailsProviding {
     let settings: PrimerSettingsProtocol
 
     // MARK: - Init
-    init(apiClient: PrimerAPIClientProtocol = PrimerAPIConfigurationModule.apiClient ?? PrimerAPIClient(),
-         settings: PrimerSettingsProtocol = DependencyContainer.resolve()) {
+    init(
+        apiClient: PrimerAPIClientProtocol = PrimerAPIConfigurationModule.apiClient ?? PrimerAPIClient(),
+        settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+    ) {
         self.apiClient = apiClient
         self.settings = settings
     }
