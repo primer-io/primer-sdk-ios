@@ -9,7 +9,7 @@ import SwiftUI
 @available(iOS 15.0, *)
 struct SplashScreen: View {
   @Environment(\.designTokens) private var tokens
-  @Environment(\.sizeCategory) private var sizeCategory  // Observes Dynamic Type changes
+  @Environment(\.sizeCategory) private var sizeCategory
 
   var body: some View {
     ZStack {

@@ -40,9 +40,7 @@ struct PayPalView: View, LogReporter {
       HStack {
         if scope.presentationContext.shouldShowBackButton {
           Button(
-            action: {
-              scope.onBack()
-            },
+            action: scope.onBack,
             label: {
               HStack(spacing: PrimerSpacing.xsmall(tokens: tokens)) {
                 Image(systemName: RTLIcon.backChevron)
@@ -65,9 +63,7 @@ struct PayPalView: View, LogReporter {
         if scope.dismissalMechanism.contains(.closeButton) {
           Button(
             CheckoutComponentsStrings.cancelButton,
-            action: {
-              scope.cancel()
-            }
+            action: scope.cancel
           )
           .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
           .accessibility(
@@ -206,7 +202,7 @@ struct PayPalView: View, LogReporter {
   // MARK: - State Observation
 
   private func observeState() {
-    Task {
+    Task { [self] in
       for await state in scope.state {
         await MainActor.run {
           payPalState = state

@@ -65,9 +65,7 @@ struct FormRedirectPendingScreen: View {
         }
         .background(CheckoutColors.screenBackground(tokens: tokens))
         .accessibilityIdentifier(AccessibilityIdentifiers.FormRedirect.pendingScreen)
-        .onAppear {
-            announceScreenChange()
-        }
+        .onAppear(perform: announceScreenChange)
     }
 
     // MARK: - Header

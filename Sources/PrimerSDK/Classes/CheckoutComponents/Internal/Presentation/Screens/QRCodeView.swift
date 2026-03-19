@@ -178,7 +178,7 @@ struct QRCodeView: View, LogReporter {
   // MARK: - State Observation
 
   private func observeState() {
-    Task {
+    Task { [self] in
       for await state in scope.state {
         await MainActor.run {
           qrCodeState = state

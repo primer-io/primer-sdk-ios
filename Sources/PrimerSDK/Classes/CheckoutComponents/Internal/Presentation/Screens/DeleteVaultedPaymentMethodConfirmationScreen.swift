@@ -34,8 +34,8 @@ struct DeleteVaultedPaymentMethodConfirmationScreen: View, LogReporter {
   private func makeHeader() -> some View {
     CheckoutHeaderView(
       showBackButton: true,
-      onBack: { navigator.navigateBack() },
-      rightButton: .doneButton(action: { navigator.navigateBack() })
+      onBack: navigator.navigateBack,
+      rightButton: .doneButton(action: navigator.navigateBack)
     )
   }
 
@@ -145,7 +145,7 @@ struct DeleteVaultedPaymentMethodConfirmationScreen: View, LogReporter {
 
     isDeleting = true
 
-    Task {
+    Task { [self] in
       do {
         try await scope.deleteVaultedPaymentMethod(vaultedPaymentMethod)
         logger.info(message: "[Vault] Successfully deleted payment method from confirmation screen")

@@ -14,7 +14,7 @@ struct StripeBankCollectorRepresentable: UIViewControllerRepresentable {
     viewController
   }
 
-  func updateUIViewController(_ uiViewController: UIViewController, context: Context) {
-    // No updates needed - the Stripe collector manages its own state
+  func updateUIViewController(_: UIViewController, context _: Context) {
+    // No update needed — the bank collector manages its own state
   }
 }

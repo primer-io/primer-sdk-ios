@@ -71,12 +71,7 @@ struct VaultedPaymentMethodsListScreen: View {
     }
   }
 
-  // MARK: - Helpers
-
-  private func isMethodSelected(_ method: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod)
-    -> Bool
-  {
-    guard let selected = selectedVaultedPaymentMethod else { return false }
-    return method.id == selected.id
+  private func isMethodSelected(_ method: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod) -> Bool {
+    method.id == selectedVaultedPaymentMethod?.id
   }
 }

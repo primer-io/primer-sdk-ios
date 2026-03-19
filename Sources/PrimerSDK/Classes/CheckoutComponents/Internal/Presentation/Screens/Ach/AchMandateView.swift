@@ -81,8 +81,6 @@ struct AchMandateView: View, LogReporter {
     .accessibilityHint(CheckoutComponentsStrings.a11yAchMandateDeclineHint)
   }
 
-  // MARK: - Layout Constants
-
   private enum Layout {
     static let mandateTextMaxHeight: CGFloat = 300
   }

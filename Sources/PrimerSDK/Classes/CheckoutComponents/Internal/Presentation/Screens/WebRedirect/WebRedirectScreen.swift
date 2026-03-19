@@ -44,9 +44,7 @@ struct WebRedirectScreen: View {
         VStack(spacing: PrimerSpacing.large(tokens: tokens)) {
             HStack {
                 if scope.presentationContext.shouldShowBackButton {
-                    Button(action: {
-                        scope.onBack()
-                    }, label: {
+                    Button(action: scope.onBack, label: {
                         HStack(spacing: PrimerSpacing.xsmall(tokens: tokens)) {
                             Image(systemName: RTLIcon.backChevron)
                                 .font(PrimerFont.bodyMedium(tokens: tokens))

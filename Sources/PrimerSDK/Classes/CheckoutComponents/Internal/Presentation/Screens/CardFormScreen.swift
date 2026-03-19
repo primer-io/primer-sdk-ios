@@ -6,7 +6,6 @@
 
 import SwiftUI
 
-/// Default card form screen for CheckoutComponents with dynamic field rendering
 @available(iOS 15.0, *)
 struct CardFormScreen: View, LogReporter {
   let scope: any PrimerCardFormScope
@@ -43,19 +42,14 @@ struct CardFormScreen: View, LogReporter {
     VStack(spacing: PrimerSpacing.large(tokens: tokens)) {
       HStack {
         if scope.presentationContext.shouldShowBackButton {
-          Button(
-            action: {
-              scope.onBack()
-            },
-            label: {
-              HStack(spacing: PrimerSpacing.xsmall(tokens: tokens)) {
-                Image(systemName: RTLIcon.backChevron)
-                  .font(PrimerFont.bodyMedium(tokens: tokens))
-                Text(CheckoutComponentsStrings.backButton)
-              }
-              .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
+          Button(action: scope.onBack) {
+            HStack(spacing: PrimerSpacing.xsmall(tokens: tokens)) {
+              Image(systemName: RTLIcon.backChevron)
+                .font(PrimerFont.bodyMedium(tokens: tokens))
+              Text(CheckoutComponentsStrings.backButton)
             }
-          )
+            .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
+          }
           .accessibility(
             config: AccessibilityConfiguration(
               identifier: AccessibilityIdentifiers.Common.backButton,
@@ -67,19 +61,14 @@ struct CardFormScreen: View, LogReporter {
         Spacer()
 
         if scope.dismissalMechanism.contains(.closeButton) {
-          Button(
-            CheckoutComponentsStrings.cancelButton,
-            action: {
-              scope.cancel()
-            }
-          )
-          .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
-          .accessibility(
-            config: AccessibilityConfiguration(
-              identifier: AccessibilityIdentifiers.Common.closeButton,
-              label: CheckoutComponentsStrings.a11yCancel,
-              traits: [.isButton]
-            ))
+          Button(CheckoutComponentsStrings.cancelButton, action: scope.cancel)
+            .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
+            .accessibility(
+              config: AccessibilityConfiguration(
+                identifier: AccessibilityIdentifiers.Common.closeButton,
+                label: CheckoutComponentsStrings.a11yCancel,
+                traits: [.isButton]
+              ))
         }
       }
 
@@ -104,8 +93,7 @@ struct CardFormScreen: View, LogReporter {
   }
 
   private var titleSection: some View {
-    let title = scope.title ?? CheckoutComponentsStrings.cardPaymentTitle
-    return Text(title)
+    Text(scope.title ?? CheckoutComponentsStrings.cardPaymentTitle)
       .font(PrimerFont.titleXLarge(tokens: tokens))
       .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
       .frame(maxWidth: .infinity, alignment: .leading)
@@ -115,7 +103,6 @@ struct CardFormScreen: View, LogReporter {
   @MainActor
   @ViewBuilder
   private var dynamicFieldsSection: some View {
-    // Check scope configuration for custom screen
     if let customScreen = scope.screen {
       AnyView(customScreen(scope))
     } else {

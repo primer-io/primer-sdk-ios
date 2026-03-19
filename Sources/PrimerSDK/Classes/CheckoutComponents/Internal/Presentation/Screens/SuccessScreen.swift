@@ -12,7 +12,7 @@ struct SuccessScreen: View {
   let onDismiss: (() -> Void)?
 
   @Environment(\.designTokens) private var tokens
-  @Environment(\.sizeCategory) private var sizeCategory  // Observes Dynamic Type changes
+  @Environment(\.sizeCategory) private var sizeCategory
   @State private var dismissTimer: Timer?
   @State private var iconScale: CGFloat = 0.3
 

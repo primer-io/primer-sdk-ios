@@ -35,9 +35,7 @@ final class AchStateObserver: ObservableObject {
   func startObserving() {
     guard observationTask == nil else { return }
 
-    observationTask = Task { @MainActor [weak self] in
-      guard let self else { return }
-
+    observationTask = Task { [self] in
       for await state in scope.state {
         if Task.isCancelled { break }
 
@@ -46,9 +44,7 @@ final class AchStateObserver: ObservableObject {
         if shouldShowBankCollector {
           showBankCollector = true
         } else if state.step == .mandateAcceptance {
-          if !stripeFlowCompleted {
-            stripeFlowCompleted = true
-          }
+          stripeFlowCompleted = true
         } else if shouldHideBankCollector {
           showBankCollector = false
         }
