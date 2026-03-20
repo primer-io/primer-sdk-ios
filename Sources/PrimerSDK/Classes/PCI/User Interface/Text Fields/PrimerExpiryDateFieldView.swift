@@ -7,6 +7,7 @@
 // swiftlint:disable function_body_length
 
 import PrimerFoundation
+import PrimerUI
 import UIKit
 
 public final class PrimerExpiryDateFieldView: PrimerTextFieldView {
@@ -28,9 +29,11 @@ public final class PrimerExpiryDateFieldView: PrimerTextFieldView {
         }
     }
 
-    override public func textField(_ textField: UITextField,
-                                   shouldChangeCharactersIn range: NSRange,
-                                   replacementString string: String) -> Bool {
+    override public func textField(
+        _ textField: UITextField,
+        shouldChangeCharactersIn range: NSRange,
+        replacementString string: String
+    ) -> Bool {
         guard let primerTextField = textField as? PrimerTextField else { return true }
         let currentText = primerTextField.internalText ?? ""
 

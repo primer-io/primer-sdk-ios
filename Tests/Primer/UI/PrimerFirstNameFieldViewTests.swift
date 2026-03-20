@@ -1,11 +1,12 @@
 //
 //  PrimerFirstNameFieldViewTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import XCTest
 @testable import PrimerSDK
+import PrimerUI
+import XCTest
 
 final class PrimerFirstNameFieldViewTests: XCTestCase {
 
@@ -40,9 +41,11 @@ final class PrimerFirstNameFieldViewTests: XCTestCase {
             expectation.fulfill()
         }
 
-        _ = view.textField(view.textField,
-                           shouldChangeCharactersIn: NSRange(location: 0, length: 0),
-                           replacementString: "John")
+        _ = view.textField(
+            view.textField,
+            shouldChangeCharactersIn: NSRange(location: 0, length: 0),
+            replacementString: "John"
+        )
 
         waitForExpectations(timeout: 2.0)
     }

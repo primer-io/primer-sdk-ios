@@ -4,7 +4,19 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+import PrimerUI
 import UIKit
+
+extension PrimerTextFieldView {
+    var editingAnalyticsObjectId: ObjectId? {
+        get {
+            _editingAnalyticsObjectId.flatMap(ObjectId.init)
+        }
+        set {
+            _editingAnalyticsObjectId = newValue?.rawValue
+        }
+    }
+}
 
 public final class PrimerLastNameFieldView: PrimerSimpleCardFormTextFieldView {
 

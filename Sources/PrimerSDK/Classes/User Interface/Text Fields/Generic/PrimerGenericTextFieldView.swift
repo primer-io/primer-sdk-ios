@@ -5,6 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import PrimerFoundation
+import PrimerUI
 import UIKit
 
 public final class PrimerGenericFieldView: PrimerTextFieldView {
@@ -29,9 +30,11 @@ public final class PrimerGenericFieldView: PrimerTextFieldView {
         textField.delegate = self
     }
 
-    override public func textField(_ textField: UITextField,
-                                   shouldChangeCharactersIn range: NSRange,
-                                   replacementString string: String) -> Bool {
+    override public func textField(
+        _ textField: UITextField,
+        shouldChangeCharactersIn range: NSRange,
+        replacementString string: String
+    ) -> Bool {
 
         guard let primerTextField = textField as? PrimerTextField else { return true }
         let currentText = primerTextField.internalText ?? ""
