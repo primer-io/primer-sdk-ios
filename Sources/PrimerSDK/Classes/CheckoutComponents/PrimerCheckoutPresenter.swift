@@ -325,16 +325,13 @@ extension PrimerCheckoutPresenterDelegate {
             completion?()
             return
         }
-        
+
         isPresentingCheckout = false
-        
-        dismissDirectly()
-        
-        activeCheckoutController = nil
-        
-        handleCheckoutDismiss()
-        
-        completion?()
+
+        dismissDirectly { [weak self] in
+            self?.handleCheckoutDismiss()
+            completion?()
+        }
     }
     
 }
