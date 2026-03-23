@@ -105,5 +105,4 @@ actor AnalyticsEventService: CheckoutComponentsAnalyticsServiceProtocol, LogRepo
 
 enum AnalyticsError: Error {
   case requestFailed
-  case invalidConfiguration
 }

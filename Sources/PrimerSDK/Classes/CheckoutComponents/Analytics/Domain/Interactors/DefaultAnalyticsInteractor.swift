@@ -15,8 +15,6 @@ actor DefaultAnalyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol 
   }
 
   func trackEvent(_ eventType: AnalyticsEventType, metadata: AnalyticsEventMetadata?) async {
-    _ = Task { [eventService] in
-      await eventService.sendEvent(eventType, metadata: metadata)
-    }
+    await eventService.sendEvent(eventType, metadata: metadata)
   }
 }
