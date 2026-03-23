@@ -7,6 +7,7 @@
 // swiftlint:disable function_body_length
 
 import PrimerFoundation
+import PrimerUI
 import UIKit
 
 public final class PrimerCVVFieldView: PrimerTextFieldView {
@@ -30,9 +31,11 @@ public final class PrimerCVVFieldView: PrimerTextFieldView {
         }
     }
 
-    override public func textField(_ textField: UITextField,
-                                   shouldChangeCharactersIn range: NSRange,
-                                   replacementString string: String) -> Bool {
+    override public func textField(
+        _ textField: UITextField,
+        shouldChangeCharactersIn range: NSRange,
+        replacementString string: String
+    ) -> Bool {
         guard let primerTextField = textField as? PrimerTextField else { return true }
         let currentText = primerTextField.internalText ?? ""
 
@@ -50,9 +53,9 @@ public final class PrimerCVVFieldView: PrimerTextFieldView {
             validation = .valid
         case false:
 			validation = .invalid(
-				PrimerValidationError.invalidCvv(
-					message: newText.isEmpty ? "CVV cannot be blank." : "CVV is not valid."
-				)
+			    PrimerValidationError.invalidCvv(
+			        message: newText.isEmpty ? "CVV cannot be blank." : "CVV is not valid."
+			    )
 			)
         default:
             validation = .notAvailable
