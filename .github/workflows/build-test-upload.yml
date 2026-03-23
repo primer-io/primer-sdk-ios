@@ -134,7 +134,7 @@ jobs:
         with:
           xcode-version: '16.4.0'
       - name: Install SSH key
-        uses: shimataro/ssh-key-action@6b84f2e793b32fa0b03a379cadadec75cc539391 #v2.8.0
+        uses: shimataro/ssh-key-action@87a8f067114a8ce263df83e9ed5c849953548bc3 #v2.8.1
         with:
           key: ${{ secrets.SSH_KEY }}
           name: id_rsa_github_actions
