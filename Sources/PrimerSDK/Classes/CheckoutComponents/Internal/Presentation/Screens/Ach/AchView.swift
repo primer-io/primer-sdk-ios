@@ -40,6 +40,19 @@ struct AchView: View, LogReporter {
     .onDisappear {
       observer.stopObserving()
     }
+    .onChange(of: observer.achState.step) { step in
+      let message: String = switch step {
+      case .loading, .processing:
+        CheckoutComponentsStrings.loading
+      case .userDetailsCollection:
+        CheckoutComponentsStrings.achUserDetailsTitle
+      case .bankAccountCollection:
+        CheckoutComponentsStrings.loading
+      case .mandateAcceptance:
+        CheckoutComponentsStrings.achMandateTitle
+      }
+      UIAccessibility.post(notification: .screenChanged, argument: message)
+    }
     .fullScreenCover(isPresented: $observer.showBankCollector) {
       if let bankCollectorVC = scope.bankCollectorViewController {
         StripeBankCollectorRepresentable(viewController: bankCollectorVC)
