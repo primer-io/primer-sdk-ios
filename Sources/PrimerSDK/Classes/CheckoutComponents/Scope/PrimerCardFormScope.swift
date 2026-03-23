@@ -164,6 +164,7 @@ where State == PrimerCardFormState {
   // MARK: - Validation State Communication
 
   func updateValidationState(cardNumber: Bool, cvv: Bool, expiry: Bool, cardholderName: Bool)
+  func updateValidationStateIfNeeded(for field: PrimerInputElementType, isValid: Bool)
 
   // MARK: - Structured State Support
 
@@ -253,41 +254,9 @@ extension PrimerCardFormScope {
   public func getFormConfiguration() -> CardFormConfiguration {
     CardFormConfiguration.default
   }
-}
 
-// MARK: - PrimerInputElementType to FieldValidationStates KeyPath Mapping
-
-private extension PrimerInputElementType {
-  var validationKeyPath: WritableKeyPath<FieldValidationStates, Bool>? {
-    switch self {
-    case .cardNumber: \.cardNumber
-    case .cvv: \.cvv
-    case .expiryDate: \.expiry
-    case .cardholderName: \.cardholderName
-    case .email: \.email
-    case .firstName: \.firstName
-    case .lastName: \.lastName
-    case .addressLine1: \.addressLine1
-    case .addressLine2: \.addressLine2
-    case .city: \.city
-    case .state: \.state
-    case .postalCode: \.postalCode
-    case .countryCode: \.countryCode
-    case .phoneNumber: \.phoneNumber
-    case .retailer, .otp, .unknown, .all: nil
-    }
-  }
-}
-
-// MARK: - Validation State Update Helper
-
-@available(iOS 15.0, *)
-extension PrimerCardFormScope {
-
-  func updateValidationStateIfNeeded(for field: PrimerInputElementType, isValid: Bool) {
-    guard let defaultScope = self as? DefaultCardFormScope,
-          let keyPath = field.validationKeyPath else { return }
-    defaultScope.updateValidationState(keyPath, isValid: isValid)
+  public func updateValidationStateIfNeeded(for field: PrimerInputElementType, isValid: Bool) {
+    // No-op default; overridden in DefaultCardFormScope
   }
 }
 

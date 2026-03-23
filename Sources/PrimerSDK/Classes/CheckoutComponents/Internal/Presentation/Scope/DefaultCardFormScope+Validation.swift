@@ -22,4 +22,33 @@ extension DefaultCardFormScope {
     fieldValidationStates[keyPath: field] = isValid
     updateFieldValidationState()
   }
+
+  public func updateValidationStateIfNeeded(for field: PrimerInputElementType, isValid: Bool) {
+    guard let keyPath = field.validationKeyPath else { return }
+    updateValidationState(keyPath, isValid: isValid)
+  }
+}
+
+// MARK: - PrimerInputElementType to FieldValidationStates KeyPath Mapping
+
+private extension PrimerInputElementType {
+  var validationKeyPath: WritableKeyPath<FieldValidationStates, Bool>? {
+    switch self {
+    case .cardNumber: \.cardNumber
+    case .cvv: \.cvv
+    case .expiryDate: \.expiry
+    case .cardholderName: \.cardholderName
+    case .email: \.email
+    case .firstName: \.firstName
+    case .lastName: \.lastName
+    case .addressLine1: \.addressLine1
+    case .addressLine2: \.addressLine2
+    case .city: \.city
+    case .state: \.state
+    case .postalCode: \.postalCode
+    case .countryCode: \.countryCode
+    case .phoneNumber: \.phoneNumber
+    case .retailer, .otp, .unknown, .all: nil
+    }
+  }
 }
