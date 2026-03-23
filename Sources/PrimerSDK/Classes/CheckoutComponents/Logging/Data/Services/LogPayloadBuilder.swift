@@ -34,8 +34,8 @@ struct LogPayloadBuilder: LogPayloadBuilding {
 
   private enum Constants {
     static let unknownValue = "Unknown"
-    static let statusInfo = "info"
-    static let statusError = "error"
+    static let statusInfo = DatadogLogStatus.info.rawValue
+    static let statusError = DatadogLogStatus.error.rawValue
     static let serviceIosSdk = "ios-sdk"
     static let sourceLambda = "lambda"
     static let intentCheckout = "checkout"
