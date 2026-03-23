@@ -9,7 +9,7 @@ import UIKit
 
 enum FontRegistration: LogReporter {
 
-  private static var isRegistered = false
+  private nonisolated(unsafe) static var isRegistered = false
   private static let lock = NSLock()
 
   static func registerFonts() {

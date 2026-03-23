@@ -9,6 +9,7 @@
 import SwiftUI
 
 @available(iOS 15.0, *)
+@MainActor
 final class DesignTokensManager: ObservableObject {
   @Published var tokens: DesignTokens?
   private var themeOverrides: PrimerCheckoutTheme?
