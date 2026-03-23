@@ -918,14 +918,6 @@ enum CheckoutComponentsStrings {
     comment: "Default text for vaulted bank account payment methods"
   )
 
-  static let maskedCardNumber = NSLocalizedString(
-    "primer_vault_format_masked",
-    tableName: tableName,
-    bundle: .primerResources,
-    value: "•••• %@",
-    comment: "Masked card number format. Parameter is the last 4 digits."
-  )
-
   static func maskedCardNumberFormatted(_ last4: String) -> String {
     let format = NSLocalizedString(
       "primer_vault_format_masked",
