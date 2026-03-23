@@ -53,7 +53,7 @@ extension PrimerHeadlessUniversalCheckout {
 
     public final class RawDataManager: NSObject, LogReporter {
 
-        public var delegate: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate?
+        public weak var delegate: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate?
         public private(set) var paymentMethodType: String
         public var rawData: PrimerRawData? {
             didSet {
@@ -235,6 +235,7 @@ extension PrimerHeadlessUniversalCheckout {
                     await PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: self.paymentMethodType)
 
                     let paymentMethodTokenData = try await self.tokenizationService.tokenize(requestBody: requestBody)
+                    self.delegate = nil
                     (self.rawData as? PrimerCardData)?.wipe()
                     self.paymentMethodTokenData = paymentMethodTokenData
 
