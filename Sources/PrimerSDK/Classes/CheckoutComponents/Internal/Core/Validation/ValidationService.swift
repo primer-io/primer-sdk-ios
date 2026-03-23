@@ -54,9 +54,12 @@ final class ValidationResultCache {
   private let cache = NSCache<NSString, CachedValidationResult>()
 
   private init() {
-    // Configure cache for optimal validation performance
-    cache.countLimit = 200  // Support high-frequency validation calls
-    cache.totalCostLimit = 8000  // ~8KB memory limit
+    cache.countLimit = 200
+    cache.totalCostLimit = 8000
+  }
+
+  func clear() {
+    cache.removeAllObjects()
   }
 
   /// Wrapper for cached validation results with timestamp

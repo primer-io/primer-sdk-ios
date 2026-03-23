@@ -92,6 +92,7 @@ final class CheckoutSDKInitializer {
   }
 
   func cleanup() {
+    ValidationResultCache.shared.clear()
     Task {
       await DIContainer.clearContainer()
     }
