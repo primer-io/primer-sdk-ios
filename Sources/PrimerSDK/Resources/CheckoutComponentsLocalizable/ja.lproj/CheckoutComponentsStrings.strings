@@ -225,3 +225,9 @@
 "accessibility_ach_continue_hint" = "ダブルタップして銀行口座の選択に進む";
 "accessibility_ach_mandate_accept_hint" = "ダブルタップして承認を受け入れ、支払いを完了する";
 "accessibility_ach_mandate_decline_hint" = "ダブルタップして拒否し、支払いをキャンセルする";
+
+"accessibility_card_form_billing_address_hint" = "住所を入力してください";
+"accessibility_card_form_billing_address_state_hint" = "都道府県を入力してください";
+"accessibility_card_form_email_hint" = "メールアドレスを入力してください";
+"accessibility_card_form_name_hint" = "名前を入力してください";
+"accessibility_card_form_otp_hint" = "ワンタイムパスコードを入力してください";

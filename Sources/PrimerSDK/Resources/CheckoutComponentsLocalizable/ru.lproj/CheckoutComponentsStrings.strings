@@ -225,3 +225,9 @@
 "accessibility_ach_continue_hint" = "Нажмите дважды, чтобы продолжить к выбору банковского счёта";
 "accessibility_ach_mandate_accept_hint" = "Нажмите дважды, чтобы принять авторизацию и завершить оплату";
 "accessibility_ach_mandate_decline_hint" = "Нажмите дважды, чтобы отклонить и отменить оплату";
+
+"accessibility_card_form_billing_address_hint" = "Введите ваш адрес";
+"accessibility_card_form_billing_address_state_hint" = "Введите область или провинцию";
+"accessibility_card_form_email_hint" = "Введите адрес электронной почты";
+"accessibility_card_form_name_hint" = "Введите ваше имя";
+"accessibility_card_form_otp_hint" = "Введите одноразовый пароль";

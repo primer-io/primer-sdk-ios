@@ -225,3 +225,9 @@
 "accessibility_ach_continue_hint" = "Doppeltippen, um zur Bankkontoauswahl fortzufahren";
 "accessibility_ach_mandate_accept_hint" = "Doppeltippen, um die Autorisierung zu akzeptieren und die Zahlung abzuschließen";
 "accessibility_ach_mandate_decline_hint" = "Doppeltippen, um abzulehnen und die Zahlung abzubrechen";
+
+"accessibility_card_form_billing_address_hint" = "Geben Sie Ihre Adresse ein";
+"accessibility_card_form_billing_address_state_hint" = "Geben Sie Bundesland oder Provinz ein";
+"accessibility_card_form_email_hint" = "Geben Sie Ihre E-Mail-Adresse ein";
+"accessibility_card_form_name_hint" = "Geben Sie Ihren Namen ein";
+"accessibility_card_form_otp_hint" = "Einmalpasswort eingeben";

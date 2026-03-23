@@ -225,3 +225,9 @@
 "accessibility_ach_continue_hint" = "Banka hesabı seçimine devam etmek için çift dokunun";
 "accessibility_ach_mandate_accept_hint" = "Yetkilendirmeyi kabul etmek ve ödemeyi tamamlamak için çift dokunun";
 "accessibility_ach_mandate_decline_hint" = "Reddetmek ve ödemeyi iptal etmek için çift dokunun";
+
+"accessibility_card_form_billing_address_hint" = "Adresinizi girin";
+"accessibility_card_form_billing_address_state_hint" = "Eyalet veya il girin";
+"accessibility_card_form_email_hint" = "E-posta adresinizi girin";
+"accessibility_card_form_name_hint" = "Adınızı girin";
+"accessibility_card_form_otp_hint" = "Tek kullanımlık şifreyi girin";

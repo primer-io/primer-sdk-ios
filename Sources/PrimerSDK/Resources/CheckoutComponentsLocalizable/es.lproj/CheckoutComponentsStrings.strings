@@ -225,3 +225,9 @@
 "accessibility_ach_continue_hint" = "Pulsa dos veces para continuar a la selección de cuenta bancaria";
 "accessibility_ach_mandate_accept_hint" = "Pulsa dos veces para aceptar la autorización y completar el pago";
 "accessibility_ach_mandate_decline_hint" = "Pulsa dos veces para rechazar y cancelar el pago";
+
+"accessibility_card_form_billing_address_hint" = "Ingrese su dirección";
+"accessibility_card_form_billing_address_state_hint" = "Ingrese estado o provincia";
+"accessibility_card_form_email_hint" = "Ingrese su correo electrónico";
+"accessibility_card_form_name_hint" = "Ingrese su nombre";
+"accessibility_card_form_otp_hint" = "Ingrese el código de un solo uso";

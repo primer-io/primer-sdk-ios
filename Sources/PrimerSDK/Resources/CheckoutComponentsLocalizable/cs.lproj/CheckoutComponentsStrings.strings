@@ -225,3 +225,9 @@
 "accessibility_ach_continue_hint" = "Dvojitým klepnutím pokračujte k výběru bankovního účtu";
 "accessibility_ach_mandate_accept_hint" = "Dvojitým klepnutím přijměte autorizaci a dokončete platbu";
 "accessibility_ach_mandate_decline_hint" = "Dvojitým klepnutím odmítněte a zrušte platbu";
+
+"accessibility_card_form_billing_address_hint" = "Enter your address";
+"accessibility_card_form_billing_address_state_hint" = "Enter state or province";
+"accessibility_card_form_email_hint" = "Enter your email address";
+"accessibility_card_form_name_hint" = "Enter your name";
+"accessibility_card_form_otp_hint" = "Enter one-time passcode";

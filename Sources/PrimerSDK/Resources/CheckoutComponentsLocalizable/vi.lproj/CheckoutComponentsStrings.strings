@@ -225,3 +225,9 @@
 "accessibility_ach_continue_hint" = "Nhấn đúp để tiếp tục chọn tài khoản ngân hàng";
 "accessibility_ach_mandate_accept_hint" = "Nhấn đúp để chấp nhận ủy quyền và hoàn tất thanh toán";
 "accessibility_ach_mandate_decline_hint" = "Nhấn đúp để từ chối và hủy thanh toán";
+
+"accessibility_card_form_billing_address_hint" = "Enter your address";
+"accessibility_card_form_billing_address_state_hint" = "Enter state or province";
+"accessibility_card_form_email_hint" = "Enter your email address";
+"accessibility_card_form_name_hint" = "Enter your name";
+"accessibility_card_form_otp_hint" = "Enter one-time passcode";

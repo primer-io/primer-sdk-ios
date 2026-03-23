@@ -225,3 +225,9 @@
 "accessibility_ach_continue_hint" = "Dobbelttryk for at fortsætte til valg af bankkonto";
 "accessibility_ach_mandate_accept_hint" = "Dobbelttryk for at acceptere autorisationen og gennemføre betalingen";
 "accessibility_ach_mandate_decline_hint" = "Dobbelttryk for at afvise og annullere betalingen";
+
+"accessibility_card_form_billing_address_hint" = "Indtast din adresse";
+"accessibility_card_form_billing_address_state_hint" = "Indtast stat eller provins";
+"accessibility_card_form_email_hint" = "Indtast din e-mailadresse";
+"accessibility_card_form_name_hint" = "Indtast dit navn";
+"accessibility_card_form_otp_hint" = "Indtast engangskode";

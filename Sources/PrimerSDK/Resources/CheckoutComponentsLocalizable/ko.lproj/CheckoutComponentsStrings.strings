@@ -225,3 +225,9 @@
 "accessibility_ach_continue_hint" = "은행 계좌 선택으로 계속하려면 두 번 탭하세요";
 "accessibility_ach_mandate_accept_hint" = "승인을 수락하고 결제를 완료하려면 두 번 탭하세요";
 "accessibility_ach_mandate_decline_hint" = "거절하고 결제를 취소하려면 두 번 탭하세요";
+
+"accessibility_card_form_billing_address_hint" = "주소를 입력하세요";
+"accessibility_card_form_billing_address_state_hint" = "시/도를 입력하세요";
+"accessibility_card_form_email_hint" = "이메일 주소를 입력하세요";
+"accessibility_card_form_name_hint" = "이름을 입력하세요";
+"accessibility_card_form_otp_hint" = "일회용 비밀번호를 입력하세요";

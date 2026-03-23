@@ -225,3 +225,9 @@
 "accessibility_ach_continue_hint" = "Dubbeltryck för att fortsätta till val av bankkonto";
 "accessibility_ach_mandate_accept_hint" = "Dubbeltryck för att godkänna auktoriseringen och slutföra betalningen";
 "accessibility_ach_mandate_decline_hint" = "Dubbeltryck för att avvisa och avbryta betalningen";
+
+"accessibility_card_form_billing_address_hint" = "Ange din adress";
+"accessibility_card_form_billing_address_state_hint" = "Ange delstat eller provins";
+"accessibility_card_form_email_hint" = "Ange din e-postadress";
+"accessibility_card_form_name_hint" = "Ange ditt namn";
+"accessibility_card_form_otp_hint" = "Ange engångskod";

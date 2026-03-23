@@ -225,3 +225,9 @@
 "accessibility_ach_continue_hint" = "Stuknij dwukrotnie, aby przejść do wyboru konta bankowego";
 "accessibility_ach_mandate_accept_hint" = "Stuknij dwukrotnie, aby zaakceptować autoryzację i zakończyć płatność";
 "accessibility_ach_mandate_decline_hint" = "Stuknij dwukrotnie, aby odrzucić i anulować płatność";
+
+"accessibility_card_form_billing_address_hint" = "Wprowadź swój adres";
+"accessibility_card_form_billing_address_state_hint" = "Wprowadź województwo lub prowincję";
+"accessibility_card_form_email_hint" = "Wprowadź swój adres e-mail";
+"accessibility_card_form_name_hint" = "Wprowadź swoje imię";
+"accessibility_card_form_otp_hint" = "Wprowadź kod jednorazowy";

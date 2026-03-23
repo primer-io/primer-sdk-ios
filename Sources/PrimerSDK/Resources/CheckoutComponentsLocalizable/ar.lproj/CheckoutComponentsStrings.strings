@@ -225,3 +225,9 @@
 "accessibility_ach_continue_hint" = "انقر مرتين للمتابعة إلى اختيار الحساب البنكي";
 "accessibility_ach_mandate_accept_hint" = "انقر مرتين لقبول التفويض وإتمام الدفع";
 "accessibility_ach_mandate_decline_hint" = "انقر مرتين للرفض وإلغاء الدفع";
+
+"accessibility_card_form_billing_address_hint" = "أدخل عنوانك";
+"accessibility_card_form_billing_address_state_hint" = "أدخل الولاية أو المقاطعة";
+"accessibility_card_form_email_hint" = "أدخل عنوان بريدك الإلكتروني";
+"accessibility_card_form_name_hint" = "أدخل اسمك";
+"accessibility_card_form_otp_hint" = "أدخل رمز المرور لمرة واحدة";
