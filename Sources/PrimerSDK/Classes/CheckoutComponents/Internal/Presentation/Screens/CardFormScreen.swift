@@ -15,6 +15,7 @@ struct CardFormScreen: View, LogReporter {
   @Environment(\.diContainer) private var container
   @Environment(\.sizeCategory) private var sizeCategory  // Observes Dynamic Type changes
   @State private var cardFormState: PrimerCardFormState = .init()
+  @State private var previousErrorCount = 0
   @State private var selectedCardNetwork: CardNetwork = .unknown
   @State private var formConfiguration: CardFormConfiguration = .default
   @State private var configurationService: ConfigurationService?
@@ -335,6 +336,15 @@ struct CardFormScreen: View, LogReporter {
         }
 
         await MainActor.run {
+          let newErrors = state.fieldErrors
+          if newErrors.count > previousErrorCount, let firstError = newErrors.first {
+            UIAccessibility.post(
+              notification: .announcement,
+              argument: firstError.message
+            )
+          }
+          previousErrorCount = newErrors.count
+
           cardFormState = state
 
           formConfiguration = updatedFormConfig
