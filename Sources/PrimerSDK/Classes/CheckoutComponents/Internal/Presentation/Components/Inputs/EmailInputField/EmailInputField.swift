@@ -95,6 +95,14 @@ struct EmailInputField: View, LogReporter {
           .disabled(true)
       }
     }
+    .accessibility(
+      config: AccessibilityConfiguration(
+        identifier: AccessibilityIdentifiers.CardForm.billingAddressField("email"),
+        label: label ?? "Email",
+        hint: CheckoutComponentsStrings.a11yEmailFieldHint
+      ),
+      combinesChildren: false
+    )
     .onAppear {
       setupValidationService()
       if !initialValue.isEmpty, email.isEmpty {

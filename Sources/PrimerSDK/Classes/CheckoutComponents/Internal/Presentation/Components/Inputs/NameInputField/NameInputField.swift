@@ -99,6 +99,14 @@ struct NameInputField: View, LogReporter {
           .disabled(true)
       }
     }
+    .accessibility(
+      config: AccessibilityConfiguration(
+        identifier: AccessibilityIdentifiers.CardForm.billingAddressField(inputType.rawValue),
+        label: label ?? "Name",
+        hint: CheckoutComponentsStrings.a11yNameFieldHint
+      ),
+      combinesChildren: false
+    )
     .onAppear {
       setupValidationService()
       if !initialValue.isEmpty, name.isEmpty {

@@ -3,6 +3,7 @@
 "accessibility_action_set_default" = "Set as default payment method";
 "accessibility_card_form_billing_address_address_line_1_label" = "Address line 1, required";
 "accessibility_card_form_billing_address_address_line_2_label" = "Address line 2, optional";
+"accessibility_card_form_billing_address_hint" = "Enter your address";
 "accessibility_card_form_billing_address_city_hint" = "Enter city name";
 "accessibility_card_form_billing_address_city_label" = "City, required";
 "accessibility_card_form_billing_address_country_label" = "Country, required";
@@ -10,7 +11,11 @@
 "accessibility_card_form_billing_address_last_name_label" = "Last name, required";
 "accessibility_card_form_billing_address_postal_code_hint" = "Enter postal or ZIP code";
 "accessibility_card_form_billing_address_postal_code_label" = "Postal code, required";
+"accessibility_card_form_billing_address_state_hint" = "Enter state or province";
 "accessibility_card_form_billing_address_state_label" = "State, required";
+"accessibility_card_form_email_hint" = "Enter your email address";
+"accessibility_card_form_name_hint" = "Enter your name";
+"accessibility_card_form_otp_hint" = "Enter one-time passcode";
 "accessibility_card_form_billing_section" = "Billing address";
 "accessibility_card_form_card_number_error_empty" = "Card number is required.";
 "accessibility_card_form_card_number_error_invalid" = "Invalid card number. Please check and try again.";

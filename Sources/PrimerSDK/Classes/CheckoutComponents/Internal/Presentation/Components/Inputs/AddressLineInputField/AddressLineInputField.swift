@@ -101,6 +101,14 @@ struct AddressLineInputField: View, LogReporter {
           .disabled(true)
       }
     }
+    .accessibility(
+      config: AccessibilityConfiguration(
+        identifier: AccessibilityIdentifiers.CardForm.billingAddressField(inputType.rawValue),
+        label: label ?? "Address",
+        hint: CheckoutComponentsStrings.a11yBillingAddressHint
+      ),
+      combinesChildren: false
+    )
     .onAppear {
       setupValidationService()
     }

@@ -101,6 +101,14 @@ struct OTPCodeInputField: View, LogReporter {
         }
       }
     }
+    .accessibility(
+      config: AccessibilityConfiguration(
+        identifier: AccessibilityIdentifiers.FormRedirect.otpField,
+        label: label ?? "OTP Code",
+        hint: CheckoutComponentsStrings.a11yOtpFieldHint
+      ),
+      combinesChildren: false
+    )
     .onAppear {
       setupValidationService()
     }

@@ -1445,6 +1445,46 @@ enum CheckoutComponentsStrings {
     comment: "VoiceOver hint for billing address postal code field"
   )
 
+  static let a11yBillingAddressHint = NSLocalizedString(
+    "accessibility_card_form_billing_address_hint",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Enter your address",
+    comment: "VoiceOver hint for billing address field"
+  )
+
+  static let a11yBillingAddressStateHint = NSLocalizedString(
+    "accessibility_card_form_billing_address_state_hint",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Enter state or province",
+    comment: "VoiceOver hint for billing address state field"
+  )
+
+  static let a11yNameFieldHint = NSLocalizedString(
+    "accessibility_card_form_name_hint",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Enter your name",
+    comment: "VoiceOver hint for name field"
+  )
+
+  static let a11yEmailFieldHint = NSLocalizedString(
+    "accessibility_card_form_email_hint",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Enter your email address",
+    comment: "VoiceOver hint for email field"
+  )
+
+  static let a11yOtpFieldHint = NSLocalizedString(
+    "accessibility_card_form_otp_hint",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Enter one-time passcode",
+    comment: "VoiceOver hint for OTP code field"
+  )
+
   // MARK: Inline Network Selector Accessibility
 
   static let a11yInlineNetworkButtonHint = NSLocalizedString(
