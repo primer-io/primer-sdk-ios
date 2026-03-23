@@ -491,7 +491,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     let (expiryMonth, fullYear) = try parseExpiryComponents()
 
     return CardPaymentData(
-      cardNumber: structuredState.data[.cardNumber],
+      cardNumber: structuredState.data[.cardNumber].replacingOccurrences(of: " ", with: ""),
       cvv: structuredState.data[.cvv],
       expiryMonth: expiryMonth,
       expiryYear: fullYear,
