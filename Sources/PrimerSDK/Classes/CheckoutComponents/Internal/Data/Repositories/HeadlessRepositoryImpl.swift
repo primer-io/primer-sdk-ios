@@ -48,6 +48,7 @@ final class OneShotContinuation<T>: @unchecked Sendable {
 
 /// Payment completion handler that implements delegate callbacks for async payment processing
 @available(iOS 15.0, *)
+@MainActor
 private class PaymentCompletionHandler: NSObject,
   PrimerHeadlessUniversalCheckoutDelegate,
   PrimerHeadlessUniversalCheckoutRawDataManagerDelegate,
@@ -166,6 +167,7 @@ private class PaymentCompletionHandler: NSObject,
 }
 
 @available(iOS 15.0, *)
+@MainActor
 final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
 
   private var paymentMethods: [InternalPaymentMethod] = []
