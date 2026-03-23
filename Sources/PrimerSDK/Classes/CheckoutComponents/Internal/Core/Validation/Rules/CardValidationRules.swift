@@ -108,7 +108,7 @@ final class CVVRule: ValidationRule {
       return .invalid(error: error)
     }
 
-    let expectedLength = cardNetwork?.rawValue == "AMEX" ? 4 : 3
+    let expectedLength = cardNetwork == .amex ? 4 : 3
     if value.count != expectedLength {
       let error = ErrorMessageResolver.createInvalidFieldError(for: .cvv)
       return .invalid(error: error)
