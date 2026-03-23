@@ -87,6 +87,7 @@ final class PollingModule: Module {
                 } else {
                     let err = PrimerError.unknown(message: "Received unexpected polling status for id '\(res.id)'")
                     ErrorHandler.handle(error: err)
+                    completion(nil, err)
                 }
             case let .failure(err):
                 ErrorHandler.handle(error: err)
