@@ -76,7 +76,7 @@ final class ValidationResultCache {
   }
 
   private func cacheKey(for input: String, type: String, context: String = "") -> String {
-    "\(type)_\(input)_\(context)".hash.description
+    "\(type)_\(input)_\(context)"
   }
 
   /// Retrieves cached validation result or performs validation
