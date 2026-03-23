@@ -10,6 +10,42 @@ import Foundation
   import Primer3DS
 #endif
 
+/// Thread-safe one-shot wrapper for CheckedContinuation to prevent double-resume crashes.
+@available(iOS 15.0, *)
+final class OneShotContinuation<T>: @unchecked Sendable {
+  private var continuation: CheckedContinuation<T, Error>?
+  private let lock = NSLock()
+
+  init(_ continuation: CheckedContinuation<T, Error>) {
+    self.continuation = continuation
+  }
+
+  func resume(returning value: T) {
+    lock.lock()
+    let cont = continuation
+    continuation = nil
+    lock.unlock()
+    cont?.resume(returning: value)
+  }
+
+  func resume(throwing error: Error) {
+    lock.lock()
+    let cont = continuation
+    continuation = nil
+    lock.unlock()
+    cont?.resume(throwing: error)
+  }
+
+  func resume(with result: Result<T, Error>) {
+    switch result {
+    case let .success(value):
+      resume(returning: value)
+    case let .failure(error):
+      resume(throwing: error)
+    }
+  }
+}
+
 /// Payment completion handler that implements delegate callbacks for async payment processing
 @available(iOS 15.0, *)
 private class PaymentCompletionHandler: NSObject,
@@ -310,7 +346,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
     }
   }
 
-  func extractFromNetworksArray(_ networksArray: [[String: Any]]) -> [String: Int]? {
+  private func extractFromNetworksArray(_ networksArray: [[String: Any]]) -> [String: Int]? {
     var networkSurcharges: [String: Int] = [:]
 
     for networkData in networksArray {
@@ -333,7 +369,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
     return networkSurcharges.isEmpty ? nil : networkSurcharges
   }
 
-  func extractFromNetworksDict(_ networksDict: [String: [String: Any]]) -> [String: Int]? {
+  private func extractFromNetworksDict(_ networksDict: [String: [String: Any]]) -> [String: Int]? {
     var networkSurcharges: [String: Int] = [:]
 
     for (networkType, networkData) in networksDict {
@@ -352,7 +388,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
     return networkSurcharges.isEmpty ? nil : networkSurcharges
   }
 
-  func getRequiredInputElements(for paymentMethodType: String) -> [PrimerInputElementType] {
+  private func getRequiredInputElements(for paymentMethodType: String) -> [PrimerInputElementType] {
     switch paymentMethodType {
     case PrimerPaymentMethodType.paymentCard.rawValue:
       [.cardNumber, .cvv, .expiryDate, .cardholderName]
@@ -370,6 +406,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
     selectedNetwork: CardNetwork?
   ) async throws -> PaymentResult {
     try await withCheckedThrowingContinuation { continuation in
+      let oneShot = OneShotContinuation(continuation)
       Task { @MainActor in
         do {
           let cardData = createCardData(
@@ -382,7 +419,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
           )
 
           let paymentHandler = PaymentCompletionHandler(repository: self) { result in
-            continuation.resume(with: result)
+            oneShot.resume(with: result)
           }
           PrimerHeadlessUniversalCheckout.current.delegate = paymentHandler
 
@@ -395,18 +432,18 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
             rawDataManager: rawDataManager,
             cardData: cardData,
             selectedNetwork: selectedNetwork,
-            continuation: continuation,
+            oneShot: oneShot,
             paymentHandler: paymentHandler
           )
         } catch {
           // Failed to setup payment
-          continuation.resume(throwing: error)
+          oneShot.resume(throwing: error)
         }
       }
     }
   }
 
-  func createCardData(
+  private func createCardData(
     cardNumber: String,
     cvv: String,
     expiryMonth: String,
@@ -435,14 +472,14 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
     rawDataManager: RawDataManagerProtocol,
     cardData: PrimerCardData,
     selectedNetwork: CardNetwork?,
-    continuation: CheckedContinuation<PaymentResult, Error>,
+    oneShot: OneShotContinuation<PaymentResult>,
     paymentHandler: PaymentCompletionHandler
   ) {
     rawDataManager.configure { [weak self] _, error in
       guard let self else { return }
 
       if let error {
-        continuation.resume(throwing: error)
+        oneShot.resume(throwing: error)
         return
       }
 
@@ -456,7 +493,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
           self.submitPaymentWithValidation(
             rawDataManager: rawDataManager,
             selectedNetwork: selectedNetwork,
-            continuation: continuation,
+            oneShot: oneShot,
             validationResult: isValid,
             validationErrors: errors
           )
@@ -472,7 +509,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
   private func submitPaymentWithValidation(
     rawDataManager: RawDataManagerProtocol,
     selectedNetwork: CardNetwork?,
-    continuation: CheckedContinuation<PaymentResult, Error>,
+    oneShot: OneShotContinuation<PaymentResult>,
     validationResult: Bool,
     validationErrors: [Error]?
   ) {
@@ -484,7 +521,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
 
         if let error {
           // Client session update failed
-          continuation.resume(throwing: error)
+          oneShot.resume(throwing: error)
           return
         }
 
@@ -495,7 +532,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
     } else {
       handleValidationFailure(
         rawDataManager: rawDataManager,
-        continuation: continuation,
+        oneShot: oneShot,
         validationErrors: validationErrors
       )
     }
@@ -517,21 +554,21 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
 
   private func handleValidationFailure(
     rawDataManager: RawDataManagerProtocol,
-    continuation: CheckedContinuation<PaymentResult, Error>,
+    oneShot: OneShotContinuation<PaymentResult>,
     validationErrors: [Error]?
   ) {
     // Use the actual validation errors from the delegate if available
     if let validationErrors, !validationErrors.isEmpty {
       // If there's a single validation error, use it directly
       if validationErrors.count == 1, let error = validationErrors.first {
-        continuation.resume(throwing: error)
+        oneShot.resume(throwing: error)
       } else {
         // If there are multiple errors, wrap them in an underlying errors container
         let error = PrimerError.underlyingErrors(
           errors: validationErrors,
           diagnosticsId: .uuid
         )
-        continuation.resume(throwing: error)
+        oneShot.resume(throwing: error)
       }
     } else {
       // Fallback to generic error if no validation errors are available
@@ -542,10 +579,11 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         reason:
           "Card data validation failed. Required inputs: \(requiredInputs.map { "\($0.rawValue)" }.joined(separator: ", "))"
       )
-      continuation.resume(throwing: error)
+      oneShot.resume(throwing: error)
     }
   }
 
+  // TODO: ACC-XXXX Implement billing address submission
   func setBillingAddress(_ billingAddress: BillingAddress) async throws {
   }
 
@@ -627,13 +665,14 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
     _ = try await fetchVaultedPaymentMethods()
 
     return try await withCheckedThrowingContinuation { continuation in
+      let oneShot = OneShotContinuation(continuation)
       Task { @MainActor in
         let completionHandler = PaymentCompletionHandler(
           repository: self,
           paymentMethodType: paymentMethodType
         ) { [weak self] result in
           self?.vaultPaymentCompletionHandler = nil
-          continuation.resume(with: result)
+          oneShot.resume(with: result)
         }
 
         // Retain handler to prevent deallocation during async flow
@@ -644,6 +683,14 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
           vaultedPaymentMethodId: vaultedPaymentMethodId,
           vaultedPaymentMethodAdditionalData: additionalData
         )
+
+        // Timeout to prevent continuation hanging forever
+        Task {
+          try? await Task.sleep(nanoseconds: 60_000_000_000)
+          oneShot.resume(
+            throwing: PrimerError.unknown(
+              message: "Vaulted payment timed out after 60 seconds"))
+        }
       }
     }
   }
@@ -761,7 +808,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
     return nil
   }
 
-  func extractURL(from value: Any) -> String? {
+  private func extractURL(from value: Any) -> String? {
     if let string = value as? String, isLikelyURL(string) {
       return string
     }
@@ -777,7 +824,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
     return nil
   }
 
-  func isLikelyURL(_ string: String) -> Bool {
+  private func isLikelyURL(_ string: String) -> Bool {
     ["http://", "https://"].contains { string.lowercased().hasPrefix($0) }
   }
 
