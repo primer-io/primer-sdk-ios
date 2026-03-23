@@ -23,8 +23,25 @@ extension View {
   ///         traits: [.isButton]
   ///     ))
   /// ```
-  func accessibility(config: AccessibilityConfiguration) -> some View {
-    accessibilityElement(children: .ignore)
+  func accessibility(config: AccessibilityConfiguration, combinesChildren: Bool = true) -> some View
+  {
+    modifier(
+      ConditionalAccessibilityElement(
+        config: config,
+        combinesChildren: combinesChildren
+      )
+    )
+  }
+}
+
+@available(iOS 15.0, *)
+private struct ConditionalAccessibilityElement: ViewModifier {
+  let config: AccessibilityConfiguration
+  let combinesChildren: Bool
+
+  func body(content: Content) -> some View {
+    let base = combinesChildren ? AnyView(content.accessibilityElement(children: .ignore)) : AnyView(content)
+    base
       .accessibilityIdentifier(config.identifier)
       .accessibilityLabel(config.label)
       .modifier(ConditionalAccessibilityHint(hint: config.hint))

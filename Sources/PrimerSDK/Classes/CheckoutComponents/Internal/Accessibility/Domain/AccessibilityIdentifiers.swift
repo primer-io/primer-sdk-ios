@@ -78,6 +78,11 @@ enum AccessibilityIdentifiers {
   enum Error {
     static let messageContainer = "checkout_components_error_message_container"
     static let dismissButton = "checkout_components_error_dismiss_button"
+    static let icon = "checkout_components_error_icon"
+    static let title = "checkout_components_error_title"
+    static let description = "checkout_components_error_description"
+    static let retryButton = "checkout_components_error_retry_button"
+    static let otherPaymentMethodButton = "checkout_components_error_other_payment_method_button"
   }
 
   enum PayPal {

@@ -1799,6 +1799,30 @@ enum CheckoutComponentsStrings {
     comment: "VoiceOver generic error announcement"
   )
 
+  static let a11yErrorIcon = NSLocalizedString(
+    "accessibility_error_icon",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Error",
+    comment: "VoiceOver label for error icon"
+  )
+
+  static let a11yRetry = NSLocalizedString(
+    "accessibility_retry",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Retry payment",
+    comment: "VoiceOver label for retry button"
+  )
+
+  static let a11yChooseOtherPaymentMethod = NSLocalizedString(
+    "accessibility_choose_other_payment_method",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Choose another payment method",
+    comment: "VoiceOver label for choose other payment method button"
+  )
+
   // MARK: - ACH Strings
 
   static let achTitle = NSLocalizedString(
