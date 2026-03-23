@@ -139,15 +139,11 @@ struct CardNumberInputField: View, LogReporter {
     .onChange(of: selectedNetwork) { newNetwork in
       if let newNetwork {
         localSelectedNetwork = newNetwork
+        updateSurchargeAmount(for: newNetwork)
       }
     }
     .onChange(of: cardNetwork) { newNetwork in
       updateSurchargeAmount(for: newNetwork)
-    }
-    .onChange(of: selectedNetwork) { newNetwork in
-      if let newNetwork {
-        updateSurchargeAmount(for: newNetwork)
-      }
     }
   }
 

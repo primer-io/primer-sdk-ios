@@ -81,6 +81,10 @@ public struct FieldError: Equatable, Identifiable {
     self.message = message
     self.errorCode = errorCode
   }
+
+  public static func == (lhs: FieldError, rhs: FieldError) -> Bool {
+    lhs.fieldType == rhs.fieldType && lhs.message == rhs.message && lhs.errorCode == rhs.errorCode
+  }
 }
 
 // MARK: - Form Data
@@ -141,6 +145,11 @@ public struct PrimerCountry: Equatable, Identifiable {
     self.name = name
     self.flag = flag
     self.dialCode = dialCode
+  }
+
+  public static func == (lhs: PrimerCountry, rhs: PrimerCountry) -> Bool {
+    lhs.code == rhs.code && lhs.name == rhs.name && lhs.flag == rhs.flag
+      && lhs.dialCode == rhs.dialCode
   }
 }
 

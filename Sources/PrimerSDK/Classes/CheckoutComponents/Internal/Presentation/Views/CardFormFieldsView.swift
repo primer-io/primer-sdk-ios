@@ -283,10 +283,8 @@ struct CardFormFieldsView: View {
   private func getCardNetworkForCvv() -> CardNetwork {
     if let network = cardFormState.selectedNetwork {
       return network.network
-    } else {
-      let cardNumber: String? = nil
-      return CardNetwork(cardNumber: cardNumber ?? "")
     }
+    return .unknown
   }
 
   // MARK: - Focus Management

@@ -13,8 +13,6 @@ struct CountryInputFieldWrapper: View, LogReporter {
   let label: String?
   let placeholder: String
   let styling: PrimerFieldStyling?
-  let onValidationChange: ((Bool) -> Void)?
-  let onOpenCountrySelector: (() -> Void)?
 
   var body: some View {
     CountryInputField(
