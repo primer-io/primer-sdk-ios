@@ -123,6 +123,10 @@ public final class DefaultWebRedirectScope: PrimerWebRedirectScope, ObservableOb
         )
 
         do {
+            try await checkoutScope.invokeBeforePaymentCreate(
+                paymentMethodType: paymentMethodType
+            )
+
             await analyticsInteractor?.trackEvent(
                 .paymentProcessingStarted,
                 metadata: .payment(PaymentEvent(paymentMethod: paymentMethodType))

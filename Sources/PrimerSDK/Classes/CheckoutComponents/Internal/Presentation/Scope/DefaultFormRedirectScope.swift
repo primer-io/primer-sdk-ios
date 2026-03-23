@@ -243,6 +243,10 @@ public final class DefaultFormRedirectScope: PrimerFormRedirectScope, Observable
         )
 
         do {
+            try await checkoutScope?.invokeBeforePaymentCreate(
+                paymentMethodType: paymentMethodType
+            )
+
             let sessionInfo = try buildSessionInfo()
 
             await analyticsInteractor?.trackEvent(

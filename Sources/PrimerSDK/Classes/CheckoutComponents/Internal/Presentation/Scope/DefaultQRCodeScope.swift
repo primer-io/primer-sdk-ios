@@ -96,6 +96,10 @@ public final class DefaultQRCodeScope: PrimerQRCodeScope, ObservableObject, LogR
     await analyticsInteractor?.trackEvent(.paymentProcessingStarted, metadata: metadata)
 
     do {
+      try await checkoutScope?.invokeBeforePaymentCreate(
+        paymentMethodType: paymentMethodType
+      )
+
       let paymentData = try await interactor.startPayment()
       internalState.qrCodeImageData = paymentData.qrCodeImageData
       internalState.status = .displaying

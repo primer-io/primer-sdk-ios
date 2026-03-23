@@ -99,6 +99,10 @@ public final class DefaultPayPalScope: PrimerPayPalScope, ObservableObject, LogR
     )
 
     do {
+      try await checkoutScope?.invokeBeforePaymentCreate(
+        paymentMethodType: PrimerPaymentMethodType.payPal.rawValue
+      )
+
       internalState.step = .redirecting
 
       await analyticsInteractor?.trackEvent(
