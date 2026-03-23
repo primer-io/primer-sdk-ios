@@ -6,6 +6,7 @@
 
 import UIKit
 
+@available(iOS 15.0, *)
 protocol PaymentMethodMapper {
   func mapToPublic(_ internalMethod: InternalPaymentMethod) -> CheckoutPaymentMethod
   func mapToPublic(_ internalMethods: [InternalPaymentMethod]) -> [CheckoutPaymentMethod]
