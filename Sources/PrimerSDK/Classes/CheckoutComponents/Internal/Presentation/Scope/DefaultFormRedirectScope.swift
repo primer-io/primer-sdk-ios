@@ -8,7 +8,7 @@ import SwiftUI
 
 @available(iOS 15.0, *)
 @MainActor
-public final class DefaultFormRedirectScope: PrimerFormRedirectScope, ObservableObject, LogReporter {
+public final class DefaultFormRedirectScope: PrimerFormRedirectScope, ObservableObject, LogReporter, @unchecked Sendable {
 
     // MARK: - Constants
 

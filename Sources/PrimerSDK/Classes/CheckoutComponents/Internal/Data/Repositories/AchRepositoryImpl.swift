@@ -12,7 +12,7 @@ import PrimerStripeSDK
 
 @available(iOS 15.0, *)
 @MainActor
-final class AchRepositoryImpl: AchRepository, LogReporter {
+final class AchRepositoryImpl: AchRepository, LogReporter, @unchecked Sendable {
 
   private let achClientSessionService: ACHClientSessionService
   private var achTokenizationService: ACHTokenizationService?

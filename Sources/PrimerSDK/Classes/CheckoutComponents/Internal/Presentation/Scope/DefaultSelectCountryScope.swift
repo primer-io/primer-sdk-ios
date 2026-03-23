@@ -11,7 +11,7 @@ import SwiftUI
 /// to accept a generic payment method context instead of being tied to card payments.
 @available(iOS 15.0, *)
 @MainActor
-final class DefaultSelectCountryScope: PrimerSelectCountryScope, LogReporter {
+final class DefaultSelectCountryScope: PrimerSelectCountryScope, LogReporter, @unchecked Sendable {
 
   // MARK: - Properties
 

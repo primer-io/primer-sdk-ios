@@ -8,7 +8,7 @@ import UIKit
 
 @available(iOS 15.0, *)
 @MainActor
-final class KlarnaRepositoryImpl: KlarnaRepository, LogReporter {
+final class KlarnaRepositoryImpl: KlarnaRepository, LogReporter, @unchecked Sendable {
 
   private enum Timing {
     static let mockAuthorizationDelay: UInt64 = 2_000_000_000
@@ -143,8 +143,8 @@ final class KlarnaRepositoryImpl: KlarnaRepository, LogReporter {
       // Klarna SDK creates WKWebView internally, which must be initialized on the main thread.
       let timeoutTask = Task { [weak self] in
         try? await Task.sleep(nanoseconds: Timing.operationTimeout)
-        guard let self, let cont = self.viewLoadedContinuation else { return }
-        self.viewLoadedContinuation = nil
+        guard let self, let cont = viewLoadedContinuation else { return }
+        viewLoadedContinuation = nil
         cont.resume(
           throwing: PrimerError.klarnaError(
             message: "Klarna view loading timed out",
@@ -194,8 +194,8 @@ final class KlarnaRepositoryImpl: KlarnaRepository, LogReporter {
 
       let timeoutTask = Task { [weak self] in
         try? await Task.sleep(nanoseconds: Timing.operationTimeout)
-        guard let self, let cont = self.authorizationContinuation else { return }
-        self.authorizationContinuation = nil
+        guard let self, let cont = authorizationContinuation else { return }
+        authorizationContinuation = nil
         cont.resume(
           throwing: PrimerError.klarnaError(
             message: "Klarna authorization timed out",
@@ -223,8 +223,8 @@ final class KlarnaRepositoryImpl: KlarnaRepository, LogReporter {
 
       let timeoutTask = Task { [weak self] in
         try? await Task.sleep(nanoseconds: Timing.operationTimeout)
-        guard let self, let cont = self.finalizationContinuation else { return }
-        self.finalizationContinuation = nil
+        guard let self, let cont = finalizationContinuation else { return }
+        finalizationContinuation = nil
         cont.resume(
           throwing: PrimerError.klarnaError(
             message: "Klarna finalization timed out",

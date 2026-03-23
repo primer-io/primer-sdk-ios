@@ -8,7 +8,7 @@ import SwiftUI
 
 @available(iOS 15.0, *)
 @MainActor
-final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogReporter {
+final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogReporter, @unchecked Sendable {
 
   enum NavigationState: Equatable {
     case loading

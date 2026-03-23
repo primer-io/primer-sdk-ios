@@ -8,7 +8,7 @@ import SwiftUI
 
 @available(iOS 15.0, *)
 @MainActor
-public final class DefaultKlarnaScope: PrimerKlarnaScope, ObservableObject, LogReporter {
+public final class DefaultKlarnaScope: PrimerKlarnaScope, ObservableObject, LogReporter, @unchecked Sendable {
 
   // MARK: - Public Properties
 

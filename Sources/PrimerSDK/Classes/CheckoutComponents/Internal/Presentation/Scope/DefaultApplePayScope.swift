@@ -9,7 +9,7 @@ import SwiftUI
 
 @available(iOS 15.0, *)
 @MainActor
-public final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
+public final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject, @unchecked Sendable {
 
   @Published var structuredState: PrimerApplePayState
 
