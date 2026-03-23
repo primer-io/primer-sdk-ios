@@ -13,6 +13,33 @@ final class WeakBox<T: AnyObject> {
   init(_ inst: T) { instance = inst }
 }
 
+/// Thread-safe cache for resolved singletons, accessible without actor isolation.
+/// Prevents DispatchSemaphore deadlocks in resolveSync by serving
+/// already-resolved singletons synchronously.
+final class SyncCache: @unchecked Sendable {
+  private let lock = NSLock()
+  private var storage: [TypeKey: Any] = [:]
+
+  func get<T>(_ type: T.Type, name: String? = nil) -> T? {
+    let key = TypeKey(type, name: name)
+    lock.lock()
+    defer { lock.unlock() }
+    return storage[key] as? T
+  }
+
+  func set(_ value: Any, forKey key: TypeKey) {
+    lock.lock()
+    defer { lock.unlock() }
+    storage[key] = value
+  }
+
+  func clear() {
+    lock.lock()
+    defer { lock.unlock() }
+    storage.removeAll()
+  }
+}
+
 /// Thread-safe container for storing values across async boundaries
 final class ThreadSafeContainer<T>: @unchecked Sendable {
   private let lock = NSLock()
@@ -113,8 +140,14 @@ public actor Container: ContainerProtocol, LogReporter {
   private var resolutionStack: Set<TypeKey> = []
   private var resolutionOrder: [TypeKey] = []
 
+  /// Nonisolated thread-safe cache for resolved singletons.
+  /// Allows resolveSync to return immediately without blocking
+  /// the calling thread when the singleton is already available.
+  private nonisolated let syncCache = SyncCache()
+
   func setInstance(_ instance: Any, forKey key: TypeKey) {
     instances[key] = instance
+    syncCache.set(instance, forKey: key)
   }
 
   func setWeakBox(_ box: WeakBox<AnyObject>, forKey key: TypeKey) {
@@ -229,9 +262,17 @@ public actor Container: ContainerProtocol, LogReporter {
     }
   }
 
-  /// Synchronous resolution for SwiftUI and other sync contexts
-  /// Note: This method uses a timeout to prevent indefinite blocking
+  /// Synchronous resolution for SwiftUI and other sync contexts.
+  /// First checks the nonisolated sync cache for already-resolved singletons
+  /// to avoid blocking the main thread. Falls back to semaphore-based
+  /// resolution with timeout for first-time resolution.
   public nonisolated func resolveSync<T>(_ type: T.Type, name: String? = nil) throws -> T {
+    // Fast path: check nonisolated cache for already-resolved singletons
+    if let cached: T = syncCache.get(type, name: name) {
+      return cached
+    }
+
+    // Slow path: resolve via actor with semaphore (only for first-time resolution)
     let semaphore = DispatchSemaphore(value: 0)
     let resultContainer = ThreadSafeContainer<Result<T, Error>>()
 
@@ -245,7 +286,6 @@ public actor Container: ContainerProtocol, LogReporter {
       semaphore.signal()
     }
 
-    // Wait with a reasonable timeout (500ms)
     let timeoutResult = semaphore.wait(timeout: .now() + 0.5)
 
     let finalResult = resultContainer.value
@@ -357,6 +397,9 @@ public actor Container: ContainerProtocol, LogReporter {
     for key in factories.keys where !keysToIgnore.contains(key) {
       factories.removeValue(forKey: key)
     }
+
+    // Clear the nonisolated sync cache
+    syncCache.clear()
   }
 
   // MARK: - Memory Management
