@@ -66,16 +66,18 @@ extension ComposableContainer {
 extension ComposableContainer {
 
   fileprivate func registerInfrastructure() async {
+    let settings = settings
     await safeRegister(PrimerSettings.self) {
       _ = try await container.register(PrimerSettings.self)
         .asSingleton()
-        .with { _ in self.settings }
+        .with { _ in settings }
     }
 
+    let theme = theme
     await safeRegister(PrimerCheckoutTheme.self) {
       _ = try await container.register(PrimerCheckoutTheme.self)
         .asSingleton()
-        .with { _ in self.theme }
+        .with { _ in theme }
     }
 
     await safeRegister(DesignTokensManager.self) {

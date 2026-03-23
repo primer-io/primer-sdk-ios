@@ -8,7 +8,7 @@ import Foundation
 
 public protocol DependencyScope: AnyObject {
   var scopeId: String { get }
-  func setupContainer() async
+  func setupContainer(_ container: Container) async
   func cleanupScope() async
 }
 
@@ -17,7 +17,7 @@ extension DependencyScope {
 
   public func register() async {
     let container = Container()
-    await setupContainer()
+    await setupContainer(container)
     await DIContainer.setScopedContainer(container, for: scopeId)
   }
 

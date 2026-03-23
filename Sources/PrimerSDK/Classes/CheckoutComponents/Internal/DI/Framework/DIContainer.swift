@@ -130,10 +130,8 @@ public final class DIContainer: LogReporter {
   }
 
   private static func registerDependencies(in container: Container) async {
-    Task {
-      _ = try await container.register(ContainerProtocol.self).asSingleton().with { container in
-        container
-      }
+    _ = try? await container.register(ContainerProtocol.self).asSingleton().with { container in
+      container
     }
   }
 
