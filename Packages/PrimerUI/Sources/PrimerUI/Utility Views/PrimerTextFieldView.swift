@@ -4,24 +4,21 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import PrimerCore
 import PrimerFoundation
 import PrimerResources
-
-import PrimerUI
-
-// swiftlint:disable function_body_length
 import UIKit
 
-public class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
+// swiftlint:disable function_body_length
 
-    @IBOutlet weak var textField: PrimerTextField!
-    var isValid: ((_ text: String) -> Bool?)?
+open class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
+
+    @IBOutlet public weak var textField: PrimerTextField!
+    public var isValid: ((_ text: String) -> Bool?)?
     public internal(set) var isTextValid: Bool = false
-    var editingAnalyticsObjectId: Analytics.Event.Property.ObjectId?
-    public internal(set) var isEditingAnalyticsEnabled: Bool = false
+    public var _editingAnalyticsObjectId: String?
+    public var isEditingAnalyticsEnabled: Bool = false
     public var delegate: PrimerTextFieldViewDelegate?
-    var validation: PrimerTextField.Validation = .notAvailable {
+    public var validation: PrimerTextField.Validation = .notAvailable {
         didSet {
             if isValid == nil {
                 isTextValid = true
@@ -45,7 +42,7 @@ public class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
         textField?.backgroundColor = backgroundColor
     } }
 
-    public var text: String? { didSet { textField.text = text } }
+    open var text: String? { didSet { textField.text = text } }
     public var attributedText: NSAttributedString? { didSet { textField.attributedText = attributedText } }
     public var textColor: UIColor? { didSet { textField.textColor = textColor } }
     public var font: UIFont? { didSet { textField.font = font } }
@@ -137,17 +134,17 @@ public class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
         textField.resignFirstResponder()
     }
 
-    public var clearsOnInsertion: Bool = false { didSet { textField.clearsOnInsertion = clearsOnInsertion }}
+    public var clearsOnInsertion: Bool = false {
+        didSet { textField.clearsOnInsertion = clearsOnInsertion }
+    }
 
     override public func loadNib() -> UIView {
         let bundle = Bundle.primerResources
         let nib = UINib(nibName: PrimerTextFieldView.className, bundle: bundle)
-        // swiftlint:disable force_cast
         return nib.instantiate(withOwner: self, options: nil).first as! UIView
-        // swiftlint:enable force_cast
     }
 
-    override public func xibSetup() {
+    override open func xibSetup() {
         super.xibSetup()
         backgroundColor = .clear
         view.backgroundColor = .clear
@@ -157,7 +154,7 @@ public class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
 
     // MARK: - TEXT FIELD DELEGATE
 
-    public func textFieldDidBeginEditing(_ textField: UITextField) {
+    open func textFieldDidBeginEditing(_ textField: UITextField) {
         delegate?.primerTextFieldViewDidBeginEditing(self)
     }
 
@@ -169,7 +166,7 @@ public class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
         delegate?.primerTextFieldViewShouldEndEditing(self) ?? true
     }
 
-    public func textFieldDidEndEditing(_ textField: UITextField) {
+    open func textFieldDidEndEditing(_ textField: UITextField) {
 
         guard let primerTextField = textField as? PrimerTextField else { return }
 
@@ -197,11 +194,12 @@ public class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
         delegate?.primerTextFieldViewDidEndEditing(self)
     }
 
-    public func textField(_ textField: UITextField,
-                          shouldChangeCharactersIn range: NSRange,
-                          replacementString string: String) -> Bool {
+    open func textField(
+        _ textField: UITextField,
+        shouldChangeCharactersIn range: NSRange,
+        replacementString string: String
+    ) -> Bool {
         true
     }
 
 }
-// swiftlint:enable function_body_length

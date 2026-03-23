@@ -6,6 +6,7 @@
 
 import PrimerCore
 import PrimerFoundation
+import PrimerUI
 import UIKit
 
 extension PrimerTextFieldView {
