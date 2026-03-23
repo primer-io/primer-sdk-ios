@@ -8,7 +8,7 @@ import Foundation
 
 /// Bridge to connect CheckoutComponents to the existing SDK payment methods
 @available(iOS 15.0, *)
-class CheckoutComponentsPaymentMethodsBridge: GetPaymentMethodsInteractor, LogReporter {
+final class CheckoutComponentsPaymentMethodsBridge: GetPaymentMethodsInteractor, LogReporter {
 
   private let configurationService: ConfigurationService
 
@@ -17,35 +17,35 @@ class CheckoutComponentsPaymentMethodsBridge: GetPaymentMethodsInteractor, LogRe
   }
 
   func execute() async throws -> [InternalPaymentMethod] {
-    logger.info(message: "🌉 [PaymentMethodsBridge] Starting payment methods bridge...")
+    logger.info(message: "[PaymentMethodsBridge] Starting payment methods bridge...")
 
     guard let configuration = configurationService.apiConfiguration else {
-      logger.error(message: "❌ [PaymentMethodsBridge] No configuration available")
+      logger.error(message: "[PaymentMethodsBridge] No configuration available")
       throw PrimerError.missingPrimerConfiguration()
     }
 
-    logger.info(message: "✅ [PaymentMethodsBridge] Configuration found")
+    logger.info(message: "[PaymentMethodsBridge] Configuration found")
 
     guard let paymentMethods = configuration.paymentMethods, !paymentMethods.isEmpty else {
-      logger.error(message: "❌ [PaymentMethodsBridge] No payment methods in configuration")
+      logger.error(message: "[PaymentMethodsBridge] No payment methods in configuration")
       throw PrimerError.misconfiguredPaymentMethods()
     }
 
     logger.info(
       message:
-        "📊 [PaymentMethodsBridge] Found \(paymentMethods.count) payment methods in configuration")
+        "[PaymentMethodsBridge] Found \(paymentMethods.count) payment methods in configuration")
 
     // Filter payment methods based on CheckoutComponents support (only show implemented payment methods)
     let filteredMethods = await filterPaymentMethodsBySupport(paymentMethods)
     logger.info(
       message:
-        "🔍 [PaymentMethodsBridge] Filtered to \(filteredMethods.count) payment methods based on CheckoutComponents support"
+        "[PaymentMethodsBridge] Filtered to \(filteredMethods.count) payment methods based on CheckoutComponents support"
     )
 
     let convertedMethods = filteredMethods.map { primerMethod -> InternalPaymentMethod in
       let type = primerMethod.type
 
-      logger.debug(message: "🔄 [PaymentMethodsBridge] Converting payment method: \(type)")
+      logger.debug(message: "[PaymentMethodsBridge] Converting payment method: \(type)")
 
       // Extract network surcharges for card payment methods
       let networkSurcharges = extractNetworkSurcharges(for: type)
@@ -82,11 +82,11 @@ class CheckoutComponentsPaymentMethodsBridge: GetPaymentMethodsInteractor, LogRe
 
     logger.info(
       message:
-        "✅ [PaymentMethodsBridge] Successfully converted \(convertedMethods.count) payment methods")
+        "[PaymentMethodsBridge] Successfully converted \(convertedMethods.count) payment methods")
 
     for (index, method) in convertedMethods.enumerated() {
       logger.debug(
-        message: "💳 [PaymentMethodsBridge] Method \(index + 1): \(method.type) - \(method.name)")
+        message: "[PaymentMethodsBridge] Method \(index + 1): \(method.type) - \(method.name)")
     }
 
     return convertedMethods
@@ -176,19 +176,19 @@ class CheckoutComponentsPaymentMethodsBridge: GetPaymentMethodsInteractor, LogRe
     -> [PrimerPaymentMethod] {
       let registeredTypes = Set(await PaymentMethodRegistry.shared.registeredTypes)
 
-      logger.debug(message: "🔍 [PaymentMethodsBridge] Registered payment method types: \(registeredTypes)")
+      logger.debug(message: "[PaymentMethodsBridge] Registered payment method types: \(registeredTypes)")
 
       let filtered = paymentMethods.filter { method in
         let isRegistered = registeredTypes.contains(method.type)
         if !isRegistered {
-          logger.debug(message: "🚫 [PaymentMethodsBridge] Filtering out unregistered payment method: \(method.type)")
+          logger.debug(message: "[PaymentMethodsBridge] Filtering out unregistered payment method: \(method.type)")
         }
         return isRegistered
       }
 
       logger.debug(
         message:
-          "🔍 [PaymentMethodsBridge] Filtered \(paymentMethods.count) payment methods to \(filtered.count) registered types"
+          "[PaymentMethodsBridge] Filtered \(paymentMethods.count) payment methods to \(filtered.count) registered types"
       )
 
       return filtered
