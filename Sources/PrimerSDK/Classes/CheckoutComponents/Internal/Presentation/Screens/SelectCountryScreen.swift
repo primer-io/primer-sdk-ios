@@ -13,7 +13,6 @@ struct SelectCountryScreen: View, LogReporter {
   let onDismiss: (() -> Void)?
 
   @Environment(\.designTokens) private var tokens
-  @Environment(\.sizeCategory) private var sizeCategory  // Observes Dynamic Type changes
   @State private var countryState: PrimerSelectCountryState = .init()
 
   var body: some View {
@@ -21,7 +20,11 @@ struct SelectCountryScreen: View, LogReporter {
       mainContent
     }
     .environment(\.primerSelectCountryScope, scope)
-    .onAppear(perform: observeState)
+    .task {
+      for await state in await scope.state {
+        countryState = state
+      }
+    }
   }
 
   private var mainContent: some View {
@@ -160,13 +163,6 @@ struct SelectCountryScreen: View, LogReporter {
     onDismiss?()
   }
 
-  private func observeState() {
-    Task { [self] in
-      for await state in await scope.state {
-        countryState = state
-      }
-    }
-  }
 }
 
 /// Country item view

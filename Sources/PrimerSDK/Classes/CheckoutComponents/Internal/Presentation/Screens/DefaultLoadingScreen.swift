@@ -30,5 +30,6 @@ struct DefaultLoadingScreen: View {
     .frame(height: 300)
     .frame(maxWidth: .infinity)
     .background(CheckoutColors.background(tokens: tokens))
+    .accessibilityIdentifier(AccessibilityIdentifiers.Common.loadingIndicator)
   }
 }

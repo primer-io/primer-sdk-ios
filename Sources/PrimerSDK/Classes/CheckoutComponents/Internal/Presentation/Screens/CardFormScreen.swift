@@ -16,7 +16,6 @@ struct CardFormScreen: View, LogReporter {
   @Environment(\.sizeCategory) private var sizeCategory  // Observes Dynamic Type changes
   @State private var cardFormState: PrimerCardFormState = .init()
   @State private var selectedCardNetwork: CardNetwork = .unknown
-  @State private var refreshTrigger = UUID()
   @State private var formConfiguration: CardFormConfiguration = .default
   @State private var configurationService: ConfigurationService?
   @State private var observationTask: Task<Void, Never>?
@@ -30,7 +29,7 @@ struct CardFormScreen: View, LogReporter {
       }
       .padding(.horizontal, PrimerSpacing.large(tokens: tokens))
       .padding(.vertical, PrimerSpacing.large(tokens: tokens))
-      .frame(maxWidth: UIScreen.main.bounds.width)
+      .frame(maxWidth: .infinity)
     }
     .navigationBarHidden(true)
     .background(CheckoutColors.background(tokens: tokens))
@@ -307,7 +306,7 @@ struct CardFormScreen: View, LogReporter {
 
   private func submitAction() {
     Task {
-      await (scope as? DefaultCardFormScope)?.submit()
+      await (scope as? DefaultCardFormScope)?.performSubmit()
     }
   }
 
@@ -337,7 +336,6 @@ struct CardFormScreen: View, LogReporter {
 
         await MainActor.run {
           cardFormState = state
-          refreshTrigger = UUID()
 
           formConfiguration = updatedFormConfig
 
@@ -626,10 +624,8 @@ struct CardFormScreen: View, LogReporter {
   private func getCardNetworkForCvv() -> CardNetwork {
     if let network = cardFormState.selectedNetwork {
       return network.network
-    } else {
-      let cardNumber: String? = nil
-      return CardNetwork(cardNumber: cardNumber ?? "")
     }
+    return .unknown
   }
 
   // MARK: - Focus Management
@@ -665,19 +661,4 @@ struct CardFormScreen: View, LogReporter {
     focusedField = nil
   }
 
-  /// Moves focus to the first field with a validation error.
-  ///
-  /// **Important**: Only call in response to explicit user actions (form submission, navigation request).
-  /// DO NOT call automatically during typing as it creates an accessibility trap.
-  private func moveFocusToFirstError() {
-    for field in formConfiguration.cardFields where cardFormState.hasError(for: field) {
-      focusedField = field
-      return
-    }
-
-    for field in formConfiguration.billingFields where cardFormState.hasError(for: field) {
-      focusedField = field
-      return
-    }
-  }
 }

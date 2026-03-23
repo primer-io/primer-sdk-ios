@@ -33,7 +33,11 @@ struct QRCodeView: View, LogReporter {
     .navigationBarHidden(true)
     .background(CheckoutColors.background(tokens: tokens))
     .accessibilityIdentifier(AccessibilityIdentifiers.QRCode.container)
-    .onAppear(perform: observeState)
+    .task {
+      for await state in scope.state {
+        qrCodeState = state
+      }
+    }
   }
 
   // MARK: - Header Section
@@ -175,15 +179,4 @@ struct QRCodeView: View, LogReporter {
     }
   }
 
-  // MARK: - State Observation
-
-  private func observeState() {
-    Task { [self] in
-      for await state in scope.state {
-        await MainActor.run {
-          qrCodeState = state
-        }
-      }
-    }
-  }
 }

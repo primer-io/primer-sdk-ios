@@ -12,8 +12,6 @@ struct SuccessScreen: View {
   let onDismiss: (() -> Void)?
 
   @Environment(\.designTokens) private var tokens
-  @Environment(\.sizeCategory) private var sizeCategory
-  @State private var dismissTimer: Timer?
   @State private var iconScale: CGFloat = 0.3
 
   init(result: PaymentResult, onDismiss: (() -> Void)? = nil) {
@@ -54,19 +52,9 @@ struct SuccessScreen: View {
           iconScale = 1.0
         }
       }
-      startAutoDismissTimer()
     }
-    .onDisappear {
-      dismissTimer?.invalidate()
-      dismissTimer = nil
-    }
-  }
-
-  private func startAutoDismissTimer() {
-    dismissTimer?.invalidate()
-    dismissTimer = Timer.scheduledTimer(
-      withTimeInterval: AnimationConstants.autoDismissDelay, repeats: false
-    ) { _ in
+    .task {
+      try? await Task.sleep(nanoseconds: UInt64(AnimationConstants.autoDismissDelay * 1_000_000_000))
       onDismiss?()
     }
   }

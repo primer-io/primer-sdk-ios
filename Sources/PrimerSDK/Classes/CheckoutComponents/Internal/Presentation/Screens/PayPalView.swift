@@ -24,11 +24,13 @@ struct PayPalView: View, LogReporter {
     }
     .padding(.horizontal, PrimerSpacing.large(tokens: tokens))
     .padding(.vertical, PrimerSpacing.large(tokens: tokens))
-    .frame(maxWidth: UIScreen.main.bounds.width)
+    .frame(maxWidth: .infinity)
     .navigationBarHidden(true)
     .background(CheckoutColors.background(tokens: tokens))
-    .onAppear {
-      observeState()
+    .task {
+      for await state in scope.state {
+        payPalState = state
+      }
     }
   }
 
@@ -199,17 +201,6 @@ struct PayPalView: View, LogReporter {
     scope.submit()
   }
 
-  // MARK: - State Observation
-
-  private func observeState() {
-    Task { [self] in
-      for await state in scope.state {
-        await MainActor.run {
-          payPalState = state
-        }
-      }
-    }
-  }
 }
 
 // MARK: - Preview

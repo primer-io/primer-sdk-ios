@@ -42,6 +42,7 @@ struct PaymentMethodSelectionScreen: View, LogReporter {
         Text(CheckoutComponentsStrings.paymentAmountTitle(formattedAmount))
           .font(PrimerFont.titleXLarge(tokens: tokens))
           .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
+          .accessibilityAddTraits(.isHeader)
       }
 
       Spacer()
@@ -49,6 +50,12 @@ struct PaymentMethodSelectionScreen: View, LogReporter {
       if scope.dismissalMechanism.contains(.closeButton) {
         Button(CheckoutComponentsStrings.cancelButton, action: scope.cancel)
           .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
+          .accessibility(
+            config: AccessibilityConfiguration(
+              identifier: AccessibilityIdentifiers.Common.closeButton,
+              label: CheckoutComponentsStrings.a11yCancel,
+              traits: [.isButton]
+            ))
       }
     }
     .padding(.horizontal, PrimerSpacing.large(tokens: tokens))

@@ -9,7 +9,6 @@ import SwiftUI
 @available(iOS 15.0, *)
 struct SplashScreen: View {
   @Environment(\.designTokens) private var tokens
-  @Environment(\.sizeCategory) private var sizeCategory
 
   var body: some View {
     ZStack {
@@ -38,14 +37,12 @@ struct SplashScreen: View {
             .font(PrimerFont.bodyLarge(tokens: tokens))
             .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
             .multilineTextAlignment(.center)
-            .accessibilityAddTraits(.isStaticText)
 
           // Secondary loading message
           Text(CheckoutComponentsStrings.loadingWontTakeLong)
             .font(PrimerFont.bodyMedium(tokens: tokens))
             .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
             .multilineTextAlignment(.center)
-            .accessibilityAddTraits(.isStaticText)
         }
       }
       .padding(.horizontal, PrimerSpacing.xxlarge(tokens: tokens))

@@ -15,7 +15,8 @@ struct DeleteVaultedPaymentMethodConfirmationScreen: View, LogReporter {
 
   @Environment(\.designTokens) private var tokens
 
-  @State private var isDeleting: Bool = false
+  @State private var isDeleting = false
+  @State private var deleteTask: Task<Void, Never>?
 
   // MARK: - Body
 
@@ -27,6 +28,10 @@ struct DeleteVaultedPaymentMethodConfirmationScreen: View, LogReporter {
       Spacer()
     }
     .background(CheckoutColors.background(tokens: tokens))
+    .onDisappear {
+      deleteTask?.cancel()
+      deleteTask = nil
+    }
   }
 
   // MARK: - Header

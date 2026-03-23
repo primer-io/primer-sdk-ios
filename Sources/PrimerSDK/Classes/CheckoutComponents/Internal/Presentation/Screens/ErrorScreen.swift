@@ -13,7 +13,6 @@ struct ErrorScreen: View {
   let onChooseOtherPaymentMethods: (() -> Void)?
 
   @Environment(\.designTokens) private var tokens
-  @Environment(\.sizeCategory) private var sizeCategory  // Observes Dynamic Type changes
 
   init(
     error: PrimerError,
@@ -32,16 +31,21 @@ struct ErrorScreen: View {
       Image(systemName: "exclamationmark.triangle.fill")
         .font(PrimerFont.largeIcon(tokens: tokens))
         .foregroundColor(CheckoutColors.borderError(tokens: tokens))
+        .accessibilityIdentifier(AccessibilityIdentifiers.Error.icon)
+        .accessibilityHidden(true)
 
       Text(CheckoutComponentsStrings.paymentFailed)
         .font(PrimerFont.titleLarge(tokens: tokens))
         .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
+        .accessibilityIdentifier(AccessibilityIdentifiers.Error.title)
+        .accessibilityAddTraits(.isHeader)
 
       Text(error.errorDescription ?? CheckoutComponentsStrings.unexpectedError)
         .font(PrimerFont.bodyMedium(tokens: tokens))
         .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
         .multilineTextAlignment(.center)
         .padding(.horizontal, PrimerSpacing.xxlarge(tokens: tokens))
+        .accessibilityIdentifier(AccessibilityIdentifiers.Error.description)
 
       Spacer()
 
@@ -69,6 +73,12 @@ struct ErrorScreen: View {
         .background(CheckoutColors.blue(tokens: tokens))
         .cornerRadius(PrimerRadius.medium(tokens: tokens))
     }
+    .accessibility(
+      config: AccessibilityConfiguration(
+        identifier: AccessibilityIdentifiers.Error.retryButton,
+        label: CheckoutComponentsStrings.retryButton,
+        traits: [.isButton]
+      ))
   }
 
   private func makeOtherPaymentButton() -> some View {
@@ -87,5 +97,11 @@ struct ErrorScreen: View {
             .stroke(CheckoutColors.borderDefault(tokens: tokens), lineWidth: 1)
         )
     }
+    .accessibility(
+      config: AccessibilityConfiguration(
+        identifier: AccessibilityIdentifiers.Error.otherPaymentMethodButton,
+        label: CheckoutComponentsStrings.chooseOtherPaymentMethod,
+        traits: [.isButton]
+      ))
   }
 }
