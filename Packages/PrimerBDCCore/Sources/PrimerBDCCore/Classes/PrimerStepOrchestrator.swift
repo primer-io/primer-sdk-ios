@@ -81,7 +81,7 @@ public final class PrimerStepOrchestrator {
                 logger.info("Received instruction; executing web view step")
                 let response = try await urlOpenHandler.resolve(value)
                 
-                urlOpenHandler.onClose = { [weak self] in
+                urlOpenHandler.onClose = {
                     try await completion(
                         StepResponse(
                             outcome: .cancelled,
@@ -91,7 +91,7 @@ public final class PrimerStepOrchestrator {
                     )
                 }
                 
-                urlOpenHandler.onComplete = { [weak self] in
+                urlOpenHandler.onComplete = {
                     try await completion(
                         StepResponse(
                             outcome: .success,
