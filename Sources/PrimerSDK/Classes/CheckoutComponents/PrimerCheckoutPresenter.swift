@@ -64,6 +64,7 @@ extension PrimerCheckoutPresenterDelegate {
 /// It acts as a bridge between UIKit apps and the underlying SwiftUI implementation (PrimerCheckout).
 /// For pure SwiftUI apps, use PrimerCheckout directly instead of this class.
 @available(iOS 15.0, *)
+@MainActor
 @objc public final class PrimerCheckoutPresenter: NSObject {
     
     // MARK: - Singleton
