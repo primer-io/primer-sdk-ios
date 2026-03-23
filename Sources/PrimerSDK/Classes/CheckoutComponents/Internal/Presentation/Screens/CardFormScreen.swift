@@ -258,11 +258,11 @@ struct CardFormScreen: View, LogReporter {
     {
       let totalAmount = merchantAmount + surchargeRaw
       let accessibilityAmount = totalAmount.toAccessibilityCurrencyString(currency: currency)
-      return "Pay with \(accessibilityAmount)"
+      return CheckoutComponentsStrings.paymentAmountTitle(accessibilityAmount)
     }
 
     let accessibilityAmount = amount.toAccessibilityCurrencyString(currency: currency)
-    return "Pay with \(accessibilityAmount)"
+    return CheckoutComponentsStrings.paymentAmountTitle(accessibilityAmount)
   }
 
   private var submitButtonText: String {
