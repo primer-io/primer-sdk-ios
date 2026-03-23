@@ -56,9 +56,7 @@ extension DefaultCardFormScope {
       scope: self,
       label: label,
       placeholder: CheckoutComponentsStrings.selectCountryPlaceholder,
-      styling: styling,
-      onValidationChange: nil,
-      onOpenCountrySelector: nil
+      styling: styling
     ).asAny()
   }
 

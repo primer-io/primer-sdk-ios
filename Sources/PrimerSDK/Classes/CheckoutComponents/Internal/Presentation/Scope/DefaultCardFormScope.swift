@@ -89,6 +89,8 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
   private let analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol?
   private let configurationService: ConfigurationService
   private var billingAddressSent = false
+  private var networkDetectionTask: Task<Void, Never>?
+  private var binDataTask: Task<Void, Never>?
   private var preferredNetwork: CardNetwork?
   private var currentCardData: PrimerCardData?
   private var formConfiguration: CardFormConfiguration = .default
@@ -112,14 +114,6 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     if options.state != false { fields.append(.state) }
 
     return fields
-  }
-
-  private var selectedCountryFromCode: CountryCode.PhoneNumberCountryCode? {
-    let countryCode = structuredState.data[.countryCode]
-    guard !countryCode.isEmpty else { return nil }
-    return CountryCode.phoneNumberCountryCodes.first {
-      $0.code.uppercased() == countryCode.uppercased()
-    }
   }
 
   init(
@@ -172,8 +166,9 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
   private func setupNetworkDetectionStream() {
     guard let interactor = cardNetworkDetectionInteractor else { return }
 
-    Task { [self] in
+    networkDetectionTask = Task { [weak self] in
       for await networks in interactor.networkDetectionStream {
+        guard let self else { return }
         structuredState.availableNetworks = networks.map { PrimerCardNetwork(network: $0) }
 
         if let firstNetwork = networks.first {
@@ -191,16 +186,15 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
   private func setupBinDataStream() {
     guard let cardNetworkDetectionInteractor else { return }
 
-    Task { [self] in
+    binDataTask = Task { [weak self] in
       for await binData in cardNetworkDetectionInteractor.binDataStream {
+        guard let self else { return }
         structuredState.binData = binData
       }
     }
   }
 
   public func updateField(_ fieldType: PrimerInputElementType, value: String) {
-    structuredState.data[fieldType] = value
-
     switch fieldType {
     case .cardNumber:
       updateCardNumber(value)
@@ -375,8 +369,9 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
   }
 
   public func submit() {
+    guard !structuredState.isLoading else { return }
     Task { [self] in
-      await submit()
+      await performSubmit()
     }
   }
 
@@ -387,6 +382,10 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
   }
 
   public func cancel() {
+    networkDetectionTask?.cancel()
+    networkDetectionTask = nil
+    binDataTask?.cancel()
+    binDataTask = nil
     checkoutScope?.onDismiss()
   }
 
@@ -454,7 +453,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     )
   }
 
-  func submit() async {
+  func performSubmit() async {
     structuredState.isLoading = true
     checkoutScope?.startProcessing()
 
@@ -525,6 +524,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
 
   private func handlePaymentError(_ error: Error) async {
     structuredState.isLoading = false
+    billingAddressSent = false
     let primerError =
       error as? PrimerError ?? PrimerError.unknown(message: error.localizedDescription)
     checkoutScope?.handlePaymentError(primerError)
