@@ -95,14 +95,14 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
 
   let presentationContext: PresentationContext
 
-  private var _paymentMethodSelection: PrimerPaymentMethodSelectionScope?
+  private var cachedPaymentMethodSelection: PrimerPaymentMethodSelectionScope?
   public var paymentMethodSelection: PrimerPaymentMethodSelectionScope {
-    if let _paymentMethodSelection { return _paymentMethodSelection }
+    if let cachedPaymentMethodSelection { return cachedPaymentMethodSelection }
     let scope = DefaultPaymentMethodSelectionScope(
       checkoutScope: self,
       analyticsInteractor: analyticsInteractor
     )
-    _paymentMethodSelection = scope
+    cachedPaymentMethodSelection = scope
     return scope
   }
 
@@ -507,7 +507,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
       updateState(.dismissed)
       updateNavigationState(.dismissed)
 
-      _paymentMethodSelection = nil
+      cachedPaymentMethodSelection = nil
       currentPaymentMethodScope = nil
       paymentMethodScopeCache.removeAll()
 
@@ -662,7 +662,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
   ) {
     selectedVaultedPaymentMethod = method
     // Notify payment method selection scope to sync from source of truth
-    if let selectionScope = _paymentMethodSelection as? DefaultPaymentMethodSelectionScope {
+    if let selectionScope = cachedPaymentMethodSelection as? DefaultPaymentMethodSelectionScope {
       selectionScope.syncSelectedVaultedPaymentMethod()
     }
   }
