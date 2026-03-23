@@ -83,32 +83,28 @@ final class DefaultAchScopeTests: XCTestCase {
     // MARK: - Start Tests
 
     @MainActor
-    func test_start_callsValidate() async {
+    func test_start_callsValidate() async throws {
         // Given
         mockInteractor.userDetailsResultToReturn = AchTestData.defaultUserDetails
         let scope = createScope()
 
         // When
         scope.start()
-
-        // Wait for async operations
-        try? await Task.sleep(nanoseconds: 200_000_000)
+        _ = try await awaitValue(scope.state, matching: { $0.step == .userDetailsCollection })
 
         // Then
         XCTAssertEqual(mockInteractor.validateCallCount, 1)
     }
 
     @MainActor
-    func test_start_callsLoadUserDetails() async {
+    func test_start_callsLoadUserDetails() async throws {
         // Given
         mockInteractor.userDetailsResultToReturn = AchTestData.defaultUserDetails
         let scope = createScope()
 
         // When
         scope.start()
-
-        // Wait for async operations
-        try? await Task.sleep(nanoseconds: 200_000_000)
+        _ = try await awaitValue(scope.state, matching: { $0.step == .userDetailsCollection })
 
         // Then
         XCTAssertEqual(mockInteractor.loadUserDetailsCallCount, 1)
@@ -275,36 +271,36 @@ final class DefaultAchScopeTests: XCTestCase {
     // MARK: - Submit User Details Tests
 
     @MainActor
-    func test_submitUserDetails_callsPatchUserDetails() async {
+    func test_submitUserDetails_callsPatchUserDetails() async throws {
         // Given
         mockInteractor.userDetailsResultToReturn = AchTestData.defaultUserDetails
         mockInteractor.stripeDataToReturn = AchTestData.defaultStripeData
         mockInteractor.bankCollectorViewControllerToReturn = UIViewController()
         let scope = createScope()
         scope.start()
-        try? await Task.sleep(nanoseconds: 200_000_000)
+        _ = try await awaitValue(scope.state, matching: { $0.step == .userDetailsCollection })
 
         // When
         scope.submitUserDetails()
-        try? await Task.sleep(nanoseconds: 200_000_000)
+        _ = try await awaitValue(scope.state, matching: { $0.step == .bankAccountCollection })
 
         // Then
         XCTAssertEqual(mockInteractor.patchUserDetailsCallCount, 1)
     }
 
     @MainActor
-    func test_submitUserDetails_capturesUserDetailsParameters() async {
+    func test_submitUserDetails_capturesUserDetailsParameters() async throws {
         // Given
         mockInteractor.userDetailsResultToReturn = AchTestData.defaultUserDetails
         mockInteractor.stripeDataToReturn = AchTestData.defaultStripeData
         mockInteractor.bankCollectorViewControllerToReturn = UIViewController()
         let scope = createScope()
         scope.start()
-        try? await Task.sleep(nanoseconds: 200_000_000)
+        _ = try await awaitValue(scope.state, matching: { $0.step == .userDetailsCollection })
 
         // When
         scope.submitUserDetails()
-        try? await Task.sleep(nanoseconds: 200_000_000)
+        _ = try await awaitValue(scope.state, matching: { $0.step == .bankAccountCollection })
 
         // Then
         XCTAssertEqual(mockInteractor.lastPatchedFirstName, AchTestData.Constants.firstName)
@@ -313,36 +309,36 @@ final class DefaultAchScopeTests: XCTestCase {
     }
 
     @MainActor
-    func test_submitUserDetails_callsStartPaymentAndGetStripeData() async {
+    func test_submitUserDetails_callsStartPaymentAndGetStripeData() async throws {
         // Given
         mockInteractor.userDetailsResultToReturn = AchTestData.defaultUserDetails
         mockInteractor.stripeDataToReturn = AchTestData.defaultStripeData
         mockInteractor.bankCollectorViewControllerToReturn = UIViewController()
         let scope = createScope()
         scope.start()
-        try? await Task.sleep(nanoseconds: 200_000_000)
+        _ = try await awaitValue(scope.state, matching: { $0.step == .userDetailsCollection })
 
         // When
         scope.submitUserDetails()
-        try? await Task.sleep(nanoseconds: 200_000_000)
+        _ = try await awaitValue(scope.state, matching: { $0.step == .bankAccountCollection })
 
         // Then
         XCTAssertEqual(mockInteractor.startPaymentAndGetStripeDataCallCount, 1)
     }
 
     @MainActor
-    func test_submitUserDetails_callsCreateBankCollector() async {
+    func test_submitUserDetails_callsCreateBankCollector() async throws {
         // Given
         mockInteractor.userDetailsResultToReturn = AchTestData.defaultUserDetails
         mockInteractor.stripeDataToReturn = AchTestData.defaultStripeData
         mockInteractor.bankCollectorViewControllerToReturn = UIViewController()
         let scope = createScope()
         scope.start()
-        try? await Task.sleep(nanoseconds: 200_000_000)
+        _ = try await awaitValue(scope.state, matching: { $0.step == .userDetailsCollection })
 
         // When
         scope.submitUserDetails()
-        try? await Task.sleep(nanoseconds: 200_000_000)
+        _ = try await awaitValue(scope.state, matching: { $0.step == .bankAccountCollection })
 
         // Then
         XCTAssertEqual(mockInteractor.createBankCollectorCallCount, 1)
@@ -386,34 +382,34 @@ final class DefaultAchScopeTests: XCTestCase {
     }
 
     @MainActor
-    func test_submitUserDetails_withInvalidUserDetails_doesNotCallPatch() async {
+    func test_submitUserDetails_withInvalidUserDetails_doesNotCallPatch() async throws {
         // Given
         mockInteractor.userDetailsResultToReturn = AchTestData.emptyUserDetails
         let scope = createScope()
         scope.start()
-        try? await Task.sleep(nanoseconds: 200_000_000)
+        _ = try await awaitValue(scope.state, matching: { $0.step == .userDetailsCollection })
 
         // When
         scope.submitUserDetails()
-        try? await Task.sleep(nanoseconds: 100_000_000)
+        await Task.yield()
 
         // Then
         XCTAssertEqual(mockInteractor.patchUserDetailsCallCount, 0)
     }
 
     @MainActor
-    func test_submit_callsSubmitUserDetails() async {
+    func test_submit_callsSubmitUserDetails() async throws {
         // Given
         mockInteractor.userDetailsResultToReturn = AchTestData.defaultUserDetails
         mockInteractor.stripeDataToReturn = AchTestData.defaultStripeData
         mockInteractor.bankCollectorViewControllerToReturn = UIViewController()
         let scope = createScope()
         scope.start()
-        try? await Task.sleep(nanoseconds: 200_000_000)
+        _ = try await awaitValue(scope.state, matching: { $0.step == .userDetailsCollection })
 
         // When
         scope.submit()
-        try? await Task.sleep(nanoseconds: 200_000_000)
+        _ = try await awaitValue(scope.state, matching: { $0.step == .bankAccountCollection })
 
         // Then
         XCTAssertEqual(mockInteractor.patchUserDetailsCallCount, 1)
@@ -598,7 +594,11 @@ final class DefaultAchScopeTests: XCTestCase {
         mockInteractor.stripeDataToReturn = AchTestData.defaultStripeData
         mockInteractor.bankCollectorViewControllerToReturn = UIViewController()
         mockInteractor.mandateResultToReturn = AchTestData.fullMandateResult
-        mockInteractor.paymentResultToReturn = AchTestData.successPaymentResult
+        let completeExpectation = expectation(description: "complete payment called")
+        mockInteractor.onCompletePayment = { _ in
+            completeExpectation.fulfill()
+            return AchTestData.successPaymentResult
+        }
         let scope = createScope()
         scope.start()
         _ = try await awaitValue(scope.state, matching: { $0.step == .userDetailsCollection })
@@ -609,7 +609,7 @@ final class DefaultAchScopeTests: XCTestCase {
 
         // When
         scope.acceptMandate()
-        try? await Task.sleep(nanoseconds: 200_000_000)
+        await fulfillment(of: [completeExpectation], timeout: 2.0)
 
         // Then
         XCTAssertEqual(mockInteractor.completePaymentCallCount, 1)
@@ -625,7 +625,7 @@ final class DefaultAchScopeTests: XCTestCase {
 
         // When
         scope.acceptMandate()
-        try? await Task.sleep(nanoseconds: 100_000_000)
+        await Task.yield()
 
         // Then
         XCTAssertEqual(mockInteractor.completePaymentCallCount, 0)
@@ -686,26 +686,16 @@ final class DefaultAchScopeTests: XCTestCase {
     // MARK: - State AsyncStream Tests
 
     @MainActor
-    func test_state_emitsInitialState() async {
+    func test_state_emitsInitialState() async throws {
         // Given
         mockInteractor.userDetailsResultToReturn = AchTestData.defaultUserDetails
         let scope = createScope()
 
         // When
-        var receivedStates: [PrimerAchState] = []
-        let task = Task {
-            for await state in scope.state {
-                receivedStates.append(state)
-                if receivedStates.count >= 1 { break }
-            }
-        }
-
-        // Wait for initial emission
-        try? await Task.sleep(nanoseconds: 100_000_000)
-        task.cancel()
+        let state = try await awaitFirst(scope.state)
 
         // Then
-        XCTAssertFalse(receivedStates.isEmpty)
+        XCTAssertNotNil(state)
     }
 
     @MainActor
@@ -721,7 +711,7 @@ final class DefaultAchScopeTests: XCTestCase {
         }
 
         task.cancel()
-        try? await Task.sleep(nanoseconds: 50_000_000)
+        await Task.yield()
 
         // Then
         XCTAssertTrue(task.isCancelled)
@@ -736,7 +726,11 @@ final class DefaultAchScopeTests: XCTestCase {
         mockInteractor.stripeDataToReturn = AchTestData.defaultStripeData
         mockInteractor.bankCollectorViewControllerToReturn = UIViewController()
         mockInteractor.mandateResultToReturn = AchTestData.fullMandateResult
-        mockInteractor.paymentResultToReturn = AchTestData.successPaymentResult
+        let completeExpectation = expectation(description: "complete payment called")
+        mockInteractor.onCompletePayment = { _ in
+            completeExpectation.fulfill()
+            return AchTestData.successPaymentResult
+        }
         let scope = createScope()
 
         // When - Start flow
@@ -753,10 +747,7 @@ final class DefaultAchScopeTests: XCTestCase {
 
         // Accept mandate
         scope.acceptMandate()
-        _ = try await awaitValue(scope.state, matching: { $0.step == .processing })
-
-        // Wait for payment completion
-        try? await Task.sleep(nanoseconds: 200_000_000)
+        await fulfillment(of: [completeExpectation], timeout: 2.0)
 
         // Then
         XCTAssertEqual(mockInteractor.validateCallCount, 1)
@@ -773,12 +764,16 @@ final class DefaultAchScopeTests: XCTestCase {
     @MainActor
     func test_start_validationFailure_doesNotCrash() async {
         // Given
-        mockInteractor.validateError = TestError.networkFailure
+        let validateExpectation = expectation(description: "validate called")
+        mockInteractor.onValidate = {
+            validateExpectation.fulfill()
+            throw TestError.networkFailure
+        }
         let scope = createScope()
 
         // When
         scope.start()
-        try? await Task.sleep(nanoseconds: 200_000_000)
+        await fulfillment(of: [validateExpectation], timeout: 2.0)
 
         // Then - should not crash
         XCTAssertEqual(mockInteractor.validateCallCount, 1)
@@ -787,64 +782,80 @@ final class DefaultAchScopeTests: XCTestCase {
     @MainActor
     func test_start_loadUserDetailsFailure_doesNotCrash() async {
         // Given
-        mockInteractor.loadUserDetailsError = TestError.networkFailure
+        let loadExpectation = expectation(description: "load user details called")
+        mockInteractor.onLoadUserDetails = {
+            loadExpectation.fulfill()
+            throw TestError.networkFailure
+        }
         let scope = createScope()
 
         // When
         scope.start()
-        try? await Task.sleep(nanoseconds: 200_000_000)
+        await fulfillment(of: [loadExpectation], timeout: 2.0)
 
         // Then - should not crash
         XCTAssertEqual(mockInteractor.loadUserDetailsCallCount, 1)
     }
 
     @MainActor
-    func test_submitUserDetails_patchFailure_doesNotCrash() async {
+    func test_submitUserDetails_patchFailure_doesNotCrash() async throws {
         // Given
         mockInteractor.userDetailsResultToReturn = AchTestData.defaultUserDetails
-        mockInteractor.patchUserDetailsError = TestError.networkFailure
+        let patchExpectation = expectation(description: "patch called")
+        mockInteractor.onPatchUserDetails = { _, _, _ in
+            patchExpectation.fulfill()
+            throw TestError.networkFailure
+        }
         let scope = createScope()
         scope.start()
-        try? await Task.sleep(nanoseconds: 200_000_000)
+        _ = try await awaitValue(scope.state, matching: { $0.step == .userDetailsCollection })
 
         // When
         scope.submitUserDetails()
-        try? await Task.sleep(nanoseconds: 200_000_000)
+        await fulfillment(of: [patchExpectation], timeout: 2.0)
 
         // Then - should not crash
         XCTAssertEqual(mockInteractor.patchUserDetailsCallCount, 1)
     }
 
     @MainActor
-    func test_submitUserDetails_stripeDataFailure_doesNotCrash() async {
+    func test_submitUserDetails_stripeDataFailure_doesNotCrash() async throws {
         // Given
         mockInteractor.userDetailsResultToReturn = AchTestData.defaultUserDetails
-        mockInteractor.startPaymentAndGetStripeDataError = TestError.networkFailure
+        let stripeExpectation = expectation(description: "start payment called")
+        mockInteractor.onStartPaymentAndGetStripeData = {
+            stripeExpectation.fulfill()
+            throw TestError.networkFailure
+        }
         let scope = createScope()
         scope.start()
-        try? await Task.sleep(nanoseconds: 200_000_000)
+        _ = try await awaitValue(scope.state, matching: { $0.step == .userDetailsCollection })
 
         // When
         scope.submitUserDetails()
-        try? await Task.sleep(nanoseconds: 200_000_000)
+        await fulfillment(of: [stripeExpectation], timeout: 2.0)
 
         // Then - should not crash
         XCTAssertEqual(mockInteractor.startPaymentAndGetStripeDataCallCount, 1)
     }
 
     @MainActor
-    func test_submitUserDetails_bankCollectorFailure_doesNotCrash() async {
+    func test_submitUserDetails_bankCollectorFailure_doesNotCrash() async throws {
         // Given
         mockInteractor.userDetailsResultToReturn = AchTestData.defaultUserDetails
         mockInteractor.stripeDataToReturn = AchTestData.defaultStripeData
-        mockInteractor.createBankCollectorError = TestError.networkFailure
+        let bankExpectation = expectation(description: "create bank collector called")
+        mockInteractor.onCreateBankCollector = { _, _, _, _, _ in
+            bankExpectation.fulfill()
+            throw TestError.networkFailure
+        }
         let scope = createScope()
         scope.start()
-        try? await Task.sleep(nanoseconds: 200_000_000)
+        _ = try await awaitValue(scope.state, matching: { $0.step == .userDetailsCollection })
 
         // When
         scope.submitUserDetails()
-        try? await Task.sleep(nanoseconds: 200_000_000)
+        await fulfillment(of: [bankExpectation], timeout: 2.0)
 
         // Then - should not crash
         XCTAssertEqual(mockInteractor.createBankCollectorCallCount, 1)
@@ -856,7 +867,11 @@ final class DefaultAchScopeTests: XCTestCase {
         mockInteractor.userDetailsResultToReturn = AchTestData.defaultUserDetails
         mockInteractor.stripeDataToReturn = AchTestData.defaultStripeData
         mockInteractor.bankCollectorViewControllerToReturn = UIViewController()
-        mockInteractor.getMandateDataError = TestError.networkFailure
+        let mandateExpectation = expectation(description: "get mandate data called")
+        mockInteractor.onGetMandateData = {
+            mandateExpectation.fulfill()
+            throw TestError.networkFailure
+        }
         let scope = createScope()
         scope.start()
         _ = try await awaitValue(scope.state, matching: { $0.step == .userDetailsCollection })
@@ -865,7 +880,7 @@ final class DefaultAchScopeTests: XCTestCase {
 
         // When
         scope.achBankCollectorDidSucceed(paymentId: AchTestData.Constants.paymentId)
-        try? await Task.sleep(nanoseconds: 200_000_000)
+        await fulfillment(of: [mandateExpectation], timeout: 2.0)
 
         // Then - should not crash
         XCTAssertEqual(mockInteractor.getMandateDataCallCount, 1)
@@ -878,7 +893,11 @@ final class DefaultAchScopeTests: XCTestCase {
         mockInteractor.stripeDataToReturn = AchTestData.defaultStripeData
         mockInteractor.bankCollectorViewControllerToReturn = UIViewController()
         mockInteractor.mandateResultToReturn = AchTestData.fullMandateResult
-        mockInteractor.completePaymentError = TestError.networkFailure
+        let completeExpectation = expectation(description: "complete payment called")
+        mockInteractor.onCompletePayment = { _ in
+            completeExpectation.fulfill()
+            throw TestError.networkFailure
+        }
         let scope = createScope()
         scope.start()
         _ = try await awaitValue(scope.state, matching: { $0.step == .userDetailsCollection })
@@ -889,7 +908,7 @@ final class DefaultAchScopeTests: XCTestCase {
 
         // When
         scope.acceptMandate()
-        try? await Task.sleep(nanoseconds: 200_000_000)
+        await fulfillment(of: [completeExpectation], timeout: 2.0)
 
         // Then - should not crash
         XCTAssertEqual(mockInteractor.completePaymentCallCount, 1)
