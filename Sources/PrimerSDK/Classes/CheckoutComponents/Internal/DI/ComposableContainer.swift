@@ -83,7 +83,7 @@ extension ComposableContainer {
     await safeRegister(DesignTokensManager.self) {
       _ = try await container.register(DesignTokensManager.self)
         .asSingleton()
-        .with { _ in DesignTokensManager() }
+        .with { _ in await MainActor.run { DesignTokensManager() } }
     }
 
     await safeRegister(CheckoutComponentsAnalyticsServiceProtocol.self) {
@@ -260,7 +260,7 @@ extension ComposableContainer {
     await safeRegister(HeadlessRepository.self) {
       _ = try await container.register(HeadlessRepository.self)
         .asTransient()
-        .with { _ in HeadlessRepositoryImpl() }
+        .with { _ in await MainActor.run { HeadlessRepositoryImpl() } }
     }
 
     await safeRegister(PaymentMethodMapper.self) {
