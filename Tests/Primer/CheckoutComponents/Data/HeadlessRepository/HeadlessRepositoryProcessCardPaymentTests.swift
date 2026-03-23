@@ -377,7 +377,7 @@ final class UpdateClientSessionBeforePaymentTests: XCTestCase {
         await repository.selectCardNetwork(.visa)
 
         // Wait for the detached Task to complete (fire-and-forget pattern)
-        try? await Task.sleep(nanoseconds: 100_000_000) // 100ms
+        await Task.yield()
 
         // Then
         XCTAssertEqual(mockClientSessionActions.selectPaymentMethodCalls.count, 1)
@@ -390,7 +390,7 @@ final class UpdateClientSessionBeforePaymentTests: XCTestCase {
         await repository.selectCardNetwork(.masterCard)
 
         // Wait for the detached Task to complete
-        try? await Task.sleep(nanoseconds: 100_000_000) // 100ms
+        await Task.yield()
 
         // Then
         XCTAssertEqual(mockClientSessionActions.selectPaymentMethodCalls.count, 1)
@@ -402,7 +402,7 @@ final class UpdateClientSessionBeforePaymentTests: XCTestCase {
         await repository.selectCardNetwork(.amex)
 
         // Wait for the detached Task to complete
-        try? await Task.sleep(nanoseconds: 100_000_000) // 100ms
+        await Task.yield()
 
         // Then
         XCTAssertEqual(mockClientSessionActions.selectPaymentMethodCalls.count, 1)
@@ -414,7 +414,7 @@ final class UpdateClientSessionBeforePaymentTests: XCTestCase {
         await repository.selectCardNetwork(.discover)
 
         // Wait for the detached Task to complete
-        try? await Task.sleep(nanoseconds: 100_000_000) // 100ms
+        await Task.yield()
 
         // Then
         XCTAssertEqual(mockClientSessionActions.selectPaymentMethodCalls.count, 1)
