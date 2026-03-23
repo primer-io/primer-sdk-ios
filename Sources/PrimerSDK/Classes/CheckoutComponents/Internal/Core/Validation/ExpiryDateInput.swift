@@ -32,10 +32,14 @@ final class ExpiryDateRule: ValidationRule {
       return .invalid(error: error)
     }
 
-    let currentYear = Calendar.current.component(.year, from: Date()) % 100
-    let currentMonth = Calendar.current.component(.month, from: Date())
+    let now = Date()
+    let currentYear = Calendar.current.component(.year, from: now) % 100
+    let currentMonth = Calendar.current.component(.month, from: now)
 
-    if yearInt < currentYear || (yearInt == currentYear && monthInt < currentMonth) {
+    // Normalize 4-digit year input to 2-digit
+    let normalizedYear = yearInt > 99 ? yearInt % 100 : yearInt
+
+    if normalizedYear < currentYear || (normalizedYear == currentYear && monthInt < currentMonth) {
       // Create specific expired card error
       let error = ValidationError(
         inputElementType: .expiryDate,
