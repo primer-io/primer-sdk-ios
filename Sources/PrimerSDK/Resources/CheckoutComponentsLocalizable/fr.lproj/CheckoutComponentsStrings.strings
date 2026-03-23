@@ -51,7 +51,7 @@
 "accessibility_country_selection_search" = "Rechercher un pays";
 "accessibility_country_selection_search_icon" = "Rechercher";
 "accessibility_error_generic" = "Une erreur s'est produite. Veuillez réessayer.";
-"accessibility_error_multiple_errors" = "Plusieurs erreurs se sont produites";
+"accessibility_error_multiple_errors" = "%d erreurs trouvées";
 "accessibility_payment_selection_card_full" = "Carte %1$@ se terminant par %2$@, expirant le %3$@";
 "accessibility_payment_selection_card_masked" = "carte se terminant par ****";
 "accessibility_payment_selection_coming_soon" = "Moyen de paiement bientôt disponible";
