@@ -8,6 +8,7 @@
 import XCTest
 
 @available(iOS 15.0, *)
+@MainActor
 final class SelectCardNetworkTests: XCTestCase {
 
     private var mockClientSessionActions: MockClientSessionActionsModule!

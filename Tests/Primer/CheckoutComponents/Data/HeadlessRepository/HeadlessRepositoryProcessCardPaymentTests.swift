@@ -8,6 +8,7 @@
 import XCTest
 
 @available(iOS 15.0, *)
+@MainActor
 final class ProcessCardPaymentTests: XCTestCase {
 
     private var mockRawDataManagerFactory: MockRawDataManagerFactory!
@@ -345,6 +346,7 @@ final class ProcessCardPaymentTests: XCTestCase {
 }
 
 @available(iOS 15.0, *)
+@MainActor
 final class UpdateClientSessionBeforePaymentTests: XCTestCase {
 
     private var mockClientSessionActions: MockClientSessionActionsModule!
@@ -423,6 +425,7 @@ final class UpdateClientSessionBeforePaymentTests: XCTestCase {
 }
 
 @available(iOS 15.0, *)
+@MainActor
 final class ProcessCardPaymentEdgeCasesTests: XCTestCase {
 
     private var mockRawDataManagerFactory: MockRawDataManagerFactory!
@@ -916,174 +919,4 @@ final class ProcessCardPaymentEdgeCasesTests: XCTestCase {
     }
 }
 
-@available(iOS 15.0, *)
-final class CreateCardDataDirectTests: XCTestCase {
-
-    private var repository: HeadlessRepositoryImpl!
-
-    override func setUp() {
-        super.setUp()
-        repository = HeadlessRepositoryImpl()
-    }
-
-    override func tearDown() {
-        repository = nil
-        super.tearDown()
-    }
-
-    func testCreateCardData_WithAllFields_CreatesCorrectData() {
-        // When
-        let cardData = repository.createCardData(
-            cardNumber: "4242424242424242",
-            cvv: "123",
-            expiryMonth: "12",
-            expiryYear: "25",
-            cardholderName: "John Doe",
-            selectedNetwork: .visa
-        )
-
-        // Then
-        XCTAssertEqual(cardData.cardNumber, "4242424242424242")
-        XCTAssertEqual(cardData.cvv, "123")
-        XCTAssertEqual(cardData.expiryDate, "12/25")
-        XCTAssertEqual(cardData.cardholderName, "John Doe")
-        XCTAssertEqual(cardData.cardNetwork, .visa)
-    }
-
-    func testCreateCardData_WithSpacesInCardNumber_StripsSpaces() {
-        // When
-        let cardData = repository.createCardData(
-            cardNumber: "4242 4242 4242 4242",
-            cvv: "123",
-            expiryMonth: "12",
-            expiryYear: "25",
-            cardholderName: "Test",
-            selectedNetwork: nil
-        )
-
-        // Then
-        XCTAssertEqual(cardData.cardNumber, "4242424242424242")
-    }
-
-    func testCreateCardData_WithEmptyCardholderName_SetsNil() {
-        // When
-        let cardData = repository.createCardData(
-            cardNumber: "4242424242424242",
-            cvv: "123",
-            expiryMonth: "12",
-            expiryYear: "25",
-            cardholderName: "",
-            selectedNetwork: nil
-        )
-
-        // Then
-        XCTAssertNil(cardData.cardholderName)
-    }
-
-    func testCreateCardData_WithNilNetwork_DoesNotSetNetwork() {
-        // When
-        let cardData = repository.createCardData(
-            cardNumber: "4242424242424242",
-            cvv: "123",
-            expiryMonth: "12",
-            expiryYear: "25",
-            cardholderName: "Test",
-            selectedNetwork: nil
-        )
-
-        // Then - Default network is unknown when not set
-        XCTAssertNotNil(cardData)
-    }
-
-    func testCreateCardData_WithMastercard_SetsCorrectNetwork() {
-        // When
-        let cardData = repository.createCardData(
-            cardNumber: "5555555555554444",
-            cvv: "123",
-            expiryMonth: "12",
-            expiryYear: "25",
-            cardholderName: "Test",
-            selectedNetwork: .masterCard
-        )
-
-        // Then
-        XCTAssertEqual(cardData.cardNetwork, .masterCard)
-    }
-
-    func testCreateCardData_WithAmex_SetsCorrectNetwork() {
-        // When
-        let cardData = repository.createCardData(
-            cardNumber: "378282246310005",
-            cvv: "1234",
-            expiryMonth: "12",
-            expiryYear: "25",
-            cardholderName: "Test",
-            selectedNetwork: .amex
-        )
-
-        // Then
-        XCTAssertEqual(cardData.cardNetwork, .amex)
-    }
-
-    func testCreateCardData_FormatsExpiryCorrectly() {
-        // When
-        let cardData = repository.createCardData(
-            cardNumber: "4242424242424242",
-            cvv: "123",
-            expiryMonth: "03",
-            expiryYear: "28",
-            cardholderName: "Test",
-            selectedNetwork: nil
-        )
-
-        // Then
-        XCTAssertEqual(cardData.expiryDate, "03/28")
-    }
-
-    func testCreateCardData_WithSingleDigitMonth_FormatsAsIs() {
-        // When
-        let cardData = repository.createCardData(
-            cardNumber: "4242424242424242",
-            cvv: "123",
-            expiryMonth: "1",
-            expiryYear: "28",
-            cardholderName: "Test",
-            selectedNetwork: nil
-        )
-
-        // Then
-        XCTAssertEqual(cardData.expiryDate, "1/28")
-    }
-
-    func testCreateCardData_With4DigitYear_FormatsCorrectly() {
-        // When
-        let cardData = repository.createCardData(
-            cardNumber: "4242424242424242",
-            cvv: "123",
-            expiryMonth: "12",
-            expiryYear: "2028",
-            cardholderName: "Test",
-            selectedNetwork: nil
-        )
-
-        // Then
-        XCTAssertEqual(cardData.expiryDate, "12/2028")
-    }
-
-    func testCreateCardData_WithAllNetworkTypes() {
-        // Test all supported network types
-        let networks: [CardNetwork] = [.visa, .masterCard, .amex, .discover, .jcb, .diners, .cartesBancaires, .maestro, .mir]
-
-        for network in networks {
-            let cardData = repository.createCardData(
-                cardNumber: "4242424242424242",
-                cvv: "123",
-                expiryMonth: "12",
-                expiryYear: "25",
-                cardholderName: "Test",
-                selectedNetwork: network
-            )
-            XCTAssertEqual(cardData.cardNetwork, network, "Failed for network: \(network)")
-        }
-    }
-}
+// CreateCardDataDirectTests removed — createCardData is now private

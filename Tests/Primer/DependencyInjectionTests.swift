@@ -26,22 +26,15 @@ enum DummyError: Error, Equatable {
 @available(iOS 15.0, *)
 class DummyScope: DependencyScope {
     let scopeId: String
-    init(id: String) { self.scopeId = id }
+    init(id: String) { scopeId = id }
 
-    // no-op
     func cleanupScope() async {}
 
-    // We override register() to build & register ON our local container
-    func register() async {
-        let container = Container()
+    func setupContainer(_ container: Container) async {
         _ = try? await container.register(TestService.self)
             .asSingleton()
             .with { _ in TestServiceImpl() }
-        await DIContainer.setScopedContainer(container, for: scopeId)
     }
-
-    // We don’t even need setupContainer() any more
-    func setupContainer() async {}
 }
 
 // A simple synchronous factory for testing

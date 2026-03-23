@@ -49,18 +49,7 @@ final class SwiftUIDITests: XCTestCase {
 
     // MARK: - Tests
 
-    func test_requiredInjected_returnsFallback() {
-        // Arrange
-        var requiredInjected = RequiredInjected(
-            MockService.self,
-            fallback: MockService(identifier: TestData.DI.protocolFallbackValue)
-        )
-
-        // Act
-        let value = requiredInjected.wrappedValue
-
-        // Assert
-        XCTAssertEqual(value.identifier, TestData.DI.protocolFallbackValue)
-    }
+    // RequiredInjected was removed as unused dead code.
+    // The SwiftUI+DI property wrappers are no longer part of the API.
 
 }

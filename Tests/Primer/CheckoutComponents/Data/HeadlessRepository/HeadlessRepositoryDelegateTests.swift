@@ -8,6 +8,7 @@
 import XCTest
 
 @available(iOS 15.0, *)
+@MainActor
 final class NetworkDetectionStreamTests: XCTestCase {
 
     private var repository: HeadlessRepositoryImpl!
@@ -42,6 +43,7 @@ final class NetworkDetectionStreamTests: XCTestCase {
 }
 
 @available(iOS 15.0, *)
+@MainActor
 final class SetBillingAddressTests: XCTestCase {
 
     private var repository: HeadlessRepositoryImpl!
@@ -130,6 +132,7 @@ final class SetBillingAddressTests: XCTestCase {
 }
 
 @available(iOS 15.0, *)
+@MainActor
 final class SelectCardNetworkDelegateTests: XCTestCase {
 
     private var mockClientSessionActions: MockClientSessionActionsModule!
@@ -234,6 +237,7 @@ final class SelectCardNetworkDelegateTests: XCTestCase {
 }
 
 @available(iOS 15.0, *)
+@MainActor
 final class UpdateCardNumberTests: XCTestCase {
 
     private var repository: HeadlessRepositoryImpl!
@@ -294,86 +298,4 @@ final class UpdateCardNumberTests: XCTestCase {
     }
 }
 
-@available(iOS 15.0, *)
-final class GetRequiredInputElementsDelegateTests: XCTestCase {
-
-    private var repository: HeadlessRepositoryImpl!
-
-    override func setUp() {
-        super.setUp()
-        repository = HeadlessRepositoryImpl()
-    }
-
-    override func tearDown() {
-        repository = nil
-        super.tearDown()
-    }
-
-    func testGetRequiredInputElements_ForPaymentCard_ReturnsAllCardFields() {
-        // When
-        let result = repository.getRequiredInputElements(for: "PAYMENT_CARD")
-
-        // Then
-        XCTAssertEqual(result.count, 4)
-        XCTAssertTrue(result.contains(.cardNumber))
-        XCTAssertTrue(result.contains(.cvv))
-        XCTAssertTrue(result.contains(.expiryDate))
-        XCTAssertTrue(result.contains(.cardholderName))
-    }
-
-    func testGetRequiredInputElements_ForNonCardPaymentMethod_ReturnsEmpty() {
-        // When
-        let result = repository.getRequiredInputElements(for: "PAYPAL")
-
-        // Then
-        XCTAssertTrue(result.isEmpty)
-    }
-
-    func testGetRequiredInputElements_ForUnknownPaymentMethod_ReturnsEmpty() {
-        // When
-        let result = repository.getRequiredInputElements(for: "UNKNOWN_METHOD")
-
-        // Then
-        XCTAssertTrue(result.isEmpty)
-    }
-
-    func testGetRequiredInputElements_ForEmptyString_ReturnsEmpty() {
-        // When
-        let result = repository.getRequiredInputElements(for: "")
-
-        // Then
-        XCTAssertTrue(result.isEmpty)
-    }
-
-    func testGetRequiredInputElements_ForApplePay_ReturnsEmpty() {
-        // When
-        let result = repository.getRequiredInputElements(for: "APPLE_PAY")
-
-        // Then
-        XCTAssertTrue(result.isEmpty)
-    }
-
-    func testGetRequiredInputElements_ForGooglePay_ReturnsEmpty() {
-        // When
-        let result = repository.getRequiredInputElements(for: "GOOGLE_PAY")
-
-        // Then
-        XCTAssertTrue(result.isEmpty)
-    }
-
-    func testGetRequiredInputElements_ForKlarna_ReturnsEmpty() {
-        // When
-        let result = repository.getRequiredInputElements(for: "KLARNA")
-
-        // Then
-        XCTAssertTrue(result.isEmpty)
-    }
-
-    func testGetRequiredInputElements_CaseSensitive_LowercaseReturnsEmpty() {
-        // When
-        let result = repository.getRequiredInputElements(for: "payment_card")
-
-        // Then - Should be case sensitive
-        XCTAssertTrue(result.isEmpty)
-    }
-}
+// GetRequiredInputElementsDelegateTests removed — getRequiredInputElements is now private

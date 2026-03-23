@@ -9,6 +9,7 @@ import PassKit
 import XCTest
 
 @available(iOS 15.0, *)
+@MainActor
 final class ApplePayAuthorizationCoordinatorTests: XCTestCase {
 
     // MARK: - Properties

@@ -8,6 +8,7 @@
 import XCTest
 
 @available(iOS 15.0, *)
+@MainActor
 final class FetchVaultedPaymentMethodsEdgeCaseTests: XCTestCase {
 
     private var repository: HeadlessRepositoryImpl!
@@ -37,6 +38,7 @@ final class FetchVaultedPaymentMethodsEdgeCaseTests: XCTestCase {
 }
 
 @available(iOS 15.0, *)
+@MainActor
 final class ProcessVaultedPaymentEdgeCaseTests: XCTestCase {
 
     private var repository: HeadlessRepositoryImpl!
@@ -108,6 +110,7 @@ final class ProcessVaultedPaymentEdgeCaseTests: XCTestCase {
 }
 
 @available(iOS 15.0, *)
+@MainActor
 final class DeleteVaultedPaymentMethodEdgeCaseTests: XCTestCase {
 
     private var repository: HeadlessRepositoryImpl!
