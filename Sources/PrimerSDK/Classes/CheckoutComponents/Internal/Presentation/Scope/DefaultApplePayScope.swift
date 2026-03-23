@@ -198,6 +198,7 @@ public final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
 /// Coordinator that handles PKPaymentAuthorizationControllerDelegate callbacks.
 /// Bridges PassKit delegate pattern to async/await.
 @available(iOS 15.0, *)
+@MainActor
 final class ApplePayAuthorizationCoordinator: NSObject, PKPaymentAuthorizationControllerDelegate {
 
   // MARK: - Continuations
