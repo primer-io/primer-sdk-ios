@@ -56,6 +56,7 @@ public struct CardFormProvider<Content: View>: View, LogReporter {
 
   public var body: some View {
     if let checkoutScope,
+      // TODO: C3 — Refactor registry to support protocol metatypes, then use PrimerCardFormScope.self
       let cardFormScope = checkoutScope.getPaymentMethodScope(DefaultCardFormScope.self)
     {
       content(cardFormScope)

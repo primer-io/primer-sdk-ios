@@ -61,73 +61,73 @@ public struct ColorOverrides {
 
   // MARK: Brand & Primary Colors
 
-  public var primerColorBrand: Color?
+  public let primerColorBrand: Color?
 
   // MARK: Grays (matching internal DesignTokens)
 
-  public var primerColorGray000: Color?
-  public var primerColorGray100: Color?
-  public var primerColorGray200: Color?
-  public var primerColorGray300: Color?
-  public var primerColorGray400: Color?
-  public var primerColorGray500: Color?
-  public var primerColorGray600: Color?
-  public var primerColorGray700: Color?
-  public var primerColorGray900: Color?
+  public let primerColorGray000: Color?
+  public let primerColorGray100: Color?
+  public let primerColorGray200: Color?
+  public let primerColorGray300: Color?
+  public let primerColorGray400: Color?
+  public let primerColorGray500: Color?
+  public let primerColorGray600: Color?
+  public let primerColorGray700: Color?
+  public let primerColorGray900: Color?
 
   // MARK: Semantic Colors (matching internal DesignTokens)
 
   /// Success color (internal: primerColorGreen500)
-  public var primerColorGreen500: Color?
+  public let primerColorGreen500: Color?
   /// Error colors (internal: primerColorRed100, primerColorRed500, primerColorRed900)
-  public var primerColorRed100: Color?
-  public var primerColorRed500: Color?
-  public var primerColorRed900: Color?
+  public let primerColorRed100: Color?
+  public let primerColorRed500: Color?
+  public let primerColorRed900: Color?
   /// Info/link colors (internal: primerColorBlue500, primerColorBlue900)
-  public var primerColorBlue500: Color?
-  public var primerColorBlue900: Color?
+  public let primerColorBlue500: Color?
+  public let primerColorBlue900: Color?
 
   // MARK: Semantic UI Colors (matching internal DesignTokens)
 
-  public var primerColorBackground: Color?
-  public var primerColorTextPrimary: Color?
-  public var primerColorTextSecondary: Color?
-  public var primerColorTextPlaceholder: Color?
-  public var primerColorTextDisabled: Color?
-  public var primerColorTextNegative: Color?
-  public var primerColorTextLink: Color?
+  public let primerColorBackground: Color?
+  public let primerColorTextPrimary: Color?
+  public let primerColorTextSecondary: Color?
+  public let primerColorTextPlaceholder: Color?
+  public let primerColorTextDisabled: Color?
+  public let primerColorTextNegative: Color?
+  public let primerColorTextLink: Color?
 
   // MARK: Border Colors (matching internal DesignTokens)
 
-  public var primerColorBorderOutlinedDefault: Color?
-  public var primerColorBorderOutlinedHover: Color?
-  public var primerColorBorderOutlinedActive: Color?
-  public var primerColorBorderOutlinedFocus: Color?
-  public var primerColorBorderOutlinedDisabled: Color?
-  public var primerColorBorderOutlinedError: Color?
-  public var primerColorBorderOutlinedSelected: Color?
-  public var primerColorBorderOutlinedLoading: Color?
+  public let primerColorBorderOutlinedDefault: Color?
+  public let primerColorBorderOutlinedHover: Color?
+  public let primerColorBorderOutlinedActive: Color?
+  public let primerColorBorderOutlinedFocus: Color?
+  public let primerColorBorderOutlinedDisabled: Color?
+  public let primerColorBorderOutlinedError: Color?
+  public let primerColorBorderOutlinedSelected: Color?
+  public let primerColorBorderOutlinedLoading: Color?
 
   // MARK: Border Transparent Colors
 
-  public var primerColorBorderTransparentDefault: Color?
-  public var primerColorBorderTransparentHover: Color?
-  public var primerColorBorderTransparentActive: Color?
-  public var primerColorBorderTransparentFocus: Color?
-  public var primerColorBorderTransparentDisabled: Color?
-  public var primerColorBorderTransparentSelected: Color?
+  public let primerColorBorderTransparentDefault: Color?
+  public let primerColorBorderTransparentHover: Color?
+  public let primerColorBorderTransparentActive: Color?
+  public let primerColorBorderTransparentFocus: Color?
+  public let primerColorBorderTransparentDisabled: Color?
+  public let primerColorBorderTransparentSelected: Color?
 
   // MARK: Icon Colors
 
-  public var primerColorIconPrimary: Color?
-  public var primerColorIconDisabled: Color?
-  public var primerColorIconNegative: Color?
-  public var primerColorIconPositive: Color?
+  public let primerColorIconPrimary: Color?
+  public let primerColorIconDisabled: Color?
+  public let primerColorIconNegative: Color?
+  public let primerColorIconPositive: Color?
 
   // MARK: Other
 
-  public var primerColorFocus: Color?
-  public var primerColorLoader: Color?
+  public let primerColorFocus: Color?
+  public let primerColorLoader: Color?
 
   public init(
     primerColorBrand: Color? = nil,
@@ -227,15 +227,15 @@ public struct ColorOverrides {
 @available(iOS 15.0, *)
 public struct RadiusOverrides {
   /// Internal: primerRadiusXsmall (default: 2)
-  public var primerRadiusXsmall: CGFloat?
+  public let primerRadiusXsmall: CGFloat?
   /// Internal: primerRadiusSmall (default: 4)
-  public var primerRadiusSmall: CGFloat?
+  public let primerRadiusSmall: CGFloat?
   /// Internal: primerRadiusMedium (default: 8)
-  public var primerRadiusMedium: CGFloat?
+  public let primerRadiusMedium: CGFloat?
   /// Internal: primerRadiusLarge (default: 12)
-  public var primerRadiusLarge: CGFloat?
+  public let primerRadiusLarge: CGFloat?
   /// Internal: primerRadiusBase (default: 4)
-  public var primerRadiusBase: CGFloat?
+  public let primerRadiusBase: CGFloat?
 
   public init(
     primerRadiusXsmall: CGFloat? = nil,
@@ -259,21 +259,21 @@ public struct RadiusOverrides {
 @available(iOS 15.0, *)
 public struct SpacingOverrides {
   /// Internal: primerSpaceXxsmall (default: 2)
-  public var primerSpaceXxsmall: CGFloat?
+  public let primerSpaceXxsmall: CGFloat?
   /// Internal: primerSpaceXsmall (default: 4)
-  public var primerSpaceXsmall: CGFloat?
+  public let primerSpaceXsmall: CGFloat?
   /// Internal: primerSpaceSmall (default: 8)
-  public var primerSpaceSmall: CGFloat?
+  public let primerSpaceSmall: CGFloat?
   /// Internal: primerSpaceMedium (default: 12)
-  public var primerSpaceMedium: CGFloat?
+  public let primerSpaceMedium: CGFloat?
   /// Internal: primerSpaceLarge (default: 16)
-  public var primerSpaceLarge: CGFloat?
+  public let primerSpaceLarge: CGFloat?
   /// Internal: primerSpaceXlarge (default: 20)
-  public var primerSpaceXlarge: CGFloat?
+  public let primerSpaceXlarge: CGFloat?
   /// Internal: primerSpaceXxlarge (default: 24)
-  public var primerSpaceXxlarge: CGFloat?
+  public let primerSpaceXxlarge: CGFloat?
   /// Internal: primerSpaceBase (default: 4)
-  public var primerSpaceBase: CGFloat?
+  public let primerSpaceBase: CGFloat?
 
   public init(
     primerSpaceXxsmall: CGFloat? = nil,
@@ -303,19 +303,19 @@ public struct SpacingOverrides {
 @available(iOS 15.0, *)
 public struct SizeOverrides {
   /// Internal: primerSizeSmall (default: 16)
-  public var primerSizeSmall: CGFloat?
+  public let primerSizeSmall: CGFloat?
   /// Internal: primerSizeMedium (default: 20)
-  public var primerSizeMedium: CGFloat?
+  public let primerSizeMedium: CGFloat?
   /// Internal: primerSizeLarge (default: 24)
-  public var primerSizeLarge: CGFloat?
+  public let primerSizeLarge: CGFloat?
   /// Internal: primerSizeXlarge (default: 32)
-  public var primerSizeXlarge: CGFloat?
+  public let primerSizeXlarge: CGFloat?
   /// Internal: primerSizeXxlarge (default: 44)
-  public var primerSizeXxlarge: CGFloat?
+  public let primerSizeXxlarge: CGFloat?
   /// Internal: primerSizeXxxlarge (default: 56)
-  public var primerSizeXxxlarge: CGFloat?
+  public let primerSizeXxxlarge: CGFloat?
   /// Internal: primerSizeBase (default: 4)
-  public var primerSizeBase: CGFloat?
+  public let primerSizeBase: CGFloat?
 
   public init(
     primerSizeSmall: CGFloat? = nil,
@@ -347,15 +347,15 @@ public struct TypographyOverrides {
   /// Individual typography style configuration.
   public struct TypographyStyle {
     /// Custom font family name (e.g., "Inter")
-    public var font: String?
+    public let font: String?
     /// Letter spacing in points
-    public var letterSpacing: CGFloat?
+    public let letterSpacing: CGFloat?
     /// Font weight
-    public var weight: Font.Weight?
+    public let weight: Font.Weight?
     /// Font size in points
-    public var size: CGFloat?
+    public let size: CGFloat?
     /// Line height in points
-    public var lineHeight: CGFloat?
+    public let lineHeight: CGFloat?
 
     /// Creates a typography style with optional properties.
     public init(
@@ -376,19 +376,19 @@ public struct TypographyOverrides {
   // MARK: - Token Properties
 
   /// Title extra large: Inter, -0.6 letter spacing, weight 550, size 24, line height 32
-  public var titleXlarge: TypographyStyle?
+  public let titleXlarge: TypographyStyle?
 
   /// Title large: Inter, -0.2 letter spacing, weight 550, size 16, line height 20
-  public var titleLarge: TypographyStyle?
+  public let titleLarge: TypographyStyle?
 
   /// Body large: Inter, -0.2 letter spacing, weight 400, size 16, line height 20
-  public var bodyLarge: TypographyStyle?
+  public let bodyLarge: TypographyStyle?
 
   /// Body medium: Inter, 0 letter spacing, weight 400, size 14, line height 20
-  public var bodyMedium: TypographyStyle?
+  public let bodyMedium: TypographyStyle?
 
   /// Body small: Inter, 0 letter spacing, weight 400, size 12, line height 16
-  public var bodySmall: TypographyStyle?
+  public let bodySmall: TypographyStyle?
 
   /// Creates typography overrides with all optional properties.
   public init(
@@ -412,13 +412,13 @@ public struct TypographyOverrides {
 @available(iOS 15.0, *)
 public struct BorderWidthOverrides {
   /// Internal: primerBorderWidthThin (default: 1)
-  public var primerBorderWidthThin: CGFloat?
+  public let primerBorderWidthThin: CGFloat?
 
   /// Internal: primerBorderWidthMedium (default: 2)
-  public var primerBorderWidthMedium: CGFloat?
+  public let primerBorderWidthMedium: CGFloat?
 
   /// Internal: primerBorderWidthThick (default: 3)
-  public var primerBorderWidthThick: CGFloat?
+  public let primerBorderWidthThick: CGFloat?
 
   /// Creates border width overrides with all optional properties.
   public init(

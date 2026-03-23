@@ -45,20 +45,20 @@ public typealias WebRedirectButtonComponent = (any PrimerWebRedirectScope) -> an
 @MainActor
 public protocol PrimerWebRedirectScope: PrimerPaymentMethodScope where State == PrimerWebRedirectState {
 
-    /// The payment method type identifier (e.g., "TWINT").
-    var paymentMethodType: String { get }
+  /// The payment method type identifier (e.g., "TWINT").
+  var paymentMethodType: String { get }
 
-    /// Async stream emitting the current web redirect state whenever it changes.
-    var state: AsyncStream<PrimerWebRedirectState> { get }
+  /// Async stream emitting the current web redirect state whenever it changes.
+  var state: AsyncStream<PrimerWebRedirectState> { get }
 
-    // MARK: - Screen-Level Customization
+  // MARK: - Screen-Level Customization
 
-    /// Custom screen component to replace the entire web redirect screen.
-    var screen: WebRedirectScreenComponent? { get set }
+  /// Custom screen component to replace the entire web redirect screen.
+  var screen: WebRedirectScreenComponent? { get set }
 
-    /// Custom button component to replace the submit button.
-    var payButton: WebRedirectButtonComponent? { get set }
+  /// Custom button component to replace the submit button.
+  var payButton: WebRedirectButtonComponent? { get set }
 
-    /// Custom text for the submit button (default: payment method specific).
-    var submitButtonText: String? { get set }
+  /// Custom text for the submit button (default: payment method specific).
+  var submitButtonText: String? { get set }
 }

@@ -9,8 +9,8 @@ import SwiftUI
 /// Closure type for the `onBeforePaymentCreate` callback.
 /// Provides payment method data and a decision handler to continue or abort payment creation.
 @available(iOS 15.0, *)
-public typealias BeforePaymentCreateHandler = (_ data: PrimerCheckoutPaymentMethodData,
-                                               _ decisionHandler: @escaping (PrimerPaymentCreationDecision) -> Void) -> Void
+public typealias BeforePaymentCreateHandler = @Sendable (_ data: PrimerCheckoutPaymentMethodData,
+                                                        _ decisionHandler: @escaping (PrimerPaymentCreationDecision) -> Void) -> Void
 
 /// The main scope interface for PrimerCheckout, providing lifecycle control and customizable UI components.
 @available(iOS 15.0, *)
@@ -127,6 +127,7 @@ public protocol PrimerCheckoutScope: AnyObject {
 ///     }
 /// }
 /// ```
+@available(iOS 15.0, *)
 public enum PrimerCheckoutState: Equatable {
   /// Initial state while loading configuration and payment methods.
   /// The SDK is fetching the client session and preparing available payment methods.

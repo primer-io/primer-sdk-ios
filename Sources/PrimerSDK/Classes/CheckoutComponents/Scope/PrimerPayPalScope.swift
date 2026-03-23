@@ -23,17 +23,6 @@ public protocol PrimerPayPalScope: PrimerPaymentMethodScope where State == Prime
   /// The current state of the PayPal payment flow as an async stream.
   var state: AsyncStream<PrimerPayPalState> { get }
 
-  // MARK: - Payment Method Lifecycle
-
-  /// Called when the payment method is selected and the scope becomes active.
-  func start()
-
-  /// Initiates the PayPal payment flow, opening web authentication.
-  func submit()
-
-  /// Cancels the PayPal payment flow.
-  func cancel()
-
   // MARK: - Screen-Level Customization
 
   /// Custom screen component to replace the entire PayPal screen.

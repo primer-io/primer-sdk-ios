@@ -67,6 +67,7 @@ public protocol PrimerPaymentMethodSelectionScope: AnyObject {
 }
 
 /// Represents the current state of available payment methods and loading status.
+@available(iOS 15.0, *)
 public struct PrimerPaymentMethodSelectionState: Equatable {
   public internal(set) var paymentMethods: [CheckoutPaymentMethod] = []
   public internal(set) var isLoading: Bool = false
@@ -161,6 +162,7 @@ public struct PrimerPaymentMethodSelectionState: Equatable {
 ///     }
 /// }
 /// ```
+@available(iOS 15.0, *)
 public struct CheckoutPaymentMethod: Equatable, Identifiable {
   /// Unique identifier for this payment method instance.
   public let id: String
@@ -236,6 +238,10 @@ public struct CheckoutPaymentMethod: Equatable, Identifiable {
     self.cornerRadius = cornerRadius
   }
 
+  /// Compares two payment methods by identity and payment-relevant properties only.
+  /// Intentionally excludes `metadata` (not `Equatable`), `icon`, `buttonText`,
+  /// `textColor`, `borderColor`, `borderWidth`, and `cornerRadius` — these are
+  /// display-only properties that should not trigger state change propagation.
   public static func == (lhs: CheckoutPaymentMethod, rhs: CheckoutPaymentMethod) -> Bool {
     lhs.id == rhs.id && lhs.type == rhs.type && lhs.name == rhs.name
       && lhs.surcharge == rhs.surcharge && lhs.hasUnknownSurcharge == rhs.hasUnknownSurcharge

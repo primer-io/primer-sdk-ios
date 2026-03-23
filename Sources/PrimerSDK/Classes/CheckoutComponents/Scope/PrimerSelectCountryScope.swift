@@ -38,7 +38,6 @@ public protocol PrimerSelectCountryScope: AnyObject {
     )?
   { get set }
 
-  @available(iOS 15.0, *)
   var countryItem: CountryItemComponent? { get set }
 
 }

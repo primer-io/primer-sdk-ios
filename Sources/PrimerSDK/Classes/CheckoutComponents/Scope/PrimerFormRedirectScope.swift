@@ -53,31 +53,31 @@ public typealias FormRedirectFormSectionComponent = (any PrimerFormRedirectScope
 @MainActor
 public protocol PrimerFormRedirectScope: PrimerPaymentMethodScope where State == PrimerFormRedirectState {
 
-    /// Async stream emitting the current form redirect state whenever it changes.
-    var state: AsyncStream<PrimerFormRedirectState> { get }
+  /// Async stream emitting the current form redirect state whenever it changes.
+  var state: AsyncStream<PrimerFormRedirectState> { get }
 
-    /// The payment method type identifier (e.g., "ADYEN_BLIK", "ADYEN_MBWAY").
-    var paymentMethodType: String { get }
+  /// The payment method type identifier (e.g., "ADYEN_BLIK", "ADYEN_MBWAY").
+  var paymentMethodType: String { get }
 
-    // MARK: - Field Management
+  // MARK: - Field Management
 
-    /// Updates the value of a form field.
-    /// - Parameters:
-    ///   - fieldType: The type of field to update (`.otpCode` or `.phoneNumber`).
-    ///   - value: The new value for the field.
-    func updateField(_ fieldType: PrimerFormFieldState.FieldType, value: String)
+  /// Updates the value of a form field.
+  /// - Parameters:
+  ///   - fieldType: The type of field to update (`.otpCode` or `.phoneNumber`).
+  ///   - value: The new value for the field.
+  func updateField(_ fieldType: PrimerFormFieldState.FieldType, value: String)
 
-    // MARK: - Screen-Level Customization
+  // MARK: - Screen-Level Customization
 
-    /// When set, replaces both form input and pending screens.
-    var screen: FormRedirectScreenComponent? { get set }
+  /// When set, replaces both form input and pending screens.
+  var screen: FormRedirectScreenComponent? { get set }
 
-    /// Custom form section component to replace the default form fields area.
-    var formSection: FormRedirectFormSectionComponent? { get set }
+  /// Custom form section component to replace the default form fields area.
+  var formSection: FormRedirectFormSectionComponent? { get set }
 
-    /// Custom button component to replace the submit button.
-    var submitButton: FormRedirectButtonComponent? { get set }
+  /// Custom button component to replace the submit button.
+  var submitButton: FormRedirectButtonComponent? { get set }
 
-    /// Custom text for the submit button (default: payment method specific, e.g., "Pay with BLIK").
-    var submitButtonText: String? { get set }
+  /// Custom text for the submit button (default: payment method specific, e.g., "Pay with BLIK").
+  var submitButtonText: String? { get set }
 }
