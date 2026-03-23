@@ -57,6 +57,6 @@ public protocol RegistrationBuilder<T> {
   func asWeak() -> Self
   /// New instance each time
   func asTransient() -> Self
-  func with(_ factory: @escaping (any ContainerProtocol) async throws -> T) async throws -> Self
-  func with(_ factory: @escaping (any ContainerProtocol) throws -> T) async throws -> Self
+  func with(_ factory: @escaping @Sendable (any ContainerProtocol) async throws -> T) async throws -> Self
+  func with(_ factory: @escaping @Sendable (any ContainerProtocol) throws -> T) async throws -> Self
 }

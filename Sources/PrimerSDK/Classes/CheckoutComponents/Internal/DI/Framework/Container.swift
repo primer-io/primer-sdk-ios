@@ -60,18 +60,22 @@ final class ThreadSafeContainer<T>: @unchecked Sendable {
 }
 
 public actor Container: ContainerProtocol, LogReporter {
-  struct FactoryRegistration {
+  struct FactoryRegistration: Sendable {
     let policy: ContainerRetainPolicy
-    let buildAsync: (ContainerProtocol) async throws -> Any
+    let buildAsync: @Sendable (ContainerProtocol) async throws -> Any
 
     init(
-      policy: ContainerRetainPolicy, buildAsync: @escaping (ContainerProtocol) async throws -> Any
+      policy: ContainerRetainPolicy,
+      buildAsync: @escaping @Sendable (ContainerProtocol) async throws -> Any
     ) {
       self.policy = policy
       self.buildAsync = buildAsync
     }
 
-    init(policy: ContainerRetainPolicy, buildSync: @escaping (ContainerProtocol) throws -> Any) {
+    init(
+      policy: ContainerRetainPolicy,
+      buildSync: @escaping @Sendable (ContainerProtocol) throws -> Any
+    ) {
       self.policy = policy
       buildAsync = { container in
         try buildSync(container)
@@ -79,7 +83,7 @@ public actor Container: ContainerProtocol, LogReporter {
     }
   }
 
-  public class ContainerRegistrationBuilderImpl<T>: RegistrationBuilder {
+  public class ContainerRegistrationBuilderImpl<T>: RegistrationBuilder, @unchecked Sendable {
     private let container: Container
     private let type: T.Type
     private var name: String?
@@ -112,7 +116,7 @@ public actor Container: ContainerProtocol, LogReporter {
 
     @discardableResult
     public func with(
-      _ factory: @escaping (any ContainerProtocol) async throws -> T
+      _ factory: @escaping @Sendable (any ContainerProtocol) async throws -> T
     ) async throws -> Self {
       try await container.registerInternal(type: type, name: name, with: policy) { resolver in
         try await factory(resolver)
@@ -122,7 +126,7 @@ public actor Container: ContainerProtocol, LogReporter {
 
     @discardableResult
     public func with(
-      _ factory: @escaping (any ContainerProtocol) throws -> T
+      _ factory: @escaping @Sendable (any ContainerProtocol) throws -> T
     ) async throws -> Self {
       try await container.registerInternal(type: type, name: name, with: policy) { resolver in
         try factory(resolver)
