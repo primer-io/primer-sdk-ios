@@ -108,6 +108,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
 
   private var currentPaymentMethodScope: (any PrimerPaymentMethodScope)?
   private var paymentMethodScopeCache: [String: any PrimerPaymentMethodScope] = [:]
+  private var navigationObservationTask: Task<Void, Never>?
   private let navigator: CheckoutNavigator
   private var configurationService: ConfigurationService?
   private var paymentMethodsInteractor: GetPaymentMethodsInteractor?
@@ -368,7 +369,8 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
   // MARK: - Navigation Events Observer
 
   private func observeNavigationEvents() {
-    Task { @MainActor in
+    navigationObservationTask = Task { @MainActor [weak self] in
+      guard let self else { return }
       for await route in navigator.navigationEvents {
         let newNavigationState: NavigationState
         switch route {
@@ -499,12 +501,6 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
     getPaymentMethodScope(for: methodType.rawValue)
   }
 
-  // MARK: - Payment Method Screen Management
-
-  private func getPaymentMethodIdentifier(_ type: PrimerPaymentMethodType) -> String {
-    type.rawValue
-  }
-
   public func onDismiss() {
     // Ensure state updates happen on main thread for SwiftUI observation
     Task { @MainActor in
@@ -514,9 +510,12 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
       _paymentMethodSelection = nil
       currentPaymentMethodScope = nil
       paymentMethodScopeCache.removeAll()
-    }
 
-    navigator.dismiss()
+      navigationObservationTask?.cancel()
+      navigationObservationTask = nil
+
+      navigator.dismiss()
+    }
   }
 
   // MARK: - Internal Methods
