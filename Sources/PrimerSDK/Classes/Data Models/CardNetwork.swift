@@ -193,6 +193,8 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
                     name: "CVV",
                     length: 3))
 
+        // Note: v3.0 breaking change — Mastercard formatting changed from [4, 10]
+        // (groups of 4-6-6) to [4, 8, 12] (groups of 4-4-4-4) per industry standard.
         case .masterCard:
             CardNetworkValidation(
                 niceType: "Mastercard",

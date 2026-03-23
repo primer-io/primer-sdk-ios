@@ -39,6 +39,9 @@ public struct PrimerLocaleData: Codable, Equatable {
     /// Optional; when nil, only the language code is used.
     public let regionCode: String?
 
+    /// - Note: **v3.0 breaking change**: In v2.x, providing `languageCode` without
+    ///   `regionCode` defaulted to the device region (e.g., `"de-US"`). In v3.0,
+    ///   `regionCode` is `nil` when not explicitly provided, producing `"de"` instead.
     public init(languageCode: String? = nil, regionCode: String? = nil) {
         // If both parameters are nil, use device locale for both
         if languageCode == nil, regionCode == nil {
@@ -52,9 +55,9 @@ public struct PrimerLocaleData: Codable, Equatable {
         }
 
         if let regionCode = self.regionCode {
-            self.localeCode = "\(self.languageCode)-\(regionCode)"
+            localeCode = "\(self.languageCode)-\(regionCode)"
         } else {
-            self.localeCode = self.languageCode
+            localeCode = self.languageCode
         }
     }
 }
