@@ -261,3 +261,10 @@
 "accessibility_qr_code_scan_hint" = "Зробіть знімок екрану для збереження QR-коду";
 "accessibility_qr_code_success_icon" = "Оплату успішно здійснено";
 "accessibility_qr_code_failure_icon" = "Оплата не вдалася";
+
+/* Apple Pay */
+"primer_apple_pay_title" = "Apple Pay";
+"primer_apple_pay_description" = "Сплатіть безпечно за допомогою Apple Pay";
+"primer_apple_pay_processing" = "Обробка...";
+"primer_apple_pay_unavailable" = "Apple Pay недоступний";
+"primer_apple_pay_choose_other" = "Оберіть інший спосіб оплати";

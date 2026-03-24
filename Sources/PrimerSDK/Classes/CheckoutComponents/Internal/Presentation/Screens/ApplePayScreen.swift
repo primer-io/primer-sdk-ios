@@ -10,6 +10,8 @@ import SwiftUI
 @available(iOS 15.0, *)
 struct ApplePayScreen: View {
   @ObservedObject private var scope: DefaultApplePayScope
+  @Environment(\.designTokens) private var tokens
+
   private let presentationContext: PresentationContext
 
   init(
@@ -25,7 +27,7 @@ struct ApplePayScreen: View {
       makeContent()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
-    .background(Color(.systemBackground))
+    .background(CheckoutColors.background(tokens: tokens))
   }
 
   private func makeNavigationBar() -> some View {
@@ -33,28 +35,42 @@ struct ApplePayScreen: View {
       if presentationContext.shouldShowBackButton {
         Button(action: scope.onBack) {
           Image(systemName: RTLIcon.backChevron)
-            .font(.system(size: 17, weight: .semibold))
-            .foregroundColor(.primary)
+            .font(PrimerFont.bodyMedium(tokens: tokens))
+            .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
         }
-        .padding(.leading, 16)
+        .padding(.leading, PrimerSpacing.large(tokens: tokens))
+        .accessibility(
+          config: AccessibilityConfiguration(
+            identifier: AccessibilityIdentifiers.Common.backButton,
+            label: CheckoutComponentsStrings.a11yBack,
+            traits: [.isButton]
+          ))
       }
 
       Spacer()
 
-      Text("Apple Pay")
-        .font(.headline)
+      Text(CheckoutComponentsStrings.applePayTitle)
+        .font(PrimerFont.titleLarge(tokens: tokens))
+        .accessibilityIdentifier(AccessibilityIdentifiers.ApplePay.title)
+        .accessibilityAddTraits(.isHeader)
 
       Spacer()
 
       Button(action: scope.onDismiss) {
         Image(systemName: "xmark")
-          .font(.system(size: 17, weight: .medium))
-          .foregroundColor(.secondary)
+          .font(PrimerFont.bodyMedium(tokens: tokens))
+          .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
       }
-      .padding(.trailing, 16)
+      .padding(.trailing, PrimerSpacing.large(tokens: tokens))
+      .accessibility(
+        config: AccessibilityConfiguration(
+          identifier: AccessibilityIdentifiers.Common.closeButton,
+          label: CheckoutComponentsStrings.a11yCancel,
+          traits: [.isButton]
+        ))
     }
     .frame(height: 56)
-    .background(Color(.systemBackground))
+    .background(CheckoutColors.background(tokens: tokens))
   }
 
   @ViewBuilder
@@ -67,18 +83,20 @@ struct ApplePayScreen: View {
   }
 
   private func makeAvailableContent() -> some View {
-    VStack(spacing: 24) {
+    VStack(spacing: PrimerSpacing.xxlarge(tokens: tokens)) {
       Spacer()
 
       Image(systemName: "apple.logo")
-        .font(.system(size: 60))
-        .foregroundColor(.primary)
+        .font(PrimerFont.extraLargeIcon(tokens: tokens))
+        .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
+        .accessibilityHidden(true)
 
-      Text("Pay securely with Apple Pay")
-        .font(.body)
-        .foregroundColor(.secondary)
+      Text(CheckoutComponentsStrings.applePayDescription)
+        .font(PrimerFont.bodyMedium(tokens: tokens))
+        .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
         .multilineTextAlignment(.center)
-        .padding(.horizontal, 32)
+        .padding(.horizontal, PrimerSpacing.xxlarge(tokens: tokens))
+        .accessibilityIdentifier(AccessibilityIdentifiers.ApplePay.description)
 
       Spacer()
 
@@ -89,9 +107,9 @@ struct ApplePayScreen: View {
       }
 
       Spacer()
-        .frame(height: 32)
+        .frame(height: PrimerSpacing.xxlarge(tokens: tokens))
     }
-    .padding(.horizontal, 16)
+    .padding(.horizontal, PrimerSpacing.large(tokens: tokens))
   }
 
   @ViewBuilder
@@ -99,63 +117,79 @@ struct ApplePayScreen: View {
     if let customButton = scope.applePayButton {
       AnyView(customButton(scope.submit))
         .frame(height: 50)
-        .padding(.horizontal, 16)
+        .padding(.horizontal, PrimerSpacing.large(tokens: tokens))
+        .accessibilityIdentifier(AccessibilityIdentifiers.ApplePay.payButton)
     } else {
       scope.PrimerApplePayButton(action: scope.submit)
         .frame(height: 50)
-        .padding(.horizontal, 16)
+        .padding(.horizontal, PrimerSpacing.large(tokens: tokens))
+        .accessibilityIdentifier(AccessibilityIdentifiers.ApplePay.payButton)
     }
   }
 
   private func makeLoadingView() -> some View {
-    HStack(spacing: 12) {
+    HStack(spacing: PrimerSpacing.medium(tokens: tokens)) {
       ProgressView()
         .progressViewStyle(CircularProgressViewStyle())
+        .accessibilityIdentifier(AccessibilityIdentifiers.ApplePay.processingIndicator)
 
-      Text("Processing...")
-        .font(.body)
-        .foregroundColor(.secondary)
+      Text(CheckoutComponentsStrings.applePayProcessing)
+        .font(PrimerFont.bodyMedium(tokens: tokens))
+        .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
+        .accessibilityIdentifier(AccessibilityIdentifiers.ApplePay.processingLabel)
     }
     .frame(height: 50)
   }
 
   private func makeUnavailableContent() -> some View {
-    VStack(spacing: 16) {
+    VStack(spacing: PrimerSpacing.large(tokens: tokens)) {
       Spacer()
 
       Image(systemName: "exclamationmark.triangle")
-        .font(.system(size: 48))
-        .foregroundColor(.orange)
+        .font(PrimerFont.largeIcon(tokens: tokens))
+        .foregroundColor(CheckoutColors.orange(tokens: tokens))
+        .accessibilityIdentifier(AccessibilityIdentifiers.ApplePay.unavailableIcon)
+        .accessibilityHidden(true)
 
-      Text("Apple Pay Unavailable")
-        .font(.headline)
+      Text(CheckoutComponentsStrings.applePayUnavailable)
+        .font(PrimerFont.titleLarge(tokens: tokens))
+        .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
+        .accessibilityIdentifier(AccessibilityIdentifiers.ApplePay.unavailableTitle)
+        .accessibilityAddTraits(.isHeader)
 
       if let error = scope.structuredState.availabilityError {
         Text(error)
-          .font(.body)
-          .foregroundColor(.secondary)
+          .font(PrimerFont.bodyMedium(tokens: tokens))
+          .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
           .multilineTextAlignment(.center)
-          .padding(.horizontal, 32)
+          .padding(.horizontal, PrimerSpacing.xxlarge(tokens: tokens))
+          .accessibilityIdentifier(AccessibilityIdentifiers.ApplePay.unavailableDescription)
       }
 
       Spacer()
 
       if presentationContext.shouldShowBackButton {
         Button(action: scope.onBack) {
-          Text("Choose Another Payment Method")
-            .font(.body)
+          Text(CheckoutComponentsStrings.applePayChooseOther)
+            .font(PrimerFont.bodyMedium(tokens: tokens))
             .fontWeight(.medium)
-            .foregroundColor(.white)
+            .foregroundColor(CheckoutColors.white(tokens: tokens))
             .frame(maxWidth: .infinity)
             .frame(height: 50)
-            .background(Color.accentColor)
-            .cornerRadius(8)
+            .background(CheckoutColors.blue(tokens: tokens))
+            .cornerRadius(PrimerRadius.medium(tokens: tokens))
         }
-        .padding(.horizontal, 16)
+        .padding(.horizontal, PrimerSpacing.large(tokens: tokens))
+        .accessibility(
+          config: AccessibilityConfiguration(
+            identifier: AccessibilityIdentifiers.ApplePay.chooseOtherButton,
+            label: CheckoutComponentsStrings.applePayChooseOther,
+            traits: [.isButton]
+          ))
       }
 
       Spacer()
-        .frame(height: 32)
+        .frame(height: PrimerSpacing.xxlarge(tokens: tokens))
     }
   }
 }

@@ -261,3 +261,10 @@
 "accessibility_qr_code_scan_hint" = "Ambil tangkapan layar untuk menyimpan kode QR";
 "accessibility_qr_code_success_icon" = "Pembayaran berhasil";
 "accessibility_qr_code_failure_icon" = "Pembayaran gagal";
+
+/* Apple Pay */
+"primer_apple_pay_title" = "Apple Pay";
+"primer_apple_pay_description" = "Bayar dengan aman menggunakan Apple Pay";
+"primer_apple_pay_processing" = "Memproses...";
+"primer_apple_pay_unavailable" = "Apple Pay Tidak Tersedia";
+"primer_apple_pay_choose_other" = "Pilih Metode Pembayaran Lain";

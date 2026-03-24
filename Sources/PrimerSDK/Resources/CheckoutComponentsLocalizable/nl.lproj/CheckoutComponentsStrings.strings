@@ -261,3 +261,10 @@
 "accessibility_qr_code_scan_hint" = "Maak een screenshot om de QR-code op te slaan";
 "accessibility_qr_code_success_icon" = "Betaling geslaagd";
 "accessibility_qr_code_failure_icon" = "Betaling mislukt";
+
+/* Apple Pay */
+"primer_apple_pay_title" = "Apple Pay";
+"primer_apple_pay_description" = "Betaal veilig met Apple Pay";
+"primer_apple_pay_processing" = "Verwerken...";
+"primer_apple_pay_unavailable" = "Apple Pay niet beschikbaar";
+"primer_apple_pay_choose_other" = "Kies een andere betaalmethode";

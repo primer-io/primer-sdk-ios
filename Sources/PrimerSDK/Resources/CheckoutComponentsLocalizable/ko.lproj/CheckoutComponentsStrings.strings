@@ -261,3 +261,10 @@
 "accessibility_qr_code_scan_hint" = "QR 코드를 저장하려면 스크린샷을 찍으세요";
 "accessibility_qr_code_success_icon" = "결제 성공";
 "accessibility_qr_code_failure_icon" = "결제 실패";
+
+/* Apple Pay */
+"primer_apple_pay_title" = "Apple Pay";
+"primer_apple_pay_description" = "Apple Pay로 안전하게 결제";
+"primer_apple_pay_processing" = "처리 중...";
+"primer_apple_pay_unavailable" = "Apple Pay를 사용할 수 없습니다";
+"primer_apple_pay_choose_other" = "다른 결제 수단 선택";

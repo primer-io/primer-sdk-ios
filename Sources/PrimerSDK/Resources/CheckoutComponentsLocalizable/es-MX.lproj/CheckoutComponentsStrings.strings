@@ -261,3 +261,10 @@
 "accessibility_qr_code_scan_hint" = "Toma una captura de pantalla para guardar el código QR";
 "accessibility_qr_code_success_icon" = "Pago exitoso";
 "accessibility_qr_code_failure_icon" = "Pago fallido";
+
+/* Apple Pay */
+"primer_apple_pay_title" = "Apple Pay";
+"primer_apple_pay_description" = "Paga de forma segura con Apple Pay";
+"primer_apple_pay_processing" = "Procesando...";
+"primer_apple_pay_unavailable" = "Apple Pay no disponible";
+"primer_apple_pay_choose_other" = "Elige otro método de pago";

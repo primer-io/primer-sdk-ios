@@ -261,3 +261,10 @@
 "accessibility_qr_code_scan_hint" = "Tag et skærmbillede for at gemme QR-koden";
 "accessibility_qr_code_success_icon" = "Betaling gennemført";
 "accessibility_qr_code_failure_icon" = "Betaling mislykkedes";
+
+/* Apple Pay */
+"primer_apple_pay_title" = "Apple Pay";
+"primer_apple_pay_description" = "Betal sikkert med Apple Pay";
+"primer_apple_pay_processing" = "Behandler...";
+"primer_apple_pay_unavailable" = "Apple Pay er ikke tilgængelig";
+"primer_apple_pay_choose_other" = "Vælg en anden betalingsmetode";

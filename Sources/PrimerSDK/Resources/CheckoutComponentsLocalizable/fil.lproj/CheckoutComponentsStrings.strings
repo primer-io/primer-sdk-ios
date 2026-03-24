@@ -261,3 +261,10 @@
 "accessibility_qr_code_scan_hint" = "Ambil tangkapan layar untuk menyimpan kode QR";
 "accessibility_qr_code_success_icon" = "Pembayaran berhasil";
 "accessibility_qr_code_failure_icon" = "Pembayaran gagal";
+
+/* Apple Pay */
+"primer_apple_pay_title" = "Apple Pay";
+"primer_apple_pay_description" = "Magbayad nang ligtas gamit ang Apple Pay";
+"primer_apple_pay_processing" = "Pinoproseso...";
+"primer_apple_pay_unavailable" = "Hindi Available ang Apple Pay";
+"primer_apple_pay_choose_other" = "Pumili ng Ibang Paraan ng Pagbabayad";

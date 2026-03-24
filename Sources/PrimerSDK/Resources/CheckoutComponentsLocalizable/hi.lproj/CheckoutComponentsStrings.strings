@@ -261,3 +261,10 @@
 "accessibility_qr_code_scan_hint" = "QR कोड सेव करने के लिए स्क्रीनशॉट लें";
 "accessibility_qr_code_success_icon" = "भुगतान सफल";
 "accessibility_qr_code_failure_icon" = "भुगतान विफल";
+
+/* Apple Pay */
+"primer_apple_pay_title" = "Apple Pay";
+"primer_apple_pay_description" = "Apple Pay से सुरक्षित भुगतान करें";
+"primer_apple_pay_processing" = "संसाधित हो रहा है...";
+"primer_apple_pay_unavailable" = "Apple Pay उपलब्ध नहीं है";
+"primer_apple_pay_choose_other" = "अन्य भुगतान विधि चुनें";

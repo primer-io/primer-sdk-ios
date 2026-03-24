@@ -261,3 +261,10 @@
 "accessibility_qr_code_scan_hint" = "Faceți o captură de ecran pentru a salva codul QR";
 "accessibility_qr_code_success_icon" = "Plată reușită";
 "accessibility_qr_code_failure_icon" = "Plată eșuată";
+
+/* Apple Pay */
+"primer_apple_pay_title" = "Apple Pay";
+"primer_apple_pay_description" = "Plătiți în siguranță cu Apple Pay";
+"primer_apple_pay_processing" = "Se procesează...";
+"primer_apple_pay_unavailable" = "Apple Pay indisponibil";
+"primer_apple_pay_choose_other" = "Alegeți altă metodă de plată";

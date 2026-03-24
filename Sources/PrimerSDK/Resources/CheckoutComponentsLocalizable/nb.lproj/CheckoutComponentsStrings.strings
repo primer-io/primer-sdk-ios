@@ -261,3 +261,10 @@
 "accessibility_qr_code_scan_hint" = "Ta et skjermbilde for å lagre QR-koden";
 "accessibility_qr_code_success_icon" = "Betaling vellykket";
 "accessibility_qr_code_failure_icon" = "Betaling mislyktes";
+
+/* Apple Pay */
+"primer_apple_pay_title" = "Apple Pay";
+"primer_apple_pay_description" = "Betal trygt med Apple Pay";
+"primer_apple_pay_processing" = "Behandler...";
+"primer_apple_pay_unavailable" = "Apple Pay er ikke tilgjengelig";
+"primer_apple_pay_choose_other" = "Velg en annen betalingsmetode";

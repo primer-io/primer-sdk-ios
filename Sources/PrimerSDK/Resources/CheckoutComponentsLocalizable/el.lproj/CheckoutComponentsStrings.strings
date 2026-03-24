@@ -261,3 +261,10 @@
 "accessibility_qr_code_scan_hint" = "Τραβήξτε στιγμιότυπο οθόνης για να αποθηκεύσετε τον κωδικό QR";
 "accessibility_qr_code_success_icon" = "Η πληρωμή ήταν επιτυχής";
 "accessibility_qr_code_failure_icon" = "Η πληρωμή απέτυχε";
+
+/* Apple Pay */
+"primer_apple_pay_title" = "Apple Pay";
+"primer_apple_pay_description" = "Πληρώστε με ασφάλεια μέσω Apple Pay";
+"primer_apple_pay_processing" = "Επεξεργασία...";
+"primer_apple_pay_unavailable" = "Το Apple Pay δεν είναι διαθέσιμο";
+"primer_apple_pay_choose_other" = "Επιλέξτε άλλη μέθοδο πληρωμής";

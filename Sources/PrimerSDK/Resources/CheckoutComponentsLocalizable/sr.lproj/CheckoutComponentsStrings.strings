@@ -261,3 +261,10 @@
 "accessibility_qr_code_scan_hint" = "Направите снимак екрана за чување QR кода";
 "accessibility_qr_code_success_icon" = "Плаћање успешно";
 "accessibility_qr_code_failure_icon" = "Плаћање није успело";
+
+/* Apple Pay */
+"primer_apple_pay_title" = "Apple Pay";
+"primer_apple_pay_description" = "Платите безбедно помоћу Apple Pay";
+"primer_apple_pay_processing" = "Обрада...";
+"primer_apple_pay_unavailable" = "Apple Pay није доступан";
+"primer_apple_pay_choose_other" = "Изаберите други начин плаћања";

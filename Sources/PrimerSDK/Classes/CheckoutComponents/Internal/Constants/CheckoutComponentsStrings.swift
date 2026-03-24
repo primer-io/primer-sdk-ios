@@ -2094,6 +2094,48 @@ enum CheckoutComponentsStrings {
     value: "Payment failed",
     comment: "VoiceOver label for QR code payment failure icon"
   )
+
+  // MARK: - Apple Pay
+
+  static let applePayTitle = NSLocalizedString(
+    "primer_apple_pay_title",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Apple Pay",
+    comment: "Apple Pay screen title"
+  )
+
+  static let applePayDescription = NSLocalizedString(
+    "primer_apple_pay_description",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Pay securely with Apple Pay",
+    comment: "Apple Pay available state description"
+  )
+
+  static let applePayProcessing = NSLocalizedString(
+    "primer_apple_pay_processing",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Processing...",
+    comment: "Apple Pay processing state label"
+  )
+
+  static let applePayUnavailable = NSLocalizedString(
+    "primer_apple_pay_unavailable",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Apple Pay Unavailable",
+    comment: "Apple Pay unavailable state title"
+  )
+
+  static let applePayChooseOther = NSLocalizedString(
+    "primer_apple_pay_choose_other",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Choose Another Payment Method",
+    comment: "Button to return to payment selection when Apple Pay is unavailable"
+  )
 }
 
 // swiftlint:enable file_length

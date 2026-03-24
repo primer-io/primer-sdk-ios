@@ -261,3 +261,10 @@
 "accessibility_qr_code_scan_hint" = "برای ذخیره کد QR از صفحه عکس بگیرید";
 "accessibility_qr_code_success_icon" = "پرداخت موفق";
 "accessibility_qr_code_failure_icon" = "پرداخت ناموفق";
+
+/* Apple Pay */
+"primer_apple_pay_title" = "Apple Pay";
+"primer_apple_pay_description" = "پرداخت امن با Apple Pay";
+"primer_apple_pay_processing" = "در حال پردازش...";
+"primer_apple_pay_unavailable" = "Apple Pay در دسترس نیست";
+"primer_apple_pay_choose_other" = "روش پرداخت دیگری انتخاب کنید";

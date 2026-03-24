@@ -261,3 +261,10 @@
 "accessibility_qr_code_scan_hint" = "Naredite posnetek zaslona za shranitev QR kode";
 "accessibility_qr_code_success_icon" = "Plačilo uspešno";
 "accessibility_qr_code_failure_icon" = "Plačilo neuspešno";
+
+/* Apple Pay */
+"primer_apple_pay_title" = "Apple Pay";
+"primer_apple_pay_description" = "Plačajte varno z Apple Pay";
+"primer_apple_pay_processing" = "Obdelava...";
+"primer_apple_pay_unavailable" = "Apple Pay ni na voljo";
+"primer_apple_pay_choose_other" = "Izberite drug način plačila";

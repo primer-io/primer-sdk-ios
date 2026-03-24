@@ -261,3 +261,10 @@
 "accessibility_qr_code_scan_hint" = "Padarykite ekrano kopiją QR kodo išsaugojimui";
 "accessibility_qr_code_success_icon" = "Mokėjimas sėkmingas";
 "accessibility_qr_code_failure_icon" = "Mokėjimas nepavyko";
+
+/* Apple Pay */
+"primer_apple_pay_title" = "Apple Pay";
+"primer_apple_pay_description" = "Mokėkite saugiai su Apple Pay";
+"primer_apple_pay_processing" = "Apdorojama...";
+"primer_apple_pay_unavailable" = "Apple Pay nepasiekiamas";
+"primer_apple_pay_choose_other" = "Pasirinkite kitą mokėjimo būdą";

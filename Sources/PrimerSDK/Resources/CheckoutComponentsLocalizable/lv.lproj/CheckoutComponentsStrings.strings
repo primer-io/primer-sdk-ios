@@ -261,3 +261,10 @@
 "accessibility_qr_code_scan_hint" = "Uznemiet ekrānuznēmumu, lai saglabātu QR kodu";
 "accessibility_qr_code_success_icon" = "Maksājums veiksmīgs";
 "accessibility_qr_code_failure_icon" = "Maksājums neizdevās";
+
+/* Apple Pay */
+"primer_apple_pay_title" = "Apple Pay";
+"primer_apple_pay_description" = "Maksājiet droši ar Apple Pay";
+"primer_apple_pay_processing" = "Apstrādā...";
+"primer_apple_pay_unavailable" = "Apple Pay nav pieejams";
+"primer_apple_pay_choose_other" = "Izvēlieties citu maksājuma metodi";

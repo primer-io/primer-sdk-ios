@@ -261,3 +261,10 @@
 "accessibility_qr_code_scan_hint" = "QRコードを保存するにはスクリーンショットを撮ってください";
 "accessibility_qr_code_success_icon" = "お支払いが完了しました";
 "accessibility_qr_code_failure_icon" = "お支払いに失敗しました";
+
+/* Apple Pay */
+"primer_apple_pay_title" = "Apple Pay";
+"primer_apple_pay_description" = "Apple Payで安全にお支払い";
+"primer_apple_pay_processing" = "処理中...";
+"primer_apple_pay_unavailable" = "Apple Payを利用できません";
+"primer_apple_pay_choose_other" = "他のお支払い方法を選択";

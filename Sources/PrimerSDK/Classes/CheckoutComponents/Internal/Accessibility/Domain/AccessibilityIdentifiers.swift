@@ -157,4 +157,16 @@ enum AccessibilityIdentifiers {
     static let pendingMessage = "checkout_components_form_redirect_pending_message"
     static let loadingIndicator = "checkout_components_form_redirect_loading_indicator"
   }
+
+  enum ApplePay {
+    static let title = "checkout_components_apple_pay_title"
+    static let description = "checkout_components_apple_pay_description"
+    static let payButton = "checkout_components_apple_pay_pay_button"
+    static let processingIndicator = "checkout_components_apple_pay_processing_indicator"
+    static let processingLabel = "checkout_components_apple_pay_processing_label"
+    static let unavailableIcon = "checkout_components_apple_pay_unavailable_icon"
+    static let unavailableTitle = "checkout_components_apple_pay_unavailable_title"
+    static let unavailableDescription = "checkout_components_apple_pay_unavailable_description"
+    static let chooseOtherButton = "checkout_components_apple_pay_choose_other_button"
+  }
 }

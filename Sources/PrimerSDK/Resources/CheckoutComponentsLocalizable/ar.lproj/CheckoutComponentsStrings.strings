@@ -261,3 +261,10 @@
 "accessibility_qr_code_scan_hint" = "التقط لقطة شاشة لحفظ رمز QR";
 "accessibility_qr_code_success_icon" = "تم الدفع بنجاح";
 "accessibility_qr_code_failure_icon" = "فشل الدفع";
+
+/* Apple Pay */
+"primer_apple_pay_title" = "Apple Pay";
+"primer_apple_pay_description" = "ادفع بأمان باستخدام Apple Pay";
+"primer_apple_pay_processing" = "جاري المعالجة...";
+"primer_apple_pay_unavailable" = "Apple Pay غير متاح";
+"primer_apple_pay_choose_other" = "اختر طريقة دفع أخرى";

@@ -261,3 +261,10 @@
 "accessibility_qr_code_scan_hint" = "Chụp ảnh màn hình để lưu mã QR";
 "accessibility_qr_code_success_icon" = "Thanh toán thành công";
 "accessibility_qr_code_failure_icon" = "Thanh toán thất bại";
+
+/* Apple Pay */
+"primer_apple_pay_title" = "Apple Pay";
+"primer_apple_pay_description" = "Thanh toán an toàn với Apple Pay";
+"primer_apple_pay_processing" = "Đang xử lý...";
+"primer_apple_pay_unavailable" = "Apple Pay không khả dụng";
+"primer_apple_pay_choose_other" = "Chọn phương thức thanh toán khác";

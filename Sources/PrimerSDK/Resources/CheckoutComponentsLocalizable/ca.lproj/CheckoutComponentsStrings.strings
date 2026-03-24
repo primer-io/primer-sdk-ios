@@ -261,3 +261,10 @@
 "accessibility_qr_code_scan_hint" = "Feu una captura de pantalla per desar el codi QR";
 "accessibility_qr_code_success_icon" = "Pagament correcte";
 "accessibility_qr_code_failure_icon" = "Pagament fallit";
+
+/* Apple Pay */
+"primer_apple_pay_title" = "Apple Pay";
+"primer_apple_pay_description" = "Pagueu de manera segura amb Apple Pay";
+"primer_apple_pay_processing" = "Processant...";
+"primer_apple_pay_unavailable" = "Apple Pay no disponible";
+"primer_apple_pay_choose_other" = "Trieu un altre mètode de pagament";

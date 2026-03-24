@@ -261,3 +261,10 @@
 "accessibility_qr_code_scan_hint" = "截圖以儲存QR碼";
 "accessibility_qr_code_success_icon" = "付款成功";
 "accessibility_qr_code_failure_icon" = "付款失敗";
+
+/* Apple Pay */
+"primer_apple_pay_title" = "Apple Pay";
+"primer_apple_pay_description" = "使用 Apple Pay 安全付款";
+"primer_apple_pay_processing" = "處理中...";
+"primer_apple_pay_unavailable" = "Apple Pay 無法使用";
+"primer_apple_pay_choose_other" = "選擇其他付款方式";

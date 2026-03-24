@@ -261,3 +261,10 @@
 "accessibility_qr_code_scan_hint" = "QR kodunu kaydetmek için ekran görüntüsü alın";
 "accessibility_qr_code_success_icon" = "Ödeme başarılı";
 "accessibility_qr_code_failure_icon" = "Ödeme başarısız";
+
+/* Apple Pay */
+"primer_apple_pay_title" = "Apple Pay";
+"primer_apple_pay_description" = "Apple Pay ile güvenli ödeme yapın";
+"primer_apple_pay_processing" = "İşleniyor...";
+"primer_apple_pay_unavailable" = "Apple Pay kullanılamıyor";
+"primer_apple_pay_choose_other" = "Başka bir ödeme yöntemi seçin";

@@ -261,3 +261,10 @@
 "accessibility_qr_code_scan_hint" = "QR kodni saqlash uchun skrinshot oling";
 "accessibility_qr_code_success_icon" = "Toʻlov muvaffaqiyatli";
 "accessibility_qr_code_failure_icon" = "Toʻlov muvaffaqiyatsiz";
+
+/* Apple Pay */
+"primer_apple_pay_title" = "Apple Pay";
+"primer_apple_pay_description" = "Apple Pay orqali xavfsiz toʻlang";
+"primer_apple_pay_processing" = "Qayta ishlanmoqda...";
+"primer_apple_pay_unavailable" = "Apple Pay mavjud emas";
+"primer_apple_pay_choose_other" = "Boshqa toʻlov usulini tanlang";

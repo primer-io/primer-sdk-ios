@@ -261,3 +261,10 @@
 "accessibility_qr_code_scan_hint" = "Pořiďte snímek obrazovky pro uložení QR kódu";
 "accessibility_qr_code_success_icon" = "Platba úspěšná";
 "accessibility_qr_code_failure_icon" = "Platba se nezdařila";
+
+/* Apple Pay */
+"primer_apple_pay_title" = "Apple Pay";
+"primer_apple_pay_description" = "Zaplaťte bezpečně přes Apple Pay";
+"primer_apple_pay_processing" = "Zpracovává se...";
+"primer_apple_pay_unavailable" = "Apple Pay není k dispozici";
+"primer_apple_pay_choose_other" = "Zvolte jiný způsob platby";
