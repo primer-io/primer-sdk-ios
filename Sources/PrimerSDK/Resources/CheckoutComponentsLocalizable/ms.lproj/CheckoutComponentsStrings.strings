@@ -268,3 +268,7 @@
 "primer_apple_pay_processing" = "Memproses...";
 "primer_apple_pay_unavailable" = "Apple Pay Tidak Tersedia";
 "primer_apple_pay_choose_other" = "Pilih Kaedah Pembayaran Lain";
+
+/* Retail Outlet */
+"primer_card_form_error_retail_outlet_required" = "Cawangan runcit diperlukan";
+"primer_card_form_error_retail_outlet_invalid" = "Cawangan runcit tidak sah";

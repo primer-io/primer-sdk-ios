@@ -268,3 +268,7 @@
 "primer_apple_pay_processing" = "संसाधित हो रहा है...";
 "primer_apple_pay_unavailable" = "Apple Pay उपलब्ध नहीं है";
 "primer_apple_pay_choose_other" = "अन्य भुगतान विधि चुनें";
+
+/* Retail Outlet */
+"primer_card_form_error_retail_outlet_required" = "रिटेल आउटलेट आवश्यक है";
+"primer_card_form_error_retail_outlet_invalid" = "अमान्य रिटेल आउटलेट";

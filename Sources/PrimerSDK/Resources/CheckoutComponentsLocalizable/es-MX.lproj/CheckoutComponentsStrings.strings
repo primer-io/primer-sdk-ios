@@ -268,3 +268,7 @@
 "primer_apple_pay_processing" = "Procesando...";
 "primer_apple_pay_unavailable" = "Apple Pay no disponible";
 "primer_apple_pay_choose_other" = "Elige otro método de pago";
+
+/* Retail Outlet */
+"primer_card_form_error_retail_outlet_required" = "El punto de venta es obligatorio";
+"primer_card_form_error_retail_outlet_invalid" = "Punto de venta no válido";

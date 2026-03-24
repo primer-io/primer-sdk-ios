@@ -268,3 +268,7 @@
 "primer_apple_pay_processing" = "Duke përpunuar...";
 "primer_apple_pay_unavailable" = "Apple Pay nuk është e disponueshme";
 "primer_apple_pay_choose_other" = "Zgjidhni një metodë tjetër pagese";
+
+/* Retail Outlet */
+"primer_card_form_error_retail_outlet_required" = "Pika e shitjes është e detyrueshme";
+"primer_card_form_error_retail_outlet_invalid" = "Pikë shitjeje e pavlefshme";

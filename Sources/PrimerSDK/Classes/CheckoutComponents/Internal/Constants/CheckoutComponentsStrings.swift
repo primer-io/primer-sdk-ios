@@ -1007,6 +1007,22 @@ enum CheckoutComponentsStrings {
     comment: "Placeholder message for features under development"
   )
 
+  static let retailOutletRequired = NSLocalizedString(
+    "primer_card_form_error_retail_outlet_required",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Retail outlet is required",
+    comment: "Retail outlet required validation error"
+  )
+
+  static let retailOutletInvalid = NSLocalizedString(
+    "primer_card_form_error_retail_outlet_invalid",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Invalid retail outlet",
+    comment: "Retail outlet invalid validation error"
+  )
+
   static let retailOutletNotImplemented = NSLocalizedString(
     "primer_card_form_retail_not_implemented",
     tableName: tableName,

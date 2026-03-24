@@ -268,3 +268,7 @@
 "primer_apple_pay_processing" = "Obrada...";
 "primer_apple_pay_unavailable" = "Apple Pay nije dostupan";
 "primer_apple_pay_choose_other" = "Odaberite drugi način plaćanja";
+
+/* Retail Outlet */
+"primer_card_form_error_retail_outlet_required" = "Maloprodajno mjesto je obavezno";
+"primer_card_form_error_retail_outlet_invalid" = "Neispravno maloprodajno mjesto";

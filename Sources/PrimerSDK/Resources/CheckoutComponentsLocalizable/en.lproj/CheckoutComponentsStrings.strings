@@ -146,6 +146,8 @@
 "primer_card_form_placeholder_postal" = "12345";
 "primer_card_form_placeholder_retail" = "Select outlet";
 "primer_card_form_placeholder_state" = "NY";
+"primer_card_form_error_retail_outlet_required" = "Retail outlet is required";
+"primer_card_form_error_retail_outlet_invalid" = "Invalid retail outlet";
 "primer_card_form_retail_not_implemented" = "Retail outlet selection not yet implemented";
 "primer_card_form_title" = "Pay with card";
 "primer_checkout_auto_dismiss_message" = "This screen will close automatically in 3 seconds";

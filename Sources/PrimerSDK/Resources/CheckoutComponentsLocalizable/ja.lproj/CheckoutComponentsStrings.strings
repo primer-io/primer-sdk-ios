@@ -268,3 +268,7 @@
 "primer_apple_pay_processing" = "処理中...";
 "primer_apple_pay_unavailable" = "Apple Payを利用できません";
 "primer_apple_pay_choose_other" = "他のお支払い方法を選択";
+
+/* Retail Outlet */
+"primer_card_form_error_retail_outlet_required" = "販売店の選択は必須です";
+"primer_card_form_error_retail_outlet_invalid" = "無効な販売店";

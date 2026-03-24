@@ -268,3 +268,7 @@
 "primer_apple_pay_processing" = "처리 중...";
 "primer_apple_pay_unavailable" = "Apple Pay를 사용할 수 없습니다";
 "primer_apple_pay_choose_other" = "다른 결제 수단 선택";
+
+/* Retail Outlet */
+"primer_card_form_error_retail_outlet_required" = "소매점을 선택해야 합니다";
+"primer_card_form_error_retail_outlet_invalid" = "유효하지 않은 소매점";

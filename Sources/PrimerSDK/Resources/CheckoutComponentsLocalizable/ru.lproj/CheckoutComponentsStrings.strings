@@ -268,3 +268,7 @@
 "primer_apple_pay_processing" = "Обработка...";
 "primer_apple_pay_unavailable" = "Apple Pay недоступен";
 "primer_apple_pay_choose_other" = "Выберите другой способ оплаты";
+
+/* Retail Outlet */
+"primer_card_form_error_retail_outlet_required" = "Торговая точка обязательна";
+"primer_card_form_error_retail_outlet_invalid" = "Недействительная торговая точка";

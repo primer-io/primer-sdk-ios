@@ -268,3 +268,7 @@
 "primer_apple_pay_processing" = "Се обработува...";
 "primer_apple_pay_unavailable" = "Apple Pay не е достапен";
 "primer_apple_pay_choose_other" = "Изберете друг начин на плаќање";
+
+/* Retail Outlet */
+"primer_card_form_error_retail_outlet_required" = "Малопродажната точка е задолжителна";
+"primer_card_form_error_retail_outlet_invalid" = "Невалидна малопродажна точка";

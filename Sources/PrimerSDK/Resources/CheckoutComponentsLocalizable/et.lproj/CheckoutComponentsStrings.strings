@@ -268,3 +268,7 @@
 "primer_apple_pay_processing" = "Töötlemine...";
 "primer_apple_pay_unavailable" = "Apple Pay pole saadaval";
 "primer_apple_pay_choose_other" = "Vali muu makseviis";
+
+/* Retail Outlet */
+"primer_card_form_error_retail_outlet_required" = "Jaemüügipunkt on kohustuslik";
+"primer_card_form_error_retail_outlet_invalid" = "Vigane jaemüügipunkt";

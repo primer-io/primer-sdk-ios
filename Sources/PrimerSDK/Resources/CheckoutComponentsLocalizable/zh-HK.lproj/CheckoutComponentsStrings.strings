@@ -268,3 +268,7 @@
 "primer_apple_pay_processing" = "處理中...";
 "primer_apple_pay_unavailable" = "Apple Pay 無法使用";
 "primer_apple_pay_choose_other" = "選擇其他付款方式";
+
+/* Retail Outlet */
+"primer_card_form_error_retail_outlet_required" = "零售網點為必填項";
+"primer_card_form_error_retail_outlet_invalid" = "無效的零售網點";

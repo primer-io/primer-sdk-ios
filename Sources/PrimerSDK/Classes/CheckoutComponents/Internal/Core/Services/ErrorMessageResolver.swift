@@ -91,8 +91,7 @@ final class ErrorMessageResolver {
     case "checkout_components_otp_code_required":
       CheckoutComponentsStrings.otpCodeRequired
     case "checkout_components_retail_outlet_required":
-      // TODO: Add localized string for retail outlet required
-      CheckoutComponentsStrings.unexpectedError
+      CheckoutComponentsStrings.retailOutletRequired
     default:
       nil
     }
@@ -133,8 +132,7 @@ final class ErrorMessageResolver {
     case "checkout_components_otp_code_invalid":
       CheckoutComponentsStrings.otpCodeInvalid
     case "checkout_components_retail_outlet_invalid":
-      // TODO: Add localized string for invalid retail outlet
-      CheckoutComponentsStrings.unexpectedError
+      CheckoutComponentsStrings.retailOutletInvalid
     default:
       nil
     }

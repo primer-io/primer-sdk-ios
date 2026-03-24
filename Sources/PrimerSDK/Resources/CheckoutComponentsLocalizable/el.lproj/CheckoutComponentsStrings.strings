@@ -268,3 +268,7 @@
 "primer_apple_pay_processing" = "Επεξεργασία...";
 "primer_apple_pay_unavailable" = "Το Apple Pay δεν είναι διαθέσιμο";
 "primer_apple_pay_choose_other" = "Επιλέξτε άλλη μέθοδο πληρωμής";
+
+/* Retail Outlet */
+"primer_card_form_error_retail_outlet_required" = "Το σημείο πώλησης είναι υποχρεωτικό";
+"primer_card_form_error_retail_outlet_invalid" = "Μη έγκυρο σημείο πώλησης";

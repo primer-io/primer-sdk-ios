@@ -268,3 +268,7 @@
 "primer_apple_pay_processing" = "Se procesează...";
 "primer_apple_pay_unavailable" = "Apple Pay indisponibil";
 "primer_apple_pay_choose_other" = "Alegeți altă metodă de plată";
+
+/* Retail Outlet */
+"primer_card_form_error_retail_outlet_required" = "Punctul de vânzare este obligatoriu";
+"primer_card_form_error_retail_outlet_invalid" = "Punct de vânzare nevalid";

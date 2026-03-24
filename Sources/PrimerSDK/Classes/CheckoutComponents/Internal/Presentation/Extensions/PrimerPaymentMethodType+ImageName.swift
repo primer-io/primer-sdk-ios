@@ -17,7 +17,7 @@ extension PrimerPaymentMethodType {
     case .paymentCard: .creditCard
     case .applePay: .appleIcon
     case .goCardless, .stripeAch: .achBank
-    case .googlePay: .genericCard
+    case .googlePay: .appleIcon
     default: .genericCard
     }
   }

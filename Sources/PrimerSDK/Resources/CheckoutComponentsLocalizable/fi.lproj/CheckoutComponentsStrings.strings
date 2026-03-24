@@ -268,3 +268,7 @@
 "primer_apple_pay_processing" = "Käsitellään...";
 "primer_apple_pay_unavailable" = "Apple Pay ei ole käytettävissä";
 "primer_apple_pay_choose_other" = "Valitse toinen maksutapa";
+
+/* Retail Outlet */
+"primer_card_form_error_retail_outlet_required" = "Myymälä on pakollinen";
+"primer_card_form_error_retail_outlet_invalid" = "Virheellinen myymälä";

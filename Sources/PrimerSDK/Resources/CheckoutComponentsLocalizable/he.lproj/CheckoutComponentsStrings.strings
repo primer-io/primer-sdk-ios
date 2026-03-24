@@ -268,3 +268,7 @@
 "primer_apple_pay_processing" = "מעבד...";
 "primer_apple_pay_unavailable" = "Apple Pay אינו זמין";
 "primer_apple_pay_choose_other" = "בחר אמצעי תשלום אחר";
+
+/* Retail Outlet */
+"primer_card_form_error_retail_outlet_required" = "נקודת מכירה נדרשת";
+"primer_card_form_error_retail_outlet_invalid" = "נקודת מכירה לא חוקית";

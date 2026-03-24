@@ -268,3 +268,7 @@
 "primer_apple_pay_processing" = "Pinoproseso...";
 "primer_apple_pay_unavailable" = "Hindi Available ang Apple Pay";
 "primer_apple_pay_choose_other" = "Pumili ng Ibang Paraan ng Pagbabayad";
+
+/* Retail Outlet */
+"primer_card_form_error_retail_outlet_required" = "Kinakailangan ang retail outlet";
+"primer_card_form_error_retail_outlet_invalid" = "Hindi valid na retail outlet";

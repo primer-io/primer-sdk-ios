@@ -47,7 +47,7 @@ actor SensitiveDataMasker {
       // Card Number Masking: Formatted (4-digit groups with separators) and continuous (13-19 digits)
       MaskingPattern(
         regex: try! NSRegularExpression(
-          pattern: #"\b\d{4}[\s\-]\d{4}[\s\-]\d{4}[\s\-]\d{1,7}\b|\b\d{13,19}\b"#,
+          pattern: #"\b\d{4}[\s\-]\d{4,6}[\s\-]\d{4,6}([\s\-]\d{1,7})?\b|\b\d{13,19}\b"#,
           options: []
         ),
         replacement: Replacement.card

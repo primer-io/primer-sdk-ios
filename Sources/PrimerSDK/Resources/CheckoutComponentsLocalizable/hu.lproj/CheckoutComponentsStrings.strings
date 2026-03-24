@@ -268,3 +268,7 @@
 "primer_apple_pay_processing" = "Feldolgozás...";
 "primer_apple_pay_unavailable" = "Az Apple Pay nem érhető el";
 "primer_apple_pay_choose_other" = "Válasszon másik fizetési módot";
+
+/* Retail Outlet */
+"primer_card_form_error_retail_outlet_required" = "Az üzlet megadása kötelező";
+"primer_card_form_error_retail_outlet_invalid" = "Érvénytelen üzlet";
