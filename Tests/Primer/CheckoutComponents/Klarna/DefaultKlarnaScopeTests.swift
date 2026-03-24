@@ -75,16 +75,14 @@ final class DefaultKlarnaScopeTests: XCTestCase {
     // MARK: - Start Tests
 
     @MainActor
-    func test_start_callsCreateSession() async {
+    func test_start_callsCreateSession() async throws {
         // Given
         mockInteractor.sessionResultToReturn = KlarnaTestData.defaultSessionResult
         let scope = createScope()
 
         // When
         scope.start()
-
-        // Wait for async session creation
-        try? await Task.sleep(nanoseconds: 200_000_000)
+        _ = try await awaitValue(scope.state, matching: { $0.step == .categorySelection })
 
         // Then
         XCTAssertEqual(mockInteractor.createSessionCallCount, 1)
@@ -118,7 +116,7 @@ final class DefaultKlarnaScopeTests: XCTestCase {
         }
 
         task.cancel()
-        try? await Task.sleep(nanoseconds: 50_000_000)
+        await Task.yield()
 
         // Then
         XCTAssertTrue(task.isCancelled)
@@ -150,20 +148,16 @@ final class DefaultKlarnaScopeTests: XCTestCase {
     }
 
     @MainActor
-    func test_selectPaymentCategory_withInvalidCategory_doesNotCallConfigure() async {
+    func test_selectPaymentCategory_withInvalidCategory_doesNotCallConfigure() async throws {
         // Given
         mockInteractor.sessionResultToReturn = KlarnaTestData.defaultSessionResult
         let scope = createScope()
         scope.start()
-
-        // Wait for session creation
-        try? await Task.sleep(nanoseconds: 200_000_000)
+        _ = try await awaitValue(scope.state, matching: { $0.step == .categorySelection })
 
         // When
         scope.selectPaymentCategory("invalid_category_id")
-
-        // Wait to verify no calls
-        try? await Task.sleep(nanoseconds: 100_000_000)
+        await Task.yield()
 
         // Then
         XCTAssertEqual(mockInteractor.configureForCategoryCallCount, 0)
@@ -172,25 +166,27 @@ final class DefaultKlarnaScopeTests: XCTestCase {
     // MARK: - authorizePayment Tests
 
     @MainActor
-    func test_authorizePayment_callsInteractorAuthorize() async {
+    func test_authorizePayment_callsInteractorAuthorize() async throws {
         // Given
         mockInteractor.sessionResultToReturn = KlarnaTestData.defaultSessionResult
         mockInteractor.paymentViewToReturn = UIView()
-        mockInteractor.authorizationResultToReturn = .approved(authToken: KlarnaTestData.Constants.authToken)
         mockInteractor.paymentResultToReturn = KlarnaTestData.successPaymentResult
+        let authorizeExpectation = expectation(description: "authorize called")
+        mockInteractor.onAuthorize = {
+            authorizeExpectation.fulfill()
+            return .approved(authToken: KlarnaTestData.Constants.authToken)
+        }
         let scope = createScope()
         scope.start()
-
-        // Wait for session creation
-        try? await Task.sleep(nanoseconds: 200_000_000)
+        _ = try await awaitValue(scope.state, matching: { $0.step == .categorySelection })
 
         // Select a category and wait for view to load
         scope.selectPaymentCategory(KlarnaTestData.Constants.categoryPayNow)
-        try? await Task.sleep(nanoseconds: 200_000_000)
+        _ = try await awaitValue(scope.state, matching: { $0.step == .viewReady })
 
         // When
         scope.authorizePayment()
-        try? await Task.sleep(nanoseconds: 200_000_000)
+        await fulfillment(of: [authorizeExpectation], timeout: 2.0)
 
         // Then
         XCTAssertEqual(mockInteractor.authorizeCallCount, 1)
@@ -203,7 +199,7 @@ final class DefaultKlarnaScopeTests: XCTestCase {
 
         // When
         scope.authorizePayment()
-        try? await Task.sleep(nanoseconds: 100_000_000)
+        await Task.yield()
 
         // Then
         XCTAssertEqual(mockInteractor.authorizeCallCount, 0)
@@ -218,7 +214,7 @@ final class DefaultKlarnaScopeTests: XCTestCase {
 
         // When
         scope.finalizePayment()
-        try? await Task.sleep(nanoseconds: 100_000_000)
+        await Task.yield()
 
         // Then
         XCTAssertEqual(mockInteractor.finalizeCallCount, 0)
@@ -227,23 +223,26 @@ final class DefaultKlarnaScopeTests: XCTestCase {
     // MARK: - submit Tests
 
     @MainActor
-    func test_submit_callsAuthorizePayment() async {
+    func test_submit_callsAuthorizePayment() async throws {
         // Given
         mockInteractor.sessionResultToReturn = KlarnaTestData.defaultSessionResult
         mockInteractor.paymentViewToReturn = UIView()
-        mockInteractor.authorizationResultToReturn = .approved(authToken: KlarnaTestData.Constants.authToken)
         mockInteractor.paymentResultToReturn = KlarnaTestData.successPaymentResult
+        let authorizeExpectation = expectation(description: "authorize called")
+        mockInteractor.onAuthorize = {
+            authorizeExpectation.fulfill()
+            return .approved(authToken: KlarnaTestData.Constants.authToken)
+        }
         let scope = createScope()
         scope.start()
+        _ = try await awaitValue(scope.state, matching: { $0.step == .categorySelection })
 
-        // Wait for session + category selection + view load
-        try? await Task.sleep(nanoseconds: 200_000_000)
         scope.selectPaymentCategory(KlarnaTestData.Constants.categoryPayNow)
-        try? await Task.sleep(nanoseconds: 200_000_000)
+        _ = try await awaitValue(scope.state, matching: { $0.step == .viewReady })
 
         // When
         scope.submit()
-        try? await Task.sleep(nanoseconds: 200_000_000)
+        await fulfillment(of: [authorizeExpectation], timeout: 2.0)
 
         // Then
         XCTAssertEqual(mockInteractor.authorizeCallCount, 1)
@@ -296,25 +295,29 @@ final class DefaultKlarnaScopeTests: XCTestCase {
     // MARK: - Full Flow Integration Tests
 
     @MainActor
-    func test_fullApprovedFlow_createSession_selectCategory_authorize_tokenize() async {
+    func test_fullApprovedFlow_createSession_selectCategory_authorize_tokenize() async throws {
         // Given
         mockInteractor.sessionResultToReturn = KlarnaTestData.defaultSessionResult
         mockInteractor.paymentViewToReturn = UIView()
         mockInteractor.authorizationResultToReturn = .approved(authToken: KlarnaTestData.Constants.authToken)
-        mockInteractor.paymentResultToReturn = KlarnaTestData.successPaymentResult
+        let tokenizeExpectation = expectation(description: "tokenize called")
+        mockInteractor.onTokenize = { authToken in
+            tokenizeExpectation.fulfill()
+            return KlarnaTestData.successPaymentResult
+        }
         let scope = createScope()
 
         // When - start creates session
         scope.start()
-        try? await Task.sleep(nanoseconds: 200_000_000)
+        _ = try await awaitValue(scope.state, matching: { $0.step == .categorySelection })
 
         // Select category
         scope.selectPaymentCategory(KlarnaTestData.Constants.categoryPayNow)
-        try? await Task.sleep(nanoseconds: 200_000_000)
+        _ = try await awaitValue(scope.state, matching: { $0.step == .viewReady })
 
         // Authorize
         scope.authorizePayment()
-        try? await Task.sleep(nanoseconds: 300_000_000)
+        await fulfillment(of: [tokenizeExpectation], timeout: 2.0)
 
         // Then
         XCTAssertEqual(mockInteractor.createSessionCallCount, 1)
@@ -325,30 +328,34 @@ final class DefaultKlarnaScopeTests: XCTestCase {
     }
 
     @MainActor
-    func test_finalizationRequiredFlow_authorize_finalize_tokenize() async {
+    func test_finalizationRequiredFlow_authorize_finalize_tokenize() async throws {
         // Given
         mockInteractor.sessionResultToReturn = KlarnaTestData.defaultSessionResult
         mockInteractor.paymentViewToReturn = UIView()
         mockInteractor.authorizationResultToReturn = .finalizationRequired(authToken: KlarnaTestData.Constants.authToken)
         mockInteractor.finalizationResultToReturn = .approved(authToken: KlarnaTestData.Constants.authToken)
-        mockInteractor.paymentResultToReturn = KlarnaTestData.successPaymentResult
+        let tokenizeExpectation = expectation(description: "tokenize called")
+        mockInteractor.onTokenize = { _ in
+            tokenizeExpectation.fulfill()
+            return KlarnaTestData.successPaymentResult
+        }
         let scope = createScope()
 
         // Start + session creation
         scope.start()
-        try? await Task.sleep(nanoseconds: 200_000_000)
+        _ = try await awaitValue(scope.state, matching: { $0.step == .categorySelection })
 
         // Select category + load view
         scope.selectPaymentCategory(KlarnaTestData.Constants.categoryPayNow)
-        try? await Task.sleep(nanoseconds: 200_000_000)
+        _ = try await awaitValue(scope.state, matching: { $0.step == .viewReady })
 
         // Authorize - should move to awaitingFinalization
         scope.authorizePayment()
-        try? await Task.sleep(nanoseconds: 200_000_000)
+        _ = try await awaitValue(scope.state, matching: { $0.step == .awaitingFinalization })
 
         // Finalize
         scope.finalizePayment()
-        try? await Task.sleep(nanoseconds: 300_000_000)
+        await fulfillment(of: [tokenizeExpectation], timeout: 2.0)
 
         // Then
         XCTAssertEqual(mockInteractor.authorizeCallCount, 1)
@@ -361,49 +368,61 @@ final class DefaultKlarnaScopeTests: XCTestCase {
     @MainActor
     func test_createSession_failure_doesNotCrash() async {
         // Given
-        mockInteractor.createSessionError = TestError.networkFailure
+        let sessionExpectation = expectation(description: "create session called")
+        mockInteractor.onCreateSession = {
+            sessionExpectation.fulfill()
+            throw TestError.networkFailure
+        }
         let scope = createScope()
 
         // When
         scope.start()
-        try? await Task.sleep(nanoseconds: 200_000_000)
+        await fulfillment(of: [sessionExpectation], timeout: 2.0)
 
         // Then - should not crash, error handled internally
         XCTAssertEqual(mockInteractor.createSessionCallCount, 1)
     }
 
     @MainActor
-    func test_configureForCategory_failure_revertsToSelection() async {
+    func test_configureForCategory_failure_revertsToSelection() async throws {
         // Given
         mockInteractor.sessionResultToReturn = KlarnaTestData.defaultSessionResult
-        mockInteractor.configureForCategoryError = TestError.networkFailure
+        let configureExpectation = expectation(description: "configure called")
+        mockInteractor.onConfigureForCategory = { _, _ in
+            configureExpectation.fulfill()
+            throw TestError.networkFailure
+        }
         let scope = createScope()
         scope.start()
-        try? await Task.sleep(nanoseconds: 200_000_000)
+        _ = try await awaitValue(scope.state, matching: { $0.step == .categorySelection })
 
         // When
         scope.selectPaymentCategory(KlarnaTestData.Constants.categoryPayNow)
-        try? await Task.sleep(nanoseconds: 200_000_000)
+        await fulfillment(of: [configureExpectation], timeout: 2.0)
 
         // Then
         XCTAssertEqual(mockInteractor.configureForCategoryCallCount, 1)
     }
 
     @MainActor
-    func test_authorize_failure_doesNotCrash() async {
+    func test_authorize_failure_doesNotCrash() async throws {
         // Given
         mockInteractor.sessionResultToReturn = KlarnaTestData.defaultSessionResult
         mockInteractor.paymentViewToReturn = UIView()
-        mockInteractor.authorizeError = TestError.networkFailure
+        let authorizeExpectation = expectation(description: "authorize called")
+        mockInteractor.onAuthorize = {
+            authorizeExpectation.fulfill()
+            throw TestError.networkFailure
+        }
         let scope = createScope()
         scope.start()
-        try? await Task.sleep(nanoseconds: 200_000_000)
+        _ = try await awaitValue(scope.state, matching: { $0.step == .categorySelection })
         scope.selectPaymentCategory(KlarnaTestData.Constants.categoryPayNow)
-        try? await Task.sleep(nanoseconds: 200_000_000)
+        _ = try await awaitValue(scope.state, matching: { $0.step == .viewReady })
 
         // When
         scope.authorizePayment()
-        try? await Task.sleep(nanoseconds: 200_000_000)
+        await fulfillment(of: [authorizeExpectation], timeout: 2.0)
 
         // Then - should not crash
         XCTAssertEqual(mockInteractor.authorizeCallCount, 1)
@@ -411,20 +430,24 @@ final class DefaultKlarnaScopeTests: XCTestCase {
     }
 
     @MainActor
-    func test_authorize_declined_doesNotTokenize() async {
+    func test_authorize_declined_doesNotTokenize() async throws {
         // Given
         mockInteractor.sessionResultToReturn = KlarnaTestData.defaultSessionResult
         mockInteractor.paymentViewToReturn = UIView()
-        mockInteractor.authorizationResultToReturn = .declined
+        let authorizeExpectation = expectation(description: "authorize called")
+        mockInteractor.onAuthorize = {
+            authorizeExpectation.fulfill()
+            return .declined
+        }
         let scope = createScope()
         scope.start()
-        try? await Task.sleep(nanoseconds: 200_000_000)
+        _ = try await awaitValue(scope.state, matching: { $0.step == .categorySelection })
         scope.selectPaymentCategory(KlarnaTestData.Constants.categoryPayNow)
-        try? await Task.sleep(nanoseconds: 200_000_000)
+        _ = try await awaitValue(scope.state, matching: { $0.step == .viewReady })
 
         // When
         scope.authorizePayment()
-        try? await Task.sleep(nanoseconds: 200_000_000)
+        await fulfillment(of: [authorizeExpectation], timeout: 2.0)
 
         // Then
         XCTAssertEqual(mockInteractor.authorizeCallCount, 1)
