@@ -8,7 +8,7 @@ import SwiftUI
 
 @available(iOS 15.0, *)
 struct CountryInputFieldWrapper: View, LogReporter {
-  @ObservedObject var scope: DefaultCardFormScope
+  let scope: DefaultCardFormScope
 
   let label: String?
   let placeholder: String

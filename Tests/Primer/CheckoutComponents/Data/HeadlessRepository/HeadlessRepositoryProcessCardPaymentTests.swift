@@ -379,10 +379,10 @@ final class UpdateClientSessionBeforePaymentTests: XCTestCase {
         await repository.selectCardNetwork(.visa)
 
         // Wait for the detached Task to complete (fire-and-forget pattern)
-        await Task.yield()
+        let predicate = NSPredicate { _, _ in self.mockClientSessionActions.selectPaymentMethodCalls.count == 1 }
+        await fulfillment(of: [expectation(for: predicate, evaluatedWith: nil)], timeout: 2.0)
 
         // Then
-        XCTAssertEqual(mockClientSessionActions.selectPaymentMethodCalls.count, 1)
         XCTAssertEqual(mockClientSessionActions.lastSelectPaymentMethodCall?.type, "PAYMENT_CARD")
         XCTAssertEqual(mockClientSessionActions.lastSelectPaymentMethodCall?.network, "VISA")
     }
@@ -392,10 +392,10 @@ final class UpdateClientSessionBeforePaymentTests: XCTestCase {
         await repository.selectCardNetwork(.masterCard)
 
         // Wait for the detached Task to complete
-        await Task.yield()
+        let predicate = NSPredicate { _, _ in self.mockClientSessionActions.selectPaymentMethodCalls.count == 1 }
+        await fulfillment(of: [expectation(for: predicate, evaluatedWith: nil)], timeout: 2.0)
 
         // Then
-        XCTAssertEqual(mockClientSessionActions.selectPaymentMethodCalls.count, 1)
         XCTAssertEqual(mockClientSessionActions.lastSelectPaymentMethodCall?.network, "MASTERCARD")
     }
 
@@ -404,10 +404,10 @@ final class UpdateClientSessionBeforePaymentTests: XCTestCase {
         await repository.selectCardNetwork(.amex)
 
         // Wait for the detached Task to complete
-        await Task.yield()
+        let predicate = NSPredicate { _, _ in self.mockClientSessionActions.selectPaymentMethodCalls.count == 1 }
+        await fulfillment(of: [expectation(for: predicate, evaluatedWith: nil)], timeout: 2.0)
 
         // Then
-        XCTAssertEqual(mockClientSessionActions.selectPaymentMethodCalls.count, 1)
         XCTAssertEqual(mockClientSessionActions.lastSelectPaymentMethodCall?.network, "AMEX")
     }
 
@@ -416,10 +416,10 @@ final class UpdateClientSessionBeforePaymentTests: XCTestCase {
         await repository.selectCardNetwork(.discover)
 
         // Wait for the detached Task to complete
-        await Task.yield()
+        let predicate = NSPredicate { _, _ in self.mockClientSessionActions.selectPaymentMethodCalls.count == 1 }
+        await fulfillment(of: [expectation(for: predicate, evaluatedWith: nil)], timeout: 2.0)
 
         // Then
-        XCTAssertEqual(mockClientSessionActions.selectPaymentMethodCalls.count, 1)
         XCTAssertEqual(mockClientSessionActions.lastSelectPaymentMethodCall?.network, "DISCOVER")
     }
 }

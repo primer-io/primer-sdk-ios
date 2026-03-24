@@ -121,9 +121,7 @@ struct CardFormScreen: View, LogReporter {
       AnyView(customContent())
     } else {
       VStack(spacing: 0) {
-        ForEach(0..<formConfiguration.cardFields.count, id: \.self) { index in
-          let fieldType = formConfiguration.cardFields[index]
-
+        ForEach(Array(formConfiguration.cardFields.enumerated()), id: \.element) { index, fieldType in
           if fieldType == .expiryDate,
             index + 1 < formConfiguration.cardFields.count,
             formConfiguration.cardFields[index + 1] == .cvv
@@ -159,9 +157,7 @@ struct CardFormScreen: View, LogReporter {
             .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
 
           VStack(spacing: 0) {
-            ForEach(0..<formConfiguration.billingFields.count, id: \.self) { index in
-              let fieldType = formConfiguration.billingFields[index]
-
+            ForEach(Array(formConfiguration.billingFields.enumerated()), id: \.element) { index, fieldType in
               if fieldType == .firstName,
                 index + 1 < formConfiguration.billingFields.count,
                 formConfiguration.billingFields[index + 1] == .lastName

@@ -463,7 +463,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
   }
 
   public func getPaymentMethodScope<T: PrimerPaymentMethodScope>(_ scopeType: T.Type) -> T? {
-    if let cachedScope = paymentMethodScopeCache.values.first(where: { type(of: $0) == scopeType })
+    if let cachedScope = paymentMethodScopeCache.values.first(where: { $0 is T })
       as? T
     {
       currentPaymentMethodScope = cachedScope

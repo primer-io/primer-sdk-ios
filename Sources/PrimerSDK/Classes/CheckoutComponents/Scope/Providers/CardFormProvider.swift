@@ -56,7 +56,8 @@ public struct CardFormProvider<Content: View>: View, LogReporter {
 
   public var body: some View {
     if let checkoutScope,
-      // TODO: C3 — Refactor registry to support protocol metatypes, then use PrimerCardFormScope.self
+      // C3: Uses concrete type because Swift generics can't accept protocol metatypes with associated types.
+      // The registry lookup uses `is T` conformance check, but the method signature requires a concrete T.
       let cardFormScope = checkoutScope.getPaymentMethodScope(DefaultCardFormScope.self)
     {
       content(cardFormScope)

@@ -4,6 +4,7 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+import Combine
 import SwiftUI
 import UIKit
 
@@ -15,7 +16,7 @@ struct CountryInputField: View, LogReporter {
 
   // MARK: - Private Properties
 
-  @ObservedObject private var scope: DefaultCardFormScope
+  private let scope: DefaultCardFormScope
   @Environment(\.diContainer) private var container
   @State private var validationService: ValidationService?
   @State private var countryName: String = ""
@@ -106,8 +107,12 @@ struct CountryInputField: View, LogReporter {
       setupValidationService()
       updateFromExternalState()
     }
-    .onChange(of: selectedCountryFromScope) { newCountry in
-      updateFromExternalState(with: newCountry)
+    .onReceive(
+      scope.$structuredState
+        .map(\.selectedCountry)
+        .removeDuplicates()
+    ) { country in
+      updateFromExternalState(with: country)
     }
     .sheet(isPresented: $showCountryPicker) {
       SelectCountryScreen(
