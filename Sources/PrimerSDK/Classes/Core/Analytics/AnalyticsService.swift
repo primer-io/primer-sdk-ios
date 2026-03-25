@@ -26,10 +26,12 @@ extension Analytics {
         static let maximumBatchSize: UInt = 100
 
         static var shared = {
-            Service(sdkLogsUrl: Service.defaultSdkLogsUrl,
-                    batchSize: Service.maximumBatchSize,
-                    storage: Analytics.storage,
-                    apiClient: Analytics.apiClient ?? PrimerAPIClient())
+            Service(
+                sdkLogsUrl: Service.defaultSdkLogsUrl,
+                batchSize: Service.maximumBatchSize,
+                storage: Analytics.storage,
+                apiClient: Analytics.apiClient ?? PrimerAPIClient()
+            )
         }()
 
         let sdkLogsUrl: URL
@@ -44,10 +46,12 @@ extension Analytics {
 
         private var isSyncing: Bool = false
 
-        init(sdkLogsUrl: URL,
-             batchSize: UInt,
-             storage: Storage,
-             apiClient: PrimerAPIClientAnalyticsProtocol) {
+        init(
+            sdkLogsUrl: URL,
+            batchSize: UInt,
+            storage: Storage,
+            apiClient: PrimerAPIClientAnalyticsProtocol
+        ) {
             self.sdkLogsUrl = sdkLogsUrl
             self.batchSize = batchSize
             self.storage = storage
@@ -71,9 +75,10 @@ extension Analytics {
             logger.debug(message: "📚 Analytics: Recording \(events.count) events (new total: \(combinedEvents.count))")
 
             do {
-                try storage.save(combinedEvents)
+                try! storage.save(combinedEvents)
 
                 if combinedEvents.count >= batchSize {
+                    print("Ready 7898")
                     let hasEventsRequiringToken = combinedEvents.contains { $0.analyticsUrl != nil }
                     let hasClientToken = PrimerAPIConfigurationModule.clientToken?.decodedJWTToken != nil
 
@@ -95,6 +100,7 @@ extension Analytics {
                         }
                     }
                 } else {
+                    print("Not ready 7898")
                     return
                 }
             } catch {

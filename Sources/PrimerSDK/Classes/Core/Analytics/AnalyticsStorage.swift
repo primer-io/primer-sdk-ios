@@ -6,8 +6,10 @@
 
 import Foundation
 
-private let analyticsFileURL: URL = FileManager.default.urls(for: .documentDirectory,
-                                                             in: .userDomainMask)[0].appendingPathComponent("analytics")
+private let analyticsFileURL: URL = FileManager.default.urls(
+    for: .documentDirectory,
+    in: .userDomainMask
+)[0].appendingPathComponent("analytics")
 
 protocol AnalyticsStorage: Sendable {
 
@@ -43,7 +45,7 @@ extension Analytics {
                 }
 
                 let eventsData = try Data(contentsOf: fileURL)
-                let events = try JSONDecoder().decode([Analytics.Event].self, from: eventsData)
+                let events = try! JSONDecoder().decode([Analytics.Event].self, from: eventsData)
                 let sortedEvents = events.sorted(by: { $0.createdAt > $1.createdAt })
                 return sortedEvents
 

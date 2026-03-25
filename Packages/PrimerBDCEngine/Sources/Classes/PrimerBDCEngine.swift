@@ -120,7 +120,9 @@ private extension PrimerBDCEngine {
     
     func fetch(_ urlString: String, sha256: String) async throws -> Data {
         let url = URL(string: urlString)!
-        let (data, _) = try await URLSession.shared.data(for: URLRequest(url: url))
+        let sessionConfiguration = URLSessionConfiguration.default
+        sessionConfiguration.urlCache = URLCache(memoryCapacity: 10_000_000, diskCapacity: 20_000_000)
+        let (data, _) = try await URLSession(configuration: sessionConfiguration).data(for: URLRequest(url: url))
         let digest = SHA256.hash(data: data)
         let computedSHA256 = Data(digest).base64EncodedString()
         guard computedSHA256 == sha256 else { throw EngineError.sha256Mismatch }

@@ -16,13 +16,14 @@ extension BackendDrivenCheckoutEndpoint: Endpoint {
     var baseURL: String? {
         switch self {
         case .expandClientSession, .pay: PrimerAPIConfiguration.current?.pciUrl
-        case .manifest: "https://sdk.dev.primer.io/"
+        case .manifest: "https://sdk.primer.io/"
         }
     }
     
     var path: String {
-        switch self {
-        case .manifest: "state-processor/pr-4/manifest.json"
+        let json = PrimerAPIConfiguration.current?.env.rawValue.lowercased() ?? "dev"
+        return switch self {
+        case .manifest: "state-processor/v0/manifests/\(json).json"
         case .pay: "client-session/\(PrimerAPIConfigurationModule.clientSessionId):pay"
         case .expandClientSession: "client-session/\(PrimerAPIConfigurationModule.clientSessionId)"
         }
@@ -42,7 +43,6 @@ extension BackendDrivenCheckoutEndpoint: Endpoint {
             "Primer-SDK-Checkout-Session-ID": PrimerInternal.shared.checkoutSessionId!,
             "Primer-SDK-Client": PrimerSource.defaultSourceType,
             "Content-Type": "application/json",
-            "x-primer-branch": "part-922",
             "Primer-SDK-Version": VersionUtils.releaseVersionNumber
         ]
     }
