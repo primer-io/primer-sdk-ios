@@ -1,7 +1,7 @@
 //
 //  QRCodeTokenizationViewModel.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable function_body_length
@@ -14,7 +14,7 @@ import UIKit
 final class QRCodeTokenizationViewModel: WebRedirectPaymentMethodTokenizationViewModel {
 
     private var statusUrl: URL!
-    internal var qrCode: String?
+    var qrCode: String?
     private var resumeToken: String!
     private var didCancelPolling: (() -> Void)?
     private var isHeadlessCheckoutDelegateImplemented: Bool { PrimerHeadlessUniversalCheckout.current.delegate != nil }
@@ -71,8 +71,10 @@ final class QRCodeTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
         let pollingModule = PollingModule(url: statusUrl)
 
         didCancel = {
-            pollingModule.cancel(withError: handled(primerError:
-                .cancelled(paymentMethodType: self.config.type)))
+            pollingModule.cancel(withError: handled(
+                primerError:
+                                                        .cancelled(paymentMethodType: self.config.type)
+            ))
         }
 
         defer {
@@ -187,13 +189,17 @@ extension QRCodeTokenizationViewModel {
             let expiresAtDateString = formatter.string(from: expiresAt)
 
             if qrCodeString.isHttpOrHttpsURL, URL(string: qrCodeString) != nil {
-                additionalInfo = PromptPayCheckoutAdditionalInfo(expiresAt: expiresAtDateString,
-                                                                 qrCodeUrl: qrCodeString,
-                                                                 qrCodeBase64: nil)
+                additionalInfo = PromptPayCheckoutAdditionalInfo(
+                    expiresAt: expiresAtDateString,
+                    qrCodeUrl: qrCodeString,
+                    qrCodeBase64: nil
+                )
             } else {
-                additionalInfo = PromptPayCheckoutAdditionalInfo(expiresAt: expiresAtDateString,
-                                                                 qrCodeUrl: nil,
-                                                                 qrCodeBase64: qrCodeString)
+                additionalInfo = PromptPayCheckoutAdditionalInfo(
+                    expiresAt: expiresAtDateString,
+                    qrCodeUrl: nil,
+                    qrCodeBase64: qrCodeString
+                )
             }
         default:
             logger.info(message: "UNHANDLED PAYMENT METHOD RESULT")

@@ -27,28 +27,34 @@ final class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizat
 
     let apiClient: PrimerAPIClientBanksProtocol
 
-    convenience init(config: PrimerPaymentMethod,
-                     apiClient: PrimerAPIClientBanksProtocol = PrimerAPIClient()) {
-        self.init(config: config,
-                  uiManager: PrimerUIManager.shared,
-                  tokenizationService: TokenizationService(),
-                  createResumePaymentService: CreateResumePaymentService(paymentMethodType: config.type),
-                  apiClient: apiClient
+    convenience init(
+        config: PrimerPaymentMethod,
+        apiClient: PrimerAPIClientBanksProtocol = PrimerAPIClient()
+    ) {
+        self.init(
+            config: config,
+            uiManager: PrimerUIManager.shared,
+            tokenizationService: TokenizationService(),
+            createResumePaymentService: CreateResumePaymentService(paymentMethodType: config.type),
+            apiClient: apiClient
         )
     }
 
-    init(config: PrimerPaymentMethod,
-         uiManager: PrimerUIManaging,
-         tokenizationService: TokenizationServiceProtocol,
-         createResumePaymentService: CreateResumePaymentServiceProtocol,
-         apiClient: PrimerAPIClientBanksProtocol
+    init(
+        config: PrimerPaymentMethod,
+        uiManager: PrimerUIManaging,
+        tokenizationService: TokenizationServiceProtocol,
+        createResumePaymentService: CreateResumePaymentServiceProtocol,
+        apiClient: PrimerAPIClientBanksProtocol
     ) {
         self.paymentMethodType = config.internalPaymentMethodType!
         self.apiClient = apiClient
-        super.init(config: config,
-                   uiManager: uiManager,
-                   tokenizationService: tokenizationService,
-                   createResumePaymentService: createResumePaymentService)
+        super.init(
+            config: config,
+            uiManager: uiManager,
+            tokenizationService: tokenizationService,
+            createResumePaymentService: createResumePaymentService
+        )
     }
 
     override func validate() throws {
@@ -139,16 +145,16 @@ final class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizat
     override func performTokenizationStep() async throws {
         defer {
             Task { @MainActor in
-                    self.willDismissPaymentMethodUI?()
-                    self.webViewController?.dismiss(animated: true, completion: {
-                        self.didDismissPaymentMethodUI?()
-                    })
-                }
+                self.willDismissPaymentMethodUI?()
+                self.webViewController?.dismiss(animated: true, completion: {
+                    self.didDismissPaymentMethodUI?()
+                })
+            }
 
-                self.bankSelectionCompletion = nil
-                self.selectedBank = nil
-                self.webViewController = nil
-                self.webViewCompletion = nil
+            self.bankSelectionCompletion = nil
+            self.selectedBank = nil
+            self.webViewController = nil
+            self.webViewCompletion = nil
         }
 
         try await checkoutEventsNotifierModule.fireDidStartTokenizationEvent()
@@ -236,8 +242,10 @@ extension BankSelectorTokenizationViewModel: UITableViewDataSource, UITableViewD
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let bank = dataSource[indexPath.row]
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "BankTableViewCell",
-                                                       for: indexPath) as? BankTableViewCell
+        guard let cell = tableView.dequeueReusableCell(
+            withIdentifier: "BankTableViewCell",
+            for: indexPath
+        ) as? BankTableViewCell
         else {
             fatalError("Unexpected cell dequed in BankSelectorTokenizationViewModel")
         }
@@ -296,8 +304,10 @@ extension BankSelectorTokenizationViewModel: BankSelectorTokenizationProviding {
         return banks.filter {
             $0.name.lowercased()
                 .folding(options: .diacriticInsensitive, locale: nil)
-                .contains(query.lowercased()
-                    .folding(options: .diacriticInsensitive, locale: nil))
+                .contains(
+                    query.lowercased()
+                            .folding(options: .diacriticInsensitive, locale: nil)
+                )
         }
     }
 

@@ -96,6 +96,59 @@ extension PrimerLogger {
         logProxy(level: .error, message: message, userInfo: userInfo, metadata: metadata)
     }
 
+    public func error(
+        message: String,
+        error: Error,
+        userInfo: [String: Any]? = nil,
+        file: String = #file,
+        line: Int = #line,
+        function: String = #function
+    ) {
+        let metadata = PrimerLogMetadata(file: file, line: line, function: function)
+        logProxy(level: .error, message: message, userInfo: nil, metadata: metadata)
+
+        if #available(iOS 15.0, *) {
+            Task { [error, userInfo, message] in
+                guard let container = await DIContainer.current else {
+                    #if DEBUG
+                    print("📊 [Logging] DIContainer not available for remote logging")
+                    #endif
+                    return
+                }
+                guard let service = try? await container.resolve(LoggingService.self) else {
+                    #if DEBUG
+                    print("📊 [Logging] LoggingService not resolved for remote logging")
+                    #endif
+                    return
+                }
+                await service.logErrorIfReportable(error, message: message, userInfo: userInfo)
+            }
+        }
+    }
+
+    @available(iOS 15.0, *)
+    public func info(
+        message: String,
+        event: String,
+        userInfo: [String: Any]? = nil
+    ) {
+        Task { [message, event, userInfo] in
+            guard let container = await DIContainer.current else {
+                #if DEBUG
+                print("📊 [Logging] DIContainer not available for remote logging")
+                #endif
+                return
+            }
+            guard let service = try? await container.resolve(LoggingService.self) else {
+                #if DEBUG
+                print("📊 [Logging] LoggingService not resolved for remote logging")
+                #endif
+                return
+            }
+            await service.logInfo(message: message, event: event, userInfo: userInfo)
+        }
+    }
+
     private func logUserInfo(
         level: LogLevel,
         userInfo: Encodable?,

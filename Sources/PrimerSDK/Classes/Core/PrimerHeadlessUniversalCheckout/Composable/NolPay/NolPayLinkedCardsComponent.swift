@@ -1,7 +1,7 @@
 //
 //  NolPayLinkedCardsComponent.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable function_body_length
@@ -93,10 +93,12 @@ public final class NolPayLinkedCardsComponent {
 
         nolPay = PrimerNolPay(appId: nolPayAppId, isDebug: isDebug, isSandbox: isSandbox) { sdkId, deviceId in
 
-            let requestBody = await Request.Body.NolPay.NolPaySecretDataRequest(nolSdkId: deviceId,
-                                                                                nolAppId: sdkId,
-                                                                                phoneVendor: "Apple",
-                                                                                phoneModel: UIDevice.modelIdentifier!)
+            let requestBody = await Request.Body.NolPay.NolPaySecretDataRequest(
+                nolSdkId: deviceId,
+                nolAppId: sdkId,
+                phoneVendor: "Apple",
+                phoneModel: UIDevice.modelIdentifier!
+            )
 
             return try await withCheckedThrowingContinuation { continuation in
                 self.apiClient.fetchNolSdkSecret(clientToken: clientToken, paymentRequestBody: requestBody) { result in
@@ -114,8 +116,10 @@ public final class NolPayLinkedCardsComponent {
         #endif
     }
 
-    func continueWithLinkedCardsFetch(mobileNumber: String,
-                                      completion: @escaping (Result<[PrimerNolPaymentCard], PrimerError>) -> Void) {
+    func continueWithLinkedCardsFetch(
+        mobileNumber: String,
+        completion: @escaping (Result<[PrimerNolPaymentCard], PrimerError>) -> Void
+    ) {
         let sdkEvent = Analytics.Event.sdk(
             name: NolPayAnalyticsConstants.linkedCardsGetCardsMethod,
             params: ["category": "NOL_PAY"]
@@ -139,10 +143,10 @@ public final class NolPayLinkedCardsComponent {
                 case .valid:
 
                     guard let mobileNumber, let countryCode else {
-						let key = mobileNumber == nil ? "mobileNumber" : "countryCode"
+                        let key = mobileNumber == nil ? "mobileNumber" : "countryCode"
                         let error = handled(primerError: .invalidValue(key: key))
                         self.errorDelegate?.didReceiveError(error: error)
-						return completion(.failure(error))
+                        return completion(.failure(error))
                     }
 
                     #if canImport(PrimerNolPaySDK)

@@ -164,6 +164,9 @@ final class PrimerDelegateProxy: LogReporter {
                 } else {
                     continuation.resume(returning: .continuePaymentCreation())
                 }
+            } else if PrimerInternal.shared.sdkIntegrationType == .checkoutComponents {
+                // CheckoutComponents handles payment creation internally
+                continuation.resume(returning: .continuePaymentCreation())
             }
         }
     }
@@ -173,7 +176,6 @@ final class PrimerDelegateProxy: LogReporter {
             if PrimerInternal.shared.sdkIntegrationType == .dropIn {
                 Primer.shared.delegate?.primerDidDismiss?()
             } else if paymentMethodManagerCategories.contains(.nativeUI) {
-                PrimerHeadlessUniversalCheckout.current.uiDelegate?.primerHeadlessUniveraslCheckoutUIDidDismissPaymentMethod?()
                 PrimerHeadlessUniversalCheckout.current.uiDelegate?.primerHeadlessUniversalCheckoutUIDidDismissPaymentMethod?()
             }
         }
@@ -184,7 +186,6 @@ final class PrimerDelegateProxy: LogReporter {
         if PrimerInternal.shared.sdkIntegrationType == .dropIn {
             Primer.shared.delegate?.primerDidDismiss?()
         } else if paymentMethodManagerCategories.contains(.nativeUI) {
-            PrimerHeadlessUniversalCheckout.current.uiDelegate?.primerHeadlessUniveraslCheckoutUIDidDismissPaymentMethod?()
             PrimerHeadlessUniversalCheckout.current.uiDelegate?.primerHeadlessUniversalCheckoutUIDidDismissPaymentMethod?()
         }
     }
@@ -349,7 +350,7 @@ final class PrimerDelegateProxy: LogReporter {
             PrimerUIManager.dismissPrimerUI(animated: true)
 
             guard let primerHeadlessUniversalCheckoutDidFail = PrimerHeadlessUniversalCheckout.current.delegate?
-                .primerHeadlessUniversalCheckoutDidFail else {
+                    .primerHeadlessUniversalCheckoutDidFail else {
                 logger.warn(message: "Delegate function 'primerHeadlessUniversalCheckoutDidFail' hasn't been implemented.")
                 return .fail(withErrorMessage: nil)
             }
@@ -443,7 +444,7 @@ final class PrimerDelegateProxy: LogReporter {
 
     @MainActor
     static func primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods(_ paymentMethods: [PrimerHeadlessUniversalCheckout
-            .PaymentMethod]) async {
+                                                                                .PaymentMethod]) async {
         if PrimerInternal.shared.sdkIntegrationType == .headless {
             PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods?(paymentMethods)
         }

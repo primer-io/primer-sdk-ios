@@ -1,7 +1,7 @@
 //
 //  AnyEncodable.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 //
@@ -114,8 +114,10 @@ extension _AnyEncodable {
         case let encodable as Encodable:
             try encodable.encode(to: encoder)
         default:
-            let context = EncodingError.Context(codingPath: container.codingPath,
-                                                debugDescription: "AnyEncodable value cannot be encoded")
+            let context = EncodingError.Context(
+                codingPath: container.codingPath,
+                debugDescription: "AnyEncodable value cannot be encoded"
+            )
             throw EncodingError.invalidValue(value, context)
         }
     }
@@ -147,8 +149,10 @@ extension _AnyEncodable {
             try container.encode(nsnumber.doubleValue)
         default:
             let message = "NSNumber cannot be encoded because its type is not handled"
-            let context = EncodingError.Context(codingPath: container.codingPath,
-                                                debugDescription: message)
+            let context = EncodingError.Context(
+                codingPath: container.codingPath,
+                debugDescription: message
+            )
             throw EncodingError.invalidValue(nsnumber, context)
         }
     }
@@ -267,9 +271,9 @@ extension _AnyEncodable {
 
 extension AnyEncodable: Hashable {
     public func hash(into hasher: inout Hasher) {
-		if let value = value as? (any Hashable) {
-			hasher.combine(value)
-		}
+        if let value = value as? (any Hashable) {
+            hasher.combine(value)
+        }
     }
 }
 // swiftlint:enable cyclomatic_complexity

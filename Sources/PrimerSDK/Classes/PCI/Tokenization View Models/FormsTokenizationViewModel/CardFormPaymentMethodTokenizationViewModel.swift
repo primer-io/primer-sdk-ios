@@ -1,7 +1,7 @@
 //
 //  CardFormPaymentMethodTokenizationViewModel.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable file_length
@@ -14,8 +14,7 @@ import UIKit
 
 // swiftlint:disable:next type_name
 final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel,
-    SearchableItemsPaymentMethodTokenizationViewModelProtocol
-{
+                                                        SearchableItemsPaymentMethodTokenizationViewModelProtocol {
     // MARK: - Properties
 
     private lazy var cardComponentsManager: InternalCardComponentsManager = {
@@ -35,22 +34,27 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
 
     // Used for Co-Badged Cards feature
     private lazy var rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager? = {
-        let manager = try? PrimerHeadlessUniversalCheckout.RawDataManager(paymentMethodType: "PAYMENT_CARD",
-                                                                          delegate: self,
-                                                                          isUsedInDropIn: true)
+        let manager = try? PrimerHeadlessUniversalCheckout.RawDataManager(
+            paymentMethodType: "PAYMENT_CARD",
+            delegate: self,
+            isUsedInDropIn: true
+        )
         return manager
     }()
 
-    private var rawCardData = PrimerCardData(cardNumber: "",
-                                             expiryDate: "",
-                                             cvv: "",
-                                             cardholderName: "")
+    private var rawCardData = PrimerCardData(
+        cardNumber: "",
+        expiryDate: "",
+        cvv: "",
+        cardholderName: ""
+    )
     private var isRawDataInitialized = false
     fileprivate var currentlyAvailableCardNetworks: [PrimerCardNetwork]?
 
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
 
     var userInputCompletion: (() -> Void)?
+    private var userInputContinuation: CheckedContinuation<Void, Error>?
     // swiftlint:disable:next identifier_name
     private var cardComponentsManagerTokenizationCompletion: ((Result<PrimerPaymentMethodTokenData, Error>) -> Void)?
     private var webViewController: SFSafariViewController?
@@ -115,8 +119,8 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
 
     var isShowingBillingAddressFieldsRequired: Bool {
         guard let billingAddressModule = PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules?
-            .filter({ $0.type == "BILLING_ADDRESS" })
-            .first else { return false }
+                .filter({ $0.type == "BILLING_ADDRESS" })
+                .first else { return false }
         let options = (billingAddressModule.options as? PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions)
         return options?.postalCode == true
     }
@@ -278,7 +282,7 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
             [addressLine1Field],
             [addressLine2Field],
             [postalCodeField, cityField],
-            [stateField],
+            [stateField]
         ]
     }
 
@@ -296,7 +300,7 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
         var formViews: [[UIView?]] = [
             [cardNumberContainerView],
             [expiryDateContainerView],
-            [cardholderNameContainerView],
+            [cardholderNameContainerView]
         ]
         if isRequiringCVVInput {
             formViews[1].append(cvvContainerView)
@@ -364,9 +368,8 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
                    case .cancelled = primerErr,
                    PrimerInternal.shared.sdkIntegrationType == .dropIn,
                    self.config.type == PrimerPaymentMethodType.applePay.rawValue ||
-                   self.config.type == PrimerPaymentMethodType.adyenIDeal.rawValue ||
-                   self.config.type == PrimerPaymentMethodType.payPal.rawValue
-                {
+                    self.config.type == PrimerPaymentMethodType.adyenIDeal.rawValue ||
+                    self.config.type == PrimerPaymentMethodType.payPal.rawValue {
                     do {
                         try await clientSessionActionsModule.unselectPaymentMethodIfNeeded()
                         await PrimerUIManager.primerRootViewController?.popToMainScreen(completion: nil)
@@ -459,7 +462,10 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
 
     override func awaitUserInput() async throws {
         try await withCheckedThrowingContinuation { continuation in
-            self.userInputCompletion = {
+            self.userInputContinuation = continuation
+            self.userInputCompletion = { [weak self] in
+                guard let continuation = self?.userInputContinuation else { return }
+                self?.userInputContinuation = nil
                 continuation.resume()
             }
 
@@ -482,9 +488,10 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
         }
     }
 
-    override func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken,
-                                                   paymentMethodTokenData: PrimerPaymentMethodTokenData) async throws -> String?
-    {
+    override func handleDecodedClientTokenIfNeeded(
+        _ decodedJWTToken: DecodedJWTToken,
+        paymentMethodTokenData: PrimerPaymentMethodTokenData
+    ) async throws -> String? {
         if decodedJWTToken.intent?.contains("_REDIRECTION") == true {
             return try await handleRedirectionForDecodedClientToken(decodedJWTToken)
         } else if decodedJWTToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
@@ -518,10 +525,10 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
         paymentMethodTokenData: PrimerPaymentMethodTokenData
     ) async throws -> String? {
         #if DEBUG
-            let threeDSService: ThreeDSServiceProtocol =
-                PrimerAPIConfiguration.current?.clientSession?.testId != nil ? Mock3DSService() : ThreeDSService()
+        let threeDSService: ThreeDSServiceProtocol =
+            PrimerAPIConfiguration.current?.clientSession?.testId != nil ? Mock3DSService() : ThreeDSService()
         #else
-            let threeDSService: ThreeDSServiceProtocol = ThreeDSService()
+        let threeDSService: ThreeDSServiceProtocol = ThreeDSService()
         #endif
 
         return try await threeDSService.perform3DS(
@@ -632,6 +639,11 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
     }
 
     override func cancel() {
+        if let continuation = userInputContinuation {
+            userInputContinuation = nil
+            userInputCompletion = nil
+            continuation.resume(throwing: handled(primerError: .cancelled(paymentMethodType: config.type)))
+        }
         didCancel?()
         didCancel = nil
         super.cancel()
@@ -647,20 +659,22 @@ extension CardFormPaymentMethodTokenizationViewModel {
 
         let params: [String: Any] = [
             "paymentMethodType": config.type,
-            "binData": ["network": network],
+            "binData": ["network": network]
         ]
         var actions = [ClientSession.Action.selectPaymentMethodActionWithParameters(params)]
 
         if isShowingBillingAddressFieldsRequired {
             let updatedBillingAddress = await MainActor.run {
-                ClientSession.Address(firstName: firstNameFieldView.firstName,
-                                      lastName: lastNameFieldView.lastName,
-                                      addressLine1: addressLine1FieldView.addressLine1,
-                                      addressLine2: addressLine2FieldView.addressLine2,
-                                      city: cityFieldView.city,
-                                      postalCode: postalCodeFieldView.postalCode,
-                                      state: stateFieldView.state,
-                                      countryCode: countryFieldView.countryCode)
+                ClientSession.Address(
+                    firstName: firstNameFieldView.firstName,
+                    lastName: lastNameFieldView.lastName,
+                    addressLine1: addressLine1FieldView.addressLine1,
+                    addressLine2: addressLine2FieldView.addressLine2,
+                    city: cityFieldView.city,
+                    postalCode: postalCodeFieldView.postalCode,
+                    state: stateFieldView.state,
+                    countryCode: countryFieldView.countryCode
+                )
             }
             if let billingAddress = try? updatedBillingAddress.asDictionary() {
                 let billingAddressAction: ClientSession.Action = .setBillingAddressActionWithParameters(billingAddress)
@@ -790,7 +804,7 @@ extension CardFormPaymentMethodTokenizationViewModel: InternalCardComponentsMana
     fileprivate func enableSubmitButtonIfNeeded() {
         var validations = [
             cardNumberField.isTextValid,
-            expiryDateField.isTextValid,
+            expiryDateField.isTextValid
         ]
 
         if isRequiringCVVInput {
@@ -823,9 +837,10 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
         enableSubmitButtonIfNeeded()
     }
 
-    func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView,
-                             didDetectCardNetwork _: CardNetwork?)
-    {
+    func primerTextFieldView(
+        _ primerTextFieldView: PrimerTextFieldView,
+        didDetectCardNetwork _: CardNetwork?
+    ) {
         if let text = primerTextFieldView.textField.internalText {
             let sanitizedText = text.replacingOccurrences(of: " ", with: "")
             guard rawCardData.cardNumber != sanitizedText else { return }
@@ -851,8 +866,7 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
         var network = cardNetwork?.rawValue.uppercased()
 
         if let cardNetwork = cardNetwork,
-           cardNetwork != .unknown
-        {
+           cardNetwork != .unknown {
             // Set the network value to "OTHER" if it's nil or unknown
             if network == nil || network == "UNKNOWN" {
                 network = "OTHER"
@@ -889,8 +903,10 @@ extension CardFormPaymentMethodTokenizationViewModel: UITableViewDataSource, UIT
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let country = dataSource[indexPath.row]
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: CountryTableViewCell.className,
-                                                       for: indexPath) as? CountryTableViewCell
+        guard let cell = tableView.dequeueReusableCell(
+            withIdentifier: CountryTableViewCell.className,
+            for: indexPath
+        ) as? CountryTableViewCell
         else {
             fatalError("Unexpected cell dequed in PrimerSDK.CardFormPaymentMethodTokenizationViewModel")
         }
@@ -909,10 +925,11 @@ extension CardFormPaymentMethodTokenizationViewModel: UITableViewDataSource, UIT
 }
 
 extension CardFormPaymentMethodTokenizationViewModel: UITextFieldDelegate {
-    func textField(_ textField: UITextField,
-                   shouldChangeCharactersIn _: NSRange,
-                   replacementString string: String) -> Bool
-    {
+    func textField(
+        _ textField: UITextField,
+        shouldChangeCharactersIn _: NSRange,
+        replacementString string: String
+    ) -> Bool {
         if string == "\n" {
             // Keyboard's return button tapoped
             textField.resignFirstResponder()
@@ -953,19 +970,21 @@ extension CardFormPaymentMethodTokenizationViewModel: UITextFieldDelegate {
 // MARK: - PrimerHeadlessUniversalCheckoutRawDataManagerDelegate
 
 extension CardFormPaymentMethodTokenizationViewModel: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate {
-    func primerRawDataManager(_: PrimerHeadlessUniversalCheckout.RawDataManager,
-                              willFetchMetadataForState cardState: PrimerValidationState)
-    {
+    func primerRawDataManager(
+        _: PrimerHeadlessUniversalCheckout.RawDataManager,
+        willFetchMetadataForState cardState: PrimerValidationState
+    ) {
         guard cardState is PrimerCardNumberEntryState else {
             logger.error(message: "Received non-card metadata. Ignoring ...")
             return
         }
     }
 
-    func primerRawDataManager(_: PrimerHeadlessUniversalCheckout.RawDataManager,
-                              didReceiveMetadata metadata: PrimerPaymentMethodMetadata,
-                              forState cardState: PrimerValidationState)
-    {
+    func primerRawDataManager(
+        _: PrimerHeadlessUniversalCheckout.RawDataManager,
+        didReceiveMetadata metadata: PrimerPaymentMethodMetadata,
+        forState cardState: PrimerValidationState
+    ) {
         guard let metadataModel = metadata as? PrimerCardNumberEntryMetadata,
               cardState is PrimerCardNumberEntryState
         else {
@@ -976,8 +995,7 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerHeadlessUniversalChe
         var primerNetworks: [PrimerCardNetwork]
         if metadataModel.source == .remote,
            let selectable = metadataModel.selectableCardNetworks?.items,
-           !selectable.isEmpty
-        {
+           !selectable.isEmpty {
             primerNetworks = selectable
         } else if let preferred = metadataModel.detectedCardNetworks.preferred {
             primerNetworks = [preferred]
