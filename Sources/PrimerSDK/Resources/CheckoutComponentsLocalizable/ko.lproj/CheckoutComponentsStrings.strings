@@ -64,6 +64,7 @@
 "accessibility_screen_error" = "결제 오류가 발생했습니다";
 "accessibility_screen_loading_payment_methods" = "결제 수단을 로딩하는 중입니다";
 "accessibility_screen_payment_method" = "%@ 결제 수단";
+"accessibility_payment_method_button" = "%@(으)로 결제";
 "accessibility_screen_processing_payment" = "결제를 처리하는 중입니다";
 "accessibility_screen_success" = "결제 완료";
 "accessibility_vault_delete_payment_method" = "이 결제 수단 삭제";

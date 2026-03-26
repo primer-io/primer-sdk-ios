@@ -197,6 +197,7 @@
 "accessibility_error_multiple_errors" = "%d na mga error ang natagpuan";
 "accessibility_paypal_logo" = "PayPal";
 "accessibility_screen_payment_method" = "%@ na paraan ng pagbabayad";
+"accessibility_payment_method_button" = "Magbayad gamit ang %@";
 
 /* Klarna */
 "primer_vault_default_klarna" = "Klarna";

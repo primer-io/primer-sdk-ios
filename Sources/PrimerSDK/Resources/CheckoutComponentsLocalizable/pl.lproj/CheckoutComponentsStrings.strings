@@ -64,6 +64,7 @@
 "accessibility_screen_error" = "Wystąpił błąd płatności";
 "accessibility_screen_loading_payment_methods" = "Ładowanie metod płatności";
 "accessibility_screen_payment_method" = "Metoda płatności %@";
+"accessibility_payment_method_button" = "Zapłać za pomocą %@";
 "accessibility_screen_processing_payment" = "Przetwarzanie płatności";
 "accessibility_screen_success" = "Płatność zakończona sukcesem";
 "accessibility_vault_delete_payment_method" = "Usuń tę metodę płatności";

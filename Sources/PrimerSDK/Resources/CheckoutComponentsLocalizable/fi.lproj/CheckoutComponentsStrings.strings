@@ -64,6 +64,7 @@
 "accessibility_screen_error" = "Maksuvirhettä tapahtui";
 "accessibility_screen_loading_payment_methods" = "Ladataan maksutapoja";
 "accessibility_screen_payment_method" = "%@ maksutapa";
+"accessibility_payment_method_button" = "Maksa %@";
 "accessibility_screen_processing_payment" = "Käsitellään maksua";
 "accessibility_screen_success" = "Maksu onnistui";
 "accessibility_vault_delete_payment_method" = "Poista tämä maksutapa";

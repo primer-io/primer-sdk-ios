@@ -583,10 +583,6 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
     }
   }
 
-  // TODO: ACC-XXXX Implement billing address submission
-  func setBillingAddress(_ billingAddress: BillingAddress) async throws {
-  }
-
   func getNetworkDetectionStream() -> AsyncStream<[CardNetwork]> {
     networkDetectionStream
   }

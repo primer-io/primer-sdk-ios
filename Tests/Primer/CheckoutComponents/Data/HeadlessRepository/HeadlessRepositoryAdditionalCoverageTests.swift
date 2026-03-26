@@ -7,43 +7,6 @@
 @testable import PrimerSDK
 import XCTest
 
-// MARK: - setBillingAddress
-
-@available(iOS 15.0, *)
-@MainActor
-final class HeadlessRepositorySetBillingAddressTests: XCTestCase {
-
-    private var sut: HeadlessRepositoryImpl!
-
-    override func setUp() {
-        super.setUp()
-        sut = HeadlessRepositoryImpl()
-    }
-
-    override func tearDown() {
-        sut = nil
-        super.tearDown()
-    }
-
-    func test_setBillingAddress_doesNotThrow() async throws {
-        // Given
-        let address = BillingAddress(
-            firstName: "John",
-            lastName: "Doe",
-            addressLine1: "123 Main St",
-            addressLine2: nil,
-            city: "London",
-            state: nil,
-            postalCode: "SW1A 1AA",
-            countryCode: "GB",
-            phoneNumber: nil
-        )
-
-        // When / Then
-        try await sut.setBillingAddress(address)
-    }
-}
-
 // MARK: - Redirect Tracking Deduplication
 
 @available(iOS 15.0, *)

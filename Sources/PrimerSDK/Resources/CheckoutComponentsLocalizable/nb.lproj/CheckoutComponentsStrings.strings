@@ -64,6 +64,7 @@
 "accessibility_screen_error" = "Betalingsfeil har oppstått";
 "accessibility_screen_loading_payment_methods" = "Laster betalingsmetoder";
 "accessibility_screen_payment_method" = "%@ betalingsmetode";
+"accessibility_payment_method_button" = "Betal med %@";
 "accessibility_screen_processing_payment" = "Behandler betaling";
 "accessibility_screen_success" = "Betaling vellykket";
 "accessibility_vault_delete_payment_method" = "Slett denne betalingsmetoden";

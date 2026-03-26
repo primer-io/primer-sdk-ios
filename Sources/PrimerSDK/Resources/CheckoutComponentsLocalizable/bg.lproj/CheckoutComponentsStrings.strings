@@ -64,6 +64,7 @@
 "accessibility_screen_error" = "Възникна грешка при плащането";
 "accessibility_screen_loading_payment_methods" = "Зареждане на методи за плащане";
 "accessibility_screen_payment_method" = "%@ метод на плащане";
+"accessibility_payment_method_button" = "Плащане с %@";
 "accessibility_screen_processing_payment" = "Обработване на плащането";
 "accessibility_screen_success" = "Плащането е успешно";
 "accessibility_vault_delete_payment_method" = "Изтрий този метод на плащане";

@@ -64,6 +64,7 @@
 "accessibility_screen_error" = "Προέκυψε σφάλμα πληρωμής";
 "accessibility_screen_loading_payment_methods" = "Φόρτωση μεθόδων πληρωμής";
 "accessibility_screen_payment_method" = "Μέθοδος πληρωμής %@";
+"accessibility_payment_method_button" = "Πληρωμή με %@";
 "accessibility_screen_processing_payment" = "Επεξεργασία πληρωμής";
 "accessibility_screen_success" = "Επιτυχής πληρωμή";
 "accessibility_vault_delete_payment_method" = "Διαγραφή αυτής της μεθόδου πληρωμής";

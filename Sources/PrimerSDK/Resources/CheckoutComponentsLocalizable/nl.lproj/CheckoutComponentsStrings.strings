@@ -64,6 +64,7 @@
 "accessibility_screen_error" = "Betalingsfout opgetreden";
 "accessibility_screen_loading_payment_methods" = "Betaalmethoden worden geladen";
 "accessibility_screen_payment_method" = "%@ betaalmethode";
+"accessibility_payment_method_button" = "Betalen met %@";
 "accessibility_screen_processing_payment" = "Betaling wordt verwerkt";
 "accessibility_screen_success" = "Betaling geslaagd";
 "accessibility_vault_delete_payment_method" = "Deze betaalmethode verwijderen";

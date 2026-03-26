@@ -64,6 +64,7 @@
 "accessibility_screen_error" = "A apărut o eroare de plată";
 "accessibility_screen_loading_payment_methods" = "Se încarcă metodele de plată";
 "accessibility_screen_payment_method" = "Metodă de plată %@";
+"accessibility_payment_method_button" = "Plătește cu %@";
 "accessibility_screen_processing_payment" = "Se procesează plata";
 "accessibility_screen_success" = "Plată reușită";
 "accessibility_vault_delete_payment_method" = "Ștergeți această metodă de plată";

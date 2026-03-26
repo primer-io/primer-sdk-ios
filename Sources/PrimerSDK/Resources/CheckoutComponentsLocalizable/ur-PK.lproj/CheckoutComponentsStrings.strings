@@ -194,6 +194,7 @@
 "accessibility_vaulted_paypal" = "PayPal";
 "accessibility_vaulted_paypal_email" = "PayPal, %@";
 "accessibility_screen_payment_method" = "%@ ادائیگی کا طریقہ";
+"accessibility_payment_method_button" = "%@ سے ادائیگی کریں";
 "accessibility_paypal_logo" = "PayPal";
 "accessibility_error_generic" = "ایک خرابی پیش آئی۔ براہ کرم دوبارہ کوشش کریں۔";
 "accessibility_error_multiple_errors" = "%d خرابیاں ملیں";

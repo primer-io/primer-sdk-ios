@@ -64,6 +64,7 @@
 "accessibility_screen_error" = "お支払いエラーが発生しました";
 "accessibility_screen_loading_payment_methods" = "お支払い方法を読み込み中";
 "accessibility_screen_payment_method" = "%@のお支払い方法";
+"accessibility_payment_method_button" = "%@で支払う";
 "accessibility_screen_processing_payment" = "お支払い処理中";
 "accessibility_screen_success" = "お支払いが完了しました";
 "accessibility_vault_delete_payment_method" = "このお支払い方法を削除";

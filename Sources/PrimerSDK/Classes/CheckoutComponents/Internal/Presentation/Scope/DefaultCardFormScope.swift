@@ -432,26 +432,6 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     )
   }
 
-  private func createInteractorBillingAddress() -> BillingAddress? {
-    guard !structuredState.data[.postalCode].isEmpty else { return nil }
-
-    return BillingAddress(
-      firstName: structuredState.data[.firstName].isEmpty ? nil : structuredState.data[.firstName],
-      lastName: structuredState.data[.lastName].isEmpty ? nil : structuredState.data[.lastName],
-      addressLine1: structuredState.data[.addressLine1].isEmpty
-        ? nil : structuredState.data[.addressLine1],
-      addressLine2: structuredState.data[.addressLine2].isEmpty
-        ? nil : structuredState.data[.addressLine2],
-      city: structuredState.data[.city].isEmpty ? nil : structuredState.data[.city],
-      state: structuredState.data[.state].isEmpty ? nil : structuredState.data[.state],
-      postalCode: structuredState.data[.postalCode].isEmpty
-        ? nil : structuredState.data[.postalCode],
-      countryCode: structuredState.data[.countryCode].isEmpty
-        ? nil : structuredState.data[.countryCode],
-      phoneNumber: nil
-    )
-  }
-
   func performSubmit() async {
     structuredState.isLoading = true
     checkoutScope?.startProcessing()
@@ -495,8 +475,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
       expiryMonth: expiryMonth,
       expiryYear: fullYear,
       cardholderName: structuredState.data[.cardholderName],
-      selectedNetwork: preferredNetwork,
-      billingAddress: createInteractorBillingAddress()
+      selectedNetwork: preferredNetwork
     )
   }
 

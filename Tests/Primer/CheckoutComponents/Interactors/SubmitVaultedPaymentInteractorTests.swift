@@ -160,8 +160,6 @@ private actor SpyHeadlessRepository: HeadlessRepository {
         PaymentResult(paymentId: "", status: .success)
     }
 
-    func setBillingAddress(_ billingAddress: BillingAddress) async throws {}
-
     nonisolated func getNetworkDetectionStream() -> AsyncStream<[CardNetwork]> {
         AsyncStream { _ in }
     }

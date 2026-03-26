@@ -64,6 +64,7 @@
 "accessibility_screen_error" = "Ödeme hatası oluştu";
 "accessibility_screen_loading_payment_methods" = "Ödeme yöntemleri yükleniyor";
 "accessibility_screen_payment_method" = "%@ ödeme yöntemi";
+"accessibility_payment_method_button" = "%@ ile öde";
 "accessibility_screen_processing_payment" = "Ödeme işleniyor";
 "accessibility_screen_success" = "Ödeme başarılı";
 "accessibility_vault_delete_payment_method" = "Bu ödeme yöntemini sil";

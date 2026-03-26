@@ -64,6 +64,7 @@
 "accessibility_screen_error" = "Radās maksājuma kļūda";
 "accessibility_screen_loading_payment_methods" = "Maksājuma metodes tiek ielādētas";
 "accessibility_screen_payment_method" = "%@ maksājuma metode";
+"accessibility_payment_method_button" = "Maksāt ar %@";
 "accessibility_screen_processing_payment" = "Maksājums tiek apstrādāts";
 "accessibility_screen_success" = "Maksājums veiksmīgs";
 "accessibility_vault_delete_payment_method" = "Dzēst šo maksājuma metodi";

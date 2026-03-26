@@ -193,6 +193,7 @@
 "accessibility_vaulted_paypal_email" = "PayPal, %@";
 "accessibility_payment_selection_card_masked" = "жашыруун сандар менен аяктаган карта";
 "accessibility_screen_payment_method" = "%@ төлөм ыкмасы";
+"accessibility_payment_method_button" = "%@ менен төлөө";
 "accessibility_error_generic" = "Ката кетти. Кайра аракет кылыңыз.";
 "accessibility_error_multiple_errors" = "%d ката табылды";
 "accessibility_action_edit" = "Карта маалыматтарын түзөтүү";

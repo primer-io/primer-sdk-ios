@@ -64,6 +64,7 @@
 "accessibility_screen_error" = "S'ha produït un error de pagament";
 "accessibility_screen_loading_payment_methods" = "Carregant els mètodes de pagament";
 "accessibility_screen_payment_method" = "Mètode de pagament %@";
+"accessibility_payment_method_button" = "Paga amb %@";
 "accessibility_screen_processing_payment" = "Processant el pagament";
 "accessibility_screen_success" = "Pagament correcte";
 "accessibility_vault_delete_payment_method" = "Suprimeix aquest mètode de pagament";

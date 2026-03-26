@@ -187,6 +187,7 @@
 "accessibility_payment_selection_card_masked" = "картичка завршува на маскирани цифри";
 "accessibility_paypal_logo" = "PayPal";
 "accessibility_screen_payment_method" = "%@ начин на плаќање";
+"accessibility_payment_method_button" = "Плати со %@";
 "accessibility_vault_delete_payment_method" = "Избриши го овој начин на плаќање";
 "accessibility_vaulted_ach" = "%@ банкарска сметка";
 "accessibility_vaulted_ach_full" = "%@ банкарска сметка завршува на %@";

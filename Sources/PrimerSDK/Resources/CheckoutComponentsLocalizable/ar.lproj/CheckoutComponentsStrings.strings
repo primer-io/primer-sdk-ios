@@ -64,6 +64,7 @@
 "accessibility_screen_error" = "حدث خطأ في الدفع";
 "accessibility_screen_loading_payment_methods" = "جاري تحميل طرق الدفع";
 "accessibility_screen_payment_method" = "طريقة الدفع %@";
+"accessibility_payment_method_button" = "الدفع بواسطة %@";
 "accessibility_screen_processing_payment" = "جاري تنفيذ عملية الدفع";
 "accessibility_screen_success" = "تمت عملية الدفع بنجاح";
 "accessibility_vault_delete_payment_method" = "حذف طريقة الدفع هذه";

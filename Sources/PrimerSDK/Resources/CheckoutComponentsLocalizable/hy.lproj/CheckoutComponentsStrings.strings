@@ -194,6 +194,7 @@
 "accessibility_vaulted_paypal" = "PayPal";
 "accessibility_vaulted_paypal_email" = "PayPal, %@";
 "accessibility_screen_payment_method" = "%@ վճարման եղանակ";
+"accessibility_payment_method_button" = "Վճարել %@-ով";
 "accessibility_paypal_logo" = "PayPal";
 "accessibility_error_generic" = "Սխալ է տեղի ունեցել։ Խնդրում ենք կրկին փորձել։";
 "accessibility_error_multiple_errors" = "%d սխալներ հայտնաբերվել են";

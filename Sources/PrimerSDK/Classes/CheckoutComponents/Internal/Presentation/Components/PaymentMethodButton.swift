@@ -45,6 +45,12 @@ struct PaymentMethodButton: View {
         )
       }
       .buttonStyle(PaymentMethodButtonStyle())
+      .accessibility(config: AccessibilityConfiguration(
+        identifier: AccessibilityIdentifiers.PaymentSelection.paymentMethodItem(
+          method.type, uniqueId: method.id),
+        label: CheckoutComponentsStrings.a11yPaymentMethodButton(method.buttonText ?? method.name),
+        traits: [.isButton]
+      ))
       .background(
         RoundedRectangle(cornerRadius: radius)
           .fill(

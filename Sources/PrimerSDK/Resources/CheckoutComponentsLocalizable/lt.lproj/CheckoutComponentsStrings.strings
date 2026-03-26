@@ -64,6 +64,7 @@
 "accessibility_screen_error" = "Įvyko mokėjimo klaida";
 "accessibility_screen_loading_payment_methods" = "Įkeliami mokėjimo būdai";
 "accessibility_screen_payment_method" = "%@ mokėjimo būdas";
+"accessibility_payment_method_button" = "Mokėti su %@";
 "accessibility_screen_processing_payment" = "Apdorojamas mokėjimas";
 "accessibility_screen_success" = "Mokėjimas sėkmingas";
 "accessibility_vault_delete_payment_method" = "Ištrinti šį mokėjimo būdą";

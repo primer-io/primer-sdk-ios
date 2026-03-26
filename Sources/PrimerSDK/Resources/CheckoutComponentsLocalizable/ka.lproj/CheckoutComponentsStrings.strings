@@ -187,6 +187,7 @@
 "accessibility_error_multiple_errors" = "მოიძებნა %d შეცდომა";
 "accessibility_paypal_logo" = "PayPal";
 "accessibility_screen_payment_method" = "%@ გადახდის მეთოდი";
+"accessibility_payment_method_button" = "%@-ით გადახდა";
 "accessibility_vault_delete_payment_method" = "ამ გადახდის მეთოდის წაშლა";
 "accessibility_vaulted_ach" = "%@ საბანკო ანგარიში";
 "accessibility_vaulted_ach_full" = "%@ საბანკო ანგარიში, ბოლო ციფრები %@";

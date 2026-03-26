@@ -64,6 +64,7 @@
 "accessibility_screen_error" = "Đã xảy ra lỗi thanh toán";
 "accessibility_screen_loading_payment_methods" = "Đang tải phương thức thanh toán";
 "accessibility_screen_payment_method" = "Phương thức thanh toán %@";
+"accessibility_payment_method_button" = "Thanh toán bằng %@";
 "accessibility_screen_processing_payment" = "Đang xử lý thanh toán";
 "accessibility_screen_success" = "Thanh toán thành công";
 "accessibility_vault_delete_payment_method" = "Xóa phương thức thanh toán này";

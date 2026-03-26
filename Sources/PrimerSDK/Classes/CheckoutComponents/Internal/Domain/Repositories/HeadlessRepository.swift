@@ -16,7 +16,6 @@ protocol HeadlessRepository {
     cardholderName: String,
     selectedNetwork: CardNetwork?
   ) async throws -> PaymentResult
-  func setBillingAddress(_ billingAddress: BillingAddress) async throws
   func getNetworkDetectionStream() -> AsyncStream<[CardNetwork]>
   func getBinDataStream() -> AsyncStream<PrimerBinData>
   func updateCardNumberInRawDataManager(_ cardNumber: String) async

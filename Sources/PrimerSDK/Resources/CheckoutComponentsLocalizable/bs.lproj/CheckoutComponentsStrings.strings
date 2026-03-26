@@ -192,6 +192,7 @@
 "accessibility_vaulted_paypal" = "PayPal";
 "accessibility_vaulted_paypal_email" = "PayPal, %@";
 "accessibility_screen_payment_method" = "Način plaćanja %@";
+"accessibility_payment_method_button" = "Plati s %@";
 "accessibility_payment_selection_card_masked" = "kartica sa završetkom u maskiranim ciframa";
 "accessibility_action_edit" = "Uredi detalje kartice";
 "accessibility_action_set_default" = "Postavi kao zadani način plaćanja";

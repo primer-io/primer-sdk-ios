@@ -13,19 +13,6 @@ struct CardPaymentData {
   let expiryYear: String
   let cardholderName: String
   let selectedNetwork: CardNetwork?
-  let billingAddress: BillingAddress?
-}
-
-struct BillingAddress {
-  let firstName: String?
-  let lastName: String?
-  let addressLine1: String?
-  let addressLine2: String?
-  let city: String?
-  let state: String?
-  let postalCode: String?
-  let countryCode: String?
-  let phoneNumber: String?
 }
 
 protocol ProcessCardPaymentInteractor {
@@ -42,10 +29,6 @@ final class ProcessCardPaymentInteractorImpl: ProcessCardPaymentInteractor, LogR
 
   func execute(cardData: CardPaymentData) async throws -> PaymentResult {
     do {
-      if let billingAddress = cardData.billingAddress {
-        try await repository.setBillingAddress(billingAddress)
-      }
-
       let startTime = CFAbsoluteTimeGetCurrent()
       let result = try await repository.processCardPayment(
         cardNumber: cardData.cardNumber,

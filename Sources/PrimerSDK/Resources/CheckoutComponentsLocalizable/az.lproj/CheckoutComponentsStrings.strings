@@ -197,6 +197,7 @@
 "accessibility_error_generic" = "Xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.";
 "accessibility_error_multiple_errors" = "%d xəta tapıldı";
 "accessibility_screen_payment_method" = "%@ ödəniş metodu";
+"accessibility_payment_method_button" = "%@ ilə ödə";
 
 /* Klarna */
 "primer_vault_default_klarna" = "Klarna";

@@ -64,6 +64,7 @@
 "accessibility_screen_error" = "Произошла ошибка платежа";
 "accessibility_screen_loading_payment_methods" = "Загрузка способов оплаты";
 "accessibility_screen_payment_method" = "Способ оплаты: %@";
+"accessibility_payment_method_button" = "Оплатить с помощью %@";
 "accessibility_screen_processing_payment" = "Обработка платежа";
 "accessibility_screen_success" = "Платеж выполнен успешно";
 "accessibility_vault_delete_payment_method" = "Удалить этот способ оплаты";

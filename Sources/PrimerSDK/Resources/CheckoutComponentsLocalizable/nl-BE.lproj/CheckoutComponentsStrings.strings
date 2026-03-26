@@ -187,6 +187,7 @@
 "accessibility_payment_selection_card_masked" = "kaart eindigend op afgeschermde nummers";
 "accessibility_paypal_logo" = "PayPal";
 "accessibility_screen_payment_method" = "%@ betaalmethode";
+"accessibility_payment_method_button" = "Betalen met %@";
 "accessibility_vault_delete_payment_method" = "Verwijder deze betaalmethode";
 "accessibility_vaulted_ach" = "%@ bankrekening";
 "accessibility_vaulted_ach_full" = "%@ bankrekening eindigend op %@";

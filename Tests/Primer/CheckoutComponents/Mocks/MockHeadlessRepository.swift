@@ -21,7 +21,6 @@ final class MockHeadlessRepository: HeadlessRepository {
 
     var getPaymentMethodsError: Error?
     var processCardPaymentError: Error?
-    var setBillingAddressError: Error?
     var fetchVaultedPaymentMethodsError: Error?
     var processVaultedPaymentError: Error?
     var deleteVaultedPaymentMethodError: Error?
@@ -30,7 +29,6 @@ final class MockHeadlessRepository: HeadlessRepository {
 
     private(set) var getPaymentMethodsCallCount = 0
     private(set) var processCardPaymentCallCount = 0
-    private(set) var setBillingAddressCallCount = 0
     private(set) var updateCardNumberCallCount = 0
     private(set) var selectCardNetworkCallCount = 0
     private(set) var fetchVaultedPaymentMethodsCallCount = 0
@@ -45,7 +43,6 @@ final class MockHeadlessRepository: HeadlessRepository {
     private(set) var lastExpiryYear: String?
     private(set) var lastCardholderName: String?
     private(set) var lastSelectedNetwork: CardNetwork?
-    private(set) var lastBillingAddress: BillingAddress?
     private(set) var lastVaultedPaymentMethodId: String?
     private(set) var lastVaultedPaymentMethodType: String?
     private(set) var lastVaultedPaymentAdditionalData: PrimerVaultedPaymentMethodAdditionalData?
@@ -92,15 +89,6 @@ final class MockHeadlessRepository: HeadlessRepository {
             throw TestError.unknown
         }
         return result
-    }
-
-    func setBillingAddress(_ billingAddress: BillingAddress) async throws {
-        setBillingAddressCallCount += 1
-        lastBillingAddress = billingAddress
-
-        if let setBillingAddressError {
-            throw setBillingAddressError
-        }
     }
 
     func getNetworkDetectionStream() -> AsyncStream<[CardNetwork]> {
@@ -180,7 +168,6 @@ final class MockHeadlessRepository: HeadlessRepository {
     func reset() {
         getPaymentMethodsCallCount = 0
         processCardPaymentCallCount = 0
-        setBillingAddressCallCount = 0
         updateCardNumberCallCount = 0
         selectCardNetworkCallCount = 0
         fetchVaultedPaymentMethodsCallCount = 0
@@ -193,7 +180,6 @@ final class MockHeadlessRepository: HeadlessRepository {
         lastExpiryYear = nil
         lastCardholderName = nil
         lastSelectedNetwork = nil
-        lastBillingAddress = nil
         lastVaultedPaymentMethodId = nil
         lastVaultedPaymentMethodType = nil
         lastVaultedPaymentAdditionalData = nil
@@ -204,7 +190,6 @@ final class MockHeadlessRepository: HeadlessRepository {
 
         getPaymentMethodsError = nil
         processCardPaymentError = nil
-        setBillingAddressError = nil
         fetchVaultedPaymentMethodsError = nil
         processVaultedPaymentError = nil
         deleteVaultedPaymentMethodError = nil

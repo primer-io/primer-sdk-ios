@@ -64,6 +64,7 @@
 "accessibility_screen_error" = "เกิดข้อผิดพลาดในการชำระเงิน";
 "accessibility_screen_loading_payment_methods" = "กำลังโหลดวิธีการชำระเงิน";
 "accessibility_screen_payment_method" = "วิธีการชำระเงิน %@";
+"accessibility_payment_method_button" = "ชำระเงินด้วย %@";
 "accessibility_screen_processing_payment" = "กำลังดำเนินการชำระเงิน";
 "accessibility_screen_success" = "ชำระเงินสำเร็จ";
 "accessibility_vault_delete_payment_method" = "ลบวิธีการชำระเงินนี้";

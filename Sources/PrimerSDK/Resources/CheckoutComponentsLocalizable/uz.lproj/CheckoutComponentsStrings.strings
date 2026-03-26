@@ -197,6 +197,7 @@
 "accessibility_error_generic" = "Xatolik yuz berdi. Iltimos, qayta urinib ko'ring.";
 "accessibility_error_multiple_errors" = "%d ta xato topildi";
 "accessibility_screen_payment_method" = "%@ to'lov usuli";
+"accessibility_payment_method_button" = "%@ orqali to‘lash";
 
 /* Klarna */
 "primer_vault_default_klarna" = "Klarna";

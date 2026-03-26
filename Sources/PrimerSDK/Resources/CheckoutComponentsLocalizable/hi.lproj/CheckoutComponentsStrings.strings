@@ -64,6 +64,7 @@
 "accessibility_screen_error" = "भुगतान त्रुटि हुई";
 "accessibility_screen_loading_payment_methods" = "भुगतान विधियाँ लोड हो रही हैं";
 "accessibility_screen_payment_method" = "%@ भुगतान विधि";
+"accessibility_payment_method_button" = "%@ से भुगतान करें";
 "accessibility_screen_processing_payment" = "भुगतान संसाधित हो रहा है";
 "accessibility_screen_success" = "भुगतान सफल";
 "accessibility_vault_delete_payment_method" = "इस भुगतान विधि को हटाएं";

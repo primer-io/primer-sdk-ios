@@ -94,8 +94,9 @@ struct CheckoutScopeObserver: View, LogReporter {
         SplashScreen()
       }
     } else {
-      _ = logger.debug(message: "⏭️ [CheckoutComponents] Init screen disabled - skipping loading view")
-      EmptyView()
+      EmptyView().onAppear {
+        logger.debug(message: "⏭️ [CheckoutComponents] Init screen disabled - skipping loading view")
+      }
     }
   }
 
@@ -145,12 +146,11 @@ struct CheckoutScopeObserver: View, LogReporter {
         scope: selectionScope
       )
     } else {
-      _ = {
+      EmptyView().onAppear {
         logger.error(
           message: "Cannot cast paymentMethodSelection to DefaultPaymentMethodSelectionScope")
         scope.checkoutNavigator.navigateBack()
-      }()
-      EmptyView()
+      }
     }
   }
 
@@ -183,8 +183,8 @@ struct CheckoutScopeObserver: View, LogReporter {
         }
       }
     } else {
-      _ = logger.debug(message: "⏭️ [CheckoutComponents] Success screen disabled - auto-dismissing")
       EmptyView().onAppear {
+        logger.debug(message: "⏭️ [CheckoutComponents] Success screen disabled - auto-dismissing")
         DispatchQueue.main.async {
           onCompletion?(scope.currentState)
         }
@@ -211,8 +211,8 @@ struct CheckoutScopeObserver: View, LogReporter {
         )
       }
     } else {
-      _ = logger.debug(message: "⏭️ [CheckoutComponents] Error screen disabled - auto-dismissing")
       EmptyView().onAppear {
+        logger.debug(message: "⏭️ [CheckoutComponents] Error screen disabled - auto-dismissing")
         DispatchQueue.main.async {
           onCompletion?(scope.currentState)
         }

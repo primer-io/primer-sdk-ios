@@ -1771,6 +1771,19 @@ enum CheckoutComponentsStrings {
     comment: "VoiceOver label for dismiss button"
   )
 
+  // MARK: Payment Method Selection
+
+  static func a11yPaymentMethodButton(_ name: String) -> String {
+    let format = NSLocalizedString(
+      "accessibility_payment_method_button",
+      tableName: tableName,
+      bundle: .primerResources,
+      value: "Pay with %@",
+      comment: "VoiceOver label for payment method button. Parameter is the payment method name."
+    )
+    return String(format: format, name)
+  }
+
   // MARK: Screen Change Announcements
 
   static func a11yScreenPaymentMethod(_ paymentMethodName: String) -> String {

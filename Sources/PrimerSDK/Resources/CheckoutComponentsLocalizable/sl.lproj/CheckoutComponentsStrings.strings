@@ -64,6 +64,7 @@
 "accessibility_screen_error" = "Prišlo je do napake pri plačilu";
 "accessibility_screen_loading_payment_methods" = "Nalaganje načinov plačila";
 "accessibility_screen_payment_method" = "Način plačila %@";
+"accessibility_payment_method_button" = "Plačaj z %@";
 "accessibility_screen_processing_payment" = "Obdelava plačila";
 "accessibility_screen_success" = "Plačilo uspešno";
 "accessibility_vault_delete_payment_method" = "Izbriši ta način plačila";

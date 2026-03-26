@@ -64,6 +64,7 @@
 "accessibility_screen_error" = "付款發生錯誤";
 "accessibility_screen_loading_payment_methods" = "正在載入付款方式";
 "accessibility_screen_payment_method" = "%@付款方式";
+"accessibility_payment_method_button" = "使用%@付款";
 "accessibility_screen_processing_payment" = "正在處理付款";
 "accessibility_screen_success" = "付款成功";
 "accessibility_vault_delete_payment_method" = "刪除此付款方式";

@@ -64,6 +64,7 @@
 "accessibility_screen_error" = "אירעה שגיאת תשלום";
 "accessibility_screen_loading_payment_methods" = "טוען אמצעי תשלום";
 "accessibility_screen_payment_method" = "אמצעי תשלום %@";
+"accessibility_payment_method_button" = "שלם עם %@";
 "accessibility_screen_processing_payment" = "מעבד תשלום";
 "accessibility_screen_success" = "התשלום הושלם בהצלחה";
 "accessibility_vault_delete_payment_method" = "מחק אמצעי תשלום זה";

@@ -64,6 +64,7 @@
 "accessibility_screen_error" = "Terjadi kesalahan pembayaran";
 "accessibility_screen_loading_payment_methods" = "Memuat metode pembayaran";
 "accessibility_screen_payment_method" = "Metode pembayaran %@";
+"accessibility_payment_method_button" = "Bayar dengan %@";
 "accessibility_screen_processing_payment" = "Memproses pembayaran";
 "accessibility_screen_success" = "Pembayaran berhasil";
 "accessibility_vault_delete_payment_method" = "Hapus metode pembayaran ini";

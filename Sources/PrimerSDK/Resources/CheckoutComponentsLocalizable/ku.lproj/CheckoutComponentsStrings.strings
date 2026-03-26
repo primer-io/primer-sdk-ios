@@ -168,6 +168,7 @@
 "accessibility_screen_processing_payment" = "Dayn tê pêvekirin";
 "accessibility_screen_loading_payment_methods" = "Rêbazên daynê tên barkirin";
 "accessibility_screen_payment_method" = "Rêbaza daynê %@";
+"accessibility_payment_method_button" = "Bi %@ re bide";
 "accessibility_payment_selection_pay_with_card" = "Bi kartê bide";
 "accessibility_payment_selection_pay_with_paypal" = "Bi PayPal bide";
 "accessibility_payment_selection_pay_with_klarna" = "Bi Klarna bide";

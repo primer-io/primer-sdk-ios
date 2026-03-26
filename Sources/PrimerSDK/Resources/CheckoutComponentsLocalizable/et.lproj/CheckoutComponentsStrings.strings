@@ -64,6 +64,7 @@
 "accessibility_screen_error" = "Tekkis makseviga";
 "accessibility_screen_loading_payment_methods" = "Makseviise laetakse";
 "accessibility_screen_payment_method" = "%@ makseviis";
+"accessibility_payment_method_button" = "Maksa %@-ga";
 "accessibility_screen_processing_payment" = "Makse töötlemine";
 "accessibility_screen_success" = "Makse õnnestus";
 "accessibility_vault_delete_payment_method" = "Kustuta see makseviis";

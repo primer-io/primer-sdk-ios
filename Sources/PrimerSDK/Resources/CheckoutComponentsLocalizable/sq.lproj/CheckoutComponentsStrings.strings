@@ -168,6 +168,7 @@
 "accessibility_screen_processing_payment" = "Po përpunohet pagesa";
 "accessibility_screen_loading_payment_methods" = "Po ngarkohen metodat e pagesës";
 "accessibility_screen_payment_method" = "Metoda e pagesës %@";
+"accessibility_payment_method_button" = "Paguaj me %@";
 "accessibility_payment_selection_pay_with_card" = "Paguaj me kartë";
 "accessibility_payment_selection_pay_with_paypal" = "Paguaj me PayPal";
 "accessibility_payment_selection_pay_with_klarna" = "Paguaj me Klarna";

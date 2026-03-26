@@ -187,6 +187,7 @@
 "accessibility_error_multiple_errors" = "%d қате табылды";
 "accessibility_paypal_logo" = "PayPal";
 "accessibility_screen_payment_method" = "%@ төлем әдісі";
+"accessibility_payment_method_button" = "%@ арқылы төлеу";
 "accessibility_vault_delete_payment_method" = "Бұл төлем әдісін жою";
 "accessibility_vaulted_ach" = "%@ банк шоты";
 "accessibility_vaulted_ach_full" = "%@ банк шоты, соңы %@";

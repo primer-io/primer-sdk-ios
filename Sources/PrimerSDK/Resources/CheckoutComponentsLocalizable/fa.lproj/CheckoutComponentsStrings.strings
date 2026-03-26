@@ -187,6 +187,7 @@
 "accessibility_payment_selection_card_masked" = "کارت با ارقام پنهان";
 "accessibility_paypal_logo" = "PayPal";
 "accessibility_screen_payment_method" = "روش پرداخت %@";
+"accessibility_payment_method_button" = "پرداخت با %@";
 "accessibility_vault_delete_payment_method" = "حذف این روش پرداخت";
 "accessibility_vaulted_ach" = "حساب بانکی %@";
 "accessibility_vaulted_ach_full" = "حساب بانکی %@ با پایان %@";

@@ -64,6 +64,7 @@
 "accessibility_screen_error" = "Vyskytla sa chyba platby";
 "accessibility_screen_loading_payment_methods" = "Načítavajú sa spôsoby platby";
 "accessibility_screen_payment_method" = "Spôsob platby %@";
+"accessibility_payment_method_button" = "Zaplatiť cez %@";
 "accessibility_screen_processing_payment" = "Spracúvanie platby";
 "accessibility_screen_success" = "Platba úspešná";
 "accessibility_vault_delete_payment_method" = "Vymazať tento spôsob platby";

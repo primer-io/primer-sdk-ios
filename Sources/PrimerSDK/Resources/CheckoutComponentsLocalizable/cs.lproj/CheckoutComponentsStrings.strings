@@ -64,6 +64,7 @@
 "accessibility_screen_error" = "Došlo k chybě platby";
 "accessibility_screen_loading_payment_methods" = "Načítání platebních metod";
 "accessibility_screen_payment_method" = "Platební metoda %@";
+"accessibility_payment_method_button" = "Zaplatit přes %@";
 "accessibility_screen_processing_payment" = "Zpracovává se platba";
 "accessibility_screen_success" = "Platba úspěšná";
 "accessibility_vault_delete_payment_method" = "Odstranit tuto platební metodu";

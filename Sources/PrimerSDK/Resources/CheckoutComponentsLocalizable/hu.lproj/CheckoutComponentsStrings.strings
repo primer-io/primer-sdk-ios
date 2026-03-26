@@ -64,6 +64,7 @@
 "accessibility_screen_error" = "Fizetési hiba történt";
 "accessibility_screen_loading_payment_methods" = "Fizetési módok betöltése";
 "accessibility_screen_payment_method" = "%@ fizetési mód";
+"accessibility_payment_method_button" = "Fizetés %@-val";
 "accessibility_screen_processing_payment" = "Fizetés feldolgozása";
 "accessibility_screen_success" = "Sikeres fizetés";
 "accessibility_vault_delete_payment_method" = "Törölje ezt a fizetési módot";
