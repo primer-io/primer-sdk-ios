@@ -70,7 +70,7 @@ final class FormRedirectPaymentMethodTests: XCTestCase {
 
         // When/Then
         do {
-            _ = try BlikPaymentMethod.createScope(
+            _ = try await BlikPaymentMethod.createScope(
                 checkoutScope: invalidScope,
                 diContainer: container
             )
@@ -91,7 +91,7 @@ final class FormRedirectPaymentMethodTests: XCTestCase {
 
         // When/Then
         do {
-            _ = try MBWayPaymentMethod.createScope(
+            _ = try await MBWayPaymentMethod.createScope(
                 checkoutScope: invalidScope,
                 diContainer: container
             )
@@ -114,7 +114,7 @@ final class FormRedirectPaymentMethodTests: XCTestCase {
 
         // When/Then
         do {
-            _ = try BlikPaymentMethod.createScope(
+            _ = try await BlikPaymentMethod.createScope(
                 checkoutScope: checkoutScope,
                 diContainer: emptyContainer
             )
@@ -135,7 +135,7 @@ final class FormRedirectPaymentMethodTests: XCTestCase {
 
         // When/Then
         do {
-            _ = try MBWayPaymentMethod.createScope(
+            _ = try await MBWayPaymentMethod.createScope(
                 checkoutScope: checkoutScope,
                 diContainer: emptyContainer
             )
@@ -158,7 +158,7 @@ final class FormRedirectPaymentMethodTests: XCTestCase {
 
         // When/Then
         do {
-            _ = try FormRedirectPaymentMethodHelper.createScopeForPaymentMethodType(
+            _ = try await FormRedirectPaymentMethodHelper.createScopeForPaymentMethodType(
                 PrimerPaymentMethodType.adyenBlik.rawValue,
                 checkoutScope: checkoutScope,
                 diContainer: emptyContainer
@@ -179,7 +179,7 @@ final class FormRedirectPaymentMethodTests: XCTestCase {
         let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
 
         // When
-        let scope = try FormRedirectPaymentMethodHelper.createScopeForPaymentMethodType(
+        let scope = try await FormRedirectPaymentMethodHelper.createScopeForPaymentMethodType(
             PrimerPaymentMethodType.adyenBlik.rawValue,
             checkoutScope: checkoutScope,
             diContainer: container
@@ -196,7 +196,7 @@ final class FormRedirectPaymentMethodTests: XCTestCase {
         let checkoutScope = createCheckoutScopeWithMultiplePaymentMethods()
 
         // When
-        let scope = try FormRedirectPaymentMethodHelper.createScopeForPaymentMethodType(
+        let scope = try await FormRedirectPaymentMethodHelper.createScopeForPaymentMethodType(
             PrimerPaymentMethodType.adyenMBWay.rawValue,
             checkoutScope: checkoutScope,
             diContainer: container
@@ -212,7 +212,7 @@ final class FormRedirectPaymentMethodTests: XCTestCase {
         let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
 
         // When
-        let scope = try BlikPaymentMethod.createScope(
+        let scope = try await BlikPaymentMethod.createScope(
             checkoutScope: checkoutScope,
             diContainer: container
         )
@@ -227,7 +227,7 @@ final class FormRedirectPaymentMethodTests: XCTestCase {
         let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
 
         // When
-        let scope = try MBWayPaymentMethod.createScope(
+        let scope = try await MBWayPaymentMethod.createScope(
             checkoutScope: checkoutScope,
             diContainer: container
         )
@@ -244,7 +244,7 @@ final class FormRedirectPaymentMethodTests: XCTestCase {
         let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
 
         // When
-        let scope = try BlikPaymentMethod.createScope(
+        let scope = try await BlikPaymentMethod.createScope(
             checkoutScope: checkoutScope,
             diContainer: container
         )
@@ -259,7 +259,7 @@ final class FormRedirectPaymentMethodTests: XCTestCase {
         let checkoutScope = createCheckoutScopeWithMultiplePaymentMethods()
 
         // When
-        let scope = try BlikPaymentMethod.createScope(
+        let scope = try await BlikPaymentMethod.createScope(
             checkoutScope: checkoutScope,
             diContainer: container
         )
@@ -274,7 +274,7 @@ final class FormRedirectPaymentMethodTests: XCTestCase {
         let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
 
         // When
-        let scope = try MBWayPaymentMethod.createScope(
+        let scope = try await MBWayPaymentMethod.createScope(
             checkoutScope: checkoutScope,
             diContainer: container
         )
@@ -289,7 +289,7 @@ final class FormRedirectPaymentMethodTests: XCTestCase {
         let checkoutScope = createCheckoutScopeWithMultiplePaymentMethods()
 
         // When
-        let scope = try MBWayPaymentMethod.createScope(
+        let scope = try await MBWayPaymentMethod.createScope(
             checkoutScope: checkoutScope,
             diContainer: container
         )
@@ -304,7 +304,7 @@ final class FormRedirectPaymentMethodTests: XCTestCase {
         // Given
         await registerFormRedirectDependencies()
         let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
-        _ = try BlikPaymentMethod.createScope(
+        _ = try await BlikPaymentMethod.createScope(
             checkoutScope: checkoutScope,
             diContainer: container
         )
@@ -324,7 +324,7 @@ final class FormRedirectPaymentMethodTests: XCTestCase {
         let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
 
         // When
-        let scope = try FormRedirectPaymentMethodHelper.createScopeForPaymentMethodType(
+        let scope = try await FormRedirectPaymentMethodHelper.createScopeForPaymentMethodType(
             PrimerPaymentMethodType.adyenMBWay.rawValue,
             checkoutScope: checkoutScope,
             diContainer: container
@@ -378,7 +378,7 @@ final class FormRedirectPaymentMethodTests: XCTestCase {
         let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
 
         // When
-        let scope = try PaymentMethodRegistry.shared.createScope(
+        let scope = try await PaymentMethodRegistry.shared.createScope(
             for: PrimerPaymentMethodType.adyenBlik.rawValue,
             checkoutScope: checkoutScope,
             diContainer: container
@@ -395,7 +395,7 @@ final class FormRedirectPaymentMethodTests: XCTestCase {
         let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
 
         // When
-        let scope = try PaymentMethodRegistry.shared.createScope(
+        let scope = try await PaymentMethodRegistry.shared.createScope(
             for: PrimerPaymentMethodType.adyenMBWay.rawValue,
             checkoutScope: checkoutScope,
             diContainer: container

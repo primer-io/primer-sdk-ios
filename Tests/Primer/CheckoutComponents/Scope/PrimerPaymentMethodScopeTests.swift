@@ -83,7 +83,7 @@ final class PrimerPaymentMethodScopeTests: XCTestCase {
         XCTAssertTrue(registry.registeredTypes.isEmpty)
     }
 
-    func test_registry_createScope_withUnregisteredType_returnsNil() throws {
+    func test_registry_createScope_withUnregisteredType_returnsNil() async throws {
         // Given
         let registry = PaymentMethodRegistry.shared
         registry.reset()
@@ -95,7 +95,7 @@ final class PrimerPaymentMethodScopeTests: XCTestCase {
         )
 
         // When
-        let scope: (any PrimerPaymentMethodScope)? = try registry.createScope(
+        let scope: (any PrimerPaymentMethodScope)? = try await registry.createScope(
             for: "NONEXISTENT",
             checkoutScope: checkoutScope,
             diContainer: DIContainer.createContainer()

@@ -71,7 +71,7 @@ final class KlarnaPaymentMethodTests: XCTestCase {
         let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
 
         // When
-        let scope = try TestKlarnaPaymentMethod.createScope(
+        let scope = try await TestKlarnaPaymentMethod.createScope(
             checkoutScope: checkoutScope,
             diContainer: container
         )
@@ -88,7 +88,7 @@ final class KlarnaPaymentMethodTests: XCTestCase {
 
         // When/Then
         do {
-            _ = try TestKlarnaPaymentMethod.createScope(
+            _ = try await TestKlarnaPaymentMethod.createScope(
                 checkoutScope: invalidScope,
                 diContainer: container
             )
@@ -131,7 +131,7 @@ final class KlarnaPaymentMethodTests: XCTestCase {
         let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
 
         // When
-        let scope = try KlarnaPaymentMethod.createScope(
+        let scope = try await KlarnaPaymentMethod.createScope(
             checkoutScope: checkoutScope,
             diContainer: container
         )
@@ -151,7 +151,7 @@ final class KlarnaPaymentMethodTests: XCTestCase {
             .asSingleton()
             .with { _ in StubProcessKlarnaPaymentInteractorForTests() }
         let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
-        _ = try KlarnaPaymentMethod.createScope(
+        _ = try await KlarnaPaymentMethod.createScope(
             checkoutScope: checkoutScope,
             diContainer: container
         )
@@ -195,7 +195,7 @@ final class KlarnaPaymentMethodTests: XCTestCase {
 
         // When/Then
         do {
-            _ = try KlarnaPaymentMethod.createScope(
+            _ = try await KlarnaPaymentMethod.createScope(
                 checkoutScope: invalidScope,
                 diContainer: container
             )
@@ -219,7 +219,7 @@ final class KlarnaPaymentMethodTests: XCTestCase {
 
         // When/Then
         do {
-            _ = try KlarnaPaymentMethod.createScope(
+            _ = try await KlarnaPaymentMethod.createScope(
                 checkoutScope: checkoutScope,
                 diContainer: emptyContainer
             )
@@ -245,7 +245,7 @@ final class KlarnaPaymentMethodTests: XCTestCase {
         let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
 
         // When
-        let scope = try KlarnaPaymentMethod.createScope(
+        let scope = try await KlarnaPaymentMethod.createScope(
             checkoutScope: checkoutScope,
             diContainer: container
         )
@@ -279,7 +279,7 @@ final class KlarnaPaymentMethodTests: XCTestCase {
         ]
 
         // When
-        let scope = try KlarnaPaymentMethod.createScope(
+        let scope = try await KlarnaPaymentMethod.createScope(
             checkoutScope: checkoutScope,
             diContainer: container
         )
@@ -304,7 +304,7 @@ final class KlarnaPaymentMethodTests: XCTestCase {
         let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
 
         // When
-        let scope = try registry.createScope(
+        let scope = try await registry.createScope(
             for: PrimerPaymentMethodType.klarna.rawValue,
             checkoutScope: checkoutScope,
             diContainer: container

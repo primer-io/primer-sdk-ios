@@ -68,7 +68,7 @@ final class PaymentMethodRegistryTests: XCTestCase {
         let checkoutScope = await createMockCheckoutScope()
 
         // When
-        let scope = try PaymentMethodRegistry.shared.createScope(
+        let scope = try await PaymentMethodRegistry.shared.createScope(
             for: "MOCK_PAYMENT",
             checkoutScope: checkoutScope,
             diContainer: container
@@ -83,7 +83,7 @@ final class PaymentMethodRegistryTests: XCTestCase {
         let checkoutScope = await createMockCheckoutScope()
 
         // When
-        let scope = try PaymentMethodRegistry.shared.createScope(
+        let scope = try await PaymentMethodRegistry.shared.createScope(
             for: "UNREGISTERED_PAYMENT",
             checkoutScope: checkoutScope,
             diContainer: container
@@ -146,7 +146,7 @@ final class PaymentMethodRegistryTests: XCTestCase {
         let checkoutScope = await createMockCheckoutScope()
 
         // When
-        let scope = try PaymentMethodRegistry.shared.createScope(
+        let scope = try await PaymentMethodRegistry.shared.createScope(
             for: "MOCK_PAYMENT",
             checkoutScope: checkoutScope,
             diContainer: container
@@ -204,7 +204,7 @@ struct MockPaymentMethod: PaymentMethodProtocol {
     static func createScope(
         checkoutScope: PrimerCheckoutScope,
         diContainer: any ContainerProtocol
-    ) throws -> MockPaymentMethodScope {
+    ) async throws -> MockPaymentMethodScope {
         MockPaymentMethodScope()
     }
 
@@ -253,7 +253,7 @@ struct MockPaymentMethod2: PaymentMethodProtocol {
     static func createScope(
         checkoutScope: PrimerCheckoutScope,
         diContainer: any ContainerProtocol
-    ) throws -> MockPaymentMethod2Scope {
+    ) async throws -> MockPaymentMethod2Scope {
         MockPaymentMethod2Scope()
     }
 

@@ -17,7 +17,7 @@ struct ApplePayPaymentMethod: PaymentMethodProtocol {
   static func createScope(
     checkoutScope: PrimerCheckoutScope,
     diContainer: any ContainerProtocol
-  ) throws -> DefaultApplePayScope {
+  ) async throws -> DefaultApplePayScope {
     guard let defaultCheckoutScope = checkoutScope as? DefaultCheckoutScope else {
       throw PrimerError.invalidArchitecture(
         description: "ApplePayPaymentMethod requires DefaultCheckoutScope",

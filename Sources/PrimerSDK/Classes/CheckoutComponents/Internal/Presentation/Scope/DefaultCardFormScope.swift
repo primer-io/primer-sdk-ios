@@ -25,7 +25,7 @@ public struct FieldValidationStates: Equatable {
 
 @available(iOS 15.0, *)
 @MainActor
-public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, LogReporter, @unchecked Sendable {
+public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, LogReporter {
 
   public private(set) var presentationContext: PresentationContext = .fromPaymentSelection
 

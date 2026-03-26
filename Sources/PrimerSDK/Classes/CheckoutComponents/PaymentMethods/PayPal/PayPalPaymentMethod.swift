@@ -17,7 +17,7 @@ struct PayPalPaymentMethod: PaymentMethodProtocol {
   static func createScope(
     checkoutScope: PrimerCheckoutScope,
     diContainer: any ContainerProtocol
-  ) throws -> DefaultPayPalScope {
+  ) async throws -> DefaultPayPalScope {
 
     guard let defaultCheckoutScope = checkoutScope as? DefaultCheckoutScope else {
       throw PrimerError.invalidArchitecture(
@@ -30,9 +30,9 @@ struct PayPalPaymentMethod: PaymentMethodProtocol {
       defaultCheckoutScope.availablePaymentMethods.count > 1 ? .fromPaymentSelection : .direct
 
     do {
-      let processPayPalInteractor: ProcessPayPalPaymentInteractor = try diContainer.resolveSync(
+      let processPayPalInteractor: ProcessPayPalPaymentInteractor = try await diContainer.resolve(
         ProcessPayPalPaymentInteractor.self)
-      let analyticsInteractor = try? diContainer.resolveSync(
+      let analyticsInteractor = try? await diContainer.resolve(
         CheckoutComponentsAnalyticsInteractorProtocol.self)
 
       return DefaultPayPalScope(

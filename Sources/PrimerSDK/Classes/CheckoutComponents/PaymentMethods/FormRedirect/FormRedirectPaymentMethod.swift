@@ -14,18 +14,18 @@ enum FormRedirectPaymentMethodHelper {
         _ paymentMethodType: String,
         checkoutScope: DefaultCheckoutScope,
         diContainer: any ContainerProtocol
-    ) throws -> DefaultFormRedirectScope {
+    ) async throws -> DefaultFormRedirectScope {
         let paymentMethodContext: PresentationContext =
             checkoutScope.availablePaymentMethods.count > 1 ? .fromPaymentSelection : .direct
 
         do {
-            let processPaymentInteractor: ProcessFormRedirectPaymentInteractor = try diContainer.resolveSync(
+            let processPaymentInteractor: ProcessFormRedirectPaymentInteractor = try await diContainer.resolve(
                 ProcessFormRedirectPaymentInteractor.self
             )
-            let validationService: ValidationService = try diContainer.resolveSync(
+            let validationService: ValidationService = try await diContainer.resolve(
                 ValidationService.self
             )
-            let analyticsInteractor = try? diContainer.resolveSync(
+            let analyticsInteractor = try? await diContainer.resolve(
                 CheckoutComponentsAnalyticsInteractorProtocol.self
             )
 
@@ -93,7 +93,7 @@ struct BlikPaymentMethod: PaymentMethodProtocol {
     static func createScope(
         checkoutScope: PrimerCheckoutScope,
         diContainer: any ContainerProtocol
-    ) throws -> DefaultFormRedirectScope {
+    ) async throws -> DefaultFormRedirectScope {
         guard let defaultCheckoutScope = checkoutScope as? DefaultCheckoutScope else {
             throw PrimerError.invalidArchitecture(
                 description: "BlikPaymentMethod requires DefaultCheckoutScope",
@@ -101,7 +101,7 @@ struct BlikPaymentMethod: PaymentMethodProtocol {
             )
         }
 
-        return try FormRedirectPaymentMethodHelper.createScopeForPaymentMethodType(
+        return try await FormRedirectPaymentMethodHelper.createScopeForPaymentMethodType(
             paymentMethodType,
             checkoutScope: defaultCheckoutScope,
             diContainer: diContainer
@@ -134,7 +134,7 @@ struct MBWayPaymentMethod: PaymentMethodProtocol {
     static func createScope(
         checkoutScope: PrimerCheckoutScope,
         diContainer: any ContainerProtocol
-    ) throws -> DefaultFormRedirectScope {
+    ) async throws -> DefaultFormRedirectScope {
         guard let defaultCheckoutScope = checkoutScope as? DefaultCheckoutScope else {
             throw PrimerError.invalidArchitecture(
                 description: "MBWayPaymentMethod requires DefaultCheckoutScope",
@@ -142,7 +142,7 @@ struct MBWayPaymentMethod: PaymentMethodProtocol {
             )
         }
 
-        return try FormRedirectPaymentMethodHelper.createScopeForPaymentMethodType(
+        return try await FormRedirectPaymentMethodHelper.createScopeForPaymentMethodType(
             paymentMethodType,
             checkoutScope: defaultCheckoutScope,
             diContainer: diContainer

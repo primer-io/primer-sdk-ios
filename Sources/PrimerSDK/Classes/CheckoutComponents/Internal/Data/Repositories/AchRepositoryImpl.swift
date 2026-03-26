@@ -12,7 +12,7 @@ import PrimerStripeSDK
 
 @available(iOS 15.0, *)
 @MainActor
-final class AchRepositoryImpl: AchRepository, LogReporter, @unchecked Sendable {
+final class AchRepositoryImpl: AchRepository, LogReporter {
 
   private let achClientSessionService: ACHClientSessionService
   private var achTokenizationService: ACHTokenizationService?
@@ -27,7 +27,7 @@ final class AchRepositoryImpl: AchRepository, LogReporter, @unchecked Sendable {
 
   private weak var bankCollectorDelegate: AchBankCollectorDelegate?
 
-  nonisolated init(
+  init(
     achClientSessionService: ACHClientSessionService = ACHClientSessionService(),
     settings: PrimerSettingsProtocol = DependencyContainer.resolve(),
     createPaymentServiceFactory: @escaping (String) -> CreateResumePaymentServiceProtocol = {

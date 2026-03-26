@@ -107,7 +107,7 @@ public protocol PaymentMethodProtocol {
   static func createScope(
     checkoutScope: PrimerCheckoutScope,
     diContainer: any ContainerProtocol
-  ) throws -> ScopeType
+  ) async throws -> ScopeType
 
   /// Creates the view for this payment method by retrieving its scope and rendering the appropriate UI.
   /// This method handles both custom screens (if provided) and default screens.
@@ -136,7 +136,7 @@ public protocol PaymentMethodProtocol {
 final class PaymentMethodRegistry: LogReporter {
 
   private typealias ScopeCreator =
-    @MainActor (PrimerCheckoutScope, any ContainerProtocol) throws -> any PrimerPaymentMethodScope
+    @MainActor (PrimerCheckoutScope, any ContainerProtocol) async throws -> any PrimerPaymentMethodScope
   private typealias ViewCreator = @MainActor (any PrimerCheckoutScope) -> AnyView?
 
   private var creators: [String: ScopeCreator] = [:]
@@ -149,7 +149,7 @@ final class PaymentMethodRegistry: LogReporter {
 
   func register(
     forKey key: String,
-    scopeCreator: @escaping @MainActor (PrimerCheckoutScope, any ContainerProtocol) throws -> any PrimerPaymentMethodScope,
+    scopeCreator: @escaping @MainActor (PrimerCheckoutScope, any ContainerProtocol) async throws -> any PrimerPaymentMethodScope,
     viewCreator: @escaping @MainActor (any PrimerCheckoutScope) -> AnyView?
   ) {
     creators[key] = scopeCreator
@@ -162,7 +162,7 @@ final class PaymentMethodRegistry: LogReporter {
   func register<T: PaymentMethodProtocol>(_ paymentMethodType: T.Type) {
     let typeKey = paymentMethodType.paymentMethodType
     creators[typeKey] = { checkoutScope, diContainer in
-      try paymentMethodType.createScope(checkoutScope: checkoutScope, diContainer: diContainer)
+      try await paymentMethodType.createScope(checkoutScope: checkoutScope, diContainer: diContainer)
     }
 
     // Register view builder for dynamic UI creation
@@ -206,12 +206,12 @@ final class PaymentMethodRegistry: LogReporter {
     for paymentMethodType: String,
     checkoutScope: PrimerCheckoutScope,
     diContainer: any ContainerProtocol
-  ) throws -> (any PrimerPaymentMethodScope)? {
+  ) async throws -> (any PrimerPaymentMethodScope)? {
     guard let creator = creators[paymentMethodType] else {
       return nil
     }
 
-    return try creator(checkoutScope, diContainer)
+    return try await creator(checkoutScope, diContainer)
   }
 
   /// Creates a scope for the specified payment method type (generic)
@@ -224,12 +224,12 @@ final class PaymentMethodRegistry: LogReporter {
     for paymentMethodType: String,
     checkoutScope: PrimerCheckoutScope,
     diContainer: any ContainerProtocol
-  ) throws -> T? {
+  ) async throws -> T? {
     guard let creator = creators[paymentMethodType] else {
       return nil
     }
 
-    let scope = try creator(checkoutScope, diContainer)
+    let scope = try await creator(checkoutScope, diContainer)
     return scope as? T
   }
 
@@ -243,13 +243,13 @@ final class PaymentMethodRegistry: LogReporter {
     _ scopeType: T.Type,
     checkoutScope: PrimerCheckoutScope,
     diContainer: any ContainerProtocol
-  ) throws -> T? {
+  ) async throws -> T? {
     let typeName = String(describing: scopeType)
     guard let paymentMethodType = typeToIdentifier[typeName] else {
       return nil
     }
 
-    return try createScope(
+    return try await createScope(
       for: paymentMethodType, checkoutScope: checkoutScope, diContainer: diContainer)
   }
 
@@ -263,8 +263,8 @@ final class PaymentMethodRegistry: LogReporter {
     for methodType: PrimerPaymentMethodType,
     checkoutScope: PrimerCheckoutScope,
     diContainer: any ContainerProtocol
-  ) throws -> T? {
-    try createScope(
+  ) async throws -> T? {
+    try await createScope(
       for: methodType.rawValue, checkoutScope: checkoutScope, diContainer: diContainer)
   }
 
@@ -288,7 +288,7 @@ final class PaymentMethodRegistry: LogReporter {
   /// Used by payment methods that need parameterized registration (e.g., WebRedirect APMs).
   func registerInternal(
     typeKey: String,
-    scopeCreator: @escaping @MainActor (PrimerCheckoutScope, any ContainerProtocol) throws -> any PrimerPaymentMethodScope,
+    scopeCreator: @escaping @MainActor (PrimerCheckoutScope, any ContainerProtocol) async throws -> any PrimerPaymentMethodScope,
     viewCreator: @escaping @MainActor (any PrimerCheckoutScope) -> AnyView?
   ) {
     creators[typeKey] = scopeCreator

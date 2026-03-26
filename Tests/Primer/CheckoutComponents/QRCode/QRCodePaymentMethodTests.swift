@@ -67,7 +67,7 @@ final class QRCodePaymentMethodTests: XCTestCase {
 
         // When/Then
         do {
-            _ = try PaymentMethodRegistry.shared.createScope(
+            _ = try await PaymentMethodRegistry.shared.createScope(
                 for: PrimerPaymentMethodType.xfersPayNow.rawValue,
                 checkoutScope: invalidScope,
                 diContainer: container
@@ -92,7 +92,7 @@ final class QRCodePaymentMethodTests: XCTestCase {
 
         // When/Then
         do {
-            _ = try PaymentMethodRegistry.shared.createScope(
+            _ = try await PaymentMethodRegistry.shared.createScope(
                 for: PrimerPaymentMethodType.xfersPayNow.rawValue,
                 checkoutScope: checkoutScope,
                 diContainer: emptyContainer
@@ -116,7 +116,7 @@ final class QRCodePaymentMethodTests: XCTestCase {
         let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
 
         // When
-        let scope: (any PrimerPaymentMethodScope)? = try PaymentMethodRegistry.shared.createScope(
+        let scope: (any PrimerPaymentMethodScope)? = try await PaymentMethodRegistry.shared.createScope(
             for: PrimerPaymentMethodType.xfersPayNow.rawValue,
             checkoutScope: checkoutScope,
             diContainer: container
@@ -136,7 +136,7 @@ final class QRCodePaymentMethodTests: XCTestCase {
         let checkoutScope = createCheckoutScopeWithMultiplePaymentMethods()
 
         // When
-        let scope: (any PrimerPaymentMethodScope)? = try PaymentMethodRegistry.shared.createScope(
+        let scope: (any PrimerPaymentMethodScope)? = try await PaymentMethodRegistry.shared.createScope(
             for: PrimerPaymentMethodType.xfersPayNow.rawValue,
             checkoutScope: checkoutScope,
             diContainer: container
@@ -173,7 +173,7 @@ final class QRCodePaymentMethodTests: XCTestCase {
 
         // When/Then — both should resolve independently
         for type in types {
-            let scope: (any PrimerPaymentMethodScope)? = try PaymentMethodRegistry.shared.createScope(
+            let scope: (any PrimerPaymentMethodScope)? = try await PaymentMethodRegistry.shared.createScope(
                 for: type.rawValue,
                 checkoutScope: checkoutScope,
                 diContainer: container

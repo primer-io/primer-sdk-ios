@@ -17,7 +17,7 @@ struct CardPaymentMethod: PaymentMethodProtocol {
   static func createScope(
     checkoutScope: PrimerCheckoutScope,
     diContainer: any ContainerProtocol
-  ) throws -> DefaultCardFormScope {
+  ) async throws -> DefaultCardFormScope {
 
     guard let defaultCheckoutScope = checkoutScope as? DefaultCheckoutScope else {
       throw PrimerError.invalidArchitecture(
@@ -30,14 +30,14 @@ struct CardPaymentMethod: PaymentMethodProtocol {
       defaultCheckoutScope.availablePaymentMethods.count > 1 ? .fromPaymentSelection : .direct
 
     do {
-      let processCardInteractor: ProcessCardPaymentInteractor = try diContainer.resolveSync(
+      let processCardInteractor: ProcessCardPaymentInteractor = try await diContainer.resolve(
         ProcessCardPaymentInteractor.self)
-      let validateInputInteractor = try? diContainer.resolveSync(ValidateInputInteractor.self)
-      let cardNetworkDetectionInteractor = try? diContainer.resolveSync(
+      let validateInputInteractor = try? await diContainer.resolve(ValidateInputInteractor.self)
+      let cardNetworkDetectionInteractor = try? await diContainer.resolve(
         CardNetworkDetectionInteractor.self)
-      let analyticsInteractor = try? diContainer.resolveSync(
+      let analyticsInteractor = try? await diContainer.resolve(
         CheckoutComponentsAnalyticsInteractorProtocol.self)
-      let configurationService: ConfigurationService = try diContainer.resolveSync(
+      let configurationService: ConfigurationService = try await diContainer.resolve(
         ConfigurationService.self)
 
       if validateInputInteractor == nil {

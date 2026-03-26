@@ -33,7 +33,7 @@ final class PayPalPaymentMethodTests: XCTestCase {
         let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
 
         // When
-        let scope = try PayPalPaymentMethod.createScope(
+        let scope = try await PayPalPaymentMethod.createScope(
             checkoutScope: checkoutScope,
             diContainer: container
         )
@@ -52,7 +52,7 @@ final class PayPalPaymentMethodTests: XCTestCase {
 
         // When/Then
         do {
-            _ = try PayPalPaymentMethod.createScope(
+            _ = try await PayPalPaymentMethod.createScope(
                 checkoutScope: checkoutScope,
                 diContainer: emptyContainer
             )
@@ -76,7 +76,7 @@ final class PayPalPaymentMethodTests: XCTestCase {
 
         // When/Then
         do {
-            _ = try PayPalPaymentMethod.createScope(
+            _ = try await PayPalPaymentMethod.createScope(
                 checkoutScope: mockScope,
                 diContainer: container
             )
@@ -101,7 +101,7 @@ final class PayPalPaymentMethodTests: XCTestCase {
         let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
 
         // When
-        let scope = try PayPalPaymentMethod.createScope(
+        let scope = try await PayPalPaymentMethod.createScope(
             checkoutScope: checkoutScope,
             diContainer: container
         )
@@ -116,7 +116,7 @@ final class PayPalPaymentMethodTests: XCTestCase {
         let checkoutScope = await createCheckoutScopeWithMultiplePaymentMethods()
 
         // When
-        let scope = try PayPalPaymentMethod.createScope(
+        let scope = try await PayPalPaymentMethod.createScope(
             checkoutScope: checkoutScope,
             diContainer: container
         )
@@ -155,7 +155,7 @@ final class PayPalPaymentMethodTests: XCTestCase {
         let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
 
         do {
-            let scope = try PaymentMethodRegistry.shared.createScope(
+            let scope = try await PaymentMethodRegistry.shared.createScope(
                 for: PrimerPaymentMethodType.payPal.rawValue,
                 checkoutScope: checkoutScope,
                 diContainer: container
@@ -172,7 +172,7 @@ final class PayPalPaymentMethodTests: XCTestCase {
         // Given
         await registerPayPalDependencies()
         let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
-        _ = try PayPalPaymentMethod.createScope(
+        _ = try await PayPalPaymentMethod.createScope(
             checkoutScope: checkoutScope,
             diContainer: container
         )
@@ -201,7 +201,7 @@ final class PayPalPaymentMethodTests: XCTestCase {
 
         // When/Then
         do {
-            _ = try PayPalPaymentMethod.createScope(
+            _ = try await PayPalPaymentMethod.createScope(
                 checkoutScope: checkoutScope,
                 diContainer: errorContainer
             )

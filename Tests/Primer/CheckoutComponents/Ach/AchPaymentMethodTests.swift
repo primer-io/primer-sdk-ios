@@ -92,7 +92,7 @@ final class AchPaymentMethodTests: XCTestCase {
         let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
 
         // When
-        let scope = try TestAchPaymentMethod.createScope(
+        let scope = try await TestAchPaymentMethod.createScope(
             checkoutScope: checkoutScope,
             diContainer: container
         )
@@ -109,7 +109,7 @@ final class AchPaymentMethodTests: XCTestCase {
 
         // When/Then
         do {
-            _ = try TestAchPaymentMethod.createScope(
+            _ = try await TestAchPaymentMethod.createScope(
                 checkoutScope: invalidScope,
                 diContainer: container
             )
@@ -179,7 +179,7 @@ final class AchPaymentMethodTests: XCTestCase {
         let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
 
         // When
-        let scope = try AchPaymentMethod.createScope(
+        let scope = try await AchPaymentMethod.createScope(
             checkoutScope: checkoutScope,
             diContainer: container
         )
@@ -199,7 +199,7 @@ final class AchPaymentMethodTests: XCTestCase {
             .asSingleton()
             .with { _ in StubProcessAchPaymentInteractorForTests() }
         let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
-        _ = try AchPaymentMethod.createScope(
+        _ = try await AchPaymentMethod.createScope(
             checkoutScope: checkoutScope,
             diContainer: container
         )
@@ -226,7 +226,7 @@ final class AchPaymentMethodTests: XCTestCase {
 
         // When/Then
         do {
-            _ = try AchPaymentMethod.createScope(
+            _ = try await AchPaymentMethod.createScope(
                 checkoutScope: invalidScope,
                 diContainer: container
             )
@@ -250,7 +250,7 @@ final class AchPaymentMethodTests: XCTestCase {
 
         // When/Then
         do {
-            _ = try AchPaymentMethod.createScope(
+            _ = try await AchPaymentMethod.createScope(
                 checkoutScope: checkoutScope,
                 diContainer: emptyContainer
             )
@@ -276,7 +276,7 @@ final class AchPaymentMethodTests: XCTestCase {
         let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
 
         // When
-        let scope = try AchPaymentMethod.createScope(
+        let scope = try await AchPaymentMethod.createScope(
             checkoutScope: checkoutScope,
             diContainer: container
         )
@@ -310,7 +310,7 @@ final class AchPaymentMethodTests: XCTestCase {
         ]
 
         // When
-        let scope = try AchPaymentMethod.createScope(
+        let scope = try await AchPaymentMethod.createScope(
             checkoutScope: checkoutScope,
             diContainer: container
         )
@@ -335,7 +335,7 @@ final class AchPaymentMethodTests: XCTestCase {
         let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
 
         // When
-        let scope = try registry.createScope(
+        let scope = try await registry.createScope(
             for: PrimerPaymentMethodType.stripeAch.rawValue,
             checkoutScope: checkoutScope,
             diContainer: container

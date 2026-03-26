@@ -260,7 +260,7 @@ extension ComposableContainer {
     await safeRegister(HeadlessRepository.self) {
       _ = try await container.register(HeadlessRepository.self)
         .asTransient()
-        .with { _ in HeadlessRepositoryImpl() }
+        .with { _ in await HeadlessRepositoryImpl() }
     }
 
     await safeRegister(PaymentMethodMapper.self) {
@@ -281,13 +281,13 @@ extension ComposableContainer {
     await safeRegister(KlarnaRepository.self) {
       _ = try await container.register(KlarnaRepository.self)
         .asTransient()
-        .with { _ in KlarnaRepositoryImpl() }
+        .with { _ in await KlarnaRepositoryImpl() }
     }
 
     await safeRegister(AchRepository.self) {
       _ = try await container.register(AchRepository.self)
         .asTransient()
-        .with { _ in AchRepositoryImpl() }
+        .with { _ in await AchRepositoryImpl() }
     }
 
     await safeRegister(WebRedirectRepository.self) {

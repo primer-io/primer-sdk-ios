@@ -29,7 +29,7 @@ struct WebRedirectPaymentMethod: PaymentMethodProtocol {
     for paymentMethodType: String,
     checkoutScope: any PrimerCheckoutScope,
     container: any ContainerProtocol
-  ) throws -> DefaultWebRedirectScope {
+  ) async throws -> DefaultWebRedirectScope {
     guard let defaultCheckoutScope = checkoutScope as? DefaultCheckoutScope else {
       throw PrimerError.invalidArchitecture(
         description: "WebRedirectPaymentMethod requires DefaultCheckoutScope",
@@ -40,16 +40,15 @@ struct WebRedirectPaymentMethod: PaymentMethodProtocol {
     let paymentMethodContext: PresentationContext =
       defaultCheckoutScope.availablePaymentMethods.count > 1 ? .fromPaymentSelection : .direct
 
+    let mapper = try? await container.resolve(PaymentMethodMapper.self)
     let paymentMethod: CheckoutPaymentMethod? = defaultCheckoutScope.availablePaymentMethods
       .first { $0.type == paymentMethodType }
-      .flatMap { method in
-        (try? container.resolveSync(PaymentMethodMapper.self))?.mapToPublic(method)
-      }
+      .flatMap { mapper?.mapToPublic($0) }
 
-    let processWebRedirectInteractor = try container.resolveSync(ProcessWebRedirectPaymentInteractor.self)
-    let accessibilityService = try? container.resolveSync(AccessibilityAnnouncementService.self)
-    let analyticsInteractor = try? container.resolveSync(CheckoutComponentsAnalyticsInteractorProtocol.self)
-    let repository = try? container.resolveSync(WebRedirectRepository.self)
+    let processWebRedirectInteractor = try await container.resolve(ProcessWebRedirectPaymentInteractor.self)
+    let accessibilityService = try? await container.resolve(AccessibilityAnnouncementService.self)
+    let analyticsInteractor = try? await container.resolve(CheckoutComponentsAnalyticsInteractorProtocol.self)
+    let repository = try? await container.resolve(WebRedirectRepository.self)
 
     return DefaultWebRedirectScope(
       paymentMethodType: paymentMethodType,
@@ -81,7 +80,7 @@ struct WebRedirectPaymentMethod: PaymentMethodProtocol {
   static func createScope(
     checkoutScope: PrimerCheckoutScope,
     diContainer: any ContainerProtocol
-  ) throws -> DefaultWebRedirectScope {
+  ) async throws -> DefaultWebRedirectScope {
     throw PrimerError.invalidArchitecture(
       description: "WebRedirectPaymentMethod.createScope requires a payment method type parameter",
       recoverSuggestion: "Use register(types:) for dynamic registration instead"
@@ -110,11 +109,11 @@ extension PaymentMethodRegistry {
   @MainActor
   func register(
     paymentMethodType: String,
-    scopeCreator: @escaping @MainActor (String, any PrimerCheckoutScope, any ContainerProtocol) throws -> any PrimerPaymentMethodScope,
+    scopeCreator: @escaping @MainActor (String, any PrimerCheckoutScope, any ContainerProtocol) async throws -> any PrimerPaymentMethodScope,
     viewCreator: @escaping @MainActor (String, any PrimerCheckoutScope) -> AnyView?
   ) {
-    let wrappedScopeCreator: @MainActor (PrimerCheckoutScope, any ContainerProtocol) throws -> any PrimerPaymentMethodScope = { checkoutScope, container in
-      try scopeCreator(paymentMethodType, checkoutScope, container)
+    let wrappedScopeCreator: @MainActor (PrimerCheckoutScope, any ContainerProtocol) async throws -> any PrimerPaymentMethodScope = { checkoutScope, container in
+      try await scopeCreator(paymentMethodType, checkoutScope, container)
     }
 
     let wrappedViewCreator: @MainActor (any PrimerCheckoutScope) -> AnyView? = { checkoutScope in

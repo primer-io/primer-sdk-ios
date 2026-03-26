@@ -34,7 +34,7 @@ final class CardPaymentMethodTests: XCTestCase {
 
         // When/Then
         do {
-            _ = try CardPaymentMethod.createScope(
+            _ = try await CardPaymentMethod.createScope(
                 checkoutScope: checkoutScope,
                 diContainer: emptyContainer
             )
@@ -58,7 +58,7 @@ final class CardPaymentMethodTests: XCTestCase {
 
         // When/Then
         do {
-            _ = try CardPaymentMethod.createScope(
+            _ = try await CardPaymentMethod.createScope(
                 checkoutScope: invalidCheckoutScope,
                 diContainer: container
             )
@@ -89,7 +89,7 @@ final class CardPaymentMethodTests: XCTestCase {
         let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
 
         // When
-        let scope = try CardPaymentMethod.createScope(
+        let scope = try await CardPaymentMethod.createScope(
             checkoutScope: checkoutScope,
             diContainer: container
         )
@@ -106,7 +106,7 @@ final class CardPaymentMethodTests: XCTestCase {
         let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
 
         // When
-        let scope = try CardPaymentMethod.createScope(
+        let scope = try await CardPaymentMethod.createScope(
             checkoutScope: checkoutScope,
             diContainer: container
         )
@@ -128,7 +128,7 @@ final class CardPaymentMethodTests: XCTestCase {
         ])
 
         // When
-        let scope = try CardPaymentMethod.createScope(
+        let scope = try await CardPaymentMethod.createScope(
             checkoutScope: checkoutScope,
             diContainer: container
         )
@@ -155,7 +155,7 @@ final class CardPaymentMethodTests: XCTestCase {
         ])
 
         // When
-        let scope = try CardPaymentMethod.createScope(
+        let scope = try await CardPaymentMethod.createScope(
             checkoutScope: checkoutScope,
             diContainer: container
         )
@@ -188,7 +188,7 @@ final class CardPaymentMethodTests: XCTestCase {
         let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
 
         do {
-            let scope = try PaymentMethodRegistry.shared.createScope(
+            let scope = try await PaymentMethodRegistry.shared.createScope(
                 for: PrimerPaymentMethodType.paymentCard.rawValue,
                 checkoutScope: checkoutScope,
                 diContainer: container
@@ -211,7 +211,7 @@ final class CardPaymentMethodTests: XCTestCase {
         let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
 
         do {
-            let scope = try PaymentMethodRegistry.shared.createScope(
+            let scope = try await PaymentMethodRegistry.shared.createScope(
                 for: PrimerPaymentMethodType.paymentCard.rawValue,
                 checkoutScope: checkoutScope,
                 diContainer: container

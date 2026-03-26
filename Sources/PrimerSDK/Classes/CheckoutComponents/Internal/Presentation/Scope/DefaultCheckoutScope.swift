@@ -8,7 +8,7 @@ import SwiftUI
 
 @available(iOS 15.0, *)
 @MainActor
-final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogReporter, @unchecked Sendable {
+final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogReporter {
 
   enum NavigationState: Equatable {
     case loading
@@ -200,6 +200,8 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
 
       availablePaymentMethods = try await interactor.execute()
 
+      await preloadPaymentMethodScopes()
+
       if availablePaymentMethods.isEmpty {
         let error = PrimerError.missingPrimerConfiguration()
         updateNavigationState(.failure(error))
@@ -225,6 +227,27 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
 
       updateNavigationState(.failure(primerError))
       updateState(.failure(primerError))
+    }
+  }
+
+  private func preloadPaymentMethodScopes() async {
+    guard let container = await DIContainer.current else { return }
+
+    for type in PaymentMethodRegistry.shared.registeredTypes {
+      do {
+        let scope = try await PaymentMethodRegistry.shared.createScope(
+          for: type,
+          checkoutScope: self,
+          diContainer: container
+        )
+        if let scope {
+          paymentMethodScopeCache[type] = scope
+        }
+      } catch {
+        logger.warn(
+          message: "Failed to pre-load scope for \(type): \(error.localizedDescription)"
+        )
+      }
     }
   }
 
@@ -430,65 +453,17 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
   public func getPaymentMethodScope<T: PrimerPaymentMethodScope>(
     for paymentMethodType: String
   ) -> T? {
-    if let cachedScope = paymentMethodScopeCache[paymentMethodType] as? T {
-      currentPaymentMethodScope = cachedScope
-      return cachedScope
-    }
-
-    do {
-      guard let container = DIContainer.currentSync else {
-        return nil
-      }
-
-      let scope: T? = try PaymentMethodRegistry.shared.createScope(
-        for: paymentMethodType,
-        checkoutScope: self,
-        diContainer: container
-      )
-
-      if let scope {
-        paymentMethodScopeCache[paymentMethodType] = scope
-        currentPaymentMethodScope = scope
-        return scope
-      } else {
-        return nil
-      }
-
-    } catch {
-      return nil
-    }
+    guard let scope = paymentMethodScopeCache[paymentMethodType] as? T else { return nil }
+    currentPaymentMethodScope = scope
+    return scope
   }
 
   public func getPaymentMethodScope<T: PrimerPaymentMethodScope>(_ scopeType: T.Type) -> T? {
-    if let cachedScope = paymentMethodScopeCache.values.first(where: { $0 is T })
-      as? T {
-      currentPaymentMethodScope = cachedScope
-      return cachedScope
-    }
-
-    do {
-      guard let container = DIContainer.currentSync else {
-        return nil
-      }
-
-      let scope: T? = try PaymentMethodRegistry.shared.createScope(
-        scopeType,
-        checkoutScope: self,
-        diContainer: container
-      )
-
-      if let scope {
-        let scopeTypeName = String(describing: type(of: scope))
-        paymentMethodScopeCache[scopeTypeName] = scope
-        currentPaymentMethodScope = scope
-        return scope
-      } else {
-        return nil
-      }
-
-    } catch {
+    guard let scope = paymentMethodScopeCache.values.first(where: { $0 is T }) as? T else {
       return nil
     }
+    currentPaymentMethodScope = scope
+    return scope
   }
 
   public func getPaymentMethodScope<T: PrimerPaymentMethodScope>(
@@ -519,50 +494,16 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
   func handlePaymentMethodSelection(_ method: InternalPaymentMethod) {
     selectedPaymentMethodName = method.name
 
-    do {
-      guard let container = DIContainer.currentSync else {
-        updateNavigationState(
-          .failure(
-            PrimerError.invalidArchitecture(
-              description: "Dependency injection container not available",
-              recoverSuggestion: "Ensure DI container is properly initialized",
-            )))
-        return
-      }
-
-      let scope = try PaymentMethodRegistry.shared.createScope(
-        for: method.type,
-        checkoutScope: self,
-        diContainer: container
+    if let scope = paymentMethodScopeCache[method.type] {
+      currentPaymentMethodScope = scope
+      scope.start()
+      updateNavigationState(.paymentMethod(method.type))
+    } else {
+      logger.debug(
+        message:
+          "⚠️ [DefaultCheckoutScope] Payment method \(method.type) not implemented, showing placeholder"
       )
-
-      if let scope {
-        paymentMethodScopeCache[method.type] = scope
-
-        currentPaymentMethodScope = scope
-
-        scope.start()
-
-        updateNavigationState(.paymentMethod(method.type))
-
-      } else {
-        // Still navigate to payment method screen - PaymentMethodScreen will show placeholder UI
-        // This allows graceful handling of unimplemented payment methods with "Coming Soon" message
-        logger.debug(
-          message:
-            "⚠️ [DefaultCheckoutScope] Payment method \(method.type) not implemented, showing placeholder"
-        )
-        updateNavigationState(.paymentMethod(method.type))
-      }
-
-    } catch {
-      updateNavigationState(
-        .failure(
-          PrimerError.invalidArchitecture(
-            description:
-              "Failed to initialize payment method \\(method.type): \\(error.localizedDescription)",
-            recoverSuggestion: "Check payment method implementation"
-          )))
+      updateNavigationState(.paymentMethod(method.type))
     }
   }
 

@@ -17,7 +17,7 @@ struct KlarnaPaymentMethod: PaymentMethodProtocol {
   static func createScope(
     checkoutScope: PrimerCheckoutScope,
     diContainer: any ContainerProtocol
-  ) throws -> DefaultKlarnaScope {
+  ) async throws -> DefaultKlarnaScope {
 
     guard let defaultCheckoutScope = checkoutScope as? DefaultCheckoutScope else {
       throw PrimerError.invalidArchitecture(
@@ -30,9 +30,9 @@ struct KlarnaPaymentMethod: PaymentMethodProtocol {
       defaultCheckoutScope.availablePaymentMethods.count > 1 ? .fromPaymentSelection : .direct
 
     do {
-      let processKlarnaInteractor: ProcessKlarnaPaymentInteractor = try diContainer.resolveSync(
+      let processKlarnaInteractor: ProcessKlarnaPaymentInteractor = try await diContainer.resolve(
         ProcessKlarnaPaymentInteractor.self)
-      let analyticsInteractor = try? diContainer.resolveSync(
+      let analyticsInteractor = try? await diContainer.resolve(
         CheckoutComponentsAnalyticsInteractorProtocol.self)
 
       return DefaultKlarnaScope(
@@ -101,8 +101,8 @@ extension KlarnaPaymentMethod {
     static func createScope(
       checkoutScope: PrimerCheckoutScope,
       diContainer: any ContainerProtocol
-    ) throws -> DefaultKlarnaScope {
-      try KlarnaPaymentMethod.createScope(checkoutScope: checkoutScope, diContainer: diContainer)
+    ) async throws -> DefaultKlarnaScope {
+      try await KlarnaPaymentMethod.createScope(checkoutScope: checkoutScope, diContainer: diContainer)
     }
 
     @MainActor

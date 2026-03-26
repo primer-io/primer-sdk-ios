@@ -21,13 +21,13 @@ final class ApplePayPaymentMethodTests: XCTestCase {
     // MARK: - createScope Tests
 
     @MainActor
-    func test_createScope_withValidCheckoutScope_returnsScope() throws {
+    func test_createScope_withValidCheckoutScope_returnsScope() async throws {
         // Given
         let checkoutScope = createCheckoutScope()
         let container = DIContainer.createContainer()
 
         // When
-        let scope = try ApplePayPaymentMethod.createScope(
+        let scope = try await ApplePayPaymentMethod.createScope(
             checkoutScope: checkoutScope,
             diContainer: container
         )
@@ -38,13 +38,13 @@ final class ApplePayPaymentMethodTests: XCTestCase {
     }
 
     @MainActor
-    func test_createScope_withNoPaymentMethods_setsDirectContext() throws {
+    func test_createScope_withNoPaymentMethods_setsDirectContext() async throws {
         // Given - no payment methods means single payment method scenario
         let checkoutScope = createCheckoutScope()
         let container = DIContainer.createContainer()
 
         // When
-        let scope = try ApplePayPaymentMethod.createScope(
+        let scope = try await ApplePayPaymentMethod.createScope(
             checkoutScope: checkoutScope,
             diContainer: container
         )
@@ -54,13 +54,13 @@ final class ApplePayPaymentMethodTests: XCTestCase {
     }
 
     @MainActor
-    func test_createScope_withSinglePaymentMethod_setsDirectContext() throws {
+    func test_createScope_withSinglePaymentMethod_setsDirectContext() async throws {
         // Given
         let checkoutScope = createCheckoutScope(paymentMethodCount: 1)
         let container = DIContainer.createContainer()
 
         // When
-        let scope = try ApplePayPaymentMethod.createScope(
+        let scope = try await ApplePayPaymentMethod.createScope(
             checkoutScope: checkoutScope,
             diContainer: container
         )
@@ -70,13 +70,13 @@ final class ApplePayPaymentMethodTests: XCTestCase {
     }
 
     @MainActor
-    func test_createScope_withMultiplePaymentMethods_setsFromPaymentSelectionContext() throws {
+    func test_createScope_withMultiplePaymentMethods_setsFromPaymentSelectionContext() async throws {
         // Given
         let checkoutScope = createCheckoutScope(paymentMethodCount: 3)
         let container = DIContainer.createContainer()
 
         // When
-        let scope = try ApplePayPaymentMethod.createScope(
+        let scope = try await ApplePayPaymentMethod.createScope(
             checkoutScope: checkoutScope,
             diContainer: container
         )
@@ -86,13 +86,13 @@ final class ApplePayPaymentMethodTests: XCTestCase {
     }
 
     @MainActor
-    func test_createScope_withTwoPaymentMethods_setsFromPaymentSelectionContext() throws {
+    func test_createScope_withTwoPaymentMethods_setsFromPaymentSelectionContext() async throws {
         // Given
         let checkoutScope = createCheckoutScope(paymentMethodCount: 2)
         let container = DIContainer.createContainer()
 
         // When
-        let scope = try ApplePayPaymentMethod.createScope(
+        let scope = try await ApplePayPaymentMethod.createScope(
             checkoutScope: checkoutScope,
             diContainer: container
         )
@@ -102,23 +102,20 @@ final class ApplePayPaymentMethodTests: XCTestCase {
     }
 
     @MainActor
-    func test_createScope_withInvalidCheckoutScope_throwsError() {
+    func test_createScope_withInvalidCheckoutScope_throwsError() async throws {
         // Given
         let invalidScope = MockInvalidCheckoutScope()
         let container = DIContainer.createContainer()
 
         // When/Then
-        XCTAssertThrowsError(
-            try ApplePayPaymentMethod.createScope(
+        do {
+            _ = try await ApplePayPaymentMethod.createScope(
                 checkoutScope: invalidScope,
                 diContainer: container
             )
-        ) { error in
-            guard let primerError = error as? PrimerError else {
-                XCTFail("Expected PrimerError")
-                return
-            }
-            if case .invalidArchitecture = primerError {
+            XCTFail("Expected error when using invalid checkout scope")
+        } catch let error as PrimerError {
+            if case .invalidArchitecture = error {
                 // Expected error type
             } else {
                 XCTFail("Expected invalidArchitecture error")

@@ -69,13 +69,13 @@ final class WebRedirectPaymentMethodTests: XCTestCase {
 
     // MARK: - createScope (Protocol Conformance) Tests
 
-    func test_createScope_protocolConformance_throwsInvalidArchitecture() {
+    func test_createScope_protocolConformance_throwsInvalidArchitecture() async throws {
         // Given
         let checkoutScope = MockNonDefaultCheckoutScopeForWebRedirect()
 
         // When/Then
         do {
-            _ = try WebRedirectPaymentMethod.createScope(
+            _ = try await WebRedirectPaymentMethod.createScope(
                 checkoutScope: checkoutScope,
                 diContainer: container
             )
@@ -113,7 +113,7 @@ final class WebRedirectPaymentMethodTests: XCTestCase {
 
         // When/Then
         do {
-            _ = try PaymentMethodRegistry.shared.createScope(
+            _ = try await PaymentMethodRegistry.shared.createScope(
                 for: "TWINT",
                 checkoutScope: invalidScope,
                 diContainer: container
@@ -138,7 +138,7 @@ final class WebRedirectPaymentMethodTests: XCTestCase {
 
         // When/Then
         do {
-            _ = try PaymentMethodRegistry.shared.createScope(
+            _ = try await PaymentMethodRegistry.shared.createScope(
                 for: "TWINT",
                 checkoutScope: checkoutScope,
                 diContainer: emptyContainer
@@ -159,7 +159,7 @@ final class WebRedirectPaymentMethodTests: XCTestCase {
         let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
 
         // When
-        let scope: (any PrimerPaymentMethodScope)? = try PaymentMethodRegistry.shared.createScope(
+        let scope: (any PrimerPaymentMethodScope)? = try await PaymentMethodRegistry.shared.createScope(
             for: "TWINT",
             checkoutScope: checkoutScope,
             diContainer: container
@@ -179,7 +179,7 @@ final class WebRedirectPaymentMethodTests: XCTestCase {
         let checkoutScope = createCheckoutScopeWithMultiplePaymentMethods()
 
         // When
-        let scope: (any PrimerPaymentMethodScope)? = try PaymentMethodRegistry.shared.createScope(
+        let scope: (any PrimerPaymentMethodScope)? = try await PaymentMethodRegistry.shared.createScope(
             for: "TWINT",
             checkoutScope: checkoutScope,
             diContainer: container

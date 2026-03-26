@@ -8,7 +8,7 @@ import SwiftUI
 
 @available(iOS 15.0, *)
 @MainActor
-public final class DefaultPayPalScope: PrimerPayPalScope, ObservableObject, LogReporter, @unchecked Sendable {
+public final class DefaultPayPalScope: PrimerPayPalScope, ObservableObject, LogReporter {
 
   // MARK: - Public Properties
 

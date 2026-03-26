@@ -8,7 +8,7 @@ import UIKit
 
 @available(iOS 15.0, *)
 @MainActor
-final class KlarnaRepositoryImpl: KlarnaRepository, LogReporter, @unchecked Sendable {
+final class KlarnaRepositoryImpl: KlarnaRepository, LogReporter {
 
   private enum Timing {
     static let mockAuthorizationDelay: UInt64 = 2_000_000_000
@@ -53,7 +53,7 @@ final class KlarnaRepositoryImpl: KlarnaRepository, LogReporter, @unchecked Send
     PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.testId != nil
   }
 
-  nonisolated init(
+  init(
     apiClient: PrimerAPIClientProtocol? = nil,
     tokenizationService: TokenizationServiceProtocol = TokenizationService(),
     createResumePaymentService: CreateResumePaymentServiceProtocol? = nil

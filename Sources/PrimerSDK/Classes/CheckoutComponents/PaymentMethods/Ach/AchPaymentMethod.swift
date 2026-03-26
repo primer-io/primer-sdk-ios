@@ -17,7 +17,7 @@ struct AchPaymentMethod: PaymentMethodProtocol {
   static func createScope(
     checkoutScope: PrimerCheckoutScope,
     diContainer: any ContainerProtocol
-  ) throws -> DefaultAchScope {
+  ) async throws -> DefaultAchScope {
 
     guard let defaultCheckoutScope = checkoutScope as? DefaultCheckoutScope else {
       throw PrimerError.invalidArchitecture(
@@ -30,9 +30,9 @@ struct AchPaymentMethod: PaymentMethodProtocol {
       defaultCheckoutScope.availablePaymentMethods.count > 1 ? .fromPaymentSelection : .direct
 
     do {
-      let processAchInteractor: ProcessAchPaymentInteractor = try diContainer.resolveSync(
+      let processAchInteractor: ProcessAchPaymentInteractor = try await diContainer.resolve(
         ProcessAchPaymentInteractor.self)
-      let analyticsInteractor = try? diContainer.resolveSync(
+      let analyticsInteractor = try? await diContainer.resolve(
         CheckoutComponentsAnalyticsInteractorProtocol.self)
 
       return DefaultAchScope(
@@ -101,8 +101,8 @@ extension AchPaymentMethod {
     static func createScope(
       checkoutScope: PrimerCheckoutScope,
       diContainer: any ContainerProtocol
-    ) throws -> DefaultAchScope {
-      try AchPaymentMethod.createScope(checkoutScope: checkoutScope, diContainer: diContainer)
+    ) async throws -> DefaultAchScope {
+      try await AchPaymentMethod.createScope(checkoutScope: checkoutScope, diContainer: diContainer)
     }
 
     @MainActor

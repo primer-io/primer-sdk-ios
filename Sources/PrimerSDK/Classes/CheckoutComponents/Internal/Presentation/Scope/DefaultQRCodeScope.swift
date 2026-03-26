@@ -8,7 +8,7 @@ import SwiftUI
 
 @available(iOS 15.0, *)
 @MainActor
-public final class DefaultQRCodeScope: PrimerQRCodeScope, ObservableObject, LogReporter, @unchecked Sendable {
+public final class DefaultQRCodeScope: PrimerQRCodeScope, ObservableObject, LogReporter {
 
   // MARK: - Public Properties
 

@@ -9,7 +9,7 @@ import SwiftUI
 @available(iOS 15.0, *)
 @MainActor
 final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSelectionScope, ObservableObject,
-  LogReporter, @unchecked Sendable {
+  LogReporter {
   // MARK: - Properties
 
   @Published private var internalState = PrimerPaymentMethodSelectionState()

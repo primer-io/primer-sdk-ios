@@ -9,7 +9,7 @@ import UIKit
 
 @available(iOS 15.0, *)
 @MainActor
-public final class DefaultAchScope: PrimerAchScope, ObservableObject, LogReporter, @unchecked Sendable {
+public final class DefaultAchScope: PrimerAchScope, ObservableObject, LogReporter {
 
   public var screen: AchScreenComponent?
   public var userDetailsScreen: AchScreenComponent?

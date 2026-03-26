@@ -16,7 +16,7 @@ enum QRCodePaymentMethod {
       PaymentMethodRegistry.shared.register(
         forKey: typeRawValue,
         scopeCreator: { checkoutScope, diContainer in
-          try createScope(
+          try await createScope(
             paymentMethodType: typeRawValue,
             checkoutScope: checkoutScope,
             diContainer: diContainer
@@ -32,7 +32,7 @@ enum QRCodePaymentMethod {
     paymentMethodType: String,
     checkoutScope: PrimerCheckoutScope,
     diContainer: any ContainerProtocol
-  ) throws -> DefaultQRCodeScope {
+  ) async throws -> DefaultQRCodeScope {
 
     guard let defaultCheckoutScope = checkoutScope as? DefaultCheckoutScope else {
       throw PrimerError.invalidArchitecture(
@@ -45,8 +45,8 @@ enum QRCodePaymentMethod {
       defaultCheckoutScope.availablePaymentMethods.count > 1 ? .fromPaymentSelection : .direct
 
     do {
-      let repository: QRCodeRepository = try diContainer.resolveSync(QRCodeRepository.self)
-      let analyticsInteractor = try? diContainer.resolveSync(
+      let repository: QRCodeRepository = try await diContainer.resolve(QRCodeRepository.self)
+      let analyticsInteractor = try? await diContainer.resolve(
         CheckoutComponentsAnalyticsInteractorProtocol.self
       )
 
