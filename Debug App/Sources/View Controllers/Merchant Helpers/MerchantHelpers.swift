@@ -1,11 +1,11 @@
 //
 //  MerchantHelpers.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import UIKit
 import PrimerSDK
+import UIKit
 
 struct MerchantMockDataManager {
 
@@ -27,7 +27,7 @@ struct MerchantMockDataManager {
     }
 
     static func getClientSession(sessionType: SessionType) -> ClientSessionRequestBody {
-        return ClientSessionRequestBody(
+        ClientSessionRequestBody(
             customerId: customerId,
             orderId: "ios-order-\(String.randomString(length: 8))",
             currencyCode: CurrencyLoader().getCurrency("EUR")?.code,
@@ -46,7 +46,8 @@ struct MerchantMockDataManager {
                     city: sessionType == .generic ? "London" : "Berlin",
                     state: sessionType == .generic ? "Greater London" : "Berlin",
                     countryCode: sessionType == .generic ? "GB" : "DE",
-                    postalCode: sessionType == .generic ? "NW06 4OM" : "10178"),
+                    postalCode: sessionType == .generic ? "NW06 4OM" : "10178"
+                ),
                 shippingAddress: Address(
                     firstName: "John",
                     lastName: "Smith",
@@ -55,7 +56,8 @@ struct MerchantMockDataManager {
                     city: sessionType == .generic ? "London" : "Berlin",
                     state: sessionType == .generic ? "Greater London" : "Berlin",
                     countryCode: sessionType == .generic ? "GB" : "DE",
-                    postalCode: sessionType == .generic ? "EC53 8BT" : "10178")
+                    postalCode: sessionType == .generic ? "EC53 8BT" : "10178"
+                )
             ),
             order: ClientSessionRequestBody.Order(
                 countryCode: .de,
@@ -66,14 +68,17 @@ struct MerchantMockDataManager {
                         amount: 600,
                         quantity: 1,
                         discountAmount: nil,
-                        taxAmount: nil)
-                ]),
-            paymentMethod: sessionType == .generic ? genericPaymentMethod : klarnaPaymentMethod,
-            testParams: nil)
+                        taxAmount: nil
+                    )
+                ]
+            ),
+            paymentMethod: getPaymentMethod(sessionType: sessionType),
+            testParams: nil
+        )
     }
 
     static func getPaymentMethod(sessionType: SessionType) -> ClientSessionRequestBody.PaymentMethod {
-        return sessionType == .generic ? genericPaymentMethod : klarnaPaymentMethod
+        sessionType == .generic ? genericPaymentMethod : klarnaPaymentMethod
     }
 
     static var genericPaymentMethod = ClientSessionRequestBody.PaymentMethod(
@@ -97,7 +102,9 @@ struct MerchantMockDataManager {
             extraMerchantData: extraMerchantData,
             captureVaultedCardCvv: false,
             merchantName: nil,
-            networks: nil))
+            networks: nil
+        )
+    )
 
     static var extraMerchantData: ExtraMerchantData = ExtraMerchantData(
         subscription: [
@@ -105,12 +112,15 @@ struct MerchantMockDataManager {
                 subscriptionName: "Implant_lenses",
                 startTime: "2020-11-24T15:00",
                 endTime: "2021-11-24T15:00",
-                autoRenewalOfSubscription: false)
+                autoRenewalOfSubscription: false
+            )
         ],
         customerAccountInfo: [
             ExtraMerchantData.CustomerAccountInfo(
                 uniqueAccountIdentifier: "Owen Owenson",
                 accountRegistrationDate: "2020-11-24T15:00",
-                accountLastModified: "2020-11-24T15:00")
-        ])
+                accountLastModified: "2020-11-24T15:00"
+            )
+        ]
+    )
 }

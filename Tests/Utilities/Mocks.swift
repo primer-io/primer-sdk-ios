@@ -397,6 +397,16 @@ extension MockAppState {
         ]) { _, new in new })
     }
 
+    static var mockClientTokenWithQRCode: String {
+        // swiftlint:disable:next line_length
+        let minimalPNGBase64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
+        return try! jwtFactory.create(payload: mockSandboxPayload.merging([
+            "intent": "QR_CODE",
+            "statusUrl": "https://localhost/status",
+            "qrCode": minimalPNGBase64
+        ]) { _, new in new })
+    }
+
     static var mockClientTokenWithVoucher: String {
         try! jwtFactory.create(payload: mockSandboxPayload.merging([
             "intent": "CHECKOUT",

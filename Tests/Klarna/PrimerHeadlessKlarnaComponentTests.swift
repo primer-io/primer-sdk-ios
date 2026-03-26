@@ -21,7 +21,7 @@ final class PrimerHeadlessKlarnaComponentTests: XCTestCase {
 
     var errorResult: PrimerSDK.PrimerError? {
         didSet {
-            guard let errorResult = errorResult,
+            guard let errorResult,
                   let handler = receiveErrorDecisionHandler else { return }
             handler(errorResult)
         }
@@ -29,7 +29,7 @@ final class PrimerHeadlessKlarnaComponentTests: XCTestCase {
 
     var stepType: StepDelegationType? {
         didSet {
-            guard let stepType = stepType,
+            guard let stepType,
                   let handler = stepTypeDecisionHandler else { return }
             handler(stepType)
         }

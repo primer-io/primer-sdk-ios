@@ -1,7 +1,7 @@
 //
 //  FormPaymentMethodTokenizationViewModel+FormViews.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable file_length
@@ -76,11 +76,13 @@ extension FormPaymentMethodTokenizationViewModel {
             let dueDateAttributedString = NSMutableAttributedString()
             let prefix = NSAttributedString(
                 string: Strings.AccountInfoPaymentView.dueAt,
-                attributes: [NSAttributedString.Key.foregroundColor: UIColor.primerGray600])
+                attributes: [NSAttributedString.Key.foregroundColor: UIColor.primerGray600]
+            )
             let formatter = DateFormatter().withExpirationDisplayDateFormat()
             let dueAtDate = NSAttributedString(
                 string: formatter.string(from: expDate),
-                attributes: [NSAttributedString.Key.foregroundColor: UIColor.black])
+                attributes: [NSAttributedString.Key.foregroundColor: UIColor.black]
+            )
             dueDateAttributedString.append(prefix)
             dueDateAttributedString.append(NSAttributedString(string: " ", attributes: nil))
             dueDateAttributedString.append(dueAtDate)
@@ -97,10 +99,12 @@ extension FormPaymentMethodTokenizationViewModel {
         accountNumberInfoContainerStackView.axis = .vertical
         accountNumberInfoContainerStackView.spacing = 12.0
         accountNumberInfoContainerStackView.addBackground(color: .primerGray100)
-        accountNumberInfoContainerStackView.layoutMargins = UIEdgeInsets(top: spacing,
-                                                                         left: spacing,
-                                                                         bottom: spacing,
-                                                                         right: spacing)
+        accountNumberInfoContainerStackView.layoutMargins = UIEdgeInsets(
+            top: spacing,
+            left: spacing,
+            bottom: spacing,
+            right: spacing
+        )
         accountNumberInfoContainerStackView.isLayoutMarginsRelativeArrangement = true
         accountNumberInfoContainerStackView.layer.cornerRadius = PrimerDimensions.cornerRadius
 
@@ -116,10 +120,12 @@ extension FormPaymentMethodTokenizationViewModel {
         accountNumberStackView.spacing = 12.0
         accountNumberStackView.heightAnchor.constraint(equalToConstant: 56.0).isActive = true
         accountNumberStackView.addBackground(color: .white)
-        accountNumberStackView.layoutMargins = UIEdgeInsets(top: spacing,
-                                                            left: spacing,
-                                                            bottom: spacing,
-                                                            right: spacing)
+        accountNumberStackView.layoutMargins = UIEdgeInsets(
+            top: spacing,
+            left: spacing,
+            bottom: spacing,
+            right: spacing
+        )
         accountNumberStackView.layer.cornerRadius = PrimerDimensions.cornerRadius / 2
         accountNumberStackView.layer.borderColor = UIColor.primerGray200.cgColor
         accountNumberStackView.layer.borderWidth = 2.0
@@ -227,13 +233,15 @@ extension FormPaymentMethodTokenizationViewModel {
             let expiresAtAttributedString = NSMutableAttributedString()
             let prefix = NSAttributedString(
                 string: Strings.VoucherInfoPaymentView.expiresAt,
-                attributes: [NSAttributedString.Key.foregroundColor: UIColor.primerGray600])
+                attributes: [NSAttributedString.Key.foregroundColor: UIColor.primerGray600]
+            )
             let formatter = DateFormatter()
             formatter.dateStyle = .medium
             formatter.timeStyle = .short
             let expiresAtDate = NSAttributedString(
                 string: formatter.string(from: expDate),
-                attributes: [NSAttributedString.Key.foregroundColor: UIColor.black])
+                attributes: [NSAttributedString.Key.foregroundColor: UIColor.black]
+            )
             expiresAtAttributedString.append(prefix)
             expiresAtAttributedString.append(NSAttributedString(string: " ", attributes: nil))
             expiresAtAttributedString.append(expiresAtDate)
@@ -302,8 +310,10 @@ extension FormPaymentMethodTokenizationViewModel {
 
     // MARK: Payment Pending Info View
 
-    func makePaymentPendingInfoView(logo: UIImage? = nil,
-                                    message: String) -> PrimerFormView {
+    func makePaymentPendingInfoView(
+        logo: UIImage? = nil,
+        message: String
+    ) -> PrimerFormView {
 
         // The top logo
 
@@ -358,8 +368,8 @@ extension FormPaymentMethodTokenizationViewModel {
 
             guard let paymentMethodType = PrimerPaymentMethodType(rawValue: config.type),
                   let message = needingExternalCompletionPaymentMethodDictionary
-                  .first(where: { $0.key == paymentMethodType })?
-                  .value
+                    .first(where: { $0.key == paymentMethodType })?
+                    .value
             else { return }
 
             let infoView = makePaymentPendingInfoView(message: message)
