@@ -161,6 +161,7 @@ final class CheckoutComponentsAnalyticsInteractorTests: XCTestCase {
         let service = SpyAnalyticsService()
         let interactor = DefaultAnalyticsInteractor(eventService: service)
         let metadata: AnalyticsEventMetadata = .redirect(RedirectEvent(
+            paymentMethod: "PAYPAL",
             destinationUrl: "https://example.com/redirect"
         ))
 

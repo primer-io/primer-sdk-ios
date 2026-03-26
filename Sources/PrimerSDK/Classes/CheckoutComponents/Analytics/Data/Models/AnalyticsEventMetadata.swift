@@ -56,13 +56,13 @@ public struct ThreeDSEvent {
   public let locale: String
   public let paymentMethod: String
   public let provider: String
-  public let response: String
+  public let response: String?
 
   public init(
     locale: String = GeneralEvent.formattedCurrentLocale,
     paymentMethod: String,
     provider: String,
-    response: String
+    response: String? = nil
   ) {
     self.locale = locale
     self.paymentMethod = paymentMethod
@@ -74,13 +74,16 @@ public struct ThreeDSEvent {
 /// Metadata for third-party redirect events
 public struct RedirectEvent {
   public let locale: String
+  public let paymentMethod: String
   public let destinationUrl: String
 
   public init(
     locale: String = GeneralEvent.formattedCurrentLocale,
+    paymentMethod: String,
     destinationUrl: String
   ) {
     self.locale = locale
+    self.paymentMethod = paymentMethod
     self.destinationUrl = destinationUrl
   }
 }
@@ -102,6 +105,7 @@ extension AnalyticsEventMetadata {
     switch self {
     case let .payment(event): event.paymentMethod
     case let .threeDS(event): event.paymentMethod
+    case let .redirect(event): event.paymentMethod
     default: nil
     }
   }

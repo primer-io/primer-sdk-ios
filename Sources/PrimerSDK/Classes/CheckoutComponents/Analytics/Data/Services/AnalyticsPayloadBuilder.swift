@@ -25,15 +25,15 @@ struct AnalyticsPayloadBuilder {
       sdkVersion: config.sdkVersion,
       userAgent: UIDevice.userAgent,
       eventType: nil,
-      userLocale: metadata.map(\.locale),
+      userLocale: metadata?.locale ?? GeneralEvent.formattedCurrentLocale,
       paymentMethod: metadata?.paymentMethod,
       paymentId: metadata?.paymentId,
       redirectDestinationUrl: metadata?.redirectDestinationUrl,
       threedsProvider: metadata?.threedsProvider,
       threedsResponse: metadata?.threedsResponse,
       browser: nil,
-      device: metadata != nil ? UIDevice.model.rawValue : nil,
-      deviceType: metadata != nil ? UIDevice.deviceType : nil
+      device: UIDevice.model.rawValue,
+      deviceType: UIDevice.deviceType
     )
   }
 }

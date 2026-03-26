@@ -123,7 +123,7 @@ final class LogPayloadBuilderTests: XCTestCase {
         let deviceInfo = json["device_info"] as? [String: Any]
         let networkType = deviceInfo?["network_type"] as? String
 
-        XCTAssertTrue(["WIFI", "CELLULAR", "NONE"].contains(networkType ?? ""))
+        XCTAssertTrue(["wifi", "cellular", "none"].contains(networkType ?? ""))
     }
 
     func test_buildInfoPayload_extractsInitDurationMsFromUserInfo() throws {

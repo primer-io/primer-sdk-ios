@@ -71,6 +71,7 @@ final class AnalyticsPayloadBuilderTests: XCTestCase {
         let eventType = AnalyticsEventType.paymentRedirectToThirdParty
         let config = makeTestConfig()
         let metadata: AnalyticsEventMetadata = .redirect(RedirectEvent(
+            paymentMethod: "PAYPAL",
             destinationUrl: "https://example.com/redirect"
         ))
 
@@ -123,9 +124,9 @@ final class AnalyticsPayloadBuilderTests: XCTestCase {
         XCTAssertNotNil(payload.userAgent)
         XCTAssertTrue(payload.userAgent.contains("iOS/"))
 
-        // But device and deviceType should be nil for SDK lifecycle events (nil metadata)
-        XCTAssertNil(payload.device)
-        XCTAssertNil(payload.deviceType)
+        // device and deviceType are always populated from system APIs
+        XCTAssertNotNil(payload.device)
+        XCTAssertNotNil(payload.deviceType)
     }
 
     func testBuildPayload_WithMetadata_AutoFillsDeviceInfo() {
@@ -165,7 +166,7 @@ final class AnalyticsPayloadBuilderTests: XCTestCase {
         XCTAssertEqual(payload.userLocale, "fr-FR")
     }
 
-    func testBuildPayload_WithoutMetadata_DoesNotIncludeLocale() {
+    func testBuildPayload_WithoutMetadata_IncludesSystemLocale() {
         // Given
         let eventType = AnalyticsEventType.sdkInitStart
         let config = makeTestConfig()
@@ -177,8 +178,8 @@ final class AnalyticsPayloadBuilderTests: XCTestCase {
             config: config
         )
 
-        // Then - should not include locale for SDK lifecycle events
-        XCTAssertNil(payload.userLocale)
+        // Then - locale is always populated from system APIs
+        XCTAssertNotNil(payload.userLocale)
     }
 
     func testBuildPayload_GeneratesUniqueIds() {
