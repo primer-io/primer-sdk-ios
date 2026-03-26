@@ -228,7 +228,7 @@ final class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
             return .init(shippingMethods: nil, selectedShippingMethodOrderItem: nil)
         }
 
-        var factor: NSDecimalNumber = if AppState.current.currency?.isZeroDecimal == true {
+        let factor: NSDecimalNumber = if AppState.current.currency?.isZeroDecimal == true {
             1
         } else {
             100

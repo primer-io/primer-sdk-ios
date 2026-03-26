@@ -131,7 +131,7 @@ extension UITextField {
       ?? UIColor(CheckoutColors.textPlaceholder(tokens: tokens))
     attributedPlaceholder = NSAttributedString(
       string: placeholder,
-      attributes: [.foregroundColor: placeholderColor, .font: font]
+      attributes: [.foregroundColor: placeholderColor, .font: font as Any]
     )
 
     // Add keyboard accessory view with "Done" button

@@ -256,7 +256,7 @@ public final class DefaultAchScope: PrimerAchScope, ObservableObject, LogReporte
   }
 
   private func patchUserDetailsAndCreateBankCollector() async {
-    guard let checkoutScope else {
+    guard checkoutScope != nil else {
       logger.warn(message: "ACH checkout scope was deallocated before patching user details")
       return
     }

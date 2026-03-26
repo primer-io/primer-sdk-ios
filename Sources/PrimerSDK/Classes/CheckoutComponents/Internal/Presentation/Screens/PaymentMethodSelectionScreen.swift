@@ -134,7 +134,7 @@ struct PaymentMethodSelectionScreen: View, LogReporter {
   private func observeState() {
     observationTask?.cancel()
     observationTask = Task {
-      for await state in await scope.state {
+      for await state in scope.state {
         await MainActor.run {
           selectionState = state
           if !state.paymentMethods.isEmpty {

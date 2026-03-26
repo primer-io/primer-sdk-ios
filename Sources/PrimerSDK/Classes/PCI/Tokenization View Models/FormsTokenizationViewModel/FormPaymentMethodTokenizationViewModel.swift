@@ -875,7 +875,7 @@ extension FormPaymentMethodTokenizationViewModel: UITextFieldDelegate {
             return false
         }
 
-        var query: String = if string.isEmpty {
+        let query: String = if string.isEmpty {
             String((textField.text ?? "").dropLast())
         } else {
             (textField.text ?? "") + string

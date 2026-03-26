@@ -103,7 +103,7 @@ extension ContainerProtocol {
     _ factoryType: F.Type,
     policy: ContainerRetainPolicy = .singleton,
     name: String? = nil,
-    factory: @escaping (ContainerProtocol) async throws -> F
+    factory: @Sendable @escaping (ContainerProtocol) async throws -> F
   ) async throws -> Self {
     let builder = register(F.self)
     let namedBuilder = name != nil ? builder.named(name!) : builder

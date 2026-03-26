@@ -70,7 +70,7 @@ public struct SelectCountryProvider<Content: View>: View, LogReporter {
     guard let countryScope else { return }
 
     for await state in countryScope.state {
-      await handleStateChange(state)
+      handleStateChange(state)
     }
   }
 

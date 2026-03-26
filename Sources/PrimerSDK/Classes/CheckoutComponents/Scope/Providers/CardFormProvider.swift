@@ -79,7 +79,7 @@ public struct CardFormProvider<Content: View>: View, LogReporter {
     guard let checkoutScope else { return }
 
     for await state in checkoutScope.state {
-      await handleStateChange(state)
+      handleStateChange(state)
     }
   }
 

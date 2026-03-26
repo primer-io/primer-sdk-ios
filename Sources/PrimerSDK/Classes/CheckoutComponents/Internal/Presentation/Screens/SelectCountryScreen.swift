@@ -21,7 +21,7 @@ struct SelectCountryScreen: View, LogReporter {
     }
     .environment(\.primerSelectCountryScope, scope)
     .task {
-      for await state in await scope.state {
+      for await state in scope.state {
         countryState = state
       }
     }

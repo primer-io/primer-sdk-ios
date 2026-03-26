@@ -74,7 +74,7 @@ public struct PaymentMethodSelectionProvider<Content: View>: View, LogReporter {
   private func observePaymentMethodSelection(selectionScope: PrimerPaymentMethodSelectionScope)
     async {
     for await state in selectionScope.state {
-      await handleSelectionStateChange(state)
+      handleSelectionStateChange(state)
     }
   }
 
@@ -83,7 +83,7 @@ public struct PaymentMethodSelectionProvider<Content: View>: View, LogReporter {
     guard let checkoutScope else { return }
 
     for await state in checkoutScope.state {
-      await handleCheckoutStateChange(state)
+      handleCheckoutStateChange(state)
     }
   }
 

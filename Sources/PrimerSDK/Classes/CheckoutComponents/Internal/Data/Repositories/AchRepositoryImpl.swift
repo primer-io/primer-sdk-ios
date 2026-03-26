@@ -149,7 +149,7 @@ final class AchRepositoryImpl: AchRepository, LogReporter, @unchecked Sendable {
       emailAddress: emailAddress
     )
 
-    return await PrimerStripeCollectorViewController.getCollectorViewController(
+    return PrimerStripeCollectorViewController.getCollectorViewController(
       params: stripeParams,
       delegate: self
     )

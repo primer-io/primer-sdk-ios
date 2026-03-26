@@ -4,7 +4,7 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import PassKit
+@preconcurrency import PassKit
 import SwiftUI
 
 @available(iOS 15.0, *)
@@ -271,10 +271,11 @@ final class ApplePayAuthorizationCoordinator: NSObject, PKPaymentAuthorizationCo
     // Complete the authorization with success
     completion(PKPaymentAuthorizationResult(status: .success, errors: nil))
 
-    // Dismiss and resume continuation
-    controller.dismiss { [weak self] in
-      self?.authorizationContinuation?.resume(returning: payment)
-      self?.authorizationContinuation = nil
+    // Capture and clear continuation before dismiss to avoid @MainActor access in @Sendable closure
+    let continuation = authorizationContinuation
+    authorizationContinuation = nil
+    controller.dismiss {
+      continuation?.resume(returning: payment)
     }
   }
 }
