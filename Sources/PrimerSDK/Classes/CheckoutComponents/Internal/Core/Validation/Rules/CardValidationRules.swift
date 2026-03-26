@@ -55,8 +55,7 @@ final class CardNumberRule: ValidationRule {
 
       if detectedNetwork != .unknown,
         let validation = detectedNetwork.validation,
-        !validation.lengths.contains(cleanedNumber.count)
-      {
+        !validation.lengths.contains(cleanedNumber.count) {
         let error = ErrorMessageResolver.createInvalidFieldError(for: .cardNumber)
         return .invalid(error: error)
       }

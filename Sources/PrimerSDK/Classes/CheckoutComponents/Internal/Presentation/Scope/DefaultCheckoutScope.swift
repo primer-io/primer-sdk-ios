@@ -210,8 +210,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
         updateState(.ready(totalAmount: totalAmount, currencyCode: currencyCode))
 
         if availablePaymentMethods.count == 1,
-          let singlePaymentMethod = availablePaymentMethods.first
-        {
+          let singlePaymentMethod = availablePaymentMethods.first {
           updateNavigationState(.paymentMethod(singlePaymentMethod.type))
         } else {
           updateNavigationState(.paymentMethodSelection)
@@ -277,8 +276,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
 
   private func extractFailureMetadata(from error: PrimerError) -> AnalyticsEventMetadata {
     if case let .paymentFailed(paymentMethodType, paymentId, _, _, _) = error,
-      let paymentMethod = paymentMethodType
-    {
+      let paymentMethod = paymentMethodType {
       return .payment(
         PaymentEvent(
           paymentMethod: paymentMethod,
@@ -394,8 +392,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
 
         // Only update if the state has actually changed to avoid loops
         if case let .failure(currentError) = navigationState,
-          case let .failure(newError) = newNavigationState
-        {
+          case let .failure(newError) = newNavigationState {
           // For error states, compare messages to avoid redundant updates
           if currentError.localizedDescription != newError.localizedDescription {
             updateNavigationState(newNavigationState, syncToNavigator: false)
@@ -464,8 +461,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
 
   public func getPaymentMethodScope<T: PrimerPaymentMethodScope>(_ scopeType: T.Type) -> T? {
     if let cachedScope = paymentMethodScopeCache.values.first(where: { $0 is T })
-      as? T
-    {
+      as? T {
       currentPaymentMethodScope = cachedScope
       return cachedScope
     }
@@ -646,8 +642,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
 
     // Clear selection if the selected method was deleted
     if let selectedId = selectedVaultedPaymentMethod?.id,
-      !methods.contains(where: { $0.id == selectedId })
-    {
+      !methods.contains(where: { $0.id == selectedId }) {
       selectedVaultedPaymentMethod = nil
     }
 

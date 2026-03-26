@@ -94,7 +94,7 @@ struct CheckoutScopeObserver: View, LogReporter {
         SplashScreen()
       }
     } else {
-      let _ = logger.debug(message: "⏭️ [CheckoutComponents] Init screen disabled - skipping loading view")
+      _ = logger.debug(message: "⏭️ [CheckoutComponents] Init screen disabled - skipping loading view")
       EmptyView()
     }
   }
@@ -120,8 +120,7 @@ struct CheckoutScopeObserver: View, LogReporter {
       onSelect: { method in
         scope.setSelectedVaultedPaymentMethod(method)
         if let selectionScope = scope.paymentMethodSelection
-          as? DefaultPaymentMethodSelectionScope
-        {
+          as? DefaultPaymentMethodSelectionScope {
           selectionScope.collapsePaymentMethods()
         }
         scope.checkoutNavigator.navigateBack()
@@ -146,7 +145,7 @@ struct CheckoutScopeObserver: View, LogReporter {
         scope: selectionScope
       )
     } else {
-      let _ = {
+      _ = {
         logger.error(
           message: "Cannot cast paymentMethodSelection to DefaultPaymentMethodSelectionScope")
         scope.checkoutNavigator.navigateBack()
@@ -184,7 +183,7 @@ struct CheckoutScopeObserver: View, LogReporter {
         }
       }
     } else {
-      let _ = logger.debug(message: "⏭️ [CheckoutComponents] Success screen disabled - auto-dismissing")
+      _ = logger.debug(message: "⏭️ [CheckoutComponents] Success screen disabled - auto-dismissing")
       EmptyView().onAppear {
         DispatchQueue.main.async {
           onCompletion?(scope.currentState)
@@ -212,7 +211,7 @@ struct CheckoutScopeObserver: View, LogReporter {
         )
       }
     } else {
-      let _ = logger.debug(message: "⏭️ [CheckoutComponents] Error screen disabled - auto-dismissing")
+      _ = logger.debug(message: "⏭️ [CheckoutComponents] Error screen disabled - auto-dismissing")
       EmptyView().onAppear {
         DispatchQueue.main.async {
           onCompletion?(scope.currentState)

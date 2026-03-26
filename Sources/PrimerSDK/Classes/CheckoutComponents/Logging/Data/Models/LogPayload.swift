@@ -34,26 +34,12 @@ struct DeviceInfoMetadata: Codable, Sendable {
   let locale: String
   let timezone: String
   let networkType: String
-
-  init(model: String, osVersion: String, locale: String, timezone: String, networkType: String) {
-    self.model = model
-    self.osVersion = osVersion
-    self.locale = locale
-    self.timezone = timezone
-    self.networkType = networkType
-  }
 }
 
 struct AppMetadata: Codable, Sendable {
   let appName: String
   let appVersion: String
   let appId: String
-
-  init(appName: String, appVersion: String, appId: String) {
-    self.appName = appName
-    self.appVersion = appVersion
-    self.appId = appId
-  }
 }
 
 struct SessionMetadata: Codable, Sendable {

@@ -235,7 +235,7 @@ struct PrimerFont {
       .name: "InterVariable",
       kCTFontVariationAttribute as UIFontDescriptor.AttributeName: [
         2_003_265_652: weight  // 'wght' variation axis
-      ],
+      ]
     ])
 
     let font = UIFont(descriptor: descriptor, size: size)

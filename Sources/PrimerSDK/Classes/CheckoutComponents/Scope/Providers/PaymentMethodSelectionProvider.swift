@@ -72,8 +72,7 @@ public struct PaymentMethodSelectionProvider<Content: View>: View, LogReporter {
   /// Observes payment method selection state changes and invokes appropriate callbacks.
   /// Uses iOS-native async/await pattern with AsyncStream.
   private func observePaymentMethodSelection(selectionScope: PrimerPaymentMethodSelectionScope)
-    async
-  {
+    async {
     for await state in selectionScope.state {
       await handleSelectionStateChange(state)
     }
@@ -93,8 +92,7 @@ public struct PaymentMethodSelectionProvider<Content: View>: View, LogReporter {
   private func handleSelectionStateChange(_ state: PrimerPaymentMethodSelectionState) {
     // Check if a NEW payment method was selected (different from last seen)
     if let selectedMethod = state.selectedPaymentMethod,
-      selectedMethod.type != lastSelectedPaymentMethodType
-    {
+      selectedMethod.type != lastSelectedPaymentMethodType {
       lastSelectedPaymentMethodType = selectedMethod.type
       onPaymentMethodSelected?(selectedMethod.type)
     }

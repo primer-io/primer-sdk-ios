@@ -52,8 +52,7 @@ final class OneShotContinuation<T>: @unchecked Sendable {
 private class PaymentCompletionHandler: NSObject,
   @preconcurrency PrimerHeadlessUniversalCheckoutDelegate,
   @preconcurrency PrimerHeadlessUniversalCheckoutRawDataManagerDelegate,
-  LogReporter
-{
+  LogReporter {
 
   private let completion: (Result<PaymentResult, Error>) -> Void
   private var hasCompleted = false
@@ -180,12 +179,11 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
   // MARK: - Co-Badged Cards Support
 
   private lazy var rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager? = {
-    let manager = try? PrimerHeadlessUniversalCheckout.RawDataManager(
+    try? PrimerHeadlessUniversalCheckout.RawDataManager(
       paymentMethodType: "PAYMENT_CARD",
       delegate: self,
       isUsedInDropIn: false
     )
-    return manager
   }()
 
   // MARK: - Vault Support
@@ -362,12 +360,10 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
 
       if let surchargeData = networkData["surcharge"] as? [String: Any],
         let surchargeAmount = surchargeData["amount"] as? Int,
-        surchargeAmount > 0
-      {
+        surchargeAmount > 0 {
         networkSurcharges[networkType] = surchargeAmount
       } else if let surcharge = networkData["surcharge"] as? Int,
-        surcharge > 0
-      {
+        surcharge > 0 {
         networkSurcharges[networkType] = surcharge
       }
     }
@@ -381,12 +377,10 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
     for (networkType, networkData) in networksDict {
       if let surchargeData = networkData["surcharge"] as? [String: Any],
         let surchargeAmount = surchargeData["amount"] as? Int,
-        surchargeAmount > 0
-      {
+        surchargeAmount > 0 {
         networkSurcharges[networkType] = surchargeAmount
       } else if let surcharge = networkData["surcharge"] as? Int,
-        surcharge > 0
-      {
+        surcharge > 0 {
         networkSurcharges[networkType] = surcharge
       }
     }
@@ -639,8 +633,7 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
   // MARK: - Vault Methods
 
   func fetchVaultedPaymentMethods() async throws -> [PrimerHeadlessUniversalCheckout
-    .VaultedPaymentMethod]
-  {
+    .VaultedPaymentMethod] {
     try await withCheckedThrowingContinuation { continuation in
       vaultManager.fetchVaultedPaymentMethods { [weak self] vaultedPaymentMethods, error in
         if let error {
@@ -736,7 +729,7 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
       "paymentMethodType": "PAYMENT_CARD",
       "binData": [
         "network": network ?? "OTHER"
-      ],
+      ]
     ]
 
     let actions = [ClientSession.Action.selectPaymentMethodActionWithParameters(params)]
@@ -787,7 +780,7 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
 
   private func extractRedirectURL(from info: PrimerCheckoutAdditionalInfo) -> String? {
     let candidateKeys = [
-      "redirectUrl", "url", "deeplinkUrl", "deepLinkUrl", "qrCodeUrl", "link", "href",
+      "redirectUrl", "url", "deeplinkUrl", "deepLinkUrl", "qrCodeUrl", "link", "href"
     ]
 
     for key in candidateKeys {
@@ -801,8 +794,7 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
 
     for child in Mirror(reflecting: info).children {
       if let nestedInfo = child.value as? PrimerCheckoutAdditionalInfo,
-        let nestedUrl = extractRedirectURL(from: nestedInfo)
-      {
+        let nestedUrl = extractRedirectURL(from: nestedInfo) {
         return nestedUrl
       }
 
@@ -920,8 +912,7 @@ extension HeadlessRepositoryImpl: @preconcurrency PrimerHeadlessUniversalCheckou
     // Extract networks following traditional SDK pattern
     let primerNetworks: [PrimerCardNetwork] = if metadataModel.source == .remote,
       let selectable = metadataModel.selectableCardNetworks?.items,
-      !selectable.isEmpty
-    {
+      !selectable.isEmpty {
       selectable
     } else if let preferred = metadataModel.detectedCardNetworks.preferred {
       [preferred]

@@ -307,7 +307,7 @@ struct VaultedPaymentMethodCard: View {
           externalPayerInfo: [
             "email": "john.appleseed@gmail.com",
             "firstName": "John",
-            "lastName": "Appleseed",
+            "lastName": "Appleseed"
           ]
         )
       )

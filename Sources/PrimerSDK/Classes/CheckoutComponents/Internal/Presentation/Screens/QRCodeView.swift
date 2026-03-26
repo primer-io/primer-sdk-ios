@@ -131,8 +131,7 @@ struct QRCodeView: View, LogReporter {
   private func makeAmountLabel() -> some View {
     Group {
       if let amount = AppState.current.amount,
-        let currency = AppState.current.currency
-      {
+        let currency = AppState.current.currency {
         Text(amount.toCurrencyString(currency: currency))
           .font(.system(size: Layout.amountFontSize, weight: .bold))
           .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))

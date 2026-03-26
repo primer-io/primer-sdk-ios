@@ -116,8 +116,7 @@ public final class DIContainer: LogReporter {
   }
 
   public static func setScopedContainer(_ container: any ContainerProtocol, for scopeId: String)
-    async
-  {
+    async {
     await shared.storage.setScopedContainer(container, for: scopeId)
   }
 

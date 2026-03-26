@@ -95,8 +95,7 @@ extension PrimerInputFieldContainer {
   private func announceError(_ message: String) {
     Task { @MainActor in
       if let container = DIContainer.currentSync,
-        let announcementService = try? container.resolveSync(AccessibilityAnnouncementService.self)
-      {
+        let announcementService = try? container.resolveSync(AccessibilityAnnouncementService.self) {
         announcementService.announceError(message)
       }
     }

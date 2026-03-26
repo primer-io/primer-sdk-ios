@@ -36,7 +36,7 @@ struct KlarnaPaymentViewRepresentable: UIViewRepresentable {
       paymentView.topAnchor.constraint(equalTo: container.topAnchor),
       paymentView.leadingAnchor.constraint(equalTo: container.leadingAnchor),
       paymentView.trailingAnchor.constraint(equalTo: container.trailingAnchor),
-      paymentView.bottomAnchor.constraint(equalTo: container.bottomAnchor),
+      paymentView.bottomAnchor.constraint(equalTo: container.bottomAnchor)
     ])
   }
 }

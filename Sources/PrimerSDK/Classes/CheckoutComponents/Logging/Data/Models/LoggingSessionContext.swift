@@ -136,8 +136,7 @@ public actor LoggingSessionContext {
   private func parsePrimerAccountId() -> String? {
     // First try from API configuration
     if let configAccountId = PrimerAPIConfigurationModule.apiConfiguration?.primerAccountId,
-      !configAccountId.isEmpty
-    {
+      !configAccountId.isEmpty {
       return configAccountId
     }
 

@@ -35,8 +35,7 @@ public protocol PrimerSelectCountryScope: AnyObject {
     (
       (_ query: String, _ onQueryChange: @escaping (String) -> Void, _ placeholder: String) ->
         AnyView
-    )?
-  { get set }
+    )? { get set }
 
   var countryItem: CountryItemComponent? { get set }
 

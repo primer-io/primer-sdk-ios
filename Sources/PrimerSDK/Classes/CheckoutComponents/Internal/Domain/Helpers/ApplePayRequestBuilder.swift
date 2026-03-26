@@ -44,8 +44,7 @@ struct ApplePayRequestBuilder {
   }
 
   private static func createOrderItems(from clientSession: ClientSession.APIResponse) throws
-    -> [ApplePayOrderItem]
-  {
+    -> [ApplePayOrderItem] {
     var orderItems: [ApplePayOrderItem] = []
 
     let merchantName =

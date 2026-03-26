@@ -132,8 +132,7 @@ struct LogPayloadBuilder: LogPayloadBuilding {
   }
 
   private static func buildSessionMetadata(sessionData: LoggingSessionContext.SessionData)
-    -> SessionMetadata
-  {
+    -> SessionMetadata {
     SessionMetadata(
       paymentIntent: buildPaymentIntent(),
       availablePaymentMethods: buildAvailablePaymentMethods(),

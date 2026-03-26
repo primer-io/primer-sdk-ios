@@ -124,8 +124,7 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
 
       // Only allow numbers and return for non-numeric input except deletion
       if !string.isEmpty,
-        !CharacterSet.decimalDigits.isSuperset(of: CharacterSet(charactersIn: string))
-      {
+        !CharacterSet.decimalDigits.isSuperset(of: CharacterSet(charactersIn: string)) {
         return false
       }
 
@@ -153,8 +152,7 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
       if string.isEmpty {
         // If deleting the separator, also remove the character before it
         if range.location == 2, range.length == 1, currentText.count >= 3,
-          currentText[currentText.index(currentText.startIndex, offsetBy: 2)] == "/"
-        {
+          currentText[currentText.index(currentText.startIndex, offsetBy: 2)] == "/" {
           return String(currentText.prefix(1))
         }
 
@@ -195,7 +193,7 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
     private func extractMonthAndYear(from text: String) {
       let parts = text.components(separatedBy: "/")
 
-      month = parts.count > 0 ? parts[0] : ""
+      month = !parts.isEmpty ? parts[0] : ""
       year = parts.count > 1 ? parts[1] : ""
 
       scope.updateExpiryMonth(month)

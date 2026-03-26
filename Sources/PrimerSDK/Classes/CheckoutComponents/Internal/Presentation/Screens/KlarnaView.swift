@@ -376,7 +376,7 @@ struct KlarnaView: View, LogReporter {
           response: Response.Body.Klarna.SessionCategory(
             identifier: "pay_later", name: "Pay in 30 days",
             descriptiveAssetUrl: "", standardAssetUrl: ""
-          )),
+          ))
       ]
       mockState = PrimerKlarnaState(step: step, categories: categories)
     }

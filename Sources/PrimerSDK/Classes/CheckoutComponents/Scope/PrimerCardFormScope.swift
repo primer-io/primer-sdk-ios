@@ -108,8 +108,7 @@ where State == PrimerCardFormState {
   var title: String? { get set }
   var screen: CardFormScreenComponent? { get set }
   var cobadgedCardsView:
-    ((_ availableNetworks: [String], _ selectNetwork: @escaping (String) -> Void) -> any View)?
-  { get set }
+    ((_ availableNetworks: [String], _ selectNetwork: @escaping (String) -> Void) -> any View)? { get set }
   var errorScreen: ErrorComponent? { get set }
 
   // MARK: - Submit Button Customization

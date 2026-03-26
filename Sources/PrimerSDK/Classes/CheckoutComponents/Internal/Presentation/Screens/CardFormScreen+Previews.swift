@@ -25,7 +25,7 @@
             .lastName,
             .email,
             .phoneNumber,
-            .otp,
+            .otp
           ]
         )
       )
@@ -52,7 +52,7 @@
             .lastName,
             .email,
             .phoneNumber,
-            .otp,
+            .otp
           ]
         )
       )

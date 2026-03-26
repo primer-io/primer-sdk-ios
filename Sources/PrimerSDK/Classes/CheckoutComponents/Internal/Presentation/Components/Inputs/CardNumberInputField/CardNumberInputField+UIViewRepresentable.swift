@@ -230,8 +230,7 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
       }
     }
 
-    private func calculateUnformattedPosition(upToIndex index: Int, in formattedText: String) -> Int
-    {
+    private func calculateUnformattedPosition(upToIndex index: Int, in formattedText: String) -> Int {
       var unformattedPos = 0
       for i in 0..<index where i < formattedText.count {
         let charIndex = formattedText.index(formattedText.startIndex, offsetBy: i)
@@ -288,8 +287,7 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
       }
       DispatchQueue.main.async {
         if let newPosition = textField.position(
-          from: textField.beginningOfDocument, offset: newCursorPosition)
-        {
+          from: textField.beginningOfDocument, offset: newCursorPosition) {
           textField.selectedTextRange = textField.textRange(from: newPosition, to: newPosition)
         }
       }
@@ -388,8 +386,7 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
 
       let network = CardNetwork(cardNumber: number)
       if network != .unknown, let validation = network.validation,
-        validation.lengths.contains(number.count)
-      {
+        validation.lengths.contains(number.count) {
         let validationResult = validationService.validateCardNumber(number)
         if validationResult.isValid {
           isValid = true

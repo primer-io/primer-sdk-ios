@@ -68,8 +68,7 @@ final class DefaultRulesFactory: RulesFactory {
   }
 
   func createAddressFieldRule(inputType: ValidationError.InputElementType, isRequired: Bool = true)
-    -> AddressFieldRule
-  {
+    -> AddressFieldRule {
     AddressFieldRule(inputType: inputType, isRequired: isRequired)
   }
 

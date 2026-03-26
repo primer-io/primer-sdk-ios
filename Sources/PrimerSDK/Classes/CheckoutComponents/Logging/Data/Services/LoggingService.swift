@@ -30,8 +30,7 @@ actor LoggingService: LogReporter {
   // MARK: - Public Methods
 
   func logErrorIfReportable(_ error: Error, message: String? = nil, userInfo: [String: Any]? = nil)
-    async
-  {
+    async {
     guard error.shouldReportToDatadog else {
       Self.logger.debug(message: "📊 [Logging] Skipping non-reportable error: \(error)")
       return

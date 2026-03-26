@@ -79,8 +79,7 @@ public struct SelectCountryProvider<Content: View>: View, LogReporter {
   private func handleStateChange(_ state: PrimerSelectCountryState) {
     // Check if a NEW country was selected (different from last seen)
     if let selectedCountry = state.selectedCountry,
-      selectedCountry.code != lastSelectedCountryCode
-    {
+      selectedCountry.code != lastSelectedCountryCode {
       lastSelectedCountryCode = selectedCountry.code
       onCountrySelected?(selectedCountry.code, selectedCountry.name)
     }

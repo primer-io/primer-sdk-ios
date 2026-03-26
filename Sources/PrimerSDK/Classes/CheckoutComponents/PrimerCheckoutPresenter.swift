@@ -12,23 +12,23 @@ public protocol PrimerCheckoutPresenterDelegate: AnyObject {
     /// Called when payment is successful
     /// - Parameter result: The payment result containing payment ID, status, and other details
     func primerCheckoutPresenterDidCompleteWithSuccess(_ result: PaymentResult)
-    
+
     /// Called when payment fails
     func primerCheckoutPresenterDidFailWithError(_ error: PrimerError)
-    
+
     /// Called when checkout is dismissed without completion
     func primerCheckoutPresenterDidDismiss()
-    
+
     // MARK: - 3DS Delegate Methods (Optional with default implementations)
-    
+
     /// Called when 3DS challenge is about to be presented
     /// - Parameter paymentMethodTokenData: The payment method token data requiring 3DS
     func primerCheckoutPresenterWillPresent3DSChallenge(
         _ paymentMethodTokenData: PrimerPaymentMethodTokenData)
-    
+
     /// Called when 3DS challenge UI is dismissed
     func primerCheckoutPresenterDidDismiss3DSChallenge()
-    
+
     /// Called when 3DS challenge completes (success or failure)
     /// - Parameters:
     ///   - success: Whether 3DS challenge was successful
@@ -46,11 +46,11 @@ extension PrimerCheckoutPresenterDelegate {
         _ paymentMethodTokenData: PrimerPaymentMethodTokenData
     ) {
     }
-    
+
     /// Override if you need 3DS challenge dismissal callbacks
     public func primerCheckoutPresenterDidDismiss3DSChallenge() {
     }
-    
+
     /// Override if you need 3DS challenge completion callbacks
     public func primerCheckoutPresenterDidComplete3DSChallenge(
         success: Bool, resumeToken: String?, error: Error?
@@ -66,32 +66,32 @@ extension PrimerCheckoutPresenterDelegate {
 @available(iOS 15.0, *)
 @MainActor
 @objc public final class PrimerCheckoutPresenter: NSObject {
-    
+
     // MARK: - Singleton
-    
+
     @objc public static let shared = PrimerCheckoutPresenter()
-    
+
     // MARK: - Properties
-    
+
     /// The currently active UIViewController hosting the SwiftUI checkout view
     /// This will always be a PrimerSwiftUIBridgeViewController that wraps the PrimerCheckout SwiftUI view
     private weak var activeCheckoutController: UIViewController?
-    
+
     /// Flag to prevent multiple simultaneous presentations
     private var isPresentingCheckout = false
-    
+
     private let logger = PrimerLogging.shared.logger
-    
+
     public weak var delegate: PrimerCheckoutPresenterDelegate?
-    
+
     // MARK: - Private Init
-    
+
     override private init() {
         super.init()
     }
-    
+
     // MARK: - Public API
-    
+
     /// Present the CheckoutComponents UI
     /// - Parameters:
     ///   - clientToken: The client token for the session
@@ -109,7 +109,7 @@ extension PrimerCheckoutPresenterDelegate {
             completion: completion
         )
     }
-    
+
     /// Present the CheckoutComponents UI
     /// - Parameters:
     ///   - clientToken: The client token for the session
@@ -131,7 +131,7 @@ extension PrimerCheckoutPresenterDelegate {
             completion: completion
         )
     }
-    
+
     /// Present the CheckoutComponents UI with full configuration
     /// - Parameters:
     ///   - clientToken: The client token for the session
@@ -157,7 +157,7 @@ extension PrimerCheckoutPresenterDelegate {
             completion: completion
         )
     }
-    
+
     /// Dismiss the CheckoutComponents UI
     /// - Parameters:
     ///   - animated: Whether to animate the dismissal
@@ -168,16 +168,16 @@ extension PrimerCheckoutPresenterDelegate {
     ) {
         shared.dismiss(animated: animated, completion: completion)
     }
-    
+
     // MARK: - Instance Methods
-    
+
     // MARK: - Sheet Configuration
-    
+
     private enum SheetSizing {
         static let minimumHeight: CGFloat = 200
         static let maximumScreenRatio: CGFloat = 0.9
     }
-    
+
     /// Configure sheet presentation for the bridge controller
     /// - Parameters:
     ///   - controller: The view controller to configure
@@ -186,20 +186,20 @@ extension PrimerCheckoutPresenterDelegate {
         for controller: UIViewController, settings: PrimerSettings
     ) {
         controller.modalPresentationStyle = .pageSheet
-        
+
         let dismissalMechanism = settings.uiOptions.dismissalMechanism
-        
+
         // isModalInPresentation = true DISABLES gestures (prevents accidental dismissal)
         // isModalInPresentation = false ENABLES gestures (allows dismissal)
         let gesturesEnabled = dismissalMechanism.contains(.gestures)
         controller.isModalInPresentation = !gesturesEnabled
-        
+
         guard let sheet = controller.sheetPresentationController else { return }
-        
+
         if let primerBridge = controller as? PrimerSwiftUIBridgeViewController {
             primerBridge.customSheetPresentationController = sheet
         }
-        
+
         if #available(iOS 16.0, *) {
             let customDetent = UISheetPresentationController.Detent.custom { [weak controller] context in
                 guard let controller else { return context.maximumDetentValue }
@@ -220,12 +220,12 @@ extension PrimerCheckoutPresenterDelegate {
         sheet.prefersScrollingExpandsWhenScrolledToEdge = false
         sheet.largestUndimmedDetentIdentifier = .medium
     }
-    
+
     /// Internal method for dismissing checkout (used by CheckoutCoordinator)
     func dismissCheckout() {
         dismissDirectly()
     }
-    
+
     func handlePaymentSuccess(_ result: PaymentResult) {
         logger.info(message: "Payment completed: \(result.paymentId)")
 
@@ -249,11 +249,11 @@ extension PrimerCheckoutPresenterDelegate {
             }
         }
     }
-    
+
     func handleCheckoutDismiss() {
         delegate?.primerCheckoutPresenterDidDismiss()
     }
-    
+
     private func presentCheckout(
         clientToken: String,
         from viewController: UIViewController,
@@ -267,9 +267,9 @@ extension PrimerCheckoutPresenterDelegate {
             completion?()
             return
         }
-        
+
         isPresentingCheckout = true
-        
+
         Task { @MainActor in
             // SDK initialization is now handled automatically by PrimerCheckout
             let bridgeController = PrimerSwiftUIBridgeViewController.createForCheckoutComponents(
@@ -293,20 +293,20 @@ extension PrimerCheckoutPresenterDelegate {
                     }
                 }
             )
-            
+
             activeCheckoutController = bridgeController
-            
+
             configureSheetPresentation(for: bridgeController, settings: primerSettings)
-            
+
             viewController.present(bridgeController, animated: true) { [weak self] in
                 self?.isPresentingCheckout = false
                 completion?()
             }
         }
     }
-    
+
     // MARK: - Direct Dismissal
-    
+
     func dismissDirectly(completion: (() -> Void)? = nil) {
         if let controller = activeCheckoutController {
             controller.dismiss(animated: true) { [weak self] in
@@ -318,7 +318,7 @@ extension PrimerCheckoutPresenterDelegate {
             completion?()
         }
     }
-    
+
     private func dismiss(animated: Bool, completion: (() -> Void)?) {
         guard activeCheckoutController != nil else {
             logger.debug(message: "No active checkout to dismiss")
@@ -333,14 +333,14 @@ extension PrimerCheckoutPresenterDelegate {
             completion?()
         }
     }
-    
+
 }
 
 // MARK: - Convenience Methods
 
 @available(iOS 15.0, *)
 extension PrimerCheckoutPresenter {
-    
+
     /// Present checkout with automatic view controller detection
     /// - Parameters:
     ///   - clientToken: The client token for the session
@@ -355,7 +355,7 @@ extension PrimerCheckoutPresenter {
             completion: completion
         )
     }
-    
+
     /// Present checkout with automatic view controller detection and custom settings
     /// - Parameters:
     ///   - clientToken: The client token for the session
@@ -372,12 +372,12 @@ extension PrimerCheckoutPresenter {
                 paymentMethodType: "CheckoutComponents",
                 reason: "No presenting view controller found"
             )
-            
+
             PrimerDelegateProxy.primerDidFailWithError(error, data: nil) { _ in
             }
             return
         }
-        
+
         presentCheckout(
             clientToken: clientToken,
             from: viewController,
@@ -385,22 +385,22 @@ extension PrimerCheckoutPresenter {
             completion: completion
         )
     }
-    
+
 }
 
 // MARK: - Integration Helpers
 
 @available(iOS 15.0, *)
 extension PrimerCheckoutPresenter {
-    
+
     @objc public static var isAvailable: Bool {
         true  // Since we're already in an @available(iOS 15.0, *) context
     }
-    
+
     @objc public static var isPresenting: Bool {
         shared.isPresentingCheckout || shared.activeCheckoutController != nil
     }
-    
+
     private func findPresentingViewController() -> UIViewController? {
         guard
             let windowScene = UIApplication.shared.connectedScenes
@@ -414,23 +414,21 @@ extension PrimerCheckoutPresenter {
 
         return findTopViewController(from: rootViewController)
     }
-    
+
     private func findTopViewController(from viewController: UIViewController) -> UIViewController {
         if let presented = viewController.presentedViewController {
             return findTopViewController(from: presented)
         }
-        
+
         if let navigation = viewController as? UINavigationController,
-           let top = navigation.topViewController
-        {
+           let top = navigation.topViewController {
             return findTopViewController(from: top)
         }
         if let tab = viewController as? UITabBarController,
-           let selected = tab.selectedViewController
-        {
+           let selected = tab.selectedViewController {
             return findTopViewController(from: selected)
         }
-        
+
         return viewController
     }
 }
@@ -439,7 +437,7 @@ extension PrimerCheckoutPresenter {
 
 @available(iOS 15.0, *)
 extension PrimerCheckoutPresenter {
-    
+
     /// Set the Primer delegate (uses the shared Primer.delegate)
     @objc public static var delegate: PrimerDelegate? {
         get { Primer.shared.delegate }

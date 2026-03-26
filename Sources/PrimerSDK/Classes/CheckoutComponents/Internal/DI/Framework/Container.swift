@@ -190,8 +190,7 @@ public actor Container: ContainerProtocol, LogReporter {
   }
 
   public nonisolated func registerIfNeeded<T>(_ type: T.Type, name: String? = nil) async
-    -> ContainerRegistrationBuilderImpl<T>?
-  {
+    -> ContainerRegistrationBuilderImpl<T>? {
     let key = TypeKey(type, name: name)
     let isRegistered = await isRegistered(key)
 
@@ -367,8 +366,7 @@ public actor Container: ContainerProtocol, LogReporter {
       // Build it and cast if possible
       if let any = try? await strategy(for: registration.policy)
         .instance(for: key, registration: registration, in: self),
-        let cast = any as? T
-      {
+        let cast = any as? T {
         result.append(cast)
       }
     }

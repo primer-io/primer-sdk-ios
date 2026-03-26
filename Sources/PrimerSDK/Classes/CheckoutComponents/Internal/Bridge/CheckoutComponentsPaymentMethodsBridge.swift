@@ -131,12 +131,10 @@ final class CheckoutComponentsPaymentMethodsBridge: GetPaymentMethodsInteractor,
 
       if let surchargeData = networkData["surcharge"] as? [String: Any],
         let surchargeAmount = surchargeData["amount"] as? Int,
-        surchargeAmount > 0
-      {
+        surchargeAmount > 0 {
         networkSurcharges[networkType] = surchargeAmount
       } else if let surcharge = networkData["surcharge"] as? Int,
-        surcharge > 0
-      {
+        surcharge > 0 {
         networkSurcharges[networkType] = surcharge
       }
     }
@@ -150,12 +148,10 @@ final class CheckoutComponentsPaymentMethodsBridge: GetPaymentMethodsInteractor,
     for (networkType, networkData) in networksDict {
       if let surchargeData = networkData["surcharge"] as? [String: Any],
         let surchargeAmount = surchargeData["amount"] as? Int,
-        surchargeAmount > 0
-      {
+        surchargeAmount > 0 {
         networkSurcharges[networkType] = surchargeAmount
       } else if let surcharge = networkData["surcharge"] as? Int,
-        surcharge > 0
-      {
+        surcharge > 0 {
         networkSurcharges[networkType] = surcharge
       }
     }

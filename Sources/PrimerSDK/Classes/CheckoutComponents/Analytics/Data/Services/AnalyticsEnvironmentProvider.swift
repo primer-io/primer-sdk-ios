@@ -12,7 +12,7 @@ struct AnalyticsEnvironmentProvider {
     .dev: "https://analytics.dev.data.primer.io/v1/sdk-analytic-events",
     .staging: "https://analytics.staging.data.primer.io/v1/sdk-analytic-events",
     .sandbox: "https://analytics.sandbox.data.primer.io/v1/sdk-analytic-events",
-    .production: "https://analytics.production.data.primer.io/v1/sdk-analytic-events",
+    .production: "https://analytics.production.data.primer.io/v1/sdk-analytic-events"
   ]
 
   func getEndpointURL(for environment: AnalyticsEnvironment) -> URL? {

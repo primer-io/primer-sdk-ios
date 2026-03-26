@@ -15,13 +15,11 @@ enum DesignTokensProcessor {
   // MARK: - Dictionary Operations
 
   static func mergeDictionaries(_ base: [String: Any], with override: [String: Any]) -> [String:
-    Any]
-  {
+    Any] {
     var merged = base
     for (key, overrideValue) in override {
       if let baseDict = base[key] as? [String: Any],
-        let overrideDict = overrideValue as? [String: Any]
-      {
+        let overrideDict = overrideValue as? [String: Any] {
         merged[key] = mergeDictionaries(baseDict, with: overrideDict)
       } else {
         merged[key] = overrideValue
@@ -97,8 +95,7 @@ enum DesignTokensProcessor {
       if let nested = value as? [String: Any] {
         result[key] = convertHexColors(in: nested)
       } else if let hex = value as? String, hex.hasPrefix("#"),
-        let colorArray = hexToColorArray(hex)
-      {
+        let colorArray = hexToColorArray(hex) {
         result[key] = colorArray
       } else {
         result[key] = value
@@ -167,11 +164,10 @@ enum DesignTokensProcessor {
   }
 
   static func resolveFlattenedReferences(in flatDict: [String: Any], source: [String: Any])
-    -> [String: Any]
-  {
+    -> [String: Any] {
     (0..<10).reduce(flatDict) { current, _ in
       var hasUnresolved = false
-      let resolved = current.reduce(into: [String: Any]()) { result, pair in
+      return current.reduce(into: [String: Any]()) { result, pair in
         let (key, value) = pair
         guard let str = value as? String, str.contains("{"), str.contains("}") else {
           result[key] = value
@@ -181,7 +177,6 @@ enum DesignTokensProcessor {
         result[key] = resolveReferencesInString(
           str, flatDict: current, source: source, hasUnresolved: &hasUnresolved)
       }
-      return resolved
     }
   }
 
@@ -210,8 +205,7 @@ enum DesignTokensProcessor {
       // Otherwise, replace reference in string
       if let resolved = flatDict[flatKey] ?? resolveReference(reference, in: source),
         var stringResult = result as? String,
-        let fullRange = Range(match.range, in: stringResult)
-      {
+        let fullRange = Range(match.range, in: stringResult) {
         stringResult.replaceSubrange(fullRange, with: "\(resolved)")
         result = stringResult
       } else {
@@ -238,7 +232,7 @@ enum DesignTokensProcessor {
   private static func evaluateExpression(_ expression: String) -> Double? {
     let trimmed = expression.trimmingCharacters(in: .whitespacesAndNewlines)
     let operators: [(Character, (Double, Double) -> Double)] = [
-      ("*", *), ("/", /), ("+", +), ("-", -),
+      ("*", *), ("/", /), ("+", +), ("-", -)
     ]
 
     for (symbol, operation) in operators {

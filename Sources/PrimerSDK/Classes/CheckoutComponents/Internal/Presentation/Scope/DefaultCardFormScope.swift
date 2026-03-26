@@ -320,8 +320,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     if let country = CountryCode.phoneNumberCountryCodes.first(where: {
       $0.code.uppercased() == countryCode.uppercased()
     }),
-      let countryCodeEnum = CountryCode(rawValue: country.code)
-    {
+      let countryCodeEnum = CountryCode(rawValue: country.code) {
       structuredState.selectedCountry = PrimerCountry(
         code: country.code,
         name: country.name,
@@ -556,8 +555,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     structuredState.surchargeAmount = formattedSurcharge
   }
 
-  public func updateValidationState(cardNumber: Bool, cvv: Bool, expiry: Bool, cardholderName: Bool)
-  {
+  public func updateValidationState(cardNumber: Bool, cvv: Bool, expiry: Bool, cardholderName: Bool) {
     let hasValidCardNumber =
       cardNumber
       && !structuredState.data[.cardNumber].replacingOccurrences(of: " ", with: "").isEmpty

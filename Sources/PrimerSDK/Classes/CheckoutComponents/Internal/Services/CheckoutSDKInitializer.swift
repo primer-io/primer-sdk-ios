@@ -144,8 +144,7 @@ final class CheckoutSDKInitializer {
     guard let container = await DIContainer.current else { return }
 
     if let analyticsService = try? await container.resolve(
-      CheckoutComponentsAnalyticsServiceProtocol.self)
-    {
+      CheckoutComponentsAnalyticsServiceProtocol.self) {
       await analyticsService.initialize(config: analyticsConfig)
     }
   }

@@ -149,12 +149,10 @@ final class AchRepositoryImpl: AchRepository, LogReporter, @unchecked Sendable {
       emailAddress: emailAddress
     )
 
-    let collectorViewController = await PrimerStripeCollectorViewController.getCollectorViewController(
+    return await PrimerStripeCollectorViewController.getCollectorViewController(
       params: stripeParams,
       delegate: self
     )
-
-    return collectorViewController
     #else
     throw ACHHelpers.getMissingSDKError(sdk: "PrimerStripeSDK")
     #endif

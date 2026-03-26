@@ -38,8 +38,7 @@ extension PrimerHeadlessUniversalCheckout.VaultedPaymentMethod {
   // MARK: - Card Display Data
 
   private func cardDisplayData(from data: Response.Body.Tokenization.PaymentInstrumentData)
-    -> VaultedPaymentMethodDisplayData
-  {
+    -> VaultedPaymentMethodDisplayData {
     let network = data.network ?? data.binData?.network ?? "Card"
     let cardNetwork = CardNetwork(rawValue: network.uppercased()) ?? .unknown
     let brandIcon = cardNetwork.icon ?? ImageName.creditCard.image
@@ -73,8 +72,7 @@ extension PrimerHeadlessUniversalCheckout.VaultedPaymentMethod {
   // MARK: - PayPal Display Data
 
   private func paypalDisplayData(from data: Response.Body.Tokenization.PaymentInstrumentData)
-    -> VaultedPaymentMethodDisplayData
-  {
+    -> VaultedPaymentMethodDisplayData {
     let payerInfo = data.externalPayerInfo
     let name = buildPayPalName(from: payerInfo)
     let email = payerInfo?.email
@@ -96,8 +94,7 @@ extension PrimerHeadlessUniversalCheckout.VaultedPaymentMethod {
   }
 
   private func buildPayPalName(from payerInfo: Response.Body.Tokenization.PayPal.ExternalPayerInfo?)
-    -> String?
-  {
+    -> String? {
     guard let payerInfo else { return nil }
 
     let firstName = payerInfo.firstName ?? payerInfo.firstNameSnakeCase
@@ -105,11 +102,9 @@ extension PrimerHeadlessUniversalCheckout.VaultedPaymentMethod {
 
     if let firstName, let lastName {
       return "\(firstName) \(lastName)"
-    }
-    else if let firstName {
+    } else if let firstName {
       return firstName
-    }
-    else if let lastName {
+    } else if let lastName {
       return lastName
     }
     return nil
@@ -118,8 +113,7 @@ extension PrimerHeadlessUniversalCheckout.VaultedPaymentMethod {
   // MARK: - Klarna Display Data
 
   private func klarnaDisplayData(from data: Response.Body.Tokenization.PaymentInstrumentData)
-    -> VaultedPaymentMethodDisplayData
-  {
+    -> VaultedPaymentMethodDisplayData {
     let email = data.sessionData?.billingAddress?.email
     let maskedEmail = email.map { maskEmail($0) }
 
@@ -138,8 +132,7 @@ extension PrimerHeadlessUniversalCheckout.VaultedPaymentMethod {
   // MARK: - ACH Display Data
 
   private func achDisplayData(from data: Response.Body.Tokenization.PaymentInstrumentData)
-    -> VaultedPaymentMethodDisplayData
-  {
+    -> VaultedPaymentMethodDisplayData {
     let bankName = data.bankName ?? "Bank"
     let brandName = "\(bankName) \(CheckoutComponentsStrings.achSuffix)"
 
@@ -164,8 +157,7 @@ extension PrimerHeadlessUniversalCheckout.VaultedPaymentMethod {
   // MARK: - GoCardless Display Data
 
   private func goCardlessDisplayData(from data: Response.Body.Tokenization.PaymentInstrumentData)
-    -> VaultedPaymentMethodDisplayData
-  {
+    -> VaultedPaymentMethodDisplayData {
     let bankName = data.bankName ?? "Bank"
     let brandName = "\(bankName) (Direct Debit)"
 

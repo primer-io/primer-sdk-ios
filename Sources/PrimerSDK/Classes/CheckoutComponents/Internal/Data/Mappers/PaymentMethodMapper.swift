@@ -63,7 +63,6 @@ final class PaymentMethodMapperImpl: PaymentMethodMapper {
 
     // Use existing currency formatting extension to match Drop-in/Headless behavior
     let formatted = surcharge.toCurrencyString(currency: currency)
-    let result = "+\(formatted)"  // "+" prefix for surcharges
-    return result
+    return "+\(formatted)"  // "+" prefix for surcharges
   }
 }

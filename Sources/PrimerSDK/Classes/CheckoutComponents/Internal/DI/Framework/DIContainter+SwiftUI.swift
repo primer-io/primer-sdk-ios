@@ -48,8 +48,7 @@ extension DIContainer {
 
   @MainActor
   static func resolve<T>(_ type: T.Type, from environment: EnvironmentValues, name: String? = nil)
-    throws -> T
-  {
+    throws -> T {
     guard let container = environment.diContainer else {
       throw ContainerError.containerUnavailable
     }

@@ -22,8 +22,8 @@ import SwiftUI
       self.label = label
       self.text = text
       self.errorMessage = errorMessage
-      self._currentText = State(initialValue: text)
-      self._currentErrorMessage = State(initialValue: errorMessage)
+      _currentText = State(initialValue: text)
+      _currentErrorMessage = State(initialValue: errorMessage)
     }
 
     var body: some View {
@@ -60,7 +60,7 @@ import SwiftUI
     init(label: String?, text: String) {
       self.label = label
       self.text = text
-      self._currentText = State(initialValue: text)
+      _currentText = State(initialValue: text)
     }
 
     var body: some View {

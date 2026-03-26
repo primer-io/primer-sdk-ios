@@ -82,20 +82,17 @@
     }
 
     public func validateFormData(_ formData: FormData, configuration: CardFormConfiguration)
-      -> [FieldError]
-    {
+      -> [FieldError] {
       []
     }
 
     public func validateFields(_ fieldTypes: [PrimerInputElementType], formData: FormData)
-      -> [FieldError]
-    {
+      -> [FieldError] {
       []
     }
 
     public func validateFieldWithStructuredResult(type: PrimerInputElementType, value: String?)
-      -> FieldError?
-    {
+      -> FieldError? {
       nil
     }
   }

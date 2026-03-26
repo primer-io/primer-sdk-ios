@@ -1034,8 +1034,7 @@ enum CheckoutComponentsStrings {
   // MARK: - Vaulted Payment Method Accessibility
 
   static func a11yVaultedCard(network: String, last4: String, expiry: String, name: String?)
-    -> String
-  {
+    -> String {
     if let name {
       let format = NSLocalizedString(
         "accessibility_vaulted_card_full",

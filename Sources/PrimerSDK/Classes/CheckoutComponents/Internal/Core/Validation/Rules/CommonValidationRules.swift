@@ -71,8 +71,7 @@ final class AddressRule: ValidationRule {
   private let inputElementType: ValidationError.InputElementType
   private let isRequired: Bool
 
-  init(inputElementType: ValidationError.InputElementType = .addressLine1, isRequired: Bool = true)
-  {
+  init(inputElementType: ValidationError.InputElementType = .addressLine1, isRequired: Bool = true) {
     self.inputElementType = inputElementType
     self.isRequired = isRequired
   }
@@ -224,8 +223,7 @@ final class PostalCodeRule: ValidationRule {
       let postalCodeRegex = "^[A-Za-z0-9\\s\\-]+$"
       let postalCodePredicate = NSPredicate(format: "SELF MATCHES %@", postalCodeRegex)
       if !postalCodePredicate.evaluate(with: trimmedValue) || trimmedValue.count < 3
-        || trimmedValue.count > 10
-      {
+        || trimmedValue.count > 10 {
         let error = ErrorMessageResolver.createInvalidFieldError(for: .postalCode)
         return .invalid(error: error)
       }

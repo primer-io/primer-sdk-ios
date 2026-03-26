@@ -266,22 +266,19 @@ extension DefaultValidationService {
 
   @available(iOS 15.0, *)
   public func validateFormData(_ formData: FormData, configuration: CardFormConfiguration)
-    -> [FieldError]
-  {
+    -> [FieldError] {
     validateFields(configuration.allFields, formData: formData)
   }
 
   @available(iOS 15.0, *)
   public func validateFields(_ fieldTypes: [PrimerInputElementType], formData: FormData)
-    -> [FieldError]
-  {
+    -> [FieldError] {
     var fieldErrors: [FieldError] = []
 
     for fieldType in fieldTypes {
       let value = formData[fieldType]
       if let error = validateFieldWithStructuredResult(
-        type: fieldType, value: value.isEmpty ? nil : value)
-      {
+        type: fieldType, value: value.isEmpty ? nil : value) {
         fieldErrors.append(error)
       }
     }
@@ -291,8 +288,7 @@ extension DefaultValidationService {
 
   @available(iOS 15.0, *)
   public func validateFieldWithStructuredResult(type: PrimerInputElementType, value: String?)
-    -> FieldError?
-  {
+    -> FieldError? {
     let result = validateField(type: type, value: value)
 
     // Convert ValidationResult to FieldError if invalid

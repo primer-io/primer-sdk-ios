@@ -83,8 +83,7 @@ final class DesignTokensManager: ObservableObject {
     applyIconAndOtherColorOverrides(to: tokens, from: colors)
   }
 
-  private func applyBrandAndGrayColorOverrides(to tokens: DesignTokens, from colors: ColorOverrides)
-  {
+  private func applyBrandAndGrayColorOverrides(to tokens: DesignTokens, from colors: ColorOverrides) {
     if let value = colors.primerColorBrand { tokens.primerColorBrand = value }
     if let value = colors.primerColorGray000 { tokens.primerColorGray000 = value }
     if let value = colors.primerColorGray100 { tokens.primerColorGray100 = value }
@@ -173,8 +172,7 @@ final class DesignTokensManager: ObservableObject {
     }
   }
 
-  private func applyIconAndOtherColorOverrides(to tokens: DesignTokens, from colors: ColorOverrides)
-  {
+  private func applyIconAndOtherColorOverrides(to tokens: DesignTokens, from colors: ColorOverrides) {
     if let value = colors.primerColorIconPrimary { tokens.primerColorIconPrimary = value }
     if let value = colors.primerColorIconDisabled { tokens.primerColorIconDisabled = value }
     if let value = colors.primerColorIconNegative { tokens.primerColorIconNegative = value }

@@ -23,8 +23,7 @@ extension View {
   ///         traits: [.isButton]
   ///     ))
   /// ```
-  func accessibility(config: AccessibilityConfiguration, combinesChildren: Bool = true) -> some View
-  {
+  func accessibility(config: AccessibilityConfiguration, combinesChildren: Bool = true) -> some View {
     modifier(
       ConditionalAccessibilityElement(
         config: config,

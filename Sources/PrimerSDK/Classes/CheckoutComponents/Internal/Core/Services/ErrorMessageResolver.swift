@@ -12,8 +12,7 @@ final class ErrorMessageResolver {
     // Resolution priority:
     // 1. Try formatted error with field name placeholder
     if let formatKey = error.errorFormatKey,
-      let fieldNameKey = error.fieldNameKey
-    {
+      let fieldNameKey = error.fieldNameKey {
       let fieldName = getLocalizedFieldName(fieldNameKey)
       let formatString = getLocalizedString(formatKey)
       return String(format: formatString, fieldName)
@@ -236,8 +235,7 @@ final class ErrorMessageResolver {
 extension ErrorMessageResolver {
 
   static func createRequiredFieldError(for inputElementType: ValidationError.InputElementType)
-    -> ValidationError
-  {
+    -> ValidationError {
     let errorMessageKey = requiredErrorMessageKey(for: inputElementType)
     let errorId = "\(inputElementType.rawValue.lowercased())_required"
 
@@ -253,8 +251,7 @@ extension ErrorMessageResolver {
   }
 
   static func createInvalidFieldError(for inputElementType: ValidationError.InputElementType)
-    -> ValidationError
-  {
+    -> ValidationError {
     let errorMessageKey = invalidErrorMessageKey(for: inputElementType)
     let errorId = "\(inputElementType.rawValue.lowercased())_invalid"
 
@@ -303,8 +300,7 @@ extension ErrorMessageResolver {
   }
 
   private static func invalidErrorMessageKey(for inputElementType: ValidationError.InputElementType)
-    -> String
-  {
+    -> String {
     switch inputElementType {
     // Card field validation error keys
     case .cardNumber:

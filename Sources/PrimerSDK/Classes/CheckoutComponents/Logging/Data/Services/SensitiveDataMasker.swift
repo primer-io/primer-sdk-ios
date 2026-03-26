@@ -104,7 +104,7 @@ actor SensitiveDataMasker {
           options: []
         ),
         replacement: Replacement.phone
-      ),
+      )
     ]
   }
   // swiftlint:enable force_try

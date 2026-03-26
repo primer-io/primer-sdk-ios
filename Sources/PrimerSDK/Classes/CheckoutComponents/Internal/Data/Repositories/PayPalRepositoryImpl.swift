@@ -78,8 +78,7 @@ final class PayPalRepositoryImpl: PayPalRepository, LogReporter {
   // MARK: - Private Helpers
 
   private func createPaymentInstrument(from data: PayPalPaymentInstrumentData)
-    -> PayPalPaymentInstrument
-  {
+    -> PayPalPaymentInstrument {
     switch data {
     case let .order(orderId, payerInfo):
       PayPalPaymentInstrument(
@@ -99,8 +98,7 @@ final class PayPalRepositoryImpl: PayPalRepository, LogReporter {
   }
 
   private func mapPayerInfo(_ info: Response.Body.Tokenization.PayPal.ExternalPayerInfo?)
-    -> PayPalPayerInfo?
-  {
+    -> PayPalPayerInfo? {
     guard let info else { return nil }
     return PayPalPayerInfo(
       externalPayerId: info.externalPayerId,
@@ -111,8 +109,7 @@ final class PayPalRepositoryImpl: PayPalRepository, LogReporter {
   }
 
   private func mapShippingAddress(_ address: Response.Body.Tokenization.PayPal.ShippingAddress?)
-    -> PayPalShippingAddress?
-  {
+    -> PayPalShippingAddress? {
     guard let address else { return nil }
     return PayPalShippingAddress(
       firstName: address.firstName,
@@ -127,8 +124,7 @@ final class PayPalRepositoryImpl: PayPalRepository, LogReporter {
   }
 
   private func mapToExternalPayerInfo(_ info: PayPalPayerInfo?) -> Response.Body.Tokenization.PayPal
-    .ExternalPayerInfo?
-  {
+    .ExternalPayerInfo? {
     guard let info else { return nil }
     return Response.Body.Tokenization.PayPal.ExternalPayerInfo(
       externalPayerId: info.externalPayerId ?? "",
@@ -139,8 +135,7 @@ final class PayPalRepositoryImpl: PayPalRepository, LogReporter {
   }
 
   private func mapToShippingAddress(_ address: PayPalShippingAddress?) -> Response.Body.Tokenization
-    .PayPal.ShippingAddress?
-  {
+    .PayPal.ShippingAddress? {
     guard let address else { return nil }
     return Response.Body.Tokenization.PayPal.ShippingAddress(
       firstName: address.firstName,

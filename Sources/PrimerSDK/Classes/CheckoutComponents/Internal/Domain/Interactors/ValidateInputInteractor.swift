@@ -30,8 +30,7 @@ final class ValidateInputInteractorImpl: ValidateInputInteractor, LogReporter {
   }
 
   func validateMultiple(fields: [PrimerInputElementType: String]) async -> [PrimerInputElementType:
-    ValidationResult]
-  {
+    ValidationResult] {
     var results: [PrimerInputElementType: ValidationResult] = [:]
     for (type, value) in fields {
       results[type] = await validate(value: value, type: type)
