@@ -272,12 +272,14 @@ public actor Container: ContainerProtocol, LogReporter {
     }
 
     // Slow path: resolve via actor with semaphore (only for first-time resolution)
+    // Task.detached avoids inheriting @MainActor from the caller, which would
+    // deadlock: main blocked by semaphore while Task waits for main to run.
     let semaphore = DispatchSemaphore(value: 0)
     let resultContainer = ThreadSafeContainer<Result<T, Error>>()
 
-    Task {
+    Task.detached { [self] in
       do {
-        let resolved = try await self.resolve(type, name: name)
+        let resolved = try await resolve(type, name: name)
         resultContainer.value = .success(resolved)
       } catch {
         resultContainer.value = .failure(error)

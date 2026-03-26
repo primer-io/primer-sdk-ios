@@ -260,7 +260,7 @@ extension ComposableContainer {
     await safeRegister(HeadlessRepository.self) {
       _ = try await container.register(HeadlessRepository.self)
         .asTransient()
-        .with { _ in await MainActor.run { HeadlessRepositoryImpl() } }
+        .with { _ in HeadlessRepositoryImpl() }
     }
 
     await safeRegister(PaymentMethodMapper.self) {

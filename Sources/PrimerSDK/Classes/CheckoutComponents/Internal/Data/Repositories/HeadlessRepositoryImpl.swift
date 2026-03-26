@@ -223,7 +223,7 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
   private let rawDataManagerFactory: RawDataManagerFactoryProtocol
   private let vaultManagerFactory: (() -> any VaultManagerProtocol)?
 
-  init(
+  nonisolated init(
     clientSessionActionsFactory: @escaping () -> ClientSessionActionsProtocol = {
       ClientSessionActionsModule()
     },
