@@ -17,6 +17,8 @@ final class AchRepositoryImpl: AchRepository, LogReporter, @unchecked Sendable {
   private let achClientSessionService: ACHClientSessionService
   private var achTokenizationService: ACHTokenizationService?
   private let settings: PrimerSettingsProtocol
+  private let createPaymentServiceFactory: (String) -> CreateResumePaymentServiceProtocol
+  private let apiConfigurationModule: PrimerAPIConfigurationModuleProtocol
 
   private var achPaymentMethod: PrimerPaymentMethod? {
     PrimerAPIConfigurationModule.apiConfiguration?.paymentMethods?
@@ -27,10 +29,16 @@ final class AchRepositoryImpl: AchRepository, LogReporter, @unchecked Sendable {
 
   nonisolated init(
     achClientSessionService: ACHClientSessionService = ACHClientSessionService(),
-    settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+    settings: PrimerSettingsProtocol = DependencyContainer.resolve(),
+    createPaymentServiceFactory: @escaping (String) -> CreateResumePaymentServiceProtocol = {
+      CreateResumePaymentService(paymentMethodType: $0)
+    },
+    apiConfigurationModule: PrimerAPIConfigurationModuleProtocol = PrimerAPIConfigurationModule()
   ) {
     self.achClientSessionService = achClientSessionService
     self.settings = settings
+    self.createPaymentServiceFactory = createPaymentServiceFactory
+    self.apiConfigurationModule = apiConfigurationModule
   }
 
   func loadUserDetails() async throws -> AchUserDetailsResult {
@@ -78,18 +86,15 @@ final class AchRepositoryImpl: AchRepository, LogReporter, @unchecked Sendable {
       throw ACHHelpers.getInvalidTokenError()
     }
 
-    let createResumePaymentService = CreateResumePaymentService(
-      paymentMethodType: PrimerPaymentMethodType.stripeAch.rawValue
-    )
+    let paymentService = createPaymentServiceFactory(PrimerPaymentMethodType.stripeAch.rawValue)
 
     let paymentRequest = Request.Body.Payment.Create(token: token)
-    let paymentResponse = try await createResumePaymentService.createPayment(paymentRequest: paymentRequest)
+    let paymentResponse = try await paymentService.createPayment(paymentRequest: paymentRequest)
 
     guard let requiredAction = paymentResponse.requiredAction else {
       throw PrimerError.invalidClientToken(reason: "Payment response missing requiredAction for ACH")
     }
 
-    let apiConfigurationModule = PrimerAPIConfigurationModule()
     try await apiConfigurationModule.storeRequiredActionClientToken(requiredAction.clientToken)
 
     guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
@@ -180,12 +185,10 @@ final class AchRepositoryImpl: AchRepository, LogReporter, @unchecked Sendable {
       throw ACHHelpers.getInvalidTokenError()
     }
 
-    let createResumePaymentService = CreateResumePaymentService(
-      paymentMethodType: PrimerPaymentMethodType.stripeAch.rawValue
-    )
+    let paymentService = createPaymentServiceFactory(PrimerPaymentMethodType.stripeAch.rawValue)
 
     let paymentRequest = Request.Body.Payment.Create(token: token)
-    let paymentResponse = try await createResumePaymentService.createPayment(paymentRequest: paymentRequest)
+    let paymentResponse = try await paymentService.createPayment(paymentRequest: paymentRequest)
 
     return PaymentResult(
       paymentId: paymentResponse.id ?? UUID().uuidString,
@@ -197,16 +200,14 @@ final class AchRepositoryImpl: AchRepository, LogReporter, @unchecked Sendable {
   }
 
   func completePayment(stripeData: AchStripeData) async throws -> PaymentResult {
-    let createResumePaymentService = CreateResumePaymentService(
-      paymentMethodType: PrimerPaymentMethodType.stripeAch.rawValue
-    )
+    let paymentService = createPaymentServiceFactory(PrimerPaymentMethodType.stripeAch.rawValue)
 
     // Create mandate timestamp in UTC format
     let timeZone = TimeZone(abbreviation: "UTC")
     let timeStamp = Date().toString(timeZone: timeZone)
     let completeBody = Request.Body.Payment.Complete(mandateSignatureTimestamp: timeStamp)
 
-    try await createResumePaymentService.completePayment(
+    try await paymentService.completePayment(
       clientToken: stripeData.decodedJWTToken,
       completeUrl: stripeData.sdkCompleteUrl,
       body: completeBody

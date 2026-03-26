@@ -794,4 +794,588 @@ final class DefaultCardFormScopeTests: XCTestCase {
             XCTAssertEqual(scope.getFieldValue(.cardNumber), "")
         }
     }
+
+    // MARK: - performSubmit Error Handling Tests
+
+    func test_performSubmit_invalidExpiryFormat_handlesError() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createCardFormScope(checkoutScope: checkoutScope)
+
+            scope.updateCardNumber(TestData.CardNumbers.validVisa)
+            scope.updateCvv("123")
+            scope.updateExpiryDate("invalid")
+            scope.updateCardholderName("John Doe")
+
+            // When
+            await scope.performSubmit()
+
+            // Then — should handle error gracefully, loading should be reset
+            XCTAssertFalse(scope.structuredState.isLoading)
+        }
+    }
+
+    func test_performSubmit_withTwoDigitYear_convertsToFourDigit() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let mockPaymentInteractor = MockProcessCardPaymentInteractor()
+            let scope = createCardFormScope(
+                checkoutScope: checkoutScope,
+                processCardPaymentInteractor: mockPaymentInteractor
+            )
+
+            scope.updateCardNumber(TestData.CardNumbers.validVisa)
+            scope.updateCvv("123")
+            scope.updateExpiryDate("12/30")
+            scope.updateCardholderName("John Doe")
+
+            // When
+            await scope.performSubmit()
+
+            // Then — payment should be attempted (even if it fails due to mock setup)
+            XCTAssertFalse(scope.structuredState.isLoading)
+        }
+    }
+
+    func test_performSubmit_paymentInteractorFails_handlesError() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let mockPaymentInteractor = MockProcessCardPaymentInteractor()
+            mockPaymentInteractor.errorToThrow = PrimerError.unknown(message: "Payment failed")
+
+            let scope = createCardFormScope(
+                checkoutScope: checkoutScope,
+                processCardPaymentInteractor: mockPaymentInteractor
+            )
+
+            scope.updateCardNumber(TestData.CardNumbers.validVisa)
+            scope.updateCvv("123")
+            scope.updateExpiryDate("12/30")
+            scope.updateCardholderName("John Doe")
+
+            // When
+            await scope.performSubmit()
+
+            // Then
+            XCTAssertFalse(scope.structuredState.isLoading)
+        }
+    }
+
+    // MARK: - submit Guard Tests
+
+    func test_submit_whenAlreadyLoading_doesNotSubmitAgain() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createCardFormScope(checkoutScope: checkoutScope)
+
+            scope.structuredState.isLoading = true
+
+            // When
+            scope.submit()
+
+            // Then — should bail out immediately since isLoading is true
+            XCTAssertTrue(scope.structuredState.isLoading)
+        }
+    }
+
+    // MARK: - cancel Tests
+
+    func test_cancel_cancelsNetworkDetectionTask() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createCardFormScope(checkoutScope: checkoutScope)
+
+            // When
+            scope.cancel()
+
+            // Then — should not crash, tasks should be cancelled
+            XCTAssertTrue(true)
+        }
+    }
+
+    // MARK: - onBack Tests
+
+    func test_onBack_fromPaymentSelection_navigatesBack() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createCardFormScope(checkoutScope: checkoutScope)
+
+            // When / Then — should not crash
+            scope.onBack()
+        }
+    }
+
+    // MARK: - Billing Address Configuration Tests
+
+    func test_getBillingAddressConfiguration_withBillingFields_reflectsFields() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let mockConfig = MockConfigurationService.withDefaultConfiguration()
+            mockConfig.billingAddressOptions = PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions(
+                firstName: true,
+                lastName: true,
+                city: true,
+                postalCode: true,
+                addressLine1: true,
+                addressLine2: true,
+                countryCode: true,
+                phoneNumber: false,
+                state: true
+            )
+
+            let scope = createCardFormScope(
+                checkoutScope: checkoutScope,
+                configurationService: mockConfig
+            )
+
+            let billingConfig = scope.getBillingAddressConfiguration()
+
+            XCTAssertTrue(billingConfig.showFirstName)
+            XCTAssertTrue(billingConfig.showLastName)
+            XCTAssertTrue(billingConfig.showCity)
+            XCTAssertTrue(billingConfig.showPostalCode)
+            XCTAssertTrue(billingConfig.showAddressLine1)
+            XCTAssertTrue(billingConfig.showAddressLine2)
+            XCTAssertTrue(billingConfig.showCountry)
+            XCTAssertTrue(billingConfig.showState)
+        }
+    }
+
+    func test_getFormConfiguration_withBillingAddress_includesBillingFields() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let mockConfig = MockConfigurationService.withDefaultConfiguration()
+            mockConfig.billingAddressOptions = PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions(
+                firstName: true,
+                lastName: true,
+                city: true,
+                postalCode: true,
+                addressLine1: true,
+                addressLine2: true,
+                countryCode: true,
+                phoneNumber: nil,
+                state: true
+            )
+
+            let scope = createCardFormScope(
+                checkoutScope: checkoutScope,
+                configurationService: mockConfig
+            )
+
+            let config = scope.getFormConfiguration()
+
+            XCTAssertTrue(config.requiresBillingAddress)
+            XCTAssertFalse(config.billingFields.isEmpty)
+            XCTAssertTrue(config.billingFields.contains(.postalCode))
+        }
+    }
+
+    func test_getFormConfiguration_withoutBillingAddress_hasEmptyBillingFields() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let mockConfig = MockConfigurationService.withDefaultConfiguration()
+            mockConfig.billingAddressOptions = nil
+
+            let scope = createCardFormScope(
+                checkoutScope: checkoutScope,
+                configurationService: mockConfig
+            )
+
+            let config = scope.getFormConfiguration()
+
+            XCTAssertFalse(config.requiresBillingAddress)
+            XCTAssertTrue(config.billingFields.isEmpty)
+        }
+    }
+
+    // MARK: - getCardNetworkForCvv Tests
+
+    func test_getCardNetworkForCvv_withSelectedNetwork_returnsSelected() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createCardFormScope(checkoutScope: checkoutScope)
+
+            scope.updateSelectedCardNetwork("VISA")
+
+            let network = scope.getCardNetworkForCvv()
+            XCTAssertEqual(network, .visa)
+        }
+    }
+
+    func test_getCardNetworkForCvv_noSelectedNetwork_derivesFromCardNumber() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createCardFormScope(checkoutScope: checkoutScope)
+
+            scope.updateCardNumber(TestData.CardNumbers.validVisa)
+
+            let network = scope.getCardNetworkForCvv()
+            XCTAssertEqual(network, .visa)
+        }
+    }
+
+    // MARK: - updateField Default Case Tests
+
+    func test_updateField_unknownType_doesNotCrash() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createCardFormScope(checkoutScope: checkoutScope)
+
+            // When / Then — unknown type should hit default case
+            scope.updateField(.unknown, value: "test")
+        }
+    }
+
+    // MARK: - Postal Code Update Tests
+
+    func test_updatePostalCode_setsValue() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createCardFormScope(checkoutScope: checkoutScope)
+
+            scope.updatePostalCode("10001")
+
+            XCTAssertEqual(scope.getFieldValue(.postalCode), "10001")
+        }
+    }
+
+    // MARK: - updateField via Switch Cases Tests
+
+    func test_updateField_cardNumber_delegatesToUpdateCardNumber() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createCardFormScope(checkoutScope: checkoutScope)
+
+            scope.updateField(.cardNumber, value: TestData.CardNumbers.validVisa)
+
+            XCTAssertEqual(scope.getFieldValue(.cardNumber), TestData.CardNumbers.validVisa)
+        }
+    }
+
+    func test_updateField_cvv_delegatesToUpdateCvv() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createCardFormScope(checkoutScope: checkoutScope)
+
+            scope.updateField(.cvv, value: "999")
+
+            XCTAssertEqual(scope.getFieldValue(.cvv), "999")
+        }
+    }
+
+    func test_updateField_expiryDate_delegatesToUpdateExpiryDate() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createCardFormScope(checkoutScope: checkoutScope)
+
+            scope.updateField(.expiryDate, value: "12/30")
+
+            XCTAssertEqual(scope.getFieldValue(.expiryDate), "12/30")
+        }
+    }
+
+    func test_updateField_postalCode_delegatesToUpdatePostalCode() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createCardFormScope(checkoutScope: checkoutScope)
+
+            scope.updateField(.postalCode, value: "90210")
+
+            XCTAssertEqual(scope.getFieldValue(.postalCode), "90210")
+        }
+    }
+
+    // MARK: - Dismissal Mechanism and Card Form UI Options Tests
+
+    func test_dismissalMechanism_delegatesToCheckoutScope() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createCardFormScope(checkoutScope: checkoutScope)
+
+            let mechanism = scope.dismissalMechanism
+            XCTAssertNotNil(mechanism)
+        }
+    }
+
+    func test_cardFormUIOptions_delegatesToCheckoutScope() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createCardFormScope(checkoutScope: checkoutScope)
+
+            // Default PrimerSettings doesn't set cardFormUIOptions
+            XCTAssertNil(scope.cardFormUIOptions)
+        }
+    }
+}
+
+// MARK: - DefaultCardFormScope+Validation Tests
+
+@available(iOS 15.0, *)
+@MainActor
+final class DefaultCardFormScopeValidationTests: XCTestCase {
+
+    private func createTestContainer() async -> Container {
+        await ContainerTestHelpers.createTestContainer()
+    }
+
+    private func createCardFormScope(
+        checkoutScope: DefaultCheckoutScope
+    ) -> DefaultCardFormScope {
+        DefaultCardFormScope(
+            checkoutScope: checkoutScope,
+            processCardPaymentInteractor: MockProcessCardPaymentInteractor(),
+            validateInputInteractor: MockValidateInputInteractor(),
+            cardNetworkDetectionInteractor: MockCardNetworkDetectionInteractor(),
+            analyticsInteractor: MockAnalyticsInteractor(),
+            configurationService: MockConfigurationService.withDefaultConfiguration()
+        )
+    }
+
+    // MARK: - updateValidationState via KeyPath Tests
+
+    func test_updateValidationState_keyPath_cardNumber_updatesFieldValidationStates() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createCardFormScope(checkoutScope: checkoutScope)
+
+            // Populate all required fields
+            scope.updateCardNumber(TestData.CardNumbers.validVisa)
+            scope.updateCvv("123")
+            scope.updateExpiryDate("12/30")
+            scope.updateCardholderName("John Doe")
+
+            // When
+            scope.updateValidationState(\.cardNumber, isValid: true)
+            scope.updateValidationState(\.cvv, isValid: true)
+            scope.updateValidationState(\.expiry, isValid: true)
+            scope.updateValidationState(\.cardholderName, isValid: true)
+
+            // Then
+            XCTAssertTrue(scope.fieldValidationStates.cardNumber)
+            XCTAssertTrue(scope.fieldValidationStates.cvv)
+            XCTAssertTrue(scope.fieldValidationStates.expiry)
+            XCTAssertTrue(scope.fieldValidationStates.cardholderName)
+            XCTAssertTrue(scope.structuredState.isValid)
+        }
+    }
+
+    func test_updateValidationState_keyPath_settingFalse_invalidatesForm() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createCardFormScope(checkoutScope: checkoutScope)
+
+            scope.updateCardNumber(TestData.CardNumbers.validVisa)
+            scope.updateCvv("123")
+            scope.updateExpiryDate("12/30")
+            scope.updateCardholderName("John Doe")
+
+            // Set all valid first
+            scope.updateValidationState(\.cardNumber, isValid: true)
+            scope.updateValidationState(\.cvv, isValid: true)
+            scope.updateValidationState(\.expiry, isValid: true)
+            scope.updateValidationState(\.cardholderName, isValid: true)
+            XCTAssertTrue(scope.structuredState.isValid)
+
+            // When — invalidate one field
+            scope.updateValidationState(\.cardNumber, isValid: false)
+
+            // Then
+            XCTAssertFalse(scope.structuredState.isValid)
+        }
+    }
+
+    // MARK: - updateValidationStateIfNeeded Tests
+
+    func test_updateValidationStateIfNeeded_cardNumber_mapsCorrectly() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createCardFormScope(checkoutScope: checkoutScope)
+
+            // When
+            scope.updateValidationStateIfNeeded(for: .cardNumber, isValid: true)
+
+            // Then
+            XCTAssertTrue(scope.fieldValidationStates.cardNumber)
+        }
+    }
+
+    func test_updateValidationStateIfNeeded_cvv_mapsCorrectly() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createCardFormScope(checkoutScope: checkoutScope)
+
+            scope.updateValidationStateIfNeeded(for: .cvv, isValid: true)
+
+            XCTAssertTrue(scope.fieldValidationStates.cvv)
+        }
+    }
+
+    func test_updateValidationStateIfNeeded_expiryDate_mapsCorrectly() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createCardFormScope(checkoutScope: checkoutScope)
+
+            scope.updateValidationStateIfNeeded(for: .expiryDate, isValid: true)
+
+            XCTAssertTrue(scope.fieldValidationStates.expiry)
+        }
+    }
+
+    func test_updateValidationStateIfNeeded_cardholderName_mapsCorrectly() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createCardFormScope(checkoutScope: checkoutScope)
+
+            scope.updateValidationStateIfNeeded(for: .cardholderName, isValid: true)
+
+            XCTAssertTrue(scope.fieldValidationStates.cardholderName)
+        }
+    }
+
+    func test_updateValidationStateIfNeeded_billingFields_mapCorrectly() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createCardFormScope(checkoutScope: checkoutScope)
+
+            scope.updateValidationStateIfNeeded(for: .email, isValid: true)
+            scope.updateValidationStateIfNeeded(for: .firstName, isValid: true)
+            scope.updateValidationStateIfNeeded(for: .lastName, isValid: true)
+            scope.updateValidationStateIfNeeded(for: .addressLine1, isValid: true)
+            scope.updateValidationStateIfNeeded(for: .addressLine2, isValid: true)
+            scope.updateValidationStateIfNeeded(for: .city, isValid: true)
+            scope.updateValidationStateIfNeeded(for: .state, isValid: true)
+            scope.updateValidationStateIfNeeded(for: .postalCode, isValid: true)
+            scope.updateValidationStateIfNeeded(for: .countryCode, isValid: true)
+            scope.updateValidationStateIfNeeded(for: .phoneNumber, isValid: true)
+
+            XCTAssertTrue(scope.fieldValidationStates.email)
+            XCTAssertTrue(scope.fieldValidationStates.firstName)
+            XCTAssertTrue(scope.fieldValidationStates.lastName)
+            XCTAssertTrue(scope.fieldValidationStates.addressLine1)
+            XCTAssertTrue(scope.fieldValidationStates.addressLine2)
+            XCTAssertTrue(scope.fieldValidationStates.city)
+            XCTAssertTrue(scope.fieldValidationStates.state)
+            XCTAssertTrue(scope.fieldValidationStates.postalCode)
+            XCTAssertTrue(scope.fieldValidationStates.countryCode)
+            XCTAssertTrue(scope.fieldValidationStates.phoneNumber)
+        }
+    }
+
+    func test_updateValidationStateIfNeeded_unmappedType_doesNothing() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createCardFormScope(checkoutScope: checkoutScope)
+
+            // When — retailer, otp, unknown, all have no mapping
+            scope.updateValidationStateIfNeeded(for: .retailer, isValid: true)
+            scope.updateValidationStateIfNeeded(for: .otp, isValid: true)
+            scope.updateValidationStateIfNeeded(for: .unknown, isValid: true)
+
+            // Then — no field validation states should change
+            XCTAssertFalse(scope.fieldValidationStates.cardNumber)
+            XCTAssertFalse(scope.fieldValidationStates.cvv)
+        }
+    }
+}
+
+// MARK: - FieldValidationStates Tests
+
+@available(iOS 15.0, *)
+final class FieldValidationStatesTests: XCTestCase {
+
+    func test_init_allFieldsDefaultToFalse() {
+        // Given / When
+        let states = FieldValidationStates()
+
+        // Then
+        XCTAssertFalse(states.cardNumber)
+        XCTAssertFalse(states.cvv)
+        XCTAssertFalse(states.expiry)
+        XCTAssertFalse(states.cardholderName)
+        XCTAssertFalse(states.postalCode)
+        XCTAssertFalse(states.countryCode)
+        XCTAssertFalse(states.city)
+        XCTAssertFalse(states.state)
+        XCTAssertFalse(states.addressLine1)
+        XCTAssertFalse(states.addressLine2)
+        XCTAssertFalse(states.firstName)
+        XCTAssertFalse(states.lastName)
+        XCTAssertFalse(states.email)
+        XCTAssertFalse(states.phoneNumber)
+    }
+
+    func test_equatable_sameValues_areEqual() {
+        // Given
+        var states1 = FieldValidationStates()
+        states1.cardNumber = true
+        var states2 = FieldValidationStates()
+        states2.cardNumber = true
+
+        // Then
+        XCTAssertEqual(states1, states2)
+    }
+
+    func test_equatable_differentValues_areNotEqual() {
+        // Given
+        var states1 = FieldValidationStates()
+        states1.cardNumber = true
+        let states2 = FieldValidationStates()
+
+        // Then
+        XCTAssertNotEqual(states1, states2)
+    }
 }

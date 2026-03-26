@@ -140,10 +140,50 @@ final class ApplePayPaymentMethodTests: XCTestCase {
         XCTAssertNil(view)
     }
 
-    // NOTE: The following 2 tests are excluded from this PR because they rely on scope caching
-    // mechanisms that require other PRs to merge first. They will be added back when PR dependencies merge.
-    // - test_createView_whenScopeAvailable_returnsView
-    // - test_createView_whenCustomScreenSet_returnsCustomScreen
+    @MainActor
+    func test_createView_onDefaultCheckoutScope_returnsView() {
+        // Given — DefaultCheckoutScope auto-registers Apple Pay
+        let checkoutScope = createCheckoutScope()
+
+        // When
+        let view = ApplePayPaymentMethod.createView(checkoutScope: checkoutScope)
+
+        // Then
+        XCTAssertNotNil(view)
+    }
+
+    // MARK: - Static Properties
+
+    func test_paymentMethodType_isApplePay() {
+        XCTAssertEqual(ApplePayPaymentMethod.paymentMethodType, "APPLE_PAY")
+    }
+
+    // MARK: - Register Tests
+
+    @MainActor
+    func test_register_addsToPaymentMethodRegistry() {
+        // When
+        ApplePayPaymentMethod.register()
+
+        // Then
+        XCTAssertTrue(PaymentMethodRegistry.shared.registeredTypes.contains("APPLE_PAY"))
+    }
+
+    // MARK: - createView with Custom Screen
+
+    @MainActor
+    func test_createView_withCustomScreen_returnsCustomView() {
+        // Given
+        let checkoutScope = createCheckoutScope()
+        let scope = checkoutScope.getPaymentMethodScope(DefaultApplePayScope.self)
+        scope?.screen = { _ in AnyView(EmptyView()) }
+
+        // When
+        let view = ApplePayPaymentMethod.createView(checkoutScope: checkoutScope)
+
+        // Then
+        XCTAssertNotNil(view)
+    }
 
     // MARK: - Helpers
 

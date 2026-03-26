@@ -40,14 +40,24 @@ public final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject, 
   private let applePayPresentationManager: ApplePayPresenting
   private var authorizationCoordinator: ApplePayAuthorizationCoordinator?
 
+  private let clientSessionActionsFactory: () -> ClientSessionActionsProtocol
+  private let applePayRequestFactory: () throws -> ApplePayRequest
+  private let authorizationCoordinatorFactory: @MainActor () -> ApplePayAuthorizationCoordinator
+
   init(
     checkoutScope: DefaultCheckoutScope,
     presentationContext: PresentationContext = .fromPaymentSelection,
-    applePayPresentationManager: ApplePayPresenting = ApplePayPresentationManager()
+    applePayPresentationManager: ApplePayPresenting = ApplePayPresentationManager(),
+    clientSessionActionsFactory: @escaping () -> ClientSessionActionsProtocol = { ClientSessionActionsModule() },
+    applePayRequestFactory: @escaping () throws -> ApplePayRequest = { try ApplePayRequestBuilder.build() },
+    authorizationCoordinatorFactory: @MainActor @escaping () -> ApplePayAuthorizationCoordinator = { ApplePayAuthorizationCoordinator() }
   ) {
     self.checkoutScope = checkoutScope
     self.presentationContext = presentationContext
     self.applePayPresentationManager = applePayPresentationManager
+    self.clientSessionActionsFactory = clientSessionActionsFactory
+    self.applePayRequestFactory = applePayRequestFactory
+    self.authorizationCoordinatorFactory = authorizationCoordinatorFactory
 
     structuredState = applePayPresentationManager.isPresentable
       ? .available()
@@ -114,15 +124,15 @@ public final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject, 
         paymentMethodType: PrimerPaymentMethodType.applePay.rawValue
       )
 
-      let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
-      try await clientSessionActionsModule.selectPaymentMethodIfNeeded(
+      let clientSessionActions = clientSessionActionsFactory()
+      try await clientSessionActions.selectPaymentMethodIfNeeded(
         PrimerPaymentMethodType.applePay.rawValue,
         cardNetwork: nil
       )
 
-      let applePayRequest = try ApplePayRequestBuilder.build()
+      let applePayRequest = try applePayRequestFactory()
 
-      let coordinator = ApplePayAuthorizationCoordinator()
+      let coordinator = authorizationCoordinatorFactory()
       authorizationCoordinator = coordinator
 
       let payment = try await coordinator.authorize(

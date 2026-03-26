@@ -10,10 +10,23 @@ import UIKit
 final class QRCodeRepositoryImpl: QRCodeRepository, LogReporter {
 
   private let tokenizationService: TokenizationServiceProtocol
+  private let createPaymentServiceFactory: (String) -> CreateResumePaymentServiceProtocol
+  private let apiConfigurationModule: PrimerAPIConfigurationModuleProtocol
+  private let pollingModuleFactory: (URL) -> PollingModule
   private var pollingModule: PollingModule?
 
-  init(tokenizationService: TokenizationServiceProtocol = TokenizationService()) {
+  init(
+    tokenizationService: TokenizationServiceProtocol = TokenizationService(),
+    createPaymentServiceFactory: @escaping (String) -> CreateResumePaymentServiceProtocol = {
+      CreateResumePaymentService(paymentMethodType: $0)
+    },
+    apiConfigurationModule: PrimerAPIConfigurationModuleProtocol = PrimerAPIConfigurationModule(),
+    pollingModuleFactory: @escaping (URL) -> PollingModule = { PollingModule(url: $0) }
+  ) {
     self.tokenizationService = tokenizationService
+    self.createPaymentServiceFactory = createPaymentServiceFactory
+    self.apiConfigurationModule = apiConfigurationModule
+    self.pollingModuleFactory = pollingModuleFactory
   }
 
   func startPayment(paymentMethodType: String) async throws -> QRCodePaymentData {
@@ -44,9 +57,9 @@ final class QRCodeRepositoryImpl: QRCodeRepository, LogReporter {
       )
     }
 
-    let createPaymentService = CreateResumePaymentService(paymentMethodType: paymentMethodType)
+    let paymentService = createPaymentServiceFactory(paymentMethodType)
     let paymentRequest = Request.Body.Payment.Create(token: token)
-    let paymentResponse = try await createPaymentService.createPayment(paymentRequest: paymentRequest)
+    let paymentResponse = try await paymentService.createPayment(paymentRequest: paymentRequest)
 
     guard let paymentId = paymentResponse.id else {
       throw PrimerError.invalidValue(
@@ -64,8 +77,7 @@ final class QRCodeRepositoryImpl: QRCodeRepository, LogReporter {
       )
     }
 
-    let configModule = PrimerAPIConfigurationModule()
-    try await configModule.storeRequiredActionClientToken(requiredAction.clientToken)
+    try await apiConfigurationModule.storeRequiredActionClientToken(requiredAction.clientToken)
 
     guard let decodedJWT = PrimerAPIConfigurationModule.decodedJWTToken else {
       throw PrimerError.invalidClientToken()
@@ -97,7 +109,7 @@ final class QRCodeRepositoryImpl: QRCodeRepository, LogReporter {
   }
 
   func pollForCompletion(statusUrl: URL) async throws -> String {
-    let polling = PollingModule(url: statusUrl)
+    let polling = pollingModuleFactory(statusUrl)
     pollingModule = polling
     defer { pollingModule = nil }
     return try await polling.start()
@@ -108,9 +120,9 @@ final class QRCodeRepositoryImpl: QRCodeRepository, LogReporter {
     resumeToken: String,
     paymentMethodType: String
   ) async throws -> PaymentResult {
-    let createPaymentService = CreateResumePaymentService(paymentMethodType: paymentMethodType)
+    let paymentService = createPaymentServiceFactory(paymentMethodType)
     let resumeRequest = Request.Body.Payment.Resume(token: resumeToken)
-    let paymentResponse = try await createPaymentService.resumePaymentWithPaymentId(
+    let paymentResponse = try await paymentService.resumePaymentWithPaymentId(
       paymentId, paymentResumeRequest: resumeRequest)
 
     return PaymentResult(

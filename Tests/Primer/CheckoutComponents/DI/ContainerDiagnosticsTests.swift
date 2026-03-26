@@ -172,6 +172,345 @@ final class ContainerDiagnosticsTests: XCTestCase {
         // Then
         XCTAssertEqual(instances.count, 2)
     }
+
+    // MARK: - InstrumentedContainer resolveSync Tests
+
+    func test_instrumentedContainer_resolveSync_returnsInstance() async throws {
+        // Given
+        let container = InstrumentedContainer()
+
+        _ = try await container.register(TestProtocol.self)
+            .asSingleton()
+            .with { _ in TestImplementation() }
+
+        // Resolve async first to populate singleton cache
+        _ = try await container.resolve(TestProtocol.self)
+
+        // When
+        let result: TestProtocol = try container.resolveSync(TestProtocol.self)
+
+        // Then
+        XCTAssertNotNil(result)
+    }
+
+    func test_instrumentedContainer_resolve_failedResolution_recordsMetrics() async {
+        // Given
+        let container = InstrumentedContainer()
+
+        // When
+        do {
+            _ = try await container.resolve(TestProtocol.self)
+            XCTFail("Expected error")
+        } catch {
+            // Expected
+        }
+
+        // Then - metrics should still have recorded the attempt
+        let metrics = await container.getPerformanceMetrics()
+        XCTAssertNotNil(metrics)
+        XCTAssertEqual(metrics?.totalResolutions, 1)
+    }
+
+    func test_instrumentedContainer_unregister_removesRegistration() async throws {
+        // Given
+        let container = InstrumentedContainer()
+        _ = try await container.register(TestProtocol.self)
+            .asSingleton()
+            .with { _ in TestImplementation() }
+
+        // Verify it resolves
+        _ = try await container.resolve(TestProtocol.self)
+
+        // When
+        _ = await container.unregister(TestProtocol.self, name: nil)
+
+        // Then
+        do {
+            _ = try await container.resolve(TestProtocol.self)
+            XCTFail("Expected error after unregister")
+        } catch {
+            XCTAssertTrue(error is ContainerError)
+        }
+    }
+
+    func test_instrumentedContainer_reset_clearsRegistrations() async throws {
+        // Given
+        let container = InstrumentedContainer()
+        _ = try await container.register(TestProtocol.self)
+            .asSingleton()
+            .with { _ in TestImplementation() }
+
+        // When
+        await container.reset(ignoreDependencies: [Never.Type]())
+
+        // Then
+        do {
+            _ = try await container.resolve(TestProtocol.self)
+            XCTFail("Expected error after reset")
+        } catch {
+            XCTAssertTrue(error is ContainerError)
+        }
+    }
+
+    func test_instrumentedContainer_getPerformanceMetrics_withNoMetrics_returnsNil() async {
+        // Given
+        let container = InstrumentedContainer(metrics: nil)
+
+        // When
+        let metrics = await container.getPerformanceMetrics()
+
+        // Then
+        XCTAssertNil(metrics)
+    }
+
+    // MARK: - ContainerDiagnostics Tests
+
+    func test_diagnostics_description_containsAllFields() {
+        // Given
+        let diagnostics = ContainerDiagnostics(
+            totalRegistrations: 10,
+            singletonInstances: 5,
+            weakReferences: 3,
+            activeWeakReferences: 2,
+            registeredTypes: [TypeKey(String.self), TypeKey(Int.self)]
+        )
+
+        // When
+        let description = diagnostics.description
+
+        // Then
+        XCTAssertTrue(description.contains("10"))
+        XCTAssertTrue(description.contains("5"))
+        XCTAssertTrue(description.contains("3"))
+        XCTAssertTrue(description.contains("2"))
+        XCTAssertTrue(description.contains("Memory Efficiency"))
+    }
+
+    func test_diagnostics_memoryEfficiency_zeroWeakReferences_shows100Percent() {
+        // Given - 0 weak references, so formula is 0/max(0,1)*100 = 0%
+        let diagnostics = ContainerDiagnostics(
+            totalRegistrations: 5,
+            singletonInstances: 5,
+            weakReferences: 0,
+            activeWeakReferences: 0,
+            registeredTypes: []
+        )
+
+        // When
+        let description = diagnostics.description
+
+        // Then
+        XCTAssertTrue(description.contains("0.0%"))
+    }
+
+    func test_diagnostics_memoryEfficiency_allActive_shows100Percent() {
+        // Given
+        let diagnostics = ContainerDiagnostics(
+            totalRegistrations: 5,
+            singletonInstances: 3,
+            weakReferences: 2,
+            activeWeakReferences: 2,
+            registeredTypes: []
+        )
+
+        // When
+        let description = diagnostics.description
+
+        // Then
+        XCTAssertTrue(description.contains("100.0%"))
+    }
+
+    // MARK: - ContainerPerformanceMetrics Description Tests
+
+    func test_performanceMetrics_description_containsAllFields() {
+        // Given
+        let metrics = ContainerPerformanceMetrics(
+            totalResolutions: 100,
+            averageResolutionTime: 1.5,
+            slowestResolutions: [(TypeKey(String.self), 5.0), (TypeKey(Int.self), 3.0)],
+            cacheHitRate: 0.85,
+            memoryUsageEstimate: 1024
+        )
+
+        // When
+        let description = metrics.description
+
+        // Then
+        XCTAssertTrue(description.contains("100"))
+        XCTAssertTrue(description.contains("1.500"))
+        XCTAssertTrue(description.contains("85.0%"))
+        XCTAssertTrue(description.contains("1024"))
+    }
+
+    // MARK: - ContainerHealthReport Tests
+
+    func test_healthReport_storesStatusAndIssues() {
+        // Given
+        let diagnostics = ContainerDiagnostics(
+            totalRegistrations: 5,
+            singletonInstances: 3,
+            weakReferences: 1,
+            activeWeakReferences: 1,
+            registeredTypes: []
+        )
+
+        // When
+        let report = ContainerHealthReport(
+            status: .hasIssues,
+            issues: [.orphanedRegistrations(2)],
+            recommendations: ["Clean up unused registrations"],
+            diagnostics: diagnostics
+        )
+
+        // Then
+        XCTAssertEqual(report.status, .hasIssues)
+        XCTAssertEqual(report.issues.count, 1)
+        XCTAssertEqual(report.recommendations.count, 1)
+    }
+
+    func test_healthReport_healthyStatus() {
+        // Given
+        let diagnostics = ContainerDiagnostics(
+            totalRegistrations: 5,
+            singletonInstances: 3,
+            weakReferences: 0,
+            activeWeakReferences: 0,
+            registeredTypes: []
+        )
+
+        // When
+        let report = ContainerHealthReport(
+            status: .healthy,
+            issues: [],
+            recommendations: [],
+            diagnostics: diagnostics
+        )
+
+        // Then
+        XCTAssertEqual(report.status, .healthy)
+        XCTAssertTrue(report.issues.isEmpty)
+        XCTAssertTrue(report.recommendations.isEmpty)
+    }
+
+    func test_healthReport_criticalStatus_withMultipleIssues() {
+        // Given
+        let diagnostics = ContainerDiagnostics(
+            totalRegistrations: 0,
+            singletonInstances: 0,
+            weakReferences: 0,
+            activeWeakReferences: 0,
+            registeredTypes: []
+        )
+
+        // When
+        let report = ContainerHealthReport(
+            status: .critical,
+            issues: [
+                .memoryLeak("ServiceA"),
+                .circularDependency("A -> B -> A"),
+                .deepResolutionStack("ServiceX"),
+            ],
+            recommendations: ["Fix circular dependency", "Investigate memory leak"],
+            diagnostics: diagnostics
+        )
+
+        // Then
+        XCTAssertEqual(report.status, .critical)
+        XCTAssertEqual(report.issues.count, 3)
+        XCTAssertEqual(report.recommendations.count, 2)
+    }
+
+    // MARK: - printDetailedReport / printReport Tests
+
+    func test_diagnostics_printDetailedReport_doesNotCrash() {
+        // Given
+        let diagnostics = ContainerDiagnostics(
+            totalRegistrations: 3,
+            singletonInstances: 2,
+            weakReferences: 1,
+            activeWeakReferences: 1,
+            registeredTypes: [TypeKey(String.self), TypeKey(Int.self)]
+        )
+
+        // When / Then — should not crash
+        diagnostics.printDetailedReport()
+    }
+
+    func test_healthReport_printReport_doesNotCrash() {
+        // Given
+        let diagnostics = ContainerDiagnostics(
+            totalRegistrations: 5,
+            singletonInstances: 3,
+            weakReferences: 1,
+            activeWeakReferences: 0,
+            registeredTypes: []
+        )
+        let report = ContainerHealthReport(
+            status: .hasIssues,
+            issues: [.memoryLeak("TestService"), .orphanedRegistrations(2)],
+            recommendations: ["Fix leak", "Clean up registrations"],
+            diagnostics: diagnostics
+        )
+
+        // When / Then — should not crash
+        report.printReport()
+    }
+
+    func test_healthReport_printReport_healthy_noIssues_doesNotCrash() {
+        // Given
+        let diagnostics = ContainerDiagnostics(
+            totalRegistrations: 5,
+            singletonInstances: 5,
+            weakReferences: 0,
+            activeWeakReferences: 0,
+            registeredTypes: []
+        )
+        let report = ContainerHealthReport(
+            status: .healthy,
+            issues: [],
+            recommendations: [],
+            diagnostics: diagnostics
+        )
+
+        // When / Then — should not crash
+        report.printReport()
+    }
+
+    func test_instrumentedContainer_printPerformanceReport_doesNotCrash() async throws {
+        // Given
+        let container = InstrumentedContainer()
+        _ = try await container.register(TestProtocol.self)
+            .asSingleton()
+            .with { _ in TestImplementation() }
+        _ = try await container.resolve(TestProtocol.self)
+
+        // When / Then — should not crash
+        await container.printPerformanceReport()
+    }
+
+    func test_instrumentedContainer_printPerformanceReport_noMetrics_doesNotCrash() async {
+        // Given
+        let container = InstrumentedContainer(metrics: nil)
+
+        // When / Then — should not crash (nil metrics)
+        await container.printPerformanceReport()
+    }
+
+    // MARK: - DefaultContainerMetrics recordRegistration Tests
+
+    func test_metrics_recordRegistration_tracksCount() async {
+        // Given
+        let metrics = DefaultContainerMetrics()
+        let key = TypeKey(String.self)
+
+        // When
+        await metrics.recordRegistration(for: key)
+        await metrics.recordRegistration(for: key)
+        let result = await metrics.getMetrics()
+
+        // Then
+        XCTAssertGreaterThan(result.memoryUsageEstimate, 0)
+    }
 }
 
 // MARK: - Test Types

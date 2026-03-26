@@ -55,6 +55,34 @@ final class PaymentFlowSetupTests: XCTestCase {
         XCTAssertEqual(mockRawDataManagerFactory.createCallCount, 1)
     }
 
+    @MainActor
+    func test_setBillingAddress_doesNotCrash() async throws {
+        // Given
+        let billingAddress = BillingAddress(
+            firstName: "John",
+            lastName: "Doe",
+            addressLine1: "123 Main St",
+            addressLine2: nil,
+            city: "SF",
+            state: "CA",
+            postalCode: "94102",
+            countryCode: "US",
+            phoneNumber: nil
+        )
+
+        // When / Then — no-op method, should not crash
+        try await repository.setBillingAddress(billingAddress)
+    }
+
+    @MainActor
+    func test_getNetworkDetectionStream_returnsStream() {
+        // When
+        let stream = repository.getNetworkDetectionStream()
+
+        // Then
+        XCTAssertNotNil(stream)
+    }
+
     func testProcessCardPayment_WhenFactoryThrows_PropagatesError() async {
         let factoryError = NSError(domain: "Factory", code: 500, userInfo: [NSLocalizedDescriptionKey: "Cannot create"])
         mockRawDataManagerFactory.createError = factoryError

@@ -230,6 +230,63 @@ final class ContainerTests: XCTestCase {
         }
     }
 
+    // MARK: - Default Extension Tests
+
+    func test_resolve_defaultExtension_resolvesWithoutNameParameter() async throws {
+        // Given
+        _ = try await sut.register(ValidationService.self)
+            .asSingleton()
+            .with { _ in DefaultValidationService() }
+
+        // When — uses the default extension (no name: param)
+        let service: ValidationService = try await sut.resolve(ValidationService.self)
+
+        // Then
+        XCTAssertNotNil(service)
+    }
+
+    // MARK: - Default Extension: resolveSync Without Name
+
+    func test_resolveSync_defaultExtension_resolvesWithoutNameParameter() async throws {
+        // Given
+        _ = try await sut.register(ValidationService.self)
+            .asSingleton()
+            .with { _ in DefaultValidationService() }
+
+        // Pre-populate singleton cache
+        _ = try await sut.resolve(ValidationService.self)
+
+        // When — uses the default extension (no name: param)
+        let service: ValidationService = try sut.resolveSync(ValidationService.self)
+
+        // Then
+        XCTAssertNotNil(service)
+        XCTAssertTrue(service is DefaultValidationService)
+    }
+
+    // MARK: - Default Extension: unregister Without Name
+
+    func test_unregister_defaultExtension_removesRegistrationWithoutNameParameter() async throws {
+        // Given
+        _ = try await sut.register(ValidationService.self)
+            .asSingleton()
+            .with { _ in DefaultValidationService() }
+
+        let service: ValidationService = try await sut.resolve(ValidationService.self)
+        XCTAssertNotNil(service)
+
+        // When — uses the default extension (no name: param)
+        await sut.unregister(ValidationService.self)
+
+        // Then
+        do {
+            _ = try await sut.resolve(ValidationService.self)
+            XCTFail("Expected error after unregister")
+        } catch {
+            XCTAssertTrue(error is ContainerError)
+        }
+    }
+
     // MARK: - Sync Resolution Tests
 
     func test_resolveSync_withSlowFactory_throwsTimeoutError() async throws {
@@ -254,6 +311,35 @@ final class ContainerTests: XCTestCase {
                 XCTFail("Expected factoryFailed error")
             }
         }
+    }
+
+    // MARK: - Resolve All Tests
+
+    func test_resolveAll_withNoRegistrations_returnsEmptyArray() async {
+        // When
+        let results: [ValidationService] = await sut.resolveAll(ValidationService.self)
+
+        // Then
+        XCTAssertTrue(results.isEmpty)
+    }
+
+    func test_resolveAll_withMultipleNamedRegistrations_returnsAllInstances() async throws {
+        // Given
+        _ = try await sut.register(DefaultValidationService.self)
+            .named("a")
+            .asSingleton()
+            .with { _ in DefaultValidationService() }
+
+        _ = try await sut.register(DefaultValidationService.self)
+            .named("b")
+            .asSingleton()
+            .with { _ in DefaultValidationService() }
+
+        // When
+        let results = await sut.resolveAll(DefaultValidationService.self)
+
+        // Then
+        XCTAssertEqual(results.count, 2)
     }
 }
 

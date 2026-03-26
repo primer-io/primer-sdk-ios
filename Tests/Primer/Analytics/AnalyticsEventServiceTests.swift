@@ -458,6 +458,407 @@ final class AnalyticsEventServiceTests: XCTestCase {
         XCTAssertTrue(call.endpoint.absoluteString.contains("analytics.staging.data.primer.io"))
     }
 
+    // MARK: - 3DS Metadata Tests
+
+    func testSendEvent_WithThreeDSMetadata_IncludesProviderAndResponse() async throws {
+        // Given
+        let config = makeTestConfig()
+        await service.initialize(config: config)
+
+        let metadata: AnalyticsEventMetadata = .threeDS(ThreeDSEvent(
+            paymentMethod: "PAYMENT_CARD",
+            provider: "NETCETERA",
+            response: "Y"
+        ))
+
+        // When
+        await service.sendEvent(.paymentThreeds, metadata: metadata)
+
+        // Then
+        let call = try await mockNetworkClient.nextCall()
+        XCTAssertEqual(call.payload.eventName, "PAYMENT_THREEDS")
+        XCTAssertEqual(call.payload.paymentMethod, "PAYMENT_CARD")
+        XCTAssertEqual(call.payload.threedsProvider, "NETCETERA")
+        XCTAssertEqual(call.payload.threedsResponse, "Y")
+        XCTAssertNil(call.payload.redirectDestinationUrl)
+    }
+
+    // MARK: - Redirect Metadata Tests
+
+    func testSendEvent_WithRedirectMetadata_IncludesDestinationUrl() async throws {
+        // Given
+        let config = makeTestConfig()
+        await service.initialize(config: config)
+
+        let metadata: AnalyticsEventMetadata = .redirect(RedirectEvent(
+            destinationUrl: "https://paypal.com/checkout"
+        ))
+
+        // When
+        await service.sendEvent(.paymentRedirectToThirdParty, metadata: metadata)
+
+        // Then
+        let call = try await mockNetworkClient.nextCall()
+        XCTAssertEqual(call.payload.eventName, "PAYMENT_REDIRECT_TO_THIRD_PARTY")
+        XCTAssertEqual(call.payload.redirectDestinationUrl, "https://paypal.com/checkout")
+        XCTAssertNil(call.payload.paymentMethod)
+        XCTAssertNil(call.payload.threedsProvider)
+    }
+
+    // MARK: - General Metadata Tests
+
+    func testSendEvent_WithGeneralMetadata_IncludesLocale() async throws {
+        // Given
+        let config = makeTestConfig()
+        await service.initialize(config: config)
+
+        let metadata: AnalyticsEventMetadata = .general(GeneralEvent(locale: "fr-FR"))
+
+        // When
+        await service.sendEvent(.checkoutFlowStarted, metadata: metadata)
+
+        // Then
+        let call = try await mockNetworkClient.nextCall()
+        XCTAssertEqual(call.payload.userLocale, "fr-FR")
+        XCTAssertNil(call.payload.paymentMethod)
+        XCTAssertNil(call.payload.paymentId)
+    }
+
+    // MARK: - Payload Structure Tests
+
+    func testSendEvent_payloadContainsValidUUID() async throws {
+        // Given
+        let config = makeTestConfig()
+        await service.initialize(config: config)
+
+        // When
+        await service.sendEvent(.sdkInitStart, metadata: nil)
+
+        // Then
+        let call = try await mockNetworkClient.nextCall()
+        XCTAssertFalse(call.payload.id.isEmpty)
+        XCTAssertNotNil(UUID(uuidString: call.payload.id), "Payload ID should be a valid UUID")
+    }
+
+    func testSendEvent_payloadContainsCorrectSdkVersion() async throws {
+        // Given
+        let config = makeTestConfig()
+        await service.initialize(config: config)
+
+        // When
+        await service.sendEvent(.sdkInitStart, metadata: nil)
+
+        // Then
+        let call = try await mockNetworkClient.nextCall()
+        XCTAssertEqual(call.payload.sdkVersion, "2.46.7")
+    }
+
+    func testSendEvent_payloadContainsCorrectSdkType() async throws {
+        // Given
+        let config = makeTestConfig()
+        await service.initialize(config: config)
+
+        // When
+        await service.sendEvent(.sdkInitStart, metadata: nil)
+
+        // Then
+        let call = try await mockNetworkClient.nextCall()
+        XCTAssertTrue(
+            call.payload.sdkType == "IOS_NATIVE" || call.payload.sdkType == "RN_IOS",
+            "SDK type should be IOS_NATIVE or RN_IOS"
+        )
+    }
+
+    func testSendEvent_payloadContainsSessionIds() async throws {
+        // Given
+        let config = makeTestConfig()
+        await service.initialize(config: config)
+
+        // When
+        await service.sendEvent(.sdkInitStart, metadata: nil)
+
+        // Then
+        let call = try await mockNetworkClient.nextCall()
+        XCTAssertEqual(call.payload.checkoutSessionId, "cs_test_123")
+        XCTAssertEqual(call.payload.clientSessionId, "client_test_456")
+        XCTAssertEqual(call.payload.primerAccountId, "acc_test_789")
+    }
+
+    func testSendEvent_withNilMetadata_userLocaleIsNil() async throws {
+        // Given
+        let config = makeTestConfig()
+        await service.initialize(config: config)
+
+        // When
+        await service.sendEvent(.sdkInitStart, metadata: nil)
+
+        // Then
+        let call = try await mockNetworkClient.nextCall()
+        XCTAssertNil(call.payload.userLocale)
+    }
+
+    // MARK: - Token Passing Tests
+
+    func testSendEvent_passesAuthTokenToNetworkClient() async throws {
+        // Given
+        let config = makeTestConfig()
+        await service.initialize(config: config)
+
+        // When
+        await service.sendEvent(.sdkInitStart, metadata: nil)
+
+        // Then
+        let call = try await mockNetworkClient.nextCall()
+        XCTAssertEqual(call.token, "test_token_abc")
+    }
+
+    func testSendEvent_withNilToken_passesNilToNetworkClient() async throws {
+        // Given
+        let config = AnalyticsSessionConfig(
+            environment: .dev,
+            checkoutSessionId: "cs_test",
+            clientSessionId: "client_test",
+            primerAccountId: "acc_test",
+            sdkVersion: "2.46.7",
+            clientSessionToken: nil
+        )
+        await service.initialize(config: config)
+
+        // When
+        await service.sendEvent(.sdkInitStart, metadata: nil)
+
+        // Then
+        let call = try await mockNetworkClient.nextCall()
+        XCTAssertNil(call.token)
+    }
+
+    // MARK: - Initialize With No Buffered Events Tests
+
+    func testInitialize_withNoBufferedEvents_completesWithoutSending() async throws {
+        // Given
+        let config = makeTestConfig()
+
+        // When
+        await service.initialize(config: config)
+
+        // Then
+        let hasCall = await mockNetworkClient.hasCall()
+        XCTAssertFalse(hasCall, "No events should be sent when buffer is empty")
+    }
+
+    // MARK: - Environment Endpoint Tests
+
+    func testSendEvent_productionEnvironment_usesCorrectEndpoint() async throws {
+        // Given
+        let config = AnalyticsSessionConfig(
+            environment: .production,
+            checkoutSessionId: "cs_prod",
+            clientSessionId: "client_prod",
+            primerAccountId: "acc_prod",
+            sdkVersion: "2.46.7",
+            clientSessionToken: "prod_token"
+        )
+        await service.initialize(config: config)
+
+        // When
+        await service.sendEvent(.sdkInitStart, metadata: nil)
+
+        // Then
+        let call = try await mockNetworkClient.nextCall()
+        XCTAssertTrue(call.endpoint.absoluteString.contains("analytics.production.data.primer.io"))
+    }
+
+    func testSendEvent_sandboxEnvironment_usesCorrectEndpoint() async throws {
+        // Given
+        let config = AnalyticsSessionConfig(
+            environment: .sandbox,
+            checkoutSessionId: "cs_sandbox",
+            clientSessionId: "client_sandbox",
+            primerAccountId: "acc_sandbox",
+            sdkVersion: "2.46.7",
+            clientSessionToken: "sandbox_token"
+        )
+        await service.initialize(config: config)
+
+        // When
+        await service.sendEvent(.sdkInitStart, metadata: nil)
+
+        // Then
+        let call = try await mockNetworkClient.nextCall()
+        XCTAssertTrue(call.endpoint.absoluteString.contains("analytics.sandbox.data.primer.io"))
+    }
+
+    // MARK: - Unique Event IDs Tests
+
+    func testSendEvent_multipleEvents_haveUniqueIds() async throws {
+        // Given
+        let config = makeTestConfig()
+        await service.initialize(config: config)
+
+        // When
+        await service.sendEvent(.sdkInitStart, metadata: nil)
+        await service.sendEvent(.sdkInitEnd, metadata: nil)
+        await service.sendEvent(.checkoutFlowStarted, metadata: nil)
+
+        // Then
+        let call1 = try await mockNetworkClient.nextCall()
+        let call2 = try await mockNetworkClient.nextCall()
+        let call3 = try await mockNetworkClient.nextCall()
+
+        let ids = Set([call1.payload.id, call2.payload.id, call3.payload.id])
+        XCTAssertEqual(ids.count, 3, "Each event should have a unique ID")
+    }
+
+    // MARK: - Multiple Buffered Events With Metadata Tests
+
+    func testInitialize_flushesBufferedEventsWithMetadata() async throws {
+        // Given
+        let paymentMetadata: AnalyticsEventMetadata = .payment(PaymentEvent(
+            paymentMethod: "PAYPAL",
+            paymentId: "pay_buffered"
+        ))
+        await service.sendEvent(.paymentMethodSelection, metadata: paymentMetadata)
+
+        // When
+        let config = makeTestConfig()
+        await service.initialize(config: config)
+
+        // Then
+        let call = try await mockNetworkClient.nextCall()
+        XCTAssertEqual(call.payload.eventName, "PAYMENT_METHOD_SELECTION")
+        XCTAssertEqual(call.payload.paymentMethod, "PAYPAL")
+        XCTAssertEqual(call.payload.paymentId, "pay_buffered")
+    }
+
+    // MARK: - Network Failure Does Not Block Subsequent Events Tests
+
+    func testSendEvent_afterNetworkFailure_subsequentEventsStillSent() async throws {
+        // Given
+        let config = makeTestConfig()
+        await service.initialize(config: config)
+        await mockNetworkClient.setShouldFail(true)
+
+        // When - first event fails
+        await service.sendEvent(.paymentFailure, metadata: nil)
+        _ = try await mockNetworkClient.nextCall()
+
+        // Reset failure and send another event
+        await mockNetworkClient.setShouldFail(false)
+        await service.sendEvent(.paymentReattempted, metadata: nil)
+
+        // Then - second event is still sent
+        let call = try await mockNetworkClient.nextCall()
+        XCTAssertEqual(call.payload.eventName, "PAYMENT_REATTEMPTED")
+    }
+
+    // MARK: - Factory Method Tests
+
+    func testCreate_returnsConfiguredService() async throws {
+        // Given
+        let environmentProvider = AnalyticsEnvironmentProvider()
+
+        // When
+        let service = AnalyticsEventService.create(environmentProvider: environmentProvider)
+
+        // Then — service should be a valid actor
+        XCTAssertNotNil(service)
+    }
+
+    func testCreate_serviceCanInitializeAndSendEvents() async throws {
+        // Given
+        let environmentProvider = AnalyticsEnvironmentProvider()
+        let service = AnalyticsEventService.create(environmentProvider: environmentProvider)
+        let config = makeTestConfig()
+
+        // When
+        await service.initialize(config: config)
+
+        // Then — service initialized without crashing
+        // We can't easily verify network calls on the real service,
+        // but we verify it doesn't crash
+        await service.sendEvent(.sdkInitStart, metadata: nil)
+    }
+
+    // MARK: - Buffer and Flush Edge Cases
+
+    func testInitialize_withSingleBufferedEvent_flushesThatEvent() async throws {
+        // Given
+        let config = makeTestConfig()
+
+        // Queue exactly one event
+        await service.sendEvent(.sdkInitStart, metadata: nil)
+
+        // Verify buffered
+        let hasCallBefore = await mockNetworkClient.hasCall()
+        XCTAssertFalse(hasCallBefore)
+
+        // When
+        await service.initialize(config: config)
+
+        // Then
+        let call = try await mockNetworkClient.nextCall()
+        XCTAssertEqual(call.payload.eventName, "SDK_INIT_START")
+    }
+
+    // MARK: - Metadata Types Coverage
+
+    func testSendEvent_withPaymentMetadata_noPaymentId_sendsCorrectly() async throws {
+        // Given
+        let config = makeTestConfig()
+        await service.initialize(config: config)
+
+        let metadata: AnalyticsEventMetadata = .payment(PaymentEvent(paymentMethod: "KLARNA"))
+
+        // When
+        await service.sendEvent(.paymentSubmitted, metadata: metadata)
+
+        // Then
+        let call = try await mockNetworkClient.nextCall()
+        XCTAssertEqual(call.payload.paymentMethod, "KLARNA")
+        XCTAssertNil(call.payload.paymentId)
+    }
+
+    func testSendEvent_withGeneralMetadata_defaultLocale_sendsCorrectly() async throws {
+        // Given
+        let config = makeTestConfig()
+        await service.initialize(config: config)
+
+        let metadata: AnalyticsEventMetadata = .general()
+
+        // When
+        await service.sendEvent(.paymentFlowExited, metadata: metadata)
+
+        // Then
+        let call = try await mockNetworkClient.nextCall()
+        XCTAssertEqual(call.payload.eventName, "PAYMENT_FLOW_EXITED")
+        XCTAssertNotNil(call.payload.userLocale)
+    }
+
+    // MARK: - Re-initialization Tests
+
+    func testInitialize_calledTwice_updatesConfig() async throws {
+        // Given
+        let config1 = makeTestConfig()
+        let config2 = AnalyticsSessionConfig(
+            environment: .staging,
+            checkoutSessionId: "cs_new",
+            clientSessionId: "client_new",
+            primerAccountId: "acc_new",
+            sdkVersion: "2.46.8",
+            clientSessionToken: "new_token"
+        )
+
+        // When
+        await service.initialize(config: config1)
+        await service.initialize(config: config2)
+        await service.sendEvent(.sdkInitStart, metadata: nil)
+
+        // Then — should use second config
+        let call = try await mockNetworkClient.nextCall()
+        XCTAssertEqual(call.payload.checkoutSessionId, "cs_new")
+        XCTAssertTrue(call.endpoint.absoluteString.contains("staging"))
+    }
+
     // MARK: - Helper Methods
 
     private func makeTestConfig() -> AnalyticsSessionConfig {
@@ -518,7 +919,7 @@ actor TestableAnalyticsEventService: CheckoutComponentsAnalyticsServiceProtocol 
     }
 
     func initialize(config: AnalyticsSessionConfig) async {
-        self.sessionConfig = config
+        sessionConfig = config
 
         let bufferedEvents = await eventBuffer.flush()
 

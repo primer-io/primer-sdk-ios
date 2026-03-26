@@ -14,6 +14,8 @@ final class WebRedirectRepositoryImpl: WebRedirectRepository, LogReporter {
     private let tokenizationService: TokenizationServiceProtocol
     private let webAuthService: WebAuthenticationService
     private let createPaymentService: CreateResumePaymentServiceProtocol
+    private let apiConfigurationModule: PrimerAPIConfigurationModuleProtocol
+    private let pollingModuleFactory: (URL) -> PollingModule
 
     // MARK: - State
 
@@ -35,23 +37,31 @@ final class WebRedirectRepositoryImpl: WebRedirectRepository, LogReporter {
         webAuthService: WebAuthenticationService = DefaultWebAuthenticationService(),
         createPaymentServiceFactory: @escaping (String) -> CreateResumePaymentServiceProtocol = { paymentMethodType in
             CreateResumePaymentService(paymentMethodType: paymentMethodType)
-        }
+        },
+        apiConfigurationModule: PrimerAPIConfigurationModuleProtocol = PrimerAPIConfigurationModule(),
+        pollingModuleFactory: @escaping (URL) -> PollingModule = { PollingModule(url: $0) }
     ) {
         self.tokenizationService = tokenizationService
         self.webAuthService = webAuthService
         // Default to generic type, will be updated per payment
         createPaymentService = createPaymentServiceFactory("WEB_REDIRECT")
+        self.apiConfigurationModule = apiConfigurationModule
+        self.pollingModuleFactory = pollingModuleFactory
     }
 
     // Internal init for dependency injection with specific payment service
     init(
         tokenizationService: TokenizationServiceProtocol,
         webAuthService: WebAuthenticationService,
-        createPaymentService: CreateResumePaymentServiceProtocol
+        createPaymentService: CreateResumePaymentServiceProtocol,
+        apiConfigurationModule: PrimerAPIConfigurationModuleProtocol = PrimerAPIConfigurationModule(),
+        pollingModuleFactory: @escaping (URL) -> PollingModule = { PollingModule(url: $0) }
     ) {
         self.tokenizationService = tokenizationService
         self.webAuthService = webAuthService
         self.createPaymentService = createPaymentService
+        self.apiConfigurationModule = apiConfigurationModule
+        self.pollingModuleFactory = pollingModuleFactory
     }
 
     // MARK: - WebRedirectRepository Protocol
@@ -111,7 +121,6 @@ final class WebRedirectRepositoryImpl: WebRedirectRepository, LogReporter {
         }
 
         // Store the new client token
-        let apiConfigurationModule = PrimerAPIConfigurationModule()
         try await apiConfigurationModule.storeRequiredActionClientToken(requiredAction.clientToken)
 
         // Get the decoded JWT which contains redirect URLs
@@ -172,7 +181,7 @@ final class WebRedirectRepositoryImpl: WebRedirectRepository, LogReporter {
     }
 
     func pollForCompletion(statusUrl: URL) async throws -> String {
-        let pollingModule = PollingModule(url: statusUrl)
+        let pollingModule = pollingModuleFactory(statusUrl)
         currentPollingModule = pollingModule
         defer { currentPollingModule = nil }
         return try await pollingModule.start()

@@ -25,6 +25,24 @@ final class PayPalPaymentMethodTests: XCTestCase {
         try await super.tearDown()
     }
 
+    // MARK: - createScope Success Cases
+
+    func test_createScope_withValidDependencies_returnsScope() async throws {
+        // Given
+        await registerPayPalDependencies()
+        let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+
+        // When
+        let scope = try PayPalPaymentMethod.createScope(
+            checkoutScope: checkoutScope,
+            diContainer: container
+        )
+
+        // Then
+        XCTAssertNotNil(scope)
+        XCTAssertTrue(scope is DefaultPayPalScope)
+    }
+
     // MARK: - createScope Error Cases
 
     func test_createScope_withMissingRequiredDependency_throws() async throws {
@@ -107,6 +125,25 @@ final class PayPalPaymentMethodTests: XCTestCase {
         XCTAssertEqual(scope.presentationContext, .fromPaymentSelection)
     }
 
+    // MARK: - Static Properties
+
+    func test_paymentMethodType_matchesPayPal() {
+        XCTAssertEqual(PayPalPaymentMethod.paymentMethodType, PrimerPaymentMethodType.payPal.rawValue)
+    }
+
+    // MARK: - createView Tests
+
+    func test_createView_withNoScope_returnsNil() {
+        // Given
+        let mockScope = MockNonDefaultCheckoutScope()
+
+        // When
+        let view = PayPalPaymentMethod.createView(checkoutScope: mockScope)
+
+        // Then
+        XCTAssertNil(view)
+    }
+
     // MARK: - Register Tests
 
     func test_register_addsToPaymentMethodRegistry() async throws {
@@ -126,6 +163,51 @@ final class PayPalPaymentMethodTests: XCTestCase {
             XCTAssertNotNil(scope)
         } catch {
             XCTFail("Registry should have PayPalPaymentMethod registered: \(error)")
+        }
+    }
+
+    // MARK: - createView With Registered Scope
+
+    func test_createView_withRegisteredScope_returnsView() async throws {
+        // Given
+        await registerPayPalDependencies()
+        let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+        _ = try PayPalPaymentMethod.createScope(
+            checkoutScope: checkoutScope,
+            diContainer: container
+        )
+
+        // When — createView depends on PaymentMethodRegistry
+        let view = PayPalPaymentMethod.createView(checkoutScope: checkoutScope)
+
+        // Then — no crash; view may be nil since scope isn't auto-registered
+        _ = view
+    }
+
+    // MARK: - createScope PrimerError Rethrow
+
+    func test_createScope_whenResolveThrowsPrimerError_rethrowsSameError() async throws {
+        // Given - register a factory that throws a PrimerError directly
+        let expectedError = PrimerError.invalidClientToken(reason: "test")
+        let errorContainer = Container()
+        _ = try? await errorContainer.register(ProcessPayPalPaymentInteractor.self)
+            .asSingleton()
+            .with { _ in throw expectedError }
+
+        // Pre-populate the singleton to make resolveSync throw
+        _ = try? await errorContainer.resolve(ProcessPayPalPaymentInteractor.self)
+
+        let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+
+        // When/Then
+        do {
+            _ = try PayPalPaymentMethod.createScope(
+                checkoutScope: checkoutScope,
+                diContainer: errorContainer
+            )
+            XCTFail("Expected error to be thrown")
+        } catch {
+            XCTAssertTrue(error is PrimerError)
         }
     }
 

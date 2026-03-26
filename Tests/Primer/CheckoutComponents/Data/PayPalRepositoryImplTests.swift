@@ -307,8 +307,6 @@ final class PayPalRepositoryImplTests: XCTestCase {
         }
     }
 
-    // MARK: - fetchPayerInfo Tests
-
     func test_fetchPayerInfo_propagatesError() async {
         // Given
         let expectedError = NSError(domain: "test", code: 500, userInfo: nil)
@@ -375,6 +373,62 @@ final class PayPalRepositoryImplTests: XCTestCase {
         } catch {
             XCTAssertEqual((error as NSError).code, 600)
         }
+    }
+
+    func test_tokenize_withOrderPaymentInstrumentAndPayerInfo_callsTokenizationService() async throws {
+        // Given
+        let payerInfo = PayPalPayerInfo(
+            externalPayerId: "payer-xyz",
+            email: "order@example.com",
+            firstName: "Order",
+            lastName: "Payer"
+        )
+        let paymentInstrument = PayPalPaymentInstrumentData.order(orderId: "order-456", payerInfo: payerInfo)
+        mockTokenizationService.tokenizeResult = .success(createMockTokenData(id: "token-order", token: "tok-order"))
+
+        // When
+        let result = try await sut.tokenize(paymentInstrument: paymentInstrument)
+
+        // Then
+        XCTAssertTrue(mockTokenizationService.tokenizeCalled)
+        XCTAssertEqual(result.paymentId, "token-order")
+        XCTAssertEqual(result.paymentMethodType, PrimerPaymentMethodType.payPal.rawValue)
+    }
+
+    func test_tokenize_withBillingAgreementAndShippingAddress_mapsAllFields() async throws {
+        // Given
+        let billingResult = PayPalBillingAgreementResult(
+            billingAgreementId: "ba-full",
+            externalPayerInfo: PayPalPayerInfo(
+                externalPayerId: "payer-full",
+                email: "full@example.com",
+                firstName: "Full",
+                lastName: "Payer"
+            ),
+            shippingAddress: PayPalShippingAddress(
+                firstName: "Ship",
+                lastName: "To",
+                addressLine1: "456 Oak Ave",
+                addressLine2: nil,
+                city: "Portland",
+                state: "OR",
+                countryCode: "US",
+                postalCode: "97201"
+            )
+        )
+        let paymentInstrument = PayPalPaymentInstrumentData.billingAgreement(result: billingResult)
+        mockTokenizationService.tokenizeResult = .success(createMockTokenData(id: "token-full"))
+
+        // When
+        let result = try await sut.tokenize(paymentInstrument: paymentInstrument)
+
+        // Then
+        XCTAssertTrue(mockTokenizationService.tokenizeCalled)
+        XCTAssertEqual(result.paymentId, "token-full")
+        let instrument = mockTokenizationService.tokenizeRequestBody?.paymentInstrument as? PayPalPaymentInstrument
+        XCTAssertEqual(instrument?.paypalBillingAgreementId, "ba-full")
+        XCTAssertNotNil(instrument?.shippingAddress)
+        XCTAssertNotNil(instrument?.externalPayerInfo)
     }
 
     func test_tokenize_generatesUUIDWhenIdIsNil() async throws {

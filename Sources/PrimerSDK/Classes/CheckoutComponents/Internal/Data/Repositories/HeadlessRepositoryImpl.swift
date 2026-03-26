@@ -50,8 +50,8 @@ final class OneShotContinuation<T>: @unchecked Sendable {
 @available(iOS 15.0, *)
 @MainActor
 private class PaymentCompletionHandler: NSObject,
-  PrimerHeadlessUniversalCheckoutDelegate,
-  PrimerHeadlessUniversalCheckoutRawDataManagerDelegate,
+  @preconcurrency PrimerHeadlessUniversalCheckoutDelegate,
+  @preconcurrency PrimerHeadlessUniversalCheckoutRawDataManagerDelegate,
   LogReporter
 {
 
@@ -190,7 +190,8 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
 
   // MARK: - Vault Support
 
-  private lazy var vaultManager: PrimerHeadlessUniversalCheckout.VaultManager = {
+  private lazy var vaultManager: any VaultManagerProtocol = {
+    if let factory = vaultManagerFactory { return factory() }
     let manager = PrimerHeadlessUniversalCheckout.VaultManager()
     do {
       try manager.configure()
@@ -222,17 +223,20 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
   private let clientSessionActionsFactory: () -> ClientSessionActionsProtocol
   private var configurationServiceFactory: (() -> ConfigurationService)?
   private let rawDataManagerFactory: RawDataManagerFactoryProtocol
+  private let vaultManagerFactory: (() -> any VaultManagerProtocol)?
 
   init(
     clientSessionActionsFactory: @escaping () -> ClientSessionActionsProtocol = {
       ClientSessionActionsModule()
     },
     configurationServiceFactory: (() -> ConfigurationService)? = nil,
-    rawDataManagerFactory: RawDataManagerFactoryProtocol = DefaultRawDataManagerFactory()
+    rawDataManagerFactory: RawDataManagerFactoryProtocol = DefaultRawDataManagerFactory(),
+    vaultManagerFactory: (() -> any VaultManagerProtocol)? = nil
   ) {
     self.clientSessionActionsFactory = clientSessionActionsFactory
     self.configurationServiceFactory = configurationServiceFactory
     self.rawDataManagerFactory = rawDataManagerFactory
+    self.vaultManagerFactory = vaultManagerFactory
   }
 
   @available(iOS 15.0, *)
@@ -876,7 +880,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
 // MARK: - RawDataManager Delegate Extension
 
 @available(iOS 15.0, *)
-extension HeadlessRepositoryImpl: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate {
+extension HeadlessRepositoryImpl: @preconcurrency PrimerHeadlessUniversalCheckoutRawDataManagerDelegate {
 
   func primerRawDataManager(
     _ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
