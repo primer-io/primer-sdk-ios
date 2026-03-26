@@ -40,7 +40,7 @@ protocol URLSessionProtocol: Sendable {
 
 extension URLSession: URLSessionProtocol {}
 
-final class DefaultRequestDispatcher: RequestDispatcher, LogReporter {
+final class DefaultRequestDispatcher: RequestDispatcher, @unchecked Sendable, LogReporter {
 
     let urlSession: URLSessionProtocol
     

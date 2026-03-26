@@ -210,7 +210,7 @@ public actor Container: ContainerProtocol, LogReporter {
 
   @discardableResult
   public func unregister<T>(_ type: T.Type, name: String? = nil) async -> Self {
-    await unregisterInternal(type, name: name)
+    unregisterInternal(type, name: name)
     return self
   }
 
@@ -226,7 +226,6 @@ public actor Container: ContainerProtocol, LogReporter {
   // MARK: - Resolution
 
   public func resolve<T>(_ type: T.Type, name: String? = nil) async throws -> T {
-    let startTime = CFAbsoluteTimeGetCurrent()
     let key = TypeKey(type, name: name)
 
     guard let registration = factories[key] else {
@@ -254,9 +253,6 @@ public actor Container: ContainerProtocol, LogReporter {
       guard let typed = instance as? T else {
         throw ContainerError.typeCastFailed(key, expected: T.self, actual: Swift.type(of: instance))
       }
-
-      let duration = (CFAbsoluteTimeGetCurrent() - startTime) * 1000
-      // Performance monitoring removed for DI resolution
 
       return typed
     } catch let containerError as ContainerError {

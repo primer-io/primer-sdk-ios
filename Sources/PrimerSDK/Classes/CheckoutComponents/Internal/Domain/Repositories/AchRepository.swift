@@ -48,6 +48,7 @@ protocol AchRepository {
 }
 
 @available(iOS 15.0, *)
+@MainActor
 protocol AchBankCollectorDelegate: AnyObject {
   func achBankCollectorDidSucceed(paymentId: String)
   func achBankCollectorDidCancel()

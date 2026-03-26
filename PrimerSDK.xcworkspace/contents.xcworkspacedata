@@ -179,9 +179,6 @@
                      location = "group:Navigation"
                      name = "Navigation">
                      <FileRef
-                        location = "group:NAVIGATION_ARCHITECTURE_DECISION.md">
-                     </FileRef>
-                     <FileRef
                         location = "group:BackportedNavigationStack.swift">
                      </FileRef>
                      <FileRef
@@ -215,10 +212,6 @@
                      <FileRef
                         location = "group:MockValidationService.swift">
                      </FileRef>
-                  </Group>
-                  <Group
-                     location = "group:Environment"
-                     name = "Environment">
                   </Group>
                   <Group
                      location = "group:Accessibility"

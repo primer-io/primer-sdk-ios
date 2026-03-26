@@ -54,11 +54,19 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
     public private(set) var cardNetwork: CardNetwork = .unknown {
         didSet {
             guard let rawDataManager else { return }
-
+            let cardNumber = (rawData as? PrimerCardData)?.cardNumber ?? ""
+            let state = PrimerCardNumberEntryState(cardNumber: cardNumber)
+            let network = PrimerCardNetwork(network: cardNetwork)
+            let metadata = PrimerCardNumberEntryMetadata(
+                source: .local,
+                selectableCardNetworks: nil,
+                detectedCardNetworks: [network]
+            )
             DispatchQueue.main.async {
                 rawDataManager.delegate?.primerRawDataManager?(
                     rawDataManager,
-                    metadataDidChange: ["cardNetwork": self.cardNetwork.rawValue]
+                    didReceiveMetadata: metadata,
+                    forState: state
                 )
             }
         }

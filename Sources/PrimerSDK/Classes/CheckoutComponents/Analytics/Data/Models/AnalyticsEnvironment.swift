@@ -7,7 +7,7 @@
 import Foundation
 
 /// Analytics environment enumeration matching Primer backend environments
-public enum AnalyticsEnvironment: String, Codable {
+public enum AnalyticsEnvironment: String, Codable, Sendable {
   case dev = "DEV"
   case staging = "STAGING"
   case sandbox = "SANDBOX"

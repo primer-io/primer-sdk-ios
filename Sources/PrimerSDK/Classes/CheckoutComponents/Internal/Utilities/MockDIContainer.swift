@@ -10,7 +10,7 @@
   /// Mock implementation of ContainerProtocol for SwiftUI previews
   /// Provides basic dependency resolution for preview environments
   @available(iOS 15.0, *)
-  public class MockDIContainer: ContainerProtocol {
+  public final class MockDIContainer: ContainerProtocol, @unchecked Sendable {
     private var registrations: [String: Any] = [:]
 
     /// Creates a mock DI container for previews

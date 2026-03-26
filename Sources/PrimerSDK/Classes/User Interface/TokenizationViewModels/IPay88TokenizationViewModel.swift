@@ -364,7 +364,7 @@ final class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
                 place: .iPay88View
             ))
 
-            DispatchQueue.main.async {
+            DispatchQueue.main.async { [weak self] in
                 #if DEBUG
                 let isMockBE = PrimerAPIConfiguration.current?.clientSession?.testId != nil
                 #else
@@ -372,10 +372,10 @@ final class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
                 #endif
 
                 if !isMockBE {
-                    self.primerIPay88ViewController?.dismiss(animated: true)
+                    self?.primerIPay88ViewController?.dismiss(animated: true)
                 } else {
                     #if DEBUG
-                    self.demoThirdPartySDKViewController?.dismiss(animated: true)
+                    self?.demoThirdPartySDKViewController?.dismiss(animated: true)
                     #endif
                 }
             }

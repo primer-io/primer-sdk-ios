@@ -15,7 +15,7 @@ private struct PrimerCheckoutScopeKey: EnvironmentKey {
 
 @available(iOS 15.0, *)
 private struct PrimerCardFormScopeKey: EnvironmentKey {
-  static let defaultValue: PrimerCardFormScope? = nil
+  static let defaultValue: (any PrimerCardFormScope)? = nil
 }
 
 @available(iOS 15.0, *)

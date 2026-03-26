@@ -168,7 +168,7 @@ private class PaymentCompletionHandler: NSObject,
 
 @available(iOS 15.0, *)
 @MainActor
-final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
+final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogReporter {
 
   private var paymentMethods: [InternalPaymentMethod] = []
 
