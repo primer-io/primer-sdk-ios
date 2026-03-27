@@ -6,7 +6,6 @@
 
 import JavaScriptCore
 import PrimerFoundation
-import PrimerStepResolver
 
 extension PrimerBDCEngine {
     var instantiate: String {
@@ -24,15 +23,16 @@ extension PrimerBDCEngine {
         """
     }
     
-    func initialize(schema: String, state: String) -> String {
+    func initialize(schema: String, context: String, state: String) -> String {
         setObject(schema, forKey: "__schema")
         setObject(state, forKey: "__state")
+        setObject(context, forKey: "__context")
         
         return """
         (async () => {
             try {
                 const processor = await StateProcessor.createStateProcessor(__schema);
-                const result = await processor.initialize(JSON.parse(__state));
+                const result = await processor.initialize(JSON.parse(__state), JSON.parse(__context));
                 onInitializeResult(JSON.stringify(result));
             } catch (e) {
                 onInitializeResult(JSON.stringify({ error: e.toString() }));
@@ -61,6 +61,7 @@ extension PrimerBDCEngine {
     
     func resultScript(
         schema: String,
+        actionId: String,
         state: String,
         outcome: String,
         data: String?
@@ -68,13 +69,14 @@ extension PrimerBDCEngine {
         setObject(schema, forKey: "__schema")
         setObject(state, forKey: "__state")
         setObject(outcome, forKey: "__outcome")
-        setObject(data, forKey: "__data")
+        setObject(data as Any, forKey: "__data")
+        setObject(actionId, forKey: "__actionId")
         
         return """
         (async () => {
             try {
                 const processor = await StateProcessor.createStateProcessor(__schema);
-                const result = await processor.applyResult(JSON.parse(__state), __outcome, __data);
+                const result = await processor.applyResult(JSON.parse(__state), __actionId, __outcome, __data);
                 onExecuteActionResult(JSON.stringify(result));
             } catch (e) {
                 onExecuteActionResult(JSON.stringify({ error: e.toString() }));
@@ -86,5 +88,4 @@ extension PrimerBDCEngine {
     private func setObject(_ value: Any, forKey key: String) {
         context.setObject(value, forKeyedSubscript: key as NSString)
     }
-
 }
