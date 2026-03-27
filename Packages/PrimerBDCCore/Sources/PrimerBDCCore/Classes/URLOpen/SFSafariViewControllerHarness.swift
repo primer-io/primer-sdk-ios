@@ -100,7 +100,7 @@ final class SFSafariViewControllerHarness: NSObject, StepResolver {
     }
 }
 
-extension SFSafariViewControllerHarness: SFSafariViewControllerDelegate {
+extension SFSafariViewControllerHarness: @preconcurrency SFSafariViewControllerDelegate {
     func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
         handleCancel()
     }
