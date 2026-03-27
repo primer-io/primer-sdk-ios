@@ -11,6 +11,8 @@ import PrimerStepResolver
 
 @MainActor
 public final class PrimerStepOrchestrator {
+    public var onCancelled: (() -> Void)?
+
     private let logger = Logger()
     
     private let analyticsHandler: AnalyticsHandler
@@ -20,7 +22,7 @@ public final class PrimerStepOrchestrator {
     private let engine: PrimerBDCEngine
     private var rawSchema: String!
     private var state: CodableState = [:]
-    
+        
     public init(manifest: Manifest, registry: PrimerStepResolverRegistry = .shared) {
         self.engine = PrimerBDCEngine(manifest: manifest)
         
@@ -28,7 +30,7 @@ public final class PrimerStepOrchestrator {
         urlOpenHandler = URLOpenHandler()
         httpHandler = HTTPInteractionStepHandler(registry: registry)
     }
-    
+
     public func start(rawSchema: String, context: SDKContext, initialState: CodableValue) async throws {
         do {
             let result = try await engine.start(schema: rawSchema, context: context, state: initialState)
@@ -44,7 +46,12 @@ public final class PrimerStepOrchestrator {
             let response = try JSONDecoder().decode(StateProcessorResponse.self, from: try result.data())
             state = response.newState
             if let next = response.action {
-                try await resolveStepResponse(next, completion: applyResult)
+                try await resolveStepResponse(next) { [weak self] in try await self?.applyResult($0) }
+            } else if let outcome = response.terminal?.outcome {
+                switch outcome {
+                case .cancelled: onCancelled?()
+                case .success, .error: break
+                }
             }
         } catch {
             throw PrimerStepOrchestratorError.decodeResultFailed(error: error)
@@ -81,7 +88,7 @@ public final class PrimerStepOrchestrator {
                 logger.info("Received instruction; executing web view step")
                 let response = try await urlOpenHandler.resolve(value)
                 
-                urlOpenHandler.onClose = { [weak self] in
+                urlOpenHandler.onClose = {
                     try await completion(
                         StepResponse(
                             outcome: .cancelled,
@@ -91,7 +98,7 @@ public final class PrimerStepOrchestrator {
                     )
                 }
                 
-                urlOpenHandler.onComplete = { [weak self] in
+                urlOpenHandler.onComplete = {
                     try await completion(
                         StepResponse(
                             outcome: .success,
@@ -106,7 +113,7 @@ public final class PrimerStepOrchestrator {
         }
     }
     
-    private func applyResult(_ response: StepResponse) async throws{
+    private func applyResult(_ response: StepResponse) async throws {
         do {
             let data = try response.data?.casted(to: Data.self)
             let outcome = response.outcome.rawValue
