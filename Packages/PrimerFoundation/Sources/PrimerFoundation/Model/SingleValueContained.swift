@@ -10,7 +10,7 @@ public extension SingleValueContained {
     init(from decoder: any Decoder) throws {
         let container = try decoder.singleValueContainer()
         guard let value = Self(rawValue: try container.decode(String.self)) else {
-            throw DecodingError.unexpectedValue(type: SingleValueContained.self, decoder: decoder)
+            throw DecodingError.unexpectedValue(type: Self.self, decoder: decoder)
         }
         self = value
     }
