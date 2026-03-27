@@ -9,16 +9,10 @@ import PrimerStepResolver
 
 public struct StateProcessorResponse: Decodable {
     public let newState: CodableState
-    public let nextToExecute: WorkflowStep?
+    public let action: WorkflowStep?
     public let terminal: Terminal?
 }
 
 public struct Terminal: Decodable {
-    let outcome: TerminalOutcome
-}
-
-public enum TerminalOutcome: String, Decodable {
-    case success
-    case cancelled
-    case error
+   public let outcome: TerminalOutcome
 }
