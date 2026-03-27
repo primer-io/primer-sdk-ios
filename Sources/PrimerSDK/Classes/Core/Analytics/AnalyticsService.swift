@@ -8,6 +8,7 @@
 // swiftlint:disable file_length
 
 import Foundation
+import PrimerStepResolver
 
 protocol AnalyticsServiceProtocol: Actor {
     func record(events: [Analytics.Event]) async throws
@@ -25,10 +26,12 @@ extension Analytics {
         static let maximumBatchSize: UInt = 100
 
         static var shared = {
-            Service(sdkLogsUrl: Service.defaultSdkLogsUrl,
-                    batchSize: Service.maximumBatchSize,
-                    storage: Analytics.storage,
-                    apiClient: Analytics.apiClient ?? PrimerAPIClient())
+            Service(
+                sdkLogsUrl: Service.defaultSdkLogsUrl,
+                batchSize: Service.maximumBatchSize,
+                storage: Analytics.storage,
+                apiClient: Analytics.apiClient ?? PrimerAPIClient()
+            )
         }()
 
         let sdkLogsUrl: URL
@@ -43,14 +46,17 @@ extension Analytics {
 
         private var isSyncing: Bool = false
 
-        init(sdkLogsUrl: URL,
-             batchSize: UInt,
-             storage: Storage,
-             apiClient: PrimerAPIClientAnalyticsProtocol) {
+        init(
+            sdkLogsUrl: URL,
+            batchSize: UInt,
+            storage: Storage,
+            apiClient: PrimerAPIClientAnalyticsProtocol
+        ) {
             self.sdkLogsUrl = sdkLogsUrl
             self.batchSize = batchSize
             self.storage = storage
             self.apiClient = apiClient
+            Task { await PrimerStepResolverRegistry.shared.register(self, forStepType: .platformLog) }
         }
 
         func record(events: [Analytics.Event]) async throws {

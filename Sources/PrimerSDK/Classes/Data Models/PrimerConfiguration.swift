@@ -232,6 +232,7 @@ Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in you
         let pciUrl: String?
         let binDataUrl: String?
         let assetsUrl: String?
+        var env: PrimerEnvironment?
         var clientSession: ClientSession.APIResponse?
         let paymentMethods: [PrimerPaymentMethod]?
         let primerAccountId: String?
@@ -242,6 +243,7 @@ Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in you
             let container = try decoder.container(keyedBy: CodingKeys.self)
             self.coreUrl = (try? container.decode(String?.self, forKey: .coreUrl)) ?? nil
             self.pciUrl = (try? container.decode(String?.self, forKey: .pciUrl)) ?? nil
+            self.env = try container.decodeIfPresent(PrimerEnvironment.self, forKey: .env)
             self.binDataUrl = (try? container.decode(String?.self, forKey: .binDataUrl)) ?? nil
             self.assetsUrl = (try? container.decode(String?.self, forKey: .assetsUrl)) ?? nil
             self.clientSession = (try? container.decode(ClientSession.APIResponse?.self, forKey: .clientSession)) ?? nil
@@ -294,6 +296,7 @@ Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in you
             pciUrl: String?,
             binDataUrl: String?,
             assetsUrl: String?,
+            env: PrimerEnvironment = .dev,
             clientSession: ClientSession.APIResponse?,
             paymentMethods: [PrimerPaymentMethod]?,
             primerAccountId: String?,
@@ -304,6 +307,7 @@ Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in you
             self.pciUrl = pciUrl
             self.binDataUrl = binDataUrl
             self.assetsUrl = assetsUrl
+            self.env = env
             self.clientSession = clientSession
             self.paymentMethods = paymentMethods
             self.primerAccountId = primerAccountId
