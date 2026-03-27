@@ -23,6 +23,7 @@ public final class PrimerBDCEngine: NSObject {
     private typealias JSStringBlock = @convention(block) (String) -> Void
     private typealias JSVoidBlock = @convention(block) () -> Void
     
+    private let urlSession: URLSession
     private let manifest: Manifest
     private let encoder = JSONEncoder()
     private var isReady = false
@@ -35,6 +36,9 @@ public final class PrimerBDCEngine: NSObject {
     public init(manifest: Manifest) {
         self.manifest = manifest
         context = JSContext()!
+        let sessionConfiguration = URLSessionConfiguration.default
+        sessionConfiguration.urlCache = URLCache(memoryCapacity: 10_000_000, diskCapacity: 20_000_000)
+        self.urlSession = URLSession(configuration: sessionConfiguration)
         super.init()
         setupContext()
         Task { try! await setupEngine() }
@@ -42,9 +46,9 @@ public final class PrimerBDCEngine: NSObject {
 }
 
 public extension PrimerBDCEngine {
-    func start(schema: String, state: CodableValue) async throws -> [String: Any] {
+    func start(schema: String, context: SDKContext, state: CodableValue) async throws -> [String: Any] {
         await checkIfReady()
-        let script = initialize(schema: schema, state: try state.literal(encoder))
+        let script = initialize(schema: schema, context: try context.literal(encoder), state: try state.literal(encoder))
         return try await runScript(script, continuationPath: \.initializeContinuation)
     }
     
@@ -54,10 +58,17 @@ public extension PrimerBDCEngine {
         return try await runScript(script, continuationPath: \.applyEventContination)
     }
     
-    func applyResult<State: Encodable>(schema: String, state: State, outcome: String, data: Data?) async throws  -> [String: Any] {
+    func applyResult<State: Encodable>(
+        schema: String,
+        actionId: String,
+        state: State,
+        outcome: String,
+        data: Data?
+    ) async throws  -> [String: Any] {
 		await checkIfReady()
         let script = resultScript(
             schema: schema,
+            actionId: actionId,
             state: try state.literal(encoder),
             outcome: outcome,
             data: data.flatMap { String(data: $0, encoding: .utf8) }
@@ -113,7 +124,7 @@ private extension PrimerBDCEngine {
     
     func fetch(_ urlString: String, sha256: String) async throws -> Data {
         let url = URL(string: urlString)!
-        let (data, _) = try await URLSession.shared.data(for: URLRequest(url: url))
+        let (data, _) = try await urlSession.data(for: URLRequest(url: url))
         let digest = SHA256.hash(data: data)
         let computedSHA256 = Data(digest).base64EncodedString()
         guard computedSHA256 == sha256 else { throw EngineError.sha256Mismatch }
