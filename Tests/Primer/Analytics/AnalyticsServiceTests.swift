@@ -1,7 +1,7 @@
 //
 //  AnalyticsServiceTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 @testable import PrimerSDK
@@ -15,10 +15,12 @@ final class AnalyticsServiceTests: XCTestCase {
     override func setUp() {
         apiClient = MockPrimerAPIAnalyticsClient()
         storage = MockAnalyticsStorage()
-        sut = Analytics.Service(sdkLogsUrl: URL(string: "http://localhost/")!,
-                                batchSize: 5,
-                                storage: storage,
-                                apiClient: apiClient)
+        sut = Analytics.Service(
+            sdkLogsUrl: URL(string: "http://localhost/")!,
+            batchSize: 5,
+            storage: storage,
+            apiClient: apiClient
+        )
     }
 
     override func tearDown() async throws {
@@ -242,15 +244,14 @@ final class AnalyticsServiceTests: XCTestCase {
         eventType: Analytics.Event.EventType = .message,
         after delay: TimeInterval? = nil
     ) async throws {
-        let events = (0 ..< numberOfEvents).compactMap { num in
-            switch eventType {
-            case .message:
+        let events = (0 ..< numberOfEvents).map { num -> Analytics.Event in
+            if eventType == .message {
                 return messageEvent(withMessage: "Test #\(num + 1)")
-            case .sdkEvent:
+            } else if eventType == .sdkEvent {
                 return sdkEvent(name: "Test #\(num + 1)")
-            default:
-                XCTFail()
-                return nil
+            } else {
+                XCTFail("Unsupported event type: \(eventType.rawValue)")
+                return messageEvent(withMessage: "Test #\(num + 1)")
             }
         }
 
