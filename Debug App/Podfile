@@ -10,10 +10,6 @@ target 'Debug App' do
   # Pods for Debug App
   pod 'PrimerSDK', :path => '../'
   # TODO: Remove :path entries below once pods are pushed to trunk
-  pod 'PrimerFoundation', :path => '../'
-  pod 'PrimerStepResolver', :path => '../'
-  pod 'PrimerBDCEngine', :path => '../'
-  pod 'PrimerBDCCore', :path => '../'
   pod 'Primer3DS'
   pod 'PrimerKlarnaSDK'
   pod 'PrimerIPay88MYSDK'

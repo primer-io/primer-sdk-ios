@@ -40,12 +40,25 @@ PODS:
   - IQTextView (1.0.5):
     - IQKeyboardToolbar/Placeholderable
   - Primer3DS (2.8.0)
+  - PrimerBDCCore (1.0.0):
+    - PrimerBDCEngine (~> 1.0)
+    - PrimerFoundation (~> 1.0)
+    - PrimerStepResolver (~> 1.0)
+  - PrimerBDCEngine (1.0.0):
+    - PrimerFoundation (~> 1.0)
+    - PrimerStepResolver (~> 1.0)
+  - PrimerFoundation (1.1.0)
   - PrimerIPay88MYSDK (0.1.7)
   - PrimerKlarnaSDK (1.1.2)
   - PrimerNolPaySDK (1.0.1)
-  - PrimerSDK (2.44.1):
-    - PrimerSDK/Core (= 2.44.1)
-  - PrimerSDK/Core (2.44.1)
+  - PrimerSDK (2.46.1):
+    - PrimerSDK/Core (= 2.46.1)
+  - PrimerSDK/Core (2.46.1):
+    - PrimerBDCCore (~> 1.0)
+    - PrimerFoundation (~> 1.0)
+    - PrimerStepResolver (~> 1.0)
+  - PrimerStepResolver (1.0.0):
+    - PrimerFoundation (~> 1.0)
   - PrimerStripeSDK (1.0.1)
 
 DEPENDENCIES:
@@ -68,9 +81,13 @@ SPEC REPOS:
     - IQTextInputViewNotification
     - IQTextView
     - Primer3DS
+    - PrimerBDCCore
+    - PrimerBDCEngine
+    - PrimerFoundation
     - PrimerIPay88MYSDK
     - PrimerKlarnaSDK
     - PrimerNolPaySDK
+    - PrimerStepResolver
     - PrimerStripeSDK
 
 EXTERNAL SOURCES:
@@ -87,12 +104,16 @@ SPEC CHECKSUMS:
   IQTextInputViewNotification: f5e954d8881fd9808b744e49e024cc0d4bcfe572
   IQTextView: ae13b4922f22e6f027f62c557d9f4f236b19d5c7
   Primer3DS: b8b583ef260f703180870358bc55069de74f8f51
+  PrimerBDCCore: 9cee8f8a803d0de54556ae191bbd37ceb8810cec
+  PrimerBDCEngine: b19d70a62048151272dad8e57540e2a4773a6980
+  PrimerFoundation: 23a5bb1b1fa8117467b26015a2cdd6dedd4a4d46
   PrimerIPay88MYSDK: 436ee0be7e2c97e4e81456ccddee20175e9e3c4d
   PrimerKlarnaSDK: c39536a4eb070da5b43ec99a4edbede241e91d25
   PrimerNolPaySDK: 08b140ed39b378a0b33b4f8746544a402175c0cc
-  PrimerSDK: fde30db8ff5cf09d8186caeaf4d17beb4fedbe16
+  PrimerSDK: 972db9a03bb53bf3dda995489fe5d329923af9ec
+  PrimerStepResolver: ee6254b15378a6beb7a23bf3bd950d3d0ba511de
   PrimerStripeSDK: dce5e37d10223ee724f33d1cdeaa17235a71ddbb
 
-PODFILE CHECKSUM: 665eac28ae49fa5a7b983ebc01493e77d5e13406
+PODFILE CHECKSUM: c5c2814fb414b0519d66e9d7a250e9fc5d239d92
 
 COCOAPODS: 1.16.2
