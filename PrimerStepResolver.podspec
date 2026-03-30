@@ -14,5 +14,5 @@ Pod::Spec.new do |s|
     s.ios.source_files = "Packages/PrimerStepResolver/Sources/**/*.{swift}"
     s.ios.frameworks   = "Foundation"
 
-    s.dependency "PrimerFoundation", "~> 1.1"
+    s.dependency "PrimerFoundation", "~> 1.0"
 end
