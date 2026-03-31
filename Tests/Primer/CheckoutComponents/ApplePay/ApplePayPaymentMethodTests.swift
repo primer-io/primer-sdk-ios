@@ -193,6 +193,10 @@ final class ApplePayPaymentMethodTests: XCTestCase {
             navigator: CheckoutNavigator()
         )
 
+        // Pre-populate Apple Pay scope in cache since async loading won't complete in sync tests
+        let applePayScope = DefaultApplePayScope(checkoutScope: scope)
+        scope.paymentMethodScopeCache["APPLE_PAY"] = applePayScope
+
         // Add mock payment methods to simulate count
         for i in 0 ..< paymentMethodCount {
             let mockMethod = InternalPaymentMethod(
