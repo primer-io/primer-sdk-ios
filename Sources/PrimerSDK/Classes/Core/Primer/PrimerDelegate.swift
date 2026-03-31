@@ -176,6 +176,7 @@ final class PrimerDelegateProxy: LogReporter {
             if PrimerInternal.shared.sdkIntegrationType == .dropIn {
                 Primer.shared.delegate?.primerDidDismiss?()
             } else if paymentMethodManagerCategories.contains(.nativeUI) {
+                PrimerHeadlessUniversalCheckout.current.uiDelegate?.primerHeadlessUniveraslCheckoutUIDidDismissPaymentMethod?()
                 PrimerHeadlessUniversalCheckout.current.uiDelegate?.primerHeadlessUniversalCheckoutUIDidDismissPaymentMethod?()
             }
         }
@@ -186,6 +187,7 @@ final class PrimerDelegateProxy: LogReporter {
         if PrimerInternal.shared.sdkIntegrationType == .dropIn {
             Primer.shared.delegate?.primerDidDismiss?()
         } else if paymentMethodManagerCategories.contains(.nativeUI) {
+            PrimerHeadlessUniversalCheckout.current.uiDelegate?.primerHeadlessUniveraslCheckoutUIDidDismissPaymentMethod?()
             PrimerHeadlessUniversalCheckout.current.uiDelegate?.primerHeadlessUniversalCheckoutUIDidDismissPaymentMethod?()
         }
     }
