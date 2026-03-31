@@ -33,9 +33,11 @@ extension Analytics {
         let integrationType: String
         let minDeploymentTarget: String
 
-        fileprivate init(eventType: Analytics.Event.EventType,
-                         properties: AnalyticsEventProperties?,
-                         analyticsUrl: String? = PrimerAPIConfigurationModule.decodedJWTToken?.analyticsUrlV2) {
+        init(
+            eventType: Analytics.Event.EventType,
+            properties: AnalyticsEventProperties?,
+            analyticsUrl: String? = PrimerAPIConfigurationModule.decodedJWTToken?.analyticsUrlV2
+        ) {
             self.analyticsUrl = analyticsUrl
             self.localId = String.randomString(length: 32)
 
@@ -122,6 +124,8 @@ extension Analytics {
                 try? container.encode(timerEventProperties, forKey: .properties)
             } else if let uiEventProperties = properties as? UIEventProperties {
                 try? container.encode(uiEventProperties, forKey: .properties)
+            } else if let rawEventProperties = properties as? RawEventProperties {
+                try? container.encode(rawEventProperties, forKey: .properties)
             }
         }
 
@@ -176,7 +180,7 @@ extension Analytics {
             } else if let uiEventProperties = (try? container.decode(UIEventProperties?.self, forKey: .properties)) {
                 self.properties = uiEventProperties
             } else {
-                self.properties = nil
+                self.properties = try? container.decode(RawEventProperties.self, forKey: .properties)
             }
         }
     }
@@ -184,17 +188,19 @@ extension Analytics {
 
 extension Analytics.Event {
 
-    enum EventType: String, Codable {
-        case ui                             = "UI_EVENT"
-        case crash                          = "APP_CRASHED_EVENT"
-        case message                        = "MESSAGE_EVENT"
-        case networkCall                    = "NETWORK_CALL_EVENT"
-        case networkConnectivity            = "NETWORK_CONNECTIVITY_EVENT"
-        case sdkEvent                       = "SDK_FUNCTION_EVENT"
-        case timerEvent                     = "TIMER_EVENT"
-        case appLifecycle                   = "APP_LIFECYCLE_EVENT"
-        case paymentMethodImageLoading      = "PM_IMAGE_LOADING_DURATION"
-        case paymentMethodAllImagesLoading  = "PM_ALL_IMAGES_LOADING_DURATION"
+    struct EventType: RawRepresentable, Codable, Equatable {
+        let rawValue: String
+
+        static let ui                             = EventType(rawValue: "UI_EVENT")
+        static let crash                          = EventType(rawValue: "APP_CRASHED_EVENT")
+        static let message                        = EventType(rawValue: "MESSAGE_EVENT")
+        static let networkCall                    = EventType(rawValue: "NETWORK_CALL_EVENT")
+        static let networkConnectivity            = EventType(rawValue: "NETWORK_CONNECTIVITY_EVENT")
+        static let sdkEvent                       = EventType(rawValue: "SDK_FUNCTION_EVENT")
+        static let timerEvent                     = EventType(rawValue: "TIMER_EVENT")
+        static let appLifecycle                   = EventType(rawValue: "APP_LIFECYCLE_EVENT")
+        static let paymentMethodImageLoading      = EventType(rawValue: "PM_IMAGE_LOADING_DURATION")
+        static let paymentMethodAllImagesLoading  = EventType(rawValue: "PM_ALL_IMAGES_LOADING_DURATION")
     }
 
     struct Property {
@@ -331,6 +337,24 @@ extension Analytics.Event {
 }
 
 protocol AnalyticsEventProperties: Codable {}
+
+struct RawEventProperties: AnalyticsEventProperties {
+    private let values: [String: AnyCodable]
+
+    init(data: Data) throws {
+        values = try JSONDecoder().decode([String: AnyCodable].self, from: data)
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        values = try container.decode([String: AnyCodable].self)
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(values)
+    }
+}
 
 struct MessageEventProperties: AnalyticsEventProperties {
 
@@ -788,11 +812,13 @@ extension Analytics.Event {
         )
     }
 
-    static func message(message: String?,
-                        messageType: Property.MessageType,
-                        severity: Property.Severity,
-                        diagnosticsId: String? = nil,
-                        context: [String: Any]? = nil) -> Self {
+    static func message(
+        message: String?,
+        messageType: Property.MessageType,
+        severity: Property.Severity,
+        diagnosticsId: String? = nil,
+        context: [String: Any]? = nil
+    ) -> Self {
         .init(
             eventType: .message,
             properties: MessageEventProperties(
@@ -805,13 +831,15 @@ extension Analytics.Event {
         )
     }
 
-    static func ui(action: Property.Action,
-                   context: Property.Context?,
-                   extra: String?,
-                   objectType: Property.ObjectType,
-                   objectId: Property.ObjectId?,
-                   objectClass: String?,
-                   place: Property.Place) -> Self {
+    static func ui(
+        action: Property.Action,
+        context: Property.Context?,
+        extra: String?,
+        objectType: Property.ObjectType,
+        objectId: Property.ObjectId?,
+        objectClass: String?,
+        place: Property.Place
+    ) -> Self {
         .init(
             eventType: .ui,
             properties: UIEventProperties(
@@ -821,17 +849,20 @@ extension Analytics.Event {
                 objectType: objectType,
                 objectId: objectId,
                 objectClass: objectClass,
-                place: place)
+                place: place
+            )
         )
     }
 
-    static func networkCall(callType: Property.NetworkCallType,
-                            id: String,
-                            url: String,
-                            method: HTTPMethod,
-                            errorBody: String?,
-                            responseCode: Int?,
-                            duration: TimeInterval? = nil) -> Self {
+    static func networkCall(
+        callType: Property.NetworkCallType,
+        id: String,
+        url: String,
+        method: HTTPMethod,
+        errorBody: String?,
+        responseCode: Int?,
+        duration: TimeInterval? = nil
+    ) -> Self {
         .init(
             eventType: .networkCall,
             properties: NetworkCallEventProperties(
@@ -860,10 +891,12 @@ extension Analytics.Event {
         )
     }
 
-    static func timer(momentType: Property.TimerType,
-                      id: String?,
-                      duration: TimeInterval? = nil,
-                      context: [String: Any]? = nil) -> Self {
+    static func timer(
+        momentType: Property.TimerType,
+        id: String?,
+        duration: TimeInterval? = nil,
+        context: [String: Any]? = nil
+    ) -> Self {
         .init(
             eventType: .timerEvent,
             properties: TimerEventProperties(
@@ -881,12 +914,16 @@ extension Analytics.Event {
         case vaultManager = "VAULT_MANAGER"
     }
 
-    static func dropInLoading(duration: Int,
-                              source: DropInLoadingSource) -> Self {
-        .timer(momentType: .end,
-               id: "DROP_IN_LOADING",
-               duration: TimeInterval(duration),
-               context: ["source": source.rawValue])
+    static func dropInLoading(
+        duration: Int,
+        source: DropInLoadingSource
+    ) -> Self {
+        .timer(
+            momentType: .end,
+            id: "DROP_IN_LOADING",
+            duration: TimeInterval(duration),
+            context: ["source": source.rawValue]
+        )
     }
 
     static func headlessLoading(duration: Int) -> Self {
@@ -898,15 +935,22 @@ extension Analytics.Event {
         case network = "NETWORK"
     }
 
-    static func configurationLoading(duration: Int,
-                                     source: ConfigurationLoadingSource) -> Self {
-        .timer(momentType: .end, id: "CONFIGURATION_LOADING",
-               duration: TimeInterval(duration),
-               context: ["source": source.rawValue])
+    static func configurationLoading(
+        duration: Int,
+        source: ConfigurationLoadingSource
+    ) -> Self {
+        .timer(
+            momentType: .end,
+            id: "CONFIGURATION_LOADING",
+            duration: TimeInterval(duration),
+            context: ["source": source.rawValue]
+        )
     }
 
-    static func allImagesLoading(momentType: Property.TimerType,
-                                 id: String?) -> Self {
+    static func allImagesLoading(
+        momentType: Property.TimerType,
+        id: String?
+    ) -> Self {
         .init(
             eventType: .paymentMethodAllImagesLoading,
             properties: TimerEventProperties(
@@ -916,8 +960,10 @@ extension Analytics.Event {
         )
     }
 
-    static func imageLoading(momentType: Property.TimerType,
-                             id: String?) -> Self {
+    static func imageLoading(
+        momentType: Property.TimerType,
+        id: String?
+    ) -> Self {
         .init(
             eventType: .paymentMethodImageLoading,
             properties: TimerEventProperties(
