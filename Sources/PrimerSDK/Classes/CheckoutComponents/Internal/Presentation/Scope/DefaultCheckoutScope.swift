@@ -83,6 +83,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
   var checkoutNavigator: CheckoutNavigator { navigator }
 
   var availablePaymentMethods: [InternalPaymentMethod] = []
+  var paymentMethodScopeCache: [String: any PrimerPaymentMethodScope] = [:]
 
   @Published private(set) var vaultedPaymentMethods: [PrimerHeadlessUniversalCheckout.VaultedPaymentMethod] = []
   @Published private(set) var selectedVaultedPaymentMethod: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod?
@@ -108,7 +109,6 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
   }
 
   private var currentPaymentMethodScope: (any PrimerPaymentMethodScope)?
-  private var paymentMethodScopeCache: [String: any PrimerPaymentMethodScope] = [:]
   private var navigationObservationTask: Task<Void, Never>?
   private let navigator: CheckoutNavigator
   private var configurationService: ConfigurationService?
