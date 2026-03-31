@@ -645,7 +645,7 @@ final class MockPrimerAPIClient: PrimerAPIClientProtocol, @unchecked Sendable {
         clientToken: DecodedJWTToken?,
         url: String,
         retryConfig: RetryConfig? = nil,
-        completion: @escaping APICompletion<PrimerSDK.PollingResponse>
+        completion: @escaping APICompletion<PollingResponse>
     ) {
         guard let pollingResults = pollingResults,
               !pollingResults.isEmpty
