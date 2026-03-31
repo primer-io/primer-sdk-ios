@@ -365,6 +365,82 @@ public final class ThreeDS {
         public let challengeIssued: Bool?
     }
 
+    public struct BeginAuthResponse: Decodable {
+
+        public let authentication: ThreeDSAuthenticationProtocol
+        public let token: Response.Body.Tokenization
+        public let resumeToken: String
+
+        // swiftlint:disable:next nesting
+        enum CodingKeys: String, CodingKey {
+            case authentication
+            case token
+            case resumeToken
+        }
+
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            if let declinedResponse = try? container.decode(
+                ThreeDS.DeclinedAPIResponse.self,
+                forKey: .authentication
+            ) {
+                authentication = declinedResponse
+            } else if let skippedResponse = try? container.decode(
+                ThreeDS.SkippedAPIResponse.self,
+                forKey: .authentication
+            ) {
+                authentication = skippedResponse
+            } else if let appV2ChallengeResponse = try? container.decode(
+                ThreeDS.AppV2ChallengeAPIResponse.self,
+                forKey: .authentication
+            ) {
+                authentication = appV2ChallengeResponse
+            } else if let browserV2ChallengeResponse = try? container.decode(
+                ThreeDS.BrowserV2ChallengeAPIResponse.self,
+                forKey: .authentication
+            ) {
+                authentication = browserV2ChallengeResponse
+            } else if let browserV1ChallengeResponse = try? container.decode(
+                ThreeDS.BrowserV1ChallengeAPIResponse.self,
+                forKey: .authentication
+            ) {
+                authentication = browserV1ChallengeResponse
+            } else if let successResponse = try? container.decode(
+                Authentication.self,
+                forKey: .authentication
+            ) {
+                authentication = successResponse
+            } else if let methodResponse = try? container.decode(
+                ThreeDS.MethodAPIResponse.self,
+                forKey: .authentication
+            ) {
+                authentication = methodResponse
+            } else {
+                throw InternalError.failedToDecode(message: "ThreeDS.BeginAuthResponse")
+            }
+
+            resumeToken = try container.decode(String.self, forKey: .resumeToken)
+            token = try container.decode(Response.Body.Tokenization.self, forKey: .token)
+        }
+
+        public init(
+            authentication: ThreeDSAuthenticationProtocol,
+            token: Response.Body.Tokenization,
+            resumeToken: String
+        ) {
+            self.authentication = authentication
+            self.token = token
+            self.resumeToken = resumeToken
+        }
+    }
+
+    public struct PostAuthResponse: Codable {
+
+        public let token: Response.Body.Tokenization
+        public let resumeToken: String
+        public let authentication: Authentication?
+    }
+
     enum DeclinedReasonCode: String, Codable {
 
         case unknown = "UNKNOWN"
