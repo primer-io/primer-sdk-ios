@@ -31,26 +31,35 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
     private var redirectUrlComponents: URLComponents?
     private let deeplinkAbilityProvider: DeeplinkAbilityProviding
 
-    init(config: PrimerPaymentMethod,
-         uiManager: PrimerUIManaging,
-         tokenizationService: TokenizationServiceProtocol,
-         createResumePaymentService: CreateResumePaymentServiceProtocol,
-         deeplinkAbilityProvider: DeeplinkAbilityProviding = UIApplication.shared) {
+    init(
+        config: PrimerPaymentMethod,
+        uiManager: PrimerUIManaging,
+        tokenizationService: TokenizationServiceProtocol,
+        createResumePaymentService: CreateResumePaymentServiceProtocol,
+        deeplinkAbilityProvider: DeeplinkAbilityProviding = UIApplication.shared
+    ) {
 
         self.deeplinkAbilityProvider = deeplinkAbilityProvider
-        super.init(config: config,
-                   uiManager: uiManager,
-                   tokenizationService: tokenizationService,
-                   createResumePaymentService: createResumePaymentService)
+        super.init(
+            config: config,
+            uiManager: uiManager,
+            tokenizationService: tokenizationService,
+            createResumePaymentService: createResumePaymentService
+        )
     }
 
-    convenience init(config: PrimerPaymentMethod,
-                     apiClient: PrimerAPIClientProtocol = PrimerAPIClient()) {
-        self.init(config: config,
-                  uiManager: PrimerUIManager.shared,
-                  tokenizationService: TokenizationService(apiClient: apiClient),
-                  createResumePaymentService: CreateResumePaymentService(paymentMethodType: config.type,
-                                                                         apiClient: apiClient)
+    convenience init(
+        config: PrimerPaymentMethod,
+        apiClient: PrimerAPIClientProtocol = PrimerAPIClient()
+    ) {
+        self.init(
+            config: config,
+            uiManager: PrimerUIManager.shared,
+            tokenizationService: TokenizationService(apiClient: apiClient),
+            createResumePaymentService: CreateResumePaymentService(
+                paymentMethodType: config.type,
+                apiClient: apiClient
+            )
         )
     }
 
@@ -92,14 +101,18 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
     }
 
     func setupNotificationObservers() {
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(self.receivedNotification(_:)),
-                                               name: Notification.Name.receivedUrlSchemeRedirect,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(self.receivedNotification(_:)),
-                                               name: Notification.Name.receivedUrlSchemeCancellation,
-                                               object: nil)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(self.receivedNotification(_:)),
+            name: Notification.Name.receivedUrlSchemeRedirect,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(self.receivedNotification(_:)),
+            name: Notification.Name.receivedUrlSchemeCancellation,
+            object: nil
+        )
     }
 
     @MainActor
@@ -279,8 +292,10 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
         return try await tokenizationService.tokenize(requestBody: Request.Body.Tokenization(paymentInstrument: paymentInstrument))
     }
 
-    override func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken,
-                                                   paymentMethodTokenData: PrimerPaymentMethodTokenData) async throws -> String? {
+    override func handleDecodedClientTokenIfNeeded(
+        _ decodedJWTToken: DecodedJWTToken,
+        paymentMethodTokenData: PrimerPaymentMethodTokenData
+    ) async throws -> String? {
         if decodedJWTToken.intent?.contains("_REDIRECTION") == true {
             if let redirectUrlStr = decodedJWTToken.redirectUrl,
                let redirectUrl = URL(string: redirectUrlStr),
@@ -385,46 +400,6 @@ extension WebRedirectPaymentMethodTokenizationViewModel: SFSafariViewControllerD
             self.webViewController?.dismiss(animated: true)
             self.uiManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: nil, message: nil)
         }
-    }
-}
-
-enum PollingStatus: String, Codable {
-    case pending = "PENDING"
-    case complete = "COMPLETE"
-}
-
-struct PollingResponse: Decodable {
-
-    let status: PollingStatus
-    let id: String
-    let source: String
-
-    enum CodingKeys: CodingKey {
-        case status
-        case id
-        case source
-    }
-
-    init(
-        status: PollingStatus,
-        id: String,
-        source: String
-    ) {
-        self.status = status
-        self.id = id
-        self.source = source
-    }
-
-    init(from decoder: Decoder) throws {
-        do {
-            let container = try decoder.container(keyedBy: CodingKeys.self)
-            self.status = try container.decode(PollingStatus.self, forKey: .status)
-            self.id = try container.decode(String.self, forKey: .id)
-            self.source = try container.decode(String.self, forKey: .source)
-        } catch {
-            throw error
-        }
-
     }
 }
 // swiftlint:enable function_body_length

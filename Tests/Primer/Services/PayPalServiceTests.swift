@@ -6,6 +6,7 @@
 
 import PrimerCore
 import PrimerFoundation
+@testable import PrimerNetworking
 @testable import PrimerSDK
 import XCTest
 
@@ -680,14 +681,16 @@ final class PayPalServiceTests: XCTestCase {
 
         mockApiClient.createPayPalBillingAgreementSessionResult = .success(.init(tokenId: "my_token", approvalUrl: "scheme://approve"))
         mockApiClient.confirmPayPalBillingAgreementResult = .success(
-            .init(billingAgreementId: "agreement_id",
-                  externalPayerInfo: .init(
+            .init(
+                billingAgreementId: "agreement_id",
+                externalPayerInfo: .init(
                     externalPayerId: "external_payer_id",
                     email: "email@email.com",
                     firstName: "first_name",
                     lastName: "last_name"
-                  ),
-                  shippingAddress: nil)
+                ),
+                shippingAddress: nil
+            )
         )
 
         // When
@@ -728,14 +731,16 @@ final class PayPalServiceTests: XCTestCase {
         SDKSessionHelper.setUp(withPaymentMethods: [Mocks.PaymentMethods.paypalPaymentMethod])
         mockApiClient.createPayPalBillingAgreementSessionResult = .success(.init(tokenId: "my_token", approvalUrl: "scheme://approve"))
         mockApiClient.confirmPayPalBillingAgreementResult = .success(
-            .init(billingAgreementId: "agreement_id",
-                  externalPayerInfo: .init(
+            .init(
+                billingAgreementId: "agreement_id",
+                externalPayerInfo: .init(
                     externalPayerId: "external_payer_id",
                     email: "email@email.com",
                     firstName: "first_name",
                     lastName: "last_name"
-                  ),
-                  shippingAddress: nil)
+                ),
+                shippingAddress: nil
+            )
         )
 
         // When
