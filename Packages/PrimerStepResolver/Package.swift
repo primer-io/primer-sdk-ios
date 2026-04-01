@@ -8,8 +8,14 @@ let package = Package(
     platforms: [.iOS(.v13)],
     products: [.library(name: "PrimerStepResolver", targets: ["PrimerStepResolver"])],
     dependencies: [.package(path: "../PrimerFoundation")],
-    targets: [.target(
-        name: "PrimerStepResolver",
-        dependencies: [.product(name: "PrimerFoundation", package: "PrimerFoundation")]
-    )]
+    targets: [
+        .target(
+            name: "PrimerStepResolver",
+            dependencies: [.product(name: "PrimerFoundation", package: "PrimerFoundation")]
+        ),
+        .testTarget(
+            name: "PrimerStepResolverTests",
+            dependencies: ["PrimerStepResolver"]
+        )
+    ]
 )
