@@ -8,4 +8,5 @@ public enum TerminalOutcome: String, Decodable {
     case success
     case cancelled
     case error
+    case unsupported
 }
