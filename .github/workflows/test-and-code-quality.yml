@@ -12,7 +12,7 @@ concurrency:
 
 jobs:
   sdk-unit-tests:
-    runs-on: macos-latest-large
+    runs-on: macos-26-large
     timeout-minutes: 20
     name: "SDK - Unit Tests"
     steps:
@@ -39,7 +39,7 @@ jobs:
 
   optional-sdk-tests:
     name: Optional SDK Tests
-    runs-on: macos-latest-large
+    runs-on: macos-26-large
     strategy:
       max-parallel: 3
       matrix:
@@ -75,7 +75,7 @@ jobs:
     needs:
       - sdk-unit-tests
       - optional-sdk-tests
-    runs-on: macos-latest-large
+    runs-on: macos-26-large
     name: SonarCloud
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
