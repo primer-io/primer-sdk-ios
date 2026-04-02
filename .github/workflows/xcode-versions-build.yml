@@ -11,15 +11,15 @@ on:
 jobs:
   build:
     name: "Build App"
-    runs-on: macos-latest
+    runs-on: macos-26
     strategy:
       max-parallel: 3
       matrix:
-        variant: 
+        variant:
           - cocoapods
           - spm
         xcode:
-          - '16.4.0'
+          - '26.2'
     steps:
       - name: Git - Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -62,7 +62,7 @@ jobs:
       - name: Build and archive app via SPM
         if: ${{ matrix.variant == 'spm' }}
         run: |
-          bundle exec fastlane test_sdk sim_version:18.5
+          bundle exec fastlane test_sdk sim_version:26.2
         env:
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
           MATCH_GIT_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
@@ -86,7 +86,7 @@ jobs:
   success:
     name: Report Success
     needs: build
-    runs-on: macos-latest
+    runs-on: macos-26
     steps:
       - name: Git - Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
