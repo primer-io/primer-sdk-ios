@@ -898,9 +898,6 @@
                            location = "group:LogPayloadBuilder.swift">
                         </FileRef>
                         <FileRef
-                           location = "group:SensitiveDataMasker.swift">
-                        </FileRef>
-                        <FileRef
                            location = "group:LogEnvironmentProvider.swift">
                         </FileRef>
                      </Group>

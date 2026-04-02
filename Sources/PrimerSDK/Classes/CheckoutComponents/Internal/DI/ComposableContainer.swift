@@ -316,12 +316,6 @@ extension ComposableContainer {
         .with { _ in LogNetworkClient() }
     }
 
-    await safeRegister(SensitiveDataMasker.self) {
-      _ = try await container.register(SensitiveDataMasker.self)
-        .asSingleton()
-        .with { _ in SensitiveDataMasker() }
-    }
-
     await safeRegister(LogPayloadBuilding.self) {
       _ = try await container.register(LogPayloadBuilding.self)
         .asSingleton()
@@ -334,8 +328,7 @@ extension ComposableContainer {
         .with { resolver in
           LoggingService(
             networkClient: try await resolver.resolve(LogNetworkClient.self),
-            payloadBuilder: try await resolver.resolve(LogPayloadBuilding.self),
-            masker: try await resolver.resolve(SensitiveDataMasker.self)
+            payloadBuilder: try await resolver.resolve(LogPayloadBuilding.self)
           )
         }
     }

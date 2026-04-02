@@ -13,18 +13,15 @@ actor LoggingService: LogReporter {
 
   private let networkClient: any LogNetworkClientProtocol
   private let payloadBuilder: any LogPayloadBuilding
-  private let masker: SensitiveDataMasker
 
   // MARK: - Initialization
 
   init(
     networkClient: any LogNetworkClientProtocol,
-    payloadBuilder: any LogPayloadBuilding,
-    masker: SensitiveDataMasker
+    payloadBuilder: any LogPayloadBuilding
   ) {
     self.networkClient = networkClient
     self.payloadBuilder = payloadBuilder
-    self.masker = masker
   }
 
   // MARK: - Public Methods
@@ -48,13 +45,11 @@ actor LoggingService: LogReporter {
   private func sendInfo(message: String, event: String, userInfo: [String: Any]?) async {
     do {
       let sessionData = await LoggingSessionContext.shared.getSessionData()
-      let maskedMessage = await masker.mask(text: message)
-      let maskedUserInfo = await maskUserInfo(userInfo)
 
       let payload = try payloadBuilder.buildInfoPayload(
-        message: maskedMessage,
+        message: message,
         event: event,
-        userInfo: maskedUserInfo,
+        userInfo: userInfo,
         sessionData: sessionData
       )
 
@@ -76,24 +71,14 @@ actor LoggingService: LogReporter {
       let sessionData = await LoggingSessionContext.shared.getSessionData()
 
       let datadogMessage = message ?? Self.extractDatadogMessage(from: error)
-      let errorMessage = error.localizedDescription
-      let errorId = Self.extractErrorId(from: error)
-      let diagnosticsId = Self.extractDiagnosticsId(from: error)
-      let stack = String(describing: error)
-
-      let maskedMessage = await masker.mask(text: datadogMessage)
-      let maskedErrorMessage = await masker.mask(text: errorMessage)
-      let maskedStack = await masker.mask(text: stack)
-
-      let maskedUserInfo = await maskUserInfo(userInfo)
 
       let payload = try payloadBuilder.buildErrorPayload(
-        message: maskedMessage,
-        errorMessage: maskedErrorMessage,
-        diagnosticsId: diagnosticsId,
-        stack: maskedStack,
-        event: errorId,
-        userInfo: maskedUserInfo,
+        message: datadogMessage,
+        errorMessage: error.localizedDescription,
+        diagnosticsId: Self.extractDiagnosticsId(from: error),
+        stack: String(describing: error),
+        event: Self.extractErrorId(from: error),
+        userInfo: userInfo,
         sessionData: sessionData
       )
 
@@ -108,19 +93,6 @@ actor LoggingService: LogReporter {
       Self.logger.error(
         message: "📊 [Logging] Failed to send ERROR log: \(error.localizedDescription)")
     }
-  }
-
-  private func maskUserInfo(_ userInfo: [String: Any]?) async -> [String: Any]? {
-    guard let userInfo else { return nil }
-    var masked: [String: Any] = [:]
-    for (key, value) in userInfo {
-      if let stringValue = value as? String {
-        masked[key] = await masker.mask(text: stringValue)
-      } else {
-        masked[key] = value
-      }
-    }
-    return masked
   }
 
   private static func extractDatadogMessage(from error: Error) -> String {
