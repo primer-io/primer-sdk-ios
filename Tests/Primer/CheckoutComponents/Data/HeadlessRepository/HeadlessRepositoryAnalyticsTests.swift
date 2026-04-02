@@ -153,7 +153,7 @@ final class TrackRedirectToThirdPartyTests: XCTestCase {
 
     func test_trackRedirect_withNilAdditionalInfo_doesNotCrash() {
         // When / Then
-        sut.trackRedirectToThirdPartyIfNeeded(from: nil)
+        sut.trackRedirectToThirdPartyIfNeeded(from: nil, paymentMethodType: "PAYMENT_CARD")
     }
 
 }

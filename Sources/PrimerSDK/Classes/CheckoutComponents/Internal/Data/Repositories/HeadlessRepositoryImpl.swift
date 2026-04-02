@@ -134,13 +134,13 @@ private class PaymentCompletionHandler: NSObject,
   func primerHeadlessUniversalCheckoutDidEnterResumePendingWithPaymentAdditionalInfo(
     _ additionalInfo: PrimerCheckoutAdditionalInfo?
   ) {
-    repository?.trackRedirectToThirdPartyIfNeeded(from: additionalInfo)
+    repository?.trackRedirectToThirdPartyIfNeeded(from: additionalInfo, paymentMethodType: paymentMethodType)
   }
 
   func primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo(
     _ additionalInfo: PrimerCheckoutAdditionalInfo?
   ) {
-    repository?.trackRedirectToThirdPartyIfNeeded(from: additionalInfo)
+    repository?.trackRedirectToThirdPartyIfNeeded(from: additionalInfo, paymentMethodType: paymentMethodType)
   }
 
   // MARK: - PrimerHeadlessUniversalCheckoutRawDataManagerDelegate (Validation)
@@ -760,7 +760,10 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
         )))
   }
 
-  func trackRedirectToThirdPartyIfNeeded(from additionalInfo: PrimerCheckoutAdditionalInfo?) {
+  func trackRedirectToThirdPartyIfNeeded(
+    from additionalInfo: PrimerCheckoutAdditionalInfo?,
+    paymentMethodType: String
+  ) {
     guard let additionalInfo,
       let redirectUrl = extractRedirectURL(from: additionalInfo)
     else { return }
@@ -771,7 +774,14 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
     lastTrackedRedirectDestination = redirectUrl
 
     trackAnalyticsEvent(
-      .paymentRedirectToThirdParty, metadata: .redirect(RedirectEvent(destinationUrl: redirectUrl)))
+      .paymentRedirectToThirdParty,
+      metadata: .redirect(
+        RedirectEvent(
+          paymentMethod: paymentMethodType,
+          destinationUrl: redirectUrl
+        )
+      )
+    )
   }
 
   private func extractRedirectURL(from info: PrimerCheckoutAdditionalInfo) -> String? {

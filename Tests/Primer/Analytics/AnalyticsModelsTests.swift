@@ -229,6 +229,19 @@ final class AnalyticsEventMetadataTests: XCTestCase {
         XCTAssertEqual(event.response, "05")
     }
 
+    func testThreeDSEvent_InitializesWithNilResponse() {
+        // When
+        let event = ThreeDSEvent(
+            paymentMethod: "PAYMENT_CARD",
+            provider: "Netcetera"
+        )
+
+        // Then
+        XCTAssertEqual(event.paymentMethod, "PAYMENT_CARD")
+        XCTAssertEqual(event.provider, "Netcetera")
+        XCTAssertNil(event.response)
+    }
+
     func testThreeDSEvent_InitializesWithCustomLocale() {
         // When
         let event = ThreeDSEvent(
@@ -246,10 +259,11 @@ final class AnalyticsEventMetadataTests: XCTestCase {
 
     func testRedirectEvent_InitializesWithRequiredFields() {
         // When
-        let event = RedirectEvent(destinationUrl: "https://example.com")
+        let event = RedirectEvent(paymentMethod: "PAYPAL", destinationUrl: "https://example.com")
 
         // Then
         XCTAssertEqual(event.locale, GeneralEvent.formattedCurrentLocale)
+        XCTAssertEqual(event.paymentMethod, "PAYPAL")
         XCTAssertEqual(event.destinationUrl, "https://example.com")
     }
 
@@ -257,11 +271,13 @@ final class AnalyticsEventMetadataTests: XCTestCase {
         // When
         let event = RedirectEvent(
             locale: "es-ES",
+            paymentMethod: "PAYPAL",
             destinationUrl: "https://redirect.example.com"
         )
 
         // Then
         XCTAssertEqual(event.locale, "es-ES")
+        XCTAssertEqual(event.paymentMethod, "PAYPAL")
         XCTAssertEqual(event.destinationUrl, "https://redirect.example.com")
     }
 
@@ -316,12 +332,13 @@ final class AnalyticsEventMetadataTests: XCTestCase {
     func testAnalyticsEventMetadata_RedirectCase() {
         // When
         let metadata: AnalyticsEventMetadata = .redirect(RedirectEvent(
+            paymentMethod: "PAYPAL",
             destinationUrl: "https://redirect.example.com"
         ))
 
         // Then
         XCTAssertEqual(metadata.locale, GeneralEvent.formattedCurrentLocale)
-        XCTAssertNil(metadata.paymentMethod)
+        XCTAssertEqual(metadata.paymentMethod, "PAYPAL")
         XCTAssertNil(metadata.paymentId)
         XCTAssertNil(metadata.threedsProvider)
         XCTAssertNil(metadata.threedsResponse)
@@ -353,7 +370,7 @@ final class AnalyticsEventMetadataTests: XCTestCase {
         let generalMetadata: AnalyticsEventMetadata = .general(GeneralEvent(locale: testLocale))
         let paymentMetadata: AnalyticsEventMetadata = .payment(PaymentEvent(locale: testLocale, paymentMethod: "PAYMENT_CARD"))
         let threeDSMetadata: AnalyticsEventMetadata = .threeDS(ThreeDSEvent(locale: testLocale, paymentMethod: "PAYMENT_CARD", provider: "Test", response: "05"))
-        let redirectMetadata: AnalyticsEventMetadata = .redirect(RedirectEvent(locale: testLocale, destinationUrl: "https://example.com"))
+        let redirectMetadata: AnalyticsEventMetadata = .redirect(RedirectEvent(locale: testLocale, paymentMethod: "PAYPAL", destinationUrl: "https://example.com"))
 
         // Then
         XCTAssertEqual(generalMetadata.locale, testLocale)

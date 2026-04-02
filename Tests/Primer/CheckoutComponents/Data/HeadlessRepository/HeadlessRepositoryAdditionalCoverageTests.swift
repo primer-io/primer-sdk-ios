@@ -27,7 +27,7 @@ final class HeadlessRepositoryRedirectTrackingTests: XCTestCase {
 
     func test_trackRedirect_withNilInfo_doesNotCrash() {
         // When / Then — nil info handled gracefully
-        sut.trackRedirectToThirdPartyIfNeeded(from: nil)
+        sut.trackRedirectToThirdPartyIfNeeded(from: nil, paymentMethodType: "PAYMENT_CARD")
     }
 }
 
