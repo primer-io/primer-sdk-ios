@@ -212,12 +212,12 @@ final class AnalyticsEventServiceTests: XCTestCase {
         // When - send SDK lifecycle event (no metadata)
         await service.sendEvent(.sdkInitStart, metadata: nil)
 
-        // Then - userAgent should be auto-filled, but not device fields
+        // Then - userAgent, device, and deviceType should all be auto-filled
         let call = try await mockNetworkClient.nextCall()
         XCTAssertNotNil(call.payload.userAgent)
         XCTAssertTrue(call.payload.userAgent.contains("iOS/"))
-        XCTAssertNil(call.payload.device, "Device should be nil for SDK lifecycle events")
-        XCTAssertNil(call.payload.deviceType, "DeviceType should be nil for SDK lifecycle events")
+        XCTAssertNotNil(call.payload.device, "Device should always be populated from system APIs")
+        XCTAssertNotNil(call.payload.deviceType, "DeviceType should always be populated from system APIs")
     }
 
     func testSendEvent_WithMetadata_AutoFillsDeviceInfo() async throws {
@@ -530,6 +530,7 @@ final class AnalyticsEventServiceTests: XCTestCase {
         await service.initialize(config: config)
 
         let metadata: AnalyticsEventMetadata = .redirect(RedirectEvent(
+            paymentMethod: "PAYPAL",
             destinationUrl: "https://paypal.com/checkout"
         ))
 
@@ -540,7 +541,7 @@ final class AnalyticsEventServiceTests: XCTestCase {
         let call = try await mockNetworkClient.nextCall()
         XCTAssertEqual(call.payload.eventName, "PAYMENT_REDIRECT_TO_THIRD_PARTY")
         XCTAssertEqual(call.payload.redirectDestinationUrl, "https://paypal.com/checkout")
-        XCTAssertNil(call.payload.paymentMethod)
+        XCTAssertEqual(call.payload.paymentMethod, "PAYPAL")
         XCTAssertNil(call.payload.threedsProvider)
     }
 
@@ -623,7 +624,7 @@ final class AnalyticsEventServiceTests: XCTestCase {
         XCTAssertEqual(call.payload.primerAccountId, "acc_test_789")
     }
 
-    func testSendEvent_withNilMetadata_userLocaleIsNil() async throws {
+    func testSendEvent_withNilMetadata_userLocaleIsPopulated() async throws {
         // Given
         let config = makeTestConfig()
         await service.initialize(config: config)
@@ -633,7 +634,7 @@ final class AnalyticsEventServiceTests: XCTestCase {
 
         // Then
         let call = try await mockNetworkClient.nextCall()
-        XCTAssertNil(call.payload.userLocale)
+        XCTAssertNotNil(call.payload.userLocale, "userLocale should always be populated from system APIs")
     }
 
     // MARK: - Token Passing Tests
