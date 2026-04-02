@@ -11,6 +11,10 @@ public protocol StepResolver: Sendable {
 	func resolve(_ step: CodableValue) async throws -> CodableValue?
 }
 
+public enum StepResolutionError: Error {
+    case noResolverFound
+}
+
 public actor PrimerStepResolverRegistry {
 	public static let shared = PrimerStepResolverRegistry()
 	
@@ -32,8 +36,4 @@ public actor PrimerStepResolverRegistry {
         }
         return resolver
     }
-}
-
-private enum StepResolutionError: Error {
-    case noResolverFound
 }
