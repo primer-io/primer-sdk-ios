@@ -50,7 +50,8 @@ public final class PrimerStepOrchestrator {
             } else if let outcome = response.terminal?.outcome {
                 switch outcome {
                 case .cancelled: onCancelled?()
-                case .success, .error: break
+                case .unsupported, .error: throw PrimerStepOrchestratorError.receivedUnexpectedTerminalOutcome(outcome: outcome)
+                case .success: break
                 }
             }
         } catch {
@@ -66,50 +67,63 @@ public final class PrimerStepOrchestrator {
             switch step.type {
             case let .log(value):
                 logger.info("Received instruction; executing log step")
-                let response = try await analyticsHandler.resolve(value)
-                try await completion(
-                    StepResponse(
-                        outcome: .success,
-                        data: response,
-                        actionId: step.id
-                    )
+                try await attemptResolution(
+                    actionId: step.id,
+                    resolutionHandler: { try await analyticsHandler.resolve(value) },
+                    completion: completion
                 )
+                
             case let .httpCall(value):
                 logger.info("Received instruction; executing http step")
-                let response = try await httpHandler.resolve(value)
-                try await completion(
-                    StepResponse(
-                        outcome: .success,
-                        data: response,
-                        actionId: step.id
-                    )
+                try await attemptResolution(
+                    actionId: step.id,
+                    resolutionHandler: { try await httpHandler.resolve(value) },
+                    completion: completion
                 )
             case let .urlOpen(value):
                 logger.info("Received instruction; executing web view step")
-                let response = try await urlOpenHandler.resolve(value)
                 
-                urlOpenHandler.onClose = {
-                    try await completion(
-                        StepResponse(
-                            outcome: .cancelled,
-                            data: response,
-                            actionId: step.id
-                        )
-                    )
-                }
-                
-                urlOpenHandler.onComplete = {
-                    try await completion(
-                        StepResponse(
-                            outcome: .success,
-                            data: response,
-                            actionId: step.id
-                        )
-                    )
+                do {
+                    let response = try await urlOpenHandler.resolve(value)
+
+                    urlOpenHandler.onClose = {
+                        try await completion(StepResponse(outcome: .cancelled, data: response, actionId: step.id))
+                    }
+                    
+                    urlOpenHandler.onComplete = {
+                        try await completion(StepResponse(outcome: .success, data: response, actionId: step.id))
+                    }
+                } catch {
+                    try await handle(error, actionId: step.id, completion: completion)
                 }
             }
         } catch {
             throw PrimerStepOrchestratorError.resolvingFailed(error: error)
+        }
+    }
+    
+    private func attemptResolution(
+        actionId: String,
+        resolutionHandler: () async throws -> CodableValue?,
+        completion: @escaping (StepResponse) async throws -> Void
+    ) async throws {
+        do {
+            let response = try await resolutionHandler()
+            try await completion(StepResponse(outcome: .success, data: response, actionId: actionId))
+        } catch {
+           try await handle(error, actionId: actionId, completion: completion)
+        }
+    }
+    
+    private func handle(
+        _ error: Error,
+        actionId: String,
+        completion: @escaping (StepResponse) async throws -> Void
+    ) async throws {
+        if let error = error as? PrimerStepResolver.StepResolutionError, error == .noResolverFound {
+           try await completion(StepResponse(outcome: .unsupported, data: nil, actionId: actionId))
+        } else {
+            throw error
         }
     }
     
@@ -149,4 +163,5 @@ private enum PrimerStepOrchestratorError: LocalizedError {
     case decodeResultFailed(error: Error)
     case resolvingFailed(error: Error)
     case applyWorkflowStepResponseFailed(error: Error)
+    case receivedUnexpectedTerminalOutcome(outcome: TerminalOutcome)
 }
