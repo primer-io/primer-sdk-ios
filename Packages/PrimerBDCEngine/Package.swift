@@ -16,5 +16,9 @@ let package = Package(
                 .product(name: "PrimerStepResolver", package: "PrimerStepResolver")
             ]
         ),
+        .testTarget(
+            name: "PrimerBDCEngineTests",
+            dependencies: ["PrimerBDCEngine"]
+        )
     ]
 )
