@@ -775,7 +775,12 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
 
     trackAnalyticsEvent(
       .paymentRedirectToThirdParty,
-      metadata: .redirect(RedirectEvent(paymentMethod: paymentMethodType, destinationUrl: redirectUrl))
+      metadata: .redirect(
+        RedirectEvent(
+          paymentMethod: paymentMethodType,
+          destinationUrl: redirectUrl
+        )
+      )
     )
   }
 
