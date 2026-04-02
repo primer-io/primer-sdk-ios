@@ -19,12 +19,20 @@ public final class PrimerStepOrchestrator {
     private let urlOpenHandler: URLOpenHandler
     private let httpHandler: HTTPInteractionStepHandler
     
-    private let engine: PrimerBDCEngine
+    private let engine: BDCEngineProtocol
     private var rawSchema: String!
     private var state: CodableState = [:]
         
     public init(manifest: Manifest, registry: PrimerStepResolverRegistry = .shared) {
         self.engine = PrimerBDCEngine(manifest: manifest)
+        
+        analyticsHandler = AnalyticsHandler(registry: registry)
+        urlOpenHandler = URLOpenHandler()
+        httpHandler = HTTPInteractionStepHandler(registry: registry)
+    }
+    
+    init(engine: BDCEngineProtocol, registry: PrimerStepResolverRegistry = .shared) {
+        self.engine = engine
         
         analyticsHandler = AnalyticsHandler(registry: registry)
         urlOpenHandler = URLOpenHandler()
@@ -50,7 +58,7 @@ public final class PrimerStepOrchestrator {
             } else if let outcome = response.terminal?.outcome {
                 switch outcome {
                 case .cancelled: onCancelled?()
-                case .success, .error: break
+                case .success, .error, .unsupported: break
                 }
             }
         } catch {

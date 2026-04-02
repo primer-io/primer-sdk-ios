@@ -12,12 +12,18 @@ let package = Package(
         .package(path: "../PrimerFoundation"),
         .package(path: "../PrimerStepResolver")
     ],
-    targets: [.target(
-        name: "PrimerBDCCore",
-        dependencies: [
-            .product(name: "PrimerBDCEngine", package: "PrimerBDCEngine"),
-            .product(name: "PrimerFoundation", package: "PrimerFoundation"),
-            .product(name: "PrimerStepResolver", package: "PrimerStepResolver")
-        ]
-    )]
+    targets: [
+        .target(
+            name: "PrimerBDCCore",
+            dependencies: [
+                .product(name: "PrimerBDCEngine", package: "PrimerBDCEngine"),
+                .product(name: "PrimerFoundation", package: "PrimerFoundation"),
+                .product(name: "PrimerStepResolver", package: "PrimerStepResolver")
+            ]
+        ),
+        .testTarget(
+            name: "PrimerBDCCoreTests",
+            dependencies: ["PrimerBDCCore"]
+        )
+    ]
 )
