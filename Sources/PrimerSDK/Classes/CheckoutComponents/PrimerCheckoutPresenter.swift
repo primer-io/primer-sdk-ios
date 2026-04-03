@@ -24,8 +24,7 @@ public protocol PrimerCheckoutPresenterDelegate: AnyObject {
     /// Called when 3DS challenge is about to be presented
     /// - Parameter paymentMethodTokenData: The payment method token data requiring 3DS
     func primerCheckoutPresenterWillPresent3DSChallenge(
-        _ paymentMethodTokenData: PrimerPaymentMethodTokenData
-    )
+        _ paymentMethodTokenData: PrimerPaymentMethodTokenData)
 
     /// Called when 3DS challenge UI is dismissed
     func primerCheckoutPresenterDidDismiss3DSChallenge()
@@ -208,8 +207,7 @@ extension PrimerCheckoutPresenterDelegate {
                 let maxHeight = context.maximumDetentValue
                 // Allow content to determine height, but cap at maximum
                 return min(
-                    max(contentHeight, SheetSizing.minimumHeight), maxHeight * SheetSizing.maximumScreenRatio
-                )
+                    max(contentHeight, SheetSizing.minimumHeight), maxHeight * SheetSizing.maximumScreenRatio)
             }
             sheet.detents = [customDetent, .large()]
             sheet.selectedDetentIdentifier = customDetent.identifier
@@ -375,8 +373,7 @@ extension PrimerCheckoutPresenter {
                 reason: "No presenting view controller found"
             )
 
-            PrimerDelegateProxy.primerDidFailWithError(error, data: nil) { _ in
-            }
+            shared.delegate?.primerCheckoutPresenterDidFailWithError(error)
             return
         }
 
