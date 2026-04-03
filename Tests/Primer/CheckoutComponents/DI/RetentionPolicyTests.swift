@@ -8,190 +8,133 @@
 import XCTest
 
 @available(iOS 15.0, *)
-@MainActor
 final class RetentionPolicyTests: XCTestCase {
-
-    private var container: DIContainer!
-
-    override func setUp() async throws {
-        try await super.setUp()
-        container = DIContainer()
-    }
-
-    override func tearDown() async throws {
-        container = nil
-        try await super.tearDown()
-    }
 
     // MARK: - Singleton Retention
 
     func test_singleton_returnsSameInstanceOnMultipleCalls() async throws {
-        // Given
-        container.register(MockService.self, policy: .singleton) {
-            MockService()
-        }
+        let container = Container()
+        _ = try await container.register(MockRetentionService.self).asSingleton().with { _ in MockRetentionService() }
 
-        // When
-        let instance1 = try await container.resolve(MockService.self)
-        let instance2 = try await container.resolve(MockService.self)
+        let instance1 = try await container.resolve(MockRetentionService.self)
+        let instance2 = try await container.resolve(MockRetentionService.self)
 
-        // Then
         XCTAssertTrue(instance1 === instance2)
     }
 
     func test_singleton_retainsInstanceBetweenCalls() async throws {
-        // Given
-        container.register(MockService.self, policy: .singleton) {
-            MockService()
-        }
+        let container = Container()
+        _ = try await container.register(MockRetentionService.self).asSingleton().with { _ in MockRetentionService() }
 
-        // When
-        let instance1 = try await container.resolve(MockService.self)
+        let instance1 = try await container.resolve(MockRetentionService.self)
         weak var weakRef = instance1
+        let instance2 = try await container.resolve(MockRetentionService.self)
 
-        // Force a second resolution
-        let instance2 = try await container.resolve(MockService.self)
-
-        // Then
         XCTAssertNotNil(weakRef)
         XCTAssertTrue(instance1 === instance2)
     }
 
     func test_singleton_survivesContainerRetention() async throws {
-        // Given
-        container.register(MockService.self, policy: .singleton) {
-            MockService()
-        }
+        let container = Container()
+        _ = try await container.register(MockRetentionService.self).asSingleton().with { _ in MockRetentionService() }
 
-        let instance1 = try await container.resolve(MockService.self)
+        let instance1 = try await container.resolve(MockRetentionService.self)
         weak var weakRef = instance1
+        _ = try await container.resolve(MockRetentionService.self)
 
-        // When - clear other references
-        _ = try await container.resolve(MockService.self)
-
-        // Then - singleton should still exist
         XCTAssertNotNil(weakRef)
     }
 
     // MARK: - Transient Retention
 
     func test_transient_returnsDifferentInstancesOnMultipleCalls() async throws {
-        // Given
-        container.register(MockService.self, policy: .transient) {
-            MockService()
-        }
+        let container = Container()
+        _ = try await container.register(MockRetentionService.self).asTransient().with { _ in MockRetentionService() }
 
-        // When
-        let instance1 = try await container.resolve(MockService.self)
-        let instance2 = try await container.resolve(MockService.self)
+        let instance1 = try await container.resolve(MockRetentionService.self)
+        let instance2 = try await container.resolve(MockRetentionService.self)
 
-        // Then
         XCTAssertFalse(instance1 === instance2)
     }
 
     func test_transient_doesNotRetainInstance() async throws {
-        // Given
-        container.register(MockService.self, policy: .transient) {
-            MockService()
-        }
+        let container = Container()
+        _ = try await container.register(MockRetentionService.self).asTransient().with { _ in MockRetentionService() }
 
-        // When
-        weak var weakRef: MockService?
+        weak var weakRef: MockRetentionService?
         do {
-            let instance = try await container.resolve(MockService.self)
+            let instance = try await container.resolve(MockRetentionService.self)
             weakRef = instance
         }
 
-        // Then - instance should be deallocated
         XCTAssertNil(weakRef)
     }
 
     func test_transient_createsNewInstanceEachTime() async throws {
-        // Given
-        var creationCount = 0
-        container.register(MockService.self, policy: .transient) {
-            creationCount += 1
-            return MockService()
+        let counter = Counter()
+        let container = Container()
+        _ = try await container.register(MockRetentionService.self).asTransient().with { _ in
+            await counter.increment()
+            return MockRetentionService()
         }
 
-        // When
-        _ = try await container.resolve(MockService.self)
-        _ = try await container.resolve(MockService.self)
-        _ = try await container.resolve(MockService.self)
+        _ = try await container.resolve(MockRetentionService.self)
+        _ = try await container.resolve(MockRetentionService.self)
+        _ = try await container.resolve(MockRetentionService.self)
 
-        // Then
-        XCTAssertEqual(creationCount, 3)
+        let count = await counter.value
+        XCTAssertEqual(count, 3)
     }
 
     // MARK: - Weak Retention
 
     func test_weak_retainsInstanceWhileReferencesExist() async throws {
-        // Given
-        container.register(MockService.self, policy: .weak) {
-            MockService()
-        }
+        let container = Container()
+        _ = try await container.register(MockRetentionService.self).asWeak().with { _ in MockRetentionService() }
 
-        // When
-        let instance1 = try await container.resolve(MockService.self)
-        let instance2 = try await container.resolve(MockService.self)
+        let instance1 = try await container.resolve(MockRetentionService.self)
+        let instance2 = try await container.resolve(MockRetentionService.self)
 
-        // Then - should return same instance while reference exists
         XCTAssertTrue(instance1 === instance2)
     }
 
     func test_weak_releasesInstanceWhenNoReferencesExist() async throws {
-        // Given
-        container.register(MockService.self, policy: .weak) {
-            MockService()
-        }
+        let container = Container()
+        _ = try await container.register(MockRetentionService.self).asWeak().with { _ in MockRetentionService() }
 
-        // When
-        weak var weakRef: MockService?
+        weak var weakRef: MockRetentionService?
         do {
-            let instance = try await container.resolve(MockService.self)
+            let instance = try await container.resolve(MockRetentionService.self)
             weakRef = instance
         }
 
-        // Then - instance should be deallocated
         XCTAssertNil(weakRef)
     }
 
     func test_weak_createsNewInstanceAfterDeallocation() async throws {
-        // Given
-        container.register(MockService.self, policy: .weak) {
-            MockService()
-        }
+        let container = Container()
+        _ = try await container.register(MockRetentionService.self).asWeak().with { _ in MockRetentionService() }
 
-        // Resolve and let instance fall out of scope
         do {
-            _ = try await container.resolve(MockService.self)
+            _ = try await container.resolve(MockRetentionService.self)
         }
 
-        // When - resolve again after deallocation
-        let instance2 = try await container.resolve(MockService.self)
-
-        // Then - should create new instance (weak reference was released)
+        let instance2 = try await container.resolve(MockRetentionService.self)
         XCTAssertNotNil(instance2)
     }
 
     // MARK: - Policy Comparison
 
     func test_differentPolicies_behaveDifferently() async throws {
-        // Given
-        container.register(MockService.self, name: "singleton", policy: .singleton) {
-            MockService()
-        }
-        container.register(MockService.self, name: "transient", policy: .transient) {
-            MockService()
-        }
+        let container = Container()
+        _ = try await container.register(MockRetentionService.self).named("singleton").asSingleton().with { _ in MockRetentionService() }
+        _ = try await container.register(MockRetentionService.self).named("transient").asTransient().with { _ in MockRetentionService() }
 
-        // When
-        let singleton1 = try await container.resolve(MockService.self, name: "singleton")
-        let singleton2 = try await container.resolve(MockService.self, name: "singleton")
-        let transient1 = try await container.resolve(MockService.self, name: "transient")
-        let transient2 = try await container.resolve(MockService.self, name: "transient")
+        let singleton1 = try await container.resolve(MockRetentionService.self, name: "singleton")
+        let singleton2 = try await container.resolve(MockRetentionService.self, name: "singleton")
+        let transient1 = try await container.resolve(MockRetentionService.self, name: "transient")
+        let transient2 = try await container.resolve(MockRetentionService.self, name: "transient")
 
-        // Then
         XCTAssertTrue(singleton1 === singleton2)
         XCTAssertFalse(transient1 === transient2)
     }
@@ -199,70 +142,49 @@ final class RetentionPolicyTests: XCTestCase {
     // MARK: - Container Reset
 
     func test_reset_clearsSingletonInstances() async throws {
-        // Given
-        container.register(MockService.self, policy: .singleton) {
-            MockService()
-        }
-        let instance1 = try await container.resolve(MockService.self)
+        let container = Container()
+        _ = try await container.register(MockRetentionService.self).asSingleton().with { _ in MockRetentionService() }
+        let instance1 = try await container.resolve(MockRetentionService.self)
 
-        // When
-        await container.reset()
-        container.register(MockService.self, policy: .singleton) {
-            MockService()
-        }
-        let instance2 = try await container.resolve(MockService.self)
+        await container.reset(ignoreDependencies: [Never.Type]())
+        _ = try await container.register(MockRetentionService.self).asSingleton().with { _ in MockRetentionService() }
+        let instance2 = try await container.resolve(MockRetentionService.self)
 
-        // Then - should be different instances after reset
         XCTAssertFalse(instance1 === instance2)
     }
 
     func test_reset_doesNotAffectTransientPolicy() async throws {
-        // Given
-        container.register(MockService.self, policy: .transient) {
-            MockService()
-        }
+        let container = Container()
+        _ = try await container.register(MockRetentionService.self).asTransient().with { _ in MockRetentionService() }
 
-        // When
-        await container.reset()
-        container.register(MockService.self, policy: .transient) {
-            MockService()
-        }
-        let instance1 = try await container.resolve(MockService.self)
-        let instance2 = try await container.resolve(MockService.self)
+        await container.reset(ignoreDependencies: [Never.Type]())
+        _ = try await container.register(MockRetentionService.self).asTransient().with { _ in MockRetentionService() }
+        let instance1 = try await container.resolve(MockRetentionService.self)
+        let instance2 = try await container.resolve(MockRetentionService.self)
 
-        // Then - still creates new instances
         XCTAssertFalse(instance1 === instance2)
     }
 
     // MARK: - Concurrent Access
 
     func test_singleton_withConcurrentResolution_returnsSameInstance() async throws {
-        // Given
-        container.register(MockService.self, policy: .singleton) {
-            MockService()
-        }
+        let container = Container()
+        _ = try await container.register(MockRetentionService.self).asSingleton().with { _ in MockRetentionService() }
 
-        // When - concurrent resolutions
-        let instances = await withTaskGroup(of: MockService.self, returning: [MockService].self) { group in
+        let instances = await withTaskGroup(of: MockRetentionService?.self, returning: [MockRetentionService].self) { group in
             for _ in 0..<10 {
                 group.addTask {
-                    do {
-                        return try await self.container.resolve(MockService.self)
-                    } catch {
-                        XCTFail("Unexpected error: \(error)")
-                        fatalError("Resolution failed")
-                    }
+                    try? await container.resolve(MockRetentionService.self)
                 }
             }
 
-            var results: [MockService] = []
+            var results: [MockRetentionService] = []
             for await instance in group {
-                results.append(instance)
+                if let instance { results.append(instance) }
             }
             return results
         }
 
-        // Then - all should be same instance
         guard let firstInstance = instances.first else {
             XCTFail("Expected at least one instance")
             return
@@ -276,69 +198,12 @@ final class RetentionPolicyTests: XCTestCase {
 // MARK: - Test Types
 
 @available(iOS 15.0, *)
-private final class MockService {
+private final class MockRetentionService {
     let id = UUID()
 }
 
 @available(iOS 15.0, *)
-@MainActor
-private final class DIContainer {
-    enum RetentionPolicy {
-        case singleton
-        case transient
-        case weak
-    }
-
-    private var registrations: [String: (RetentionPolicy, () -> Any)] = [:]
-    private var singletons: [String: Any] = [:]
-    private var weakInstances: [String: WeakBox] = [:]
-
-    func register<T>(_ type: T.Type, name: String = "", policy: RetentionPolicy, factory: @escaping () -> T) {
-        let key = "\(type)_\(name)"
-        registrations[key] = (policy, factory)
-    }
-
-    func resolve<T>(_ type: T.Type, name: String = "") async throws -> T {
-        let key = "\(type)_\(name)"
-        guard let (policy, factory) = registrations[key] else {
-            throw DIError.notRegistered
-        }
-
-        switch policy {
-        case .singleton:
-            if let existing = singletons[key] as? T {
-                return existing
-            }
-            let instance = factory() as! T
-            singletons[key] = instance
-            return instance
-
-        case .transient:
-            return factory() as! T
-
-        case .weak:
-            if let weakBox = weakInstances[key], let existing = weakBox.value as? T {
-                return existing
-            }
-            let instance = factory() as! T
-            weakInstances[key] = WeakBox(value: instance as AnyObject)
-            return instance
-        }
-    }
-
-    func reset() async {
-        singletons.removeAll()
-        weakInstances.removeAll()
-    }
-
-    private final class WeakBox {
-        weak var value: AnyObject?
-        init(value: AnyObject) {
-            self.value = value
-        }
-    }
-}
-
-private enum DIError: Error {
-    case notRegistered
+private actor Counter {
+    private(set) var value = 0
+    func increment() { value += 1 }
 }

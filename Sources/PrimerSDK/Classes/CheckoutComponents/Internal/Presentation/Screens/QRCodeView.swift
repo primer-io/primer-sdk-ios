@@ -110,8 +110,8 @@ struct QRCodeView: View, LogReporter {
       case .success:
         Spacer()
         Image(systemName: "checkmark.circle.fill")
-          .font(.system(size: Layout.iconSize))
-          .foregroundColor(.green)
+          .font(PrimerFont.largeIcon(tokens: tokens))
+          .foregroundColor(CheckoutColors.iconPositive(tokens: tokens))
           .accessibilityIdentifier(AccessibilityIdentifiers.QRCode.successIcon)
           .accessibilityLabel(CheckoutComponentsStrings.a11yQrCodeSuccessIcon)
         Spacer()
@@ -119,8 +119,8 @@ struct QRCodeView: View, LogReporter {
       case .failure:
         Spacer()
         Image(systemName: "xmark.circle.fill")
-          .font(.system(size: Layout.iconSize))
-          .foregroundColor(.red)
+          .font(PrimerFont.largeIcon(tokens: tokens))
+          .foregroundColor(CheckoutColors.iconNegative(tokens: tokens))
           .accessibilityIdentifier(AccessibilityIdentifiers.QRCode.failureIcon)
           .accessibilityLabel(CheckoutComponentsStrings.a11yQrCodeFailureIcon)
         Spacer()
@@ -133,7 +133,7 @@ struct QRCodeView: View, LogReporter {
       if let amount = AppState.current.amount,
         let currency = AppState.current.currency {
         Text(amount.toCurrencyString(currency: currency))
-          .font(.system(size: Layout.amountFontSize, weight: .bold))
+          .font(PrimerFont.titleXLarge(tokens: tokens))
           .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
           .frame(maxWidth: .infinity, alignment: .leading)
           .accessibilityIdentifier(AccessibilityIdentifiers.QRCode.amountLabel)
@@ -144,13 +144,13 @@ struct QRCodeView: View, LogReporter {
   private func makeTitleSection() -> some View {
     VStack(alignment: .leading, spacing: PrimerSpacing.small(tokens: tokens)) {
       Text(CheckoutComponentsStrings.qrCodeScanInstruction)
-        .font(.system(size: Layout.titleFontSize))
+        .font(PrimerFont.titleLarge(tokens: tokens))
         .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
         .frame(maxWidth: .infinity, alignment: .leading)
         .accessibilityIdentifier(AccessibilityIdentifiers.QRCode.instructionTitle)
 
       Text(CheckoutComponentsStrings.qrCodeUploadInstruction)
-        .font(.system(size: Layout.subtitleFontSize))
+        .font(PrimerFont.bodyMedium(tokens: tokens))
         .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
         .frame(maxWidth: .infinity, alignment: .leading)
         .accessibilityIdentifier(AccessibilityIdentifiers.QRCode.instructionSubtitle)

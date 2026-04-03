@@ -16,8 +16,8 @@ protocol HeadlessRepository {
     cardholderName: String,
     selectedNetwork: CardNetwork?
   ) async throws -> PaymentResult
-  func getNetworkDetectionStream() -> AsyncStream<[CardNetwork]>
-  func getBinDataStream() -> AsyncStream<PrimerBinData>
+  nonisolated func getNetworkDetectionStream() -> AsyncStream<[CardNetwork]>
+  nonisolated func getBinDataStream() -> AsyncStream<PrimerBinData>
   func updateCardNumberInRawDataManager(_ cardNumber: String) async
   func selectCardNetwork(_ cardNetwork: CardNetwork) async
   func fetchVaultedPaymentMethods() async throws -> [PrimerHeadlessUniversalCheckout

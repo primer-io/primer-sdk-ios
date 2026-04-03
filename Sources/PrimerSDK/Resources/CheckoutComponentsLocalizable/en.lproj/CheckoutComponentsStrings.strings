@@ -135,14 +135,17 @@
 "primer_card_form_placeholder_country_code" = "Select country";
 "primer_card_form_placeholder_cvv" = "123";
 "primer_card_form_placeholder_cvv_amex" = "1234";
+"primer_card_form_placeholder_cvv_standard" = "123";
 "primer_card_form_placeholder_email" = "john.doe@example.com";
 "primer_card_form_placeholder_expiry" = "MM/YY";
 "primer_card_form_placeholder_expiry_alt" = "12/25";
 "primer_card_form_placeholder_first_name" = "John";
+"primer_card_form_placeholder_full_name" = "Full name";
 "primer_card_form_placeholder_last_name" = "Doe";
 "primer_card_form_placeholder_name" = "Full name";
 "primer_card_form_placeholder_number" = "1234 1234 1234 1234";
 "primer_card_form_placeholder_otp" = "123456";
+"primer_card_form_placeholder_otp_code" = "OTP Code";
 "primer_card_form_placeholder_phone" = "+1 (555) 123–4567";
 "primer_card_form_placeholder_postal" = "12345";
 "primer_card_form_placeholder_retail" = "Select outlet";
@@ -171,6 +174,7 @@
 "primer_common_button_pay" = "Pay";
 "primer_common_button_pay_amount" = "Pay %1$@";
 "primer_common_button_retry" = "Retry";
+"primer_common_display_name_pay_amount" = "Pay %1$@";
 "primer_common_error_generic" = "An unknown error occurred.";
 "primer_common_error_unexpected" = "An unexpected error occurred.";
 "primer_country_no_results" = "No countries found";

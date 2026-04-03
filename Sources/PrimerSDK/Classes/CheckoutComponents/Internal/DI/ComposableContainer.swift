@@ -11,15 +11,10 @@ final class ComposableContainer: LogReporter {
 
   private let container: Container
   private let settings: PrimerSettings
-  private let theme: PrimerCheckoutTheme
 
-  init(
-    settings: PrimerSettings,
-    theme: PrimerCheckoutTheme = PrimerCheckoutTheme()
-  ) {
+  init(settings: PrimerSettings) {
     container = Container()
     self.settings = settings
-    self.theme = theme
   }
 
   func configure() async {
@@ -28,7 +23,6 @@ final class ComposableContainer: LogReporter {
     await registerInteractors()
     await registerPaymentInteractors()
     await registerData()
-    await registerLogging()
 
     await DIContainer.setContainer(container)
 
@@ -47,8 +41,9 @@ final class ComposableContainer: LogReporter {
 @available(iOS 15.0, *)
 extension ComposableContainer {
 
-  /// Safely registers a dependency, logging errors instead of silently swallowing them.
-  fileprivate func safeRegister<T>(
+  /// Guards registration-time errors (e.g. duplicate keys) without crashing.
+  /// Factory execution errors are thrown later at resolution time, not caught here.
+  fileprivate func guardedRegister<T>(
     _ type: T.Type,
     _ registration: () async throws -> Void
   ) async {
@@ -67,26 +62,13 @@ extension ComposableContainer {
 
   fileprivate func registerInfrastructure() async {
     let settings = settings
-    await safeRegister(PrimerSettings.self) {
+    await guardedRegister(PrimerSettings.self) {
       _ = try await container.register(PrimerSettings.self)
         .asSingleton()
         .with { _ in settings }
     }
 
-    let theme = theme
-    await safeRegister(PrimerCheckoutTheme.self) {
-      _ = try await container.register(PrimerCheckoutTheme.self)
-        .asSingleton()
-        .with { _ in theme }
-    }
-
-    await safeRegister(DesignTokensManager.self) {
-      _ = try await container.register(DesignTokensManager.self)
-        .asSingleton()
-        .with { _ in await MainActor.run { DesignTokensManager() } }
-    }
-
-    await safeRegister(CheckoutComponentsAnalyticsServiceProtocol.self) {
+    await guardedRegister(CheckoutComponentsAnalyticsServiceProtocol.self) {
       _ = try await container.register(CheckoutComponentsAnalyticsServiceProtocol.self)
         .asSingleton()
         .with { _ in
@@ -96,7 +78,7 @@ extension ComposableContainer {
         }
     }
 
-    await safeRegister(CheckoutComponentsAnalyticsInteractorProtocol.self) {
+    await guardedRegister(CheckoutComponentsAnalyticsInteractorProtocol.self) {
       _ = try await container.register(CheckoutComponentsAnalyticsInteractorProtocol.self)
         .asSingleton()
         .with { resolver in
@@ -106,13 +88,13 @@ extension ComposableContainer {
         }
     }
 
-    await safeRegister(AccessibilityAnnouncementService.self) {
+    await guardedRegister(AccessibilityAnnouncementService.self) {
       _ = try await container.register(AccessibilityAnnouncementService.self)
         .asSingleton()
         .with { _ in DefaultAccessibilityAnnouncementService() }
     }
 
-    await safeRegister(ConfigurationService.self) {
+    await guardedRegister(ConfigurationService.self) {
       _ = try await container.register(ConfigurationService.self)
         .asSingleton()
         .with { _ in DefaultConfigurationService() }
@@ -120,34 +102,17 @@ extension ComposableContainer {
   }
 
   fileprivate func registerValidation() async {
-    await safeRegister(RulesFactory.self) {
-      _ = try await container.register(RulesFactory.self)
-        .asSingleton()
-        .with { _ in DefaultRulesFactory() }
-    }
-
-    await safeRegister(ValidationService.self) {
+    await guardedRegister(ValidationService.self) {
       _ = try await container.register(ValidationService.self)
         .asSingleton()
-        .with { resolver in
-          let factory = try await resolver.resolve(RulesFactory.self)
-          return DefaultValidationService(rulesFactory: factory)
+        .with { _ in
+          DefaultValidationService(rulesFactory: DefaultRulesFactory())
         }
     }
   }
 
   fileprivate func registerInteractors() async {
-    await safeRegister(GetPaymentMethodsInteractor.self) {
-      _ = try await container.register(GetPaymentMethodsInteractor.self)
-        .asTransient()
-        .with { resolver in
-          GetPaymentMethodsInteractorImpl(
-            repository: try await resolver.resolve(HeadlessRepository.self)
-          )
-        }
-    }
-
-    await safeRegister(ProcessCardPaymentInteractor.self) {
+    await guardedRegister(ProcessCardPaymentInteractor.self) {
       _ = try await container.register(ProcessCardPaymentInteractor.self)
         .asTransient()
         .with { resolver in
@@ -157,7 +122,7 @@ extension ComposableContainer {
         }
     }
 
-    await safeRegister(ValidateInputInteractor.self) {
+    await guardedRegister(ValidateInputInteractor.self) {
       _ = try await container.register(ValidateInputInteractor.self)
         .asTransient()
         .with { resolver in
@@ -167,7 +132,7 @@ extension ComposableContainer {
         }
     }
 
-    await safeRegister(CardNetworkDetectionInteractor.self) {
+    await guardedRegister(CardNetworkDetectionInteractor.self) {
       _ = try await container.register(CardNetworkDetectionInteractor.self)
         .asTransient()
         .with { resolver in
@@ -177,7 +142,7 @@ extension ComposableContainer {
         }
     }
 
-    await safeRegister(SubmitVaultedPaymentInteractor.self) {
+    await guardedRegister(SubmitVaultedPaymentInteractor.self) {
       _ = try await container.register(SubmitVaultedPaymentInteractor.self)
         .asTransient()
         .with { resolver in
@@ -189,7 +154,7 @@ extension ComposableContainer {
   }
 
   fileprivate func registerPaymentInteractors() async {
-    await safeRegister(ProcessPayPalPaymentInteractor.self) {
+    await guardedRegister(ProcessPayPalPaymentInteractor.self) {
       _ = try await container.register(ProcessPayPalPaymentInteractor.self)
         .asTransient()
         .with { resolver in
@@ -199,7 +164,7 @@ extension ComposableContainer {
         }
     }
 
-    await safeRegister(ProcessKlarnaPaymentInteractor.self) {
+    await guardedRegister(ProcessKlarnaPaymentInteractor.self) {
       _ = try await container.register(ProcessKlarnaPaymentInteractor.self)
         .asTransient()
         .with { resolver in
@@ -209,7 +174,7 @@ extension ComposableContainer {
         }
     }
 
-    await safeRegister(ProcessWebRedirectPaymentInteractor.self) {
+    await guardedRegister(ProcessWebRedirectPaymentInteractor.self) {
       _ = try await container.register(ProcessWebRedirectPaymentInteractor.self)
         .asTransient()
         .with { resolver in
@@ -219,7 +184,7 @@ extension ComposableContainer {
         }
     }
 
-    await safeRegister(ProcessApplePayPaymentInteractor.self) {
+    await guardedRegister(ProcessApplePayPaymentInteractor.self) {
       _ = try await container.register(ProcessApplePayPaymentInteractor.self)
         .asTransient()
         .with { _ in
@@ -231,7 +196,7 @@ extension ComposableContainer {
         }
     }
 
-    await safeRegister(ProcessAchPaymentInteractor.self) {
+    await guardedRegister(ProcessAchPaymentInteractor.self) {
       _ = try await container.register(ProcessAchPaymentInteractor.self)
         .asTransient()
         .with { resolver in
@@ -241,7 +206,7 @@ extension ComposableContainer {
         }
     }
 
-    await safeRegister(ProcessFormRedirectPaymentInteractor.self) {
+    await guardedRegister(ProcessFormRedirectPaymentInteractor.self) {
       _ = try await container.register(ProcessFormRedirectPaymentInteractor.self)
         .asTransient()
         .with { resolver in
@@ -250,20 +215,27 @@ extension ComposableContainer {
           )
         }
     }
+
+    await guardedRegister(ProcessQRCodePaymentInteractor.self) {
+      _ = try await container.register(ProcessQRCodePaymentInteractor.self)
+        .asTransient()
+        .with { resolver in
+          ProcessQRCodePaymentInteractorImpl(
+            repository: try await resolver.resolve(QRCodeRepository.self),
+            paymentMethodType: ""
+          )
+        }
+    }
   }
 
   fileprivate func registerData() async {
-    // HeadlessRepository uses transient scope to ensure each checkout session gets a fresh instance.
-    // This prevents stale state (e.g., cached card networks, validation handlers) from leaking
-    // between checkout sessions when the user dismisses and re-presents the checkout UI.
-    // Note: VaultManager is lazily initialized within HeadlessRepositoryImpl for vault payments.
-    await safeRegister(HeadlessRepository.self) {
+    await guardedRegister(HeadlessRepository.self) {
       _ = try await container.register(HeadlessRepository.self)
-        .asTransient()
+        .asSingleton()
         .with { _ in await HeadlessRepositoryImpl() }
     }
 
-    await safeRegister(PaymentMethodMapper.self) {
+    await guardedRegister(PaymentMethodMapper.self) {
       _ = try await container.register(PaymentMethodMapper.self)
         .asSingleton()
         .with { container in
@@ -272,65 +244,40 @@ extension ComposableContainer {
         }
     }
 
-    await safeRegister(PayPalRepository.self) {
+    await guardedRegister(PayPalRepository.self) {
       _ = try await container.register(PayPalRepository.self)
         .asTransient()
         .with { _ in PayPalRepositoryImpl() }
     }
 
-    await safeRegister(KlarnaRepository.self) {
+    await guardedRegister(KlarnaRepository.self) {
       _ = try await container.register(KlarnaRepository.self)
         .asTransient()
         .with { _ in await KlarnaRepositoryImpl() }
     }
 
-    await safeRegister(AchRepository.self) {
+    await guardedRegister(AchRepository.self) {
       _ = try await container.register(AchRepository.self)
         .asTransient()
         .with { _ in await AchRepositoryImpl() }
     }
 
-    await safeRegister(WebRedirectRepository.self) {
+    await guardedRegister(WebRedirectRepository.self) {
       _ = try await container.register(WebRedirectRepository.self)
         .asTransient()
         .with { _ in WebRedirectRepositoryImpl() }
     }
 
-    await safeRegister(FormRedirectRepository.self) {
+    await guardedRegister(FormRedirectRepository.self) {
       _ = try await container.register(FormRedirectRepository.self)
         .asTransient()
         .with { _ in FormRedirectRepositoryImpl() }
     }
 
-    await safeRegister(QRCodeRepository.self) {
+    await guardedRegister(QRCodeRepository.self) {
       _ = try await container.register(QRCodeRepository.self)
         .asTransient()
         .with { _ in QRCodeRepositoryImpl() }
-    }
-  }
-
-  fileprivate func registerLogging() async {
-    await safeRegister(LogNetworkClient.self) {
-      _ = try await container.register(LogNetworkClient.self)
-        .asSingleton()
-        .with { _ in LogNetworkClient() }
-    }
-
-    await safeRegister(LogPayloadBuilding.self) {
-      _ = try await container.register(LogPayloadBuilding.self)
-        .asSingleton()
-        .with { _ in LogPayloadBuilder() }
-    }
-
-    await safeRegister(LoggingService.self) {
-      _ = try await container.register(LoggingService.self)
-        .asSingleton()
-        .with { resolver in
-          LoggingService(
-            networkClient: try await resolver.resolve(LogNetworkClient.self),
-            payloadBuilder: try await resolver.resolve(LogPayloadBuilding.self)
-          )
-        }
     }
   }
 

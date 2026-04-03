@@ -59,8 +59,7 @@ final class CheckoutSDKInitializer {
     DependencyContainer.register(primerSettings)
 
     let composableContainer = ComposableContainer(
-      settings: primerSettings,
-      theme: primerTheme
+      settings: primerSettings
     )
     await composableContainer.configure()
 
@@ -92,7 +91,6 @@ final class CheckoutSDKInitializer {
   }
 
   func cleanup() {
-    ValidationResultCache.shared.clear()
     Task {
       await DIContainer.clearContainer()
     }

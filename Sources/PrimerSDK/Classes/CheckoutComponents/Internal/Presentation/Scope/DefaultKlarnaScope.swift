@@ -8,19 +8,17 @@ import SwiftUI
 
 @available(iOS 15.0, *)
 @MainActor
-public final class DefaultKlarnaScope: PrimerKlarnaScope, ObservableObject, LogReporter {
+final class DefaultKlarnaScope: PrimerKlarnaScope, ObservableObject, LogReporter {
 
-  // MARK: - Public Properties
+  private(set) var presentationContext: PresentationContext
 
-  public private(set) var presentationContext: PresentationContext
-
-  public var dismissalMechanism: [DismissalMechanism] {
+  var dismissalMechanism: [DismissalMechanism] {
     checkoutScope?.dismissalMechanism ?? []
   }
 
-  public private(set) var paymentView: UIView?
+  private(set) var paymentView: UIView?
 
-  public var state: AsyncStream<PrimerKlarnaState> {
+  var state: AsyncStream<PrimerKlarnaState> {
     AsyncStream { continuation in
       let task = Task { @MainActor in
         for await _ in $internalState.values {
@@ -35,13 +33,9 @@ public final class DefaultKlarnaScope: PrimerKlarnaScope, ObservableObject, LogR
     }
   }
 
-  // MARK: - UI Customization Properties
-
-  public var screen: KlarnaScreenComponent?
-  public var authorizeButton: KlarnaButtonComponent?
-  public var finalizeButton: KlarnaButtonComponent?
-
-  // MARK: - Private Properties
+  var screen: KlarnaScreenComponent?
+  var authorizeButton: KlarnaButtonComponent?
+  var finalizeButton: KlarnaButtonComponent?
 
   private weak var checkoutScope: DefaultCheckoutScope?
   private let processKlarnaInteractor: ProcessKlarnaPaymentInteractor
@@ -52,8 +46,6 @@ public final class DefaultKlarnaScope: PrimerKlarnaScope, ObservableObject, LogR
   private var klarnaClientToken: String?
 
   private var authorizationToken: String?
-
-  // MARK: - Initialization
 
   init(
     checkoutScope: DefaultCheckoutScope,
@@ -67,20 +59,18 @@ public final class DefaultKlarnaScope: PrimerKlarnaScope, ObservableObject, LogR
     self.analyticsInteractor = analyticsInteractor
   }
 
-  // MARK: - PrimerPaymentMethodScope Methods
-
-  public func start() {
+  func start() {
     logger.debug(message: "Klarna scope started")
     Task { [self] in
       await createSession()
     }
   }
 
-  public func submit() {
+  func submit() {
     authorizePayment()
   }
 
-  public func cancel() {
+  func cancel() {
     logger.debug(message: "Klarna payment cancelled")
     guard let checkoutScope else {
       logger.warn(message: "Klarna checkout scope was deallocated during cancel")
@@ -89,9 +79,7 @@ public final class DefaultKlarnaScope: PrimerKlarnaScope, ObservableObject, LogR
     checkoutScope.onDismiss()
   }
 
-  // MARK: - Klarna Flow Actions
-
-  public func selectPaymentCategory(_ categoryId: String) {
+  func selectPaymentCategory(_ categoryId: String) {
     guard internalState.categories.contains(where: { $0.id == categoryId }) else {
       logger.warn(message: "Invalid category ID: \(categoryId)")
       return
@@ -109,7 +97,7 @@ public final class DefaultKlarnaScope: PrimerKlarnaScope, ObservableObject, LogR
     }
   }
 
-  public func authorizePayment() {
+  func authorizePayment() {
     guard internalState.step == .viewReady || internalState.step == .categorySelection else {
       logger.warn(message: "Cannot authorize in current step: \(internalState.step)")
       return
@@ -126,7 +114,7 @@ public final class DefaultKlarnaScope: PrimerKlarnaScope, ObservableObject, LogR
     }
   }
 
-  public func finalizePayment() {
+  func finalizePayment() {
     guard internalState.step == .awaitingFinalization else {
       logger.warn(message: "Cannot finalize in current step: \(internalState.step)")
       return
@@ -137,9 +125,7 @@ public final class DefaultKlarnaScope: PrimerKlarnaScope, ObservableObject, LogR
     }
   }
 
-  // MARK: - Navigation Methods
-
-  public func onBack() {
+  func onBack() {
     guard presentationContext.shouldShowBackButton else { return }
     guard let checkoutScope else {
       logger.warn(message: "Klarna checkout scope was deallocated during navigation back")
@@ -147,8 +133,6 @@ public final class DefaultKlarnaScope: PrimerKlarnaScope, ObservableObject, LogR
     }
     checkoutScope.checkoutNavigator.navigateBack()
   }
-
-  // MARK: - Private Flow Methods
 
   private func handleError(_ error: Error, context: String) {
     logger.error(message: "Klarna \(context) failed: \(error.localizedDescription)")

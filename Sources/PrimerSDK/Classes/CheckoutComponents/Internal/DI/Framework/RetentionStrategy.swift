@@ -30,12 +30,12 @@ struct SingletonStrategy: RetentionStrategy {
     registration: Container.FactoryRegistration,
     in container: Container
   ) async throws -> Any {
-    if let stored = await container.instances[key] {
+    if let stored = await container.getInstance(forKey: key) {
       return stored
     }
     let new = try await registration.buildAsync(container)
     // Double-check: another task may have resolved while we awaited the factory
-    if let stored = await container.instances[key] {
+    if let stored = await container.getInstance(forKey: key) {
       return stored
     }
     await container.setInstance(new, forKey: key)
@@ -49,7 +49,7 @@ struct WeakStrategy: RetentionStrategy {
     registration: Container.FactoryRegistration,
     in container: Container
   ) async throws -> Any {
-    if let box = await container.weakBoxes[key], let obj = box.instance {
+    if let box = await container.getWeakBox(forKey: key), let obj = box.instance {
       return obj
     }
     let any = try await registration.buildAsync(container)

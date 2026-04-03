@@ -373,8 +373,7 @@ extension PrimerCheckoutPresenter {
                 reason: "No presenting view controller found"
             )
 
-            PrimerDelegateProxy.primerDidFailWithError(error, data: nil) { _ in
-            }
+            shared.delegate?.primerCheckoutPresenterDidFailWithError(error)
             return
         }
 

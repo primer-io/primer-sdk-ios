@@ -229,6 +229,8 @@ enum DesignTokensProcessor {
     }
   }
 
+  // Limitation: does not handle negative numbers (e.g. "-0.6") as operands,
+  // since '-' is also treated as the subtraction operator.
   private static func evaluateExpression(_ expression: String) -> Double? {
     let trimmed = expression.trimmingCharacters(in: .whitespacesAndNewlines)
     let operators: [(Character, (Double, Double) -> Double)] = [

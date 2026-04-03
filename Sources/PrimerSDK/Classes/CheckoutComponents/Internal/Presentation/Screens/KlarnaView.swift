@@ -267,7 +267,7 @@ struct KlarnaView: View, LogReporter {
         .aspectRatio(contentMode: .fit)
     } placeholder: {
       RoundedRectangle(cornerRadius: Layout.badgeCornerRadius)
-        .fill(Color.pink.opacity(Layout.placeholderOpacity))
+        .fill(CheckoutColors.gray300(tokens: tokens).opacity(Layout.placeholderOpacity))
         .overlay(
           Text("K")
             .font(PrimerFont.bodyLarge(tokens: tokens))

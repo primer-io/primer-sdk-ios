@@ -19,7 +19,7 @@ final class DefaultSelectCountryScopeTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        sut = DefaultSelectCountryScope(cardFormScope: nil, checkoutScope: nil)
+        sut = DefaultSelectCountryScope(cardFormScope: nil)
     }
 
     override func tearDown() {

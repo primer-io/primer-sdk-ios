@@ -10,22 +10,22 @@ import Foundation
 @available(iOS 15.0, *)
 enum ContainerTestHelpers {
 
-    static func createTestContainer() async -> Container {
+    static func createTestContainer() async throws -> Container {
         let container = Container()
 
         // Register mock ConfigurationService
         let mockConfig = MockConfigurationService.withDefaultConfiguration()
-        _ = try? await container.register(ConfigurationService.self)
+        _ = try await container.register(ConfigurationService.self)
             .asSingleton()
             .with { _ in mockConfig }
 
         // Register mock AccessibilityAnnouncementService
-        _ = try? await container.register(AccessibilityAnnouncementService.self)
+        _ = try await container.register(AccessibilityAnnouncementService.self)
             .asSingleton()
             .with { _ in DefaultAccessibilityAnnouncementService(publisher: MockUIAccessibilityNotificationPublisher()) }
 
         // Register mock AnalyticsInteractor
-        _ = try? await container.register(CheckoutComponentsAnalyticsInteractorProtocol.self)
+        _ = try await container.register(CheckoutComponentsAnalyticsInteractorProtocol.self)
             .asSingleton()
             .with { _ in MockAnalyticsInteractor() }
 

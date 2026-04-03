@@ -18,7 +18,7 @@ final class KlarnaRepositoryImpl: KlarnaRepository, LogReporter {
   private let apiClient: PrimerAPIClientProtocol
   private let tokenizationService: TokenizationServiceProtocol
   private let createResumePaymentService: CreateResumePaymentServiceProtocol
-  private let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+  private let settings: PrimerSettingsProtocol
 
   // Klarna session state
   private var paymentSessionId: String?
@@ -56,7 +56,8 @@ final class KlarnaRepositoryImpl: KlarnaRepository, LogReporter {
   init(
     apiClient: PrimerAPIClientProtocol? = nil,
     tokenizationService: TokenizationServiceProtocol = TokenizationService(),
-    createResumePaymentService: CreateResumePaymentServiceProtocol? = nil
+    createResumePaymentService: CreateResumePaymentServiceProtocol? = nil,
+    settings: PrimerSettingsProtocol = PrimerSettings.current
   ) {
     self.apiClient = apiClient ?? PrimerAPIConfigurationModule.apiClient ?? PrimerAPIClient()
     self.tokenizationService = tokenizationService
@@ -65,7 +66,8 @@ final class KlarnaRepositoryImpl: KlarnaRepository, LogReporter {
       ?? CreateResumePaymentService(
         paymentMethodType: PrimerPaymentMethodType.klarna.rawValue
       )
-    let klarnaOptions = PrimerSettings.current.paymentMethodOptions.klarnaOptions
+    self.settings = settings
+    let klarnaOptions = settings.paymentMethodOptions.klarnaOptions
     recurringPaymentDescription = klarnaOptions?.recurringPaymentDescription
   }
 
@@ -319,7 +321,7 @@ final class KlarnaRepositoryImpl: KlarnaRepository, LogReporter {
 
     return PaymentResult(
       paymentId: paymentResponse.id ?? UUID().uuidString,
-      status: .success,
+      status: PaymentStatus(from: paymentResponse.status),
       token: tokenData.token,
       amount: paymentResponse.amount,
       paymentMethodType: PrimerPaymentMethodType.klarna.rawValue

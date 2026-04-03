@@ -97,7 +97,7 @@ struct VaultedPaymentMethodCard: View {
           .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
           .frame(width: 20, height: 20)
       }
-      .frame(width: 36, height: 36)
+      .frame(width: 44, height: 44)
       .contentShape(Rectangle())
     }
     .buttonStyle(PlainButtonStyle())

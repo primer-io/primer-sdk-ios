@@ -32,25 +32,19 @@ final class DefaultSelectCountryScope: PrimerSelectCountryScope, LogReporter {
 
   // MARK: - UI Customization Properties
 
-  public var screen: ((_ scope: PrimerSelectCountryScope) -> AnyView)?
-  public var searchBar:
-    (
-      (_ query: String, _ onQueryChange: @escaping (String) -> Void, _ placeholder: String) ->
-        AnyView
-    )?
+  public var screen: SelectCountryScreenComponent?
+  public var searchBar: SearchBarComponent?
   public var countryItem: CountryItemComponent?
 
   // MARK: - Private Properties
 
   @Published private var internalState = PrimerSelectCountryState()
   private weak var cardFormScope: DefaultCardFormScope?
-  private weak var checkoutScope: DefaultCheckoutScope?
 
   // MARK: - Initialization
 
-  init(cardFormScope: DefaultCardFormScope?, checkoutScope: DefaultCheckoutScope?) {
+  init(cardFormScope: DefaultCardFormScope?) {
     self.cardFormScope = cardFormScope
-    self.checkoutScope = checkoutScope
     loadAvailableCountries()
   }
 

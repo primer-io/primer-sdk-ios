@@ -47,11 +47,11 @@ struct SelectCountryScreen: View, LogReporter {
   private var searchBarSection: some View {
     Group {
       if let customSearchBar = scope.searchBar {
-        customSearchBar(
+        AnyView(customSearchBar(
           countryState.searchQuery,
           { query in
             scope.onSearch(query: query)
-          }, CheckoutComponentsStrings.searchCountriesPlaceholder)
+          }, CheckoutComponentsStrings.searchCountriesPlaceholder))
       } else {
         defaultSearchBar
       }

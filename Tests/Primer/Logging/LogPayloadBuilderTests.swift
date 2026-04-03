@@ -53,8 +53,8 @@ final class MockLogPayloadBuilder: LogPayloadBuilding {
 
 final class LogPayloadBuilderTests: XCTestCase {
 
-    var builder: LogPayloadBuilder!
-    var mockSessionData: LoggingSessionContext.SessionData!
+    private var builder: LogPayloadBuilder!
+    private var mockSessionData: LoggingSessionContext.SessionData!
 
     override func setUp() {
         super.setUp()

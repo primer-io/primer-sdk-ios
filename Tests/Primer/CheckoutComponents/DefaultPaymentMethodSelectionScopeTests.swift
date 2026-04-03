@@ -529,7 +529,7 @@ final class DefaultPaymentMethodSelectionScopeTests: XCTestCase {
 
     func test_refreshVaultedPaymentMethods_withContainer_callsRepository() async throws {
         // Given
-        let container = await ContainerTestHelpers.createTestContainer()
+        let container = try await ContainerTestHelpers.createTestContainer()
         let mockRepo = MockHeadlessRepository()
         mockRepo.vaultedPaymentMethodsToReturn = [makeVaultedPaymentMethod()]
         _ = try? await container.register(HeadlessRepository.self).asSingleton().with { _ in mockRepo }
@@ -546,7 +546,7 @@ final class DefaultPaymentMethodSelectionScopeTests: XCTestCase {
 
     func test_refreshVaultedPaymentMethods_repositoryThrows_doesNotCrash() async throws {
         // Given
-        let container = await ContainerTestHelpers.createTestContainer()
+        let container = try await ContainerTestHelpers.createTestContainer()
         let mockRepo = MockHeadlessRepository()
         mockRepo.fetchVaultedPaymentMethodsError = TestError.networkFailure
         _ = try? await container.register(HeadlessRepository.self).asSingleton().with { _ in mockRepo }
@@ -563,7 +563,7 @@ final class DefaultPaymentMethodSelectionScopeTests: XCTestCase {
 
     func test_deleteVaultedPaymentMethod_success_callsRepositoryAndRefreshes() async throws {
         // Given
-        let container = await ContainerTestHelpers.createTestContainer()
+        let container = try await ContainerTestHelpers.createTestContainer()
         let mockRepo = MockHeadlessRepository()
         mockRepo.vaultedPaymentMethodsToReturn = []
         _ = try? await container.register(HeadlessRepository.self).asSingleton().with { _ in mockRepo }
@@ -584,7 +584,7 @@ final class DefaultPaymentMethodSelectionScopeTests: XCTestCase {
 
     func test_deleteVaultedPaymentMethod_repositoryThrows_propagatesError() async throws {
         // Given
-        let container = await ContainerTestHelpers.createTestContainer()
+        let container = try await ContainerTestHelpers.createTestContainer()
         let mockRepo = MockHeadlessRepository()
         mockRepo.deleteVaultedPaymentMethodError = TestError.networkFailure
         _ = try? await container.register(HeadlessRepository.self).asSingleton().with { _ in mockRepo }
@@ -878,7 +878,7 @@ final class DefaultPaymentMethodSelectionScopeVaultTests: XCTestCase {
 
     func test_deleteVaultedPaymentMethod_success_refreshesAfterDelete() async throws {
         // Given
-        let container = await ContainerTestHelpers.createTestContainer()
+        let container = try await ContainerTestHelpers.createTestContainer()
         let mockRepo = MockHeadlessRepository()
         let remainingMethod = makeVaultedPaymentMethod(id: "vault_remaining")
         mockRepo.vaultedPaymentMethodsToReturn = [remainingMethod]
@@ -899,9 +899,9 @@ final class DefaultPaymentMethodSelectionScopeVaultTests: XCTestCase {
 
     // MARK: - deleteVaultedPaymentMethod: repository delete throws
 
-    func test_deleteVaultedPaymentMethod_whenDeleteThrows_propagatesErrorWithoutRefresh() async {
+    func test_deleteVaultedPaymentMethod_whenDeleteThrows_propagatesErrorWithoutRefresh() async throws {
         // Given
-        let container = await ContainerTestHelpers.createTestContainer()
+        let container = try await ContainerTestHelpers.createTestContainer()
         let mockRepo = MockHeadlessRepository()
         mockRepo.deleteVaultedPaymentMethodError = TestError.networkFailure
         _ = try? await container.register(HeadlessRepository.self).asSingleton().with { _ in mockRepo }
@@ -927,7 +927,7 @@ final class DefaultPaymentMethodSelectionScopeVaultTests: XCTestCase {
 
     func test_refreshVaultedPaymentMethods_success_syncesCheckoutScope() async throws {
         // Given
-        let container = await ContainerTestHelpers.createTestContainer()
+        let container = try await ContainerTestHelpers.createTestContainer()
         let mockRepo = MockHeadlessRepository()
         let vaultedMethod = makeVaultedPaymentMethod(id: "vault_synced")
         mockRepo.vaultedPaymentMethodsToReturn = [vaultedMethod]
@@ -945,9 +945,9 @@ final class DefaultPaymentMethodSelectionScopeVaultTests: XCTestCase {
 
     // MARK: - refreshVaultedPaymentMethods: repository throws logs error
 
-    func test_refreshVaultedPaymentMethods_whenRepositoryThrows_handlesGracefully() async {
+    func test_refreshVaultedPaymentMethods_whenRepositoryThrows_handlesGracefully() async throws {
         // Given
-        let container = await ContainerTestHelpers.createTestContainer()
+        let container = try await ContainerTestHelpers.createTestContainer()
         let mockRepo = MockHeadlessRepository()
         mockRepo.fetchVaultedPaymentMethodsError = TestError.networkFailure
         _ = try? await container.register(HeadlessRepository.self).asSingleton().with { _ in mockRepo }

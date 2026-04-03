@@ -134,7 +134,7 @@ public final class PrimerPaymentMethodOptions: PrimerPaymentMethodOptionsProtoco
         stripeOptions: PrimerStripeOptions? = nil
     ) {
         self.urlScheme = urlScheme
-        if let urlScheme = urlScheme, URL(string: urlScheme) == nil {
+        if let urlScheme, URL(string: urlScheme) == nil {
             PrimerLogging.shared.logger.warn(message: """
 The provided url scheme '\(urlScheme)' is not a valid URL. Please ensure that a valid url scheme is provided of the form 'myurlscheme://myapp'
 """)
@@ -160,7 +160,7 @@ The provided url scheme '\(urlScheme)' is not a valid URL. Please ensure that a 
     }
 
     func validUrlForUrlScheme() throws -> URL {
-        guard let urlScheme = urlScheme, let url = URL(string: urlScheme), url.scheme != nil else {
+        guard let urlScheme, let url = URL(string: urlScheme), url.scheme != nil else {
             throw handled(primerError: .invalidValue(key: "urlScheme"))
         }
         return url
@@ -202,8 +202,8 @@ public final class PrimerApplePayOptions: Codable {
         self.isCaptureBillingAddressEnabled = isCaptureBillingAddressEnabled
         self.showApplePayForUnsupportedDevice = showApplePayForUnsupportedDevice
         self.checkProvidedNetworks = checkProvidedNetworks
-        self.shippingOptions = nil
-        self.billingOptions = nil
+        shippingOptions = nil
+        billingOptions = nil
     }
 
     public init(merchantIdentifier: String,
@@ -298,12 +298,12 @@ public final class PrimerCardPaymentOptions: Codable {
 
     @available(swift, obsoleted: 4.0, message: "is3DSOnVaultingEnabled is obsoleted on v.2.14.0")
     public init(is3DSOnVaultingEnabled: Bool?) {
-        self.is3DSOnVaultingEnabled = is3DSOnVaultingEnabled != nil ? is3DSOnVaultingEnabled! : true
-        self.networkSelectorStyle = .dropdown
+        self.is3DSOnVaultingEnabled = is3DSOnVaultingEnabled ?? true
+        networkSelectorStyle = .dropdown
     }
 
     public init(networkSelectorStyle: CardNetworkSelectorStyle = .dropdown) {
-        self.is3DSOnVaultingEnabled = true
+        is3DSOnVaultingEnabled = true
         self.networkSelectorStyle = networkSelectorStyle
     }
 }
@@ -314,12 +314,12 @@ public final class PrimerCardPaymentOptions: Codable {
 ///
 /// You can enable multiple dismissal mechanisms by passing an array to `PrimerUIOptions`.
 /// For example, `[.gestures, .closeButton]` allows both swipe gestures and a close button.
-public enum DismissalMechanism: Codable {
+public enum DismissalMechanism: String, Codable {
     /// Allow dismissal via swipe-down gestures on the modal.
-    case gestures
+    case gestures = "GESTURES"
 
     /// Display a close button in the navigation area.
-    case closeButton
+    case closeButton = "CLOSE_BUTTON"
 }
 
 public enum PrimerAppearanceMode: String, Codable {
@@ -390,9 +390,9 @@ public final class PrimerUIOptions: Codable {
         appearanceMode: PrimerAppearanceMode? = nil,
         theme: PrimerTheme? = nil
     ) {
-        self.isInitScreenEnabled = isInitScreenEnabled != nil ? isInitScreenEnabled! : true
-        self.isSuccessScreenEnabled = isSuccessScreenEnabled != nil ? isSuccessScreenEnabled! : true
-        self.isErrorScreenEnabled = isErrorScreenEnabled != nil ? isErrorScreenEnabled! : true
+        self.isInitScreenEnabled = isInitScreenEnabled ?? true
+        self.isSuccessScreenEnabled = isSuccessScreenEnabled ?? true
+        self.isErrorScreenEnabled = isErrorScreenEnabled ?? true
         self.dismissalMechanism = dismissalMechanism ?? [.gestures]
         self.cardFormUIOptions = cardFormUIOptions
         self.appearanceMode = appearanceMode ?? .system
@@ -401,13 +401,13 @@ public final class PrimerUIOptions: Codable {
 
     public required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.isInitScreenEnabled = try container.decode(Bool.self, forKey: .isInitScreenEnabled)
-        self.isSuccessScreenEnabled = try container.decode(Bool.self, forKey: .isSuccessScreenEnabled)
-        self.isErrorScreenEnabled = try container.decode(Bool.self, forKey: .isErrorScreenEnabled)
-        self.dismissalMechanism = try container.decode([DismissalMechanism].self, forKey: .dismissalMechanism)
-        self.cardFormUIOptions = try container.decodeIfPresent(PrimerCardFormUIOptions.self, forKey: .cardFormUIOptions)
-        self.appearanceMode = try container.decodeIfPresent(PrimerAppearanceMode.self, forKey: .appearanceMode) ?? .system
-        self.theme = PrimerTheme()
+        isInitScreenEnabled = try container.decode(Bool.self, forKey: .isInitScreenEnabled)
+        isSuccessScreenEnabled = try container.decode(Bool.self, forKey: .isSuccessScreenEnabled)
+        isErrorScreenEnabled = try container.decode(Bool.self, forKey: .isErrorScreenEnabled)
+        dismissalMechanism = try container.decodeIfPresent([DismissalMechanism].self, forKey: .dismissalMechanism) ?? [.gestures]
+        cardFormUIOptions = try container.decodeIfPresent(PrimerCardFormUIOptions.self, forKey: .cardFormUIOptions)
+        appearanceMode = try container.decodeIfPresent(PrimerAppearanceMode.self, forKey: .appearanceMode) ?? .system
+        theme = PrimerTheme()
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -439,7 +439,7 @@ public struct PrimerDebugOptions: Codable {
     let is3DSSanityCheckEnabled: Bool
 
     public init(is3DSSanityCheckEnabled: Bool? = nil) {
-        self.is3DSSanityCheckEnabled = is3DSSanityCheckEnabled != nil ? is3DSSanityCheckEnabled! : true
+        self.is3DSSanityCheckEnabled = is3DSSanityCheckEnabled ?? true
     }
 }
 

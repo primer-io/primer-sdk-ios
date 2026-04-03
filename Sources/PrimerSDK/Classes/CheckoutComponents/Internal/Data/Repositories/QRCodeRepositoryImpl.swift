@@ -13,6 +13,7 @@ final class QRCodeRepositoryImpl: QRCodeRepository, LogReporter {
   private let createPaymentServiceFactory: (String) -> CreateResumePaymentServiceProtocol
   private let apiConfigurationModule: PrimerAPIConfigurationModuleProtocol
   private let pollingModuleFactory: (URL) -> PollingModule
+  private let settings: PrimerSettingsProtocol
   private var pollingModule: PollingModule?
 
   init(
@@ -21,26 +22,30 @@ final class QRCodeRepositoryImpl: QRCodeRepository, LogReporter {
       CreateResumePaymentService(paymentMethodType: $0)
     },
     apiConfigurationModule: PrimerAPIConfigurationModuleProtocol = PrimerAPIConfigurationModule(),
-    pollingModuleFactory: @escaping (URL) -> PollingModule = { PollingModule(url: $0) }
+    pollingModuleFactory: @escaping (URL) -> PollingModule = { PollingModule(url: $0) },
+    settings: PrimerSettingsProtocol = PrimerSettings.current
   ) {
     self.tokenizationService = tokenizationService
     self.createPaymentServiceFactory = createPaymentServiceFactory
     self.apiConfigurationModule = apiConfigurationModule
     self.pollingModuleFactory = pollingModuleFactory
+    self.settings = settings
   }
 
   func startPayment(paymentMethodType: String) async throws -> QRCodePaymentData {
     guard let paymentMethodConfig = findPaymentMethodConfig(for: paymentMethodType),
       let configId = paymentMethodConfig.id
     else {
-      throw PrimerError.invalidValue(
+      let error = PrimerError.invalidValue(
         key: "configuration.id",
         value: nil,
         reason: "Payment method configuration not found for \(paymentMethodType)"
       )
+      ErrorHandler.handle(error: error)
+      throw error
     }
 
-    let sessionInfo = WebRedirectSessionInfo(locale: PrimerSettings.current.localeData.localeCode)
+    let sessionInfo = WebRedirectSessionInfo(locale: settings.localeData.localeCode)
     let paymentInstrument = OffSessionPaymentInstrument(
       paymentMethodConfigId: configId,
       paymentMethodType: paymentMethodType,
@@ -50,11 +55,13 @@ final class QRCodeRepositoryImpl: QRCodeRepository, LogReporter {
     let tokenData = try await tokenizationService.tokenize(requestBody: requestBody)
 
     guard let token = tokenData.token else {
-      throw PrimerError.invalidValue(
+      let error = PrimerError.invalidValue(
         key: "paymentMethodToken",
         value: nil,
         reason: "Tokenization returned nil token"
       )
+      ErrorHandler.handle(error: error)
+      throw error
     }
 
     let paymentService = createPaymentServiceFactory(paymentMethodType)
@@ -62,41 +69,51 @@ final class QRCodeRepositoryImpl: QRCodeRepository, LogReporter {
     let paymentResponse = try await paymentService.createPayment(paymentRequest: paymentRequest)
 
     guard let paymentId = paymentResponse.id else {
-      throw PrimerError.invalidValue(
+      let error = PrimerError.invalidValue(
         key: "payment.id",
         value: nil,
         reason: "Payment creation returned nil payment ID"
       )
+      ErrorHandler.handle(error: error)
+      throw error
     }
 
     guard let requiredAction = paymentResponse.requiredAction else {
-      throw PrimerError.invalidValue(
+      let error = PrimerError.invalidValue(
         key: "requiredAction",
         value: nil,
         reason: "Payment response missing required action for QR code flow"
       )
+      ErrorHandler.handle(error: error)
+      throw error
     }
 
     try await apiConfigurationModule.storeRequiredActionClientToken(requiredAction.clientToken)
 
     guard let decodedJWT = PrimerAPIConfigurationModule.decodedJWTToken else {
-      throw PrimerError.invalidClientToken()
+      let error = PrimerError.invalidClientToken()
+      ErrorHandler.handle(error: error)
+      throw error
     }
 
     guard let statusUrlStr = decodedJWT.statusUrl, let statusUrl = URL(string: statusUrlStr) else {
-      throw PrimerError.invalidValue(
+      let error = PrimerError.invalidValue(
         key: "statusUrl",
         value: decodedJWT.statusUrl,
         reason: "JWT missing or invalid statusUrl"
       )
+      ErrorHandler.handle(error: error)
+      throw error
     }
 
     guard let qrCodeString = decodedJWT.qrCode, !qrCodeString.isEmpty else {
-      throw PrimerError.invalidValue(
+      let error = PrimerError.invalidValue(
         key: "qrCode",
         value: nil,
         reason: "JWT missing qrCode field"
       )
+      ErrorHandler.handle(error: error)
+      throw error
     }
 
     let qrCodeImageData = try await convertQRCodeToImageData(qrCodeString)
@@ -158,11 +175,13 @@ final class QRCodeRepositoryImpl: QRCodeRepository, LogReporter {
   private func fetchImageData(from url: URL) async throws -> Data {
     let (data, _) = try await URLSession.shared.data(from: url)
     guard UIImage(data: data) != nil else {
-      throw PrimerError.invalidValue(
+      let error = PrimerError.invalidValue(
         key: "qrCodeUrl",
         value: url.absoluteString,
         reason: "Failed to create image from URL data"
       )
+      ErrorHandler.handle(error: error)
+      throw error
     }
     return data
   }
@@ -171,11 +190,13 @@ final class QRCodeRepositoryImpl: QRCodeRepository, LogReporter {
     guard let data = Data(base64Encoded: base64String),
       UIImage(data: data) != nil
     else {
-      throw PrimerError.invalidValue(
+      let error = PrimerError.invalidValue(
         key: "qrCode",
         value: nil,
         reason: "Failed to decode Base64 QR code image"
       )
+      ErrorHandler.handle(error: error)
+      throw error
     }
     return data
   }

@@ -19,15 +19,7 @@ struct CardPaymentMethod: PaymentMethodProtocol {
     diContainer: any ContainerProtocol
   ) async throws -> DefaultCardFormScope {
 
-    guard let defaultCheckoutScope = checkoutScope as? DefaultCheckoutScope else {
-      throw PrimerError.invalidArchitecture(
-        description: "CardPaymentMethod requires DefaultCheckoutScope",
-        recoverSuggestion: "Ensure you're using the default CheckoutComponents implementation"
-      )
-    }
-
-    let paymentMethodContext: PresentationContext =
-      defaultCheckoutScope.availablePaymentMethods.count > 1 ? .fromPaymentSelection : .direct
+    let (defaultCheckoutScope, paymentMethodContext) = try DefaultCheckoutScope.validated(from: checkoutScope)
 
     do {
       let processCardInteractor: ProcessCardPaymentInteractor = try await diContainer.resolve(

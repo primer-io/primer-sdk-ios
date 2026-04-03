@@ -50,19 +50,19 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
   @Published private var internalState = PrimerCheckoutState.initializing
   @Published var navigationState = NavigationState.loading
 
-  public var onBeforePaymentCreate: BeforePaymentCreateHandler?
-  public var container: ContainerComponent?
-  public var splashScreen: Component?
-  public var loadingScreen: Component?
-  public var successScreen: ((_ result: PaymentResult) -> AnyView)?
-  public var errorScreen: ErrorComponent?
-  public var paymentMethodSelectionScreen: PaymentMethodSelectionScreenComponent?
+  var onBeforePaymentCreate: BeforePaymentCreateHandler?
+  var container: ContainerComponent?
+  var splashScreen: Component?
+  var loadingScreen: Component?
+  var successScreen: ((_ result: PaymentResult) -> AnyView)?
+  var errorScreen: ErrorComponent?
+  var paymentMethodSelectionScreen: PaymentMethodSelectionScreenComponent?
 
-  public var paymentHandling: PrimerPaymentHandling {
+  var paymentHandling: PrimerPaymentHandling {
     settings.paymentHandling
   }
 
-  public var state: AsyncStream<PrimerCheckoutState> {
+  var state: AsyncStream<PrimerCheckoutState> {
     AsyncStream { continuation in
       let task = Task { [self] in
         for await value in $internalState.values {
@@ -97,7 +97,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
   let presentationContext: PresentationContext
 
   private var cachedPaymentMethodSelection: PrimerPaymentMethodSelectionScope?
-  public var paymentMethodSelection: PrimerPaymentMethodSelectionScope {
+  var paymentMethodSelection: PrimerPaymentMethodSelectionScope {
     if let cachedPaymentMethodSelection { return cachedPaymentMethodSelection }
     let scope = DefaultPaymentMethodSelectionScope(
       checkoutScope: self,
@@ -189,7 +189,9 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
     }
 
     do {
-      try await Task.sleep(nanoseconds: 500_000_000)
+      if isInitScreenEnabled {
+        try await Task.sleep(nanoseconds: 500_000_000)
+      }
 
       guard let interactor = paymentMethodsInteractor else {
         throw PrimerError.invalidArchitecture(
@@ -252,6 +254,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
   }
 
   private func updateState(_ newState: PrimerCheckoutState) {
+    if case .dismissed = internalState { return }
     internalState = newState
 
     Task { [self] in
@@ -387,8 +390,6 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
     }
   }
 
-  // MARK: - Navigation Events Observer
-
   private func observeNavigationEvents() {
     navigationObservationTask = Task { @MainActor [weak self] in
       guard let self else { return }
@@ -413,44 +414,14 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
           continue
         }
 
-        // Only update if the state has actually changed to avoid loops
-        if case let .failure(currentError) = navigationState,
-          case let .failure(newError) = newNavigationState {
-          // For error states, compare messages to avoid redundant updates
-          if currentError.localizedDescription != newError.localizedDescription {
-            updateNavigationState(newNavigationState, syncToNavigator: false)
-          }
-        } else if !navigationStateEquals(navigationState, newNavigationState) {
+        if navigationState != newNavigationState {
           updateNavigationState(newNavigationState, syncToNavigator: false)
         }
       }
     }
   }
 
-  private func navigationStateEquals(_ lhs: NavigationState, _ rhs: NavigationState) -> Bool {
-    switch (lhs, rhs) {
-    case (.loading, .loading),
-      (.paymentMethodSelection, .paymentMethodSelection),
-      (.vaultedPaymentMethods, .vaultedPaymentMethods),
-      (.processing, .processing):
-      true
-    case let (
-      .deleteVaultedPaymentMethodConfirmation(lhsMethod),
-      .deleteVaultedPaymentMethodConfirmation(rhsMethod)
-    ):
-      lhsMethod.id == rhsMethod.id
-    case let (.paymentMethod(lhsType), .paymentMethod(rhsType)):
-      lhsType == rhsType
-    case let (.failure(lhsError), .failure(rhsError)):
-      lhsError.localizedDescription == rhsError.localizedDescription
-    default:
-      false
-    }
-  }
-
-  // MARK: - Public Methods
-
-  public func getPaymentMethodScope<T: PrimerPaymentMethodScope>(
+  func getPaymentMethodScope<T: PrimerPaymentMethodScope>(
     for paymentMethodType: String
   ) -> T? {
     guard let scope = paymentMethodScopeCache[paymentMethodType] as? T else { return nil }
@@ -458,7 +429,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
     return scope
   }
 
-  public func getPaymentMethodScope<T: PrimerPaymentMethodScope>(_ scopeType: T.Type) -> T? {
+  func getPaymentMethodScope<T: PrimerPaymentMethodScope>(_ scopeType: T.Type) -> T? {
     guard let scope = paymentMethodScopeCache.values.first(where: { $0 is T }) as? T else {
       return nil
     }
@@ -466,30 +437,25 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
     return scope
   }
 
-  public func getPaymentMethodScope<T: PrimerPaymentMethodScope>(
+  func getPaymentMethodScope<T: PrimerPaymentMethodScope>(
     for methodType: PrimerPaymentMethodType
   ) -> T? {
     getPaymentMethodScope(for: methodType.rawValue)
   }
 
-  public func onDismiss() {
-    // Ensure state updates happen on main thread for SwiftUI observation
-    Task { @MainActor in
-      updateState(.dismissed)
-      updateNavigationState(.dismissed)
+  func onDismiss() {
+    updateState(.dismissed)
+    updateNavigationState(.dismissed)
 
-      cachedPaymentMethodSelection = nil
-      currentPaymentMethodScope = nil
-      paymentMethodScopeCache.removeAll()
+    cachedPaymentMethodSelection = nil
+    currentPaymentMethodScope = nil
+    paymentMethodScopeCache.removeAll()
 
-      navigationObservationTask?.cancel()
-      navigationObservationTask = nil
+    navigationObservationTask?.cancel()
+    navigationObservationTask = nil
 
-      navigator.dismiss()
-    }
+    navigator.dismiss()
   }
-
-  // MARK: - Internal Methods
 
   func handlePaymentMethodSelection(_ method: InternalPaymentMethod) {
     selectedPaymentMethodName = method.name
@@ -500,8 +466,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
       updateNavigationState(.paymentMethod(method.type))
     } else {
       logger.debug(
-        message:
-          "⚠️ [DefaultCheckoutScope] Payment method \(method.type) not implemented, showing placeholder"
+        message: "Payment method \(method.type) not implemented, showing placeholder"
       )
       updateNavigationState(.paymentMethod(method.type))
     }
@@ -576,8 +541,6 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
     return .general()
   }
 
-  // MARK: - Vaulted Payment Methods Methods
-
   func setVaultedPaymentMethods(_ methods: [PrimerHeadlessUniversalCheckout.VaultedPaymentMethod]) {
     vaultedPaymentMethods = methods
 
@@ -601,6 +564,17 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
     if let selectionScope = cachedPaymentMethodSelection as? DefaultPaymentMethodSelectionScope {
       selectionScope.syncSelectedVaultedPaymentMethod()
     }
+  }
+
+  static func validated(from checkoutScope: any PrimerCheckoutScope) throws -> (DefaultCheckoutScope, PresentationContext) {
+    guard let scope = checkoutScope as? DefaultCheckoutScope else {
+      throw PrimerError.invalidArchitecture(
+        description: "Expected DefaultCheckoutScope but received \(type(of: checkoutScope))",
+        recoverSuggestion: "Use the SDK-provided checkout scope"
+      )
+    }
+    let context: PresentationContext = scope.availablePaymentMethods.count > 1 ? .fromPaymentSelection : .direct
+    return (scope, context)
   }
 
 }

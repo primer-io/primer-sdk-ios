@@ -144,9 +144,9 @@ extension UITextField {
     accessoryView.isAccessibilityElement = false
 
     let doneButton = UIButton(type: .system)
-    doneButton.setTitle("Done", for: .normal)
+    doneButton.setTitle(CheckoutComponentsStrings.a11yDone, for: .normal)
     doneButton.titleLabel?.font = UIFont.systemFont(ofSize: 17, weight: .medium)
-    doneButton.accessibilityLabel = "Done"
+    doneButton.accessibilityLabel = CheckoutComponentsStrings.a11yDone
     doneButton.accessibilityTraits = .button
     if let target = doneButtonTarget {
       doneButton.addTarget(target, action: doneButtonAction, for: .touchUpInside)

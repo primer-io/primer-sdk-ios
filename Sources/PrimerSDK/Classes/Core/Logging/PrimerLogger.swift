@@ -30,11 +30,11 @@ public enum LogLevel: Int {
 
     public var prefix: String {
         switch self {
-        case .debug: return "🪲"
-        case .info: return "ℹ️"
-        case .warning: return "⚠️"
-        case .error: return "🚨"
-        case .none: return ""
+        case .debug: "🪲"
+        case .info: "ℹ️"
+        case .warning: "⚠️"
+        case .error: "🚨"
+        case .none: ""
         }
     }
 }
@@ -88,6 +88,9 @@ extension PrimerLogger {
         logProxy(level: .error, message: message, userInfo: userInfo, metadata: metadata)
     }
 
+    // NOTE: During CC payment flows, RawDataManager overwrites sdkIntegrationType to .headless.
+    // This means DIContainer.current may be nil when called from the headless payment path.
+    // The guard-and-return pattern below handles this gracefully.
     public func error(
         message: String,
         error: Error,
@@ -143,7 +146,7 @@ extension PrimerLogger {
 
     private func logUserInfo(level: LogLevel,
                              userInfo: Encodable?, metadata: PrimerLogMetadata) {
-        guard let userInfo = userInfo, let dictionary = try? userInfo.asDictionary() else {
+        guard let userInfo, let dictionary = try? userInfo.asDictionary() else {
             return
         }
         logProxy(level: level, message: dictionary.debugDescription, userInfo: nil, metadata: metadata)
@@ -155,7 +158,7 @@ extension PrimerLogger {
                           metadata: PrimerLogMetadata) {
         // Currently we only send logs for debug builds to avoid transmission of PII / PCI data in production
         #if DEBUG
-        guard level.rawValue >= self.logLevel.rawValue else { return }
+        guard level.rawValue >= logLevel.rawValue else { return }
         log(level: level, message: message, userInfo: nil, metadata: metadata)
         #endif
     }
@@ -180,12 +183,11 @@ public final class DefaultLogger: PrimerLogger {
             return
         }
 
-        let logger: os.Logger
-        if let userInfoDict = userInfo as? [String: Any?],
+        let logger: os.Logger = if let userInfoDict = userInfo as? [String: Any?],
            let category = userInfoDict["category"] as? String {
-            logger = self.logger(for: category)
+            self.logger(for: category)
         } else {
-            logger = os.Logger()
+            os.Logger()
         }
 
         switch level {

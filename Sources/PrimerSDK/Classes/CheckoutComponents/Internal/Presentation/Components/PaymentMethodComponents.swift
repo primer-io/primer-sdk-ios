@@ -124,7 +124,7 @@ struct PaymentMethodPlaceholder: View {
     return Image(uiImage: fallbackImage ?? UIImage())
       .resizable()
       .aspectRatio(contentMode: .fit)
-      .frame(width: 80, height: 80)
+      .frame(width: PrimerIconSize.paymentMethodLargeWidth, height: PrimerIconSize.paymentMethodLargeHeight)
       .accessibilityHidden(true)  // Decorative image, payment method name is announced via text
   }
 

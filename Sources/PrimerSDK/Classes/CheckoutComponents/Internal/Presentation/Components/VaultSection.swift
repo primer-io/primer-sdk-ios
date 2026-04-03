@@ -95,6 +95,7 @@ struct VaultSection: View {
           ProgressView()
             .progressViewStyle(
               CircularProgressViewStyle(tint: CheckoutColors.background(tokens: tokens)))
+            .accessibilityLabel(CheckoutComponentsStrings.a11yLoading)
         } else {
           Text(CheckoutComponentsStrings.payButton)
         }

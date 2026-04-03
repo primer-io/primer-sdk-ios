@@ -91,7 +91,7 @@ extension PrimerPaymentMethodScope {
 /// Protocol for payment method implementations that can create their associated scopes.
 /// Enables self-registration and dynamic scope creation for different payment methods.
 @available(iOS 15.0, *)
-public protocol PaymentMethodProtocol {
+protocol PaymentMethodProtocol {
 
   associatedtype ScopeType: PrimerPaymentMethodScope
 
@@ -154,7 +154,7 @@ final class PaymentMethodRegistry: LogReporter {
   ) {
     creators[key] = scopeCreator
     viewBuilders[key] = viewCreator
-    logger.debug(message: "✅ [PaymentMethodRegistry] Payment method \(key) registered")
+    logger.debug(message: "[PaymentMethodRegistry] Payment method \(key) registered")
   }
 
   /// Registers a payment method implementation
@@ -179,20 +179,20 @@ final class PaymentMethodRegistry: LogReporter {
     if typeKey == PrimerPaymentMethodType.applePay.rawValue {
       logger.info(
         message:
-          "✅ [PaymentMethodRegistry] Apple Pay registered - requires PrimerSettings.paymentMethodOptions.applePayOptions"
+          "[PaymentMethodRegistry] Apple Pay registered - requires PrimerSettings.paymentMethodOptions.applePayOptions"
       )
     } else if [PrimerPaymentMethodType.klarna, .primerTestKlarna].map(\.rawValue).contains(typeKey) {
       logger.info(
         message:
-          "✅ [PaymentMethodRegistry] Klarna registered - requires PrimerSettings.paymentMethodOptions.klarnaOptions"
+          "[PaymentMethodRegistry] Klarna registered - requires PrimerSettings.paymentMethodOptions.klarnaOptions"
       )
     } else if typeKey.contains("STRIPE") {
       logger.info(
         message:
-          "✅ [PaymentMethodRegistry] Stripe (\(typeKey)) registered - requires PrimerSettings.paymentMethodOptions.stripeOptions"
+          "[PaymentMethodRegistry] Stripe (\(typeKey)) registered - requires PrimerSettings.paymentMethodOptions.stripeOptions"
       )
     } else {
-      logger.debug(message: "✅ [PaymentMethodRegistry] Payment method \(typeKey) registered")
+      logger.debug(message: "[PaymentMethodRegistry] Payment method \(typeKey) registered")
     }
   }
 
@@ -295,11 +295,11 @@ final class PaymentMethodRegistry: LogReporter {
     viewBuilders[typeKey] = viewCreator
   }
 
-  /// Resets the registry by clearing all registered payment methods.
-  /// This method is intended for testing purposes only.
+  #if DEBUG
   func reset() {
     creators.removeAll()
     viewBuilders.removeAll()
     typeToIdentifier.removeAll()
   }
+  #endif
 }

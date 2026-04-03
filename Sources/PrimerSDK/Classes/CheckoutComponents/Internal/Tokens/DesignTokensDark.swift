@@ -49,181 +49,31 @@ final class DesignTokensDark: Decodable {
   required init(from decoder: Decoder) throws {
     let container = try decoder.container(keyedBy: CodingKeys.self)
 
-    if let primerColorGray100Components = try container.decodeIfPresent(
-      [CGFloat].self, forKey: .primerColorGray100)
-    {
-      primerColorGray100 = Color(
-        red: primerColorGray100Components[0],
-        green: primerColorGray100Components[1],
-        blue: primerColorGray100Components[2],
-        opacity: primerColorGray100Components[3]
-      )
-    }
+    primerColorGray100 = try container.decodeColorIfPresent(forKey: .primerColorGray100) ?? primerColorGray100
+    primerColorGray200 = try container.decodeColorIfPresent(forKey: .primerColorGray200) ?? primerColorGray200
+    primerColorGray300 = try container.decodeColorIfPresent(forKey: .primerColorGray300) ?? primerColorGray300
+    primerColorGray400 = try container.decodeColorIfPresent(forKey: .primerColorGray400) ?? primerColorGray400
+    primerColorGray500 = try container.decodeColorIfPresent(forKey: .primerColorGray500) ?? primerColorGray500
+    primerColorGray600 = try container.decodeColorIfPresent(forKey: .primerColorGray600) ?? primerColorGray600
+    primerColorGray700 = try container.decodeColorIfPresent(forKey: .primerColorGray700) ?? primerColorGray700
+    primerColorGray900 = try container.decodeColorIfPresent(forKey: .primerColorGray900) ?? primerColorGray900
+    primerColorGray000 = try container.decodeColorIfPresent(forKey: .primerColorGray000) ?? primerColorGray000
+    primerColorGreen500 = try container.decodeColorIfPresent(forKey: .primerColorGreen500) ?? primerColorGreen500
+    primerColorBrand = try container.decodeColorIfPresent(forKey: .primerColorBrand) ?? primerColorBrand
+    primerColorRed100 = try container.decodeColorIfPresent(forKey: .primerColorRed100) ?? primerColorRed100
+    primerColorRed500 = try container.decodeColorIfPresent(forKey: .primerColorRed500) ?? primerColorRed500
+    primerColorRed900 = try container.decodeColorIfPresent(forKey: .primerColorRed900) ?? primerColorRed900
+    primerColorBlue500 = try container.decodeColorIfPresent(forKey: .primerColorBlue500) ?? primerColorBlue500
+    primerColorBlue900 = try container.decodeColorIfPresent(forKey: .primerColorBlue900) ?? primerColorBlue900
+  }
+}
 
-    if let primerColorGray200Components = try container.decodeIfPresent(
-      [CGFloat].self, forKey: .primerColorGray200)
-    {
-      primerColorGray200 = Color(
-        red: primerColorGray200Components[0],
-        green: primerColorGray200Components[1],
-        blue: primerColorGray200Components[2],
-        opacity: primerColorGray200Components[3]
-      )
-    }
-
-    if let primerColorGray300Components = try container.decodeIfPresent(
-      [CGFloat].self, forKey: .primerColorGray300)
-    {
-      primerColorGray300 = Color(
-        red: primerColorGray300Components[0],
-        green: primerColorGray300Components[1],
-        blue: primerColorGray300Components[2],
-        opacity: primerColorGray300Components[3]
-      )
-    }
-
-    if let primerColorGray400Components = try container.decodeIfPresent(
-      [CGFloat].self, forKey: .primerColorGray400)
-    {
-      primerColorGray400 = Color(
-        red: primerColorGray400Components[0],
-        green: primerColorGray400Components[1],
-        blue: primerColorGray400Components[2],
-        opacity: primerColorGray400Components[3]
-      )
-    }
-
-    if let primerColorGray500Components = try container.decodeIfPresent(
-      [CGFloat].self, forKey: .primerColorGray500)
-    {
-      primerColorGray500 = Color(
-        red: primerColorGray500Components[0],
-        green: primerColorGray500Components[1],
-        blue: primerColorGray500Components[2],
-        opacity: primerColorGray500Components[3]
-      )
-    }
-
-    if let primerColorGray600Components = try container.decodeIfPresent(
-      [CGFloat].self, forKey: .primerColorGray600)
-    {
-      primerColorGray600 = Color(
-        red: primerColorGray600Components[0],
-        green: primerColorGray600Components[1],
-        blue: primerColorGray600Components[2],
-        opacity: primerColorGray600Components[3]
-      )
-    }
-
-    if let primerColorGray700Components = try container.decodeIfPresent(
-      [CGFloat].self, forKey: .primerColorGray700)
-    {
-      primerColorGray700 = Color(
-        red: primerColorGray700Components[0],
-        green: primerColorGray700Components[1],
-        blue: primerColorGray700Components[2],
-        opacity: primerColorGray700Components[3]
-      )
-    }
-
-    if let primerColorGray900Components = try container.decodeIfPresent(
-      [CGFloat].self, forKey: .primerColorGray900)
-    {
-      primerColorGray900 = Color(
-        red: primerColorGray900Components[0],
-        green: primerColorGray900Components[1],
-        blue: primerColorGray900Components[2],
-        opacity: primerColorGray900Components[3]
-      )
-    }
-
-    if let primerColorGray000Components = try container.decodeIfPresent(
-      [CGFloat].self, forKey: .primerColorGray000)
-    {
-      primerColorGray000 = Color(
-        red: primerColorGray000Components[0],
-        green: primerColorGray000Components[1],
-        blue: primerColorGray000Components[2],
-        opacity: primerColorGray000Components[3]
-      )
-    }
-
-    if let primerColorGreen500Components = try container.decodeIfPresent(
-      [CGFloat].self, forKey: .primerColorGreen500)
-    {
-      primerColorGreen500 = Color(
-        red: primerColorGreen500Components[0],
-        green: primerColorGreen500Components[1],
-        blue: primerColorGreen500Components[2],
-        opacity: primerColorGreen500Components[3]
-      )
-    }
-
-    if let primerColorBrandComponents = try container.decodeIfPresent(
-      [CGFloat].self, forKey: .primerColorBrand)
-    {
-      primerColorBrand = Color(
-        red: primerColorBrandComponents[0],
-        green: primerColorBrandComponents[1],
-        blue: primerColorBrandComponents[2],
-        opacity: primerColorBrandComponents[3]
-      )
-    }
-
-    if let primerColorRed100Components = try container.decodeIfPresent(
-      [CGFloat].self, forKey: .primerColorRed100)
-    {
-      primerColorRed100 = Color(
-        red: primerColorRed100Components[0],
-        green: primerColorRed100Components[1],
-        blue: primerColorRed100Components[2],
-        opacity: primerColorRed100Components[3]
-      )
-    }
-
-    if let primerColorRed500Components = try container.decodeIfPresent(
-      [CGFloat].self, forKey: .primerColorRed500)
-    {
-      primerColorRed500 = Color(
-        red: primerColorRed500Components[0],
-        green: primerColorRed500Components[1],
-        blue: primerColorRed500Components[2],
-        opacity: primerColorRed500Components[3]
-      )
-    }
-
-    if let primerColorRed900Components = try container.decodeIfPresent(
-      [CGFloat].self, forKey: .primerColorRed900)
-    {
-      primerColorRed900 = Color(
-        red: primerColorRed900Components[0],
-        green: primerColorRed900Components[1],
-        blue: primerColorRed900Components[2],
-        opacity: primerColorRed900Components[3]
-      )
-    }
-
-    if let primerColorBlue500Components = try container.decodeIfPresent(
-      [CGFloat].self, forKey: .primerColorBlue500)
-    {
-      primerColorBlue500 = Color(
-        red: primerColorBlue500Components[0],
-        green: primerColorBlue500Components[1],
-        blue: primerColorBlue500Components[2],
-        opacity: primerColorBlue500Components[3]
-      )
-    }
-
-    if let primerColorBlue900Components = try container.decodeIfPresent(
-      [CGFloat].self, forKey: .primerColorBlue900)
-    {
-      primerColorBlue900 = Color(
-        red: primerColorBlue900Components[0],
-        green: primerColorBlue900Components[1],
-        blue: primerColorBlue900Components[2],
-        opacity: primerColorBlue900Components[3]
-      )
-    }
+private extension KeyedDecodingContainer {
+  func decodeColorIfPresent(forKey key: Key) throws -> Color? {
+    guard let components = try decodeIfPresent([CGFloat].self, forKey: key),
+      components.count >= 4
+    else { return nil }
+    return Color(red: components[0], green: components[1], blue: components[2], opacity: components[3])
   }
 }
 // swiftlint:enable all

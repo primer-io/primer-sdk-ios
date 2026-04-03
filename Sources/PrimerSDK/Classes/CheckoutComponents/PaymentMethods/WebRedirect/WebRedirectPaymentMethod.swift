@@ -30,15 +30,7 @@ struct WebRedirectPaymentMethod: PaymentMethodProtocol {
     checkoutScope: any PrimerCheckoutScope,
     container: any ContainerProtocol
   ) async throws -> DefaultWebRedirectScope {
-    guard let defaultCheckoutScope = checkoutScope as? DefaultCheckoutScope else {
-      throw PrimerError.invalidArchitecture(
-        description: "WebRedirectPaymentMethod requires DefaultCheckoutScope",
-        recoverSuggestion: "Ensure you're using the default CheckoutComponents implementation"
-      )
-    }
-
-    let paymentMethodContext: PresentationContext =
-      defaultCheckoutScope.availablePaymentMethods.count > 1 ? .fromPaymentSelection : .direct
+    let (defaultCheckoutScope, paymentMethodContext) = try DefaultCheckoutScope.validated(from: checkoutScope)
 
     let mapper = try? await container.resolve(PaymentMethodMapper.self)
     let paymentMethod: CheckoutPaymentMethod? = defaultCheckoutScope.availablePaymentMethods
@@ -48,7 +40,7 @@ struct WebRedirectPaymentMethod: PaymentMethodProtocol {
     let processWebRedirectInteractor = try await container.resolve(ProcessWebRedirectPaymentInteractor.self)
     let accessibilityService = try? await container.resolve(AccessibilityAnnouncementService.self)
     let analyticsInteractor = try? await container.resolve(CheckoutComponentsAnalyticsInteractorProtocol.self)
-    let repository = try? await container.resolve(WebRedirectRepository.self)
+    let repository = try await container.resolve(WebRedirectRepository.self)
 
     return DefaultWebRedirectScope(
       paymentMethodType: paymentMethodType,

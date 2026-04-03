@@ -88,7 +88,7 @@ struct VaultedCardCVVInput: View {
   // MARK: - CVV Text Field
 
   private func makeCvvTextField() -> some View {
-    TextField(cvvPlaceholder, text: filteredCvvBinding)
+    SecureField(cvvPlaceholder, text: filteredCvvBinding)
       .keyboardType(.numberPad)
       .textContentType(.oneTimeCode)
       .focused($isFocused)

@@ -95,7 +95,7 @@ struct CheckoutScopeObserver: View, LogReporter {
       }
     } else {
       EmptyView().onAppear {
-        logger.debug(message: "⏭️ [CheckoutComponents] Init screen disabled - skipping loading view")
+        logger.debug(message: "[CheckoutComponents] Init screen disabled - skipping loading view")
       }
     }
   }
@@ -184,7 +184,7 @@ struct CheckoutScopeObserver: View, LogReporter {
       }
     } else {
       EmptyView().onAppear {
-        logger.debug(message: "⏭️ [CheckoutComponents] Success screen disabled - auto-dismissing")
+        logger.debug(message: "[CheckoutComponents] Success screen disabled - auto-dismissing")
         DispatchQueue.main.async {
           onCompletion?(scope.currentState)
         }
@@ -212,7 +212,7 @@ struct CheckoutScopeObserver: View, LogReporter {
       }
     } else {
       EmptyView().onAppear {
-        logger.debug(message: "⏭️ [CheckoutComponents] Error screen disabled - auto-dismissing")
+        logger.debug(message: "[CheckoutComponents] Error screen disabled - auto-dismissing")
         DispatchQueue.main.async {
           onCompletion?(scope.currentState)
         }

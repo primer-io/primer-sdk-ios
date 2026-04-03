@@ -29,7 +29,7 @@ actor LoggingService: LogReporter {
   func logErrorIfReportable(_ error: Error, message: String? = nil, userInfo: [String: Any]? = nil)
     async {
     guard error.shouldReportToDatadog else {
-      Self.logger.debug(message: "📊 [Logging] Skipping non-reportable error: \(error)")
+      Self.logger.debug(message: "[Logging] Skipping non-reportable error: \(error)")
       return
     }
 
@@ -62,7 +62,7 @@ actor LoggingService: LogReporter {
       )
     } catch {
       Self.logger.error(
-        message: "📊 [Logging] Failed to send INFO log: \(error.localizedDescription)")
+        message: "[Logging] Failed to send INFO log: \(error.localizedDescription)")
     }
   }
 
@@ -91,7 +91,7 @@ actor LoggingService: LogReporter {
       )
     } catch {
       Self.logger.error(
-        message: "📊 [Logging] Failed to send ERROR log: \(error.localizedDescription)")
+        message: "[Logging] Failed to send ERROR log: \(error.localizedDescription)")
     }
   }
 

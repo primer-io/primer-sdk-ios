@@ -8,6 +8,8 @@ import UIKit
 
 struct AnalyticsPayloadBuilder {
 
+  private static let isReactNative = NSClassFromString("RCTBridge") != nil
+
   func buildPayload(
     eventType: AnalyticsEventType,
     metadata: AnalyticsEventMetadata?,
@@ -17,7 +19,7 @@ struct AnalyticsPayloadBuilder {
     AnalyticsPayload(
       id: .uuid,
       timestamp: timestamp ?? Int(Date().timeIntervalSince1970),
-      sdkType: NSClassFromString("RCTBridge") != nil ? "RN_IOS" : "IOS_NATIVE",
+      sdkType: Self.isReactNative ? "RN_IOS" : "IOS_NATIVE",
       eventName: eventType.rawValue,
       checkoutSessionId: config.checkoutSessionId,
       clientSessionId: config.clientSessionId,

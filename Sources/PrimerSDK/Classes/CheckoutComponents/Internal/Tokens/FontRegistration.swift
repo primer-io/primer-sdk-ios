@@ -40,18 +40,18 @@ enum FontRegistration: LogReporter {
         withExtension: "ttf"
       )
     else {
-      logger.error(message: "⚠️ [FontRegistration] Failed to locate font file: \(fontFileName)")
+      logger.error(message: "[FontRegistration] Failed to locate font file: \(fontFileName)")
       return
     }
 
     guard let fontDataProvider = CGDataProvider(url: fontURL as CFURL) else {
       logger.error(
-        message: "⚠️ [FontRegistration] Failed to create data provider for: \(fontFileName)")
+        message: "[FontRegistration] Failed to create data provider for: \(fontFileName)")
       return
     }
 
     guard let font = CGFont(fontDataProvider) else {
-      logger.error(message: "⚠️ [FontRegistration] Failed to create CGFont from: \(fontFileName)")
+      logger.error(message: "[FontRegistration] Failed to create CGFont from: \(fontFileName)")
       return
     }
 
@@ -60,7 +60,7 @@ enum FontRegistration: LogReporter {
 
     if !success, let error = error?.takeRetainedValue() {
       logger.error(
-        message: "⚠️ [FontRegistration] Failed to register font \(fontFileName): \(error)")
+        message: "[FontRegistration] Failed to register font \(fontFileName): \(error)")
     }
   }
 }

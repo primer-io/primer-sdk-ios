@@ -25,6 +25,7 @@ struct PaymentMethodSelectionScreen: View, LogReporter {
     }
     .environment(\.primerPaymentMethodSelectionScope, scope)
     .onAppear {
+      UIAccessibility.post(notification: .screenChanged, argument: nil)
       resolveConfigurationService()
       observeState()
     }

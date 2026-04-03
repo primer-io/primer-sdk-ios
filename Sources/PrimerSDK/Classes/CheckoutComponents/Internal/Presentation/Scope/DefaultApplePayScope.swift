@@ -9,11 +9,11 @@ import SwiftUI
 
 @available(iOS 15.0, *)
 @MainActor
-public final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
+final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
 
   @Published var structuredState: PrimerApplePayState
 
-  public var state: AsyncStream<PrimerApplePayState> {
+  var state: AsyncStream<PrimerApplePayState> {
     AsyncStream { continuation in
       let task = Task { [self] in
         continuation.yield(structuredState)
@@ -30,10 +30,10 @@ public final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
     }
   }
 
-  public var screen: ((_ scope: any PrimerApplePayScope) -> any View)?
-  public var applePayButton: ((_ action: @escaping () -> Void) -> any View)?
+  var screen: ApplePayScreenComponent?
+  var applePayButton: ApplePayButtonComponent?
 
-  public private(set) var presentationContext: PresentationContext = .fromPaymentSelection
+  private(set) var presentationContext: PresentationContext = .fromPaymentSelection
 
   private weak var checkoutScope: DefaultCheckoutScope?
   private var processPaymentInteractor: ProcessApplePayPaymentInteractor?
@@ -79,7 +79,7 @@ public final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
     }
   }
 
-  public func start() {
+  func start() {
     if applePayPresentationManager.isPresentable {
       structuredState = .available(
         buttonStyle: structuredState.buttonStyle,
@@ -91,24 +91,24 @@ public final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
     }
   }
 
-  public func cancel() {
+  func cancel() {
     structuredState.isLoading = false
     if presentationContext.shouldShowBackButton {
       checkoutScope?.checkoutNavigator.navigateBack()
     }
   }
 
-  public func onBack() {
+  func onBack() {
     if presentationContext.shouldShowBackButton {
       checkoutScope?.checkoutNavigator.navigateBack()
     }
   }
 
-  public func onDismiss() {
+  func onDismiss() {
     checkoutScope?.onDismiss()
   }
 
-  public func submit() {
+  func submit() {
     guard structuredState.isAvailable, !structuredState.isLoading else { return }
 
     Task { [self] in
@@ -189,7 +189,7 @@ public final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
 
   // swiftlint:disable identifier_name
 
-  public func PrimerApplePayButton(action: @escaping () -> Void) -> AnyView {
+  func PrimerApplePayButton(action: @escaping () -> Void) -> AnyView {
     AnyView(
       ApplePayButtonView(
         style: structuredState.buttonStyle,
@@ -211,17 +211,10 @@ public final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
 @MainActor
 final class ApplePayAuthorizationCoordinator: NSObject, PKPaymentAuthorizationControllerDelegate {
 
-  // MARK: - Continuations
-
   private var authorizationContinuation: CheckedContinuation<PKPayment, Error>?
   private var completionHandler: ((PKPaymentAuthorizationResult) -> Void)?
-
-  // MARK: - State
-
   private var isCancelled = true
   private var didTimeout = false
-
-  // MARK: - Authorization
 
   func authorize(
     with request: ApplePayRequest,

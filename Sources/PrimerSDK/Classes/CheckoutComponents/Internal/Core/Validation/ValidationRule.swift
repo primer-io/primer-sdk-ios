@@ -6,7 +6,7 @@
 
 import Foundation
 
-public protocol ValidationRule {
+protocol ValidationRule {
   associatedtype Input
   func validate(_ input: Input) -> ValidationResult
 }

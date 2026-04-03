@@ -267,6 +267,11 @@ final class CountryCodeRule: ValidationRule {
       return .invalid(error: error)
     }
 
+    guard trimmedValue.allSatisfy(\.isLetter) else {
+      let error = ErrorMessageResolver.createInvalidFieldError(for: .countryCode)
+      return .invalid(error: error)
+    }
+
     return .valid
   }
 

@@ -82,6 +82,9 @@ final class PrimerDelegateProxy: LogReporter {
                 Primer.shared.delegate?.primerDidTokenizePaymentMethod?(paymentMethodTokenData) { decision in
                     continuation.resume(returning: decision)
                 }
+            } else if PrimerInternal.shared.sdkIntegrationType == .checkoutComponents {
+                // CheckoutComponents handles tokenization through its own scope mechanism
+                continuation.resume(returning: PrimerResumeDecision.succeed())
             }
         }
     }
@@ -110,6 +113,9 @@ final class PrimerDelegateProxy: LogReporter {
                 Primer.shared.delegate?.primerDidResumeWith?(resumeToken) { decision in
                     continuation.resume(returning: decision)
                 }
+            } else if PrimerInternal.shared.sdkIntegrationType == .checkoutComponents {
+                // CheckoutComponents handles resume through its own scope mechanism
+                continuation.resume(returning: PrimerResumeDecision.succeed())
             }
         }
     }
@@ -321,6 +327,9 @@ final class PrimerDelegateProxy: LogReporter {
                         }
                     })
                 }
+            } else if PrimerInternal.shared.sdkIntegrationType == .checkoutComponents {
+                // CheckoutComponents handles errors through its own scope mechanism
+                decisionHandler(.fail(withErrorMessage: nil))
             }
         }
     }
@@ -370,8 +379,12 @@ final class PrimerDelegateProxy: LogReporter {
                     }
                 }
             }
+        } else if PrimerInternal.shared.sdkIntegrationType == .checkoutComponents {
+            // CheckoutComponents handles errors through its own scope mechanism
+            return .fail(withErrorMessage: nil)
         } else {
-            preconditionFailure()
+            logger.warn(message: "Unhandled sdkIntegrationType in primerDidFailWithError")
+            return .fail(withErrorMessage: nil)
         }
     }
 

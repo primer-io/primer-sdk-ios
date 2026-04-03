@@ -38,8 +38,8 @@ actor MockLogNetworkClient: LogNetworkClientProtocol {
 @available(iOS 15.0, *)
 final class LoggingServiceTests: XCTestCase {
 
-    var mockNetworkClient: MockLogNetworkClient!
-    var loggingService: LoggingService!
+    private var mockNetworkClient: MockLogNetworkClient!
+    private var loggingService: LoggingService!
 
     override func setUp() async throws {
         try await super.setUp()

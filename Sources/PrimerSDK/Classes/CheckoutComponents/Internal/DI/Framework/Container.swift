@@ -59,7 +59,7 @@ final class ThreadSafeContainer<T>: @unchecked Sendable {
   }
 }
 
-public actor Container: ContainerProtocol, LogReporter {
+actor Container: ContainerProtocol, LogReporter {
   struct FactoryRegistration: Sendable {
     let policy: ContainerRetainPolicy
     let buildAsync: @Sendable (ContainerProtocol) async throws -> Any
@@ -83,7 +83,7 @@ public actor Container: ContainerProtocol, LogReporter {
     }
   }
 
-  public class ContainerRegistrationBuilderImpl<T>: RegistrationBuilder, @unchecked Sendable {
+  final class ContainerRegistrationBuilderImpl<T>: RegistrationBuilder, @unchecked Sendable {
     private let container: Container
     private let type: T.Type
     private var name: String?
@@ -94,21 +94,25 @@ public actor Container: ContainerProtocol, LogReporter {
       self.type = type
     }
 
+    @discardableResult
     public func named(_ name: String) -> Self {
       self.name = name
       return self
     }
 
+    @discardableResult
     public func asSingleton() -> Self {
       policy = .singleton
       return self
     }
 
+    @discardableResult
     public func asWeak() -> Self {
       policy = .weak
       return self
     }
 
+    @discardableResult
     public func asTransient() -> Self {
       policy = .transient
       return self
@@ -138,8 +142,8 @@ public actor Container: ContainerProtocol, LogReporter {
   // MARK: - Properties
 
   private var factories: [TypeKey: FactoryRegistration] = [:]
-  var instances: [TypeKey: Any] = [:]
-  var weakBoxes: [TypeKey: WeakBox<AnyObject>] = [:]
+  private var instances: [TypeKey: Any] = [:]
+  private var weakBoxes: [TypeKey: WeakBox<AnyObject>] = [:]
   /// O(1) circular dependency detection
   private var resolutionStack: Set<TypeKey> = []
   private var resolutionOrder: [TypeKey] = []
@@ -157,6 +161,9 @@ public actor Container: ContainerProtocol, LogReporter {
   func setWeakBox(_ box: WeakBox<AnyObject>, forKey key: TypeKey) {
     weakBoxes[key] = box
   }
+
+  func getInstance(forKey key: TypeKey) -> Any? { instances[key] }
+  func getWeakBox(forKey key: TypeKey) -> WeakBox<AnyObject>? { weakBoxes[key] }
 
   // MARK: - Registration
 
@@ -186,7 +193,6 @@ public actor Container: ContainerProtocol, LogReporter {
     factories[key] = FactoryRegistration(policy: policy) { container in
       try await factory(container)
     }
-
   }
 
   public nonisolated func registerIfNeeded<T>(_ type: T.Type, name: String? = nil) async
@@ -250,7 +256,7 @@ public actor Container: ContainerProtocol, LogReporter {
         .instance(for: key, registration: registration, in: self)
 
       guard let typed = instance as? T else {
-        throw ContainerError.typeCastFailed(key, expected: T.self, actual: Swift.type(of: instance))
+        throw ContainerError.typeCastFailed(key, expected: String(describing: T.self), actual: String(describing: Swift.type(of: instance)))
       }
 
       return typed
@@ -265,7 +271,14 @@ public actor Container: ContainerProtocol, LogReporter {
   /// First checks the nonisolated sync cache for already-resolved singletons
   /// to avoid blocking the main thread. Falls back to semaphore-based
   /// resolution with timeout for first-time resolution.
-  public nonisolated func resolveSync<T>(_ type: T.Type, name: String? = nil) throws -> T {
+  ///
+  /// - Warning: The semaphore-based fallback blocks the calling thread while
+  ///   waiting for actor-isolated async work. If called from the Swift
+  ///   cooperative thread pool (e.g. inside a `Task`) this can deadlock
+  ///   because the blocked thread may be the only one available to run
+  ///   the actor hop. Always call from the main thread or a non-cooperative
+  ///   dispatch queue, and prefer the async `resolve(_:name:)` when possible.
+  nonisolated func resolveSync<T>(_ type: T.Type, name: String? = nil) throws -> T {
     // Fast path: check nonisolated cache for already-resolved singletons
     if let cached: T = syncCache.get(type, name: name) {
       return cached
@@ -310,7 +323,7 @@ public actor Container: ContainerProtocol, LogReporter {
     }
   }
 
-  /// Resolve multiple dependencies in parallel
+  /// Resolve multiple dependencies concurrently
   public func resolveBatch<T>(_ requests: [(type: T.Type, name: String?)]) async throws -> [T] {
     try await withThrowingTaskGroup(of: (Int, T).self) { group in
       for (index, request) in requests.enumerated() {

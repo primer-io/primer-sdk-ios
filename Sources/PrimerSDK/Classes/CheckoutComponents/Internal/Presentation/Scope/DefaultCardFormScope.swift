@@ -6,38 +6,38 @@
 
 import SwiftUI
 
-public struct FieldValidationStates: Equatable {
-  public var cardNumber: Bool = false
-  public var cvv: Bool = false
-  public var expiry: Bool = false
-  public var cardholderName: Bool = false
-  public var postalCode: Bool = false
-  public var countryCode: Bool = false
-  public var city: Bool = false
-  public var state: Bool = false
-  public var addressLine1: Bool = false
-  public var addressLine2: Bool = false
-  public var firstName: Bool = false
-  public var lastName: Bool = false
-  public var email: Bool = false
-  public var phoneNumber: Bool = false
+struct FieldValidationStates: Equatable {
+  var cardNumber: Bool = false
+  var cvv: Bool = false
+  var expiry: Bool = false
+  var cardholderName: Bool = false
+  var postalCode: Bool = false
+  var countryCode: Bool = false
+  var city: Bool = false
+  var state: Bool = false
+  var addressLine1: Bool = false
+  var addressLine2: Bool = false
+  var firstName: Bool = false
+  var lastName: Bool = false
+  var email: Bool = false
+  var phoneNumber: Bool = false
 }
 
 @available(iOS 15.0, *)
 @MainActor
-public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, LogReporter {
+final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, LogReporter {
 
-  public private(set) var presentationContext: PresentationContext = .fromPaymentSelection
+  private(set) var presentationContext: PresentationContext = .fromPaymentSelection
 
-  public var cardFormUIOptions: PrimerCardFormUIOptions? {
+  var cardFormUIOptions: PrimerCardFormUIOptions? {
     checkoutScope?.cardFormUIOptions
   }
 
-  public var dismissalMechanism: [DismissalMechanism] {
+  var dismissalMechanism: [DismissalMechanism] {
     checkoutScope?.dismissalMechanism ?? []
   }
 
-  public var state: AsyncStream<PrimerCardFormState> {
+  var state: AsyncStream<PrimerCardFormState> {
     AsyncStream { continuation in
       let task = Task { [self] in
         for await _ in $structuredState.values {
@@ -52,32 +52,32 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     }
   }
 
-  public var title: String?
-  public var screen: CardFormScreenComponent?
-  public var cobadgedCardsView:
+  var title: String?
+  var screen: CardFormScreenComponent?
+  var cobadgedCardsView:
     ((_ availableNetworks: [String], _ selectNetwork: @escaping (String) -> Void) -> any View)?
-  public var errorScreen: ErrorComponent?
-  public var submitButtonText: String?
-  public var showSubmitLoadingIndicator: Bool = true
-  public var cardNumberConfig: InputFieldConfig?
-  public var expiryDateConfig: InputFieldConfig?
-  public var cvvConfig: InputFieldConfig?
-  public var cardholderNameConfig: InputFieldConfig?
-  public var postalCodeConfig: InputFieldConfig?
-  public var countryConfig: InputFieldConfig?
-  public var cityConfig: InputFieldConfig?
-  public var stateConfig: InputFieldConfig?
-  public var addressLine1Config: InputFieldConfig?
-  public var addressLine2Config: InputFieldConfig?
-  public var phoneNumberConfig: InputFieldConfig?
-  public var firstNameConfig: InputFieldConfig?
-  public var lastNameConfig: InputFieldConfig?
-  public var emailConfig: InputFieldConfig?
-  public var retailOutletConfig: InputFieldConfig?
-  public var otpCodeConfig: InputFieldConfig?
-  public var cardInputSection: Component?
-  public var billingAddressSection: Component?
-  public var submitButton: Component?
+  var errorScreen: ErrorComponent?
+  var submitButtonText: String?
+  var showSubmitLoadingIndicator: Bool = true
+  var cardNumberConfig: InputFieldConfig?
+  var expiryDateConfig: InputFieldConfig?
+  var cvvConfig: InputFieldConfig?
+  var cardholderNameConfig: InputFieldConfig?
+  var postalCodeConfig: InputFieldConfig?
+  var countryConfig: InputFieldConfig?
+  var cityConfig: InputFieldConfig?
+  var stateConfig: InputFieldConfig?
+  var addressLine1Config: InputFieldConfig?
+  var addressLine2Config: InputFieldConfig?
+  var phoneNumberConfig: InputFieldConfig?
+  var firstNameConfig: InputFieldConfig?
+  var lastNameConfig: InputFieldConfig?
+  var emailConfig: InputFieldConfig?
+  var retailOutletConfig: InputFieldConfig?
+  var otpCodeConfig: InputFieldConfig?
+  var cardInputSection: Component?
+  var billingAddressSection: Component?
+  var submitButton: Component?
 
   @Published var structuredState = PrimerCardFormState()
   var fieldValidationStates = FieldValidationStates()
@@ -194,7 +194,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     }
   }
 
-  public func updateField(_ fieldType: PrimerInputElementType, value: String) {
+  func updateField(_ fieldType: PrimerInputElementType, value: String) {
     switch fieldType {
     case .cardNumber:
       updateCardNumber(value)
@@ -233,7 +233,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     }
   }
 
-  public func updateCardNumber(_ cardNumber: String) {
+  func updateCardNumber(_ cardNumber: String) {
     structuredState.data[.cardNumber] = cardNumber
     updateCardData()
 
@@ -247,17 +247,17 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     await interactor.detectNetworks(for: cardNumber)
   }
 
-  public func updateCvv(_ cvv: String) {
+  func updateCvv(_ cvv: String) {
     structuredState.data[.cvv] = cvv
     updateCardData()
   }
 
-  public func updateExpiryDate(_ expiryDate: String) {
+  func updateExpiryDate(_ expiryDate: String) {
     structuredState.data[.expiryDate] = expiryDate
     updateCardData()
   }
 
-  public func updateExpiryMonth(_ month: String) {
+  func updateExpiryMonth(_ month: String) {
     let currentExpiry = structuredState.data[.expiryDate]
     let components = currentExpiry.components(separatedBy: "/")
     let year = components.count >= 2 ? components[1] : ""
@@ -265,7 +265,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     updateCardData()
   }
 
-  public func updateExpiryYear(_ year: String) {
+  func updateExpiryYear(_ year: String) {
     let currentExpiry = structuredState.data[.expiryDate]
     let components = currentExpiry.components(separatedBy: "/")
     let month = components.count >= 1 ? components[0] : ""
@@ -273,48 +273,48 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     updateCardData()
   }
 
-  public func updateCardholderName(_ name: String) {
+  func updateCardholderName(_ name: String) {
     structuredState.data[.cardholderName] = name
     updateCardData()
   }
 
-  public func updateFirstName(_ firstName: String) {
+  func updateFirstName(_ firstName: String) {
     structuredState.data[.firstName] = firstName
   }
 
-  public func updateLastName(_ lastName: String) {
+  func updateLastName(_ lastName: String) {
     structuredState.data[.lastName] = lastName
   }
 
-  public func updateEmail(_ email: String) {
+  func updateEmail(_ email: String) {
     structuredState.data[.email] = email
   }
 
-  public func updatePhoneNumber(_ phoneNumber: String) {
+  func updatePhoneNumber(_ phoneNumber: String) {
     structuredState.data[.phoneNumber] = phoneNumber
   }
 
-  public func updateAddressLine1(_ addressLine1: String) {
+  func updateAddressLine1(_ addressLine1: String) {
     structuredState.data[.addressLine1] = addressLine1
   }
 
-  public func updateAddressLine2(_ addressLine2: String) {
+  func updateAddressLine2(_ addressLine2: String) {
     structuredState.data[.addressLine2] = addressLine2
   }
 
-  public func updateCity(_ city: String) {
+  func updateCity(_ city: String) {
     structuredState.data[.city] = city
   }
 
-  public func updateState(_ state: String) {
+  func updateState(_ state: String) {
     structuredState.data[.state] = state
   }
 
-  public func updatePostalCode(_ postalCode: String) {
+  func updatePostalCode(_ postalCode: String) {
     structuredState.data[.postalCode] = postalCode
   }
 
-  public func updateCountryCode(_ countryCode: String) {
+  func updateCountryCode(_ countryCode: String) {
     structuredState.data[.countryCode] = countryCode
 
     if let country = CountryCode.phoneNumberCountryCodes.first(where: {
@@ -332,11 +332,11 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     objectWillChange.send()
   }
 
-  public func updateOtpCode(_ otpCode: String) {
+  func updateOtpCode(_ otpCode: String) {
     structuredState.data[.otp] = otpCode
   }
 
-  public func updateSelectedCardNetwork(_ network: String) {
+  func updateSelectedCardNetwork(_ network: String) {
     if let cardNetwork = CardNetwork(rawValue: network) {
       if cardNetwork == .unknown {
         structuredState.selectedNetwork = nil
@@ -363,24 +363,26 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     await interactor.selectNetwork(cardNetwork)
   }
 
-  public func updateRetailOutlet(_ retailOutlet: String) {
+  func updateRetailOutlet(_ retailOutlet: String) {
     structuredState.data[.retailer] = retailOutlet
   }
 
-  public func submit() {
+  func start() {}
+
+  func submit() {
     guard !structuredState.isLoading else { return }
     Task { [self] in
       await performSubmit()
     }
   }
 
-  public func onBack() {
+  func onBack() {
     if presentationContext.shouldShowBackButton {
       checkoutScope?.checkoutNavigator.navigateBack()
     }
   }
 
-  public func cancel() {
+  func cancel() {
     networkDetectionTask?.cancel()
     networkDetectionTask = nil
     binDataTask?.cancel()
@@ -389,11 +391,11 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
   }
 
   private var _selectCountry: DefaultSelectCountryScope?
-  public var selectCountry: PrimerSelectCountryScope {
+  var selectCountry: PrimerSelectCountryScope {
     if let existing = _selectCountry {
       return existing
     }
-    let scope = DefaultSelectCountryScope(cardFormScope: self, checkoutScope: checkoutScope)
+    let scope = DefaultSelectCountryScope(cardFormScope: self)
     _selectCountry = scope
     return scope
   }
@@ -534,7 +536,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     structuredState.surchargeAmount = formattedSurcharge
   }
 
-  public func updateValidationState(cardNumber: Bool, cvv: Bool, expiry: Bool, cardholderName: Bool) {
+  func updateValidationState(cardNumber: Bool, cvv: Bool, expiry: Bool, cardholderName: Bool) {
     let hasValidCardNumber =
       cardNumber
       && !structuredState.data[.cardNumber].replacingOccurrences(of: " ", with: "").isEmpty
@@ -561,26 +563,26 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     }
   }
 
-  public func getFieldValue(_ fieldType: PrimerInputElementType) -> String {
+  func getFieldValue(_ fieldType: PrimerInputElementType) -> String {
     structuredState.data[fieldType]
   }
 
-  public func setFieldError(
+  func setFieldError(
     _ fieldType: PrimerInputElementType, message: String, errorCode: String? = nil
   ) {
     structuredState.setError(message, for: fieldType, errorCode: errorCode)
     announceFieldErrors()
   }
 
-  public func clearFieldError(_ fieldType: PrimerInputElementType) {
+  func clearFieldError(_ fieldType: PrimerInputElementType) {
     structuredState.clearError(for: fieldType)
   }
 
-  public func getFieldError(_ fieldType: PrimerInputElementType) -> String? {
+  func getFieldError(_ fieldType: PrimerInputElementType) -> String? {
     structuredState.errorMessage(for: fieldType)
   }
 
-  public func getFormConfiguration() -> CardFormConfiguration {
+  func getFormConfiguration() -> CardFormConfiguration {
     formConfiguration
   }
 

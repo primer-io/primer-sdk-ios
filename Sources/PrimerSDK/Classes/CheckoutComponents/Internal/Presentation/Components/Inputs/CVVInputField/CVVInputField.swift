@@ -78,7 +78,8 @@ struct CVVInputField: View, LogReporter {
         hint: CheckoutComponentsStrings.a11yCVCHint,
         value: errorMessage,
         traits: []
-      )
+      ),
+      combinesChildren: false
     )
     .onAppear {
       setupValidationService()
