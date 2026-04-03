@@ -33,8 +33,7 @@ final class CheckoutComponentsPaymentMethodsBridge: GetPaymentMethodsInteractor,
 
     logger.info(
       message:
-        "[PaymentMethodsBridge] Found \(paymentMethods.count) payment methods in configuration"
-    )
+        "[PaymentMethodsBridge] Found \(paymentMethods.count) payment methods in configuration")
 
     // Filter payment methods based on CheckoutComponents support (only show implemented payment methods)
     let filteredMethods = await filterPaymentMethodsBySupport(paymentMethods)
@@ -48,8 +47,8 @@ final class CheckoutComponentsPaymentMethodsBridge: GetPaymentMethodsInteractor,
 
       logger.debug(message: "[PaymentMethodsBridge] Converting payment method: \(type)")
 
-      // Extract network surcharges for card payment methods
-      let networkSurcharges = extractNetworkSurcharges(for: type)
+      let networkSurcharges = NetworkSurchargeExtractor.extractNetworkSurcharges(
+        for: type, from: configurationService)
 
       let displayButton = primerMethod.displayMetadata?.button
       let backgroundColor = displayButton?.backgroundColor?.uiColor
@@ -67,7 +66,7 @@ final class CheckoutComponentsPaymentMethodsBridge: GetPaymentMethodsInteractor,
         configId: primerMethod.processorConfigId,
         isEnabled: true,
         supportedCurrencies: nil,
-        requiredInputElements: getRequiredInputElements(for: type),
+        requiredInputElements: NetworkSurchargeExtractor.getRequiredInputElements(for: type),
         metadata: nil,
         surcharge: primerMethod.surcharge,
         hasUnknownSurcharge: primerMethod.hasUnknownSurcharge,
@@ -83,92 +82,14 @@ final class CheckoutComponentsPaymentMethodsBridge: GetPaymentMethodsInteractor,
 
     logger.info(
       message:
-        "[PaymentMethodsBridge] Successfully converted \(convertedMethods.count) payment methods"
-    )
+        "[PaymentMethodsBridge] Successfully converted \(convertedMethods.count) payment methods")
 
     for (index, method) in convertedMethods.enumerated() {
       logger.debug(
-        message: "[PaymentMethodsBridge] Method \(index + 1): \(method.type) - \(method.name)"
-      )
+        message: "[PaymentMethodsBridge] Method \(index + 1): \(method.type) - \(method.name)")
     }
 
     return convertedMethods
-  }
-
-  private func extractNetworkSurcharges(for paymentMethodType: String) -> [String: Int]? {
-    guard paymentMethodType == PrimerPaymentMethodType.paymentCard.rawValue else {
-      return nil
-    }
-
-    let session = configurationService.apiConfiguration?.clientSession
-    guard let paymentMethodData = session?.paymentMethod else {
-      return nil
-    }
-
-    guard let options = paymentMethodData.options else {
-      return nil
-    }
-
-    guard
-      let paymentCardOption = options.first(where: { ($0["type"] as? String) == paymentMethodType })
-    else {
-      return nil
-    }
-
-    if let networksArray = paymentCardOption["networks"] as? [[String: Any]] {
-      return extractFromNetworksArray(networksArray)
-    } else if let networksDict = paymentCardOption["networks"] as? [String: [String: Any]] {
-      return extractFromNetworksDict(networksDict)
-    } else {
-      return nil
-    }
-  }
-
-  private func extractFromNetworksArray(_ networksArray: [[String: Any]]) -> [String: Int]? {
-    var networkSurcharges: [String: Int] = [:]
-
-    for networkData in networksArray {
-      guard let networkType = networkData["type"] as? String else {
-        continue
-      }
-
-      if let surchargeData = networkData["surcharge"] as? [String: Any],
-        let surchargeAmount = surchargeData["amount"] as? Int,
-        surchargeAmount > 0 {
-        networkSurcharges[networkType] = surchargeAmount
-      } else if let surcharge = networkData["surcharge"] as? Int,
-        surcharge > 0 {
-        networkSurcharges[networkType] = surcharge
-      }
-    }
-
-    return networkSurcharges.isEmpty ? nil : networkSurcharges
-  }
-
-  private func extractFromNetworksDict(_ networksDict: [String: [String: Any]]) -> [String: Int]? {
-    var networkSurcharges: [String: Int] = [:]
-
-    for (networkType, networkData) in networksDict {
-      if let surchargeData = networkData["surcharge"] as? [String: Any],
-        let surchargeAmount = surchargeData["amount"] as? Int,
-        surchargeAmount > 0 {
-        networkSurcharges[networkType] = surchargeAmount
-      } else if let surcharge = networkData["surcharge"] as? Int,
-        surcharge > 0 {
-        networkSurcharges[networkType] = surcharge
-      }
-    }
-
-    return networkSurcharges.isEmpty ? nil : networkSurcharges
-  }
-
-  private func getRequiredInputElements(for paymentMethodType: String) -> [PrimerInputElementType] {
-    switch paymentMethodType {
-    case PrimerPaymentMethodType.paymentCard.rawValue:
-      [.cardNumber, .cvv, .expiryDate, .cardholderName]
-    default:
-      []
-    }
   }
 
   private func filterPaymentMethodsBySupport(_ paymentMethods: [PrimerPaymentMethod]) async
