@@ -20,9 +20,6 @@ public typealias PayPalButtonComponent = (any PrimerPayPalScope) -> any View
 @MainActor
 public protocol PrimerPayPalScope: PrimerPaymentMethodScope where State == PrimerPayPalState {
 
-  /// The current state of the PayPal payment flow as an async stream.
-  var state: AsyncStream<PrimerPayPalState> { get }
-
   // MARK: - Screen-Level Customization
 
   /// Custom screen component to replace the entire PayPal screen.

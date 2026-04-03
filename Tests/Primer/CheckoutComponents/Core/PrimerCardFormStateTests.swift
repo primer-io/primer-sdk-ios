@@ -76,11 +76,13 @@ final class PrimerCardFormStateTests: XCTestCase {
         XCTAssertNotEqual(error1, error2)
     }
 
-    func test_fieldError_identifiable_hasUniqueId() {
+    func test_fieldError_identifiable_hasDeterministicId() {
         let error1 = FieldError(fieldType: .cardNumber, message: "Invalid")
-        let error2 = FieldError(fieldType: .cardNumber, message: "Invalid")
+        let error2 = FieldError(fieldType: .cardNumber, message: "Different message")
+        let error3 = FieldError(fieldType: .expiryDate, message: "Invalid")
 
-        XCTAssertNotEqual(error1.id, error2.id)
+        XCTAssertEqual(error1.id, error2.id)
+        XCTAssertNotEqual(error1.id, error3.id)
     }
 
     // MARK: - FormData Tests
@@ -142,11 +144,13 @@ final class PrimerCardFormStateTests: XCTestCase {
         XCTAssertNotEqual(country1, country2)
     }
 
-    func test_country_identifiable_hasUniqueId() {
+    func test_country_identifiable_hasDeterministicId() {
         let country1 = PrimerCountry(code: "US", name: "United States")
-        let country2 = PrimerCountry(code: "US", name: "United States")
+        let country2 = PrimerCountry(code: "US", name: "USA")
+        let country3 = PrimerCountry(code: "GB", name: "United Kingdom")
 
-        XCTAssertNotEqual(country1.id, country2.id)
+        XCTAssertEqual(country1.id, country2.id)
+        XCTAssertNotEqual(country1.id, country3.id)
     }
 
     // MARK: - PrimerCardFormState Tests
