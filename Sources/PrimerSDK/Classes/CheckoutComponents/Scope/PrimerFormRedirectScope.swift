@@ -53,9 +53,6 @@ public typealias FormRedirectFormSectionComponent = (any PrimerFormRedirectScope
 @MainActor
 public protocol PrimerFormRedirectScope: PrimerPaymentMethodScope where State == PrimerFormRedirectState {
 
-  /// Async stream emitting the current form redirect state whenever it changes.
-  var state: AsyncStream<PrimerFormRedirectState> { get }
-
   /// The payment method type identifier (e.g., "ADYEN_BLIK", "ADYEN_MBWAY").
   var paymentMethodType: String { get }
 

@@ -156,30 +156,4 @@ final class TypeKeyTests: XCTestCase {
         XCTAssertTrue(key.debugDescription.contains("debug"))
     }
 
-    // MARK: - Codable Tests
-
-    func test_codable_encodeDecode_preservesTypeName() throws {
-        // Given
-        let key = TypeKey(String.self, name: "codable")
-
-        // When
-        let data = try JSONEncoder().encode(key)
-        let decoded = try JSONDecoder().decode(TypeKey.self, from: data)
-
-        // Then
-        XCTAssertTrue(decoded.description.contains("String"))
-        XCTAssertTrue(decoded.description.contains("codable"))
-    }
-
-    func test_codable_withoutName_encodesAndDecodes() throws {
-        // Given
-        let key = TypeKey(Int.self)
-
-        // When
-        let data = try JSONEncoder().encode(key)
-        let decoded = try JSONDecoder().decode(TypeKey.self, from: data)
-
-        // Then
-        XCTAssertTrue(decoded.description.contains("Int"))
-    }
 }

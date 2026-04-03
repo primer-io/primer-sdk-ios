@@ -48,9 +48,6 @@ public protocol PrimerWebRedirectScope: PrimerPaymentMethodScope where State == 
   /// The payment method type identifier (e.g., "TWINT").
   var paymentMethodType: String { get }
 
-  /// Async stream emitting the current web redirect state whenever it changes.
-  var state: AsyncStream<PrimerWebRedirectState> { get }
-
   // MARK: - Screen-Level Customization
 
   /// Custom screen component to replace the entire web redirect screen.
