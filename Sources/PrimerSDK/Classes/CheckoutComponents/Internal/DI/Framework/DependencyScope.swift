@@ -6,34 +6,34 @@
 
 import Foundation
 
-public protocol DependencyScope: AnyObject {
+protocol DependencyScope: AnyObject {
   var scopeId: String { get }
-  func setupContainer(_ container: Container) async
+  func setupContainer(_ container: any ContainerProtocol) async
   func cleanupScope() async
 }
 
 @available(iOS 15.0, *)
 extension DependencyScope {
 
-  public func register() async {
+  func register() async {
     let container = Container()
     await setupContainer(container)
     await DIContainer.setScopedContainer(container, for: scopeId)
   }
 
-  public func unregister() async {
+  func unregister() async {
     await DIContainer.removeScopedContainer(for: scopeId)
     await cleanupScope()
   }
 
-  public func getContainer() async throws -> ContainerProtocol {
+  func getContainer() async throws -> any ContainerProtocol {
     guard let container = await DIContainer.scopedContainer(for: scopeId) else {
       throw ContainerError.scopeNotFound(scopeId)
     }
     return container
   }
 
-  public func withContainer<T>(_ action: (ContainerProtocol) async throws -> T) async throws -> T {
+  func withContainer<T>(_ action: (any ContainerProtocol) async throws -> T) async throws -> T {
     let container = try await getContainer()
     return try await action(container)
   }
