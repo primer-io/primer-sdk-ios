@@ -1,7 +1,7 @@
 //
 //  AnalyticsServiceTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 @testable import PrimerSDK
@@ -15,10 +15,12 @@ final class AnalyticsServiceTests: XCTestCase {
     override func setUp() {
         apiClient = MockPrimerAPIAnalyticsClient()
         storage = MockAnalyticsStorage()
-        sut = Analytics.Service(sdkLogsUrl: URL(string: "http://localhost/")!,
-                                batchSize: 5,
-                                storage: storage,
-                                apiClient: apiClient)
+        sut = Analytics.Service(
+            sdkLogsUrl: URL(string: "http://localhost/")!,
+            batchSize: 5,
+            storage: storage,
+            apiClient: apiClient
+        )
     }
 
     override func tearDown() async throws {

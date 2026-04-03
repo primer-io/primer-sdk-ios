@@ -42,24 +42,26 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
 
     var navigationBarLogo: UIImage? {
 
-        guard let internaPaymentMethodType = PrimerPaymentMethodType(rawValue: self.paymentMethodTokenizationViewModel.config.type) else {
+        guard let internaPaymentMethodType = PrimerPaymentMethodType(rawValue: paymentMethodTokenizationViewModel.config.type) else {
             return logo
         }
 
         return switch internaPaymentMethodType {
-            case .adyenBlik: UIScreen.isDarkModeEnabled ? logo : .blikLight
-            case .adyenMultibanco: UIScreen.isDarkModeEnabled ? logo : .multibancoLight
-            default: logo
+        case .adyenBlik: UIScreen.isDarkModeEnabled ? logo : .blikLight
+        case .adyenMultibanco: UIScreen.isDarkModeEnabled ? logo : .multibancoLight
+        default: logo
         }
     }
 
     var icon: UIImage? {
         var fileName = paymentMethodTokenizationViewModel.config.type
-            .lowercased().replacingOccurrences(of: "_",
-                                               with: "-")
+            .lowercased().replacingOccurrences(
+                of: "_",
+                with: "-"
+            )
         fileName += "-icon"
 
-        switch self.themeMode {
+        switch themeMode {
         case .colored:
             fileName += "-colored"
         case .dark:
@@ -100,7 +102,7 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
     }
 
     var localDisplayMetadata: PrimerPaymentMethod.DisplayMetadata? {
-        let type = self.paymentMethodTokenizationViewModel.config.type
+        let type = paymentMethodTokenizationViewModel.config.type
         guard let internaPaymentMethodType = PrimerPaymentMethodType(rawValue: type)
         else { return nil }
 
@@ -112,18 +114,23 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                     backgroundColor: PrimerTheme.BaseColors(
                         coloredHex: "#31B1F0",
                         lightHex: "#FFFFFF",
-                        darkHex: "#000000"),
+                        darkHex: "#000000"
+                    ),
                     cornerRadius: 4,
                     borderWidth: PrimerTheme.BaseBorderWidth(
                         colored: 0,
                         light: 1,
-                        dark: 1),
+                        dark: 1
+                    ),
                     borderColor: PrimerTheme.BaseColors(
                         coloredHex: nil,
                         lightHex: "#000000",
-                        darkHex: "#FFFFFF"),
+                        darkHex: "#FFFFFF"
+                    ),
                     text: nil,
-                    textColor: nil))
+                    textColor: nil
+                )
+            )
 
         case .adyenBlik:
             return PrimerPaymentMethod.DisplayMetadata(
@@ -132,18 +139,23 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                     backgroundColor: PrimerTheme.BaseColors(
                         coloredHex: "#000000",
                         lightHex: "#FFFFFF",
-                        darkHex: "#000000"),
+                        darkHex: "#000000"
+                    ),
                     cornerRadius: 4,
                     borderWidth: PrimerTheme.BaseBorderWidth(
                         colored: 0,
                         light: 1,
-                        dark: 1),
+                        dark: 1
+                    ),
                     borderColor: PrimerTheme.BaseColors(
                         coloredHex: nil,
                         lightHex: "#000000",
-                        darkHex: "#FFFFFF"),
+                        darkHex: "#FFFFFF"
+                    ),
                     text: nil,
-                    textColor: nil))
+                    textColor: nil
+                )
+            )
 
         case .adyenBancontactCard:
             return nil
@@ -155,18 +167,23 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                     backgroundColor: PrimerTheme.BaseColors(
                         coloredHex: nil,
                         lightHex: "#FFFFFF",
-                        darkHex: "#000000"),
+                        darkHex: "#000000"
+                    ),
                     cornerRadius: 4,
                     borderWidth: PrimerTheme.BaseBorderWidth(
                         colored: nil,
                         light: 1,
-                        dark: 1),
+                        dark: 1
+                    ),
                     borderColor: PrimerTheme.BaseColors(
                         coloredHex: nil,
                         lightHex: "#000000",
-                        darkHex: "#FFFFFF"),
+                        darkHex: "#FFFFFF"
+                    ),
                     text: nil,
-                    textColor: nil))
+                    textColor: nil
+                )
+            )
 
         case .adyenGiropay,
              .buckarooGiropay,
@@ -177,18 +194,23 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                     backgroundColor: PrimerTheme.BaseColors(
                         coloredHex: "#000268",
                         lightHex: nil,
-                        darkHex: nil),
+                        darkHex: nil
+                    ),
                     cornerRadius: 4,
                     borderWidth: PrimerTheme.BaseBorderWidth(
                         colored: 0,
                         light: nil,
-                        dark: nil),
+                        dark: nil
+                    ),
                     borderColor: PrimerTheme.BaseColors(
                         coloredHex: nil,
                         lightHex: nil,
-                        darkHex: nil),
+                        darkHex: nil
+                    ),
                     text: nil,
-                    textColor: nil))
+                    textColor: nil
+                )
+            )
 
         case .adyenIDeal,
              .buckarooIdeal,
@@ -200,18 +222,23 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                     backgroundColor: PrimerTheme.BaseColors(
                         coloredHex: "#CC0066",
                         lightHex: "#FFFFFF",
-                        darkHex: "#000000"),
+                        darkHex: "#000000"
+                    ),
                     cornerRadius: 4,
                     borderWidth: PrimerTheme.BaseBorderWidth(
                         colored: 0,
                         light: 1,
-                        dark: 1),
+                        dark: 1
+                    ),
                     borderColor: PrimerTheme.BaseColors(
                         coloredHex: nil,
                         lightHex: "#000000",
-                        darkHex: "#FFFFFF"),
+                        darkHex: "#FFFFFF"
+                    ),
                     text: nil,
-                    textColor: nil))
+                    textColor: nil
+                )
+            )
 
         case .adyenInterac:
             return nil
@@ -223,18 +250,23 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                     backgroundColor: PrimerTheme.BaseColors(
                         coloredHex: "#5A78FF",
                         lightHex: "#FFFFFF",
-                        darkHex: "#000000"),
+                        darkHex: "#000000"
+                    ),
                     cornerRadius: 4,
                     borderWidth: PrimerTheme.BaseBorderWidth(
                         colored: 0,
                         light: 1,
-                        dark: 1),
+                        dark: 1
+                    ),
                     borderColor: PrimerTheme.BaseColors(
                         coloredHex: nil,
                         lightHex: "#000000",
-                        darkHex: "#FFFFFF"),
+                        darkHex: "#FFFFFF"
+                    ),
                     text: nil,
-                    textColor: nil))
+                    textColor: nil
+                )
+            )
 
         case .adyenMBWay:
             return PrimerPaymentMethod.DisplayMetadata(
@@ -243,18 +275,23 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                     backgroundColor: PrimerTheme.BaseColors(
                         coloredHex: nil,
                         lightHex: "#FFFFFF",
-                        darkHex: "#000000"),
+                        darkHex: "#000000"
+                    ),
                     cornerRadius: 4,
                     borderWidth: PrimerTheme.BaseBorderWidth(
                         colored: nil,
                         light: 1,
-                        dark: 1),
+                        dark: 1
+                    ),
                     borderColor: PrimerTheme.BaseColors(
                         coloredHex: nil,
                         lightHex: "#000000",
-                        darkHex: "#FFFFFF"),
+                        darkHex: "#FFFFFF"
+                    ),
                     text: nil,
-                    textColor: nil))
+                    textColor: nil
+                )
+            )
 
         case .adyenMultibanco:
             return PrimerPaymentMethod.DisplayMetadata(
@@ -263,18 +300,23 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                     backgroundColor: PrimerTheme.BaseColors(
                         coloredHex: "#000000",
                         lightHex: "#FFFFFF",
-                        darkHex: "#000000"),
+                        darkHex: "#000000"
+                    ),
                     cornerRadius: 4,
                     borderWidth: PrimerTheme.BaseBorderWidth(
                         colored: nil,
                         light: 1,
-                        dark: 1),
+                        dark: 1
+                    ),
                     borderColor: PrimerTheme.BaseColors(
                         coloredHex: nil,
                         lightHex: "#000000",
-                        darkHex: "#FFFFFF"),
+                        darkHex: "#FFFFFF"
+                    ),
                     text: nil,
-                    textColor: nil))
+                    textColor: nil
+                )
+            )
 
         case .adyenPayTrail:
             return PrimerPaymentMethod.DisplayMetadata(
@@ -283,18 +325,23 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                     backgroundColor: PrimerTheme.BaseColors(
                         coloredHex: nil,
                         lightHex: "#FFFFFF",
-                        darkHex: "#000000"),
+                        darkHex: "#000000"
+                    ),
                     cornerRadius: 4,
                     borderWidth: PrimerTheme.BaseBorderWidth(
                         colored: 0,
                         light: 1,
-                        dark: 1),
+                        dark: 1
+                    ),
                     borderColor: PrimerTheme.BaseColors(
                         coloredHex: nil,
                         lightHex: "#000000",
-                        darkHex: "#FFFFFF"),
+                        darkHex: "#FFFFFF"
+                    ),
                     text: nil,
-                    textColor: nil))
+                    textColor: nil
+                )
+            )
 
         case .adyenPayshop:
             return PrimerPaymentMethod.DisplayMetadata(
@@ -303,18 +350,23 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                     backgroundColor: PrimerTheme.BaseColors(
                         coloredHex: "#EE3424",
                         lightHex: "#FFFFFF",
-                        darkHex: "#000000"),
+                        darkHex: "#000000"
+                    ),
                     cornerRadius: 4,
                     borderWidth: PrimerTheme.BaseBorderWidth(
                         colored: 0,
                         light: 1,
-                        dark: 1),
+                        dark: 1
+                    ),
                     borderColor: PrimerTheme.BaseColors(
                         coloredHex: nil,
                         lightHex: "#000000",
-                        darkHex: "#FFFFFF"),
+                        darkHex: "#FFFFFF"
+                    ),
                     text: nil,
-                    textColor: nil))
+                    textColor: nil
+                )
+            )
 
         case .adyenSofort,
              .buckarooSofort,
@@ -325,18 +377,23 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                     backgroundColor: PrimerTheme.BaseColors(
                         coloredHex: "#EF809F",
                         lightHex: "#FFFFFF",
-                        darkHex: "#000000"),
+                        darkHex: "#000000"
+                    ),
                     cornerRadius: 4,
                     borderWidth: PrimerTheme.BaseBorderWidth(
                         colored: 0,
                         light: 1,
-                        dark: 1),
+                        dark: 1
+                    ),
                     borderColor: PrimerTheme.BaseColors(
                         coloredHex: nil,
                         lightHex: "#000000",
-                        darkHex: "#FFFFFF"),
+                        darkHex: "#FFFFFF"
+                    ),
                     text: nil,
-                    textColor: nil))
+                    textColor: nil
+                )
+            )
 
         case .adyenTrustly:
             return PrimerPaymentMethod.DisplayMetadata(
@@ -345,18 +402,23 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                     backgroundColor: PrimerTheme.BaseColors(
                         coloredHex: "#0EE06E",
                         lightHex: "#FFFFFF",
-                        darkHex: "#000000"),
+                        darkHex: "#000000"
+                    ),
                     cornerRadius: 4,
                     borderWidth: PrimerTheme.BaseBorderWidth(
                         colored: 0,
                         light: 1,
-                        dark: 1),
+                        dark: 1
+                    ),
                     borderColor: PrimerTheme.BaseColors(
                         coloredHex: nil,
                         lightHex: "#000000",
-                        darkHex: "#FFFFFF"),
+                        darkHex: "#FFFFFF"
+                    ),
                     text: nil,
-                    textColor: nil))
+                    textColor: nil
+                )
+            )
 
         case .adyenTwint:
             return PrimerPaymentMethod.DisplayMetadata(
@@ -365,18 +427,23 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                     backgroundColor: PrimerTheme.BaseColors(
                         coloredHex: "#000000",
                         lightHex: "#FFFFFF",
-                        darkHex: "#000000"),
+                        darkHex: "#000000"
+                    ),
                     cornerRadius: 4,
                     borderWidth: PrimerTheme.BaseBorderWidth(
                         colored: 0,
                         light: 1,
-                        dark: 1),
+                        dark: 1
+                    ),
                     borderColor: PrimerTheme.BaseColors(
                         coloredHex: nil,
                         lightHex: "#000000",
-                        darkHex: "#FFFFFF"),
+                        darkHex: "#FFFFFF"
+                    ),
                     text: nil,
-                    textColor: nil))
+                    textColor: nil
+                )
+            )
 
         case .adyenVipps:
             return PrimerPaymentMethod.DisplayMetadata(
@@ -385,18 +452,23 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                     backgroundColor: PrimerTheme.BaseColors(
                         coloredHex: "#FF5B24",
                         lightHex: "#FFFFFF",
-                        darkHex: "#000000"),
+                        darkHex: "#000000"
+                    ),
                     cornerRadius: 4,
                     borderWidth: PrimerTheme.BaseBorderWidth(
                         colored: 0,
                         light: 1,
-                        dark: 1),
+                        dark: 1
+                    ),
                     borderColor: PrimerTheme.BaseColors(
                         coloredHex: nil,
                         lightHex: "#000000",
-                        darkHex: "#FFFFFF"),
+                        darkHex: "#FFFFFF"
+                    ),
                     text: nil,
-                    textColor: nil))
+                    textColor: nil
+                )
+            )
 
         case .applePay:
             return PrimerPaymentMethod.DisplayMetadata(
@@ -405,18 +477,23 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                     backgroundColor: PrimerTheme.BaseColors(
                         coloredHex: "#FFFFFF",
                         lightHex: "#FFFFFF",
-                        darkHex: "#000000"),
+                        darkHex: "#000000"
+                    ),
                     cornerRadius: 4,
                     borderWidth: PrimerTheme.BaseBorderWidth(
                         colored: 0,
                         light: 1,
-                        dark: 1),
+                        dark: 1
+                    ),
                     borderColor: PrimerTheme.BaseColors(
                         coloredHex: nil,
                         lightHex: "#000000",
-                        darkHex: "#FFFFFF"),
+                        darkHex: "#FFFFFF"
+                    ),
                     text: nil,
-                    textColor: nil))
+                    textColor: nil
+                )
+            )
 
         case .atome:
             return PrimerPaymentMethod.DisplayMetadata(
@@ -425,18 +502,23 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                     backgroundColor: PrimerTheme.BaseColors(
                         coloredHex: "#F0FF5F",
                         lightHex: "#FFFFFF",
-                        darkHex: "#000000"),
+                        darkHex: "#000000"
+                    ),
                     cornerRadius: 4,
                     borderWidth: PrimerTheme.BaseBorderWidth(
                         colored: 0,
                         light: 1,
-                        dark: 1),
+                        dark: 1
+                    ),
                     borderColor: PrimerTheme.BaseColors(
                         coloredHex: nil,
                         lightHex: "#000000",
-                        darkHex: "#FFFFFF"),
+                        darkHex: "#FFFFFF"
+                    ),
                     text: nil,
-                    textColor: nil))
+                    textColor: nil
+                )
+            )
 
         case .buckarooBancontact,
              .mollieBankcontact,
@@ -447,18 +529,23 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                     backgroundColor: PrimerTheme.BaseColors(
                         coloredHex: nil,
                         lightHex: "#FFFFFF",
-                        darkHex: nil),
+                        darkHex: nil
+                    ),
                     cornerRadius: 4,
                     borderWidth: PrimerTheme.BaseBorderWidth(
                         colored: nil,
                         light: 1,
-                        dark: nil),
+                        dark: nil
+                    ),
                     borderColor: PrimerTheme.BaseColors(
                         coloredHex: nil,
                         lightHex: "#000000",
-                        darkHex: nil),
+                        darkHex: nil
+                    ),
                     text: nil,
-                    textColor: nil))
+                    textColor: nil
+                )
+            )
 
         case .buckarooEps:
             return PrimerPaymentMethod.DisplayMetadata(
@@ -467,18 +554,23 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                     backgroundColor: PrimerTheme.BaseColors(
                         coloredHex: nil,
                         lightHex: "#FFFFFF",
-                        darkHex: nil),
+                        darkHex: nil
+                    ),
                     cornerRadius: 4,
                     borderWidth: PrimerTheme.BaseBorderWidth(
                         colored: nil,
                         light: 1,
-                        dark: nil),
+                        dark: nil
+                    ),
                     borderColor: PrimerTheme.BaseColors(
                         coloredHex: nil,
                         lightHex: "#000000",
-                        darkHex: nil),
+                        darkHex: nil
+                    ),
                     text: nil,
-                    textColor: nil))
+                    textColor: nil
+                )
+            )
 
         case .coinbase:
             return PrimerPaymentMethod.DisplayMetadata(
@@ -487,18 +579,23 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                     backgroundColor: PrimerTheme.BaseColors(
                         coloredHex: "#0052FF",
                         lightHex: "#FFFFFF",
-                        darkHex: "#000000"),
+                        darkHex: "#000000"
+                    ),
                     cornerRadius: 4,
                     borderWidth: PrimerTheme.BaseBorderWidth(
                         colored: 0,
                         light: 1,
-                        dark: 1),
+                        dark: 1
+                    ),
                     borderColor: PrimerTheme.BaseColors(
                         coloredHex: nil,
                         lightHex: "#000000",
-                        darkHex: "#FFFFFF"),
+                        darkHex: "#FFFFFF"
+                    ),
                     text: nil,
-                    textColor: nil))
+                    textColor: nil
+                )
+            )
 
         case .goCardless:
             return nil
@@ -513,18 +610,23 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                     backgroundColor: PrimerTheme.BaseColors(
                         coloredHex: "#D63727",
                         lightHex: "#FFFFFF",
-                        darkHex: "#000000"),
+                        darkHex: "#000000"
+                    ),
                     cornerRadius: 4,
                     borderWidth: PrimerTheme.BaseBorderWidth(
                         colored: 0,
                         light: 1,
-                        dark: 1),
+                        dark: 1
+                    ),
                     borderColor: PrimerTheme.BaseColors(
                         coloredHex: nil,
                         lightHex: "#000000",
-                        darkHex: "#FFFFFF"),
+                        darkHex: "#FFFFFF"
+                    ),
                     text: nil,
-                    textColor: nil))
+                    textColor: nil
+                )
+            )
 
         case .iPay88Card:
             return PrimerPaymentMethod.DisplayMetadata(
@@ -533,21 +635,27 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                     backgroundColor: PrimerTheme.BaseColors(
                         coloredHex: "#FFFFFF",
                         lightHex: "#FFFFFF",
-                        darkHex: "#000000"),
+                        darkHex: "#000000"
+                    ),
                     cornerRadius: 4,
                     borderWidth: PrimerTheme.BaseBorderWidth(
                         colored: 1,
                         light: 1,
-                        dark: 1),
+                        dark: 1
+                    ),
                     borderColor: PrimerTheme.BaseColors(
                         coloredHex: "#000000",
                         lightHex: "#000000",
-                        darkHex: "#FFFFFF"),
+                        darkHex: "#FFFFFF"
+                    ),
                     text: Strings.PaymentButton.payWithCard,
                     textColor: PrimerTheme.BaseColors(
                         coloredHex: "#000000",
                         lightHex: "#000000",
-                        darkHex: "#FFFFFF")))
+                        darkHex: "#FFFFFF"
+                    )
+                )
+            )
 
         case .klarna,
              .primerTestKlarna:
@@ -557,18 +665,23 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                     backgroundColor: PrimerTheme.BaseColors(
                         coloredHex: "#FFB3C7",
                         lightHex: "#FFFFFF",
-                        darkHex: "#000000"),
+                        darkHex: "#000000"
+                    ),
                     cornerRadius: 4,
                     borderWidth: PrimerTheme.BaseBorderWidth(
                         colored: 0,
                         light: 1,
-                        dark: 1),
+                        dark: 1
+                    ),
                     borderColor: PrimerTheme.BaseColors(
                         coloredHex: nil,
                         lightHex: "#000000",
-                        darkHex: "#FFFFFF"),
+                        darkHex: "#FFFFFF"
+                    ),
                     text: nil,
-                    textColor: nil))
+                    textColor: nil
+                )
+            )
 
         case .opennode:
             return PrimerPaymentMethod.DisplayMetadata(
@@ -577,18 +690,23 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                     backgroundColor: PrimerTheme.BaseColors(
                         coloredHex: nil,
                         lightHex: "#FFFFFF",
-                        darkHex: "#000000"),
+                        darkHex: "#000000"
+                    ),
                     cornerRadius: 4,
                     borderWidth: PrimerTheme.BaseBorderWidth(
                         colored: nil,
                         light: 1,
-                        dark: nil),
+                        dark: nil
+                    ),
                     borderColor: PrimerTheme.BaseColors(
                         coloredHex: nil,
                         lightHex: "#000000",
-                        darkHex: "#FFFFFF"),
+                        darkHex: "#FFFFFF"
+                    ),
                     text: nil,
-                    textColor: nil))
+                    textColor: nil
+                )
+            )
 
         case .payNLPayconiq:
             return PrimerPaymentMethod.DisplayMetadata(
@@ -597,18 +715,23 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                     backgroundColor: PrimerTheme.BaseColors(
                         coloredHex: "#FF4785",
                         lightHex: nil,
-                        darkHex: "#000000"),
+                        darkHex: "#000000"
+                    ),
                     cornerRadius: 4,
                     borderWidth: PrimerTheme.BaseBorderWidth(
                         colored: 0,
                         light: nil,
-                        dark: 1),
+                        dark: 1
+                    ),
                     borderColor: PrimerTheme.BaseColors(
                         coloredHex: nil,
                         lightHex: nil,
-                        darkHex: "#FFFFFF"),
+                        darkHex: "#FFFFFF"
+                    ),
                     text: nil,
-                    textColor: nil))
+                    textColor: nil
+                )
+            )
 
         case .paymentCard:
             return PrimerPaymentMethod.DisplayMetadata(
@@ -617,21 +740,27 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                     backgroundColor: PrimerTheme.BaseColors(
                         coloredHex: "#FFFFFF",
                         lightHex: "#FFFFFF",
-                        darkHex: "#000000"),
+                        darkHex: "#000000"
+                    ),
                     cornerRadius: 4,
                     borderWidth: PrimerTheme.BaseBorderWidth(
                         colored: 1,
                         light: 1,
-                        dark: 1),
+                        dark: 1
+                    ),
                     borderColor: PrimerTheme.BaseColors(
                         coloredHex: "#000000",
                         lightHex: "#000000",
-                        darkHex: "#FFFFFF"),
+                        darkHex: "#FFFFFF"
+                    ),
                     text: Strings.PaymentButton.payWithCard,
                     textColor: PrimerTheme.BaseColors(
                         coloredHex: "#000000",
                         lightHex: "#000000",
-                        darkHex: "#FFFFFF")))
+                        darkHex: "#FFFFFF"
+                    )
+                )
+            )
 
         case .payPal,
              .primerTestPayPal:
@@ -641,18 +770,23 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                     backgroundColor: PrimerTheme.BaseColors(
                         coloredHex: "#009CDE",
                         lightHex: nil,
-                        darkHex: nil),
+                        darkHex: nil
+                    ),
                     cornerRadius: 4,
                     borderWidth: PrimerTheme.BaseBorderWidth(
                         colored: 0,
                         light: nil,
-                        dark: nil),
+                        dark: nil
+                    ),
                     borderColor: PrimerTheme.BaseColors(
                         coloredHex: nil,
                         lightHex: nil,
-                        darkHex: nil),
+                        darkHex: nil
+                    ),
                     text: nil,
-                    textColor: nil))
+                    textColor: nil
+                )
+            )
 
         case .rapydFast:
             return nil
@@ -667,18 +801,23 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                     backgroundColor: PrimerTheme.BaseColors(
                         coloredHex: "#01B14E",
                         lightHex: nil,
-                        darkHex: nil),
+                        darkHex: nil
+                    ),
                     cornerRadius: 4,
                     borderWidth: PrimerTheme.BaseBorderWidth(
                         colored: 0,
                         light: nil,
-                        dark: nil),
+                        dark: nil
+                    ),
                     borderColor: PrimerTheme.BaseColors(
                         coloredHex: nil,
                         lightHex: nil,
-                        darkHex: nil),
+                        darkHex: nil
+                    ),
                     text: nil,
-                    textColor: nil))
+                    textColor: nil
+                )
+            )
 
         case .rapydPoli:
             return nil
@@ -694,18 +833,23 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                     backgroundColor: PrimerTheme.BaseColors(
                         coloredHex: "#023C68",
                         lightHex: nil,
-                        darkHex: nil),
+                        darkHex: nil
+                    ),
                     cornerRadius: 4,
                     borderWidth: PrimerTheme.BaseBorderWidth(
                         colored: 0,
                         light: nil,
-                        dark: nil),
+                        dark: nil
+                    ),
                     borderColor: PrimerTheme.BaseColors(
                         coloredHex: nil,
                         lightHex: nil,
-                        darkHex: nil),
+                        darkHex: nil
+                    ),
                     text: nil,
-                    textColor: nil))
+                    textColor: nil
+                )
+            )
 
         case .xenditOvo:
             return PrimerPaymentMethod.DisplayMetadata(
@@ -714,18 +858,23 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                     backgroundColor: PrimerTheme.BaseColors(
                         coloredHex: "#4B2489",
                         lightHex: "#FFFFFF",
-                        darkHex: "#000000"),
+                        darkHex: "#000000"
+                    ),
                     cornerRadius: 4,
                     borderWidth: PrimerTheme.BaseBorderWidth(
                         colored: 0,
                         light: 1,
-                        dark: 1),
+                        dark: 1
+                    ),
                     borderColor: PrimerTheme.BaseColors(
                         coloredHex: nil,
                         lightHex: "#000000",
-                        darkHex: "#FFFFFF"),
+                        darkHex: "#FFFFFF"
+                    ),
                     text: nil,
-                    textColor: nil))
+                    textColor: nil
+                )
+            )
 
         case .xenditRetailOutlets:
             return nil
@@ -737,18 +886,23 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                     backgroundColor: PrimerTheme.BaseColors(
                         coloredHex: "#028BF4",
                         lightHex: "#FFFFFF",
-                        darkHex: "#000000"),
+                        darkHex: "#000000"
+                    ),
                     cornerRadius: 4,
                     borderWidth: PrimerTheme.BaseBorderWidth(
                         colored: 0,
                         light: 1,
-                        dark: 1),
+                        dark: 1
+                    ),
                     borderColor: PrimerTheme.BaseColors(
                         coloredHex: nil,
                         lightHex: "#000000",
-                        darkHex: "#FFFFFF"),
+                        darkHex: "#FFFFFF"
+                    ),
                     text: nil,
-                    textColor: nil))
+                    textColor: nil
+                )
+            )
         case .nolPay:
             return nil
         case .stripeAch:
@@ -778,7 +932,7 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
     var buttonTitle: String? {
 
         let metadataButtonText = paymentMethodTokenizationViewModel.config.displayMetadata?.button.text
-            ?? self.localDisplayMetadata?.button.text
+            ?? localDisplayMetadata?.button.text
 
         switch paymentMethodTokenizationViewModel.config.type {
 
@@ -811,7 +965,7 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
     }
 
     var buttonImage: UIImage? {
-        self.logo
+        logo
     }
 
     lazy var buttonFont: UIFont? = {
@@ -820,7 +974,7 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
 
     var buttonCornerRadius: CGFloat? {
         let cornerRadius = paymentMethodTokenizationViewModel.config.displayMetadata?.button.cornerRadius
-            ?? self.localDisplayMetadata?.button.cornerRadius
+            ?? localDisplayMetadata?.button.cornerRadius
         guard cornerRadius != nil else { return 4.0 }
         return CGFloat(cornerRadius!)
     }
@@ -833,7 +987,7 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
             return nil
         }
 
-        switch self.themeMode {
+        switch themeMode {
         case .colored:
             if let coloredColorHex = baseBackgroundColor!.coloredHex {
                 return PrimerColor(hex: coloredColorHex)
@@ -853,13 +1007,13 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
 
     var buttonTitleColor: UIColor? {
         let baseTextColor = paymentMethodTokenizationViewModel.config.displayMetadata?.button.textColor
-            ?? self.localDisplayMetadata?.button.textColor
+            ?? localDisplayMetadata?.button.textColor
 
         guard baseTextColor != nil else {
             return nil
         }
 
-        switch self.themeMode {
+        switch themeMode {
         case .colored:
             if let coloredColorHex = baseTextColor!.coloredHex {
                 return PrimerColor(hex: coloredColorHex)
@@ -879,12 +1033,12 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
 
     var buttonBorderWidth: CGFloat {
         let baseBorderWidth = paymentMethodTokenizationViewModel.config.displayMetadata?.button.borderWidth
-            ?? self.localDisplayMetadata?.button.borderWidth
+            ?? localDisplayMetadata?.button.borderWidth
         guard baseBorderWidth != nil else {
             return 0.0
         }
 
-        switch self.themeMode {
+        switch themeMode {
         case .colored:
             return baseBorderWidth!.colored ?? 0.0
         case .light:
@@ -896,12 +1050,12 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
 
     var buttonBorderColor: UIColor? {
         let baseBorderColor = paymentMethodTokenizationViewModel.config.displayMetadata?.button.borderColor
-            ?? self.localDisplayMetadata?.button.borderColor
+            ?? localDisplayMetadata?.button.borderColor
         guard baseBorderColor != nil else {
             return nil
         }
 
-        switch self.themeMode {
+        switch themeMode {
         case .colored:
             if let coloredColorHex = baseBorderColor!.coloredHex {
                 return PrimerColor(hex: coloredColorHex)
@@ -940,19 +1094,21 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
         let type = paymentMethodTokenizationViewModel.config.type
         let defaultRightPadding = customPaddingSettingsCard.contains(type) ? imagePadding : 0
         let rightPadding = UILocalizableUtil.isRightToLeftLocale ? 0 : defaultRightPadding
-        paymentMethodButton.imageEdgeInsets = UIEdgeInsets(top: 8,
-                                                           left: leftPadding,
-                                                           bottom: 8,
-                                                           right: rightPadding)
+        paymentMethodButton.imageEdgeInsets = UIEdgeInsets(
+            top: 8,
+            left: leftPadding,
+            bottom: 8,
+            right: rightPadding
+        )
         paymentMethodButton.contentMode = .scaleAspectFit
         paymentMethodButton.imageView?.contentMode = .scaleAspectFit
         paymentMethodButton.titleLabel?.font = buttonFont
-        if let buttonCornerRadius = buttonCornerRadius {
+        if let buttonCornerRadius {
             paymentMethodButton.layer.cornerRadius = buttonCornerRadius
         }
         paymentMethodButton.backgroundColor = buttonColor
-        paymentMethodButton.setTitle(self.buttonTitle, for: .normal)
-        paymentMethodButton.setImage(self.buttonImage, for: .normal)
+        paymentMethodButton.setTitle(buttonTitle, for: .normal)
+        paymentMethodButton.setImage(buttonImage, for: .normal)
         paymentMethodButton.setTitleColor(buttonTitleColor, for: .normal)
         paymentMethodButton.tintColor = buttonTintColor
         paymentMethodButton.layer.borderWidth = buttonBorderWidth
@@ -1044,7 +1200,7 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
 
     @MainActor
     func makeLogoImageView(withSize size: CGSize?) -> UIImageView? {
-        guard let logo = self.logo else { return nil }
+        guard let logo else { return nil }
 
         var tmpSize: CGSize! = size
         if size == nil {
@@ -1062,22 +1218,31 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
 
     @MainActor
     func makeIconImageView(withDimension dimension: CGFloat) -> UIImageView? {
-        guard let squareLogo = self.icon else { return nil }
-        let imgView = UIImageView()
-        imgView.image = squareLogo
-        imgView.contentMode = .scaleAspectFit
-        imgView.translatesAutoresizingMaskIntoConstraints = false
-        imgView.heightAnchor.constraint(equalToConstant: dimension).isActive = true
-        imgView.widthAnchor.constraint(equalToConstant: dimension).isActive = true
-        return imgView
+        guard let squareLogo = icon else { return nil }
+
+        let createImageView: () -> UIImageView = {
+            let imgView = UIImageView()
+            imgView.image = squareLogo
+            imgView.contentMode = .scaleAspectFit
+            imgView.translatesAutoresizingMaskIntoConstraints = false
+            imgView.heightAnchor.constraint(equalToConstant: dimension).isActive = true
+            imgView.widthAnchor.constraint(equalToConstant: dimension).isActive = true
+            return imgView
+        }
+
+        if Thread.isMainThread {
+            return createImageView()
+        } else {
+            return DispatchQueue.main.sync { createImageView() }
+        }
     }
 
     @IBAction private func paymentMethodButtonTapped(_ sender: UIButton) {
-        self.paymentMethodTokenizationViewModel.start()
+        paymentMethodTokenizationViewModel.start()
     }
 
     @IBAction private func submitButtonTapped(_ sender: UIButton) {
-        self.paymentMethodTokenizationViewModel.submitButtonTapped()
+        paymentMethodTokenizationViewModel.submitButtonTapped()
     }
 }
 // swiftlint:enable type_body_length

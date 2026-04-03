@@ -1,7 +1,7 @@
 //
 //  AnyCodable.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 //
@@ -112,10 +112,10 @@ extension AnyCodable: ExpressibleByArrayLiteral {}
 extension AnyCodable: ExpressibleByDictionaryLiteral {}
 
 extension AnyCodable: Hashable {
-	public func hash(into hasher: inout Hasher) {
-		if let value = value as? (any Hashable) {
-			hasher.combine(value)
-		}
-	}
+    public func hash(into hasher: inout Hasher) {
+        if let value = value as? (any Hashable) {
+            hasher.combine(value)
+        }
+    }
 }
 // swiftlint:enable cyclomatic_complexity

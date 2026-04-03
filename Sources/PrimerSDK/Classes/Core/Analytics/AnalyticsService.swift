@@ -25,10 +25,12 @@ extension Analytics {
         static let maximumBatchSize: UInt = 100
 
         static var shared = {
-            Service(sdkLogsUrl: Service.defaultSdkLogsUrl,
-                    batchSize: Service.maximumBatchSize,
-                    storage: Analytics.storage,
-                    apiClient: Analytics.apiClient ?? PrimerAPIClient())
+            Service(
+                sdkLogsUrl: Service.defaultSdkLogsUrl,
+                batchSize: Service.maximumBatchSize,
+                storage: Analytics.storage,
+                apiClient: Analytics.apiClient ?? PrimerAPIClient()
+            )
         }()
 
         let sdkLogsUrl: URL
@@ -43,10 +45,12 @@ extension Analytics {
 
         private var isSyncing: Bool = false
 
-        init(sdkLogsUrl: URL,
-             batchSize: UInt,
-             storage: Storage,
-             apiClient: PrimerAPIClientAnalyticsProtocol) {
+        init(
+            sdkLogsUrl: URL,
+            batchSize: UInt,
+            storage: Storage,
+            apiClient: PrimerAPIClientAnalyticsProtocol
+        ) {
             self.sdkLogsUrl = sdkLogsUrl
             self.batchSize = batchSize
             self.storage = storage
@@ -194,7 +198,7 @@ extension Analytics {
                 completion(nil)
                 return
             }
-            
+
             if url.absoluteString != self.sdkLogsUrl.absoluteString,
                PrimerAPIConfigurationModule.clientToken?.decodedJWTToken == nil {
                 // Skip sending events that require client token when no token is available
@@ -203,11 +207,11 @@ extension Analytics {
                 completion(nil)
                 return
             }
-            
+
             let decodedJWTToken = PrimerAPIConfigurationModule.clientToken?.decodedJWTToken
-            
+
             logger.debug(message: "📚 Analytics: Sending \(events.count) events to \(url.absoluteString)")
-            
+
             self.apiClient.sendAnalyticsEvents(
                 clientToken: decodedJWTToken,
                 url: url,

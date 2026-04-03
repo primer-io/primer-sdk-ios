@@ -15,29 +15,29 @@ final class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDat
 
     var rawData: PrimerRawData? {
         didSet {
-            if let rawCardData = self.rawData as? PrimerBancontactCardData {
+            if let rawCardData = rawData as? PrimerBancontactCardData {
                 rawCardData.onDataDidChange = { [weak self] in
-                    guard let self = self else { return }
+                    guard let self else { return }
                     Task { try? await self.validateRawData(rawCardData) }
 
                     let newCardNetwork = CardNetwork(cardNumber: rawCardData.cardNumber)
-                    if newCardNetwork != self.cardNetwork {
-                        self.cardNetwork = newCardNetwork
+                    if newCardNetwork != cardNetwork {
+                        cardNetwork = newCardNetwork
                     }
                 }
 
                 let newCardNetwork = CardNetwork(cardNumber: rawCardData.cardNumber)
-                if newCardNetwork != self.cardNetwork {
-                    self.cardNetwork = newCardNetwork
+                if newCardNetwork != cardNetwork {
+                    cardNetwork = newCardNetwork
                 }
 
             } else {
-                if self.cardNetwork != .unknown {
-                    self.cardNetwork = .unknown
+                if cardNetwork != .unknown {
+                    cardNetwork = .unknown
                 }
             }
 
-            if let rawData = self.rawData {
+            if let rawData {
                 Task { try? await self.validateRawData(rawData) }
             }
         }
@@ -49,12 +49,21 @@ final class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDat
 
     public private(set) var cardNetwork: CardNetwork = .unknown {
         didSet {
-            guard let rawDataManager = rawDataManager else {
-                return
-            }
-
+            guard let rawDataManager else { return }
+            let cardNumber = (rawData as? PrimerBancontactCardData)?.cardNumber ?? ""
+            let state = PrimerCardNumberEntryState(cardNumber: cardNumber)
+            let network = PrimerCardNetwork(network: cardNetwork)
+            let metadata = PrimerCardNumberEntryMetadata(
+                source: .local,
+                selectableCardNetworks: nil,
+                detectedCardNetworks: [network]
+            )
             DispatchQueue.main.async {
-                rawDataManager.delegate?.primerRawDataManager?(rawDataManager, metadataDidChange: ["cardNetwork": self.cardNetwork.rawValue])
+                rawDataManager.delegate?.primerRawDataManager?(
+                    rawDataManager,
+                    didReceiveMetadata: metadata,
+                    forState: state
+                )
             }
         }
     }
@@ -126,7 +135,7 @@ final class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDat
             }
         }
 
-        if self.requiredInputElementTypes.contains(PrimerInputElementType.cardholderName) {
+        if requiredInputElementTypes.contains(PrimerInputElementType.cardholderName) {
             if rawData.cardholderName.isEmpty {
                 errors.append(PrimerValidationError.invalidCardholderName(
                     message: "Cardholder name cannot be blank."

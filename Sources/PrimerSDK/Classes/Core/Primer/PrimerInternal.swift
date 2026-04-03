@@ -42,18 +42,30 @@ final class PrimerInternal: LogReporter {
     }
 
     fileprivate init() {
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(onAppStateChange),
-                                               name: UIApplication.willTerminateNotification, object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(onAppStateChange),
-                                               name: UIApplication.willResignActiveNotification, object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(onAppDidEnterBackground),
-                                               name: UIApplication.didEnterBackgroundNotification, object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(onAppWillEnterForeground),
-                                               name: UIApplication.willEnterForegroundNotification, object: nil)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(onAppStateChange),
+            name: UIApplication.willTerminateNotification,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(onAppStateChange),
+            name: UIApplication.willResignActiveNotification,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(onAppDidEnterBackground),
+            name: UIApplication.didEnterBackgroundNotification,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(onAppWillEnterForeground),
+            name: UIApplication.willEnterForegroundNotification,
+            object: nil
+        )
     }
 
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
@@ -78,9 +90,11 @@ final class PrimerInternal: LogReporter {
         return false
     }
 
-    func application(_ application: UIApplication,
-                              continue userActivity: NSUserActivity,
-                              restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
+    func application(
+        _ application: UIApplication,
+        continue userActivity: NSUserActivity,
+        restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void
+    ) -> Bool {
         #if canImport(Primer3DS)
         return Primer3DS.application(application, continue: userActivity, restorationHandler: restorationHandler)
         #else
@@ -140,11 +154,11 @@ final class PrimerInternal: LogReporter {
      */
 
     func showUniversalCheckout(clientToken: String, completion: ((Error?) -> Void)? = nil) {
-        self.sdkIntegrationType = .dropIn
-        self.intent = .checkout
-        self.selectedPaymentMethodType = nil
-        self.checkoutSessionId = UUID().uuidString
-        self.timingEventId = UUID().uuidString
+        sdkIntegrationType = .dropIn
+        intent = .checkout
+        selectedPaymentMethodType = nil
+        checkoutSessionId = UUID().uuidString
+        timingEventId = UUID().uuidString
 
         var events: [Analytics.Event] = []
 
@@ -167,8 +181,10 @@ final class PrimerInternal: LogReporter {
                 try await PrimerUIManager.preparePresentation(clientToken: clientToken)
                 await PrimerUIManager.presentPaymentUI()
 
-                let currencyLoader = CurrencyLoader(storage: DefaultCurrencyStorage(),
-                                                    networkService: CurrencyNetworkService())
+                let currencyLoader = CurrencyLoader(
+                    storage: DefaultCurrencyStorage(),
+                    networkService: CurrencyNetworkService()
+                )
                 currencyLoader.updateCurrenciesFromAPI()
                 self.recordLoadedEvent(start, source: .universalCheckout)
                 completion?(nil)
@@ -181,12 +197,12 @@ final class PrimerInternal: LogReporter {
     }
 
     func showVaultManager(clientToken: String, completion: ((Error?) -> Void)? = nil) {
-        self.sdkIntegrationType = .dropIn
-        self.intent = .vault
-        self.selectedPaymentMethodType = nil
+        sdkIntegrationType = .dropIn
+        intent = .vault
+        selectedPaymentMethodType = nil
 
-        self.checkoutSessionId = UUID().uuidString
-        self.timingEventId = UUID().uuidString
+        checkoutSessionId = UUID().uuidString
+        timingEventId = UUID().uuidString
 
         var events: [Analytics.Event] = []
 
@@ -220,10 +236,10 @@ final class PrimerInternal: LogReporter {
 
     func showPaymentMethod(_ paymentMethodType: String, withIntent intent: PrimerSessionIntent, andClientToken clientToken: String, completion: ((Error?) -> Void)? = nil) {
         self.intent = intent
-        self.selectedPaymentMethodType = paymentMethodType
+        selectedPaymentMethodType = paymentMethodType
 
-        self.checkoutSessionId = UUID().uuidString
-        self.timingEventId = UUID().uuidString
+        checkoutSessionId = UUID().uuidString
+        timingEventId = UUID().uuidString
 
         var events: [Analytics.Event] = []
 
@@ -268,15 +284,15 @@ final class PrimerInternal: LogReporter {
 
         let timingEvent = Analytics.Event.timer(
             momentType: .end,
-            id: self.timingEventId
+            id: timingEventId
         )
 
         Analytics.Service.fire(events: [sdkEvent, timingEvent])
         Analytics.Service.drain()
 
-        self.checkoutSessionId = nil
-        self.selectedPaymentMethodType = nil
-        self.currentIdempotencyKey = nil
+        checkoutSessionId = nil
+        selectedPaymentMethodType = nil
+        currentIdempotencyKey = nil
 
         PrimerUIManager.dismissPrimerUI(animated: true) {
             PrimerDelegateProxy.primerDidDismiss(
