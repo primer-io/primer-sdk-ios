@@ -44,9 +44,7 @@ final class DesignTokensManager: ObservableObject {
     // Apply merchant theme overrides on top of loaded tokens
     let finalTokens = applyThemeOverrides(to: loadedTokens)
 
-    await MainActor.run {
-      self.tokens = finalTokens
-    }
+    tokens = finalTokens
   }
 
   // MARK: - Apply Theme Overrides

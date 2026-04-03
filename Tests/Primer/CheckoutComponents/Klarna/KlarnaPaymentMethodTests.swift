@@ -64,7 +64,7 @@ final class KlarnaPaymentMethodTests: XCTestCase {
     @MainActor
     func test_testKlarnaPaymentMethod_createScope_withValidDependencies_delegatesToKlarnaPaymentMethod() async throws {
         // Given
-        let container = await ContainerTestHelpers.createTestContainer()
+        let container = try await ContainerTestHelpers.createTestContainer()
         _ = try? await container.register(ProcessKlarnaPaymentInteractor.self)
             .asSingleton()
             .with { _ in StubProcessKlarnaPaymentInteractorForTests() }
@@ -83,7 +83,7 @@ final class KlarnaPaymentMethodTests: XCTestCase {
     @MainActor
     func test_testKlarnaPaymentMethod_createScope_withNonDefaultScope_throws() async throws {
         // Given
-        let container = await ContainerTestHelpers.createTestContainer()
+        let container = try await ContainerTestHelpers.createTestContainer()
         let invalidScope = MockNonDefaultCheckoutScopeForKlarna()
 
         // When/Then
@@ -124,7 +124,7 @@ final class KlarnaPaymentMethodTests: XCTestCase {
     @MainActor
     func test_createScope_withValidDependencies_returnsScope() async throws {
         // Given
-        let container = await ContainerTestHelpers.createTestContainer()
+        let container = try await ContainerTestHelpers.createTestContainer()
         _ = try? await container.register(ProcessKlarnaPaymentInteractor.self)
             .asSingleton()
             .with { _ in StubProcessKlarnaPaymentInteractorForTests() }
@@ -146,7 +146,7 @@ final class KlarnaPaymentMethodTests: XCTestCase {
     @MainActor
     func test_createView_withRegisteredScope_returnsView() async throws {
         // Given
-        let container = await ContainerTestHelpers.createTestContainer()
+        let container = try await ContainerTestHelpers.createTestContainer()
         _ = try? await container.register(ProcessKlarnaPaymentInteractor.self)
             .asSingleton()
             .with { _ in StubProcessKlarnaPaymentInteractorForTests() }
@@ -187,7 +187,7 @@ final class KlarnaPaymentMethodTests: XCTestCase {
     @MainActor
     func test_createScope_withNonDefaultCheckoutScope_throws() async throws {
         // Given
-        let container = await ContainerTestHelpers.createTestContainer()
+        let container = try await ContainerTestHelpers.createTestContainer()
         _ = try? await container.register(ProcessKlarnaPaymentInteractor.self)
             .asSingleton()
             .with { _ in StubProcessKlarnaPaymentInteractorForTests() }
@@ -238,7 +238,7 @@ final class KlarnaPaymentMethodTests: XCTestCase {
     @MainActor
     func test_createScope_withSinglePaymentMethod_usesDirectContext() async throws {
         // Given
-        let container = await ContainerTestHelpers.createTestContainer()
+        let container = try await ContainerTestHelpers.createTestContainer()
         _ = try? await container.register(ProcessKlarnaPaymentInteractor.self)
             .asSingleton()
             .with { _ in StubProcessKlarnaPaymentInteractorForTests() }
@@ -257,7 +257,7 @@ final class KlarnaPaymentMethodTests: XCTestCase {
     @MainActor
     func test_createScope_withMultiplePaymentMethods_usesPaymentSelectionContext() async throws {
         // Given
-        let container = await ContainerTestHelpers.createTestContainer()
+        let container = try await ContainerTestHelpers.createTestContainer()
         _ = try? await container.register(ProcessKlarnaPaymentInteractor.self)
             .asSingleton()
             .with { _ in StubProcessKlarnaPaymentInteractorForTests() }
@@ -297,7 +297,7 @@ final class KlarnaPaymentMethodTests: XCTestCase {
         registry.reset()
         KlarnaPaymentMethod.register()
 
-        let container = await ContainerTestHelpers.createTestContainer()
+        let container = try await ContainerTestHelpers.createTestContainer()
         _ = try? await container.register(ProcessKlarnaPaymentInteractor.self)
             .asSingleton()
             .with { _ in StubProcessKlarnaPaymentInteractorForTests() }

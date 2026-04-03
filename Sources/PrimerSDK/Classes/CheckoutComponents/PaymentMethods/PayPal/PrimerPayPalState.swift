@@ -8,8 +8,9 @@ import Foundation
 
 /// PayPal flow: `idle` -> `loading` -> `redirecting` -> `processing` -> `success` | `failure`
 @available(iOS 15.0, *)
-public struct PrimerPayPalState: Equatable {
+public struct PrimerPayPalState: Equatable, @unchecked Sendable {
 
+  /// When switching on this enum, always include a `default` case to handle future additions.
   public enum Step: Equatable {
     case idle
     case loading

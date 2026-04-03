@@ -8,9 +8,7 @@ import SwiftUI
 
 @available(iOS 15.0, *)
 @MainActor
-public final class DefaultFormRedirectScope: PrimerFormRedirectScope, ObservableObject, LogReporter {
-
-    // MARK: - Constants
+final class DefaultFormRedirectScope: PrimerFormRedirectScope, ObservableObject, LogReporter {
 
     private enum Constants {
         static let blikOtpLength = 6
@@ -18,17 +16,15 @@ public final class DefaultFormRedirectScope: PrimerFormRedirectScope, Observable
         static let defaultCountryFlag = "🇵🇹"
     }
 
-    // MARK: - Public Properties
+    let paymentMethodType: String
 
-    public let paymentMethodType: String
+    private(set) var presentationContext: PresentationContext
 
-    public private(set) var presentationContext: PresentationContext
-
-    public var dismissalMechanism: [DismissalMechanism] {
+    var dismissalMechanism: [DismissalMechanism] {
         checkoutScope?.dismissalMechanism ?? []
     }
 
-    public var state: AsyncStream<PrimerFormRedirectState> {
+    var state: AsyncStream<PrimerFormRedirectState> {
         AsyncStream { continuation in
             let task = Task { @MainActor in
                 for await _ in $internalState.values {
@@ -43,14 +39,10 @@ public final class DefaultFormRedirectScope: PrimerFormRedirectScope, Observable
         }
     }
 
-    // MARK: - UI Customization Properties
-
-    public var screen: FormRedirectScreenComponent?
-    public var formSection: FormRedirectFormSectionComponent?
-    public var submitButton: FormRedirectButtonComponent?
-    public var submitButtonText: String?
-
-    // MARK: - Private Properties
+    var screen: FormRedirectScreenComponent?
+    var formSection: FormRedirectFormSectionComponent?
+    var submitButton: FormRedirectButtonComponent?
+    var submitButtonText: String?
 
     private weak var checkoutScope: DefaultCheckoutScope?
     private let processPaymentInteractor: ProcessFormRedirectPaymentInteractor
@@ -63,14 +55,12 @@ public final class DefaultFormRedirectScope: PrimerFormRedirectScope, Observable
     private var hasStarted = false
     private var hasTrackedDetailsEntered = false
 
-    // MARK: - Initialization
-
     init(
         paymentMethodType: String,
-        checkoutScope: DefaultCheckoutScope,
+        checkoutScope: DefaultCheckoutScope? = nil,
         presentationContext: PresentationContext = .fromPaymentSelection,
         processPaymentInteractor: ProcessFormRedirectPaymentInteractor,
-        validationService: ValidationService,
+        validationService: ValidationService = DefaultValidationService(),
         analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol? = nil
     ) {
         self.paymentMethodType = paymentMethodType
@@ -82,25 +72,7 @@ public final class DefaultFormRedirectScope: PrimerFormRedirectScope, Observable
         configureFieldsForPaymentMethod()
     }
 
-    init(
-        paymentMethodType: String,
-        presentationContext: PresentationContext = .fromPaymentSelection,
-        processPaymentInteractor: ProcessFormRedirectPaymentInteractor,
-        validationService: ValidationService = DefaultValidationService(),
-        analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol? = nil
-    ) {
-        self.paymentMethodType = paymentMethodType
-        checkoutScope = nil
-        self.presentationContext = presentationContext
-        self.processPaymentInteractor = processPaymentInteractor
-        self.validationService = validationService
-        self.analyticsInteractor = analyticsInteractor
-        configureFieldsForPaymentMethod()
-    }
-
-    // MARK: - PrimerPaymentMethodScope Methods
-
-    public func start() {
+    func start() {
         guard !hasStarted else { return }
         hasStarted = true
         logger.debug(message: "Form redirect scope started for \(paymentMethodType)")
@@ -110,7 +82,7 @@ public final class DefaultFormRedirectScope: PrimerFormRedirectScope, Observable
         }
     }
 
-    public func submit() {
+    func submit() {
         guard internalState.isSubmitEnabled else {
             logger.warn(message: "Submit called but form is not valid")
             return

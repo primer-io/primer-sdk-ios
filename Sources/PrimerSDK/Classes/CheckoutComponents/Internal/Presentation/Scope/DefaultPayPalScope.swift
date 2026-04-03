@@ -8,17 +8,15 @@ import SwiftUI
 
 @available(iOS 15.0, *)
 @MainActor
-public final class DefaultPayPalScope: PrimerPayPalScope, ObservableObject, LogReporter {
+final class DefaultPayPalScope: PrimerPayPalScope, ObservableObject, LogReporter {
 
-  // MARK: - Public Properties
+  private(set) var presentationContext: PresentationContext
 
-  public private(set) var presentationContext: PresentationContext
-
-  public var dismissalMechanism: [DismissalMechanism] {
+  var dismissalMechanism: [DismissalMechanism] {
     checkoutScope?.dismissalMechanism ?? []
   }
 
-  public var state: AsyncStream<PrimerPayPalState> {
+  var state: AsyncStream<PrimerPayPalState> {
     AsyncStream { continuation in
       let task = Task { @MainActor in
         for await _ in $internalState.values {
@@ -33,21 +31,15 @@ public final class DefaultPayPalScope: PrimerPayPalScope, ObservableObject, LogR
     }
   }
 
-  // MARK: - UI Customization Properties
-
-  public var screen: PayPalScreenComponent?
-  public var payButton: PayPalButtonComponent?
-  public var submitButtonText: String?
-
-  // MARK: - Private Properties
+  var screen: PayPalScreenComponent?
+  var payButton: PayPalButtonComponent?
+  var submitButtonText: String?
 
   private weak var checkoutScope: DefaultCheckoutScope?
   private let processPayPalInteractor: ProcessPayPalPaymentInteractor
   private let analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol?
 
   @Published private var internalState = PrimerPayPalState()
-
-  // MARK: - Initialization
 
   init(
     checkoutScope: DefaultCheckoutScope,
@@ -61,33 +53,27 @@ public final class DefaultPayPalScope: PrimerPayPalScope, ObservableObject, LogR
     self.analyticsInteractor = analyticsInteractor
   }
 
-  // MARK: - PrimerPaymentMethodScope Methods
-
-  public func start() {
+  func start() {
     logger.debug(message: "PayPal scope started")
     internalState.step = .idle
   }
 
-  public func submit() {
+  func submit() {
     Task {
       await performPayment()
     }
   }
 
-  public func cancel() {
+  func cancel() {
     logger.debug(message: "PayPal payment cancelled")
     checkoutScope?.onDismiss()
   }
 
-  // MARK: - Navigation Methods
-
-  public func onBack() {
+  func onBack() {
     if presentationContext.shouldShowBackButton {
       checkoutScope?.checkoutNavigator.navigateBack()
     }
   }
-
-  // MARK: - Private Methods
 
   private func performPayment() async {
     internalState.step = .loading

@@ -12,6 +12,7 @@ struct AchUserDetailsView: View, LogReporter {
   let achState: PrimerAchState
 
   @Environment(\.designTokens) private var tokens
+  @FocusState private var focusedField: PrimerInputElementType?
 
   var body: some View {
     VStack(spacing: PrimerSpacing.large(tokens: tokens)) {
@@ -42,6 +43,8 @@ struct AchUserDetailsView: View, LogReporter {
       initialValue: achState.userDetails.firstName,
       onNameChange: scope.updateFirstName
     )
+    .focused($focusedField, equals: .firstName)
+    .onSubmit { focusedField = .lastName }
     .accessibilityIdentifier(AccessibilityIdentifiers.Ach.firstNameField)
   }
 
@@ -53,6 +56,8 @@ struct AchUserDetailsView: View, LogReporter {
       initialValue: achState.userDetails.lastName,
       onNameChange: scope.updateLastName
     )
+    .focused($focusedField, equals: .lastName)
+    .onSubmit { focusedField = .email }
     .accessibilityIdentifier(AccessibilityIdentifiers.Ach.lastNameField)
   }
 
@@ -64,6 +69,8 @@ struct AchUserDetailsView: View, LogReporter {
         initialValue: achState.userDetails.emailAddress,
         onEmailChange: scope.updateEmailAddress
       )
+      .focused($focusedField, equals: .email)
+      .onSubmit { focusedField = nil }
       .accessibilityIdentifier(AccessibilityIdentifiers.Ach.emailField)
 
       Text(CheckoutComponentsStrings.achEmailDisclaimer)

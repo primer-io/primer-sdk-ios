@@ -38,9 +38,8 @@ final class PrimerPaymentMethodTypeDefaultImageNameTests: XCTestCase {
         XCTAssertEqual(PrimerPaymentMethodType.applePay.defaultImageName, .appleIcon)
     }
 
-    func test_defaultImageName_googlePay_returnsAppleIconImage() {
-        // Google Pay uses same icon as Apple Pay
-        XCTAssertEqual(PrimerPaymentMethodType.googlePay.defaultImageName, .appleIcon)
+    func test_defaultImageName_googlePay_returnsGenericCard() {
+        XCTAssertEqual(PrimerPaymentMethodType.googlePay.defaultImageName, .genericCard)
     }
 
     // MARK: - ACH Payment Methods

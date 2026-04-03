@@ -35,19 +35,4 @@ final class CountryCodeValidationRulesTests: XCTestCase {
         assertAllInvalid(rule: rule, values: invalidCodes)
     }
 
-    // MARK: - Helpers
-
-    private func assertAllValid<R: ValidationRule>(rule: R, values: [String?], file: StaticString = #file, line: UInt = #line) where R.Input == String? {
-        for value in values {
-            let result = rule.validate(value)
-            XCTAssertTrue(result.isValid, "Expected '\(value ?? "nil")' to be valid", file: file, line: line)
-        }
-    }
-
-    private func assertAllInvalid<R: ValidationRule>(rule: R, values: [String?], file: StaticString = #file, line: UInt = #line) where R.Input == String? {
-        for value in values {
-            let result = rule.validate(value)
-            XCTAssertFalse(result.isValid, "Expected '\(value ?? "nil")' to be invalid", file: file, line: line)
-        }
-    }
 }
