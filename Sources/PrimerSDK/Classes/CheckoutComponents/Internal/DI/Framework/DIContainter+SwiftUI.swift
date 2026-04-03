@@ -63,8 +63,7 @@ extension DIContainer {
         return StateObject(wrappedValue: resolved)
       } catch {
         logger.debug(
-          message: "Failed to resolve \(String(describing: type)) from environment DI container"
-        )
+          message: "Failed to resolve \(String(describing: type)) from environment DI container")
         return StateObject(wrappedValue: fallback())
       }
     } else {

@@ -311,8 +311,7 @@ actor Container: ContainerProtocol, LogReporter {
           domain: "DIContainer", code: -1,
           userInfo: [
             NSLocalizedDescriptionKey: "Synchronous resolution timed out"
-          ]
-        )
+          ])
       )
     }
 
