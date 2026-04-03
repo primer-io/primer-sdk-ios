@@ -569,7 +569,7 @@ enum CheckoutComponentsStrings {
 
   static func paymentMethodDisplayName(_ displayName: String) -> String {
     let format = NSLocalizedString(
-      "primer_common_button_pay_amount",
+      "primer_common_display_name_pay_amount",
       tableName: tableName,
       bundle: .primerResources,
       value: "Pay %@",
@@ -613,7 +613,7 @@ enum CheckoutComponentsStrings {
   )
 
   static let cvvStandardPlaceholder = NSLocalizedString(
-    "primer_card_form_placeholder_cvv",
+    "primer_card_form_placeholder_cvv_standard",
     tableName: tableName,
     bundle: .primerResources,
     value: "123",
@@ -621,7 +621,7 @@ enum CheckoutComponentsStrings {
   )
 
   static let fullNamePlaceholder = NSLocalizedString(
-    "primer_card_form_placeholder_name",
+    "primer_card_form_placeholder_full_name",
     tableName: tableName,
     bundle: .primerResources,
     value: "Full name",
@@ -677,7 +677,7 @@ enum CheckoutComponentsStrings {
   )
 
   static let otpCodePlaceholder = NSLocalizedString(
-    "primer_card_form_label_otp",
+    "primer_card_form_placeholder_otp_code",
     tableName: tableName,
     bundle: .primerResources,
     value: "OTP Code",

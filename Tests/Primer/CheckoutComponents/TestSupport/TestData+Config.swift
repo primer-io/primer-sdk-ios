@@ -27,7 +27,7 @@ extension TestData {
 
     // MARK: - Locale
 
-    enum Locale {
+    enum TestLocale {
         static let spanish = "es"
         static let mexico = "MX"
         static let spanishMexico = "es-MX"

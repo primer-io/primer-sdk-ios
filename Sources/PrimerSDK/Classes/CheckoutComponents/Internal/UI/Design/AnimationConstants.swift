@@ -6,7 +6,7 @@
 
 import SwiftUI
 
-struct AnimationConstants {
+enum AnimationConstants {
 
   // MARK: - Duration
 
