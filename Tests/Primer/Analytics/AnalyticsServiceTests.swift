@@ -15,10 +15,12 @@ final class AnalyticsServiceTests: XCTestCase {
     override func setUp() {
         apiClient = MockPrimerAPIAnalyticsClient()
         storage = MockAnalyticsStorage()
-        sut = Analytics.Service(sdkLogsUrl: URL(string: "http://localhost/")!,
-                                batchSize: 5,
-                                storage: storage,
-                                apiClient: apiClient)
+        sut = Analytics.Service(
+            sdkLogsUrl: URL(string: "http://localhost/")!,
+            batchSize: 5,
+            storage: storage,
+            apiClient: apiClient
+        )
     }
 
     override func tearDown() async throws {
@@ -30,7 +32,7 @@ final class AnalyticsServiceTests: XCTestCase {
     }
 
     func testSimpleMessageEventBatchSend() async throws {
-        let expectation = self.expectation(description: "Batch of five events is sent")
+        let expectation = expectation(description: "Batch of five events is sent")
 
         apiClient.onSendAnalyticsEvent = { events in
             XCTAssertNotNil(events, "Expected events to be non-nil")
@@ -58,7 +60,7 @@ final class AnalyticsServiceTests: XCTestCase {
     }
 
     func testSimpleSDKEventBatchSend() async throws {
-        let expectation = self.expectation(description: "Batch of five SDK events is sent")
+        let expectation = expectation(description: "Batch of five SDK events is sent")
 
         PrimerAPIConfigurationModule.clientToken = MockAppState.mockClientToken
 
@@ -88,7 +90,7 @@ final class AnalyticsServiceTests: XCTestCase {
     }
 
     func testComplexMultiBatchFastSend() async throws {
-        let expectation = self.expectation(description: "Expected number of batches sent")
+        let expectation = expectation(description: "Expected number of batches sent")
         expectation.expectedFulfillmentCount = 5
 
         apiClient.onSendAnalyticsEvent = { _ in
@@ -117,7 +119,7 @@ final class AnalyticsServiceTests: XCTestCase {
     }
 
     func testComplexMultiBatchSlowSend() async throws {
-        let expectation = self.expectation(description: "Events sent to API client expected number of times")
+        let expectation = expectation(description: "Events sent to API client expected number of times")
         expectation.expectedFulfillmentCount = 3
 
         apiClient.onSendAnalyticsEvent = { _ in
@@ -155,7 +157,7 @@ final class AnalyticsServiceTests: XCTestCase {
     }
 
     func testFlush() async throws {
-        let expectation = self.expectation(description: "All events flushed")
+        let expectation = expectation(description: "All events flushed")
 
         Task {
             do {
@@ -180,7 +182,7 @@ final class AnalyticsServiceTests: XCTestCase {
 
         apiClient.shouldSucceed = false
 
-        let expectation = self.expectation(description: "Wait for all events to be sent")
+        let expectation = expectation(description: "Wait for all events to be sent")
         Task {
             try? await sendEvents(numberOfEvents: 4, eventType: .sdkEvent)
             expectation.fulfill()
@@ -211,7 +213,7 @@ final class AnalyticsServiceTests: XCTestCase {
 
         apiClient.shouldSucceed = false
 
-        let expectation = self.expectation(description: "Full event purge triggered")
+        let expectation = expectation(description: "Full event purge triggered")
         storage.onDeleteAnalyticsFile = {
             expectation.fulfill()
         }
@@ -242,15 +244,14 @@ final class AnalyticsServiceTests: XCTestCase {
         eventType: Analytics.Event.EventType = .message,
         after delay: TimeInterval? = nil
     ) async throws {
-        let events = (0 ..< numberOfEvents).compactMap { num in
-            switch eventType {
-            case .message:
+        let events = (0 ..< numberOfEvents).map { num -> Analytics.Event in
+            if eventType == .message {
                 return messageEvent(withMessage: "Test #\(num + 1)")
-            case .sdkEvent:
+            } else if eventType == .sdkEvent {
                 return sdkEvent(name: "Test #\(num + 1)")
-            default:
-                XCTFail()
-                return nil
+            } else {
+                XCTFail("Unsupported event type: \(eventType.rawValue)")
+                return messageEvent(withMessage: "Test #\(num + 1)")
             }
         }
 
