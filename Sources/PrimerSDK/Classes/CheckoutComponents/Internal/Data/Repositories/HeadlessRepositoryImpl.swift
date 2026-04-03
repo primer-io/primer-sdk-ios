@@ -10,46 +10,10 @@ import Foundation
   import Primer3DS
 #endif
 
-/// Thread-safe one-shot wrapper for CheckedContinuation to prevent double-resume crashes.
-@available(iOS 15.0, *)
-final class OneShotContinuation<T>: @unchecked Sendable {
-  private var continuation: CheckedContinuation<T, Error>?
-  private let lock = NSLock()
-
-  init(_ continuation: CheckedContinuation<T, Error>) {
-    self.continuation = continuation
-  }
-
-  func resume(returning value: T) {
-    lock.lock()
-    let cont = continuation
-    continuation = nil
-    lock.unlock()
-    cont?.resume(returning: value)
-  }
-
-  func resume(throwing error: Error) {
-    lock.lock()
-    let cont = continuation
-    continuation = nil
-    lock.unlock()
-    cont?.resume(throwing: error)
-  }
-
-  func resume(with result: Result<T, Error>) {
-    switch result {
-    case let .success(value):
-      resume(returning: value)
-    case let .failure(error):
-      resume(throwing: error)
-    }
-  }
-}
-
 /// Payment completion handler that implements delegate callbacks for async payment processing
 @available(iOS 15.0, *)
 @MainActor
-private class PaymentCompletionHandler: NSObject,
+private final class PaymentCompletionHandler: NSObject,
   @preconcurrency PrimerHeadlessUniversalCheckoutDelegate,
   @preconcurrency PrimerHeadlessUniversalCheckoutRawDataManagerDelegate,
   LogReporter {
@@ -134,13 +98,13 @@ private class PaymentCompletionHandler: NSObject,
   func primerHeadlessUniversalCheckoutDidEnterResumePendingWithPaymentAdditionalInfo(
     _ additionalInfo: PrimerCheckoutAdditionalInfo?
   ) {
-    repository?.trackRedirectToThirdPartyIfNeeded(from: additionalInfo)
+    repository?.trackRedirectToThirdPartyIfNeeded(from: additionalInfo, paymentMethodType: paymentMethodType)
   }
 
   func primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo(
     _ additionalInfo: PrimerCheckoutAdditionalInfo?
   ) {
-    repository?.trackRedirectToThirdPartyIfNeeded(from: additionalInfo)
+    repository?.trackRedirectToThirdPartyIfNeeded(from: additionalInfo, paymentMethodType: paymentMethodType)
   }
 
   // MARK: - PrimerHeadlessUniversalCheckoutRawDataManagerDelegate (Validation)
@@ -195,8 +159,7 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
       try manager.configure()
     } catch {
       logger.error(
-        message: "[Vault] VaultManager.configure() failed: \(error.localizedDescription)"
-      )
+        message: "[Vault] VaultManager.configure() failed: \(error.localizedDescription)")
     }
     return manager
   }()
@@ -208,10 +171,10 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
   /// HeadlessRepository uses transient DI scope - each checkout session creates a fresh instance,
   /// and the old instance (with any retained handler) is deallocated when the session ends.
   private var vaultPaymentCompletionHandler: PaymentCompletionHandler?
+  private var cardPaymentCompletionHandler: PaymentCompletionHandler?
 
   private var rawCardData = PrimerCardData(
-    cardNumber: "", expiryDate: "", cvv: "", cardholderName: ""
-  )
+    cardNumber: "", expiryDate: "", cvv: "", cardholderName: "")
   // swiftformat:disable:next wrap
   private let (networkDetectionStream, networkDetectionContinuation) = AsyncStream<[CardNetwork]>.makeStream()
   // swiftformat:disable:next wrap
@@ -239,7 +202,6 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
     self.vaultManagerFactory = vaultManagerFactory
   }
 
-  @available(iOS 15.0, *)
   private func injectSettings() async {
     guard settings == nil else { return }
 
@@ -250,17 +212,16 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
 
       settings = try await container.resolve(PrimerSettings.self)
     } catch {
+      logger.error(message: "Failed to resolve dependency: \(error)")
     }
   }
 
-  @available(iOS 15.0, *)
   private func ensureSettings() async {
     if settings == nil {
       await injectSettings()
     }
   }
 
-  @available(iOS 15.0, *)
   private func injectConfigurationService() async {
     guard configurationService == nil else { return }
 
@@ -276,10 +237,10 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
 
       configurationService = try await container.resolve(ConfigurationService.self)
     } catch {
+      logger.error(message: "Failed to resolve dependency: \(error)")
     }
   }
 
-  @available(iOS 15.0, *)
   private func ensureConfigurationService() async {
     if configurationService == nil {
       await injectConfigurationService()
@@ -291,9 +252,10 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
 
     let primerMethods = configurationService?.apiConfiguration?.paymentMethods ?? []
 
-    // Map PrimerPaymentMethod to InternalPaymentMethod with surcharge data
     let mappedMethods = primerMethods.map { primerMethod in
-      let networkSurcharges = extractNetworkSurcharges(for: primerMethod.type)
+      let networkSurcharges = configurationService.map {
+        NetworkSurchargeExtractor.extractNetworkSurcharges(for: primerMethod.type, from: $0)
+      } ?? nil
 
       let displayButton = primerMethod.displayMetadata?.button
       return InternalPaymentMethod(
@@ -304,7 +266,7 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
         configId: primerMethod.processorConfigId,
         isEnabled: true,
         supportedCurrencies: nil,
-        requiredInputElements: getRequiredInputElements(for: primerMethod.type),
+        requiredInputElements: NetworkSurchargeExtractor.getRequiredInputElements(for: primerMethod.type),
         metadata: nil,
         surcharge: primerMethod.surcharge,
         hasUnknownSurcharge: primerMethod.hasUnknownSurcharge,
@@ -319,84 +281,7 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
     }
 
     paymentMethods = mappedMethods
-    // Mapped payment methods with surcharge data
     return paymentMethods
-  }
-
-  private func extractNetworkSurcharges(for paymentMethodType: String) -> [String: Int]? {
-    guard paymentMethodType == PrimerPaymentMethodType.paymentCard.rawValue else {
-      return nil
-    }
-
-    let session = configurationService?.apiConfiguration?.clientSession
-    guard let paymentMethodData = session?.paymentMethod else {
-      return nil
-    }
-
-    guard let options = paymentMethodData.options else {
-      return nil
-    }
-
-    guard
-      let paymentCardOption = options.first(where: { ($0["type"] as? String) == paymentMethodType })
-    else {
-      return nil
-    }
-
-    if let networksArray = paymentCardOption["networks"] as? [[String: Any]] {
-      return extractFromNetworksArray(networksArray)
-    } else if let networksDict = paymentCardOption["networks"] as? [String: [String: Any]] {
-      return extractFromNetworksDict(networksDict)
-    } else {
-      return nil
-    }
-  }
-
-  private func extractFromNetworksArray(_ networksArray: [[String: Any]]) -> [String: Int]? {
-    var networkSurcharges: [String: Int] = [:]
-
-    for networkData in networksArray {
-      guard let networkType = networkData["type"] as? String else {
-        continue
-      }
-
-      if let surchargeData = networkData["surcharge"] as? [String: Any],
-        let surchargeAmount = surchargeData["amount"] as? Int,
-        surchargeAmount > 0 {
-        networkSurcharges[networkType] = surchargeAmount
-      } else if let surcharge = networkData["surcharge"] as? Int,
-        surcharge > 0 {
-        networkSurcharges[networkType] = surcharge
-      }
-    }
-
-    return networkSurcharges.isEmpty ? nil : networkSurcharges
-  }
-
-  private func extractFromNetworksDict(_ networksDict: [String: [String: Any]]) -> [String: Int]? {
-    var networkSurcharges: [String: Int] = [:]
-
-    for (networkType, networkData) in networksDict {
-      if let surchargeData = networkData["surcharge"] as? [String: Any],
-        let surchargeAmount = surchargeData["amount"] as? Int,
-        surchargeAmount > 0 {
-        networkSurcharges[networkType] = surchargeAmount
-      } else if let surcharge = networkData["surcharge"] as? Int,
-        surcharge > 0 {
-        networkSurcharges[networkType] = surcharge
-      }
-    }
-
-    return networkSurcharges.isEmpty ? nil : networkSurcharges
-  }
-
-  private func getRequiredInputElements(for paymentMethodType: String) -> [PrimerInputElementType] {
-    switch paymentMethodType {
-    case PrimerPaymentMethodType.paymentCard.rawValue:
-      [.cardNumber, .cvv, .expiryDate, .cardholderName]
-    default:
-      []
-    }
   }
 
   func processCardPayment(
@@ -409,7 +294,7 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
   ) async throws -> PaymentResult {
     try await withCheckedThrowingContinuation { continuation in
       let oneShot = OneShotContinuation(continuation)
-      Task { @MainActor in
+      Task { @MainActor [self] in
         do {
           let cardData = createCardData(
             cardNumber: cardNumber,
@@ -420,25 +305,34 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
             selectedNetwork: selectedNetwork
           )
 
-          let paymentHandler = PaymentCompletionHandler(repository: self) { result in
+          let paymentHandler = PaymentCompletionHandler(repository: self) { [weak self] result in
+            self?.cardPaymentCompletionHandler = nil
             oneShot.resume(with: result)
           }
+          cardPaymentCompletionHandler = paymentHandler
           PrimerHeadlessUniversalCheckout.current.delegate = paymentHandler
 
-          let rawDataManager = try self.rawDataManagerFactory.createRawDataManager(
+          let rawDataManager = try rawDataManagerFactory.createRawDataManager(
             paymentMethodType: "PAYMENT_CARD",
             delegate: paymentHandler
           )
+
+          let timeoutTask = Task {
+            try? await Task.sleep(nanoseconds: 60_000_000_000)
+            oneShot.resume(
+              throwing: PrimerError.unknown(
+                message: "Card payment timed out after 60 seconds"))
+          }
 
           configureRawDataManagerAndSubmit(
             rawDataManager: rawDataManager,
             cardData: cardData,
             selectedNetwork: selectedNetwork,
             oneShot: oneShot,
-            paymentHandler: paymentHandler
+            paymentHandler: paymentHandler,
+            timeoutTask: timeoutTask
           )
         } catch {
-          // Failed to setup payment
           oneShot.resume(throwing: error)
         }
       }
@@ -475,34 +369,33 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
     cardData: PrimerCardData,
     selectedNetwork: CardNetwork?,
     oneShot: OneShotContinuation<PaymentResult>,
-    paymentHandler: PaymentCompletionHandler
+    paymentHandler: PaymentCompletionHandler,
+    timeoutTask: Task<Void, Never>
   ) {
     rawDataManager.configure { [weak self] _, error in
       guard let self else { return }
 
       if let error {
+        timeoutTask.cancel()
         oneShot.resume(throwing: error)
         return
       }
 
-      // Set up validation callback to be notified when validation completes
       paymentHandler.setValidationCompletion { [weak self] isValid, errors in
         guard let self else { return }
 
         DispatchQueue.main.async {
-          // Use the callback's isValid parameter instead of re-checking the property
-          // to avoid race condition where the property hasn't been updated yet
           self.submitPaymentWithValidation(
             rawDataManager: rawDataManager,
             selectedNetwork: selectedNetwork,
             oneShot: oneShot,
             validationResult: isValid,
-            validationErrors: errors
+            validationErrors: errors,
+            timeoutTask: timeoutTask
           )
         }
       }
 
-      // This triggers validation automatically and will call the delegate when done
       rawDataManager.rawData = cardData
     }
   }
@@ -513,16 +406,15 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
     selectedNetwork: CardNetwork?,
     oneShot: OneShotContinuation<PaymentResult>,
     validationResult: Bool,
-    validationErrors: [Error]?
+    validationErrors: [Error]?,
+    timeoutTask: Task<Void, Never>
   ) {
-    // Use the validationResult from the callback instead of rawDataManager.isDataValid
-    // to avoid race condition where the property hasn't been updated yet
     if validationResult {
       updateClientSessionBeforePayment(selectedNetwork: selectedNetwork) { [weak self] error in
         guard let self else { return }
 
         if let error {
-          // Client session update failed
+          timeoutTask.cancel()
           oneShot.resume(throwing: error)
           return
         }
@@ -532,6 +424,7 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
         }
       }
     } else {
+      timeoutTask.cancel()
       handleValidationFailure(
         rawDataManager: rawDataManager,
         oneShot: oneShot,
@@ -545,9 +438,8 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
     await ensureSettings()
     let paymentHandlingMode = settings?.paymentHandling ?? .auto
 
-    // CheckoutComponents currently only supports auto mode, but log the setting
     if paymentHandlingMode == .manual {
-      // Manual payment handling not yet supported in CheckoutComponents - proceeding with auto mode
+      logger.warn(message: "[Card] Manual payment handling not yet supported in CheckoutComponents - proceeding with auto mode")
     }
 
     // This will trigger async payment processing and delegate callbacks
@@ -585,11 +477,11 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
     }
   }
 
-  func getNetworkDetectionStream() -> AsyncStream<[CardNetwork]> {
+  nonisolated func getNetworkDetectionStream() -> AsyncStream<[CardNetwork]> {
     networkDetectionStream
   }
 
-  func getBinDataStream() -> AsyncStream<PrimerBinData> {
+  nonisolated func getBinDataStream() -> AsyncStream<PrimerBinData> {
     binDataStream
   }
 
@@ -663,33 +555,30 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
 
     return try await withCheckedThrowingContinuation { continuation in
       let oneShot = OneShotContinuation(continuation)
-      Task { @MainActor in
+      Task { @MainActor [self] in
+        let timeoutTask = Task {
+          try? await Task.sleep(nanoseconds: 60_000_000_000)
+          oneShot.resume(
+            throwing: PrimerError.unknown(
+              message: "Vaulted payment timed out after 60 seconds"))
+        }
+
         let completionHandler = PaymentCompletionHandler(
           repository: self,
           paymentMethodType: paymentMethodType
         ) { [weak self] result in
+          timeoutTask.cancel()
           self?.vaultPaymentCompletionHandler = nil
           oneShot.resume(with: result)
         }
 
-        // Retain handler to prevent deallocation during async flow
-        self.vaultPaymentCompletionHandler = completionHandler
+        vaultPaymentCompletionHandler = completionHandler
         PrimerHeadlessUniversalCheckout.current.delegate = completionHandler
 
-        self.vaultManager.startPaymentFlow(
+        vaultManager.startPaymentFlow(
           vaultedPaymentMethodId: vaultedPaymentMethodId,
           vaultedPaymentMethodAdditionalData: additionalData
         )
-
-        // Timeout to prevent continuation hanging forever
-        Task {
-          try? await Task.sleep(nanoseconds: 60_000_000_000)
-          oneShot.resume(
-            throwing: PrimerError.unknown(
-              message: "Vaulted payment timed out after 60 seconds"
-            )
-          )
-        }
       }
     }
   }
@@ -761,12 +650,13 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
           paymentMethod: tokenData.paymentMethodType ?? "PAYMENT_CARD",
           provider: threeDSProvider ?? "Unknown",
           response: authentication.responseCode.rawValue
-        )
-      )
-    )
+        )))
   }
 
-  func trackRedirectToThirdPartyIfNeeded(from additionalInfo: PrimerCheckoutAdditionalInfo?) {
+  func trackRedirectToThirdPartyIfNeeded(
+    from additionalInfo: PrimerCheckoutAdditionalInfo?,
+    paymentMethodType: String
+  ) {
     guard let additionalInfo,
       let redirectUrl = extractRedirectURL(from: additionalInfo)
     else { return }
@@ -777,7 +667,13 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
     lastTrackedRedirectDestination = redirectUrl
 
     trackAnalyticsEvent(
-      .paymentRedirectToThirdParty, metadata: .redirect(RedirectEvent(destinationUrl: redirectUrl))
+      .paymentRedirectToThirdParty,
+      metadata: .redirect(
+        RedirectEvent(
+          paymentMethod: paymentMethodType,
+          destinationUrl: redirectUrl
+        )
+      )
     )
   }
 
@@ -787,6 +683,8 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
     ]
 
     for key in candidateKeys {
+      let selector = NSSelectorFromString(key)
+      guard info.responds(to: selector) else { continue }
       if let value = info.value(forKey: key) as? String, isLikelyURL(value) {
         return value
       }
@@ -855,7 +753,6 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
 
   private var analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol?
 
-  @available(iOS 15.0, *)
   private func injectAnalyticsInteractor() async {
     guard analyticsInteractor == nil else { return }
 
@@ -865,10 +762,9 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
       }
 
       analyticsInteractor = try await container.resolve(
-        CheckoutComponentsAnalyticsInteractorProtocol.self
-      )
+        CheckoutComponentsAnalyticsInteractorProtocol.self)
     } catch {
-      // Failed to resolve analytics interactor
+      logger.error(message: "Failed to resolve dependency: \(error)")
     }
   }
 }

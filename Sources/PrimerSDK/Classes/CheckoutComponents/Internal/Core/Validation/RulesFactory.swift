@@ -21,6 +21,8 @@ protocol RulesFactory {
   func createPhoneNumberValidationRule() -> PhoneNumberValidationRule
   func createAddressFieldRule(inputType: ValidationError.InputElementType, isRequired: Bool)
     -> AddressFieldRule
+  func createCityRule() -> CityRule
+  func createStateRule() -> StateRule
   func createBillingPostalCodeRule() -> BillingPostalCodeRule
   func createBillingCountryCodeRule() -> BillingCountryCodeRule
 }
@@ -70,6 +72,14 @@ final class DefaultRulesFactory: RulesFactory {
   func createAddressFieldRule(inputType: ValidationError.InputElementType, isRequired: Bool = true)
     -> AddressFieldRule {
     AddressFieldRule(inputType: inputType, isRequired: isRequired)
+  }
+
+  func createCityRule() -> CityRule {
+    CityRule()
+  }
+
+  func createStateRule() -> StateRule {
+    StateRule()
   }
 
   func createBillingPostalCodeRule() -> BillingPostalCodeRule {

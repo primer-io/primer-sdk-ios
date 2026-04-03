@@ -16,7 +16,7 @@ final class QRCodePaymentMethodTests: XCTestCase {
 
     override func setUp() async throws {
         try await super.setUp()
-        container = await ContainerTestHelpers.createTestContainer()
+        container = try await ContainerTestHelpers.createTestContainer()
         PaymentMethodRegistry.shared.reset()
     }
 
@@ -188,6 +188,15 @@ final class QRCodePaymentMethodTests: XCTestCase {
         _ = try? await container.register(QRCodeRepository.self)
             .asSingleton()
             .with { _ in StubQRCodeRepository() }
+
+        _ = try? await container.register(ProcessQRCodePaymentInteractor.self)
+            .asTransient()
+            .with { resolver in
+                ProcessQRCodePaymentInteractorImpl(
+                    repository: try await resolver.resolve(QRCodeRepository.self),
+                    paymentMethodType: ""
+                )
+            }
     }
 
     private func createCheckoutScopeWithMultiplePaymentMethods() -> DefaultCheckoutScope {

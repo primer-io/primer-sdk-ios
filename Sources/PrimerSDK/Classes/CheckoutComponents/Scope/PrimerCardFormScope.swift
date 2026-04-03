@@ -55,27 +55,8 @@ import SwiftUI
 public protocol PrimerCardFormScope: PrimerPaymentMethodScope
 where State == PrimerCardFormState {
 
-  /// Async stream of the current card form state including field values, validation, and networks.
-  var state: AsyncStream<PrimerCardFormState> { get }
-
   /// Card form-specific UI options from the SDK settings.
   var cardFormUIOptions: PrimerCardFormUIOptions? { get }
-
-  // MARK: - Payment Method Lifecycle
-
-  /// Initializes the card form and begins field observation.
-  func start()
-
-  /// Submits the card form for tokenization and payment processing.
-  func submit()
-
-  /// Cancels the card form and returns to the previous screen.
-  func cancel()
-
-  // MARK: - Navigation Methods
-
-  /// Called when the user taps the back button.
-  func onBack()
 
   // MARK: - Update Methods
 
@@ -178,16 +159,6 @@ where State == PrimerCardFormState {
 
   func DefaultCardFormView(styling: PrimerFieldStyling?) -> AnyView
 
-}
-
-// MARK: - Default Implementation for Payment Method Lifecycle
-
-@available(iOS 15.0, *)
-extension PrimerCardFormScope {
-
-  public func start() {
-    // Override if initialization logic needed
-  }
 }
 
 // MARK: - Structured State Default Implementations

@@ -8,19 +8,17 @@ import SwiftUI
 
 @available(iOS 15.0, *)
 @MainActor
-public final class DefaultWebRedirectScope: PrimerWebRedirectScope, ObservableObject, LogReporter {
+final class DefaultWebRedirectScope: PrimerWebRedirectScope, ObservableObject, LogReporter {
 
-    // MARK: - Public Properties
+    let paymentMethodType: String
 
-    public let paymentMethodType: String
+    private(set) var presentationContext: PresentationContext
 
-    public private(set) var presentationContext: PresentationContext
-
-    public var dismissalMechanism: [DismissalMechanism] {
+    var dismissalMechanism: [DismissalMechanism] {
         checkoutScope?.dismissalMechanism ?? []
     }
 
-    public var state: AsyncStream<PrimerWebRedirectState> {
+    var state: AsyncStream<PrimerWebRedirectState> {
         AsyncStream { continuation in
             let task = Task { @MainActor in
                 for await _ in $internalState.values {
@@ -35,13 +33,9 @@ public final class DefaultWebRedirectScope: PrimerWebRedirectScope, ObservableOb
         }
     }
 
-    // MARK: - UI Customization Properties
-
-    public var screen: WebRedirectScreenComponent?
-    public var payButton: WebRedirectButtonComponent?
-    public var submitButtonText: String?
-
-    // MARK: - Private Properties
+    var screen: WebRedirectScreenComponent?
+    var payButton: WebRedirectButtonComponent?
+    var submitButtonText: String?
 
     private weak var checkoutScope: DefaultCheckoutScope?
     private let processWebRedirectInteractor: ProcessWebRedirectPaymentInteractor
@@ -50,8 +44,6 @@ public final class DefaultWebRedirectScope: PrimerWebRedirectScope, ObservableOb
     private let repository: WebRedirectRepository?
 
     @Published private var internalState: PrimerWebRedirectState
-
-    // MARK: - Initialization
 
     init(
         paymentMethodType: String,
@@ -78,34 +70,28 @@ public final class DefaultWebRedirectScope: PrimerWebRedirectScope, ObservableOb
         )
     }
 
-    // MARK: - PrimerPaymentMethodScope Methods
-
-    public func start() {
+    func start() {
         internalState.status = .idle
     }
 
-    public func submit() {
+    func submit() {
         Task {
             await performPayment()
         }
     }
 
-    public func cancel() {
+    func cancel() {
         // Cancel any in-flight polling before resetting state
         repository?.cancelPolling(paymentMethodType: paymentMethodType)
         internalState.status = .idle
         checkoutScope?.onDismiss()
     }
 
-    // MARK: - Navigation Methods
-
-    public func onBack() {
+    func onBack() {
         if presentationContext.shouldShowBackButton {
             checkoutScope?.checkoutNavigator.navigateBack()
         }
     }
-
-    // MARK: - Private Methods
 
     private func performPayment() async {
         // Capture strong reference to checkoutScope before Safari opens

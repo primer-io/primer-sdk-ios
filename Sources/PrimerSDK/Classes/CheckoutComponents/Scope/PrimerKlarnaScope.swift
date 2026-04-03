@@ -38,9 +38,6 @@ public typealias KlarnaButtonComponent = (any PrimerKlarnaScope) -> any View
 @MainActor
 public protocol PrimerKlarnaScope: PrimerPaymentMethodScope where State == PrimerKlarnaState {
 
-  /// Async stream of Klarna payment state including current step and available categories.
-  var state: AsyncStream<PrimerKlarnaState> { get }
-
   /// The Klarna SDK payment view. Display this when `state.step` is `.viewReady`.
   var paymentView: UIView? { get }
 

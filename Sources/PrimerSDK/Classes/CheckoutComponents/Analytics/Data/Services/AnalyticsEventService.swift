@@ -78,7 +78,7 @@ actor AnalyticsEventService: CheckoutComponentsAnalyticsServiceProtocol, LogRepo
     guard let endpoint = environmentProvider.getEndpointURL(for: sessionConfig.environment) else {
       logger.warn(
         message:
-          "📊 [Analytics] Dropped \(eventType.rawValue) - invalid endpoint for \(sessionConfig.environment.rawValue)"
+          "[Analytics] Dropped \(eventType.rawValue) - invalid endpoint for \(sessionConfig.environment.rawValue)"
       )
       return
     }
@@ -92,11 +92,10 @@ actor AnalyticsEventService: CheckoutComponentsAnalyticsServiceProtocol, LogRepo
 
     do {
       try await networkClient.send(
-        payload: payload, to: endpoint, token: sessionConfig.clientSessionToken
-      )
+        payload: payload, to: endpoint, token: sessionConfig.clientSessionToken)
     } catch {
       logger.error(
-        message: "📊 [Analytics] Failed to send \(eventType.rawValue): \(error.localizedDescription)"
+        message: "[Analytics] Failed to send \(eventType.rawValue): \(error.localizedDescription)"
       )
     }
   }

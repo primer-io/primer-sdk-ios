@@ -9,10 +9,8 @@ import SwiftUI
 /// Closure type for the `onBeforePaymentCreate` callback.
 /// Provides payment method data and a decision handler to continue or abort payment creation.
 @available(iOS 15.0, *)
-public typealias BeforePaymentCreateHandler = @Sendable (
-  _ data: PrimerCheckoutPaymentMethodData,
-  _ decisionHandler: @escaping (PrimerPaymentCreationDecision) -> Void
-) -> Void
+public typealias BeforePaymentCreateHandler = @Sendable (_ data: PrimerCheckoutPaymentMethodData,
+                                                        _ decisionHandler: @escaping (PrimerPaymentCreationDecision) -> Void) -> Void
 
 /// The main scope interface for PrimerCheckout, providing lifecycle control and customizable UI components.
 @available(iOS 15.0, *)
@@ -34,9 +32,6 @@ public protocol PrimerCheckoutScope: AnyObject {
   /// Custom loading screen shown during payment processing.
   /// Default implementation shows a centered loading indicator with "Loading" text.
   var loadingScreen: Component? { get set }
-
-  // Note: Success screen removed - CheckoutComponents dismisses immediately on success
-  // The delegate handles presenting the result screen via PrimerResultViewController
 
   /// Default implementation shows error icon and message.
   var errorScreen: ErrorComponent? { get set }
@@ -80,10 +75,6 @@ public protocol PrimerCheckoutScope: AnyObject {
   /// let cardFormScope: PrimerCardFormScope = checkoutScope.getPaymentMethodScope(for: "PAYMENT_CARD")
   /// ```
   func getPaymentMethodScope<T: PrimerPaymentMethodScope>(for paymentMethodType: String) -> T?
-
-  // MARK: - Payment Method Screen Customization
-  // Removed: setPaymentMethodScreen and getPaymentMethodScreen methods
-  // Use PaymentMethodProtocol.content() for custom UI with ViewBuilder pattern
 
   // MARK: - Payment Callbacks
 
@@ -129,6 +120,7 @@ public protocol PrimerCheckoutScope: AnyObject {
 ///     }
 /// }
 /// ```
+/// When switching on this enum, always include a `default` case to handle future additions.
 @available(iOS 15.0, *)
 public enum PrimerCheckoutState: Equatable {
   /// Initial state while loading configuration and payment methods.

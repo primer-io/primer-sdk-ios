@@ -9,25 +9,25 @@ import UIKit
 
 @available(iOS 15.0, *)
 @MainActor
-public final class DefaultAchScope: PrimerAchScope, ObservableObject, LogReporter {
+final class DefaultAchScope: PrimerAchScope, ObservableObject, LogReporter {
 
-  public var screen: AchScreenComponent?
-  public var userDetailsScreen: AchScreenComponent?
-  public var mandateScreen: AchScreenComponent?
-  public var submitButton: AchButtonComponent?
+  var screen: AchScreenComponent?
+  var userDetailsScreen: AchScreenComponent?
+  var mandateScreen: AchScreenComponent?
+  var submitButton: AchButtonComponent?
 
-  public private(set) var presentationContext: PresentationContext
-  public private(set) var bankCollectorViewController: UIViewController?
+  private(set) var presentationContext: PresentationContext
+  private(set) var bankCollectorViewController: UIViewController?
 
-  public var dismissalMechanism: [DismissalMechanism] {
+  var dismissalMechanism: [DismissalMechanism] {
     checkoutScope?.dismissalMechanism ?? []
   }
 
-  public var state: AsyncStream<PrimerAchState> {
+  var state: AsyncStream<PrimerAchState> {
     AsyncStream { continuation in
-      let task = Task { @MainActor in
-        for await _ in self.$internalState.values {
-          continuation.yield(self.internalState)
+      let task = Task { [self] in
+        for await _ in $internalState.values {
+          continuation.yield(internalState)
         }
         continuation.finish()
       }
@@ -62,18 +62,18 @@ public final class DefaultAchScope: PrimerAchScope, ObservableObject, LogReporte
     self.analyticsInteractor = analyticsInteractor
   }
 
-  public func start() {
+  func start() {
     logger.debug(message: "ACH scope started")
     Task { [self] in
       await loadInitialUserDetails()
     }
   }
 
-  public func submit() {
+  func submit() {
     submitUserDetails()
   }
 
-  public func cancel() {
+  func cancel() {
     logger.debug(message: "ACH payment cancelled")
     guard let checkoutScope else {
       logger.warn(message: "ACH checkout scope was deallocated during cancel")
@@ -82,22 +82,22 @@ public final class DefaultAchScope: PrimerAchScope, ObservableObject, LogReporte
     checkoutScope.onDismiss()
   }
 
-  public func updateFirstName(_ value: String) {
+  func updateFirstName(_ value: String) {
     currentFirstName = value
     validateAndUpdateState()
   }
 
-  public func updateLastName(_ value: String) {
+  func updateLastName(_ value: String) {
     currentLastName = value
     validateAndUpdateState()
   }
 
-  public func updateEmailAddress(_ value: String) {
+  func updateEmailAddress(_ value: String) {
     currentEmailAddress = value
     validateAndUpdateState()
   }
 
-  public func submitUserDetails() {
+  func submitUserDetails() {
     guard validateUserDetails() else {
       logger.warn(message: "Cannot submit user details: validation failed")
       return
@@ -110,7 +110,7 @@ public final class DefaultAchScope: PrimerAchScope, ObservableObject, LogReporte
     }
   }
 
-  public func acceptMandate() {
+  func acceptMandate() {
     guard internalState.step == .mandateAcceptance else {
       logger.warn(message: "Cannot accept mandate in current step: \(internalState.step)")
       return
@@ -146,7 +146,7 @@ public final class DefaultAchScope: PrimerAchScope, ObservableObject, LogReporte
     }
   }
 
-  public func declineMandate() {
+  func declineMandate() {
     logger.debug(message: "ACH mandate declined")
 
     let error = ACHHelpers.getCancelledError(paymentMethodType: PrimerPaymentMethodType.stripeAch.rawValue)
@@ -157,7 +157,7 @@ public final class DefaultAchScope: PrimerAchScope, ObservableObject, LogReporte
     checkoutScope.handlePaymentError(error)
   }
 
-  public func onBack() {
+  func onBack() {
     guard presentationContext.shouldShowBackButton else { return }
     guard let checkoutScope else {
       logger.warn(message: "ACH checkout scope was deallocated during navigation back")

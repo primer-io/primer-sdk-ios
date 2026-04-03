@@ -20,6 +20,12 @@ final class DIContainerTests: XCTestCase {
     }
 
     override func tearDown() async throws {
+        // Clean up any scoped containers created during tests
+        for scopeId in scopeIdsToCleanUp {
+            await DIContainer.removeScopedContainer(for: scopeId)
+        }
+        scopeIdsToCleanUp.removeAll()
+
         if let savedContainer {
             await DIContainer.setContainer(savedContainer)
         } else {
@@ -27,6 +33,8 @@ final class DIContainerTests: XCTestCase {
         }
         try await super.tearDown()
     }
+
+    private var scopeIdsToCleanUp: [String] = []
 
     // MARK: - createContainer Tests
 
@@ -167,6 +175,7 @@ final class DIContainerTests: XCTestCase {
     func test_setScopedContainer_storesContainerForScope() async throws {
         // Given
         let scopeId = "test-scope"
+        scopeIdsToCleanUp.append(scopeId)
         let container = Container()
 
         // When
@@ -189,6 +198,7 @@ final class DIContainerTests: XCTestCase {
     func test_removeScopedContainer_removesContainer() async throws {
         // Given
         let scopeId = "removal-test-scope"
+        scopeIdsToCleanUp.append(scopeId)
         let container = Container()
         await DIContainer.setScopedContainer(container, for: scopeId)
 
@@ -204,6 +214,7 @@ final class DIContainerTests: XCTestCase {
         // Given
         let scope1 = "scope-1"
         let scope2 = "scope-2"
+        scopeIdsToCleanUp.append(contentsOf: [scope1, scope2])
         let container1 = Container()
         let container2 = Container()
 
