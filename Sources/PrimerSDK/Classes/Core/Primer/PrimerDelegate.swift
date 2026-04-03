@@ -1,7 +1,7 @@
 //
 //  PrimerDelegate.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import UIKit
@@ -60,8 +60,10 @@ final class PrimerDelegateProxy: LogReporter {
             if PrimerInternal.shared.sdkIntegrationType == .headless,
                (decisionHandler as ((PrimerHeadlessUniversalCheckoutResumeDecision) -> Void)?) != nil {
                 let delegate = PrimerHeadlessUniversalCheckout.current.delegate
-                delegate?.primerHeadlessUniversalCheckoutDidTokenizePaymentMethod?(paymentMethodTokenData,
-                                                                                   decisionHandler: decisionHandler)
+                delegate?.primerHeadlessUniversalCheckoutDidTokenizePaymentMethod?(
+                    paymentMethodTokenData,
+                    decisionHandler: decisionHandler
+                )
 
             } else if PrimerInternal.shared.sdkIntegrationType == .dropIn,
                       (decisionHandler as ((PrimerResumeDecision) -> Void)?) != nil {
@@ -90,8 +92,10 @@ final class PrimerDelegateProxy: LogReporter {
         DispatchQueue.main.async {
             if PrimerInternal.shared.sdkIntegrationType == .headless,
                (decisionHandler as ((PrimerHeadlessUniversalCheckoutResumeDecision) -> Void)?) != nil {
-                PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidResumeWith?(resumeToken,
-                                                                                                                decisionHandler: decisionHandler)
+                PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidResumeWith?(
+                    resumeToken,
+                    decisionHandler: decisionHandler
+                )
             } else if PrimerInternal.shared.sdkIntegrationType == .dropIn,
                       (decisionHandler as ((PrimerResumeDecision) -> Void)?) != nil {
                 Primer.shared.delegate?.primerDidResumeWith?(resumeToken, decisionHandler: decisionHandler)
@@ -122,8 +126,10 @@ final class PrimerDelegateProxy: LogReporter {
             if PrimerInternal.shared.sdkIntegrationType == .headless {
                 let delegate = PrimerHeadlessUniversalCheckout.current.delegate
                 if delegate?.primerHeadlessUniversalCheckoutWillCreatePaymentWithData != nil {
-                    delegate?.primerHeadlessUniversalCheckoutWillCreatePaymentWithData?(data,
-                                                                                        decisionHandler: decisionHandler)
+                    delegate?.primerHeadlessUniversalCheckoutWillCreatePaymentWithData?(
+                        data,
+                        decisionHandler: decisionHandler
+                    )
                 } else {
                     decisionHandler(.continuePaymentCreation())
                 }
@@ -281,8 +287,10 @@ final class PrimerDelegateProxy: LogReporter {
 
                 } else {
                     let delegate = PrimerHeadlessUniversalCheckout.current.delegate
-                    delegate?.primerHeadlessUniversalCheckoutDidFail!(withError: exposedError,
-                                                                      checkoutData: data)
+                    delegate?.primerHeadlessUniversalCheckoutDidFail!(
+                        withError: exposedError,
+                        checkoutData: data
+                    )
                     decisionHandler(.fail(withErrorMessage: nil))
                 }
 
@@ -311,7 +319,7 @@ final class PrimerDelegateProxy: LogReporter {
                 } else {
                     Primer.shared.delegate?.primerDidFailWithError?(exposedError, data: data, decisionHandler: { errorDecision in
                         switch errorDecision.type {
-                        case .fail(let message):
+                        case let .fail(message):
                             DispatchQueue.main.async {
                                 decisionHandler(.fail(withErrorMessage: message))
                             }
@@ -362,7 +370,7 @@ final class PrimerDelegateProxy: LogReporter {
             return await withCheckedContinuation { continuation in
                 primerDidFailWithError(exposedError, data) { errorDecision in
                     switch errorDecision.type {
-                    case .fail(let message):
+                    case let .fail(message):
                         continuation.resume(returning: .fail(withErrorMessage: message))
                     }
                 }
@@ -379,7 +387,7 @@ final class PrimerDelegateProxy: LogReporter {
         await withCheckedContinuation { continuation in
             PrimerDelegateProxy.primerDidFailWithError(primerError, data: data) { errorDecision in
                 switch errorDecision.type {
-                case .fail(let message):
+                case let .fail(message):
                     continuation.resume(returning: message)
                 }
             }
