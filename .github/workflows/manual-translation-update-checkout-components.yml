@@ -1,0 +1,61 @@
+name: 'Manual Translation Update - CheckoutComponents'
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to update'
+        required: true
+        default: 'master'
+
+jobs:
+  update-translations:
+    runs-on: ubuntu-latest
+    name: "Download latest CheckoutComponents translations from Phrase.com and make a PR."
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.RELEASE_ACCESS_TOKEN }}
+
+      - name: Install Phrase CLI
+        uses: phrase/setup-cli@d1c415d0ff01efc1bb21287d60a547669d9331c5
+        with:
+          version: '2.35.5'
+
+      - name: Prepend Phrase configuration
+        run: |
+          echo "phrase:" > .phrase.yml
+          echo "  access_token: ${PHRASE_ACCESS_KEY}" >> .phrase.yml
+          echo "  project_id: ${PHRASE_PROJECT_ID_CHECKOUT_COMPONENTS}" >> .phrase.yml
+          cat phrase_config_checkout_components.yml >> .phrase.yml
+        env:
+          PHRASE_ACCESS_KEY: ${{ secrets.PHRASE_ACCESS_KEY }}
+          PHRASE_PROJECT_ID_CHECKOUT_COMPONENTS: ${{ secrets.PHRASE_PROJECT_ID_CHECKOUT_COMPONENTS }}
+
+      - name: Download Translations from Phrase
+        run: phrase pull
+
+      - name: Remove .phrase.yml file
+        run: |
+          rm .phrase.yml
+
+      - name: Check for changes in translations folder
+        run: |
+          if git diff --quiet; then
+            echo "No changes detected in translations folder. Exiting."
+          else
+            echo "Changes detected:"
+            git diff
+          fi
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@84ae59a2cdc2258d6fa0732dd66352dddae2a412
+        with:
+          token: ${{ secrets.RELEASE_ACCESS_TOKEN }}
+          base: ${{ github.event.inputs.branch }}
+          branch: update-translations-checkout-components/${{ github.event.inputs.branch }}
+          title: "chore: CheckoutComponents Translation Update"
+          commit-message: "Update CheckoutComponents translations"
+          body: "This PR updates the CheckoutComponents translations from Phrase.com"
