@@ -8,7 +8,7 @@ import Foundation
 
 /// Internal payload model matching the analytics API JSON schema.
 /// Codable automatically omits nil optional values during JSON encoding.
-struct AnalyticsPayload: Codable {
+struct AnalyticsPayload: Codable, Sendable {
   // MARK: - Required Fields
 
   /// Unique event ID (UUID v4)

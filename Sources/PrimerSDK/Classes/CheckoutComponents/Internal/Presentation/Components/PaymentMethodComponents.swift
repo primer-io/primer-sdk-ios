@@ -29,8 +29,7 @@ struct PaymentMethodScreen: View {
         PaymentMethodPlaceholder(
           paymentMethodType: paymentMethodType,
           checkoutScope: checkoutScope
-        )
-      )
+        ))
     }
   }
 }
@@ -91,8 +90,7 @@ struct PaymentMethodPlaceholder: View {
             identifier: AccessibilityIdentifiers.Common.backButton,
             label: CheckoutComponentsStrings.a11yBack,
             traits: [.isButton]
-          )
-        )
+          ))
       } else {
         // Fallback to cancel button if we can't access internal navigator
         Button(
@@ -107,8 +105,7 @@ struct PaymentMethodPlaceholder: View {
             identifier: AccessibilityIdentifiers.Common.closeButton,
             label: CheckoutComponentsStrings.a11yCancel,
             traits: [.isButton]
-          )
-        )
+          ))
       }
 
       Spacer()
@@ -127,7 +124,7 @@ struct PaymentMethodPlaceholder: View {
     return Image(uiImage: fallbackImage ?? UIImage())
       .resizable()
       .aspectRatio(contentMode: .fit)
-      .frame(width: 80, height: 80)
+      .frame(width: PrimerIconSize.paymentMethodLargeWidth, height: PrimerIconSize.paymentMethodLargeHeight)
       .accessibilityHidden(true)  // Decorative image, payment method name is announced via text
   }
 

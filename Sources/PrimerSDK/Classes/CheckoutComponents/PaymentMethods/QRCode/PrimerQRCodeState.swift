@@ -8,8 +8,9 @@ import Foundation
 
 /// QR code flow: `loading` -> `displaying` -> `success` | `failure`
 @available(iOS 15.0, *)
-public struct PrimerQRCodeState: Equatable {
+public struct PrimerQRCodeState: Equatable, @unchecked Sendable {
 
+  /// When switching on this enum, always include a `default` case to handle future additions.
   public enum Status: Equatable {
     case loading
     case displaying

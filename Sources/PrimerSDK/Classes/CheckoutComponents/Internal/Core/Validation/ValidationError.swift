@@ -6,7 +6,7 @@
 
 import Foundation
 
-public struct ValidationError: Equatable, Hashable, Codable {
+struct ValidationError: Equatable, Hashable, Codable {
   let code: String
   let message: String
 
@@ -17,7 +17,7 @@ public struct ValidationError: Equatable, Hashable, Codable {
   let errorFormatKey: String?  // Localization key for formatted error
 
   /// Input element types matching PrimerInputElementType
-  public enum InputElementType: String, Codable, CaseIterable {
+  enum InputElementType: String, Codable, CaseIterable {
     case cardNumber = "CARD_NUMBER"
     case cvv = "CVV"
     case expiryDate = "EXPIRY_DATE"
@@ -37,7 +37,7 @@ public struct ValidationError: Equatable, Hashable, Codable {
     case unknown = "UNKNOWN"
   }
 
-  public init(
+  init(
     inputElementType: InputElementType,
     errorId: String,
     fieldNameKey: String? = nil,
@@ -55,7 +55,7 @@ public struct ValidationError: Equatable, Hashable, Codable {
     self.message = message
   }
 
-  public init(code: String, message: String) {
+  init(code: String, message: String) {
     self.code = code
     self.message = message
     inputElementType = .unknown

@@ -10,7 +10,7 @@ import Foundation
 /// Not all events require all metadata fields - include only relevant fields per event type.
 /// Analytics event metadata using discriminated unions for type safety.
 /// Each event type carries only its relevant metadata - no optional pollution.
-public enum AnalyticsEventMetadata {
+public enum AnalyticsEventMetadata: Sendable {
   case general(GeneralEvent = GeneralEvent())
   case payment(PaymentEvent)
   case threeDS(ThreeDSEvent)
@@ -20,7 +20,7 @@ public enum AnalyticsEventMetadata {
 // MARK: - Event Types
 
 /// Metadata for general analytics events (checkout flow, SDK lifecycle)
-public struct GeneralEvent {
+public struct GeneralEvent: Sendable {
   public let locale: String
 
   public init(locale: String = Self.formattedCurrentLocale) {
@@ -35,7 +35,7 @@ public struct GeneralEvent {
 }
 
 /// Metadata for payment-related analytics events
-public struct PaymentEvent {
+public struct PaymentEvent: Sendable {
   public let locale: String
   public let paymentMethod: String
   public let paymentId: String?
@@ -52,17 +52,17 @@ public struct PaymentEvent {
 }
 
 /// Metadata for 3D Secure authentication events
-public struct ThreeDSEvent {
+public struct ThreeDSEvent: Sendable {
   public let locale: String
   public let paymentMethod: String
   public let provider: String
-  public let response: String
+  public let response: String?
 
   public init(
     locale: String = GeneralEvent.formattedCurrentLocale,
     paymentMethod: String,
     provider: String,
-    response: String
+    response: String? = nil
   ) {
     self.locale = locale
     self.paymentMethod = paymentMethod
@@ -72,15 +72,18 @@ public struct ThreeDSEvent {
 }
 
 /// Metadata for third-party redirect events
-public struct RedirectEvent {
+public struct RedirectEvent: Sendable {
   public let locale: String
+  public let paymentMethod: String
   public let destinationUrl: String
 
   public init(
     locale: String = GeneralEvent.formattedCurrentLocale,
+    paymentMethod: String,
     destinationUrl: String
   ) {
     self.locale = locale
+    self.paymentMethod = paymentMethod
     self.destinationUrl = destinationUrl
   }
 }
@@ -102,6 +105,7 @@ extension AnalyticsEventMetadata {
     switch self {
     case let .payment(event): event.paymentMethod
     case let .threeDS(event): event.paymentMethod
+    case let .redirect(event): event.paymentMethod
     default: nil
     }
   }

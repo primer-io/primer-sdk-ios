@@ -40,6 +40,7 @@ public struct PaymentResult {
   }
 }
 
+/// When switching on this enum, always include a `default` case to handle future additions.
 public enum PaymentStatus {
   case pending
   case processing

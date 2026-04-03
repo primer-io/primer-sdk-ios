@@ -8,8 +8,9 @@ import Foundation
 
 /// ACH flow: `loading` -> `userDetailsCollection` -> `bankAccountCollection` -> `mandateAcceptance` -> `processing`
 @available(iOS 15.0, *)
-public struct PrimerAchState: Equatable {
+public struct PrimerAchState: Equatable, @unchecked Sendable {
 
+  /// When switching on this enum, always include a `default` case to handle future additions.
   public enum Step: Equatable {
     case loading
     case userDetailsCollection

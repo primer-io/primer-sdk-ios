@@ -53,8 +53,8 @@ final class MockLogPayloadBuilder: LogPayloadBuilding {
 
 final class LogPayloadBuilderTests: XCTestCase {
 
-    var builder: LogPayloadBuilder!
-    var mockSessionData: LoggingSessionContext.SessionData!
+    private var builder: LogPayloadBuilder!
+    private var mockSessionData: LoggingSessionContext.SessionData!
 
     override func setUp() {
         super.setUp()
@@ -123,7 +123,7 @@ final class LogPayloadBuilderTests: XCTestCase {
         let deviceInfo = json["device_info"] as? [String: Any]
         let networkType = deviceInfo?["network_type"] as? String
 
-        XCTAssertTrue(["WIFI", "CELLULAR", "NONE"].contains(networkType ?? ""))
+        XCTAssertTrue(["wifi", "cellular", "none"].contains(networkType ?? ""))
     }
 
     func test_buildInfoPayload_extractsInitDurationMsFromUserInfo() throws {

@@ -20,7 +20,7 @@ import SwiftUI
 /// - Custom font families specified via TypographyOverrides
 /// - Falls back to system fonts if custom font is unavailable
 @available(iOS 15.0, *)
-struct PrimerFont {
+enum PrimerFont {
 
   // MARK: - Base Font Function
 
@@ -129,7 +129,7 @@ struct PrimerFont {
   }
 
   /// Large icon font (48pt, weight 400) - for large icon displays
-  static func uiFontLargeIcon(tokens: DesignTokens?) -> UIFont {
+  static func uiFontLargeIcon(tokens _: DesignTokens?) -> UIFont {
     uiFont(family: "Inter", weight: 400, size: 48)
   }
 
@@ -140,7 +140,7 @@ struct PrimerFont {
   }
 
   /// Small badge font (10pt, weight 500) - for compact badge text
-  static func uiFontSmallBadge(tokens: DesignTokens?) -> UIFont {
+  static func uiFontSmallBadge(tokens _: DesignTokens?) -> UIFont {
     uiFont(family: "Inter", weight: 500, size: 10)
   }
 

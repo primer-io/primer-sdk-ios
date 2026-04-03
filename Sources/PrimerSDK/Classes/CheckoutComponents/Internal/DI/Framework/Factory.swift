@@ -7,7 +7,7 @@
 import Foundation
 
 /// Modern factory that handles both sync and async creation
-public protocol Factory<Product, Params>: Sendable {
+protocol Factory<Product, Params>: Sendable {
   associatedtype Product
   associatedtype Params = Void
 
@@ -16,7 +16,7 @@ public protocol Factory<Product, Params>: Sendable {
 
 /// Protocol marker for factories that are inherently synchronous
 /// This allows for performance optimizations when we know the factory is sync
-public protocol SynchronousFactory<Product, Params>: Factory {
+protocol SynchronousFactory<Product, Params>: Factory {
   /// Synchronous creation method - implement this for purely sync factories
   func createSync(with params: Params) throws -> Product
 }
@@ -29,13 +29,13 @@ extension SynchronousFactory {
 }
 
 extension Factory where Params == Void {
-  public func create() async throws -> Product {
+  func create() async throws -> Product {
     try await create(with: ())
   }
 }
 
 extension SynchronousFactory where Params == Void {
-  public func createSync() throws -> Product {
+  func createSync() throws -> Product {
     try createSync(with: ())
   }
 }
@@ -48,7 +48,7 @@ extension ContainerProtocol {
   ///   - name: Optional name for multiple registrations of the same type
   /// - Returns: Self for method chaining
   @discardableResult
-  public func registerFactory<F: Factory>(
+  func registerFactory<F: Factory>(
     _ factory: F,
     name: String? = nil
   ) async throws -> Self {
@@ -72,7 +72,7 @@ extension ContainerProtocol {
   ///   - name: Optional name for multiple registrations
   /// - Returns: Self for method chaining
   @discardableResult
-  public func registerFactory<F: Factory>(
+  func registerFactory<F: Factory>(
     _ factory: F,
     policy: ContainerRetainPolicy,
     name: String? = nil
@@ -99,7 +99,7 @@ extension ContainerProtocol {
   ///   - factory: Async-throwing closure that creates the factory instance
   /// - Returns: Self for method chaining
   @discardableResult
-  public func registerFactory<F: Factory>(
+  func registerFactory<F: Factory>(
     _ factoryType: F.Type,
     policy: ContainerRetainPolicy = .singleton,
     name: String? = nil,

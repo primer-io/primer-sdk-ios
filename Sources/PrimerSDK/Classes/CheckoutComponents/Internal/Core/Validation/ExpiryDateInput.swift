@@ -40,7 +40,6 @@ final class ExpiryDateRule: ValidationRule {
     let normalizedYear = yearInt > 99 ? yearInt % 100 : yearInt
 
     if normalizedYear < currentYear || (normalizedYear == currentYear && monthInt < currentMonth) {
-      // Create specific expired card error
       let error = ValidationError(
         inputElementType: .expiryDate,
         errorId: "card_expired",
@@ -48,7 +47,7 @@ final class ExpiryDateRule: ValidationRule {
         errorMessageKey: "form_error_card_expired",
         errorFormatKey: nil,
         code: "card-expired",
-        message: "Card has expired"
+        message: CheckoutComponentsStrings.formErrorCardExpired
       )
       return .invalid(error: error)
     }

@@ -47,12 +47,11 @@ struct SelectCountryScreen: View, LogReporter {
   private var searchBarSection: some View {
     Group {
       if let customSearchBar = scope.searchBar {
-        customSearchBar(
+        AnyView(customSearchBar(
           countryState.searchQuery,
           { query in
             scope.onSearch(query: query)
-          }, CheckoutComponentsStrings.searchCountriesPlaceholder
-        )
+          }, CheckoutComponentsStrings.searchCountriesPlaceholder))
       } else {
         defaultSearchBar
       }
@@ -81,8 +80,7 @@ struct SelectCountryScreen: View, LogReporter {
           label: {
             Image(systemName: "xmark.circle.fill")
               .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
-          }
-        )
+          })
       }
     }
     .padding(.horizontal, PrimerSpacing.medium(tokens: tokens))
@@ -116,8 +114,7 @@ struct SelectCountryScreen: View, LogReporter {
           config: AccessibilityConfiguration(
             identifier: AccessibilityIdentifiers.Common.loadingIndicator,
             label: CheckoutComponentsStrings.a11yLoading
-          )
-        )
+          ))
       Spacer()
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -145,8 +142,7 @@ struct SelectCountryScreen: View, LogReporter {
             AnyView(
               customCountryItem(country) {
                 selectCountry(country)
-              }
-            )
+              })
           } else {
             CountryItemView(
               country: country,

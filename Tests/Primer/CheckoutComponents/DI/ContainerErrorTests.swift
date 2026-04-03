@@ -98,7 +98,7 @@ final class ContainerErrorTests: XCTestCase {
     func test_typeCastFailed_includesExpectedAndActual() {
         // Given
         let key = TypeKey(String.self)
-        let error = ContainerError.typeCastFailed(key, expected: String.self, actual: Int.self)
+        let error = ContainerError.typeCastFailed(key, expected: String(describing: String.self), actual: String(describing: Int.self))
 
         // When
         let description = error.errorDescription
@@ -154,7 +154,7 @@ final class ContainerErrorTests: XCTestCase {
     }
 
     func test_typeCastFailed_hasRecoverySuggestion() {
-        let error = ContainerError.typeCastFailed(TypeKey(String.self), expected: String.self, actual: Int.self)
+        let error = ContainerError.typeCastFailed(TypeKey(String.self), expected: String(describing: String.self), actual: String(describing: Int.self))
         XCTAssertNotNil(error.recoverySuggestion)
     }
 
@@ -188,7 +188,7 @@ final class ContainerErrorTests: XCTestCase {
     }
 
     func test_typeCastFailed_isUserError() {
-        let error = ContainerError.typeCastFailed(TypeKey(String.self), expected: String.self, actual: Int.self)
+        let error = ContainerError.typeCastFailed(TypeKey(String.self), expected: String(describing: String.self), actual: String(describing: Int.self))
         XCTAssertTrue(error.isUserError)
     }
 
