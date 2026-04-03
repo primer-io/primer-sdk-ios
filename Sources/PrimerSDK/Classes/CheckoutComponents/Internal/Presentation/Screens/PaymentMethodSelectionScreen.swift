@@ -25,6 +25,7 @@ struct PaymentMethodSelectionScreen: View, LogReporter {
     }
     .environment(\.primerPaymentMethodSelectionScope, scope)
     .onAppear {
+      UIAccessibility.post(notification: .screenChanged, argument: nil)
       resolveConfigurationService()
       observeState()
     }
@@ -55,8 +56,7 @@ struct PaymentMethodSelectionScreen: View, LogReporter {
               identifier: AccessibilityIdentifiers.Common.closeButton,
               label: CheckoutComponentsStrings.a11yCancel,
               traits: [.isButton]
-            )
-          )
+            ))
       }
     }
     .padding(.horizontal, PrimerSpacing.large(tokens: tokens))
@@ -105,8 +105,7 @@ struct PaymentMethodSelectionScreen: View, LogReporter {
         .background(
           RoundedRectangle(cornerRadius: PrimerRadius.medium(tokens: tokens))
             .stroke(
-              CheckoutColors.borderDefault(tokens: tokens), lineWidth: PrimerBorderWidth.standard
-            )
+              CheckoutColors.borderDefault(tokens: tokens), lineWidth: PrimerBorderWidth.standard)
         )
     }
     .accessibility(
@@ -114,8 +113,7 @@ struct PaymentMethodSelectionScreen: View, LogReporter {
         identifier: AccessibilityIdentifiers.PaymentSelection.showOtherWaysButton,
         label: CheckoutComponentsStrings.a11yShowOtherWaysToPay,
         traits: [.isButton]
-      )
-    )
+      ))
   }
 
   // MARK: - Helpers

@@ -49,8 +49,7 @@ struct VaultSection: View {
           identifier: AccessibilityIdentifiers.PaymentSelection.showAllButton,
           label: CheckoutComponentsStrings.a11yShowAll,
           traits: [.isButton]
-        )
-      )
+        ))
     }
   }
 
@@ -70,8 +69,7 @@ struct VaultSection: View {
                 errorMessage: $cvvError,
                 cardNetwork: cardNetwork,
                 onCvvChange: scope.updateCvvInput
-              )
-            )
+              ))
           } : nil
       )
 
@@ -96,8 +94,8 @@ struct VaultSection: View {
         if isLoading {
           ProgressView()
             .progressViewStyle(
-              CircularProgressViewStyle(tint: CheckoutColors.background(tokens: tokens))
-            )
+              CircularProgressViewStyle(tint: CheckoutColors.background(tokens: tokens)))
+            .accessibilityLabel(CheckoutComponentsStrings.a11yLoading)
         } else {
           Text(CheckoutComponentsStrings.payButton)
         }
@@ -110,8 +108,7 @@ struct VaultSection: View {
         RoundedRectangle(cornerRadius: PrimerRadius.medium(tokens: tokens))
           .fill(
             isPayButtonEnabled
-              ? CheckoutColors.borderFocus(tokens: tokens) : CheckoutColors.gray300(tokens: tokens)
-          )
+              ? CheckoutColors.borderFocus(tokens: tokens) : CheckoutColors.gray300(tokens: tokens))
       )
     }
     .disabled(!isPayButtonEnabled)
@@ -120,8 +117,7 @@ struct VaultSection: View {
         identifier: AccessibilityIdentifiers.Vault.payButton,
         label: CheckoutComponentsStrings.payButton,
         traits: [.isButton]
-      )
-    )
+      ))
   }
 
   // MARK: - Helpers

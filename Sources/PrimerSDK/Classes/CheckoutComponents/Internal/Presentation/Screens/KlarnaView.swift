@@ -72,8 +72,7 @@ struct KlarnaView: View, LogReporter {
             identifier: AccessibilityIdentifiers.Common.backButton,
             label: CheckoutComponentsStrings.a11yBack,
             traits: [.isButton]
-          )
-        )
+          ))
       }
 
       Spacer()
@@ -94,8 +93,7 @@ struct KlarnaView: View, LogReporter {
             identifier: AccessibilityIdentifiers.Common.closeButton,
             label: CheckoutComponentsStrings.a11yCancel,
             traits: [.isButton]
-          )
-        )
+          ))
       } else {
         // Invisible spacer to keep logo centered
         Text(CheckoutComponentsStrings.cancelButton)
@@ -122,8 +120,7 @@ struct KlarnaView: View, LogReporter {
       config: AccessibilityConfiguration(
         identifier: AccessibilityIdentifiers.Klarna.logo,
         label: CheckoutComponentsStrings.klarnaBrandName
-      )
-    )
+      ))
   }
 
   // MARK: - Content Section
@@ -270,7 +267,7 @@ struct KlarnaView: View, LogReporter {
         .aspectRatio(contentMode: .fit)
     } placeholder: {
       RoundedRectangle(cornerRadius: Layout.badgeCornerRadius)
-        .fill(Color.pink.opacity(Layout.placeholderOpacity))
+        .fill(CheckoutColors.gray300(tokens: tokens).opacity(Layout.placeholderOpacity))
         .overlay(
           Text("K")
             .font(PrimerFont.bodyLarge(tokens: tokens))
@@ -374,14 +371,12 @@ struct KlarnaView: View, LogReporter {
           response: Response.Body.Klarna.SessionCategory(
             identifier: "pay_now", name: "Pay now",
             descriptiveAssetUrl: "", standardAssetUrl: ""
-          )
-        ),
+          )),
         KlarnaPaymentCategory(
           response: Response.Body.Klarna.SessionCategory(
             identifier: "pay_later", name: "Pay in 30 days",
             descriptiveAssetUrl: "", standardAssetUrl: ""
-          )
-        )
+          ))
       ]
       mockState = PrimerKlarnaState(step: step, categories: categories)
     }

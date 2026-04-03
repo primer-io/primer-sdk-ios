@@ -52,7 +52,7 @@ final class PrimerSwiftUIBridgeViewController: PrimerViewController {
       swiftUIView.environment(\.bridgeController, self)
     )
 
-    logger.info(message: "🌉 [SwiftUIBridge] Initialized bridge controller for SwiftUI integration")
+    logger.info(message: "[SwiftUIBridge] Initialized bridge controller for SwiftUI integration")
   }
 
   // MARK: - Lifecycle
@@ -62,7 +62,7 @@ final class PrimerSwiftUIBridgeViewController: PrimerViewController {
 
     setupSwiftUIContent()
     setupSizeObservation()
-    logger.debug(message: "🌉 [SwiftUIBridge] Bridge controller view loaded")
+    logger.debug(message: "[SwiftUIBridge] Bridge controller view loaded")
   }
 
   override func viewWillAppear(_ animated: Bool) {
@@ -99,16 +99,15 @@ final class PrimerSwiftUIBridgeViewController: PrimerViewController {
     // Complete the child view controller setup
     hostingController.didMove(toParent: self)
 
-    logger.debug(message: "🌉 [SwiftUIBridge] SwiftUI content embedded successfully")
+    logger.debug(message: "[SwiftUIBridge] SwiftUI content embedded successfully")
   }
 
   private func setupSizeObservation() {
     // Add observer for SwiftUI view size changes
     hostingController.view.addObserver(
-      self, forKeyPath: "bounds", options: [.new, .old], context: nil
-    )
+      self, forKeyPath: "bounds", options: [.new, .old], context: nil)
 
-    logger.debug(message: "🌉 [SwiftUIBridge] Size observation setup completed")
+    logger.debug(message: "[SwiftUIBridge] Size observation setup completed")
   }
 
   override func observeValue(
@@ -129,7 +128,7 @@ final class PrimerSwiftUIBridgeViewController: PrimerViewController {
 
       logger.debug(
         message:
-          "🌉 [SwiftUIBridge] SwiftUI bounds changed significantly: \(lastRecordedSize) -> \(newRect.size)"
+          "[SwiftUIBridge] SwiftUI bounds changed significantly: \(lastRecordedSize) -> \(newRect.size)"
       )
       lastRecordedSize = newRect.size
       updateContentSize()
@@ -155,8 +154,7 @@ final class PrimerSwiftUIBridgeViewController: PrimerViewController {
 
     // Get the intrinsic content size from SwiftUI
     let targetSize = CGSize(
-      width: view.bounds.width, height: UIView.layoutFittingCompressedSize.height
-    )
+      width: view.bounds.width, height: UIView.layoutFittingCompressedSize.height)
     let fittingSize = hostingController.view.systemLayoutSizeFitting(targetSize)
     let newSize = CGSize(width: view.bounds.width, height: fittingSize.height)
 
@@ -177,8 +175,7 @@ final class PrimerSwiftUIBridgeViewController: PrimerViewController {
 
     logger.debug(
       message:
-        "🌉 [SwiftUIBridge] Updated content size: \(preferredContentSize) (fitting: \(fittingSize))"
-    )
+        "[SwiftUIBridge] Updated content size: \(preferredContentSize) (fitting: \(fittingSize))")
   }
 
   func invalidateContentSize() {
@@ -189,8 +186,7 @@ final class PrimerSwiftUIBridgeViewController: PrimerViewController {
     hostingController.view.layoutIfNeeded()
 
     let targetSize = CGSize(
-      width: view.bounds.width, height: UIView.layoutFittingCompressedSize.height
-    )
+      width: view.bounds.width, height: UIView.layoutFittingCompressedSize.height)
     let fittingSize = hostingController.view.systemLayoutSizeFitting(targetSize)
 
     preferredContentSize = CGSize(width: view.bounds.width, height: fittingSize.height)
@@ -259,7 +255,7 @@ extension PrimerSwiftUIBridgeViewController {
   ) -> PrimerSwiftUIBridgeViewController {
 
     let logger = PrimerLogging.shared.logger
-    logger.info(message: "🌉 [SwiftUIBridge] Creating bridge for CheckoutComponents")
+    logger.info(message: "[SwiftUIBridge] Creating bridge for CheckoutComponents")
 
     // Create the SwiftUI checkout view
     let checkoutView = PrimerCheckout(
@@ -288,7 +284,7 @@ extension PrimerSwiftUIBridgeViewController {
       bridgeController.overrideUserInterfaceStyle = .dark
     }
 
-    logger.info(message: "🌉 [SwiftUIBridge] CheckoutComponents bridge created successfully")
+    logger.info(message: "[SwiftUIBridge] CheckoutComponents bridge created successfully")
     return bridgeController
   }
 }
