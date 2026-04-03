@@ -38,7 +38,7 @@ final class PrimerSettingsIntegrationTests: XCTestCase {
 
         let settings = PrimerSettings(
             paymentHandling: .manual,
-            localeData: PrimerLocaleData(languageCode: TestData.Locale.french, regionCode: TestData.Locale.france),
+            localeData: PrimerLocaleData(languageCode: TestData.TestLocale.french, regionCode: TestData.TestLocale.france),
             paymentMethodOptions: PrimerPaymentMethodOptions(
                 urlScheme: TestData.PaymentMethodOptions.testAppUrl,
                 klarnaOptions: klarnaOptions
@@ -71,7 +71,7 @@ final class PrimerSettingsIntegrationTests: XCTestCase {
         XCTAssertEqual(resolvedSettings.paymentHandling, .manual)
         XCTAssertTrue(resolvedSettings.clientSessionCachingEnabled)
         XCTAssertEqual(resolvedSettings.apiVersion, .V2_4)
-        XCTAssertEqual(resolvedSettings.localeData.localeCode, TestData.Locale.frenchFrance)
+        XCTAssertEqual(resolvedSettings.localeData.localeCode, TestData.TestLocale.frenchFrance)
         XCTAssertEqual(
             resolvedSettings.paymentMethodOptions.klarnaOptions?.recurringPaymentDescription,
             TestData.PaymentMethodOptions.testSubscription
@@ -195,7 +195,7 @@ final class PrimerSettingsIntegrationTests: XCTestCase {
 
     func test_localeData_withLanguageAndRegion_propagatesCorrectly() async throws {
         // Given: Settings with specific locale
-        let localeData = PrimerLocaleData(languageCode: TestData.Locale.german, regionCode: TestData.Locale.germany)
+        let localeData = PrimerLocaleData(languageCode: TestData.TestLocale.german, regionCode: TestData.TestLocale.germany)
         let settings = PrimerSettings(localeData: localeData)
 
         let composableContainer = ComposableContainer(settings: settings)
@@ -209,14 +209,14 @@ final class PrimerSettingsIntegrationTests: XCTestCase {
         let resolved = try await container.resolve(PrimerSettings.self)
 
         // Then: Locale data should be correctly propagated
-        XCTAssertEqual(resolved.localeData.languageCode, TestData.Locale.german)
-        XCTAssertEqual(resolved.localeData.regionCode, TestData.Locale.germany)
-        XCTAssertEqual(resolved.localeData.localeCode, TestData.Locale.germanGermany)
+        XCTAssertEqual(resolved.localeData.languageCode, TestData.TestLocale.german)
+        XCTAssertEqual(resolved.localeData.regionCode, TestData.TestLocale.germany)
+        XCTAssertEqual(resolved.localeData.localeCode, TestData.TestLocale.germanGermany)
     }
 
     func test_localeData_withLanguageOnly_usesLanguageCode() async throws {
         // Given: Settings with language code only
-        let localeData = PrimerLocaleData(languageCode: TestData.Locale.japanese, regionCode: nil)
+        let localeData = PrimerLocaleData(languageCode: TestData.TestLocale.japanese, regionCode: nil)
         let settings = PrimerSettings(localeData: localeData)
 
         let composableContainer = ComposableContainer(settings: settings)
@@ -230,9 +230,9 @@ final class PrimerSettingsIntegrationTests: XCTestCase {
         let resolved = try await container.resolve(PrimerSettings.self)
 
         // Then: Locale should use language code only
-        XCTAssertEqual(resolved.localeData.languageCode, TestData.Locale.japanese)
+        XCTAssertEqual(resolved.localeData.languageCode, TestData.TestLocale.japanese)
         XCTAssertNil(resolved.localeData.regionCode)
-        XCTAssertEqual(resolved.localeData.localeCode, TestData.Locale.japanese)
+        XCTAssertEqual(resolved.localeData.localeCode, TestData.TestLocale.japanese)
     }
 
     // MARK: - Container Lifecycle Tests

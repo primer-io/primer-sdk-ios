@@ -15,8 +15,8 @@ final class DefaultCardFormScopeTests: XCTestCase {
 
     // MARK: - Test Helpers
 
-    private func createTestContainer() async -> Container {
-        await ContainerTestHelpers.createTestContainer()
+    private func createTestContainer() async throws -> Container {
+        try await ContainerTestHelpers.createTestContainer()
     }
 
     private func createCardFormScope(
@@ -40,7 +40,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
     // MARK: - Card Number Field Validation Tests
 
     func test_cardNumberField_validatesCorrectly() async throws {
-        let container = await createTestContainer()
+        let container = try await createTestContainer()
 
         await DIContainer.withContainer(container) {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
@@ -60,7 +60,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
     }
 
     func test_cardNumberField_invalidNumber_setsError() async throws {
-        let container = await createTestContainer()
+        let container = try await createTestContainer()
 
         await DIContainer.withContainer(container) {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
@@ -84,7 +84,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
     // MARK: - CVV Field Validation Tests
 
     func test_cvvField_validatesForCardNetwork() async throws {
-        let container = await createTestContainer()
+        let container = try await createTestContainer()
 
         await DIContainer.withContainer(container) {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
@@ -108,7 +108,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
     // MARK: - Expiry Field Validation Tests
 
     func test_expiryField_rejectsExpiredDates() async throws {
-        let container = await createTestContainer()
+        let container = try await createTestContainer()
 
         await DIContainer.withContainer(container) {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
@@ -130,7 +130,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
     }
 
     func test_expiryField_acceptsValidDate() async throws {
-        let container = await createTestContainer()
+        let container = try await createTestContainer()
 
         await DIContainer.withContainer(container) {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
@@ -155,7 +155,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
     // MARK: - Cardholder Name Validation Tests
 
     func test_cardholderNameField_validatesCorrectly() async throws {
-        let container = await createTestContainer()
+        let container = try await createTestContainer()
 
         await DIContainer.withContainer(container) {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
@@ -175,7 +175,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
     }
 
     func test_cardholderNameField_invalidName_setsError() async throws {
-        let container = await createTestContainer()
+        let container = try await createTestContainer()
 
         await DIContainer.withContainer(container) {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
@@ -198,7 +198,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
     // MARK: - State Reflects Field Validation Tests
 
     func test_state_reflectsFieldValidation() async throws {
-        let container = await createTestContainer()
+        let container = try await createTestContainer()
 
         await DIContainer.withContainer(container) {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
@@ -222,7 +222,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
     // MARK: - Submit Tests
 
     func test_submit_withValidData_triggersPayment() async throws {
-        let container = await createTestContainer()
+        let container = try await createTestContainer()
 
         await DIContainer.withContainer(container) {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
@@ -260,7 +260,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
     }
 
     func test_onSubmit_callsSubmit() async throws {
-        let container = await createTestContainer()
+        let container = try await createTestContainer()
 
         await DIContainer.withContainer(container) {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
@@ -280,7 +280,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
     // MARK: - Co-Badged Card Detection Tests
 
     func test_coBadgedCardDetection_exposesNetworkOptions() async throws {
-        let container = await createTestContainer()
+        let container = try await createTestContainer()
 
         await DIContainer.withContainer(container) {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
@@ -302,7 +302,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
     // MARK: - Exhaustive Field Update Test
 
     func test_updateField_allFieldTypes_setsCorrectValues() async throws {
-        let container = await createTestContainer()
+        let container = try await createTestContainer()
 
         await DIContainer.withContainer(container) {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
@@ -339,7 +339,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
     // MARK: - Clear Field Error Tests
 
     func test_clearFieldError_removesError() async throws {
-        let container = await createTestContainer()
+        let container = try await createTestContainer()
 
         await DIContainer.withContainer(container) {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
@@ -357,7 +357,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
     // MARK: - Validation State Tests
 
     func test_updateValidationState_setsIsValid() async throws {
-        let container = await createTestContainer()
+        let container = try await createTestContainer()
 
         await DIContainer.withContainer(container) {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
@@ -382,7 +382,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
     }
 
     func test_updateValidationState_invalidField_setsIsValidFalse() async throws {
-        let container = await createTestContainer()
+        let container = try await createTestContainer()
 
         await DIContainer.withContainer(container) {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
@@ -407,7 +407,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
     // MARK: - Expiry Month/Year Tests
 
     func test_updateExpiryMonth_updatesOnlyMonth() async throws {
-        let container = await createTestContainer()
+        let container = try await createTestContainer()
 
         await DIContainer.withContainer(container) {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
@@ -421,7 +421,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
     }
 
     func test_updateExpiryYear_updatesOnlyYear() async throws {
-        let container = await createTestContainer()
+        let container = try await createTestContainer()
 
         await DIContainer.withContainer(container) {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
@@ -435,7 +435,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
     }
 
     func test_updateExpiryMonth_withEmptyYear_handlesGracefully() async throws {
-        let container = await createTestContainer()
+        let container = try await createTestContainer()
 
         await DIContainer.withContainer(container) {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
@@ -448,7 +448,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
     }
 
     func test_updateExpiryYear_withEmptyMonth_handlesGracefully() async throws {
-        let container = await createTestContainer()
+        let container = try await createTestContainer()
 
         await DIContainer.withContainer(container) {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
@@ -463,7 +463,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
     // MARK: - Country Code Tests
 
     func test_updateCountryCode_setsCountryAndSelectedCountry() async throws {
-        let container = await createTestContainer()
+        let container = try await createTestContainer()
 
         await DIContainer.withContainer(container) {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
@@ -478,7 +478,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
     }
 
     func test_updateCountryCode_withLowercase_normalizesCorrectly() async throws {
-        let container = await createTestContainer()
+        let container = try await createTestContainer()
 
         await DIContainer.withContainer(container) {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
@@ -492,7 +492,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
     }
 
     func test_updateCountryCode_withInvalidCode_handlesGracefully() async throws {
-        let container = await createTestContainer()
+        let container = try await createTestContainer()
 
         await DIContainer.withContainer(container) {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
@@ -507,7 +507,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
     // MARK: - Selected Card Network Tests
 
     func test_updateSelectedCardNetwork_setsNetworkCorrectly() async throws {
-        let container = await createTestContainer()
+        let container = try await createTestContainer()
 
         await DIContainer.withContainer(container) {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
@@ -521,7 +521,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
     }
 
     func test_updateSelectedCardNetwork_withMastercard_setsCorrectly() async throws {
-        let container = await createTestContainer()
+        let container = try await createTestContainer()
 
         await DIContainer.withContainer(container) {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
@@ -535,7 +535,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
     }
 
     func test_updateSelectedCardNetwork_withUnknown_clearsNetwork() async throws {
-        let container = await createTestContainer()
+        let container = try await createTestContainer()
 
         await DIContainer.withContainer(container) {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
@@ -552,7 +552,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
     // MARK: - Individual Validation State Methods Tests
 
     func test_updateCardNumberValidationState_updatesIsValid() async throws {
-        let container = await createTestContainer()
+        let container = try await createTestContainer()
 
         await DIContainer.withContainer(container) {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
@@ -573,7 +573,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
     }
 
     func test_updateCvvValidationState_invalidCvv_setsIsValidFalse() async throws {
-        let container = await createTestContainer()
+        let container = try await createTestContainer()
 
         await DIContainer.withContainer(container) {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
@@ -594,7 +594,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
     }
 
     func test_updateExpiryValidationState_invalidExpiry_setsIsValidFalse() async throws {
-        let container = await createTestContainer()
+        let container = try await createTestContainer()
 
         await DIContainer.withContainer(container) {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
@@ -615,7 +615,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
     }
 
     func test_updateCardholderNameValidationState_invalidName_setsIsValidFalse() async throws {
-        let container = await createTestContainer()
+        let container = try await createTestContainer()
 
         await DIContainer.withContainer(container) {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
@@ -636,7 +636,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
     }
 
     func test_updateBillingFieldValidationStates_doNotAffectIsValid() async throws {
-        let container = await createTestContainer()
+        let container = try await createTestContainer()
 
         await DIContainer.withContainer(container) {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
@@ -670,7 +670,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
     // MARK: - Form Configuration Tests
 
     func test_getFormConfiguration_returnsDefaultConfiguration() async throws {
-        let container = await createTestContainer()
+        let container = try await createTestContainer()
 
         await DIContainer.withContainer(container) {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
@@ -686,7 +686,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
     }
 
     func test_getBillingAddressConfiguration_returnsConfiguration() async throws {
-        let container = await createTestContainer()
+        let container = try await createTestContainer()
 
         await DIContainer.withContainer(container) {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
@@ -701,7 +701,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
     // MARK: - Select Country Scope Tests
 
     func test_selectCountry_returnsScope() async throws {
-        let container = await createTestContainer()
+        let container = try await createTestContainer()
 
         await DIContainer.withContainer(container) {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
@@ -714,7 +714,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
     }
 
     func test_selectCountry_returnsSameInstance() async throws {
-        let container = await createTestContainer()
+        let container = try await createTestContainer()
 
         await DIContainer.withContainer(container) {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
@@ -730,7 +730,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
     // MARK: - Multiple Field Error Tests
 
     func test_setFieldError_multipleFields_tracksAll() async throws {
-        let container = await createTestContainer()
+        let container = try await createTestContainer()
 
         await DIContainer.withContainer(container) {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
@@ -748,7 +748,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
     }
 
     func test_clearFieldError_onlyRemovesSpecificField() async throws {
-        let container = await createTestContainer()
+        let container = try await createTestContainer()
 
         await DIContainer.withContainer(container) {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
@@ -766,7 +766,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
     }
 
     func test_setFieldError_withNilErrorCode_setsError() async throws {
-        let container = await createTestContainer()
+        let container = try await createTestContainer()
 
         await DIContainer.withContainer(container) {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
@@ -781,7 +781,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
     // MARK: - Empty Field Value Tests
 
     func test_updateCardNumber_withEmptyString_clearsField() async throws {
-        let container = await createTestContainer()
+        let container = try await createTestContainer()
 
         await DIContainer.withContainer(container) {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
@@ -798,7 +798,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
     // MARK: - performSubmit Error Handling Tests
 
     func test_performSubmit_invalidExpiryFormat_handlesError() async throws {
-        let container = await createTestContainer()
+        let container = try await createTestContainer()
 
         await DIContainer.withContainer(container) {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
@@ -818,7 +818,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
     }
 
     func test_performSubmit_withTwoDigitYear_convertsToFourDigit() async throws {
-        let container = await createTestContainer()
+        let container = try await createTestContainer()
 
         await DIContainer.withContainer(container) {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
@@ -842,7 +842,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
     }
 
     func test_performSubmit_paymentInteractorFails_handlesError() async throws {
-        let container = await createTestContainer()
+        let container = try await createTestContainer()
 
         await DIContainer.withContainer(container) {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
@@ -870,7 +870,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
     // MARK: - submit Guard Tests
 
     func test_submit_whenAlreadyLoading_doesNotSubmitAgain() async throws {
-        let container = await createTestContainer()
+        let container = try await createTestContainer()
 
         await DIContainer.withContainer(container) {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
@@ -889,7 +889,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
     // MARK: - cancel Tests
 
     func test_cancel_cancelsNetworkDetectionTask() async throws {
-        let container = await createTestContainer()
+        let container = try await createTestContainer()
 
         await DIContainer.withContainer(container) {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
@@ -906,7 +906,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
     // MARK: - onBack Tests
 
     func test_onBack_fromPaymentSelection_navigatesBack() async throws {
-        let container = await createTestContainer()
+        let container = try await createTestContainer()
 
         await DIContainer.withContainer(container) {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
@@ -920,7 +920,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
     // MARK: - Billing Address Configuration Tests
 
     func test_getBillingAddressConfiguration_withBillingFields_reflectsFields() async throws {
-        let container = await createTestContainer()
+        let container = try await createTestContainer()
 
         await DIContainer.withContainer(container) {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
@@ -956,7 +956,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
     }
 
     func test_getFormConfiguration_withBillingAddress_includesBillingFields() async throws {
-        let container = await createTestContainer()
+        let container = try await createTestContainer()
 
         await DIContainer.withContainer(container) {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
@@ -987,7 +987,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
     }
 
     func test_getFormConfiguration_withoutBillingAddress_hasEmptyBillingFields() async throws {
-        let container = await createTestContainer()
+        let container = try await createTestContainer()
 
         await DIContainer.withContainer(container) {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
@@ -1009,7 +1009,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
     // MARK: - getCardNetworkForCvv Tests
 
     func test_getCardNetworkForCvv_withSelectedNetwork_returnsSelected() async throws {
-        let container = await createTestContainer()
+        let container = try await createTestContainer()
 
         await DIContainer.withContainer(container) {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
@@ -1023,7 +1023,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
     }
 
     func test_getCardNetworkForCvv_noSelectedNetwork_derivesFromCardNumber() async throws {
-        let container = await createTestContainer()
+        let container = try await createTestContainer()
 
         await DIContainer.withContainer(container) {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
@@ -1039,7 +1039,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
     // MARK: - updateField Default Case Tests
 
     func test_updateField_unknownType_doesNotCrash() async throws {
-        let container = await createTestContainer()
+        let container = try await createTestContainer()
 
         await DIContainer.withContainer(container) {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
@@ -1053,7 +1053,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
     // MARK: - Postal Code Update Tests
 
     func test_updatePostalCode_setsValue() async throws {
-        let container = await createTestContainer()
+        let container = try await createTestContainer()
 
         await DIContainer.withContainer(container) {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
@@ -1068,7 +1068,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
     // MARK: - updateField via Switch Cases Tests
 
     func test_updateField_cardNumber_delegatesToUpdateCardNumber() async throws {
-        let container = await createTestContainer()
+        let container = try await createTestContainer()
 
         await DIContainer.withContainer(container) {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
@@ -1081,7 +1081,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
     }
 
     func test_updateField_cvv_delegatesToUpdateCvv() async throws {
-        let container = await createTestContainer()
+        let container = try await createTestContainer()
 
         await DIContainer.withContainer(container) {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
@@ -1094,7 +1094,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
     }
 
     func test_updateField_expiryDate_delegatesToUpdateExpiryDate() async throws {
-        let container = await createTestContainer()
+        let container = try await createTestContainer()
 
         await DIContainer.withContainer(container) {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
@@ -1107,7 +1107,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
     }
 
     func test_updateField_postalCode_delegatesToUpdatePostalCode() async throws {
-        let container = await createTestContainer()
+        let container = try await createTestContainer()
 
         await DIContainer.withContainer(container) {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
@@ -1122,7 +1122,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
     // MARK: - Dismissal Mechanism and Card Form UI Options Tests
 
     func test_dismissalMechanism_delegatesToCheckoutScope() async throws {
-        let container = await createTestContainer()
+        let container = try await createTestContainer()
 
         await DIContainer.withContainer(container) {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
@@ -1134,7 +1134,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
     }
 
     func test_cardFormUIOptions_delegatesToCheckoutScope() async throws {
-        let container = await createTestContainer()
+        let container = try await createTestContainer()
 
         await DIContainer.withContainer(container) {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
@@ -1152,8 +1152,8 @@ final class DefaultCardFormScopeTests: XCTestCase {
 @MainActor
 final class DefaultCardFormScopeValidationTests: XCTestCase {
 
-    private func createTestContainer() async -> Container {
-        await ContainerTestHelpers.createTestContainer()
+    private func createTestContainer() async throws -> Container {
+        try await ContainerTestHelpers.createTestContainer()
     }
 
     private func createCardFormScope(
@@ -1172,7 +1172,7 @@ final class DefaultCardFormScopeValidationTests: XCTestCase {
     // MARK: - updateValidationState via KeyPath Tests
 
     func test_updateValidationState_keyPath_cardNumber_updatesFieldValidationStates() async throws {
-        let container = await createTestContainer()
+        let container = try await createTestContainer()
 
         await DIContainer.withContainer(container) {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
@@ -1200,7 +1200,7 @@ final class DefaultCardFormScopeValidationTests: XCTestCase {
     }
 
     func test_updateValidationState_keyPath_settingFalse_invalidatesForm() async throws {
-        let container = await createTestContainer()
+        let container = try await createTestContainer()
 
         await DIContainer.withContainer(container) {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
@@ -1229,7 +1229,7 @@ final class DefaultCardFormScopeValidationTests: XCTestCase {
     // MARK: - updateValidationStateIfNeeded Tests
 
     func test_updateValidationStateIfNeeded_cardNumber_mapsCorrectly() async throws {
-        let container = await createTestContainer()
+        let container = try await createTestContainer()
 
         await DIContainer.withContainer(container) {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
@@ -1244,7 +1244,7 @@ final class DefaultCardFormScopeValidationTests: XCTestCase {
     }
 
     func test_updateValidationStateIfNeeded_cvv_mapsCorrectly() async throws {
-        let container = await createTestContainer()
+        let container = try await createTestContainer()
 
         await DIContainer.withContainer(container) {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
@@ -1257,7 +1257,7 @@ final class DefaultCardFormScopeValidationTests: XCTestCase {
     }
 
     func test_updateValidationStateIfNeeded_expiryDate_mapsCorrectly() async throws {
-        let container = await createTestContainer()
+        let container = try await createTestContainer()
 
         await DIContainer.withContainer(container) {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
@@ -1270,7 +1270,7 @@ final class DefaultCardFormScopeValidationTests: XCTestCase {
     }
 
     func test_updateValidationStateIfNeeded_cardholderName_mapsCorrectly() async throws {
-        let container = await createTestContainer()
+        let container = try await createTestContainer()
 
         await DIContainer.withContainer(container) {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
@@ -1283,7 +1283,7 @@ final class DefaultCardFormScopeValidationTests: XCTestCase {
     }
 
     func test_updateValidationStateIfNeeded_billingFields_mapCorrectly() async throws {
-        let container = await createTestContainer()
+        let container = try await createTestContainer()
 
         await DIContainer.withContainer(container) {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
@@ -1314,7 +1314,7 @@ final class DefaultCardFormScopeValidationTests: XCTestCase {
     }
 
     func test_updateValidationStateIfNeeded_unmappedType_doesNothing() async throws {
-        let container = await createTestContainer()
+        let container = try await createTestContainer()
 
         await DIContainer.withContainer(container) {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()

@@ -38,16 +38,15 @@ actor MockLogNetworkClient: LogNetworkClientProtocol {
 @available(iOS 15.0, *)
 final class LoggingServiceTests: XCTestCase {
 
-    var mockNetworkClient: MockLogNetworkClient!
-    var loggingService: LoggingService!
+    private var mockNetworkClient: MockLogNetworkClient!
+    private var loggingService: LoggingService!
 
     override func setUp() async throws {
         try await super.setUp()
         mockNetworkClient = MockLogNetworkClient()
         loggingService = LoggingService(
             networkClient: mockNetworkClient,
-            payloadBuilder: LogPayloadBuilder(),
-            masker: SensitiveDataMasker()
+            payloadBuilder: LogPayloadBuilder()
         )
 
         await LoggingSessionContext.shared.initialize(
@@ -125,20 +124,6 @@ final class LoggingServiceTests: XCTestCase {
 
         let payloads = await mockNetworkClient.sentPayloads
         XCTAssertEqual(payloads.count, 0)
-    }
-
-    func test_logErrorIfReportable_masksSensitiveData() async {
-        let error = PrimerError.unknown(diagnosticsId: "test-id")
-        await loggingService.logErrorIfReportable(
-            error,
-            message: "Payment for user@email.com with card 4111111111111111 failed"
-        )
-
-        let payloads = await mockNetworkClient.sentPayloads
-        let message = payloads.first?.message ?? ""
-
-        XCTAssertFalse(message.contains("4111111111111111"))
-        XCTAssertFalse(message.contains("user@email.com"))
     }
 
     // MARK: - Error Handling Tests

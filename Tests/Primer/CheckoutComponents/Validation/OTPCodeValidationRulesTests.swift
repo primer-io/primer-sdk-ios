@@ -21,7 +21,7 @@ final class OTPCodeValidationRulesTests: XCTestCase {
     func test_validateOTPCode_withInvalidCodes_returnsInvalid() {
         let rule = OTPCodeRule(expectedLength: TestData.OTPCodes.expectedLength6)
         let invalidCodes: [String] = [
-            TestData.OTPCodes.tooShort,
+            TestData.OTPCodes.tooShortFor6Digit,
             TestData.OTPCodes.withNonNumeric,
             TestData.OTPCodes.empty
         ]
@@ -29,12 +29,4 @@ final class OTPCodeValidationRulesTests: XCTestCase {
         assertAllInvalid(rule: rule, values: invalidCodes)
     }
 
-    // MARK: - Helpers
-
-    private func assertAllInvalid<R: ValidationRule>(rule: R, values: [String], file: StaticString = #file, line: UInt = #line) where R.Input == String {
-        for value in values {
-            let result = rule.validate(value)
-            XCTAssertFalse(result.isValid, "Expected '\(value)' to be invalid", file: file, line: line)
-        }
-    }
 }

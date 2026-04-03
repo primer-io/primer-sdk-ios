@@ -8,7 +8,7 @@ import Foundation
 
 @available(iOS 15.0, *)
 @MainActor
-public final class DIContainer: LogReporter {
+final class DIContainer: LogReporter {
   public static let shared = DIContainer()
 
   /// Isolated actor for thread-safe container operations
@@ -134,24 +134,4 @@ public final class DIContainer: LogReporter {
     }
   }
 
-  public static func createMockContainer() async -> any ContainerProtocol {
-    let container = Container()
-    await registerMockDependencies(in: container)
-    return container
-  }
-
-  private static func registerMockDependencies(in container: Container) async {
-    await registerMockRepositories(container)
-    await registerMockUseCases(container)
-    await registerMockServices(container)
-  }
-
-  private static func registerMockRepositories(_ container: Container) async {
-  }
-
-  private static func registerMockUseCases(_ container: Container) async {
-  }
-
-  private static func registerMockServices(_ container: Container) async {
-  }
 }
