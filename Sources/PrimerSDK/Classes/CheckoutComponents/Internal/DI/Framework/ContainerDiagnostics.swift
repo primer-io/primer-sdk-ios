@@ -6,14 +6,14 @@
 
 import Foundation
 
-public struct ContainerDiagnostics: Sendable, CustomStringConvertible {
-  public let totalRegistrations: Int
-  public let singletonInstances: Int
-  public let weakReferences: Int
-  public let activeWeakReferences: Int
-  public let registeredTypes: [TypeKey]
+struct ContainerDiagnostics: Sendable, CustomStringConvertible {
+  let totalRegistrations: Int
+  let singletonInstances: Int
+  let weakReferences: Int
+  let activeWeakReferences: Int
+  let registeredTypes: [TypeKey]
 
-  public var description: String {
+  var description: String {
     """
     Container Diagnostics:
     - Total Registrations: \(totalRegistrations)
@@ -24,7 +24,7 @@ public struct ContainerDiagnostics: Sendable, CustomStringConvertible {
   }
 
   #if DEBUG
-    public func printDetailedReport() {
+    func printDetailedReport() {
       print(description)
       print("\nRegistered Types:")
       for type in registeredTypes.sorted(by: { $0.description < $1.description }) {
@@ -34,45 +34,45 @@ public struct ContainerDiagnostics: Sendable, CustomStringConvertible {
   #endif
 }
 
-public enum HealthStatus {
+enum HealthStatus {
   case healthy
   case hasIssues
   case critical
 }
 
-public enum HealthIssue {
+enum HealthIssue {
   case memoryLeak(String)
   case orphanedRegistrations(Int)
   case deepResolutionStack(String)
   case circularDependency(String)
 }
 
-public struct ContainerHealthReport {
-  public let status: HealthStatus
-  public let issues: [HealthIssue]
-  public let recommendations: [String]
-  public let diagnostics: ContainerDiagnostics
+struct ContainerHealthReport {
+  let status: HealthStatus
+  let issues: [HealthIssue]
+  let recommendations: [String]
+  let diagnostics: ContainerDiagnostics
 
   #if DEBUG
-    public func printReport() {
-      print("🔍 Container Health Report")
+    func printReport() {
+      print("Container Health Report")
       print("Status: \(status)")
 
       if !issues.isEmpty {
-        print("\n⚠️ Issues Found:")
+        print("\nIssues Found:")
         for issue in issues {
           print("  - \(issue)")
         }
       }
 
       if !recommendations.isEmpty {
-        print("\n💡 Recommendations:")
+        print("\nRecommendations:")
         for recommendation in recommendations {
           print("  - \(recommendation)")
         }
       }
 
-      print("\n📊 Diagnostics:")
+      print("\nDiagnostics:")
       print(diagnostics.description)
     }
   #endif
@@ -83,7 +83,7 @@ public struct ContainerHealthReport {
   // MARK: - Instrumented Container (Wrapper Pattern)
 
   /// Container with performance monitoring capabilities using wrapper pattern
-  public actor InstrumentedContainer: ContainerProtocol {
+  actor InstrumentedContainer: ContainerProtocol {
     private let container: Container
     private let metrics: ContainerMetrics?
 
@@ -146,7 +146,7 @@ public struct ContainerHealthReport {
 
   // MARK: - Container Metrics Protocol (minimal implementation for InstrumentedContainer)
 
-  public protocol ContainerMetrics: Sendable {
+  protocol ContainerMetrics: Sendable {
     func recordResolution(for key: TypeKey, duration: TimeInterval) async
     func recordRegistration(for key: TypeKey) async
     func recordCacheHit(for key: TypeKey) async
@@ -154,14 +154,14 @@ public struct ContainerHealthReport {
     func getMetrics() async -> ContainerPerformanceMetrics
   }
 
-  public struct ContainerPerformanceMetrics: Sendable {
-    public let totalResolutions: Int
-    public let averageResolutionTime: TimeInterval
-    public let slowestResolutions: [(TypeKey, TimeInterval)]
-    public let cacheHitRate: Double
-    public let memoryUsageEstimate: Int
+  struct ContainerPerformanceMetrics: Sendable {
+    let totalResolutions: Int
+    let averageResolutionTime: TimeInterval
+    let slowestResolutions: [(TypeKey, TimeInterval)]
+    let cacheHitRate: Double
+    let memoryUsageEstimate: Int
 
-    public var description: String {
+    var description: String {
       """
       Container Performance Metrics:
       - Total Resolutions: \(totalResolutions)
@@ -175,7 +175,7 @@ public struct ContainerHealthReport {
     }
   }
 
-  public actor DefaultContainerMetrics: ContainerMetrics {
+  actor DefaultContainerMetrics: ContainerMetrics {
     private var resolutionTimes: [TypeKey: [TimeInterval]] = [:]
     private var registrationCounts: [TypeKey: Int] = [:]
     private var cacheHits: [TypeKey: Int] = [:]

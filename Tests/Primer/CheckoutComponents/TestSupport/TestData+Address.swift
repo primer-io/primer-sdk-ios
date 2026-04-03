@@ -89,7 +89,7 @@ extension TestData {
     enum OTPCodes {
         static let valid6Digit = "123456"
         static let valid4Digit = "1234"
-        static let tooShort = "1234"
+        static let tooShortFor6Digit = "1234"
         static let withNonNumeric = "12345a"
         static let empty = ""
         static let expectedLength6 = 6
