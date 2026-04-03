@@ -60,8 +60,10 @@ final class PrimerDelegateProxy: LogReporter {
             if PrimerInternal.shared.sdkIntegrationType == .headless,
                (decisionHandler as ((PrimerHeadlessUniversalCheckoutResumeDecision) -> Void)?) != nil {
                 let delegate = PrimerHeadlessUniversalCheckout.current.delegate
-                delegate?.primerHeadlessUniversalCheckoutDidTokenizePaymentMethod?(paymentMethodTokenData,
-                                                                                   decisionHandler: decisionHandler)
+                delegate?.primerHeadlessUniversalCheckoutDidTokenizePaymentMethod?(
+                    paymentMethodTokenData,
+                    decisionHandler: decisionHandler
+                )
 
             } else if PrimerInternal.shared.sdkIntegrationType == .dropIn,
                       (decisionHandler as ((PrimerResumeDecision) -> Void)?) != nil {
@@ -93,8 +95,10 @@ final class PrimerDelegateProxy: LogReporter {
         DispatchQueue.main.async {
             if PrimerInternal.shared.sdkIntegrationType == .headless,
                (decisionHandler as ((PrimerHeadlessUniversalCheckoutResumeDecision) -> Void)?) != nil {
-                PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidResumeWith?(resumeToken,
-                                                                                                                decisionHandler: decisionHandler)
+                PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidResumeWith?(
+                    resumeToken,
+                    decisionHandler: decisionHandler
+                )
             } else if PrimerInternal.shared.sdkIntegrationType == .dropIn,
                       (decisionHandler as ((PrimerResumeDecision) -> Void)?) != nil {
                 Primer.shared.delegate?.primerDidResumeWith?(resumeToken, decisionHandler: decisionHandler)
@@ -128,8 +132,10 @@ final class PrimerDelegateProxy: LogReporter {
             if PrimerInternal.shared.sdkIntegrationType == .headless {
                 let delegate = PrimerHeadlessUniversalCheckout.current.delegate
                 if delegate?.primerHeadlessUniversalCheckoutWillCreatePaymentWithData != nil {
-                    delegate?.primerHeadlessUniversalCheckoutWillCreatePaymentWithData?(data,
-                                                                                        decisionHandler: decisionHandler)
+                    delegate?.primerHeadlessUniversalCheckoutWillCreatePaymentWithData?(
+                        data,
+                        decisionHandler: decisionHandler
+                    )
                 } else {
                     decisionHandler(.continuePaymentCreation())
                 }
@@ -290,8 +296,10 @@ final class PrimerDelegateProxy: LogReporter {
 
                 } else {
                     let delegate = PrimerHeadlessUniversalCheckout.current.delegate
-                    delegate?.primerHeadlessUniversalCheckoutDidFail!(withError: exposedError,
-                                                                      checkoutData: data)
+                    delegate?.primerHeadlessUniversalCheckoutDidFail!(
+                        withError: exposedError,
+                        checkoutData: data
+                    )
                     decisionHandler(.fail(withErrorMessage: nil))
                 }
 
