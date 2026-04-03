@@ -192,11 +192,13 @@ public final class PrimerApplePayOptions: Codable {
     let shippingOptions: ShippingOptions?
     let billingOptions: BillingOptions?
 
-    public init(merchantIdentifier: String,
-                merchantName: String?,
-                isCaptureBillingAddressEnabled: Bool = false,
-                showApplePayForUnsupportedDevice: Bool = true,
-                checkProvidedNetworks: Bool = true) {
+    public init(
+        merchantIdentifier: String,
+        merchantName: String?,
+        isCaptureBillingAddressEnabled: Bool = false,
+        showApplePayForUnsupportedDevice: Bool = true,
+        checkProvidedNetworks: Bool = true
+    ) {
         self.merchantIdentifier = merchantIdentifier
         self.merchantName = merchantName
         self.isCaptureBillingAddressEnabled = isCaptureBillingAddressEnabled
@@ -206,13 +208,15 @@ public final class PrimerApplePayOptions: Codable {
         billingOptions = nil
     }
 
-    public init(merchantIdentifier: String,
-                merchantName: String?,
-                isCaptureBillingAddressEnabled: Bool = false,
-                showApplePayForUnsupportedDevice: Bool = true,
-                checkProvidedNetworks: Bool = true,
-                shippingOptions: ShippingOptions? = nil,
-                billingOptions: BillingOptions? = nil) {
+    public init(
+        merchantIdentifier: String,
+        merchantName: String?,
+        isCaptureBillingAddressEnabled: Bool = false,
+        showApplePayForUnsupportedDevice: Bool = true,
+        checkProvidedNetworks: Bool = true,
+        shippingOptions: ShippingOptions? = nil,
+        billingOptions: BillingOptions? = nil
+    ) {
         self.merchantIdentifier = merchantIdentifier
         self.merchantName = merchantName
         self.isCaptureBillingAddressEnabled = isCaptureBillingAddressEnabled
@@ -226,8 +230,10 @@ public final class PrimerApplePayOptions: Codable {
         public let shippingContactFields: [RequiredContactField]?
         public let requireShippingMethod: Bool
 
-        public init(shippingContactFields: [RequiredContactField]? = nil,
-                    requireShippingMethod: Bool) {
+        public init(
+            shippingContactFields: [RequiredContactField]? = nil,
+            requireShippingMethod: Bool
+        ) {
             self.shippingContactFields = shippingContactFields
             self.requireShippingMethod = requireShippingMethod
         }
