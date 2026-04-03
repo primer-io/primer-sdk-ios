@@ -8,7 +8,7 @@ import Foundation
 
 /// Configuration for an analytics session, initialized once per checkout flow.
 /// All fields are extracted from the client token JWT or generated at checkout start.
-public struct AnalyticsSessionConfig {
+public struct AnalyticsSessionConfig: Sendable {
   /// The analytics environment (extracted from client token)
   public let environment: AnalyticsEnvironment
 

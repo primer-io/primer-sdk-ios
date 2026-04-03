@@ -38,16 +38,27 @@ private struct ConditionalAccessibilityElement: ViewModifier {
   let config: AccessibilityConfiguration
   let combinesChildren: Bool
 
+  @ViewBuilder
   func body(content: Content) -> some View {
-    let base = combinesChildren ? AnyView(content.accessibilityElement(children: .ignore)) : AnyView(content)
-    base
-      .accessibilityIdentifier(config.identifier)
-      .accessibilityLabel(config.label)
-      .modifier(ConditionalAccessibilityHint(hint: config.hint))
-      .modifier(ConditionalAccessibilityValue(value: config.value))
-      .accessibilityAddTraits(config.traits)
-      .accessibilityHidden(config.isHidden)
-      .accessibilitySortPriority(Double(config.sortPriority))
+    if combinesChildren {
+      content.accessibilityElement(children: .ignore)
+        .accessibilityIdentifier(config.identifier)
+        .accessibilityLabel(config.label)
+        .modifier(ConditionalAccessibilityHint(hint: config.hint))
+        .modifier(ConditionalAccessibilityValue(value: config.value))
+        .accessibilityAddTraits(config.traits)
+        .accessibilityHidden(config.isHidden)
+        .accessibilitySortPriority(Double(config.sortPriority))
+    } else {
+      content
+        .accessibilityIdentifier(config.identifier)
+        .accessibilityLabel(config.label)
+        .modifier(ConditionalAccessibilityHint(hint: config.hint))
+        .modifier(ConditionalAccessibilityValue(value: config.value))
+        .accessibilityAddTraits(config.traits)
+        .accessibilityHidden(config.isHidden)
+        .accessibilitySortPriority(Double(config.sortPriority))
+    }
   }
 }
 
