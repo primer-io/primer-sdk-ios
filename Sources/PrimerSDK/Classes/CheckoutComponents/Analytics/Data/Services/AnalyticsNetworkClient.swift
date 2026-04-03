@@ -12,22 +12,21 @@ actor AnalyticsNetworkClient: LogReporter {
     let request = buildRequest(payload: payload, endpoint: endpoint, token: token)
 
     logger.info(
-      message: "📊 [Analytics] Dispatching \(payload.eventName) -> \(endpoint.absoluteString)"
-    )
+      message: "[Analytics] Dispatching \(payload.eventName) -> \(endpoint.absoluteString)")
     logger.debug(
       message:
-        "📊 [Analytics] Event context - id: \(payload.id), timestamp: \(payload.timestamp), sdkType: \(payload.sdkType)"
+        "[Analytics] Event context - id: \(payload.id), timestamp: \(payload.timestamp), sdkType: \(payload.sdkType)"
     )
 
     if request.value(forHTTPHeaderField: "Authorization") == nil {
-      logger.warn(message: "⚠️ [Analytics] No authorization token provided")
+      logger.warn(message: "[Analytics] No authorization token provided")
     }
 
     let (data, response) = try await URLSession.shared.data(for: request)
 
     try validateResponse(response: response, data: data)
 
-    logger.info(message: "✅ [Analytics] \(payload.eventName) acknowledged")
+    logger.info(message: "[Analytics] \(payload.eventName) acknowledged")
   }
 
   private func buildRequest(payload: AnalyticsPayload, endpoint: URL, token: String?) -> URLRequest {
@@ -45,7 +44,7 @@ actor AnalyticsNetworkClient: LogReporter {
     do {
       request.httpBody = try encoder.encode(payload)
     } catch {
-      logger.error(message: "❌ [Analytics] Failed to encode payload: \(error)")
+      logger.error(message: "[Analytics] Failed to encode payload: \(error)")
     }
 
     return request
@@ -53,20 +52,20 @@ actor AnalyticsNetworkClient: LogReporter {
 
   private func validateResponse(response: URLResponse, data: Data) throws {
     guard let httpResponse = response as? HTTPURLResponse else {
-      logger.error(message: "❌ [Analytics] Invalid response type")
+      logger.error(message: "[Analytics] Invalid response type")
       throw AnalyticsError.requestFailed
     }
 
-    logger.debug(message: "📊 [Analytics] Response status code: \(httpResponse.statusCode)")
+    logger.debug(message: "[Analytics] Response status code: \(httpResponse.statusCode)")
 
     guard (200...299).contains(httpResponse.statusCode) else {
       if let responseString = String(data: data, encoding: .utf8), !responseString.isEmpty {
         logger.error(
           message:
-            "❌ [Analytics] Request failed with status \(httpResponse.statusCode) - \(responseString)"
+            "[Analytics] Request failed with status \(httpResponse.statusCode) - \(responseString)"
         )
       } else {
-        logger.error(message: "❌ [Analytics] Request failed with status \(httpResponse.statusCode)")
+        logger.error(message: "[Analytics] Request failed with status \(httpResponse.statusCode)")
       }
       throw AnalyticsError.requestFailed
     }

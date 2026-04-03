@@ -8,8 +8,9 @@ import Foundation
 
 /// Klarna flow: `loading` -> `categorySelection` -> `viewReady` -> `authorizationStarted` -> `awaitingFinalization`
 @available(iOS 15.0, *)
-public struct PrimerKlarnaState: Equatable {
+public struct PrimerKlarnaState: Equatable, @unchecked Sendable {
 
+  /// When switching on this enum, always include a `default` case to handle future additions.
   public enum Step: Equatable {
     case loading
     case categorySelection

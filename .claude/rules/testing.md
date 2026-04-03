@@ -30,13 +30,27 @@ Protocol-based mocking, no framework. Every mock has:
 - `TestData` + extensions — shared test constants (`Tests/Primer/CheckoutComponents/TestSupport/TestData*.swift`)
 - `TestError` enum — shared error type for test assertions
 
-## Running Specific Tests
-Test target is `Tests` (not `PrimerSDKTests`). Use `-testPlan "UnitTestsTestPlan"`:
+## Running Tests
+
+**Simulator**: Use `iPhone 17 Pro Max` (or check `xcrun simctl list devices available` for current options).
+
+**Full test suite** (all unit tests):
 ```bash
 xcodebuild -workspace PrimerSDK.xcworkspace \
   -scheme "PrimerSDKTests" \
-  -destination "platform=iOS Simulator,name=iPhone 16" \
+  -destination "platform=iOS Simulator,name=iPhone 17 Pro Max" \
+  -testPlan "UnitTestsTestPlan" \
+  test
+```
+
+**Specific test class** — test target is `Tests` (not `PrimerSDKTests`):
+```bash
+xcodebuild -workspace PrimerSDK.xcworkspace \
+  -scheme "PrimerSDKTests" \
+  -destination "platform=iOS Simulator,name=iPhone 17 Pro Max" \
   -testPlan "UnitTestsTestPlan" \
   -only-testing:"Tests/SomeClassTests" \
   test
 ```
+
+**Before running tests**: Always run `pod install` in `Debug App/` first, especially after switching branches.

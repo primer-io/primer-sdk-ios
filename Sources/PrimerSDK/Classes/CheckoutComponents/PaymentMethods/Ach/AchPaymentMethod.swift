@@ -19,23 +19,13 @@ struct AchPaymentMethod: PaymentMethodProtocol {
     diContainer: any ContainerProtocol
   ) async throws -> DefaultAchScope {
 
-    guard let defaultCheckoutScope = checkoutScope as? DefaultCheckoutScope else {
-      throw PrimerError.invalidArchitecture(
-        description: "AchPaymentMethod requires DefaultCheckoutScope",
-        recoverSuggestion: "Ensure you're using the default CheckoutComponents implementation"
-      )
-    }
-
-    let paymentMethodContext: PresentationContext =
-      defaultCheckoutScope.availablePaymentMethods.count > 1 ? .fromPaymentSelection : .direct
+    let (defaultCheckoutScope, paymentMethodContext) = try DefaultCheckoutScope.validated(from: checkoutScope)
 
     do {
       let processAchInteractor: ProcessAchPaymentInteractor = try await diContainer.resolve(
-        ProcessAchPaymentInteractor.self
-      )
+        ProcessAchPaymentInteractor.self)
       let analyticsInteractor = try? await diContainer.resolve(
-        CheckoutComponentsAnalyticsInteractorProtocol.self
-      )
+        CheckoutComponentsAnalyticsInteractorProtocol.self)
 
       return DefaultAchScope(
         checkoutScope: defaultCheckoutScope,
@@ -47,8 +37,7 @@ struct AchPaymentMethod: PaymentMethodProtocol {
       throw primerError
     } catch {
       PrimerLogging.shared.logger.error(
-        message: "Failed to resolve ACH payment dependencies: \(error)"
-      )
+        message: "Failed to resolve ACH payment dependencies: \(error)")
       throw PrimerError.invalidArchitecture(
         description: "Required ACH payment dependencies could not be resolved",
         recoverSuggestion:

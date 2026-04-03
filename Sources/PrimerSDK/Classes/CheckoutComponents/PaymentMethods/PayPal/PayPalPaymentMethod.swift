@@ -19,23 +19,13 @@ struct PayPalPaymentMethod: PaymentMethodProtocol {
     diContainer: any ContainerProtocol
   ) async throws -> DefaultPayPalScope {
 
-    guard let defaultCheckoutScope = checkoutScope as? DefaultCheckoutScope else {
-      throw PrimerError.invalidArchitecture(
-        description: "PayPalPaymentMethod requires DefaultCheckoutScope",
-        recoverSuggestion: "Ensure you're using the default CheckoutComponents implementation"
-      )
-    }
-
-    let paymentMethodContext: PresentationContext =
-      defaultCheckoutScope.availablePaymentMethods.count > 1 ? .fromPaymentSelection : .direct
+    let (defaultCheckoutScope, paymentMethodContext) = try DefaultCheckoutScope.validated(from: checkoutScope)
 
     do {
       let processPayPalInteractor: ProcessPayPalPaymentInteractor = try await diContainer.resolve(
-        ProcessPayPalPaymentInteractor.self
-      )
+        ProcessPayPalPaymentInteractor.self)
       let analyticsInteractor = try? await diContainer.resolve(
-        CheckoutComponentsAnalyticsInteractorProtocol.self
-      )
+        CheckoutComponentsAnalyticsInteractorProtocol.self)
 
       return DefaultPayPalScope(
         checkoutScope: defaultCheckoutScope,
@@ -47,8 +37,7 @@ struct PayPalPaymentMethod: PaymentMethodProtocol {
       throw primerError
     } catch {
       PrimerLogging.shared.logger.error(
-        message: "Failed to resolve PayPal payment dependencies: \(error)"
-      )
+        message: "Failed to resolve PayPal payment dependencies: \(error)")
       throw PrimerError.invalidArchitecture(
         description: "Required PayPal payment dependencies could not be resolved",
         recoverSuggestion:

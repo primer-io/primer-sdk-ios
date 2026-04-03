@@ -40,9 +40,6 @@ public typealias AchButtonComponent = (any PrimerAchScope) -> any View
 @MainActor
 public protocol PrimerAchScope: PrimerPaymentMethodScope where State == PrimerAchState {
 
-  /// Async stream of ACH payment state including current step, user details, and validation.
-  var state: AsyncStream<PrimerAchState> { get }
-
   /// The bank collector view controller provided by Stripe SDK.
   /// Present this when `state.step` is `.bankAccountCollection`.
   var bankCollectorViewController: UIViewController? { get }
