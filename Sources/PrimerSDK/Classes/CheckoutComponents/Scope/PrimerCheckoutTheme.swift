@@ -17,7 +17,7 @@ import SwiftUI
 /// When a merchant provides an override, `DesignTokensManager` merges it with
 /// internal defaults. Nil values fall back to internal token values.
 @available(iOS 15.0, *)
-public struct PrimerCheckoutTheme {
+public struct PrimerCheckoutTheme: Equatable {
 
   public let colors: ColorOverrides?
   public let radius: RadiusOverrides?
@@ -57,7 +57,7 @@ public struct PrimerCheckoutTheme {
 /// Property names match internal `DesignTokens` for consistency.
 /// All properties are optional - nil values use internal defaults.
 @available(iOS 15.0, *)
-public struct ColorOverrides {
+public struct ColorOverrides: Equatable {
 
   // MARK: Brand & Primary Colors
 
@@ -225,7 +225,7 @@ public struct ColorOverrides {
 /// Optional radius token overrides.
 /// Property names match internal `DesignTokens`.
 @available(iOS 15.0, *)
-public struct RadiusOverrides {
+public struct RadiusOverrides: Equatable {
   /// Internal: primerRadiusXsmall (default: 2)
   public let primerRadiusXsmall: CGFloat?
   /// Internal: primerRadiusSmall (default: 4)
@@ -257,7 +257,7 @@ public struct RadiusOverrides {
 /// Optional spacing token overrides.
 /// Property names match internal `DesignTokens`.
 @available(iOS 15.0, *)
-public struct SpacingOverrides {
+public struct SpacingOverrides: Equatable {
   /// Internal: primerSpaceXxsmall (default: 2)
   public let primerSpaceXxsmall: CGFloat?
   /// Internal: primerSpaceXsmall (default: 4)
@@ -301,7 +301,7 @@ public struct SpacingOverrides {
 /// Optional size token overrides.
 /// Property names match internal `DesignTokens`.
 @available(iOS 15.0, *)
-public struct SizeOverrides {
+public struct SizeOverrides: Equatable {
   /// Internal: primerSizeSmall (default: 16)
   public let primerSizeSmall: CGFloat?
   /// Internal: primerSizeMedium (default: 20)
@@ -340,12 +340,12 @@ public struct SizeOverrides {
 
 /// Optional typography token overrides for customizing text styles.
 @available(iOS 15.0, *)
-public struct TypographyOverrides {
+public struct TypographyOverrides: Equatable {
 
   // MARK: - Typography Style
 
   /// Individual typography style configuration.
-  public struct TypographyStyle {
+  public struct TypographyStyle: Equatable {
     /// Custom font family name (e.g., "Inter")
     public let font: String?
     /// Letter spacing in points
@@ -410,7 +410,7 @@ public struct TypographyOverrides {
 
 /// Optional border width token overrides.
 @available(iOS 15.0, *)
-public struct BorderWidthOverrides {
+public struct BorderWidthOverrides: Equatable {
   /// Internal: primerBorderWidthThin (default: 1)
   public let primerBorderWidthThin: CGFloat?
 

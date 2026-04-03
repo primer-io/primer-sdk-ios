@@ -59,16 +59,14 @@ final class CheckoutSDKInitializer {
     DependencyContainer.register(primerSettings)
 
     let composableContainer = ComposableContainer(
-      settings: primerSettings,
-      theme: primerTheme
+      settings: primerSettings
     )
     await composableContainer.configure()
 
     // Resolve analytics interactor
     if let container = await DIContainer.current {
       analyticsInteractor = try? await container.resolve(
-        CheckoutComponentsAnalyticsInteractorProtocol.self
-      )
+        CheckoutComponentsAnalyticsInteractorProtocol.self)
     }
 
     // Track SDK initialization start - after DI container is ready, before BE calls
@@ -93,7 +91,6 @@ final class CheckoutSDKInitializer {
   }
 
   func cleanup() {
-    ValidationResultCache.shared.clear()
     Task {
       await DIContainer.clearContainer()
     }
@@ -145,8 +142,7 @@ final class CheckoutSDKInitializer {
     guard let container = await DIContainer.current else { return }
 
     if let analyticsService = try? await container.resolve(
-      CheckoutComponentsAnalyticsServiceProtocol.self
-    ) {
+      CheckoutComponentsAnalyticsServiceProtocol.self) {
       await analyticsService.initialize(config: analyticsConfig)
     }
   }

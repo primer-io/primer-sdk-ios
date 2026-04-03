@@ -17,7 +17,7 @@ extension PrimerPaymentMethodType {
     case .paymentCard: .creditCard
     case .applePay: .appleIcon
     case .goCardless, .stripeAch: .achBank
-    case .googlePay: .appleIcon
+    case .googlePay: .genericCard // TODO: Add .googlePay case to ImageName enum
     default: .genericCard
     }
   }

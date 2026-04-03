@@ -17,8 +17,7 @@ actor AnalyticsEventBuffer: LogReporter {
 
   func buffer(eventType: AnalyticsEventType, metadata: AnalyticsEventMetadata?, timestamp: Int) {
     logger.debug(
-      message: "📊 [Analytics] Queued \(eventType.rawValue) - service not initialized yet"
-    )
+      message: "[Analytics] Queued \(eventType.rawValue) - service not initialized yet")
     pendingEvents.append((eventType, metadata, timestamp))
     if pendingEvents.count > Self.maxBufferSize {
       pendingEvents.removeFirst(pendingEvents.count - Self.maxBufferSize)
