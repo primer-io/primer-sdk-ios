@@ -6,6 +6,13 @@
 
 import SwiftUI
 
+@available(iOS 15.0, *)
+public typealias SelectCountryScreenComponent = (_ scope: PrimerSelectCountryScope) -> any View
+
+@available(iOS 15.0, *)
+public typealias SearchBarComponent =
+  (_ query: String, _ onQueryChange: @escaping (String) -> Void, _ placeholder: String) -> any View
+
 /// Scope interface for country selection functionality with search capabilities.
 @MainActor
 @available(iOS 15.0, *)
@@ -30,12 +37,8 @@ public protocol PrimerSelectCountryScope: AnyObject {
 
   // MARK: - Customizable UI Components
 
-  var screen: ((_ scope: PrimerSelectCountryScope) -> AnyView)? { get set }
-  var searchBar:
-    (
-      (_ query: String, _ onQueryChange: @escaping (String) -> Void, _ placeholder: String) ->
-        AnyView
-    )? { get set }
+  var screen: SelectCountryScreenComponent? { get set }
+  var searchBar: SearchBarComponent? { get set }
 
   var countryItem: CountryItemComponent? { get set }
 

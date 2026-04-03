@@ -6,7 +6,7 @@
 
 import Foundation
 
-public protocol ValidationService {
+protocol ValidationService {
   func validateCardNumber(_ number: String) -> ValidationResult
   func validateExpiry(month: String, year: String) -> ValidationResult
   func validateCVV(_ cvv: String, cardNetwork: CardNetwork) -> ValidationResult
@@ -47,13 +47,10 @@ public protocol ValidationService {
 /// - **Hit Rate**: Expected 70-85% for typical user typing patterns
 final class ValidationResultCache {
 
-  /// Shared cache instance for all validation operations
-  static let shared = ValidationResultCache()
-
   /// Internal cache with automatic cleanup
   private let cache = NSCache<NSString, CachedValidationResult>()
 
-  private init() {
+  init() {
     cache.countLimit = 200
     cache.totalCostLimit = 8000
   }
@@ -105,9 +102,10 @@ final class ValidationResultCache {
   }
 }
 
-public final class DefaultValidationService: ValidationService {
+final class DefaultValidationService: ValidationService {
 
   private let rulesFactory: RulesFactory
+  private let cache = ValidationResultCache()
 
   init(rulesFactory: RulesFactory = DefaultRulesFactory()) {
     self.rulesFactory = rulesFactory
@@ -116,9 +114,9 @@ public final class DefaultValidationService: ValidationService {
 
 extension DefaultValidationService {
 
-  public func validateCardNumber(_ number: String) -> ValidationResult {
+  func validateCardNumber(_ number: String) -> ValidationResult {
     // INTERNAL OPTIMIZATION: Use caching for card number validation
-    ValidationResultCache.shared.cachedValidation(
+    cache.cachedValidation(
       input: number,
       type: "cardNumber"
     ) {
@@ -127,10 +125,10 @@ extension DefaultValidationService {
     }
   }
 
-  public func validateExpiry(month: String, year: String) -> ValidationResult {
+  func validateExpiry(month: String, year: String) -> ValidationResult {
     // INTERNAL OPTIMIZATION: Use caching for expiry validation
     let expiryString = "\(month)/\(year)"
-    return ValidationResultCache.shared.cachedValidation(
+    return cache.cachedValidation(
       input: expiryString,
       type: "expiry"
     ) {
@@ -140,9 +138,9 @@ extension DefaultValidationService {
     }
   }
 
-  public func validateCVV(_ cvv: String, cardNetwork: CardNetwork) -> ValidationResult {
+  func validateCVV(_ cvv: String, cardNetwork: CardNetwork) -> ValidationResult {
     // INTERNAL OPTIMIZATION: Use caching for CVV validation with card network context
-    ValidationResultCache.shared.cachedValidation(
+    cache.cachedValidation(
       input: cvv,
       type: "cvv",
       context: cardNetwork.rawValue
@@ -152,9 +150,9 @@ extension DefaultValidationService {
     }
   }
 
-  public func validateCardholderName(_ name: String) -> ValidationResult {
+  func validateCardholderName(_ name: String) -> ValidationResult {
     // INTERNAL OPTIMIZATION: Use caching for cardholder name validation
-    ValidationResultCache.shared.cachedValidation(
+    cache.cachedValidation(
       input: name,
       type: "cardholderName"
     ) {
@@ -163,8 +161,8 @@ extension DefaultValidationService {
     }
   }
 
-  // swiftlint:disable all
-  public func validateField(type: PrimerInputElementType, value: String?) -> ValidationResult {
+  // swiftlint:disable cyclomatic_complexity
+  func validateField(type: PrimerInputElementType, value: String?) -> ValidationResult {
     switch type {
     case .cardNumber:
       guard let value else {
@@ -224,11 +222,19 @@ extension DefaultValidationService {
       return rule.validate(value)
 
     case .city:
-      let rule = rulesFactory.createAddressFieldRule(inputType: .city, isRequired: true)
+      guard let value else {
+        let error = ErrorMessageResolver.createRequiredFieldError(for: .city)
+        return .invalid(error: error)
+      }
+      let rule = rulesFactory.createCityRule()
       return rule.validate(value)
 
     case .state:
-      let rule = rulesFactory.createAddressFieldRule(inputType: .state, isRequired: true)
+      guard let value else {
+        let error = ErrorMessageResolver.createRequiredFieldError(for: .state)
+        return .invalid(error: error)
+      }
+      let rule = rulesFactory.createStateRule()
       return rule.validate(value)
 
     case .phoneNumber:
@@ -255,9 +261,9 @@ extension DefaultValidationService {
       return rule.validate(value)
     }
   }
-  // swiftlint:enable all
+  // swiftlint:enable cyclomatic_complexity
 
-  public func validate<T, R: ValidationRule>(input: T, with rule: R) -> ValidationResult
+  func validate<T, R: ValidationRule>(input: T, with rule: R) -> ValidationResult
   where R.Input == T {
     rule.validate(input)
   }
@@ -265,21 +271,20 @@ extension DefaultValidationService {
   // MARK: - Structured State Support Implementation
 
   @available(iOS 15.0, *)
-  public func validateFormData(_ formData: FormData, configuration: CardFormConfiguration)
+  func validateFormData(_ formData: FormData, configuration: CardFormConfiguration)
     -> [FieldError] {
     validateFields(configuration.allFields, formData: formData)
   }
 
   @available(iOS 15.0, *)
-  public func validateFields(_ fieldTypes: [PrimerInputElementType], formData: FormData)
+  func validateFields(_ fieldTypes: [PrimerInputElementType], formData: FormData)
     -> [FieldError] {
     var fieldErrors: [FieldError] = []
 
     for fieldType in fieldTypes {
       let value = formData[fieldType]
       if let error = validateFieldWithStructuredResult(
-        type: fieldType, value: value.isEmpty ? nil : value
-      ) {
+        type: fieldType, value: value.isEmpty ? nil : value) {
         fieldErrors.append(error)
       }
     }
@@ -288,7 +293,7 @@ extension DefaultValidationService {
   }
 
   @available(iOS 15.0, *)
-  public func validateFieldWithStructuredResult(type: PrimerInputElementType, value: String?)
+  func validateFieldWithStructuredResult(type: PrimerInputElementType, value: String?)
     -> FieldError? {
     let result = validateField(type: type, value: value)
 

@@ -35,7 +35,7 @@ public struct PrimerFieldStyling {
   public let fontName: String?
   /// Font size in points for field input text.
   public let fontSize: CGFloat?
-  /// Font weight for field input text, specified as a `CGFloat` (e.g., `UIFont.Weight.bold.rawValue`).
+  /// Font weight for field input text, specified as a CSS numeric weight `CGFloat` (100–900, e.g. 400 = regular, 700 = bold).
   public let fontWeight: CGFloat?
   /// Custom font family name for field labels.
   public let labelFontName: String?

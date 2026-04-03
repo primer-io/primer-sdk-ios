@@ -5,11 +5,6 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // TODO: Rename file to DIContainer+SwiftUI.swift
-//
-//  DIContainter+SwiftUI.swift
-//
-//  Copyright © 2026 Primer API Ltd. All rights reserved. 
-//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import SwiftUI
 
@@ -68,8 +63,7 @@ extension DIContainer {
         return StateObject(wrappedValue: resolved)
       } catch {
         logger.debug(
-          message: "Failed to resolve \(String(describing: type)) from environment DI container"
-        )
+          message: "Failed to resolve \(String(describing: type)) from environment DI container")
         return StateObject(wrappedValue: fallback())
       }
     } else {

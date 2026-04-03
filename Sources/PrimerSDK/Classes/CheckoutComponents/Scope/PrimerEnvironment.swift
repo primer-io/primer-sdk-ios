@@ -59,7 +59,7 @@ extension EnvironmentValues {
   ///     @Environment(\.primerCardFormScope) private var cardFormScope
   ///
   ///     var body: some View {
-  ///         Text("Card: \(cardFormScope?.structuredState.cardNumber.value ?? "")")
+  ///         Button("Submit", action: { cardFormScope?.submit() })
   ///     }
   /// }
   /// ```

@@ -60,8 +60,8 @@ public struct CardFormConfiguration: Equatable {
 /// ```
 @available(iOS 15.0, *)
 public struct FieldError: Equatable, Identifiable {
-  /// Unique identifier for this error instance.
-  public let id = UUID()
+  /// Deterministic identifier based on field type for stable SwiftUI diffing.
+  public var id: PrimerInputElementType { fieldType }
 
   /// The type of field that has the error.
   public let fieldType: PrimerInputElementType
@@ -125,8 +125,8 @@ public struct FormData: Equatable {
 /// ```
 @available(iOS 15.0, *)
 public struct PrimerCountry: Equatable, Identifiable {
-  /// Unique identifier for this country instance.
-  public let id = UUID()
+  /// Deterministic identifier based on country code for stable SwiftUI diffing.
+  public var id: String { code }
 
   /// ISO 3166-1 alpha-2 country code (e.g., "US", "GB", "DE").
   public let code: String
@@ -258,6 +258,22 @@ public struct PrimerCardFormState: Equatable {
     self.binData = binData
   }
 
+  // Custom Equatable comparing NSObject fields by value (PrimerCardNetwork/PrimerBinData don't override isEqual)
+  public static func == (lhs: PrimerCardFormState, rhs: PrimerCardFormState) -> Bool {
+    lhs.configuration == rhs.configuration &&
+    lhs.data == rhs.data &&
+    lhs.fieldErrors == rhs.fieldErrors &&
+    lhs.isLoading == rhs.isLoading &&
+    lhs.isValid == rhs.isValid &&
+    lhs.selectedCountry == rhs.selectedCountry &&
+    lhs.selectedNetwork?.network == rhs.selectedNetwork?.network &&
+    lhs.availableNetworks.map(\.network) == rhs.availableNetworks.map(\.network) &&
+    lhs.surchargeAmountRaw == rhs.surchargeAmountRaw &&
+    lhs.surchargeAmount == rhs.surchargeAmount &&
+    lhs.binData?.preferred?.network == rhs.binData?.preferred?.network &&
+    lhs.binData?.status == rhs.binData?.status
+  }
+
   // MARK: - Convenience Properties
 
   /// All fields that should be displayed (card + billing if enabled)
@@ -273,14 +289,14 @@ public struct PrimerCardFormState: Equatable {
     fieldErrors.first { $0.fieldType == fieldType }?.message
   }
 
-  public mutating func setError(
+  mutating func setError(
     _ message: String, for fieldType: PrimerInputElementType, errorCode: String? = nil
   ) {
     fieldErrors.removeAll { $0.fieldType == fieldType }
     fieldErrors.append(FieldError(fieldType: fieldType, message: message, errorCode: errorCode))
   }
 
-  public mutating func clearError(for fieldType: PrimerInputElementType) {
+  mutating func clearError(for fieldType: PrimerInputElementType) {
     fieldErrors.removeAll { $0.fieldType == fieldType }
   }
 }
