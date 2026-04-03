@@ -16,7 +16,7 @@ final class WebRedirectPaymentMethodTests: XCTestCase {
 
     override func setUp() async throws {
         try await super.setUp()
-        container = await ContainerTestHelpers.createTestContainer()
+        container = try await ContainerTestHelpers.createTestContainer()
         PaymentMethodRegistry.shared.reset()
     }
 
@@ -235,6 +235,10 @@ final class WebRedirectPaymentMethodTests: XCTestCase {
         _ = try? await container.register(PaymentMethodMapper.self)
             .asSingleton()
             .with { _ in StubPaymentMethodMapper() }
+
+        _ = try? await container.register(WebRedirectRepository.self)
+            .asSingleton()
+            .with { _ in MockWebRedirectRepository() }
     }
 
     private func createCheckoutScopeWithMultiplePaymentMethods() -> DefaultCheckoutScope {

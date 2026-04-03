@@ -19,23 +19,13 @@ struct KlarnaPaymentMethod: PaymentMethodProtocol {
     diContainer: any ContainerProtocol
   ) async throws -> DefaultKlarnaScope {
 
-    guard let defaultCheckoutScope = checkoutScope as? DefaultCheckoutScope else {
-      throw PrimerError.invalidArchitecture(
-        description: "KlarnaPaymentMethod requires DefaultCheckoutScope",
-        recoverSuggestion: "Ensure you're using the default CheckoutComponents implementation"
-      )
-    }
-
-    let paymentMethodContext: PresentationContext =
-      defaultCheckoutScope.availablePaymentMethods.count > 1 ? .fromPaymentSelection : .direct
+    let (defaultCheckoutScope, paymentMethodContext) = try DefaultCheckoutScope.validated(from: checkoutScope)
 
     do {
       let processKlarnaInteractor: ProcessKlarnaPaymentInteractor = try await diContainer.resolve(
-        ProcessKlarnaPaymentInteractor.self
-      )
+        ProcessKlarnaPaymentInteractor.self)
       let analyticsInteractor = try? await diContainer.resolve(
-        CheckoutComponentsAnalyticsInteractorProtocol.self
-      )
+        CheckoutComponentsAnalyticsInteractorProtocol.self)
 
       return DefaultKlarnaScope(
         checkoutScope: defaultCheckoutScope,
@@ -47,8 +37,7 @@ struct KlarnaPaymentMethod: PaymentMethodProtocol {
       throw primerError
     } catch {
       PrimerLogging.shared.logger.error(
-        message: "Failed to resolve Klarna payment dependencies: \(error)"
-      )
+        message: "Failed to resolve Klarna payment dependencies: \(error)")
       throw PrimerError.invalidArchitecture(
         description: "Required Klarna payment dependencies could not be resolved",
         recoverSuggestion:

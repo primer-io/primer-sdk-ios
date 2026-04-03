@@ -29,7 +29,7 @@ final class AchRepositoryImpl: AchRepository, LogReporter {
 
   init(
     achClientSessionService: ACHClientSessionService = ACHClientSessionService(),
-    settings: PrimerSettingsProtocol = DependencyContainer.resolve(),
+    settings: PrimerSettingsProtocol = PrimerSettings.current,
     createPaymentServiceFactory: @escaping (String) -> CreateResumePaymentServiceProtocol = {
       CreateResumePaymentService(paymentMethodType: $0)
     },
@@ -92,7 +92,13 @@ final class AchRepositoryImpl: AchRepository, LogReporter {
     let paymentResponse = try await paymentService.createPayment(paymentRequest: paymentRequest)
 
     guard let requiredAction = paymentResponse.requiredAction else {
-      throw PrimerError.invalidClientToken(reason: "Payment response missing requiredAction for ACH")
+      let error = PrimerError.invalidValue(
+        key: "paymentResponse.requiredAction",
+        value: nil,
+        reason: "Payment response missing requiredAction for ACH"
+      )
+      ErrorHandler.handle(error: error)
+      throw error
     }
 
     try await apiConfigurationModule.storeRequiredActionClientToken(requiredAction.clientToken)
@@ -102,16 +108,34 @@ final class AchRepositoryImpl: AchRepository, LogReporter {
     }
 
     guard let stripeClientSecret = decodedJWTToken.stripeClientSecret else {
-      throw PrimerError.invalidClientToken(reason: "stripeClientSecret not found in requiredAction client token")
+      let error = PrimerError.invalidValue(
+        key: "decodedJWTToken.stripeClientSecret",
+        value: nil,
+        reason: "stripeClientSecret not found in requiredAction client token"
+      )
+      ErrorHandler.handle(error: error)
+      throw error
     }
 
     guard let sdkCompleteUrlString = decodedJWTToken.sdkCompleteUrl,
           let sdkCompleteUrl = URL(string: sdkCompleteUrlString) else {
-      throw PrimerError.invalidClientToken(reason: "sdkCompleteUrl not found in requiredAction client token")
+      let error = PrimerError.invalidValue(
+        key: "decodedJWTToken.sdkCompleteUrl",
+        value: decodedJWTToken.sdkCompleteUrl,
+        reason: "sdkCompleteUrl not found or invalid in requiredAction client token"
+      )
+      ErrorHandler.handle(error: error)
+      throw error
     }
 
     guard let paymentId = paymentResponse.id else {
-      throw PrimerError.invalidClientToken(reason: "Payment ID not found in payment response")
+      let error = PrimerError.invalidValue(
+        key: "paymentResponse.id",
+        value: nil,
+        reason: "Payment ID not found in payment response"
+      )
+      ErrorHandler.handle(error: error)
+      throw error
     }
 
     return AchStripeData(
@@ -190,7 +214,7 @@ final class AchRepositoryImpl: AchRepository, LogReporter {
 
     return PaymentResult(
       paymentId: paymentResponse.id ?? UUID().uuidString,
-      status: .success,
+      status: PaymentStatus(from: paymentResponse.status),
       token: tokenData.token,
       amount: paymentResponse.amount,
       paymentMethodType: PrimerPaymentMethodType.stripeAch.rawValue

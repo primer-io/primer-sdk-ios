@@ -34,26 +34,14 @@ enum QRCodePaymentMethod {
     diContainer: any ContainerProtocol
   ) async throws -> DefaultQRCodeScope {
 
-    guard let defaultCheckoutScope = checkoutScope as? DefaultCheckoutScope else {
-      throw PrimerError.invalidArchitecture(
-        description: "QRCodePaymentMethod requires DefaultCheckoutScope",
-        recoverSuggestion: "Ensure you're using the default CheckoutComponents implementation"
-      )
-    }
-
-    let paymentMethodContext: PresentationContext =
-      defaultCheckoutScope.availablePaymentMethods.count > 1 ? .fromPaymentSelection : .direct
+    let (defaultCheckoutScope, paymentMethodContext) = try DefaultCheckoutScope.validated(from: checkoutScope)
 
     do {
-      let repository: QRCodeRepository = try await diContainer.resolve(QRCodeRepository.self)
       let analyticsInteractor = try? await diContainer.resolve(
         CheckoutComponentsAnalyticsInteractorProtocol.self
       )
 
-      let interactor = ProcessQRCodePaymentInteractorImpl(
-        repository: repository,
-        paymentMethodType: paymentMethodType
-      )
+      let interactor = try await diContainer.resolve(ProcessQRCodePaymentInteractor.self)
 
       return DefaultQRCodeScope(
         checkoutScope: defaultCheckoutScope,

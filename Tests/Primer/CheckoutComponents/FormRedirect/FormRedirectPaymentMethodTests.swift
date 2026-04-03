@@ -16,7 +16,7 @@ final class FormRedirectPaymentMethodTests: XCTestCase {
 
     override func setUp() async throws {
         try await super.setUp()
-        container = await ContainerTestHelpers.createTestContainer()
+        container = try await ContainerTestHelpers.createTestContainer()
         PaymentMethodRegistry.shared.reset()
     }
 

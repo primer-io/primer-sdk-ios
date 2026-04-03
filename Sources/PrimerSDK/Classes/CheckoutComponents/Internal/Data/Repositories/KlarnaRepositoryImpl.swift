@@ -18,7 +18,7 @@ final class KlarnaRepositoryImpl: KlarnaRepository, LogReporter {
   private let apiClient: PrimerAPIClientProtocol
   private let tokenizationService: TokenizationServiceProtocol
   private let createResumePaymentService: CreateResumePaymentServiceProtocol
-  private let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+  private let settings: PrimerSettingsProtocol
 
   // Klarna session state
   private var paymentSessionId: String?
@@ -44,8 +44,7 @@ final class KlarnaRepositoryImpl: KlarnaRepository, LogReporter {
           throwing: error
             ?? PrimerError.cancelled(
               paymentMethodType: PrimerPaymentMethodType.klarna.rawValue
-            )
-        )
+            ))
       }
     }
   #endif
@@ -57,7 +56,8 @@ final class KlarnaRepositoryImpl: KlarnaRepository, LogReporter {
   init(
     apiClient: PrimerAPIClientProtocol? = nil,
     tokenizationService: TokenizationServiceProtocol = TokenizationService(),
-    createResumePaymentService: CreateResumePaymentServiceProtocol? = nil
+    createResumePaymentService: CreateResumePaymentServiceProtocol? = nil,
+    settings: PrimerSettingsProtocol = PrimerSettings.current
   ) {
     self.apiClient = apiClient ?? PrimerAPIConfigurationModule.apiClient ?? PrimerAPIClient()
     self.tokenizationService = tokenizationService
@@ -66,7 +66,8 @@ final class KlarnaRepositoryImpl: KlarnaRepository, LogReporter {
       ?? CreateResumePaymentService(
         paymentMethodType: PrimerPaymentMethodType.klarna.rawValue
       )
-    let klarnaOptions = PrimerSettings.current.paymentMethodOptions.klarnaOptions
+    self.settings = settings
+    let klarnaOptions = settings.paymentMethodOptions.klarnaOptions
     recurringPaymentDescription = klarnaOptions?.recurringPaymentDescription
   }
 
@@ -133,8 +134,7 @@ final class KlarnaRepositoryImpl: KlarnaRepository, LogReporter {
     // Test flow: skip Klarna SDK view loading
     if isTestFlow {
       logger.debug(
-        message: "Klarna test flow: skipping SDK view loading for category \(categoryId)"
-      )
+        message: "Klarna test flow: skipping SDK view loading for category \(categoryId)")
       return nil
     }
 
@@ -151,8 +151,7 @@ final class KlarnaRepositoryImpl: KlarnaRepository, LogReporter {
           throwing: PrimerError.klarnaError(
             message: "Klarna view loading timed out",
             diagnosticsId: UUID().uuidString
-          )
-        )
+          ))
       }
       defer { timeoutTask.cancel() }
       return try await withCheckedThrowingContinuation { continuation in
@@ -203,8 +202,7 @@ final class KlarnaRepositoryImpl: KlarnaRepository, LogReporter {
           throwing: PrimerError.klarnaError(
             message: "Klarna authorization timed out",
             diagnosticsId: UUID().uuidString
-          )
-        )
+          ))
       }
       defer { timeoutTask.cancel() }
       return try await withCheckedThrowingContinuation { continuation in
@@ -233,8 +231,7 @@ final class KlarnaRepositoryImpl: KlarnaRepository, LogReporter {
           throwing: PrimerError.klarnaError(
             message: "Klarna finalization timed out",
             diagnosticsId: UUID().uuidString
-          )
-        )
+          ))
       }
       defer { timeoutTask.cancel() }
       return try await withCheckedThrowingContinuation { continuation in
@@ -324,7 +321,7 @@ final class KlarnaRepositoryImpl: KlarnaRepository, LogReporter {
 
     return PaymentResult(
       paymentId: paymentResponse.id ?? UUID().uuidString,
-      status: .success,
+      status: PaymentStatus(from: paymentResponse.status),
       token: tokenData.token,
       amount: paymentResponse.amount,
       paymentMethodType: PrimerPaymentMethodType.klarna.rawValue
