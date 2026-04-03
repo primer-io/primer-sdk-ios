@@ -16,7 +16,7 @@ final class PayPalPaymentMethodTests: XCTestCase {
 
     override func setUp() async throws {
         try await super.setUp()
-        container = await ContainerTestHelpers.createTestContainer()
+        container = try await ContainerTestHelpers.createTestContainer()
     }
 
     override func tearDown() async throws {

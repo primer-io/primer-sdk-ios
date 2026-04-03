@@ -19,4 +19,9 @@ final class SecureTextField: UITextField {
     get { "****" }
     set { super.text = newValue }
   }
+
+  override var accessibilityValue: String? {
+    get { nil }
+    set { }
+  }
 }

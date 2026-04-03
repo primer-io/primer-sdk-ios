@@ -66,37 +66,21 @@ enum CheckoutColors {
     tokens?.primerColorIconPositive ?? Color(.systemGreen)
   }
 
-  static func white(tokens _: DesignTokens?) -> Color {
-    .white
-  }
+  static func white(tokens _: DesignTokens?) -> Color { .white }
 
-  static func gray(tokens _: DesignTokens?) -> Color {
-    .gray
-  }
+  static func gray(tokens _: DesignTokens?) -> Color { .gray }
 
-  static func blue(tokens _: DesignTokens?) -> Color {
-    .blue
-  }
+  static func blue(tokens _: DesignTokens?) -> Color { .blue }
 
-  static func green(tokens _: DesignTokens?) -> Color {
-    .green
-  }
+  static func green(tokens _: DesignTokens?) -> Color { .green }
 
-  static func orange(tokens _: DesignTokens?) -> Color {
-    .orange
-  }
+  static func orange(tokens _: DesignTokens?) -> Color { .orange }
 
-  static func primary(tokens _: DesignTokens?) -> Color {
-    .primary
-  }
+  static func primary(tokens _: DesignTokens?) -> Color { .primary }
 
-  static func secondary(tokens _: DesignTokens?) -> Color {
-    .secondary
-  }
+  static func secondary(tokens _: DesignTokens?) -> Color { .secondary }
 
-  static func clear(tokens _: DesignTokens?) -> Color {
-    .clear
-  }
+  static func clear(tokens _: DesignTokens?) -> Color { .clear }
 
   // MARK: - Screen & Input Colors
 

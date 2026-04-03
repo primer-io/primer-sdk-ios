@@ -6,12 +6,12 @@
 
 import Foundation
 
-public enum ContainerError: Error, Sendable, LocalizedError {
+enum ContainerError: Error, Sendable, LocalizedError {
   case dependencyNotRegistered(TypeKey, suggestions: [String] = [])
   case circularDependency(TypeKey, path: [TypeKey])
   case containerUnavailable
   case scopeNotFound(String, availableScopes: [String] = [])
-  case typeCastFailed(TypeKey, expected: Any.Type, actual: Any.Type)
+  case typeCastFailed(TypeKey, expected: String, actual: String)
   case factoryFailed(TypeKey, underlyingError: Error)
   case weakUnsupported(TypeKey)
 

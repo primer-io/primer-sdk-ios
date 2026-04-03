@@ -130,7 +130,8 @@ struct CardNumberInputField: View, LogReporter {
         hint: CheckoutComponentsStrings.a11yCardNumberHint,
         value: errorMessage,
         traits: []
-      )
+      ),
+      combinesChildren: false
     )
     .onAppear {
       setupValidationService()

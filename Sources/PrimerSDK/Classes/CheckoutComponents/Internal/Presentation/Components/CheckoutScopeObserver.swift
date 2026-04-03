@@ -95,7 +95,7 @@ struct CheckoutScopeObserver: View, LogReporter {
       }
     } else {
       EmptyView().onAppear {
-        logger.debug(message: "⏭️ [CheckoutComponents] Init screen disabled - skipping loading view")
+        logger.debug(message: "[CheckoutComponents] Init screen disabled - skipping loading view")
       }
     }
   }
@@ -148,8 +148,7 @@ struct CheckoutScopeObserver: View, LogReporter {
     } else {
       EmptyView().onAppear {
         logger.error(
-          message: "Cannot cast paymentMethodSelection to DefaultPaymentMethodSelectionScope"
-        )
+          message: "Cannot cast paymentMethodSelection to DefaultPaymentMethodSelectionScope")
         scope.checkoutNavigator.navigateBack()
       }
     }
@@ -185,7 +184,7 @@ struct CheckoutScopeObserver: View, LogReporter {
       }
     } else {
       EmptyView().onAppear {
-        logger.debug(message: "⏭️ [CheckoutComponents] Success screen disabled - auto-dismissing")
+        logger.debug(message: "[CheckoutComponents] Success screen disabled - auto-dismissing")
         DispatchQueue.main.async {
           onCompletion?(scope.currentState)
         }
@@ -213,7 +212,7 @@ struct CheckoutScopeObserver: View, LogReporter {
       }
     } else {
       EmptyView().onAppear {
-        logger.debug(message: "⏭️ [CheckoutComponents] Error screen disabled - auto-dismissing")
+        logger.debug(message: "[CheckoutComponents] Error screen disabled - auto-dismissing")
         DispatchQueue.main.async {
           onCompletion?(scope.currentState)
         }
@@ -247,8 +246,7 @@ struct CheckoutScopeObserver: View, LogReporter {
 
   private func loadDesignTokens(for colorScheme: ColorScheme) async {
     logger.info(
-      message: "Loading design tokens for color scheme: \(colorScheme == .dark ? "dark" : "light")"
-    )
+      message: "Loading design tokens for color scheme: \(colorScheme == .dark ? "dark" : "light")")
     do {
       try await designTokensManager.fetchTokens(for: colorScheme)
       logger.info(message: "Design tokens loaded successfully")

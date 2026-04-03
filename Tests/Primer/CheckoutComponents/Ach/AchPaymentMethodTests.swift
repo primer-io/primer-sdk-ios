@@ -85,7 +85,7 @@ final class AchPaymentMethodTests: XCTestCase {
     @MainActor
     func test_testAchPaymentMethod_createScope_withValidDependencies_delegatesToAchPaymentMethod() async throws {
         // Given
-        let container = await ContainerTestHelpers.createTestContainer()
+        let container = try await ContainerTestHelpers.createTestContainer()
         _ = try? await container.register(ProcessAchPaymentInteractor.self)
             .asSingleton()
             .with { _ in StubProcessAchPaymentInteractorForTests() }
@@ -104,7 +104,7 @@ final class AchPaymentMethodTests: XCTestCase {
     @MainActor
     func test_testAchPaymentMethod_createScope_withNonDefaultScope_throws() async throws {
         // Given
-        let container = await ContainerTestHelpers.createTestContainer()
+        let container = try await ContainerTestHelpers.createTestContainer()
         let invalidScope = MockInvalidCheckoutScope()
 
         // When/Then
@@ -172,7 +172,7 @@ final class AchPaymentMethodTests: XCTestCase {
     @MainActor
     func test_createScope_withValidDependencies_returnsScope() async throws {
         // Given
-        let container = await ContainerTestHelpers.createTestContainer()
+        let container = try await ContainerTestHelpers.createTestContainer()
         _ = try? await container.register(ProcessAchPaymentInteractor.self)
             .asSingleton()
             .with { _ in StubProcessAchPaymentInteractorForTests() }
@@ -194,7 +194,7 @@ final class AchPaymentMethodTests: XCTestCase {
     @MainActor
     func test_createView_withRegisteredScope_returnsView() async throws {
         // Given
-        let container = await ContainerTestHelpers.createTestContainer()
+        let container = try await ContainerTestHelpers.createTestContainer()
         _ = try? await container.register(ProcessAchPaymentInteractor.self)
             .asSingleton()
             .with { _ in StubProcessAchPaymentInteractorForTests() }
@@ -217,7 +217,7 @@ final class AchPaymentMethodTests: XCTestCase {
     @MainActor
     func test_createScope_withNonDefaultCheckoutScope_throws() async throws {
         // Given
-        let container = await ContainerTestHelpers.createTestContainer()
+        let container = try await ContainerTestHelpers.createTestContainer()
         _ = try? await container.register(ProcessAchPaymentInteractor.self)
             .asSingleton()
             .with { _ in StubProcessAchPaymentInteractorForTests() }
@@ -269,7 +269,7 @@ final class AchPaymentMethodTests: XCTestCase {
     @MainActor
     func test_createScope_withSinglePaymentMethod_usesDirectContext() async throws {
         // Given
-        let container = await ContainerTestHelpers.createTestContainer()
+        let container = try await ContainerTestHelpers.createTestContainer()
         _ = try? await container.register(ProcessAchPaymentInteractor.self)
             .asSingleton()
             .with { _ in StubProcessAchPaymentInteractorForTests() }
@@ -288,7 +288,7 @@ final class AchPaymentMethodTests: XCTestCase {
     @MainActor
     func test_createScope_withMultiplePaymentMethods_usesPaymentSelectionContext() async throws {
         // Given
-        let container = await ContainerTestHelpers.createTestContainer()
+        let container = try await ContainerTestHelpers.createTestContainer()
         _ = try? await container.register(ProcessAchPaymentInteractor.self)
             .asSingleton()
             .with { _ in StubProcessAchPaymentInteractorForTests() }
@@ -328,7 +328,7 @@ final class AchPaymentMethodTests: XCTestCase {
         registry.reset()
         AchPaymentMethod.register()
 
-        let container = await ContainerTestHelpers.createTestContainer()
+        let container = try await ContainerTestHelpers.createTestContainer()
         _ = try? await container.register(ProcessAchPaymentInteractor.self)
             .asSingleton()
             .with { _ in StubProcessAchPaymentInteractorForTests() }
@@ -352,10 +352,8 @@ final class AchPaymentMethodTests: XCTestCase {
 @MainActor
 private final class MockInvalidCheckoutScope: PrimerCheckoutScope {
 
-    var onBeforePaymentCreate: ((
-        _ data: PrimerCheckoutPaymentMethodData,
-        _ decisionHandler: @escaping (PrimerPaymentCreationDecision) -> Void
-    ) -> Void)?
+    var onBeforePaymentCreate: ((_ data: PrimerCheckoutPaymentMethodData,
+                                 _ decisionHandler: @escaping (PrimerPaymentCreationDecision) -> Void) -> Void)?
     var container: ContainerComponent?
     var splashScreen: Component?
     var loadingScreen: Component?

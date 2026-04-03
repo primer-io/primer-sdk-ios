@@ -7,7 +7,7 @@
 import Foundation
 
 /// Defines how the container should retain registered dependencies
-public enum ContainerRetainPolicy: String, Equatable, Sendable, Codable {
+enum ContainerRetainPolicy: String, Equatable, Sendable {
   case transient  // new instance every time
   case singleton  // strong cache
   case weak  // weak cache

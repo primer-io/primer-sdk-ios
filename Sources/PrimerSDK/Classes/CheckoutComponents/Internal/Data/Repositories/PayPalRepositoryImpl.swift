@@ -12,15 +12,18 @@ final class PayPalRepositoryImpl: PayPalRepository, LogReporter {
   private let payPalService: PayPalServiceProtocol
   private let webAuthService: WebAuthenticationService
   private let tokenizationService: TokenizationServiceProtocol
+  private let settings: PrimerSettingsProtocol
 
   init(
     payPalService: PayPalServiceProtocol = PayPalService(),
     webAuthService: WebAuthenticationService = DefaultWebAuthenticationService(),
-    tokenizationService: TokenizationServiceProtocol = TokenizationService()
+    tokenizationService: TokenizationServiceProtocol = TokenizationService(),
+    settings: PrimerSettingsProtocol = PrimerSettings.current
   ) {
     self.payPalService = payPalService
     self.webAuthService = webAuthService
     self.tokenizationService = tokenizationService
+    self.settings = settings
   }
 
   func startOrderSession() async throws -> (orderId: String, approvalUrl: String) {
@@ -33,7 +36,7 @@ final class PayPalRepositoryImpl: PayPalRepository, LogReporter {
   }
 
   func openWebAuthentication(url: URL) async throws -> URL {
-    let scheme = try PrimerSettings.current.paymentMethodOptions.validSchemeForUrlScheme()
+    let scheme = try settings.paymentMethodOptions.validSchemeForUrlScheme()
     return try await webAuthService.connect(
       paymentMethodType: PrimerPaymentMethodType.payPal.rawValue,
       url: url,

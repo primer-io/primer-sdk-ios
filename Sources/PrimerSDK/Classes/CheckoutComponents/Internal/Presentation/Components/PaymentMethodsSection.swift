@@ -18,6 +18,7 @@ struct PaymentMethodsSection: View {
       Text(CheckoutComponentsStrings.choosePaymentMethod)
         .font(PrimerFont.titleLarge(tokens: tokens))
         .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
+        .accessibilityAddTraits(.isHeader)
 
       if state.isLoading {
         makeLoadingView()
@@ -44,6 +45,7 @@ struct PaymentMethodsSection: View {
       )
       .scaleEffect(PrimerScale.large)
       .frame(maxWidth: .infinity, minHeight: PrimerComponentHeight.emptyStateMinHeight)
+      .accessibilityLabel(CheckoutComponentsStrings.a11yLoading)
   }
 
   // MARK: - Empty State

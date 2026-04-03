@@ -18,15 +18,7 @@ struct ApplePayPaymentMethod: PaymentMethodProtocol {
     checkoutScope: PrimerCheckoutScope,
     diContainer: any ContainerProtocol
   ) async throws -> DefaultApplePayScope {
-    guard let defaultCheckoutScope = checkoutScope as? DefaultCheckoutScope else {
-      throw PrimerError.invalidArchitecture(
-        description: "ApplePayPaymentMethod requires DefaultCheckoutScope",
-        recoverSuggestion: "Ensure you're using the default CheckoutComponents implementation"
-      )
-    }
-
-    let paymentMethodContext: PresentationContext =
-      defaultCheckoutScope.availablePaymentMethods.count > 1 ? .fromPaymentSelection : .direct
+    let (defaultCheckoutScope, paymentMethodContext) = try DefaultCheckoutScope.validated(from: checkoutScope)
 
     return DefaultApplePayScope(
       checkoutScope: defaultCheckoutScope,

@@ -23,7 +23,7 @@ final class AnalyticsEnvironmentProviderTests: XCTestCase {
 
     // MARK: - Dev Environment Tests
 
-    func testGetEndpointURL_Dev_ReturnsCorrectURL() {
+    func test_getEndpointURL_dev_returnsCorrectURL() {
         // When
         let url = provider.getEndpointURL(for: .dev)
 
@@ -35,7 +35,7 @@ final class AnalyticsEnvironmentProviderTests: XCTestCase {
         )
     }
 
-    func testGetEndpointURL_Dev_ReturnsValidURL() {
+    func test_getEndpointURL_dev_returnsValidURL() {
         // When
         let url = provider.getEndpointURL(for: .dev)
 
@@ -48,7 +48,7 @@ final class AnalyticsEnvironmentProviderTests: XCTestCase {
 
     // MARK: - Staging Environment Tests
 
-    func testGetEndpointURL_Staging_ReturnsCorrectURL() {
+    func test_getEndpointURL_staging_returnsCorrectURL() {
         // When
         let url = provider.getEndpointURL(for: .staging)
 
@@ -60,7 +60,7 @@ final class AnalyticsEnvironmentProviderTests: XCTestCase {
         )
     }
 
-    func testGetEndpointURL_Staging_ReturnsValidURL() {
+    func test_getEndpointURL_staging_returnsValidURL() {
         // When
         let url = provider.getEndpointURL(for: .staging)
 
@@ -72,7 +72,7 @@ final class AnalyticsEnvironmentProviderTests: XCTestCase {
 
     // MARK: - Sandbox Environment Tests
 
-    func testGetEndpointURL_Sandbox_ReturnsCorrectURL() {
+    func test_getEndpointURL_sandbox_returnsCorrectURL() {
         // When
         let url = provider.getEndpointURL(for: .sandbox)
 
@@ -84,7 +84,7 @@ final class AnalyticsEnvironmentProviderTests: XCTestCase {
         )
     }
 
-    func testGetEndpointURL_Sandbox_ReturnsValidURL() {
+    func test_getEndpointURL_sandbox_returnsValidURL() {
         // When
         let url = provider.getEndpointURL(for: .sandbox)
 
@@ -96,7 +96,7 @@ final class AnalyticsEnvironmentProviderTests: XCTestCase {
 
     // MARK: - Production Environment Tests
 
-    func testGetEndpointURL_Production_ReturnsCorrectURL() {
+    func test_getEndpointURL_production_returnsCorrectURL() {
         // When
         let url = provider.getEndpointURL(for: .production)
 
@@ -108,7 +108,7 @@ final class AnalyticsEnvironmentProviderTests: XCTestCase {
         )
     }
 
-    func testGetEndpointURL_Production_ReturnsValidURL() {
+    func test_getEndpointURL_production_returnsValidURL() {
         // When
         let url = provider.getEndpointURL(for: .production)
 
@@ -120,7 +120,7 @@ final class AnalyticsEnvironmentProviderTests: XCTestCase {
 
     // MARK: - All Environments Test
 
-    func testGetEndpointURL_AllEnvironments_ReturnValidURLs() {
+    func test_getEndpointURL_allEnvironments_returnValidURLs() {
         // Given
         let environments: [AnalyticsEnvironment] = [.dev, .staging, .sandbox, .production]
 
@@ -147,7 +147,7 @@ final class AnalyticsEnvironmentProviderTests: XCTestCase {
 
     // MARK: - URL Format Tests
 
-    func testGetEndpointURL_AllEnvironments_UseHTTPS() {
+    func test_getEndpointURL_allEnvironments_useHTTPS() {
         // Given
         let environments: [AnalyticsEnvironment] = [.dev, .staging, .sandbox, .production]
 
@@ -162,7 +162,7 @@ final class AnalyticsEnvironmentProviderTests: XCTestCase {
         }
     }
 
-    func testGetEndpointURL_AllEnvironments_HaveCorrectPath() {
+    func test_getEndpointURL_allEnvironments_haveCorrectPath() {
         // Given
         let environments: [AnalyticsEnvironment] = [.dev, .staging, .sandbox, .production]
         let expectedPath = "/v1/sdk-analytic-events"
@@ -178,7 +178,7 @@ final class AnalyticsEnvironmentProviderTests: XCTestCase {
         }
     }
 
-    func testGetEndpointURL_AllEnvironments_HaveUniqueHosts() {
+    func test_getEndpointURL_allEnvironments_haveUniqueHosts() {
         // Given
         let environments: [AnalyticsEnvironment] = [.dev, .staging, .sandbox, .production]
 
@@ -196,7 +196,7 @@ final class AnalyticsEnvironmentProviderTests: XCTestCase {
 
     // MARK: - Thread Safety Tests
 
-    func testConcurrentAccess_IsThreadSafe() async {
+    func test_concurrentAccess_isThreadSafe() async {
         // Given
         let environments: [AnalyticsEnvironment] = [.dev, .staging, .sandbox, .production]
 
@@ -217,17 +217,14 @@ final class AnalyticsEnvironmentProviderTests: XCTestCase {
 
     // MARK: - Integration Tests
 
-    func testGetEndpointURL_AllEnvironments_PrintURLs() {
+    func test_getEndpointURL_allEnvironments_verifyURLs() {
         // Given
         let environments: [AnalyticsEnvironment] = [.dev, .staging, .sandbox, .production]
 
         // When/Then
-        print("\nAnalytics Environment URLs:")
         for environment in environments {
-            if let url = provider.getEndpointURL(for: environment) {
-                print("  \(environment.rawValue): \(url.absoluteString)")
-                XCTAssertNotNil(url)
-            }
+            let url = provider.getEndpointURL(for: environment)
+            XCTAssertNotNil(url, "URL should not be nil for \(environment.rawValue)")
         }
     }
 }

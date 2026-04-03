@@ -55,8 +55,7 @@ struct CardFormScreen: View, LogReporter {
               identifier: AccessibilityIdentifiers.Common.backButton,
               label: CheckoutComponentsStrings.a11yBack,
               traits: [.isButton]
-            )
-          )
+            ))
         }
 
         Spacer()
@@ -69,8 +68,7 @@ struct CardFormScreen: View, LogReporter {
                 identifier: AccessibilityIdentifiers.Common.closeButton,
                 label: CheckoutComponentsStrings.a11yCancel,
                 traits: [.isButton]
-              )
-            )
+              ))
         }
       }
 
@@ -184,12 +182,10 @@ struct CardFormScreen: View, LogReporter {
   private var submitButtonSection: some View {
     // Check scope configuration for full button replacement
     if let customContent = scope.submitButton {
-      AnyView(customContent())
-        .onTapGesture {
-          if cardFormState.isValid, !cardFormState.isLoading {
-            submitAction()
-          }
-        }
+      Button(action: submitAction) {
+        AnyView(customContent())
+      }
+      .disabled(!cardFormState.isValid || cardFormState.isLoading)
     } else {
       Button(action: submitAction) {
         submitButtonContent
@@ -223,14 +219,11 @@ struct CardFormScreen: View, LogReporter {
           ? CheckoutComponentsStrings.a11ySubmitButtonLoading : submitButtonAccessibilityLabel,
         hint: cardFormState.isLoading
           ? nil
-          : (
-            isEnabled
+          : (isEnabled
             ? CheckoutComponentsStrings.a11ySubmitButtonHint
-            : CheckoutComponentsStrings.a11ySubmitButtonDisabled
-          ),
+            : CheckoutComponentsStrings.a11ySubmitButtonDisabled),
         traits: [.isButton]
-      )
-    )
+      ))
   }
 
   /// Accessibility-friendly version of submit button text for VoiceOver.
@@ -333,10 +326,9 @@ struct CardFormScreen: View, LogReporter {
         await MainActor.run {
           let newErrors = state.fieldErrors
           if newErrors.count > previousErrorCount, let firstError = newErrors.first {
-            UIAccessibility.post(
-              notification: .announcement,
-              argument: firstError.message
-            )
+            if let announcementService = try? container?.resolveSync(AccessibilityAnnouncementService.self) {
+              announcementService.announceError(firstError.message)
+            }
           }
           previousErrorCount = newErrors.count
 

@@ -77,8 +77,7 @@ struct VaultedCardCVVInput: View {
           identifier: AccessibilityIdentifiers.Vault.cvvSecurityLabel,
           label: CheckoutComponentsStrings.cvvRecaptureInstruction,
           traits: []
-        )
-      )
+        ))
 
       Spacer()
 
@@ -89,7 +88,7 @@ struct VaultedCardCVVInput: View {
   // MARK: - CVV Text Field
 
   private func makeCvvTextField() -> some View {
-    TextField(cvvPlaceholder, text: filteredCvvBinding)
+    SecureField(cvvPlaceholder, text: filteredCvvBinding)
       .keyboardType(.numberPad)
       .textContentType(.oneTimeCode)
       .focused($isFocused)
@@ -106,8 +105,7 @@ struct VaultedCardCVVInput: View {
         RoundedRectangle(cornerRadius: PrimerRadius.small(tokens: tokens))
           .stroke(
             cvvBorderColor,
-            lineWidth: isFocused ? PrimerBorderWidth.selected : PrimerBorderWidth.standard
-          )
+            lineWidth: isFocused ? PrimerBorderWidth.selected : PrimerBorderWidth.standard)
       )
       .accessibility(
         config: AccessibilityConfiguration(
@@ -115,8 +113,7 @@ struct VaultedCardCVVInput: View {
           label: CheckoutComponentsStrings.a11yVaultCVVLabel,
           hint: CheckoutComponentsStrings.a11yVaultCVVHint(length: expectedCvvLength),
           traits: []
-        )
-      )
+        ))
   }
 
   // MARK: - Error Label

@@ -66,12 +66,10 @@ struct VaultedPaymentMethodCard: View {
     .accessibility(
       config: AccessibilityConfiguration(
         identifier: AccessibilityIdentifiers.PaymentSelection.vaultedPaymentMethodItem(
-          vaultedPaymentMethod.id
-        ),
+          vaultedPaymentMethod.id),
         label: vaultedPaymentMethod.displayData.accessibilityLabel,
         traits: isEditMode ? [] : (isSelected ? [.isButton, .isSelected] : [.isButton])
-      )
-    )
+      ))
   }
 
   // MARK: - Main Card Row
@@ -99,19 +97,17 @@ struct VaultedPaymentMethodCard: View {
           .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
           .frame(width: 20, height: 20)
       }
-      .frame(width: 36, height: 36)
+      .frame(width: 44, height: 44)
       .contentShape(Rectangle())
     }
     .buttonStyle(PlainButtonStyle())
     .accessibility(
       config: AccessibilityConfiguration(
         identifier: AccessibilityIdentifiers.PaymentSelection.deletePaymentMethodButton(
-          vaultedPaymentMethod.id
-        ),
+          vaultedPaymentMethod.id),
         label: CheckoutComponentsStrings.a11yDeletePaymentMethod,
         traits: [.isButton]
-      )
-    )
+      ))
   }
 
   // MARK: - Display Data

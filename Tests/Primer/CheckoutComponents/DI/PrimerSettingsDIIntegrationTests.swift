@@ -150,7 +150,7 @@ final class PrimerSettingsDIIntegrationTests: XCTestCase {
 
     func test_settings_withCustomLocaleData_preservesLocale() async throws {
         // Given: Settings with custom locale
-        let localeData = PrimerLocaleData(languageCode: TestData.Locale.spanish, regionCode: TestData.Locale.mexico)
+        let localeData = PrimerLocaleData(languageCode: TestData.TestLocale.spanish, regionCode: TestData.TestLocale.mexico)
         let settings = PrimerSettings(localeData: localeData)
         let composableContainer = ComposableContainer(settings: settings)
 
@@ -164,9 +164,9 @@ final class PrimerSettingsDIIntegrationTests: XCTestCase {
         let resolved = try await container.resolve(PrimerSettings.self)
 
         // Then: Locale data should be preserved
-        XCTAssertEqual(resolved.localeData.languageCode, TestData.Locale.spanish)
-        XCTAssertEqual(resolved.localeData.regionCode, TestData.Locale.mexico)
-        XCTAssertEqual(resolved.localeData.localeCode, TestData.Locale.spanishMexico)
+        XCTAssertEqual(resolved.localeData.languageCode, TestData.TestLocale.spanish)
+        XCTAssertEqual(resolved.localeData.regionCode, TestData.TestLocale.mexico)
+        XCTAssertEqual(resolved.localeData.localeCode, TestData.TestLocale.spanishMexico)
     }
 
     // MARK: - UI Options Tests

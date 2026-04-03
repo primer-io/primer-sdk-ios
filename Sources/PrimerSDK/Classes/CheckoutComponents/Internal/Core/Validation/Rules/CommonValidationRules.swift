@@ -30,8 +30,7 @@ final class NameRule: ValidationRule {
 
     // Allow letters, spaces, hyphens, apostrophes
     let allowedCharacters = CharacterSet.letters.union(.whitespaces).union(
-      CharacterSet(charactersIn: "-'")
-    )
+      CharacterSet(charactersIn: "-'"))
     if !trimmedValue.unicodeScalars.allSatisfy({ allowedCharacters.contains($0) }) {
       let error = ErrorMessageResolver.createInvalidFieldError(for: inputElementType)
       return .invalid(error: error)
@@ -146,8 +145,7 @@ final class CityRule: ValidationRule {
 
     // Allow letters, spaces, hyphens, periods
     let allowedCharacters = CharacterSet.letters.union(.whitespaces).union(
-      CharacterSet(charactersIn: "-.")
-    )
+      CharacterSet(charactersIn: "-."))
     if !trimmedValue.unicodeScalars.allSatisfy({ allowedCharacters.contains($0) }) {
       let error = ErrorMessageResolver.createInvalidFieldError(for: .city)
       return .invalid(error: error)
@@ -265,6 +263,11 @@ final class CountryCodeRule: ValidationRule {
 
     // Should be 2-letter ISO code or 3-letter code
     if trimmedValue.count < 2 || trimmedValue.count > 3 {
+      let error = ErrorMessageResolver.createInvalidFieldError(for: .countryCode)
+      return .invalid(error: error)
+    }
+
+    guard trimmedValue.allSatisfy(\.isLetter) else {
       let error = ErrorMessageResolver.createInvalidFieldError(for: .countryCode)
       return .invalid(error: error)
     }

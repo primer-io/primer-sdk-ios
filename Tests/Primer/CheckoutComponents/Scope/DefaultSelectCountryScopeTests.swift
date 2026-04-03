@@ -19,7 +19,7 @@ final class DefaultSelectCountryScopeTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        sut = DefaultSelectCountryScope(cardFormScope: nil, checkoutScope: nil)
+        sut = DefaultSelectCountryScope(cardFormScope: nil)
     }
 
     override func tearDown() {
@@ -138,10 +138,8 @@ final class DefaultSelectCountryScopeTests: XCTestCase {
             let nameMatch = country.name.localizedCaseInsensitiveContains("United")
             let codeMatch = country.code.localizedCaseInsensitiveContains("United")
             let dialMatch = country.dialCode?.contains("United") ?? false
-            XCTAssertTrue(
-                nameMatch || codeMatch || dialMatch,
-                "Country '\(country.name)' should match 'United'"
-            )
+            XCTAssertTrue(nameMatch || codeMatch || dialMatch,
+                          "Country '\(country.name)' should match 'United'")
         }
     }
 
@@ -234,11 +232,8 @@ final class DefaultSelectCountryScopeTests: XCTestCase {
         let state2 = try await awaitFirst(sut.state)
         let count2 = state2.filteredCountries.count
 
-        XCTAssertGreaterThanOrEqual(
-            count1,
-            count2,
-            "More specific search should return same or fewer results"
-        )
+        XCTAssertGreaterThanOrEqual(count1, count2,
+                                     "More specific search should return same or fewer results")
     }
 
     func test_onSearch_doesNotMutateCountriesList() async throws {
@@ -339,10 +334,8 @@ final class DefaultSelectCountryScopeTests: XCTestCase {
         XCTAssertFalse(countriesWithDialCodes.isEmpty, "Some countries should have dial codes")
         for country in countriesWithDialCodes {
             guard let dialCode = country.dialCode else { continue }
-            XCTAssertTrue(
-                dialCode.hasPrefix("+"),
-                "Dial code '\(dialCode)' for \(country.code) should start with +"
-            )
+            XCTAssertTrue(dialCode.hasPrefix("+"),
+                          "Dial code '\(dialCode)' for \(country.code) should start with +")
         }
     }
 }

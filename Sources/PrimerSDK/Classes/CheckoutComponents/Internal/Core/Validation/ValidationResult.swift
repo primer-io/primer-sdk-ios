@@ -6,23 +6,23 @@
 
 import Foundation
 
-public struct ValidationResult {
-  public let isValid: Bool
+struct ValidationResult {
+  let isValid: Bool
 
   /// Error code if validation failed (nil if valid)
-  public let errorCode: String?
+  let errorCode: String?
 
   /// Human-readable error message if validation failed (nil if valid)
-  public let errorMessage: String?
+  let errorMessage: String?
 
-  public static let valid = ValidationResult(isValid: true, errorCode: nil, errorMessage: nil)
+  static let valid = ValidationResult(isValid: true, errorCode: nil, errorMessage: nil)
 
-  public static func invalid(code: String, message: String) -> ValidationResult {
+  static func invalid(code: String, message: String) -> ValidationResult {
     ValidationResult(isValid: false, errorCode: code, errorMessage: message)
   }
 
   /// Creates a failed validation result using ValidationError with automatic error message resolution
-  public static func invalid(error: ValidationError) -> ValidationResult {
+  static func invalid(error: ValidationError) -> ValidationResult {
     // Attempt to resolve the error message through ErrorMessageResolver
     let resolvedMessage = ErrorMessageResolver.resolveErrorMessage(for: error) ?? error.message
 
@@ -30,7 +30,7 @@ public struct ValidationResult {
   }
 
   /// Converts the validation result to a ValidationError (nil if valid)
-  public var toValidationError: ValidationError? {
+  var toValidationError: ValidationError? {
     guard !isValid, let code = errorCode, let message = errorMessage else {
       return nil
     }

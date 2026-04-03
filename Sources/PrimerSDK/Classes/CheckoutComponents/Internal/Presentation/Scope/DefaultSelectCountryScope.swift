@@ -32,25 +32,19 @@ final class DefaultSelectCountryScope: PrimerSelectCountryScope, LogReporter {
 
   // MARK: - UI Customization Properties
 
-  public var screen: ((_ scope: PrimerSelectCountryScope) -> AnyView)?
-  public var searchBar:
-    (
-      (_ query: String, _ onQueryChange: @escaping (String) -> Void, _ placeholder: String) ->
-        AnyView
-    )?
+  public var screen: SelectCountryScreenComponent?
+  public var searchBar: SearchBarComponent?
   public var countryItem: CountryItemComponent?
 
   // MARK: - Private Properties
 
   @Published private var internalState = PrimerSelectCountryState()
   private weak var cardFormScope: DefaultCardFormScope?
-  private weak var checkoutScope: DefaultCheckoutScope?
 
   // MARK: - Initialization
 
-  init(cardFormScope: DefaultCardFormScope?, checkoutScope: DefaultCheckoutScope?) {
+  init(cardFormScope: DefaultCardFormScope?) {
     self.cardFormScope = cardFormScope
-    self.checkoutScope = checkoutScope
     loadAvailableCountries()
   }
 
@@ -108,16 +102,13 @@ final class DefaultSelectCountryScope: PrimerSelectCountryScope, LogReporter {
       internalState.filteredCountries = internalState.countries
     } else {
       let normalizedQuery = query.folding(
-        options: [.diacriticInsensitive, .caseInsensitive], locale: nil
-      )
+        options: [.diacriticInsensitive, .caseInsensitive], locale: nil)
 
       internalState.filteredCountries = internalState.countries.filter { country in
         let normalizedCountryName = country.name.folding(
-          options: [.diacriticInsensitive, .caseInsensitive], locale: nil
-        )
+          options: [.diacriticInsensitive, .caseInsensitive], locale: nil)
         let normalizedCountryCode = country.code.folding(
-          options: [.diacriticInsensitive, .caseInsensitive], locale: nil
-        )
+          options: [.diacriticInsensitive, .caseInsensitive], locale: nil)
 
         return normalizedCountryName.contains(normalizedQuery)
           || normalizedCountryCode.contains(normalizedQuery)

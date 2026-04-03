@@ -6,8 +6,8 @@
 
 import Foundation
 
-// MARK: – Registrar: registration APIs
-public protocol Registrar: Sendable {
+// MARK: - Registrar: registration APIs
+protocol Registrar: Sendable {
   func register<T>(_ type: T.Type) -> any RegistrationBuilder<T>
   @discardableResult
   func unregister<T>(_ type: T.Type, name: String?) async -> Self
@@ -19,8 +19,8 @@ extension Registrar {
   }
 }
 
-// MARK: – Resolver: resolution APIs (named with prefix DI due to conflict naming with PromisKit)
-public protocol DIResolver: Sendable {
+// MARK: - Resolver: resolution APIs (named with prefix DI due to conflict naming with PromisKit)
+protocol DIResolver: Sendable {
   /// Async resolution - throw if missing or failed
   func resolve<T>(_ type: T.Type, name: String?) async throws -> T
 
@@ -40,23 +40,29 @@ extension DIResolver {
   }
 }
 
-// MARK: – LifecycleManager: container lifecycle
-public protocol LifecycleManager: Sendable {
+// MARK: - LifecycleManager: container lifecycle
+protocol LifecycleManager: Sendable {
   func reset<T>(ignoreDependencies: [T.Type]) async
 }
 
-public protocol ContainerProtocol: Registrar, DIResolver, LifecycleManager {}
+protocol ContainerProtocol: Registrar, DIResolver, LifecycleManager {}
 
 /// Fluent builder for configuring dependency registrations
-public protocol RegistrationBuilder<T> {
+protocol RegistrationBuilder<T> {
   associatedtype T
 
+  @discardableResult
   func named(_ name: String) -> Self
   /// Strongly retained singleton
+  @discardableResult
   func asSingleton() -> Self
+  @discardableResult
   func asWeak() -> Self
   /// New instance each time
+  @discardableResult
   func asTransient() -> Self
+  @discardableResult
   func with(_ factory: @escaping @Sendable (any ContainerProtocol) async throws -> T) async throws -> Self
+  @discardableResult
   func with(_ factory: @escaping @Sendable (any ContainerProtocol) throws -> T) async throws -> Self
 }
