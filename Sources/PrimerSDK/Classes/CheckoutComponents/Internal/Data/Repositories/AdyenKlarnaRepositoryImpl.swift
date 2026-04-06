@@ -181,19 +181,13 @@ final class AdyenKlarnaRepositoryImpl: AdyenKlarnaRepository, LogReporter {
         )
     }
 
+    @MainActor
     private func openDeepLink(url: URL) async throws {
-        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
-            DispatchQueue.main.async {
-                UIApplication.shared.open(url) { success in
-                    if success {
-                        continuation.resume()
-                    } else {
-                        let error = PrimerError.failedToRedirect(url: url.schemeAndHost)
-                        ErrorHandler.handle(error: error)
-                        continuation.resume(throwing: error)
-                    }
-                }
-            }
+        let success = await UIApplication.shared.open(url)
+        guard success else {
+            let error = PrimerError.failedToRedirect(url: url.schemeAndHost)
+            ErrorHandler.handle(error: error)
+            throw error
         }
     }
 }
