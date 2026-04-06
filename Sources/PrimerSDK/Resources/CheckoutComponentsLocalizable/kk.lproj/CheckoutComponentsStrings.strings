@@ -273,3 +273,12 @@
 /* Retail Outlet */
 "primer_card_form_error_retail_outlet_required" = "Сауда нүктесі міндетті";
 "primer_card_form_error_retail_outlet_invalid" = "Жарамсыз сауда нүктесі";
+
+// Adyen Klarna
+"primer_adyen_klarna_title" = "Klarna";
+"primer_adyen_klarna_select_option" = "Төлем әдісін таңдаңыз";
+"primer_adyen_klarna_button_continue" = "Klarna арқылы жалғастыру";
+"accessibility_adyen_klarna_option_list" = "Klarna төлем опциялары";
+"accessibility_adyen_klarna_option_button" = "Klarna %@ арқылы төлеу";
+"accessibility_adyen_klarna_loading" = "Klarna төлем опциялары жүктелуде";
+"accessibility_adyen_klarna_redirecting" = "Klarna-ға қайта бағыттау";

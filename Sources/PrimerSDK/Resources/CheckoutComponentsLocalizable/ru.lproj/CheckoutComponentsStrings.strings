@@ -273,3 +273,12 @@
 /* Retail Outlet */
 "primer_card_form_error_retail_outlet_required" = "Торговая точка обязательна";
 "primer_card_form_error_retail_outlet_invalid" = "Недействительная торговая точка";
+
+// Adyen Klarna
+"primer_adyen_klarna_title" = "Klarna";
+"primer_adyen_klarna_select_option" = "Выберите способ оплаты";
+"primer_adyen_klarna_button_continue" = "Продолжить с Klarna";
+"accessibility_adyen_klarna_option_list" = "Варианты оплаты Klarna";
+"accessibility_adyen_klarna_option_button" = "Оплатить через Klarna %@";
+"accessibility_adyen_klarna_loading" = "Загрузка вариантов оплаты Klarna";
+"accessibility_adyen_klarna_redirecting" = "Перенаправление на Klarna";

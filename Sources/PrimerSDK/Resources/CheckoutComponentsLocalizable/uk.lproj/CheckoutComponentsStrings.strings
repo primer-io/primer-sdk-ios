@@ -273,3 +273,12 @@
 /* Retail Outlet */
 "primer_card_form_error_retail_outlet_required" = "Торгова точка є обов'язковою";
 "primer_card_form_error_retail_outlet_invalid" = "Недійсна торгова точка";
+
+// Adyen Klarna
+"primer_adyen_klarna_title" = "Klarna";
+"primer_adyen_klarna_select_option" = "Оберіть спосіб оплати";
+"primer_adyen_klarna_button_continue" = "Продовжити з Klarna";
+"accessibility_adyen_klarna_option_list" = "Варіанти оплати Klarna";
+"accessibility_adyen_klarna_option_button" = "Оплатити через Klarna %@";
+"accessibility_adyen_klarna_loading" = "Завантаження варіантів оплати Klarna";
+"accessibility_adyen_klarna_redirecting" = "Перенаправлення на Klarna";

@@ -273,3 +273,12 @@
 /* Retail Outlet */
 "primer_card_form_error_retail_outlet_required" = "Търговският обект е задължителен";
 "primer_card_form_error_retail_outlet_invalid" = "Невалиден търговски обект";
+
+// Adyen Klarna
+"primer_adyen_klarna_title" = "Klarna";
+"primer_adyen_klarna_select_option" = "Изберете как искате да платите";
+"primer_adyen_klarna_button_continue" = "Продължете с Klarna";
+"accessibility_adyen_klarna_option_list" = "Опции за плащане с Klarna";
+"accessibility_adyen_klarna_option_button" = "Платете с Klarna %@";
+"accessibility_adyen_klarna_loading" = "Зареждане на опциите за плащане с Klarna";
+"accessibility_adyen_klarna_redirecting" = "Пренасочване към Klarna";

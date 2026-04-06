@@ -273,3 +273,12 @@
 /* Retail Outlet */
 "primer_card_form_error_retail_outlet_required" = "منفذ البيع بالتجزئة مطلوب";
 "primer_card_form_error_retail_outlet_invalid" = "منفذ بيع بالتجزئة غير صالح";
+
+// Adyen Klarna
+"primer_adyen_klarna_title" = "Klarna";
+"primer_adyen_klarna_select_option" = "اختر طريقة الدفع المفضلة";
+"primer_adyen_klarna_button_continue" = "المتابعة مع Klarna";
+"accessibility_adyen_klarna_option_list" = "خيارات الدفع عبر Klarna";
+"accessibility_adyen_klarna_option_button" = "الدفع باستخدام Klarna %@";
+"accessibility_adyen_klarna_loading" = "جارٍ تحميل خيارات الدفع عبر Klarna";
+"accessibility_adyen_klarna_redirecting" = "جارٍ إعادة التوجيه إلى Klarna";

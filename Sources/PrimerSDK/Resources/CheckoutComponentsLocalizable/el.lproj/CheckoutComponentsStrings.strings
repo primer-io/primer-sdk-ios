@@ -273,3 +273,12 @@
 /* Retail Outlet */
 "primer_card_form_error_retail_outlet_required" = "Το σημείο πώλησης είναι υποχρεωτικό";
 "primer_card_form_error_retail_outlet_invalid" = "Μη έγκυρο σημείο πώλησης";
+
+// Adyen Klarna
+"primer_adyen_klarna_title" = "Klarna";
+"primer_adyen_klarna_select_option" = "Επιλέξτε πώς θέλετε να πληρώσετε";
+"primer_adyen_klarna_button_continue" = "Συνέχεια με Klarna";
+"accessibility_adyen_klarna_option_list" = "Επιλογές πληρωμής Klarna";
+"accessibility_adyen_klarna_option_button" = "Πληρωμή με Klarna %@";
+"accessibility_adyen_klarna_loading" = "Φόρτωση επιλογών πληρωμής Klarna";
+"accessibility_adyen_klarna_redirecting" = "Ανακατεύθυνση στο Klarna";

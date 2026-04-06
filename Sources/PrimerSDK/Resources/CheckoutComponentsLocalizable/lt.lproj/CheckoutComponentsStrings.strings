@@ -273,3 +273,12 @@
 /* Retail Outlet */
 "primer_card_form_error_retail_outlet_required" = "Mažmeninės prekybos vieta yra privaloma";
 "primer_card_form_error_retail_outlet_invalid" = "Netinkama mažmeninės prekybos vieta";
+
+// Adyen Klarna
+"primer_adyen_klarna_title" = "Klarna";
+"primer_adyen_klarna_select_option" = "Pasirinkite mokėjimo būdą";
+"primer_adyen_klarna_button_continue" = "Tęsti su Klarna";
+"accessibility_adyen_klarna_option_list" = "Klarna mokėjimo parinktys";
+"accessibility_adyen_klarna_option_button" = "Mokėti su Klarna %@";
+"accessibility_adyen_klarna_loading" = "Įkeliamos Klarna mokėjimo parinktys";
+"accessibility_adyen_klarna_redirecting" = "Nukreipiama į Klarna";

@@ -273,3 +273,12 @@
 /* Retail Outlet */
 "primer_card_form_error_retail_outlet_required" = "Jaemüügipunkt on kohustuslik";
 "primer_card_form_error_retail_outlet_invalid" = "Vigane jaemüügipunkt";
+
+// Adyen Klarna
+"primer_adyen_klarna_title" = "Klarna";
+"primer_adyen_klarna_select_option" = "Valige, kuidas soovite maksta";
+"primer_adyen_klarna_button_continue" = "Jätka Klarna-ga";
+"accessibility_adyen_klarna_option_list" = "Klarna maksevalikud";
+"accessibility_adyen_klarna_option_button" = "Maksa Klarna %@ abil";
+"accessibility_adyen_klarna_loading" = "Klarna maksevalikute laadimine";
+"accessibility_adyen_klarna_redirecting" = "Suunamine Klarna-sse";

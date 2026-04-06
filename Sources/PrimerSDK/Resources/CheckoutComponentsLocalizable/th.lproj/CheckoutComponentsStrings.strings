@@ -273,3 +273,12 @@
 /* Retail Outlet */
 "primer_card_form_error_retail_outlet_required" = "จำเป็นต้องระบุจุดชำระเงิน";
 "primer_card_form_error_retail_outlet_invalid" = "จุดชำระเงินไม่ถูกต้อง";
+
+// Adyen Klarna
+"primer_adyen_klarna_title" = "Klarna";
+"primer_adyen_klarna_select_option" = "เลือกวิธีการชำระเงิน";
+"primer_adyen_klarna_button_continue" = "ดำเนินการต่อด้วย Klarna";
+"accessibility_adyen_klarna_option_list" = "ตัวเลือกการชำระเงิน Klarna";
+"accessibility_adyen_klarna_option_button" = "ชำระเงินด้วย Klarna %@";
+"accessibility_adyen_klarna_loading" = "กำลังโหลดตัวเลือกการชำระเงิน Klarna";
+"accessibility_adyen_klarna_redirecting" = "กำลังเปลี่ยนเส้นทางไปยัง Klarna";

@@ -30,6 +30,10 @@ final class PrimerPaymentMethodTypeDefaultImageNameTests: XCTestCase {
         XCTAssertEqual(PrimerPaymentMethodType.primerTestKlarna.defaultImageName, .klarna)
     }
 
+    func test_defaultImageName_adyenKlarna_returnsKlarnaImage() {
+        XCTAssertEqual(PrimerPaymentMethodType.adyenKlarna.defaultImageName, .klarna)
+    }
+
     func test_defaultImageName_paymentCard_returnsCreditCardImage() {
         XCTAssertEqual(PrimerPaymentMethodType.paymentCard.defaultImageName, .creditCard)
     }
@@ -183,6 +187,10 @@ final class PrimerPaymentMethodTypeIconTests: XCTestCase {
 
     func test_icon_adyenTwint_returnsNonNilImage() {
         XCTAssertNotNil(PrimerPaymentMethodType.adyenTwint.icon)
+    }
+
+    func test_icon_adyenKlarna_returnsNonNilImage() {
+        XCTAssertNotNil(PrimerPaymentMethodType.adyenKlarna.icon)
     }
 
     func test_icon_adyenVipps_returnsNonNilImage() {

@@ -273,3 +273,12 @@
 /* Retail Outlet */
 "primer_card_form_error_retail_outlet_required" = "Pika e shitjes është e detyrueshme";
 "primer_card_form_error_retail_outlet_invalid" = "Pikë shitjeje e pavlefshme";
+
+// Adyen Klarna
+"primer_adyen_klarna_title" = "Klarna";
+"primer_adyen_klarna_select_option" = "Zgjidhni si dëshiron të paguash";
+"primer_adyen_klarna_button_continue" = "Vazhdo me Klarna";
+"accessibility_adyen_klarna_option_list" = "Opsionet e pagesës Klarna";
+"accessibility_adyen_klarna_option_button" = "Paguaj me Klarna %@";
+"accessibility_adyen_klarna_loading" = "Po ngarkohen opsionet e pagesës Klarna";
+"accessibility_adyen_klarna_redirecting" = "Po ridrejtohet te Klarna";

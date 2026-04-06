@@ -30,6 +30,7 @@ enum PrimerAPI: Endpoint, Equatable {
              (.tokenizePaymentMethod, .tokenizePaymentMethod),
              (.listAdyenBanks, .listAdyenBanks),
              (.listRetailOutlets, .listRetailOutlets),
+             (.listAdyenKlarnaPaymentTypes, .listAdyenKlarnaPaymentTypes),
              (.begin3DSRemoteAuth, .begin3DSRemoteAuth),
              (.continue3DSRemoteAuth, .continue3DSRemoteAuth),
              (.poll, .poll),
@@ -63,6 +64,7 @@ enum PrimerAPI: Endpoint, Equatable {
     case tokenizePaymentMethod(clientToken: DecodedJWTToken, tokenizationRequestBody: Request.Body.Tokenization)
     case listAdyenBanks(clientToken: DecodedJWTToken, request: Request.Body.Adyen.BanksList)
     case listRetailOutlets(clientToken: DecodedJWTToken, paymentMethodId: String)
+    case listAdyenKlarnaPaymentTypes(clientToken: DecodedJWTToken, paymentMethodConfigId: String)
 
     case requestPrimerConfigurationWithActions(clientToken: DecodedJWTToken, request: ClientSessionUpdateRequest)
 
@@ -133,6 +135,7 @@ extension PrimerAPI {
              let .continue3DSRemoteAuth(clientToken, _, _),
              let .listAdyenBanks(clientToken, _),
              let .listRetailOutlets(clientToken, _),
+             let .listAdyenKlarnaPaymentTypes(clientToken, _),
              let .requestPrimerConfigurationWithActions(clientToken, _),
              let .fetchPayPalExternalPayerInfo(clientToken, _),
              let .resumePayment(clientToken, _, _),
@@ -209,6 +212,7 @@ extension PrimerAPI {
              .finalizeKlarnaPaymentSession,
              .listAdyenBanks,
              .listRetailOutlets,
+             .listAdyenKlarnaPaymentTypes,
              .poll,
              .sendAnalyticsEvents,
              .fetchPayPalExternalPayerInfo,
@@ -235,6 +239,7 @@ extension PrimerAPI {
              let .finalizeKlarnaPaymentSession(clientToken, _),
              let .listAdyenBanks(clientToken, _),
              let .listRetailOutlets(clientToken, _),
+             let .listAdyenKlarnaPaymentTypes(clientToken, _),
              let .fetchPayPalExternalPayerInfo(clientToken, _),
              let .testFinalizePolling(clientToken, _),
              let .getNolSdkSecret(clientToken, _):
@@ -305,6 +310,8 @@ extension PrimerAPI {
             "/adyen/checkout"
         case let .listRetailOutlets(_, paymentMethodId):
             "/payment-method-options/\(paymentMethodId)/retail-outlets"
+        case let .listAdyenKlarnaPaymentTypes(_, paymentMethodConfigId):
+            "/payment-method-options/\(paymentMethodConfigId)/payment-types"
         case .requestPrimerConfigurationWithActions:
             "/client-session/actions"
         case .poll:
@@ -342,6 +349,7 @@ extension PrimerAPI {
              .fetchConfiguration,
              .fetchVaultedPaymentMethods,
              .listRetailOutlets,
+             .listAdyenKlarnaPaymentTypes,
              .listCardNetworks,
              .getPhoneMetadata:
             .get
@@ -414,7 +422,8 @@ extension PrimerAPI {
              .deleteVaultedPaymentMethod,
              .fetchVaultedPaymentMethods,
              .poll,
-             .listRetailOutlets:
+             .listRetailOutlets,
+             .listAdyenKlarnaPaymentTypes:
             return nil
         case let .exchangePaymentMethodToken(_, _, vaultedPaymentMethodAdditionalData):
             if let vaultedCardAdditionalData = vaultedPaymentMethodAdditionalData as? PrimerVaultedCardAdditionalData {
@@ -470,6 +479,7 @@ extension PrimerAPI {
              .finalizeKlarnaPaymentSession,
              .listAdyenBanks,
              .listRetailOutlets,
+             .listAdyenKlarnaPaymentTypes,
              .fetchPayPalExternalPayerInfo,
              .testFinalizePolling,
              .getNolSdkSecret,

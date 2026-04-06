@@ -273,3 +273,12 @@
 /* Retail Outlet */
 "primer_card_form_error_retail_outlet_required" = "零售网点为必填项";
 "primer_card_form_error_retail_outlet_invalid" = "无效的零售网点";
+
+// Adyen Klarna
+"primer_adyen_klarna_title" = "Klarna";
+"primer_adyen_klarna_select_option" = "选择您的付款方式";
+"primer_adyen_klarna_button_continue" = "继续使用 Klarna";
+"accessibility_adyen_klarna_option_list" = "Klarna 付款选项";
+"accessibility_adyen_klarna_option_button" = "使用 Klarna %@ 付款";
+"accessibility_adyen_klarna_loading" = "正在加载 Klarna 付款选项";
+"accessibility_adyen_klarna_redirecting" = "正在跳转到 Klarna";

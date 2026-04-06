@@ -273,3 +273,12 @@
 /* Retail Outlet */
 "primer_card_form_error_retail_outlet_required" = "소매점을 선택해야 합니다";
 "primer_card_form_error_retail_outlet_invalid" = "유효하지 않은 소매점";
+
+// Adyen Klarna
+"primer_adyen_klarna_title" = "Klarna";
+"primer_adyen_klarna_select_option" = "결제 방법을 선택하세요";
+"primer_adyen_klarna_button_continue" = "Klarna로 계속하기";
+"accessibility_adyen_klarna_option_list" = "Klarna 결제 옵션";
+"accessibility_adyen_klarna_option_button" = "Klarna %@(으)로 결제";
+"accessibility_adyen_klarna_loading" = "Klarna 결제 옵션 로드 중";
+"accessibility_adyen_klarna_redirecting" = "Klarna로 리디렉션 중";

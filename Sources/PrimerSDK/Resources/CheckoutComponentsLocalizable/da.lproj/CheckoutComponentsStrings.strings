@@ -273,3 +273,12 @@
 /* Retail Outlet */
 "primer_card_form_error_retail_outlet_required" = "Detailbutik er påkrævet";
 "primer_card_form_error_retail_outlet_invalid" = "Ugyldig detailbutik";
+
+// Adyen Klarna
+"primer_adyen_klarna_title" = "Klarna";
+"primer_adyen_klarna_select_option" = "Vælg hvordan du vil betale";
+"primer_adyen_klarna_button_continue" = "Fortsæt med Klarna";
+"accessibility_adyen_klarna_option_list" = "Klarna betalingsmuligheder";
+"accessibility_adyen_klarna_option_button" = "Betal med Klarna %@";
+"accessibility_adyen_klarna_loading" = "Indlæser Klarna betalingsmuligheder";
+"accessibility_adyen_klarna_redirecting" = "Omdirigerer til Klarna";

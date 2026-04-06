@@ -273,3 +273,12 @@
 /* Retail Outlet */
 "primer_card_form_error_retail_outlet_required" = "Satış noktası gereklidir";
 "primer_card_form_error_retail_outlet_invalid" = "Geçersiz satış noktası";
+
+// Adyen Klarna
+"primer_adyen_klarna_title" = "Klarna";
+"primer_adyen_klarna_select_option" = "Nasıl ödemek istediğinizi seçin";
+"primer_adyen_klarna_button_continue" = "Klarna ile devam et";
+"accessibility_adyen_klarna_option_list" = "Klarna ödeme seçenekleri";
+"accessibility_adyen_klarna_option_button" = "Klarna %@ ile öde";
+"accessibility_adyen_klarna_loading" = "Klarna ödeme seçenekleri yükleniyor";
+"accessibility_adyen_klarna_redirecting" = "Klarna'ya yönlendiriliyor";

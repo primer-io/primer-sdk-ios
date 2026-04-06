@@ -2164,6 +2164,69 @@ enum CheckoutComponentsStrings {
     value: "Choose Another Payment Method",
     comment: "Button to return to payment selection when Apple Pay is unavailable"
   )
+
+  // MARK: - Adyen Klarna Strings
+
+  static let adyenKlarnaTitle = NSLocalizedString(
+    "primer_adyen_klarna_title",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Klarna",
+    comment: "Adyen Klarna screen title"
+  )
+
+  static let adyenKlarnaSelectOption = NSLocalizedString(
+    "primer_adyen_klarna_select_option",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Choose how you'd like to pay",
+    comment: "Adyen Klarna payment option selection description"
+  )
+
+  static let adyenKlarnaButtonContinue = NSLocalizedString(
+    "primer_adyen_klarna_button_continue",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Continue with Klarna",
+    comment: "Adyen Klarna continue button text"
+  )
+
+  // MARK: - Adyen Klarna Accessibility
+
+  static let a11yAdyenKlarnaOptionList = NSLocalizedString(
+    "accessibility_adyen_klarna_option_list",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Klarna payment options",
+    comment: "VoiceOver label for Adyen Klarna option list"
+  )
+
+  static func a11yAdyenKlarnaOptionButton(_ optionName: String) -> String {
+    let format = NSLocalizedString(
+      "accessibility_adyen_klarna_option_button",
+      tableName: tableName,
+      bundle: .primerResources,
+      value: "Pay with Klarna %@",
+      comment: "VoiceOver label for Adyen Klarna payment option button"
+    )
+    return String(format: format, optionName)
+  }
+
+  static let a11yAdyenKlarnaLoading = NSLocalizedString(
+    "accessibility_adyen_klarna_loading",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Loading Klarna payment options",
+    comment: "VoiceOver announcement when loading Adyen Klarna options"
+  )
+
+  static let a11yAdyenKlarnaRedirecting = NSLocalizedString(
+    "accessibility_adyen_klarna_redirecting",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Redirecting to Klarna",
+    comment: "VoiceOver announcement when redirecting to Klarna"
+  )
 }
 
 // swiftlint:enable file_length

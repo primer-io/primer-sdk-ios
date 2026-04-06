@@ -273,3 +273,12 @@
 /* Retail Outlet */
 "primer_card_form_error_retail_outlet_required" = "Prodejní místo je povinné";
 "primer_card_form_error_retail_outlet_invalid" = "Neplatné prodejní místo";
+
+// Adyen Klarna
+"primer_adyen_klarna_title" = "Klarna";
+"primer_adyen_klarna_select_option" = "Zvolte způsob platby";
+"primer_adyen_klarna_button_continue" = "Pokračovat s Klarna";
+"accessibility_adyen_klarna_option_list" = "Možnosti platby Klarna";
+"accessibility_adyen_klarna_option_button" = "Zaplatit přes Klarna %@";
+"accessibility_adyen_klarna_loading" = "Načítání možností platby Klarna";
+"accessibility_adyen_klarna_redirecting" = "Přesměrování na Klarna";

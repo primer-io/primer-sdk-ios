@@ -145,6 +145,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
     PayPalPaymentMethod.register()
     ApplePayPaymentMethod.register()
     KlarnaPaymentMethod.register()
+    AdyenKlarnaPaymentMethod.register()
     AchPaymentMethod.register()
     FormRedirectPaymentMethod.register()
     QRCodePaymentMethod.registerAll([.xfersPayNow, .rapydPromptPay, .omisePromptPay])

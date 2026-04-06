@@ -273,3 +273,12 @@
 /* Retail Outlet */
 "primer_card_form_error_retail_outlet_required" = "Малопродажната точка е задолжителна";
 "primer_card_form_error_retail_outlet_invalid" = "Невалидна малопродажна точка";
+
+// Adyen Klarna
+"primer_adyen_klarna_title" = "Klarna";
+"primer_adyen_klarna_select_option" = "Изберете како сакате да платите";
+"primer_adyen_klarna_button_continue" = "Продолжете со Klarna";
+"accessibility_adyen_klarna_option_list" = "Klarna опции за плаќање";
+"accessibility_adyen_klarna_option_button" = "Платете со Klarna %@";
+"accessibility_adyen_klarna_loading" = "Се вчитуваат Klarna опциите за плаќање";
+"accessibility_adyen_klarna_redirecting" = "Пренасочување кон Klarna";

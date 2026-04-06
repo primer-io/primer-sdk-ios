@@ -273,3 +273,12 @@
 /* Retail Outlet */
 "primer_card_form_error_retail_outlet_required" = "Savdo nuqtasi talab qilinadi";
 "primer_card_form_error_retail_outlet_invalid" = "Notoʻgʻri savdo nuqtasi";
+
+// Adyen Klarna
+"primer_adyen_klarna_title" = "Klarna";
+"primer_adyen_klarna_select_option" = "To'lov usulini tanlang";
+"primer_adyen_klarna_button_continue" = "Klarna bilan davom eting";
+"accessibility_adyen_klarna_option_list" = "Klarna to'lov variantlari";
+"accessibility_adyen_klarna_option_button" = "Klarna %@ bilan to'lang";
+"accessibility_adyen_klarna_loading" = "Klarna to'lov variantlari yuklanmoqda";
+"accessibility_adyen_klarna_redirecting" = "Klarna-ga yo'naltirilmoqda";

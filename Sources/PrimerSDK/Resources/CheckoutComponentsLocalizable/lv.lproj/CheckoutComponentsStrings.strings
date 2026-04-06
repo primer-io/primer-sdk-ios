@@ -273,3 +273,12 @@
 /* Retail Outlet */
 "primer_card_form_error_retail_outlet_required" = "Mazumtirdzniecības vieta ir obligāta";
 "primer_card_form_error_retail_outlet_invalid" = "Nederīga mazumtirdzniecības vieta";
+
+// Adyen Klarna
+"primer_adyen_klarna_title" = "Klarna";
+"primer_adyen_klarna_select_option" = "Izvēlieties maksājuma veidu";
+"primer_adyen_klarna_button_continue" = "Turpināt ar Klarna";
+"accessibility_adyen_klarna_option_list" = "Klarna maksājumu iespējas";
+"accessibility_adyen_klarna_option_button" = "Maksāt ar Klarna %@";
+"accessibility_adyen_klarna_loading" = "Klarna maksājumu iespējas tiek ielādētas";
+"accessibility_adyen_klarna_redirecting" = "Notiek novirzīšana uz Klarna";

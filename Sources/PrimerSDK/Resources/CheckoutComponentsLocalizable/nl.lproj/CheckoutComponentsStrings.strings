@@ -273,3 +273,12 @@
 /* Retail Outlet */
 "primer_card_form_error_retail_outlet_required" = "Verkooppunt is verplicht";
 "primer_card_form_error_retail_outlet_invalid" = "Ongeldig verkooppunt";
+
+// Adyen Klarna
+"primer_adyen_klarna_title" = "Klarna";
+"primer_adyen_klarna_select_option" = "Kies hoe je wilt betalen";
+"primer_adyen_klarna_button_continue" = "Doorgaan met Klarna";
+"accessibility_adyen_klarna_option_list" = "Klarna betaalopties";
+"accessibility_adyen_klarna_option_button" = "Betaal met Klarna %@";
+"accessibility_adyen_klarna_loading" = "Klarna betaalopties laden";
+"accessibility_adyen_klarna_redirecting" = "Doorsturen naar Klarna";

@@ -273,3 +273,12 @@
 /* Retail Outlet */
 "primer_card_form_error_retail_outlet_required" = "საცალო მაღაზია სავალდებულოა";
 "primer_card_form_error_retail_outlet_invalid" = "არასწორი საცალო მაღაზია";
+
+// Adyen Klarna
+"primer_adyen_klarna_title" = "Klarna";
+"primer_adyen_klarna_select_option" = "აირჩიეთ გადახდის საშუალება";
+"primer_adyen_klarna_button_continue" = "გააგრძელეთ Klarna-ით";
+"accessibility_adyen_klarna_option_list" = "Klarna გადახდის ვარიანტები";
+"accessibility_adyen_klarna_option_button" = "გადაიხადეთ Klarna %@-ით";
+"accessibility_adyen_klarna_loading" = "Klarna გადახდის ვარიანტების ჩატვირთვა";
+"accessibility_adyen_klarna_redirecting" = "Klarna-ზე გადამისამართება";

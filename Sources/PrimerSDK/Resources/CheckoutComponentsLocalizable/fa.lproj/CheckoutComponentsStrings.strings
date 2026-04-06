@@ -273,3 +273,12 @@
 /* Retail Outlet */
 "primer_card_form_error_retail_outlet_required" = "فروشگاه خرده‌فروشی الزامی است";
 "primer_card_form_error_retail_outlet_invalid" = "فروشگاه خرده‌فروشی نامعتبر";
+
+// Adyen Klarna
+"primer_adyen_klarna_title" = "Klarna";
+"primer_adyen_klarna_select_option" = "نحوه پرداخت را انتخاب کنید";
+"primer_adyen_klarna_button_continue" = "ادامه با Klarna";
+"accessibility_adyen_klarna_option_list" = "گزینه‌های پرداخت Klarna";
+"accessibility_adyen_klarna_option_button" = "پرداخت با Klarna %@";
+"accessibility_adyen_klarna_loading" = "در حال بارگذاری گزینه‌های پرداخت Klarna";
+"accessibility_adyen_klarna_redirecting" = "در حال انتقال به Klarna";

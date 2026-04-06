@@ -273,3 +273,12 @@
 /* Retail Outlet */
 "primer_card_form_error_retail_outlet_required" = "Myymälä on pakollinen";
 "primer_card_form_error_retail_outlet_invalid" = "Virheellinen myymälä";
+
+// Adyen Klarna
+"primer_adyen_klarna_title" = "Klarna";
+"primer_adyen_klarna_select_option" = "Valitse maksutapa";
+"primer_adyen_klarna_button_continue" = "Jatka Klarna-maksulla";
+"accessibility_adyen_klarna_option_list" = "Klarna-maksuvaihtoehdot";
+"accessibility_adyen_klarna_option_button" = "Maksa Klarna %@ -maksulla";
+"accessibility_adyen_klarna_loading" = "Ladataan Klarna-maksuvaihtoehtoja";
+"accessibility_adyen_klarna_redirecting" = "Siirrytään Klarna-palveluun";

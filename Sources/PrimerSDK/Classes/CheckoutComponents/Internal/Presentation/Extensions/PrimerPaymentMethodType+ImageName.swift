@@ -13,7 +13,7 @@ extension PrimerPaymentMethodType {
   var defaultImageName: ImageName {
     switch self {
     case .payPal, .primerTestPayPal: .paypal
-    case .klarna, .primerTestKlarna: .klarna
+    case .klarna, .primerTestKlarna, .adyenKlarna: .klarna
     case .paymentCard: .creditCard
     case .applePay: .appleIcon
     case .goCardless, .stripeAch: .achBank
@@ -29,7 +29,7 @@ extension PrimerPaymentMethodType {
     // Primary payment methods
     case .payPal, .primerTestPayPal:
       UIImage(primerResource: "paypal-icon-colored")
-    case .klarna, .primerTestKlarna:
+    case .klarna, .primerTestKlarna, .adyenKlarna:
       UIImage(primerResource: "klarna-icon-colored")
     case .goCardless:
       UIImage(primerResource: "gocardless-logo-colored")
