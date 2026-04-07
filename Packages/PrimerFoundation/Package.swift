@@ -7,5 +7,8 @@ import PackageDescription
 let package = Package(
     name: "PrimerFoundation",
     products: [.library(name: "PrimerFoundation", targets: ["PrimerFoundation"])],
-    targets: [.target(name: "PrimerFoundation")]
+    targets: [
+        .target(name: "PrimerFoundation"),
+        .testTarget(name: "PrimerFoundationTests", dependencies: ["PrimerFoundation"])
+    ]
 )
