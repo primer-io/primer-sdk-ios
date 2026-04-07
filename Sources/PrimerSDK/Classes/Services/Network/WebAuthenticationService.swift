@@ -24,7 +24,7 @@ final class DefaultWebAuthenticationService: NSObject, WebAuthenticationService 
             url: url,
             callbackURLScheme: scheme,
             completionHandler: { (url, error) in
-                if let url = url {
+                if let url {
                     completion(.success(url))
                 } else if error != nil {
                     completion(.failure(PrimerError.cancelled(paymentMethodType: paymentMethodType)))
@@ -62,8 +62,10 @@ final class DefaultWebAuthenticationService: NSObject, WebAuthenticationService 
 
             self.session = webAuthSession
 
-            webAuthSession.presentationContextProvider = self
-            webAuthSession.start()
+            DispatchQueue.main.async {
+                webAuthSession.presentationContextProvider = self
+                webAuthSession.start()
+            }
         }
     }
 }
@@ -77,7 +79,7 @@ extension DefaultWebAuthenticationService: ASWebAuthenticationPresentationContex
 
 extension UIApplication {
     var windows: [UIWindow] {
-        let windowScene = self.connectedScenes.compactMap { $0 as? UIWindowScene }.first
+        let windowScene = connectedScenes.compactMap { $0 as? UIWindowScene }.first
         guard let windows = windowScene?.windows else {
             return []
         }

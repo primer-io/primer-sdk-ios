@@ -121,7 +121,7 @@ final class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
             guard let url = URL(string: res.approvalUrl) else {
                 throw handled(primerError: .invalidValue(key: "res.approvalUrl", value: res.approvalUrl))
             }
-            self.orderId = res.orderId
+            orderId = res.orderId
             return url
         case .vault:
             let urlStr = try await payPalService.startBillingAgreementSession()

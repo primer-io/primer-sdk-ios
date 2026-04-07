@@ -133,6 +133,9 @@
 /* Cardholder name */
 "primer-card-form-name" = "Ime";
 
+/* Billing address section title - Card Form */
+"primer-card-form-billing-address" = "Billing address";
+
 /* Pay - Card Form (Checkout submit button text) */
 "primer-card-form-pay" = "Plati";
 
@@ -282,4 +285,6 @@
 
 /* Upload the screenshot in your banking app. - QR code screen subtitle label */
 "uploadScreenshot" = "Prenesite snimku zaslona u svoju bankovnu aplikaciju";
+
+
 

@@ -1,0 +1,316 @@
+//
+//  ComposableContainer.swift
+//
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
+
+import Foundation
+
+@available(iOS 15.0, *)
+final class ComposableContainer: LogReporter {
+
+  private let container: Container
+  private let settings: PrimerSettings
+
+  init(settings: PrimerSettings) {
+    container = Container()
+    self.settings = settings
+  }
+
+  func configure() async {
+    await registerInfrastructure()
+    await registerValidation()
+    await registerInteractors()
+    await registerPaymentInteractors()
+    await registerData()
+
+    await DIContainer.setContainer(container)
+
+    #if DEBUG
+      await performHealthCheck()
+    #endif
+  }
+
+  var diContainer: Container {
+    container
+  }
+}
+
+// MARK: - Registration Helpers
+
+@available(iOS 15.0, *)
+extension ComposableContainer {
+
+  /// Guards registration-time errors (e.g. duplicate keys) without crashing.
+  /// Factory execution errors are thrown later at resolution time, not caught here.
+  fileprivate func guardedRegister<T>(
+    _ type: T.Type,
+    _ registration: () async throws -> Void
+  ) async {
+    do {
+      try await registration()
+    } catch {
+      logger.error(message: "Failed to register \(type): \(error)")
+    }
+  }
+}
+
+// MARK: - Registration Methods
+
+@available(iOS 15.0, *)
+extension ComposableContainer {
+
+  fileprivate func registerInfrastructure() async {
+    let settings = settings
+    await guardedRegister(PrimerSettings.self) {
+      _ = try await container.register(PrimerSettings.self)
+        .asSingleton()
+        .with { _ in settings }
+    }
+
+    await guardedRegister(CheckoutComponentsAnalyticsServiceProtocol.self) {
+      _ = try await container.register(CheckoutComponentsAnalyticsServiceProtocol.self)
+        .asSingleton()
+        .with { _ in
+          AnalyticsEventService.create(
+            environmentProvider: AnalyticsEnvironmentProvider()
+          )
+        }
+    }
+
+    await guardedRegister(CheckoutComponentsAnalyticsInteractorProtocol.self) {
+      _ = try await container.register(CheckoutComponentsAnalyticsInteractorProtocol.self)
+        .asSingleton()
+        .with { resolver in
+          DefaultAnalyticsInteractor(
+            eventService: try await resolver.resolve(CheckoutComponentsAnalyticsServiceProtocol.self)
+          )
+        }
+    }
+
+    await guardedRegister(AccessibilityAnnouncementService.self) {
+      _ = try await container.register(AccessibilityAnnouncementService.self)
+        .asSingleton()
+        .with { _ in DefaultAccessibilityAnnouncementService() }
+    }
+
+    await guardedRegister(ConfigurationService.self) {
+      _ = try await container.register(ConfigurationService.self)
+        .asSingleton()
+        .with { _ in DefaultConfigurationService() }
+    }
+  }
+
+  fileprivate func registerValidation() async {
+    await guardedRegister(ValidationService.self) {
+      _ = try await container.register(ValidationService.self)
+        .asSingleton()
+        .with { _ in
+          DefaultValidationService(rulesFactory: DefaultRulesFactory())
+        }
+    }
+  }
+
+  fileprivate func registerInteractors() async {
+    await guardedRegister(ProcessCardPaymentInteractor.self) {
+      _ = try await container.register(ProcessCardPaymentInteractor.self)
+        .asTransient()
+        .with { resolver in
+          ProcessCardPaymentInteractorImpl(
+            repository: try await resolver.resolve(HeadlessRepository.self)
+          )
+        }
+    }
+
+    await guardedRegister(ValidateInputInteractor.self) {
+      _ = try await container.register(ValidateInputInteractor.self)
+        .asTransient()
+        .with { resolver in
+          ValidateInputInteractorImpl(
+            validationService: try await resolver.resolve(ValidationService.self)
+          )
+        }
+    }
+
+    await guardedRegister(CardNetworkDetectionInteractor.self) {
+      _ = try await container.register(CardNetworkDetectionInteractor.self)
+        .asTransient()
+        .with { resolver in
+          CardNetworkDetectionInteractorImpl(
+            repository: try await resolver.resolve(HeadlessRepository.self)
+          )
+        }
+    }
+
+    await guardedRegister(SubmitVaultedPaymentInteractor.self) {
+      _ = try await container.register(SubmitVaultedPaymentInteractor.self)
+        .asTransient()
+        .with { resolver in
+          SubmitVaultedPaymentInteractorImpl(
+            repository: try await resolver.resolve(HeadlessRepository.self)
+          )
+        }
+    }
+  }
+
+  fileprivate func registerPaymentInteractors() async {
+    await guardedRegister(ProcessPayPalPaymentInteractor.self) {
+      _ = try await container.register(ProcessPayPalPaymentInteractor.self)
+        .asTransient()
+        .with { resolver in
+          ProcessPayPalPaymentInteractorImpl(
+            repository: try await resolver.resolve(PayPalRepository.self)
+          )
+        }
+    }
+
+    await guardedRegister(ProcessKlarnaPaymentInteractor.self) {
+      _ = try await container.register(ProcessKlarnaPaymentInteractor.self)
+        .asTransient()
+        .with { resolver in
+          ProcessKlarnaPaymentInteractorImpl(
+            repository: try await resolver.resolve(KlarnaRepository.self)
+          )
+        }
+    }
+
+    await guardedRegister(ProcessAdyenKlarnaPaymentInteractor.self) {
+      _ = try await container.register(ProcessAdyenKlarnaPaymentInteractor.self)
+        .asTransient()
+        .with { resolver in
+          ProcessAdyenKlarnaPaymentInteractorImpl(
+            repository: try await resolver.resolve(AdyenKlarnaRepository.self)
+          )
+        }
+    }
+
+    await guardedRegister(ProcessWebRedirectPaymentInteractor.self) {
+      _ = try await container.register(ProcessWebRedirectPaymentInteractor.self)
+        .asTransient()
+        .with { resolver in
+          ProcessWebRedirectPaymentInteractorImpl(
+            repository: try await resolver.resolve(WebRedirectRepository.self)
+          )
+        }
+    }
+
+    await guardedRegister(ProcessApplePayPaymentInteractor.self) {
+      _ = try await container.register(ProcessApplePayPaymentInteractor.self)
+        .asTransient()
+        .with { _ in
+          ProcessApplePayPaymentInteractorImpl(
+            tokenizationService: TokenizationService(),
+            createPaymentService: CreateResumePaymentService(
+              paymentMethodType: PrimerPaymentMethodType.applePay.rawValue)
+          )
+        }
+    }
+
+    await guardedRegister(ProcessAchPaymentInteractor.self) {
+      _ = try await container.register(ProcessAchPaymentInteractor.self)
+        .asTransient()
+        .with { resolver in
+          ProcessAchPaymentInteractorImpl(
+            repository: try await resolver.resolve(AchRepository.self)
+          )
+        }
+    }
+
+    await guardedRegister(ProcessFormRedirectPaymentInteractor.self) {
+      _ = try await container.register(ProcessFormRedirectPaymentInteractor.self)
+        .asTransient()
+        .with { resolver in
+          ProcessFormRedirectPaymentInteractorImpl(
+            formRedirectRepository: try await resolver.resolve(FormRedirectRepository.self)
+          )
+        }
+    }
+
+    await guardedRegister(ProcessQRCodePaymentInteractor.self) {
+      _ = try await container.register(ProcessQRCodePaymentInteractor.self)
+        .asTransient()
+        .with { resolver in
+          ProcessQRCodePaymentInteractorImpl(
+            repository: try await resolver.resolve(QRCodeRepository.self),
+            paymentMethodType: ""
+          )
+        }
+    }
+  }
+
+  fileprivate func registerData() async {
+    await guardedRegister(HeadlessRepository.self) {
+      _ = try await container.register(HeadlessRepository.self)
+        .asSingleton()
+        .with { _ in await HeadlessRepositoryImpl() }
+    }
+
+    await guardedRegister(PaymentMethodMapper.self) {
+      _ = try await container.register(PaymentMethodMapper.self)
+        .asSingleton()
+        .with { container in
+          let configService = try await container.resolve(ConfigurationService.self)
+          return PaymentMethodMapperImpl(configurationService: configService)
+        }
+    }
+
+    await guardedRegister(PayPalRepository.self) {
+      _ = try await container.register(PayPalRepository.self)
+        .asTransient()
+        .with { _ in PayPalRepositoryImpl() }
+    }
+
+    await guardedRegister(KlarnaRepository.self) {
+      _ = try await container.register(KlarnaRepository.self)
+        .asTransient()
+        .with { _ in await KlarnaRepositoryImpl() }
+    }
+
+    await guardedRegister(AdyenKlarnaRepository.self) {
+      _ = try await container.register(AdyenKlarnaRepository.self)
+        .asTransient()
+        .with { _ in AdyenKlarnaRepositoryImpl() }
+    }
+
+    await guardedRegister(AchRepository.self) {
+      _ = try await container.register(AchRepository.self)
+        .asTransient()
+        .with { _ in await AchRepositoryImpl() }
+    }
+
+    await guardedRegister(WebRedirectRepository.self) {
+      _ = try await container.register(WebRedirectRepository.self)
+        .asTransient()
+        .with { _ in WebRedirectRepositoryImpl() }
+    }
+
+    await guardedRegister(FormRedirectRepository.self) {
+      _ = try await container.register(FormRedirectRepository.self)
+        .asTransient()
+        .with { _ in FormRedirectRepositoryImpl() }
+    }
+
+    await guardedRegister(QRCodeRepository.self) {
+      _ = try await container.register(QRCodeRepository.self)
+        .asTransient()
+        .with { _ in QRCodeRepositoryImpl() }
+    }
+  }
+
+  #if DEBUG
+    fileprivate func performHealthCheck() async {
+      let diagnostics = await container.getDiagnostics()
+      logger.debug(
+        message:
+          "Container diagnostics - Total registrations: \(diagnostics.totalRegistrations), Singletons: \(diagnostics.singletonInstances), Weak refs: \(diagnostics.weakReferences)/\(diagnostics.activeWeakReferences)"
+      )
+
+      let healthReport = await container.performHealthCheck()
+      if healthReport.status == .healthy {
+        logger.debug(message: "Container is healthy")
+      } else {
+        logger.warn(message: "Health issues: \(healthReport.issues)")
+      }
+    }
+  #endif
+}
