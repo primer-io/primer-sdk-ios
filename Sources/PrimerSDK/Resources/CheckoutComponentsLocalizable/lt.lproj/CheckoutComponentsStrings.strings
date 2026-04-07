@@ -282,3 +282,6 @@
 "accessibility_adyen_klarna_option_button" = "Mokėti su Klarna %@";
 "accessibility_adyen_klarna_loading" = "Įkeliamos Klarna mokėjimo parinktys";
 "accessibility_adyen_klarna_redirecting" = "Nukreipiama į Klarna";
+"primer_adyen_klarna_option_pay_later" = "Sumokėti vėliau";
+"primer_adyen_klarna_option_pay_over_time" = "Sumokėti per tam tikrą laiką";
+"primer_adyen_klarna_option_pay_now" = "Sumokėti dabar";

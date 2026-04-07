@@ -282,3 +282,6 @@
 "accessibility_adyen_klarna_option_button" = "Zaplatiť cez Klarna %@";
 "accessibility_adyen_klarna_loading" = "Načítavanie možností platby Klarna";
 "accessibility_adyen_klarna_redirecting" = "Presmerovanie na Klarna";
+"primer_adyen_klarna_option_pay_later" = "Zaplatiť neskôr";
+"primer_adyen_klarna_option_pay_over_time" = "Platiť v priebehu času";
+"primer_adyen_klarna_option_pay_now" = "Zaplatiť ihneď";

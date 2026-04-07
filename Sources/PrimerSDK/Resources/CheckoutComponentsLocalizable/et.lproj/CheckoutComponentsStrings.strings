@@ -282,3 +282,6 @@
 "accessibility_adyen_klarna_option_button" = "Maksa Klarna %@ abil";
 "accessibility_adyen_klarna_loading" = "Klarna maksevalikute laadimine";
 "accessibility_adyen_klarna_redirecting" = "Suunamine Klarna-sse";
+"primer_adyen_klarna_option_pay_later" = "Maksa hiljem";
+"primer_adyen_klarna_option_pay_over_time" = "Maksa järelmaksuga";
+"primer_adyen_klarna_option_pay_now" = "Maksa kohe";

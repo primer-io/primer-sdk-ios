@@ -2227,6 +2227,42 @@ enum CheckoutComponentsStrings {
     value: "Redirecting to Klarna",
     comment: "VoiceOver announcement when redirecting to Klarna"
   )
+
+  // MARK: - Adyen Klarna Payment Option Names
+
+  static let adyenKlarnaOptionPayLater = NSLocalizedString(
+    "primer_adyen_klarna_option_pay_later",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Pay later",
+    comment: "Klarna payment option: pay later"
+  )
+
+  static let adyenKlarnaOptionPayOverTime = NSLocalizedString(
+    "primer_adyen_klarna_option_pay_over_time",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Pay over time",
+    comment: "Klarna payment option: pay over time / installments"
+  )
+
+  static let adyenKlarnaOptionPayNow = NSLocalizedString(
+    "primer_adyen_klarna_option_pay_now",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Pay now",
+    comment: "Klarna payment option: pay now"
+  )
+
+  /// Maps a raw Klarna payment option name from the API to a localized display string.
+  static func adyenKlarnaOptionDisplayName(for rawName: String) -> String {
+    switch rawName.lowercased() {
+    case "klarna": adyenKlarnaOptionPayLater
+    case "klarna_account": adyenKlarnaOptionPayOverTime
+    case "klarna_paynow": adyenKlarnaOptionPayNow
+    default: rawName
+    }
+  }
 }
 
 // swiftlint:enable file_length

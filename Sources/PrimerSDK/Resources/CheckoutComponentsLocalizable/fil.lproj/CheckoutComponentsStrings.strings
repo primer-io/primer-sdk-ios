@@ -282,3 +282,6 @@
 "accessibility_adyen_klarna_option_button" = "Magbayad gamit ang Klarna %@";
 "accessibility_adyen_klarna_loading" = "Nilo-load ang mga opsyon sa pagbabayad ng Klarna";
 "accessibility_adyen_klarna_redirecting" = "Nire-redirect sa Klarna";
+"primer_adyen_klarna_option_pay_later" = "Magbayad mamaya";
+"primer_adyen_klarna_option_pay_over_time" = "Magbayad sa paglipas ng panahon";
+"primer_adyen_klarna_option_pay_now" = "Magbayad ngayon";

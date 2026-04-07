@@ -282,3 +282,6 @@
 "accessibility_adyen_klarna_option_button" = "Klarna %@ арқылы төлеу";
 "accessibility_adyen_klarna_loading" = "Klarna төлем опциялары жүктелуде";
 "accessibility_adyen_klarna_redirecting" = "Klarna-ға қайта бағыттау";
+"primer_adyen_klarna_option_pay_later" = "Кейін төлеу";
+"primer_adyen_klarna_option_pay_over_time" = "Бөліп төлеу";
+"primer_adyen_klarna_option_pay_now" = "Қазір төлеу";

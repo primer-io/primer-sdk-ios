@@ -280,3 +280,6 @@
 "accessibility_adyen_klarna_option_button" = "Վճարել Klarna %@-ով";
 "accessibility_adyen_klarna_loading" = "Klarna վճարման ընտրանքների բեռնում";
 "accessibility_adyen_klarna_redirecting" = "Վերահղում դեպի Klarna";
+"primer_adyen_klarna_option_pay_later" = "Վճարեք ավելի ուշ";
+"primer_adyen_klarna_option_pay_over_time" = "Վճարեք մասնակի վճարումներով";
+"primer_adyen_klarna_option_pay_now" = "Վճարեք հիմա";

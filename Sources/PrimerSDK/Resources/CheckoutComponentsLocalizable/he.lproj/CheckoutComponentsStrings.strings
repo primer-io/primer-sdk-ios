@@ -282,3 +282,6 @@
 "accessibility_adyen_klarna_option_button" = "שלמו עם Klarna %@";
 "accessibility_adyen_klarna_loading" = "טוען אפשרויות תשלום של Klarna";
 "accessibility_adyen_klarna_redirecting" = "מעביר אל Klarna";
+"primer_adyen_klarna_option_pay_later" = "שלמו מאוחר יותר";
+"primer_adyen_klarna_option_pay_over_time" = "שלמו לאורך זמן";
+"primer_adyen_klarna_option_pay_now" = "שלמו כעת";

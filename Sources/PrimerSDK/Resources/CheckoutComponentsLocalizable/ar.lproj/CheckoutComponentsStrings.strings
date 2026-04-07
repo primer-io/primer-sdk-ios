@@ -282,3 +282,6 @@
 "accessibility_adyen_klarna_option_button" = "الدفع باستخدام Klarna %@";
 "accessibility_adyen_klarna_loading" = "جارٍ تحميل خيارات الدفع عبر Klarna";
 "accessibility_adyen_klarna_redirecting" = "جارٍ إعادة التوجيه إلى Klarna";
+"primer_adyen_klarna_option_pay_later" = "ادفع لاحقاً";
+"primer_adyen_klarna_option_pay_over_time" = "ادفع بمرور الوقت";
+"primer_adyen_klarna_option_pay_now" = "ادفع الآن";

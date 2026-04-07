@@ -282,3 +282,6 @@
 "accessibility_adyen_klarna_option_button" = "Betal med Klarna %@";
 "accessibility_adyen_klarna_loading" = "Indlæser Klarna betalingsmuligheder";
 "accessibility_adyen_klarna_redirecting" = "Omdirigerer til Klarna";
+"primer_adyen_klarna_option_pay_later" = "Betal senere";
+"primer_adyen_klarna_option_pay_over_time" = "Betal over tid";
+"primer_adyen_klarna_option_pay_now" = "Betal nu";

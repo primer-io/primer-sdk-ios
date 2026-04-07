@@ -290,3 +290,6 @@
 "accessibility_adyen_klarna_option_button" = "Pay with Klarna %@";
 "accessibility_adyen_klarna_loading" = "Loading Klarna payment options";
 "accessibility_adyen_klarna_redirecting" = "Redirecting to Klarna";
+"primer_adyen_klarna_option_pay_later" = "Pay later";
+"primer_adyen_klarna_option_pay_over_time" = "Pay over time";
+"primer_adyen_klarna_option_pay_now" = "Pay now";

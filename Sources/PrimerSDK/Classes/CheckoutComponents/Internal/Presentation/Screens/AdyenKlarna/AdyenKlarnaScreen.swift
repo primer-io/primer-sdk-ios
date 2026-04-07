@@ -129,7 +129,7 @@ struct AdyenKlarnaScreen: View {
             HStack(spacing: PrimerSpacing.small(tokens: tokens)) {
                 makeKlarnaLogoBadge()
 
-                Text(option.name)
+                Text(CheckoutComponentsStrings.adyenKlarnaOptionDisplayName(for: option.name))
                     .font(PrimerFont.bodyLarge(tokens: tokens))
                     .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
 

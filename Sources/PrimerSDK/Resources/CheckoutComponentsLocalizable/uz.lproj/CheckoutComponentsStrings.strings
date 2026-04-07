@@ -282,3 +282,6 @@
 "accessibility_adyen_klarna_option_button" = "Klarna %@ bilan to'lang";
 "accessibility_adyen_klarna_loading" = "Klarna to'lov variantlari yuklanmoqda";
 "accessibility_adyen_klarna_redirecting" = "Klarna-ga yo'naltirilmoqda";
+"primer_adyen_klarna_option_pay_later" = "Keyinroq toʻlash";
+"primer_adyen_klarna_option_pay_over_time" = "Boʻlib toʻlash";
+"primer_adyen_klarna_option_pay_now" = "Hozir toʻlash";

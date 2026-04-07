@@ -282,3 +282,6 @@
 "accessibility_adyen_klarna_option_button" = "پرداخت با Klarna %@";
 "accessibility_adyen_klarna_loading" = "در حال بارگذاری گزینه‌های پرداخت Klarna";
 "accessibility_adyen_klarna_redirecting" = "در حال انتقال به Klarna";
+"primer_adyen_klarna_option_pay_later" = "بعداً پرداخت کنید";
+"primer_adyen_klarna_option_pay_over_time" = "پرداخت اقساطی";
+"primer_adyen_klarna_option_pay_now" = "همین الان پرداخت کنید";

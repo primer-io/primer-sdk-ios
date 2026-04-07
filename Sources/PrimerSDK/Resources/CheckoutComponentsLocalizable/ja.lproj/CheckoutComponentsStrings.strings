@@ -282,3 +282,6 @@
 "accessibility_adyen_klarna_option_button" = "Klarna %@で支払う";
 "accessibility_adyen_klarna_loading" = "Klarnaの支払いオプションを読み込み中";
 "accessibility_adyen_klarna_redirecting" = "Klarnaにリダイレクト中";
+"primer_adyen_klarna_option_pay_later" = "後で支払う";
+"primer_adyen_klarna_option_pay_over_time" = "分割で支払う";
+"primer_adyen_klarna_option_pay_now" = "今すぐ支払う";

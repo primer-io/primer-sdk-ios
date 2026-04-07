@@ -282,3 +282,6 @@
 "accessibility_adyen_klarna_option_button" = "使用 Klarna %@ 付款";
 "accessibility_adyen_klarna_loading" = "正在載入 Klarna 付款選項";
 "accessibility_adyen_klarna_redirecting" = "正在跳轉到 Klarna";
+"primer_adyen_klarna_option_pay_later" = "稍後付款";
+"primer_adyen_klarna_option_pay_over_time" = "分期付款";
+"primer_adyen_klarna_option_pay_now" = "立即付款";

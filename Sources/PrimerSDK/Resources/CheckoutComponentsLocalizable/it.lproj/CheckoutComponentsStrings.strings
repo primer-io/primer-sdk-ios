@@ -282,3 +282,6 @@
 "accessibility_adyen_klarna_option_button" = "Paga con Klarna %@";
 "accessibility_adyen_klarna_loading" = "Caricamento opzioni di pagamento Klarna";
 "accessibility_adyen_klarna_redirecting" = "Reindirizzamento a Klarna";
+"primer_adyen_klarna_option_pay_later" = "Paga più tardi";
+"primer_adyen_klarna_option_pay_over_time" = "Paga in modo dilazionato";
+"primer_adyen_klarna_option_pay_now" = "Paga ora";

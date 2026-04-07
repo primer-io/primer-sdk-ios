@@ -282,3 +282,6 @@
 "accessibility_adyen_klarna_option_button" = "Thanh toán bằng Klarna %@";
 "accessibility_adyen_klarna_loading" = "Đang tải tùy chọn thanh toán Klarna";
 "accessibility_adyen_klarna_redirecting" = "Đang chuyển hướng đến Klarna";
+"primer_adyen_klarna_option_pay_later" = "Thanh toán sau";
+"primer_adyen_klarna_option_pay_over_time" = "Thanh toán theo thời gian";
+"primer_adyen_klarna_option_pay_now" = "Thanh toán ngay";

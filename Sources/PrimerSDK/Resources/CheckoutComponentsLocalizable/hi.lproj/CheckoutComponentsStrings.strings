@@ -282,3 +282,6 @@
 "accessibility_adyen_klarna_option_button" = "Klarna %@ से भुगतान करें";
 "accessibility_adyen_klarna_loading" = "Klarna भुगतान विकल्प लोड हो रहे हैं";
 "accessibility_adyen_klarna_redirecting" = "Klarna पर रीडायरेक्ट हो रहा है";
+"primer_adyen_klarna_option_pay_later" = "बाद में भुगतान करें";
+"primer_adyen_klarna_option_pay_over_time" = "किस्तों में भुगतान करें";
+"primer_adyen_klarna_option_pay_now" = "अभी भुगतान करें";

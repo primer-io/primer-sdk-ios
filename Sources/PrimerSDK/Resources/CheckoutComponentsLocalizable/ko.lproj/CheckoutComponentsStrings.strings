@@ -282,3 +282,6 @@
 "accessibility_adyen_klarna_option_button" = "Klarna %@(으)로 결제";
 "accessibility_adyen_klarna_loading" = "Klarna 결제 옵션 로드 중";
 "accessibility_adyen_klarna_redirecting" = "Klarna로 리디렉션 중";
+"primer_adyen_klarna_option_pay_later" = "나중에 결제";
+"primer_adyen_klarna_option_pay_over_time" = "시간을 두고 결제";
+"primer_adyen_klarna_option_pay_now" = "지금 결제";

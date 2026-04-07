@@ -282,3 +282,6 @@
 "accessibility_adyen_klarna_option_button" = "Betaal met Klarna %@";
 "accessibility_adyen_klarna_loading" = "Klarna betaalopties laden";
 "accessibility_adyen_klarna_redirecting" = "Doorsturen naar Klarna";
+"primer_adyen_klarna_option_pay_later" = "Later betalen";
+"primer_adyen_klarna_option_pay_over_time" = "In termijnen betalen";
+"primer_adyen_klarna_option_pay_now" = "Nu betalen";

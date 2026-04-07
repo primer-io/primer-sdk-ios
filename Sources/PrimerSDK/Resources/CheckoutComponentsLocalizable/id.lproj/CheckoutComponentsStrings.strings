@@ -282,3 +282,6 @@
 "accessibility_adyen_klarna_option_button" = "Bayar dengan Klarna %@";
 "accessibility_adyen_klarna_loading" = "Memuat opsi pembayaran Klarna";
 "accessibility_adyen_klarna_redirecting" = "Mengalihkan ke Klarna";
+"primer_adyen_klarna_option_pay_later" = "Bayar nanti";
+"primer_adyen_klarna_option_pay_over_time" = "Bayar seiring waktu";
+"primer_adyen_klarna_option_pay_now" = "Bayar sekarang";

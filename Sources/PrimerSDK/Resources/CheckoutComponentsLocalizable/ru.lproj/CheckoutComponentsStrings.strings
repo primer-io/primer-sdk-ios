@@ -282,3 +282,6 @@
 "accessibility_adyen_klarna_option_button" = "Оплатить через Klarna %@";
 "accessibility_adyen_klarna_loading" = "Загрузка вариантов оплаты Klarna";
 "accessibility_adyen_klarna_redirecting" = "Перенаправление на Klarna";
+"primer_adyen_klarna_option_pay_later" = "Оплатить позже";
+"primer_adyen_klarna_option_pay_over_time" = "Платить по частям";
+"primer_adyen_klarna_option_pay_now" = "Оплатить сейчас";

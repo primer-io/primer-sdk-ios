@@ -282,3 +282,6 @@
 "accessibility_adyen_klarna_option_button" = "Πληρωμή με Klarna %@";
 "accessibility_adyen_klarna_loading" = "Φόρτωση επιλογών πληρωμής Klarna";
 "accessibility_adyen_klarna_redirecting" = "Ανακατεύθυνση στο Klarna";
+"primer_adyen_klarna_option_pay_later" = "Πληρωμή αργότερα";
+"primer_adyen_klarna_option_pay_over_time" = "Πληρωμή με έντοκες δόσεις";
+"primer_adyen_klarna_option_pay_now" = "Πληρωμή τώρα";

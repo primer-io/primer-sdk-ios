@@ -282,3 +282,6 @@
 "accessibility_adyen_klarna_option_button" = "Bi Klarna %@ re bidin";
 "accessibility_adyen_klarna_loading" = "Vebijarkên dravdanê yên Klarna tên barkirin";
 "accessibility_adyen_klarna_redirecting" = "Beralîkirin bo Klarna";
+"primer_adyen_klarna_option_pay_later" = "Paşê bide";
+"primer_adyen_klarna_option_pay_over_time" = "Bi demê re bide";
+"primer_adyen_klarna_option_pay_now" = "Niha bide";

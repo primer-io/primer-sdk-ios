@@ -282,3 +282,6 @@
 "accessibility_adyen_klarna_option_button" = "გადაიხადეთ Klarna %@-ით";
 "accessibility_adyen_klarna_loading" = "Klarna გადახდის ვარიანტების ჩატვირთვა";
 "accessibility_adyen_klarna_redirecting" = "Klarna-ზე გადამისამართება";
+"primer_adyen_klarna_option_pay_later" = "გადაიხადე მოგვიანებით";
+"primer_adyen_klarna_option_pay_over_time" = "გადაიხადე განვადებით";
+"primer_adyen_klarna_option_pay_now" = "გადაიხადე ახლა";

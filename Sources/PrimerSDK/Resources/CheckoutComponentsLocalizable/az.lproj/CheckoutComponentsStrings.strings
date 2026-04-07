@@ -282,3 +282,6 @@
 "accessibility_adyen_klarna_option_button" = "Klarna %@ ilə ödəyin";
 "accessibility_adyen_klarna_loading" = "Klarna ödəmə seçimləri yüklənir";
 "accessibility_adyen_klarna_redirecting" = "Klarna-ya yönləndirilir";
+"primer_adyen_klarna_option_pay_later" = "Sonra ödə";
+"primer_adyen_klarna_option_pay_over_time" = "Hissə-hissə ödə";
+"primer_adyen_klarna_option_pay_now" = "İndi ödə";

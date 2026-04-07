@@ -282,3 +282,6 @@
 "accessibility_adyen_klarna_option_button" = "ชำระเงินด้วย Klarna %@";
 "accessibility_adyen_klarna_loading" = "กำลังโหลดตัวเลือกการชำระเงิน Klarna";
 "accessibility_adyen_klarna_redirecting" = "กำลังเปลี่ยนเส้นทางไปยัง Klarna";
+"primer_adyen_klarna_option_pay_later" = "ชำระภายหลัง";
+"primer_adyen_klarna_option_pay_over_time" = "ชำระแบบผ่อนชำระ";
+"primer_adyen_klarna_option_pay_now" = "ชำระตอนนี้";

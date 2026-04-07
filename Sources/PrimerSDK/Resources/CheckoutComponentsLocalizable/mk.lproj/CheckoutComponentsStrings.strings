@@ -282,3 +282,6 @@
 "accessibility_adyen_klarna_option_button" = "Платете со Klarna %@";
 "accessibility_adyen_klarna_loading" = "Се вчитуваат Klarna опциите за плаќање";
 "accessibility_adyen_klarna_redirecting" = "Пренасочување кон Klarna";
+"primer_adyen_klarna_option_pay_later" = "Плати подоцна";
+"primer_adyen_klarna_option_pay_over_time" = "Плати на рати";
+"primer_adyen_klarna_option_pay_now" = "Плати сега";

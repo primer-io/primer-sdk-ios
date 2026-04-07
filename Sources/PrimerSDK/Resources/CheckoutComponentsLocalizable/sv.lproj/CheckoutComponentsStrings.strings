@@ -282,3 +282,6 @@
 "accessibility_adyen_klarna_option_button" = "Betala med Klarna %@";
 "accessibility_adyen_klarna_loading" = "Laddar Klarna betalningsalternativ";
 "accessibility_adyen_klarna_redirecting" = "Omdirigerar till Klarna";
+"primer_adyen_klarna_option_pay_later" = "Betala senare";
+"primer_adyen_klarna_option_pay_over_time" = "Delbetala";
+"primer_adyen_klarna_option_pay_now" = "Betala nu";

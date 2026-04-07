@@ -282,3 +282,6 @@
 "accessibility_adyen_klarna_option_button" = "Maksāt ar Klarna %@";
 "accessibility_adyen_klarna_loading" = "Klarna maksājumu iespējas tiek ielādētas";
 "accessibility_adyen_klarna_redirecting" = "Notiek novirzīšana uz Klarna";
+"primer_adyen_klarna_option_pay_later" = "Maksā vēlāk";
+"primer_adyen_klarna_option_pay_over_time" = "Maksā pēc tam";
+"primer_adyen_klarna_option_pay_now" = "Maksā tagad";

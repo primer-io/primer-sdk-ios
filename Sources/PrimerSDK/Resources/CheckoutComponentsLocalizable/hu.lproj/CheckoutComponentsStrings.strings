@@ -282,3 +282,6 @@
 "accessibility_adyen_klarna_option_button" = "Fizetés Klarna %@ segítségével";
 "accessibility_adyen_klarna_loading" = "Klarna fizetési lehetőségek betöltése";
 "accessibility_adyen_klarna_redirecting" = "Átirányítás a Klarna-hoz";
+"primer_adyen_klarna_option_pay_later" = "Későbbi fizetés";
+"primer_adyen_klarna_option_pay_over_time" = "Fizetés idővel";
+"primer_adyen_klarna_option_pay_now" = "Fizetés most";
