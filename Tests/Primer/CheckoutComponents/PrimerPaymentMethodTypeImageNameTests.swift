@@ -225,6 +225,10 @@ final class PrimerPaymentMethodTypeIconTests: XCTestCase {
         XCTAssertNotNil(PrimerPaymentMethodType.mollieBankcontact.icon)
     }
 
+    func test_icon_mollieGiftcard_returnsNonNilImage() {
+        XCTAssertNotNil(PrimerPaymentMethodType.mollieGiftcard.icon)
+    }
+
     func test_icon_mollieIdeal_returnsNonNilImage() {
         XCTAssertNotNil(PrimerPaymentMethodType.mollieIdeal.icon)
     }

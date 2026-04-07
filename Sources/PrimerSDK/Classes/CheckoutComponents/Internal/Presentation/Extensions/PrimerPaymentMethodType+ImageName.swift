@@ -99,6 +99,8 @@ extension PrimerPaymentMethodType {
     // Mollie payment methods
     case .mollieBankcontact:
       UIImage(primerResource: "bancontact-card-logo-colored")
+    case .mollieGiftcard:
+      ImageName.genericCard.image
     case .mollieIdeal:
       UIImage(primerResource: "ideal-icon-colored")
 

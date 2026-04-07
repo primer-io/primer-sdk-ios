@@ -67,6 +67,7 @@ public enum PrimerPaymentMethodType: String, Codable, CaseIterable, Equatable, H
     case iPay88Card                     = "IPAY88_CARD"
     case klarna                         = "KLARNA"
     case mollieBankcontact              = "MOLLIE_BANCONTACT"
+    case mollieGiftcard                 = "MOLLIE_GIFTCARD"
     case mollieIdeal                    = "MOLLIE_IDEAL"
     case opennode                       = "OPENNODE"
     case payNLBancontact                = "PAY_NL_BANCONTACT"
@@ -138,6 +139,7 @@ public enum PrimerPaymentMethodType: String, Codable, CaseIterable, Equatable, H
             "IPAY88"
 
         case .mollieBankcontact,
+             .mollieGiftcard,
              .mollieIdeal:
             "MOLLIE"
 
