@@ -55,9 +55,6 @@
                            location = "group:AnimationConstants.swift">
                         </FileRef>
                         <FileRef
-                           location = "group:SlideInModifier.swift">
-                        </FileRef>
-                        <FileRef
                            location = "group:CheckoutColors.swift">
                         </FileRef>
                         <FileRef
@@ -85,9 +82,6 @@
                         </FileRef>
                         <FileRef
                            location = "group:DIContainter+SwiftUI.swift">
-                        </FileRef>
-                        <FileRef
-                           location = "group:SwiftUI+DI.swift">
                         </FileRef>
                         <FileRef
                            location = "group:Container.swift">
@@ -221,12 +215,6 @@
                         name = "Core">
                         <FileRef
                            location = "group:AccessibilityConfiguration.swift">
-                        </FileRef>
-                        <FileRef
-                           location = "group:AccessibilityConfigurable.swift">
-                        </FileRef>
-                        <FileRef
-                           location = "group:AccessibilityIdentifierProviding.swift">
                         </FileRef>
                      </Group>
                      <Group
@@ -853,14 +841,6 @@
                   location = "group:PrimerCheckout.swift">
                </FileRef>
                <Group
-                  location = "group:Accessibility"
-                  name = "Accessibility">
-                  <Group
-                     location = "group:Builders"
-                     name = "Builders">
-                  </Group>
-               </Group>
-               <Group
                   location = "group:Logging"
                   name = "Logging">
                   <Group
@@ -909,10 +889,6 @@
                <Group
                   location = "group:Analytics"
                   name = "Analytics">
-                  <Group
-                     location = "group:Utils"
-                     name = "Utils">
-                  </Group>
                   <Group
                      location = "group:Data"
                      name = "Data">
