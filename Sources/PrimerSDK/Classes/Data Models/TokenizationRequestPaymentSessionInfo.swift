@@ -1,7 +1,7 @@
 //
 //  TokenizationRequestPaymentSessionInfo.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
@@ -57,6 +57,13 @@ struct WebRedirectSessionInfo: OffSessionPaymentSessionInfo {
     var locale: String
     var platform: String = "IOS"
     var redirectionUrl: String? = urlScheme()
+}
+
+struct AdyenKlarnaSessionInfo: OffSessionPaymentSessionInfo {
+    var locale: String
+    var platform: String = "IOS"
+    var redirectionUrl: String? = urlScheme()
+    var paymentMethodType: String
 }
 
 struct IPay88SessionInfo: OffSessionPaymentSessionInfo {

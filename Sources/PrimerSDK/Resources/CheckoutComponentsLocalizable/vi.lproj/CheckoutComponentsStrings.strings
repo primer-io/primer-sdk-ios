@@ -273,3 +273,15 @@
 /* Retail Outlet */
 "primer_card_form_error_retail_outlet_required" = "Điểm bán lẻ là bắt buộc";
 "primer_card_form_error_retail_outlet_invalid" = "Điểm bán lẻ không hợp lệ";
+
+// Adyen Klarna
+"primer_adyen_klarna_title" = "Klarna";
+"primer_adyen_klarna_select_option" = "Chọn cách bạn muốn thanh toán";
+"primer_adyen_klarna_button_continue" = "Tiếp tục với Klarna";
+"accessibility_adyen_klarna_option_list" = "Tùy chọn thanh toán Klarna";
+"accessibility_adyen_klarna_option_button" = "Thanh toán bằng Klarna %@";
+"accessibility_adyen_klarna_loading" = "Đang tải tùy chọn thanh toán Klarna";
+"accessibility_adyen_klarna_redirecting" = "Đang chuyển hướng đến Klarna";
+"primer_adyen_klarna_option_pay_later" = "Thanh toán sau";
+"primer_adyen_klarna_option_pay_over_time" = "Thanh toán theo thời gian";
+"primer_adyen_klarna_option_pay_now" = "Thanh toán ngay";

@@ -273,3 +273,15 @@
 /* Retail Outlet */
 "primer_card_form_error_retail_outlet_required" = "Cawangan runcit diperlukan";
 "primer_card_form_error_retail_outlet_invalid" = "Cawangan runcit tidak sah";
+
+// Adyen Klarna
+"primer_adyen_klarna_title" = "Klarna";
+"primer_adyen_klarna_select_option" = "Pilih cara anda mahu membayar";
+"primer_adyen_klarna_button_continue" = "Teruskan dengan Klarna";
+"accessibility_adyen_klarna_option_list" = "Pilihan pembayaran Klarna";
+"accessibility_adyen_klarna_option_button" = "Bayar dengan Klarna %@";
+"accessibility_adyen_klarna_loading" = "Memuatkan pilihan pembayaran Klarna";
+"accessibility_adyen_klarna_redirecting" = "Mengalihkan ke Klarna";
+"primer_adyen_klarna_option_pay_later" = "Bayar nanti";
+"primer_adyen_klarna_option_pay_over_time" = "Beli sekarang bayar nanti";
+"primer_adyen_klarna_option_pay_now" = "Bayar sekarang";

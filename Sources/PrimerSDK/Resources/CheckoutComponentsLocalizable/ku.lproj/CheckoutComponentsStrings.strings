@@ -273,3 +273,15 @@
 /* Retail Outlet */
 "primer_card_form_error_retail_outlet_required" = "Firotgeha pêdivî ye";
 "primer_card_form_error_retail_outlet_invalid" = "Firotgeha nederbasdar";
+
+// Adyen Klarna
+"primer_adyen_klarna_title" = "Klarna";
+"primer_adyen_klarna_select_option" = "Hilbijêre ka tu çawa dixwazî bidin";
+"primer_adyen_klarna_button_continue" = "Bi Klarna re bidomîne";
+"accessibility_adyen_klarna_option_list" = "Vebijarkên dravdanê yên Klarna";
+"accessibility_adyen_klarna_option_button" = "Bi Klarna %@ re bidin";
+"accessibility_adyen_klarna_loading" = "Vebijarkên dravdanê yên Klarna tên barkirin";
+"accessibility_adyen_klarna_redirecting" = "Beralîkirin bo Klarna";
+"primer_adyen_klarna_option_pay_later" = "Paşê bide";
+"primer_adyen_klarna_option_pay_over_time" = "Bi demê re bide";
+"primer_adyen_klarna_option_pay_now" = "Niha bide";

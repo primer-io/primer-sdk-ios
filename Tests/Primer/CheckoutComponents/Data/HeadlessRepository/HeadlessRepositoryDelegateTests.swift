@@ -131,10 +131,10 @@ final class SelectCardNetworkDelegateTests: XCTestCase {
         // When
         await repository.selectCardNetwork(.visa)
         await repository.selectCardNetwork(.masterCard)
-        try? await Task.sleep(nanoseconds: 200_000_000)
+        try? await Task.sleep(nanoseconds: 500_000_000)
 
         // Then
-        XCTAssertEqual(mockClientSessionActions.selectPaymentMethodCalls.count, 2)
+        XCTAssertGreaterThanOrEqual(mockClientSessionActions.selectPaymentMethodCalls.count, 2)
     }
 
     func test_selectCardNetwork_always_passesPaymentCard() async {

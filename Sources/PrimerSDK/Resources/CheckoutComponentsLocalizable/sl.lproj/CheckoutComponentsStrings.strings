@@ -273,3 +273,15 @@
 /* Retail Outlet */
 "primer_card_form_error_retail_outlet_required" = "Prodajno mesto je obvezno";
 "primer_card_form_error_retail_outlet_invalid" = "Neveljavno prodajno mesto";
+
+// Adyen Klarna
+"primer_adyen_klarna_title" = "Klarna";
+"primer_adyen_klarna_select_option" = "Izberite način plačila";
+"primer_adyen_klarna_button_continue" = "Nadaljujte s Klarna";
+"accessibility_adyen_klarna_option_list" = "Klarna možnosti plačila";
+"accessibility_adyen_klarna_option_button" = "Plačajte s Klarna %@";
+"accessibility_adyen_klarna_loading" = "Nalaganje Klarna možnosti plačila";
+"accessibility_adyen_klarna_redirecting" = "Preusmeritev na Klarna";
+"primer_adyen_klarna_option_pay_later" = "Plačajte pozneje";
+"primer_adyen_klarna_option_pay_over_time" = "Plačajte čez čas";
+"primer_adyen_klarna_option_pay_now" = "Plačajte zdaj";

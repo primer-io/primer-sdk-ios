@@ -273,3 +273,15 @@
 /* Retail Outlet */
 "primer_card_form_error_retail_outlet_required" = "Punctul de vânzare este obligatoriu";
 "primer_card_form_error_retail_outlet_invalid" = "Punct de vânzare nevalid";
+
+// Adyen Klarna
+"primer_adyen_klarna_title" = "Klarna";
+"primer_adyen_klarna_select_option" = "Alegeți cum doriți să plătiți";
+"primer_adyen_klarna_button_continue" = "Continuați cu Klarna";
+"accessibility_adyen_klarna_option_list" = "Opțiuni de plată Klarna";
+"accessibility_adyen_klarna_option_button" = "Plătiți cu Klarna %@";
+"accessibility_adyen_klarna_loading" = "Se încarcă opțiunile de plată Klarna";
+"accessibility_adyen_klarna_redirecting" = "Redirecționare către Klarna";
+"primer_adyen_klarna_option_pay_later" = "Plătește mai târziu";
+"primer_adyen_klarna_option_pay_over_time" = "Plătește eșalonat";
+"primer_adyen_klarna_option_pay_now" = "Plătește acum";

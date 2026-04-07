@@ -273,3 +273,15 @@
 /* Retail Outlet */
 "primer_card_form_error_retail_outlet_required" = "販売店の選択は必須です";
 "primer_card_form_error_retail_outlet_invalid" = "無効な販売店";
+
+// Adyen Klarna
+"primer_adyen_klarna_title" = "Klarna";
+"primer_adyen_klarna_select_option" = "お支払い方法を選択してください";
+"primer_adyen_klarna_button_continue" = "Klarnaで続ける";
+"accessibility_adyen_klarna_option_list" = "Klarnaの支払いオプション";
+"accessibility_adyen_klarna_option_button" = "Klarna %@で支払う";
+"accessibility_adyen_klarna_loading" = "Klarnaの支払いオプションを読み込み中";
+"accessibility_adyen_klarna_redirecting" = "Klarnaにリダイレクト中";
+"primer_adyen_klarna_option_pay_later" = "後で支払う";
+"primer_adyen_klarna_option_pay_over_time" = "分割で支払う";
+"primer_adyen_klarna_option_pay_now" = "今すぐ支払う";

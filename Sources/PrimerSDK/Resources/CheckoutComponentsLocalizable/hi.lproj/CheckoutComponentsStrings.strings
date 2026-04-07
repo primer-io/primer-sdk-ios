@@ -273,3 +273,15 @@
 /* Retail Outlet */
 "primer_card_form_error_retail_outlet_required" = "रिटेल आउटलेट आवश्यक है";
 "primer_card_form_error_retail_outlet_invalid" = "अमान्य रिटेल आउटलेट";
+
+// Adyen Klarna
+"primer_adyen_klarna_title" = "Klarna";
+"primer_adyen_klarna_select_option" = "चुनें कि आप कैसे भुगतान करना चाहते हैं";
+"primer_adyen_klarna_button_continue" = "Klarna के साथ जारी रखें";
+"accessibility_adyen_klarna_option_list" = "Klarna भुगतान विकल्प";
+"accessibility_adyen_klarna_option_button" = "Klarna %@ से भुगतान करें";
+"accessibility_adyen_klarna_loading" = "Klarna भुगतान विकल्प लोड हो रहे हैं";
+"accessibility_adyen_klarna_redirecting" = "Klarna पर रीडायरेक्ट हो रहा है";
+"primer_adyen_klarna_option_pay_later" = "बाद में भुगतान करें";
+"primer_adyen_klarna_option_pay_over_time" = "किस्तों में भुगतान करें";
+"primer_adyen_klarna_option_pay_now" = "अभी भुगतान करें";

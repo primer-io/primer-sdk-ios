@@ -273,3 +273,15 @@
 /* Retail Outlet */
 "primer_card_form_error_retail_outlet_required" = "Az üzlet megadása kötelező";
 "primer_card_form_error_retail_outlet_invalid" = "Érvénytelen üzlet";
+
+// Adyen Klarna
+"primer_adyen_klarna_title" = "Klarna";
+"primer_adyen_klarna_select_option" = "Válassza ki a fizetési módot";
+"primer_adyen_klarna_button_continue" = "Folytatás a Klarna-val";
+"accessibility_adyen_klarna_option_list" = "Klarna fizetési lehetőségek";
+"accessibility_adyen_klarna_option_button" = "Fizetés Klarna %@ segítségével";
+"accessibility_adyen_klarna_loading" = "Klarna fizetési lehetőségek betöltése";
+"accessibility_adyen_klarna_redirecting" = "Átirányítás a Klarna-hoz";
+"primer_adyen_klarna_option_pay_later" = "Későbbi fizetés";
+"primer_adyen_klarna_option_pay_over_time" = "Fizetés idővel";
+"primer_adyen_klarna_option_pay_now" = "Fizetés most";

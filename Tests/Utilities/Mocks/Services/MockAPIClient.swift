@@ -28,6 +28,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
     var continue3DSAuthResult: (ThreeDS.PostAuthResponse?, Error?)?
     var listAdyenBanksResult: (BanksListSessionResponse?, Error?)?
     var listRetailOutletsResult: (RetailOutletsList?, Error?)?
+    var listAdyenKlarnaPaymentTypesResult: (AdyenKlarnaPaymentOptionsResponse?, Error?)?
     var paymentResult: (Response.Body.Payment?, Error?)?
     var sendAnalyticsEventsResult: (Analytics.Service.Response?, Error?)?
     var resumePaymentResult: (Response.Body.Payment?, Error?)?
@@ -633,6 +634,23 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
         if let errorResult = result.1 { throw errorResult }
         if let successResult = result.0 { return successResult }
         XCTAssert(false, "Set 'listRetailOutletsResult' on your MockPrimerAPIClient")
+        throw NSError(domain: "MockPrimerAPIClient", code: 1, userInfo: nil)
+    }
+
+    func listAdyenKlarnaPaymentTypes(
+        clientToken: PrimerSDK.DecodedJWTToken,
+        paymentMethodConfigId: String
+    ) async throws -> PrimerSDK.AdyenKlarnaPaymentOptionsResponse {
+        guard let result = listAdyenKlarnaPaymentTypesResult else {
+            XCTAssert(false, "Set 'listAdyenKlarnaPaymentTypesResult' on your MockPrimerAPIClient")
+            throw NSError(domain: "MockPrimerAPIClient", code: 1, userInfo: nil)
+        }
+
+        try await Task.sleep(nanoseconds: UInt64(mockedNetworkDelay * 1_000_000_000))
+
+        if let errorResult = result.1 { throw errorResult }
+        if let successResult = result.0 { return successResult }
+        XCTAssert(false, "Set 'listAdyenKlarnaPaymentTypesResult' on your MockPrimerAPIClient")
         throw NSError(domain: "MockPrimerAPIClient", code: 1, userInfo: nil)
     }
 

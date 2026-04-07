@@ -273,3 +273,15 @@
 /* Retail Outlet */
 "primer_card_form_error_retail_outlet_required" = "零售據點為必填項";
 "primer_card_form_error_retail_outlet_invalid" = "無效的零售據點";
+
+// Adyen Klarna
+"primer_adyen_klarna_title" = "Klarna";
+"primer_adyen_klarna_select_option" = "選擇您的付款方式";
+"primer_adyen_klarna_button_continue" = "繼續使用 Klarna";
+"accessibility_adyen_klarna_option_list" = "Klarna 付款選項";
+"accessibility_adyen_klarna_option_button" = "使用 Klarna %@ 付款";
+"accessibility_adyen_klarna_loading" = "正在載入 Klarna 付款選項";
+"accessibility_adyen_klarna_redirecting" = "正在跳轉至 Klarna";
+"primer_adyen_klarna_option_pay_later" = "延後支付";
+"primer_adyen_klarna_option_pay_over_time" = "分期支付";
+"primer_adyen_klarna_option_pay_now" = "立即支付";

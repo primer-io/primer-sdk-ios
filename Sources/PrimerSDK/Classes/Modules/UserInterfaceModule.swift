@@ -550,7 +550,8 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                         darkHex: "#FFFFFF")))
 
         case .klarna,
-             .primerTestKlarna:
+             .primerTestKlarna,
+             .adyenKlarna:
             return PrimerPaymentMethod.DisplayMetadata(
                 button: PrimerPaymentMethod.DisplayMetadata.Button(
                     iconUrl: nil,

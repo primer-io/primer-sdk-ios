@@ -273,3 +273,15 @@
 /* Retail Outlet */
 "primer_card_form_error_retail_outlet_required" = "Kinakailangan ang retail outlet";
 "primer_card_form_error_retail_outlet_invalid" = "Hindi valid na retail outlet";
+
+// Adyen Klarna
+"primer_adyen_klarna_title" = "Klarna";
+"primer_adyen_klarna_select_option" = "Piliin kung paano mo gustong magbayad";
+"primer_adyen_klarna_button_continue" = "Magpatuloy sa Klarna";
+"accessibility_adyen_klarna_option_list" = "Mga opsyon sa pagbabayad ng Klarna";
+"accessibility_adyen_klarna_option_button" = "Magbayad gamit ang Klarna %@";
+"accessibility_adyen_klarna_loading" = "Nilo-load ang mga opsyon sa pagbabayad ng Klarna";
+"accessibility_adyen_klarna_redirecting" = "Nire-redirect sa Klarna";
+"primer_adyen_klarna_option_pay_later" = "Magbayad mamaya";
+"primer_adyen_klarna_option_pay_over_time" = "Magbayad sa paglipas ng panahon";
+"primer_adyen_klarna_option_pay_now" = "Magbayad ngayon";

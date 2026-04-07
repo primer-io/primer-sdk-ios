@@ -273,3 +273,15 @@
 /* Retail Outlet */
 "primer_card_form_error_retail_outlet_required" = "Verkaufsstelle ist erforderlich";
 "primer_card_form_error_retail_outlet_invalid" = "Ungültige Verkaufsstelle";
+
+// Adyen Klarna
+"primer_adyen_klarna_title" = "Klarna";
+"primer_adyen_klarna_select_option" = "Wählen Sie Ihre Zahlungsart";
+"primer_adyen_klarna_button_continue" = "Weiter mit Klarna";
+"accessibility_adyen_klarna_option_list" = "Klarna Zahlungsoptionen";
+"accessibility_adyen_klarna_option_button" = "Mit Klarna %@ bezahlen";
+"accessibility_adyen_klarna_loading" = "Klarna Zahlungsoptionen werden geladen";
+"accessibility_adyen_klarna_redirecting" = "Weiterleitung zu Klarna";
+"primer_adyen_klarna_option_pay_later" = "Später zahlen";
+"primer_adyen_klarna_option_pay_over_time" = "In Raten zahlen";
+"primer_adyen_klarna_option_pay_now" = "Jetzt bezahlen";

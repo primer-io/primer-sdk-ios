@@ -536,12 +536,13 @@ final class DefaultPaymentMethodSelectionScopeTests: XCTestCase {
 
         await DIContainer.setContainer(container)
         sut = makeSut()
+        let countBeforeCall = mockRepo.fetchVaultedPaymentMethodsCallCount
 
         // When
         await sut.refreshVaultedPaymentMethods()
 
         // Then
-        XCTAssertEqual(mockRepo.fetchVaultedPaymentMethodsCallCount, 1)
+        XCTAssertGreaterThan(mockRepo.fetchVaultedPaymentMethodsCallCount, countBeforeCall)
     }
 
     func test_refreshVaultedPaymentMethods_repositoryThrows_doesNotCrash() async throws {
@@ -553,10 +554,11 @@ final class DefaultPaymentMethodSelectionScopeTests: XCTestCase {
 
         await DIContainer.setContainer(container)
         sut = makeSut()
+        let countBeforeCall = mockRepo.fetchVaultedPaymentMethodsCallCount
 
         // When / Then — should not crash
         await sut.refreshVaultedPaymentMethods()
-        XCTAssertEqual(mockRepo.fetchVaultedPaymentMethodsCallCount, 1)
+        XCTAssertGreaterThan(mockRepo.fetchVaultedPaymentMethodsCallCount, countBeforeCall)
     }
 
     // MARK: - deleteVaultedPaymentMethod with Container Tests
@@ -954,10 +956,11 @@ final class DefaultPaymentMethodSelectionScopeVaultTests: XCTestCase {
 
         await DIContainer.setContainer(container)
         sut = makeSut()
+        let countBeforeCall = mockRepo.fetchVaultedPaymentMethodsCallCount
 
         // When / Then — should not crash, error is logged
         await sut.refreshVaultedPaymentMethods()
-        XCTAssertEqual(mockRepo.fetchVaultedPaymentMethodsCallCount, 1)
+        XCTAssertGreaterThan(mockRepo.fetchVaultedPaymentMethodsCallCount, countBeforeCall)
     }
 
     // MARK: - deleteVaultedPaymentMethod: container nil

@@ -305,6 +305,18 @@ final class PrimerAPIClient: PrimerAPIClientProtocol {
         )
     }
 
+    func listAdyenKlarnaPaymentTypes(
+        clientToken: DecodedJWTToken,
+        paymentMethodConfigId: String
+    ) async throws -> AdyenKlarnaPaymentOptionsResponse {
+        try await networkService.request(
+            .listAdyenKlarnaPaymentTypes(
+                clientToken: clientToken,
+                paymentMethodConfigId: paymentMethodConfigId
+            )
+        )
+    }
+
     func poll(
         clientToken: DecodedJWTToken?,
         url: String,

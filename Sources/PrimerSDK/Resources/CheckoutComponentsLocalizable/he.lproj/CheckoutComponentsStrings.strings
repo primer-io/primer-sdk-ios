@@ -273,3 +273,15 @@
 /* Retail Outlet */
 "primer_card_form_error_retail_outlet_required" = "נקודת מכירה נדרשת";
 "primer_card_form_error_retail_outlet_invalid" = "נקודת מכירה לא חוקית";
+
+// Adyen Klarna
+"primer_adyen_klarna_title" = "Klarna";
+"primer_adyen_klarna_select_option" = "בחרו כיצד תרצו לשלם";
+"primer_adyen_klarna_button_continue" = "המשיכו עם Klarna";
+"accessibility_adyen_klarna_option_list" = "אפשרויות תשלום של Klarna";
+"accessibility_adyen_klarna_option_button" = "שלמו עם Klarna %@";
+"accessibility_adyen_klarna_loading" = "טוען אפשרויות תשלום של Klarna";
+"accessibility_adyen_klarna_redirecting" = "מעביר אל Klarna";
+"primer_adyen_klarna_option_pay_later" = "שלמו מאוחר יותר";
+"primer_adyen_klarna_option_pay_over_time" = "שלמו לאורך זמן";
+"primer_adyen_klarna_option_pay_now" = "שלמו כעת";

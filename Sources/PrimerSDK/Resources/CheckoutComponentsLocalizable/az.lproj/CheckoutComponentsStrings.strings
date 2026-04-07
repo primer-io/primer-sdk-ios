@@ -273,3 +273,15 @@
 /* Retail Outlet */
 "primer_card_form_error_retail_outlet_required" = "Pərakəndə satış nöqtəsi tələb olunur";
 "primer_card_form_error_retail_outlet_invalid" = "Yanlış pərakəndə satış nöqtəsi";
+
+// Adyen Klarna
+"primer_adyen_klarna_title" = "Klarna";
+"primer_adyen_klarna_select_option" = "Ödəmə üsulunuzu seçin";
+"primer_adyen_klarna_button_continue" = "Klarna ilə davam edin";
+"accessibility_adyen_klarna_option_list" = "Klarna ödəmə seçimləri";
+"accessibility_adyen_klarna_option_button" = "Klarna %@ ilə ödəyin";
+"accessibility_adyen_klarna_loading" = "Klarna ödəmə seçimləri yüklənir";
+"accessibility_adyen_klarna_redirecting" = "Klarna-ya yönləndirilir";
+"primer_adyen_klarna_option_pay_later" = "Sonra ödə";
+"primer_adyen_klarna_option_pay_over_time" = "Hissə-hissə ödə";
+"primer_adyen_klarna_option_pay_now" = "İndi ödə";

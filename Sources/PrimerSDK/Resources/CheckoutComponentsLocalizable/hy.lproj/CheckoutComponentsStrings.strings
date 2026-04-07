@@ -271,3 +271,15 @@
 /* Retail Outlet */
 "primer_card_form_error_retail_outlet_required" = "Մանրածախ կետը պարտադիր է";
 "primer_card_form_error_retail_outlet_invalid" = "Սխալ մանրածախ կետ";
+
+// Adyen Klarna
+"primer_adyen_klarna_title" = "Klarna";
+"primer_adyen_klarna_select_option" = "Ընտրեք վճարման եղանակը";
+"primer_adyen_klarna_button_continue" = "Շարունակել Klarna-ով";
+"accessibility_adyen_klarna_option_list" = "Klarna վճարման ընտրանքներ";
+"accessibility_adyen_klarna_option_button" = "Վճարել Klarna %@-ով";
+"accessibility_adyen_klarna_loading" = "Klarna վճարման ընտրանքների բեռնում";
+"accessibility_adyen_klarna_redirecting" = "Վերահղում դեպի Klarna";
+"primer_adyen_klarna_option_pay_later" = "Վճարեք ավելի ուշ";
+"primer_adyen_klarna_option_pay_over_time" = "Վճարեք մասնակի վճարումներով";
+"primer_adyen_klarna_option_pay_now" = "Վճարեք հիմա";

@@ -91,6 +91,20 @@ enum AccessibilityIdentifiers {
     static let submitButton = "checkout_components_paypal_submit_button"
   }
 
+  enum AdyenKlarna {
+    static let container = "checkout_components_adyen_klarna_container"
+    static let logo = "checkout_components_adyen_klarna_logo"
+    static let title = "checkout_components_adyen_klarna_title"
+    static let optionList = "checkout_components_adyen_klarna_option_list"
+    static let submitButton = "checkout_components_adyen_klarna_submit_button"
+    static let backButton = "checkout_components_adyen_klarna_back_button"
+    static let cancelButton = "checkout_components_adyen_klarna_cancel_button"
+
+    static func optionButton(_ optionId: String) -> String {
+      "checkout_components_adyen_klarna_option_\(optionId.lowercased())_button"
+    }
+  }
+
   enum Klarna {
     static let container = "checkout_components_klarna_container"
     static let logo = "checkout_components_klarna_logo"

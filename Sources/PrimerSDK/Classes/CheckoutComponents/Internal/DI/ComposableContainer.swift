@@ -174,6 +174,16 @@ extension ComposableContainer {
         }
     }
 
+    await guardedRegister(ProcessAdyenKlarnaPaymentInteractor.self) {
+      _ = try await container.register(ProcessAdyenKlarnaPaymentInteractor.self)
+        .asTransient()
+        .with { resolver in
+          ProcessAdyenKlarnaPaymentInteractorImpl(
+            repository: try await resolver.resolve(AdyenKlarnaRepository.self)
+          )
+        }
+    }
+
     await guardedRegister(ProcessWebRedirectPaymentInteractor.self) {
       _ = try await container.register(ProcessWebRedirectPaymentInteractor.self)
         .asTransient()
@@ -254,6 +264,12 @@ extension ComposableContainer {
       _ = try await container.register(KlarnaRepository.self)
         .asTransient()
         .with { _ in await KlarnaRepositoryImpl() }
+    }
+
+    await guardedRegister(AdyenKlarnaRepository.self) {
+      _ = try await container.register(AdyenKlarnaRepository.self)
+        .asTransient()
+        .with { _ in AdyenKlarnaRepositoryImpl() }
     }
 
     await guardedRegister(AchRepository.self) {
