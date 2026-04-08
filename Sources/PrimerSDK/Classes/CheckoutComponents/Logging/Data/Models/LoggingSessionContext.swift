@@ -9,8 +9,9 @@ import Foundation
 // MARK: - Integration Type
 
 public enum CheckoutComponentsIntegrationType: String, Sendable {
-  case swiftUI = "swiftui"
-  case uiKit = "uikit"
+  case swiftUI = "swift_ui"
+  case uiKit = "ui_kit"
+  case reactNative = "react_native"
 }
 
 // MARK: - Logging Session Context
