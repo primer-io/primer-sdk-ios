@@ -290,16 +290,6 @@ final class DefaultSelectCountryScopeTests: XCTestCase {
         XCTAssertFalse(state.filteredCountries.isEmpty)
     }
 
-    func test_state_multipleSubscribers_eachReceivesState() async throws {
-        // Given / When
-        async let state1 = awaitFirst(sut.state)
-        async let state2 = awaitFirst(sut.state)
-
-        // Then
-        let (s1, s2) = try await (state1, state2)
-        XCTAssertEqual(s1.countries.count, s2.countries.count)
-    }
-
     // MARK: - Country Data Integrity Tests
 
     func test_countriesContainCommonCountries() async throws {

@@ -7,7 +7,7 @@
 import Foundation
 
 @available(iOS 15.0, *)
-actor LoggingService: LogReporter {
+actor LoggingService: LogReporter, ComponentsLoggingServiceProtocol {
 
   // MARK: - Dependencies
 
