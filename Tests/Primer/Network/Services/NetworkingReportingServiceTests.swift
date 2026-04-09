@@ -1,11 +1,11 @@
 //
 //  NetworkingReportingServiceTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import XCTest
 @testable import PrimerSDK
+import XCTest
 
 final class NetworkingReportingServiceTests: XCTestCase {
 
@@ -25,26 +25,30 @@ final class NetworkingReportingServiceTests: XCTestCase {
     func testRequestStartEventSent() throws {
         let expectation = XCTestExpectation(description: "Request start event sent")
 
-        let endpoint = PrimerAPI.fetchConfiguration(clientToken: Mocks.decodedJWTToken,
-                                                    requestParameters: nil)
+        let endpoint = PrimerAPI.fetchConfiguration(
+            clientToken: Mocks.decodedJWTToken,
+            requestParameters: nil
+        )
         let request = try DefaultNetworkRequestFactory().request(for: endpoint, identifier: nil)
-
 
         // Assert
         analyticsService.onRecord = { events in
+            let event = events.first as? Analytics.Event
             XCTAssertEqual(events.count, 1)
-            XCTAssertEqual(events.first?.eventType, .networkCall)
-            XCTAssertNil(events.first?.analyticsUrl)
-            XCTAssertTrue(events.first?.properties is NetworkCallEventProperties)
+            XCTAssertEqual(event?.eventType, .networkCall)
+            XCTAssertNil(event?.analyticsUrl)
+            XCTAssertTrue(event?.properties is NetworkCallEventProperties)
 
-            let properties = events.first?.properties as! NetworkCallEventProperties
+            let properties = event?.properties as! NetworkCallEventProperties
             XCTAssertEqual(properties.callType, .requestStart)
             expectation.fulfill()
         }
 
-        networkReportingService.report(eventType: .requestStart(identifier: "id",
-                                                                endpoint: endpoint,
-                                                                request: request))
+        networkReportingService.report(eventType: .requestStart(
+            identifier: "id",
+            endpoint: endpoint,
+            request: request
+        ))
 
         wait(for: [expectation], timeout: 1)
     }
@@ -52,26 +56,30 @@ final class NetworkingReportingServiceTests: XCTestCase {
     func testRequestEndEventSent() throws {
         let expectation = XCTestExpectation(description: "Request end event sent")
 
-        let endpoint = PrimerAPI.fetchConfiguration(clientToken: Mocks.decodedJWTToken,
-                                                    requestParameters: nil)
+        let endpoint = PrimerAPI.fetchConfiguration(
+            clientToken: Mocks.decodedJWTToken,
+            requestParameters: nil
+        )
         let responseMetadata = ResponseMetadataModel(responseUrl: nil, statusCode: 0, headers: nil)
 
         analyticsService.onRecord = { events in
+            let event = events.first as? Analytics.Event
             XCTAssertEqual(events.count, 1)
-            XCTAssertEqual(events.first?.eventType, .networkCall)
-            XCTAssertNil(events.first?.analyticsUrl)
-            XCTAssertTrue(events.first?.properties is NetworkCallEventProperties)
+            XCTAssertEqual(event?.eventType, .networkCall)
+            XCTAssertNil(event?.analyticsUrl)
+            XCTAssertTrue(event?.properties is NetworkCallEventProperties)
 
-            let properties = events.first?.properties as! NetworkCallEventProperties
+            let properties = event?.properties as! NetworkCallEventProperties
             XCTAssertEqual(properties.callType, .requestEnd)
             expectation.fulfill()
         }
 
-        networkReportingService.report(eventType: .requestEnd(identifier: "id",
-                                                              endpoint: endpoint,
-                                                              response: responseMetadata,
-                                                              duration: 1000))
-
+        networkReportingService.report(eventType: .requestEnd(
+            identifier: "id",
+            endpoint: endpoint,
+            response: responseMetadata,
+            duration: 1000
+        ))
 
         wait(for: [expectation], timeout: 1)
     }
@@ -79,16 +87,19 @@ final class NetworkingReportingServiceTests: XCTestCase {
     func testNetworkConnectivityEventSent() throws {
         let expectation = XCTestExpectation(description: "Network connectivity event sent")
 
-        let endpoint = PrimerAPI.fetchConfiguration(clientToken: Mocks.decodedJWTToken,
-                                                    requestParameters: nil)
+        let endpoint = PrimerAPI.fetchConfiguration(
+            clientToken: Mocks.decodedJWTToken,
+            requestParameters: nil
+        )
 
         analyticsService.onRecord = { events in
+            let event = events.first as? Analytics.Event
             XCTAssertEqual(events.count, 1)
-            XCTAssertEqual(events.first?.eventType, .networkConnectivity)
-            XCTAssertNil(events.first?.analyticsUrl)
-            XCTAssertTrue(events.first?.properties is NetworkConnectivityEventProperties)
+            XCTAssertEqual(event?.eventType, .networkConnectivity)
+            XCTAssertNil(event?.analyticsUrl)
+            XCTAssertTrue(event?.properties is NetworkConnectivityEventProperties)
 
-            let properties = events.first?.properties as! NetworkConnectivityEventProperties
+            let properties = event?.properties as! NetworkConnectivityEventProperties
             XCTAssertEqual(properties.networkType, .wifi)
             expectation.fulfill()
         }

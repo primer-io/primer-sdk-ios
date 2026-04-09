@@ -10,13 +10,18 @@ protocol PrimerAPIClientAnalyticsProtocol: Sendable {
 
     typealias ResponseHandler = (_ result: Result<Analytics.Service.Response, Error>) -> Void
 
-    func sendAnalyticsEvents(clientToken: DecodedJWTToken?,
-                             url: URL,
-                             body: [Analytics.Event]?,
-                             completion: @escaping ResponseHandler)
+    func sendAnalyticsEvents(
+        clientToken: DecodedJWTToken?,
+        url: URL,
+        body: [Analytics.Event]?,
+        completion: @escaping ResponseHandler
+    )
 
-    func sendAnalyticsEvents(clientToken: DecodedJWTToken?,
-                             url: URL,
-                             body: [Analytics.Event]?) async throws -> Analytics.Service.Response
+    func sendAnalyticsEvents(
+        clientToken: DecodedJWTToken?,
+        url: URL,
+        body: [Analytics.Event]?
+    ) async throws -> Analytics.Service.Response
 
+    func sendRawAnalyticsEvents(url: URL, body: Data) async throws -> Analytics.Service.Response
 }
