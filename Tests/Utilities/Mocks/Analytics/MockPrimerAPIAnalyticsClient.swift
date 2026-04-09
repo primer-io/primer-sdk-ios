@@ -12,6 +12,7 @@ class MockPrimerAPIAnalyticsClient: PrimerAPIClientAnalyticsProtocol {
     var shouldSucceed: Bool = true
 
     var onSendAnalyticsEvent: (([PrimerSDK.Analytics.Event]?) -> Void)?
+    var onSendRawAnalyticsEvent: ((Data) -> Void)?
 
     var batches: [[Analytics.Event]] = []
 
@@ -44,6 +45,7 @@ class MockPrimerAPIAnalyticsClient: PrimerAPIClientAnalyticsProtocol {
 
     func sendRawAnalyticsEvents(url: URL, body: Data) async throws -> Analytics.Service.Response {
         if shouldSucceed {
+            onSendRawAnalyticsEvent?(body)
             return Analytics.Service.Response(id: nil, result: nil)
         } else {
             throw PrimerError.unknown()

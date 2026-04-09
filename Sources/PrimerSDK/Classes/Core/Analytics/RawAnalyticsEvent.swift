@@ -13,8 +13,9 @@ struct RawAnalyticsEvent: AnalyticsEvent, Codable {
     let createdAt: Int
     let payload: CodableValue
 
-    init(analyticsUrl: String? = nil, payload: CodableValue) {
-        self.analyticsUrl = analyticsUrl
+    init(payload: CodableValue) {
+        let params = try? payload.casted(to: AnalyticsStepParams.self)
+        self.analyticsUrl = params?.analyticsUrl
         self.localId = String.randomString(length: 32)
         self.createdAt = Date().millisecondsSince1970
         self.payload = payload
@@ -23,4 +24,8 @@ struct RawAnalyticsEvent: AnalyticsEvent, Codable {
 
 extension RawAnalyticsEvent: Equatable {
     static func == (lhs: Self, rhs: Self) -> Bool { lhs.localId == rhs.localId }
+}
+
+private struct AnalyticsStepParams: Decodable {
+    fileprivate let analyticsUrl: String
 }
