@@ -52,14 +52,25 @@ public extension PrimerBDCEngine {
         return try await runScript(script, continuationPath: \.initializeContinuation)
     }
     
-    func applyEvent<State: Encodable>(_ event: CodableValue, schema: String, state: State) async throws -> [String: Any]  {
+    func applyEvent<State: Encodable>(
+        _ event: CodableValue,
+        context: SDKContext,
+        schema: String,
+        state: State
+    ) async throws -> [String: Any]  {
         await checkIfReady()
-        let script = eventScript(schema: schema, state: try state.literal(encoder), event: try event.jsonString)
+        let script = eventScript(
+            schema: schema,
+            context: try context.literal(encoder),
+            state: try state.literal(encoder),
+            event: try event.jsonString
+        )
         return try await runScript(script, continuationPath: \.applyEventContination)
     }
     
     func applyResult<State: Encodable>(
         schema: String,
+        context: SDKContext,
         actionId: String,
         state: State,
         outcome: String,
@@ -68,6 +79,7 @@ public extension PrimerBDCEngine {
 		await checkIfReady()
         let script = resultScript(
             schema: schema,
+            context: try context.literal(encoder),
             actionId: actionId,
             state: try state.literal(encoder),
             outcome: outcome,

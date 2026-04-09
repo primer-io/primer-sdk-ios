@@ -20,18 +20,23 @@ public final class PrimerStepOrchestrator {
     private let httpHandler: HTTPInteractionStepHandler
     
     private let engine: PrimerBDCEngine
+    private let context: SDKContext
     private var rawSchema: String!
     private var state: CodableState = [:]
         
-    public init(manifest: Manifest, registry: PrimerStepResolverRegistry = .shared) {
+    public init(
+        manifest: Manifest,
+        context: SDKContext,
+        registry: PrimerStepResolverRegistry = .shared
+    ) {
         self.engine = PrimerBDCEngine(manifest: manifest)
-        
+        self.context = context
         analyticsHandler = AnalyticsHandler(registry: registry)
         urlOpenHandler = URLOpenHandler()
         httpHandler = HTTPInteractionStepHandler(registry: registry)
     }
 
-    public func start(rawSchema: String, context: SDKContext, initialState: CodableValue) async throws {
+    public func start(rawSchema: String, initialState: CodableValue) async throws {
         do {
             let result = try await engine.start(schema: rawSchema, context: context, state: initialState)
             self.rawSchema = rawSchema
@@ -133,6 +138,7 @@ public final class PrimerStepOrchestrator {
             let outcome = response.outcome.rawValue
             let result = try await engine.applyResult(
                 schema: rawSchema,
+                context: context,
                 actionId: response.actionId,
                 state: state,
                 outcome: outcome,
@@ -147,7 +153,7 @@ public final class PrimerStepOrchestrator {
 
 extension PrimerStepOrchestrator {
     private func applyOpenBrowserEvent(event: CodableValue) async throws {
-        let result = try await engine.applyEvent(event, schema: rawSchema, state: state)
+        let result = try await engine.applyEvent(event, context: context, schema: rawSchema, state: state)
         try await decodeResult(result)
     }
 }
