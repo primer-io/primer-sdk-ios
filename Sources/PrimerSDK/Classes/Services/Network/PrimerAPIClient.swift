@@ -422,6 +422,17 @@ final class PrimerAPIClient: PrimerAPIClientProtocol {
         )
     }
 
+    func sendRawAnalyticsEvents(url: URL, body: Data) async throws -> Analytics.Service.Response {
+        let clientToken = PrimerAPIConfigurationModule.clientToken?.decodedJWTToken
+        return try await networkService.request(
+            .sendRawAnalyticsEvents(
+                clientToken: clientToken,
+                url: url,
+                body: body
+            )
+        )
+    }
+
     func fetchPayPalExternalPayerInfo(
         clientToken: DecodedJWTToken,
         payPalExternalPayerInfoRequestBody: Request.Body.PayPal.PayerInfo,

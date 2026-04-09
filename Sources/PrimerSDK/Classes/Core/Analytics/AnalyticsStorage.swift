@@ -6,16 +6,18 @@
 
 import Foundation
 
-private let analyticsFileURL: URL = FileManager.default.urls(for: .documentDirectory,
-                                                             in: .userDomainMask)[0].appendingPathComponent("analytics")
+private let analyticsFileURL: URL = FileManager.default.urls(
+    for: .documentDirectory,
+    in: .userDomainMask
+)[0].appendingPathComponent("analytics")
 
 protocol AnalyticsStorage: Sendable {
 
-    func loadEvents() -> [Analytics.Event]
+    func loadEvents() -> [StoredEvent]
 
-    func save(_ events: [Analytics.Event]) throws
+    func save(_ events: [StoredEvent]) throws
 
-    func delete(_ events: [Analytics.Event])
+    func delete(_ events: [StoredEvent])
 
     func delete(eventsWithUrl url: URL)
 
@@ -36,14 +38,14 @@ extension Analytics {
             self.fileURL = fileURL
         }
 
-        func loadEvents() -> [Analytics.Event] {
+        func loadEvents() -> [StoredEvent] {
             do {
                 guard FileManager.default.fileExists(atPath: fileURL.path) else {
                     return []
                 }
 
                 let eventsData = try Data(contentsOf: fileURL)
-                let events = try JSONDecoder().decode([Analytics.Event].self, from: eventsData)
+                let events = try JSONDecoder().decode([StoredEvent].self, from: eventsData)
                 let sortedEvents = events.sorted(by: { $0.createdAt > $1.createdAt })
                 return sortedEvents
 
@@ -54,7 +56,7 @@ extension Analytics {
             }
         }
 
-        func save(_ events: [Analytics.Event]) throws {
+        func save(_ events: [StoredEvent]) throws {
             do {
                 let eventsData = try JSONEncoder().encode(events)
                 try FileManager.default.createDirectory(at: fileURL.deletingLastPathComponent(), withIntermediateDirectories: true)
@@ -65,7 +67,7 @@ extension Analytics {
             }
         }
 
-        func delete(_ events: [Analytics.Event]) {
+        func delete(_ events: [StoredEvent]) {
             guard !events.isEmpty else {
                 logger.warn(message: "📚 Analytics: tried to delete events but array was empty ...")
                 return
