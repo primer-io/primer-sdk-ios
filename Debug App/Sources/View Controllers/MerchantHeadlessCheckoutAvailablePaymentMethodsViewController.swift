@@ -1,7 +1,7 @@
 //
 //  MerchantHeadlessCheckoutAvailablePaymentMethodsViewController.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import PrimerSDK
@@ -52,9 +52,11 @@ class MerchantHeadlessCheckoutAvailablePaymentMethodsViewController: UIViewContr
     }
 
     @IBAction func onVaultManagerButtonTap(_ sender: Any) {
-        let vc = MerchantHeadlessVaultManagerViewController.instantiate(settings: settings,
-                                                                        clientSession: clientSession,
-                                                                        clientToken: clientToken)
+        let vc = MerchantHeadlessVaultManagerViewController.instantiate(
+            settings: settings,
+            clientSession: clientSession,
+            clientToken: clientToken
+        )
         self.navigationController?.pushViewController(vc, animated: true)
     }
 
@@ -111,7 +113,7 @@ class MerchantHeadlessCheckoutAvailablePaymentMethodsViewController: UIViewContr
 extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController: UITableViewDataSource, UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return self.availablePaymentMethods.count
+        self.availablePaymentMethods.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -150,9 +152,6 @@ extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController: UITable
             #else
             break
             #endif
-        case "ADYEN_IDEAL":
-            let vc = MerchantHeadlessCheckoutBankViewController()
-            self.navigationController?.pushViewController(vc, animated: true)
         case "STRIPE_ACH":
             #if canImport(PrimerStripeSDK)
             let vc = MerchantHeadlessCheckoutStripeAchViewController()
@@ -217,9 +216,13 @@ extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController {
 
                     if let lastViewController = self.navigationController?.children.last {
                         if lastViewController is MerchantHeadlessCheckoutKlarnaViewController {
-                            self.manualHandlingCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(id: res.id,
-                                                                                                                    orderId: res.orderId,
-                                                                                                                    paymentFailureReason: nil))
+                            self.manualHandlingCheckoutData = PrimerCheckoutData(
+                                payment: PrimerCheckoutDataPayment(
+                                    id: res.id,
+                                    orderId: res.orderId,
+                                    paymentFailureReason: nil
+                                )
+                            )
                         } else {
                             self.presentResultsVC()
                         }
@@ -363,8 +366,10 @@ extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController {
             })
 
         } else if let clientSession = clientSession {
-            Networking.requestClientSession(requestBody: clientSession,
-                                            apiVersion: settings.apiVersion) { (clientToken, err) in
+            Networking.requestClientSession(
+                requestBody: clientSession,
+                apiVersion: settings.apiVersion
+            ) { (clientToken, err) in
                 self.hideLoadingOverlay()
 
                 if let err = err {
