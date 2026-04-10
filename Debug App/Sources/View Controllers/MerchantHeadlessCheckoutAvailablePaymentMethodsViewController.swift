@@ -220,7 +220,8 @@ extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController {
                                 payment: PrimerCheckoutDataPayment(
                                     id: res.id,
                                     orderId: res.orderId,
-                                    paymentFailureReason: nil
+                                    paymentFailureReason: nil,
+                                    status: res.status.rawValue
                                 )
                             )
                         } else {
