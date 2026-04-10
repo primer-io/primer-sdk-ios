@@ -16,14 +16,14 @@ extension BackendDrivenCheckoutEndpoint: Endpoint {
     var baseURL: String? {
         switch self {
         case .expandClientSession, .pay: PrimerAPIConfiguration.current?.pciUrl
-        case .manifest: "https://sdk.primer.io/"
+        case .manifest: "https://sdk.dev.primer.io"
         }
     }
     
     var path: String {
         let json = PrimerAPIConfiguration.current?.env?.rawValue.lowercased() ?? "dev"
         return switch self {
-        case .manifest: "state-processor/v0/manifests/\(json).json"
+        case .manifest: "state-processor/pr-16/manifest.json"
         case .pay: "client-session/\(PrimerAPIConfigurationModule.clientSessionId):pay"
         case .expandClientSession: "client-session/\(PrimerAPIConfigurationModule.clientSessionId)"
         }
