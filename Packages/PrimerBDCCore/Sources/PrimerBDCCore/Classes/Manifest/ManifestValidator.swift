@@ -8,8 +8,15 @@ import Foundation
 import PrimerFoundation
 import Security
 
-enum ManifestValidator {
-    static func isValid(_ manifest: SignedManifest, publicKeyB64s: [String]) -> Bool {
+public enum ManifestValidator {
+
+    public static let trustedPublicKeys: [String] = [
+        "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEUM5exrePPsIdkWFL6IjKdYmEDoEHBZkoBvrApQpmDEhQ7IisLTCiP0byqN+5B5V60QjAj4I/Bw292h8gPGZyOg==", // SP_KEY_1
+        "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAERA0j68aAYtwMDagEx2FY+CBbm2+MAYviARSMxWHt1Qt8wGyVvLJ2FqIvg4m2pKfb7GqUwzuJRD/gaOrO2ZJulQ==", // SP_KEY_2
+        "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEp7v1KpNTWcI9yJSoZYGvRxsPtciT99P2YDpISVLyD6BDD8xqJ11A8v2/elOEPaSxx5hConszht1cOlPp9YdTsA=="  // SP_KEY_DEV
+    ]
+
+    public static func isValid(_ manifest: SignedManifest, publicKeyB64s: [String] = trustedPublicKeys) -> Bool {
         let signatureB64 = manifest.signature
         
         for keyB64 in publicKeyB64s {
