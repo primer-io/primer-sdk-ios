@@ -16,7 +16,7 @@ private enum EngineError: Error {
 }
 
 @MainActor
-public final class PrimerBDCEngine: NSObject {
+public final class PrimerBDCEngine: NSObject, BDCEngineProtocol {
     let context: JSContext
 
     private typealias Continuation = CheckedContinuation<String, Never>
@@ -30,7 +30,7 @@ public final class PrimerBDCEngine: NSObject {
     private var isReady = false
     private var loadingContinuations: [CheckedContinuation<Void, Never>] = []
     private var initializeContinuation: Continuation?
-    private var applyEventContination: Continuation?
+    private var applyEventContinuation: Continuation?
     private var evaluateTreeContinuation: Continuation?
     private var executeActionContinuation: Continuation?
     
@@ -66,18 +66,18 @@ public extension PrimerBDCEngine {
             state: try state.literal(encoder),
             event: try event.jsonString
         )
-        return try await runScript(script, continuationPath: \.applyEventContination)
+        return try await runScript(script, continuationPath: \.applyEventContinuation)
     }
     
-    func applyResult<State: Encodable>(
+    func applyResult(
         schema: String,
         context: SDKContext,
         actionId: String,
-        state: State,
+        state: CodableState,
         outcome: String,
         data: Data?
     ) async throws  -> [String: Any] {
-		await checkIfReady()
+        await checkIfReady()
         let script = resultScript(
             schema: schema,
             context: try context.literal(encoder),
@@ -105,7 +105,7 @@ private extension PrimerBDCEngine {
         }
         
         setupCallback(continuation: \.initializeContinuation, value: "onInitializeResult")
-        setupCallback(continuation: \.applyEventContination, value: "onProcessFieldResult")
+        setupCallback(continuation: \.applyEventContinuation, value: "onProcessFieldResult")
         setupCallback(continuation: \.evaluateTreeContinuation, value: "onEvaluateTreeResult")
         setupCallback(continuation: \.executeActionContinuation, value: "onExecuteActionResult")
         
