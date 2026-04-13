@@ -28,8 +28,8 @@ public final class PrimerStepOrchestrator {
         manifest: Manifest,
         context: SDKContext,
         registry: PrimerStepResolverRegistry = .shared
-    ) {
-        self.engine = PrimerBDCEngine(manifest: manifest)
+    ) async throws {
+        self.engine = try await PrimerBDCEngine(manifest: manifest)
         self.context = context
         analyticsHandler = AnalyticsHandler(registry: registry)
         urlOpenHandler = URLOpenHandler()
