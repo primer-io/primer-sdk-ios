@@ -121,7 +121,7 @@ jobs:
           LAMBDATEST_ACCESS_KEY: ${{ secrets.LAMBDATEST_ACCESS_KEY }}
           SOURCE_BRANCH: ${{ github.ref }}
       - name: Save LambdaTest ID
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f #v7.0.0
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a #v7.0.1
         id: save_lambdatest_id_step
         with:
           name: lambdatest_id
@@ -129,7 +129,7 @@ jobs:
           path: /var/tmp/lambdatest_id.txt
       - name: Save App Artifact
         id: save_app_artifact_step
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: app_artifact_id
           retention-days: 1
