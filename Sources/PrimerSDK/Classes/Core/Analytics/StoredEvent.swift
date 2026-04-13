@@ -29,13 +29,13 @@ enum StoredEvent: Codable {
         }
     }
     
-    init(_ event: any AnalyticsEvent) {
+    init?(_ event: any AnalyticsEvent) {
         if let sdkEvent = event as? Analytics.Event {
             self = .sdk(sdkEvent)
         } else if let rawEvent = event as? RawAnalyticsEvent {
             self = .raw(rawEvent)
         } else {
-            fatalError("Unknown AnalyticsEvent type: \(type(of: event))")
+            return nil
         }
     }
     
