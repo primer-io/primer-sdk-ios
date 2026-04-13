@@ -60,7 +60,7 @@ extension Analytics {
         }
 
         func record(events: [any AnalyticsEvent]) async throws {
-            let events = events.map(StoredEvent.init)
+            let events = events.flatMap(StoredEvent.init)
             let storedEvents = storage.loadEvents()
             let storedEventsIds = storedEvents.map(\.localId)
             var eventsToAppend: [StoredEvent] = []

@@ -10,6 +10,7 @@ import PrimerFoundation
 import PrimerStepResolver
 
 private enum EngineError: Error {
+    case badUrl
     case jsonToDataFailed
     case sha256Mismatch
 }
@@ -33,15 +34,15 @@ public final class PrimerBDCEngine: NSObject {
     private var evaluateTreeContinuation: Continuation?
     private var executeActionContinuation: Continuation?
     
-    public init(manifest: Manifest) {
+    public init(manifest: Manifest) async throws  {
         self.manifest = manifest
-        context = JSContext()!
+        context = JSContext()
         let sessionConfiguration = URLSessionConfiguration.default
         sessionConfiguration.urlCache = URLCache(memoryCapacity: 10_000_000, diskCapacity: 20_000_000)
         self.urlSession = URLSession(configuration: sessionConfiguration)
         super.init()
         setupContext()
-        Task { try! await setupEngine() }
+        try await setupEngine()
     }
 }
 
@@ -92,9 +93,7 @@ public extension PrimerBDCEngine {
 private extension PrimerBDCEngine {
     func setupContext() {
         let date = Date()
-        context.exceptionHandler = { _, exception in
-            fatalError(exception?.toString() ?? "Unknown exception")
-        }
+        context.exceptionHandler = { _, exception in Logger.handleJSErr(exception?.toString() ?? "Unknown exception") }
         context.evaluateScript(context.textCodecPolyfill)
         context.evaluateScript(context.consolePolyfill)
         
@@ -116,7 +115,7 @@ private extension PrimerBDCEngine {
         let consoleErrorCallback: JSStringBlock = Logger.handleJSErr
         context.setObject(consoleErrorCallback, forKeyedSubscript: "consoleError" as NSString)
 
-        let onLoadFailed: JSStringBlock = { fatalError($0) }
+        let onLoadFailed: JSStringBlock = Logger.handleJSErr
         context.setObject(onLoadFailed, forKeyedSubscript: "onLoadFailed" as NSString)
         
         context.setObject(onReady, forKeyedSubscript: "onWASMReady" as NSString)
@@ -128,14 +127,14 @@ private extension PrimerBDCEngine {
         
         let wasmData = try await fetch(manifest.celWrapperWASMURLContainer.br, sha256: manifest.celWrapperWASMURLContainer.sha256)
         let byteArray = [UInt8](wasmData)
-        let jsByteArray = JSValue(object: byteArray, in: context)!
+        let jsByteArray = JSValue(object: byteArray, in: context)
         
         context.setObject(jsByteArray, forKeyedSubscript: "wasmBytes" as NSString)
         context.evaluateScript(instantiate)
     }
     
     func fetch(_ urlString: String, sha256: String) async throws -> Data {
-        let url = URL(string: urlString)!
+        guard let url = URL(string: urlString) else { throw EngineError.badUrl }
         let (data, _) = try await urlSession.data(for: URLRequest(url: url))
         let digest = SHA256.hash(data: data)
         let computedSHA256 = Data(digest).base64EncodedString()
@@ -144,7 +143,8 @@ private extension PrimerBDCEngine {
     }
     
     private func setupCallback(continuation: ContinuationPath, value: String) {
-        let callback: JSStringBlock = { [unowned self] json in
+        let callback: JSStringBlock = { [weak self] json in
+            guard let self else { return }
             let continuation = self[keyPath: continuation]
             continuation?.resume(returning: json)
         }
@@ -154,7 +154,7 @@ private extension PrimerBDCEngine {
 
 private extension PrimerBDCEngine {
     func evaluate(_ script: () async throws -> Data) async rethrows {
-        let script = String(data: try await script(), encoding: .utf8)!
+        let script = String(data: try await script(), encoding: .utf8)
         context.evaluateScript(script)
     }
     
@@ -168,8 +168,11 @@ private extension PrimerBDCEngine {
             self[keyPath: continuationPath] = cont
             context.evaluateScript(script)
         }
-        guard let resultData = jsonString.data(using: .utf8) else { throw EngineError.jsonToDataFailed }
-        return try JSONSerialization.jsonObject(with: resultData) as! AnyDict
+        guard
+            let data = jsonString.data(using: .utf8),
+            let object = try? JSONSerialization.jsonObject(with: data, options: []) as? AnyDict
+        else { throw EngineError.jsonToDataFailed }
+        return object
     }
 }
 
