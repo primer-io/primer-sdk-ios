@@ -50,6 +50,7 @@ public enum PrimerPaymentMethodType: String, Codable, CaseIterable, Equatable, H
     case adyenPayTrail                  = "ADYEN_PAYTRAIL"
     case adyenPayshop                   = "ADYEN_PAYSHOP"
     case adyenSofort                    = "ADYEN_SOFORT"
+    case adyenSwish                     = "ADYEN_SWISH"
     case adyenTrustly                   = "ADYEN_TRUSTLY"
     case adyenTwint                     = "ADYEN_TWINT"
     case adyenVipps                     = "ADYEN_VIPPS"
@@ -109,6 +110,7 @@ public enum PrimerPaymentMethodType: String, Codable, CaseIterable, Equatable, H
              .adyenMultibanco,
              .adyenPayTrail,
              .adyenSofort,
+             .adyenSwish,
              .adyenPayshop,
              .adyenTrustly,
              .adyenTwint,

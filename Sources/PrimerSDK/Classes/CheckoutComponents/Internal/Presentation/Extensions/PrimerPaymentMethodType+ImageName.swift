@@ -77,6 +77,8 @@ extension PrimerPaymentMethodType {
       UIImage(primerResource: "payshop-icon-colored")
     case .adyenSofort, .primerTestSofort:
       UIImage(primerResource: "sofort-icon-colored")
+    case .adyenSwish:
+      UIImage(primerResource: "swish-logo-colored")
     case .adyenTrustly:
       UIImage(primerResource: "trustly-icon-colored")
     case .adyenTwint:

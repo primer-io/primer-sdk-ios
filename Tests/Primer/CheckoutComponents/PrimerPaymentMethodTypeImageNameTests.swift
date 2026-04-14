@@ -181,6 +181,11 @@ final class PrimerPaymentMethodTypeIconTests: XCTestCase {
         XCTAssertNotNil(PrimerPaymentMethodType.primerTestSofort.icon)
     }
 
+    func test_icon_adyenSwish_returnsNonNilImage() {
+        XCTAssertNotNil(PrimerPaymentMethodType.adyenSwish.icon)
+        XCTAssertEqual(PrimerPaymentMethodType.adyenSwish.icon, UIImage(primerResource: "swish-logo-colored"))
+    }
+
     func test_icon_adyenTrustly_returnsNonNilImage() {
         XCTAssertNotNil(PrimerPaymentMethodType.adyenTrustly.icon)
     }
