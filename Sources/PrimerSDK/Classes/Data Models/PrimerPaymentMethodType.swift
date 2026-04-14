@@ -73,6 +73,7 @@ public enum PrimerPaymentMethodType: String, Codable, CaseIterable, Equatable, H
     case payNLBancontact                = "PAY_NL_BANCONTACT"
     case payNLGiropay                   = "PAY_NL_GIROPAY"
     case payNLIdeal                     = "PAY_NL_IDEAL"
+    case payNLKaartdirect                = "PAY_NL_KAARTDIRECT"
     case payNLPayconiq                  = "PAY_NL_PAYCONIQ"
     case paymentCard                    = "PAYMENT_CARD"
     case payPal                         = "PAYPAL"
@@ -146,6 +147,7 @@ public enum PrimerPaymentMethodType: String, Codable, CaseIterable, Equatable, H
         case .payNLBancontact,
              .payNLGiropay,
              .payNLIdeal,
+             .payNLKaartdirect,
              .payNLPayconiq:
             "PAY_NL"
 
