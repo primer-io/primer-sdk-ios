@@ -137,6 +137,11 @@ final class PrimerPaymentMethodTypeIconTests: XCTestCase {
         XCTAssertNotNil(PrimerPaymentMethodType.adyenBancontactCard.icon)
     }
 
+    func test_icon_adyenBancontactPayconiq_returnsNonNilImage() {
+        XCTAssertNotNil(PrimerPaymentMethodType.adyenBancontactPayconiq.icon)
+        XCTAssertEqual(PrimerPaymentMethodType.adyenBancontactPayconiq.icon, UIImage(primerResource: "payconiq-logo-colored"))
+    }
+
     func test_icon_adyenDotPay_returnsNonNilImage() {
         XCTAssertNotNil(PrimerPaymentMethodType.adyenDotPay.icon)
     }

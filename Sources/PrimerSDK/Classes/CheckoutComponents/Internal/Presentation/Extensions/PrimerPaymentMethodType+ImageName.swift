@@ -57,6 +57,8 @@ extension PrimerPaymentMethodType {
       UIImage(primerResource: "blik-icon-colored")
     case .adyenBancontactCard:
       UIImage(primerResource: "bancontact-card-logo-colored")
+    case .adyenBancontactPayconiq:
+      UIImage(primerResource: "payconiq-logo-colored")
     case .adyenDotPay:
       UIImage(primerResource: "dotpay-icon-colored")
     case .adyenGiropay:
