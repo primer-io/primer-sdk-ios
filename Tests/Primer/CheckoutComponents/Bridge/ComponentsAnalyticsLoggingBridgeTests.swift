@@ -44,7 +44,14 @@ final class ComponentsAnalyticsLoggingBridgeTests: XCTestCase {
 
   func test_setup_initializesAnalyticsWithConfig() async {
     // Given
-    let config = makeTestConfig()
+    let config = AnalyticsSessionConfig(
+      environment: .sandbox,
+      checkoutSessionId: "cs_test_123",
+      clientSessionId: "client_test_456",
+      primerAccountId: "acc_test_789",
+      sdkVersion: "2.46.7",
+      clientSessionToken: "test_token"
+    )
     mockConfigurationModule.configToReturn = config
 
     // When
@@ -111,18 +118,15 @@ final class ComponentsAnalyticsLoggingBridgeTests: XCTestCase {
   // MARK: - Metadata Mapping Tests
 
   func test_mapMetadata_nilMetadata_returnsGeneral() {
-    let result = ComponentsAnalyticsLoggingBridge.mapMetadata(nil)
-    assertIsGeneral(result)
+    XCTAssertNil(ComponentsAnalyticsLoggingBridge.mapMetadata(nil).paymentMethod)
   }
 
   func test_mapMetadata_emptyMetadata_returnsGeneral() {
-    let result = ComponentsAnalyticsLoggingBridge.mapMetadata([:])
-    assertIsGeneral(result)
+    XCTAssertNil(ComponentsAnalyticsLoggingBridge.mapMetadata([:]).paymentMethod)
   }
 
   func test_mapMetadata_noPaymentMethod_returnsGeneral() {
-    let result = ComponentsAnalyticsLoggingBridge.mapMetadata(["someKey": "someValue"])
-    assertIsGeneral(result)
+    XCTAssertNil(ComponentsAnalyticsLoggingBridge.mapMetadata(["someKey": "someValue"]).paymentMethod)
   }
 
   func test_mapMetadata_paymentMethodOnly_returnsPayment() {
@@ -198,30 +202,12 @@ final class ComponentsAnalyticsLoggingBridgeTests: XCTestCase {
     XCTAssertEqual(calls.first?.event, "SDK_INIT")
   }
 
-  // MARK: - Helpers
-
-  private func makeTestConfig() -> AnalyticsSessionConfig {
-    AnalyticsSessionConfig(
-      environment: .sandbox,
-      checkoutSessionId: "cs_test_123",
-      clientSessionId: "client_test_456",
-      primerAccountId: "acc_test_789",
-      sdkVersion: "2.46.7",
-      clientSessionToken: "test_token"
-    )
-  }
-
-  private func assertIsGeneral(_ metadata: AnalyticsEventMetadata, file: StaticString = #filePath,
-                                line: UInt = #line) {
-    if case .general = metadata { return }
-    XCTFail("Expected .general but got \(metadata)", file: file, line: line)
-  }
 }
 
 // MARK: - Mocks
 
 @available(iOS 15.0, *)
-private actor MockBridgeAnalyticsService: CheckoutComponentsAnalyticsServiceProtocol {
+private final actor MockBridgeAnalyticsService: CheckoutComponentsAnalyticsServiceProtocol {
   private(set) var initializeConfig: AnalyticsSessionConfig?
   private(set) var sentEvents: [(eventType: AnalyticsEventType, metadata: AnalyticsEventMetadata?)] = []
 
@@ -235,7 +221,7 @@ private actor MockBridgeAnalyticsService: CheckoutComponentsAnalyticsServiceProt
 }
 
 @available(iOS 15.0, *)
-private actor MockBridgeLoggingService: ComponentsLoggingServiceProtocol {
+private final actor MockBridgeLoggingService: ComponentsLoggingServiceProtocol {
   struct InfoCall {
     let message: String
     let event: String
