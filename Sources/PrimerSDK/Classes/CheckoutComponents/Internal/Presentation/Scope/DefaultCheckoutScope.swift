@@ -150,9 +150,15 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
     FormRedirectPaymentMethod.register()
     QRCodePaymentMethod.registerAll([.xfersPayNow, .rapydPromptPay, .omisePromptPay])
 
+    // Payment methods that use the WebRedirect flow but whose backend `implementationType`
+    // is NATIVE_SDK instead of WEB_REDIRECT (e.g. due to custom drop-in buttons).
+    // Mirrors the WEB SDK's `mergeConfigWithLocalDefinitions` override.
+    let nativeSdkRedirectTypes: Set<String> = [
+      PrimerPaymentMethodType.payNLKaartdirect.rawValue
+    ]
     let webRedirectTypes = PrimerAPIConfigurationModule.apiConfiguration?
       .paymentMethods?
-      .filter { $0.implementationType == .webRedirect }
+      .filter { $0.implementationType == .webRedirect || nativeSdkRedirectTypes.contains($0.type) }
       .map(\.type) ?? []
     WebRedirectPaymentMethod.register(types: webRedirectTypes)
   }

@@ -247,6 +247,11 @@ final class PrimerPaymentMethodTypeIconTests: XCTestCase {
         XCTAssertNotNil(PrimerPaymentMethodType.payNLIdeal.icon)
     }
 
+    func test_icon_payNLKaartdirect_returnsGenericCardImage() {
+        XCTAssertNotNil(PrimerPaymentMethodType.payNLKaartdirect.icon)
+        XCTAssertEqual(PrimerPaymentMethodType.payNLKaartdirect.icon, ImageName.genericCard.image)
+    }
+
     func test_icon_payNLPayconiq_returnsNonNilImage() {
         XCTAssertNotNil(PrimerPaymentMethodType.payNLPayconiq.icon)
     }
