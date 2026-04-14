@@ -51,7 +51,9 @@ struct ErrorScreen: View {
 
       VStack(spacing: PrimerSpacing.medium(tokens: tokens)) {
         makeRetryButton()
-        makeOtherPaymentButton()
+        if onChooseOtherPaymentMethods != nil {
+          makeOtherPaymentButton()
+        }
       }
       .padding(.horizontal, PrimerSpacing.large(tokens: tokens))
       .padding(.bottom, PrimerSpacing.xxlarge(tokens: tokens))

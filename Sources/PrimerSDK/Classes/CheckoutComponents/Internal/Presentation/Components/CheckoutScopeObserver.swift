@@ -204,10 +204,10 @@ struct CheckoutScopeObserver: View, LogReporter {
             logger.info(message: "Error screen retry tapped")
             scope.retryPayment()
           },
-          onChooseOtherPaymentMethods: {
+          onChooseOtherPaymentMethods: scope.availablePaymentMethods.count > 1 ? {
             logger.info(message: "Error screen choose other payment method tapped")
             scope.checkoutNavigator.handleOtherPaymentMethods()
-          }
+          } : nil
         )
       }
     } else {
