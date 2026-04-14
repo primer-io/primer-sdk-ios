@@ -10,197 +10,197 @@ import XCTest
 @available(iOS 15.0, *)
 final class ComponentsAnalyticsLoggingBridgeTests: XCTestCase {
 
-  private var sut: ComponentsAnalyticsLoggingBridge!
-  private var mockAnalyticsService: MockBridgeAnalyticsService!
-  private var mockAnalyticsInteractor: MockTrackingAnalyticsInteractor!
-  private var mockLoggingService: MockBridgeLoggingService!
-  private var mockConfigurationModule: MockBridgeConfigurationModule!
+    private var sut: ComponentsAnalyticsLoggingBridge!
+    private var mockAnalyticsService: MockBridgeAnalyticsService!
+    private var mockAnalyticsInteractor: MockTrackingAnalyticsInteractor!
+    private var mockLoggingService: MockBridgeLoggingService!
+    private var mockConfigurationModule: MockBridgeConfigurationModule!
 
-  override func setUp() async throws {
-    try await super.setUp()
-    mockAnalyticsService = MockBridgeAnalyticsService()
-    mockAnalyticsInteractor = MockTrackingAnalyticsInteractor()
-    mockLoggingService = MockBridgeLoggingService()
-    mockConfigurationModule = MockBridgeConfigurationModule()
+    override func setUp() async throws {
+        try await super.setUp()
+        mockAnalyticsService = MockBridgeAnalyticsService()
+        mockAnalyticsInteractor = MockTrackingAnalyticsInteractor()
+        mockLoggingService = MockBridgeLoggingService()
+        mockConfigurationModule = MockBridgeConfigurationModule()
 
-    sut = ComponentsAnalyticsLoggingBridge(
-      analyticsService: mockAnalyticsService,
-      analyticsInteractor: mockAnalyticsInteractor,
-      loggingService: mockLoggingService,
-      configurationModule: mockConfigurationModule
-    )
-  }
-
-  override func tearDown() async throws {
-    sut = nil
-    mockAnalyticsService = nil
-    mockAnalyticsInteractor = nil
-    mockLoggingService = nil
-    mockConfigurationModule = nil
-    try await super.tearDown()
-  }
-
-  // MARK: - Setup Tests
-
-  func test_setup_initializesAnalyticsWithConfig() async {
-    // Given
-    let config = AnalyticsSessionConfig(
-      environment: .sandbox,
-      checkoutSessionId: "cs_test_123",
-      clientSessionId: "client_test_456",
-      primerAccountId: "acc_test_789",
-      sdkVersion: "2.46.7",
-      clientSessionToken: "test_token"
-    )
-    mockConfigurationModule.configToReturn = config
-
-    // When
-    await sut.setup(clientToken: "test-token")
-
-    // Then
-    let initConfig = await mockAnalyticsService.initializeConfig
-    XCTAssertNotNil(initConfig)
-    XCTAssertEqual(initConfig?.checkoutSessionId, config.checkoutSessionId)
-    XCTAssertEqual(initConfig?.clientSessionId, config.clientSessionId)
-  }
-
-  func test_setup_withNilConfig_doesNotInitializeAnalytics() async {
-    // Given
-    mockConfigurationModule.configToReturn = nil
-
-    // When
-    await sut.setup(clientToken: "test-token")
-
-    // Then
-    let initConfig = await mockAnalyticsService.initializeConfig
-    XCTAssertNil(initConfig)
-  }
-
-  // MARK: - Track Event Tests
-
-  func test_trackEvent_validEvent_tracksViaInteractor() async {
-    // When
-    await sut.trackEvent("SDK_INIT_START", metadata: nil)
-
-    // Then
-    let hasTracked = await mockAnalyticsInteractor.hasTracked(.sdkInitStart)
-    XCTAssertTrue(hasTracked)
-  }
-
-  func test_trackEvent_unknownEvent_silentlyIgnored() async {
-    // When
-    await sut.trackEvent("UNKNOWN_EVENT", metadata: nil)
-
-    // Then
-    let count = await mockAnalyticsInteractor.trackEventCallCount
-    XCTAssertEqual(count, 0)
-  }
-
-  func test_trackEvent_allEventTypes_trackedCorrectly() async {
-    // Given
-    let eventNames = [
-      "SDK_INIT_START", "SDK_INIT_END", "CHECKOUT_FLOW_STARTED",
-      "PAYMENT_METHOD_SELECTION", "PAYMENT_DETAILS_ENTERED", "PAYMENT_SUBMITTED",
-      "PAYMENT_PROCESSING_STARTED", "PAYMENT_REDIRECT_TO_THIRD_PARTY", "PAYMENT_THREEDS",
-      "PAYMENT_SUCCESS", "PAYMENT_FAILURE", "PAYMENT_REATTEMPTED", "PAYMENT_FLOW_EXITED",
-    ]
-
-    // When
-    for name in eventNames {
-      await sut.trackEvent(name, metadata: nil)
+        sut = ComponentsAnalyticsLoggingBridge(
+            analyticsService: mockAnalyticsService,
+            analyticsInteractor: mockAnalyticsInteractor,
+            loggingService: mockLoggingService,
+            configurationModule: mockConfigurationModule
+        )
     }
 
-    // Then
-    let count = await mockAnalyticsInteractor.trackEventCallCount
-    XCTAssertEqual(count, 13)
-  }
+    override func tearDown() async throws {
+        sut = nil
+        mockAnalyticsService = nil
+        mockAnalyticsInteractor = nil
+        mockLoggingService = nil
+        mockConfigurationModule = nil
+        try await super.tearDown()
+    }
 
-  // MARK: - Metadata Mapping Tests
+    // MARK: - Setup Tests
 
-  func test_mapMetadata_nilMetadata_returnsGeneral() {
-    XCTAssertNil(ComponentsAnalyticsLoggingBridge.mapMetadata(nil).paymentMethod)
-  }
+    func test_setup_initializesAnalyticsWithConfig() async {
+        // Given
+        let config = AnalyticsSessionConfig(
+            environment: .sandbox,
+            checkoutSessionId: "cs_test_123",
+            clientSessionId: "client_test_456",
+            primerAccountId: "acc_test_789",
+            sdkVersion: "2.46.7",
+            clientSessionToken: "test_token"
+        )
+        mockConfigurationModule.configToReturn = config
 
-  func test_mapMetadata_emptyMetadata_returnsGeneral() {
-    XCTAssertNil(ComponentsAnalyticsLoggingBridge.mapMetadata([:]).paymentMethod)
-  }
+        // When
+        await sut.setup(clientToken: "test-token")
 
-  func test_mapMetadata_noPaymentMethod_returnsGeneral() {
-    XCTAssertNil(ComponentsAnalyticsLoggingBridge.mapMetadata(["someKey": "someValue"]).paymentMethod)
-  }
+        // Then
+        let initConfig = await mockAnalyticsService.initializeConfig
+        XCTAssertNotNil(initConfig)
+        XCTAssertEqual(initConfig?.checkoutSessionId, config.checkoutSessionId)
+        XCTAssertEqual(initConfig?.clientSessionId, config.clientSessionId)
+    }
 
-  func test_mapMetadata_paymentMethodOnly_returnsPayment() {
-    // When
-    let result = ComponentsAnalyticsLoggingBridge.mapMetadata(["paymentMethod": "PAYMENT_CARD"])
+    func test_setup_withNilConfig_doesNotInitializeAnalytics() async {
+        // Given
+        mockConfigurationModule.configToReturn = nil
 
-    // Then
-    XCTAssertEqual(result.paymentMethod, "PAYMENT_CARD")
-    XCTAssertNil(result.paymentId)
-    XCTAssertNil(result.threedsProvider)
-    XCTAssertNil(result.redirectDestinationUrl)
-  }
+        // When
+        await sut.setup(clientToken: "test-token")
 
-  func test_mapMetadata_paymentMethodWithPaymentId_returnsPayment() {
-    // When
-    let result = ComponentsAnalyticsLoggingBridge.mapMetadata([
-      "paymentMethod": "PAYMENT_CARD",
-      "paymentId": "pay_123",
-    ])
+        // Then
+        let initConfig = await mockAnalyticsService.initializeConfig
+        XCTAssertNil(initConfig)
+    }
 
-    // Then
-    XCTAssertEqual(result.paymentMethod, "PAYMENT_CARD")
-    XCTAssertEqual(result.paymentId, "pay_123")
-  }
+    // MARK: - Track Event Tests
 
-  func test_mapMetadata_withThreedsProvider_returnsThreeDS() {
-    // When
-    let result = ComponentsAnalyticsLoggingBridge.mapMetadata([
-      "paymentMethod": "PAYMENT_CARD",
-      "threedsProvider": "ADYEN",
-    ])
+    func test_trackEvent_validEvent_tracksViaInteractor() async {
+        // When
+        await sut.trackEvent("SDK_INIT_START", metadata: nil)
 
-    // Then
-    XCTAssertEqual(result.paymentMethod, "PAYMENT_CARD")
-    XCTAssertEqual(result.threedsProvider, "ADYEN")
-  }
+        // Then
+        let hasTracked = await mockAnalyticsInteractor.hasTracked(.sdkInitStart)
+        XCTAssertTrue(hasTracked)
+    }
 
-  func test_mapMetadata_withRedirectUrl_returnsRedirect() {
-    // When
-    let result = ComponentsAnalyticsLoggingBridge.mapMetadata([
-      "paymentMethod": "PAYPAL",
-      "redirectDestinationUrl": "https://paypal.com/checkout",
-    ])
+    func test_trackEvent_unknownEvent_silentlyIgnored() async {
+        // When
+        await sut.trackEvent("UNKNOWN_EVENT", metadata: nil)
 
-    // Then
-    XCTAssertEqual(result.paymentMethod, "PAYPAL")
-    XCTAssertEqual(result.redirectDestinationUrl, "https://paypal.com/checkout")
-  }
+        // Then
+        let count = await mockAnalyticsInteractor.trackEventCallCount
+        XCTAssertEqual(count, 0)
+    }
 
-  func test_mapMetadata_threedsHasPriorityOverRedirect() {
-    // When — both threedsProvider and redirectDestinationUrl present
-    let result = ComponentsAnalyticsLoggingBridge.mapMetadata([
-      "paymentMethod": "PAYMENT_CARD",
-      "threedsProvider": "ADYEN",
-      "redirectDestinationUrl": "https://example.com",
-    ])
+    func test_trackEvent_allEventTypes_trackedCorrectly() async {
+        // Given
+        let eventNames = [
+            "SDK_INIT_START", "SDK_INIT_END", "CHECKOUT_FLOW_STARTED",
+            "PAYMENT_METHOD_SELECTION", "PAYMENT_DETAILS_ENTERED", "PAYMENT_SUBMITTED",
+            "PAYMENT_PROCESSING_STARTED", "PAYMENT_REDIRECT_TO_THIRD_PARTY", "PAYMENT_THREEDS",
+            "PAYMENT_SUCCESS", "PAYMENT_FAILURE", "PAYMENT_REATTEMPTED", "PAYMENT_FLOW_EXITED",
+        ]
 
-    // Then — threeDS takes priority
-    XCTAssertEqual(result.threedsProvider, "ADYEN")
-    XCTAssertNil(result.redirectDestinationUrl)
-  }
+        // When
+        for name in eventNames {
+            await sut.trackEvent(name, metadata: nil)
+        }
 
-  // MARK: - Log Info Tests
+        // Then
+        let count = await mockAnalyticsInteractor.trackEventCallCount
+        XCTAssertEqual(count, 13)
+    }
 
-  func test_logInfo_delegatesToLoggingService() async {
-    // When
-    await sut.logInfo(message: "test message", event: "SDK_INIT")
+    // MARK: - Metadata Mapping Tests
 
-    // Then
-    let calls = await mockLoggingService.logInfoCalls
-    XCTAssertEqual(calls.count, 1)
-    XCTAssertEqual(calls.first?.message, "test message")
-    XCTAssertEqual(calls.first?.event, "SDK_INIT")
-  }
+    func test_mapMetadata_nilMetadata_returnsGeneral() {
+        XCTAssertNil(ComponentsAnalyticsLoggingBridge.mapMetadata(nil).paymentMethod)
+    }
+
+    func test_mapMetadata_emptyMetadata_returnsGeneral() {
+        XCTAssertNil(ComponentsAnalyticsLoggingBridge.mapMetadata([:]).paymentMethod)
+    }
+
+    func test_mapMetadata_noPaymentMethod_returnsGeneral() {
+        XCTAssertNil(ComponentsAnalyticsLoggingBridge.mapMetadata(["someKey": "someValue"]).paymentMethod)
+    }
+
+    func test_mapMetadata_paymentMethodOnly_returnsPayment() {
+        // When
+        let result = ComponentsAnalyticsLoggingBridge.mapMetadata(["paymentMethod": "PAYMENT_CARD"])
+
+        // Then
+        XCTAssertEqual(result.paymentMethod, "PAYMENT_CARD")
+        XCTAssertNil(result.paymentId)
+        XCTAssertNil(result.threedsProvider)
+        XCTAssertNil(result.redirectDestinationUrl)
+    }
+
+    func test_mapMetadata_paymentMethodWithPaymentId_returnsPayment() {
+        // When
+        let result = ComponentsAnalyticsLoggingBridge.mapMetadata([
+            "paymentMethod": "PAYMENT_CARD",
+            "paymentId": "pay_123",
+        ])
+
+        // Then
+        XCTAssertEqual(result.paymentMethod, "PAYMENT_CARD")
+        XCTAssertEqual(result.paymentId, "pay_123")
+    }
+
+    func test_mapMetadata_withThreedsProvider_returnsThreeDS() {
+        // When
+        let result = ComponentsAnalyticsLoggingBridge.mapMetadata([
+            "paymentMethod": "PAYMENT_CARD",
+            "threedsProvider": "ADYEN",
+        ])
+
+        // Then
+        XCTAssertEqual(result.paymentMethod, "PAYMENT_CARD")
+        XCTAssertEqual(result.threedsProvider, "ADYEN")
+    }
+
+    func test_mapMetadata_withRedirectUrl_returnsRedirect() {
+        // When
+        let result = ComponentsAnalyticsLoggingBridge.mapMetadata([
+            "paymentMethod": "PAYPAL",
+            "redirectDestinationUrl": "https://paypal.com/checkout",
+        ])
+
+        // Then
+        XCTAssertEqual(result.paymentMethod, "PAYPAL")
+        XCTAssertEqual(result.redirectDestinationUrl, "https://paypal.com/checkout")
+    }
+
+    func test_mapMetadata_threedsHasPriorityOverRedirect() {
+        // When — both threedsProvider and redirectDestinationUrl present
+        let result = ComponentsAnalyticsLoggingBridge.mapMetadata([
+            "paymentMethod": "PAYMENT_CARD",
+            "threedsProvider": "ADYEN",
+            "redirectDestinationUrl": "https://example.com",
+        ])
+
+        // Then — threeDS takes priority
+        XCTAssertEqual(result.threedsProvider, "ADYEN")
+        XCTAssertNil(result.redirectDestinationUrl)
+    }
+
+    // MARK: - Log Info Tests
+
+    func test_logInfo_delegatesToLoggingService() async {
+        // When
+        await sut.logInfo(message: "test message", event: "SDK_INIT")
+
+        // Then
+        let calls = await mockLoggingService.logInfoCalls
+        XCTAssertEqual(calls.count, 1)
+        XCTAssertEqual(calls.first?.message, "test message")
+        XCTAssertEqual(calls.first?.event, "SDK_INIT")
+    }
 
 }
 
@@ -208,42 +208,42 @@ final class ComponentsAnalyticsLoggingBridgeTests: XCTestCase {
 
 @available(iOS 15.0, *)
 private final actor MockBridgeAnalyticsService: CheckoutComponentsAnalyticsServiceProtocol {
-  private(set) var initializeConfig: AnalyticsSessionConfig?
-  private(set) var sentEvents: [(eventType: AnalyticsEventType, metadata: AnalyticsEventMetadata?)] = []
+    private(set) var initializeConfig: AnalyticsSessionConfig?
+    private(set) var sentEvents: [(eventType: AnalyticsEventType, metadata: AnalyticsEventMetadata?)] = []
 
-  func initialize(config: AnalyticsSessionConfig) async {
-    initializeConfig = config
-  }
+    func initialize(config: AnalyticsSessionConfig) async {
+        initializeConfig = config
+    }
 
-  func sendEvent(_ eventType: AnalyticsEventType, metadata: AnalyticsEventMetadata?) async {
-    sentEvents.append((eventType: eventType, metadata: metadata))
-  }
+    func sendEvent(_ eventType: AnalyticsEventType, metadata: AnalyticsEventMetadata?) async {
+        sentEvents.append((eventType: eventType, metadata: metadata))
+    }
 }
 
 @available(iOS 15.0, *)
 private final actor MockBridgeLoggingService: ComponentsLoggingServiceProtocol {
-  struct InfoCall {
-    let message: String
-    let event: String
-    let userInfo: [String: Any]?
-  }
+    struct InfoCall {
+        let message: String
+        let event: String
+        let userInfo: [String: Any]?
+    }
 
-  private(set) var logInfoCalls: [InfoCall] = []
+    private(set) var logInfoCalls: [InfoCall] = []
 
-  func logInfo(message: String, event: String, userInfo: [String: Any]?) async {
-    logInfoCalls.append(InfoCall(message: message, event: event, userInfo: userInfo))
-  }
+    func logInfo(message: String, event: String, userInfo: [String: Any]?) async {
+        logInfoCalls.append(InfoCall(message: message, event: event, userInfo: userInfo))
+    }
 }
 
 @available(iOS 15.0, *)
 private final class MockBridgeConfigurationModule: AnalyticsSessionConfigProviding {
-  var configToReturn: AnalyticsSessionConfig?
+    var configToReturn: AnalyticsSessionConfig?
 
-  func makeAnalyticsSessionConfig(
-    checkoutSessionId: String,
-    clientToken: String,
-    sdkVersion: String
-  ) -> AnalyticsSessionConfig? {
-    configToReturn
-  }
+    func makeAnalyticsSessionConfig(
+        checkoutSessionId: String,
+        clientToken: String,
+        sdkVersion: String
+    ) -> AnalyticsSessionConfig? {
+        configToReturn
+    }
 }
