@@ -12,7 +12,7 @@ extension PrimerPaymentMethodType {
   /// Follows the same pattern as DropIn UI's TokenizationResponse.icon
   var defaultImageName: ImageName {
     switch self {
-    case .payPal, .primerTestPayPal: .paypal
+    case .payPal, .primerTestPayPal, .payNLPaypal: .paypal
     case .klarna, .primerTestKlarna, .adyenKlarna: .klarna
     case .paymentCard: .creditCard
     case .applePay: .appleIcon
@@ -113,6 +113,8 @@ extension PrimerPaymentMethodType {
       UIImage(primerResource: "ideal-icon-colored")
     case .payNLKaartdirect:
       ImageName.genericCard.image
+    case .payNLPaypal:
+      UIImage(primerResource: "paypal-icon-colored")
     case .payNLPayconiq:
       UIImage(primerResource: "payconiq-icon-colored")
 
