@@ -757,6 +757,7 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
         case .fintechtureSmartTransfer, .fintechtureImmediateTransfer:
             return nil
         case .mollieGiftcard,
+             .nets,
              .payNLKaartdirect:
             return nil
         }
