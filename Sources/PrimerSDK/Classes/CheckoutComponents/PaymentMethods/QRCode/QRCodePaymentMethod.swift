@@ -41,7 +41,8 @@ enum QRCodePaymentMethod {
         CheckoutComponentsAnalyticsInteractorProtocol.self
       )
 
-      let interactor = try await diContainer.resolve(ProcessQRCodePaymentInteractor.self)
+      let factory = try await diContainer.resolve(QRCodePaymentInteractorFactory.self)
+      let interactor = try await factory.create(with: paymentMethodType)
 
       return DefaultQRCodeScope(
         checkoutScope: defaultCheckoutScope,
