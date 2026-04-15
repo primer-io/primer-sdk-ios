@@ -51,6 +51,8 @@ extension PrimerPaymentMethodType {
       UIImage(primerResource: "coinbase-icon-colored")
 
     // Adyen payment methods
+    case .adyenAffirm:
+      ImageName.genericCard.image
     case .adyenAlipay:
       UIImage(primerResource: "alipay-icon-colored")
     case .adyenBlik:
