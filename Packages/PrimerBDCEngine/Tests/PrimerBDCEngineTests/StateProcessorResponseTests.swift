@@ -44,6 +44,30 @@ final class StateProcessorResponseTests: XCTestCase {
     func testDecodeInvalidOutcomeThrows() {
         XCTAssertThrowsError(try decode(#"{"newState":{}, "terminal": {"outcome": "foo"} }"#))
     }
+
+    func testDecodeWithError() throws {
+        let json = #"{"newState": {}, "error": {"code": 42, "message": "Something went wrong", "diagnosticsId": "diag-123"}}"#
+        let response = try decode(json)
+        XCTAssertEqual(response.error?.code, 42)
+        XCTAssertEqual(response.error?.message, "Something went wrong")
+        XCTAssertEqual(response.error?.diagnosticsId, "diag-123")
+        XCTAssertNil(response.action)
+        XCTAssertNil(response.terminal)
+    }
+
+    func testDecodeWithNilError() throws {
+        let response = try decode(#"{"newState": {}}"#)
+        XCTAssertNil(response.error)
+    }
+
+    func testErrorDescription() throws {
+        let json = #"{"newState": {}, "error": {"code": 500, "message": "Internal error", "diagnosticsId": "abc-456"}}"#
+        let response = try decode(json)
+        XCTAssertEqual(
+            response.error?.errorDescription,
+            "State processor error [500] (diagnosticsId=abc-456): Internal error"
+        )
+    }
 }
 
 private extension StateProcessorResponseTests {
