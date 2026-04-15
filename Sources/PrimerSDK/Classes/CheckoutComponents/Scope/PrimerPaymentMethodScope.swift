@@ -295,11 +295,9 @@ final class PaymentMethodRegistry: LogReporter {
     viewBuilders[typeKey] = viewCreator
   }
 
-  #if DEBUG
   func reset() {
     creators.removeAll()
     viewBuilders.removeAll()
     typeToIdentifier.removeAll()
   }
-  #endif
 }

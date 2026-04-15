@@ -141,6 +141,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
   }
 
   private func registerPaymentMethods() {
+    PaymentMethodRegistry.shared.reset()
     CardPaymentMethod.register()
     PayPalPaymentMethod.register()
     ApplePayPaymentMethod.register()

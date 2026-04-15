@@ -63,9 +63,9 @@ final class PaymentMethodRegistryTests: XCTestCase {
     // MARK: - createScope (String Type) Tests
 
     func test_createScope_forRegisteredType_returnsScope() async throws {
-        // Given
-        PaymentMethodRegistry.shared.register(MockPaymentMethod.self)
+        // Given — register after scope creation since init calls reset()
         let checkoutScope = await createMockCheckoutScope()
+        PaymentMethodRegistry.shared.register(MockPaymentMethod.self)
 
         // When
         let scope = try await PaymentMethodRegistry.shared.createScope(
@@ -96,9 +96,9 @@ final class PaymentMethodRegistryTests: XCTestCase {
     // MARK: - getView Tests
 
     func test_getView_forRegisteredType_returnsView() async {
-        // Given
-        PaymentMethodRegistry.shared.register(MockPaymentMethod.self)
+        // Given — register after scope creation since init calls reset()
         let checkoutScope = await createMockCheckoutScope()
+        PaymentMethodRegistry.shared.register(MockPaymentMethod.self)
 
         // When
         let view = PaymentMethodRegistry.shared.getView(
