@@ -1,7 +1,7 @@
 //
 //  StringExtension.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
@@ -10,20 +10,20 @@ public extension String {
     static var uuid: String {  UUID().uuidString }
 }
 
-internal extension String {
+extension String {
 
     var withoutWhiteSpace: String {
-        return self.replacingOccurrences(of: " ", with: "").trimmingCharacters(in: .whitespacesAndNewlines)
+        replacingOccurrences(of: " ", with: "").trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
     var isNumeric: Bool {
-        guard !self.isEmpty else { return false }
+        guard !isEmpty else { return false }
         let nums: Set<Character> = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
         return Set(self).isSubset(of: nums)
     }
 
     var isValidCardNumber: Bool {
-        let clearedCardNumber = self.withoutNonNumericCharacters
+        let clearedCardNumber = withoutNonNumericCharacters
 
         let cardNetwork = CardNetwork(cardNumber: clearedCardNumber)
         if let cardNumberValidation = cardNetwork.validation {
@@ -53,12 +53,12 @@ internal extension String {
     }
 
     var withoutNonNumericCharacters: String {
-        return withoutWhiteSpace.filter("0123456789".contains)
+        withoutWhiteSpace.filter("0123456789".contains)
     }
 
     var isValidExpiryDate: Bool {
         // swiftlint:disable identifier_name
-        let _self = self.replacingOccurrences(of: "/", with: "")
+        let _self = replacingOccurrences(of: "/", with: "")
         // swiftlint:enable identifier_name
         if _self.count != 4 {
             return false
@@ -85,14 +85,14 @@ internal extension String {
 
     func isTypingValidCVV(cardNetwork: CardNetwork?) -> Bool? {
         let maxDigits = cardNetwork?.validation?.code.length ?? 4
-        if !isNumeric && !isEmpty { return false }
+        if !isNumeric, !isEmpty { return false }
         if count > maxDigits { return false }
-        if count >= 3 && count <= maxDigits { return true }
+        if count >= 3, count <= maxDigits { return true }
         return nil
     }
 
     func isValidCVV(cardNetwork: CardNetwork?) -> Bool {
-        if !self.isNumeric {
+        if !isNumeric {
             return false
         }
 
@@ -122,12 +122,12 @@ internal extension String {
     var isValidPostalCode: Bool {
         if count < 1 { return false }
         let set = CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLKMNOPQRSTUVWXYZ '`~.-1234567890")
-        return !(self.rangeOfCharacter(from: set.inverted) != nil)
+        return !(rangeOfCharacter(from: set.inverted) != nil)
     }
 
     var isValidLuhn: Bool {
         var sum = 0
-        let digitStrings = self.withoutWhiteSpace.reversed().map { String($0) }
+        let digitStrings = withoutWhiteSpace.reversed().map { String($0) }
 
         for tuple in digitStrings.enumerated() {
             if let digit = Int(tuple.element) {
@@ -149,32 +149,39 @@ internal extension String {
     }
 
     var decodedJWTToken: DecodedJWTToken? {
-        let components = self.split(separator: ".")
+        let components = split(separator: ".")
         if components.count < 2 { return nil }
         let segment = String(components[1]).base64IOSFormat
-        guard !segment.isEmpty, let data = Data(base64Encoded: segment,
-                                                options: .ignoreUnknownCharacters)
+        guard !segment.isEmpty, let data = Data(
+            base64Encoded: segment,
+            options: .ignoreUnknownCharacters
+        )
         else { return nil }
         return try? JSONDecoder().decode(DecodedJWTToken.self, from: data)
     }
 
     private var base64IOSFormat: Self {
-        let str = self.replacingOccurrences(of: "-", with: "+")
+        let str = replacingOccurrences(of: "-", with: "+")
             .replacingOccurrences(of: "_", with: "/")
         let offset = str.count % 4
         guard offset != 0 else { return str }
-        return str.padding(toLength: str.count + 4 - offset,
-                           withPad: "=", startingAt: 0)
+        return str.padding(
+            toLength: str.count + 4 - offset,
+            withPad: "=",
+            startingAt: 0
+        )
     }
 
     var base64RFC4648Format: Self {
-        return self.replacingOccurrences(of: "+", with: "-")
+        replacingOccurrences(of: "+", with: "-")
             .replacingOccurrences(of: "/", with: "_")
             .replacingOccurrences(of: "=", with: "")
     }
 
-    func toDate(withFormat format: String = "yyyy-MM-dd'T'HH:mm:ss.SSSZ",
-                timeZone: TimeZone? = nil) -> Date? {
+    func toDate(
+        withFormat format: String = "yyyy-MM-dd'T'HH:mm:ss.SSSZ",
+        timeZone: TimeZone? = nil
+    ) -> Date? {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = format
         dateFormatter.locale = Locale(identifier: "en_US_POSIX")
@@ -188,7 +195,7 @@ internal extension String {
     }
 
     func separate(every: Int, with separator: String) -> String {
-        return String(stride(from: 0, to: Array(self).count, by: every).map {
+        String(stride(from: 0, to: Array(self).count, by: every).map {
             Array(Array(self)[$0..<min($0 + every, Array(self).count)])
         }.joined(separator: separator))
     }
@@ -213,7 +220,7 @@ internal extension String {
     /// - Note: This function accepts both MM/YY and MM/YYYY formats to maintain compatibility
     ///         between Drop-in UI (MM/YY) and Headless/RawDataManager (MM/YYYY) implementations
     func validateExpiryDateString() throws {
-        if self.isEmpty {
+        if isEmpty {
             throw PrimerValidationError.invalidExpiryDate(message: "Expiry date cannot be blank.")
 
         } else {
@@ -251,13 +258,13 @@ internal extension String {
     func compareWithVersion(_ otherVersion: String) -> ComparisonResult {
         let versionDelimiter = "."
 
-        var versionComponents = self.components(separatedBy: versionDelimiter)
+        var versionComponents = components(separatedBy: versionDelimiter)
         var otherVersionComponents = otherVersion.components(separatedBy: versionDelimiter)
 
         let zeroDiff = versionComponents.count - otherVersionComponents.count
 
         if zeroDiff == 0 {
-            return self.compare(otherVersion, options: .numeric)
+            return compare(otherVersion, options: .numeric)
         } else {
             let zeros = Array(repeating: "0", count: abs(zeroDiff))
             if zeroDiff > 0 {
@@ -273,7 +280,7 @@ internal extension String {
     var isValidOTP: Bool {
         let pattern = "^\\d{6}$"
         let regex = try? NSRegularExpression(pattern: pattern, options: [])
-        let matches = regex?.matches(in: self, options: [], range: NSRange(location: 0, length: self.count))
+        let matches = regex?.matches(in: self, options: [], range: NSRange(location: 0, length: count))
         return matches?.count ?? 0 > 0
     }
 
@@ -283,9 +290,9 @@ internal extension String {
     ///         4-digit years (e.g., "2030") are returned as-is
     ///         Invalid inputs return nil
     func normalizedFourDigitYear() -> String? {
-        guard self.allSatisfy(\.isNumber) else { return nil }
+        guard allSatisfy(\.isNumber) else { return nil }
 
-        switch self.count {
+        switch count {
         case 4:
             return self
         case 2:
@@ -296,5 +303,41 @@ internal extension String {
         default:
             return nil
         }
+    }
+
+    // MARK: - NSRange Text Processing Utilities
+
+    /// Safely converts NSRange to Range<String.Index>
+    /// - Parameter nsRange: The NSRange to convert
+    /// - Returns: The corresponding Range<String.Index>, or nil if conversion fails
+    func range(from nsRange: NSRange) -> Range<String.Index>? {
+        Range(nsRange, in: self)
+    }
+
+    /// Replaces characters in the given NSRange with a replacement string
+    /// - Parameters:
+    ///   - nsRange: The range of characters to replace
+    ///   - replacement: The string to insert in place of the characters
+    /// - Returns: A new string with the replacement applied, or the original string if the range is invalid
+    func replacingCharacters(in nsRange: NSRange, with replacement: String) -> String {
+        guard let range = range(from: nsRange) else { return self }
+        return replacingCharacters(in: range, with: replacement)
+    }
+
+    /// Calculates the unformatted position from a formatted text position
+    /// Useful for mapping cursor positions when text contains separator characters
+    /// - Parameters:
+    ///   - formattedIndex: The index in the formatted text (including separators)
+    ///   - separator: The separator character used in formatting (e.g., " " for card numbers, "/" for expiry dates)
+    /// - Returns: The corresponding index in the unformatted text (excluding separators)
+    func unformattedPosition(from formattedIndex: Int, separator: Character) -> Int {
+        var unformattedPos = 0
+        for i in 0..<min(formattedIndex, count) {
+            let charIndex = index(startIndex, offsetBy: i)
+            if self[charIndex] != separator {
+                unformattedPos += 1
+            }
+        }
+        return unformattedPos
     }
 }

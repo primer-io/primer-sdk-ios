@@ -40,7 +40,7 @@ protocol URLSessionProtocol: Sendable {
 
 extension URLSession: URLSessionProtocol {}
 
-final class DefaultRequestDispatcher: RequestDispatcher, LogReporter {
+final class DefaultRequestDispatcher: RequestDispatcher, @unchecked Sendable, LogReporter {
 
     let urlSession: URLSessionProtocol
     
@@ -69,9 +69,11 @@ final class DefaultRequestDispatcher: RequestDispatcher, LogReporter {
                 return completion(.failure(InternalError.missingHTTPResponse(underlyingError: error)))
             }
 
-            let metadata = ResponseMetadataModel(responseUrl: httpResponse.responseUrl,
-                                                 statusCode: httpResponse.statusCode,
-                                                 headers: httpResponse.headers)
+            let metadata = ResponseMetadataModel(
+                responseUrl: httpResponse.responseUrl,
+                statusCode: httpResponse.statusCode,
+                headers: httpResponse.headers
+            )
             let responseModel = DispatcherResponseModel(metadata: metadata, requestDuration: requestDuration, data: data, error: error)
             completion(.success(responseModel))
         }

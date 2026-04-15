@@ -84,6 +84,9 @@ final class PrimerDelegateProxy: LogReporter {
                 Primer.shared.delegate?.primerDidTokenizePaymentMethod?(paymentMethodTokenData) { decision in
                     continuation.resume(returning: decision)
                 }
+            } else if PrimerInternal.shared.sdkIntegrationType == .checkoutComponents {
+                // CheckoutComponents handles tokenization through its own scope mechanism
+                continuation.resume(returning: PrimerResumeDecision.succeed())
             }
         }
     }
@@ -114,6 +117,9 @@ final class PrimerDelegateProxy: LogReporter {
                 Primer.shared.delegate?.primerDidResumeWith?(resumeToken) { decision in
                     continuation.resume(returning: decision)
                 }
+            } else if PrimerInternal.shared.sdkIntegrationType == .checkoutComponents {
+                // CheckoutComponents handles resume through its own scope mechanism
+                continuation.resume(returning: PrimerResumeDecision.succeed())
             }
         }
     }
@@ -164,6 +170,9 @@ final class PrimerDelegateProxy: LogReporter {
                 } else {
                     continuation.resume(returning: .continuePaymentCreation())
                 }
+            } else if PrimerInternal.shared.sdkIntegrationType == .checkoutComponents {
+                // CheckoutComponents handles payment creation internally
+                continuation.resume(returning: .continuePaymentCreation())
             }
         }
     }
@@ -326,6 +335,9 @@ final class PrimerDelegateProxy: LogReporter {
                         }
                     })
                 }
+            } else if PrimerInternal.shared.sdkIntegrationType == .checkoutComponents {
+                // CheckoutComponents handles errors through its own scope mechanism
+                decisionHandler(.fail(withErrorMessage: nil))
             }
         }
     }
@@ -349,7 +361,7 @@ final class PrimerDelegateProxy: LogReporter {
             PrimerUIManager.dismissPrimerUI(animated: true)
 
             guard let primerHeadlessUniversalCheckoutDidFail = PrimerHeadlessUniversalCheckout.current.delegate?
-                .primerHeadlessUniversalCheckoutDidFail else {
+                    .primerHeadlessUniversalCheckoutDidFail else {
                 logger.warn(message: "Delegate function 'primerHeadlessUniversalCheckoutDidFail' hasn't been implemented.")
                 return .fail(withErrorMessage: nil)
             }
@@ -375,8 +387,12 @@ final class PrimerDelegateProxy: LogReporter {
                     }
                 }
             }
+        } else if PrimerInternal.shared.sdkIntegrationType == .checkoutComponents {
+            // CheckoutComponents handles errors through its own scope mechanism
+            return .fail(withErrorMessage: nil)
         } else {
-            preconditionFailure()
+            logger.warn(message: "Unhandled sdkIntegrationType in primerDidFailWithError")
+            return .fail(withErrorMessage: nil)
         }
     }
 
@@ -443,7 +459,7 @@ final class PrimerDelegateProxy: LogReporter {
 
     @MainActor
     static func primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods(_ paymentMethods: [PrimerHeadlessUniversalCheckout
-            .PaymentMethod]) async {
+                                                                                .PaymentMethod]) async {
         if PrimerInternal.shared.sdkIntegrationType == .headless {
             PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods?(paymentMethods)
         }
