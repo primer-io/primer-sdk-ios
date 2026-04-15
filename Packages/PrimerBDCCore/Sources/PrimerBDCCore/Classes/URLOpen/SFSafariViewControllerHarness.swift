@@ -37,7 +37,7 @@ final class SFSafariViewControllerHarness: NSObject, StepResolver {
             logger.error("Could not create URL from \(browserStep.url)")
             return nil
         }
-        open(url)
+        try open(url)
         return nil
     }
     
@@ -81,12 +81,12 @@ final class SFSafariViewControllerHarness: NSObject, StepResolver {
         }
     }
     
-    private func open(_ url: URL) {
+    private func open(_ url: URL) throws {
         guard let windowScene = UIApplication.shared.connectedScenes
             .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene,
-              let window = windowScene.windows.first(where: \.isKeyWindow),
-              let rootVC = window.rootViewController else {
-            return
+            let window = windowScene.windows.first(where: \.isKeyWindow),
+            let rootVC = window.rootViewController else {
+            throw Error.couldNotOpen
         }
         var topVC = rootVC
         while let presented = topVC.presentedViewController {
@@ -103,6 +103,12 @@ final class SFSafariViewControllerHarness: NSObject, StepResolver {
 extension SFSafariViewControllerHarness: @preconcurrency SFSafariViewControllerDelegate {
     func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
         handleCancel()
+    }
+}
+
+private extension SFSafariViewControllerHarness {
+    enum Error: Swift.Error {
+        case couldNotOpen
     }
 }
 
