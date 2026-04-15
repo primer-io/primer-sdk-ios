@@ -58,9 +58,9 @@ extension Analytics {
             self.minDeploymentTarget = Bundle.main.minimumOSVersion ?? "Unknown"
 
             #if COCOAPODS
-            self.integrationType = "COCOAPODS"
+                self.integrationType = "COCOAPODS"
             #else
-            self.integrationType = "SPM"
+                self.integrationType = "SPM"
             #endif
         }
 
@@ -249,6 +249,7 @@ extension Analytics.Event {
             case retry                              = "RETRY"
             case retryFailed                        = "RETRY_FAILED"
             case retrySuccess                       = "RETRY_SUCCESS"
+            case backendDrivenCheckoutStarted       = "BDC_FLOW_START"
         }
 
         enum TimerType: String, Codable {
@@ -744,9 +745,9 @@ struct SDKProperties: Codable {
         self.clientToken = AppState.current.clientToken
         self.sdkIntegrationType = PrimerInternal.shared.sdkIntegrationType
         #if COCOAPODS
-        self.integrationType = "COCOAPODS"
+            self.integrationType = "COCOAPODS"
         #else
-        self.integrationType = "SPM"
+            self.integrationType = "SPM"
         #endif
         self.paymentMethodType = PrimerInternal.shared.selectedPaymentMethodType
         self.sdkIntent = PrimerInternal.shared.intent
