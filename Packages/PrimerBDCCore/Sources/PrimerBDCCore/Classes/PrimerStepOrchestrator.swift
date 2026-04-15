@@ -10,8 +10,14 @@ import PrimerFoundation
 import PrimerStepResolver
 
 @MainActor
-public final class PrimerStepOrchestrator {
-    public var onCancelled: (() -> Void)?
+protocol StepOrchestrating: AnyObject {
+    var onCancelled: (() -> Void)? { get set }
+    func start(rawSchema: String, initialState: CodableValue) async throws
+}
+
+@MainActor
+final class PrimerStepOrchestrator: StepOrchestrating {
+    var onCancelled: (() -> Void)?
 
     private let logger = Logger()
     
@@ -19,39 +25,39 @@ public final class PrimerStepOrchestrator {
     private let urlOpenHandler: URLOpenHandler
     private let httpHandler: HTTPInteractionStepHandler
     
-    private let engine: PrimerBDCEngine
+    private let engine: any BDCEngineProtocol
     private let context: SDKContext
-    private var rawSchema: String!
     private var state: CodableState = [:]
         
-    public init(
-        manifest: Manifest,
+    init(
+        engine: any BDCEngineProtocol,
         context: SDKContext,
         registry: PrimerStepResolverRegistry = .shared
-    ) async throws {
-        self.engine = try await PrimerBDCEngine(manifest: manifest)
+    ) {
+        self.engine = engine
         self.context = context
         analyticsHandler = AnalyticsHandler(registry: registry)
         urlOpenHandler = URLOpenHandler()
         httpHandler = HTTPInteractionStepHandler(registry: registry)
     }
 
-    public func start(rawSchema: String, initialState: CodableValue) async throws {
+    func start(rawSchema: String, initialState: CodableValue) async throws {
         do {
             let result = try await engine.start(schema: rawSchema, context: context, state: initialState)
-            self.rawSchema = rawSchema
-            try await decodeResult(result)
+            try await decodeResult(result, rawSchema: rawSchema)
         } catch {
             throw PrimerStepOrchestratorError.startFailed(error: error)
         }
     }
     
-    private func decodeResult(_ result: AnyDict) async throws {
+    private func decodeResult(_ result: AnyDict, rawSchema: String) async throws {
         do {
             let response = try JSONDecoder().decode(StateProcessorResponse.self, from: try result.data())
             state = response.newState
             if let next = response.action {
-                try await resolveStepResponse(next) { [weak self] in try await self?.applyResult($0) }
+                try await resolveStepResponse(next) { [weak self] in
+                    try await self?.applyResult($0, rawSchema: rawSchema)
+                }
             } else if let outcome = response.terminal?.outcome {
                 switch outcome {
                 case .cancelled: onCancelled?()
@@ -116,7 +122,7 @@ public final class PrimerStepOrchestrator {
             let response = try await resolutionHandler()
             try await completion(StepResponse(outcome: .success, data: response, actionId: actionId))
         } catch {
-           try await handle(error, actionId: actionId, completion: completion)
+            try await handle(error, actionId: actionId, completion: completion)
         }
     }
     
@@ -126,13 +132,13 @@ public final class PrimerStepOrchestrator {
         completion: @escaping (StepResponse) async throws -> Void
     ) async throws {
         if let error = error as? PrimerStepResolver.StepResolutionError, error == .noResolverFound {
-           try await completion(StepResponse(outcome: .unsupported, data: nil, actionId: actionId))
+            try await completion(StepResponse(outcome: .unsupported, data: nil, actionId: actionId))
         } else {
             throw error
         }
     }
     
-    private func applyResult(_ response: StepResponse) async throws {
+    private func applyResult(_ response: StepResponse, rawSchema: String) async throws {
         do {
             let data = try response.data?.casted(to: Data.self)
             let outcome = response.outcome.rawValue
@@ -144,17 +150,10 @@ public final class PrimerStepOrchestrator {
                 outcome: outcome,
                 data: data
             )
-            try await decodeResult(result)
+            try await decodeResult(result, rawSchema: rawSchema)
         } catch {
             throw PrimerStepOrchestratorError.applyWorkflowStepResponseFailed(error: error)
         }
-    }
-}
-
-extension PrimerStepOrchestrator {
-    private func applyOpenBrowserEvent(event: CodableValue) async throws {
-        let result = try await engine.applyEvent(event, context: context, schema: rawSchema, state: state)
-        try await decodeResult(result)
     }
 }
 
