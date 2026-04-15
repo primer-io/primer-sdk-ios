@@ -20,15 +20,12 @@ final class PrimerStepOrchestrator: StepOrchestrating {
     var onCancelled: (() -> Void)?
 
     private let logger = Logger()
-    
-    private let analyticsHandler: AnalyticsHandler
-    private let urlOpenHandler: URLOpenHandler
-    private let httpHandler: HTTPInteractionStepHandler
-    
     private let engine: any BDCEngineProtocol
     private let context: SDKContext
+    private let registry: PrimerStepResolverRegistry
+    private let harness = SFSafariViewControllerHarness()
     private var state: CodableState = [:]
-        
+
     init(
         engine: any BDCEngineProtocol,
         context: SDKContext,
@@ -36,12 +33,11 @@ final class PrimerStepOrchestrator: StepOrchestrating {
     ) {
         self.engine = engine
         self.context = context
-        analyticsHandler = AnalyticsHandler(registry: registry)
-        urlOpenHandler = URLOpenHandler()
-        httpHandler = HTTPInteractionStepHandler(registry: registry)
+        self.registry = registry
     }
 
     func start(rawSchema: String, initialState: CodableValue) async throws {
+        await registry.register(harness, for: "url.open")
         do {
             let result = try await engine.start(schema: rawSchema, context: context, state: initialState)
             try await decodeResult(result, rawSchema: rawSchema)
@@ -49,27 +45,12 @@ final class PrimerStepOrchestrator: StepOrchestrating {
             throw PrimerStepOrchestratorError.startFailed(error: error)
         }
     }
-    
+
     private func decodeResult(_ result: AnyDict, rawSchema: String) async throws {
         do {
             let response = try JSONDecoder().decode(StateProcessorResponse.self, from: try result.data())
             state = response.newState
-            if let error = response.error {
-                throw error
-            } else if let next = response.action {
-                try await resolveStepResponse(next) { [weak self] in
-                    try await self?.applyResult($0, rawSchema: rawSchema)
-                }
-            } else if let outcome = response.terminal?.outcome {
-                switch outcome {
-                case .cancelled: onCancelled?()
-                case .error: throw PrimerStepOrchestratorError.checkoutTerminalError
-                case .unsupported: throw PrimerStepOrchestratorError.receivedUnexpectedTerminalOutcome(outcome: outcome)
-                case .success: break
-                }
-            } else {
-                throw PrimerStepOrchestratorError.missingActionAndOutcome
-            }
+            try await handleResponse(response, rawSchema: rawSchema)
         } catch {
             if let error = error as? StateProcessorError {
                 throw error
@@ -79,84 +60,41 @@ final class PrimerStepOrchestrator: StepOrchestrating {
         }
     }
     
-    private func resolveStepResponse(
-        _ step: WorkflowStep,
-        completion: @escaping (StepResponse) async throws -> Void
-    ) async throws {
-        do {
-            switch step.type {
-            case let .log(value):
-                logger.info("Received instruction; executing log step")
-                try await attemptResolution(
-                    actionId: step.id,
-                    resolutionHandler: { try await analyticsHandler.resolve(value) },
-                    completion: completion
-                )
-                
-            case let .httpCall(value):
-                logger.info("Received instruction; executing http step")
-                try await attemptResolution(
-                    actionId: step.id,
-                    resolutionHandler: { try await httpHandler.resolve(value) },
-                    completion: completion
-                )
-            case let .urlOpen(value):
-                logger.info("Received instruction; executing web view step")
-                
-                do {
-                    let response = try await urlOpenHandler.resolve(value)
-
-                    urlOpenHandler.onClose = {
-                        try await completion(StepResponse(outcome: .cancelled, data: response, actionId: step.id))
-                    }
-                    
-                    urlOpenHandler.onComplete = {
-                        try await completion(StepResponse(outcome: .success, data: response, actionId: step.id))
-                    }
-                } catch {
-                    try await handle(error, actionId: step.id, completion: completion)
-                }
-            }
-        } catch {
-            throw PrimerStepOrchestratorError.resolvingFailed(error: error)
-        }
-    }
-    
-    private func attemptResolution(
-        actionId: String,
-        resolutionHandler: () async throws -> CodableValue?,
-        completion: @escaping (StepResponse) async throws -> Void
-    ) async throws {
-        do {
-            let response = try await resolutionHandler()
-            try await completion(StepResponse(outcome: .success, data: response, actionId: actionId))
-        } catch {
-            try await handle(error, actionId: actionId, completion: completion)
-        }
-    }
-    
-    private func handle(
-        _ error: Error,
-        actionId: String,
-        completion: @escaping (StepResponse) async throws -> Void
-    ) async throws {
-        if let error = error as? PrimerStepResolver.StepResolutionError, error == .noResolverFound {
-            try await completion(StepResponse(outcome: .unsupported, data: nil, actionId: actionId))
-        } else {
+    private func handleResponse(_ response: StateProcessorResponse, rawSchema: String) async throws {
+        if let error = response.error {
             throw error
+        } else if let action = response.action {
+            try await handleAction(action, rawSchema: rawSchema)
+        } else if let outcome = response.terminal?.outcome {
+            try handleOutcome(outcome)
+        } else {
+            throw PrimerStepOrchestratorError.missingActionAndOutcome
         }
     }
     
-    private func applyResult(_ response: StepResponse, rawSchema: String) async throws {
+    private func handleAction(_ action: WorkflowStep, rawSchema: String) async throws {
+        let resolution = try await registry.resolve(action.type, params: action.params)
+        try await applyResult(resolution, actionId: action.id, rawSchema: rawSchema)
+    }
+    
+    private func handleOutcome(_ outcome: TerminalOutcome) throws {
+        switch outcome {
+        case .cancelled: onCancelled?()
+        case .error: throw PrimerStepOrchestratorError.checkoutTerminalError
+        case .unsupported: throw PrimerStepOrchestratorError.receivedUnexpectedTerminalOutcome(outcome: outcome)
+        case .success: break
+        }
+    }
+
+    private func applyResult(_ resolution: StepResolutionResult, actionId: String, rawSchema: String) async throws {
         do {
-            let data = try response.data?.casted(to: Data.self)
-            let outcome = response.outcome.rawValue
+            let data = try resolution.data?.casted(to: Data.self)
             let result = try await engine.applyResult(
                 schema: rawSchema,
                 context: context,
-                actionId: response.actionId,
+                actionId: actionId,
                 state: state,
-                outcome: outcome,
+                outcome: resolution.outcome.rawValue,
                 data: data
             )
             try await decodeResult(result, rawSchema: rawSchema)
@@ -166,16 +104,9 @@ final class PrimerStepOrchestrator: StepOrchestrating {
     }
 }
 
-private struct StepResponse {
-    let outcome: TerminalOutcome
-    let data: CodableValue?
-    let actionId: String
-}
-
 private enum PrimerStepOrchestratorError: LocalizedError {
     case startFailed(error: Error)
     case decodeResultFailed(error: Error)
-    case resolvingFailed(error: Error)
     case applyWorkflowStepResponseFailed(error: Error)
     case receivedUnexpectedTerminalOutcome(outcome: TerminalOutcome)
     case checkoutTerminalError
@@ -185,7 +116,6 @@ private enum PrimerStepOrchestratorError: LocalizedError {
         switch self {
         case let .startFailed(error): "Start failed: \(error.localizedDescription)"
         case let .decodeResultFailed(error): "Decode result failed: \(error.localizedDescription)"
-        case let .resolvingFailed(error): "Resolving failed: \(error.localizedDescription)"
         case let .applyWorkflowStepResponseFailed(error): "Apply workflow step response failed: \(error.localizedDescription)"
         case let .receivedUnexpectedTerminalOutcome(outcome): "Received unexpected terminal outcome: \(outcome)"
         case .checkoutTerminalError: "Checkout ended with an error outcome."

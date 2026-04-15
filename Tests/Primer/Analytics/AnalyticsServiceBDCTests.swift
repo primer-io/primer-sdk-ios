@@ -45,7 +45,7 @@ final class AnalyticsServiceBDCTests: XCTestCase {
     }
 
     func testRegistersAsPlatformLogResolver() async throws {
-        let resolver = try await PrimerStepResolverRegistry.shared.resolver(for: .platformLog)
-        XCTAssertTrue(resolver is Analytics.Service)
+        let result = try await PrimerStepResolverRegistry.shared.resolve("platform.log", params: .null)
+        XCTAssertEqual(result.outcome, .success)
     }
 }

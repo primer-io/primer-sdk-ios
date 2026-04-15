@@ -9,23 +9,26 @@ import PrimerFoundation
 import XCTest
 
 final class PrimerStepResolverRegistryTests: XCTestCase {
-    func testResolverCanBeRegisteredAndRetrieved() async throws {
+    func testRegisteredResolverIsCalled() async throws {
         let registry = PrimerStepResolverRegistry()
-        await registry.register(MockStepResolver(), forStepType: .httpRequest)
-        let resolved = try await registry.resolver(for: .httpRequest)
-        XCTAssertTrue(resolved is MockStepResolver)
+        let resolver = MockResolver()
+        await registry.register(resolver, for: StepDomain.httpRequest)
+
+        let result = try await registry.resolve(StepDomain.httpRequest, params: .null)
+        XCTAssertEqual(result.outcome, .success)
+        XCTAssertEqual(resolver.callCount, 1)
     }
 
-    func testResolverForUnregisteredTypeThrows() async {
-        do {
-            _ = try await PrimerStepResolverRegistry().resolver(for: .platformLog)
-            XCTFail("Expected error for unregistered step type")
-        } catch {
-            // correct
-        }
+    func testUnregisteredTypeReturnsUnsupported() async throws {
+        let result = try await PrimerStepResolverRegistry().resolve("unknown.type", params: .null)
+        XCTAssertEqual(result.outcome, .unsupported)
     }
 }
 
-private final class MockStepResolver: StepResolver {
-    func resolve(_ step: CodableValue) async throws -> CodableValue? { nil }
+private final class MockResolver: StepResolver {
+    var callCount = 0
+    func resolve(_ step: CodableValue) async throws -> StepResolutionResult {
+        callCount += 1
+        return StepResolutionResult(outcome: .success)
+    }
 }

@@ -8,17 +8,8 @@ import PrimerFoundation
 @testable import PrimerStepResolver
 import XCTest
 
-final class StepDomainTests: XCTestCase {
-    func testDecodeHttpRequest() throws { XCTAssertEqual(try decode("http.request"), .httpRequest) }
-    func testDecodeUrlOpen() throws { XCTAssertEqual(try decode("url.open"), .urlOpen) }
-    func testDecodePlatformLog() throws { XCTAssertEqual(try decode("platform.log"), .platformLog) }
-    func testDecodeUnknownValueThrows() { XCTAssertThrowsError(try decode("unknown.value")) }
-}
-
-private extension StepDomainTests {
-    func decode(_ value: String) throws -> StepDomain {
-        let json = Data(#""\#(value)""#.utf8)
-        let decoded = try JSONDecoder().decode(StepDomain.self, from: json)
-        return decoded
-    }
+final class StepDomainConstantsTests: XCTestCase {
+    func testHttpRequest() { XCTAssertEqual(StepDomain.httpRequest, "http.request") }
+    func testUrlOpen() { XCTAssertEqual(StepDomain.urlOpen, "url.open") }
+    func testPlatformLog() { XCTAssertEqual(StepDomain.platformLog, "platform.log") }
 }
