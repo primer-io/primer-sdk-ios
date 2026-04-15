@@ -8,32 +8,38 @@ import Foundation
 import PrimerFoundation
 
 public protocol StepResolver: Sendable {
-	func resolve(_ step: CodableValue) async throws -> CodableValue?
+    func resolve(_ step: CodableValue) async throws -> StepResolutionResult
 }
 
-public enum StepResolutionError: Error {
-    case noResolverFound
+public struct StepResolutionResult: Sendable {
+    public let outcome: TerminalOutcome
+    public let data: CodableValue?
+
+    public init(outcome: TerminalOutcome, data: CodableValue? = nil) {
+        self.outcome = outcome
+        self.data = data
+    }
 }
 
 public actor PrimerStepResolverRegistry {
-	public static let shared = PrimerStepResolverRegistry()
-	
-    private let logger = Logger()
-    private var resolvers: [StepDomain: StepResolver] = [:]
+    public static let shared = PrimerStepResolverRegistry()
 
-	public init() {}
-	
-    public func register<R: StepResolver>(_ resolver: R, forStepType type: StepDomain)  {
-        logger.info("Registering resolver for action: \(type.rawValue)")
+    private let logger = Logger()
+    private var resolvers: [String: StepResolver] = [:]
+
+    public init() {}
+
+    public func register(_ resolver: StepResolver, for type: String) {
+        logger.info("Registering resolver for step type: \(type)")
         resolvers[type] = resolver
     }
-    
-    public func resolver(for step: StepDomain) throws -> StepResolver {
-        logger.info("Finding resolver for action: \(step.rawValue)")
-        guard let resolver = resolvers[step] else {
-            logger.error("No resolver found for action: \(step.rawValue)")
-            throw StepResolutionError.noResolverFound
+
+    public func resolve(_ type: String, params: CodableValue) async throws -> StepResolutionResult {
+        logger.info("Resolving step type: \(type)")
+        guard let resolver = resolvers[type] else {
+            logger.info("No resolver for type '\(type)' — returning unsupported")
+            return StepResolutionResult(outcome: .unsupported)
         }
-        return resolver
+        return try await resolver.resolve(params)
     }
 }

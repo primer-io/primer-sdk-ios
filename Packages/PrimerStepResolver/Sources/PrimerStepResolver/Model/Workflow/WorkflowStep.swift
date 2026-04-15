@@ -8,25 +8,7 @@ import Foundation
 import PrimerFoundation
 
 public struct WorkflowStep: Decodable {
-    public let type: WorkflowType
     public let id: String
-    
-    private enum StepCodingKeys: String, CodingKey {
-        case params
-        case properties
-        case schema
-        case id
-        case type
-    }
-    
-    public init(from decoder: any Decoder) throws {
-        let container = try decoder.container(keyedBy: StepCodingKeys.self)
-        let params = try container.decode(CodableValue.self, forKey: .params)
-        id = try container.decode(String.self, forKey: .id)
-        switch try container.decode(StepDomain.self, forKey: .type) {
-        case .platformLog: type = .log(params: params)
-        case .httpRequest: type = .httpCall(params: params)
-        case .urlOpen: type = .urlOpen(params: params)
-        }
-    }
+    public let type: String
+    public let params: CodableValue
 }

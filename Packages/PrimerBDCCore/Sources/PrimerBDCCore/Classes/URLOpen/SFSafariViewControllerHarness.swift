@@ -8,39 +8,34 @@ import PrimerFoundation
 import PrimerStepResolver
 import SafariServices
 
-protocol SFSafariViewControllerHarnessDelegate: AnyObject {
-    func safariViewControllerHarnessDidCancel() async throws
-    func safariViewControllerHarnessDidComplete() async throws
-}
-    
 @MainActor
 final class SFSafariViewControllerHarness: NSObject, StepResolver {
-    
-    weak var delegate: SFSafariViewControllerHarnessDelegate?
-    
+
     private let logger = Logger()
     private var safariViewController: SFSafariViewController?
+    private var continuation: CheckedContinuation<StepResolutionResult, Never>?
     
     override init() {
         super.init()
         registerForNotifications()
     }
     
-    deinit {
-        NotificationCenter.default.removeObserver(self)
-    }
-    
-    func resolve(_ step: CodableValue) async throws -> CodableValue? {
+    func resolve(_ step: CodableValue) async throws -> StepResolutionResult {
         let browserStep = try step.casted(to: URLOpenParams.self)
- 
-        guard let url = URL(string: browserStep.url) else {
-            logger.error("Could not create URL from \(browserStep.url)")
-            return nil
+
+        guard let url = URL(string: browserStep.url), open(url) else {
+            logger.error("Could not present Safari for \(browserStep.url)")
+            return StepResolutionResult(outcome: .error)
         }
-        try open(url)
-        return nil
+        
+        return await withCheckedContinuation { continuation = $0 }
     }
-    
+
+    private func resume(with outcome: TerminalOutcome) {
+        continuation?.resume(returning: StepResolutionResult(outcome: outcome))
+        continuation = nil
+    }
+
     private func registerForNotifications() {
         NotificationCenter.default.addObserver(
             self,
@@ -55,38 +50,25 @@ final class SFSafariViewControllerHarness: NSObject, StepResolver {
             object: nil
         )
     }
-    
+
     @objc private func handleNotification(_ notification: Notification) {
         switch notification.name {
         case .receivedUrlSchemeCancellation:
-            handleCancel()
+            resume(with: .cancelled)
         case .receivedUrlSchemeRedirect:
             safariViewController?.dismiss(animated: true)
-            handleComplete()
+            resume(with: .success)
         default: break
         }
     }
-    
-    private func handleCancel() {
-        Task { [weak self] in
-            do { try await self?.delegate?.safariViewControllerHarnessDidCancel() }
-            catch { self?.logger.error("SafariVC failed to cancel: \(error)") }
-        }
-    }
-    
-    private func handleComplete() {
-        Task { [weak self] in
-            do { try await self?.delegate?.safariViewControllerHarnessDidComplete() }
-            catch { self?.logger.error("Safari VC Failed to complete: \(error)") }
-        }
-    }
-    
-    private func open(_ url: URL) throws {
+
+    @discardableResult
+    private func open(_ url: URL) -> Bool {
         guard let windowScene = UIApplication.shared.connectedScenes
             .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene,
             let window = windowScene.windows.first(where: \.isKeyWindow),
             let rootVC = window.rootViewController else {
-            throw Error.couldNotOpen
+            return false
         }
         var topVC = rootVC
         while let presented = topVC.presentedViewController {
@@ -97,18 +79,13 @@ final class SFSafariViewControllerHarness: NSObject, StepResolver {
         safariVC.modalPresentationStyle = .overFullScreen
         topVC.present(safariVC, animated: true)
         safariViewController = safariVC
+        return true
     }
 }
 
 extension SFSafariViewControllerHarness: @preconcurrency SFSafariViewControllerDelegate {
     func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
-        handleCancel()
-    }
-}
-
-private extension SFSafariViewControllerHarness {
-    enum Error: Swift.Error {
-        case couldNotOpen
+        resume(with: .cancelled)
     }
 }
 
