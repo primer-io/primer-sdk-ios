@@ -99,7 +99,10 @@ private extension PrimerBDCEngine {
         
         let onReady: JSVoidBlock = { [weak self] in
             guard let self else { return }
-            print("Time to load: \(Date().timeIntervalSince(date)) seconds - pending continuations: \(self.loadingContinuations.count)")
+            Logger.info(
+                "Engine ready in \(Date().timeIntervalSince(date))s — resuming \(self.loadingContinuations.count) pending continuation(s)",
+                category: "ENGINE_LIFECYCLE"
+            )
             isReady = true
             loadingContinuations.forEach { $0.resume() }
         }
@@ -178,6 +181,13 @@ private extension PrimerBDCEngine {
 
 private extension Encodable {
     func literal(_ encoder: JSONEncoder) throws -> String {
-        String(data: try encoder.encode(self), encoding: .utf8)!
+        guard let literal = String(data: try encoder.encode(self), encoding: .utf8) else {
+            throw EncodableError.literalEncodingFailed
+        }
+        return literal
     }
+}
+
+enum EncodableError: Error {
+    case literalEncodingFailed
 }
