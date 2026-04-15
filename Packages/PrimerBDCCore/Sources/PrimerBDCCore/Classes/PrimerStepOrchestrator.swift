@@ -54,19 +54,28 @@ final class PrimerStepOrchestrator: StepOrchestrating {
         do {
             let response = try JSONDecoder().decode(StateProcessorResponse.self, from: try result.data())
             state = response.newState
-            if let next = response.action {
+            if let error = response.error {
+                throw error
+            } else if let next = response.action {
                 try await resolveStepResponse(next) { [weak self] in
                     try await self?.applyResult($0, rawSchema: rawSchema)
                 }
             } else if let outcome = response.terminal?.outcome {
                 switch outcome {
                 case .cancelled: onCancelled?()
-                case .unsupported, .error: throw PrimerStepOrchestratorError.receivedUnexpectedTerminalOutcome(outcome: outcome)
+                case .error: throw PrimerStepOrchestratorError.checkoutTerminalError
+                case .unsupported: throw PrimerStepOrchestratorError.receivedUnexpectedTerminalOutcome(outcome: outcome)
                 case .success: break
                 }
+            } else {
+                throw PrimerStepOrchestratorError.missingActionAndOutcome
             }
         } catch {
-            throw PrimerStepOrchestratorError.decodeResultFailed(error: error)
+            if let error = error as? StateProcessorError {
+                throw error
+            } else {
+                throw PrimerStepOrchestratorError.decodeResultFailed(error: error)
+            }
         }
     }
     
@@ -169,4 +178,18 @@ private enum PrimerStepOrchestratorError: LocalizedError {
     case resolvingFailed(error: Error)
     case applyWorkflowStepResponseFailed(error: Error)
     case receivedUnexpectedTerminalOutcome(outcome: TerminalOutcome)
+    case checkoutTerminalError
+    case missingActionAndOutcome
+
+    var errorDescription: String? {
+        switch self {
+        case let .startFailed(error): "Start failed: \(error.localizedDescription)"
+        case let .decodeResultFailed(error): "Decode result failed: \(error.localizedDescription)"
+        case let .resolvingFailed(error): "Resolving failed: \(error.localizedDescription)"
+        case let .applyWorkflowStepResponseFailed(error): "Apply workflow step response failed: \(error.localizedDescription)"
+        case let .receivedUnexpectedTerminalOutcome(outcome): "Received unexpected terminal outcome: \(outcome)"
+        case .checkoutTerminalError: "Checkout ended with an error outcome."
+        case .missingActionAndOutcome: "Processing result has no action nor outcome."
+        }
+    }
 }
