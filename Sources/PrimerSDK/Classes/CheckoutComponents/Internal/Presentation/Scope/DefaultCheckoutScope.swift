@@ -131,9 +131,13 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
     BillingAddressRedirectPaymentMethod.register()
     QRCodePaymentMethod.registerAll([.xfersPayNow, .rapydPromptPay, .omisePromptPay])
 
+    // Payment methods with dedicated scopes that override the generic WebRedirect registration.
+    let dedicatedScopeTypes: Set<String> = [
+      PrimerPaymentMethodType.adyenAffirm.rawValue
+    ]
     let webRedirectTypes = PrimerAPIConfigurationModule.apiConfiguration?
       .paymentMethods?
-      .filter { $0.implementationType == .webRedirect }
+      .filter { $0.implementationType == .webRedirect && !dedicatedScopeTypes.contains($0.type) }
       .map(\.type) ?? []
     WebRedirectPaymentMethod.register(types: webRedirectTypes)
   }
