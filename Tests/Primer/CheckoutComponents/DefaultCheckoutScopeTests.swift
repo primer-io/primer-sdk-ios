@@ -745,6 +745,47 @@ final class DefaultCheckoutScopeBehaviorTests: XCTestCase {
         XCTAssertEqual(sut.presentationContext, .fromPaymentSelection)
     }
 
+    func test_validated_singlePaymentMethod_returnsDirectContext() throws {
+        // Given
+        sut = makeSut()
+        sut.availablePaymentMethods = [
+            InternalPaymentMethod(id: "pm_1", type: TestData.PaymentMethodTypes.card, name: TestData.PaymentMethodNames.cardName)
+        ]
+
+        // When
+        let (_, context) = try DefaultCheckoutScope.validated(from: sut)
+
+        // Then
+        XCTAssertEqual(context, .direct)
+    }
+
+    func test_validated_multiplePaymentMethods_returnsFromPaymentSelectionContext() throws {
+        // Given
+        sut = makeSut()
+        sut.availablePaymentMethods = [
+            InternalPaymentMethod(id: "pm_1", type: TestData.PaymentMethodTypes.card, name: TestData.PaymentMethodNames.cardName),
+            InternalPaymentMethod(id: "pm_2", type: TestData.PaymentMethodTypes.paypal, name: TestData.PaymentMethodNames.paypalName)
+        ]
+
+        // When
+        let (_, context) = try DefaultCheckoutScope.validated(from: sut)
+
+        // Then
+        XCTAssertEqual(context, .fromPaymentSelection)
+    }
+
+    func test_validated_noPaymentMethods_returnsDirectContext() throws {
+        // Given
+        sut = makeSut()
+        sut.availablePaymentMethods = []
+
+        // When
+        let (_, context) = try DefaultCheckoutScope.validated(from: sut)
+
+        // Then
+        XCTAssertEqual(context, .direct)
+    }
+
     func test_currentState_reflectsInternalState() {
         // Given
         sut = makeSut()
