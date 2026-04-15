@@ -28,17 +28,17 @@ final class BackendDrivenCheckoutOrchestratorTests: XCTestCase {
         )
     }
 
-    func testDetermineFromPaymentStatusSuccess() async throws {
-        try await assertRun(
+    func testDetermineFromPaymentStatusSuccessIsUnexpectedOutcome() async throws {
+        await assertRunThrows(
             [.end(outcome: .determineFromPaymentStatus, payment: payment)],
-            returns: .success(payment: payment)
+            mock: MockStepOrchestrator()
         )
     }
 
-    func testDetermineFromPaymentStatusFailed() async throws {
-        try await assertRun(
+    func testDetermineFromPaymentStatusFailedIsUnexpectedOutcome() async throws {
+        try await assertRunThrows(
             [.end(outcome: .determineFromPaymentStatus, payment: failedPayment)],
-            returns: .failure(payment: failedPayment)
+            mock: MockStepOrchestrator()
         )
     }
 
