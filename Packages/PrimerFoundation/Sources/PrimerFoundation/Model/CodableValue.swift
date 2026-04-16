@@ -16,13 +16,13 @@ public enum CodableValue: Codable, Equatable, Hashable, Sendable, CustomStringCo
     case object([String: CodableValue])
     case null
 	
-	public var string: String? {
-		switch self {
-		case let .string(string): string
-		case let .int(int): String(int)
-		default: nil
-		}
-	}
+    public var string: String? {
+        switch self {
+        case let .string(string): string
+        case let .int(int): String(int)
+        default: nil
+        }
+    }
     
     public var description: String {
         do {

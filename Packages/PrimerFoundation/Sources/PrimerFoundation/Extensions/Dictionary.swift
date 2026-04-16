@@ -8,8 +8,8 @@ import Foundation
 
 public extension Dictionary {
     func data(options: JSONSerialization.WritingOptions = []) throws -> Data {
-		try JSONSerialization.data(withJSONObject: self, options: options)
-	}
+        try JSONSerialization.data(withJSONObject: self, options: options)
+    }
     
     func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
         String(data: try data(), encoding: encoding)

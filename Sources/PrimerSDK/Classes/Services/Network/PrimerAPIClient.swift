@@ -345,11 +345,11 @@ final class PrimerAPIClient: PrimerAPIClientProtocol {
             PrimerAPI.poll(clientToken: clientToken, url: url),
             retryConfig: retryConfig
         ) { (result: Result<PollingResponse, Error>, _) in
-                switch result {
-                case let .success(response): completion(.success(response))
-                case let .failure(error): completion(.failure(handled(error: error)))
-                }
+            switch result {
+            case let .success(response): completion(.success(response))
+            case let .failure(error): completion(.failure(handled(error: error)))
             }
+        }
     }
 
     func poll(

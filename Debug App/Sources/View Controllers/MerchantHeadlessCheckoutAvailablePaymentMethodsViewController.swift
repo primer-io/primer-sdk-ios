@@ -140,24 +140,24 @@ extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController: UITable
             self.navigationController?.pushViewController(vc, animated: true)
         case "NOL_PAY":
             #if canImport(PrimerNolPaySDK)
-            let vc = MerchantHeadlessCheckoutNolPayViewController()
-            self.navigationController?.pushViewController(vc, animated: true)
+                let vc = MerchantHeadlessCheckoutNolPayViewController()
+                self.navigationController?.pushViewController(vc, animated: true)
             #else
-            break
+                break
             #endif
         case "KLARNA":
             #if canImport(PrimerKlarnaSDK)
-            let vc = MerchantHeadlessCheckoutKlarnaViewController(sessionIntent: sessionIntent)
-            self.navigationController?.pushViewController(vc, animated: true)
+                let vc = MerchantHeadlessCheckoutKlarnaViewController(sessionIntent: sessionIntent)
+                self.navigationController?.pushViewController(vc, animated: true)
             #else
-            break
+                break
             #endif
         case "STRIPE_ACH":
             #if canImport(PrimerStripeSDK)
-            let vc = MerchantHeadlessCheckoutStripeAchViewController()
-            self.navigationController?.pushViewController(vc, animated: true)
+                let vc = MerchantHeadlessCheckoutStripeAchViewController()
+                self.navigationController?.pushViewController(vc, animated: true)
             #else
-            break
+                break
             #endif
         default:
             do {

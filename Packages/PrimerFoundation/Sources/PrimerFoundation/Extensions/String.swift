@@ -7,7 +7,7 @@
 import Foundation
 
 public extension String {
-	func jsonObject<T>() throws -> T {
+    func jsonObject<T>() throws -> T {
         do {
             let object = try JSONSerialization.jsonObject(with: Data(utf8), options: [])
             if let typedObject = object as? T {
@@ -16,7 +16,7 @@ public extension String {
                 throw CastError.typeMismatch(value: object, type: T.self)
             }
         }
-	}
+    }
     
     func unsafeData() -> Data { data(using: .utf8)! }
 }
