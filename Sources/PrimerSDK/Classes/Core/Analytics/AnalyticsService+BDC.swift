@@ -8,8 +8,8 @@ import PrimerFoundation
 import PrimerStepResolver
 
 extension Analytics.Service: StepResolver {
-    func resolve(_ step: CodableValue) async throws -> CodableValue? {
+    func resolve(_ step: CodableValue) async throws -> StepResolutionResult {
         fire(event: RawAnalyticsEvent(payload: step))
-        return nil
+        return StepResolutionResult(outcome: .success)
     }
 }

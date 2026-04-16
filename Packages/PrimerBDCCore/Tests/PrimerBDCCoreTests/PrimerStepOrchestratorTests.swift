@@ -35,27 +35,32 @@ final class PrimerStepOrchestratorTests: XCTestCase {
     }
 
     func testLogActionDispatches() async throws {
-        try await assertActionDispatches(
-            type: .platformLog,
-            actionType: "platform.log"
-        )
+        try await assertActionDispatches(actionType: "platform.log")
     }
 
     func testHttpActionDispatches() async throws {
-        try await assertActionDispatches(
-            type: .httpRequest,
-            actionType: "http.request"
-        )
+        try await assertActionDispatches(actionType: "http.request")
     }
 
     func testNoResolverSendsUnsupported() async throws {
         let engine = MockBDCEngine()
         engine.startResult = action(type: "http.request")
         engine.applyResultResult = terminal("success")
-        
+
         let sut = PrimerStepOrchestrator(engine: engine, context: stubContext, registry: PrimerStepResolverRegistry())
         try await sut.start(rawSchema: "{}", initialState: .object([:]))
-        
+
+        XCTAssertEqual(engine.lastApplyOutcome, "unsupported")
+    }
+
+    func testUnknownStepTypeSendsUnsupported() async throws {
+        let engine = MockBDCEngine()
+        engine.startResult = action(type: "future.new.step")
+        engine.applyResultResult = terminal("success")
+
+        let sut = PrimerStepOrchestrator(engine: engine, context: stubContext, registry: PrimerStepResolverRegistry())
+        try await sut.start(rawSchema: "{}", initialState: .object([:]))
+
         XCTAssertEqual(engine.lastApplyOutcome, "unsupported")
     }
 
@@ -122,23 +127,22 @@ private extension PrimerStepOrchestratorTests {
     }
 
     func assertActionDispatches(
-        type: StepDomain,
         actionType: String,
         file: StaticString = #file,
         line: UInt = #line
     ) async throws {
         let engine = MockBDCEngine()
         let resolver = MockStepResolver()
-        
+
         let registry = PrimerStepResolverRegistry()
-        await registry.register(resolver, forStepType: type)
-        
+        await registry.register(resolver, for: actionType)
+
         engine.startResult = action(type: actionType)
         engine.applyResultResult = terminal("success")
-        
+
         let sut = PrimerStepOrchestrator(engine: engine, context: stubContext, registry: registry)
         try await sut.start(rawSchema: "{}", initialState: .object([:]))
-        
+
         XCTAssertEqual(resolver.resolveCallCount, 1, file: file, line: line)
         XCTAssertEqual(engine.applyResultCallCount, 1, file: file, line: line)
     }
