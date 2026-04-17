@@ -131,10 +131,10 @@ final class WebRedirectPaymentMethodTests: XCTestCase {
     // MARK: - createScope via Registry with Missing Dependencies
 
     func test_registeredScope_withMissingDependency_throws() async throws {
-        // Given
-        WebRedirectPaymentMethod.register(types: ["TWINT"])
+        // Given — register after scope creation since init calls reset()
         let emptyContainer = Container()
         let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+        WebRedirectPaymentMethod.register(types: ["TWINT"])
 
         // When/Then
         do {
@@ -153,10 +153,10 @@ final class WebRedirectPaymentMethodTests: XCTestCase {
     // MARK: - Presentation Context
 
     func test_registeredScope_withSinglePaymentMethod_usesDirectContext() async throws {
-        // Given
+        // Given — register after scope creation since init calls reset()
         await registerWebRedirectDependencies()
-        WebRedirectPaymentMethod.register(types: ["TWINT"])
         let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+        WebRedirectPaymentMethod.register(types: ["TWINT"])
 
         // When
         let scope: (any PrimerPaymentMethodScope)? = try await PaymentMethodRegistry.shared.createScope(
@@ -173,10 +173,10 @@ final class WebRedirectPaymentMethodTests: XCTestCase {
     }
 
     func test_registeredScope_withMultiplePaymentMethods_usesPaymentSelectionContext() async throws {
-        // Given
+        // Given — register after scope creation since init calls reset()
         await registerWebRedirectDependencies()
-        WebRedirectPaymentMethod.register(types: ["TWINT"])
         let checkoutScope = createCheckoutScopeWithMultiplePaymentMethods()
+        WebRedirectPaymentMethod.register(types: ["TWINT"])
 
         // When
         let scope: (any PrimerPaymentMethodScope)? = try await PaymentMethodRegistry.shared.createScope(

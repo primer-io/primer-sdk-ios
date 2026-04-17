@@ -180,13 +180,12 @@ final class CardPaymentMethodTests: XCTestCase {
     // MARK: - Register Tests
 
     func test_register_addsToPaymentMethodRegistry() async throws {
-        // When
-        CardPaymentMethod.register()
-
-        // Then
+        // Given — register after scope creation since init calls reset()
         await registerCardPaymentDependencies()
         let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+        CardPaymentMethod.register()
 
+        // When/Then
         do {
             let scope = try await PaymentMethodRegistry.shared.createScope(
                 for: PrimerPaymentMethodType.paymentCard.rawValue,
@@ -200,16 +199,13 @@ final class CardPaymentMethodTests: XCTestCase {
     }
 
     func test_register_canBeCalledMultipleTimes() async throws {
-        // Given
-        CardPaymentMethod.register()
-
-        // When
-        CardPaymentMethod.register()
-
-        // Then
+        // Given — register after scope creation since init calls reset()
         await registerCardPaymentDependencies()
         let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+        CardPaymentMethod.register()
+        CardPaymentMethod.register()
 
+        // When/Then
         do {
             let scope = try await PaymentMethodRegistry.shared.createScope(
                 for: PrimerPaymentMethodType.paymentCard.rawValue,

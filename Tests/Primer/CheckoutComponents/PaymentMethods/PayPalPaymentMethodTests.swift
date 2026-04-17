@@ -147,13 +147,12 @@ final class PayPalPaymentMethodTests: XCTestCase {
     // MARK: - Register Tests
 
     func test_register_addsToPaymentMethodRegistry() async throws {
-        // When
-        PayPalPaymentMethod.register()
-
-        // Then
+        // Given — register after scope creation since init calls reset()
         await registerPayPalDependencies()
         let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+        PayPalPaymentMethod.register()
 
+        // When/Then
         do {
             let scope = try await PaymentMethodRegistry.shared.createScope(
                 for: PrimerPaymentMethodType.payPal.rawValue,

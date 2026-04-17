@@ -85,10 +85,10 @@ final class QRCodePaymentMethodTests: XCTestCase {
     // MARK: - createScope via Registry with Missing Dependencies
 
     func test_createScope_withMissingDependency_throws() async throws {
-        // Given
-        QRCodePaymentMethod.registerAll([.xfersPayNow])
+        // Given — register after scope creation since init calls reset()
         let emptyContainer = Container()
         let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+        QRCodePaymentMethod.registerAll([.xfersPayNow])
 
         // When/Then
         do {
@@ -110,10 +110,10 @@ final class QRCodePaymentMethodTests: XCTestCase {
     // MARK: - createScope Success with Presentation Context
 
     func test_createScope_withSinglePaymentMethod_usesDirectContext() async throws {
-        // Given
+        // Given — register after scope creation since init calls reset()
         await registerQRCodeDependencies()
-        QRCodePaymentMethod.registerAll([.xfersPayNow])
         let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+        QRCodePaymentMethod.registerAll([.xfersPayNow])
 
         // When
         let scope: (any PrimerPaymentMethodScope)? = try await PaymentMethodRegistry.shared.createScope(
@@ -130,10 +130,10 @@ final class QRCodePaymentMethodTests: XCTestCase {
     }
 
     func test_createScope_withMultiplePaymentMethods_usesPaymentSelectionContext() async throws {
-        // Given
+        // Given — register after scope creation since init calls reset()
         await registerQRCodeDependencies()
-        QRCodePaymentMethod.registerAll([.xfersPayNow])
         let checkoutScope = createCheckoutScopeWithMultiplePaymentMethods()
+        QRCodePaymentMethod.registerAll([.xfersPayNow])
 
         // When
         let scope: (any PrimerPaymentMethodScope)? = try await PaymentMethodRegistry.shared.createScope(
@@ -165,11 +165,11 @@ final class QRCodePaymentMethodTests: XCTestCase {
     // MARK: - Multiple Types Registration
 
     func test_registerAll_eachTypeCreatesIndependentScope() async throws {
-        // Given
+        // Given — register after scope creation since init calls reset()
         await registerQRCodeDependencies()
         let types: [PrimerPaymentMethodType] = [.xfersPayNow, .rapydPromptPay]
-        QRCodePaymentMethod.registerAll(types)
         let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+        QRCodePaymentMethod.registerAll(types)
 
         // When/Then — both should resolve independently
         for type in types {

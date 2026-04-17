@@ -372,10 +372,10 @@ final class FormRedirectPaymentMethodTests: XCTestCase {
     // MARK: - Registry Integration Tests
 
     func test_blik_register_createsScope_viaRegistry() async throws {
-        // Given
-        FormRedirectPaymentMethod.register()
+        // Given — register after scope creation since init calls reset()
         await registerFormRedirectDependencies()
         let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+        FormRedirectPaymentMethod.register()
 
         // When
         let scope = try await PaymentMethodRegistry.shared.createScope(
@@ -389,10 +389,10 @@ final class FormRedirectPaymentMethodTests: XCTestCase {
     }
 
     func test_mbWay_register_createsScope_viaRegistry() async throws {
-        // Given
-        FormRedirectPaymentMethod.register()
+        // Given — register after scope creation since init calls reset()
         await registerFormRedirectDependencies()
         let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+        FormRedirectPaymentMethod.register()
 
         // When
         let scope = try await PaymentMethodRegistry.shared.createScope(
