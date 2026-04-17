@@ -17,11 +17,25 @@ cocoapods-session-keepalive:
 build-and-release:
   stage: build
   image:  ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/ruby:$RUBY_VERSION
+  rules:
+    - if: $CI_COMMIT_TAG =~ /^\d+\.\d+\.\d+/
   before_script:
     - apt-get update -y
     - apt-get install -y rsync
   script:
     - bundle install
+    - |
+      for POD in PrimerFoundation PrimerStepResolver PrimerBDCEngine PrimerBDCCore; do
+        VERSION=$(grep 's.version' "${POD}.podspec" | head -1 | sed "s/.*['\"]\(.*\)['\"].*/\1/")
+        TAG="${POD}-${VERSION}"
+        TAG_COMMIT=$(git rev-list -n 1 "$TAG" 2>/dev/null || echo "")
+        if [ "$TAG_COMMIT" = "$(git rev-parse HEAD)" ]; then
+          echo "Pushing ${POD} ${VERSION}"
+          pod trunk push "${POD}.podspec" --allow-root --allow-warnings --synchronous
+        else
+          echo "Skipping ${POD} (${TAG} not on this commit)"
+        fi
+      done
     - pod trunk push --allow-root
   when: manual
   environment: production

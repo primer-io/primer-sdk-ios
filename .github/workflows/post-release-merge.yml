@@ -20,6 +20,20 @@ jobs:
       - name: Record release version
         run: |
           echo "RELEASE_VERSION=$(cz version --project)" >> $GITHUB_ENV
+      - name: Tag BDC packages
+        run: |
+          PODS=("PrimerFoundation" "PrimerStepResolver" "PrimerBDCEngine" "PrimerBDCCore")
+          for POD in "${PODS[@]}"; do
+            VERSION=$(grep 's.version' "${POD}.podspec" | head -1 | sed "s/.*['\"]\(.*\)['\"].*/\1/")
+            TAG="${POD}-${VERSION}"
+            if git rev-parse "$TAG" >/dev/null 2>&1; then
+              echo "Tag $TAG already exists, skipping"
+            else
+              echo "Creating tag $TAG"
+              git tag "$TAG"
+              git push origin "$TAG"
+            fi
+          done
       - name: Tag release
         run: |
           git tag $RELEASE_VERSION
