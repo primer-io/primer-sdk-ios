@@ -390,15 +390,7 @@ final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, LogRepo
     checkoutScope?.onDismiss()
   }
 
-  private var _selectCountry: DefaultSelectCountryScope?
-  var selectCountry: PrimerSelectCountryScope {
-    if let existing = _selectCountry {
-      return existing
-    }
-    let scope = DefaultSelectCountryScope(cardFormScope: self)
-    _selectCountry = scope
-    return scope
-  }
+  lazy var selectCountry: PrimerSelectCountryScope = DefaultSelectCountryScope(cardFormScope: self)
 
   private func updateCardData() {
     let cardData = PrimerCardData(
