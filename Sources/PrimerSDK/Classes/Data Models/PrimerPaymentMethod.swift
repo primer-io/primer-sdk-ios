@@ -1,7 +1,7 @@
 //
 //  PrimerPaymentMethod.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
@@ -17,7 +17,7 @@ extension PrimerTheme {
 final class PrimerPaymentMethod: Codable, LogReporter {
 
     static func getPaymentMethod(withType type: String) -> PrimerPaymentMethod? {
-        return PrimerAPIConfigurationModule.apiConfiguration?.paymentMethods?.filter({ $0.type == type }).first
+        PrimerAPIConfigurationModule.apiConfiguration?.paymentMethods?.filter({ $0.type == type }).first
     }
 
     let id: String? // Will be nil for cards
@@ -29,9 +29,11 @@ final class PrimerPaymentMethod: Codable, LogReporter {
     let options: PaymentMethodOptions?
     var displayMetadata: PrimerPaymentMethod.DisplayMetadata?
     var baseLogoImage: PrimerTheme.BaseImage?
+    
+    private let capabilities: [Capability]?
 
     lazy var internalPaymentMethodType: PrimerPaymentMethodType? = {
-        return PrimerPaymentMethodType(rawValue: self.type)
+        PrimerPaymentMethodType(rawValue: self.type)
     }()
 
     var logo: UIImage? {
@@ -69,9 +71,13 @@ final class PrimerPaymentMethod: Codable, LogReporter {
     var hasUnknownSurcharge: Bool = false
     lazy var tokenizationViewModel: PaymentMethodTokenizationViewModelProtocol? = {
         let apiClient = PrimerAPIConfigurationModule.apiClient ?? PrimerAPIClient()
-
+        let isBackendDriven = capabilities?.contains(.backendDriven)
         if implementationType == .webRedirect {
-            return WebRedirectPaymentMethodTokenizationViewModel(config: self, apiClient: apiClient)
+            if isBackendDriven == true {
+                return BackendDrivenCheckoutViewModel(config: self, apiClient: apiClient)
+            } else {
+                return WebRedirectPaymentMethodTokenizationViewModel(config: self, apiClient: apiClient)
+            }
 
         } else if implementationType == .iPay88Sdk {
             return IPay88TokenizationViewModel(config: self, apiClient: apiClient)
@@ -129,11 +135,13 @@ final class PrimerPaymentMethod: Codable, LogReporter {
     lazy var tokenizationModel: PaymentMethodTokenizationModelProtocol? = {
         switch internalPaymentMethodType {
         case .adyenIDeal:
-            return BanksTokenizationComponent(config: self,
-                                              uiManager: PrimerUIManager.shared,
-                                              tokenizationService: TokenizationService(),
-                                              createResumePaymentService: CreateResumePaymentService(paymentMethodType: self.type),
-                                              apiClient: PrimerAPIClient())
+            return BanksTokenizationComponent(
+                config: self,
+                uiManager: PrimerUIManager.shared,
+                tokenizationService: TokenizationService(),
+                createResumePaymentService: CreateResumePaymentService(paymentMethodType: self.type),
+                apiClient: PrimerAPIClient()
+            )
         default: return nil
         }
     }()
@@ -251,6 +259,7 @@ final class PrimerPaymentMethod: Codable, LogReporter {
              implementationType,
              type,
              name,
+             capabilities,
              processorConfigId,
              surcharge,
              options,
@@ -271,6 +280,7 @@ final class PrimerPaymentMethod: Codable, LogReporter {
         self.implementationType = implementationType
         self.type = type
         self.name = name
+        self.capabilities = []
         self.processorConfigId = processorConfigId
         self.surcharge = surcharge
         self.options = options
@@ -281,14 +291,19 @@ final class PrimerPaymentMethod: Codable, LogReporter {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
         id = (try? container.decode(String?.self, forKey: .id)) ?? nil
-        implementationType = try container.decode(PrimerPaymentMethod.ImplementationType.self,
-                                                  forKey: .implementationType)
+        implementationType = try container.decode(
+            PrimerPaymentMethod.ImplementationType.self,
+            forKey: .implementationType
+        )
         type = try container.decode(String.self, forKey: .type)
         name = try container.decode(String.self, forKey: .name)
         processorConfigId = (try? container.decode(String?.self, forKey: .processorConfigId)) ?? nil
         surcharge = (try? container.decode(Int?.self, forKey: .surcharge)) ?? nil
-        displayMetadata = (try? container.decode(PrimerPaymentMethod.DisplayMetadata?.self,
-                                                 forKey: .displayMetadata)) ?? nil
+        displayMetadata = (try? container.decode(
+            PrimerPaymentMethod.DisplayMetadata?.self,
+            forKey: .displayMetadata
+        )) ?? nil
+        capabilities = (try? container.decode([Capability].self, forKey: .capabilities))
 
         switch type {
         case "PAYMENT_CARD":
@@ -329,8 +344,12 @@ extension PrimerPaymentMethod {
         case formWithRedirect = "FORM_WITH_REDIRECT"
 
         var isEnabled: Bool {
-            return true
+            true
         }
     }
+}
+
+private enum Capability: String, Decodable {
+    case backendDriven = "BACKEND_DRIVEN"
 }
 // swiftlint:enable type_body_length

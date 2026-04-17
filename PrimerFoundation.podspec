@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
     s.name         = "PrimerFoundation"
-    s.version      = "1.1.0"
+    s.version      = "1.1.1"
     s.summary      = "Foundation utilities for Primer iOS SDK"
     s.description  = "Foundation utilities, models, and extensions for the Primer iOS SDK."
     s.homepage     = "https://www.primer.io"

@@ -17,6 +17,5 @@ public extension String {
             }
         }
     }
-    
-    func unsafeData() -> Data { data(using: .utf8)! }
+
 }
