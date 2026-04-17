@@ -18,10 +18,10 @@ Pod::Spec.new do |s|
 
     s.subspec "Core" do |ss|
         ss.ios.source_files = "Sources/PrimerSDK/Classes/**/*.{h,m,swift}"
-        ss.dependency "PrimerBDCEngine", "~> 1.0"
-        ss.dependency "PrimerBDCCore", "~> 1.0"
-        ss.dependency "PrimerFoundation", "~> 1.0"
-        ss.dependency "PrimerStepResolver", "~> 1.0"
+        ss.dependency "PrimerBDCEngine", "= #{s.version}"
+        ss.dependency "PrimerBDCCore", "= #{s.version}"
+        ss.dependency "PrimerFoundation", "= #{s.version}"
+        ss.dependency "PrimerStepResolver", "= #{s.version}"
         ss.ios.resource_bundles = {
             "PrimerResources" => [
                 "Sources/PrimerSDK/Resources/*.xcassets",
