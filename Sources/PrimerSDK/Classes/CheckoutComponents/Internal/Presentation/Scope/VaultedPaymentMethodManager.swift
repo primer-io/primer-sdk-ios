@@ -10,10 +10,10 @@ import Combine
 @MainActor
 final class VaultedPaymentMethodManager: ObservableObject {
 
+  var onSelectionChanged: ((PrimerHeadlessUniversalCheckout.VaultedPaymentMethod?) -> Void)?
+
   @Published private(set) var methods: [PrimerHeadlessUniversalCheckout.VaultedPaymentMethod] = []
   @Published private(set) var selectedMethod: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod?
-
-  var onSelectionChanged: ((PrimerHeadlessUniversalCheckout.VaultedPaymentMethod?) -> Void)?
 
   func setMethods(_ newMethods: [PrimerHeadlessUniversalCheckout.VaultedPaymentMethod]) {
     methods = newMethods
