@@ -233,6 +233,11 @@ final class PrimerPaymentMethodTypeIconTests: XCTestCase {
         XCTAssertNotNil(PrimerPaymentMethodType.mollieIdeal.icon)
     }
 
+    func test_icon_nets_returnsGenericCardImage() {
+        XCTAssertNotNil(PrimerPaymentMethodType.nets.icon)
+        XCTAssertEqual(PrimerPaymentMethodType.nets.icon, ImageName.genericCard.image)
+    }
+
     // MARK: - Pay.nl Payment Methods
 
     func test_icon_payNLBancontact_returnsNonNilImage() {

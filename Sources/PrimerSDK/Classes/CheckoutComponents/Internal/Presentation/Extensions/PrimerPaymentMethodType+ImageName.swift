@@ -103,6 +103,8 @@ extension PrimerPaymentMethodType {
       ImageName.genericCard.image
     case .mollieIdeal:
       UIImage(primerResource: "ideal-icon-colored")
+    case .nets:
+      ImageName.genericCard.image
 
     // Pay.nl payment methods
     case .payNLBancontact:

@@ -69,6 +69,7 @@ public enum PrimerPaymentMethodType: String, Codable, CaseIterable, Equatable, H
     case mollieBankcontact              = "MOLLIE_BANCONTACT"
     case mollieGiftcard                 = "MOLLIE_GIFTCARD"
     case mollieIdeal                    = "MOLLIE_IDEAL"
+    case nets                           = "NETS"
     case opennode                       = "OPENNODE"
     case payNLBancontact                = "PAY_NL_BANCONTACT"
     case payNLGiropay                   = "PAY_NL_GIROPAY"
@@ -123,6 +124,7 @@ public enum PrimerPaymentMethodType: String, Codable, CaseIterable, Equatable, H
              .googlePay,
              .hoolah,
              .klarna,
+             .nets,
              .opennode,
              .paymentCard,
              .payPal,
