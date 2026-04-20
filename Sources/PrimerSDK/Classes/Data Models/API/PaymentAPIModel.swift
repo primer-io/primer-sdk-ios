@@ -1,7 +1,7 @@
 //
 //  PaymentAPIModel.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable file_length
@@ -65,8 +65,10 @@ extension Request.Body.Payment {
         let mandateSignatureTimestamp: String
         let paymentMethodId: String?
 
-        public init(mandateSignatureTimestamp: String,
-                    paymentMethodId: String? = nil) {
+        public init(
+            mandateSignatureTimestamp: String,
+            paymentMethodId: String? = nil
+        ) {
             self.mandateSignatureTimestamp = mandateSignatureTimestamp
             self.paymentMethodId = paymentMethodId
         }
@@ -84,7 +86,7 @@ extension Response.Body {
         public var customerId: String?
         public var dateStr: String?
         public var date: Date? {
-            return dateStr?.toDate()
+            dateStr?.toDate()
         }
         public var order: Request.Body.ClientSession.Order?
         public var orderId: String?
@@ -141,7 +143,7 @@ public struct Payment {
 
 }
 
-internal struct PrimerPaymentMethodData {
+struct PrimerPaymentMethodData {
     let type: String
 }
 
@@ -150,13 +152,18 @@ internal struct PrimerPaymentMethodData {
 // MARK: Checkout Data
 
 @objc public final class PrimerCheckoutData: NSObject, Codable {
-
     public let payment: PrimerCheckoutDataPayment?
     public var additionalInfo: PrimerCheckoutAdditionalInfo?
+    public let checkoutOutcome: Response.Body.Payment.CheckoutOutcome?
 
-    public init(payment: PrimerCheckoutDataPayment?, additionalInfo: PrimerCheckoutAdditionalInfo? = nil) {
+    public init(
+        payment: PrimerCheckoutDataPayment?,
+        additionalInfo: PrimerCheckoutAdditionalInfo? = nil,
+        checkoutOutcome: Response.Body.Payment.CheckoutOutcome? = nil
+    ) {
         self.payment = payment
         self.additionalInfo = additionalInfo
+        self.checkoutOutcome = checkoutOutcome
     }
 }
 
@@ -164,11 +171,13 @@ internal struct PrimerPaymentMethodData {
     public let id: String?
     public let orderId: String?
     public let paymentFailureReason: PrimerPaymentErrorCode?
+    public let status: String
 
-    public init(id: String?, orderId: String?, paymentFailureReason: PrimerPaymentErrorCode?) {
+    public init(id: String?, orderId: String?, paymentFailureReason: PrimerPaymentErrorCode?, status: String) {
         self.id = id
         self.orderId = orderId
         self.paymentFailureReason = paymentFailureReason
+        self.status = status
     }
 }
 
@@ -177,7 +186,12 @@ internal struct PrimerPaymentMethodData {
 extension PrimerCheckoutDataPayment {
 
     convenience init(from paymentReponse: Response.Body.Payment) {
-        self.init(id: paymentReponse.id, orderId: paymentReponse.orderId, paymentFailureReason: nil)
+        self.init(
+            id: paymentReponse.id,
+            orderId: paymentReponse.orderId,
+            paymentFailureReason: nil,
+            status: paymentReponse.status.rawValue
+        )
     }
 }
 
@@ -243,10 +257,12 @@ extension PrimerCheckoutDataPayment {
 
     convenience init(clientSessionOrder: ClientSession.Order?) {
         if let shippingMethod = clientSessionOrder?.shippingMethod {
-            let shippingMethod = PrimerShipping(amount: shippingMethod.amount,
-                                                methodId: shippingMethod.methodId,
-                                                methodName: shippingMethod.methodName,
-                                                methodDescription: shippingMethod.methodDescription)
+            let shippingMethod = PrimerShipping(
+                amount: shippingMethod.amount,
+                methodId: shippingMethod.methodId,
+                methodName: shippingMethod.methodName,
+                methodDescription: shippingMethod.methodDescription
+            )
             self.init(countryCode: clientSessionOrder?.countryCode?.rawValue, shipping: shippingMethod)
             return
         }
@@ -262,10 +278,12 @@ extension PrimerCheckoutDataPayment {
     public let methodName: String?
     public let methodDescription: String?
 
-    public init(amount: Int?,
-                methodId: String?,
-                methodName: String?,
-                methodDescription: String?) {
+    public init(
+        amount: Int?,
+        methodId: String?,
+        methodName: String?,
+        methodDescription: String?
+    ) {
         self.amount = amount
         self.methodId = methodId
         self.methodName = methodName
@@ -290,7 +308,8 @@ extension PrimerCheckoutDataPayment {
         firstName: String?,
         lastName: String?,
         billingAddress: PrimerAddress?,
-        shippingAddress: PrimerAddress?) {
+        shippingAddress: PrimerAddress?
+    ) {
         self.emailAddress = emailAddress
         self.mobileNumber = mobileNumber
         self.firstName = firstName

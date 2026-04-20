@@ -1,17 +1,18 @@
 //
 //  MockPrimerAPIAnalyticsClient.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import XCTest
 @testable import PrimerSDK
+import XCTest
 
 class MockPrimerAPIAnalyticsClient: PrimerAPIClientAnalyticsProtocol {
 
     var shouldSucceed: Bool = true
 
     var onSendAnalyticsEvent: (([PrimerSDK.Analytics.Event]?) -> Void)?
+    var onSendRawAnalyticsEvent: ((Data) -> Void)?
 
     var batches: [[Analytics.Event]] = []
 
@@ -37,6 +38,15 @@ class MockPrimerAPIAnalyticsClient: PrimerAPIClientAnalyticsProtocol {
         self.onSendAnalyticsEvent?(body)
         if shouldSucceed {
             return .init(id: nil, result: nil)
+        } else {
+            throw PrimerError.unknown()
+        }
+    }
+
+    func sendRawAnalyticsEvents(url: URL, body: Data) async throws -> Analytics.Service.Response {
+        if shouldSucceed {
+            onSendRawAnalyticsEvent?(body)
+            return Analytics.Service.Response(id: nil, result: nil)
         } else {
             throw PrimerError.unknown()
         }
