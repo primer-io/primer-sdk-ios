@@ -27,6 +27,7 @@ let package = Package(
             dependencies: [
                 .product(name: "Primer3DS", package: "primer-sdk-3ds-ios"),
                 .product(name: "PrimerBDCCore", package: "PrimerBDCCore"),
+                .product(name: "PrimerBDCEngine", package: "PrimerBDCEngine"),
                 .product(name: "PrimerFoundation", package: "PrimerFoundation"),
                 .product(name: "PrimerStepResolver", package: "PrimerStepResolver")
             ],
