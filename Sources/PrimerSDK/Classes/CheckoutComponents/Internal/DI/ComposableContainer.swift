@@ -17,12 +17,14 @@ final class ComposableContainer: LogReporter {
     self.settings = settings
   }
 
-  func configure() async {
-    await registerInfrastructure()
-    await registerValidation()
+  func configure() async throws {
+    try await registerInfrastructure()
+    try await registerValidation()
     await registerInteractors()
     await registerPaymentInteractors()
-    await registerData()
+    try await registerData()
+
+    try await validateCriticalDependencies()
 
     await DIContainer.setContainer(container)
 
@@ -41,8 +43,22 @@ final class ComposableContainer: LogReporter {
 @available(iOS 15.0, *)
 extension ComposableContainer {
 
-  /// Guards registration-time errors (e.g. duplicate keys) without crashing.
-  /// Factory execution errors are thrown later at resolution time, not caught here.
+  /// Critical registrations — logs and rethrows so `configure()` fails loudly
+  /// and the SDK never publishes a partially-configured container.
+  fileprivate func criticalRegister<T>(
+    _ type: T.Type,
+    _ registration: () async throws -> Void
+  ) async throws {
+    do {
+      try await registration()
+    } catch {
+      logger.error(message: "Critical registration failed for \(type): \(error)")
+      throw error
+    }
+  }
+
+  /// Non-critical registrations — logs and swallows so a single optional
+  /// payment method failing to wire up does not block the rest of checkout.
   fileprivate func guardedRegister<T>(
     _ type: T.Type,
     _ registration: () async throws -> Void
@@ -60,15 +76,15 @@ extension ComposableContainer {
 @available(iOS 15.0, *)
 extension ComposableContainer {
 
-  fileprivate func registerInfrastructure() async {
+  fileprivate func registerInfrastructure() async throws {
     let settings = settings
-    await guardedRegister(PrimerSettings.self) {
+    try await criticalRegister(PrimerSettings.self) {
       _ = try await container.register(PrimerSettings.self)
         .asSingleton()
         .with { _ in settings }
     }
 
-    await guardedRegister(CheckoutComponentsAnalyticsServiceProtocol.self) {
+    try await criticalRegister(CheckoutComponentsAnalyticsServiceProtocol.self) {
       _ = try await container.register(CheckoutComponentsAnalyticsServiceProtocol.self)
         .asSingleton()
         .with { _ in
@@ -78,7 +94,7 @@ extension ComposableContainer {
         }
     }
 
-    await guardedRegister(CheckoutComponentsAnalyticsInteractorProtocol.self) {
+    try await criticalRegister(CheckoutComponentsAnalyticsInteractorProtocol.self) {
       _ = try await container.register(CheckoutComponentsAnalyticsInteractorProtocol.self)
         .asSingleton()
         .with { resolver in
@@ -94,15 +110,15 @@ extension ComposableContainer {
         .with { _ in DefaultAccessibilityAnnouncementService() }
     }
 
-    await guardedRegister(ConfigurationService.self) {
+    try await criticalRegister(ConfigurationService.self) {
       _ = try await container.register(ConfigurationService.self)
         .asSingleton()
         .with { _ in DefaultConfigurationService() }
     }
   }
 
-  fileprivate func registerValidation() async {
-    await guardedRegister(ValidationService.self) {
+  fileprivate func registerValidation() async throws {
+    try await criticalRegister(ValidationService.self) {
       _ = try await container.register(ValidationService.self)
         .asSingleton()
         .with { _ in
@@ -237,14 +253,14 @@ extension ComposableContainer {
     }
   }
 
-  fileprivate func registerData() async {
-    await guardedRegister(HeadlessRepository.self) {
+  fileprivate func registerData() async throws {
+    try await criticalRegister(HeadlessRepository.self) {
       _ = try await container.register(HeadlessRepository.self)
         .asSingleton()
         .with { _ in await HeadlessRepositoryImpl() }
     }
 
-    await guardedRegister(PaymentMethodMapper.self) {
+    try await criticalRegister(PaymentMethodMapper.self) {
       _ = try await container.register(PaymentMethodMapper.self)
         .asSingleton()
         .with { container in
@@ -294,6 +310,19 @@ extension ComposableContainer {
         .asTransient()
         .with { _ in QRCodeRepositoryImpl() }
     }
+  }
+
+  /// Runs in every build config. Resolving exercises the factory closures that
+  /// are deferred until resolution time, catching misconfiguration at init
+  /// instead of surfacing as a silent failure during payment.
+  fileprivate func validateCriticalDependencies() async throws {
+    _ = try await container.resolve(PrimerSettings.self)
+    _ = try await container.resolve(CheckoutComponentsAnalyticsServiceProtocol.self)
+    _ = try await container.resolve(CheckoutComponentsAnalyticsInteractorProtocol.self)
+    _ = try await container.resolve(ConfigurationService.self)
+    _ = try await container.resolve(ValidationService.self)
+    _ = try await container.resolve(HeadlessRepository.self)
+    _ = try await container.resolve(PaymentMethodMapper.self)
   }
 
   #if DEBUG
