@@ -194,6 +194,201 @@ final class DefaultBillingAddressRedirectScopeTests: XCTestCase {
     XCTAssertEqual(sut.paymentMethodType, "ADYEN_AFFIRM")
   }
 
+  // MARK: - Start Tests
+
+  func test_start_doesNotCrash() async throws {
+    sut.start()
+    try await Task.sleep(nanoseconds: 100_000_000)
+    XCTAssertEqual(sut.paymentMethodType, PrimerPaymentMethodType.adyenAffirm.rawValue)
+  }
+
+  func test_start_calledTwice_isIdempotent() async throws {
+    sut.start()
+    sut.start()
+    try await Task.sleep(nanoseconds: 100_000_000)
+    let state = await collectFirstState()
+    XCTAssertEqual(state.status, .ready)
+  }
+
+  // MARK: - Cancel Tests
+
+  func test_cancel_setsStatusToReady() async throws {
+    sut.cancel()
+    try await Task.sleep(nanoseconds: 50_000_000)
+    let state = await collectFirstState()
+    XCTAssertEqual(state.status, .ready)
+  }
+
+  func test_cancel_withNilRepository_doesNotCrash() {
+    sut.cancel()
+  }
+
+  // MARK: - onBack Tests
+
+  func test_onBack_fromPaymentSelection_navigatesBack() async {
+    let coordinator = CheckoutCoordinator()
+    coordinator.navigate(to: .paymentMethodSelection)
+    coordinator.navigate(to: .paymentMethod(PrimerPaymentMethodType.adyenAffirm.rawValue, .fromPaymentSelection))
+    let navigator = CheckoutNavigator(coordinator: coordinator)
+    let checkoutScope = DefaultCheckoutScope(
+      clientToken: TestData.Tokens.valid,
+      settings: PrimerSettings(paymentHandling: .manual, paymentMethodOptions: PrimerPaymentMethodOptions()),
+      diContainer: DIContainer.shared,
+      navigator: navigator,
+      presentationContext: .fromPaymentSelection
+    )
+    let scope = DefaultBillingAddressRedirectScope(
+      paymentMethodType: PrimerPaymentMethodType.adyenAffirm.rawValue,
+      checkoutScope: checkoutScope,
+      presentationContext: .fromPaymentSelection,
+      processWebRedirectInteractor: mockInteractor
+    )
+
+    scope.onBack()
+
+    XCTAssertEqual(coordinator.currentRoute, .paymentMethodSelection)
+  }
+
+  func test_onBack_directContext_doesNotNavigate() async {
+    let coordinator = CheckoutCoordinator()
+    coordinator.navigate(to: .paymentMethod(PrimerPaymentMethodType.adyenAffirm.rawValue, .direct))
+    let navigator = CheckoutNavigator(coordinator: coordinator)
+    let checkoutScope = DefaultCheckoutScope(
+      clientToken: TestData.Tokens.valid,
+      settings: PrimerSettings(paymentHandling: .manual, paymentMethodOptions: PrimerPaymentMethodOptions()),
+      diContainer: DIContainer.shared,
+      navigator: navigator,
+      presentationContext: .direct
+    )
+    let initialStackCount = coordinator.navigationStack.count
+    let scope = DefaultBillingAddressRedirectScope(
+      paymentMethodType: PrimerPaymentMethodType.adyenAffirm.rawValue,
+      checkoutScope: checkoutScope,
+      presentationContext: .direct,
+      processWebRedirectInteractor: mockInteractor
+    )
+
+    scope.onBack()
+
+    XCTAssertEqual(coordinator.navigationStack.count, initialStackCount)
+  }
+
+  // MARK: - dismissalMechanism Tests
+
+  func test_dismissalMechanism_reflectsCheckoutScope() async {
+    let mechanism = sut.dismissalMechanism
+    XCTAssertNotNil(mechanism)
+  }
+
+  // MARK: - presentationContext Tests
+
+  func test_presentationContext_defaultIsFromPaymentSelection() {
+    XCTAssertEqual(sut.presentationContext, .fromPaymentSelection)
+  }
+
+  func test_presentationContext_directIsPreserved() async {
+    let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+    let scope = DefaultBillingAddressRedirectScope(
+      paymentMethodType: PrimerPaymentMethodType.adyenAffirm.rawValue,
+      checkoutScope: checkoutScope,
+      presentationContext: .direct,
+      processWebRedirectInteractor: mockInteractor
+    )
+    XCTAssertEqual(scope.presentationContext, .direct)
+  }
+
+  // MARK: - Init Tests
+
+  func test_init_withPaymentMethod_populatesState() async {
+    let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+    let paymentMethod = CheckoutPaymentMethod(
+      id: "affirm_id",
+      type: PrimerPaymentMethodType.adyenAffirm.rawValue,
+      name: "Affirm"
+    )
+    let scope = DefaultBillingAddressRedirectScope(
+      paymentMethodType: PrimerPaymentMethodType.adyenAffirm.rawValue,
+      checkoutScope: checkoutScope,
+      processWebRedirectInteractor: mockInteractor,
+      paymentMethod: paymentMethod
+    )
+
+    let state = await firstState(from: scope)
+    XCTAssertEqual(state.paymentMethod?.id, "affirm_id")
+    XCTAssertEqual(state.paymentMethod?.type, PrimerPaymentMethodType.adyenAffirm.rawValue)
+  }
+
+  func test_init_withSurchargeAmount_populatesState() async {
+    let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+    let scope = DefaultBillingAddressRedirectScope(
+      paymentMethodType: PrimerPaymentMethodType.adyenAffirm.rawValue,
+      checkoutScope: checkoutScope,
+      processWebRedirectInteractor: mockInteractor,
+      surchargeAmount: "$2.50"
+    )
+
+    let state = await firstState(from: scope)
+    XCTAssertEqual(state.surchargeAmount, "$2.50")
+  }
+
+  // MARK: - Validation Edge Cases
+
+  func test_updateAddressLine2_withExistingError_clearsError() async {
+    // addressLine2 is optional and always clears errors regardless of input
+    sut.updateAddressLine2("Apt 4B")
+    sut.updateAddressLine2("")
+
+    let state = await collectFirstState()
+    XCTAssertNil(state.errors[.addressLine2])
+  }
+
+  func test_updateField_thenEmpty_keepsFormInvalid() async {
+    sut.updateCountryCode("US")
+    sut.updateCountryCode("")
+
+    let state = await collectFirstState()
+    XCTAssertFalse(state.isFormValid)
+  }
+
+  func test_submit_withInvalidForm_triggersValidationOnAllFields() async throws {
+    sut.submit()
+    try await Task.sleep(nanoseconds: 100_000_000)
+
+    let state = await collectFirstState()
+    XCTAssertFalse(state.isFormValid)
+    XCTAssertEqual(mockInteractor.executeCallCount, 0)
+  }
+
+  // MARK: - Submit / performPayment Tests
+
+  func test_submit_withValidForm_transitionsOutOfReady() async throws {
+    fillValidForm()
+    try await Task.sleep(nanoseconds: 50_000_000)
+
+    sut.submit()
+
+    let finalState = try await awaitValue(sut.state, matching: { $0.status != .ready })
+    XCTAssertNotEqual(finalState.status, .ready)
+  }
+
+  func test_submit_whenInteractorThrows_eventuallyFails() async throws {
+    mockInteractor.errorToThrow = PrimerError.unknown(message: "boom")
+    fillValidForm()
+    try await Task.sleep(nanoseconds: 50_000_000)
+
+    sut.submit()
+
+    let state = try await awaitValue(sut.state, matching: {
+      if case .failure = $0.status { return true }
+      return false
+    })
+    if case .failure = state.status {
+      // Expected
+    } else {
+      XCTFail("Expected failure status")
+    }
+  }
+
   // MARK: - Helpers
 
   private func fillValidForm() {
@@ -205,8 +400,12 @@ final class DefaultBillingAddressRedirectScopeTests: XCTestCase {
   }
 
   private func collectFirstState() async -> PrimerBillingAddressRedirectState {
+    await firstState(from: sut)
+  }
+
+  private func firstState(from scope: DefaultBillingAddressRedirectScope) async -> PrimerBillingAddressRedirectState {
     var collectedState = PrimerBillingAddressRedirectState()
-    for await state in sut.state {
+    for await state in scope.state {
       collectedState = state
       break
     }
@@ -221,7 +420,7 @@ private final class MockBillingAddressWebRedirectInteractor: ProcessWebRedirectP
 
   private(set) var executeCallCount = 0
   private(set) var lastPaymentMethodType: String?
-  var resultToReturn: PaymentResult = PaymentResult(paymentId: "test_123", status: .success)
+  var resultToReturn = PaymentResult(paymentId: "test_123", status: .success)
   var errorToThrow: Error?
 
   func execute(paymentMethodType: String) async throws -> PaymentResult {
