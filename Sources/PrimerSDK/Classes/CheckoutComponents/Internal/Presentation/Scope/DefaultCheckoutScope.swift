@@ -10,45 +10,10 @@ import SwiftUI
 @MainActor
 final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogReporter {
 
-  enum NavigationState: Equatable {
-    case loading
-    case paymentMethodSelection
-    case vaultedPaymentMethods
-    case deleteVaultedPaymentMethodConfirmation(
-      PrimerHeadlessUniversalCheckout.VaultedPaymentMethod)
-    case paymentMethod(String)
-    case processing
-    case success(PaymentResult)
-    case failure(PrimerError)
-    case dismissed
-
-    static func == (lhs: NavigationState, rhs: NavigationState) -> Bool {
-      switch (lhs, rhs) {
-      case (.loading, .loading),
-        (.paymentMethodSelection, .paymentMethodSelection),
-        (.vaultedPaymentMethods, .vaultedPaymentMethods),
-        (.processing, .processing),
-        (.dismissed, .dismissed):
-        true
-      case let (
-        .deleteVaultedPaymentMethodConfirmation(lhsMethod),
-        .deleteVaultedPaymentMethodConfirmation(rhsMethod)
-      ):
-        lhsMethod.id == rhsMethod.id
-      case let (.paymentMethod(lhsType), .paymentMethod(rhsType)):
-        lhsType == rhsType
-      case let (.success(lhsResult), .success(rhsResult)):
-        lhsResult.paymentId == rhsResult.paymentId
-      case let (.failure(lhsError), .failure(rhsError)):
-        lhsError.localizedDescription == rhsError.localizedDescription
-      default:
-        false
-      }
-    }
-  }
+  typealias NavigationState = CheckoutNavigationState
 
   @Published private var internalState = PrimerCheckoutState.initializing
-  @Published var navigationState = NavigationState.loading
+  @Published var navigationState = CheckoutNavigationState.loading
 
   var onBeforePaymentCreate: BeforePaymentCreateHandler?
   var container: ContainerComponent?
@@ -84,8 +49,15 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
   var availablePaymentMethods: [InternalPaymentMethod] = []
   var paymentMethodScopeCache: [String: any PrimerPaymentMethodScope] = [:]
 
-  @Published private(set) var vaultedPaymentMethods: [PrimerHeadlessUniversalCheckout.VaultedPaymentMethod] = []
-  @Published private(set) var selectedVaultedPaymentMethod: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod?
+  let vaultManager = VaultedPaymentMethodManager()
+
+  var vaultedPaymentMethods: [PrimerHeadlessUniversalCheckout.VaultedPaymentMethod] {
+    vaultManager.methods
+  }
+
+  var selectedVaultedPaymentMethod: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod? {
+    vaultManager.selectedMethod
+  }
 
   var isInitScreenEnabled: Bool { settings.uiOptions.isInitScreenEnabled }
   var isSuccessScreenEnabled: Bool { settings.uiOptions.isSuccessScreenEnabled }
@@ -112,6 +84,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
   private let navigator: CheckoutNavigator
   private var configurationService: ConfigurationService?
   private var paymentMethodsInteractor: GetPaymentMethodsInteractor?
+  private var analyticsTracker: CheckoutAnalyticsTracker?
   private var analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol?
   private var accessibilityAnnouncementService: AccessibilityAnnouncementService?
   private var selectedPaymentMethodName: String?
@@ -129,6 +102,12 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
     self.settings = settings
     self.navigator = navigator
     self.presentationContext = presentationContext
+
+    vaultManager.onSelectionChanged = { [weak self] _ in
+      if let selectionScope = self?.cachedPaymentMethodSelection as? DefaultPaymentMethodSelectionScope {
+        selectionScope.syncSelectedVaultedPaymentMethod()
+      }
+    }
 
     registerPaymentMethods()
 
@@ -171,6 +150,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
 
       analyticsInteractor = try? await container.resolve(
         CheckoutComponentsAnalyticsInteractorProtocol.self)
+      analyticsTracker = CheckoutAnalyticsTracker(analyticsInteractor: analyticsInteractor)
 
       accessibilityAnnouncementService = try? await container.resolve(
         AccessibilityAnnouncementService.self)
@@ -260,60 +240,8 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
     internalState = newState
 
     Task { [self] in
-      await trackStateChange(newState)
+      await analyticsTracker?.trackStateChange(newState)
     }
-  }
-
-  private func trackStateChange(_ state: PrimerCheckoutState) async {
-    switch state {
-    case .ready:
-      await analyticsInteractor?.trackEvent(.checkoutFlowStarted, metadata: .general())
-      let initDuration = await LoggingSessionContext.shared.calculateInitDuration()
-      let message = initDuration.map { "Checkout initialized (\($0)ms)" } ?? "Checkout initialized"
-      logger.info(
-        message: message,
-        event: "checkout-initialized",
-        userInfo: initDuration.map { ["init_duration_ms": $0] }
-      )
-
-    case let .success(result):
-      if let paymentMethod = result.paymentMethodType {
-        await analyticsInteractor?.trackEvent(
-          .paymentSuccess,
-          metadata: .payment(
-            PaymentEvent(
-              paymentMethod: paymentMethod,
-              paymentId: result.paymentId
-            )))
-      } else {
-        // No payment method type available, use general event
-        await analyticsInteractor?.trackEvent(.paymentSuccess, metadata: .general())
-      }
-
-    case let .failure(error):
-      await analyticsInteractor?.trackEvent(
-        .paymentFailure, metadata: extractFailureMetadata(from: error))
-
-    case .dismissed:
-      await analyticsInteractor?.trackEvent(.paymentFlowExited, metadata: .general())
-
-    default:
-      break
-    }
-  }
-
-  private func extractFailureMetadata(from error: PrimerError) -> AnalyticsEventMetadata {
-    if case let .paymentFailed(paymentMethodType, paymentId, _, _, _) = error,
-      let paymentMethod = paymentMethodType {
-      return .payment(
-        PaymentEvent(
-          paymentMethod: paymentMethod,
-          paymentId: paymentId
-        ))
-    }
-
-    // For other error types, just include userLocale
-    return .general()
   }
 
   func updateNavigationState(_ newState: NavigationState, syncToNavigator: Bool = true) {
@@ -525,47 +453,22 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
   }
 
   func retryPayment() {
-    // Track payment reattempted event with payment method metadata if available
     Task { @MainActor [weak self] in
       guard let self else { return }
-      let metadata = extractRetryMetadata()
-      await analyticsInteractor?.trackEvent(.paymentReattempted, metadata: metadata)
+      await analyticsTracker?.trackRetry(navigationState: navigationState)
     }
 
     currentPaymentMethodScope?.submit()
   }
 
-  private func extractRetryMetadata() -> AnalyticsEventMetadata {
-    // Extract payment method info from the current failure state if available
-    if case let .failure(error) = navigationState {
-      return extractFailureMetadata(from: error)
-    }
-    return .general()
-  }
-
   func setVaultedPaymentMethods(_ methods: [PrimerHeadlessUniversalCheckout.VaultedPaymentMethod]) {
-    vaultedPaymentMethods = methods
-
-    // Clear selection if the selected method was deleted
-    if let selectedId = selectedVaultedPaymentMethod?.id,
-      !methods.contains(where: { $0.id == selectedId }) {
-      selectedVaultedPaymentMethod = nil
-    }
-
-    // Set first as default if none selected
-    if selectedVaultedPaymentMethod == nil, let first = methods.first {
-      selectedVaultedPaymentMethod = first
-    }
+    vaultManager.setMethods(methods)
   }
 
   func setSelectedVaultedPaymentMethod(
     _ method: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod?
   ) {
-    selectedVaultedPaymentMethod = method
-    // Notify payment method selection scope to sync from source of truth
-    if let selectionScope = cachedPaymentMethodSelection as? DefaultPaymentMethodSelectionScope {
-      selectionScope.syncSelectedVaultedPaymentMethod()
-    }
+    vaultManager.setSelectedMethod(method)
   }
 
   static func validated(from checkoutScope: any PrimerCheckoutScope) throws -> (DefaultCheckoutScope, PresentationContext) {
