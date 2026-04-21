@@ -72,10 +72,10 @@ final class PayNLPaypalRegistrationTests: XCTestCase {
     }
 
     func test_payNLPaypal_createScope_returnsDefaultWebRedirectScope() async throws {
-        // Given
+        // Given — register after scope creation since init calls reset()
         await registerWebRedirectDependencies()
-        WebRedirectPaymentMethod.register(types: [PrimerPaymentMethodType.payNLPaypal.rawValue])
         let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+        WebRedirectPaymentMethod.register(types: [PrimerPaymentMethodType.payNLPaypal.rawValue])
 
         // When
         let scope = try await PaymentMethodRegistry.shared.createScope(
@@ -89,10 +89,10 @@ final class PayNLPaypalRegistrationTests: XCTestCase {
     }
 
     func test_payNLPaypal_createScope_setsCorrectPaymentMethodType() async throws {
-        // Given
+        // Given — register after scope creation since init calls reset()
         await registerWebRedirectDependencies()
-        WebRedirectPaymentMethod.register(types: [PrimerPaymentMethodType.payNLPaypal.rawValue])
         let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+        WebRedirectPaymentMethod.register(types: [PrimerPaymentMethodType.payNLPaypal.rawValue])
 
         // When
         let scope = try await PaymentMethodRegistry.shared.createScope(
@@ -107,10 +107,10 @@ final class PayNLPaypalRegistrationTests: XCTestCase {
     }
 
     func test_payNLPaypal_createScope_withMissingDependencies_throws() async throws {
-        // Given
-        WebRedirectPaymentMethod.register(types: [PrimerPaymentMethodType.payNLPaypal.rawValue])
+        // Given — register after scope creation since init calls reset()
         let emptyContainer = Container()
         let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+        WebRedirectPaymentMethod.register(types: [PrimerPaymentMethodType.payNLPaypal.rawValue])
 
         // When/Then
         do {
