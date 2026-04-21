@@ -16,15 +16,17 @@ final class DefaultCheckoutScopeBehaviorTests: XCTestCase {
     private var sut: DefaultCheckoutScope!
     private var navigator: CheckoutNavigator!
 
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
+        try await super.setUp()
+        await ContainerTestHelpers.resetSharedContainer()
         navigator = CheckoutNavigator(coordinator: CheckoutCoordinator())
     }
 
-    override func tearDown() {
+    override func tearDown() async throws {
         sut = nil
         navigator = nil
-        super.tearDown()
+        await ContainerTestHelpers.resetSharedContainer()
+        try await super.tearDown()
     }
 
     private func makeSut(
@@ -197,19 +199,15 @@ final class DefaultCheckoutScopeBehaviorTests: XCTestCase {
         }
     }
 
-    func test_onDismiss_setsNavigationStateToDismissed() async throws {
-        // Given
-        sut = makeSut()
+    func test_onDismiss_setsNavigationStateToDismissed() {
+        // Given — disable the init screen so the async init task cannot overwrite `.dismissed` with `.loading`.
+        sut = makeSut(settings: PrimerSettings(uiOptions: PrimerUIOptions(isInitScreenEnabled: false)))
 
         // When
         sut.onDismiss()
 
-        // Wait for the Task to execute
-        try await Task.sleep(nanoseconds: 500_000_000)
-
-        // Then — onDismiss may set dismissed on state stream but not always on navigationState directly
-        let navState = sut.navigationState
-        XCTAssertTrue(navState == .dismissed || navState == .loading)
+        // Then — updateNavigationState(.dismissed) is synchronous, so the result is observable immediately.
+        XCTAssertEqual(sut.navigationState, .dismissed)
     }
 
     // MARK: - updateNavigationState Tests

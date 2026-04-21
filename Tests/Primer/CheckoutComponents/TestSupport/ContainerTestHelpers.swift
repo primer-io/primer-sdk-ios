@@ -32,6 +32,13 @@ enum ContainerTestHelpers {
         return container
     }
 
+    /// Clears `DIContainer.shared` so registrations and singleton instances from one test do not leak into the next.
+    /// Call in both `setUp` and `tearDown` of any test class that writes into `DIContainer.shared`.
+    @MainActor
+    static func resetSharedContainer() async {
+        await DIContainer.clearContainer()
+    }
+
     @MainActor
     static func createMockCheckoutScope() async -> DefaultCheckoutScope {
         let navigator = CheckoutNavigator(coordinator: CheckoutCoordinator())
@@ -45,5 +52,44 @@ enum ContainerTestHelpers {
             diContainer: DIContainer.shared,
             navigator: navigator
         )
+    }
+
+    /// Creates a `DefaultCheckoutScope` that has already finished its async init (state = `.ready` or `.failure`).
+    /// Use when a test depends on downstream code awaiting `checkoutScope.state` — without this, the scope may still
+    /// be in `.initializing` when the test asserts, causing flakes.
+    ///
+    /// Installs a fresh minimal test container as `DIContainer.shared` so the scope's init can actually run.
+    /// The test may later swap the container via `DIContainer.setContainer(_:)`; the scope's stored state survives.
+    @MainActor
+    static func createSettledCheckoutScope() async throws -> DefaultCheckoutScope {
+        let container = try await createTestContainer()
+        await DIContainer.setContainer(container)
+
+        let navigator = CheckoutNavigator(coordinator: CheckoutCoordinator())
+        let settings = PrimerSettings(
+            paymentHandling: .manual,
+            paymentMethodOptions: PrimerPaymentMethodOptions(),
+            uiOptions: PrimerUIOptions(isInitScreenEnabled: false)
+        )
+        let scope = DefaultCheckoutScope(
+            clientToken: TestData.Tokens.valid,
+            settings: settings,
+            diContainer: DIContainer.shared,
+            navigator: navigator
+        )
+
+        // Drain the state stream until the scope exits `.initializing`. Bounded by a generous timeout
+        // so a broken init doesn't hang the suite forever.
+        let deadline = Date().addingTimeInterval(5)
+        for await state in scope.state {
+            switch state {
+            case .initializing:
+                if Date() > deadline { return scope }
+                continue
+            default:
+                return scope
+            }
+        }
+        return scope
     }
 }
