@@ -226,15 +226,14 @@ extension ComposableContainer {
         }
     }
 
-    await guardedRegister(ProcessQRCodePaymentInteractor.self) {
-      _ = try await container.register(ProcessQRCodePaymentInteractor.self)
-        .asTransient()
-        .with { resolver in
-          ProcessQRCodePaymentInteractorImpl(
-            repository: try await resolver.resolve(QRCodeRepository.self),
-            paymentMethodType: ""
-          )
-        }
+    await guardedRegister(QRCodePaymentInteractorFactory.self) {
+      try await container.registerFactory(
+        QRCodePaymentInteractorFactory.self
+      ) { resolver in
+        QRCodePaymentInteractorFactory(
+          repository: try await resolver.resolve(QRCodeRepository.self)
+        )
+      }
     }
   }
 

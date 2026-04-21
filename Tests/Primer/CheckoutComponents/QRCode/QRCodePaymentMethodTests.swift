@@ -191,14 +191,13 @@ final class QRCodePaymentMethodTests: XCTestCase {
             .asSingleton()
             .with { _ in StubQRCodeRepository() }
 
-        _ = try? await container.register(ProcessQRCodePaymentInteractor.self)
-            .asTransient()
-            .with { resolver in
-                ProcessQRCodePaymentInteractorImpl(
-                    repository: try await resolver.resolve(QRCodeRepository.self),
-                    paymentMethodType: ""
-                )
-            }
+        try? await container.registerFactory(
+            QRCodePaymentInteractorFactory.self
+        ) { resolver in
+            QRCodePaymentInteractorFactory(
+                repository: try await resolver.resolve(QRCodeRepository.self)
+            )
+        }
     }
 
     private func createCheckoutScopeWithMultiplePaymentMethods() -> DefaultCheckoutScope {
