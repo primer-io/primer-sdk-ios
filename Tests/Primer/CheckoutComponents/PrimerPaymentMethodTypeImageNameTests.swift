@@ -46,6 +46,10 @@ final class PrimerPaymentMethodTypeDefaultImageNameTests: XCTestCase {
         XCTAssertEqual(PrimerPaymentMethodType.googlePay.defaultImageName, .genericCard)
     }
 
+    func test_defaultImageName_payNLPaypal_returnsPaypalImage() {
+        XCTAssertEqual(PrimerPaymentMethodType.payNLPaypal.defaultImageName, .paypal)
+    }
+
     // MARK: - ACH Payment Methods
 
     func test_defaultImageName_goCardless_returnsAchBankImage() {
@@ -250,6 +254,11 @@ final class PrimerPaymentMethodTypeIconTests: XCTestCase {
     func test_icon_payNLKaartdirect_returnsGenericCardImage() {
         XCTAssertNotNil(PrimerPaymentMethodType.payNLKaartdirect.icon)
         XCTAssertEqual(PrimerPaymentMethodType.payNLKaartdirect.icon, ImageName.genericCard.image)
+    }
+
+    func test_icon_payNLPaypal_returnsPaypalIconImage() {
+        XCTAssertNotNil(PrimerPaymentMethodType.payNLPaypal.icon)
+        XCTAssertEqual(PrimerPaymentMethodType.payNLPaypal.icon, UIImage(primerResource: "paypal-icon-colored"))
     }
 
     func test_icon_payNLPayconiq_returnsNonNilImage() {

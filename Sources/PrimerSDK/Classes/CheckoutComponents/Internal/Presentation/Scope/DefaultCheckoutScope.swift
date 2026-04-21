@@ -134,7 +134,8 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
     // is NATIVE_SDK instead of WEB_REDIRECT (e.g. due to custom drop-in buttons).
     // Mirrors the WEB SDK's `mergeConfigWithLocalDefinitions` override.
     let nativeSdkRedirectTypes: Set<String> = [
-      PrimerPaymentMethodType.payNLKaartdirect.rawValue
+      PrimerPaymentMethodType.payNLKaartdirect.rawValue,
+      PrimerPaymentMethodType.payNLPaypal.rawValue
     ]
     let webRedirectTypes = PrimerAPIConfigurationModule.apiConfiguration?
       .paymentMethods?
