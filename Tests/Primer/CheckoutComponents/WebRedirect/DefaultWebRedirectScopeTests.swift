@@ -15,18 +15,20 @@ final class DefaultWebRedirectScopeTests: XCTestCase {
     private var mockRepository: MockWebRedirectRepository!
     private var mockAnalytics: MockTrackingAnalyticsInteractor!
 
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
+        try await super.setUp()
+        await ContainerTestHelpers.resetSharedContainer()
         mockInteractor = MockProcessWebRedirectPaymentInteractor()
         mockRepository = MockWebRedirectRepository()
         mockAnalytics = MockTrackingAnalyticsInteractor()
     }
 
-    override func tearDown() {
+    override func tearDown() async throws {
         mockInteractor = nil
         mockRepository = nil
         mockAnalytics = nil
-        super.tearDown()
+        await ContainerTestHelpers.resetSharedContainer()
+        try await super.tearDown()
     }
 
     // MARK: - Initialization Tests

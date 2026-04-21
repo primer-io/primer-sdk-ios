@@ -13,14 +13,16 @@ final class DefaultKlarnaScopeTests: XCTestCase {
 
     private var mockInteractor: MockProcessKlarnaPaymentInteractor!
 
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
+        try await super.setUp()
+        await ContainerTestHelpers.resetSharedContainer()
         mockInteractor = MockProcessKlarnaPaymentInteractor()
     }
 
-    override func tearDown() {
+    override func tearDown() async throws {
         mockInteractor = nil
-        super.tearDown()
+        await ContainerTestHelpers.resetSharedContainer()
+        try await super.tearDown()
     }
 
     @MainActor
@@ -301,7 +303,7 @@ final class DefaultKlarnaScopeTests: XCTestCase {
         mockInteractor.paymentViewToReturn = UIView()
         mockInteractor.authorizationResultToReturn = .approved(authToken: KlarnaTestData.Constants.authToken)
         let tokenizeExpectation = expectation(description: "tokenize called")
-        mockInteractor.onTokenize = { authToken in
+        mockInteractor.onTokenize = { _ in
             tokenizeExpectation.fulfill()
             return KlarnaTestData.successPaymentResult
         }

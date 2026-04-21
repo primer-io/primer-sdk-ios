@@ -16,6 +16,7 @@ final class WebRedirectPaymentMethodTests: XCTestCase {
 
     override func setUp() async throws {
         try await super.setUp()
+        await ContainerTestHelpers.resetSharedContainer()
         container = try await ContainerTestHelpers.createTestContainer()
         PaymentMethodRegistry.shared.reset()
     }
@@ -23,6 +24,7 @@ final class WebRedirectPaymentMethodTests: XCTestCase {
     override func tearDown() async throws {
         await container.reset(ignoreDependencies: [Never.Type]())
         container = nil
+        await ContainerTestHelpers.resetSharedContainer()
         try await super.tearDown()
     }
 
@@ -263,7 +265,7 @@ final class WebRedirectPaymentMethodTests: XCTestCase {
                 id: "card-1",
                 type: PrimerPaymentMethodType.paymentCard.rawValue,
                 name: "Card"
-            ),
+            )
         ]
         return scope
     }

@@ -13,14 +13,16 @@ final class DefaultQRCodeScopeTests: XCTestCase {
 
     private var mockInteractor: MockProcessQRCodePaymentInteractor!
 
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
+        try await super.setUp()
+        await ContainerTestHelpers.resetSharedContainer()
         mockInteractor = MockProcessQRCodePaymentInteractor()
     }
 
-    override func tearDown() {
+    override func tearDown() async throws {
         mockInteractor = nil
-        super.tearDown()
+        await ContainerTestHelpers.resetSharedContainer()
+        try await super.tearDown()
     }
 
     // MARK: - Full Success Flow

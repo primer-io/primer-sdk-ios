@@ -17,28 +17,19 @@ final class DefaultPaymentMethodSelectionScopeTests: XCTestCase {
     private var mockAnalytics: MockTrackingAnalyticsInteractor!
     private var sut: DefaultPaymentMethodSelectionScope!
 
-    override func setUp() {
-        super.setUp()
-        mockCheckoutScope = createCheckoutScope()
+    override func setUp() async throws {
+        try await super.setUp()
+        await ContainerTestHelpers.resetSharedContainer()
+        mockCheckoutScope = try await ContainerTestHelpers.createSettledCheckoutScope()
         mockAnalytics = MockTrackingAnalyticsInteractor()
     }
 
-    override func tearDown() {
+    override func tearDown() async throws {
         sut = nil
         mockAnalytics = nil
         mockCheckoutScope = nil
-        super.tearDown()
-    }
-
-    // MARK: - Helpers
-
-    private func createCheckoutScope() -> DefaultCheckoutScope {
-        DefaultCheckoutScope(
-            clientToken: TestData.Tokens.valid,
-            settings: PrimerSettings(),
-            diContainer: DIContainer.shared,
-            navigator: CheckoutNavigator()
-        )
+        await ContainerTestHelpers.resetSharedContainer()
+        try await super.tearDown()
     }
 
     private func makeSut() -> DefaultPaymentMethodSelectionScope {
@@ -615,26 +606,19 @@ final class DefaultPaymentMethodSelectionScopeAdditionalTests: XCTestCase {
     private var mockAnalytics: MockTrackingAnalyticsInteractor!
     private var sut: DefaultPaymentMethodSelectionScope!
 
-    override func setUp() {
-        super.setUp()
-        mockCheckoutScope = createCheckoutScope()
+    override func setUp() async throws {
+        try await super.setUp()
+        await ContainerTestHelpers.resetSharedContainer()
+        mockCheckoutScope = try await ContainerTestHelpers.createSettledCheckoutScope()
         mockAnalytics = MockTrackingAnalyticsInteractor()
     }
 
-    override func tearDown() {
+    override func tearDown() async throws {
         sut = nil
         mockAnalytics = nil
         mockCheckoutScope = nil
-        super.tearDown()
-    }
-
-    private func createCheckoutScope() -> DefaultCheckoutScope {
-        DefaultCheckoutScope(
-            clientToken: TestData.Tokens.valid,
-            settings: PrimerSettings(),
-            diContainer: DIContainer.shared,
-            navigator: CheckoutNavigator()
-        )
+        await ContainerTestHelpers.resetSharedContainer()
+        try await super.tearDown()
     }
 
     private func makeSut() -> DefaultPaymentMethodSelectionScope {
@@ -812,22 +796,19 @@ final class DefaultPaymentMethodSelectionScopeVaultTests: XCTestCase {
     private var mockAnalytics: MockTrackingAnalyticsInteractor!
     private var sut: DefaultPaymentMethodSelectionScope!
 
-    override func setUp() {
-        super.setUp()
-        mockCheckoutScope = DefaultCheckoutScope(
-            clientToken: TestData.Tokens.valid,
-            settings: PrimerSettings(),
-            diContainer: DIContainer.shared,
-            navigator: CheckoutNavigator()
-        )
+    override func setUp() async throws {
+        try await super.setUp()
+        await ContainerTestHelpers.resetSharedContainer()
+        mockCheckoutScope = try await ContainerTestHelpers.createSettledCheckoutScope()
         mockAnalytics = MockTrackingAnalyticsInteractor()
     }
 
-    override func tearDown() {
+    override func tearDown() async throws {
         sut = nil
         mockAnalytics = nil
         mockCheckoutScope = nil
-        super.tearDown()
+        await ContainerTestHelpers.resetSharedContainer()
+        try await super.tearDown()
     }
 
     private func makeSut() -> DefaultPaymentMethodSelectionScope {
@@ -912,6 +893,10 @@ final class DefaultPaymentMethodSelectionScopeVaultTests: XCTestCase {
         sut = makeSut()
         let method = makeVaultedPaymentMethod()
 
+        // Let the sut's init Task settle — it calls refreshVaultedPaymentMethods() once on startup.
+        try await Task.sleep(nanoseconds: 200_000_000)
+        let fetchBaseline = mockRepo.fetchVaultedPaymentMethodsCallCount
+
         // When / Then
         do {
             try await sut.deleteVaultedPaymentMethod(method)
@@ -920,8 +905,8 @@ final class DefaultPaymentMethodSelectionScopeVaultTests: XCTestCase {
             XCTAssertTrue(error is TestError)
             // Delete was attempted
             XCTAssertEqual(mockRepo.deleteVaultedPaymentMethodCallCount, 1)
-            // Refresh should NOT have been called because delete threw
-            XCTAssertEqual(mockRepo.fetchVaultedPaymentMethodsCallCount, 0)
+            // Refresh should NOT have been triggered by the failed delete
+            XCTAssertEqual(mockRepo.fetchVaultedPaymentMethodsCallCount, fetchBaseline)
         }
     }
 
@@ -1372,7 +1357,7 @@ final class PaymentMethodSearchLogicTests: XCTestCase {
         // Given
         let methods = [
             CheckoutPaymentMethod(id: "1", type: "PAYMENT_CARD", name: "Card"),
-            CheckoutPaymentMethod(id: "2", type: "PAYPAL", name: "PayPal"),
+            CheckoutPaymentMethod(id: "2", type: "PAYPAL", name: "PayPal")
         ]
 
         // When / Then
@@ -1384,7 +1369,7 @@ final class PaymentMethodSearchLogicTests: XCTestCase {
         let methods = [
             CheckoutPaymentMethod(id: "1", type: "PAYMENT_CARD", name: "Card"),
             CheckoutPaymentMethod(id: "2", type: "PAYPAL", name: "PayPal"),
-            CheckoutPaymentMethod(id: "3", type: "KLARNA", name: "Klarna"),
+            CheckoutPaymentMethod(id: "3", type: "KLARNA", name: "Klarna")
         ]
 
         // When
@@ -1399,7 +1384,7 @@ final class PaymentMethodSearchLogicTests: XCTestCase {
         // Given
         let methods = [
             CheckoutPaymentMethod(id: "1", type: "PAYMENT_CARD", name: "Card"),
-            CheckoutPaymentMethod(id: "2", type: "PAYPAL", name: "PayPal"),
+            CheckoutPaymentMethod(id: "2", type: "PAYPAL", name: "PayPal")
         ]
 
         // When
@@ -1414,7 +1399,7 @@ final class PaymentMethodSearchLogicTests: XCTestCase {
         // Given
         let methods = [
             CheckoutPaymentMethod(id: "1", type: "PAYMENT_CARD", name: "Card"),
-            CheckoutPaymentMethod(id: "2", type: "PAYPAL", name: "PayPal"),
+            CheckoutPaymentMethod(id: "2", type: "PAYPAL", name: "PayPal")
         ]
 
         // When
@@ -1429,7 +1414,7 @@ final class PaymentMethodSearchLogicTests: XCTestCase {
         // Given
         let methods = [
             CheckoutPaymentMethod(id: "1", type: "CARD", name: "Visa Card"),
-            CheckoutPaymentMethod(id: "2", type: "PAYPAL", name: "PayPal"),
+            CheckoutPaymentMethod(id: "2", type: "PAYPAL", name: "PayPal")
         ]
 
         // When
@@ -1444,7 +1429,7 @@ final class PaymentMethodSearchLogicTests: XCTestCase {
         // Given
         let methods = [
             CheckoutPaymentMethod(id: "1", type: "PAYMENT_CARD", name: "Card"),
-            CheckoutPaymentMethod(id: "2", type: "PAYPAL", name: "PayPal"),
+            CheckoutPaymentMethod(id: "2", type: "PAYPAL", name: "PayPal")
         ]
 
         // When / Then
@@ -1456,7 +1441,7 @@ final class PaymentMethodSearchLogicTests: XCTestCase {
         let methods = [
             CheckoutPaymentMethod(id: "1", type: "PAYMENT_CARD", name: "Visa Card"),
             CheckoutPaymentMethod(id: "2", type: "PAYMENT_CARD", name: "Mastercard"),
-            CheckoutPaymentMethod(id: "3", type: "PAYPAL", name: "PayPal"),
+            CheckoutPaymentMethod(id: "3", type: "PAYPAL", name: "PayPal")
         ]
 
         // When / Then

@@ -17,14 +17,16 @@ final class DefaultFormRedirectScopeTests: XCTestCase {
 
     // MARK: - Setup / Teardown
 
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
+        try await super.setUp()
+        await ContainerTestHelpers.resetSharedContainer()
         mockInteractor = MockProcessFormRedirectPaymentInteractor()
     }
 
-    override func tearDown() {
+    override func tearDown() async throws {
         mockInteractor = nil
-        super.tearDown()
+        await ContainerTestHelpers.resetSharedContainer()
+        try await super.tearDown()
     }
 
     // MARK: - Field Configuration Tests

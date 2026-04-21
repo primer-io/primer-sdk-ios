@@ -11,16 +11,18 @@ import XCTest
 @MainActor
 final class InvokeBeforePaymentCreateTests: XCTestCase {
 
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
+        try await super.setUp()
+        await ContainerTestHelpers.resetSharedContainer()
         SDKSessionHelper.setUp()
         PrimerInternal.shared.currentIdempotencyKey = nil
     }
 
-    override func tearDown() {
+    override func tearDown() async throws {
         PrimerInternal.shared.currentIdempotencyKey = nil
         SDKSessionHelper.tearDown()
-        super.tearDown()
+        await ContainerTestHelpers.resetSharedContainer()
+        try await super.tearDown()
     }
 
     // MARK: - onBeforePaymentCreate Property Tests

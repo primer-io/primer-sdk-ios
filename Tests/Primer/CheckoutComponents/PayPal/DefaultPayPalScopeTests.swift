@@ -16,18 +16,20 @@ final class DefaultPayPalScopeTests: XCTestCase {
     private var sut: DefaultPayPalScope!
 
     @MainActor
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
+        try await super.setUp()
+        await ContainerTestHelpers.resetSharedContainer()
         mockCheckoutScope = createCheckoutScope()
         mockInteractor = MockProcessPayPalInteractor()
     }
 
     @MainActor
-    override func tearDown() {
+    override func tearDown() async throws {
         sut = nil
         mockInteractor = nil
         mockCheckoutScope = nil
-        super.tearDown()
+        await ContainerTestHelpers.resetSharedContainer()
+        try await super.tearDown()
     }
 
     // MARK: - Mock Types
