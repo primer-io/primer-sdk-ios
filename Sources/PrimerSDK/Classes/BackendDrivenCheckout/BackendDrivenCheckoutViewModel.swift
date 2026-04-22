@@ -96,6 +96,7 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
         }
     }
     
+    @MainActor
     private func handleSuccess(_ payment: PaymentInfo?) async {
         if PrimerSettings.current.paymentHandling == .auto {
             let checkoutData = PrimerCheckoutData(payment: payment?.toPrimerPayment())
