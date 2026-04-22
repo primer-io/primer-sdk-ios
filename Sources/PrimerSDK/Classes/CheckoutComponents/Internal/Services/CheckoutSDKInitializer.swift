@@ -61,7 +61,7 @@ final class CheckoutSDKInitializer {
     let composableContainer = ComposableContainer(
       settings: primerSettings
     )
-    await composableContainer.configure()
+    try await composableContainer.configure()
 
     // Resolve analytics interactor
     if let container = await DIContainer.current {

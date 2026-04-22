@@ -57,7 +57,7 @@ final class PrimerSettingsIntegrationTests: XCTestCase {
 
         // When: Configure container with these settings
         let composableContainer = ComposableContainer(settings: settings)
-        await composableContainer.configure()
+        try await composableContainer.configure()
 
         guard let container = await DIContainer.current else {
             XCTFail("Container should be configured")
@@ -90,7 +90,7 @@ final class PrimerSettingsIntegrationTests: XCTestCase {
         // Given: Configured container
         let settings = PrimerSettings(paymentHandling: .auto)
         let composableContainer = ComposableContainer(settings: settings)
-        await composableContainer.configure()
+        try await composableContainer.configure()
 
         guard let container = await DIContainer.current else {
             XCTFail("Container should be configured")
@@ -129,7 +129,7 @@ final class PrimerSettingsIntegrationTests: XCTestCase {
         )
 
         let composableContainer = ComposableContainer(settings: settings)
-        await composableContainer.configure()
+        try await composableContainer.configure()
 
         guard let container = await DIContainer.current else {
             XCTFail("Container should be configured")
@@ -173,7 +173,7 @@ final class PrimerSettingsIntegrationTests: XCTestCase {
         )
 
         let composableContainer = ComposableContainer(settings: settings)
-        await composableContainer.configure()
+        try await composableContainer.configure()
 
         guard let container = await DIContainer.current else {
             XCTFail("Container should be configured")
@@ -199,7 +199,7 @@ final class PrimerSettingsIntegrationTests: XCTestCase {
         let settings = PrimerSettings(localeData: localeData)
 
         let composableContainer = ComposableContainer(settings: settings)
-        await composableContainer.configure()
+        try await composableContainer.configure()
 
         guard let container = await DIContainer.current else {
             XCTFail("Container should be configured")
@@ -220,7 +220,7 @@ final class PrimerSettingsIntegrationTests: XCTestCase {
         let settings = PrimerSettings(localeData: localeData)
 
         let composableContainer = ComposableContainer(settings: settings)
-        await composableContainer.configure()
+        try await composableContainer.configure()
 
         guard let container = await DIContainer.current else {
             XCTFail("Container should be configured")
@@ -241,7 +241,7 @@ final class PrimerSettingsIntegrationTests: XCTestCase {
         // Given: Initial configuration
         let settings1 = PrimerSettings(paymentHandling: .auto)
         let container1 = ComposableContainer(settings: settings1)
-        await container1.configure()
+        try await container1.configure()
 
         let initialResolve = try await DIContainer.current?.resolve(PrimerSettings.self)
         XCTAssertEqual(initialResolve?.paymentHandling, .auto)
@@ -249,7 +249,7 @@ final class PrimerSettingsIntegrationTests: XCTestCase {
         // When: Reconfigure container (without clearing)
         let settings2 = PrimerSettings(paymentHandling: .manual)
         let container2 = ComposableContainer(settings: settings2)
-        await container2.configure()
+        try await container2.configure()
 
         let afterResolve = try await DIContainer.current?.resolve(PrimerSettings.self)
 
@@ -261,7 +261,7 @@ final class PrimerSettingsIntegrationTests: XCTestCase {
         // Given: Configured container
         let settings = PrimerSettings()
         let composableContainer = ComposableContainer(settings: settings)
-        await composableContainer.configure()
+        try await composableContainer.configure()
 
         // Await before assertion to avoid async autoclosure issue
         let currentContainer = await DIContainer.current
@@ -294,7 +294,7 @@ final class PrimerSettingsIntegrationTests: XCTestCase {
         // Given: Default settings (no customization)
         let settings = PrimerSettings()
         let composableContainer = ComposableContainer(settings: settings)
-        await composableContainer.configure()
+        try await composableContainer.configure()
 
         guard let container = await DIContainer.current else {
             XCTFail("Container should be configured")
