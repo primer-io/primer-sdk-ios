@@ -315,7 +315,7 @@ extension ComposableContainer {
   /// Runs in every build config. Resolving exercises the factory closures that
   /// are deferred until resolution time, catching misconfiguration at init
   /// instead of surfacing as a silent failure during payment.
-  fileprivate func validateCriticalDependencies() async throws {
+  private func validateCriticalDependencies() async throws {
     _ = try await container.resolve(PrimerSettings.self)
     _ = try await container.resolve(CheckoutComponentsAnalyticsServiceProtocol.self)
     _ = try await container.resolve(CheckoutComponentsAnalyticsInteractorProtocol.self)
