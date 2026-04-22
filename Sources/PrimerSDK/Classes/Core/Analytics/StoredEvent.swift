@@ -83,8 +83,8 @@ extension Array where Element == StoredEvent {
         var raw: [RawAnalyticsEvent] = []
         for event in self {
             switch event {
-            case let .sdk(e): sdk.append(e)
-            case let .raw(e): raw.append(e)
+            case let .sdk(event): sdk.append(event)
+            case let .raw(event): raw.append(event)
             }
         }
         return (sdk, raw)
