@@ -1,11 +1,12 @@
 //
 //  HeadlessVaultManagerTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import XCTest
+import PrimerFoundation
 @testable import PrimerSDK
+import XCTest
 
 final class HeadlessVaultManagerTests: XCTestCase {
 
@@ -38,10 +39,13 @@ final class HeadlessVaultManagerTests: XCTestCase {
                         description: "mock-description-1",
                         taxAmount: nil,
                         taxCode: nil,
-                        productType: nil)
-                ]),
+                        productType: nil
+                    )
+                ]
+            ),
             customer: ClientSession.Customer(id: "testid"),
-            testId: nil)
+            testId: nil
+        )
 
         let mockPrimerApiConfiguration = Response.Body.Configuration(
             coreUrl: "https://primer.io/core",
@@ -58,7 +62,8 @@ final class HeadlessVaultManagerTests: XCTestCase {
                     processorConfigId: "mock-processor-config-id-1",
                     surcharge: nil,
                     options: nil,
-                    displayMetadata: nil),
+                    displayMetadata: nil
+                ),
                 PrimerPaymentMethod(
                     id: "mock-id-2",
                     implementationType: .webRedirect,
@@ -67,11 +72,13 @@ final class HeadlessVaultManagerTests: XCTestCase {
                     processorConfigId: "mock-processor-config-id-2",
                     surcharge: nil,
                     options: nil,
-                    displayMetadata: nil)
+                    displayMetadata: nil
+                )
             ],
             primerAccountId: "mock-primer-account-id",
             keys: nil,
-            checkoutModules: nil)
+            checkoutModules: nil
+        )
 
         let vaultedPaymentMethods = Response.Body.VaultedPaymentMethods(
             data: [
@@ -180,10 +187,13 @@ final class HeadlessVaultManagerTests: XCTestCase {
                         description: "mock-description-1",
                         taxAmount: nil,
                         taxCode: nil,
-                        productType: nil)
-                ]),
+                        productType: nil
+                    )
+                ]
+            ),
             customer: nil,
-            testId: nil)
+            testId: nil
+        )
 
         let mockPrimerApiConfiguration = Response.Body.Configuration(
             coreUrl: "https://primer.io/core",
@@ -194,7 +204,8 @@ final class HeadlessVaultManagerTests: XCTestCase {
             paymentMethods: [],
             primerAccountId: "mock-primer-account-id",
             keys: nil,
-            checkoutModules: nil)
+            checkoutModules: nil
+        )
 
         let vaultedPaymentMethods = Response.Body.VaultedPaymentMethods(data: [])
 
@@ -248,10 +259,13 @@ final class HeadlessVaultManagerTests: XCTestCase {
                         description: "mock-description-1",
                         taxAmount: nil,
                         taxCode: nil,
-                        productType: nil)
-                ]),
+                        productType: nil
+                    )
+                ]
+            ),
             customer: ClientSession.Customer(id: "testid"),
-            testId: nil)
+            testId: nil
+        )
 
         let mockPrimerApiConfiguration = Response.Body.Configuration(
             coreUrl: "https://primer.io/core",
@@ -268,7 +282,8 @@ final class HeadlessVaultManagerTests: XCTestCase {
                     processorConfigId: "mock-processor-config-id-1",
                     surcharge: nil,
                     options: nil,
-                    displayMetadata: nil),
+                    displayMetadata: nil
+                ),
                 PrimerPaymentMethod(
                     id: "mock-id-2",
                     implementationType: .webRedirect,
@@ -277,11 +292,13 @@ final class HeadlessVaultManagerTests: XCTestCase {
                     processorConfigId: "mock-processor-config-id-2",
                     surcharge: nil,
                     options: nil,
-                    displayMetadata: nil)
+                    displayMetadata: nil
+                )
             ],
             primerAccountId: "mock-primer-account-id",
             keys: nil,
-            checkoutModules: nil)
+            checkoutModules: nil
+        )
 
         let vaultedPaymentMethods = Response.Body.VaultedPaymentMethods(
             data: [
@@ -411,19 +428,23 @@ final class HeadlessVaultManagerTests: XCTestCase {
                     sessionInfo: nil,
                     bankName: nil,
                     accountNumberLast4Digits: nil,
-                    applePayMerchantTokenIdentifier: nil),
-                analyticsId: "analytics-id")
+                    applePayMerchantTokenIdentifier: nil
+                ),
+                analyticsId: "analytics-id"
+            )
         ]
 
         var errors = vaultManager.validateAdditionalDataSynchronously(
             vaultedPaymentMethodId: "id",
-            vaultedPaymentMethodAdditionalData: PrimerVaultedCardAdditionalData(cvv: "123"))
+            vaultedPaymentMethodAdditionalData: PrimerVaultedCardAdditionalData(cvv: "123")
+        )
 
         XCTAssert(errors == nil, "Should not have received errors for valid CVV")
 
         errors = vaultManager.validateAdditionalDataSynchronously(
             vaultedPaymentMethodId: "id",
-            vaultedPaymentMethodAdditionalData: PrimerVaultedCardAdditionalData(cvv: ""))
+            vaultedPaymentMethodAdditionalData: PrimerVaultedCardAdditionalData(cvv: "")
+        )
 
         XCTAssert(errors?.count == 1, "Should have received only one error")
         XCTAssert((errors?.first as? PrimerValidationError)?.errorId == "invalid-cvv", "Should have received error with id [invalid-cvv] but received error id [\((errors?.first as? PrimerValidationError)?.errorId ?? "n/a")]")
@@ -431,7 +452,8 @@ final class HeadlessVaultManagerTests: XCTestCase {
 
         errors = vaultManager.validateAdditionalDataSynchronously(
             vaultedPaymentMethodId: "id",
-            vaultedPaymentMethodAdditionalData: PrimerVaultedCardAdditionalData(cvv: "12"))
+            vaultedPaymentMethodAdditionalData: PrimerVaultedCardAdditionalData(cvv: "12")
+        )
 
         XCTAssert(errors?.count == 1, "Should have received only one error")
         XCTAssert((errors?.first as? PrimerValidationError)?.errorId == "invalid-cvv", "Should have received error with id [invalid-cvv] but received error id [\((errors?.first as? PrimerValidationError)?.errorId ?? "n/a")]")
@@ -439,7 +461,8 @@ final class HeadlessVaultManagerTests: XCTestCase {
 
         errors = vaultManager.validateAdditionalDataSynchronously(
             vaultedPaymentMethodId: "id",
-            vaultedPaymentMethodAdditionalData: PrimerVaultedCardAdditionalData(cvv: "12345"))
+            vaultedPaymentMethodAdditionalData: PrimerVaultedCardAdditionalData(cvv: "12345")
+        )
 
         XCTAssert(errors?.count == 1, "Should have received only one error")
         XCTAssert((errors?.first as? PrimerValidationError)?.errorId == "invalid-cvv", "Should have received error with id [invalid-cvv] but received error id [\((errors?.first as? PrimerValidationError)?.errorId ?? "n/a")]")
@@ -447,7 +470,8 @@ final class HeadlessVaultManagerTests: XCTestCase {
 
         errors = vaultManager.validateAdditionalDataSynchronously(
             vaultedPaymentMethodId: "id",
-            vaultedPaymentMethodAdditionalData: PrimerVaultedCardAdditionalData(cvv: "12a"))
+            vaultedPaymentMethodAdditionalData: PrimerVaultedCardAdditionalData(cvv: "12a")
+        )
 
         XCTAssert(errors?.count == 1, "Should have received only one error")
         XCTAssert((errors?.first as? PrimerValidationError)?.errorId == "invalid-cvv", "Should have received error with id [invalid-cvv] but received error id [\((errors?.first as? PrimerValidationError)?.errorId ?? "n/a")]")
@@ -455,7 +479,8 @@ final class HeadlessVaultManagerTests: XCTestCase {
 
         errors = vaultManager.validateAdditionalDataSynchronously(
             vaultedPaymentMethodId: "id",
-            vaultedPaymentMethodAdditionalData: PrimerVaultedCardAdditionalData(cvv: "abc"))
+            vaultedPaymentMethodAdditionalData: PrimerVaultedCardAdditionalData(cvv: "abc")
+        )
 
         XCTAssert(errors?.count == 1, "Should have received only one error")
         XCTAssert((errors?.first as? PrimerValidationError)?.errorId == "invalid-cvv", "Should have received error with id [invalid-cvv] but received error id [\((errors?.first as? PrimerValidationError)?.errorId ?? "n/a")]")
@@ -491,13 +516,16 @@ final class HeadlessVaultManagerTests: XCTestCase {
                     sessionInfo: nil,
                     bankName: nil,
                     accountNumberLast4Digits: nil,
-                    applePayMerchantTokenIdentifier: nil),
-                analyticsId: "analytics-id")
+                    applePayMerchantTokenIdentifier: nil
+                ),
+                analyticsId: "analytics-id"
+            )
         ]
 
         errors = vaultManager.validateAdditionalDataSynchronously(
             vaultedPaymentMethodId: "id",
-            vaultedPaymentMethodAdditionalData: PrimerVaultedCardAdditionalData(cvv: "123"))
+            vaultedPaymentMethodAdditionalData: PrimerVaultedCardAdditionalData(cvv: "123")
+        )
 
         XCTAssert(errors?.count == 1, "Should have received only one error")
         XCTAssert((errors?.first as? PrimerValidationError)?.errorId == "invalid-cvv", "Should have received error with id [invalid-cvv] but received error id [\((errors?.first as? PrimerValidationError)?.errorId ?? "n/a")]")
@@ -533,13 +561,16 @@ final class HeadlessVaultManagerTests: XCTestCase {
                     sessionInfo: nil,
                     bankName: nil,
                     accountNumberLast4Digits: nil,
-                    applePayMerchantTokenIdentifier: nil),
-                analyticsId: "analytics-id")
+                    applePayMerchantTokenIdentifier: nil
+                ),
+                analyticsId: "analytics-id"
+            )
         ]
 
         errors = vaultManager.validateAdditionalDataSynchronously(
             vaultedPaymentMethodId: "id",
-            vaultedPaymentMethodAdditionalData: PrimerVaultedCardAdditionalData(cvv: "123"))
+            vaultedPaymentMethodAdditionalData: PrimerVaultedCardAdditionalData(cvv: "123")
+        )
 
         XCTAssert(errors == nil, "Should not have received errors for payment methods that don't use additional data")
     }

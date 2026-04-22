@@ -1,66 +1,67 @@
 //
 //  PrimerKlarnaCategoriesViewControllerTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 #if canImport(PrimerKlarnaSDK)
-import XCTest
-@testable import PrimerSDK
+    import PrimerFoundation
+    @testable import PrimerSDK
+    import XCTest
 
-final class PrimerKlarnaCategoriesViewControllerTests: XCTestCase {
+    final class PrimerKlarnaCategoriesViewControllerTests: XCTestCase {
 
-    var sut: PrimerKlarnaCategoriesViewController!
-    var mockDelegate: MockPrimerKlarnaCategoriesDelegate!
+        var sut: PrimerKlarnaCategoriesViewController!
+        var mockDelegate: MockPrimerKlarnaCategoriesDelegate!
 
-    override func setUp() {
-        super.setUp()
-        mockDelegate = MockPrimerKlarnaCategoriesDelegate()
-        let paymentMethod = Mocks.PaymentMethods.klarnaPaymentMethod
-        let tokenizationComponent = KlarnaTokenizationComponent(paymentMethod: paymentMethod)
-        sut = PrimerKlarnaCategoriesViewController(tokenizationComponent: tokenizationComponent, delegate: mockDelegate)
-        sut.loadViewIfNeeded()
+        override func setUp() {
+            super.setUp()
+            mockDelegate = MockPrimerKlarnaCategoriesDelegate()
+            let paymentMethod = Mocks.PaymentMethods.klarnaPaymentMethod
+            let tokenizationComponent = KlarnaTokenizationComponent(paymentMethod: paymentMethod)
+            sut = PrimerKlarnaCategoriesViewController(tokenizationComponent: tokenizationComponent, delegate: mockDelegate)
+            sut.loadViewIfNeeded()
+        }
+
+        override func tearDown() {
+            mockDelegate = nil
+            sut = nil
+            super.tearDown()
+        }
+
+        func test_sessionCompleted() {
+            let authToken = "auth-token"
+            sut.sessionFinished(with: authToken)
+
+            XCTAssertEqual(mockDelegate.sessionCompleted, true)
+            XCTAssertEqual(mockDelegate.authorizationTokenReceived, authToken)
+        }
+
+        func test_sessionFailed() {
+            let error = PrimerError.failedToCreateSession(error: nil)
+            sut.didReceiveError(error: error)
+
+            let errorReceived = mockDelegate.errorReceived as? PrimerError
+
+            XCTAssertEqual(mockDelegate.sessionFailed, true)
+            XCTAssertEqual(errorReceived?.diagnosticsId, error.diagnosticsId)
+        }
     }
 
-    override func tearDown() {
-        mockDelegate = nil
-        sut = nil
-        super.tearDown()
+    class MockPrimerKlarnaCategoriesDelegate: PrimerKlarnaCategoriesDelegate {
+        var sessionCompleted = false
+        var sessionFailed = false
+        var authorizationTokenReceived: String?
+        var errorReceived: Error?
+
+        func primerKlarnaPaymentSessionCompleted(authorizationToken: String) {
+            sessionCompleted = true
+            authorizationTokenReceived = authorizationToken
+        }
+
+        func primerKlarnaPaymentSessionFailed(error: Error) {
+            sessionFailed = true
+            errorReceived = error
+        }
     }
-
-    func test_sessionCompleted() {
-        let authToken = "auth-token"
-        sut.sessionFinished(with: authToken)
-
-        XCTAssertEqual(mockDelegate.sessionCompleted, true)
-        XCTAssertEqual(mockDelegate.authorizationTokenReceived, authToken)
-    }
-
-    func test_sessionFailed() {
-        let error = PrimerError.failedToCreateSession(error: nil)
-        sut.didReceiveError(error: error)
-
-        let errorReceived = mockDelegate.errorReceived as? PrimerError
-
-        XCTAssertEqual(mockDelegate.sessionFailed, true)
-        XCTAssertEqual(errorReceived?.diagnosticsId, error.diagnosticsId)
-    }
-}
-
-class MockPrimerKlarnaCategoriesDelegate: PrimerKlarnaCategoriesDelegate {
-    var sessionCompleted = false
-    var sessionFailed = false
-    var authorizationTokenReceived: String?
-    var errorReceived: Error?
-
-    func primerKlarnaPaymentSessionCompleted(authorizationToken: String) {
-        sessionCompleted = true
-        authorizationTokenReceived = authorizationToken
-    }
-
-    func primerKlarnaPaymentSessionFailed(error: Error) {
-        sessionFailed = true
-        errorReceived = error
-    }
-}
 #endif

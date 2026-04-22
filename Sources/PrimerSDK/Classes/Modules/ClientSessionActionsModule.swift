@@ -1,10 +1,11 @@
 //
 //  ClientSessionActionsModule.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+import PrimerFoundation
 
 protocol ClientSessionActionsProtocol {
     func selectPaymentMethodIfNeeded(_ paymentMethodType: String, cardNetwork: String?) async throws
@@ -78,9 +79,11 @@ final class ClientSessionActionsModule: ClientSessionActionsProtocol {
         try await clientSessionActionsModule.dispatch(actions: [billingAddressAction])
     }
 
-    static func updateShippingDetailsViaClientSessionActionIfNeeded(address: ClientSession.Address?,
-                                                                    mobileNumber: String?,
-                                                                    emailAddress: String?) async throws {
+    static func updateShippingDetailsViaClientSessionActionIfNeeded(
+        address: ClientSession.Address?,
+        mobileNumber: String?,
+        emailAddress: String?
+    ) async throws {
         guard let unwrappedAddress = address, let shippingAddress = try? unwrappedAddress.asDictionary() else {
             return
         }

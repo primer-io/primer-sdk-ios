@@ -1,9 +1,10 @@
 //
 //  PrimerHeadlessUniversalCheckoutInputElement.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+import PrimerFoundation
 import UIKit
 
 @objc
@@ -45,24 +46,24 @@ public enum PrimerInputElementType: Int {
     func validate(value: Any, detectedValueType: Any?) -> Bool {
         switch self {
         case .cardNumber:
-			return (value as? String)?.isValidCardNumber ?? false
-		case .expiryDate:
-			return (value as? String)?.isValidExpiryDate ?? false
-		case .cardholderName:
-			return (value as? String)?.isValidNonDecimalString ?? false
-		case .otp:
-			return (value as? String)?.isNumeric ?? false
-		case .postalCode:
-			return (value as? String)?.isValidPostalCode ?? false
-		case .phoneNumber:
-			return (value as? String)?.isNumeric ?? false
-		case .cvv:
-			guard let text = value as? String else { return false }
-			if let cardNetwork = detectedValueType as? CardNetwork, cardNetwork != .unknown {
-				return text.isValidCVV(cardNetwork: cardNetwork)
-			} else {
-				return text.count >= 3 && text.count <= 5
-			}
+            return (value as? String)?.isValidCardNumber ?? false
+        case .expiryDate:
+            return (value as? String)?.isValidExpiryDate ?? false
+        case .cardholderName:
+            return (value as? String)?.isValidNonDecimalString ?? false
+        case .otp:
+            return (value as? String)?.isNumeric ?? false
+        case .postalCode:
+            return (value as? String)?.isValidPostalCode ?? false
+        case .phoneNumber:
+            return (value as? String)?.isNumeric ?? false
+        case .cvv:
+            guard let text = value as? String else { return false }
+            if let cardNetwork = detectedValueType as? CardNetwork, cardNetwork != .unknown {
+                return text.isValidCVV(cardNetwork: cardNetwork)
+            } else {
+                return text.count >= 3 && text.count <= 5
+            }
         default:
             return true
         }

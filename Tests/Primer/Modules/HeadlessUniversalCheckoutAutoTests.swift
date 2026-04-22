@@ -1,9 +1,10 @@
 //
 //  HeadlessUniversalCheckoutAutoTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+import PrimerFoundation
 @testable import PrimerSDK
 import XCTest
 
@@ -149,8 +150,11 @@ extension HeadlessUniversalCheckoutAutoTests {
         PollingModule.apiClient = mockApiClient
     }
 
-    private func expectationsForDelegates(paymentMethod: PrimerPaymentMethod, shouldAbort: Bool = false,
-                                          surchargeAmount: Int? = nil) -> [XCTestExpectation] {
+    private func expectationsForDelegates(
+        paymentMethod: PrimerPaymentMethod,
+        shouldAbort: Bool = false,
+        surchargeAmount: Int? = nil
+    ) -> [XCTestExpectation] {
         var orderedExpectations: [XCTestExpectation] = []
 
         uiDelegate.onUIDidDismissPaymentMethod = {}
@@ -251,19 +255,25 @@ extension HeadlessUniversalCheckoutAutoTests {
 
     private func submitWithRawDataManager(paymentMethod: PrimerPaymentMethod, expecting orderedExpectations: [XCTestExpectation]) throws {
         do {
-            let rawDataManager = try PrimerHeadlessUniversalCheckout.RawDataManager(paymentMethodType: paymentMethod.type,
-                                                                                    delegate: rawDataManagerDelegate)
+            let rawDataManager = try PrimerHeadlessUniversalCheckout.RawDataManager(
+                paymentMethodType: paymentMethod.type,
+                delegate: rawDataManagerDelegate
+            )
 
             let mockApiClient = PrimerAPIConfigurationModule.apiClient!
 
             rawDataManager.tokenizationService = TokenizationService(apiClient: mockApiClient)
-            rawDataManager.createResumePaymentService = CreateResumePaymentService(paymentMethodType: paymentMethod.type,
-                                                                                   apiClient: mockApiClient)
+            rawDataManager.createResumePaymentService = CreateResumePaymentService(
+                paymentMethodType: paymentMethod.type,
+                apiClient: mockApiClient
+            )
 
             let rawDataTokenizationBuilder = PrimerRawCardDataTokenizationBuilder(paymentMethodType: paymentMethod.type)
             rawDataTokenizationBuilder.rawDataManager = rawDataManager
-            rawDataTokenizationBuilder.cardValidationService = DefaultCardValidationService(rawDataManager: rawDataManager,
-                                                                                            apiClient: mockApiClient)
+            rawDataTokenizationBuilder.cardValidationService = DefaultCardValidationService(
+                rawDataManager: rawDataManager,
+                apiClient: mockApiClient
+            )
             rawDataManager.rawDataTokenizationBuilder = rawDataTokenizationBuilder
 
             let rawCardData = PrimerCardData(

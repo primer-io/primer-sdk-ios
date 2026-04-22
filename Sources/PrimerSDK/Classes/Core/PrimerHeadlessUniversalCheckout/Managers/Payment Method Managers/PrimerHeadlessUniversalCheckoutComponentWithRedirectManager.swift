@@ -1,16 +1,18 @@
 //
 //  PrimerHeadlessUniversalCheckoutComponentWithRedirectManager.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 private typealias TokenizationViewModelType = (
     BankSelectorTokenizationProviding &
-    WebRedirectTokenizationDelegate &
-    PaymentMethodTokenizationModelProtocol
+        WebRedirectTokenizationDelegate &
+        PaymentMethodTokenizationModelProtocol
 )
 
 import Foundation
+import PrimerFoundation
+
 extension PrimerHeadlessUniversalCheckout {
     @objc public final class ComponentWithRedirectManager: NSObject {
 
@@ -20,7 +22,7 @@ extension PrimerHeadlessUniversalCheckout {
 
         public func provide<MainComponent>(paymentMethodType: String) throws -> MainComponent?
 
-        where PrimerCollectableData: Any, PrimerHeadlessStep: Any {
+            where PrimerCollectableData: Any, PrimerHeadlessStep: Any {
             try provideBanksComponent(paymentMethodType: paymentMethodType) as? MainComponent
         }
 
@@ -47,7 +49,7 @@ extension PrimerHeadlessUniversalCheckout {
 
         private func getTokenizationModel() throws -> TokenizationViewModelType? {
             let viewModel = PrimerAPIConfiguration.paymentMethodConfigs?
-                .filter { $0.isEnabled }
+                .filter(\.isEnabled)
                 .filter { $0.baseLogoImage != nil }
                 .compactMap { $0.tokenizationModel as? TokenizationViewModelType }
                 .first

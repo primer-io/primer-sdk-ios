@@ -1,10 +1,11 @@
 //
 //  CreateClientToken.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+import PrimerFoundation
 import PrimerSDK
 
 enum Environment: String, Codable {
@@ -116,12 +117,14 @@ struct ClientSessionRequestBody: Encodable {
                 case surcharge, instalmentDuration, extraMerchantData, captureVaultedCardCvv, merchantName, networks
             }
 
-            init(surcharge: SurchargeOption?,
-                 instalmentDuration: String?,
-                 extraMerchantData: ExtraMerchantData?,
-                 captureVaultedCardCvv: Bool?,
-                 merchantName: String?,
-                 networks: NetworkOptionGroup?) {
+            init(
+                surcharge: SurchargeOption?,
+                instalmentDuration: String?,
+                extraMerchantData: ExtraMerchantData?,
+                captureVaultedCardCvv: Bool?,
+                merchantName: String?,
+                networks: NetworkOptionGroup?
+            ) {
                 self.surcharge = surcharge
                 self.instalmentDuration = instalmentDuration
                 self.extraMerchantData = extraMerchantData
@@ -183,7 +186,7 @@ struct ClientSessionRequestBody: Encodable {
             var amount: Int?
 
             var dictionaryValue: [String: Any] {
-                return ["amount": amount ?? 0]
+                ["amount": amount ?? 0]
             }
 
         }
@@ -216,7 +219,7 @@ struct ClientSessionRequestBody: Encodable {
             var surcharge: SurchargeOption
 
             var dictionaryValue: [String: Any] {
-                return ["surcharge": surcharge.dictionaryValue]
+                ["surcharge": surcharge.dictionaryValue]
             }
         }
     }
@@ -257,8 +260,6 @@ struct ExtraMerchantData: Codable {
         }
     }
 }
-
-
 
 extension String {
 
@@ -362,6 +363,6 @@ public struct Address: Codable {
             dic["countryCode"] = countryCode
         }
 
-        return dic.keys.count == 0 ? nil : dic
+        return dic.keys.isEmpty ? nil : dic
     }
 }

@@ -4,7 +4,8 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-@testable import PrimerSDK
+import PrimerFoundation
+@testable @preconcurrency import PrimerSDK
 import XCTest
 
 class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationViewModelProtocol {
@@ -35,14 +36,18 @@ class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizatio
     var paymentResult: (PrimerCheckoutData?, Error?)?
 
     convenience init(config: PrimerPaymentMethod) {
-        self.init(config: config,
-                  uiManager: PrimerUIManager.shared,
-                  tokenizationService: TokenizationService())
+        self.init(
+            config: config,
+            uiManager: PrimerUIManager.shared,
+            tokenizationService: TokenizationService()
+        )
     }
 
-    required init(config: PrimerPaymentMethod,
-                  uiManager: PrimerUIManaging,
-                  tokenizationService: TokenizationServiceProtocol) {
+    required init(
+        config: PrimerPaymentMethod,
+        uiManager: PrimerUIManaging,
+        tokenizationService: TokenizationServiceProtocol
+    ) {
         self.config = config
         self.uiManager = uiManager
         self.tokenizationService = tokenizationService
@@ -85,7 +90,7 @@ class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizatio
                     self.didStartPayment = nil
 
                     do {
-                        try await self.startPaymentFlow(withPaymentMethodTokenData: paymentMethodTokenData)
+                        _ = try await self.startPaymentFlow(withPaymentMethodTokenData: paymentMethodTokenData)
                         self.didFinishPayment?(nil)
                         self.nullifyEventCallbacks()
                         DispatchQueue.main.async {

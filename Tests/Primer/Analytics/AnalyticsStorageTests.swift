@@ -94,7 +94,7 @@ final class AnalyticsStorageTests: XCTestCase {
     }
 }
 
-extension Analytics.Event: Hashable {
+extension Analytics.Event: @retroactive Hashable {
     public func hash(into hasher: inout Hasher) {
         hasher.combine(localId)
     }

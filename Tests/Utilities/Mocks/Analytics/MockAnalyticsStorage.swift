@@ -7,7 +7,7 @@
 @testable import PrimerSDK
 import XCTest
 
-class MockAnalyticsStorage: Analytics.Storage {
+final class MockAnalyticsStorage: Analytics.Storage {
 
     var events: [StoredEvent] = []
 

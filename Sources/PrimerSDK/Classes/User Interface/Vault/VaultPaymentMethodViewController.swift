@@ -1,11 +1,12 @@
 //
 //  VaultPaymentMethodViewController.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable function_body_length
 
+import PrimerFoundation
 import UIKit
 
 final class VaultedPaymentInstrumentCell: UITableViewCell {
@@ -240,11 +241,11 @@ final class VaultedPaymentInstrumentsViewController: PrimerViewController {
 extension VaultedPaymentInstrumentsViewController: UITableViewDataSource, UITableViewDelegate {
 
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
+        1
     }
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 64.0
+        64.0
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -256,8 +257,10 @@ extension VaultedPaymentInstrumentsViewController: UITableViewDataSource, UITabl
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let viewModel: VaultPaymentMethodViewModelProtocol = VaultPaymentMethodViewModel()
         let paymentMethod = viewModel.paymentMethods[indexPath.row]
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "VaultedPaymentInstrumentCell",
-                                                       for: indexPath) as? VaultedPaymentInstrumentCell
+        guard let cell = tableView.dequeueReusableCell(
+            withIdentifier: "VaultedPaymentInstrumentCell",
+            for: indexPath
+        ) as? VaultedPaymentInstrumentCell
         else {
             fatalError()
         }
@@ -288,16 +291,18 @@ extension VaultedPaymentInstrumentsViewController: UITableViewDataSource, UITabl
                     title: Strings.Generic.cancel,
                     style: .cancel,
                     handler: { [weak self] _ in self?.postAlertButtonClickEvent(id: .cancel) }
-                ))
+                )
+            )
 
             alert.addAction(UIAlertAction(
-                                title: Strings.Generic.delete,
-                                style: .destructive,
-                                handler: { [weak self] _ in
-                                    guard let id = paymentMethod.id else { return }
-                                    self?.deletePaymentMethod(id)
-                                    self?.postAlertButtonClickEvent(id: .done)
-                                }))
+                title: Strings.Generic.delete,
+                style: .destructive,
+                handler: { [weak self] _ in
+                    guard let id = paymentMethod.id else { return }
+                    self?.deletePaymentMethod(id)
+                    self?.postAlertButtonClickEvent(id: .done)
+                }
+            ))
             alert.show()
         }
         tableView.reloadData()
