@@ -111,6 +111,8 @@ extension PrimerPaymentMethodType {
       UIImage(primerResource: "giropay-icon")
     case .payNLIdeal:
       UIImage(primerResource: "ideal-icon-colored")
+    case .payNLKaartdirect:
+      ImageName.genericCard.image
     case .payNLPayconiq:
       UIImage(primerResource: "payconiq-icon-colored")
 
