@@ -159,6 +159,18 @@ enum AccessibilityIdentifiers {
     static let cancelButton = "checkout_components_web_redirect_cancel_button"
   }
 
+  enum BillingAddressRedirect {
+    static let screen = "checkout_components_billing_address_redirect_screen"
+    static let countryCodeField = "checkout_components_billing_address_redirect_country_code_field"
+    static let addressLine1Field = "checkout_components_billing_address_redirect_address_line1_field"
+    static let addressLine2Field = "checkout_components_billing_address_redirect_address_line2_field"
+    static let postalCodeField = "checkout_components_billing_address_redirect_postal_code_field"
+    static let cityField = "checkout_components_billing_address_redirect_city_field"
+    static let stateField = "checkout_components_billing_address_redirect_state_field"
+    static let submitButton = "checkout_components_billing_address_redirect_submit_button"
+    static let backButton = "checkout_components_billing_address_redirect_back_button"
+  }
+
   enum FormRedirect {
     static let screen = "checkout_components_form_redirect_screen"
     static let otpField = "checkout_components_form_redirect_otp_field"

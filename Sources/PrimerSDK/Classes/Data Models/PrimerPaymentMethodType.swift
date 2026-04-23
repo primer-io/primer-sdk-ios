@@ -36,6 +36,7 @@ import Foundation
 /// - Note: **v3.0 breaking change**: This enum is now `public`. All cases are part of the
 ///   public API contract — no cases can be removed or renamed without a breaking change.
 public enum PrimerPaymentMethodType: String, Codable, CaseIterable, Equatable, Hashable {
+    case adyenAffirm                    = "ADYEN_AFFIRM"
     case adyenAlipay                    = "ADYEN_ALIPAY"
     case adyenBlik                      = "ADYEN_BLIK"
     case adyenBancontactCard            = "ADYEN_BANCONTACT_CARD"
@@ -96,7 +97,8 @@ public enum PrimerPaymentMethodType: String, Codable, CaseIterable, Equatable, H
 
     var provider: String {
         switch self {
-        case .adyenAlipay,
+        case .adyenAffirm,
+             .adyenAlipay,
              .adyenBlik,
              .adyenBancontactCard,
              .adyenDotPay,
