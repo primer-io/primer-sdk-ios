@@ -235,7 +235,7 @@
     }
 
     func updateValidationState(keyPath: WritableKeyPath<FieldValidationStates, Bool>, isValid: Bool) {
-      log("updateValidationState keyPath isValid: \(isValid)")
+      log("updateValidationState keyPath: \(keyPath), isValid: \(isValid)")
     }
 
     func updateValidationStateIfNeeded(for field: PrimerInputElementType, isValid: Bool) {
