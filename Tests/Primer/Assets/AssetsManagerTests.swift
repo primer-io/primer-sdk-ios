@@ -1,11 +1,11 @@
 //
 //  AssetsManagerTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import XCTest
 @testable import PrimerSDK
+import XCTest
 
 final class AssetsManagerTests: XCTestCase {
 
@@ -44,5 +44,30 @@ final class AssetsManagerTests: XCTestCase {
 
         XCTAssertEqual(AssetsManager.getCardNetworkAsset(cardNetworkString: "CARTES_BANCAIRES")?.cardNetwork, .cartesBancaires)
         XCTAssertNotNil(AssetsManager.getCardNetworkAsset(cardNetworkString: "CARTES_BANCAIRES")?.cardImage)
+    }
+
+    // MARK: - Card Network Traits
+
+    func testGetCardNetworkTraitsForNetworkWithValidation() throws {
+        let traits = try XCTUnwrap(AssetsManager.getCardNetworkTraits(for: .amex))
+        XCTAssertEqual(traits.cardNetwork, .amex)
+        XCTAssertEqual(traits.cvvLabel, "CID")
+        XCTAssertEqual(traits.cvvLength, 4)
+    }
+
+    func testGetCardNetworkTraitsForNetworkWithoutValidation() {
+        XCTAssertNil(AssetsManager.getCardNetworkTraits(for: .bancontact))
+        XCTAssertNil(AssetsManager.getCardNetworkTraits(for: .unknown))
+    }
+
+    func testGetCardNetworkTraitsForString() {
+        XCTAssertEqual(AssetsManager.getCardNetworkTraits(cardNetworkString: "VISA")?.cardNetwork, .visa)
+        XCTAssertEqual(AssetsManager.getCardNetworkTraits(cardNetworkString: "AMEX")?.cardNetwork, .amex)
+        XCTAssertEqual(AssetsManager.getCardNetworkTraits(cardNetworkString: "MASTERCARD")?.cardNetwork, .masterCard)
+    }
+
+    func testGetCardNetworkTraitsForNilOrUnknownString() {
+        XCTAssertNil(AssetsManager.getCardNetworkTraits(cardNetworkString: nil))
+        XCTAssertNil(AssetsManager.getCardNetworkTraits(cardNetworkString: "FOO"))
     }
 }
