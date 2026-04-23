@@ -125,6 +125,11 @@ final class PrimerPaymentMethodTypeIconTests: XCTestCase {
 
     // MARK: - Adyen Payment Methods
 
+    func test_icon_adyenAffirm_returnsGenericCardImage() {
+        XCTAssertNotNil(PrimerPaymentMethodType.adyenAffirm.icon)
+        XCTAssertEqual(PrimerPaymentMethodType.adyenAffirm.icon, ImageName.genericCard.image)
+    }
+
     func test_icon_adyenAlipay_returnsNonNilImage() {
         XCTAssertNotNil(PrimerPaymentMethodType.adyenAlipay.icon)
     }

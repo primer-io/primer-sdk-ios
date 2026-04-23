@@ -25,7 +25,7 @@ final class HeadlessRepositorySettingsTests: XCTestCase {
         // Given: Configured DI container with settings
         let settings = PrimerSettings(paymentHandling: .manual)
         let composableContainer = ComposableContainer(settings: settings)
-        await composableContainer.configure()
+        try await composableContainer.configure()
 
         guard let container = await DIContainer.current else {
             XCTFail("Container should be configured")
@@ -47,7 +47,7 @@ final class HeadlessRepositorySettingsTests: XCTestCase {
             apiVersion: .V2_4
         )
         let composableContainer = ComposableContainer(settings: settings)
-        await composableContainer.configure()
+        try await composableContainer.configure()
 
         guard let container = await DIContainer.current else {
             XCTFail("Container should be configured")
@@ -79,7 +79,7 @@ final class HeadlessRepositorySettingsTests: XCTestCase {
         // Given: Settings without explicit payment handling (uses default)
         let settings = PrimerSettings()
         let composableContainer = ComposableContainer(settings: settings)
-        await composableContainer.configure()
+        try await composableContainer.configure()
 
         guard let container = await DIContainer.current else {
             XCTFail("Container should be configured")
@@ -100,7 +100,7 @@ final class HeadlessRepositorySettingsTests: XCTestCase {
             )
         )
         let composableContainer = ComposableContainer(settings: settings)
-        await composableContainer.configure()
+        try await composableContainer.configure()
 
         guard let container = await DIContainer.current else {
             XCTFail("Container should be configured")
@@ -119,7 +119,7 @@ final class HeadlessRepositorySettingsTests: XCTestCase {
         // Given: First container with auto mode
         let settings1 = PrimerSettings(paymentHandling: .auto)
         let container1 = ComposableContainer(settings: settings1)
-        await container1.configure()
+        try await container1.configure()
 
         let resolved1 = try await DIContainer.current?.resolve(PrimerSettings.self)
         XCTAssertEqual(resolved1?.paymentHandling, .auto)
@@ -129,7 +129,7 @@ final class HeadlessRepositorySettingsTests: XCTestCase {
 
         let settings2 = PrimerSettings(paymentHandling: .manual)
         let container2 = ComposableContainer(settings: settings2)
-        await container2.configure()
+        try await container2.configure()
 
         let resolved2 = try await DIContainer.current?.resolve(PrimerSettings.self)
 
@@ -142,7 +142,7 @@ final class HeadlessRepositorySettingsTests: XCTestCase {
         // Given: Settings without explicit API version
         let settings = PrimerSettings()
         let composableContainer = ComposableContainer(settings: settings)
-        await composableContainer.configure()
+        try await composableContainer.configure()
 
         guard let container = await DIContainer.current else {
             XCTFail("Container should be configured")
@@ -159,7 +159,7 @@ final class HeadlessRepositorySettingsTests: XCTestCase {
         // Given: Settings without explicit caching configuration
         let settings = PrimerSettings()
         let composableContainer = ComposableContainer(settings: settings)
-        await composableContainer.configure()
+        try await composableContainer.configure()
 
         guard let container = await DIContainer.current else {
             XCTFail("Container should be configured")

@@ -39,7 +39,7 @@ final class PrimerSettingsDIIntegrationTests: XCTestCase {
         let composableContainer = ComposableContainer(settings: customSettings)
 
         // When: Configure the container
-        await composableContainer.configure()
+        try await composableContainer.configure()
         guard let container = await DIContainer.current else {
             XCTFail("DIContainer.current should not be nil after configuration")
             return
@@ -58,7 +58,7 @@ final class PrimerSettingsDIIntegrationTests: XCTestCase {
         let composableContainer = ComposableContainer(settings: settings)
 
         // When: Configure container and resolve twice
-        await composableContainer.configure()
+        try await composableContainer.configure()
         guard let container = await DIContainer.current else {
             XCTFail("DIContainer.current should not be nil")
             return
@@ -78,7 +78,7 @@ final class PrimerSettingsDIIntegrationTests: XCTestCase {
         let composableContainer = ComposableContainer(settings: defaultSettings)
 
         // When: Configure and resolve
-        await composableContainer.configure()
+        try await composableContainer.configure()
         guard let container = await DIContainer.current else {
             XCTFail("DIContainer.current should not be nil")
             return
@@ -105,7 +105,7 @@ final class PrimerSettingsDIIntegrationTests: XCTestCase {
         let composableContainer = ComposableContainer(settings: settings)
 
         // When: Configure and resolve
-        await composableContainer.configure()
+        try await composableContainer.configure()
         guard let container = await DIContainer.current else {
             XCTFail("DIContainer.current should not be nil")
             return
@@ -127,7 +127,7 @@ final class PrimerSettingsDIIntegrationTests: XCTestCase {
         // Given: Mutable settings
         let settings = PrimerSettings()
         let composableContainer = ComposableContainer(settings: settings)
-        await composableContainer.configure()
+        try await composableContainer.configure()
 
         guard let container = await DIContainer.current else {
             XCTFail("DIContainer.current should not be nil")
@@ -155,7 +155,7 @@ final class PrimerSettingsDIIntegrationTests: XCTestCase {
         let composableContainer = ComposableContainer(settings: settings)
 
         // When: Configure and resolve
-        await composableContainer.configure()
+        try await composableContainer.configure()
         guard let container = await DIContainer.current else {
             XCTFail("DIContainer.current should not be nil")
             return
@@ -180,7 +180,7 @@ final class PrimerSettingsDIIntegrationTests: XCTestCase {
         let composableContainer = ComposableContainer(settings: settings)
 
         // When: Configure and resolve
-        await composableContainer.configure()
+        try await composableContainer.configure()
         guard let container = await DIContainer.current else {
             XCTFail("DIContainer.current should not be nil")
             return
@@ -199,7 +199,7 @@ final class PrimerSettingsDIIntegrationTests: XCTestCase {
         // Given: Configured container
         let settings = PrimerSettings()
         let composableContainer = ComposableContainer(settings: settings)
-        await composableContainer.configure()
+        try await composableContainer.configure()
 
         // Await before assertion to avoid async autoclosure issue
         let currentContainer = await DIContainer.current
@@ -217,7 +217,7 @@ final class PrimerSettingsDIIntegrationTests: XCTestCase {
         // Given: First configuration
         let settings1 = PrimerSettings(paymentHandling: .auto)
         let container1 = ComposableContainer(settings: settings1)
-        await container1.configure()
+        try await container1.configure()
 
         let resolved1 = try await DIContainer.current?.resolve(PrimerSettings.self)
         XCTAssertEqual(resolved1?.paymentHandling, .auto)
@@ -227,7 +227,7 @@ final class PrimerSettingsDIIntegrationTests: XCTestCase {
 
         let settings2 = PrimerSettings(paymentHandling: .manual)
         let container2 = ComposableContainer(settings: settings2)
-        await container2.configure()
+        try await container2.configure()
 
         // Then: New settings should be resolved
         let resolved2 = try await DIContainer.current?.resolve(PrimerSettings.self)
