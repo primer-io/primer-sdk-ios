@@ -26,6 +26,6 @@ struct FieldValidationStates: Equatable {
 @available(iOS 15.0, *)
 @MainActor
 protocol CardFormFieldScopeInternal: PrimerCardFormScope {
-  func updateValidationState(keyPath: WritableKeyPath<FieldValidationStates, Bool>, isValid: Bool)
+  func updateValidationState(_ keyPath: WritableKeyPath<FieldValidationStates, Bool>, isValid: Bool)
   func updateValidationStateIfNeeded(for field: PrimerInputElementType, isValid: Bool)
 }

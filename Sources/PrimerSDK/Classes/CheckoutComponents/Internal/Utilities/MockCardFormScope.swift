@@ -234,7 +234,7 @@
       log("updateCountryCode: \(countryCode)")
     }
 
-    func updateValidationState(keyPath: WritableKeyPath<FieldValidationStates, Bool>, isValid: Bool) {
+    func updateValidationState(_ keyPath: WritableKeyPath<FieldValidationStates, Bool>, isValid: Bool) {
       log("updateValidationState keyPath: \(keyPath), isValid: \(isValid)")
     }
 

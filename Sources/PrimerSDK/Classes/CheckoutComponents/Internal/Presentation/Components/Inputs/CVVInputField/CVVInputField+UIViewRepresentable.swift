@@ -137,7 +137,7 @@ struct CVVTextField: UIViewRepresentable, LogReporter {
       } else {
         isValid = false
         errorMessage = nil
-        scope.updateValidationState(keyPath: \.cvv, isValid: false)
+        scope.updateValidationState(\.cvv, isValid: false)
       }
 
       return false
@@ -149,7 +149,7 @@ struct CVVTextField: UIViewRepresentable, LogReporter {
       if trimmedCVV.isEmpty {
         isValid = false  // CVV is required
         errorMessage = nil  // Never show error message for empty fields
-        scope.updateValidationState(keyPath: \.cvv, isValid: false)
+        scope.updateValidationState(\.cvv, isValid: false)
         return
       }
 
@@ -162,12 +162,12 @@ struct CVVTextField: UIViewRepresentable, LogReporter {
 
       if result.isValid {
         scope.clearFieldError(.cvv)
-        scope.updateValidationState(keyPath: \.cvv, isValid: true)
+        scope.updateValidationState(\.cvv, isValid: true)
       } else {
         if let message = result.errorMessage {
           scope.setFieldError(.cvv, message: message, errorCode: result.errorCode)
         }
-        scope.updateValidationState(keyPath: \.cvv, isValid: false)
+        scope.updateValidationState(\.cvv, isValid: false)
       }
     }
   }

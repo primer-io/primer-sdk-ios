@@ -131,7 +131,7 @@ struct CardholderNameTextField: UIViewRepresentable, LogReporter {
 
       isValid = newText.count >= 2
 
-      scope.updateValidationState(keyPath: \.cardholderName, isValid: isValid)
+      scope.updateValidationState(\.cardholderName, isValid: isValid)
 
       return false
     }
@@ -143,7 +143,7 @@ struct CardholderNameTextField: UIViewRepresentable, LogReporter {
       if trimmedName.isEmpty {
         isValid = false  // Cardholder name is required
         errorMessage = nil  // Never show error message for empty fields
-        scope.updateValidationState(keyPath: \.cardholderName, isValid: false)
+        scope.updateValidationState(\.cardholderName, isValid: false)
         return
       }
 
@@ -157,12 +157,12 @@ struct CardholderNameTextField: UIViewRepresentable, LogReporter {
 
       if result.isValid {
         scope.clearFieldError(.cardholderName)
-        scope.updateValidationState(keyPath: \.cardholderName, isValid: true)
+        scope.updateValidationState(\.cardholderName, isValid: true)
       } else {
         if let message = result.errorMessage {
           scope.setFieldError(.cardholderName, message: message, errorCode: result.errorCode)
         }
-        scope.updateValidationState(keyPath: \.cardholderName, isValid: false)
+        scope.updateValidationState(\.cardholderName, isValid: false)
       }
 
     }

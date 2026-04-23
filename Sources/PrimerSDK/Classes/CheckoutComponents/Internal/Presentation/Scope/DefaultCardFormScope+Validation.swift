@@ -15,17 +15,17 @@ extension DefaultCardFormScope {
   /// The SDK uses this to track which fields are valid and determine overall form validity.
   ///
   /// ```swift
-  /// scope.updateValidationState(keyPath: \.cvv, isValid: true)
-  /// scope.updateValidationState(keyPath: \.cardNumber, isValid: false)
+  /// scope.updateValidationState(\.cvv, isValid: true)
+  /// scope.updateValidationState(\.cardNumber, isValid: false)
   /// ```
-  func updateValidationState(keyPath: WritableKeyPath<FieldValidationStates, Bool>, isValid: Bool) {
+  func updateValidationState(_ keyPath: WritableKeyPath<FieldValidationStates, Bool>, isValid: Bool) {
     fieldValidationStates[keyPath: keyPath] = isValid
     updateFieldValidationState()
   }
 
   func updateValidationStateIfNeeded(for field: PrimerInputElementType, isValid: Bool) {
     guard let keyPath = field.validationKeyPath else { return }
-    updateValidationState(keyPath: keyPath, isValid: isValid)
+    updateValidationState(keyPath, isValid: isValid)
   }
 }
 

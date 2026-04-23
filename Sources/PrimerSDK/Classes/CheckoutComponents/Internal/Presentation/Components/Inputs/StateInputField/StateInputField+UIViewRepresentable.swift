@@ -122,7 +122,7 @@ struct StateTextField: UIViewRepresentable, LogReporter {
       // Simple validation while typing (don't show errors until focus loss)
       isValid = !newText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
 
-      scope.updateValidationState(keyPath: \.state, isValid: isValid)
+      scope.updateValidationState(\.state, isValid: isValid)
 
       return false
     }
@@ -134,7 +134,7 @@ struct StateTextField: UIViewRepresentable, LogReporter {
       if trimmedState.isEmpty {
         isValid = false  // State is required
         errorMessage = nil  // Never show error message for empty fields
-        scope.updateValidationState(keyPath: \.state, isValid: false)
+        scope.updateValidationState(\.state, isValid: false)
         return
       }
 
@@ -148,10 +148,10 @@ struct StateTextField: UIViewRepresentable, LogReporter {
 
       if result.isValid {
         scope.clearFieldError(.state)
-        scope.updateValidationState(keyPath: \.state, isValid: true)
+        scope.updateValidationState(\.state, isValid: true)
       } else if let message = result.errorMessage {
         scope.setFieldError(.state, message: message, errorCode: result.errorCode)
-        scope.updateValidationState(keyPath: \.state, isValid: false)
+        scope.updateValidationState(\.state, isValid: false)
       }
     }
   }

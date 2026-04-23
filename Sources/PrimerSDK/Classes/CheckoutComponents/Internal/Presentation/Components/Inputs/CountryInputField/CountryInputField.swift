@@ -185,10 +185,10 @@ struct CountryInputField: View, LogReporter {
 
     if result.isValid {
       clearFieldError()
-      scope.updateValidationState(keyPath: \.countryCode, isValid: true)
+      scope.updateValidationState(\.countryCode, isValid: true)
     } else if let message = result.errorMessage {
       setFieldError(message: message, errorCode: result.errorCode)
-      scope.updateValidationState(keyPath: \.countryCode, isValid: false)
+      scope.updateValidationState(\.countryCode, isValid: false)
     }
   }
 }

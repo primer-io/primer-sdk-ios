@@ -563,10 +563,10 @@ final class DefaultCardFormScopeTests: XCTestCase {
             scope.updateExpiryDate("12/30")
             scope.updateCardholderName("John Doe")
 
-            scope.updateValidationState(keyPath: \.cardNumber, isValid: true)
-            scope.updateValidationState(keyPath: \.cvv, isValid: true)
-            scope.updateValidationState(keyPath: \.expiry, isValid: true)
-            scope.updateValidationState(keyPath: \.cardholderName, isValid: true)
+            scope.updateValidationState(\.cardNumber, isValid: true)
+            scope.updateValidationState(\.cvv, isValid: true)
+            scope.updateValidationState(\.expiry, isValid: true)
+            scope.updateValidationState(\.cardholderName, isValid: true)
 
             XCTAssertTrue(scope.structuredState.isValid)
         }
@@ -584,10 +584,10 @@ final class DefaultCardFormScopeTests: XCTestCase {
             scope.updateExpiryDate("12/30")
             scope.updateCardholderName("John Doe")
 
-            scope.updateValidationState(keyPath: \.cardNumber, isValid: true)
-            scope.updateValidationState(keyPath: \.cvv, isValid: false)
-            scope.updateValidationState(keyPath: \.expiry, isValid: true)
-            scope.updateValidationState(keyPath: \.cardholderName, isValid: true)
+            scope.updateValidationState(\.cardNumber, isValid: true)
+            scope.updateValidationState(\.cvv, isValid: false)
+            scope.updateValidationState(\.expiry, isValid: true)
+            scope.updateValidationState(\.cardholderName, isValid: true)
 
             XCTAssertFalse(scope.structuredState.isValid)
         }
@@ -605,10 +605,10 @@ final class DefaultCardFormScopeTests: XCTestCase {
             scope.updateExpiryDate("12/30")
             scope.updateCardholderName("John Doe")
 
-            scope.updateValidationState(keyPath: \.cardNumber, isValid: true)
-            scope.updateValidationState(keyPath: \.cvv, isValid: true)
-            scope.updateValidationState(keyPath: \.expiry, isValid: false)
-            scope.updateValidationState(keyPath: \.cardholderName, isValid: true)
+            scope.updateValidationState(\.cardNumber, isValid: true)
+            scope.updateValidationState(\.cvv, isValid: true)
+            scope.updateValidationState(\.expiry, isValid: false)
+            scope.updateValidationState(\.cardholderName, isValid: true)
 
             XCTAssertFalse(scope.structuredState.isValid)
         }
@@ -626,10 +626,10 @@ final class DefaultCardFormScopeTests: XCTestCase {
             scope.updateExpiryDate("12/30")
             scope.updateCardholderName("John Doe")
 
-            scope.updateValidationState(keyPath: \.cardNumber, isValid: true)
-            scope.updateValidationState(keyPath: \.cvv, isValid: true)
-            scope.updateValidationState(keyPath: \.expiry, isValid: true)
-            scope.updateValidationState(keyPath: \.cardholderName, isValid: false)
+            scope.updateValidationState(\.cardNumber, isValid: true)
+            scope.updateValidationState(\.cvv, isValid: true)
+            scope.updateValidationState(\.expiry, isValid: true)
+            scope.updateValidationState(\.cardholderName, isValid: false)
 
             XCTAssertFalse(scope.structuredState.isValid)
         }
@@ -647,21 +647,21 @@ final class DefaultCardFormScopeTests: XCTestCase {
             scope.updateExpiryDate("12/30")
             scope.updateCardholderName("John Doe")
 
-            scope.updateValidationState(keyPath: \.cardNumber, isValid: true)
-            scope.updateValidationState(keyPath: \.cvv, isValid: true)
-            scope.updateValidationState(keyPath: \.expiry, isValid: true)
-            scope.updateValidationState(keyPath: \.cardholderName, isValid: true)
+            scope.updateValidationState(\.cardNumber, isValid: true)
+            scope.updateValidationState(\.cvv, isValid: true)
+            scope.updateValidationState(\.expiry, isValid: true)
+            scope.updateValidationState(\.cardholderName, isValid: true)
 
-            scope.updateValidationState(keyPath: \.postalCode, isValid: true)
-            scope.updateValidationState(keyPath: \.city, isValid: true)
-            scope.updateValidationState(keyPath: \.state, isValid: true)
-            scope.updateValidationState(keyPath: \.addressLine1, isValid: true)
-            scope.updateValidationState(keyPath: \.addressLine2, isValid: true)
-            scope.updateValidationState(keyPath: \.firstName, isValid: true)
-            scope.updateValidationState(keyPath: \.lastName, isValid: true)
-            scope.updateValidationState(keyPath: \.email, isValid: true)
-            scope.updateValidationState(keyPath: \.phoneNumber, isValid: true)
-            scope.updateValidationState(keyPath: \.countryCode, isValid: true)
+            scope.updateValidationState(\.postalCode, isValid: true)
+            scope.updateValidationState(\.city, isValid: true)
+            scope.updateValidationState(\.state, isValid: true)
+            scope.updateValidationState(\.addressLine1, isValid: true)
+            scope.updateValidationState(\.addressLine2, isValid: true)
+            scope.updateValidationState(\.firstName, isValid: true)
+            scope.updateValidationState(\.lastName, isValid: true)
+            scope.updateValidationState(\.email, isValid: true)
+            scope.updateValidationState(\.phoneNumber, isValid: true)
+            scope.updateValidationState(\.countryCode, isValid: true)
 
             XCTAssertTrue(scope.structuredState.isValid)
         }
@@ -1185,10 +1185,10 @@ final class DefaultCardFormScopeValidationTests: XCTestCase {
             scope.updateCardholderName("John Doe")
 
             // When
-            scope.updateValidationState(keyPath: \.cardNumber, isValid: true)
-            scope.updateValidationState(keyPath: \.cvv, isValid: true)
-            scope.updateValidationState(keyPath: \.expiry, isValid: true)
-            scope.updateValidationState(keyPath: \.cardholderName, isValid: true)
+            scope.updateValidationState(\.cardNumber, isValid: true)
+            scope.updateValidationState(\.cvv, isValid: true)
+            scope.updateValidationState(\.expiry, isValid: true)
+            scope.updateValidationState(\.cardholderName, isValid: true)
 
             // Then
             XCTAssertTrue(scope.fieldValidationStates.cardNumber)
@@ -1212,14 +1212,14 @@ final class DefaultCardFormScopeValidationTests: XCTestCase {
             scope.updateCardholderName("John Doe")
 
             // Set all valid first
-            scope.updateValidationState(keyPath: \.cardNumber, isValid: true)
-            scope.updateValidationState(keyPath: \.cvv, isValid: true)
-            scope.updateValidationState(keyPath: \.expiry, isValid: true)
-            scope.updateValidationState(keyPath: \.cardholderName, isValid: true)
+            scope.updateValidationState(\.cardNumber, isValid: true)
+            scope.updateValidationState(\.cvv, isValid: true)
+            scope.updateValidationState(\.expiry, isValid: true)
+            scope.updateValidationState(\.cardholderName, isValid: true)
             XCTAssertTrue(scope.structuredState.isValid)
 
             // When — invalidate one field
-            scope.updateValidationState(keyPath: \.cardNumber, isValid: false)
+            scope.updateValidationState(\.cardNumber, isValid: false)
 
             // Then
             XCTAssertFalse(scope.structuredState.isValid)

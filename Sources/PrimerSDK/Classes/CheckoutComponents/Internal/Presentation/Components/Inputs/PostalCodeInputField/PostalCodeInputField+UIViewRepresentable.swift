@@ -138,7 +138,7 @@ struct PostalCodeTextField: UIViewRepresentable, LogReporter {
       // Simple validation while typing (don't show errors until focus loss)
       isValid = !newText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
 
-      scope.updateValidationState(keyPath: \.postalCode, isValid: isValid)
+      scope.updateValidationState(\.postalCode, isValid: isValid)
 
       return false
     }
@@ -150,7 +150,7 @@ struct PostalCodeTextField: UIViewRepresentable, LogReporter {
       if trimmedPostalCode.isEmpty {
         isValid = false  // Postal code is required
         errorMessage = nil  // Never show error message for empty fields
-        scope.updateValidationState(keyPath: \.postalCode, isValid: false)
+        scope.updateValidationState(\.postalCode, isValid: false)
         return
       }
 
@@ -164,10 +164,10 @@ struct PostalCodeTextField: UIViewRepresentable, LogReporter {
 
       if result.isValid {
         scope.clearFieldError(.postalCode)
-        scope.updateValidationState(keyPath: \.postalCode, isValid: true)
+        scope.updateValidationState(\.postalCode, isValid: true)
       } else if let message = result.errorMessage {
         scope.setFieldError(.postalCode, message: message, errorCode: result.errorCode)
-        scope.updateValidationState(keyPath: \.postalCode, isValid: false)
+        scope.updateValidationState(\.postalCode, isValid: false)
       }
     }
   }

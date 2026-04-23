@@ -137,7 +137,7 @@ struct EmailTextField: UIViewRepresentable, LogReporter {
       isValid =
         !newText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && newText.contains("@")
 
-      scope?.updateValidationState(keyPath: \.email, isValid: isValid)
+      scope?.updateValidationState(\.email, isValid: isValid)
 
       return false
     }

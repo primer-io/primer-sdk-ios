@@ -212,7 +212,7 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
       if trimmedExpiry.isEmpty {
         isValid = false  // Expiry date is required
         errorMessage = nil  // Never show error message for empty fields
-        scope.updateValidationState(keyPath: \.expiry, isValid: false)
+        scope.updateValidationState(\.expiry, isValid: false)
         return
       }
 
@@ -227,7 +227,7 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
             .expiryDate, message: CheckoutComponentsStrings.enterValidExpiryDate,
             errorCode: "invalid_format")
         }
-        scope.updateValidationState(keyPath: \.expiry, isValid: false)
+        scope.updateValidationState(\.expiry, isValid: false)
         return
       }
 
@@ -249,12 +249,12 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
 
       if result.isValid {
         scope.clearFieldError(.expiryDate)
-        scope.updateValidationState(keyPath: \.expiry, isValid: true)
+        scope.updateValidationState(\.expiry, isValid: true)
       } else {
         if showErrors, let message = result.errorMessage {
           scope.setFieldError(.expiryDate, message: message, errorCode: result.errorCode)
         }
-        scope.updateValidationState(keyPath: \.expiry, isValid: false)
+        scope.updateValidationState(\.expiry, isValid: false)
       }
     }
   }
