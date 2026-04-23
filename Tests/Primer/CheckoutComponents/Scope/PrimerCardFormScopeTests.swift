@@ -197,8 +197,6 @@ final class PrimerCardFormScopeTests: XCTestCase {
             AnyView(EmptyView())
         }
 
-        func updateValidationState(cardNumber: Bool, cvv: Bool, expiry: Bool, cardholderName: Bool) {}
-
         func DefaultCardFormView(styling: PrimerFieldStyling?) -> AnyView {
             AnyView(EmptyView())
         }

@@ -18,7 +18,7 @@ struct NameTextField: UIViewRepresentable, LogReporter {
   let inputType: PrimerInputElementType
   let styling: PrimerFieldStyling?
   let validationService: ValidationService
-  let scope: (any PrimerCardFormScope)?
+  let scope: (any CardFormFieldScopeInternal)?
   let onNameChange: ((String) -> Void)?
   let onValidationChange: ((Bool) -> Void)?
   let tokens: DesignTokens?
@@ -66,7 +66,7 @@ struct NameTextField: UIViewRepresentable, LogReporter {
     @Binding private var errorMessage: String?
     @Binding private var isFocused: Bool
     private let inputType: PrimerInputElementType
-    private let scope: (any PrimerCardFormScope)?
+    private let scope: (any CardFormFieldScopeInternal)?
     private let onNameChange: ((String) -> Void)?
     private let onValidationChange: ((Bool) -> Void)?
 
@@ -77,7 +77,7 @@ struct NameTextField: UIViewRepresentable, LogReporter {
       errorMessage: Binding<String?>,
       isFocused: Binding<Bool>,
       inputType: PrimerInputElementType,
-      scope: (any PrimerCardFormScope)?,
+      scope: (any CardFormFieldScopeInternal)?,
       onNameChange: ((String) -> Void)?,
       onValidationChange: ((Bool) -> Void)?
     ) {
@@ -151,9 +151,7 @@ struct NameTextField: UIViewRepresentable, LogReporter {
       // Simple validation while typing (don't show errors until focus loss)
       isValid = !newText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
 
-      if let scope = scope as? DefaultCardFormScope {
-        scope.updateValidationStateIfNeeded(for: inputType, isValid: isValid)
-      }
+      scope?.updateValidationStateIfNeeded(for: inputType, isValid: isValid)
 
       return false
     }
@@ -166,9 +164,7 @@ struct NameTextField: UIViewRepresentable, LogReporter {
         isValid = false  // Name fields are required
         errorMessage = nil  // Never show error message for empty fields
         onValidationChange?(false)
-        if let scope = scope as? DefaultCardFormScope {
-          scope.updateValidationStateIfNeeded(for: inputType, isValid: false)
-        }
+        scope?.updateValidationStateIfNeeded(for: inputType, isValid: false)
         return
       }
 
@@ -196,14 +192,10 @@ struct NameTextField: UIViewRepresentable, LogReporter {
       if let scope {
         if result.isValid {
           scope.clearFieldError(inputType)
-          if let scope = scope as? DefaultCardFormScope {
-            scope.updateValidationStateIfNeeded(for: inputType, isValid: true)
-          }
+          scope.updateValidationStateIfNeeded(for: inputType, isValid: true)
         } else if let message = result.errorMessage {
           scope.setFieldError(inputType, message: message, errorCode: result.errorCode)
-          if let scope = scope as? DefaultCardFormScope {
-            scope.updateValidationStateIfNeeded(for: inputType, isValid: false)
-          }
+          scope.updateValidationStateIfNeeded(for: inputType, isValid: false)
         }
       }
     }

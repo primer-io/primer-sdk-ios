@@ -18,12 +18,12 @@ extension DefaultCardFormScope {
   /// scope.updateValidationState(\.cvv, isValid: true)
   /// scope.updateValidationState(\.cardNumber, isValid: false)
   /// ```
-  public func updateValidationState(_ field: WritableKeyPath<FieldValidationStates, Bool>, isValid: Bool) {
-    fieldValidationStates[keyPath: field] = isValid
+  func updateValidationState(_ keyPath: WritableKeyPath<FieldValidationStates, Bool>, isValid: Bool) {
+    fieldValidationStates[keyPath: keyPath] = isValid
     updateFieldValidationState()
   }
 
-  public func updateValidationStateIfNeeded(for field: PrimerInputElementType, isValid: Bool) {
+  func updateValidationStateIfNeeded(for field: PrimerInputElementType, isValid: Bool) {
     guard let keyPath = field.validationKeyPath else { return }
     updateValidationState(keyPath, isValid: isValid)
   }

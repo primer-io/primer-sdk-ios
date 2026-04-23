@@ -19,7 +19,7 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
   let placeholder: String
   let styling: PrimerFieldStyling?
   let validationService: ValidationService
-  let scope: any PrimerCardFormScope
+  let scope: any CardFormFieldScopeInternal
   let tokens: DesignTokens?
 
   func makeUIView(context: Context) -> UITextField {
@@ -65,7 +65,7 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
     @Binding private var isValid: Bool
     @Binding private var errorMessage: String?
     @Binding private var isFocused: Bool
-    private let scope: any PrimerCardFormScope
+    private let scope: any CardFormFieldScopeInternal
 
     init(
       validationService: ValidationService,
@@ -75,7 +75,7 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
       isValid: Binding<Bool>,
       errorMessage: Binding<String?>,
       isFocused: Binding<Bool>,
-      scope: any PrimerCardFormScope
+      scope: any CardFormFieldScopeInternal
     ) {
       self.validationService = validationService
       _expiryDate = expiryDate
@@ -212,9 +212,7 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
       if trimmedExpiry.isEmpty {
         isValid = false  // Expiry date is required
         errorMessage = nil  // Never show error message for empty fields
-        if let scope = scope as? DefaultCardFormScope {
-          scope.updateValidationState(\.expiry, isValid: false)
-        }
+        scope.updateValidationState(\.expiry, isValid: false)
         return
       }
 
@@ -229,9 +227,7 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
             .expiryDate, message: CheckoutComponentsStrings.enterValidExpiryDate,
             errorCode: "invalid_format")
         }
-        if let scope = scope as? DefaultCardFormScope {
-          scope.updateValidationState(\.expiry, isValid: false)
-        }
+        scope.updateValidationState(\.expiry, isValid: false)
         return
       }
 
@@ -253,16 +249,12 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
 
       if result.isValid {
         scope.clearFieldError(.expiryDate)
-        if let scope = scope as? DefaultCardFormScope {
-          scope.updateValidationState(\.expiry, isValid: true)
-        }
+        scope.updateValidationState(\.expiry, isValid: true)
       } else {
         if showErrors, let message = result.errorMessage {
           scope.setFieldError(.expiryDate, message: message, errorCode: result.errorCode)
         }
-        if let scope = scope as? DefaultCardFormScope {
-          scope.updateValidationState(\.expiry, isValid: false)
-        }
+        scope.updateValidationState(\.expiry, isValid: false)
       }
     }
   }

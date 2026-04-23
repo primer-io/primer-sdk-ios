@@ -18,7 +18,7 @@ struct AddressLineTextField: UIViewRepresentable, LogReporter {
   let inputType: PrimerInputElementType
   let styling: PrimerFieldStyling?
   let validationService: ValidationService
-  let scope: (any PrimerCardFormScope)?
+  let scope: (any CardFormFieldScopeInternal)?
   let onAddressChange: ((String) -> Void)?
   let onValidationChange: ((Bool) -> Void)?
   let tokens: DesignTokens?
@@ -68,7 +68,7 @@ struct AddressLineTextField: UIViewRepresentable, LogReporter {
     @Binding private var isFocused: Bool
     private let isRequired: Bool
     private let inputType: PrimerInputElementType
-    private let scope: (any PrimerCardFormScope)?
+    private let scope: (any CardFormFieldScopeInternal)?
     private let onAddressChange: ((String) -> Void)?
     private let onValidationChange: ((Bool) -> Void)?
 
@@ -80,7 +80,7 @@ struct AddressLineTextField: UIViewRepresentable, LogReporter {
       isFocused: Binding<Bool>,
       isRequired: Bool,
       inputType: PrimerInputElementType,
-      scope: (any PrimerCardFormScope)?,
+      scope: (any CardFormFieldScopeInternal)?,
       onAddressChange: ((String) -> Void)?,
       onValidationChange: ((Bool) -> Void)?
     ) {
@@ -157,9 +157,7 @@ struct AddressLineTextField: UIViewRepresentable, LogReporter {
         isValid = true  // Optional fields are always valid while typing
       }
 
-      if let scope = scope as? DefaultCardFormScope {
-        scope.updateValidationStateIfNeeded(for: inputType, isValid: isValid)
-      }
+      scope?.updateValidationStateIfNeeded(for: inputType, isValid: isValid)
 
       return false
     }
@@ -174,10 +172,7 @@ struct AddressLineTextField: UIViewRepresentable, LogReporter {
         onValidationChange?(isValid)
 
         scope?.clearFieldError(inputType)
-
-        if let scope = scope as? DefaultCardFormScope {
-          scope.updateValidationStateIfNeeded(for: inputType, isValid: isValid)
-        }
+        scope?.updateValidationStateIfNeeded(for: inputType, isValid: isValid)
         return
       }
 
@@ -205,14 +200,10 @@ struct AddressLineTextField: UIViewRepresentable, LogReporter {
       if let scope {
         if result.isValid {
           scope.clearFieldError(inputType)
-          if let scope = scope as? DefaultCardFormScope {
-            scope.updateValidationStateIfNeeded(for: inputType, isValid: true)
-          }
+          scope.updateValidationStateIfNeeded(for: inputType, isValid: true)
         } else if let message = result.errorMessage {
           scope.setFieldError(inputType, message: message, errorCode: result.errorCode)
-          if let scope = scope as? DefaultCardFormScope {
-            scope.updateValidationStateIfNeeded(for: inputType, isValid: false)
-          }
+          scope.updateValidationStateIfNeeded(for: inputType, isValid: false)
         }
       }
     }

@@ -6,26 +6,9 @@
 
 import SwiftUI
 
-struct FieldValidationStates: Equatable {
-  var cardNumber: Bool = false
-  var cvv: Bool = false
-  var expiry: Bool = false
-  var cardholderName: Bool = false
-  var postalCode: Bool = false
-  var countryCode: Bool = false
-  var city: Bool = false
-  var state: Bool = false
-  var addressLine1: Bool = false
-  var addressLine2: Bool = false
-  var firstName: Bool = false
-  var lastName: Bool = false
-  var email: Bool = false
-  var phoneNumber: Bool = false
-}
-
 @available(iOS 15.0, *)
 @MainActor
-final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, LogReporter {
+final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, LogReporter {
 
   private(set) var presentationContext: PresentationContext = .fromPaymentSelection
 

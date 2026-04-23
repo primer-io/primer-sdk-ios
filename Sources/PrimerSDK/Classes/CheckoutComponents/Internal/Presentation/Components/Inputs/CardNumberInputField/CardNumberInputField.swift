@@ -10,7 +10,7 @@ import SwiftUI
 struct CardNumberInputField: View, LogReporter {
   let label: String?
   let placeholder: String
-  let scope: any PrimerCardFormScope
+  let scope: any CardFormFieldScopeInternal
   let selectedNetwork: CardNetwork?
   let availableNetworks: [CardNetwork]
   let styling: PrimerFieldStyling?
@@ -35,7 +35,7 @@ struct CardNumberInputField: View, LogReporter {
   init(
     label: String?,
     placeholder: String,
-    scope: any PrimerCardFormScope,
+    scope: any CardFormFieldScopeInternal,
     selectedNetwork: CardNetwork? = nil,
     availableNetworks: [CardNetwork] = [],
     styling: PrimerFieldStyling? = nil

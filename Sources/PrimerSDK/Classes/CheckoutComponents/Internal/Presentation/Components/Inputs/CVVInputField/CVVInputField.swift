@@ -10,7 +10,7 @@ import SwiftUI
 struct CVVInputField: View, LogReporter {
   let label: String?
   let placeholder: String
-  let scope: any PrimerCardFormScope
+  let scope: any CardFormFieldScopeInternal
   let cardNetwork: CardNetwork
   let styling: PrimerFieldStyling?
 
@@ -29,7 +29,7 @@ struct CVVInputField: View, LogReporter {
   init(
     label: String?,
     placeholder: String,
-    scope: any PrimerCardFormScope,
+    scope: any CardFormFieldScopeInternal,
     cardNetwork: CardNetwork,
     styling: PrimerFieldStyling? = nil
   ) {

@@ -8,7 +8,7 @@ import SwiftUI
 
 @available(iOS 15.0, *)
 struct CardDetailsView: View {
-  let cardFormScope: any PrimerCardFormScope
+  let cardFormScope: any CardFormFieldScopeInternal
   @State private var cardNetwork: CardNetwork = .unknown
 
   @Environment(\.designTokens) private var tokens

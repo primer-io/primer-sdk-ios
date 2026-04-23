@@ -11,7 +11,7 @@
   /// Mock implementation of PrimerCardFormScope for SwiftUI previews
   /// Provides configurable behavior and debug logging to help test different UI states
   @available(iOS 15.0, *)
-  public class MockCardFormScope: PrimerCardFormScope {
+  public class MockCardFormScope: CardFormFieldScopeInternal {
 
     // MARK: - Configuration Properties
 
@@ -234,12 +234,12 @@
       log("updateCountryCode: \(countryCode)")
     }
 
-    public func updateValidationState(
-      cardNumber: Bool, cvv: Bool, expiry: Bool, cardholderName: Bool
-    ) {
-      log(
-        "updateValidationState - cardNumber: \(cardNumber), cvv: \(cvv), expiry: \(expiry), cardholderName: \(cardholderName)"
-      )
+    func updateValidationState(_ keyPath: WritableKeyPath<FieldValidationStates, Bool>, isValid: Bool) {
+      log("updateValidationState keyPath: \(keyPath), isValid: \(isValid)")
+    }
+
+    func updateValidationStateIfNeeded(for field: PrimerInputElementType, isValid: Bool) {
+      log("updateValidationStateIfNeeded field: \(field), isValid: \(isValid)")
     }
 
     // MARK: - Structured State Support

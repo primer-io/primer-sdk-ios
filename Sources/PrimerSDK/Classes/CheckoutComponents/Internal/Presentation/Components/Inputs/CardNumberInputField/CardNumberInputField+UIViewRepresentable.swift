@@ -15,7 +15,7 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
   @Binding var errorMessage: String?
   @Binding var isFocused: Bool
 
-  let scope: any PrimerCardFormScope
+  let scope: any CardFormFieldScopeInternal
   let placeholder: String
   let styling: PrimerFieldStyling?
   let validationService: ValidationService
@@ -74,14 +74,14 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
     @Binding private var isValid: Bool
     @Binding private var errorMessage: String?
     @Binding private var isFocused: Bool
-    private let scope: any PrimerCardFormScope
+    private let scope: any CardFormFieldScopeInternal
     private let validationService: ValidationService
     private var savedCursorPosition: Int = 0
     private var networkDetectionTimer: Timer?
     private var validationTimer: Timer?
 
     init(
-      scope: any PrimerCardFormScope,
+      scope: any CardFormFieldScopeInternal,
       validationService: ValidationService,
       cardNumber: Binding<String>,
       cardNetwork: Binding<CardNetwork>,
