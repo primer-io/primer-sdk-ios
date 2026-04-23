@@ -68,10 +68,17 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
                 do {
                     PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: nil, message: nil)
                     
+                    try await checkWillCreatePaymentDecision()
+                    
                     let context = generateContext()
                     let orchestrator = try await makeOrchestrator(context)
                     orchestrator.onCancelled = { [weak self] in self?.handleCancelled() }
                     self.orchestrator = orchestrator
+                    
+                    orchestrator.onURLOpened = { [weak self] in
+                        guard let self else { return }
+                        PrimerDelegateProxy.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for: paymentMethodType)
+                    }
                     
                     logBDCStarted()
                     
@@ -94,6 +101,18 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
         if PrimerAPIConfigurationModule.decodedJWTToken?.isValid != true {
             throw handled(primerError: .invalidClientToken())
         }
+    }
+    
+    private func checkWillCreatePaymentDecision() async throws {
+        let checkoutPaymentMethodType = PrimerCheckoutPaymentMethodType(type: paymentMethodType)
+        let decision = await PrimerDelegateProxy.primerWillCreatePaymentWithData(
+            PrimerCheckoutPaymentMethodData(type: checkoutPaymentMethodType)
+        )
+        switch decision.type {
+        case let .abort(message): throw PrimerError.merchantError(message: message ?? "")
+        case .continue: return
+        }
+        
     }
     
     @MainActor

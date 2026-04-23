@@ -38,7 +38,7 @@ PODS:
   - IQTextView (1.0.5):
     - IQKeyboardToolbar/Placeholderable
   - Primer3DS (2.8.0)
-  - PrimerBDCCore (1.0.1):
+  - PrimerBDCCore (1.0.2):
     - PrimerBDCEngine (~> 1.0)
     - PrimerFoundation (~> 1.0)
     - PrimerStepResolver (~> 1.0)
@@ -103,7 +103,7 @@ SPEC CHECKSUMS:
   IQTextInputViewNotification: 3b9fb27a16e7ee8958cc9092cfb07a1a9e1fd559
   IQTextView: ae13b4922f22e6f027f62c557d9f4f236b19d5c7
   Primer3DS: b8b583ef260f703180870358bc55069de74f8f51
-  PrimerBDCCore: a21a3edf90b4395da63bc64c560e338f3d9befca
+  PrimerBDCCore: 483b5da368e138ff1cd44acf4a82b49726167551
   PrimerBDCEngine: b70189817cbb7fe2420ae5fe843a390b337c24d6
   PrimerFoundation: 6067c46396691479b421015da260d4cf0824d4bc
   PrimerIPay88MYSDK: 436ee0be7e2c97e4e81456ccddee20175e9e3c4d

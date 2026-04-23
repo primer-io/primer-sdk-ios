@@ -23,6 +23,11 @@ final class BackendDrivenCheckoutViewModelTests: XCTestCase {
         super.setUp()
         SDKSessionHelper.setUp(withPaymentMethods: [stubConfig])
         delegate = MockPrimerHeadlessUniversalCheckoutDelegate()
+        
+        delegate.onWillCreatePaymentWithData = { data, decision in
+            decision(.continuePaymentCreation())
+        }
+        
         PrimerHeadlessUniversalCheckout.current.delegate = delegate
         uiManager = MockPrimerUIManager()
         uiManager.primerRootViewController = MockPrimerRootViewController()
@@ -156,6 +161,7 @@ private extension BackendDrivenCheckoutViewModelTests {
 
 @MainActor
 private final class MockBDCStepOrchestrator: StepOrchestrating {
+    var onURLOpen: (() -> Void)?
     var onCancelled: (() -> Void)?
     var startCallCount = 0
     var startError: Error?
