@@ -8,7 +8,7 @@ import SwiftUI
 
 @available(iOS 15.0, *)
 struct CardFormScreen: View, LogReporter {
-  let scope: any PrimerCardFormScope
+  let scope: any CardFormFieldScopeInternal
 
   @Environment(\.designTokens) private var tokens
   @Environment(\.bridgeController) private var bridgeController

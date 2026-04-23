@@ -16,7 +16,7 @@ struct CardholderNameTextField: UIViewRepresentable, LogReporter {
   let placeholder: String
   let styling: PrimerFieldStyling?
   let validationService: ValidationService
-  let scope: any PrimerCardFormScope
+  let scope: any CardFormFieldScopeInternal
   let tokens: DesignTokens?
 
   func makeUIView(context: Context) -> UITextField {
@@ -60,7 +60,7 @@ struct CardholderNameTextField: UIViewRepresentable, LogReporter {
     @Binding private var isValid: Bool
     @Binding private var errorMessage: String?
     @Binding private var isFocused: Bool
-    private let scope: any PrimerCardFormScope
+    private let scope: any CardFormFieldScopeInternal
 
     init(
       validationService: ValidationService,
@@ -68,7 +68,7 @@ struct CardholderNameTextField: UIViewRepresentable, LogReporter {
       isValid: Binding<Bool>,
       errorMessage: Binding<String?>,
       isFocused: Binding<Bool>,
-      scope: any PrimerCardFormScope
+      scope: any CardFormFieldScopeInternal
     ) {
       self.validationService = validationService
       _cardholderName = cardholderName
@@ -131,9 +131,7 @@ struct CardholderNameTextField: UIViewRepresentable, LogReporter {
 
       isValid = newText.count >= 2
 
-      if let scope = scope as? DefaultCardFormScope {
-        scope.updateValidationState(\.cardholderName, isValid: isValid)
-      }
+      scope.updateValidationState(keyPath: \.cardholderName, isValid: isValid)
 
       return false
     }
@@ -145,9 +143,7 @@ struct CardholderNameTextField: UIViewRepresentable, LogReporter {
       if trimmedName.isEmpty {
         isValid = false  // Cardholder name is required
         errorMessage = nil  // Never show error message for empty fields
-        if let scope = scope as? DefaultCardFormScope {
-          scope.updateValidationState(\.cardholderName, isValid: false)
-        }
+        scope.updateValidationState(keyPath: \.cardholderName, isValid: false)
         return
       }
 
@@ -161,16 +157,12 @@ struct CardholderNameTextField: UIViewRepresentable, LogReporter {
 
       if result.isValid {
         scope.clearFieldError(.cardholderName)
-        if let scope = scope as? DefaultCardFormScope {
-          scope.updateValidationState(\.cardholderName, isValid: true)
-        }
+        scope.updateValidationState(keyPath: \.cardholderName, isValid: true)
       } else {
         if let message = result.errorMessage {
           scope.setFieldError(.cardholderName, message: message, errorCode: result.errorCode)
         }
-        if let scope = scope as? DefaultCardFormScope {
-          scope.updateValidationState(\.cardholderName, isValid: false)
-        }
+        scope.updateValidationState(keyPath: \.cardholderName, isValid: false)
       }
 
     }

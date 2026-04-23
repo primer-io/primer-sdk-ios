@@ -17,7 +17,7 @@ struct CityTextField: UIViewRepresentable, LogReporter {
   let placeholder: String
   let styling: PrimerFieldStyling?
   let validationService: ValidationService
-  let scope: any PrimerCardFormScope
+  let scope: any CardFormFieldScopeInternal
   let tokens: DesignTokens?
 
   func makeUIView(context: Context) -> UITextField {
@@ -59,7 +59,7 @@ struct CityTextField: UIViewRepresentable, LogReporter {
     @Binding private var isValid: Bool
     @Binding private var errorMessage: String?
     @Binding private var isFocused: Bool
-    private let scope: any PrimerCardFormScope
+    private let scope: any CardFormFieldScopeInternal
 
     init(
       validationService: ValidationService,
@@ -67,7 +67,7 @@ struct CityTextField: UIViewRepresentable, LogReporter {
       isValid: Binding<Bool>,
       errorMessage: Binding<String?>,
       isFocused: Binding<Bool>,
-      scope: any PrimerCardFormScope
+      scope: any CardFormFieldScopeInternal
     ) {
       self.validationService = validationService
       _city = city
@@ -122,9 +122,7 @@ struct CityTextField: UIViewRepresentable, LogReporter {
       // Simple validation while typing (don't show errors until focus loss)
       isValid = !newText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
 
-      if let scope = scope as? DefaultCardFormScope {
-        scope.updateValidationState(\.city, isValid: isValid)
-      }
+      scope.updateValidationState(keyPath: \.city, isValid: isValid)
 
       return false
     }
@@ -136,9 +134,7 @@ struct CityTextField: UIViewRepresentable, LogReporter {
       if trimmedCity.isEmpty {
         isValid = false  // City is required
         errorMessage = nil  // Never show error message for empty fields
-        if let scope = scope as? DefaultCardFormScope {
-          scope.updateValidationState(\.city, isValid: false)
-        }
+        scope.updateValidationState(keyPath: \.city, isValid: false)
         return
       }
 
@@ -152,14 +148,10 @@ struct CityTextField: UIViewRepresentable, LogReporter {
 
       if result.isValid {
         scope.clearFieldError(.city)
-        if let scope = scope as? DefaultCardFormScope {
-          scope.updateValidationState(\.city, isValid: true)
-        }
+        scope.updateValidationState(keyPath: \.city, isValid: true)
       } else if let message = result.errorMessage {
         scope.setFieldError(.city, message: message, errorCode: result.errorCode)
-        if let scope = scope as? DefaultCardFormScope {
-          scope.updateValidationState(\.city, isValid: false)
-        }
+        scope.updateValidationState(keyPath: \.city, isValid: false)
       }
     }
   }

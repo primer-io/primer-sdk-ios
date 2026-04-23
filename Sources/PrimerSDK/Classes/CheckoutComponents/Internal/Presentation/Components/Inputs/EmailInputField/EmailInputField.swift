@@ -11,7 +11,7 @@ struct EmailInputField: View, LogReporter {
   let label: String?
   let placeholder: String
   let initialValue: String
-  let scope: (any PrimerCardFormScope)?
+  let scope: (any CardFormFieldScopeInternal)?
   let onEmailChange: ((String) -> Void)?
   let onValidationChange: ((Bool) -> Void)?
   let styling: PrimerFieldStyling?
@@ -31,7 +31,7 @@ struct EmailInputField: View, LogReporter {
   init(
     label: String?,
     placeholder: String,
-    scope: any PrimerCardFormScope,
+    scope: any CardFormFieldScopeInternal,
     styling: PrimerFieldStyling? = nil
   ) {
     self.label = label

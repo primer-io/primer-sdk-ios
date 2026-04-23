@@ -12,7 +12,7 @@ struct AddressLineInputField: View, LogReporter {
   let placeholder: String
   let isRequired: Bool
   let inputType: PrimerInputElementType
-  let scope: (any PrimerCardFormScope)?
+  let scope: (any CardFormFieldScopeInternal)?
   let onAddressChange: ((String) -> Void)?
   let onValidationChange: ((Bool) -> Void)?
   let styling: PrimerFieldStyling?
@@ -35,7 +35,7 @@ struct AddressLineInputField: View, LogReporter {
     placeholder: String,
     isRequired: Bool,
     inputType: PrimerInputElementType,
-    scope: any PrimerCardFormScope,
+    scope: any CardFormFieldScopeInternal,
     styling: PrimerFieldStyling? = nil
   ) {
     self.label = label

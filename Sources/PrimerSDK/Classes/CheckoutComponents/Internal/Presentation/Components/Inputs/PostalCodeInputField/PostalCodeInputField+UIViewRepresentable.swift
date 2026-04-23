@@ -19,7 +19,7 @@ struct PostalCodeTextField: UIViewRepresentable, LogReporter {
   let keyboardType: UIKeyboardType
   let styling: PrimerFieldStyling?
   let validationService: ValidationService
-  let scope: any PrimerCardFormScope
+  let scope: any CardFormFieldScopeInternal
   let tokens: DesignTokens?
 
   func makeUIView(context: Context) -> UITextField {
@@ -73,7 +73,7 @@ struct PostalCodeTextField: UIViewRepresentable, LogReporter {
     @Binding private var errorMessage: String?
     @Binding private var isFocused: Bool
     private let countryCode: String?
-    private let scope: any PrimerCardFormScope
+    private let scope: any CardFormFieldScopeInternal
 
     init(
       validationService: ValidationService,
@@ -82,7 +82,7 @@ struct PostalCodeTextField: UIViewRepresentable, LogReporter {
       errorMessage: Binding<String?>,
       isFocused: Binding<Bool>,
       countryCode: String?,
-      scope: any PrimerCardFormScope
+      scope: any CardFormFieldScopeInternal
     ) {
       self.validationService = validationService
       _postalCode = postalCode
@@ -138,9 +138,7 @@ struct PostalCodeTextField: UIViewRepresentable, LogReporter {
       // Simple validation while typing (don't show errors until focus loss)
       isValid = !newText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
 
-      if let scope = scope as? DefaultCardFormScope {
-        scope.updateValidationState(\.postalCode, isValid: isValid)
-      }
+      scope.updateValidationState(keyPath: \.postalCode, isValid: isValid)
 
       return false
     }
@@ -152,9 +150,7 @@ struct PostalCodeTextField: UIViewRepresentable, LogReporter {
       if trimmedPostalCode.isEmpty {
         isValid = false  // Postal code is required
         errorMessage = nil  // Never show error message for empty fields
-        if let scope = scope as? DefaultCardFormScope {
-          scope.updateValidationState(\.postalCode, isValid: false)
-        }
+        scope.updateValidationState(keyPath: \.postalCode, isValid: false)
         return
       }
 
@@ -168,14 +164,10 @@ struct PostalCodeTextField: UIViewRepresentable, LogReporter {
 
       if result.isValid {
         scope.clearFieldError(.postalCode)
-        if let scope = scope as? DefaultCardFormScope {
-          scope.updateValidationState(\.postalCode, isValid: true)
-        }
+        scope.updateValidationState(keyPath: \.postalCode, isValid: true)
       } else if let message = result.errorMessage {
         scope.setFieldError(.postalCode, message: message, errorCode: result.errorCode)
-        if let scope = scope as? DefaultCardFormScope {
-          scope.updateValidationState(\.postalCode, isValid: false)
-        }
+        scope.updateValidationState(keyPath: \.postalCode, isValid: false)
       }
     }
   }

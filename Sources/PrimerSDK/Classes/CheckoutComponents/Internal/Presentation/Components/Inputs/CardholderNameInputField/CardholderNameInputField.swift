@@ -10,7 +10,7 @@ import SwiftUI
 struct CardholderNameInputField: View, LogReporter {
   let label: String?
   let placeholder: String
-  let scope: any PrimerCardFormScope
+  let scope: any CardFormFieldScopeInternal
   let styling: PrimerFieldStyling?
 
   // MARK: - Private Properties
@@ -28,7 +28,7 @@ struct CardholderNameInputField: View, LogReporter {
   init(
     label: String?,
     placeholder: String,
-    scope: any PrimerCardFormScope,
+    scope: any CardFormFieldScopeInternal,
     styling: PrimerFieldStyling? = nil
   ) {
     self.label = label

@@ -12,7 +12,7 @@ struct PostalCodeInputField: View, LogReporter {
   let label: String?
   let placeholder: String
   let countryCode: String?
-  let scope: any PrimerCardFormScope
+  let scope: any CardFormFieldScopeInternal
   let styling: PrimerFieldStyling?
 
   // MARK: - Private Properties
@@ -40,7 +40,7 @@ struct PostalCodeInputField: View, LogReporter {
     label: String?,
     placeholder: String,
     countryCode: String? = nil,
-    scope: any PrimerCardFormScope,
+    scope: any CardFormFieldScopeInternal,
     styling: PrimerFieldStyling? = nil
   ) {
     self.label = label

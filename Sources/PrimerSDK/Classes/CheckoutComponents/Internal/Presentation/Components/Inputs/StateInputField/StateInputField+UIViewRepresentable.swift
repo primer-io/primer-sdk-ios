@@ -17,7 +17,7 @@ struct StateTextField: UIViewRepresentable, LogReporter {
   let placeholder: String
   let styling: PrimerFieldStyling?
   let validationService: ValidationService
-  let scope: any PrimerCardFormScope
+  let scope: any CardFormFieldScopeInternal
   let tokens: DesignTokens?
 
   func makeUIView(context: Context) -> UITextField {
@@ -59,7 +59,7 @@ struct StateTextField: UIViewRepresentable, LogReporter {
     @Binding private var isValid: Bool
     @Binding private var errorMessage: String?
     @Binding private var isFocused: Bool
-    private let scope: any PrimerCardFormScope
+    private let scope: any CardFormFieldScopeInternal
 
     init(
       validationService: ValidationService,
@@ -67,7 +67,7 @@ struct StateTextField: UIViewRepresentable, LogReporter {
       isValid: Binding<Bool>,
       errorMessage: Binding<String?>,
       isFocused: Binding<Bool>,
-      scope: any PrimerCardFormScope
+      scope: any CardFormFieldScopeInternal
     ) {
       self.validationService = validationService
       _state = state
@@ -122,9 +122,7 @@ struct StateTextField: UIViewRepresentable, LogReporter {
       // Simple validation while typing (don't show errors until focus loss)
       isValid = !newText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
 
-      if let scope = scope as? DefaultCardFormScope {
-        scope.updateValidationState(\.state, isValid: isValid)
-      }
+      scope.updateValidationState(keyPath: \.state, isValid: isValid)
 
       return false
     }
@@ -136,9 +134,7 @@ struct StateTextField: UIViewRepresentable, LogReporter {
       if trimmedState.isEmpty {
         isValid = false  // State is required
         errorMessage = nil  // Never show error message for empty fields
-        if let scope = scope as? DefaultCardFormScope {
-          scope.updateValidationState(\.state, isValid: false)
-        }
+        scope.updateValidationState(keyPath: \.state, isValid: false)
         return
       }
 
@@ -152,14 +148,10 @@ struct StateTextField: UIViewRepresentable, LogReporter {
 
       if result.isValid {
         scope.clearFieldError(.state)
-        if let scope = scope as? DefaultCardFormScope {
-          scope.updateValidationState(\.state, isValid: true)
-        }
+        scope.updateValidationState(keyPath: \.state, isValid: true)
       } else if let message = result.errorMessage {
         scope.setFieldError(.state, message: message, errorCode: result.errorCode)
-        if let scope = scope as? DefaultCardFormScope {
-          scope.updateValidationState(\.state, isValid: false)
-        }
+        scope.updateValidationState(keyPath: \.state, isValid: false)
       }
     }
   }

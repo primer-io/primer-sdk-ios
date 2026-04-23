@@ -12,7 +12,7 @@ struct NameInputField: View, LogReporter {
   let placeholder: String
   let inputType: PrimerInputElementType
   let initialValue: String
-  let scope: (any PrimerCardFormScope)?
+  let scope: (any CardFormFieldScopeInternal)?
   let onNameChange: ((String) -> Void)?
   let onValidationChange: ((Bool) -> Void)?
   let styling: PrimerFieldStyling?
@@ -33,7 +33,7 @@ struct NameInputField: View, LogReporter {
     label: String?,
     placeholder: String,
     inputType: PrimerInputElementType,
-    scope: any PrimerCardFormScope,
+    scope: any CardFormFieldScopeInternal,
     styling: PrimerFieldStyling? = nil
   ) {
     self.label = label

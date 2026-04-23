@@ -17,7 +17,7 @@ struct EmailTextField: UIViewRepresentable, LogReporter {
   let placeholder: String
   let styling: PrimerFieldStyling?
   let validationService: ValidationService
-  let scope: (any PrimerCardFormScope)?
+  let scope: (any CardFormFieldScopeInternal)?
   let onEmailChange: ((String) -> Void)?
   let onValidationChange: ((Bool) -> Void)?
   let tokens: DesignTokens?
@@ -63,7 +63,7 @@ struct EmailTextField: UIViewRepresentable, LogReporter {
     @Binding private var isValid: Bool
     @Binding private var errorMessage: String?
     @Binding private var isFocused: Bool
-    private let scope: (any PrimerCardFormScope)?
+    private let scope: (any CardFormFieldScopeInternal)?
     private let onEmailChange: ((String) -> Void)?
     private let onValidationChange: ((Bool) -> Void)?
 
@@ -73,7 +73,7 @@ struct EmailTextField: UIViewRepresentable, LogReporter {
       isValid: Binding<Bool>,
       errorMessage: Binding<String?>,
       isFocused: Binding<Bool>,
-      scope: (any PrimerCardFormScope)?,
+      scope: (any CardFormFieldScopeInternal)?,
       onEmailChange: ((String) -> Void)?,
       onValidationChange: ((Bool) -> Void)?
     ) {
@@ -137,9 +137,7 @@ struct EmailTextField: UIViewRepresentable, LogReporter {
       isValid =
         !newText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && newText.contains("@")
 
-      if let scope = scope as? DefaultCardFormScope {
-        scope.updateValidationState(\.email, isValid: isValid)
-      }
+      scope?.updateValidationState(keyPath: \.email, isValid: isValid)
 
       return false
     }

@@ -141,11 +141,6 @@ where State == PrimerCardFormState {
   func PrimerRetailOutletField(label: String?, styling: PrimerFieldStyling?) -> AnyView
   func PrimerOtpCodeField(label: String?, styling: PrimerFieldStyling?) -> AnyView
 
-  // MARK: - Validation State Communication
-
-  func updateValidationState(cardNumber: Bool, cvv: Bool, expiry: Bool, cardholderName: Bool)
-  func updateValidationStateIfNeeded(for field: PrimerInputElementType, isValid: Bool)
-
   // MARK: - Structured State Support
 
   func updateField(_ fieldType: PrimerInputElementType, value: String)
@@ -223,10 +218,6 @@ extension PrimerCardFormScope {
 
   public func getFormConfiguration() -> CardFormConfiguration {
     CardFormConfiguration.default
-  }
-
-  public func updateValidationStateIfNeeded(for field: PrimerInputElementType, isValid: Bool) {
-    // No-op default; overridden in DefaultCardFormScope
   }
 }
 

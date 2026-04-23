@@ -18,7 +18,7 @@ struct CVVTextField: UIViewRepresentable, LogReporter {
   let cardNetwork: CardNetwork
   let styling: PrimerFieldStyling?
   let validationService: ValidationService
-  let scope: any PrimerCardFormScope
+  let scope: any CardFormFieldScopeInternal
   let tokens: DesignTokens?
 
   func makeUIView(context: Context) -> SecureTextField {
@@ -62,7 +62,7 @@ struct CVVTextField: UIViewRepresentable, LogReporter {
     @Binding private var isValid: Bool
     @Binding private var errorMessage: String?
     @Binding private var isFocused: Bool
-    private let scope: any PrimerCardFormScope
+    private let scope: any CardFormFieldScopeInternal
 
     private var expectedCVVLength: Int {
       cardNetwork.validation?.code.length ?? 3
@@ -75,7 +75,7 @@ struct CVVTextField: UIViewRepresentable, LogReporter {
       isValid: Binding<Bool>,
       errorMessage: Binding<String?>,
       isFocused: Binding<Bool>,
-      scope: any PrimerCardFormScope
+      scope: any CardFormFieldScopeInternal
     ) {
       self.validationService = validationService
       self.cardNetwork = cardNetwork
@@ -137,9 +137,7 @@ struct CVVTextField: UIViewRepresentable, LogReporter {
       } else {
         isValid = false
         errorMessage = nil
-        if let scope = scope as? DefaultCardFormScope {
-          scope.updateValidationState(\.cvv, isValid: false)
-        }
+        scope.updateValidationState(keyPath: \.cvv, isValid: false)
       }
 
       return false
@@ -151,9 +149,7 @@ struct CVVTextField: UIViewRepresentable, LogReporter {
       if trimmedCVV.isEmpty {
         isValid = false  // CVV is required
         errorMessage = nil  // Never show error message for empty fields
-        if let scope = scope as? DefaultCardFormScope {
-          scope.updateValidationState(\.cvv, isValid: false)
-        }
+        scope.updateValidationState(keyPath: \.cvv, isValid: false)
         return
       }
 
@@ -166,16 +162,12 @@ struct CVVTextField: UIViewRepresentable, LogReporter {
 
       if result.isValid {
         scope.clearFieldError(.cvv)
-        if let scope = scope as? DefaultCardFormScope {
-          scope.updateValidationState(\.cvv, isValid: true)
-        }
+        scope.updateValidationState(keyPath: \.cvv, isValid: true)
       } else {
         if let message = result.errorMessage {
           scope.setFieldError(.cvv, message: message, errorCode: result.errorCode)
         }
-        if let scope = scope as? DefaultCardFormScope {
-          scope.updateValidationState(\.cvv, isValid: false)
-        }
+        scope.updateValidationState(keyPath: \.cvv, isValid: false)
       }
     }
   }

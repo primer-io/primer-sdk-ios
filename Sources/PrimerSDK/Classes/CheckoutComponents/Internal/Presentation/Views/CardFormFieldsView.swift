@@ -20,7 +20,7 @@ import SwiftUI
 /// - Dynamic billing address fields (based on configuration)
 @available(iOS 15.0, *)
 struct CardFormFieldsView: View {
-  let scope: any PrimerCardFormScope
+  let scope: any CardFormFieldScopeInternal
   let styling: PrimerFieldStyling?
 
   @Environment(\.designTokens) private var tokens
