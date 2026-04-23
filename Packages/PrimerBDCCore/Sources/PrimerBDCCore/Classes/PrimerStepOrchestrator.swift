@@ -11,12 +11,18 @@ import PrimerStepResolver
 
 @MainActor
 protocol StepOrchestrating: AnyObject {
+    var onURLOpen: (() -> Void)? { get set }
     var onCancelled: (() -> Void)? { get set }
     func start(rawSchema: String, initialState: CodableValue) async throws
 }
 
 @MainActor
 final class PrimerStepOrchestrator: StepOrchestrating {
+    
+    var onURLOpen: (() -> Void)? {
+        didSet { harness.onURLOpen = onURLOpen }
+    }
+    
     var onCancelled: (() -> Void)?
 
     private let logger = Logger()
