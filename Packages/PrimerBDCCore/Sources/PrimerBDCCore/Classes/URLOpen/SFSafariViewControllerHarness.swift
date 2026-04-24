@@ -11,6 +11,7 @@ import SafariServices
 @MainActor
 final class SFSafariViewControllerHarness: NSObject, StepResolver {
 
+    var onURLOpen: (() -> Void)?
     private let logger = Logger()
     private var safariViewController: SFSafariViewController?
     private var continuation: CheckedContinuation<StepResolutionResult, Never>?
@@ -79,6 +80,7 @@ final class SFSafariViewControllerHarness: NSObject, StepResolver {
         safariVC.modalPresentationStyle = .overFullScreen
         topVC.present(safariVC, animated: true)
         safariViewController = safariVC
+        onURLOpen?()
         return true
     }
 }

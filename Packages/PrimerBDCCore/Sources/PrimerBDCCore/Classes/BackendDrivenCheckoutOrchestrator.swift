@@ -10,13 +10,18 @@ import PrimerFoundation
 
 @MainActor
 public final class BackendDrivenCheckoutOrchestrator {
-    
-    private let stepOrchestrator: any StepOrchestrating
+        
+    public var onURLOpened: (() -> Void)? {
+        get { stepOrchestrator.onURLOpen }
+        set { stepOrchestrator.onURLOpen = newValue }
+    }
 
     public var onCancelled: (() -> Void)? {
         get { stepOrchestrator.onCancelled }
         set { stepOrchestrator.onCancelled = newValue }
     }
+    
+    private let stepOrchestrator: any StepOrchestrating
 
     public init(manifestProvider: SignedManifestProvider, context: SDKContext) async throws {
         let manifest = try await ManifestRepository(provider: manifestProvider).fetchManifest()
