@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
     s.name         = "PrimerStepResolver"
-    s.version      = "2.46.1"
+    s.version      = "2.47.0"
     s.summary      = "Step resolution engine for Primer iOS SDK"
     s.description  = "Step resolution and navigation logic for Primer Backend Driven Checkout."
     s.homepage     = "https://www.primer.io"

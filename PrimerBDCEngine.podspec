@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
     s.name         = "PrimerBDCEngine"
-    s.version      = "2.46.1"
+    s.version      = "2.47.0"
     s.summary      = "Backend Driven Checkout engine for Primer iOS SDK"
     s.description  = "JS-based state processing engine for Primer Backend Driven Checkout."
     s.homepage     = "https://www.primer.io"
