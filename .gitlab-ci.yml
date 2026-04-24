@@ -22,6 +22,11 @@ build-and-release:
     - apt-get install -y rsync
   script:
     - bundle install
-    - pod trunk push --allow-root
+    - |
+      for POD in PrimerFoundation PrimerStepResolver PrimerBDCEngine PrimerBDCCore; do
+        echo "Pushing ${POD}.podspec"
+        pod trunk push "${POD}.podspec" --allow-root --allow-warnings --synchronous
+      done
+    - pod trunk push PrimerSDK.podspec --allow-root
   when: manual
   environment: production

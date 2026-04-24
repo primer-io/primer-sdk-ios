@@ -9,6 +9,12 @@ target 'Debug App' do
 
   # Pods for Debug App
   pod 'PrimerSDK', :path => '../'
+  # TODO: Remove these :path overrides once PrimerBDCCore, PrimerBDCEngine,
+  # PrimerFoundation and PrimerStepResolver have been published to CocoaPods trunk.
+  pod 'PrimerBDCCore', :path => '../'
+  pod 'PrimerBDCEngine', :path => '../'
+  pod 'PrimerFoundation', :path => '../'
+  pod 'PrimerStepResolver', :path => '../'
   pod 'Primer3DS'
   pod 'PrimerKlarnaSDK'
   pod 'PrimerIPay88MYSDK'
