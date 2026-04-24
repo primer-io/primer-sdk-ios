@@ -1,7 +1,7 @@
 //
 //  PrimerClientSession.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
@@ -15,6 +15,7 @@ import Foundation
     public let lineItems: [PrimerLineItem]?
     public let orderDetails: PrimerOrder?
     public let customer: PrimerCustomer?
+    public let checkoutModules: [PrimerCheckoutModule]?
 
     public init(
         customerId: String?,
@@ -23,7 +24,8 @@ import Foundation
         totalAmount: Int?,
         lineItems: [PrimerLineItem]?,
         orderDetails: PrimerOrder?,
-        customer: PrimerCustomer?
+        customer: PrimerCustomer?,
+        checkoutModules: [PrimerCheckoutModule]?
     ) {
         self.customerId = customerId
         self.orderId = orderId
@@ -32,6 +34,22 @@ import Foundation
         self.lineItems = lineItems
         self.orderDetails = orderDetails
         self.customer = customer
+        self.checkoutModules = checkoutModules
+    }
+}
+
+/// Merchant-facing projection of a `CheckoutModule` entry from the client session configuration.
+/// Surfaces the module `type` (e.g. `"BILLING_ADDRESS"`) and its flat boolean `options` map so
+/// consumers — RN bridge, headless integrators — can drive per-field UI without reaching into
+/// the internal `PrimerAPIConfiguration.CheckoutModule` types.
+@objc public final class PrimerCheckoutModule: NSObject, Codable {
+
+    public let type: String
+    public let options: [String: Bool]?
+
+    public init(type: String, options: [String: Bool]?) {
+        self.type = type
+        self.options = options
     }
 }
 
@@ -45,8 +63,42 @@ extension PrimerClientSession {
             totalAmount: session?.order?.totalOrderAmount,
             lineItems: session?.order?.lineItems?.compactMap { PrimerLineItem(lineItem: $0, session: session) },
             orderDetails: PrimerOrder(clientSessionOrder: session?.order),
-            customer: PrimerCustomer(customer: session?.customer)
+            customer: PrimerCustomer(customer: session?.customer),
+            checkoutModules: apiConfiguration.checkoutModules?.map(PrimerCheckoutModule.init)
         )
+    }
+}
+
+private extension PrimerCheckoutModule {
+    convenience init(module: PrimerAPIConfiguration.CheckoutModule) {
+        self.init(type: module.type, options: Self.flatten(module.options))
+    }
+
+    /// Flattens the typed, closed set of `CheckoutModuleOptions` subtypes into a generic
+    /// `[String: Bool]` map suitable for cross-language consumers. Option types that don't
+    /// fit a flat boolean shape (e.g. `ShippingMethodOptions`) map to `nil` for now — the
+    /// module is still surfaced by `type`, just without an options payload.
+    static func flatten(_ options: CheckoutModuleOptions?) -> [String: Bool]? {
+        if let postal = options as? PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions {
+            var dict: [String: Bool] = [:]
+            if let v = postal.firstName { dict["firstName"] = v }
+            if let v = postal.lastName { dict["lastName"] = v }
+            if let v = postal.city { dict["city"] = v }
+            if let v = postal.postalCode { dict["postalCode"] = v }
+            if let v = postal.addressLine1 { dict["addressLine1"] = v }
+            if let v = postal.addressLine2 { dict["addressLine2"] = v }
+            if let v = postal.countryCode { dict["countryCode"] = v }
+            if let v = postal.phoneNumber { dict["phoneNumber"] = v }
+            if let v = postal.state { dict["state"] = v }
+            return dict.isEmpty ? nil : dict
+        }
+        if let card = options as? PrimerAPIConfiguration.CheckoutModule.CardInformationOptions {
+            var dict: [String: Bool] = [:]
+            if let v = card.cardHolderName { dict["cardHolderName"] = v }
+            if let v = card.saveCardCheckbox { dict["saveCardCheckbox"] = v }
+            return dict.isEmpty ? nil : dict
+        }
+        return nil
     }
 }
 
