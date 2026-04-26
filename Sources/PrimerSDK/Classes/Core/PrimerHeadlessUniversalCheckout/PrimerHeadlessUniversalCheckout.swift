@@ -165,6 +165,15 @@ public final class PrimerHeadlessUniversalCheckout: LogReporter {
         }
     }
 
+    /// Returns the current loaded client session, or `nil` if `start(...)` has not yet completed.
+    /// Reads synchronously from the in-memory configuration loaded during `start(...)`.
+    @objc public func getClientSession() -> PrimerClientSession? {
+        guard let apiConfiguration = PrimerAPIConfigurationModule.apiConfiguration else {
+            return nil
+        }
+        return PrimerClientSession(from: apiConfiguration)
+    }
+
     // MARK: - HELPERS
 
     private func continueValidateSession() async throws {
@@ -211,40 +220,40 @@ public final class PrimerHeadlessUniversalCheckout: LogReporter {
         var paymentMethods = PrimerAPIConfiguration.paymentMethodConfigs
 
         #if !canImport(PrimerKlarnaSDK)
-        if let klarnaIndex = paymentMethods?.firstIndex(where: { $0.type == PrimerPaymentMethodType.klarna.rawValue }) {
-            paymentMethods?.remove(at: klarnaIndex)
-            let message =
-                """
-Klarna configuration has been found but module 'PrimerKlarnaSDK' is missing. \
-Add `PrimerKlarnaSDK' in your project by adding \"pod 'PrimerKlarnaSDK'\" in your Podfile, \
-or by adding \"primer-klarna-sdk-ios\" in your Swift Package Manager
-"""
-            logger.warn(message: message)
-        }
+            if let klarnaIndex = paymentMethods?.firstIndex(where: { $0.type == PrimerPaymentMethodType.klarna.rawValue }) {
+                paymentMethods?.remove(at: klarnaIndex)
+                let message =
+                    """
+                    Klarna configuration has been found but module 'PrimerKlarnaSDK' is missing. \
+                    Add `PrimerKlarnaSDK' in your project by adding \"pod 'PrimerKlarnaSDK'\" in your Podfile, \
+                    or by adding \"primer-klarna-sdk-ios\" in your Swift Package Manager
+                    """
+                logger.warn(message: message)
+            }
         #endif
 
         #if !canImport(PrimerIPay88MYSDK)
-        if let iPay88ViewModelIndex = paymentMethods?.firstIndex(where: { $0.type == PrimerPaymentMethodType.iPay88Card.rawValue }) {
-            paymentMethods?.remove(at: iPay88ViewModelIndex)
-            let message =
-                """
-iPay88 configuration has been found but module 'PrimerIPay88SDK' is missing. \
-Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in your Podfile.
-"""
-            logger.warn(message: message)
-        }
+            if let iPay88ViewModelIndex = paymentMethods?.firstIndex(where: { $0.type == PrimerPaymentMethodType.iPay88Card.rawValue }) {
+                paymentMethods?.remove(at: iPay88ViewModelIndex)
+                let message =
+                    """
+                    iPay88 configuration has been found but module 'PrimerIPay88SDK' is missing. \
+                    Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in your Podfile.
+                    """
+                logger.warn(message: message)
+            }
         #endif
 
         #if !canImport(PrimerNolPaySDK)
-        if let nolPayViewModelIndex = paymentMethods?.firstIndex(where: { $0.type == PrimerPaymentMethodType.nolPay.rawValue }) {
-            paymentMethods?.remove(at: nolPayViewModelIndex)
-            let message =
-                """
-NolPay configuration has been found but module 'PrimerNolPaySDK' is missing. \
-Add `PrimerNolPaySDK' in your project by adding \"pod 'PrimerNolPaySDK'\" in your Podfile.
-"""
-            logger.warn(message: message)
-        }
+            if let nolPayViewModelIndex = paymentMethods?.firstIndex(where: { $0.type == PrimerPaymentMethodType.nolPay.rawValue }) {
+                paymentMethods?.remove(at: nolPayViewModelIndex)
+                let message =
+                    """
+                    NolPay configuration has been found but module 'PrimerNolPaySDK' is missing. \
+                    Add `PrimerNolPaySDK' in your project by adding \"pod 'PrimerNolPaySDK'\" in your Podfile.
+                    """
+                logger.warn(message: message)
+            }
         #endif
 
         return paymentMethods?.compactMap(\.type).filter({ !unsupportedPaymentMethodTypes.contains($0) })
