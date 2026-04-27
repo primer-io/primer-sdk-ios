@@ -11,7 +11,7 @@ import SwiftUI
 struct DeleteVaultedPaymentMethodConfirmationScreen: View, LogReporter {
   let vaultedPaymentMethod: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod
   let navigator: CheckoutNavigator
-  let scope: DefaultPaymentMethodSelectionScope
+  let scope: any PaymentMethodSelectionScopeInternal
 
   @Environment(\.designTokens) private var tokens
 
