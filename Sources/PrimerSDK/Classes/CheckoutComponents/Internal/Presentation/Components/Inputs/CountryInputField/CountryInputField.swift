@@ -4,7 +4,6 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import Combine
 import SwiftUI
 import UIKit
 
@@ -16,7 +15,7 @@ struct CountryInputField: View, LogReporter {
 
   // MARK: - Private Properties
 
-  private let scope: DefaultCardFormScope
+  private let scope: any CardFormFieldScopeInternal
   @Environment(\.diContainer) private var container
   @State private var validationService: ValidationService?
   @State private var countryName: String = ""
@@ -38,7 +37,7 @@ struct CountryInputField: View, LogReporter {
   }
 
   private var selectedCountryFromScope: PrimerCountry? {
-    scope.structuredState.selectedCountry
+    scope.currentState.selectedCountry
   }
 
   private var fieldFont: Font {
@@ -50,7 +49,7 @@ struct CountryInputField: View, LogReporter {
   init(
     label: String?,
     placeholder: String,
-    scope: DefaultCardFormScope,
+    scope: any CardFormFieldScopeInternal,
     styling: PrimerFieldStyling? = nil
   ) {
     self.label = label
@@ -107,12 +106,13 @@ struct CountryInputField: View, LogReporter {
       setupValidationService()
       updateFromExternalState()
     }
-    .onReceive(
-      scope.$structuredState
-        .map(\.selectedCountry)
-        .removeDuplicates()
-    ) { country in
-      updateFromExternalState(with: country)
+    .task {
+      var previousCountry: PrimerCountry? = scope.currentState.selectedCountry
+      for await state in scope.state {
+        guard state.selectedCountry != previousCountry else { continue }
+        previousCountry = state.selectedCountry
+        updateFromExternalState(with: state.selectedCountry)
+      }
     }
     .sheet(isPresented: $showCountryPicker) {
       SelectCountryScreen(
