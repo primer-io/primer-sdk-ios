@@ -9,15 +9,13 @@ import SwiftUI
 @available(iOS 15.0, *)
 struct AchPaymentMethod: PaymentMethodProtocol {
 
-  typealias ScopeType = DefaultAchScope
-
   static let paymentMethodType: String = PrimerPaymentMethodType.stripeAch.rawValue
 
   @MainActor
   static func createScope(
     checkoutScope: PrimerCheckoutScope,
     diContainer: any ContainerProtocol
-  ) async throws -> DefaultAchScope {
+  ) async throws -> any PrimerPaymentMethodScope {
 
     let (defaultCheckoutScope, paymentMethodContext) = try DefaultCheckoutScope.validated(from: checkoutScope)
 
@@ -48,23 +46,13 @@ struct AchPaymentMethod: PaymentMethodProtocol {
 
   @MainActor
   static func createView(checkoutScope: any PrimerCheckoutScope) -> AnyView? {
-    guard let achScope = checkoutScope.getPaymentMethodScope(DefaultAchScope.self) else {
+    guard let achScope = checkoutScope.getPaymentMethodScope(PrimerAchScope.self) else {
       PrimerLogging.shared.logger.error(message: "Failed to retrieve ACH scope from checkout scope")
       return nil
     }
 
     return achScope.screen.map { AnyView($0(achScope)) }
       ?? AnyView(AchView(scope: achScope))
-  }
-
-  @MainActor
-  func content<V: View>(@ViewBuilder content: @escaping (DefaultAchScope) -> V) -> AnyView {
-    fatalError("Custom content method should be implemented by the CheckoutComponents framework")
-  }
-
-  @MainActor
-  func defaultContent() -> AnyView {
-    fatalError("Default content method should be implemented by the CheckoutComponents framework")
   }
 }
 
@@ -73,7 +61,11 @@ extension AchPaymentMethod {
 
   @MainActor
   static func register() {
-    PaymentMethodRegistry.shared.register(AchPaymentMethod.self)
+    PaymentMethodRegistry.shared.register(
+      forKey: paymentMethodType,
+      scopeCreator: { try await createScope(checkoutScope: $0, diContainer: $1) },
+      viewCreator: { createView(checkoutScope: $0) }
+    )
 
     #if DEBUG
       TestAchPaymentMethod.register()
@@ -85,15 +77,13 @@ extension AchPaymentMethod {
   @available(iOS 15.0, *)
   struct TestAchPaymentMethod: PaymentMethodProtocol {
 
-    typealias ScopeType = DefaultAchScope
-
     static let paymentMethodType: String = "PRIMER_TEST_STRIPE_ACH"
 
     @MainActor
     static func createScope(
       checkoutScope: PrimerCheckoutScope,
       diContainer: any ContainerProtocol
-    ) async throws -> DefaultAchScope {
+    ) async throws -> any PrimerPaymentMethodScope {
       try await AchPaymentMethod.createScope(checkoutScope: checkoutScope, diContainer: diContainer)
     }
 
@@ -103,18 +93,12 @@ extension AchPaymentMethod {
     }
 
     @MainActor
-    func content<V: View>(@ViewBuilder content: @escaping (DefaultAchScope) -> V) -> AnyView {
-      fatalError("Custom content method should be implemented by the CheckoutComponents framework")
-    }
-
-    @MainActor
-    func defaultContent() -> AnyView {
-      fatalError("Default content method should be implemented by the CheckoutComponents framework")
-    }
-
-    @MainActor
     static func register() {
-      PaymentMethodRegistry.shared.register(TestAchPaymentMethod.self)
+      PaymentMethodRegistry.shared.register(
+        forKey: paymentMethodType,
+        scopeCreator: { try await createScope(checkoutScope: $0, diContainer: $1) },
+        viewCreator: { createView(checkoutScope: $0) }
+      )
     }
   }
 #endif

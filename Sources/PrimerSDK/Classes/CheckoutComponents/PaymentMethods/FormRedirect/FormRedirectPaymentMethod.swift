@@ -14,7 +14,7 @@ enum FormRedirectPaymentMethodHelper {
     _ paymentMethodType: String,
     checkoutScope: DefaultCheckoutScope,
     diContainer: any ContainerProtocol
-  ) async throws -> DefaultFormRedirectScope {
+  ) async throws -> any PrimerPaymentMethodScope {
     let paymentMethodContext: PresentationContext =
       checkoutScope.availablePaymentMethods.count > 1 ? .fromPaymentSelection : .direct
 
@@ -52,6 +52,8 @@ enum FormRedirectPaymentMethodHelper {
 
   @MainActor
   static func createView(checkoutScope: any PrimerCheckoutScope) -> AnyView? {
+    // ACC-7173: audit §2a — FormRedirectContainerView uses @ObservedObject DefaultFormRedirectScope
+    // so the metatype must stay concrete; SwiftUI's ObservableObject requires a concrete class.
     checkoutScope.getPaymentMethodScope(DefaultFormRedirectScope.self)
       .map { scope in
         scope.screen.map { AnyView($0(scope)) }
@@ -85,7 +87,6 @@ private struct FormRedirectContainerView: View {
 
 @available(iOS 15.0, *)
 struct BlikPaymentMethod: PaymentMethodProtocol {
-  typealias ScopeType = DefaultFormRedirectScope
 
   static let paymentMethodType: String = PrimerPaymentMethodType.adyenBlik.rawValue
 
@@ -93,7 +94,7 @@ struct BlikPaymentMethod: PaymentMethodProtocol {
   static func createScope(
     checkoutScope: PrimerCheckoutScope,
     diContainer: any ContainerProtocol
-  ) async throws -> DefaultFormRedirectScope {
+  ) async throws -> any PrimerPaymentMethodScope {
     let (scope, _) = try DefaultCheckoutScope.validated(from: checkoutScope)
     return try await FormRedirectPaymentMethodHelper.createScopeForPaymentMethodType(
       paymentMethodType,
@@ -107,20 +108,10 @@ struct BlikPaymentMethod: PaymentMethodProtocol {
     FormRedirectPaymentMethodHelper.createView(checkoutScope: checkoutScope)
   }
 
-  @MainActor
-  func content<V: View>(@ViewBuilder content: @escaping (DefaultFormRedirectScope) -> V) -> AnyView {
-    fatalError("Custom content method should be implemented by the CheckoutComponents framework")
-  }
-
-  @MainActor
-  func defaultContent() -> AnyView {
-    fatalError("Default content method should be implemented by the CheckoutComponents framework")
-  }
 }
 
 @available(iOS 15.0, *)
 struct MBWayPaymentMethod: PaymentMethodProtocol {
-  typealias ScopeType = DefaultFormRedirectScope
 
   static let paymentMethodType: String = PrimerPaymentMethodType.adyenMBWay.rawValue
 
@@ -128,7 +119,7 @@ struct MBWayPaymentMethod: PaymentMethodProtocol {
   static func createScope(
     checkoutScope: PrimerCheckoutScope,
     diContainer: any ContainerProtocol
-  ) async throws -> DefaultFormRedirectScope {
+  ) async throws -> any PrimerPaymentMethodScope {
     let (scope, _) = try DefaultCheckoutScope.validated(from: checkoutScope)
     return try await FormRedirectPaymentMethodHelper.createScopeForPaymentMethodType(
       paymentMethodType,
@@ -142,15 +133,6 @@ struct MBWayPaymentMethod: PaymentMethodProtocol {
     FormRedirectPaymentMethodHelper.createView(checkoutScope: checkoutScope)
   }
 
-  @MainActor
-  func content<V: View>(@ViewBuilder content: @escaping (DefaultFormRedirectScope) -> V) -> AnyView {
-    fatalError("Custom content method should be implemented by the CheckoutComponents framework")
-  }
-
-  @MainActor
-  func defaultContent() -> AnyView {
-    fatalError("Default content method should be implemented by the CheckoutComponents framework")
-  }
 }
 
 @available(iOS 15.0, *)
@@ -158,7 +140,15 @@ enum FormRedirectPaymentMethod {
 
   @MainActor
   static func register() {
-    PaymentMethodRegistry.shared.register(BlikPaymentMethod.self)
-    PaymentMethodRegistry.shared.register(MBWayPaymentMethod.self)
+    PaymentMethodRegistry.shared.register(
+      forKey: BlikPaymentMethod.paymentMethodType,
+      scopeCreator: { try await BlikPaymentMethod.createScope(checkoutScope: $0, diContainer: $1) },
+      viewCreator: { BlikPaymentMethod.createView(checkoutScope: $0) }
+    )
+    PaymentMethodRegistry.shared.register(
+      forKey: MBWayPaymentMethod.paymentMethodType,
+      scopeCreator: { try await MBWayPaymentMethod.createScope(checkoutScope: $0, diContainer: $1) },
+      viewCreator: { MBWayPaymentMethod.createView(checkoutScope: $0) }
+    )
   }
 }

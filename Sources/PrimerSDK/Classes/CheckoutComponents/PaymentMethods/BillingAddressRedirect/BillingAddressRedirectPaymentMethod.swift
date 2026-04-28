@@ -56,6 +56,9 @@ enum BillingAddressRedirectPaymentMethod {
     for paymentMethodType: String,
     checkoutScope: any PrimerCheckoutScope
   ) -> AnyView? {
+    // ACC-7173: string-keyed `getPaymentMethodScope<T>(for:)` carries the same `T: PrimerPaymentMethodScope`
+    // constraint that rejects existentials. Keep concrete metatype here; downstream screen still accepts
+    // `any PrimerBillingAddressRedirectScope`.
     guard let billingScope: DefaultBillingAddressRedirectScope = checkoutScope.getPaymentMethodScope(for: paymentMethodType) else {
       return nil
     }

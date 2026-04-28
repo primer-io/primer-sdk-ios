@@ -9,15 +9,13 @@ import SwiftUI
 @available(iOS 15.0, *)
 struct ApplePayPaymentMethod: PaymentMethodProtocol {
 
-  typealias ScopeType = DefaultApplePayScope
-
   static let paymentMethodType: String = "APPLE_PAY"
 
   @MainActor
   static func createScope(
     checkoutScope: PrimerCheckoutScope,
     diContainer: any ContainerProtocol
-  ) async throws -> DefaultApplePayScope {
+  ) async throws -> any PrimerPaymentMethodScope {
     let (defaultCheckoutScope, paymentMethodContext) = try DefaultCheckoutScope.validated(from: checkoutScope)
 
     return DefaultApplePayScope(
@@ -28,21 +26,13 @@ struct ApplePayPaymentMethod: PaymentMethodProtocol {
 
   @MainActor
   static func createView(checkoutScope: any PrimerCheckoutScope) -> AnyView? {
+    // ACC-7173: audit §2a — ApplePayScreen uses @ObservedObject DefaultApplePayScope so the
+    // metatype must stay concrete; SwiftUI's ObservableObject requires a concrete class.
     checkoutScope.getPaymentMethodScope(DefaultApplePayScope.self)
       .map { scope in
         scope.screen.map { AnyView($0(scope)) }
           ?? AnyView(ApplePayScreen(scope: scope))
       }
-  }
-
-  @MainActor
-  func content<V: View>(@ViewBuilder content: @escaping (DefaultApplePayScope) -> V) -> AnyView {
-    fatalError("Custom content method should be implemented by the CheckoutComponents framework")
-  }
-
-  @MainActor
-  func defaultContent() -> AnyView {
-    fatalError("Default content method should be implemented by the CheckoutComponents framework")
   }
 }
 
@@ -51,6 +41,10 @@ extension ApplePayPaymentMethod {
 
   @MainActor
   static func register() {
-    PaymentMethodRegistry.shared.register(ApplePayPaymentMethod.self)
+    PaymentMethodRegistry.shared.register(
+      forKey: paymentMethodType,
+      scopeCreator: { try await createScope(checkoutScope: $0, diContainer: $1) },
+      viewCreator: { createView(checkoutScope: $0) }
+    )
   }
 }

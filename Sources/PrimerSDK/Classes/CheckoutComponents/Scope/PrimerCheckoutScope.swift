@@ -76,6 +76,38 @@ public protocol PrimerCheckoutScope: AnyObject {
   /// ```
   func getPaymentMethodScope<T: PrimerPaymentMethodScope>(for paymentMethodType: String) -> T?
 
+  // MARK: - Per-protocol scope access (existential metatypes)
+
+  /// Gets the card-form scope as the public protocol existential.
+  func getPaymentMethodScope(_ scopeType: (any PrimerCardFormScope).Type) -> (any PrimerCardFormScope)?
+
+  /// Gets the Klarna scope as the public protocol existential.
+  func getPaymentMethodScope(_ scopeType: (any PrimerKlarnaScope).Type) -> (any PrimerKlarnaScope)?
+
+  /// Gets the Adyen Klarna scope as the public protocol existential.
+  func getPaymentMethodScope(_ scopeType: (any PrimerAdyenKlarnaScope).Type) -> (any PrimerAdyenKlarnaScope)?
+
+  /// Gets the web-redirect scope as the public protocol existential.
+  func getPaymentMethodScope(_ scopeType: (any PrimerWebRedirectScope).Type) -> (any PrimerWebRedirectScope)?
+
+  /// Gets the form-redirect scope as the public protocol existential.
+  func getPaymentMethodScope(_ scopeType: (any PrimerFormRedirectScope).Type) -> (any PrimerFormRedirectScope)?
+
+  /// Gets the billing-address-redirect scope as the public protocol existential.
+  func getPaymentMethodScope(_ scopeType: (any PrimerBillingAddressRedirectScope).Type) -> (any PrimerBillingAddressRedirectScope)?
+
+  /// Gets the Apple Pay scope as the public protocol existential.
+  func getPaymentMethodScope(_ scopeType: (any PrimerApplePayScope).Type) -> (any PrimerApplePayScope)?
+
+  /// Gets the PayPal scope as the public protocol existential.
+  func getPaymentMethodScope(_ scopeType: (any PrimerPayPalScope).Type) -> (any PrimerPayPalScope)?
+
+  /// Gets the QR code scope as the public protocol existential.
+  func getPaymentMethodScope(_ scopeType: (any PrimerQRCodeScope).Type) -> (any PrimerQRCodeScope)?
+
+  /// Gets the ACH scope as the public protocol existential.
+  func getPaymentMethodScope(_ scopeType: (any PrimerAchScope).Type) -> (any PrimerAchScope)?
+
   // MARK: - Payment Callbacks
 
   /// Called before a payment is created. Use the decision handler to provide an idempotency key
@@ -93,6 +125,26 @@ public protocol PrimerCheckoutScope: AnyObject {
 
   /// Dismisses the checkout flow.
   func onDismiss()
+}
+
+// MARK: - Default no-op implementations
+//
+// Each per-protocol overload defaults to nil so that custom `PrimerCheckoutScope` conformers
+// (test mocks, merchant-side implementations) don't have to stub all 10 methods. The SDK's
+// `DefaultCheckoutScope` overrides every one with the real cache-backed lookup.
+
+@available(iOS 15.0, *)
+public extension PrimerCheckoutScope {
+  func getPaymentMethodScope(_ scopeType: (any PrimerCardFormScope).Type) -> (any PrimerCardFormScope)? { nil }
+  func getPaymentMethodScope(_ scopeType: (any PrimerKlarnaScope).Type) -> (any PrimerKlarnaScope)? { nil }
+  func getPaymentMethodScope(_ scopeType: (any PrimerAdyenKlarnaScope).Type) -> (any PrimerAdyenKlarnaScope)? { nil }
+  func getPaymentMethodScope(_ scopeType: (any PrimerWebRedirectScope).Type) -> (any PrimerWebRedirectScope)? { nil }
+  func getPaymentMethodScope(_ scopeType: (any PrimerFormRedirectScope).Type) -> (any PrimerFormRedirectScope)? { nil }
+  func getPaymentMethodScope(_ scopeType: (any PrimerBillingAddressRedirectScope).Type) -> (any PrimerBillingAddressRedirectScope)? { nil }
+  func getPaymentMethodScope(_ scopeType: (any PrimerApplePayScope).Type) -> (any PrimerApplePayScope)? { nil }
+  func getPaymentMethodScope(_ scopeType: (any PrimerPayPalScope).Type) -> (any PrimerPayPalScope)? { nil }
+  func getPaymentMethodScope(_ scopeType: (any PrimerQRCodeScope).Type) -> (any PrimerQRCodeScope)? { nil }
+  func getPaymentMethodScope(_ scopeType: (any PrimerAchScope).Type) -> (any PrimerAchScope)? { nil }
 }
 
 // MARK: - State Definition

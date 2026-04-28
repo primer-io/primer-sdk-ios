@@ -9,15 +9,13 @@ import SwiftUI
 @available(iOS 15.0, *)
 struct PayPalPaymentMethod: PaymentMethodProtocol {
 
-  typealias ScopeType = DefaultPayPalScope
-
   static let paymentMethodType: String = PrimerPaymentMethodType.payPal.rawValue
 
   @MainActor
   static func createScope(
     checkoutScope: PrimerCheckoutScope,
     diContainer: any ContainerProtocol
-  ) async throws -> DefaultPayPalScope {
+  ) async throws -> any PrimerPaymentMethodScope {
 
     let (defaultCheckoutScope, paymentMethodContext) = try DefaultCheckoutScope.validated(from: checkoutScope)
 
@@ -48,22 +46,12 @@ struct PayPalPaymentMethod: PaymentMethodProtocol {
 
   @MainActor
   static func createView(checkoutScope: any PrimerCheckoutScope) -> AnyView? {
-    guard let payPalScope = checkoutScope.getPaymentMethodScope(DefaultPayPalScope.self) else {
+    guard let payPalScope = checkoutScope.getPaymentMethodScope(PrimerPayPalScope.self) else {
       return nil
     }
 
     return payPalScope.screen.map { AnyView($0(payPalScope)) }
       ?? AnyView(PayPalView(scope: payPalScope))
-  }
-
-  @MainActor
-  func content<V: View>(@ViewBuilder content: @escaping (DefaultPayPalScope) -> V) -> AnyView {
-    fatalError("Custom content method should be implemented by the CheckoutComponents framework")
-  }
-
-  @MainActor
-  func defaultContent() -> AnyView {
-    fatalError("Default content method should be implemented by the CheckoutComponents framework")
   }
 }
 
@@ -72,6 +60,10 @@ extension PayPalPaymentMethod {
 
   @MainActor
   static func register() {
-    PaymentMethodRegistry.shared.register(PayPalPaymentMethod.self)
+    PaymentMethodRegistry.shared.register(
+      forKey: paymentMethodType,
+      scopeCreator: { try await createScope(checkoutScope: $0, diContainer: $1) },
+      viewCreator: { createView(checkoutScope: $0) }
+    )
   }
 }
