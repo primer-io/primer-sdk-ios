@@ -8,9 +8,7 @@ import SwiftUI
 
 @available(iOS 15.0, *)
 @MainActor
-final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogReporter {
-
-  typealias NavigationState = CheckoutNavigationState
+final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogReporter {
 
   @Published private var internalState = PrimerCheckoutState.initializing
   @Published var navigationState = CheckoutNavigationState.loading
@@ -44,6 +42,23 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
 
   var currentState: PrimerCheckoutState { internalState }
 
+  var currentNavigationState: CheckoutNavigationState { navigationState }
+
+  var navigationStateStream: AsyncStream<CheckoutNavigationState> {
+    AsyncStream { continuation in
+      let task = Task { [self] in
+        for await value in $navigationState.values {
+          continuation.yield(value)
+        }
+        continuation.finish()
+      }
+
+      continuation.onTermination = { _ in
+        task.cancel()
+      }
+    }
+  }
+
   var checkoutNavigator: CheckoutNavigator { navigator }
 
   var availablePaymentMethods: [InternalPaymentMethod] = []
@@ -68,8 +83,11 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
 
   let presentationContext: PresentationContext
 
-  private var cachedPaymentMethodSelection: PrimerPaymentMethodSelectionScope?
-  var paymentMethodSelection: PrimerPaymentMethodSelectionScope {
+  private var cachedPaymentMethodSelection: (any PaymentMethodSelectionScopeInternal)?
+
+  var paymentMethodSelection: PrimerPaymentMethodSelectionScope { paymentMethodSelectionInternal }
+
+  var paymentMethodSelectionInternal: any PaymentMethodSelectionScopeInternal {
     if let cachedPaymentMethodSelection { return cachedPaymentMethodSelection }
     let scope = DefaultPaymentMethodSelectionScope(
       checkoutScope: self,
@@ -104,9 +122,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
     self.presentationContext = presentationContext
 
     vaultManager.onSelectionChanged = { [weak self] _ in
-      if let selectionScope = self?.cachedPaymentMethodSelection as? DefaultPaymentMethodSelectionScope {
-        selectionScope.syncSelectedVaultedPaymentMethod()
-      }
+      self?.cachedPaymentMethodSelection?.syncSelectedVaultedPaymentMethod()
     }
 
     registerPaymentMethods()
@@ -245,7 +261,11 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
     }
   }
 
-  func updateNavigationState(_ newState: NavigationState, syncToNavigator: Bool = true) {
+  func updateNavigationState(_ newState: CheckoutNavigationState) {
+    updateNavigationState(newState, syncToNavigator: true)
+  }
+
+  func updateNavigationState(_ newState: CheckoutNavigationState, syncToNavigator: Bool) {
     navigationState = newState
 
     announceScreenChange(for: newState)
@@ -277,7 +297,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
     }
   }
 
-  private func announceScreenChange(for state: NavigationState) {
+  private func announceScreenChange(for state: CheckoutNavigationState) {
     guard let service = accessibilityAnnouncementService else { return }
 
     let message: String?
@@ -325,7 +345,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
     navigationObservationTask = Task { @MainActor [weak self] in
       guard let self else { return }
       for await route in navigator.navigationEvents {
-        let newNavigationState: NavigationState
+        let newNavigationState: CheckoutNavigationState
         switch route {
         case .loading:
           newNavigationState = .loading
