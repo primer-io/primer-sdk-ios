@@ -11,14 +11,26 @@
 
 import Foundation
 
-// MARK: MISSING_TESTS
 final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProtocol {
 
     var rawData: PrimerRawData? {
         didSet {
             if let rawCardData = self.rawData as? PrimerCardData {
+                // DBG: REMOVE BEFORE MERGE
+                print(
+                    "[DBG-RAW] rawData set — cardNumber='\(rawCardData.cardNumber)' " +
+                        "cardNetwork=\(String(describing: rawCardData.cardNetwork)) " +
+                        "expiry='\(rawCardData.expiryDate)' cvv='\(rawCardData.cvv)' " +
+                        "name='\(rawCardData.cardholderName ?? "nil")'"
+                )
+
                 rawCardData.onDataDidChange = { [weak self] in
                     guard let self else { return }
+                    // DBG: REMOVE BEFORE MERGE
+                    print(
+                        "[DBG-RAW] onDataDidChange — cardNumber='\(rawCardData.cardNumber)' " +
+                            "cardNetwork=\(String(describing: rawCardData.cardNetwork))"
+                    )
                     Task { try? await self.validateRawData(rawCardData) }
 
                     let newCardNetwork = CardNetwork(cardNumber: rawCardData.cardNumber)
@@ -89,10 +101,20 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
     }
 
     static func preferredNetwork(from cardNetwork: CardNetwork?) -> String? {
-        guard PrimerInternal.shared.sdkIntegrationType == .headless else {
-            return cardNetwork?.rawValue
-        }
-        return cardNetwork?.allowsUserSelection == true ? cardNetwork?.rawValue : nil
+        // DBG: REMOVE BEFORE MERGE
+        let resolved: String? = {
+            guard PrimerInternal.shared.sdkIntegrationType == .headless else {
+                return cardNetwork?.rawValue
+            }
+            return cardNetwork?.allowsUserSelection == true ? cardNetwork?.rawValue : nil
+        }()
+        print(
+            "[DBG-SUBMIT] preferredNetwork(from:) cardNetwork=\(String(describing: cardNetwork)) " +
+                "integrationType=\(String(describing: PrimerInternal.shared.sdkIntegrationType)) " +
+                "allowsUserSelection=\(cardNetwork?.allowsUserSelection.description ?? "n/a") " +
+                "→ resolved=\(String(describing: resolved))"
+        )
+        return resolved
     }
 
     required init(paymentMethodType: String) {
@@ -114,17 +136,17 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
             throw handled(primerError: .invalidValue(key: "rawData"))
         }
 
-        // Validate card network before tokenization (only if card number is valid)
-        // Use user-selected network if available (for co-badged cards), otherwise auto-detect
-        if !rawData.cardNumber.isEmpty, rawData.cardNumber.isValidCardNumber {
-            let cardNetwork = rawData.cardNetwork ?? CardNetwork(cardNumber: rawData.cardNumber)
-            if !self.allowedCardNetworks.contains(cardNetwork) {
-                throw handled(primerError: .invalidValue(
-                    key: "cardNetwork",
-                    value: cardNetwork.displayName
-                ))
-            }
-        }
+        // DBG: REMOVE BEFORE MERGE
+        print(
+            "[DBG-SUBMIT] makeRequestBodyWithRawData — cardNumber='\(rawData.cardNumber)' " +
+                "rawData.cardNetwork=\(String(describing: rawData.cardNetwork)) " +
+                "expiry='\(rawData.expiryDate)' cvv.length=\(rawData.cvv.count) " +
+                "name='\(rawData.cardholderName ?? "nil")'"
+        )
+
+        // The "card type allowed?" check belongs to validation, not the request builder.
+        // `RawDataManager.submit` always runs `validateRawData` before this — and Android's
+        // `CardTokenizationDelegate` doesn't repeat the check either.
 
         let expiryMonth = String((rawData.expiryDate.split(separator: "/"))[0])
         let rawExpiryYear = String((rawData.expiryDate.split(separator: "/"))[1])
@@ -135,6 +157,13 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
             ))
         }
 
+        // DBG: REMOVE BEFORE MERGE — the value the SDK is about to send to the server
+        let resolvedPreferredNetwork = Self.preferredNetwork(from: rawData.cardNetwork)
+        print(
+            "[DBG-SUBMIT] CardPaymentInstrument.preferredNetwork=\(String(describing: resolvedPreferredNetwork)) " +
+                "(from rawData.cardNetwork=\(String(describing: rawData.cardNetwork)))"
+        )
+
         return Request.Body.Tokenization(
             paymentInstrument: CardPaymentInstrument(
                 number: (PrimerInputElementType.cardNumber.clearFormatting(value: rawData.cardNumber) as? String) ?? rawData.cardNumber,
@@ -142,13 +171,24 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
                 expirationMonth: expiryMonth,
                 expirationYear: expiryYear,
                 cardholderName: rawData.cardholderName,
-                preferredNetwork: Self.preferredNetwork(from: rawData.cardNetwork)
+                preferredNetwork: resolvedPreferredNetwork
             )
         )
     }
 
     func validateRawData(_ data: PrimerRawData) async throws {
-        try await validateRawData(data, cardNetworksMetadata: nil)
+        // Consult the BIN cache so per-keystroke validation uses the server's authoritative
+        // answer once available, instead of re-deriving the network from local IIN ranges.
+        let cached = (data as? PrimerCardData).flatMap {
+            cardValidationService?.cachedMetadata(forCardNumber: $0.cardNumber)
+        }
+        // DBG: REMOVE BEFORE MERGE
+        print(
+            "[DBG-VAL] validateRawData(_:) cacheLookup=\(cached == nil ? "MISS" : "HIT") " +
+                "detected=\(cached?.detectedCardNetworks.items.map(\.network.rawValue) ?? []) " +
+                "selectable=\(cached?.selectableCardNetworks?.items.map(\.network.rawValue) ?? [])"
+        )
+        try await validateRawData(data, cardNetworksMetadata: cached)
     }
 
     func validateRawData(_ data: PrimerRawData, cardNetworksMetadata: PrimerCardNumberEntryMetadata?) async throws {
@@ -161,20 +201,31 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
             throw err
         }
 
-        // Locally validated card network
-        // Use user-selected network if available (for co-badged cards), otherwise auto-detect
-        var cardNetwork = rawData.cardNetwork ?? CardNetwork(cardNumber: rawData.cardNumber)
+        // Resolve a card network for CVV-length use. Precedence:
+        //   1. user-selected (`rawData.cardNetwork`) — explicit pick on a co-badged card
+        //   2. BIN metadata's `preferred` / first detected — server's authoritative answer
+        //   3. local card-number detection — best-effort fallback before BIN data arrives
+        var cardNetwork: CardNetwork = rawData.cardNetwork ?? CardNetwork(cardNumber: rawData.cardNumber)
+        // DBG: REMOVE BEFORE MERGE
+        let cardNetworkInitial = cardNetwork
 
-        // Remotely validated card network
-        if let cardNetworksMetadata = cardNetworksMetadata {
-            let didDetectNetwork = !cardNetworksMetadata.detectedCardNetworks.items.isEmpty &&
-                cardNetworksMetadata.detectedCardNetworks.items.map(\.network) != [.unknown]
-
-            if didDetectNetwork, cardNetworksMetadata.detectedCardNetworks.preferred == nil,
-               let network = cardNetworksMetadata.detectedCardNetworks.items.first?.network {
-                cardNetwork = network
+        if rawData.cardNetwork == nil, let metadata = cardNetworksMetadata {
+            let detected = metadata.detectedCardNetworks
+            let didDetectNetwork = !detected.items.isEmpty && detected.items.map(\.network) != [.unknown]
+            if didDetectNetwork {
+                cardNetwork = detected.preferred?.network
+                    ?? detected.items.first?.network
+                    ?? cardNetwork
             }
         }
+        // DBG: REMOVE BEFORE MERGE
+        print(
+            "[DBG-VAL] resolveNetwork rawData.cardNetwork=\(String(describing: rawData.cardNetwork)) " +
+                "initial=\(cardNetworkInitial.rawValue) " +
+                "final=\(cardNetwork.rawValue) " +
+                "metadataNil=\(cardNetworksMetadata == nil) " +
+                "allowed=\(allowedCardNetworks.map(\.rawValue))"
+        )
 
         // Always trigger network validation (even for partial/invalid cards)
         // CardValidationService handles:
@@ -184,32 +235,26 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
         // This ensures picker appears as user types, not just when card is fully valid
         self.cardValidationService?.validateCardNetworks(withCardNumber: rawData.cardNumber)
 
-        // Invalid card number error - check this FIRST before network type validation
+        // Card-number / network errors. Mirrors Android `CardNumberValidator`:
+        //   - Only run the unsupported-card-type check when the cache has BIN-derived
+        //     metadata (REMOTE / LOCAL_FALLBACK). Local IIN guesses (e.g. Maestro for
+        //     5017…) aren't authoritative enough to reject — wait for the BIN response.
+        //   - When metadata is authoritative, "any detected network is allowed" is the
+        //     check, not "the resolved network is in the allowed list" — keeps cobadged
+        //     cards valid even when the user hasn't picked yet.
         if rawData.cardNumber.isEmpty {
             errors.append(PrimerValidationError.invalidCardnumber(message: "Card number can not be blank."))
+        } else if let metadata = cardNetworksMetadata, metadata.source != .local {
+            let detected = metadata.detectedCardNetworks.items
+            if !detected.isEmpty, !detected.contains(where: \.allowed) {
+                errors.append(PrimerValidationError.invalidCardType(
+                    message: "Unsupported card type detected: \(detected.first?.displayName ?? cardNetwork.displayName)"
+                ))
+            } else if !rawData.cardNumber.isValidCardNumber {
+                errors.append(PrimerValidationError.invalidCardnumber(message: "Card number is not valid."))
+            }
         } else if !rawData.cardNumber.isValidCardNumber {
             errors.append(PrimerValidationError.invalidCardnumber(message: "Card number is not valid."))
-        } else {
-            // Only validate network TYPE (allowed/disallowed) when card number is valid
-            // This prevents "unsupported-card-type" errors for empty/partial cards
-            if cardNetworksMetadata != nil {
-                // Unsupported card type error
-                if !self.allowedCardNetworks.contains(cardNetwork) {
-                    let err = PrimerValidationError.invalidCardType(
-                        message: "Unsupported card type detected: \(cardNetwork.displayName)"
-                    )
-                    errors.append(err)
-                }
-            } else {
-                // When BIN data is not available, validate locally detected network against allowed networks
-                // This ensures consistent behavior with Web SDK where network validation always happens
-                if !self.allowedCardNetworks.contains(cardNetwork) {
-                    let err = PrimerValidationError.invalidCardType(
-                        message: "Unsupported card type detected: \(cardNetwork.displayName)"
-                    )
-                    errors.append(err)
-                }
-            }
         }
 
         do {
@@ -235,14 +280,20 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
         }
 
         guard errors.isEmpty else {
+            // DBG: REMOVE BEFORE MERGE
+            print("[DBG-VAL] FAILED errors=\(errors.map { "\(type(of: $0)): \($0.localizedDescription)" })")
             notifyDelegateOfValidationResult(isValid: false, errors: errors)
             throw PrimerError.underlyingErrors(errors: errors)
         }
 
+        // DBG: REMOVE BEFORE MERGE
+        print("[DBG-VAL] PASSED")
         notifyDelegateOfValidationResult(isValid: true, errors: nil)
     }
 
     private func notifyDelegateOfValidationResult(isValid: Bool, errors: [Error]?) {
+        // DBG: REMOVE BEFORE MERGE
+        print("[DBG-VAL] notifyDelegate isValid=\(isValid) errorCount=\(errors?.count ?? 0)")
         isDataValid = isValid
 
         DispatchQueue.main.async { [weak self] in

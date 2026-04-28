@@ -601,6 +601,35 @@ final class CardValidationServiceTests: XCTestCase {
         wait(for: [binDataExpectation], timeout: TestConstants.standardTimeout)
     }
 
+    // MARK: - Cache Key Consistency
+
+    /// Once a remote BIN response is cached, `cachedMetadata(forCardNumber:)` must return it
+    /// for any card number sharing the same 8-char BIN — regardless of length or whitespace.
+    func test_cachedMetadata_returnsStoredMetadataForAnyCardNumberSharingTheBIN() throws {
+        // Given
+        sut = createCardValidationService(allowedNetworks: [.visa, .masterCard])
+        let bin = String(TestConstants.fullCardNumber.prefix(maxBinLength))
+        configureMockAPIClient(bin: bin, networks: ["VISA", "MASTERCARD"])
+
+        let metadataExpectation = expectation(description: "Remote metadata cached")
+        delegate.onMetadataForCardValidationState = { _, networks, _ in
+            if networks.source == .remote {
+                metadataExpectation.fulfill()
+            }
+        }
+
+        // When — populate the cache via a normal validation flow
+        enterCardNumber(TestConstants.fullCardNumber)
+        wait(for: [metadataExpectation], timeout: TestConstants.standardTimeout)
+
+        // Then — cache hits for the exact card number, an extended one with same BIN, and a
+        // formatted variant with whitespace; misses for a different BIN.
+        XCTAssertNotNil(sut.cachedMetadata(forCardNumber: TestConstants.fullCardNumber))
+        XCTAssertNotNil(sut.cachedMetadata(forCardNumber: TestConstants.fullCardNumber + "1234"))
+        XCTAssertNotNil(sut.cachedMetadata(forCardNumber: "5522 6611 7788"))
+        XCTAssertNil(sut.cachedMetadata(forCardNumber: "9999999912345678"))
+    }
+
     // MARK: - Helper Methods
 
     private func createCardValidationService(
@@ -617,18 +646,20 @@ final class CardValidationServiceTests: XCTestCase {
         apiClient.binDataResults[bin] = .init(
             firstDigits: firstDigits ?? String(bin.prefix(6)),
             binData: networks.map {
-                .init(displayName: nil,
-                      network: $0,
-                      issuerCountryCode: nil,
-                      issuerName: nil,
-                      accountFundingType: nil,
-                      prepaidReloadableIndicator: nil,
-                      productUsageType: nil,
-                      productCode: nil,
-                      productName: nil,
-                      issuerCurrencyCode: nil,
-                      regionalRestriction: nil,
-                      accountNumberType: nil)
+                .init(
+                    displayName: nil,
+                    network: $0,
+                    issuerCountryCode: nil,
+                    issuerName: nil,
+                    accountFundingType: nil,
+                    prepaidReloadableIndicator: nil,
+                    productUsageType: nil,
+                    productCode: nil,
+                    productName: nil,
+                    issuerCurrencyCode: nil,
+                    regionalRestriction: nil,
+                    accountNumberType: nil
+                )
             }
         )
     }
@@ -637,18 +668,20 @@ final class CardValidationServiceTests: XCTestCase {
         apiClient.binDataResults[bin] = .init(
             firstDigits: "552266",
             binData: [
-                .init(displayName: "Visa",
-                      network: "VISA",
-                      issuerCountryCode: "US",
-                      issuerName: "Chase",
-                      accountFundingType: "DEBIT",
-                      prepaidReloadableIndicator: "NOT_APPLICABLE",
-                      productUsageType: "CONSUMER",
-                      productCode: "A",
-                      productName: "Visa Classic",
-                      issuerCurrencyCode: "USD",
-                      regionalRestriction: "DOMESTIC_USE_ONLY",
-                      accountNumberType: "PRIMARY_ACCOUNT_NUMBER")
+                .init(
+                    displayName: "Visa",
+                    network: "VISA",
+                    issuerCountryCode: "US",
+                    issuerName: "Chase",
+                    accountFundingType: "DEBIT",
+                    prepaidReloadableIndicator: "NOT_APPLICABLE",
+                    productUsageType: "CONSUMER",
+                    productCode: "A",
+                    productName: "Visa Classic",
+                    issuerCurrencyCode: "USD",
+                    regionalRestriction: "DOMESTIC_USE_ONLY",
+                    accountNumberType: "PRIMARY_ACCOUNT_NUMBER"
+                )
             ]
         )
     }

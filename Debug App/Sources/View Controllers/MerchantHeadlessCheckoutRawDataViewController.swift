@@ -24,10 +24,12 @@ class MerchantHeadlessCheckoutRawDataViewController: UIViewController {
     var paymentMethodType: String!
     var paymentId: String?
     var activityIndicator: UIActivityIndicatorView?
-    var rawCardData = PrimerCardData(cardNumber: "",
-                                     expiryDate: "",
-                                     cvv: "",
-                                     cardholderName: "")
+    var rawCardData = PrimerCardData(
+        cardNumber: "",
+        expiryDate: "",
+        cvv: "",
+        cardholderName: ""
+    )
 
     var cardnumberTextField: UITextField?
     var expiryDateTextField: UITextField?
@@ -99,17 +101,25 @@ class MerchantHeadlessCheckoutRawDataViewController: UIViewController {
             for inputElementType in inputElementTypes {
                 switch inputElementType {
                 case .cardNumber:
-                    self.cardnumberTextField = styledTextField(forAccessibilityId: "cardNumberTextField",
-                                                               withPlaceholderText: "4242 4242 4242 4242")
+                    self.cardnumberTextField = styledTextField(
+                        forAccessibilityId: "cardNumberTextField",
+                        withPlaceholderText: "4242 4242 4242 4242"
+                    )
                 case .expiryDate:
-                    self.expiryDateTextField = styledTextField(forAccessibilityId: "expiryDateTextField",
-                                                               withPlaceholderText: "03/2030")
+                    self.expiryDateTextField = styledTextField(
+                        forAccessibilityId: "expiryDateTextField",
+                        withPlaceholderText: "03/2030"
+                    )
                 case .cvv:
-                    self.cvvTextField = styledTextField(forAccessibilityId: "cvvTextField",
-                                                        withPlaceholderText: "123")
+                    self.cvvTextField = styledTextField(
+                        forAccessibilityId: "cvvTextField",
+                        withPlaceholderText: "123"
+                    )
                 case .cardholderName:
-                    self.cardholderNameTextField = styledTextField(forAccessibilityId: "cardholderNameTextField",
-                                                                   withPlaceholderText: "John Smith")
+                    self.cardholderNameTextField = styledTextField(
+                        forAccessibilityId: "cardholderNameTextField",
+                        withPlaceholderText: "John Smith"
+                    )
                 case .otp:
                     break
 
@@ -154,8 +164,10 @@ class MerchantHeadlessCheckoutRawDataViewController: UIViewController {
         }
     }
 
-    private func styledTextField(forAccessibilityId accessibilityId: String,
-                                 withPlaceholderText placeholderText: String) -> UITextField {
+    private func styledTextField(
+        forAccessibilityId accessibilityId: String,
+        withPlaceholderText placeholderText: String
+    ) -> UITextField {
         let textField = UITextField(frame: .zero)
         textField.accessibilityIdentifier = accessibilityId
         textField.borderStyle = .none
@@ -178,6 +190,13 @@ class MerchantHeadlessCheckoutRawDataViewController: UIViewController {
               [2, 4].contains(yearComponent.count) else {
             return showErrorMessage("Please write expiry date in format MM/YY or MM/YYYY")
         }
+
+        // DBG: REMOVE BEFORE MERGE — state at the moment of submit; this is what feeds preferredNetwork
+        print(
+            "[DBG-MERCHANT] payButtonTapped → submit() with " +
+                "rawCardData.cardNetwork=\(String(describing: rawCardData.cardNetwork)) " +
+                "selectedCardNetwork=\(selectedCardNetwork?.network.rawValue ?? "nil")"
+        )
 
         if paymentMethodType == "PAYMENT_CARD" {
             self.primerRawDataManager!.submit()
@@ -226,7 +245,8 @@ extension MerchantHeadlessCheckoutRawDataViewController: UITextFieldDelegate {
                 expiryDate: self.expiryDateTextField?.text ?? "",
                 cvv: self.cvvTextField?.text ?? "",
                 cardholderName: self.cardholderNameTextField?.text ?? "",
-                cardNetwork: self.rawCardData.cardNetwork)
+                cardNetwork: self.rawCardData.cardNetwork
+            )
 
         } else if textField == self.expiryDateTextField {
             self.rawCardData = PrimerCardData(
@@ -234,7 +254,8 @@ extension MerchantHeadlessCheckoutRawDataViewController: UITextFieldDelegate {
                 expiryDate: newText,
                 cvv: self.cvvTextField?.text ?? "",
                 cardholderName: self.cardholderNameTextField?.text ?? "",
-                cardNetwork: self.rawCardData.cardNetwork)
+                cardNetwork: self.rawCardData.cardNetwork
+            )
 
         } else if textField == self.cvvTextField {
             self.rawCardData = PrimerCardData(
@@ -242,7 +263,8 @@ extension MerchantHeadlessCheckoutRawDataViewController: UITextFieldDelegate {
                 expiryDate: self.expiryDateTextField?.text ?? "",
                 cvv: newText,
                 cardholderName: self.cardholderNameTextField?.text ?? "",
-                cardNetwork: self.rawCardData.cardNetwork)
+                cardNetwork: self.rawCardData.cardNetwork
+            )
 
         } else if textField == self.cardholderNameTextField {
             self.rawCardData = PrimerCardData(
@@ -250,10 +272,17 @@ extension MerchantHeadlessCheckoutRawDataViewController: UITextFieldDelegate {
                 expiryDate: self.expiryDateTextField?.text ?? "",
                 cvv: self.cvvTextField?.text ?? "",
                 cardholderName: newText.isEmpty ? nil : newText,
-                cardNetwork: self.rawCardData.cardNetwork)
+                cardNetwork: self.rawCardData.cardNetwork
+            )
         }
 
-        print("self.rawCardData\ncardNumber: \(self.rawCardData.cardNumber)\nexpiryDate: \(self.rawCardData.expiryDate)\ncvv: \(self.rawCardData.cvv)\ncardholderName: \(self.rawCardData.cardholderName ?? "nil")")
+        // DBG: REMOVE BEFORE MERGE
+        print(
+            "[DBG-MERCHANT] textField change — cardNumber='\(self.rawCardData.cardNumber)' " +
+                "expiry='\(self.rawCardData.expiryDate)' cvv.length=\(self.rawCardData.cvv.count) " +
+                "name='\(self.rawCardData.cardholderName ?? "nil")' " +
+                "cardNetwork=\(String(describing: self.rawCardData.cardNetwork))"
+        )
         self.primerRawDataManager?.rawData = self.rawCardData
 
         return true
@@ -262,23 +291,32 @@ extension MerchantHeadlessCheckoutRawDataViewController: UITextFieldDelegate {
 
 extension MerchantHeadlessCheckoutRawDataViewController: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate {
 
-    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
-                              dataIsValid isValid: Bool,
-                              errors: [Error]?) {
-        print("\n\nMERCHANT APP\n\(#function)\ndataIsValid: \(isValid)")
+    func primerRawDataManager(
+        _ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
+        dataIsValid isValid: Bool,
+        errors: [Error]?
+    ) {
+        // DBG: REMOVE BEFORE MERGE
+        let errStr = errors?.map { "\(type(of: $0)): \($0.localizedDescription)" }.joined(separator: " | ") ?? "nil"
+        print("[DBG-MERCHANT] dataIsValid=\(isValid) errors=[\(errStr)] → button=\(isValid ? "enabled" : "disabled")")
         self.logs.append(#function)
         self.payButton.backgroundColor = isValid ? .black : .lightGray
         self.payButton.isEnabled = isValid
     }
 
-    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
-                              metadataDidChange metadata: [String: Any]?) {
-        print("\n\nMERCHANT APP\n\(#function)\nmetadataDidChange: \(String(describing: metadata))")
+    func primerRawDataManager(
+        _ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
+        metadataDidChange metadata: [String: Any]?
+    ) {
+        // DBG: REMOVE BEFORE MERGE
+        print("[DBG-MERCHANT] metadataDidChange=\(String(describing: metadata))")
         self.logs.append(#function)
     }
 
-    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
-                              willFetchMetadataForState state: PrimerValidationState) {
+    func primerRawDataManager(
+        _ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
+        willFetchMetadataForState state: PrimerValidationState
+    ) {
         print("[MerchantHeadlessCheckoutRawDataViewController] willFetchCardMetadataForState")
         DispatchQueue.main.async {
             self.cardsStackView.removeAllArrangedSubviews()
@@ -287,8 +325,11 @@ extension MerchantHeadlessCheckoutRawDataViewController: PrimerHeadlessUniversal
         }
     }
 
-    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
-                              didReceiveMetadata metadata: PrimerPaymentMethodMetadata, forState state: PrimerValidationState) {
+    func primerRawDataManager(
+        _ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
+        didReceiveMetadata metadata: PrimerPaymentMethodMetadata,
+        forState state: PrimerValidationState
+    ) {
         guard let metadata = metadata as? PrimerCardNumberEntryMetadata,
               let cardState = state as? PrimerCardNumberEntryState else {
             print("[MerchantHeadlessCheckoutRawDataViewController] ERROR: Failed to cast metadata and state to card entry models")
@@ -300,24 +341,40 @@ extension MerchantHeadlessCheckoutRawDataViewController: PrimerHeadlessUniversal
 
         DispatchQueue.main.async { [weak self] in
             guard let self else { return }
+            // Capture before any clearing so we can preserve a prior user tap when
+            // didReceiveCardMetadata re-fires (e.g. during submit-time validation).
+            let priorPick = rawCardData.cardNetwork
+            // DBG: REMOVE BEFORE MERGE
+            let prevCardNetwork = String(describing: priorPick)
             cardsStackView.removeAllArrangedSubviews()
             selectedCardNetwork = nil
 
             if metadata.autoSelectedCardNetwork != nil {
+                // DBG: REMOVE BEFORE MERGE
+                print("[DBG-MERCHANT] didReceiveMetadata branch=AUTO_SELECTED prevCardNetwork=\(prevCardNetwork) → setting nil (auto-route)")
                 // EFTPOS co-badge: show all detected networks at full opacity, non-interactive
                 cardBadgesInteractive = false
                 rawCardData.cardNetwork = nil
                 addCardBadges(for: metadata.detectedCardNetworks.items)
-            } else if let selectableNetworks = metadata.selectableCardNetworks {
-                // Selectable co-badge: first badge visually selected, but cardNetwork nil until user taps
+            } else if let selectableNetworks = metadata.selectableCardNetworks,
+                      selectableNetworks.items.count > 1 {
+                // True co-badge: more than one selectable network. Keep the user's prior tap
+                // if it's still a valid option; otherwise leave cardNetwork nil and wait for a tap.
+                let preservedSelection = priorPick.flatMap { pick in
+                    selectableNetworks.items.first { $0.network == pick }
+                }
+                // DBG: REMOVE BEFORE MERGE
+                print("[DBG-MERCHANT] didReceiveMetadata branch=SELECTABLE items=\(selectableNetworks.items.map(\.network.rawValue)) prevCardNetwork=\(prevCardNetwork) preserved=\(preservedSelection?.network.rawValue ?? "nil")")
                 cardBadgesInteractive = true
-                selectedCardNetwork = selectableNetworks.items.first
-                rawCardData.cardNetwork = nil
+                selectedCardNetwork = preservedSelection ?? selectableNetworks.items.first
+                rawCardData.cardNetwork = preservedSelection?.network
                 addCardBadges(for: selectableNetworks.items)
                 for (index, network) in selectableNetworks.items.enumerated() {
                     guard let imageView = cardsStackView.arrangedSubviews[safe: index] as? UIImageView else { continue }
                     imageView.isUserInteractionEnabled = true
                     let tapGestureRecognizer = TapGestureRecognizer {
+                        // DBG: REMOVE BEFORE MERGE
+                        print("[DBG-MERCHANT] badge tapped → cardNetwork=\(network.network.rawValue)")
                         self.selectedCardNetwork = network
                         self.rawCardData.cardNetwork = network.network
                         self.updateCardImages()
@@ -325,6 +382,8 @@ extension MerchantHeadlessCheckoutRawDataViewController: PrimerHeadlessUniversal
                     imageView.addGestureRecognizer(tapGestureRecognizer)
                 }
             } else {
+                // DBG: REMOVE BEFORE MERGE
+                print("[DBG-MERCHANT] didReceiveMetadata branch=SINGLE/FALLBACK detected=\(metadata.detectedCardNetworks.items.map(\.network.rawValue)) prevCardNetwork=\(prevCardNetwork) → setting nil")
                 // Single network / fallback
                 cardBadgesInteractive = false
                 rawCardData.cardNetwork = nil
@@ -360,8 +419,10 @@ extension MerchantHeadlessCheckoutRawDataViewController: PrimerHeadlessUniversal
         }
     }
 
-    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
-                              didReceiveBinData binData: PrimerBinData) {
+    func primerRawDataManager(
+        _ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
+        didReceiveBinData binData: PrimerBinData
+    ) {
         let statusStr = binData.status == .complete ? "complete" : "partial"
         let preferredStr = binData.preferred?.displayName ?? "none"
         let alternativesStr = binData.alternatives.map(\.displayName).joined(separator: ", ")
