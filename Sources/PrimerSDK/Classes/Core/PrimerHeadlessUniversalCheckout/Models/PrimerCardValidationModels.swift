@@ -5,6 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+import PrimerFoundation
 
 @objc
 public protocol PrimerValidationState {}
@@ -51,18 +52,20 @@ public final class PrimerCardNetwork: NSObject {
         network.allowsUserSelection
     }
 
-    init(displayName: String,
-         network: CardNetwork,
-         issuerCountryCode: String? = nil,
-         issuerName: String? = nil,
-         accountFundingType: String? = nil,
-         prepaidReloadableIndicator: String? = nil,
-         productUsageType: String? = nil,
-         productCode: String? = nil,
-         productName: String? = nil,
-         issuerCurrencyCode: String? = nil,
-         regionalRestriction: String? = nil,
-         accountNumberType: String? = nil) {
+    init(
+        displayName: String,
+        network: CardNetwork,
+        issuerCountryCode: String? = nil,
+        issuerName: String? = nil,
+        accountFundingType: String? = nil,
+        prepaidReloadableIndicator: String? = nil,
+        productUsageType: String? = nil,
+        productCode: String? = nil,
+        productName: String? = nil,
+        issuerCurrencyCode: String? = nil,
+        regionalRestriction: String? = nil,
+        accountNumberType: String? = nil
+    ) {
         self.displayName = displayName
         self.network = network
         self.issuerCountryCode = issuerCountryCode
@@ -118,10 +121,12 @@ public final class PrimerCardNumberEntryMetadata: NSObject, PrimerPaymentMethodM
     /// This is set when a co-badged card contains a network that disallows user selection
     public let autoSelectedCardNetwork: PrimerCardNetwork?
 
-    init(source: PrimerCardValidationSource,
-         selectableCardNetworks: [PrimerCardNetwork]?,
-         detectedCardNetworks: [PrimerCardNetwork],
-         autoSelectedCardNetwork: PrimerCardNetwork? = nil) {
+    init(
+        source: PrimerCardValidationSource,
+        selectableCardNetworks: [PrimerCardNetwork]?,
+        detectedCardNetworks: [PrimerCardNetwork],
+        autoSelectedCardNetwork: PrimerCardNetwork? = nil
+    ) {
         self.source = source
 
         if source == .remote, let selectableCardNetworks, !selectableCardNetworks.isEmpty {

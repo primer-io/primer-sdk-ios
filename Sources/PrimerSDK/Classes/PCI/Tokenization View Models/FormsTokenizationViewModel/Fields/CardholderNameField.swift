@@ -1,9 +1,10 @@
 //
 //  CardholderNameField.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+import PrimerFoundation
 import UIKit
 
 final class PrimerCardholderNameField: PrimerCardFormFieldProtocol {
@@ -34,7 +35,7 @@ final class PrimerCardholderNameField: PrimerCardFormFieldProtocol {
 
 extension PrimerCardholderNameField {
 
-    internal static var isCardholderNameFieldEnabled: Bool {
+    static var isCardholderNameFieldEnabled: Bool {
         let cardInfoOptions = PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules?
             .first(where: { $0.type == "CARD_INFORMATION" })?
             .options as? PrimerAPIConfiguration.CheckoutModule.CardInformationOptions

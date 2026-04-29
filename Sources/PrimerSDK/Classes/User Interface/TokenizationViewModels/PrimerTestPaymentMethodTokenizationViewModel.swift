@@ -4,6 +4,7 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+import PrimerFoundation
 import UIKit
 
 // swiftlint:disable:next type_name
@@ -160,7 +161,8 @@ final class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizat
             context: Analytics.Event.Property.Context(
                 issuerId: nil,
                 paymentMethodType: config.type,
-                url: nil),
+                url: nil
+            ),
             extra: nil,
             objectType: .button,
             objectId: .submit,

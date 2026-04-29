@@ -1,13 +1,14 @@
 //
 //  NolPayPhoneMetadataService.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable function_body_length
 // swiftlint:disable large_tuple
 
 import Foundation
+import PrimerFoundation
 
 typealias PhoneMetadataCompletion = (Result<(PrimerValidationStatus, String?, String?), PrimerError>) -> Void
 
@@ -46,7 +47,7 @@ final class NolPayPhoneMetadataService: NolPayPhoneMetadataServiceProtocol {
             self.apiClient.getPhoneMetadata(clientToken: clientToken, paymentRequestBody: requestBody) { result in
 
                 switch result {
-                case .success(let phoneMetadataResponse):
+                case let .success(phoneMetadataResponse):
                     let countryCode = phoneMetadataResponse.countryCode
                     let mobileNumber = phoneMetadataResponse.nationalNumber
                     if phoneMetadataResponse.isValid {
@@ -55,7 +56,7 @@ final class NolPayPhoneMetadataService: NolPayPhoneMetadataServiceProtocol {
                         let error = handled(error: PrimerValidationError.invalidPhoneNumber(message: "Phone number is not valid."))
                         completion(.success((.invalid(errors: [error]), nil, nil)))
                     }
-                case .failure(let error):
+                case let .failure(error):
                     completion(.failure(handled(primerError: .underlyingErrors(errors: [error]))))
                 }
             }

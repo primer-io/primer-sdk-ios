@@ -4,6 +4,7 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+import PrimerFoundation
 @testable import PrimerSDK
 
 class MockKlarnaTokenizationComponent: KlarnaTokenizationComponentProtocol {
@@ -34,7 +35,7 @@ class MockKlarnaTokenizationComponent: KlarnaTokenizationComponentProtocol {
 
     func authorizePaymentSession(
         authorizationToken: String
-    ) async throws -> PrimerSDK.Response.Body.Klarna.CustomerToken {
+    ) async throws -> Response.Body.Klarna.CustomerToken {
         authorizePaymentSessionCallCount += 1
         switch authorizePaymentSessionResult {
         case let .success(customerToken): return customerToken

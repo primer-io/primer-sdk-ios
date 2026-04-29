@@ -4,6 +4,7 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+import PrimerFoundation
 import UIKit
 
 final class CVVRecaptureViewController: UIViewController {
@@ -76,8 +77,10 @@ final class CVVRecaptureViewController: UIViewController {
     }
 
     private func setupExplanationLabel() {
-        let explanationText = String(format: Strings.CVVRecapture.explanation,
-                                     viewModel.cvvLength)
+        let explanationText = String(
+            format: Strings.CVVRecapture.explanation,
+            viewModel.cvvLength
+        )
         explanationLabel.text = explanationText
         explanationLabel.numberOfLines = 0
         explanationLabel.textColor = theme.text.body.color

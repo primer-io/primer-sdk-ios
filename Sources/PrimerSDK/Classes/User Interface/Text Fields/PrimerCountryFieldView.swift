@@ -1,20 +1,21 @@
 //
 //  PrimerCountryFieldView.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+import PrimerFoundation
 import UIKit
 
 public final class PrimerCountryFieldView: PrimerSimpleCardFormTextFieldView {
 
-    internal var country: String? {
-        return textField.internalText
+    var country: String? {
+        textField.internalText
     }
 
-    internal var countryCode: CountryCode?
+    var countryCode: CountryCode?
 
-    internal var onOpenCountriesListPressed: PrimerAction?
+    var onOpenCountriesListPressed: PrimerAction?
 
     override func xibSetup() {
         super.xibSetup()
@@ -25,13 +26,13 @@ public final class PrimerCountryFieldView: PrimerSimpleCardFormTextFieldView {
         editingAnalyticsObjectId = .billingAddressCountry
         validationError = .invalidCountry(message: "Country is not valid.")
         isValid = { text in
-            return !text.isEmpty
+            !text.isEmpty
         }
         setupTextFieldView()
     }
 
-    public override func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        return false
+    override public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        false
     }
 }
 

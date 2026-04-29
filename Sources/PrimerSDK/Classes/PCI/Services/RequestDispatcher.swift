@@ -5,6 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+import PrimerFoundation
 
 typealias DispatcherCompletion = (Result<DispatcherResponse, Error>) -> Void
 
@@ -69,9 +70,11 @@ final class DefaultRequestDispatcher: RequestDispatcher, LogReporter {
                 return completion(.failure(InternalError.missingHTTPResponse(underlyingError: error)))
             }
 
-            let metadata = ResponseMetadataModel(responseUrl: httpResponse.responseUrl,
-                                                 statusCode: httpResponse.statusCode,
-                                                 headers: httpResponse.headers)
+            let metadata = ResponseMetadataModel(
+                responseUrl: httpResponse.responseUrl,
+                statusCode: httpResponse.statusCode,
+                headers: httpResponse.headers
+            )
             let responseModel = DispatcherResponseModel(metadata: metadata, requestDuration: requestDuration, data: data, error: error)
             completion(.success(responseModel))
         }
@@ -89,4 +92,4 @@ final class DefaultRequestDispatcher: RequestDispatcher, LogReporter {
     }
 }
 
-extension Task: PrimerCancellable {}
+extension Task {}

@@ -8,6 +8,7 @@
 // swiftlint:disable function_body_length
 // swiftlint:disable type_body_length
 
+import PrimerFoundation
 import UIKit
 
 final class PrimerUniversalCheckoutViewController: PrimerFormViewController {
@@ -140,9 +141,11 @@ final class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 let err = PrimerError.invalidValue(key: "amount or currency")
                 Task {
                     let errMessage = await PrimerDelegateProxy.raisePrimerDidFailWithError(err, data: nil)
-                    PrimerUIManager.dismissOrShowResultScreen(type: .failure,
-                                                              paymentMethodManagerCategories: [],
-                                                              withMessage: errMessage)
+                    PrimerUIManager.dismissOrShowResultScreen(
+                        type: .failure,
+                        paymentMethodManagerCategories: [],
+                        withMessage: errMessage
+                    )
                 }
                 return
             }
@@ -176,7 +179,7 @@ final class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 title += " \(amount.toCurrencyString(currency: currency))"
             }
 
-          payButton.layer.cornerRadius = theme.mainButton.cornerRadius
+            payButton.layer.cornerRadius = theme.mainButton.cornerRadius
             payButton.setTitle(title, for: .normal)
             payButton.setTitleColor(theme.mainButton.text.color, for: .normal)
             payButton.titleLabel?.font = .boldSystemFont(ofSize: 19)
@@ -206,19 +209,19 @@ final class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         PrimerUIManager.primerRootViewController?.layoutIfNeeded()
     }
 	
-	private func removeSavedCardsView() {
-		if savedCardView != nil {
-			verticalStackView.removeArrangedSubview(savedCardView)
-			savedCardView.removeFromSuperview()
-			savedCardView = nil
-		}
+    private func removeSavedCardsView() {
+        if savedCardView != nil {
+            verticalStackView.removeArrangedSubview(savedCardView)
+            savedCardView.removeFromSuperview()
+            savedCardView = nil
+        }
 
-		if savedPaymentMethodStackView != nil {
-			verticalStackView.removeArrangedSubview(savedPaymentMethodStackView)
-			savedPaymentMethodStackView.removeFromSuperview()
-			savedPaymentMethodStackView = nil
-		}
-	}
+        if savedPaymentMethodStackView != nil {
+            verticalStackView.removeArrangedSubview(savedPaymentMethodStackView)
+            savedPaymentMethodStackView.removeFromSuperview()
+            savedPaymentMethodStackView = nil
+        }
+    }
 
     private func renderAvailablePaymentMethods() {
         PrimerFormViewController.renderPaymentMethods(paymentMethodConfigViewModels, on: verticalStackView)
@@ -269,7 +272,8 @@ final class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 configuration: config,
                 selectedPaymentMethodTokenData: selectedPaymentMethod,
                 additionalData: additionalData,
-                createResumePaymentService: CreateResumePaymentService(paymentMethodType: selectedPaymentMethodType))
+                createResumePaymentService: CreateResumePaymentService(paymentMethodType: selectedPaymentMethodType)
+            )
 
             Task {
                 try? await checkoutWithVaultedPaymentMethodVM.start()

@@ -1,14 +1,15 @@
 //
 //  PrimerFormViewController.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+import PrimerFoundation
 import UIKit
 
 class PrimerFormViewController: PrimerViewController {
 
-    internal var verticalStackView: UIStackView = UIStackView()
+    var verticalStackView: UIStackView = UIStackView()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -25,8 +26,10 @@ class PrimerFormViewController: PrimerViewController {
         verticalStackView.pin(view: view, leading: 20, top: 20, trailing: -20, bottom: -20)
     }
 
-    static func renderPaymentMethods(_ paymentMethodTokenizationViewModels: [PaymentMethodTokenizationViewModelProtocol],
-                                     on stackView: UIStackView) {
+    static func renderPaymentMethods(
+        _ paymentMethodTokenizationViewModels: [PaymentMethodTokenizationViewModelProtocol],
+        on stackView: UIStackView
+    ) {
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
 
         let paymentMethodsContainerStack = UIStackView()
@@ -85,7 +88,8 @@ class PrimerFormViewController: PrimerViewController {
             if !noAdditionalFeePaymentMethodsViewModels.isEmpty {
                 let noAdditionalFeesContainerView = PaymentMethodsGroupView(
                     title: Strings.CardFormView.noAdditionalFeesTitle,
-                    paymentMethodTokenizationViewModels: noAdditionalFeePaymentMethodsViewModels)
+                    paymentMethodTokenizationViewModels: noAdditionalFeePaymentMethodsViewModels
+                )
                 noAdditionalFeesContainerView.accessibilityIdentifier = "no_additional_fees_surcharge_group_view"
                 noAdditionalFeesContainerView.titleLabel?.font = UIFont.systemFont(ofSize: 12.0, weight: .regular)
                 paymentMethodsStack.addArrangedSubview(noAdditionalFeesContainerView)
@@ -94,8 +98,10 @@ class PrimerFormViewController: PrimerViewController {
             if !additionalFeePaymentMethodsViewModels.isEmpty {
                 for additionalFeePaymentMethodsViewModel in additionalFeePaymentMethodsViewModels {
                     let title = additionalFeePaymentMethodsViewModel.uiModule.surchargeSectionText
-                    let additionalFeesContainerView = PaymentMethodsGroupView(title: title,
-                                                                              paymentMethodTokenizationViewModels: [additionalFeePaymentMethodsViewModel])
+                    let additionalFeesContainerView = PaymentMethodsGroupView(
+                        title: title,
+                        paymentMethodTokenizationViewModels: [additionalFeePaymentMethodsViewModel]
+                    )
                     additionalFeesContainerView.accessibilityIdentifier = "\(additionalFeePaymentMethodsViewModel.config.type.lowercased())_surcharge_group_view"
                     additionalFeesContainerView.titleLabel?.font = UIFont.systemFont(ofSize: 16.0, weight: .bold)
                     paymentMethodsStack.addArrangedSubview(additionalFeesContainerView)
@@ -105,7 +111,8 @@ class PrimerFormViewController: PrimerViewController {
             if !unknownFeePaymentMethodsViewModels.isEmpty {
                 let unknownFeesContainerView = PaymentMethodsGroupView(
                     title: Strings.CardFormView.additionalFeesTitle,
-                    paymentMethodTokenizationViewModels: unknownFeePaymentMethodsViewModels)
+                    paymentMethodTokenizationViewModels: unknownFeePaymentMethodsViewModels
+                )
                 unknownFeesContainerView.accessibilityIdentifier = "additional_fees_surcharge_group_view"
 
                 unknownFeesContainerView.titleLabel?.font = UIFont.systemFont(ofSize: 12.0, weight: .regular)

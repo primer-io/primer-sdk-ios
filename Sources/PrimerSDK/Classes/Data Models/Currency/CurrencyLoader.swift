@@ -1,11 +1,12 @@
 //
 //  CurrencyLoader.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable function_body_length
 import Foundation
+import PrimerFoundation
 
 var inMemoryCurrencies: [Currency]? = []
 
@@ -73,8 +74,10 @@ public final class CurrencyLoader: LogReporter {
                 inMemoryCurrencies = currencies
                 self?.logger.debug(message: "Successfully updated the list of currencies.")
 
-                let sdkEvent = Analytics.Event.sdk(name: #function,
-                                                   params: ["message": "Successfully updated the list of currencies."])
+                let sdkEvent = Analytics.Event.sdk(
+                    name: #function,
+                    params: ["message": "Successfully updated the list of currencies."]
+                )
                 Analytics.Service.fire(events: [sdkEvent])
                 completion?(nil)
             } catch {

@@ -1,9 +1,10 @@
 //
 //  PrimerCardFormViewController.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+import PrimerFoundation
 import UIKit
 
 /// Subclass of the PrimerFormViewController that uses the checkout components and the card components manager
@@ -12,8 +13,10 @@ final class PrimerCardFormViewController: PrimerFormViewController {
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     private let formPaymentMethodTokenizationViewModel: CardFormPaymentMethodTokenizationViewModel
 
-    init(navigationBarLogo: UIImage? = nil,
-         viewModel: CardFormPaymentMethodTokenizationViewModel) {
+    init(
+        navigationBarLogo: UIImage? = nil,
+        viewModel: CardFormPaymentMethodTokenizationViewModel
+    ) {
         formPaymentMethodTokenizationViewModel = viewModel
         super.init()
         titleImage = navigationBarLogo

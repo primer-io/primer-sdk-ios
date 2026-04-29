@@ -1,11 +1,12 @@
 //
 //  CardButtonViewModelTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import XCTest
+import PrimerFoundation
 @testable import PrimerSDK
+import XCTest
 
 final class CardButtonViewModelTests: XCTestCase {
 
@@ -16,12 +17,14 @@ final class CardButtonViewModelTests: XCTestCase {
     func testViewModelSurchargeWithValidOptions() {
         setupSession(network: .visa, hasCardOptions: true, surcharge: 1234)
 
-        let viewModel = CardButtonViewModel(network: "VISA",
-                                            cardholder: "John Appleseed",
-                                            last4: "1234",
-                                            expiry: "01/30",
-                                            imageName: .visa,
-                                            paymentMethodType: .paymentCard)
+        let viewModel = CardButtonViewModel(
+            network: "VISA",
+            cardholder: "John Appleseed",
+            last4: "1234",
+            expiry: "01/30",
+            imageName: .visa,
+            paymentMethodType: .paymentCard
+        )
 
         XCTAssertEqual(viewModel.surCharge, 1234)
     }
@@ -29,12 +32,14 @@ final class CardButtonViewModelTests: XCTestCase {
     func testViewModelSurchargeWithInvalidOptions_invalidNetwork() {
         setupSession(network: nil, hasCardOptions: true, surcharge: 1234)
 
-        let viewModel = CardButtonViewModel(network: "VISA",
-                                            cardholder: "John Appleseed",
-                                            last4: "1234",
-                                            expiry: "01/30",
-                                            imageName: .visa,
-                                            paymentMethodType: .paymentCard)
+        let viewModel = CardButtonViewModel(
+            network: "VISA",
+            cardholder: "John Appleseed",
+            last4: "1234",
+            expiry: "01/30",
+            imageName: .visa,
+            paymentMethodType: .paymentCard
+        )
 
         XCTAssertNil(viewModel.surCharge)
     }
@@ -42,12 +47,14 @@ final class CardButtonViewModelTests: XCTestCase {
     func testViewModelSurchargeWithInvalidOptions_invalidNetworkAndSurcharge() {
         setupSession(network: nil, hasCardOptions: true, surcharge: nil)
 
-        let viewModel = CardButtonViewModel(network: "VISA",
-                                            cardholder: "John Appleseed",
-                                            last4: "1234",
-                                            expiry: "01/30",
-                                            imageName: .visa,
-                                            paymentMethodType: .paymentCard)
+        let viewModel = CardButtonViewModel(
+            network: "VISA",
+            cardholder: "John Appleseed",
+            last4: "1234",
+            expiry: "01/30",
+            imageName: .visa,
+            paymentMethodType: .paymentCard
+        )
 
         XCTAssertNil(viewModel.surCharge)
     }
@@ -55,12 +62,14 @@ final class CardButtonViewModelTests: XCTestCase {
     func testViewModelSurchargeWithInvalidOptions_noCardOptions() {
         setupSession(network: nil, hasCardOptions: false, surcharge: nil)
 
-        let viewModel = CardButtonViewModel(network: "VISA",
-                                            cardholder: "John Appleseed",
-                                            last4: "1234",
-                                            expiry: "01/30",
-                                            imageName: .visa,
-                                            paymentMethodType: .paymentCard)
+        let viewModel = CardButtonViewModel(
+            network: "VISA",
+            cardholder: "John Appleseed",
+            last4: "1234",
+            expiry: "01/30",
+            imageName: .visa,
+            paymentMethodType: .paymentCard
+        )
 
         XCTAssertNil(viewModel.surCharge)
     }
@@ -68,12 +77,14 @@ final class CardButtonViewModelTests: XCTestCase {
     func testViewModelSurchargeWithInvalidOptions_invalidSurcharge() {
         setupSession(network: .visa, hasCardOptions: true, surcharge: nil)
 
-        let viewModel = CardButtonViewModel(network: "VISA",
-                                            cardholder: "John Appleseed",
-                                            last4: "1234",
-                                            expiry: "01/30",
-                                            imageName: .visa,
-                                            paymentMethodType: .paymentCard)
+        let viewModel = CardButtonViewModel(
+            network: "VISA",
+            cardholder: "John Appleseed",
+            last4: "1234",
+            expiry: "01/30",
+            imageName: .visa,
+            paymentMethodType: .paymentCard
+        )
 
         XCTAssertNil(viewModel.surCharge)
     }
@@ -95,19 +106,23 @@ final class CardButtonViewModelTests: XCTestCase {
     }
 
     private func createPaymentMethod(hasCardOptions: Bool, surcharge: Int?) -> PrimerPaymentMethod {
-        let options = CardOptions(threeDSecureEnabled: false,
-                                  threeDSecureToken: nil,
-                                  threeDSecureInitUrl: nil,
-                                  threeDSecureProvider: "",
-                                  processorConfigId: "processor_config_id",
-                                  captureVaultedCardCvv: false)
-        return .init(id: "id",
-                     implementationType: .nativeSdk,
-                     type: PrimerPaymentMethodType.paymentCard.rawValue,
-                     name: "card",
-                     processorConfigId: "processor_config_id",
-                     surcharge: 1234,
-                     options: hasCardOptions ? options : nil,
-                     displayMetadata: nil)
+        let options = CardOptions(
+            threeDSecureEnabled: false,
+            threeDSecureToken: nil,
+            threeDSecureInitUrl: nil,
+            threeDSecureProvider: "",
+            processorConfigId: "processor_config_id",
+            captureVaultedCardCvv: false
+        )
+        return .init(
+            id: "id",
+            implementationType: .nativeSdk,
+            type: PrimerPaymentMethodType.paymentCard.rawValue,
+            name: "card",
+            processorConfigId: "processor_config_id",
+            surcharge: 1234,
+            options: hasCardOptions ? options : nil,
+            displayMetadata: nil
+        )
     }
 }

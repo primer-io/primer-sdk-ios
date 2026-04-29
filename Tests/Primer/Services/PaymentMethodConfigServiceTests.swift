@@ -1,11 +1,12 @@
 //
 //  PaymentMethodConfigServiceTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import XCTest
+import PrimerFoundation
 @testable import PrimerSDK
+import XCTest
 
 class PaymentMethodConfigServiceTests: XCTestCase {
 
@@ -25,7 +26,8 @@ class PaymentMethodConfigServiceTests: XCTestCase {
                     processorConfigId: "payment-card-processor_config-id",
                     surcharge: nil,
                     options: nil,
-                    displayMetadata: nil)
+                    displayMetadata: nil
+                )
             ],
             primerAccountId: nil,
             keys: nil,

@@ -4,10 +4,11 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+import PrimerFoundation
 @testable import PrimerSDK
 import XCTest
 
-class MockPrimerAPIAnalyticsClient: PrimerAPIClientAnalyticsProtocol {
+final class MockPrimerAPIAnalyticsClient: PrimerAPIClientAnalyticsProtocol, @unchecked Sendable {
 
     var shouldSucceed: Bool = true
 
