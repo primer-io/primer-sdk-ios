@@ -284,7 +284,7 @@ platform :ios do
     custom_id = case source_branch_trimmed
       when "release/next" then "release-latest-ios"
       when "master" then "nightly-latest-ios"
-      else pr_number.to_s.empty? ? "preview_ios" : "preview-" + pr_number + "-ios"
+      else pr_number.to_s.empty? ? "preview-ios" : "preview-" + pr_number + "-ios"
     end
 
     upload_to_lambdatest(
