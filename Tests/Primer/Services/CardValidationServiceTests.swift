@@ -617,18 +617,20 @@ final class CardValidationServiceTests: XCTestCase {
         apiClient.binDataResults[bin] = .init(
             firstDigits: firstDigits ?? String(bin.prefix(6)),
             binData: networks.map {
-                .init(displayName: nil,
-                      network: $0,
-                      issuerCountryCode: nil,
-                      issuerName: nil,
-                      accountFundingType: nil,
-                      prepaidReloadableIndicator: nil,
-                      productUsageType: nil,
-                      productCode: nil,
-                      productName: nil,
-                      issuerCurrencyCode: nil,
-                      regionalRestriction: nil,
-                      accountNumberType: nil)
+                .init(
+                    displayName: nil,
+                    network: $0,
+                    issuerCountryCode: nil,
+                    issuerName: nil,
+                    accountFundingType: nil,
+                    prepaidReloadableIndicator: nil,
+                    productUsageType: nil,
+                    productCode: nil,
+                    productName: nil,
+                    issuerCurrencyCode: nil,
+                    regionalRestriction: nil,
+                    accountNumberType: nil
+                )
             }
         )
     }
@@ -637,18 +639,20 @@ final class CardValidationServiceTests: XCTestCase {
         apiClient.binDataResults[bin] = .init(
             firstDigits: "552266",
             binData: [
-                .init(displayName: "Visa",
-                      network: "VISA",
-                      issuerCountryCode: "US",
-                      issuerName: "Chase",
-                      accountFundingType: "DEBIT",
-                      prepaidReloadableIndicator: "NOT_APPLICABLE",
-                      productUsageType: "CONSUMER",
-                      productCode: "A",
-                      productName: "Visa Classic",
-                      issuerCurrencyCode: "USD",
-                      regionalRestriction: "DOMESTIC_USE_ONLY",
-                      accountNumberType: "PRIMARY_ACCOUNT_NUMBER")
+                .init(
+                    displayName: "Visa",
+                    network: "VISA",
+                    issuerCountryCode: "US",
+                    issuerName: "Chase",
+                    accountFundingType: "DEBIT",
+                    prepaidReloadableIndicator: "NOT_APPLICABLE",
+                    productUsageType: "CONSUMER",
+                    productCode: "A",
+                    productName: "Visa Classic",
+                    issuerCurrencyCode: "USD",
+                    regionalRestriction: "DOMESTIC_USE_ONLY",
+                    accountNumberType: "PRIMARY_ACCOUNT_NUMBER"
+                )
             ]
         )
     }
