@@ -5,12 +5,15 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+import PrimerFoundation
 
 protocol CreateResumePaymentServiceProtocol {
     func createPayment(paymentRequest: Request.Body.Payment.Create) async throws -> Response.Body.Payment
-    func completePayment(clientToken: DecodedJWTToken,
-                         completeUrl: URL,
-                         body: Request.Body.Payment.Complete) async throws
+    func completePayment(
+        clientToken: DecodedJWTToken,
+        completeUrl: URL,
+        body: Request.Body.Payment.Complete
+    ) async throws
     func resumePaymentWithPaymentId(_ paymentId: String, paymentResumeRequest: Request.Body.Payment.Resume) async throws -> Response.Body.Payment
 }
 
@@ -24,8 +27,10 @@ final class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
 
     let paymentMethodType: String
 
-    init(paymentMethodType: String,
-         apiClient: PrimerAPIClientCreateResumePaymentProtocol = PrimerAPIClient()) {
+    init(
+        paymentMethodType: String,
+        apiClient: PrimerAPIClientCreateResumePaymentProtocol = PrimerAPIClient()
+    ) {
         self.paymentMethodType = paymentMethodType
         self.apiClient = apiClient
     }

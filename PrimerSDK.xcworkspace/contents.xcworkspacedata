@@ -240,9 +240,6 @@
                   location = "group:PrimerLocaleData.swift">
                </FileRef>
                <FileRef
-                  location = "group:CountryCode.swift">
-               </FileRef>
-               <FileRef
                   location = "group:PrimerInitializationData.swift">
                </FileRef>
                <FileRef
@@ -255,22 +252,13 @@
                   location = "group:PaymentResponse.swift">
                </FileRef>
                <FileRef
-                  location = "group:RetailOutletsRetail.swift">
-               </FileRef>
-               <FileRef
                   location = "group:PrimerVaultedPaymentMethodAdditionalData.swift">
                </FileRef>
                <FileRef
                   location = "group:PrimerPaymentMethod+DisplayMetadata.swift">
                </FileRef>
                <FileRef
-                  location = "group:Throwable.swift">
-               </FileRef>
-               <FileRef
                   location = "group:Bin.swift">
-               </FileRef>
-               <FileRef
-                  location = "group:PrimerPaymentMethodType.swift">
                </FileRef>
                <FileRef
                   location = "group:CardNetwork.swift">
@@ -409,9 +397,6 @@
                   location = "group:Currency"
                   name = "Currency">
                   <FileRef
-                     location = "group:Currency.swift">
-                  </FileRef>
-                  <FileRef
                      location = "group:CurrencyNetworkServiceProtocol.swift">
                   </FileRef>
                   <FileRef
@@ -466,9 +451,6 @@
                </FileRef>
                <FileRef
                   location = "group:ArrayExtension.swift">
-               </FileRef>
-               <FileRef
-                  location = "group:PrimerCancellable.swift">
                </FileRef>
                <FileRef
                   location = "group:IntExtension.swift">
@@ -591,9 +573,6 @@
                         location = "group:ConfigurationCache.swift">
                      </FileRef>
                   </Group>
-                  <FileRef
-                     location = "group:Cache.swift">
-                  </FileRef>
                </Group>
                <Group
                   location = "group:Connectivity"

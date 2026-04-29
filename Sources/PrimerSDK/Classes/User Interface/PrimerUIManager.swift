@@ -8,6 +8,7 @@
 // swiftlint:disable type_body_length
 // swiftlint:disable file_length
 
+import PrimerFoundation
 import UIKit
 
 protocol PrimerUIManaging {
@@ -15,9 +16,11 @@ protocol PrimerUIManaging {
     var primerRootViewController: PrimerRootViewController? { get }
     var apiConfigurationModule: PrimerAPIConfigurationModuleProtocol? { get }
     @MainActor func prepareRootViewController()
-    func dismissOrShowResultScreen(type: PrimerResultViewController.ScreenType,
-                                   paymentMethodManagerCategories: [PrimerPaymentMethodManagerCategory],
-                                   withMessage message: String?)
+    func dismissOrShowResultScreen(
+        type: PrimerResultViewController.ScreenType,
+        paymentMethodManagerCategories: [PrimerPaymentMethodManagerCategory],
+        withMessage message: String?
+    )
 }
 
 // MARK: MISSING_TESTS
@@ -197,9 +200,11 @@ final class PrimerUIManager: PrimerUIManaging {
         }
     }
 
-    func dismissOrShowResultScreen(type: PrimerResultViewController.ScreenType,
-                                   paymentMethodManagerCategories: [PrimerPaymentMethodManagerCategory],
-                                   withMessage message: String? = nil) {
+    func dismissOrShowResultScreen(
+        type: PrimerResultViewController.ScreenType,
+        paymentMethodManagerCategories: [PrimerPaymentMethodManagerCategory],
+        withMessage message: String? = nil
+    ) {
         if PrimerSettings.current.uiOptions.isSuccessScreenEnabled, type == .success {
             showResultScreenForResultType(type: .success, message: message)
         } else if PrimerSettings.current.uiOptions.isErrorScreenEnabled, type == .failure {
@@ -215,9 +220,11 @@ final class PrimerUIManager: PrimerUIManaging {
         PrimerDelegateProxy.primerDidFailWithError(error, data: nil) { errorDecision in
             switch errorDecision.type {
             case let .fail(message):
-                PrimerUIManager.dismissOrShowResultScreen(type: .failure,
-                                                          paymentMethodManagerCategories: [],
-                                                          withMessage: message)
+                PrimerUIManager.dismissOrShowResultScreen(
+                    type: .failure,
+                    paymentMethodManagerCategories: [],
+                    withMessage: message
+                )
             }
         }
     }
@@ -268,9 +275,11 @@ extension PrimerUIManager {
         shared.dismissPrimerWindow(completion: completion)
     }
 
-    static func dismissOrShowResultScreen(type: PrimerResultViewController.ScreenType,
-                                          paymentMethodManagerCategories: [PrimerPaymentMethodManagerCategory],
-                                          withMessage message: String? = nil) {
+    static func dismissOrShowResultScreen(
+        type: PrimerResultViewController.ScreenType,
+        paymentMethodManagerCategories: [PrimerPaymentMethodManagerCategory],
+        withMessage message: String? = nil
+    ) {
         shared.dismissOrShowResultScreen(type: type, paymentMethodManagerCategories: paymentMethodManagerCategories, withMessage: message)
     }
 
@@ -282,8 +291,10 @@ extension PrimerUIManager {
         shared.showResultScreen(for: paymentMethodType, error: error)
     }
 
-    fileprivate static func showResultScreenForResultType(type: PrimerResultViewController.ScreenType,
-                                                          message: String? = nil) {
+    fileprivate static func showResultScreenForResultType(
+        type: PrimerResultViewController.ScreenType,
+        message: String? = nil
+    ) {
         shared.showResultScreenForResultType(type: type, message: message)
     }
 }
