@@ -108,7 +108,7 @@ for await state in scope.state {
 Customize individual fields with partial or full replacement via scope properties:
 ```swift
 // Access card form scope and customize fields
-if let cardFormScope = checkoutScope.getPaymentMethodScope(DefaultCardFormScope.self) {
+if let cardFormScope = checkoutScope.getPaymentMethodScope(PrimerCardFormScope.self) {
     cardFormScope.cardNumberConfig = InputFieldConfig(
         label: "Card Number",
         placeholder: "0000 0000 0000 0000",

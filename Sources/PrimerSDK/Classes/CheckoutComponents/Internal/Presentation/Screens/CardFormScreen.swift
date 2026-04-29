@@ -295,7 +295,7 @@ struct CardFormScreen: View, LogReporter {
 
   private func submitAction() {
     Task {
-      await (scope as? DefaultCardFormScope)?.performSubmit()
+      await scope.performSubmit()
     }
   }
 
@@ -451,11 +451,11 @@ struct CardFormScreen: View, LogReporter {
       if let customComponent = config?.component {
         AnyView(customComponent())
           .focused($focusedField, equals: .countryCode)
-      } else if let defaultCardFormScope = scope as? DefaultCardFormScope {
+      } else {
         CountryInputField(
           label: config?.label ?? CheckoutComponentsStrings.countryLabel,
           placeholder: config?.placeholder ?? CheckoutComponentsStrings.selectCountryPlaceholder,
-          scope: defaultCardFormScope,
+          scope: scope,
           styling: config?.styling
         )
         .focused($focusedField, equals: .countryCode)
