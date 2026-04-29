@@ -325,6 +325,8 @@ extension MerchantHeadlessCheckoutRawDataViewController: PrimerHeadlessUniversal
 
         DispatchQueue.main.async { [weak self] in
             guard let self else { return }
+            // Preserve prior tap across metadata re-fires (e.g. submit-time re-validation).
+            let priorPick = rawCardData.cardNetwork
             cardsStackView.removeAllArrangedSubviews()
             selectedCardNetwork = nil
 
@@ -333,11 +335,14 @@ extension MerchantHeadlessCheckoutRawDataViewController: PrimerHeadlessUniversal
                 cardBadgesInteractive = false
                 rawCardData.cardNetwork = nil
                 addCardBadges(for: metadata.detectedCardNetworks.items)
-            } else if let selectableNetworks = metadata.selectableCardNetworks {
-                // Selectable co-badge: first badge visually selected, but cardNetwork nil until user taps
+            } else if let selectableNetworks = metadata.selectableCardNetworks,
+                      selectableNetworks.items.count > 1 {
+                let preservedSelection = priorPick.flatMap { pick in
+                    selectableNetworks.items.first { $0.network == pick }
+                }
                 cardBadgesInteractive = true
-                selectedCardNetwork = selectableNetworks.items.first
-                rawCardData.cardNetwork = nil
+                selectedCardNetwork = preservedSelection ?? selectableNetworks.items.first
+                rawCardData.cardNetwork = preservedSelection?.network
                 addCardBadges(for: selectableNetworks.items)
                 for (index, network) in selectableNetworks.items.enumerated() {
                     guard let imageView = cardsStackView.arrangedSubviews[safe: index] as? UIImageView else { continue }
