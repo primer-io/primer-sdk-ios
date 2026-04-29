@@ -1,9 +1,10 @@
 //
 //  MockNetworkService.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+import PrimerFoundation
 @testable import PrimerSDK
 import XCTest
 
@@ -52,7 +53,7 @@ final class MockNetworkService: NetworkServiceProtocol {
     func request<T>(
         _ endpoint: any PrimerSDK.Endpoint,
         completion: @escaping PrimerSDK.ResponseCompletionWithHeaders<T>
-    ) -> (any PrimerSDK.PrimerCancellable)? where T: Decodable {
+    ) -> (any PrimerCancellable)? where T: Decodable {
         onReceiveEndpoint?(endpoint)
 
         DispatchQueue.main.asyncAfter(deadline: .now() + mockedNetworkDelay) {
@@ -86,7 +87,7 @@ final class MockNetworkService: NetworkServiceProtocol {
         _ endpoint: any PrimerSDK.Endpoint,
         retryConfig _: PrimerSDK.RetryConfig?,
         completion: @escaping PrimerSDK.ResponseCompletionWithHeaders<T>
-    ) -> (any PrimerSDK.PrimerCancellable)? where T: Decodable {
+    ) -> (any PrimerCancellable)? where T: Decodable {
         onReceiveEndpoint?(endpoint)
 
         DispatchQueue.main.asyncAfter(deadline: .now() + mockedNetworkDelay) {

@@ -9,6 +9,7 @@
 // swiftlint:disable type_body_length
 // swiftlint:disable large_tuple
 
+import PrimerFoundation
 import UIKit
 
 @objc
@@ -195,9 +196,9 @@ final class InternalCardComponentsManager: NSObject, InternalCardComponentsManag
 
         if expiryDateField.expiryMonth == nil || expiryDateField.expiryYear == nil {
             let message = """
-Expiry date is not valid. Valid expiry date format is 2 characters for expiry month\
-and 4 characters for expiry year separated by '/'.
-"""
+            Expiry date is not valid. Valid expiry date format is 2 characters for expiry month\
+            and 4 characters for expiry year separated by '/'.
+            """
             errors.append(PrimerValidationError.invalidExpiryDate(message: message))
         }
 
@@ -302,7 +303,7 @@ and 4 characters for expiry year separated by '/'.
                                 cardNetwork = .cartesBancaires
                                 self.logger.debug(
                                     message: "Co-badged card detected: Using Cartes Bancaires " +
-                                    "instead of Visa for card starting with \(String(cardNumber.prefix(4)))"
+                                        "instead of Visa for card starting with \(String(cardNumber.prefix(4)))"
                                 )
                             }
                         }
@@ -310,9 +311,9 @@ and 4 characters for expiry year separated by '/'.
 
                     self.logger.debug(
                         message: "Network validation - selectedCardNetwork: " +
-                        "\(self.selectedCardNetwork?.displayName ?? "nil"), " +
-                        "autoDetected: \(autoDetectedNetwork.displayName), " +
-                        "using: \(cardNetwork.displayName)"
+                            "\(self.selectedCardNetwork?.displayName ?? "nil"), " +
+                            "autoDetected: \(autoDetectedNetwork.displayName), " +
+                            "using: \(cardNetwork.displayName)"
                     )
 
                     if !allowedCardNetworks.contains(cardNetwork) {

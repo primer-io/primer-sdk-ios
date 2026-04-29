@@ -1,12 +1,13 @@
 //
 //  ACHHeadlessManagerTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
-import XCTest
+import PrimerFoundation
 @testable import PrimerSDK
+import XCTest
 
 final class ACHHeadlessManagerTests: XCTestCase {
 
@@ -17,9 +18,11 @@ final class ACHHeadlessManagerTests: XCTestCase {
     override func setUp() {
         super.setUp()
         // Prepare the client session with the current user details
-        prepareConfigurations(firstName: "firstname",
-                              lastName: "lastname",
-                              email: "email")
+        prepareConfigurations(
+            firstName: "firstname",
+            lastName: "lastname",
+            email: "email"
+        )
     }
 
     override func tearDown() {
@@ -83,7 +86,8 @@ extension ACHHeadlessManagerTests {
         let mockPrimerApiConfiguration = Mocks.createMockAPIConfiguration(
             clientSession: clientSession,
             paymentMethods: [ACHMocks.stripeACHPaymentMethod,
-                             ACHMocks.klarnaPaymentMethod])
+                             ACHMocks.klarnaPaymentMethod]
+        )
 
         mockPrimerApiConfiguration.paymentMethods?[0].baseLogoImage = PrimerTheme.BaseImage(colored: UIImage(), light: nil, dark: nil)
         return mockPrimerApiConfiguration

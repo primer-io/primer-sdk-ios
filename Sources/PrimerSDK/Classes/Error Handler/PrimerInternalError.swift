@@ -5,6 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+import PrimerFoundation
 
 enum InternalError: PrimerErrorProtocol {
     case failedToDecode(message: String?, diagnosticsId: String = .uuid)
@@ -106,9 +107,9 @@ enum InternalError: PrimerErrorProtocol {
 private extension InternalError {
     var shouldExposeServerError: Bool {
         #if DEBUG
-        true
+            true
         #else
-        false
+            false
         #endif
     }
 }
