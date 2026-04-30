@@ -12,11 +12,11 @@ import PrimerFoundation
 
     extension PrimerKlarnaError: PrimerErrorProtocol {
         typealias InfoType = [String: String]
-        var exposedError: Error {
+        public var exposedError: Error {
             self
         }
 
-        var errorId: String {
+        public var errorId: String {
             switch self {
             case .userNotApproved:
                 return "klarna-user-not-approved"
@@ -27,14 +27,14 @@ import PrimerFoundation
             }
         }
 
-        var analyticsContext: [String: Any] {
+        public var analyticsContext: [String: Any] {
             [
                 AnalyticsContextKeys.errorId: errorId,
                 AnalyticsContextKeys.paymentMethodType: PrimerPaymentMethodType.klarna.rawValue
             ]
         }
 
-        var diagnosticsId: String {
+        public var diagnosticsId: String {
             UUID().uuidString
         }
     }
