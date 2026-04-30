@@ -222,9 +222,6 @@
                   location = "group:VoucherValue.swift">
                </FileRef>
                <FileRef
-                  location = "group:PrimerFlowEnums.swift">
-               </FileRef>
-               <FileRef
                   location = "group:ApplePayOrderItem.swift">
                </FileRef>
                <FileRef
@@ -489,13 +486,7 @@
                   location = "group:UIDeviceExtension.swift">
                </FileRef>
                <FileRef
-                  location = "group:PrimerImage.swift">
-               </FileRef>
-               <FileRef
                   location = "group:ApplePayUtils.swift">
-               </FileRef>
-               <FileRef
-                  location = "group:DataExtension.swift">
                </FileRef>
                <FileRef
                   location = "group:Dictionary+Extensions.swift">
@@ -517,9 +508,6 @@
                </FileRef>
                <FileRef
                   location = "group:UserDefaultsExtension.swift">
-               </FileRef>
-               <FileRef
-                  location = "group:DateExtension.swift">
                </FileRef>
                <FileRef
                   location = "group:Error+Extensions.swift">
@@ -1002,9 +990,6 @@
                   location = "group:PrimerIPay88Error+Extension.swift">
                </FileRef>
                <FileRef
-                  location = "group:PrimerValidationError.swift">
-               </FileRef>
-               <FileRef
                   location = "group:Primer3DSErrorContainer.swift">
                </FileRef>
                <FileRef
@@ -1015,9 +1000,6 @@
                </FileRef>
                <FileRef
                   location = "group:PrimerKlarnaError+Extension.swift">
-               </FileRef>
-               <FileRef
-                  location = "group:PrimerServerError.swift">
                </FileRef>
                <FileRef
                   location = "group:ErrorExtension.swift">
