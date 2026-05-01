@@ -1,10 +1,11 @@
 //
 //  ACHClientSessionServiceTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+import PrimerFoundation
 @testable import PrimerSDK
 import XCTest
 
@@ -19,14 +20,18 @@ final class ACHClientSessionServiceTests: XCTestCase {
 
     func test_getClientSession_userDetails() {
         // The user details that will be patched in the client session
-        let expectedUserDetails = ACHUserDetails(firstName: "firstname-test",
-                                                 lastName: "lastname-test",
-                                                 emailAddress: "test@mail.com")
+        let expectedUserDetails = ACHUserDetails(
+            firstName: "firstname-test",
+            lastName: "lastname-test",
+            emailAddress: "test@mail.com"
+        )
 
         // Prepare the client session with the current user details
-        prepareConfigurations(firstName: expectedUserDetails.firstName,
-                              lastName: expectedUserDetails.lastName,
-                              email: expectedUserDetails.emailAddress)
+        prepareConfigurations(
+            firstName: expectedUserDetails.firstName,
+            lastName: expectedUserDetails.lastName,
+            email: expectedUserDetails.emailAddress
+        )
 
         let userDetails = sut.getClientSessionUserDetails()
         XCTAssertNotNil(userDetails, "Result should not be nil")
@@ -35,19 +40,25 @@ final class ACHClientSessionServiceTests: XCTestCase {
 
     func test_patchClientSession_userDetails_success() async {
         // The user details that are already in the client session
-        let currentUserDetails = ACHUserDetails(firstName: "firstname-test",
-                                                lastName: "lastname-test",
-                                                emailAddress: "test@mail.com")
+        let currentUserDetails = ACHUserDetails(
+            firstName: "firstname-test",
+            lastName: "lastname-test",
+            emailAddress: "test@mail.com"
+        )
 
         // The user details that will be patched in the client session
-        let expectedUserDetails = ACHUserDetails(firstName: "updated_firstname-test",
-                                                 lastName: "updated_lastname-test",
-                                                 emailAddress: "updated_test@mail.com")
+        let expectedUserDetails = ACHUserDetails(
+            firstName: "updated_firstname-test",
+            lastName: "updated_lastname-test",
+            emailAddress: "updated_test@mail.com"
+        )
 
         // Prepare the client session with the current user details
-        prepareConfigurations(firstName: currentUserDetails.firstName,
-                              lastName: currentUserDetails.lastName,
-                              email: currentUserDetails.emailAddress)
+        prepareConfigurations(
+            firstName: currentUserDetails.firstName,
+            lastName: currentUserDetails.lastName,
+            email: currentUserDetails.emailAddress
+        )
 
         let configurationsFetchWithActions = getFetchConfiguration(
             firstName: expectedUserDetails.firstName,
@@ -67,9 +78,11 @@ final class ACHClientSessionServiceTests: XCTestCase {
         do {
             try await sut.patchClientSession(with: clientSessionActionsRequest)
             let updatedCustomer = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.customer
-            let updatedUserDetails = ACHUserDetails(firstName: updatedCustomer?.firstName ?? "",
-                                                    lastName: updatedCustomer?.lastName ?? "",
-                                                    emailAddress: updatedCustomer?.emailAddress ?? "")
+            let updatedUserDetails = ACHUserDetails(
+                firstName: updatedCustomer?.firstName ?? "",
+                lastName: updatedCustomer?.lastName ?? "",
+                emailAddress: updatedCustomer?.emailAddress ?? ""
+            )
 
             XCTAssertTrue(ACHUserDetails.compare(lhs: expectedUserDetails, rhs: updatedUserDetails).areEqual)
         } catch {
@@ -81,19 +94,25 @@ final class ACHClientSessionServiceTests: XCTestCase {
         let error = getInvalidTokenError()
 
         // The user details that are already in the client session
-        let currentUserDetails = ACHUserDetails(firstName: "firstname-test",
-                                                lastName: "lastname-test",
-                                                emailAddress: "test@mail.com")
+        let currentUserDetails = ACHUserDetails(
+            firstName: "firstname-test",
+            lastName: "lastname-test",
+            emailAddress: "test@mail.com"
+        )
 
         // The user details that will be patched in the client session
-        let expectedUserDetails = ACHUserDetails(firstName: "updated_firstname-test",
-                                                 lastName: "updated_lastname-test",
-                                                 emailAddress: "updated_test@mail.com")
+        let expectedUserDetails = ACHUserDetails(
+            firstName: "updated_firstname-test",
+            lastName: "updated_lastname-test",
+            emailAddress: "updated_test@mail.com"
+        )
 
         // Prepare the client session with the current user details
-        prepareConfigurations(firstName: currentUserDetails.firstName,
-                              lastName: currentUserDetails.lastName,
-                              email: currentUserDetails.emailAddress)
+        prepareConfigurations(
+            firstName: currentUserDetails.firstName,
+            lastName: currentUserDetails.lastName,
+            email: currentUserDetails.emailAddress
+        )
 
         mockApiClient.fetchConfigurationWithActionsResult = (nil, error)
 
@@ -142,7 +161,8 @@ extension ACHClientSessionServiceTests {
 
         let mockPrimerApiConfiguration = Mocks.createMockAPIConfiguration(
             clientSession: clientSession,
-            paymentMethods: [ACHMocks.stripeACHPaymentMethod])
+            paymentMethods: [ACHMocks.stripeACHPaymentMethod]
+        )
 
         mockPrimerApiConfiguration.paymentMethods?[0].baseLogoImage = PrimerTheme.BaseImage(colored: UIImage(), light: nil, dark: nil)
         return mockPrimerApiConfiguration

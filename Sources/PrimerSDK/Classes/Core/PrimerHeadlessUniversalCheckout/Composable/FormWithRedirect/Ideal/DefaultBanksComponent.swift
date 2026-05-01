@@ -5,6 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+import PrimerFoundation
 
 final class DefaultBanksComponent: BanksComponent {
 
@@ -20,9 +21,11 @@ final class DefaultBanksComponent: BanksComponent {
     private let onFinished: () -> WebRedirectComponent
     private let tokenizationProvidingModel: BankSelectorTokenizationProviding
 
-    init(paymentMethodType: PrimerPaymentMethodType,
-         tokenizationProvidingModel: BankSelectorTokenizationProviding,
-         onFinished: @escaping () -> WebRedirectComponent) {
+    init(
+        paymentMethodType: PrimerPaymentMethodType,
+        tokenizationProvidingModel: BankSelectorTokenizationProviding,
+        onFinished: @escaping () -> WebRedirectComponent
+    ) {
         self.paymentMethodType = paymentMethodType
         self.tokenizationProvidingModel = tokenizationProvidingModel
         self.onFinished = onFinished

@@ -5,6 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+import PrimerFoundation
 import PrimerSDK
 
 enum APIVersion: String {
@@ -63,7 +64,8 @@ final class Networking {
             }
         }
         components.percentEncodedQuery = components.percentEncodedQuery?.replacingOccurrences(
-            of: "+", with: "%2B")
+            of: "+", with: "%2B"
+        )
 
         logger.debug(message: "URL: \(components.url!.absoluteString )")
 
@@ -128,8 +130,8 @@ final class Networking {
                         logger.debug(message: "Status Code: \(httpResponse.statusCode)")
                         if let data = data,
                            let resJson =
-                            (try? JSONSerialization.jsonObject(with: data, options: .allowFragments))
-                            as? [String: Any] {
+                           (try? JSONSerialization.jsonObject(with: data, options: .allowFragments))
+                               as? [String: Any] {
                             logger.debug(message: "Response Body (json):\n\(resJson)")
                         }
 
@@ -163,7 +165,8 @@ final class Networking {
                     } else {
                         logger.debug(
                             message:
-                                "Response Body (text):\n\(String(describing: String(data: data, encoding: .utf8)))")
+                            "Response Body (text):\n\(String(describing: String(data: data, encoding: .utf8)))"
+                        )
                     }
 
                     completion(.success(data))
@@ -291,13 +294,16 @@ final class Networking {
             case let .success(data):
                 do {
                     if let token =
-                        (try JSONSerialization.jsonObject(with: data, options: .allowFragments)
-                            as? [String: Any])?["clientToken"] as? String {
+                        (
+                            try JSONSerialization.jsonObject(with: data, options: .allowFragments)
+                                as? [String: Any]
+                        )?["clientToken"] as? String {
                         completion(token, nil)
                     } else {
                         let err = NSError(
                             domain: "example", code: 10,
-                            userInfo: [NSLocalizedDescriptionKey: "Failed to find client token"])
+                            userInfo: [NSLocalizedDescriptionKey: "Failed to find client token"]
+                        )
                         completion(nil, err)
                     }
 
@@ -342,13 +348,16 @@ final class Networking {
             case let .success(data):
                 do {
                     if let token =
-                        (try JSONSerialization.jsonObject(with: data, options: .allowFragments)
-                            as? [String: Any])?["clientToken"] as? String {
+                        (
+                            try JSONSerialization.jsonObject(with: data, options: .allowFragments)
+                                as? [String: Any]
+                        )?["clientToken"] as? String {
                         completion(token, nil)
                     } else {
                         let err = NSError(
                             domain: "example", code: 10,
-                            userInfo: [NSLocalizedDescriptionKey: "Failed to find client token"])
+                            userInfo: [NSLocalizedDescriptionKey: "Failed to find client token"]
+                        )
                         completion(nil, err)
                     }
 
@@ -364,7 +373,7 @@ final class Networking {
 
 extension String {
     func toDate(withFormat f: String = "yyyy-MM-dd'T'HH:mm:ss.SSSZ", timeZone: TimeZone? = nil)
-    -> Date? {
+        -> Date? {
         let df = DateFormatter()
         df.dateFormat = f
         df.locale = Locale(identifier: "en_US_POSIX")

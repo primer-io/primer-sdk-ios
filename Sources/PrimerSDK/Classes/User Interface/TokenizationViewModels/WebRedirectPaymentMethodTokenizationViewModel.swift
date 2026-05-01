@@ -9,6 +9,7 @@
 // swiftlint:disable type_body_length
 
 import Foundation
+import PrimerFoundation
 import SafariServices
 import UIKit
 
@@ -28,26 +29,35 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
     private var redirectUrlComponents: URLComponents?
     private let deeplinkAbilityProvider: DeeplinkAbilityProviding
 
-    init(config: PrimerPaymentMethod,
-         uiManager: PrimerUIManaging,
-         tokenizationService: TokenizationServiceProtocol,
-         createResumePaymentService: CreateResumePaymentServiceProtocol,
-         deeplinkAbilityProvider: DeeplinkAbilityProviding = UIApplication.shared) {
+    init(
+        config: PrimerPaymentMethod,
+        uiManager: PrimerUIManaging,
+        tokenizationService: TokenizationServiceProtocol,
+        createResumePaymentService: CreateResumePaymentServiceProtocol,
+        deeplinkAbilityProvider: DeeplinkAbilityProviding = UIApplication.shared
+    ) {
 
         self.deeplinkAbilityProvider = deeplinkAbilityProvider
-        super.init(config: config,
-                   uiManager: uiManager,
-                   tokenizationService: tokenizationService,
-                   createResumePaymentService: createResumePaymentService)
+        super.init(
+            config: config,
+            uiManager: uiManager,
+            tokenizationService: tokenizationService,
+            createResumePaymentService: createResumePaymentService
+        )
     }
 
-    convenience init(config: PrimerPaymentMethod,
-                     apiClient: PrimerAPIClientProtocol = PrimerAPIClient()) {
-        self.init(config: config,
-                  uiManager: PrimerUIManager.shared,
-                  tokenizationService: TokenizationService(apiClient: apiClient),
-                  createResumePaymentService: CreateResumePaymentService(paymentMethodType: config.type,
-                                                                         apiClient: apiClient)
+    convenience init(
+        config: PrimerPaymentMethod,
+        apiClient: PrimerAPIClientProtocol = PrimerAPIClient()
+    ) {
+        self.init(
+            config: config,
+            uiManager: PrimerUIManager.shared,
+            tokenizationService: TokenizationService(apiClient: apiClient),
+            createResumePaymentService: CreateResumePaymentService(
+                paymentMethodType: config.type,
+                apiClient: apiClient
+            )
         )
     }
 
@@ -89,14 +99,18 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
     }
 
     func setupNotificationObservers() {
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(self.receivedNotification(_:)),
-                                               name: Notification.Name.receivedUrlSchemeRedirect,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(self.receivedNotification(_:)),
-                                               name: Notification.Name.receivedUrlSchemeCancellation,
-                                               object: nil)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(self.receivedNotification(_:)),
+            name: Notification.Name.receivedUrlSchemeRedirect,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(self.receivedNotification(_:)),
+            name: Notification.Name.receivedUrlSchemeCancellation,
+            object: nil
+        )
     }
 
     @MainActor
@@ -189,11 +203,11 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
         Analytics.Service.fire(events: [presentEvent, networkEvent])
 
         #if DEBUG
-        if TEST {
-            guard !UIApplication.shared.windows.isEmpty else {
-                return handleWebViewControllerPresentedCompletion()
+            if TEST {
+                guard !UIApplication.shared.windows.isEmpty else {
+                    return handleWebViewControllerPresentedCompletion()
+                }
             }
-        }
         #endif
 
         if PrimerUIManager.primerRootViewController == nil {
@@ -276,8 +290,10 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
         return try await tokenizationService.tokenize(requestBody: Request.Body.Tokenization(paymentInstrument: paymentInstrument))
     }
 
-    override func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken,
-                                                   paymentMethodTokenData: PrimerPaymentMethodTokenData) async throws -> String? {
+    override func handleDecodedClientTokenIfNeeded(
+        _ decodedJWTToken: DecodedJWTToken,
+        paymentMethodTokenData: PrimerPaymentMethodTokenData
+    ) async throws -> String? {
         if decodedJWTToken.intent?.contains("_REDIRECTION") == true {
             if let redirectUrlStr = decodedJWTToken.redirectUrl,
                let redirectUrl = URL(string: redirectUrlStr),
@@ -300,11 +316,11 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
     }
 
     #if DEBUG
-    /// See: [Vipps MobilePay Documentation](https://developer.vippsmobilepay.com/docs/knowledge-base/user-flow/#deep-link-flow)
-    /// If changing these values - they must also be updated in `Info.plist` `LSApplicationQueriesSchemes` of the host App.
-    private static let adyenVippsDeeplinkUrl = "vippsmt://"
+        /// See: [Vipps MobilePay Documentation](https://developer.vippsmobilepay.com/docs/knowledge-base/user-flow/#deep-link-flow)
+        /// If changing these values - they must also be updated in `Info.plist` `LSApplicationQueriesSchemes` of the host App.
+        private static let adyenVippsDeeplinkUrl = "vippsmt://"
     #else
-    private static let adyenVippsDeeplinkUrl = "vipps://"
+        private static let adyenVippsDeeplinkUrl = "vipps://"
     #endif
 
     func sessionInfo() -> WebRedirectSessionInfo {

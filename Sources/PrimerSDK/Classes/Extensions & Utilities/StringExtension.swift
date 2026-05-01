@@ -1,7 +1,7 @@
 //
 //  StringExtension.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
@@ -9,11 +9,12 @@ import Foundation
 public extension String {
     static var uuid: String {  UUID().uuidString }
 }
+import PrimerFoundation
 
-internal extension String {
+extension String {
 
     var withoutWhiteSpace: String {
-        return self.replacingOccurrences(of: " ", with: "").trimmingCharacters(in: .whitespacesAndNewlines)
+        self.replacingOccurrences(of: " ", with: "").trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
     var isNumeric: Bool {
@@ -53,7 +54,7 @@ internal extension String {
     }
 
     var withoutNonNumericCharacters: String {
-        return withoutWhiteSpace.filter("0123456789".contains)
+        withoutWhiteSpace.filter("0123456789".contains)
     }
 
     var isValidExpiryDate: Bool {
@@ -85,9 +86,9 @@ internal extension String {
 
     func isTypingValidCVV(cardNetwork: CardNetwork?) -> Bool? {
         let maxDigits = cardNetwork?.validation?.code.length ?? 4
-        if !isNumeric && !isEmpty { return false }
+        if !isNumeric, !isEmpty { return false }
         if count > maxDigits { return false }
-        if count >= 3 && count <= maxDigits { return true }
+        if count >= 3, count <= maxDigits { return true }
         return nil
     }
 
@@ -152,8 +153,10 @@ internal extension String {
         let components = self.split(separator: ".")
         if components.count < 2 { return nil }
         let segment = String(components[1]).base64IOSFormat
-        guard !segment.isEmpty, let data = Data(base64Encoded: segment,
-                                                options: .ignoreUnknownCharacters)
+        guard !segment.isEmpty, let data = Data(
+            base64Encoded: segment,
+            options: .ignoreUnknownCharacters
+        )
         else { return nil }
         return try? JSONDecoder().decode(DecodedJWTToken.self, from: data)
     }
@@ -163,18 +166,23 @@ internal extension String {
             .replacingOccurrences(of: "_", with: "/")
         let offset = str.count % 4
         guard offset != 0 else { return str }
-        return str.padding(toLength: str.count + 4 - offset,
-                           withPad: "=", startingAt: 0)
+        return str.padding(
+            toLength: str.count + 4 - offset,
+            withPad: "=",
+            startingAt: 0
+        )
     }
 
     var base64RFC4648Format: Self {
-        return self.replacingOccurrences(of: "+", with: "-")
+        self.replacingOccurrences(of: "+", with: "-")
             .replacingOccurrences(of: "/", with: "_")
             .replacingOccurrences(of: "=", with: "")
     }
 
-    func toDate(withFormat format: String = "yyyy-MM-dd'T'HH:mm:ss.SSSZ",
-                timeZone: TimeZone? = nil) -> Date? {
+    func toDate(
+        withFormat format: String = "yyyy-MM-dd'T'HH:mm:ss.SSSZ",
+        timeZone: TimeZone? = nil
+    ) -> Date? {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = format
         dateFormatter.locale = Locale(identifier: "en_US_POSIX")
@@ -188,7 +196,7 @@ internal extension String {
     }
 
     func separate(every: Int, with separator: String) -> String {
-        return String(stride(from: 0, to: Array(self).count, by: every).map {
+        String(stride(from: 0, to: Array(self).count, by: every).map {
             Array(Array(self)[$0..<min($0 + every, Array(self).count)])
         }.joined(separator: separator))
     }

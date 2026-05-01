@@ -1,474 +1,475 @@
 //
 //  NolPayPaymentComponentTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 #if canImport(PrimerNolPaySDK)
-import PrimerNolPaySDK
-@testable import PrimerSDK
-import XCTest
+    import PrimerFoundation
+    import PrimerNolPaySDK
+    @testable import PrimerSDK
+    import XCTest
 
-class NolPayPaymentComponentTests: XCTestCase {
-    var sut: NolPayPaymentComponent!
-    var mockApiClient: MockPrimerAPIClient!
-    var mockErrorDelegate: MockErrorDelegate!
-    var mockValidationDelegate: MockValidationDelegate!
-    var mockStepDelegate: MockStepDelegate!
-    var mockPhoneMetadataService: MockPhoneMetadataService!
-    var mockNolPayTokenizationViewModel: MockNolPayTokenizationViewModel!
-    var mockNolPay: MockPrimerNolPay!
+    class NolPayPaymentComponentTests: XCTestCase {
+        var sut: NolPayPaymentComponent!
+        var mockApiClient: MockPrimerAPIClient!
+        var mockErrorDelegate: MockErrorDelegate!
+        var mockValidationDelegate: MockValidationDelegate!
+        var mockStepDelegate: MockStepDelegate!
+        var mockPhoneMetadataService: MockPhoneMetadataService!
+        var mockNolPayTokenizationViewModel: MockNolPayTokenizationViewModel!
+        var mockNolPay: MockPrimerNolPay!
 
-    let mobileNumber = "+111123123123123"
-    let countryCode = "+111"
-    let cardNumber = "1234567890123456"
+        let mobileNumber = "+111123123123123"
+        let countryCode = "+111"
+        let cardNumber = "1234567890123456"
 
-    override func setUp() {
-        super.setUp()
-        PrimerInternal.shared.intent = .checkout
+        override func setUp() {
+            super.setUp()
+            PrimerInternal.shared.intent = .checkout
 
-        let paymentMethod = Mocks.PaymentMethods.nolPaymentMethod
-        SDKSessionHelper.setUp(withPaymentMethods: [paymentMethod])
+            let paymentMethod = Mocks.PaymentMethods.nolPaymentMethod
+            SDKSessionHelper.setUp(withPaymentMethods: [paymentMethod])
 
-        mockApiClient = MockPrimerAPIClient()
-        mockErrorDelegate = MockErrorDelegate()
-        mockValidationDelegate = MockValidationDelegate()
-        mockStepDelegate = MockStepDelegate()
-        mockPhoneMetadataService = MockPhoneMetadataService()
-        mockNolPayTokenizationViewModel = MockNolPayTokenizationViewModel(config: paymentMethod)
-        mockNolPay = MockPrimerNolPay(appId: "123", isDebug: true, isSandbox: true, appSecretHandler: { _, _ in
-            "appSecret"
-        })
+            mockApiClient = MockPrimerAPIClient()
+            mockErrorDelegate = MockErrorDelegate()
+            mockValidationDelegate = MockValidationDelegate()
+            mockStepDelegate = MockStepDelegate()
+            mockPhoneMetadataService = MockPhoneMetadataService()
+            mockNolPayTokenizationViewModel = MockNolPayTokenizationViewModel(config: paymentMethod)
+            mockNolPay = MockPrimerNolPay(appId: "123", isDebug: true, isSandbox: true, appSecretHandler: { _, _ in
+                "appSecret"
+            })
 
-        sut = NolPayPaymentComponent(
-            apiClient: mockApiClient,
-            phoneMetadataService: mockPhoneMetadataService,
-            tokenizationViewModel: mockNolPayTokenizationViewModel
-        )
-        sut.errorDelegate = mockErrorDelegate
-        sut.validationDelegate = mockValidationDelegate
-        sut.stepDelegate = mockStepDelegate
-    }
+            sut = NolPayPaymentComponent(
+                apiClient: mockApiClient,
+                phoneMetadataService: mockPhoneMetadataService,
+                tokenizationViewModel: mockNolPayTokenizationViewModel
+            )
+            sut.errorDelegate = mockErrorDelegate
+            sut.validationDelegate = mockValidationDelegate
+            sut.stepDelegate = mockStepDelegate
+        }
 
-    override func tearDown() {
-        sut = nil
-        mockApiClient = nil
-        mockErrorDelegate = nil
-        mockValidationDelegate = nil
-        mockStepDelegate = nil
-        mockPhoneMetadataService = nil
-        mockNolPay = nil
-        mockNolPayTokenizationViewModel = nil
+        override func tearDown() {
+            sut = nil
+            mockApiClient = nil
+            mockErrorDelegate = nil
+            mockValidationDelegate = nil
+            mockStepDelegate = nil
+            mockPhoneMetadataService = nil
+            mockNolPay = nil
+            mockNolPayTokenizationViewModel = nil
 
-        SDKSessionHelper.tearDown()
-        super.tearDown()
-    }
+            SDKSessionHelper.tearDown()
+            super.tearDown()
+        }
 
-    // MARK: - Tests
+        // MARK: - Tests
 
-    func test_UpdateCollectedData_PaymentData__WithValidData_ShouldUpdateSuccessfully() {
-        // When
-        sut.updateCollectedData(collectableData: .paymentData(cardNumber: cardNumber, mobileNumber: mobileNumber))
+        func test_UpdateCollectedData_PaymentData__WithValidData_ShouldUpdateSuccessfully() {
+            // When
+            sut.updateCollectedData(collectableData: .paymentData(cardNumber: cardNumber, mobileNumber: mobileNumber))
 
-        // Then
-        XCTAssertEqual(sut.mobileNumber, mobileNumber)
-        XCTAssertNil(sut.countryCode)
-        XCTAssertEqual(sut.cardNumber, cardNumber)
-    }
+            // Then
+            XCTAssertEqual(sut.mobileNumber, mobileNumber)
+            XCTAssertNil(sut.countryCode)
+            XCTAssertEqual(sut.cardNumber, cardNumber)
+        }
 
-    func test_UpdateCollectedData_PaymentData__WithInvalidCardNumberAndValidPhoneNumber_ShouldReturnCardNumberError() {
-        // Given
-        let expectedError = PrimerValidationError.invalidCardnumber(message: "Card number is not valid.")
-        mockPhoneMetadataService.resultToReturn = .success((.valid, countryCode, mobileNumber))
+        func test_UpdateCollectedData_PaymentData__WithInvalidCardNumberAndValidPhoneNumber_ShouldReturnCardNumberError() {
+            // Given
+            let expectedError = PrimerValidationError.invalidCardnumber(message: "Card number is not valid.")
+            mockPhoneMetadataService.resultToReturn = .success((.valid, countryCode, mobileNumber))
 
-        // When
-        sut.updateCollectedData(collectableData: .paymentData(cardNumber: "", mobileNumber: mobileNumber))
+            // When
+            sut.updateCollectedData(collectableData: .paymentData(cardNumber: "", mobileNumber: mobileNumber))
 
-        // Then
-        XCTAssertEqual(sut.mobileNumber, mobileNumber)
-        XCTAssertNil(sut.countryCode)
-        XCTAssertEqual(sut.cardNumber, "")
-        XCTAssertTrue(mockValidationDelegate.wasValidatedCalled)
-        if case .invalid(let errors) = mockValidationDelegate.validationsReceived {
-            XCTAssertEqual(errors.count, 1)
-            guard let primerValidationError = errors.first else {
-                XCTFail("Expected error to be of type PrimerValidationError, but got \(String(describing: errors.first))")
+            // Then
+            XCTAssertEqual(sut.mobileNumber, mobileNumber)
+            XCTAssertNil(sut.countryCode)
+            XCTAssertEqual(sut.cardNumber, "")
+            XCTAssertTrue(mockValidationDelegate.wasValidatedCalled)
+            if case let .invalid(errors) = mockValidationDelegate.validationsReceived {
+                XCTAssertEqual(errors.count, 1)
+                guard let primerValidationError = errors.first else {
+                    XCTFail("Expected error to be of type PrimerValidationError, but got \(String(describing: errors.first))")
+                    return
+                }
+
+                XCTAssertEqual(primerValidationError.errorId, expectedError.errorId)
+            } else {
+                XCTFail(
+                    "Expected validation status to be .invalid with errors, but got \(String(describing: mockValidationDelegate.validationsReceived))"
+                )
+            }
+        }
+
+        func test_UpdateCollectedData_PaymentData__WithInvalidCardNumberAndPhoneNumber_ShouldReturnBothErrors() {
+            // Given
+            let expectedCardError = PrimerValidationError.invalidCardnumber(
+                message: "Card number is not valid."
+            )
+            let expectedPhoneError = PrimerValidationError.invalidPhoneNumber(
+                message: "Phone number is not valid."
+            )
+            mockPhoneMetadataService.resultToReturn = .success((.invalid(errors: [expectedPhoneError]), nil, nil))
+
+            // When
+            sut.updateCollectedData(collectableData: .paymentData(cardNumber: "", mobileNumber: ""))
+
+            // Then
+            XCTAssertEqual(sut.mobileNumber, "")
+            XCTAssertNil(sut.countryCode)
+            XCTAssertEqual(sut.cardNumber, "")
+            XCTAssertTrue(mockValidationDelegate.wasValidatedCalled)
+            if case let .invalid(errors) = mockValidationDelegate.validationsReceived {
+                XCTAssertEqual(errors.count, 2)
+
+                // Validate the first error
+                let primerValidationError0 = errors[0]
+                XCTAssertEqual(primerValidationError0.errorId, expectedCardError.errorId)
+
+                // Validate the second error
+                let primerValidationError1 = errors[1]
+                XCTAssertEqual(primerValidationError1.errorId, expectedPhoneError.errorId)
+            } else {
+                XCTFail(
+                    "Expected validation status to be .invalid with errors, but got \(String(describing: mockValidationDelegate.validationsReceived))"
+                )
+            }
+        }
+
+        func test_UpdateCollectedData_PaymentData__WhenPhoneMetadataServiceFails_ShouldReturnError() {
+            // Given
+            let expectedErrorKey = "INVALID_DATA"
+            let expectedError = PrimerError.invalidValue(key: expectedErrorKey)
+            mockPhoneMetadataService.resultToReturn = .failure(expectedError)
+
+            // When
+            sut.updateCollectedData(collectableData: .paymentData(cardNumber: "", mobileNumber: ""))
+
+            // Then
+            XCTAssertEqual(sut.mobileNumber, "")
+            XCTAssertNil(sut.countryCode)
+            XCTAssertEqual(sut.cardNumber, "")
+            XCTAssertTrue(mockValidationDelegate.wasValidatedCalled)
+            if case let .error(error) = mockValidationDelegate.validationsReceived {
+                if case let PrimerError.invalidValue(key, _, _, _) = error {
+                    XCTAssertEqual(key, expectedErrorKey)
+                } else {
+                    XCTFail("Expected invalidValue error")
+                }
+            } else {
+                XCTFail(
+                    "Expected validation status to be .error with errors, but got \(String(describing: mockValidationDelegate.validationsReceived))"
+                )
+            }
+        }
+
+        func test_UpdateCollectedData_PaymentData__WithValidData_ShouldReturnValidStatus() {
+            // Given
+            mockPhoneMetadataService.resultToReturn = .success((.valid, countryCode, mobileNumber))
+
+            // When
+            sut.updateCollectedData(collectableData: .paymentData(cardNumber: cardNumber, mobileNumber: mobileNumber))
+
+            // Then
+            XCTAssertEqual(sut.mobileNumber, mobileNumber)
+            XCTAssertEqual(sut.countryCode, countryCode)
+            XCTAssertEqual(sut.cardNumber, cardNumber)
+            XCTAssertTrue(mockValidationDelegate.wasValidatedCalled)
+            if case .valid = mockValidationDelegate.validationsReceived {
+                // Validation status is valid, no further assertions needed
+            } else {
+                XCTFail(
+                    "Expected validation status to be .valid, but got \(String(describing: mockValidationDelegate.validationsReceived))"
+                )
+            }
+        }
+
+        func test_Submit_CollectCardAndPhoneData__WithMissingCardNumber_ShouldReturnCardNumberError() {
+            // Given
+            sut.nextDataStep = .collectCardAndPhoneData
+
+            // When
+            sut.submit()
+
+            // Then
+            guard let primerError = mockErrorDelegate.errorReceived as? PrimerError else {
+                XCTFail("Error should be of type PrimerError")
                 return
             }
 
-            XCTAssertEqual(primerValidationError.errorId, expectedError.errorId)
-        } else {
-            XCTFail(
-                "Expected validation status to be .invalid with errors, but got \(String(describing: mockValidationDelegate.validationsReceived))"
-            )
-        }
-    }
-
-    func test_UpdateCollectedData_PaymentData__WithInvalidCardNumberAndPhoneNumber_ShouldReturnBothErrors() {
-        // Given
-        let expectedCardError = PrimerValidationError.invalidCardnumber(
-            message: "Card number is not valid."
-        )
-        let expectedPhoneError = PrimerValidationError.invalidPhoneNumber(
-            message: "Phone number is not valid."
-        )
-        mockPhoneMetadataService.resultToReturn = .success((.invalid(errors: [expectedPhoneError]), nil, nil))
-
-        // When
-        sut.updateCollectedData(collectableData: .paymentData(cardNumber: "", mobileNumber: ""))
-
-        // Then
-        XCTAssertEqual(sut.mobileNumber, "")
-        XCTAssertNil(sut.countryCode)
-        XCTAssertEqual(sut.cardNumber, "")
-        XCTAssertTrue(mockValidationDelegate.wasValidatedCalled)
-        if case .invalid(let errors) = mockValidationDelegate.validationsReceived {
-            XCTAssertEqual(errors.count, 2)
-
-            // Validate the first error
-            let primerValidationError0 = errors[0]
-            XCTAssertEqual(primerValidationError0.errorId, expectedCardError.errorId)
-
-            // Validate the second error
-            let primerValidationError1 = errors[1]
-            XCTAssertEqual(primerValidationError1.errorId, expectedPhoneError.errorId)
-        } else {
-            XCTFail(
-                "Expected validation status to be .invalid with errors, but got \(String(describing: mockValidationDelegate.validationsReceived))"
-            )
-        }
-    }
-
-    func test_UpdateCollectedData_PaymentData__WhenPhoneMetadataServiceFails_ShouldReturnError() {
-        // Given
-        let expectedErrorKey = "INVALID_DATA"
-        let expectedError = PrimerError.invalidValue(key: expectedErrorKey)
-        mockPhoneMetadataService.resultToReturn = .failure(expectedError)
-
-        // When
-        sut.updateCollectedData(collectableData: .paymentData(cardNumber: "", mobileNumber: ""))
-
-        // Then
-        XCTAssertEqual(sut.mobileNumber, "")
-        XCTAssertNil(sut.countryCode)
-        XCTAssertEqual(sut.cardNumber, "")
-        XCTAssertTrue(mockValidationDelegate.wasValidatedCalled)
-        if case .error(let error) = mockValidationDelegate.validationsReceived {
-            if case PrimerError.invalidValue(let key, _, _, _) = error {
-                XCTAssertEqual(key, expectedErrorKey)
-            } else {
-                XCTFail("Expected invalidValue error")
+            switch primerError {
+            case let .invalidValue(key, _, _, _):
+                XCTAssertTrue(key == "cardNumber")
+            default:
+                XCTFail("primerError should be of type invalidSetting")
             }
-        } else {
-            XCTFail(
-                "Expected validation status to be .error with errors, but got \(String(describing: mockValidationDelegate.validationsReceived))"
-            )
-        }
-    }
-
-    func test_UpdateCollectedData_PaymentData__WithValidData_ShouldReturnValidStatus() {
-        // Given
-        mockPhoneMetadataService.resultToReturn = .success((.valid, countryCode, mobileNumber))
-
-        // When
-        sut.updateCollectedData(collectableData: .paymentData(cardNumber: cardNumber, mobileNumber: mobileNumber))
-
-        // Then
-        XCTAssertEqual(sut.mobileNumber, mobileNumber)
-        XCTAssertEqual(sut.countryCode, countryCode)
-        XCTAssertEqual(sut.cardNumber, cardNumber)
-        XCTAssertTrue(mockValidationDelegate.wasValidatedCalled)
-        if case .valid = mockValidationDelegate.validationsReceived {
-            // Validation status is valid, no further assertions needed
-        } else {
-            XCTFail(
-                "Expected validation status to be .valid, but got \(String(describing: mockValidationDelegate.validationsReceived))"
-            )
-        }
-    }
-
-    func test_Submit_CollectCardAndPhoneData__WithMissingCardNumber_ShouldReturnCardNumberError() {
-        // Given
-        sut.nextDataStep = .collectCardAndPhoneData
-
-        // When
-        sut.submit()
-
-        // Then
-        guard let primerError = mockErrorDelegate.errorReceived as? PrimerError else {
-            XCTFail("Error should be of type PrimerError")
-            return
         }
 
-        switch primerError {
-        case .invalidValue(let key, _, _, _):
-            XCTAssertTrue(key == "cardNumber")
-        default:
-            XCTFail("primerError should be of type invalidSetting")
-        }
-    }
+        func test_Submit_CollectCardAndPhoneData__WithMissingMobileNumber_ShouldReturnMobileNumberError() {
+            // Given
+            sut.cardNumber = cardNumber
+            sut.nextDataStep = .collectCardAndPhoneData
 
-    func test_Submit_CollectCardAndPhoneData__WithMissingMobileNumber_ShouldReturnMobileNumberError() {
-        // Given
-        sut.cardNumber = cardNumber
-        sut.nextDataStep = .collectCardAndPhoneData
+            // When
+            sut.submit()
 
-        // When
-        sut.submit()
+            // Then
+            guard let primerError = mockErrorDelegate.errorReceived as? PrimerError else {
+                XCTFail("Error should be of type PrimerError")
+                return
+            }
 
-        // Then
-        guard let primerError = mockErrorDelegate.errorReceived as? PrimerError else {
-            XCTFail("Error should be of type PrimerError")
-            return
-        }
-
-        switch primerError {
-        case .invalidValue(let key, _, _, _):
-            XCTAssertTrue(key == "mobileNumber")
-        default:
-            XCTFail("primerError should be of type invalidSetting")
-        }
-    }
-
-    func test_Submit_CollectCardAndPhoneData__WithMissingCountryCode_ShouldReturnCountryCodeError() {
-        // Given
-        sut.cardNumber = cardNumber
-        sut.mobileNumber = mobileNumber
-        sut.nextDataStep = .collectCardAndPhoneData
-
-        // When
-        sut.submit()
-
-        // Then
-        guard let primerError = mockErrorDelegate.errorReceived as? PrimerError else {
-            XCTFail("Error should be of type PrimerError")
-            return
+            switch primerError {
+            case let .invalidValue(key, _, _, _):
+                XCTAssertTrue(key == "mobileNumber")
+            default:
+                XCTFail("primerError should be of type invalidSetting")
+            }
         }
 
-        switch primerError {
-        case .invalidValue(let key, _, _, _):
-            XCTAssertTrue(key == "countryCode")
-        default:
-            XCTFail("primerError should be of type invalidSetting")
-        }
-    }
+        func test_Submit_CollectCardAndPhoneData__WithMissingCountryCode_ShouldReturnCountryCodeError() {
+            // Given
+            sut.cardNumber = cardNumber
+            sut.mobileNumber = mobileNumber
+            sut.nextDataStep = .collectCardAndPhoneData
 
-    func test_Submit_CollectCardAndPhoneData__WithUninitializedSDK_ShouldReturnNolSdkInitError() {
-        // Given
-        let expectedError = PrimerError.nolSdkInitError()
-        sut.cardNumber = cardNumber
-        sut.mobileNumber = mobileNumber
-        sut.countryCode = countryCode
-        sut.nextDataStep = .collectCardAndPhoneData
+            // When
+            sut.submit()
 
-        // When
-        sut.submit()
+            // Then
+            guard let primerError = mockErrorDelegate.errorReceived as? PrimerError else {
+                XCTFail("Error should be of type PrimerError")
+                return
+            }
 
-        // Then
-        guard let primerError = mockErrorDelegate.errorReceived as? PrimerError else {
-            XCTFail("Error should be of type PrimerError")
-            return
+            switch primerError {
+            case let .invalidValue(key, _, _, _):
+                XCTAssertTrue(key == "countryCode")
+            default:
+                XCTFail("primerError should be of type invalidSetting")
+            }
         }
 
-        XCTAssertEqual(primerError.errorId, expectedError.errorId)
-    }
+        func test_Submit_CollectCardAndPhoneData__WithUninitializedSDK_ShouldReturnNolSdkInitError() {
+            // Given
+            let expectedError = PrimerError.nolSdkInitError()
+            sut.cardNumber = cardNumber
+            sut.mobileNumber = mobileNumber
+            sut.countryCode = countryCode
+            sut.nextDataStep = .collectCardAndPhoneData
 
-    func test_Submit_CollectCardAndPhoneData__WhenPaymentRequestFails_ShouldReturnUnknownError() {
-        // Given
-        sut.cardNumber = cardNumber
-        sut.mobileNumber = mobileNumber
-        sut.countryCode = countryCode
-        sut.nextDataStep = .collectCardAndPhoneData
+            // When
+            sut.submit()
 
-        mockNolPay.requestPaymentResult = .success(false)
-        sut.nolPay = mockNolPay
+            // Then
+            guard let primerError = mockErrorDelegate.errorReceived as? PrimerError else {
+                XCTFail("Error should be of type PrimerError")
+                return
+            }
 
-        let expectation = self.expectation(description: "Async payment request should fail")
+            XCTAssertEqual(primerError.errorId, expectedError.errorId)
+        }
 
-        mockNolPayTokenizationViewModel.onStartCalled = { [weak self] in
-            guard let self else { return }
-            mockNolPayTokenizationViewModel.triggerAsyncAction("") { result in
-                switch result {
-                case .success:
-                    XCTFail("Expected payment request to fail, but it succeeded")
-                case .failure(let error):
-                    XCTAssertNotNil(error, "Expected an error, but got nil")
+        func test_Submit_CollectCardAndPhoneData__WhenPaymentRequestFails_ShouldReturnUnknownError() {
+            // Given
+            sut.cardNumber = cardNumber
+            sut.mobileNumber = mobileNumber
+            sut.countryCode = countryCode
+            sut.nextDataStep = .collectCardAndPhoneData
 
-                    guard let primerError = error as? PrimerError else {
-                        XCTFail("Error should be of type PrimerError")
-                        return
+            mockNolPay.requestPaymentResult = .success(false)
+            sut.nolPay = mockNolPay
+
+            let expectation = self.expectation(description: "Async payment request should fail")
+
+            mockNolPayTokenizationViewModel.onStartCalled = { [weak self] in
+                guard let self else { return }
+                mockNolPayTokenizationViewModel.triggerAsyncAction("") { result in
+                    switch result {
+                    case .success:
+                        XCTFail("Expected payment request to fail, but it succeeded")
+                    case let .failure(error):
+                        XCTAssertNotNil(error, "Expected an error, but got nil")
+
+                        guard let primerError = error as? PrimerError else {
+                            XCTFail("Error should be of type PrimerError")
+                            return
+                        }
+
+                        switch primerError {
+                        case let .nolError(code, message, _):
+                            XCTAssertTrue(code == "unknown")
+                            XCTAssertTrue(message == "Payment failed from unknown reason")
+                        default:
+                            XCTFail("primerError should be of type nolError")
+                        }
+
+                        expectation.fulfill()
                     }
-
-                    switch primerError {
-                    case .nolError(let code, let message, _):
-                        XCTAssertTrue(code == "unknown")
-                        XCTAssertTrue(message == "Payment failed from unknown reason")
-                    default:
-                        XCTFail("primerError should be of type nolError")
-                    }
-
-                    expectation.fulfill()
                 }
             }
+
+            // When
+            sut.submit()
+
+            // Then
+            waitForExpectations(timeout: 5) // Adjust timeout as needed
+            XCTAssertEqual(mockNolPayTokenizationViewModel.nolPayCardNumber, cardNumber)
+            XCTAssertEqual(mockNolPayTokenizationViewModel.mobileNumber, mobileNumber)
+            XCTAssertEqual(mockNolPayTokenizationViewModel.mobileCountryCode, countryCode)
         }
 
-        // When
-        sut.submit()
+        func test_Submit_CollectCardAndPhoneData__WhenPaymentRequestFailsWithError_ShouldReturnExpectedError() {
+            // Given
+            let expectedErrorDescription = "ERROR_DESCRIPTION"
+            sut.cardNumber = cardNumber
+            sut.mobileNumber = mobileNumber
+            sut.countryCode = countryCode
+            sut.nextDataStep = .collectCardAndPhoneData
 
-        // Then
-        waitForExpectations(timeout: 5) // Adjust timeout as needed
-        XCTAssertEqual(mockNolPayTokenizationViewModel.nolPayCardNumber, cardNumber)
-        XCTAssertEqual(mockNolPayTokenizationViewModel.mobileNumber, mobileNumber)
-        XCTAssertEqual(mockNolPayTokenizationViewModel.mobileCountryCode, countryCode)
-    }
+            mockNolPay.requestPaymentResult = .failure(PrimerNolPayError(description: expectedErrorDescription))
+            sut.nolPay = mockNolPay
 
-    func test_Submit_CollectCardAndPhoneData__WhenPaymentRequestFailsWithError_ShouldReturnExpectedError() {
-        // Given
-        let expectedErrorDescription = "ERROR_DESCRIPTION"
-        sut.cardNumber = cardNumber
-        sut.mobileNumber = mobileNumber
-        sut.countryCode = countryCode
-        sut.nextDataStep = .collectCardAndPhoneData
+            let expectation = self.expectation(description: "Async payment request should fail")
 
-        mockNolPay.requestPaymentResult = .failure(PrimerNolPayError(description: expectedErrorDescription))
-        sut.nolPay = mockNolPay
+            mockNolPayTokenizationViewModel.onStartCalled = { [weak self] in
+                guard let self else { return }
+                mockNolPayTokenizationViewModel.triggerAsyncAction("") { result in
+                    switch result {
+                    case .success:
+                        XCTFail("Expected payment request to fail, but it succeeded")
+                    case let .failure(error):
+                        XCTAssertNotNil(error, "Expected an error, but got nil")
+                        guard let primerError = error as? PrimerError else {
+                            XCTFail("Error should be of type PrimerError")
+                            return
+                        }
 
-        let expectation = self.expectation(description: "Async payment request should fail")
+                        switch primerError {
+                        case let .nolError(_, message, _):
+                            XCTAssertTrue(message == expectedErrorDescription)
+                        default:
+                            XCTFail("primerError should be of type nolError")
+                        }
 
-        mockNolPayTokenizationViewModel.onStartCalled = { [weak self] in
-            guard let self else { return }
-            mockNolPayTokenizationViewModel.triggerAsyncAction("") { result in
-                switch result {
-                case .success:
-                    XCTFail("Expected payment request to fail, but it succeeded")
-                case .failure(let error):
-                    XCTAssertNotNil(error, "Expected an error, but got nil")
-                    guard let primerError = error as? PrimerError else {
-                        XCTFail("Error should be of type PrimerError")
-                        return
+                        expectation.fulfill()
                     }
-
-                    switch primerError {
-                    case .nolError(_, let message, _):
-                        XCTAssertTrue(message == expectedErrorDescription)
-                    default:
-                        XCTFail("primerError should be of type nolError")
-                    }
-
-                    expectation.fulfill()
                 }
+            }
+
+            // When
+            sut.submit()
+
+            // Then
+            waitForExpectations(timeout: 5) // Adjust timeout as needed
+            XCTAssertEqual(mockNolPayTokenizationViewModel.nolPayCardNumber, cardNumber)
+            XCTAssertEqual(mockNolPayTokenizationViewModel.mobileNumber, mobileNumber)
+            XCTAssertEqual(mockNolPayTokenizationViewModel.mobileCountryCode, countryCode)
+        }
+
+        func test_Submit_CollectCardAndPhoneData__WhenPaymentRequestSucceeds_ShouldReturnSuccess() {
+            // Given
+            sut.cardNumber = cardNumber
+            sut.mobileNumber = mobileNumber
+            sut.countryCode = countryCode
+            sut.nextDataStep = .collectCardAndPhoneData
+
+            mockNolPay.requestPaymentResult = .success(true)
+            sut.nolPay = mockNolPay
+
+            let expectation = self.expectation(description: "Async payment request should succeed")
+
+            mockNolPayTokenizationViewModel.onStartCalled = { [weak self] in
+                guard let self else { return }
+                mockNolPayTokenizationViewModel.triggerAsyncAction("") { result in
+                    switch result {
+                    case .success:
+                        expectation.fulfill()
+                    case let .failure(error):
+                        XCTFail("Expected payment request to succeed, but it failed with error: \(error)")
+                    }
+                }
+            }
+
+            // When
+            sut.submit()
+
+            // Then
+            waitForExpectations(timeout: 5) // Adjust timeout as needed
+            XCTAssertEqual(mockNolPayTokenizationViewModel.nolPayCardNumber, cardNumber)
+            XCTAssertEqual(mockNolPayTokenizationViewModel.mobileNumber, mobileNumber)
+            XCTAssertEqual(mockNolPayTokenizationViewModel.mobileCountryCode, countryCode)
+        }
+
+        func test_Start_WithInvalidAppID_ShouldReturnError() {
+            // Given
+            SDKSessionHelper.tearDown()
+
+            // When
+            sut.start()
+
+            // Then
+            guard let primerError = mockErrorDelegate.errorReceived as? PrimerError else {
+                XCTFail("Error should be of type PrimerError")
+                return
+            }
+
+            switch primerError {
+            case let .invalidValue(key, _, _, _):
+                XCTAssertTrue(key == "nolPayAppId")
+            default:
+                XCTFail("primerError should be of type invalidSetting")
             }
         }
 
-        // When
-        sut.submit()
+        func test_Start_WithNoClientToken_ShouldReturnError() {
+            // Given
+            AppState.current.clientToken = nil
 
-        // Then
-        waitForExpectations(timeout: 5) // Adjust timeout as needed
-        XCTAssertEqual(mockNolPayTokenizationViewModel.nolPayCardNumber, cardNumber)
-        XCTAssertEqual(mockNolPayTokenizationViewModel.mobileNumber, mobileNumber)
-        XCTAssertEqual(mockNolPayTokenizationViewModel.mobileCountryCode, countryCode)
-    }
+            // When
+            sut.start()
 
-    func test_Submit_CollectCardAndPhoneData__WhenPaymentRequestSucceeds_ShouldReturnSuccess() {
-        // Given
-        sut.cardNumber = cardNumber
-        sut.mobileNumber = mobileNumber
-        sut.countryCode = countryCode
-        sut.nextDataStep = .collectCardAndPhoneData
-
-        mockNolPay.requestPaymentResult = .success(true)
-        sut.nolPay = mockNolPay
-
-        let expectation = self.expectation(description: "Async payment request should succeed")
-
-        mockNolPayTokenizationViewModel.onStartCalled = { [weak self] in
-            guard let self else { return }
-            mockNolPayTokenizationViewModel.triggerAsyncAction("") { result in
-                switch result {
-                case .success:
-                    expectation.fulfill()
-                case .failure(let error):
-                    XCTFail("Expected payment request to succeed, but it failed with error: \(error)")
-                }
+            // Then
+            guard let primerError = mockErrorDelegate.errorReceived as? PrimerError else {
+                XCTFail("Error should be of type PrimerError")
+                return
             }
+            XCTAssertEqual(primerError.errorId, "invalid-client-token")
         }
 
-        // When
-        sut.submit()
+        func test_Start_WhenSDKFailsWithError() {
+            // Given
+            let exp = expectation(description: "Wait for start to complete")
+            let expectedErrorCode = "EXPECTED_ERROR_CODE"
+            mockApiClient.fetchNolSdkSecretResult = {
+                exp.fulfill()
+                return .failure(PrimerError.nolError(code: expectedErrorCode, message: ""))
+            }
 
-        // Then
-        waitForExpectations(timeout: 5) // Adjust timeout as needed
-        XCTAssertEqual(mockNolPayTokenizationViewModel.nolPayCardNumber, cardNumber)
-        XCTAssertEqual(mockNolPayTokenizationViewModel.mobileNumber, mobileNumber)
-        XCTAssertEqual(mockNolPayTokenizationViewModel.mobileCountryCode, countryCode)
+            // When
+            sut.start()
+
+            // Then
+            wait(for: [exp], timeout: 5.0)
+        }
+
+        func test_Start_WhenSDKStartsSuccessfully() {
+            // Given
+            let exp = expectation(description: "Wait for start to complete")
+            mockApiClient.fetchNolSdkSecretResult = {
+                exp.fulfill()
+                return .success(Response.Body.NolPay.NolPaySecretDataResponse(sdkSecret: ""))
+            }
+
+            // When
+            sut.start()
+
+            // Then
+            wait(for: [exp], timeout: 5.0)
+        }
     }
-
-    func test_Start_WithInvalidAppID_ShouldReturnError() {
-        // Given
-        SDKSessionHelper.tearDown()
-
-        // When
-        sut.start()
-
-        // Then
-        guard let primerError = mockErrorDelegate.errorReceived as? PrimerError else {
-            XCTFail("Error should be of type PrimerError")
-            return
-        }
-
-        switch primerError {
-        case .invalidValue(let key, _, _, _):
-            XCTAssertTrue(key == "nolPayAppId")
-        default:
-            XCTFail("primerError should be of type invalidSetting")
-        }
-    }
-
-    func test_Start_WithNoClientToken_ShouldReturnError() {
-        // Given
-        AppState.current.clientToken = nil
-
-        // When
-        sut.start()
-
-        // Then
-        guard let primerError = mockErrorDelegate.errorReceived as? PrimerError else {
-            XCTFail("Error should be of type PrimerError")
-            return
-        }
-        XCTAssertEqual(primerError.errorId, "invalid-client-token")
-    }
-
-    func test_Start_WhenSDKFailsWithError() {
-        // Given
-        let exp = expectation(description: "Wait for start to complete")
-        let expectedErrorCode = "EXPECTED_ERROR_CODE"
-        mockApiClient.fetchNolSdkSecretResult = {
-            exp.fulfill()
-            return .failure(PrimerError.nolError(code: expectedErrorCode, message: ""))
-        }
-
-        // When
-        sut.start()
-
-        // Then
-        wait(for: [exp], timeout: 5.0)
-    }
-
-    func test_Start_WhenSDKStartsSuccessfully() {
-        // Given
-        let exp = expectation(description: "Wait for start to complete")
-        mockApiClient.fetchNolSdkSecretResult = {
-            exp.fulfill()
-            return .success(Response.Body.NolPay.NolPaySecretDataResponse(sdkSecret: ""))
-        }
-
-        // When
-        sut.start()
-
-        // Then
-        wait(for: [exp], timeout: 5.0)
-    }
-}
 #endif

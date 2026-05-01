@@ -1,13 +1,14 @@
 //
 //  MerchantHeadlessCheckoutNolPayViewController.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import UIKit
+import PrimerFoundation
 import PrimerSDK
+import UIKit
 #if canImport(IQKeyboardManagerSwift)
-import IQKeyboardManagerSwift
+    import IQKeyboardManagerSwift
 #endif
 
 class MerchantHeadlessCheckoutNolPayViewController: UIViewController {
@@ -76,14 +77,14 @@ class MerchantHeadlessCheckoutNolPayViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         #if canImport(IQKeyboardManagerSwift)
-        IQKeyboardManager.shared.isEnabled = true
+            IQKeyboardManager.shared.isEnabled = true
         #endif
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         #if canImport(IQKeyboardManagerSwift)
-        IQKeyboardManager.shared.isEnabled = false
+            IQKeyboardManager.shared.isEnabled = false
         #endif
     }
 
@@ -273,8 +274,10 @@ class MerchantHeadlessCheckoutNolPayViewController: UIViewController {
         }
 
         unlinkCardComponent.updateCollectedData(
-            collectableData: .cardAndPhoneData(nolPaymentCard: card,
-                                               mobileNumber: unlinkPhoneNumberTextField.text ?? "")
+            collectableData: .cardAndPhoneData(
+                nolPaymentCard: card,
+                mobileNumber: unlinkPhoneNumberTextField.text ?? ""
+            )
         )
     }
 
@@ -293,11 +296,11 @@ class MerchantHeadlessCheckoutNolPayViewController: UIViewController {
         getLinkedCardsComponent.getLinkedCardsFor(mobileNumber: listCardsPhoneNumberTextField.text ?? "") { result in
             switch result {
 
-            case .success(let cards):
+            case let .success(cards):
                 self.linkedCards = cards
                 self.linkedCardsTableView.reloadData()
                 self.showAlert(title: "Success", message: "Fetching of the listed cards done, you have: \(cards.count) linked cards")
-            case .failure(let error):
+            case let .failure(error):
                 self.showAlert(title: "Error", message: error.localizedDescription)
             }
         }
@@ -314,8 +317,9 @@ class MerchantHeadlessCheckoutNolPayViewController: UIViewController {
 
     @objc func submitPaymentPhoneNumberButtonTapped() {
         paymentComponent.updateCollectedData(collectableData: NolPayPaymentCollectableData.paymentData(
-                                                cardNumber: selectedCardForPayment?.cardNumber ?? "",
-                                                mobileNumber: startPaymentPhoneNumberTextField.text ?? ""))
+            cardNumber: selectedCardForPayment?.cardNumber ?? "",
+            mobileNumber: startPaymentPhoneNumberTextField.text ?? ""
+        ))
     }
 
     // MARK: - Helper
@@ -330,7 +334,7 @@ class MerchantHeadlessCheckoutNolPayViewController: UIViewController {
 // MARK: - UITableViewDataSource, UITableViewDelegate
 extension MerchantHeadlessCheckoutNolPayViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return linkedCards.count
+        linkedCards.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -357,8 +361,8 @@ extension MerchantHeadlessCheckoutNolPayViewController: UITableViewDataSource, U
 
 // MARK: - PrimerHeadlessErrorableDelegate, PrimerHeadlessValidatableDelegate, PrimerHeadlessStepableDelegate
 extension MerchantHeadlessCheckoutNolPayViewController: PrimerHeadlessErrorableDelegate,
-                                                        PrimerHeadlessValidatableDelegate,
-                                                        PrimerHeadlessSteppableDelegate {
+    PrimerHeadlessValidatableDelegate,
+    PrimerHeadlessSteppableDelegate {
 
     func didUpdate(validationStatus: PrimerSDK.PrimerValidationStatus, for data: PrimerSDK.PrimerCollectableData?) {
         switch validationStatus {
@@ -373,13 +377,13 @@ extension MerchantHeadlessCheckoutNolPayViewController: PrimerHeadlessErrorableD
             } else if data is NolPayPaymentCollectableData {
                 paymentComponent.submit()
             }
-        case .invalid(errors: let errors):
+        case let .invalid(errors: errors):
             var message = ""
             for error in errors {
                 message += (error.errorDescription ?? error.localizedDescription) + "\n"
             }
             self.showAlert(title: "Validation Error", message: "\(message)")
-        case .error(error: let error):
+        case let .error(error: error):
             self.showAlert(title: "Error", message: error.errorDescription ?? error.localizedDescription)
         }
     }
