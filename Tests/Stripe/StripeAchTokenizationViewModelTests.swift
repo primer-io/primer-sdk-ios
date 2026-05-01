@@ -1,9 +1,10 @@
 //
 //  StripeAchTokenizationViewModelTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+import PrimerFoundation
 @testable import PrimerSDK
 import XCTest
 
@@ -42,15 +43,17 @@ final class StripeAchTokenizationViewModelTests: XCTestCase {
         currencyCode: Currency(code: "USD", decimalDigits: 2),
         fees: nil,
         lineItems: [
-            .init(itemId: "item_id",
-                  quantity: 1,
-                  amount: 1234,
-                  discountAmount: nil,
-                  name: "my_item",
-                  description: "item_description",
-                  taxAmount: nil,
-                  taxCode: nil,
-                  productType: nil)
+            .init(
+                itemId: "item_id",
+                quantity: 1,
+                amount: 1234,
+                discountAmount: nil,
+                name: "my_item",
+                description: "item_description",
+                taxAmount: nil,
+                taxCode: nil,
+                productType: nil
+            )
         ]
     )
 
@@ -124,9 +127,13 @@ final class StripeAchTokenizationViewModelTests: XCTestCase {
         )
         mandateDelegate = sut
 
-        let settings = PrimerSettings(paymentMethodOptions:
-            PrimerPaymentMethodOptions(urlScheme: "test://primer.io",
-                                       stripeOptions: PrimerStripeOptions(publishableKey: "test-pk-1234")))
+        let settings = PrimerSettings(
+            paymentMethodOptions:
+            PrimerPaymentMethodOptions(
+                urlScheme: "test://primer.io",
+                stripeOptions: PrimerStripeOptions(publishableKey: "test-pk-1234")
+            )
+        )
 
         DependencyContainer.register(settings as PrimerSettingsProtocol)
 

@@ -1,15 +1,19 @@
 //
-//  DateExtension.swift
+//  Date.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
 
-internal extension Date {
+public extension Date {
 
     var startOfDay: Date {
-        return Calendar.current.startOfDay(for: self)
+        Calendar.current.startOfDay(for: self)
+    }
+    
+    var isValidExpiryDate: Bool {
+        Date() < endOfMonth
     }
 
     var startOfMonth: Date {
@@ -22,10 +26,6 @@ internal extension Date {
         components.month = 1
         components.second = -1
         return Calendar.current.date(byAdding: components, to: startOfMonth)!
-    }
-
-    var isValidExpiryDate: Bool {
-        return Date() < endOfMonth
     }
 
     var yearComponentAsString: String {

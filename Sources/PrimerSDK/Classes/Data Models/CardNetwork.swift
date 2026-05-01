@@ -8,6 +8,7 @@
 
 import Foundation
 import PassKit
+import PrimerFoundation
 import UIKit
 
 struct CardNetworkValidation {

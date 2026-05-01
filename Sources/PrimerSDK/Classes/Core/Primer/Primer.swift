@@ -1,29 +1,30 @@
 //
 //  Primer.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+import PrimerFoundation
 import UIKit
 
 // swiftlint:disable identifier_name
 #if DEBUG
-private var __isRunningTests__: Bool = false
+    private var __isRunningTests__: Bool = false
 
-var TEST: Bool {
-    #if DEBUG
-    __isRunningTests__
-    #else
-    false
-    #endif
-}
+    var TEST: Bool {
+        #if DEBUG
+            __isRunningTests__
+        #else
+            false
+        #endif
+    }
 #endif
 
 private let _Primer: Primer = {
     #if DEBUG
-    if ProcessInfo.processInfo.environment["UNIT_TESTS"] == "1" {
-        __isRunningTests__ = true
-    }
+        if ProcessInfo.processInfo.environment["UNIT_TESTS"] == "1" {
+            __isRunningTests__ = true
+        }
     #endif
     return Primer()
 }()
@@ -39,33 +40,39 @@ public final class Primer {
         }
     }
     public var intent: PrimerSessionIntent? {
-        return PrimerInternal.shared.intent
+        PrimerInternal.shared.intent
     }
     public var selectedPaymentMethodType: String? {
-        return PrimerInternal.shared.selectedPaymentMethodType
+        PrimerInternal.shared.selectedPaymentMethodType
     }
     public var integrationOptions: PrimerIntegrationOptions?
 
     // MARK: - INITIALIZATION
 
     public static var shared: Primer {
-        return _Primer
+        _Primer
     }
 
     fileprivate init() {}
 
-    public func application(_ app: UIApplication,
-                            open url: URL,
-                            options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
-        return PrimerInternal.shared.application(app, open: url, options: options)
+    public func application(
+        _ app: UIApplication,
+        open url: URL,
+        options: [UIApplication.OpenURLOptionsKey: Any] = [:]
+    ) -> Bool {
+        PrimerInternal.shared.application(app, open: url, options: options)
     }
 
-    public func application(_ application: UIApplication,
-                            continue userActivity: NSUserActivity,
-                            restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
-        return PrimerInternal.shared.application(application,
-                                                 continue: userActivity,
-                                                 restorationHandler: restorationHandler)
+    public func application(
+        _ application: UIApplication,
+        continue userActivity: NSUserActivity,
+        restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void
+    ) -> Bool {
+        PrimerInternal.shared.application(
+            application,
+            continue: userActivity,
+            restorationHandler: restorationHandler
+        )
     }
 
     // MARK: - CONFIGURATION
@@ -98,15 +105,19 @@ public final class Primer {
     /**
      Show a payment method with the speicified intent (if applicable)
      */
-    public func showPaymentMethod(_ paymentMethodType: String,
-                                  intent: PrimerSessionIntent,
-                                  clientToken: String,
-                                  completion: ((Error?) -> Void)? = nil) {
+    public func showPaymentMethod(
+        _ paymentMethodType: String,
+        intent: PrimerSessionIntent,
+        clientToken: String,
+        completion: ((Error?) -> Void)? = nil
+    ) {
         PrimerInternal.shared.sdkIntegrationType = .dropIn
-        PrimerInternal.shared.showPaymentMethod(paymentMethodType,
-                                                withIntent: intent,
-                                                andClientToken: clientToken,
-                                                completion: completion)
+        PrimerInternal.shared.showPaymentMethod(
+            paymentMethodType,
+            withIntent: intent,
+            andClientToken: clientToken,
+            completion: completion
+        )
     }
 
     /**

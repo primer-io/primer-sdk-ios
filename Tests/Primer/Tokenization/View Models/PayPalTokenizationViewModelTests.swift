@@ -1,9 +1,10 @@
 //
 //  PayPalTokenizationViewModelTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+import PrimerFoundation
 @testable import PrimerSDK
 import XCTest
 
@@ -75,10 +76,12 @@ final class PayPalTokenizationViewModelTests: XCTestCase {
         tokenizationService = MockTokenizationService()
         createResumePaymentService = MockCreateResumePaymentService()
 
-        sut = PayPalTokenizationViewModel(config: Mocks.PaymentMethods.paypalPaymentMethod,
-                                          uiManager: uiManager,
-                                          tokenizationService: tokenizationService,
-                                          createResumePaymentService: createResumePaymentService)
+        sut = PayPalTokenizationViewModel(
+            config: Mocks.PaymentMethods.paypalPaymentMethod,
+            uiManager: uiManager,
+            tokenizationService: tokenizationService,
+            createResumePaymentService: createResumePaymentService
+        )
     }
 
     override func tearDownWithError() throws {
@@ -145,10 +148,12 @@ final class PayPalTokenizationViewModelTests: XCTestCase {
             .init(orderId: "order_id", approvalUrl: "https://approval.url/")
         }
         payPalService.onFetchPayPalExternalPayerInfo = { _ in
-            .init(orderId: "order_id", externalPayerInfo: .init(externalPayerId: "external_payer_id",
-                                                                email: "john@appleseed.com",
-                                                                firstName: "John",
-                                                                lastName: "Appleseed"))
+            .init(orderId: "order_id", externalPayerInfo: .init(
+                externalPayerId: "external_payer_id",
+                email: "john@appleseed.com",
+                firstName: "John",
+                lastName: "Appleseed"
+            ))
         }
 
         let webAuthenticationService = MockWebAuthenticationService()
