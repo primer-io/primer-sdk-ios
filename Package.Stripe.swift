@@ -15,13 +15,21 @@ let package = Package(
         )
     ],
     dependencies: [
-        .package(url: "https://github.com/primer-io/primer-stripe-sdk-ios", from: "1.0.0")
+        .package(url: "https://github.com/primer-io/primer-stripe-sdk-ios", from: "1.0.0"),
+        .package(path: "Packages/PrimerBDCCore"),
+        .package(path: "Packages/PrimerBDCEngine"),
+        .package(path: "Packages/PrimerFoundation"),
+        .package(path: "Packages/PrimerStepResolver")
     ],
     targets: [
         .target(
             name: "PrimerSDK",
             dependencies: [
-                .product(name: "PrimerStripeSDK", package: "primer-stripe-sdk-ios")
+                .product(name: "PrimerStripeSDK", package: "primer-stripe-sdk-ios"),
+                .product(name: "PrimerBDCCore", package: "PrimerBDCCore"),
+                .product(name: "PrimerBDCEngine", package: "PrimerBDCEngine"),
+                .product(name: "PrimerFoundation", package: "PrimerFoundation"),
+                .product(name: "PrimerStepResolver", package: "PrimerStepResolver")
             ],
             path: "Sources/PrimerSDK",
             resources: [

@@ -30,6 +30,34 @@
         "identifier" : "Tests",
         "name" : "Tests"
       }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "PrimerBDCCoreTests",
+        "name" : "PrimerBDCCoreTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "PrimerBDCEngineTests",
+        "name" : "PrimerBDCEngineTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "PrimerFoundationTests",
+        "name" : "PrimerFoundationTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "PrimerStepResolverTests",
+        "name" : "PrimerStepResolverTests"
+      }
     }
   ],
   "version" : 1

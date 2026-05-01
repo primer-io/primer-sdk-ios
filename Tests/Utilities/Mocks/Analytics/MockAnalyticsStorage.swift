@@ -1,27 +1,27 @@
 //
 //  MockAnalyticsStorage.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import XCTest
 @testable import PrimerSDK
+import XCTest
 
 class MockAnalyticsStorage: Analytics.Storage {
 
-    var events: [Analytics.Event] = []
+    var events: [StoredEvent] = []
 
-    func loadEvents() -> [Analytics.Event] {
-        return events
+    func loadEvents() -> [StoredEvent] {
+        events
     }
 
-    func save(_ events: [Analytics.Event]) throws {
+    func save(_ events: [StoredEvent]) throws {
         self.events = events
     }
 
-    func delete(_ eventsToDelete: [Analytics.Event]) {
-        let idsToDelete = eventsToDelete.map { $0.localId }
-        self.events = self.events.filter { event in
+    func delete(_ eventsToDelete: [StoredEvent]) {
+        let idsToDelete = eventsToDelete.map(\.localId)
+        events = events.filter { event in
             !idsToDelete.contains(event.localId)
         }
 

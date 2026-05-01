@@ -13,10 +13,10 @@ final class AnalyticsStorageTests: XCTestCase {
 
     let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("analytics")
 
-    let events = [
-        Analytics.Event.message(message: "Test #1", messageType: .other, severity: .info),
-        Analytics.Event.message(message: "Test #2", messageType: .other, severity: .info),
-        Analytics.Event.message(message: "Test #3", messageType: .other, severity: .info)
+    let events: [StoredEvent] = [
+        .sdk(.message(message: "Test #1", messageType: .other, severity: .info)),
+        .sdk(.message(message: "Test #2", messageType: .other, severity: .info)),
+        .sdk(.message(message: "Test #3", messageType: .other, severity: .info))
     ]
 
     override func setUpWithError() throws {
@@ -96,6 +96,12 @@ final class AnalyticsStorageTests: XCTestCase {
 }
 
 extension Analytics.Event: Hashable {
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(localId)
+    }
+}
+
+extension StoredEvent: Hashable {
     public func hash(into hasher: inout Hasher) {
         hasher.combine(localId)
     }

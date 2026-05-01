@@ -1,7 +1,7 @@
 //
 //  MerchantDropInUIViewController.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import PrimerSDK
@@ -9,11 +9,15 @@ import UIKit
 
 class MerchantDropInUIViewController: UIViewController, PrimerDelegate {
 
-    class func instantiate(settings: PrimerSettings,
-                           clientSession: ClientSessionRequestBody?,
-                           clientToken: String?) -> MerchantDropInUIViewController {
-        let mcvc = UIStoryboard(name: "Main",
-                                bundle: nil).instantiateViewController(withIdentifier: "MerchantCheckoutViewController") as! MerchantDropInUIViewController
+    class func instantiate(
+        settings: PrimerSettings,
+        clientSession: ClientSessionRequestBody?,
+        clientToken: String?
+    ) -> MerchantDropInUIViewController {
+        let mcvc = UIStoryboard(
+            name: "Main",
+            bundle: nil
+        ).instantiateViewController(withIdentifier: "MerchantCheckoutViewController") as! MerchantDropInUIViewController
         mcvc.settings = settings
         mcvc.clientSession = clientSession
         mcvc.clientToken = clientToken
@@ -48,18 +52,20 @@ class MerchantDropInUIViewController: UIViewController, PrimerDelegate {
 
     @IBAction func openVaultButtonTapped(_ sender: Any) {
         print("\n\nMERCHANT APP\n\(#function)\n")
-        self.logs.append(#function)
+        logs.append(#function)
 
-        if let clientToken = clientToken {
+        if let clientToken {
             Primer.shared.showVaultManager(clientToken: clientToken)
-        } else if let clientSession = clientSession {
-            Networking.requestClientSession(requestBody: clientSession,
-                                            apiVersion: settings.apiVersion) { (clientToken, err) in
-                if let err = err {
+        } else if let clientSession {
+            Networking.requestClientSession(
+                requestBody: clientSession,
+                apiVersion: settings.apiVersion
+            ) { (clientToken, err) in
+                if let err {
                     print(err)
                     let merchantErr = NSError(domain: "merchant-domain", code: 1, userInfo: [NSLocalizedDescriptionKey: "Failed to fetch client token"])
                     print(merchantErr)
-                } else if let clientToken = clientToken {
+                } else if let clientToken {
                     Primer.shared.showVaultManager(clientToken: clientToken)
                 }
             }
@@ -70,19 +76,21 @@ class MerchantDropInUIViewController: UIViewController, PrimerDelegate {
 
     @IBAction func openUniversalCheckoutTapped(_ sender: Any) {
         print("\n\nMERCHANT APP\n\(#function)\n")
-        self.logs.append(#function)
+        logs.append(#function)
 
-        if let clientToken = clientToken {
+        if let clientToken {
             Primer.shared.showUniversalCheckout(clientToken: clientToken)
 
-        } else if let clientSession = clientSession {
-            Networking.requestClientSession(requestBody: clientSession,
-                                            apiVersion: settings.apiVersion) { (clientToken, err) in
-                if let err = err {
+        } else if let clientSession {
+            Networking.requestClientSession(
+                requestBody: clientSession,
+                apiVersion: settings.apiVersion
+            ) { (clientToken, err) in
+                if let err {
                     print(err)
                     let merchantErr = NSError(domain: "merchant-domain", code: 1, userInfo: [NSLocalizedDescriptionKey: "Failed to fetch client token"])
                     print(merchantErr)
-                } else if let clientToken = clientToken {
+                } else if let clientToken {
                     Primer.shared.showUniversalCheckout(clientToken: clientToken)
                 }
             }
@@ -97,23 +105,29 @@ class MerchantDropInUIViewController: UIViewController, PrimerDelegate {
         }
 
         print("\n\nMERCHANT APP\n\(#function)\n")
-        self.logs.append(#function)
+        logs.append(#function)
 
-        if let clientToken = clientToken {
-            Primer.shared.showPaymentMethod(paymentMethod,
-                                            intent: paymentMethodTypeSessionIntent,
-                                            clientToken: clientToken)
-        } else if let clientSession = clientSession {
-            Networking.requestClientSession(requestBody: clientSession,
-                                            apiVersion: settings.apiVersion) { (clientToken, err) in
-                if let err = err {
+        if let clientToken {
+            Primer.shared.showPaymentMethod(
+                paymentMethod,
+                intent: paymentMethodTypeSessionIntent,
+                clientToken: clientToken
+            )
+        } else if let clientSession {
+            Networking.requestClientSession(
+                requestBody: clientSession,
+                apiVersion: settings.apiVersion
+            ) { (clientToken, err) in
+                if let err {
                     print(err)
                     let merchantErr = NSError(domain: "merchant-domain", code: 1, userInfo: [NSLocalizedDescriptionKey: "Failed to fetch client token"])
                     print(merchantErr)
-                } else if let clientToken = clientToken {
-                    Primer.shared.showPaymentMethod(paymentMethod,
-                                                    intent: self.paymentMethodTypeSessionIntent,
-                                                    clientToken: clientToken)
+                } else if let clientToken {
+                    Primer.shared.showPaymentMethod(
+                        paymentMethod,
+                        intent: self.paymentMethodTypeSessionIntent,
+                        clientToken: clientToken
+                    )
                 }
             }
         }
@@ -146,8 +160,8 @@ extension MerchantDropInUIViewController {
 
     func primerDidCompleteCheckoutWithData(_ data: PrimerCheckoutData) {
         print("\n\nMERCHANT APP\n\(#function)\nPayment Success: \(data)\n")
-        self.checkoutData = data
-        self.logs.append(#function)
+        checkoutData = data
+        logs.append(#function)
     }
 }
 
@@ -157,11 +171,11 @@ extension MerchantDropInUIViewController {
 
     func primerDidTokenizePaymentMethod(_ paymentMethodTokenData: PrimerPaymentMethodTokenData, decisionHandler: @escaping (PrimerResumeDecision) -> Void) {
         print("\n\nMERCHANT APP\n\(#function)\npaymentMethodTokenData: \(paymentMethodTokenData)")
-        self.logs.append(#function)
+        logs.append(#function)
 
         if paymentMethodTokenData.paymentInstrumentType == .paymentCard,
            let threeDSecureAuthentication = paymentMethodTokenData.threeDSecureAuthentication,
-           threeDSecureAuthentication.responseCode != ThreeDS.ResponseCode.notPerformed && threeDSecureAuthentication.responseCode != ThreeDS.ResponseCode.authSuccess {
+           threeDSecureAuthentication.responseCode != ThreeDS.ResponseCode.notPerformed, threeDSecureAuthentication.responseCode != ThreeDS.ResponseCode.authSuccess {
             var message: String = ""
 
             if let reasonCode = threeDSecureAuthentication.reasonCode {
@@ -184,16 +198,19 @@ extension MerchantDropInUIViewController {
         }
 
         Networking.createPayment(with: paymentMethodTokenData) { res, err in
-            if let err = err {
+            if let err {
                 self.showErrorMessage(err.localizedDescription)
                 decisionHandler(.fail(withErrorMessage: "Oh no, something went wrong creating the payment..."))
 
-            } else if let res = res {
+            } else if let res {
                 self.checkoutData = PrimerCheckoutData(
                     payment: PrimerCheckoutDataPayment(
                         id: res.id,
                         orderId: res.orderId,
-                        paymentFailureReason: nil))
+                        paymentFailureReason: nil,
+                        status: res.status.rawValue
+                    )
+                )
 
                 if res.status == .declined {
                     decisionHandler(.fail(withErrorMessage: "Oh no, payment was declined :("))
@@ -226,19 +243,19 @@ extension MerchantDropInUIViewController {
 
     func primerDidResumeWith(_ resumeToken: String, decisionHandler: @escaping (PrimerResumeDecision) -> Void) {
         print("\n\nMERCHANT APP\n\(#function)\nresumeToken: \(resumeToken)")
-        self.logs.append(#function)
+        logs.append(#function)
 
-        guard let transactionResponse = transactionResponse else {
+        guard let transactionResponse else {
             decisionHandler(.fail(withErrorMessage: "Oh no, something went wrong parsing the response..."))
             return
         }
 
         Networking.resumePayment(transactionResponse.id, withToken: resumeToken) { res, err in
-            if let err = err {
+            if let err {
                 self.showErrorMessage(err.localizedDescription)
                 decisionHandler(.fail(withErrorMessage: "Oh no, something went wrong creating the payment..."))
 
-            } else if let res = res {
+            } else if let res {
                 if res.status == .declined {
                     decisionHandler(.fail(withErrorMessage: "Oh no, payment was declined :("))
                 } else {
@@ -255,30 +272,30 @@ extension MerchantDropInUIViewController {
 
     func primerClientSessionWillUpdate() {
         print("\n\nMERCHANT APP\n\(#function)")
-        self.logs.append(#function)
+        logs.append(#function)
     }
 
     func primerClientSessionDidUpdate(_ clientSession: PrimerClientSession) {
         print("\n\nMERCHANT APP\n\(#function)")
-        self.logs.append(#function)
+        logs.append(#function)
     }
 
     func primerWillCreatePaymentWithData(_ data: PrimerCheckoutPaymentMethodData, decisionHandler: @escaping (PrimerPaymentCreationDecision) -> Void) {
         print("\n\nMERCHANT APP\n\(#function)\nData: \(data)")
-        self.logs.append(#function)
+        logs.append(#function)
         decisionHandler(.continuePaymentCreation())
     }
 
     func primerDidEnterResumePendingWithPaymentAdditionalInfo(_ additionalInfo: PrimerCheckoutAdditionalInfo?) {
         print("\n\nMERCHANT APP\n\(#function)\nadditionalInfo: \(String(describing: additionalInfo))")
-        self.logs.append(#function)
+        logs.append(#function)
     }
 
     func primerDidFailWithError(_ error: Error, data: PrimerCheckoutData?, decisionHandler: @escaping ((PrimerErrorDecision) -> Void)) {
         print("\n\nMERCHANT APP\n\(#function)\nError: \(error)")
-        self.primerError = error
-        self.logs.append(#function)
-        self.checkoutData = data
+        primerError = error
+        logs.append(#function)
+        checkoutData = data
 
         let message = "Merchant App | ERROR: \(error.localizedDescription)"
         decisionHandler(.fail(withErrorMessage: message))
@@ -286,13 +303,13 @@ extension MerchantDropInUIViewController {
 
     func primerDidDismiss() {
         print("\n\nMERCHANT APP\n\(#function)")
-        self.logs.append(#function)
+        logs.append(#function)
 
-        if let threeDSAlert = self.threeDSAlert {
-            self.present(threeDSAlert, animated: true, completion: nil)
+        if let threeDSAlert {
+            present(threeDSAlert, animated: true, completion: nil)
         }
 
-        let rvc = MerchantResultViewController.instantiate(checkoutData: self.checkoutData, error: self.primerError, logs: self.logs)
-        self.navigationController?.pushViewController(rvc, animated: true)
+        let rvc = MerchantResultViewController.instantiate(checkoutData: checkoutData, error: primerError, logs: logs)
+        navigationController?.pushViewController(rvc, animated: true)
     }
 }

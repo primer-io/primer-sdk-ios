@@ -1,7 +1,7 @@
 //
 //  AssetsManager.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import UIKit
@@ -36,11 +36,20 @@ extension PrimerHeadlessUniversalCheckout {
             return PrimerCardNetworkAsset(cardNetwork: cardNetwork, cardImage: cardImage)
         }
 
+        public static func getCardNetworkTraits(cardNetworkString: String?) -> PrimerCardNetworkTraits? {
+            guard let cardNetworkString else { return nil }
+            return Self.getCardNetworkTraits(for: CardNetwork(cardNetworkStr: cardNetworkString))
+        }
+
+        public static func getCardNetworkTraits(for cardNetwork: CardNetwork) -> PrimerCardNetworkTraits? {
+            cardNetwork.traits
+        }
+
         public static func getPaymentMethodAsset(for paymentMethodType: String) throws -> PrimerPaymentMethodAsset? {
             try verifyAPIConfig()
 
             guard let paymentMethod = PrimerAPIConfiguration.paymentMethodConfigs?
-                    .first(where: { $0.type == paymentMethodType })
+                .first(where: { $0.type == paymentMethodType })
             else {
                 return nil
             }
@@ -52,16 +61,18 @@ extension PrimerHeadlessUniversalCheckout {
             }
 
             guard let paymentMethodLogo = PrimerInternalAsset(
-                    colored: baseLogoImage.colored,
-                    light: baseLogoImage.light,
-                    dark: baseLogoImage.dark) else {
+                colored: baseLogoImage.colored,
+                light: baseLogoImage.light,
+                dark: baseLogoImage.dark
+            ) else {
                 return nil
             }
 
             guard let paymentMethodBackgroundColor = PrimerPaymentMethodBackgroundColor(
-                    coloredStr: baseBackgroundColor.coloredHex,
-                    lightStr: baseBackgroundColor.lightHex,
-                    darkStr: baseBackgroundColor.darkHex) else {
+                coloredStr: baseBackgroundColor.coloredHex,
+                lightStr: baseBackgroundColor.lightHex,
+                darkStr: baseBackgroundColor.darkHex
+            ) else {
                 return nil
             }
 
@@ -69,14 +80,15 @@ extension PrimerHeadlessUniversalCheckout {
                 paymentMethodType: paymentMethodType,
                 paymentMethodName: paymentMethod.name,
                 paymentMethodLogo: paymentMethodLogo,
-                paymentMethodBackgroundColor: paymentMethodBackgroundColor)
+                paymentMethodBackgroundColor: paymentMethodBackgroundColor
+            )
         }
 
         public static func getPaymentMethodAssets() throws -> [PrimerPaymentMethodAsset] {
             try verifyAPIConfig()
 
             let hucAvailablePaymentMethods = PrimerHeadlessUniversalCheckout.PaymentMethod.availablePaymentMethods
-                .compactMap({ $0.paymentMethodType })
+                .compactMap(\.paymentMethodType)
 
             var paymentMethodAssets: [PrimerPaymentMethodAsset] = []
 
@@ -90,17 +102,19 @@ extension PrimerHeadlessUniversalCheckout {
                 }
 
                 guard let paymentMethodLogo = PrimerInternalAsset(
-                        colored: baseLogoImage.colored,
-                        light: baseLogoImage.light,
-                        dark: baseLogoImage.dark)
+                    colored: baseLogoImage.colored,
+                    light: baseLogoImage.light,
+                    dark: baseLogoImage.dark
+                )
                 else {
                     continue
                 }
 
                 guard let paymentMethodBackgroundColor = PrimerPaymentMethodBackgroundColor(
-                        coloredStr: baseBackgroundColor.coloredHex,
-                        lightStr: baseBackgroundColor.lightHex,
-                        darkStr: baseBackgroundColor.darkHex)
+                    coloredStr: baseBackgroundColor.coloredHex,
+                    lightStr: baseBackgroundColor.lightHex,
+                    darkStr: baseBackgroundColor.darkHex
+                )
                 else {
                     continue
                 }
@@ -109,7 +123,8 @@ extension PrimerHeadlessUniversalCheckout {
                     paymentMethodType: paymentMethod.type,
                     paymentMethodName: paymentMethod.name,
                     paymentMethodLogo: paymentMethodLogo,
-                    paymentMethodBackgroundColor: paymentMethodBackgroundColor)
+                    paymentMethodBackgroundColor: paymentMethodBackgroundColor
+                )
 
                 paymentMethodAssets.append(paymentMethodAsset)
             }
@@ -130,7 +145,7 @@ public final class PrimerCardNetworkAsset {
     public let cardImage: UIImage?
 
     var displayName: String {
-        return cardNetwork.displayName
+        cardNetwork.displayName
     }
 
     init(cardNetwork: CardNetwork, cardImage: UIImage?) {
@@ -215,16 +230,16 @@ public final class PrimerPaymentMethodBackgroundColor {
             return nil
         }
 
-        if let coloredStr = coloredStr {
-            self.colored = PrimerColor(hex: coloredStr)
+        if let coloredStr {
+            colored = PrimerColor(hex: coloredStr)
         }
 
-        if let lightStr = lightStr {
-            self.light = PrimerColor(hex: lightStr)
+        if let lightStr {
+            light = PrimerColor(hex: lightStr)
         }
 
-        if let darkStr = darkStr {
-            self.dark = PrimerColor(hex: darkStr)
+        if let darkStr {
+            dark = PrimerColor(hex: darkStr)
         }
     }
 

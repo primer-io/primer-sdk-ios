@@ -8,12 +8,13 @@
 // swiftlint:disable file_length
 
 import Foundation
+import PrimerStepResolver
 
 protocol AnalyticsServiceProtocol: Actor {
-    func record(events: [Analytics.Event]) async throws
-    func fire(events: [Analytics.Event])
-    func record(event: Analytics.Event) async throws
-    func fire(event: Analytics.Event)
+    func record(events: [any AnalyticsEvent]) async throws
+    func fire(events: [any AnalyticsEvent])
+    func record(event: any AnalyticsEvent) async throws
+    func fire(event: any AnalyticsEvent)
 }
 
 extension Analytics {
@@ -25,10 +26,12 @@ extension Analytics {
         static let maximumBatchSize: UInt = 100
 
         static var shared = {
-            Service(sdkLogsUrl: Service.defaultSdkLogsUrl,
-                    batchSize: Service.maximumBatchSize,
-                    storage: Analytics.storage,
-                    apiClient: Analytics.apiClient ?? PrimerAPIClient())
+            Service(
+                sdkLogsUrl: Service.defaultSdkLogsUrl,
+                batchSize: Service.maximumBatchSize,
+                storage: Analytics.storage,
+                apiClient: Analytics.apiClient ?? PrimerAPIClient()
+            )
         }()
 
         let sdkLogsUrl: URL
@@ -43,27 +46,31 @@ extension Analytics {
 
         private var isSyncing: Bool = false
 
-        init(sdkLogsUrl: URL,
-             batchSize: UInt,
-             storage: Storage,
-             apiClient: PrimerAPIClientAnalyticsProtocol) {
+        init(
+            sdkLogsUrl: URL,
+            batchSize: UInt,
+            storage: Storage,
+            apiClient: PrimerAPIClientAnalyticsProtocol
+        ) {
             self.sdkLogsUrl = sdkLogsUrl
             self.batchSize = batchSize
             self.storage = storage
             self.apiClient = apiClient
+            Task { await PrimerStepResolverRegistry.shared.register(self, for: "platform.log") }
         }
 
-        func record(events: [Analytics.Event]) async throws {
-            let storedEvents: [Analytics.Event] = storage.loadEvents()
+        func record(events: [any AnalyticsEvent]) async throws {
+            let events = events.flatMap(StoredEvent.init)
+            let storedEvents = storage.loadEvents()
             let storedEventsIds = storedEvents.map(\.localId)
-            var eventsToAppend: [Analytics.Event] = []
+            var eventsToAppend: [StoredEvent] = []
 
             for event in events {
                 if storedEventsIds.contains(event.localId) { continue }
                 eventsToAppend.append(event)
             }
 
-            var combinedEvents: [Analytics.Event] = eventsToAppend.sorted(by: { $0.createdAt > $1.createdAt })
+            var combinedEvents: [StoredEvent] = eventsToAppend.sorted(by: { $0.createdAt > $1.createdAt })
             combinedEvents.append(contentsOf: storedEvents)
 
             logger.debug(message: "📚 Analytics: Recording \(events.count) events (new total: \(combinedEvents.count))")
@@ -100,17 +107,17 @@ extension Analytics {
             }
         }
 
-        func fire(events: [Analytics.Event]) {
+        func fire(events: [any AnalyticsEvent]) {
             Task {
                 try? await self.record(events: events)
             }
         }
 
-        func record(event: Analytics.Event) async throws {
+        func record(event: any AnalyticsEvent) async throws {
             try await record(events: [event])
         }
 
-        func fire(event: Analytics.Event) {
+        func fire(event: any AnalyticsEvent) {
             Task {
                 try? await self.record(events: [event])
             }
@@ -126,7 +133,7 @@ extension Analytics {
             }
         }
 
-        private func sync(events: [Analytics.Event], isFlush: Bool = false) async throws {
+        private func sync(events: [StoredEvent], isFlush: Bool = false) async throws {
             let syncType = isFlush ? "flush" : "sync"
             guard !events.isEmpty else { return logger.warn(message: "📚 Analytics: Attempted to \(syncType) but had no events")}
 
@@ -152,16 +159,20 @@ extension Analytics {
             storage.deleteAnalyticsFile()
         }
 
-        private func sendSdkLogEvents(events: [Analytics.Event]) async throws {
-            let sdkLogEvents = events.filter { $0.analyticsUrl == nil }
-            let sdkLogEventsBatches = sdkLogEvents.toBatches(of: batchSize)
+        private func sendSdkLogEvents(events: [StoredEvent]) async throws {
+            let (sdkEvents, rawEvents) = events
+                .filter { $0.analyticsUrl == nil }
+                .partitioned()
 
-            for batch in sdkLogEventsBatches {
+            for batch in sdkEvents.toBatches(of: batchSize) {
                 try await sendEvents(batch, to: sdkLogsUrl)
+            }
+            if !rawEvents.isEmpty {
+                try await sendRawEvents(rawEvents, to: sdkLogsUrl)
             }
         }
 
-        private func sendSdkAnalyticsEvents(events: [Analytics.Event]) async throws {
+        private func sendSdkAnalyticsEvents(events: [StoredEvent]) async throws {
             let events = events.filter { $0.analyticsUrl != nil }
             let urls = Set(events.compactMap(\.analyticsUrl).compactMap(URL.init))
             let eventSets = urls.map { url in
@@ -178,10 +189,13 @@ extension Analytics {
             }
         }
 
-        private func sendSdkAnalyticsEvents(url: URL, events: [Analytics.Event]) async throws {
-            let batches = events.toBatches(of: batchSize)
-            for batch in batches {
+        private func sendSdkAnalyticsEvents(url: URL, events: [StoredEvent]) async throws {
+            let (sdkEvents, rawEvents) = events.partitioned()
+            for batch in sdkEvents.toBatches(of: batchSize) {
                 try await sendEvents(batch, to: url)
+            }
+            if !rawEvents.isEmpty {
+                try await sendRawEvents(rawEvents, to: url)
             }
         }
 
@@ -195,7 +209,7 @@ extension Analytics {
                 return
             }
 
-            if url.absoluteString != self.sdkLogsUrl.absoluteString,
+            if url.absoluteString != sdkLogsUrl.absoluteString,
                PrimerAPIConfigurationModule.clientToken?.decodedJWTToken == nil {
                 // Skip sending events that require client token when no token is available
                 // (This is already handled at record() level, but we double-check here as a safety measure)
@@ -208,7 +222,7 @@ extension Analytics {
 
             logger.debug(message: "📚 Analytics: Sending \(events.count) events to \(url.absoluteString)")
 
-            self.apiClient.sendAnalyticsEvents(
+            apiClient.sendAnalyticsEvents(
                 clientToken: decodedJWTToken,
                 url: url,
                 body: events
@@ -218,12 +232,12 @@ extension Analytics {
                     let messageContent = "\(events.count) events on URL \(url.absoluteString)"
                     switch result {
                     case .success:
-                        self.storage.delete(events)
-                        self.logger.debug(message: "📚 Analytics: Finished sending \(messageContent)")
+                        storage.delete(events.map(StoredEvent.sdk))
+                        logger.debug(message: "📚 Analytics: Finished sending \(messageContent)")
                         completion(nil)
                     case let .failure(err):
-                        self.logger.error(message: "📚 Analytics: Failed to send \(messageContent) with error \(err)")
-                        await self.handleFailedEvents(forUrl: url)
+                        logger.error(message: "📚 Analytics: Failed to send \(messageContent) with error \(err)")
+                        await handleFailedEvents(forUrl: url)
                         completion(handled(error: err))
                     }
                 }
@@ -242,14 +256,21 @@ extension Analytics {
             }
         }
 
+        private func sendRawEvents(_ events: [RawAnalyticsEvent], to url: URL) async throws {
+            guard !events.isEmpty else { return }
+            let data = try JSONEncoder().encode(events.map(\.payload))
+            _ = try await apiClient.sendRawAnalyticsEvents(url: url, body: data)
+            storage.delete(events.map(StoredEvent.raw))
+        }
+
         private func handleFailedEvents(forUrl url: URL) {
-            self.eventSendFailureCount += 1
+            eventSendFailureCount += 1
             if eventSendFailureCount >= 3 {
                 logger.error(message: "Failed to send events three or more times. Deleting analytics file ...")
                 storage.deleteAnalyticsFile()
                 eventSendFailureCount = 0
             } else {
-                self.storage.delete(eventsWithUrl: url)
+                storage.delete(eventsWithUrl: url)
             }
         }
 
@@ -262,6 +283,22 @@ extension Analytics {
 }
 
 extension Analytics.Service {
+    static func record(event: any AnalyticsEvent) async throws {
+        try await shared.record(event: event)
+    }
+
+    static func fire(event: any AnalyticsEvent) {
+        Task { await shared.fire(event: event) }
+    }
+
+    static func record(events: [any AnalyticsEvent]) async throws {
+        try await shared.record(events: events)
+    }
+
+    static func fire(events: [any AnalyticsEvent]) {
+        Task { await shared.fire(events: events) }
+    }
+
     static func record(event: Analytics.Event) async throws {
         try await shared.record(event: event)
     }

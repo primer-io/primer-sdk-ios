@@ -17,22 +17,32 @@ import SafariServices
 public protocol PrimerHeadlessUniversalCheckoutRawDataManagerDelegate {
 
     @available(*, deprecated, message: "Use _:didReceiveCardMetadata:forState: instead")
-    @objc optional func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
-                                             metadataDidChange metadata: [String: Any]?)
+    @objc optional func primerRawDataManager(
+        _ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
+        metadataDidChange metadata: [String: Any]?
+    )
 
-    @objc optional func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
-                                             dataIsValid isValid: Bool,
-                                             errors: [Error]?)
+    @objc optional func primerRawDataManager(
+        _ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
+        dataIsValid isValid: Bool,
+        errors: [Error]?
+    )
 
-    @objc optional func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
-                                             willFetchMetadataForState state: PrimerValidationState)
+    @objc optional func primerRawDataManager(
+        _ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
+        willFetchMetadataForState state: PrimerValidationState
+    )
 
-    @objc optional func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
-                                             didReceiveMetadata metadata: PrimerPaymentMethodMetadata,
-                                             forState state: PrimerValidationState)
+    @objc optional func primerRawDataManager(
+        _ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
+        didReceiveMetadata metadata: PrimerPaymentMethodMetadata,
+        forState state: PrimerValidationState
+    )
 
-    @objc optional func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
-                                             didReceiveBinData binData: PrimerBinData)
+    @objc optional func primerRawDataManager(
+        _ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
+        didReceiveBinData binData: PrimerBinData
+    )
 }
 
 protocol PrimerRawDataTokenizationBuilderProtocol {
@@ -100,9 +110,11 @@ extension PrimerHeadlessUniversalCheckout {
         /// The `isUsedInDropIn` flag enables support for Drop-In integration flow,
         /// expanding the utility of RawDataManager to both Headless and Drop-In use cases.
         /// When set to true, it configures the RawDataManager to behave as a Drop-In integration.
-        public required init(paymentMethodType: String,
-                             delegate: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate? = nil,
-                             isUsedInDropIn: Bool = false) throws {
+        public required init(
+            paymentMethodType: String,
+            delegate: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate? = nil,
+            isUsedInDropIn: Bool = false
+        ) throws {
             if isUsedInDropIn {
                 PrimerInternal.shared.sdkIntegrationType = .dropIn
             } else {
@@ -246,9 +258,59 @@ extension PrimerHeadlessUniversalCheckout {
                     }
                 } catch {
                     let delegate = PrimerHeadlessUniversalCheckout.current.delegate
-                    delegate?.primerHeadlessUniversalCheckoutDidFail?(withError: error,
-                                                                      checkoutData: self.paymentCheckoutData)
+                    delegate?.primerHeadlessUniversalCheckoutDidFail?(
+                        withError: error,
+                        checkoutData: self.paymentCheckoutData
+                    )
                 }
+            }
+        }
+
+        /// Dispatches the billing address as a client-session action.
+        ///
+        /// Must be awaited before calling ``submit()`` — tokenization reads billing from the server-side
+        /// client session. Safe to call repeatedly; the server accepts repeat dispatches idempotently.
+        ///
+        /// - Parameter address: The billing address to dispatch. Must have at least one non-empty field.
+        ///   If `countryCode` is set, it must be a valid `CountryCode` raw value.
+        /// - Throws: ``PrimerValidationError/invalidRawData`` when the address has no non-empty fields
+        ///   or when `countryCode` is not a valid `CountryCode`. Also propagates any error from the
+        ///   underlying client-session update (network, decoding, server validation).
+        public func setBillingAddress(_ address: PrimerAddress) async throws {
+            Analytics.Service.fire(event: Analytics.Event.sdk(
+                name: "\(Self.self).\(#function)",
+                params: [
+                    "category": "RAW_DATA",
+                    "intent": PrimerInternal.shared.intent?.rawValue ?? "null",
+                    "paymentMethodType": paymentMethodType
+                ]
+            ))
+
+            try validate(billingAddress: address)
+
+            let clientSessionAddress = ClientSession.Address(from: address)
+            try await ClientSessionActionsModule
+                .updateBillingAddressViaClientSessionActionWithAddressIfNeeded(clientSessionAddress)
+        }
+
+        private func validate(billingAddress address: PrimerAddress) throws {
+            let hasAnyField = [
+                address.firstName,
+                address.lastName,
+                address.addressLine1,
+                address.addressLine2,
+                address.city,
+                address.state,
+                address.postalCode,
+                address.countryCode
+            ].contains { $0?.isEmpty == false }
+
+            guard hasAnyField else {
+                throw PrimerValidationError.invalidRawData()
+            }
+
+            if let code = address.countryCode, !code.isEmpty, CountryCode(rawValue: code) == nil {
+                throw PrimerValidationError.invalidRawData()
             }
         }
 
@@ -433,8 +495,10 @@ extension PrimerHeadlessUniversalCheckout {
             return nil
         }
 
-        private func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken,
-                                                      paymentMethodTokenData: PrimerPaymentMethodTokenData) async throws -> String? {
+        private func handleDecodedClientTokenIfNeeded(
+            _ decodedJWTToken: DecodedJWTToken,
+            paymentMethodTokenData: PrimerPaymentMethodTokenData
+        ) async throws -> String? {
             if decodedJWTToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
                 return try await handle3DSAuthenticationForDecodedClientToken(decodedJWTToken, paymentMethodTokenData: paymentMethodTokenData)
             } else if decodedJWTToken.intent == RequiredActionName.processor3DS.rawValue {
@@ -448,8 +512,10 @@ extension PrimerHeadlessUniversalCheckout {
             }
         }
 
-        private func handle3DSAuthenticationForDecodedClientToken(_ decodedJWTToken: DecodedJWTToken,
-                                                                  paymentMethodTokenData: PrimerPaymentMethodTokenData) async throws -> String? {
+        private func handle3DSAuthenticationForDecodedClientToken(
+            _ decodedJWTToken: DecodedJWTToken,
+            paymentMethodTokenData: PrimerPaymentMethodTokenData
+        ) async throws -> String? {
             try await ThreeDSService().perform3DS(
                 paymentMethodTokenData: paymentMethodTokenData,
                 sdkDismissed: nil
@@ -575,9 +641,11 @@ extension PrimerHeadlessUniversalCheckout {
                 }
 
                 let formatter = DateFormatter().withExpirationDisplayDateFormat()
-                additionalInfo = XenditCheckoutVoucherAdditionalInfo(expiresAt: formatter.string(from: decodedExpiresAt),
-                                                                     couponCode: decodedVoucherReference,
-                                                                     retailerName: selectedRetailerName)
+                additionalInfo = XenditCheckoutVoucherAdditionalInfo(
+                    expiresAt: formatter.string(from: decodedExpiresAt),
+                    couponCode: decodedVoucherReference,
+                    retailerName: selectedRetailerName
+                )
                 paymentCheckoutData?.additionalInfo = additionalInfo
 
             default:
@@ -638,8 +706,10 @@ extension PrimerHeadlessUniversalCheckout {
         }
 
         private func handleResumePaymentEvent(_ resumePaymentId: String, resumeToken: String) async throws -> Response.Body.Payment {
-            try await createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId,
-                                                                            paymentResumeRequest: Request.Body.Payment.Resume(token: resumeToken))
+            try await createResumePaymentService.resumePaymentWithPaymentId(
+                resumePaymentId,
+                paymentResumeRequest: Request.Body.Payment.Resume(token: resumeToken)
+            )
         }
 
         @MainActor
@@ -662,17 +732,17 @@ extension PrimerHeadlessUniversalCheckout {
                 }
 
                 #if DEBUG
-                if TEST {
-                    // This ensures that the presentation completion is correctly handled in headless unit tests
-                    guard !UIApplication.shared.windows.isEmpty else {
-                        DispatchQueue.main.async {
-                            guard !didResume else { return }
-                            didResume = true
-                            continuation.resume()
+                    if TEST {
+                        // This ensures that the presentation completion is correctly handled in headless unit tests
+                        guard !UIApplication.shared.windows.isEmpty else {
+                            DispatchQueue.main.async {
+                                guard !didResume else { return }
+                                didResume = true
+                                continuation.resume()
+                            }
+                            return
                         }
-                        return
                     }
-                }
                 #endif
 
                 Task { @MainActor in
