@@ -6,7 +6,7 @@
 
 // swiftlint:disable function_body_length
 
-import PrimerFoundation
+@_spi(PrimerInternal) import PrimerFoundation
 import UIKit
 #if canImport(PrimerNolPaySDK)
     import PrimerNolPaySDK

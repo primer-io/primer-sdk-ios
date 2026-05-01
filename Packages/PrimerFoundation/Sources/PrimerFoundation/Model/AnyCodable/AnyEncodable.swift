@@ -1,7 +1,7 @@
 //
 //  AnyEncodable.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 //
@@ -13,7 +13,7 @@
 //
 
 #if canImport(Foundation)
-import Foundation
+    import Foundation
 #endif
 
 // swiftlint:disable type_name
@@ -43,7 +43,8 @@ import Foundation
  let encoder = JSONEncoder()
  let json = try! encoder.encode(dictionary)
  */
-struct AnyEncodable: Encodable {
+@_spi(PrimerInternal)
+public struct AnyEncodable: Encodable {
     public let value: Any
 
     public init<T>(_ value: T?) {
@@ -66,10 +67,10 @@ extension _AnyEncodable {
 
         switch value {
         #if canImport(Foundation)
-        case let number as NSNumber:
-            try encode(nsnumber: number, into: &container)
-        case is NSNull:
-            try container.encodeNil()
+            case let number as NSNumber:
+                try encode(nsnumber: number, into: &container)
+            case is NSNull:
+                try container.encodeNil()
         #endif
         case is Void:
             try container.encodeNil()
@@ -102,10 +103,10 @@ extension _AnyEncodable {
         case let string as String:
             try container.encode(string)
         #if canImport(Foundation)
-        case let date as Date:
-            try container.encode(date)
-        case let url as URL:
-            try container.encode(url)
+            case let date as Date:
+                try container.encode(date)
+            case let url as URL:
+                try container.encode(url)
         #endif
         case let array as [Any?]:
             try container.encode(array.map { AnyEncodable($0) })
@@ -114,44 +115,48 @@ extension _AnyEncodable {
         case let encodable as Encodable:
             try encodable.encode(to: encoder)
         default:
-            let context = EncodingError.Context(codingPath: container.codingPath,
-                                                debugDescription: "AnyEncodable value cannot be encoded")
+            let context = EncodingError.Context(
+                codingPath: container.codingPath,
+                debugDescription: "AnyEncodable value cannot be encoded"
+            )
             throw EncodingError.invalidValue(value, context)
         }
     }
 
     #if canImport(Foundation)
-    private func encode(nsnumber: NSNumber, into container: inout SingleValueEncodingContainer) throws {
-        switch Character(Unicode.Scalar(UInt8(nsnumber.objCType.pointee))) {
-        case "c", "C":
-            try container.encode(nsnumber.boolValue)
-        case "s":
-            try container.encode(nsnumber.int8Value)
-        case "i":
-            try container.encode(nsnumber.int16Value)
-        case "l":
-            try container.encode(nsnumber.int32Value)
-        case "q":
-            try container.encode(nsnumber.int64Value)
-        case "S":
-            try container.encode(nsnumber.uint8Value)
-        case "I":
-            try container.encode(nsnumber.uint16Value)
-        case "L":
-            try container.encode(nsnumber.uint32Value)
-        case "Q":
-            try container.encode(nsnumber.uint64Value)
-        case "f":
-            try container.encode(nsnumber.floatValue)
-        case "d":
-            try container.encode(nsnumber.doubleValue)
-        default:
-            let message = "NSNumber cannot be encoded because its type is not handled"
-            let context = EncodingError.Context(codingPath: container.codingPath,
-                                                debugDescription: message)
-            throw EncodingError.invalidValue(nsnumber, context)
+        private func encode(nsnumber: NSNumber, into container: inout SingleValueEncodingContainer) throws {
+            switch Character(Unicode.Scalar(UInt8(nsnumber.objCType.pointee))) {
+            case "c", "C":
+                try container.encode(nsnumber.boolValue)
+            case "s":
+                try container.encode(nsnumber.int8Value)
+            case "i":
+                try container.encode(nsnumber.int16Value)
+            case "l":
+                try container.encode(nsnumber.int32Value)
+            case "q":
+                try container.encode(nsnumber.int64Value)
+            case "S":
+                try container.encode(nsnumber.uint8Value)
+            case "I":
+                try container.encode(nsnumber.uint16Value)
+            case "L":
+                try container.encode(nsnumber.uint32Value)
+            case "Q":
+                try container.encode(nsnumber.uint64Value)
+            case "f":
+                try container.encode(nsnumber.floatValue)
+            case "d":
+                try container.encode(nsnumber.doubleValue)
+            default:
+                let message = "NSNumber cannot be encoded because its type is not handled"
+                let context = EncodingError.Context(
+                    codingPath: container.codingPath,
+                    debugDescription: message
+                )
+                throw EncodingError.invalidValue(nsnumber, context)
+            }
         }
-    }
     #endif
 }
 
@@ -267,9 +272,9 @@ extension _AnyEncodable {
 
 extension AnyEncodable: Hashable {
     public func hash(into hasher: inout Hasher) {
-		if let value = value as? (any Hashable) {
-			hasher.combine(value)
-		}
+        if let value = value as? (any Hashable) {
+            hasher.combine(value)
+        }
     }
 }
 // swiftlint:enable cyclomatic_complexity

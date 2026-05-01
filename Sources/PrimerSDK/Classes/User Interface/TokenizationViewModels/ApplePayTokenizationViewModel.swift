@@ -10,7 +10,7 @@
 
 import Foundation
 import PassKit
-import PrimerFoundation
+@_spi(PrimerInternal) import PrimerFoundation
 import UIKit
 
 extension PKPaymentMethodType {

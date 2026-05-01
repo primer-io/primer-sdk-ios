@@ -91,5 +91,3 @@ final class DefaultRequestDispatcher: RequestDispatcher, LogReporter {
         return retryHandler?.currentTask
     }
 }
-
-extension Task: PrimerCancellable {}

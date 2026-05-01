@@ -7,7 +7,7 @@
 // swiftlint:disable file_length
 // swiftlint:disable type_body_length
 
-import PrimerFoundation
+@_spi(PrimerInternal) import PrimerFoundation
 
 protocol UserInterfaceModuleProtocol {
 
