@@ -1,12 +1,12 @@
 //
 //  PrimerPaymentMethodType.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
 
-internal enum PrimerPaymentMethodType: String, Codable, CaseIterable, Equatable, Hashable {
+public enum PrimerPaymentMethodType: String, Codable, CaseIterable, Equatable, Hashable, Sendable {
     case adyenAlipay                    = "ADYEN_ALIPAY"
     case adyenBlik                      = "ADYEN_BLIK"
     case adyenBancontactCard            = "ADYEN_BANCONTACT_CARD"
@@ -63,7 +63,7 @@ internal enum PrimerPaymentMethodType: String, Codable, CaseIterable, Equatable,
     case fintechtureImmediateTransfer   = "FINTECHTURE_IMMEDIATE_TRANSFER"
     case stripeAch                      = "STRIPE_ACH"
 
-    var provider: String {
+    public var provider: String {
         switch self {
         case .adyenAlipay,
              .adyenBlik,
