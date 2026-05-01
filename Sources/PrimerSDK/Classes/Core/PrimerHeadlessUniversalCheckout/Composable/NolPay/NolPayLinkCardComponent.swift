@@ -1,16 +1,17 @@
 //
 //  NolPayLinkCardComponent.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable cyclomatic_complexity
 // swiftlint:disable function_body_length
 // swiftlint:disable type_body_length
 
+import PrimerFoundation
 import UIKit
 #if canImport(PrimerNolPaySDK)
-import PrimerNolPaySDK
+    import PrimerNolPaySDK
 #endif
 
 public enum NolPayLinkCollectableData: PrimerCollectableData {
@@ -27,7 +28,7 @@ public final class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
     public typealias STEPPABLE = NolPayLinkCardStep
 
     #if canImport(PrimerNolPaySDK)
-    var nolPay: PrimerNolPayProtocol?
+        var nolPay: PrimerNolPayProtocol?
     #endif
     public weak var errorDelegate: PrimerHeadlessErrorableDelegate?
     public weak var validationDelegate: PrimerHeadlessValidatableDelegate?
@@ -60,10 +61,10 @@ public final class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
         Analytics.Service.fire(events: [sdkEvent])
 
         switch collectableData {
-        case .phoneData(let mobileNumber):
+        case let .phoneData(mobileNumber):
             nextDataStep = .collectPhoneData(cardNumber: cardNumber ?? "")
             self.mobileNumber = mobileNumber
-        case .otpData(let otpCode):
+        case let .otpData(otpCode):
             nextDataStep = .collectOtpData(phoneNumber: mobileNumber ?? "")
             self.otpCode = otpCode
         }
@@ -76,26 +77,26 @@ public final class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
         var errors: [PrimerValidationError] = []
 
         switch data {
-        case .phoneData(mobileNumber: let mobileNumber):
+        case let .phoneData(mobileNumber: mobileNumber):
             phoneMetadataService.getPhoneMetadata(mobileNumber: mobileNumber) { [weak self] result in
                 guard let self else { return }
                 switch result {
-                case .success((let validationStatus, let countryCode, let mobileNumber)):
+                case let .success((validationStatus, countryCode, mobileNumber)):
                     switch validationStatus {
                     case .valid:
                         self.countryCode = countryCode
                         self.mobileNumber = mobileNumber
                         self.validationDelegate?.didUpdate(validationStatus: .valid, for: data)
-                    case .invalid(errors: let validationErrors):
+                    case let .invalid(errors: validationErrors):
                         errors += validationErrors
                         self.validationDelegate?.didUpdate(validationStatus: .invalid(errors: errors), for: data)
                     default: break
                     }
-                case .failure(let error):
+                case let .failure(error):
                     self.validationDelegate?.didUpdate(validationStatus: .error(error: error), for: data)
                 }
             }
-        case .otpData(otpCode: let otpCode):
+        case let .otpData(otpCode: otpCode):
             if !otpCode.isValidOTP {
                 errors.append(handled(error: PrimerValidationError.invalidOTPCode( message: "OTP is not valid.")))
                 validationDelegate?.didUpdate(validationStatus: .invalid(errors: errors), for: data)
@@ -128,40 +129,42 @@ public final class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
 
             #if canImport(PrimerNolPaySDK)
 
-            guard let nolPay else {
-                return makeAndHandleNolPayInitializationError()
-            }
+                guard let nolPay else {
+                    return makeAndHandleNolPayInitializationError()
+                }
 
-            nolPay.sendLinkOTP(to: mobileNumber,
-                               with: countryCode,
-                               and: linkToken) { [weak self] result in
-                guard let self else { return }
-                switch result {
-                case .success(let success):
-                    if success {
-                        self.nextDataStep = .collectOtpData(phoneNumber: "\(countryCode) \(mobileNumber)")
-                        self.stepDelegate?.didReceiveStep(step: self.nextDataStep)
-                    } else {
+                nolPay.sendLinkOTP(
+                    to: mobileNumber,
+                    with: countryCode,
+                    and: linkToken
+                ) { [weak self] result in
+                    guard let self else { return }
+                    switch result {
+                    case let .success(success):
+                        if success {
+                            self.nextDataStep = .collectOtpData(phoneNumber: "\(countryCode) \(mobileNumber)")
+                            self.stepDelegate?.didReceiveStep(step: self.nextDataStep)
+                        } else {
+                            self.errorDelegate?.didReceiveError(
+                                error: handled(
+                                    primerError: .nolError(
+                                        code: "unknown",
+                                        message: "Sending of OTP SMS failed from unknown reason"
+                                    )
+                                )
+                            )
+                        }
+                    case let .failure(error):
                         self.errorDelegate?.didReceiveError(
                             error: handled(
                                 primerError: .nolError(
-                                    code: "unknown",
-                                    message: "Sending of OTP SMS failed from unknown reason"
+                                    code: error.errorCode,
+                                    message: error.description
                                 )
                             )
                         )
                     }
-                case .failure(let error):
-                    self.errorDelegate?.didReceiveError(
-                        error: handled(
-                            primerError: .nolError(
-                                code: error.errorCode,
-                                message: error.description
-                            )
-                        )
-                    )
                 }
-            }
             #endif
         case .collectOtpData:
             guard let otpCode else {
@@ -174,82 +177,84 @@ public final class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
 
             #if canImport(PrimerNolPaySDK)
 
-            guard let nolPay else {
-                return makeAndHandleNolPayInitializationError()
-            }
+                guard let nolPay else {
+                    return makeAndHandleNolPayInitializationError()
+                }
 
-            nolPay.linkCard(for: otpCode,
-                            and: linkToken) { [weak self] result in
-                guard let self else { return }
-                switch result {
-                case .success(let success):
-                    if success {
-                        self.nextDataStep = .cardLinked
-                        self.stepDelegate?.didReceiveStep(step: self.nextDataStep)
-                    } else {
+                nolPay.linkCard(
+                    for: otpCode,
+                    and: linkToken
+                ) { [weak self] result in
+                    guard let self else { return }
+                    switch result {
+                    case let .success(success):
+                        if success {
+                            self.nextDataStep = .cardLinked
+                            self.stepDelegate?.didReceiveStep(step: self.nextDataStep)
+                        } else {
+                            self.errorDelegate?.didReceiveError(
+                                error: handled(
+                                    primerError: .nolError(
+                                        code: "unknown",
+                                        message: "Linking of the card failed failed from unknown reason"
+                                    )
+                                )
+                            )
+                        }
+                    case let .failure(error):
                         self.errorDelegate?.didReceiveError(
                             error: handled(
-                                primerError: .nolError(
-                                    code: "unknown",
-                                    message: "Linking of the card failed failed from unknown reason"
+                                error: .nolError(
+                                    code: error.errorCode,
+                                    message: error.description
                                 )
                             )
                         )
                     }
-                case .failure(let error):
-                    self.errorDelegate?.didReceiveError(
-                        error: handled(
-                            error: .nolError(
-                                code: error.errorCode,
-                                message: error.description
-                            )
-                        )
-                    )
                 }
-            }
             #endif
         case .collectTagData:
 
             #if canImport(PrimerNolPaySDK)
 
-            guard let nolPay else {
-                return makeAndHandleNolPayInitializationError()
-            }
+                guard let nolPay else {
+                    return makeAndHandleNolPayInitializationError()
+                }
 
-            nolPay.scanNFCCard { [weak self] result in
-                guard let self else { return }
-                switch result {
-                case .success(let cardNumber):
-                    self.cardNumber = cardNumber
-                    nolPay.makeLinkingToken(for: cardNumber) { result in
-                        switch result {
-                        case .success(let token):
-                            self.linkToken = token
-                            self.nextDataStep = .collectPhoneData(cardNumber: cardNumber)
-                            self.stepDelegate?.didReceiveStep(step: self.nextDataStep)
-                        case .failure(let error):
-                            self.errorDelegate?.didReceiveError(
-                                error: handled(
-                                    primerError: .nolError(
-                                        code: error.errorCode,
-                                        message: error.description
+                nolPay.scanNFCCard { [weak self] result in
+                    guard let self else { return }
+                    switch result {
+                    case let .success(cardNumber):
+                        self.cardNumber = cardNumber
+                        nolPay.makeLinkingToken(for: cardNumber) { result in
+                            switch result {
+                            case let .success(token):
+                                self.linkToken = token
+                                self.nextDataStep = .collectPhoneData(cardNumber: cardNumber)
+                                self.stepDelegate?.didReceiveStep(step: self.nextDataStep)
+                            case let .failure(error):
+                                self.errorDelegate?.didReceiveError(
+                                    error: handled(
+                                        primerError: .nolError(
+                                            code: error.errorCode,
+                                            message: error.description
+                                        )
                                     )
                                 )
-                            )
+                            }
                         }
-                    }
 
-                case .failure(let error):
-                    self.errorDelegate?.didReceiveError(
-                        error: handled(
-                            primerError: .nolError(
-                                code: error.errorCode,
-                                message: error.description
+                    case let .failure(error):
+                        self.errorDelegate?.didReceiveError(
+                            error: handled(
+                                primerError: .nolError(
+                                    code: error.errorCode,
+                                    message: error.description
+                                )
                             )
                         )
-                    )
+                    }
                 }
-            }
             #endif
         default: break
         }
@@ -263,9 +268,9 @@ public final class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
         Analytics.Service.fire(events: [sdkEvent])
 
         guard let nolPaymentMethodOption = PrimerAPIConfiguration.current?.paymentMethods?
-                .first(where: { $0.internalPaymentMethodType == .nolPay })?
-                .options as? MerchantOptions,
-              let nolPayAppId = nolPaymentMethodOption.appId
+            .first(where: { $0.internalPaymentMethodType == .nolPay })?
+            .options as? MerchantOptions,
+            let nolPayAppId = nolPaymentMethodOption.appId
         else {
             return makeAndHandleInvalidValueError(forKey: "nolPayAppId")
         }
@@ -278,34 +283,36 @@ public final class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
         let isSandbox = clientToken.env != "PRODUCTION"
         var isDebug = false
         #if DEBUG
-        isDebug = PrimerLogging.shared.logger.logLevel == .debug
+            isDebug = PrimerLogging.shared.logger.logLevel == .debug
         #endif
 
         #if canImport(PrimerNolPaySDK)
-        nolPay = PrimerNolPay(appId: nolPayAppId, isDebug: isDebug, isSandbox: isSandbox) { sdkId, deviceId in
+            nolPay = PrimerNolPay(appId: nolPayAppId, isDebug: isDebug, isSandbox: isSandbox) { sdkId, deviceId in
 
-            let requestBody = await Request.Body.NolPay.NolPaySecretDataRequest(nolSdkId: deviceId,
-                                                                                nolAppId: sdkId,
-                                                                                phoneVendor: "Apple",
-                                                                                phoneModel: UIDevice.modelIdentifier!)
+                let requestBody = await Request.Body.NolPay.NolPaySecretDataRequest(
+                    nolSdkId: deviceId,
+                    nolAppId: sdkId,
+                    phoneVendor: "Apple",
+                    phoneModel: UIDevice.modelIdentifier!
+                )
 
-            return try await withCheckedThrowingContinuation { continuation in
-                self.apiClient.fetchNolSdkSecret(clientToken: clientToken, paymentRequestBody: requestBody) { result in
-                    switch result {
-                    case .success(let appSecret):
-                        continuation.resume(returning: appSecret.sdkSecret)
-                    case .failure(let error):
-                        continuation.resume(throwing: error)
+                return try await withCheckedThrowingContinuation { continuation in
+                    self.apiClient.fetchNolSdkSecret(clientToken: clientToken, paymentRequestBody: requestBody) { result in
+                        switch result {
+                        case let .success(appSecret):
+                            continuation.resume(returning: appSecret.sdkSecret)
+                        case let .failure(error):
+                            continuation.resume(throwing: error)
+                        }
                     }
                 }
             }
-        }
         #else
-        let error = handled(primerError: .missingSDK(
-            paymentMethodType: PrimerPaymentMethodType.nolPay.rawValue,
-            sdkName: "PrimerNolPaySDK"
-        ))
-        errorDelegate?.didReceiveError(error: error)
+            let error = handled(primerError: .missingSDK(
+                paymentMethodType: PrimerPaymentMethodType.nolPay.rawValue,
+                sdkName: "PrimerNolPaySDK"
+            ))
+            errorDelegate?.didReceiveError(error: error)
         #endif
     }
 }

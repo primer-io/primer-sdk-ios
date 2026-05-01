@@ -4,6 +4,7 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+import PrimerFoundation
 @testable import PrimerSDK
 import XCTest
 
@@ -11,9 +12,11 @@ final class NetworkRequestFactoryTests: XCTestCase {
 
     var networkRequestFactory: NetworkRequestFactory!
 
-    func defaultHeaders(apiVersion: String = "2.4",
-                        isPost: Bool = false,
-                        jwt: String? = nil) -> [String: String] {
+    func defaultHeaders(
+        apiVersion: String = "2.4",
+        isPost: Bool = false,
+        jwt: String? = nil
+    ) -> [String: String] {
         var headers = [
             "X-Api-Version": apiVersion,
             "Primer-SDK-Version": VersionUtils.releaseVersionNumber ?? "n/a",
@@ -80,9 +83,11 @@ final class NetworkRequestFactoryTests: XCTestCase {
     }
 
     func testRequestCreation_resumePayment() throws {
-        let endpoint = PrimerAPI.resumePayment(clientToken: Mocks.decodedJWTToken,
-                                               paymentId: "payment_id",
-                                               paymentResumeRequest: Request.Body.Payment.Resume(token: "token"))
+        let endpoint = PrimerAPI.resumePayment(
+            clientToken: Mocks.decodedJWTToken,
+            paymentId: "payment_id",
+            paymentResumeRequest: Request.Body.Payment.Resume(token: "token")
+        )
         let request = try networkRequestFactory.request(for: endpoint, identifier: nil)
 
         XCTAssertEqual(request.httpMethod, "POST")

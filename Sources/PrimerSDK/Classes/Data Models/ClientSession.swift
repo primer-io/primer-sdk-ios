@@ -1,13 +1,14 @@
 //
 //  ClientSession.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable type_body_length
 // swiftlint:disable file_length
 
 import Foundation
+import PrimerFoundation
 
 final class ClientSession {
 
@@ -16,11 +17,11 @@ final class ClientSession {
     final class Action: NSObject, Encodable {
 
         static func makeBillingAddressDictionaryRequestFromParameters(_ parameters: [String: Any]) -> [String: Any] {
-            return ["billingAddress": parameters]
+            ["billingAddress": parameters]
         }
 
         static func makeShippingAddressDictionaryRequestFromParameters(_ parameters: [String: Any]) -> [String: Any] {
-            return ["shippingAddress": parameters]
+            ["shippingAddress": parameters]
         }
 
         static func selectPaymentMethodActionWithParameters(_ parameters: [String: Any]) -> ClientSession.Action {
@@ -28,23 +29,31 @@ final class ClientSession {
         }
 
         static func setBillingAddressActionWithParameters(_ parameters: [String: Any]) -> ClientSession.Action {
-            ClientSession.Action(type: .setBillingAddress,
-                                 params: makeBillingAddressDictionaryRequestFromParameters(parameters))
+            ClientSession.Action(
+                type: .setBillingAddress,
+                params: makeBillingAddressDictionaryRequestFromParameters(parameters)
+            )
         }
 
         static func setCustomerFirstName(_ firstName: String) -> ClientSession.Action {
-            ClientSession.Action(type: .setCustomerFirstName,
-                                 params: ["firstName": firstName])
+            ClientSession.Action(
+                type: .setCustomerFirstName,
+                params: ["firstName": firstName]
+            )
         }
 
         static func setCustomerLastName(_ lastName: String) -> ClientSession.Action {
-            ClientSession.Action(type: .setCustomerLastName,
-                                 params: ["lastName": lastName])
+            ClientSession.Action(
+                type: .setCustomerLastName,
+                params: ["lastName": lastName]
+            )
         }
 
         static func setCustomerEmailAddress(_ emailAddress: String) -> ClientSession.Action {
-            ClientSession.Action(type: .setCustomerEmailAddress,
-                                 params: ["emailAddress": emailAddress])
+            ClientSession.Action(
+                type: .setCustomerEmailAddress,
+                params: ["emailAddress": emailAddress]
+            )
         }
 
         static func setShippingAddressActionWithParameters(_ parameters: [String: Any]) -> ClientSession.Action {
@@ -60,7 +69,7 @@ final class ClientSession {
         }
 
         // swiftlint:disable:next nesting
-        internal enum ActionType: String {
+        enum ActionType: String {
             case selectPaymentMethod = "SELECT_PAYMENT_METHOD"
             case unselectPaymentMethod = "UNSELECT_PAYMENT_METHOD"
             case setBillingAddress = "SET_BILLING_ADDRESS"
@@ -73,21 +82,21 @@ final class ClientSession {
             case setCustomerEmailAddress = "SET_EMAIL_ADDRESS"
         }
 
-        internal var type: ActionType
-        internal var params: [String: Any]?
+        var type: ActionType
+        var params: [String: Any]?
 
         // swiftlint:disable:next nesting
         private enum CodingKeys: String, CodingKey {
             case type, params
         }
 
-        internal init(type: ActionType, params: [String: Any]? = nil) {
+        init(type: ActionType, params: [String: Any]? = nil) {
             self.type = type
             self.params = params
             super.init()
         }
 
-        internal func encode(to encoder: Encoder) throws {
+        func encode(to encoder: Encoder) throws {
             var container = encoder.container(keyedBy: CodingKeys.self)
             try container.encode(type.rawValue, forKey: .type)
 
@@ -101,7 +110,7 @@ final class ClientSession {
 
     // MARK: ClientSession.Address
 
-    internal struct Address: Codable {
+    struct Address: Codable {
         let firstName: String?
         let lastName: String?
         let addressLine1: String?
@@ -114,7 +123,7 @@ final class ClientSession {
 
     // MARK: ClientSession.Customer
 
-    internal struct Customer: Codable {
+    struct Customer: Codable {
 
         let id: String?
         let firstName: String?
@@ -137,7 +146,7 @@ final class ClientSession {
             case taxId
         }
 
-        internal init(from decoder: Decoder) throws {
+        init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
             self.id = (try? container.decode(String?.self, forKey: .id)) ?? nil
             self.firstName = (try? container.decode(String?.self, forKey: .firstName)) ?? nil
@@ -149,7 +158,7 @@ final class ClientSession {
             self.taxId = (try? container.decode(String?.self, forKey: .taxId)) ?? nil
         }
 
-        internal init(
+        init(
             id: String? = nil,
             firstName: String? = nil,
             lastName: String? = nil,
@@ -172,7 +181,7 @@ final class ClientSession {
 
     // MARK: - ClientSession.Order
 
-    internal struct Order: Codable {
+    struct Order: Codable {
 
         let id: String?
         let merchantAmount: Int?
@@ -197,7 +206,7 @@ final class ClientSession {
             case shippingMethod = "shipping"
         }
 
-        internal init(
+        init(
             id: String?,
             merchantAmount: Int?,
             totalOrderAmount: Int?,
@@ -219,7 +228,7 @@ final class ClientSession {
             self.shippingMethod = shippingMethod
         }
 
-        internal init(from decoder: Decoder) throws {
+        init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
             id = (try? container.decode(String?.self, forKey: .id)) ?? nil
             merchantAmount = (try? container.decode(Int?.self, forKey: .merchantAmount)) ?? nil
@@ -227,8 +236,10 @@ final class ClientSession {
             totalTaxAmount = (try? container.decode(Int?.self, forKey: .totalTaxAmount)) ?? nil
             countryCode = (try? container.decode(CountryCode?.self, forKey: .countryCode)) ?? nil
             if let cCode = try? container.decode(String.self, forKey: .currencyCode) {
-                let currencyLoader = CurrencyLoader(storage: DefaultCurrencyStorage(),
-                                                    networkService: CurrencyNetworkService())
+                let currencyLoader = CurrencyLoader(
+                    storage: DefaultCurrencyStorage(),
+                    networkService: CurrencyNetworkService()
+                )
                 currencyCode = currencyLoader.getCurrency(cCode)
             } else {
                 currencyCode = nil
@@ -238,7 +249,7 @@ final class ClientSession {
             shippingMethod = (try? container.decode(ShippingMethod?.self, forKey: .shippingMethod)) ?? nil
         }
 
-        internal func encode(to encoder: Encoder) throws {
+        func encode(to encoder: Encoder) throws {
             var container = encoder.container(keyedBy: CodingKeys.self)
             try? container.encode(merchantAmount, forKey: .merchantAmount)
             try? container.encode(totalOrderAmount, forKey: .totalOrderAmount)
@@ -253,7 +264,7 @@ final class ClientSession {
         // MARK: ClientSession.Order.LineItem
 
         // swiftlint:disable:next nesting
-        internal struct LineItem: Codable {
+        struct LineItem: Codable {
 
             let itemId: String?
             let quantity: Int
@@ -274,14 +285,15 @@ final class ClientSession {
                     quantity: self.quantity,
                     discountAmount: self.discountAmount,
                     taxAmount: self.taxAmount,
-                    isPending: false)
+                    isPending: false
+                )
             }
         }
 
         // MARK: ClientSession.Order.Fee
 
         // swiftlint:disable:next nesting
-        internal struct Fee: Codable {
+        struct Fee: Codable {
 
             let type: FeeType
             let amount: Int
@@ -296,7 +308,7 @@ final class ClientSession {
         }
 
         // swiftlint:disable nesting
-        internal struct ShippingMethod: Codable {
+        struct ShippingMethod: Codable {
             let amount: Int
             let methodId: String?
             let methodName: String?
@@ -341,7 +353,7 @@ final class ClientSession {
             self.descriptor = descriptor
         }
 
-        required internal init(from decoder: Decoder) throws {
+        required init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
             self.vaultOnSuccess = (try? container.decode(Bool.self, forKey: .vaultOnSuccess)) ?? false
             self.orderedAllowedCardNetworks = try? container.decode([String].self, forKey: .orderedAllowedCardNetworks)
@@ -349,15 +361,17 @@ final class ClientSession {
 
             if let tmpOptions = (try? container.decode([[String: AnyCodable]]?.self, forKey: .options)),
                let optionsData = try? JSONEncoder().encode(tmpOptions),
-               let optionsJson = (try? JSONSerialization.jsonObject(with: optionsData,
-                                                                    options: .allowFragments)) as? [[String: Any]] {
+               let optionsJson = (try? JSONSerialization.jsonObject(
+                   with: optionsData,
+                   options: .allowFragments
+               )) as? [[String: Any]] {
                 self.options = optionsJson
             } else {
                 self.options = nil
             }
         }
 
-        internal func encode(to encoder: Encoder) throws {
+        func encode(to encoder: Encoder) throws {
             var container = encoder.container(keyedBy: CodingKeys.self)
             try container.encode(vaultOnSuccess, forKey: .vaultOnSuccess)
             try container.encode(orderedAllowedCardNetworks, forKey: .orderedAllowedCardNetworks)
@@ -397,17 +411,19 @@ final class ClientSession {
             self.testId = testId
         }
 
-        required internal init(from decoder: Decoder) throws {
+        required init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
             self.clientSessionId = (try? container.decode(String?.self, forKey: .clientSessionId)) ?? nil
-            self.paymentMethod = (try? container.decode(ClientSession.PaymentMethod?.self,
-                                                        forKey: .paymentMethod)) ?? nil
+            self.paymentMethod = (try? container.decode(
+                ClientSession.PaymentMethod?.self,
+                forKey: .paymentMethod
+            )) ?? nil
             self.order = (try? container.decode(ClientSession.Order?.self, forKey: .order)) ?? nil
             self.customer = (try? container.decode(ClientSession.Customer?.self, forKey: .customer)) ?? nil
             self.testId = (try? container.decode(String?.self, forKey: .testId)) ?? nil
         }
 
-        internal func encode(to encoder: Encoder) throws {
+        func encode(to encoder: Encoder) throws {
             var container = encoder.container(keyedBy: CodingKeys.self)
             try container.encode(paymentMethod, forKey: .paymentMethod)
             try container.encode(order, forKey: .order)
@@ -417,14 +433,18 @@ final class ClientSession {
     }
 }
 
-internal extension Encodable {
+extension Encodable {
     func asDictionary() throws -> [String: Any] {
         let data = try JSONEncoder().encode(self)
-        guard let dictionary = try JSONSerialization.jsonObject(with: data,
-                                                                options: .allowFragments) as? [String: Any] else {
-            let error = NSError(domain: "EncodableError",
-                                code: 1001,
-                                userInfo: [NSLocalizedDescriptionKey: "Failed to serialize object to dictionary"])
+        guard let dictionary = try JSONSerialization.jsonObject(
+            with: data,
+            options: .allowFragments
+        ) as? [String: Any] else {
+            let error = NSError(
+                domain: "EncodableError",
+                code: 1001,
+                userInfo: [NSLocalizedDescriptionKey: "Failed to serialize object to dictionary"]
+            )
             throw error
         }
         return dictionary

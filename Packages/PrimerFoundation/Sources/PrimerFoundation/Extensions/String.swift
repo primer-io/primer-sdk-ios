@@ -7,6 +7,8 @@
 import Foundation
 
 public extension String {
+    static var uuid: String { UUID().uuidString }
+    
     func jsonObject<T>() throws -> T {
         do {
             let object = try JSONSerialization.jsonObject(with: Data(utf8), options: [])

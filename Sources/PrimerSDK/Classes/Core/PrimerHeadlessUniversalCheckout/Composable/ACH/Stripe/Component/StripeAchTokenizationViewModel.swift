@@ -7,9 +7,10 @@
 // swiftlint:disable type_body_length
 // swiftlint:disable file_length
 
+import PrimerFoundation
 import UIKit
 #if canImport(PrimerStripeSDK)
-import PrimerStripeSDK
+    import PrimerStripeSDK
 #endif
 
 final class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
@@ -26,15 +27,19 @@ final class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
     var achUserDetailsSubmitCompletion: ((_ success: Bool, _ error: PrimerError?) -> Void)?
 
     // MARK: Init
-    override init(config: PrimerPaymentMethod,
-                  uiManager: PrimerUIManaging,
-                  tokenizationService: TokenizationServiceProtocol,
-                  createResumePaymentService: CreateResumePaymentServiceProtocol) {
+    override init(
+        config: PrimerPaymentMethod,
+        uiManager: PrimerUIManaging,
+        tokenizationService: TokenizationServiceProtocol,
+        createResumePaymentService: CreateResumePaymentServiceProtocol
+    ) {
         achTokenizationService = ACHTokenizationService(paymentMethod: config, tokenizationService: tokenizationService)
-        super.init(config: config,
-                   uiManager: uiManager,
-                   tokenizationService: tokenizationService,
-                   createResumePaymentService: createResumePaymentService)
+        super.init(
+            config: config,
+            uiManager: uiManager,
+            tokenizationService: tokenizationService,
+            createResumePaymentService: createResumePaymentService
+        )
     }
     // MARK: Validate
     override func validate() throws {
@@ -125,9 +130,9 @@ final class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
     override func presentPaymentMethodUserInterface() async throws {
         // Checking if we are running UI(E2E) tests here.
         #if DEBUG
-        let isMockBE = PrimerAPIConfiguration.current?.clientSession?.testId != nil
+            let isMockBE = PrimerAPIConfiguration.current?.clientSession?.testId != nil
         #else
-        let isMockBE = false
+            let isMockBE = false
         #endif
 
         guard !isMockBE else { return }
@@ -140,24 +145,26 @@ final class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
 
     private func showCollector(urlScheme: String) async throws {
         #if canImport(PrimerStripeSDK)
-        let fullName = "\(userDetails.firstName) \(userDetails.lastName)"
-        let stripeParams = PrimerStripeParams(publishableKey: publishableKey,
-                                              clientSecret: clientSecret,
-                                              returnUrl: urlScheme,
-                                              fullName: fullName,
-                                              emailAddress: userDetails.emailAddress)
+            let fullName = "\(userDetails.firstName) \(userDetails.lastName)"
+            let stripeParams = PrimerStripeParams(
+                publishableKey: publishableKey,
+                clientSecret: clientSecret,
+                returnUrl: urlScheme,
+                fullName: fullName,
+                emailAddress: userDetails.emailAddress
+            )
 
-        let collectorViewController = await PrimerStripeCollectorViewController.getCollectorViewController(
-            params: stripeParams,
-            delegate: self
-        )
-        if PrimerInternal.shared.sdkIntegrationType == .headless {
-            try await sendAdditionalInfoEvent(stripeCollector: collectorViewController)
-        } else {
-            await PrimerUIManager.primerRootViewController?.show(viewController: collectorViewController)
-        }
+            let collectorViewController = await PrimerStripeCollectorViewController.getCollectorViewController(
+                params: stripeParams,
+                delegate: self
+            )
+            if PrimerInternal.shared.sdkIntegrationType == .headless {
+                try await sendAdditionalInfoEvent(stripeCollector: collectorViewController)
+            } else {
+                await PrimerUIManager.primerRootViewController?.show(viewController: collectorViewController)
+            }
         #else
-        throw ACHHelpers.getMissingSDKError(sdk: "PrimerStripeSDK")
+            throw ACHHelpers.getMissingSDKError(sdk: "PrimerStripeSDK")
         #endif
     }
 
@@ -174,9 +181,9 @@ final class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
     override func awaitUserInput() async throws {
         // Checking if we are running UI(E2E) tests here.
         #if DEBUG
-        let isMockBE = PrimerAPIConfiguration.current?.clientSession?.testId != nil
+            let isMockBE = PrimerAPIConfiguration.current?.clientSession?.testId != nil
         #else
-        let isMockBE = false
+            let isMockBE = false
         #endif
 
         guard !isMockBE else { return }
@@ -352,38 +359,38 @@ extension StripeAchTokenizationViewModel: ACHMandateDelegate {
 }
 
 #if canImport(PrimerStripeSDK)
-// MARK: - PrimerStripeCollectorViewControllerDelegate
-extension StripeAchTokenizationViewModel: PrimerStripeCollectorViewControllerDelegate {
+    // MARK: - PrimerStripeCollectorViewControllerDelegate
+    extension StripeAchTokenizationViewModel: PrimerStripeCollectorViewControllerDelegate {
 
-    /**
-     * Handles the outcome of a Stripe collection process by processing various statuses of the Stripe transaction.
-     *
-     * This public method is called upon the completion of Stripe's bank account collection with a status update.
-     * Depending on the result encapsulated in the `PrimerStripeStatus`, it triggers appropriate actions:
-     * successfully completing the operation, handling cancellations, or managing errors.
-     *
-     * - Parameter stripeStatus: A `PrimerStripeStatus` enum value representing the result of the Stripe transaction.
-     */
-    public func primerStripeCollected(_ stripeStatus: PrimerStripeStatus) {
-        switch stripeStatus {
-        case let .succeeded(paymentId):
-            returnedStripeAchPaymentId = paymentId
-            stripeBankAccountCollectorCompletion?(.success(()))
-        case .canceled:
-            let error = ACHHelpers.getCancelledError(paymentMethodType: config.type)
-            stripeBankAccountCollectorCompletion?(.failure(error))
-        case let .failed(error):
-            let primerError = handled(primerError: .stripeError(
-                key: error.errorId,
-                message: error.errorDescription,
-                diagnosticsId: error.diagnosticsId
-            ))
-            stripeBankAccountCollectorCompletion?(.failure(primerError))
-        @unknown default:
-            fatalError()
+        /**
+         * Handles the outcome of a Stripe collection process by processing various statuses of the Stripe transaction.
+         *
+         * This public method is called upon the completion of Stripe's bank account collection with a status update.
+         * Depending on the result encapsulated in the `PrimerStripeStatus`, it triggers appropriate actions:
+         * successfully completing the operation, handling cancellations, or managing errors.
+         *
+         * - Parameter stripeStatus: A `PrimerStripeStatus` enum value representing the result of the Stripe transaction.
+         */
+        public func primerStripeCollected(_ stripeStatus: PrimerStripeStatus) {
+            switch stripeStatus {
+            case let .succeeded(paymentId):
+                returnedStripeAchPaymentId = paymentId
+                stripeBankAccountCollectorCompletion?(.success(()))
+            case .canceled:
+                let error = ACHHelpers.getCancelledError(paymentMethodType: config.type)
+                stripeBankAccountCollectorCompletion?(.failure(error))
+            case let .failed(error):
+                let primerError = handled(primerError: .stripeError(
+                    key: error.errorId,
+                    message: error.errorDescription,
+                    diagnosticsId: error.diagnosticsId
+                ))
+                stripeBankAccountCollectorCompletion?(.failure(primerError))
+            @unknown default:
+                fatalError()
+            }
         }
     }
-}
 #endif
 
 // swiftlint:enable type_body_length

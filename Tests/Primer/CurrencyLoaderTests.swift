@@ -1,11 +1,12 @@
 //
 //  CurrencyLoaderTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import XCTest
+import PrimerFoundation
 @testable import PrimerSDK
+import XCTest
 
 class CurrencyLoaderTests: XCTestCase {
 
@@ -32,20 +33,24 @@ class CurrencyLoaderTests: XCTestCase {
         let paymentMethods = [
             Mocks.PaymentMethods.paymentCardPaymentMethod
         ]
-        let session = ClientSession.APIResponse(clientSessionId: "client_session_id",
-                                                paymentMethod: nil,
-                                                order: nil,
-                                                customer: nil,
-                                                testId: nil)
-        let apiConfig = PrimerAPIConfiguration(coreUrl: "core_url",
-                                               pciUrl: "pci_url",
-                                               binDataUrl: "bin_data_url",
-                                               assetsUrl: "https://assets.staging.core.primer.io",
-                                               clientSession: session,
-                                               paymentMethods: paymentMethods,
-                                               primerAccountId: "account_id",
-                                               keys: nil,
-                                               checkoutModules: nil)
+        let session = ClientSession.APIResponse(
+            clientSessionId: "client_session_id",
+            paymentMethod: nil,
+            order: nil,
+            customer: nil,
+            testId: nil
+        )
+        let apiConfig = PrimerAPIConfiguration(
+            coreUrl: "core_url",
+            pciUrl: "pci_url",
+            binDataUrl: "bin_data_url",
+            assetsUrl: "https://assets.staging.core.primer.io",
+            clientSession: session,
+            paymentMethods: paymentMethods,
+            primerAccountId: "account_id",
+            keys: nil,
+            checkoutModules: nil
+        )
         PrimerAPIConfigurationModule.clientToken = MockAppState.mockClientToken
         PrimerAPIConfigurationModule.apiConfiguration = apiConfig
     }
