@@ -266,54 +266,6 @@ extension PrimerHeadlessUniversalCheckout {
             }
         }
 
-        /// Dispatches the billing address as a client-session action.
-        ///
-        /// Must be awaited before calling ``submit()`` — tokenization reads billing from the server-side
-        /// client session. Safe to call repeatedly; the server accepts repeat dispatches idempotently.
-        ///
-        /// - Parameter address: The billing address to dispatch. Must have at least one non-empty field.
-        ///   If `countryCode` is set, it must be a valid `CountryCode` raw value.
-        /// - Throws: ``PrimerValidationError/invalidRawData`` when the address has no non-empty fields
-        ///   or when `countryCode` is not a valid `CountryCode`. Also propagates any error from the
-        ///   underlying client-session update (network, decoding, server validation).
-        public func setBillingAddress(_ address: PrimerAddress) async throws {
-            Analytics.Service.fire(event: Analytics.Event.sdk(
-                name: "\(Self.self).\(#function)",
-                params: [
-                    "category": "RAW_DATA",
-                    "intent": PrimerInternal.shared.intent?.rawValue ?? "null",
-                    "paymentMethodType": paymentMethodType
-                ]
-            ))
-
-            try validate(billingAddress: address)
-
-            let clientSessionAddress = ClientSession.Address(from: address)
-            try await ClientSessionActionsModule
-                .updateBillingAddressViaClientSessionActionWithAddressIfNeeded(clientSessionAddress)
-        }
-
-        private func validate(billingAddress address: PrimerAddress) throws {
-            let hasAnyField = [
-                address.firstName,
-                address.lastName,
-                address.addressLine1,
-                address.addressLine2,
-                address.city,
-                address.state,
-                address.postalCode,
-                address.countryCode
-            ].contains { $0?.isEmpty == false }
-
-            guard hasAnyField else {
-                throw PrimerValidationError.invalidRawData()
-            }
-
-            if let code = address.countryCode, !code.isEmpty, CountryCode(rawValue: code) == nil {
-                throw PrimerValidationError.invalidRawData()
-            }
-        }
-
         func validateRawData(_ data: PrimerRawData) async throws {
             // Store the latest data
             latestDataForValidation = data
