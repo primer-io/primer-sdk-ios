@@ -386,7 +386,8 @@ final class PrimerHeadlessKlarnaComponentTests: XCTestCase {
         tokenizationComponent.tokenizeHeadlessResult = .success(.init(payment: .init(
             id: "MOCK_ID",
             orderId: "MOCK_ORDER_ID",
-            paymentFailureReason: nil
+            paymentFailureReason: nil,
+            status: "MOCK_STATUS"
         )))
 
         // Act
@@ -584,7 +585,8 @@ final class PrimerHeadlessKlarnaComponentTests: XCTestCase {
         tokenizationComponent.tokenizeHeadlessResult = .success(.init(payment: .init(
             id: "MOCK_ID",
             orderId: "MOCK_ORDER_ID",
-            paymentFailureReason: nil
+            paymentFailureReason: nil,
+            status: "MOCK_STATUS"
         )))
 
         // Act
