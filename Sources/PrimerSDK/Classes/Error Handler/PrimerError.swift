@@ -254,9 +254,9 @@ public enum PrimerError: PrimerErrorProtocol {
     public var underlyingErrorCode: String? {
         switch self {
         case let .nolError(code, _, _):
-            return String(describing: code)
+            String(describing: code)
         default:
-            return nil
+            nil
         }
     }
 
@@ -300,7 +300,7 @@ public enum PrimerError: PrimerErrorProtocol {
              let .klarnaUserNotApproved(id),
              let .stripeError(_, _, id),
              let .unknown(_, id):
-            return id
+            id
         }
     }
 
@@ -448,7 +448,7 @@ public enum PrimerError: PrimerErrorProtocol {
             In HEADLESS mode, only render payment methods that are returned in the 'availablePaymentMethods' \
             from the start() completion handler or 'listAvailablePaymentMethodsForCheckout()'.
             """
-            if let reason = reason {
+            if let reason {
                 message += " Reason: \(reason)."
             }
             return message
@@ -516,7 +516,7 @@ public enum PrimerError: PrimerErrorProtocol {
 
     var analyticsContext: [String: Any] {
         var context: [String: Any] = [:]
-        if let paymentMethodType = paymentMethodType {
+        if let paymentMethodType {
             context[AnalyticsContextKeys.paymentMethodType] = paymentMethodType
         }
         context[AnalyticsContextKeys.errorId] = errorId
@@ -544,7 +544,7 @@ public enum PrimerError: PrimerErrorProtocol {
              let .paymentFailed(paymentMethodType?, _, _, _, _),
              let .failedToCreatePayment(paymentMethodType, _, _),
              let .failedToResumePayment(paymentMethodType, _, _):
-            return paymentMethodType
+            paymentMethodType
         case .applePayTimedOut,
              .unableToMakePaymentsOnProvidedNetworks,
              .unableToPresentApplePay,
@@ -552,11 +552,11 @@ public enum PrimerError: PrimerErrorProtocol {
              .applePayDeviceNotSupported,
              .applePayConfigurationError,
              .applePayPresentationFailed:
-            return PrimerPaymentMethodType.applePay.rawValue
+            PrimerPaymentMethodType.applePay.rawValue
         case .nolError,
              .nolSdkInitError:
-            return PrimerPaymentMethodType.nolPay.rawValue
-        default: return nil
+            PrimerPaymentMethodType.nolPay.rawValue
+        default: nil
         }
     }
 }

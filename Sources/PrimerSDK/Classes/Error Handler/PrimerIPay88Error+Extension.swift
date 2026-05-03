@@ -17,7 +17,7 @@ extension PrimerIPay88Error: PrimerErrorProtocol {
     var errorId: String {
         switch self {
         case .iPay88Error:
-            return "ipay88"
+            "ipay88"
         }
     }
 
@@ -28,7 +28,7 @@ extension PrimerIPay88Error: PrimerErrorProtocol {
         case let .iPay88Error(description, userInfo):
             tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
             tmpUserInfo["description"] = description
-            tmpUserInfo["diagnosticsId"] = self.diagnosticsId
+            tmpUserInfo["diagnosticsId"] = diagnosticsId
         }
 
         return tmpUserInfo
@@ -37,7 +37,7 @@ extension PrimerIPay88Error: PrimerErrorProtocol {
     public var errorDescription: String? {
         switch self {
         case let .iPay88Error(description, _):
-            return "[\(errorId)] iPay88 failed with error \(description) (diagnosticsId: \(self.diagnosticsId))"
+            "[\(errorId)] iPay88 failed with error \(description) (diagnosticsId: \(diagnosticsId))"
         }
     }
 

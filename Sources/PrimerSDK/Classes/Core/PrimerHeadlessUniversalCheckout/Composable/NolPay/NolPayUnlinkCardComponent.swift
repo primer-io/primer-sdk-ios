@@ -107,17 +107,17 @@ public final class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent
                     if errors.isEmpty {
                         self.countryCode = countryCode
                         self.mobileNumber = mobileNumber
-                        self.validationDelegate?.didUpdate(validationStatus: .valid, for: data)
+                        validationDelegate?.didUpdate(validationStatus: .valid, for: data)
                     } else {
-                        self.validationDelegate?.didUpdate(validationStatus: .invalid(errors: errors), for: data)
+                        validationDelegate?.didUpdate(validationStatus: .invalid(errors: errors), for: data)
                     }
                 case let .invalid(errors: validationErrors):
                     errors += validationErrors
-                    self.validationDelegate?.didUpdate(validationStatus: .invalid(errors: errors), for: data)
+                    validationDelegate?.didUpdate(validationStatus: .invalid(errors: errors), for: data)
                 default: break
                 }
             case let .failure(error):
-                self.validationDelegate?.didUpdate(validationStatus: .error(error: error), for: data)
+                validationDelegate?.didUpdate(validationStatus: .error(error: error), for: data)
             }
         }
     }
@@ -219,7 +219,7 @@ public final class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent
             case let .success((_, token)):
                 unlinkToken = token
                 nextDataStep = .collectOtpData
-                stepDelegate?.didReceiveStep(step: self.nextDataStep)
+                stepDelegate?.didReceiveStep(step: nextDataStep)
             case let .failure(error):
                 let error = handled(primerError: .nolError(code: error.errorCode, message: error.description))
                 errorDelegate?.didReceiveError(error: error)

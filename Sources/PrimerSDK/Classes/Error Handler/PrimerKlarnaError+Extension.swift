@@ -18,11 +18,11 @@ extension PrimerKlarnaError: PrimerErrorProtocol {
     var errorId: String {
         switch self {
         case .userNotApproved:
-            return "klarna-user-not-approved"
+            "klarna-user-not-approved"
         case .klarnaSdkError:
-            return "klarna-sdk-error"
+            "klarna-sdk-error"
         default:
-            return "klarna-unknown-error-id"
+            "klarna-unknown-error-id"
         }
     }
 

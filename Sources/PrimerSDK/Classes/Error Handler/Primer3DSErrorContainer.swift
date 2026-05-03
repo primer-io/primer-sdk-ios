@@ -121,7 +121,7 @@ public enum Primer3DSErrorContainer: PrimerErrorProtocol {
             context[K.threeDsSdkTranscationId] = errorInfo.threeDsSdkTranscationId
             context[K.protocolVersion] = errorInfo.threeDsSErrorVersion
             context[K.errorId] = errorInfo.errorId
-            if let paymentMethodType = paymentMethodType {
+            if let paymentMethodType {
                 context[K.paymentMethodType] = paymentMethodType
             }
         default:
@@ -147,7 +147,7 @@ public enum Primer3DSErrorContainer: PrimerErrorProtocol {
              let .missing3DSConfiguration(diagnosticsId, _),
              let .primer3DSSdkError(_, diagnosticsId, _, _),
              let .underlyingError(diagnosticsId, _):
-            return diagnosticsId
+            diagnosticsId
         }
     }
 
@@ -157,9 +157,9 @@ public enum Primer3DSErrorContainer: PrimerErrorProtocol {
              .invalid3DSSdkVersion,
              .missing3DSConfiguration,
              .underlyingError:
-            return nil
+            nil
         case let .primer3DSSdkError(_, _, initProtocolVersion, _):
-            return initProtocolVersion
+            initProtocolVersion
         }
     }
 
@@ -186,54 +186,54 @@ public enum Primer3DSErrorContainer: PrimerErrorProtocol {
     var threeDsErrorCode: Int? {
         switch self {
         case let .primer3DSSdkError(_, _, _, errorInfo):
-            return errorInfo.threeDsErrorCode
+            errorInfo.threeDsErrorCode
         default:
-            return nil
+            nil
         }
     }
 
     var threeDsErrorType: String? {
         switch self {
         case let .primer3DSSdkError(_, _, _, errorInfo):
-            return errorInfo.threeDsErrorType
+            errorInfo.threeDsErrorType
         default:
-            return nil
+            nil
         }
     }
 
     var threeDsErrorComponent: String? {
         switch self {
         case let .primer3DSSdkError(_, _, _, errorInfo):
-            return errorInfo.threeDsErrorComponent
+            errorInfo.threeDsErrorComponent
         default:
-            return nil
+            nil
         }
     }
 
     var threeDsSdkTranscationId: String? {
         switch self {
         case let .primer3DSSdkError(_, _, _, errorInfo):
-            return errorInfo.threeDsSdkTranscationId
+            errorInfo.threeDsSdkTranscationId
         default:
-            return nil
+            nil
         }
     }
 
     var threeDsSErrorVersion: String? {
         switch self {
         case let .primer3DSSdkError(_, _, _, errorInfo):
-            return errorInfo.threeDsSErrorVersion
+            errorInfo.threeDsSErrorVersion
         default:
-            return nil
+            nil
         }
     }
 
     var threeDsErrorDetail: String? {
         switch self {
         case let .primer3DSSdkError(_, _, _, errorInfo):
-            return errorInfo.threeDsErrorDetail
+            errorInfo.threeDsErrorDetail
         default:
-            return nil
+            nil
         }
     }
 }

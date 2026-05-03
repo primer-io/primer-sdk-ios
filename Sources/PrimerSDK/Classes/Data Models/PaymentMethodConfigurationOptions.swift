@@ -88,7 +88,7 @@ struct MerchantOptions: PaymentMethodOptions {
 
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        if let extraMerchantData = extraMerchantData {
+        if let extraMerchantData {
             let jsonData = try JSONSerialization.data(withJSONObject: extraMerchantData, options: [])
             try container.encode(jsonData, forKey: .extraMerchantData)
         }
@@ -100,11 +100,11 @@ extension PrimerTestPaymentMethodSessionInfo.FlowDecision {
     var displayFlowTitle: String {
         switch self {
         case .success:
-            return Strings.PrimerTestFlowDecision.successTitle
+            Strings.PrimerTestFlowDecision.successTitle
         case .decline:
-            return Strings.PrimerTestFlowDecision.declineTitle
+            Strings.PrimerTestFlowDecision.declineTitle
         case .fail:
-            return Strings.PrimerTestFlowDecision.failTitle
+            Strings.PrimerTestFlowDecision.failTitle
         }
     }
 

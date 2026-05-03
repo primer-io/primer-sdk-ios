@@ -44,7 +44,7 @@ public final class PrimerExpiryDateFieldView: PrimerTextFieldView {
             return false
         }
 
-        if self.isValid?(newText) ?? false {
+        if isValid?(newText) ?? false {
             validation = .valid
         } else {
             let message = """

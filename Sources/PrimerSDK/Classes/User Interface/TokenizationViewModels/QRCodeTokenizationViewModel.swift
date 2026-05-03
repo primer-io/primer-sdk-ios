@@ -109,7 +109,7 @@ final class QRCodeTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
         }
 
         self.statusUrl = statusUrl
-        self.qrCode = decodedJWTToken.qrCode
+        qrCode = decodedJWTToken.qrCode
 
         try await evaluateFireDidReceiveAdditionalInfoEvent()
         try await evaluatePresentUserInterface()
@@ -197,7 +197,7 @@ extension QRCodeTokenizationViewModel {
             }
         default:
             logger.info(message: "UNHANDLED PAYMENT METHOD RESULT")
-            logger.info(message: self.config.type)
+            logger.info(message: config.type)
         }
 
         guard let additionalInfo else {

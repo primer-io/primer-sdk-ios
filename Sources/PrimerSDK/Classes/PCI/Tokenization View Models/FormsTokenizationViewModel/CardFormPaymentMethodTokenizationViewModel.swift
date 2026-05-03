@@ -130,16 +130,16 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
     private lazy var cardNumberContainerView: PrimerCustomFieldView = {
         let containerView = PrimerCardNumberField.cardNumberContainerViewWithFieldView(cardNumberField)
         containerView.onCardNetworkSelected = { [weak self] cardNetwork in
-            guard let self = self else { return }
-            self.alternativelySelectedCardNetwork = cardNetwork.network
-            self.rawCardData.cardNetwork = cardNetwork.network
+            guard let self else { return }
+            alternativelySelectedCardNetwork = cardNetwork.network
+            rawCardData.cardNetwork = cardNetwork.network
 
-            if !self.isRawDataInitialized {
-                self.rawDataManager?.rawData = self.rawCardData
-                self.isRawDataInitialized = true
+            if !isRawDataInitialized {
+                rawDataManager?.rawData = rawCardData
+                isRawDataInitialized = true
             }
 
-            self.cardComponentsManager.selectedCardNetwork = cardNetwork.network
+            cardComponentsManager.selectedCardNetwork = cardNetwork.network
 
             configureAmountLabels(cardNetwork: cardNetwork.network)
 
@@ -855,7 +855,7 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
 
         var network = cardNetwork?.rawValue.uppercased()
 
-        if let cardNetwork = cardNetwork,
+        if let cardNetwork,
            cardNetwork != .unknown {
             // Set the network value to "OTHER" if it's nil or unknown
             if network == nil || network == "UNKNOWN" {
@@ -922,12 +922,10 @@ extension CardFormPaymentMethodTokenizationViewModel: UITextFieldDelegate {
             return false
         }
 
-        var query: String
-
-        if string.isEmpty {
-            query = String((textField.text ?? "").dropLast())
+        var query: String = if string.isEmpty {
+            String((textField.text ?? "").dropLast())
         } else {
-            query = (textField.text ?? "") + string
+            (textField.text ?? "") + string
         }
 
         if query.isEmpty {
@@ -974,17 +972,16 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerHeadlessUniversalChe
             return
         }
 
-        var primerNetworks: [PrimerCardNetwork]
-        if metadataModel.source == .remote,
+        var primerNetworks: [PrimerCardNetwork] = if metadataModel.source == .remote,
            let selectable = metadataModel.selectableCardNetworks?.items,
            !selectable.isEmpty {
-            primerNetworks = selectable
+            selectable
         } else if let preferred = metadataModel.detectedCardNetworks.preferred {
-            primerNetworks = [preferred]
+            [preferred]
         } else if let first = metadataModel.detectedCardNetworks.items.first {
-            primerNetworks = [first]
+            [first]
         } else {
-            primerNetworks = []
+            []
         }
 
         let filteredNetworks = primerNetworks.filter { $0.displayName != "Unknown" }

@@ -13,7 +13,7 @@ extension FormPaymentMethodTokenizationViewModel {
     // MARK: Input view
 
     func makeInputViews() -> [Input] {
-        guard let paymentMethodType = PrimerPaymentMethodType(rawValue: self.config.type),
+        guard let paymentMethodType = PrimerPaymentMethodType(rawValue: config.type),
               inputPaymentMethodTypes.contains(paymentMethodType) else { return [] }
 
         switch paymentMethodType {
@@ -33,7 +33,7 @@ extension FormPaymentMethodTokenizationViewModel {
 
     func makeAccountInfoPaymentView() -> PrimerFormView? {
 
-        guard let paymentMethodType = PrimerPaymentMethodType(rawValue: self.config.type) else {
+        guard let paymentMethodType = PrimerPaymentMethodType(rawValue: config.type) else {
             return nil
         }
 
@@ -338,7 +338,7 @@ extension FormPaymentMethodTokenizationViewModel {
 
         UIPasteboard.general.string = PrimerAPIConfigurationModule.decodedJWTToken?.accountNumber
 
-        self.logger.debug(message: "📝📝📝📝 Copied: \(String(describing: UIPasteboard.general.string))")
+        logger.debug(message: "📝📝📝📝 Copied: \(String(describing: UIPasteboard.general.string))")
 
         DispatchQueue.main.async {
             sender.isSelected = true
@@ -394,7 +394,7 @@ extension FormPaymentMethodTokenizationViewModel {
             shouldShareVoucherInfoWithText: voucherText
         )
         infoView = voucherInfoView
-        self.uiManager.primerRootViewController?.show(viewController: voucherInfoViewController)
+        uiManager.primerRootViewController?.show(viewController: voucherInfoViewController)
     }
 
     func presentAccountInfoViewController() {
@@ -403,7 +403,7 @@ extension FormPaymentMethodTokenizationViewModel {
             formPaymentMethodTokenizationViewModel: self
         )
         infoView = makeAccountInfoPaymentView()
-        self.uiManager.primerRootViewController?.show(viewController: accountInfoViewController)
+        uiManager.primerRootViewController?.show(viewController: accountInfoViewController)
     }
 
     func presentInputViewController() async throws {
