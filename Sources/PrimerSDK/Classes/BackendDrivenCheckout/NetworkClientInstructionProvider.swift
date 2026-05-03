@@ -30,15 +30,15 @@ private extension ClientInstructionDataResponse {
     func toClientInstruction() -> ClientInstruction {
         switch type {
         case let .wait(response):
-            return .wait(delayMilliseconds: response.pollDelayMilliseconds ?? 0)
+            .wait(delayMilliseconds: response.pollDelayMilliseconds ?? 0)
         case let .execute(response):
-            return .execute(
+            .execute(
                 delayMilliseconds: response.pollDelayMilliseconds ?? 0,
                 schema: response.schema,
                 parameters: response.parameters
             )
         case let .end(response):
-            return .end(
+            .end(
                 outcome: response.payload.checkoutOutcome?.toCheckoutOutcome(),
                 payment: response.payload.payment?.toPaymentInfo()
             )

@@ -15,9 +15,9 @@ struct RawAnalyticsEvent: AnalyticsEvent, Codable {
 
     init(payload: CodableValue) {
         let params = try? payload.casted(to: AnalyticsStepParams.self)
-        self.analyticsUrl = params?.analyticsUrl
-        self.localId = String.randomString(length: 32)
-        self.createdAt = Date().millisecondsSince1970
+        analyticsUrl = params?.analyticsUrl
+        localId = String.randomString(length: 32)
+        createdAt = Date().millisecondsSince1970
         self.payload = payload
     }
 }

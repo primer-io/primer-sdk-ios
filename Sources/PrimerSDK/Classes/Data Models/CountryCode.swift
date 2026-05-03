@@ -1,7 +1,7 @@
 //
 //  CountryCode.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable identifier_name
@@ -264,14 +264,14 @@ public enum CountryCode: String, Codable, CaseIterable {
     case zw = "ZW"
 }
 
-internal extension CountryCode {
+extension CountryCode {
 
     var country: String {
-        return localizedCountryName
+        localizedCountryName
     }
 
     var flag: String {
-        let unicodeScalars = self.rawValue
+        let unicodeScalars = rawValue
             .unicodeScalars
             .map { $0.value + 0x1F1E6 - 65 }
             .compactMap(UnicodeScalar.init)
@@ -304,8 +304,8 @@ extension CountryCode {
 
         init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
-            self.locale = try container.decode(String.self, forKey: .locale)
-            self.countries = [:]
+            locale = try container.decode(String.self, forKey: .locale)
+            countries = [:]
 
             if let countriesWithMultipleOptionNames = try container.decodeIfPresent([CountryCode.RawValue: AnyCodable].self,
                                                                                     forKey: .countries) {
@@ -317,7 +317,7 @@ extension CountryCode {
                         updatedCountries[$0.key] = countryName
                     }
                 }
-                self.countries = updatedCountries
+                countries = updatedCountries
             }
         }
     }
@@ -333,7 +333,7 @@ extension CountryCode {
     }
 
     private var localizedCountryName: String {
-        return LocalizedCountries.loadedCountriesBasedOnLocale?.countries
+        LocalizedCountries.loadedCountriesBasedOnLocale?.countries
             .first { $0.key == self.rawValue }?
             .value ?? "N/A"
     }
@@ -341,7 +341,7 @@ extension CountryCode {
 
 extension CountryCode {
 
-    internal struct PhoneNumberCountryCode: Codable {
+    struct PhoneNumberCountryCode: Codable, Equatable {
         let name: String
         let dialCode: String
         let code: String

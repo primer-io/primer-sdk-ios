@@ -49,7 +49,7 @@ extension Request.Body.Payment {
         let paymentMethodToken: String
 
         public init(token: String) {
-            self.paymentMethodToken = token
+            paymentMethodToken = token
         }
     }
 
@@ -57,7 +57,7 @@ extension Request.Body.Payment {
         let resumeToken: String
 
         public init(token: String) {
-            self.resumeToken = token
+            resumeToken = token
         }
     }
 
@@ -201,7 +201,7 @@ extension PrimerCheckoutDataPayment {
     public let paymentMethodType: PrimerCheckoutPaymentMethodType
 
     public init(type: PrimerCheckoutPaymentMethodType) {
-        self.paymentMethodType = type
+        paymentMethodType = type
     }
 }
 
@@ -225,9 +225,9 @@ extension PrimerCheckoutDataPayment {
     public var rawValue: RawValue {
         switch self {
         case .failed:
-            return "payment-failed"
+            "payment-failed"
         case .cancelledByCustomer:
-            return "cancelled-by-customer"
+            "cancelled-by-customer"
         }
     }
 

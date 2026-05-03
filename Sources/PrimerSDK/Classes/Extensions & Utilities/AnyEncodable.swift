@@ -1,7 +1,7 @@
 //
 //  AnyEncodable.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 //
@@ -159,41 +159,41 @@ extension AnyEncodable: Equatable {
     public static func == (lhs: AnyEncodable, rhs: AnyEncodable) -> Bool {
         switch (lhs.value, rhs.value) {
         case is (Void, Void):
-            return true
+            true
         case let (lhs as Bool, rhs as Bool):
-            return lhs == rhs
+            lhs == rhs
         case let (lhs as Int, rhs as Int):
-            return lhs == rhs
+            lhs == rhs
         case let (lhs as Int8, rhs as Int8):
-            return lhs == rhs
+            lhs == rhs
         case let (lhs as Int16, rhs as Int16):
-            return lhs == rhs
+            lhs == rhs
         case let (lhs as Int32, rhs as Int32):
-            return lhs == rhs
+            lhs == rhs
         case let (lhs as Int64, rhs as Int64):
-            return lhs == rhs
+            lhs == rhs
         case let (lhs as UInt, rhs as UInt):
-            return lhs == rhs
+            lhs == rhs
         case let (lhs as UInt8, rhs as UInt8):
-            return lhs == rhs
+            lhs == rhs
         case let (lhs as UInt16, rhs as UInt16):
-            return lhs == rhs
+            lhs == rhs
         case let (lhs as UInt32, rhs as UInt32):
-            return lhs == rhs
+            lhs == rhs
         case let (lhs as UInt64, rhs as UInt64):
-            return lhs == rhs
+            lhs == rhs
         case let (lhs as Float, rhs as Float):
-            return lhs == rhs
+            lhs == rhs
         case let (lhs as Double, rhs as Double):
-            return lhs == rhs
+            lhs == rhs
         case let (lhs as String, rhs as String):
-            return lhs == rhs
+            lhs == rhs
         case let (lhs as [String: AnyEncodable], rhs as [String: AnyEncodable]):
-            return lhs == rhs
+            lhs == rhs
         case let (lhs as [AnyEncodable], rhs as [AnyEncodable]):
-            return lhs == rhs
+            lhs == rhs
         default:
-            return false
+            false
         }
     }
 }
@@ -202,11 +202,11 @@ extension AnyEncodable: CustomStringConvertible {
     public var description: String {
         switch value {
         case is Void:
-            return String(describing: nil as Any?)
+            String(describing: nil as Any?)
         case let value as CustomStringConvertible:
-            return value.description
+            value.description
         default:
-            return String(describing: value)
+            String(describing: value)
         }
     }
 }
@@ -215,9 +215,9 @@ extension AnyEncodable: CustomDebugStringConvertible {
     public var debugDescription: String {
         switch value {
         case let value as CustomDebugStringConvertible:
-            return "AnyEncodable(\(value.debugDescription))"
+            "AnyEncodable(\(value.debugDescription))"
         default:
-            return "AnyEncodable(\(description))"
+            "AnyEncodable(\(description))"
         }
     }
 }
@@ -267,9 +267,9 @@ extension _AnyEncodable {
 
 extension AnyEncodable: Hashable {
     public func hash(into hasher: inout Hasher) {
-		if let value = value as? (any Hashable) {
-			hasher.combine(value)
-		}
+        if let value = value as? (any Hashable) {
+            hasher.combine(value)
+        }
     }
 }
 // swiftlint:enable cyclomatic_complexity

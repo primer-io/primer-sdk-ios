@@ -1,7 +1,7 @@
 //
 //  NolPayLinkedCardsComponent.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable function_body_length
@@ -139,10 +139,10 @@ public final class NolPayLinkedCardsComponent {
                 case .valid:
 
                     guard let mobileNumber, let countryCode else {
-						let key = mobileNumber == nil ? "mobileNumber" : "countryCode"
+                        let key = mobileNumber == nil ? "mobileNumber" : "countryCode"
                         let error = handled(primerError: .invalidValue(key: key))
-                        self.errorDelegate?.didReceiveError(error: error)
-						return completion(.failure(error))
+                        errorDelegate?.didReceiveError(error: error)
+                        return completion(.failure(error))
                     }
 
                     #if canImport(PrimerNolPaySDK)
@@ -159,13 +159,13 @@ public final class NolPayLinkedCardsComponent {
                     #endif
 
                 case let .invalid(errors: validationErrors):
-                    self.validationDelegate?.didUpdate(validationStatus: .invalid(errors: validationErrors), for: nil)
+                    validationDelegate?.didUpdate(validationStatus: .invalid(errors: validationErrors), for: nil)
                     completion(.failure(PrimerError.underlyingErrors(errors: validationErrors)))
 
                 default: break
                 }
             case let .failure(error):
-                self.errorDelegate?.didReceiveError(error: error)
+                errorDelegate?.didReceiveError(error: error)
                 completion(.failure(error))
             }
         }

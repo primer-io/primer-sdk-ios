@@ -48,11 +48,11 @@ final class PollingModule: Module {
     }
 
     func cancel(withError err: PrimerError) {
-        self.cancellationError = err
+        cancellationError = err
     }
 
     func fail(withError err: PrimerError) {
-        self.failureError = err
+        failureError = err
     }
 
     private func startPolling(
@@ -75,7 +75,7 @@ final class PollingModule: Module {
 
         let apiClient: PrimerAPIClientProtocol = PollingModule.apiClient ?? PrimerAPIClient()
 
-        apiClient.poll(clientToken: decodedJWTToken, url: self.url.absoluteString, retryConfig: retryConfig) { result in
+        apiClient.poll(clientToken: decodedJWTToken, url: url.absoluteString, retryConfig: retryConfig) { result in
             switch result {
             case let .success(res):
                 if res.status == .pending {
@@ -87,6 +87,7 @@ final class PollingModule: Module {
                 } else {
                     let err = PrimerError.unknown(message: "Received unexpected polling status for id '\(res.id)'")
                     ErrorHandler.handle(error: err)
+                    completion(nil, err)
                 }
             case let .failure(err):
                 ErrorHandler.handle(error: err)

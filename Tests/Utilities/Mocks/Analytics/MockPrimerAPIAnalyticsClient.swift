@@ -17,7 +17,7 @@ class MockPrimerAPIAnalyticsClient: PrimerAPIClientAnalyticsProtocol {
     var batches: [[Analytics.Event]] = []
 
     func sendAnalyticsEvents(clientToken: DecodedJWTToken?, url: URL, body: [Analytics.Event]?, completion: @escaping ResponseHandler) {
-        guard let body = body else {
+        guard let body else {
             XCTFail(); return
         }
         batches.append(body)
@@ -26,16 +26,16 @@ class MockPrimerAPIAnalyticsClient: PrimerAPIClientAnalyticsProtocol {
         } else {
             completion(.failure(PrimerError.unknown()))
         }
-        self.onSendAnalyticsEvent?(body)
+        onSendAnalyticsEvent?(body)
     }
 
     func sendAnalyticsEvents(clientToken: PrimerSDK.DecodedJWTToken?, url: URL, body: [PrimerSDK.Analytics.Event]?) async throws -> Analytics.Service.Response {
-        guard let body = body else {
+        guard let body else {
             XCTFail();
             throw PrimerError.unknown()
         }
         batches.append(body)
-        self.onSendAnalyticsEvent?(body)
+        onSendAnalyticsEvent?(body)
         if shouldSucceed {
             return .init(id: nil, result: nil)
         } else {
