@@ -43,7 +43,7 @@ final class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizat
          createResumePaymentService: CreateResumePaymentServiceProtocol,
          apiClient: PrimerAPIClientBanksProtocol
     ) {
-        self.paymentMethodType = config.internalPaymentMethodType!
+        paymentMethodType = config.internalPaymentMethodType!
         self.apiClient = apiClient
         super.init(config: config,
                    uiManager: uiManager,
@@ -90,8 +90,8 @@ final class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizat
     private var selectedBank: AdyenBank?
 
     override func cancel() {
-        self.webViewController = nil
-        self.webViewCompletion = nil
+        webViewController = nil
+        webViewCompletion = nil
         super.cancel()
     }
 
@@ -104,7 +104,7 @@ final class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizat
             action: .click,
             context: Analytics.Event.Property.Context(
                 issuerId: nil,
-                paymentMethodType: self.config.type,
+                paymentMethodType: config.type,
                 url: nil
             ),
             extra: nil,
@@ -139,16 +139,16 @@ final class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizat
     override func performTokenizationStep() async throws {
         defer {
             Task { @MainActor in
-                    self.willDismissPaymentMethodUI?()
-                    self.webViewController?.dismiss(animated: true, completion: {
-                        self.didDismissPaymentMethodUI?()
-                    })
-                }
+                self.willDismissPaymentMethodUI?()
+                self.webViewController?.dismiss(animated: true, completion: {
+                    self.didDismissPaymentMethodUI?()
+                })
+            }
 
-                self.bankSelectionCompletion = nil
-                self.selectedBank = nil
-                self.webViewController = nil
-                self.webViewCompletion = nil
+            self.bankSelectionCompletion = nil
+            self.selectedBank = nil
+            self.webViewController = nil
+            self.webViewCompletion = nil
         }
 
         try await checkoutEventsNotifierModule.fireDidStartTokenizationEvent()
@@ -246,8 +246,8 @@ extension BankSelectorTokenizationViewModel: UITableViewDataSource, UITableViewD
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let bank = self.dataSource[indexPath.row]
-        self.bankSelectionCompletion?(bank)
+        let bank = dataSource[indexPath.row]
+        bankSelectionCompletion?(bank)
     }
 }
 
@@ -260,12 +260,10 @@ extension BankSelectorTokenizationViewModel: UITextFieldDelegate {
             return false
         }
 
-        var query: String
-
-        if string.isEmpty {
-            query = String((textField.text ?? "").dropLast())
+        var query: String = if string.isEmpty {
+            String((textField.text ?? "").dropLast())
         } else {
-            query = (textField.text ?? "") + string
+            (textField.text ?? "") + string
         }
 
         if query.isEmpty {
@@ -297,7 +295,7 @@ extension BankSelectorTokenizationViewModel: BankSelectorTokenizationProviding {
             $0.name.lowercased()
                 .folding(options: .diacriticInsensitive, locale: nil)
                 .contains(query.lowercased()
-                    .folding(options: .diacriticInsensitive, locale: nil))
+                            .folding(options: .diacriticInsensitive, locale: nil))
         }
     }
 

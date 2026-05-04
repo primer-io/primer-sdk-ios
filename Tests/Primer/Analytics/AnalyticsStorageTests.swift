@@ -21,6 +21,7 @@ final class AnalyticsStorageTests: XCTestCase {
 
     override func setUpWithError() throws {
         storage = Analytics.DefaultStorage(fileURL: url)
+        storage.deleteAnalyticsFile()
     }
 
     override func tearDownWithError() throws {

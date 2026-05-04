@@ -1,7 +1,7 @@
 //
 //  AnyDecodable.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 //
@@ -74,7 +74,7 @@ extension _AnyDecodable {
         } else if let string = try? container.decode(String.self) {
             self.init(string)
         } else if let array = try? container.decode([AnyDecodable].self) {
-            self.init(array.map { $0.value })
+            self.init(array.map(\.value))
         } else if let dictionary = try? container.decode([String: AnyDecodable].self) {
             self.init(dictionary.mapValues { $0.value })
         } else {
@@ -113,11 +113,11 @@ extension AnyDecodable: CustomStringConvertible {
     public var description: String {
         switch value {
         case is Void:
-            return String(describing: nil as Any?)
+            String(describing: nil as Any?)
         case let value as CustomStringConvertible:
-            return value.description
+            value.description
         default:
-            return String(describing: value)
+            String(describing: value)
         }
     }
 }
@@ -126,18 +126,18 @@ extension AnyDecodable: CustomDebugStringConvertible {
     public var debugDescription: String {
         switch value {
         case let value as CustomDebugStringConvertible:
-            return "AnyDecodable(\(value.debugDescription))"
+            "AnyDecodable(\(value.debugDescription))"
         default:
-            return "AnyDecodable(\(description))"
+            "AnyDecodable(\(description))"
         }
     }
 }
 
 extension AnyDecodable: Hashable {
     public func hash(into hasher: inout Hasher) {
-		if let value = value as? (any Hashable) {
-			hasher.combine(value)
-		}
+        if let value = value as? (any Hashable) {
+            hasher.combine(value)
+        }
     }
 }
 // swiftlint:enable type_name

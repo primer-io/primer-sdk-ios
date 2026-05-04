@@ -1,7 +1,7 @@
 //
 //  FormPaymentMethodTokenizationViewModel+FormViews.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable file_length
@@ -13,7 +13,7 @@ extension FormPaymentMethodTokenizationViewModel {
     // MARK: Input view
 
     func makeInputViews() -> [Input] {
-        guard let paymentMethodType = PrimerPaymentMethodType(rawValue: self.config.type),
+        guard let paymentMethodType = PrimerPaymentMethodType(rawValue: config.type),
               inputPaymentMethodTypes.contains(paymentMethodType) else { return [] }
 
         switch paymentMethodType {
@@ -33,7 +33,7 @@ extension FormPaymentMethodTokenizationViewModel {
 
     func makeAccountInfoPaymentView() -> PrimerFormView? {
 
-        guard let paymentMethodType = PrimerPaymentMethodType(rawValue: self.config.type) else {
+        guard let paymentMethodType = PrimerPaymentMethodType(rawValue: config.type) else {
             return nil
         }
 
@@ -338,7 +338,7 @@ extension FormPaymentMethodTokenizationViewModel {
 
         UIPasteboard.general.string = PrimerAPIConfigurationModule.decodedJWTToken?.accountNumber
 
-        self.logger.debug(message: "📝📝📝📝 Copied: \(String(describing: UIPasteboard.general.string))")
+        logger.debug(message: "📝📝📝📝 Copied: \(String(describing: UIPasteboard.general.string))")
 
         DispatchQueue.main.async {
             sender.isSelected = true
@@ -358,8 +358,8 @@ extension FormPaymentMethodTokenizationViewModel {
 
             guard let paymentMethodType = PrimerPaymentMethodType(rawValue: config.type),
                   let message = needingExternalCompletionPaymentMethodDictionary
-                  .first(where: { $0.key == paymentMethodType })?
-                  .value
+                    .first(where: { $0.key == paymentMethodType })?
+                    .value
             else { return }
 
             let infoView = makePaymentPendingInfoView(message: message)
@@ -394,7 +394,7 @@ extension FormPaymentMethodTokenizationViewModel {
             shouldShareVoucherInfoWithText: voucherText
         )
         infoView = voucherInfoView
-        self.uiManager.primerRootViewController?.show(viewController: voucherInfoViewController)
+        uiManager.primerRootViewController?.show(viewController: voucherInfoViewController)
     }
 
     func presentAccountInfoViewController() {
@@ -403,7 +403,7 @@ extension FormPaymentMethodTokenizationViewModel {
             formPaymentMethodTokenizationViewModel: self
         )
         infoView = makeAccountInfoPaymentView()
-        self.uiManager.primerRootViewController?.show(viewController: accountInfoViewController)
+        uiManager.primerRootViewController?.show(viewController: accountInfoViewController)
     }
 
     func presentInputViewController() async throws {

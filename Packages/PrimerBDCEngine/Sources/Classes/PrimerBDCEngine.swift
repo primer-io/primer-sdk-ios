@@ -39,7 +39,7 @@ public final class PrimerBDCEngine: NSObject, BDCEngineProtocol {
         context = JSContext()
         let sessionConfiguration = URLSessionConfiguration.default
         sessionConfiguration.urlCache = URLCache(memoryCapacity: 10_000_000, diskCapacity: 20_000_000)
-        self.urlSession = URLSession(configuration: sessionConfiguration)
+        urlSession = URLSession(configuration: sessionConfiguration)
         super.init()
         setupContext()
         try await setupEngine()
@@ -100,7 +100,7 @@ private extension PrimerBDCEngine {
         let onReady: JSVoidBlock = { [weak self] in
             guard let self else { return }
             Logger.info(
-                "Engine ready in \(Date().timeIntervalSince(date))s — resuming \(self.loadingContinuations.count) pending continuation(s)",
+                "Engine ready in \(Date().timeIntervalSince(date))s — resuming \(loadingContinuations.count) pending continuation(s)",
                 category: "ENGINE_LIFECYCLE"
             )
             isReady = true

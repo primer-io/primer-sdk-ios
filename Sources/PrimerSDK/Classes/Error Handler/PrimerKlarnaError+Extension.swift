@@ -1,13 +1,14 @@
 //
 //  PrimerKlarnaError+Extension.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
 
 #if canImport(PrimerKlarnaSDK)
 import PrimerKlarnaSDK
+
 extension PrimerKlarnaError: PrimerErrorProtocol {
     typealias InfoType = [String: String]
     var exposedError: Error {
@@ -17,11 +18,11 @@ extension PrimerKlarnaError: PrimerErrorProtocol {
     var errorId: String {
         switch self {
         case .userNotApproved:
-            return "klarna-user-not-approved"
+            "klarna-user-not-approved"
         case .klarnaSdkError:
-            return "klarna-sdk-error"
+            "klarna-sdk-error"
         default:
-            return "klarna-unknown-error-id"
+            "klarna-unknown-error-id"
         }
     }
 
@@ -33,7 +34,9 @@ extension PrimerKlarnaError: PrimerErrorProtocol {
     }
 
     var diagnosticsId: String {
-        return UUID().uuidString
+        UUID().uuidString
     }
+
+    var isReportable: Bool { true }
 }
 #endif

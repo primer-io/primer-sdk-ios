@@ -49,6 +49,13 @@ protocol PrimerAPIClientProtocol:
         request: ClientSessionUpdateRequest
     ) async throws -> (PrimerAPIConfiguration, [String: String]?)
 
+    // MARK: Adyen Klarna
+
+    func listAdyenKlarnaPaymentTypes(
+        clientToken: DecodedJWTToken,
+        paymentMethodConfigId: String
+    ) async throws -> AdyenKlarnaPaymentOptionsResponse
+
     // MARK: Klarna
 
     func createKlarnaPaymentSession(

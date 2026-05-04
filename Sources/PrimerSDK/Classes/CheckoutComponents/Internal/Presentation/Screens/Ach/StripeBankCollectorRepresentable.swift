@@ -1,0 +1,20 @@
+//
+//  StripeBankCollectorRepresentable.swift
+//
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
+
+import SwiftUI
+
+@available(iOS 15.0, *)
+struct StripeBankCollectorRepresentable: UIViewControllerRepresentable {
+  let viewController: UIViewController
+
+  func makeUIViewController(context: Context) -> UIViewController {
+    viewController
+  }
+
+  func updateUIViewController(_: UIViewController, context _: Context) {
+    // No update needed — the bank collector manages its own state
+  }
+}

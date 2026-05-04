@@ -335,6 +335,18 @@ final class PrimerAPIClient: PrimerAPIClientProtocol {
         )
     }
 
+    func listAdyenKlarnaPaymentTypes(
+        clientToken: DecodedJWTToken,
+        paymentMethodConfigId: String
+    ) async throws -> AdyenKlarnaPaymentOptionsResponse {
+        try await networkService.request(
+            .listAdyenKlarnaPaymentTypes(
+                clientToken: clientToken,
+                paymentMethodConfigId: paymentMethodConfigId
+            )
+        )
+    }
+
     func poll(
         clientToken: DecodedJWTToken?,
         url: String,
@@ -572,9 +584,10 @@ final class PrimerAPIClient: PrimerAPIClientProtocol {
         completion: @escaping APICompletion<Response.Body.Bin.Networks>
     ) -> PrimerCancellable? {
         let endpoint = PrimerAPI.listCardNetworks(clientToken: clientToken, bin: bin)
-        return execute(endpoint) { (result: Result<Response.Body.Bin.Data, Error>) in
+        let wrappedCompletion: APICompletion<Response.Body.Bin.Data> = { result in
             completion(result.map { Response.Body.Bin.Networks(from: $0) })
         }
+        return execute(endpoint, completion: wrappedCompletion)
     }
 
     func listCardNetworks(

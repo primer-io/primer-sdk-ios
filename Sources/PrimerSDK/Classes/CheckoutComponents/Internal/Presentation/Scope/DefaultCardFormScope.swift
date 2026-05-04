@@ -1,0 +1,605 @@
+//
+//  DefaultCardFormScope.swift
+//
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
+
+import SwiftUI
+
+@available(iOS 15.0, *)
+@MainActor
+final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, LogReporter {
+
+  private(set) var presentationContext: PresentationContext = .fromPaymentSelection
+
+  var cardFormUIOptions: PrimerCardFormUIOptions? {
+    checkoutScope?.cardFormUIOptions
+  }
+
+  var dismissalMechanism: [DismissalMechanism] {
+    checkoutScope?.dismissalMechanism ?? []
+  }
+
+  var state: AsyncStream<PrimerCardFormState> {
+    AsyncStream { continuation in
+      let task = Task { [self] in
+        for await _ in $structuredState.values {
+          continuation.yield(structuredState)
+        }
+        continuation.finish()
+      }
+
+      continuation.onTermination = { _ in
+        task.cancel()
+      }
+    }
+  }
+
+  var title: String?
+  var screen: CardFormScreenComponent?
+  var cobadgedCardsView:
+    ((_ availableNetworks: [String], _ selectNetwork: @escaping (String) -> Void) -> any View)?
+  var errorScreen: ErrorComponent?
+  var submitButtonText: String?
+  var showSubmitLoadingIndicator: Bool = true
+  var cardNumberConfig: InputFieldConfig?
+  var expiryDateConfig: InputFieldConfig?
+  var cvvConfig: InputFieldConfig?
+  var cardholderNameConfig: InputFieldConfig?
+  var postalCodeConfig: InputFieldConfig?
+  var countryConfig: InputFieldConfig?
+  var cityConfig: InputFieldConfig?
+  var stateConfig: InputFieldConfig?
+  var addressLine1Config: InputFieldConfig?
+  var addressLine2Config: InputFieldConfig?
+  var phoneNumberConfig: InputFieldConfig?
+  var firstNameConfig: InputFieldConfig?
+  var lastNameConfig: InputFieldConfig?
+  var emailConfig: InputFieldConfig?
+  var retailOutletConfig: InputFieldConfig?
+  var otpCodeConfig: InputFieldConfig?
+  var cardInputSection: Component?
+  var billingAddressSection: Component?
+  var submitButton: Component?
+
+  @Published var structuredState = PrimerCardFormState()
+  var fieldValidationStates = FieldValidationStates()
+
+  private weak var checkoutScope: DefaultCheckoutScope?
+  private let processCardPaymentInteractor: ProcessCardPaymentInteractor
+  private let validateInputInteractor: ValidateInputInteractor?
+  private let cardNetworkDetectionInteractor: CardNetworkDetectionInteractor?
+  private let analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol?
+  private let configurationService: ConfigurationService
+  private var billingAddressSent = false
+  private var networkDetectionTask: Task<Void, Never>?
+  private var binDataTask: Task<Void, Never>?
+  private var preferredNetwork: CardNetwork?
+  private var currentCardData: PrimerCardData?
+  private var formConfiguration: CardFormConfiguration = .default
+
+  private func buildBillingAddressFields() -> [PrimerInputElementType] {
+    guard let options = configurationService.billingAddressOptions,
+      options.postalCode == true
+    else {
+      return []
+    }
+
+    var fields: [PrimerInputElementType] = []
+
+    if options.countryCode != false { fields.append(.countryCode) }
+    if options.firstName != false { fields.append(.firstName) }
+    if options.lastName != false { fields.append(.lastName) }
+    if options.addressLine1 != false { fields.append(.addressLine1) }
+    if options.addressLine2 != false { fields.append(.addressLine2) }
+    fields.append(.postalCode)
+    if options.city != false { fields.append(.city) }
+    if options.state != false { fields.append(.state) }
+
+    return fields
+  }
+
+  init(
+    checkoutScope: DefaultCheckoutScope,
+    presentationContext: PresentationContext = .fromPaymentSelection,
+    processCardPaymentInteractor: ProcessCardPaymentInteractor,
+    validateInputInteractor: ValidateInputInteractor? = nil,
+    cardNetworkDetectionInteractor: CardNetworkDetectionInteractor? = nil,
+    analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol? = nil,
+    configurationService: ConfigurationService
+  ) {
+    self.checkoutScope = checkoutScope
+    self.presentationContext = presentationContext
+    self.processCardPaymentInteractor = processCardPaymentInteractor
+    self.validateInputInteractor = validateInputInteractor
+    self.cardNetworkDetectionInteractor = cardNetworkDetectionInteractor
+    self.analyticsInteractor = analyticsInteractor
+    self.configurationService = configurationService
+
+    let billingFields = buildBillingAddressFields()
+    formConfiguration = CardFormConfiguration(
+      cardFields: [.cardNumber, .expiryDate, .cvv, .cardholderName],
+      billingFields: billingFields,
+      requiresBillingAddress: !billingFields.isEmpty
+    )
+
+    if cardNetworkDetectionInteractor != nil {
+      setupNetworkDetectionStream()
+      setupBinDataStream()
+    }
+  }
+
+  func getCardNetworkForCvv() -> CardNetwork {
+    if let selectedNetwork = structuredState.selectedNetwork {
+      selectedNetwork.network
+    } else {
+      CardNetwork(cardNumber: structuredState.data[.cardNumber])
+    }
+  }
+
+  func updateFieldValidationState() {
+    updateValidationState(
+      cardNumber: fieldValidationStates.cardNumber,
+      cvv: fieldValidationStates.cvv,
+      expiry: fieldValidationStates.expiry,
+      cardholderName: fieldValidationStates.cardholderName
+    )
+  }
+
+  private func setupNetworkDetectionStream() {
+    guard let interactor = cardNetworkDetectionInteractor else { return }
+
+    networkDetectionTask = Task { [weak self] in
+      for await networks in interactor.networkDetectionStream {
+        guard let self else { return }
+        structuredState.availableNetworks = networks.map { PrimerCardNetwork(network: $0) }
+
+        if let firstNetwork = networks.first {
+          structuredState.selectedNetwork = PrimerCardNetwork(network: firstNetwork)
+          updateSurchargeAmount(for: networks.count == 1 ? firstNetwork : nil)
+        } else {
+          structuredState.selectedNetwork = nil
+          updateSurchargeAmount(for: nil)
+        }
+        preferredNetwork = nil
+      }
+    }
+  }
+
+  private func setupBinDataStream() {
+    guard let cardNetworkDetectionInteractor else { return }
+
+    binDataTask = Task { [weak self] in
+      for await binData in cardNetworkDetectionInteractor.binDataStream {
+        guard let self else { return }
+        structuredState.binData = binData
+      }
+    }
+  }
+
+  func updateField(_ fieldType: PrimerInputElementType, value: String) {
+    switch fieldType {
+    case .cardNumber:
+      updateCardNumber(value)
+    case .cvv:
+      updateCvv(value)
+    case .expiryDate:
+      updateExpiryDate(value)
+    case .cardholderName:
+      updateCardholderName(value)
+    case .postalCode:
+      updatePostalCode(value)
+    case .countryCode:
+      updateCountryCode(value)
+    case .city:
+      updateCity(value)
+    case .state:
+      updateState(value)
+    case .addressLine1:
+      updateAddressLine1(value)
+    case .addressLine2:
+      updateAddressLine2(value)
+    case .phoneNumber:
+      updatePhoneNumber(value)
+    case .firstName:
+      updateFirstName(value)
+    case .lastName:
+      updateLastName(value)
+    case .email:
+      updateEmail(value)
+    case .retailer:
+      updateRetailOutlet(value)
+    case .otp:
+      updateOtpCode(value)
+    default:
+      break
+    }
+  }
+
+  func updateCardNumber(_ cardNumber: String) {
+    structuredState.data[.cardNumber] = cardNumber
+    updateCardData()
+
+    Task {
+      await triggerNetworkDetection(for: cardNumber)
+    }
+  }
+
+  private func triggerNetworkDetection(for cardNumber: String) async {
+    guard let interactor = cardNetworkDetectionInteractor else { return }
+    await interactor.detectNetworks(for: cardNumber)
+  }
+
+  func updateCvv(_ cvv: String) {
+    structuredState.data[.cvv] = cvv
+    updateCardData()
+  }
+
+  func updateExpiryDate(_ expiryDate: String) {
+    structuredState.data[.expiryDate] = expiryDate
+    updateCardData()
+  }
+
+  func updateExpiryMonth(_ month: String) {
+    let currentExpiry = structuredState.data[.expiryDate]
+    let components = currentExpiry.components(separatedBy: "/")
+    let year = components.count >= 2 ? components[1] : ""
+    structuredState.data[.expiryDate] = "\(month)/\(year)"
+    updateCardData()
+  }
+
+  func updateExpiryYear(_ year: String) {
+    let currentExpiry = structuredState.data[.expiryDate]
+    let components = currentExpiry.components(separatedBy: "/")
+    let month = components.count >= 1 ? components[0] : ""
+    structuredState.data[.expiryDate] = "\(month)/\(year)"
+    updateCardData()
+  }
+
+  func updateCardholderName(_ name: String) {
+    structuredState.data[.cardholderName] = name
+    updateCardData()
+  }
+
+  func updateFirstName(_ firstName: String) {
+    structuredState.data[.firstName] = firstName
+  }
+
+  func updateLastName(_ lastName: String) {
+    structuredState.data[.lastName] = lastName
+  }
+
+  func updateEmail(_ email: String) {
+    structuredState.data[.email] = email
+  }
+
+  func updatePhoneNumber(_ phoneNumber: String) {
+    structuredState.data[.phoneNumber] = phoneNumber
+  }
+
+  func updateAddressLine1(_ addressLine1: String) {
+    structuredState.data[.addressLine1] = addressLine1
+  }
+
+  func updateAddressLine2(_ addressLine2: String) {
+    structuredState.data[.addressLine2] = addressLine2
+  }
+
+  func updateCity(_ city: String) {
+    structuredState.data[.city] = city
+  }
+
+  func updateState(_ state: String) {
+    structuredState.data[.state] = state
+  }
+
+  func updatePostalCode(_ postalCode: String) {
+    structuredState.data[.postalCode] = postalCode
+  }
+
+  func updateCountryCode(_ countryCode: String) {
+    structuredState.data[.countryCode] = countryCode
+
+    if let country = CountryCode.phoneNumberCountryCodes.first(where: {
+      $0.code.uppercased() == countryCode.uppercased()
+    }),
+      let countryCodeEnum = CountryCode(rawValue: country.code) {
+      structuredState.selectedCountry = PrimerCountry(
+        code: country.code,
+        name: country.name,
+        flag: countryCodeEnum.flag,
+        dialCode: country.dialCode
+      )
+    }
+
+    objectWillChange.send()
+  }
+
+  func updateOtpCode(_ otpCode: String) {
+    structuredState.data[.otp] = otpCode
+  }
+
+  func updateSelectedCardNetwork(_ network: String) {
+    if let cardNetwork = CardNetwork(rawValue: network) {
+      if cardNetwork == .unknown {
+        structuredState.selectedNetwork = nil
+        preferredNetwork = nil
+        updateSurchargeAmount(for: nil)
+      } else {
+        structuredState.selectedNetwork = PrimerCardNetwork(network: cardNetwork)
+        preferredNetwork = cardNetwork
+        updateSurchargeAmount(for: cardNetwork)
+      }
+    }
+
+    updateCardData()
+
+    Task {
+      await handleNetworkSelection(network)
+    }
+  }
+
+  private func handleNetworkSelection(_ networkString: String) async {
+    guard let interactor = cardNetworkDetectionInteractor,
+      let cardNetwork = CardNetwork(rawValue: networkString)
+    else { return }
+    await interactor.selectNetwork(cardNetwork)
+  }
+
+  func updateRetailOutlet(_ retailOutlet: String) {
+    structuredState.data[.retailer] = retailOutlet
+  }
+
+  func start() {}
+
+  func submit() {
+    guard !structuredState.isLoading else { return }
+    Task { [self] in
+      await performSubmit()
+    }
+  }
+
+  func onBack() {
+    if presentationContext.shouldShowBackButton {
+      checkoutScope?.checkoutNavigator.navigateBack()
+    }
+  }
+
+  func cancel() {
+    networkDetectionTask?.cancel()
+    networkDetectionTask = nil
+    binDataTask?.cancel()
+    binDataTask = nil
+    checkoutScope?.onDismiss()
+  }
+
+  lazy var selectCountry: PrimerSelectCountryScope = DefaultSelectCountryScope(cardFormScope: self)
+
+  private func updateCardData() {
+    let cardData = PrimerCardData(
+      cardNumber: structuredState.data[.cardNumber].replacingOccurrences(of: " ", with: ""),
+      expiryDate: structuredState.data[.expiryDate],
+      cvv: structuredState.data[.cvv],
+      cardholderName: structuredState.data[.cardholderName].isEmpty
+        ? nil : structuredState.data[.cardholderName]
+    )
+
+    if let preferredNetwork {
+      cardData.cardNetwork = preferredNetwork
+    }
+
+    currentCardData = cardData
+  }
+
+  private func createBillingAddress() -> ClientSession.Address? {
+    guard !structuredState.data[.postalCode].isEmpty else { return nil }
+
+    return ClientSession.Address(
+      firstName: structuredState.data[.firstName].isEmpty ? nil : structuredState.data[.firstName],
+      lastName: structuredState.data[.lastName].isEmpty ? nil : structuredState.data[.lastName],
+      addressLine1: structuredState.data[.addressLine1].isEmpty
+        ? nil : structuredState.data[.addressLine1],
+      addressLine2: structuredState.data[.addressLine2].isEmpty
+        ? nil : structuredState.data[.addressLine2],
+      city: structuredState.data[.city].isEmpty ? nil : structuredState.data[.city],
+      postalCode: structuredState.data[.postalCode],
+      state: structuredState.data[.state].isEmpty ? nil : structuredState.data[.state],
+      countryCode: structuredState.data[.countryCode].isEmpty
+        ? nil : CountryCode(rawValue: structuredState.data[.countryCode])
+    )
+  }
+
+  func performSubmit() async {
+    structuredState.isLoading = true
+    checkoutScope?.startProcessing()
+
+    await analyticsInteractor?.trackEvent(
+      .paymentSubmitted,
+      metadata: .payment(PaymentEvent(paymentMethod: PrimerPaymentMethodType.paymentCard.rawValue)))
+
+    do {
+      try await checkoutScope?.invokeBeforePaymentCreate(
+        paymentMethodType: PrimerPaymentMethodType.paymentCard.rawValue
+      )
+      try await sendBillingAddressIfNeeded()
+      let cardData = try await prepareCardPaymentData()
+
+      await analyticsInteractor?.trackEvent(
+        .paymentProcessingStarted,
+        metadata: .payment(
+          PaymentEvent(paymentMethod: PrimerPaymentMethodType.paymentCard.rawValue)))
+
+      let result = try await processCardPayment(cardData: cardData)
+      await handlePaymentSuccess(result)
+    } catch {
+      await handlePaymentError(error)
+    }
+  }
+
+  private func sendBillingAddressIfNeeded() async throws {
+    guard !billingAddressSent, let billingAddress = createBillingAddress() else { return }
+    try await ClientSessionActionsModule
+      .updateBillingAddressViaClientSessionActionWithAddressIfNeeded(billingAddress)
+    billingAddressSent = true
+  }
+
+  private func prepareCardPaymentData() async throws -> CardPaymentData {
+    let (expiryMonth, fullYear) = try parseExpiryComponents()
+
+    return CardPaymentData(
+      cardNumber: structuredState.data[.cardNumber].replacingOccurrences(of: " ", with: ""),
+      cvv: structuredState.data[.cvv],
+      expiryMonth: expiryMonth,
+      expiryYear: fullYear,
+      cardholderName: structuredState.data[.cardholderName],
+      selectedNetwork: preferredNetwork
+    )
+  }
+
+  private func parseExpiryComponents() throws -> (month: String, year: String) {
+    let expiryComponents = structuredState.data[.expiryDate].components(separatedBy: "/")
+    guard expiryComponents.count == 2 else {
+      throw PrimerError.invalidValue(
+        key: "expiryDate",
+        value: structuredState.data[.expiryDate],
+        reason: "Invalid expiry date format. Expected MM/YY or MM/YYYY"
+      )
+    }
+
+    let expiryMonth = expiryComponents[0]
+    let expiryYear = expiryComponents[1]
+    let fullYear = expiryYear.count == 2 ? "20\(expiryYear)" : expiryYear
+
+    return (expiryMonth, fullYear)
+  }
+
+  private func processCardPayment(cardData: CardPaymentData) async throws -> PaymentResult {
+    try await processCardPaymentInteractor.execute(cardData: cardData)
+  }
+
+  private func handlePaymentError(_ error: Error) async {
+    structuredState.isLoading = false
+    billingAddressSent = false
+    let primerError =
+      error as? PrimerError ?? PrimerError.unknown(message: error.localizedDescription)
+    checkoutScope?.handlePaymentError(primerError)
+  }
+
+  private func handlePaymentSuccess(_ result: PaymentResult) async {
+    structuredState.isLoading = false
+    checkoutScope?.handlePaymentSuccess(result)
+  }
+
+  private func updateSurchargeAmount(for network: CardNetwork?) {
+    guard let network else {
+      structuredState.surchargeAmountRaw = nil
+      structuredState.surchargeAmount = nil
+      return
+    }
+
+    guard let surcharge = network.surcharge,
+      configurationService.apiConfiguration?.clientSession?.order?.merchantAmount == nil,
+      let currency = configurationService.currency
+    else {
+      structuredState.surchargeAmountRaw = nil
+      structuredState.surchargeAmount = nil
+      return
+    }
+
+    let formattedSurcharge = "+ \(surcharge.toCurrencyString(currency: currency))"
+    structuredState.surchargeAmountRaw = surcharge
+    structuredState.surchargeAmount = formattedSurcharge
+  }
+
+  func updateValidationState(cardNumber: Bool, cvv: Bool, expiry: Bool, cardholderName: Bool) {
+    let hasValidCardNumber =
+      cardNumber
+      && !structuredState.data[.cardNumber].replacingOccurrences(of: " ", with: "").isEmpty
+    let hasValidCvv = cvv && !structuredState.data[.cvv].isEmpty
+    let hasValidExpiry = expiry && !structuredState.data[.expiryDate].isEmpty
+    let hasValidCardholderName = cardholderName && !structuredState.data[.cardholderName].isEmpty
+
+    let wasValid = structuredState.isValid
+
+    structuredState.isValid =
+      hasValidCardNumber && hasValidCvv && hasValidExpiry && hasValidCardholderName
+
+    if structuredState.isValid {
+      structuredState.fieldErrors.removeAll()
+
+      if !wasValid {
+        Task { [self] in
+          await analyticsInteractor?.trackEvent(
+            .paymentDetailsEntered,
+            metadata: .payment(
+              PaymentEvent(paymentMethod: PrimerPaymentMethodType.paymentCard.rawValue)))
+        }
+      }
+    }
+  }
+
+  func getFieldValue(_ fieldType: PrimerInputElementType) -> String {
+    structuredState.data[fieldType]
+  }
+
+  func setFieldError(
+    _ fieldType: PrimerInputElementType, message: String, errorCode: String? = nil
+  ) {
+    structuredState.setError(message, for: fieldType, errorCode: errorCode)
+    announceFieldErrors()
+  }
+
+  func clearFieldError(_ fieldType: PrimerInputElementType) {
+    structuredState.clearError(for: fieldType)
+  }
+
+  func getFieldError(_ fieldType: PrimerInputElementType) -> String? {
+    structuredState.errorMessage(for: fieldType)
+  }
+
+  func getFormConfiguration() -> CardFormConfiguration {
+    formConfiguration
+  }
+
+  func getBillingAddressConfiguration() -> BillingAddressConfiguration {
+    let fields = formConfiguration.billingFields
+    return BillingAddressConfiguration(
+      showFirstName: fields.contains(.firstName),
+      showLastName: fields.contains(.lastName),
+      showEmail: fields.contains(.email),
+      showPhoneNumber: fields.contains(.phoneNumber),
+      showAddressLine1: fields.contains(.addressLine1),
+      showAddressLine2: fields.contains(.addressLine2),
+      showCity: fields.contains(.city),
+      showState: fields.contains(.state),
+      showPostalCode: fields.contains(.postalCode),
+      showCountry: fields.contains(.countryCode)
+    )
+  }
+
+  private func announceFieldErrors() {
+    guard let container = DIContainer.currentSync,
+      let announcementService = try? container.resolveSync(AccessibilityAnnouncementService.self)
+    else {
+      return
+    }
+
+    let errorCount = structuredState.fieldErrors.count
+
+    guard errorCount > 0 else { return }
+
+    if errorCount == 1 {
+      // Single error - announce the error message directly
+      if let firstError = structuredState.fieldErrors.first {
+        announcementService.announceError(firstError.message)
+      }
+    } else {
+      // Multiple errors - announce count first, then first error details
+      let countMessage = CheckoutComponentsStrings.a11yMultipleErrors(errorCount)
+      let firstErrorMessage = structuredState.fieldErrors.first?.message ?? ""
+      let combinedMessage = "\(countMessage). \(firstErrorMessage)"
+      announcementService.announceError(combinedMessage)
+    }
+  }
+
+}
