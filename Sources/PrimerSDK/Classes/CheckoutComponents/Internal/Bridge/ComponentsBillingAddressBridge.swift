@@ -54,18 +54,3 @@ public final class ComponentsBillingAddressBridge {
         }
     }
 }
-
-private extension ClientSession.Address {
-    init(from address: PrimerAddress) {
-        self.init(
-            firstName: address.firstName,
-            lastName: address.lastName,
-            addressLine1: address.addressLine1,
-            addressLine2: address.addressLine2,
-            city: address.city,
-            postalCode: address.postalCode,
-            state: address.state,
-            countryCode: address.countryCode.flatMap(CountryCode.init(rawValue:))
-        )
-    }
-}
