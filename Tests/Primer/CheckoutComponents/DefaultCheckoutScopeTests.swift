@@ -556,6 +556,39 @@ final class DefaultCheckoutScopeBehaviorTests: XCTestCase {
         XCTAssertNil(scope)
     }
 
+    // MARK: - getPaymentMethodScope per-protocol existential overload Tests
+
+    func test_getPaymentMethodScope_perProtocol_emptyCache_returnsNil() {
+        // Given
+        sut = makeSut()
+
+        // Then — every per-protocol overload returns nil when cache is empty.
+        XCTAssertNil(sut.getPaymentMethodScope((any PrimerCardFormScope).self))
+        XCTAssertNil(sut.getPaymentMethodScope((any PrimerKlarnaScope).self))
+        XCTAssertNil(sut.getPaymentMethodScope((any PrimerAdyenKlarnaScope).self))
+        XCTAssertNil(sut.getPaymentMethodScope((any PrimerWebRedirectScope).self))
+        XCTAssertNil(sut.getPaymentMethodScope((any PrimerFormRedirectScope).self))
+        XCTAssertNil(sut.getPaymentMethodScope((any PrimerBillingAddressRedirectScope).self))
+        XCTAssertNil(sut.getPaymentMethodScope((any PrimerApplePayScope).self))
+        XCTAssertNil(sut.getPaymentMethodScope((any PrimerPayPalScope).self))
+        XCTAssertNil(sut.getPaymentMethodScope((any PrimerQRCodeScope).self))
+        XCTAssertNil(sut.getPaymentMethodScope((any PrimerAchScope).self))
+    }
+
+    func test_getPaymentMethodScope_perProtocol_populatedCache_returnsCachedScope() {
+        // Given
+        sut = makeSut()
+        let mock = MockCardFormScope()
+        sut.paymentMethodScopeCache[PrimerPaymentMethodType.paymentCard.rawValue] = mock
+
+        // When
+        let scope = sut.getPaymentMethodScope((any PrimerCardFormScope).self)
+
+        // Then
+        XCTAssertNotNil(scope)
+        XCTAssertTrue(scope === mock)
+    }
+
     // MARK: - setVaultedPaymentMethods Tests (on real scope)
 
     func test_setVaultedPaymentMethods_setsMethodsAndDefaultSelection() {

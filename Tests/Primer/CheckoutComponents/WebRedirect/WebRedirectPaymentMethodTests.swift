@@ -168,10 +168,8 @@ final class WebRedirectPaymentMethodTests: XCTestCase {
         )
 
         // Then
-        XCTAssertNotNil(scope)
-        if let webRedirectScope = scope as? DefaultWebRedirectScope {
-            XCTAssertEqual(webRedirectScope.presentationContext, .direct)
-        }
+        let webRedirectScope = try XCTUnwrap(scope as? DefaultWebRedirectScope)
+        XCTAssertEqual(webRedirectScope.presentationContext, .direct)
     }
 
     func test_registeredScope_withMultiplePaymentMethods_usesPaymentSelectionContext() async throws {
@@ -188,10 +186,8 @@ final class WebRedirectPaymentMethodTests: XCTestCase {
         )
 
         // Then
-        XCTAssertNotNil(scope)
-        if let webRedirectScope = scope as? DefaultWebRedirectScope {
-            XCTAssertEqual(webRedirectScope.presentationContext, .fromPaymentSelection)
-        }
+        let webRedirectScope = try XCTUnwrap(scope as? DefaultWebRedirectScope)
+        XCTAssertEqual(webRedirectScope.presentationContext, .fromPaymentSelection)
     }
 
     // MARK: - getView via Registry

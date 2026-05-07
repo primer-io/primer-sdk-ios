@@ -9,15 +9,13 @@ import SwiftUI
 @available(iOS 15.0, *)
 struct CardPaymentMethod: PaymentMethodProtocol {
 
-  typealias ScopeType = DefaultCardFormScope
-
   static let paymentMethodType: String = PrimerPaymentMethodType.paymentCard.rawValue
 
   @MainActor
   static func createScope(
     checkoutScope: PrimerCheckoutScope,
     diContainer: any ContainerProtocol
-  ) async throws -> DefaultCardFormScope {
+  ) async throws -> any PrimerPaymentMethodScope {
 
     let (defaultCheckoutScope, paymentMethodContext) = try DefaultCheckoutScope.validated(from: checkoutScope)
 
@@ -70,21 +68,14 @@ struct CardPaymentMethod: PaymentMethodProtocol {
 
   @MainActor
   static func createView(checkoutScope: any PrimerCheckoutScope) -> AnyView? {
+    // ACC-7173: audit §2a — CardFormScreen takes `any CardFormFieldScopeInternal` (sub-protocol of
+    // PrimerCardFormScope); rebinding to PrimerCardFormScope.self would force a downcast through
+    // an internal protocol which reintroduces the silent-no-op pattern. Keep concrete metatype.
     checkoutScope.getPaymentMethodScope(DefaultCardFormScope.self)
       .map { scope in
         scope.screen.map { AnyView($0(scope)) }
           ?? AnyView(CardFormScreen(scope: scope))
       }
-  }
-
-  @MainActor
-  func content<V: View>(@ViewBuilder content: @escaping (DefaultCardFormScope) -> V) -> AnyView {
-    fatalError("Custom content method should be implemented by the CheckoutComponents framework")
-  }
-
-  @MainActor
-  func defaultContent() -> AnyView {
-    fatalError("Default content method should be implemented by the CheckoutComponents framework")
   }
 }
 
@@ -93,6 +84,10 @@ extension CardPaymentMethod {
 
   @MainActor
   static func register() {
-    PaymentMethodRegistry.shared.register(CardPaymentMethod.self)
+    PaymentMethodRegistry.shared.register(
+      forKey: paymentMethodType,
+      scopeCreator: { try await createScope(checkoutScope: $0, diContainer: $1) },
+      viewCreator: { createView(checkoutScope: $0) }
+    )
   }
 }

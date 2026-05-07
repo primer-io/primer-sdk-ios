@@ -9,15 +9,13 @@ import SwiftUI
 @available(iOS 15.0, *)
 struct KlarnaPaymentMethod: PaymentMethodProtocol {
 
-  typealias ScopeType = DefaultKlarnaScope
-
   static let paymentMethodType: String = PrimerPaymentMethodType.klarna.rawValue
 
   @MainActor
   static func createScope(
     checkoutScope: PrimerCheckoutScope,
     diContainer: any ContainerProtocol
-  ) async throws -> DefaultKlarnaScope {
+  ) async throws -> any PrimerPaymentMethodScope {
 
     let (defaultCheckoutScope, paymentMethodContext) = try DefaultCheckoutScope.validated(from: checkoutScope)
 
@@ -48,23 +46,13 @@ struct KlarnaPaymentMethod: PaymentMethodProtocol {
 
   @MainActor
   static func createView(checkoutScope: any PrimerCheckoutScope) -> AnyView? {
-    guard let klarnaScope = checkoutScope.getPaymentMethodScope(DefaultKlarnaScope.self) else {
+    guard let klarnaScope = checkoutScope.getPaymentMethodScope(PrimerKlarnaScope.self) else {
       PrimerLogging.shared.logger.error(message: "Failed to retrieve Klarna scope from checkout scope")
       return nil
     }
 
     return klarnaScope.screen.map { AnyView($0(klarnaScope)) }
       ?? AnyView(KlarnaView(scope: klarnaScope))
-  }
-
-  @MainActor
-  func content<V: View>(@ViewBuilder content: @escaping (DefaultKlarnaScope) -> V) -> AnyView {
-    fatalError("Custom content method should be implemented by the CheckoutComponents framework")
-  }
-
-  @MainActor
-  func defaultContent() -> AnyView {
-    fatalError("Default content method should be implemented by the CheckoutComponents framework")
   }
 }
 
@@ -73,7 +61,11 @@ extension KlarnaPaymentMethod {
 
   @MainActor
   static func register() {
-    PaymentMethodRegistry.shared.register(KlarnaPaymentMethod.self)
+    PaymentMethodRegistry.shared.register(
+      forKey: paymentMethodType,
+      scopeCreator: { try await createScope(checkoutScope: $0, diContainer: $1) },
+      viewCreator: { createView(checkoutScope: $0) }
+    )
 
     #if DEBUG
       TestKlarnaPaymentMethod.register()
@@ -85,15 +77,13 @@ extension KlarnaPaymentMethod {
   @available(iOS 15.0, *)
   struct TestKlarnaPaymentMethod: PaymentMethodProtocol {
 
-    typealias ScopeType = DefaultKlarnaScope
-
     static let paymentMethodType: String = "PRIMER_TEST_KLARNA"
 
     @MainActor
     static func createScope(
       checkoutScope: PrimerCheckoutScope,
       diContainer: any ContainerProtocol
-    ) async throws -> DefaultKlarnaScope {
+    ) async throws -> any PrimerPaymentMethodScope {
       try await KlarnaPaymentMethod.createScope(checkoutScope: checkoutScope, diContainer: diContainer)
     }
 
@@ -103,18 +93,12 @@ extension KlarnaPaymentMethod {
     }
 
     @MainActor
-    func content<V: View>(@ViewBuilder content: @escaping (DefaultKlarnaScope) -> V) -> AnyView {
-      fatalError("Custom content method should be implemented by the CheckoutComponents framework")
-    }
-
-    @MainActor
-    func defaultContent() -> AnyView {
-      fatalError("Default content method should be implemented by the CheckoutComponents framework")
-    }
-
-    @MainActor
     static func register() {
-      PaymentMethodRegistry.shared.register(TestKlarnaPaymentMethod.self)
+      PaymentMethodRegistry.shared.register(
+        forKey: paymentMethodType,
+        scopeCreator: { try await createScope(checkoutScope: $0, diContainer: $1) },
+        viewCreator: { createView(checkoutScope: $0) }
+      )
     }
   }
 #endif

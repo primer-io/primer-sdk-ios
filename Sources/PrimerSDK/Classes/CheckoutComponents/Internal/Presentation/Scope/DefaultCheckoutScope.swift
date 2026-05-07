@@ -374,6 +374,57 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
     getPaymentMethodScope(for: methodType.rawValue)
   }
 
+  // MARK: - Per-protocol scope access (existential metatypes)
+
+  func getPaymentMethodScope(_ scopeType: (any PrimerCardFormScope).Type) -> (any PrimerCardFormScope)? {
+    findScope()
+  }
+
+  func getPaymentMethodScope(_ scopeType: (any PrimerKlarnaScope).Type) -> (any PrimerKlarnaScope)? {
+    findScope()
+  }
+
+  func getPaymentMethodScope(_ scopeType: (any PrimerAdyenKlarnaScope).Type) -> (any PrimerAdyenKlarnaScope)? {
+    findScope()
+  }
+
+  func getPaymentMethodScope(_ scopeType: (any PrimerWebRedirectScope).Type) -> (any PrimerWebRedirectScope)? {
+    findScope()
+  }
+
+  func getPaymentMethodScope(_ scopeType: (any PrimerFormRedirectScope).Type) -> (any PrimerFormRedirectScope)? {
+    findScope()
+  }
+
+  func getPaymentMethodScope(_ scopeType: (any PrimerBillingAddressRedirectScope).Type) -> (any PrimerBillingAddressRedirectScope)? {
+    findScope()
+  }
+
+  func getPaymentMethodScope(_ scopeType: (any PrimerApplePayScope).Type) -> (any PrimerApplePayScope)? {
+    findScope()
+  }
+
+  func getPaymentMethodScope(_ scopeType: (any PrimerPayPalScope).Type) -> (any PrimerPayPalScope)? {
+    findScope()
+  }
+
+  func getPaymentMethodScope(_ scopeType: (any PrimerQRCodeScope).Type) -> (any PrimerQRCodeScope)? {
+    findScope()
+  }
+
+  func getPaymentMethodScope(_ scopeType: (any PrimerAchScope).Type) -> (any PrimerAchScope)? {
+    findScope()
+  }
+
+  /// Returns the first cached scope conforming to the requested protocol existential.
+  private func findScope<P>() -> P? {
+    guard let scope = paymentMethodScopeCache.values.first(where: { $0 is P }) as? P else { return nil }
+    if let paymentMethodScope = scope as? any PrimerPaymentMethodScope {
+      currentPaymentMethodScope = paymentMethodScope
+    }
+    return scope
+  }
+
   func onDismiss() {
     updateState(.dismissed)
     updateNavigationState(.dismissed)

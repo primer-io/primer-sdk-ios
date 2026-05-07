@@ -9,15 +9,13 @@ import SwiftUI
 @available(iOS 15.0, *)
 struct AdyenKlarnaPaymentMethod: PaymentMethodProtocol {
 
-    typealias ScopeType = DefaultAdyenKlarnaScope
-
     static let paymentMethodType: String = PrimerPaymentMethodType.adyenKlarna.rawValue
 
     @MainActor
     static func createScope(
         checkoutScope: PrimerCheckoutScope,
         diContainer: any ContainerProtocol
-    ) async throws -> DefaultAdyenKlarnaScope {
+    ) async throws -> any PrimerPaymentMethodScope {
 
         let (defaultCheckoutScope, paymentMethodContext) = try DefaultCheckoutScope.validated(from: checkoutScope)
 
@@ -57,23 +55,13 @@ struct AdyenKlarnaPaymentMethod: PaymentMethodProtocol {
 
     @MainActor
     static func createView(checkoutScope: any PrimerCheckoutScope) -> AnyView? {
-        guard let adyenKlarnaScope = checkoutScope.getPaymentMethodScope(DefaultAdyenKlarnaScope.self) else {
+        guard let adyenKlarnaScope = checkoutScope.getPaymentMethodScope(PrimerAdyenKlarnaScope.self) else {
             PrimerLogging.shared.logger.error(message: "Failed to retrieve Adyen Klarna scope from checkout scope")
             return nil
         }
 
         return adyenKlarnaScope.screen.map { AnyView($0(adyenKlarnaScope)) }
             ?? AnyView(AdyenKlarnaScreen(scope: adyenKlarnaScope))
-    }
-
-    @MainActor
-    func content<V: View>(@ViewBuilder content: @escaping (DefaultAdyenKlarnaScope) -> V) -> AnyView {
-        fatalError("Custom content method should be implemented by the CheckoutComponents framework")
-    }
-
-    @MainActor
-    func defaultContent() -> AnyView {
-        fatalError("Default content method should be implemented by the CheckoutComponents framework")
     }
 }
 
@@ -82,6 +70,10 @@ extension AdyenKlarnaPaymentMethod {
 
     @MainActor
     static func register() {
-        PaymentMethodRegistry.shared.register(AdyenKlarnaPaymentMethod.self)
+        PaymentMethodRegistry.shared.register(
+            forKey: paymentMethodType,
+            scopeCreator: { try await createScope(checkoutScope: $0, diContainer: $1) },
+            viewCreator: { createView(checkoutScope: $0) }
+        )
     }
 }
