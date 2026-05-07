@@ -8,16 +8,16 @@ import SwiftUI
 
 @available(iOS 15.0, *)
 struct CheckoutScopeObserver: View, LogReporter {
-  private let scope: DefaultCheckoutScope
+  private let scope: any CheckoutScopeInternal
   private let theme: PrimerCheckoutTheme
   private let onCompletion: ((PrimerCheckoutState) -> Void)?
-  @State private var navigationState: DefaultCheckoutScope.NavigationState = .loading
+  @State private var navigationState: CheckoutNavigationState = .loading
   @Environment(\.colorScheme) private var colorScheme
   @Environment(\.bridgeController) private var bridgeController
   @StateObject private var designTokensManager = DesignTokensManager()
 
   init(
-    scope: DefaultCheckoutScope,
+    scope: any CheckoutScopeInternal,
     theme: PrimerCheckoutTheme = PrimerCheckoutTheme(),
     onCompletion: ((PrimerCheckoutState) -> Void)?
   ) {
@@ -42,12 +42,13 @@ struct CheckoutScopeObserver: View, LogReporter {
         .animation(.easeInOut(duration: 0.3), value: navigationState)
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-    .environmentObject(scope)
     .environment(\.diContainer, DIContainer.currentSync)
     .environment(\.designTokens, designTokensManager.tokens)
     .environment(\.primerCheckoutScope, scope)
-    .onReceive(scope.$navigationState) { newState in
-      navigationState = newState
+    .task {
+      for await newState in scope.navigationStateStream {
+        navigationState = newState
+      }
     }
     .onAppear {
       Task {
@@ -120,10 +121,7 @@ struct CheckoutScopeObserver: View, LogReporter {
       selectedVaultedPaymentMethod: scope.selectedVaultedPaymentMethod,
       onSelect: { method in
         scope.setSelectedVaultedPaymentMethod(method)
-        if let selectionScope = scope.paymentMethodSelection
-          as? DefaultPaymentMethodSelectionScope {
-          selectionScope.collapsePaymentMethods()
-        }
+        scope.paymentMethodSelectionInternal.collapsePaymentMethods()
         scope.checkoutNavigator.navigateBack()
       },
       onBack: {
@@ -135,23 +133,14 @@ struct CheckoutScopeObserver: View, LogReporter {
     )
   }
 
-  @ViewBuilder
   private func makeDeleteConfirmationView(
     method: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod
   ) -> some View {
-    if let selectionScope = scope.paymentMethodSelection as? DefaultPaymentMethodSelectionScope {
-      DeleteVaultedPaymentMethodConfirmationScreen(
-        vaultedPaymentMethod: method,
-        navigator: scope.checkoutNavigator,
-        scope: selectionScope
-      )
-    } else {
-      EmptyView().onAppear {
-        logger.error(
-          message: "Cannot cast paymentMethodSelection to DefaultPaymentMethodSelectionScope")
-        scope.checkoutNavigator.navigateBack()
-      }
-    }
+    DeleteVaultedPaymentMethodConfirmationScreen(
+      vaultedPaymentMethod: method,
+      navigator: scope.checkoutNavigator,
+      scope: scope.paymentMethodSelectionInternal
+    )
   }
 
   @ViewBuilder

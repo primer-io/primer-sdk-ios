@@ -8,7 +8,7 @@ import SwiftUI
 
 @available(iOS 15.0, *)
 @MainActor
-final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSelectionScope, ObservableObject,
+final class DefaultPaymentMethodSelectionScope: PaymentMethodSelectionScopeInternal, ObservableObject,
   LogReporter {
   // MARK: - Properties
 
