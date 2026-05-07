@@ -1,22 +1,23 @@
 //
 //  MockPrimerAPIAnalyticsClient.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import XCTest
 @testable import PrimerSDK
+import XCTest
 
 class MockPrimerAPIAnalyticsClient: PrimerAPIClientAnalyticsProtocol {
 
     var shouldSucceed: Bool = true
 
     var onSendAnalyticsEvent: (([PrimerSDK.Analytics.Event]?) -> Void)?
+    var onSendRawAnalyticsEvent: ((Data) -> Void)?
 
     var batches: [[Analytics.Event]] = []
 
     func sendAnalyticsEvents(clientToken: DecodedJWTToken?, url: URL, body: [Analytics.Event]?, completion: @escaping ResponseHandler) {
-        guard let body = body else {
+        guard let body else {
             XCTFail(); return
         }
         batches.append(body)
@@ -25,18 +26,27 @@ class MockPrimerAPIAnalyticsClient: PrimerAPIClientAnalyticsProtocol {
         } else {
             completion(.failure(PrimerError.unknown()))
         }
-        self.onSendAnalyticsEvent?(body)
+        onSendAnalyticsEvent?(body)
     }
 
     func sendAnalyticsEvents(clientToken: PrimerSDK.DecodedJWTToken?, url: URL, body: [PrimerSDK.Analytics.Event]?) async throws -> Analytics.Service.Response {
-        guard let body = body else {
+        guard let body else {
             XCTFail();
             throw PrimerError.unknown()
         }
         batches.append(body)
-        self.onSendAnalyticsEvent?(body)
+        onSendAnalyticsEvent?(body)
         if shouldSucceed {
             return .init(id: nil, result: nil)
+        } else {
+            throw PrimerError.unknown()
+        }
+    }
+
+    func sendRawAnalyticsEvents(url: URL, body: Data) async throws -> Analytics.Service.Response {
+        if shouldSucceed {
+            onSendRawAnalyticsEvent?(body)
+            return Analytics.Service.Response(id: nil, result: nil)
         } else {
             throw PrimerError.unknown()
         }

@@ -134,12 +134,12 @@ extension BanksListView {
                     .padding(.horizontal, metrics.hPadding)
                     .addAccessibilityIdentifier(identifier: AccessibilityIdentifier.BanksComponent.searchBar.rawValue)
                     .onTapGesture {
-                        self.isEditing = true
+                        isEditing = true
                     }
                 if isEditing {
                     Button(action: {
-                        self.isEditing = false
-                        self.text = ""
+                        isEditing = false
+                        text = ""
                     }) {
                         Text("Cancel")
                     }

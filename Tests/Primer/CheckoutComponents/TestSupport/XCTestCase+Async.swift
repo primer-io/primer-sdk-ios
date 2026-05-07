@@ -246,11 +246,11 @@ enum AsyncTestError: Error, LocalizedError {
     var errorDescription: String? {
         switch self {
         case let .timeout(message):
-            return message
+            message
         case .streamDidNotEmit:
-            return "AsyncStream completed without emitting any values"
+            "AsyncStream completed without emitting any values"
         case .noMatchingValue:
-            return "AsyncStream completed without emitting a matching value"
+            "AsyncStream completed without emitting a matching value"
         }
     }
 }

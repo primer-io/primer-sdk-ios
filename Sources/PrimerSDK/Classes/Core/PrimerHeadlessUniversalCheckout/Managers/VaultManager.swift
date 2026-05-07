@@ -47,7 +47,7 @@ extension PrimerHeadlessUniversalCheckout {
         }
 
         public func configure() throws {
-            try self.validate()
+            try validate()
         }
 
         func validateAdditionalDataSynchronously(vaultedPaymentMethodId: String, vaultedPaymentMethodAdditionalData: PrimerVaultedPaymentMethodAdditionalData) -> [Error]? {
@@ -116,7 +116,7 @@ extension PrimerHeadlessUniversalCheckout {
         }
 
         public func deleteVaultedPaymentMethod(id: String, completion: @escaping (_ error: Error?) -> Void) {
-            guard let vaultedPaymentMethods = self.vaultedPaymentMethods, vaultedPaymentMethods.contains(where: { $0.id == id }) else {
+            guard let vaultedPaymentMethods, vaultedPaymentMethods.contains(where: { $0.id == id }) else {
                 let err = handled(primerError: .invalidVaultedPaymentMethodId(vaultedPaymentMethodId: id))
                 DispatchQueue.main.async {
                     completion(err)
@@ -211,14 +211,14 @@ extension PrimerHeadlessUniversalCheckout {
 
         private func createCreatePaymentError() -> Error {
             handled(primerError: .failedToCreatePayment(
-                paymentMethodType: self.paymentMethodType,
+                paymentMethodType: paymentMethodType,
                 description: "Failed to find checkout data after completing payment"
             ))
         }
 
         private func createResumePaymentError() -> Error {
             handled(primerError: .failedToResumePayment(
-                paymentMethodType: self.paymentMethodType,
+                paymentMethodType: paymentMethodType,
                 description: "Failed to find checkout data after resuming payment"
             ))
         }
@@ -268,11 +268,10 @@ extension PrimerHeadlessUniversalCheckout {
                     return (decodedJWTToken, paymentMethodTokenData)
 
                 case let .fail(message):
-                    let merchantErr: Error
-                    if let message {
-                        merchantErr = PrimerError.merchantError(message: message)
+                    let merchantErr: Error = if let message {
+                        PrimerError.merchantError(message: message)
                     } else {
-                        merchantErr = NSError.emptyDescriptionError
+                        NSError.emptyDescriptionError
                     }
                     throw merchantErr
                 }
@@ -389,7 +388,7 @@ extension PrimerHeadlessUniversalCheckout {
 
             do {
                 try await presentWebRedirectViewControllerWithRedirectUrl(redirectUrl)
-                self.webViewCompletion = { _, err in
+                webViewCompletion = { _, err in
                     if let err {
                         pollingModule?.cancel(withError: err)
                         pollingModule = nil
@@ -426,7 +425,7 @@ extension PrimerHeadlessUniversalCheckout {
 
                 do {
                     try await presentWebRedirectViewControllerWithRedirectUrl(redirectUrl)
-                    self.webViewCompletion = { _, err in
+                    webViewCompletion = { _, err in
                         if let err {
                             pollingModule?.cancel(withError: err)
                             pollingModule = nil
@@ -469,11 +468,10 @@ extension PrimerHeadlessUniversalCheckout {
             if let resumeDecisionType = resumeDecision.type as? PrimerResumeDecision.DecisionType {
                 switch resumeDecisionType {
                 case let .fail(message):
-                    let err: Error
-                    if let message {
-                        err = PrimerError.merchantError(message: message)
+                    let err: Error = if let message {
+                        PrimerError.merchantError(message: message)
                     } else {
-                        err = NSError.emptyDescriptionError
+                        NSError.emptyDescriptionError
                     }
                     throw err
 
@@ -481,7 +479,7 @@ extension PrimerHeadlessUniversalCheckout {
                     return nil
                 }
             } else if resumeDecision.type is PrimerHeadlessUniversalCheckoutResumeDecision.DecisionType {
-                self.paymentCheckoutData = nil
+                paymentCheckoutData = nil
                 return nil
             } else {
                 preconditionFailure("A relevant decision type was not found - decision type was: \(type(of: resumeDecision.type))")
@@ -566,10 +564,10 @@ extension PrimerHeadlessUniversalCheckout.VaultManager: SFSafariViewControllerDe
 
     public func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
         if let webViewCompletion {
-            webViewCompletion(nil, handled(primerError: .cancelled(paymentMethodType: self.paymentMethodType)))
+            webViewCompletion(nil, handled(primerError: .cancelled(paymentMethodType: paymentMethodType)))
         }
 
-        self.webViewCompletion = nil
+        webViewCompletion = nil
     }
 
     public func safariViewController(_ controller: SFSafariViewController, initialLoadDidRedirectTo URL: URL) {
@@ -637,10 +635,10 @@ extension PrimerHeadlessUniversalCheckout {
 extension PrimerPaymentMethodTokenData {
 
     var vaultedPaymentMethod: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod? {
-        guard let id = self.id,
-              let paymentMethodType = self.paymentMethodType,
-              let paymentInstrumentData = self.paymentInstrumentData,
-              let analyticsId = self.analyticsId
+        guard let id,
+              let paymentMethodType,
+              let paymentInstrumentData,
+              let analyticsId
         else {
             return nil
         }
@@ -648,7 +646,7 @@ extension PrimerPaymentMethodTokenData {
         return PrimerHeadlessUniversalCheckout.VaultedPaymentMethod(
             id: id,
             paymentMethodType: paymentMethodType,
-            paymentInstrumentType: self.paymentInstrumentType,
+            paymentInstrumentType: paymentInstrumentType,
             paymentInstrumentData: paymentInstrumentData,
             analyticsId: analyticsId
         )

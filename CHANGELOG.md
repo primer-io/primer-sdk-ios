@@ -4,6 +4,27 @@
 
 - Checkout Components
 
+## 2.47.0 (2026-04-24)
+
+### Feat
+
+- Add setBillingAddress public API on RawDataManager (ACC-6916) (#1707)
+- Expose PrimerCardNetworkTraits for card network data access (#1710)
+- Implement Backend Driven Checkout (#1679)
+
+### Fix
+
+- Fix some errors found during BDC testing (#1709)
+- Fix stale test
+- **ci**: pin CI/CD actions to commit SHAs instead of mutable refs (#1610)
+- Replace hardcoded test JWTs with programmatic mock tokens (#1600)
+- Extract release notes from CHANGELOG.md to avoid duplicates (#1591)
+
+### Refactor
+
+- Remove push to bank VC for ADYEN_IDEAL (#1675)
+- Run SwiftFormat on PrimerAPIClient (#1671)
+
 ## 2.46.1 (2026-03-11)
 
 ### Fix

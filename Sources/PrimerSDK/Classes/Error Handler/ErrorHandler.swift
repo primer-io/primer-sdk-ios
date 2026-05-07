@@ -26,7 +26,7 @@ final class ErrorHandler: LogReporter {
         line: Int = #line,
         function: String = #function
     ) {
-        self.logger.error(message: error.localizedDescription, file: file, line: line, function: function)
+        logger.error(message: error.localizedDescription, file: file, line: line, function: function)
 
         // Check if error should be filtered from server reporting
         if shouldFilterError(error) {
@@ -102,9 +102,9 @@ final class ErrorHandler: LogReporter {
         switch error {
         case .applePayNoCardsInWallet,
              .applePayDeviceNotSupported:
-            return .warning
+            .warning
         default:
-            return .error
+            .error
         }
     }
 }

@@ -1145,7 +1145,8 @@ class DebugAppPrimerCheckoutPresenterDelegate: PrimerCheckoutPresenterDelegate {
                 let successPayment = PrimerCheckoutDataPayment(
                     id: result.paymentId,
                     orderId: "checkout-components-order", // CheckoutComponents doesn't track order ID
-                    paymentFailureReason: nil
+                    paymentFailureReason: nil,
+                    status: "\(result.status)"
                 )
                 let successData = PrimerCheckoutData(payment: successPayment)
                 
@@ -1213,7 +1214,8 @@ class DebugAppPrimerCheckoutPresenterDelegate: PrimerCheckoutPresenterDelegate {
                 let failurePayment = PrimerCheckoutDataPayment(
                     id: error.diagnosticsId, // Use diagnostics ID as payment ID for errors
                     orderId: "checkout-components-error-order",
-                    paymentFailureReason: nil // Will be shown in error details
+                    paymentFailureReason: nil, // Will be shown in error details
+                    status: "failed"
                 )
                 let failureData = PrimerCheckoutData(payment: failurePayment)
                 

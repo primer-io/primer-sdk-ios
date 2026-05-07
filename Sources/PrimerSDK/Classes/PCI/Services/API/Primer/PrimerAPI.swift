@@ -35,6 +35,7 @@ enum PrimerAPI: Endpoint, Equatable {
              (.continue3DSRemoteAuth, .continue3DSRemoteAuth),
              (.poll, .poll),
              (.sendAnalyticsEvents, .sendAnalyticsEvents),
+             (.sendRawAnalyticsEvents, .sendRawAnalyticsEvents),
              (.createPayment, .createPayment),
              (.validateClientToken, .validateClientToken),
              (.getNolSdkSecret, .getNolSdkSecret),
@@ -46,18 +47,26 @@ enum PrimerAPI: Endpoint, Equatable {
     }
 
     case redirect(clientToken: DecodedJWTToken, url: URL)
-    case exchangePaymentMethodToken(clientToken: DecodedJWTToken,
-                                    vaultedPaymentMethodId: String,
-                                    vaultedPaymentMethodAdditionalData: PrimerVaultedPaymentMethodAdditionalData?)
+    case exchangePaymentMethodToken(
+        clientToken: DecodedJWTToken,
+        vaultedPaymentMethodId: String,
+        vaultedPaymentMethodAdditionalData: PrimerVaultedPaymentMethodAdditionalData?
+    )
     case fetchConfiguration(clientToken: DecodedJWTToken, requestParameters: Request.URLParameters.Configuration?)
     case fetchVaultedPaymentMethods(clientToken: DecodedJWTToken)
     case deleteVaultedPaymentMethod(clientToken: DecodedJWTToken, id: String)
-    case createPayPalOrderSession(clientToken: DecodedJWTToken,
-                                  payPalCreateOrderRequest: Request.Body.PayPal.CreateOrder)
-    case createPayPalBillingAgreementSession(clientToken: DecodedJWTToken,
-                                             payPalCreateBillingAgreementRequest: Request.Body.PayPal.CreateBillingAgreement)
-    case confirmPayPalBillingAgreement(clientToken: DecodedJWTToken,
-                                       payPalConfirmBillingAgreementRequest: Request.Body.PayPal.ConfirmBillingAgreement)
+    case createPayPalOrderSession(
+        clientToken: DecodedJWTToken,
+        payPalCreateOrderRequest: Request.Body.PayPal.CreateOrder
+    )
+    case createPayPalBillingAgreementSession(
+        clientToken: DecodedJWTToken,
+        payPalCreateBillingAgreementRequest: Request.Body.PayPal.CreateBillingAgreement
+    )
+    case confirmPayPalBillingAgreement(
+        clientToken: DecodedJWTToken,
+        payPalConfirmBillingAgreementRequest: Request.Body.PayPal.ConfirmBillingAgreement
+    )
     case createKlarnaPaymentSession(clientToken: DecodedJWTToken, klarnaCreatePaymentSessionAPIRequest: Request.Body.Klarna.CreatePaymentSession)
     case createKlarnaCustomerToken(clientToken: DecodedJWTToken, klarnaCreateCustomerTokenAPIRequest: Request.Body.Klarna.CreateCustomerToken)
     case finalizeKlarnaPaymentSession(clientToken: DecodedJWTToken, klarnaFinalizePaymentSessionRequest: Request.Body.Klarna.FinalizePaymentSession)
@@ -69,15 +78,18 @@ enum PrimerAPI: Endpoint, Equatable {
     case requestPrimerConfigurationWithActions(clientToken: DecodedJWTToken, request: ClientSessionUpdateRequest)
 
     // 3DS
-    case begin3DSRemoteAuth(clientToken: DecodedJWTToken,
-                            paymentMethodTokenData: PrimerPaymentMethodTokenData,
-                            threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest)
+    case begin3DSRemoteAuth(
+        clientToken: DecodedJWTToken,
+        paymentMethodTokenData: PrimerPaymentMethodTokenData,
+        threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest
+    )
     case continue3DSRemoteAuth(clientToken: DecodedJWTToken, threeDSTokenId: String, continueInfo: ThreeDS.ContinueInfo)
 
     // Generic
     case poll(clientToken: DecodedJWTToken?, url: String)
 
     case sendAnalyticsEvents(clientToken: DecodedJWTToken?, url: URL, body: [Analytics.Event]?)
+    case sendRawAnalyticsEvents(clientToken: DecodedJWTToken?, url: URL, body: Data)
 
     case fetchPayPalExternalPayerInfo(clientToken: DecodedJWTToken, payPalExternalPayerInfoRequestBody: Request.Body.PayPal.PayerInfo)
 
@@ -170,7 +182,8 @@ extension PrimerAPI {
                 tmpHeaders["Primer-Client-Token"] = token
             }
 
-        case let .sendAnalyticsEvents(clientToken, _, _):
+        case let .sendAnalyticsEvents(clientToken, _, _),
+             let .sendRawAnalyticsEvents(clientToken, _, _):
             if let token = clientToken?.accessToken {
                 tmpHeaders["Primer-Client-Token"] = token
             }
@@ -215,6 +228,7 @@ extension PrimerAPI {
              .listAdyenKlarnaPaymentTypes,
              .poll,
              .sendAnalyticsEvents,
+             .sendRawAnalyticsEvents,
              .fetchPayPalExternalPayerInfo,
              .testFinalizePolling,
              .getNolSdkSecret,
@@ -265,7 +279,8 @@ extension PrimerAPI {
             return baseURL
         case let .poll(_, url):
             return url
-        case let .sendAnalyticsEvents(_, url, _):
+        case let .sendAnalyticsEvents(_, url, _),
+             let .sendRawAnalyticsEvents(_, url, _):
             return url.absoluteString
         case let .validateClientToken(request):
             return request.clientToken.decodedJWTToken?.pciUrl
@@ -316,7 +331,8 @@ extension PrimerAPI {
             "/client-session/actions"
         case .poll:
             ""
-        case .sendAnalyticsEvents:
+        case .sendAnalyticsEvents,
+             .sendRawAnalyticsEvents:
             ""
         case .fetchPayPalExternalPayerInfo:
             "/paypal/orders"
@@ -366,6 +382,7 @@ extension PrimerAPI {
              .continue3DSRemoteAuth,
              .listAdyenBanks,
              .sendAnalyticsEvents,
+             .sendRawAnalyticsEvents,
              .fetchPayPalExternalPayerInfo,
              .validateClientToken,
              .createPayment,
@@ -433,6 +450,8 @@ extension PrimerAPI {
             }
         case let .sendAnalyticsEvents(_, _, body):
             return try? JSONEncoder().encode(body)
+        case let .sendRawAnalyticsEvents(_, _, body):
+            return body
         case let .fetchPayPalExternalPayerInfo(_, payPalExternalPayerInfoRequestBody):
             return try? JSONEncoder().encode(payPalExternalPayerInfoRequestBody)
         case let .validateClientToken(clientTokenToValidate):
@@ -491,7 +510,8 @@ extension PrimerAPI {
 
         // No explicit timeout
         case .poll,
-             .sendAnalyticsEvents:
+             .sendAnalyticsEvents,
+             .sendRawAnalyticsEvents:
             nil
         }
     }

@@ -22,6 +22,24 @@ build-and-release:
     - apt-get install -y rsync
   script:
     - bundle install
-    - pod trunk push --allow-root
+    - |
+      for POD in PrimerFoundation PrimerStepResolver PrimerBDCEngine PrimerBDCCore; do
+        echo "Pushing ${POD}.podspec"
+        pod trunk push "${POD}.podspec" --allow-root --allow-warnings --synchronous
+      done
+    - |
+      ATTEMPTS=60
+      SLEEP=30
+      for i in $(seq 1 $ATTEMPTS); do
+        pod repo update trunk >/dev/null 2>&1 || true
+        if pod trunk push PrimerSDK.podspec --allow-root --allow-warnings --synchronous; then
+          echo "Pushing PrimerSDK: succeeded after $i/$ATTEMPTS"
+          exit 0
+        fi
+        echo "Pushing PrimerSDK: attempt $i/$ATTEMPTS failed; sleeping ${SLEEP}s"
+        sleep "$SLEEP"
+      done
+      echo "Pushing PrimerSDK: never succeeded after $ATTEMPTS attempts" >&2
+      exit 1
   when: manual
   environment: production

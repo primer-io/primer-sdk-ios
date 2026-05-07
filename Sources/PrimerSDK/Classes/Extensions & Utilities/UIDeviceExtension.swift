@@ -376,7 +376,7 @@ extension UIDevice {
             "AppleTV11,1": .AppleTV2_4K
         ]
 
-        guard let modelIdentifier = modelIdentifier, let model = modelMap[String(modelIdentifier)] else { return Model.unrecognized }
+        guard let modelIdentifier, let model = modelMap[String(modelIdentifier)] else { return Model.unrecognized }
         if model == .simulator {
             if let simModelCode = ProcessInfo().environment["SIMULATOR_MODEL_IDENTIFIER"] {
                 if  let simModel = modelMap[String(simModelCode)] {

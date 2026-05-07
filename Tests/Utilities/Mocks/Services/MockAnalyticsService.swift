@@ -7,25 +7,25 @@
 @testable import PrimerSDK
 
 final actor MockAnalyticsService: AnalyticsServiceProtocol {
-    private var eventsStorage: [Analytics.Event] = []
-    nonisolated(unsafe) var onRecord: (([Analytics.Event]) -> Void)?
+    private var eventsStorage: [any AnalyticsEvent] = []
+    nonisolated(unsafe) var onRecord: (([any AnalyticsEvent]) -> Void)?
 
-    func record(events: [Analytics.Event]) async throws {
+    func record(events: [any AnalyticsEvent]) async throws {
         eventsStorage.append(contentsOf: events)
         onRecord?(events)
     }
 
-    func fire(events: [Analytics.Event]) {
+    func fire(events: [any AnalyticsEvent]) {
         eventsStorage.append(contentsOf: events)
         onRecord?(events)
     }
 
-    func record(event: Analytics.Event) async throws {
+    func record(event: any AnalyticsEvent) async throws {
         eventsStorage.append(contentsOf: [event])
         onRecord?([event])
     }
 
-    func fire(event: PrimerSDK.Analytics.Event) {
+    func fire(event: any AnalyticsEvent) {
         eventsStorage.append(contentsOf: [event])
         onRecord?([event])
     }

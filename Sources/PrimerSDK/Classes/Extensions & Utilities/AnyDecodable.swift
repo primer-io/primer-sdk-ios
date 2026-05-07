@@ -113,11 +113,11 @@ extension AnyDecodable: CustomStringConvertible {
     public var description: String {
         switch value {
         case is Void:
-            return String(describing: nil as Any?)
+            String(describing: nil as Any?)
         case let value as CustomStringConvertible:
-            return value.description
+            value.description
         default:
-            return String(describing: value)
+            String(describing: value)
         }
     }
 }
@@ -126,9 +126,9 @@ extension AnyDecodable: CustomDebugStringConvertible {
     public var debugDescription: String {
         switch value {
         case let value as CustomDebugStringConvertible:
-            return "AnyDecodable(\(value.debugDescription))"
+            "AnyDecodable(\(value.debugDescription))"
         default:
-            return "AnyDecodable(\(description))"
+            "AnyDecodable(\(description))"
         }
     }
 }

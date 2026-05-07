@@ -52,15 +52,15 @@ enum TestError: Error, Equatable {
     var localizedDescription: String {
         switch self {
         case .timeout:
-            return "Operation timed out"
+            "Operation timed out"
         case .cancelled:
-            return "Operation was cancelled"
+            "Operation was cancelled"
         case let .validationFailed(message):
-            return "Validation failed: \(message)"
+            "Validation failed: \(message)"
         case .networkFailure:
-            return "Network request failed"
+            "Network request failed"
         case .unknown:
-            return "An unknown error occurred"
+            "An unknown error occurred"
         }
     }
 }

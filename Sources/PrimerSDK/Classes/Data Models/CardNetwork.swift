@@ -102,7 +102,9 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
                 lengths: [15],
                 code: CardNetworkCode(
                     name: "CID",
-                    length: 4))
+                    length: 4
+                )
+            )
 
         case .bancontact, .cartesBancaires, .eftpos:
             nil
@@ -115,7 +117,9 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
                 lengths: [14, 16, 19],
                 code: CardNetworkCode(
                     name: "CVV",
-                    length: 3))
+                    length: 3
+                )
+            )
 
         case .discover:
             CardNetworkValidation(
@@ -125,7 +129,9 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
                 lengths: [16, 19],
                 code: CardNetworkCode(
                     name: "CID",
-                    length: 3))
+                    length: 3
+                )
+            )
 
         case .elo:
             CardNetworkValidation(
@@ -161,7 +167,9 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
                 lengths: [16],
                 code: CardNetworkCode(
                     name: "CVE",
-                    length: 3))
+                    length: 3
+                )
+            )
 
         case .hiper:
             CardNetworkValidation(
@@ -171,7 +179,9 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
                 lengths: [16],
                 code: CardNetworkCode(
                     name: "CVC",
-                    length: 3))
+                    length: 3
+                )
+            )
 
         case .hipercard:
             CardNetworkValidation(
@@ -181,7 +191,9 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
                 lengths: [16],
                 code: CardNetworkCode(
                     name: "CVC",
-                    length: 3))
+                    length: 3
+                )
+            )
 
         case .jcb:
             CardNetworkValidation(
@@ -191,7 +203,9 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
                 lengths: [16, 17, 18, 19],
                 code: CardNetworkCode(
                     name: "CVV",
-                    length: 3))
+                    length: 3
+                )
+            )
 
         // Note: v3.0 breaking change — Mastercard formatting changed from [4, 10]
         // (groups of 4-6-6) to [4, 8, 12] (groups of 4-4-4-4) per industry standard.
@@ -203,7 +217,9 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
                 lengths: [16],
                 code: CardNetworkCode(
                     name: "CVC",
-                    length: 3))
+                    length: 3
+                )
+            )
 
         case .maestro:
             CardNetworkValidation(
@@ -222,7 +238,9 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
                 lengths: [16, 17, 18, 19],
                 code: CardNetworkCode(
                     name: "CVC",
-                    length: 3))
+                    length: 3
+                )
+            )
 
         case .mir:
             CardNetworkValidation(
@@ -232,7 +250,9 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
                 lengths: [16, 17, 18, 19],
                 code: CardNetworkCode(
                     name: "CVP2",
-                    length: 3))
+                    length: 3
+                )
+            )
 
         case .visa:
             CardNetworkValidation(
@@ -242,7 +262,9 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
                 lengths: [16, 18, 19],
                 code: CardNetworkCode(
                     name: "CVV",
-                    length: 3))
+                    length: 3
+                )
+            )
 
         case .unionpay:
             CardNetworkValidation(
@@ -278,7 +300,9 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
                 lengths: [14, 15, 16, 17, 18, 19],
                 code: CardNetworkCode(
                     name: "CVN",
-                    length: 3))
+                    length: 3
+                )
+            )
         case .unknown:
             nil
         }
@@ -315,6 +339,19 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
         }
     }
 
+    public var traits: PrimerCardNetworkTraits? {
+        validation.map {
+            PrimerCardNetworkTraits(
+                cardNetwork: self,
+                displayName: $0.niceType,
+                panLengths: $0.lengths,
+                gapPattern: $0.gaps,
+                cvvLength: $0.code.length,
+                cvvLabel: $0.code.name
+            )
+        }
+    }
+
     var surcharge: Int? {
         guard let options = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.paymentMethod?.options,
               !options.isEmpty else { return nil }
@@ -328,8 +365,8 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
             else { continue }
 
             guard let tmpNetwork = networks
-                    .filter({ $0["type"] as? String == self.rawValue.uppercased() })
-                    .first
+                .filter({ $0["type"] as? String == self.rawValue.uppercased() })
+                .first
             else { continue }
 
             // Handle nested surcharge structure: surcharge.amount

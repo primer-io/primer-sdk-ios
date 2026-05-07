@@ -290,8 +290,10 @@ extension PaymentMethodTokenizationViewModel {
 
     private func handleAutomaticResumeStepsBasedOnSDKSettings(resumeToken: String) async throws -> PrimerCheckoutData? {
         guard let resumePaymentId else {
-            throw handled(primerError: .invalidValue(key: "resumePaymentId",
-                                                     value: "Resume Payment ID not valid"))
+            throw handled(primerError: .invalidValue(
+                key: "resumePaymentId",
+                value: "Resume Payment ID not valid"
+            ))
         }
 
         let paymentResponse = try await handleResumePaymentEvent(resumePaymentId, resumeToken: resumeToken)
@@ -333,8 +335,9 @@ extension PaymentMethodTokenizationViewModel {
         let task = Task { @MainActor [weak self] in
             try? await Task.sleep(nanoseconds: 5_000_000_000)
             guard let self else { return }
-            logger.warn(message:
-                            """
+            logger.warn(
+                message:
+                """
                 The 'decisionHandler' of 'primerHeadlessUniversalCheckoutWillCreatePaymentWithData' \
                 hasn't been called. Make sure you call the decision handler otherwise the SDK will hang.
                 """
@@ -384,11 +387,15 @@ extension PaymentMethodTokenizationViewModel {
 extension PrimerError {
     var checkoutData: PrimerCheckoutData? {
         switch self {
-        case let .paymentFailed(_, paymentId, orderId, _, _):
+        case let .paymentFailed(_, paymentId, orderId, status, _):
             PrimerCheckoutData(
-                payment: PrimerCheckoutDataPayment(id: paymentId,
-                                                   orderId: orderId,
-                                                   paymentFailureReason: PrimerPaymentErrorCode.failed))
+                payment: PrimerCheckoutDataPayment(
+                    id: paymentId,
+                    orderId: orderId,
+                    paymentFailureReason: PrimerPaymentErrorCode.failed,
+                    status: status
+                )
+            )
         default:
             nil
         }

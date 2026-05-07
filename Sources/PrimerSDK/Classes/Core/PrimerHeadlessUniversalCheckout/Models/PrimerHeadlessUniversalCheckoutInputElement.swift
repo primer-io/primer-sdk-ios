@@ -88,41 +88,41 @@ public enum PrimerInputElementType: Int {
     public var stringValue: String {
         switch self {
         case .cardNumber:
-            return "CARD_NUMBER"
+            "CARD_NUMBER"
         case .expiryDate:
-            return "EXPIRY_DATE"
+            "EXPIRY_DATE"
         case .cvv:
-            return "CVV"
+            "CVV"
         case .cardholderName:
-            return "CARDHOLDER_NAME"
+            "CARDHOLDER_NAME"
         case .otp:
-            return "OTP"
+            "OTP"
         case .postalCode:
-            return "POSTAL_CODE"
+            "POSTAL_CODE"
         case .phoneNumber:
-            return "PHONE_NUMBER"
+            "PHONE_NUMBER"
         case .retailer:
-            return "RETAILER"
+            "RETAILER"
         case .countryCode:
-            return "COUNTRY_CODE"
+            "COUNTRY_CODE"
         case .firstName:
-            return "FIRST_NAME"
+            "FIRST_NAME"
         case .lastName:
-            return "LAST_NAME"
+            "LAST_NAME"
         case .addressLine1:
-            return "ADDRESS_LINE_1"
+            "ADDRESS_LINE_1"
         case .addressLine2:
-            return "ADDRESS_LINE_2"
+            "ADDRESS_LINE_2"
         case .city:
-            return "CITY"
+            "CITY"
         case .state:
-            return "STATE"
+            "STATE"
         case .email:
-            return "EMAIL"
+            "EMAIL"
         case .all:
-            return "ALL"
+            "ALL"
         case .unknown:
-            return "UNKNOWN"
+            "UNKNOWN"
 
         }
     }
@@ -207,50 +207,50 @@ public enum PrimerInputElementType: Int {
     var delimiter: String? {
         switch self {
         case .cardNumber:
-            return " "
+            " "
         case .expiryDate:
-            return "/"
+            "/"
         default:
-            return nil
+            nil
         }
     }
 
     var maxAllowedLength: Int? {
         switch self {
         case .cardNumber:
-            return nil
+            nil
         case .expiryDate:
-            return 4
+            4
         case .cvv:
-            return nil
+            nil
         case .postalCode:
-            return 10
+            10
         default:
-            return nil
+            nil
         }
     }
 
     var allowedCharacterSet: CharacterSet? {
         switch self {
         case .cardNumber, .expiryDate, .cvv, .otp, .phoneNumber:
-            return CharacterSet(charactersIn: "0123456789")
+            CharacterSet(charactersIn: "0123456789")
         case .cardholderName, .firstName, .lastName:
-            return CharacterSet.letters.union(.whitespaces)
+            CharacterSet.letters.union(.whitespaces)
         default:
-            return nil
+            nil
         }
     }
 
     var keyboardType: UIKeyboardType {
         switch self {
         case .cardNumber, .expiryDate, .cvv, .otp, .phoneNumber, .postalCode:
-            return UIKeyboardType.numberPad
+            UIKeyboardType.numberPad
         case .cardholderName, .firstName, .lastName, .city, .state:
-            return UIKeyboardType.alphabet
+            UIKeyboardType.alphabet
         case .email:
-            return UIKeyboardType.emailAddress
+            UIKeyboardType.emailAddress
         case .addressLine1, .addressLine2, .countryCode, .retailer, .unknown, .all:
-            return UIKeyboardType.default
+            UIKeyboardType.default
         }
     }
 
@@ -260,9 +260,9 @@ public enum PrimerInputElementType: Int {
     var isCardField: Bool {
         switch self {
         case .cardNumber, .expiryDate, .cvv, .cardholderName:
-            return true
+            true
         default:
-            return false
+            false
         }
     }
 
@@ -270,9 +270,9 @@ public enum PrimerInputElementType: Int {
     var isBillingField: Bool {
         switch self {
         case .firstName, .lastName, .addressLine1, .addressLine2, .city, .state, .postalCode, .countryCode, .phoneNumber, .email:
-            return true
+            true
         default:
-            return false
+            false
         }
     }
 
@@ -280,11 +280,11 @@ public enum PrimerInputElementType: Int {
     var isRequired: Bool {
         switch self {
         case .cardNumber, .expiryDate, .cvv, .cardholderName:
-            return true
+            true
         case .postalCode, .countryCode: // Required if billing address is enabled
-            return true
+            true
         default:
-            return false
+            false
         }
     }
 
@@ -292,51 +292,51 @@ public enum PrimerInputElementType: Int {
     var displayOrder: Int {
         switch self {
         // Card fields
-        case .cardNumber: return 1
-        case .expiryDate: return 2
-        case .cvv: return 3
-        case .cardholderName: return 4
+        case .cardNumber: 1
+        case .expiryDate: 2
+        case .cvv: 3
+        case .cardholderName: 4
 
         // Billing address fields (matching Drop-in order)
-        case .countryCode: return 10
-        case .addressLine1: return 11
-        case .postalCode: return 12
-        case .state: return 13
-        case .city: return 14
-        case .addressLine2: return 15
-        case .firstName: return 16
-        case .lastName: return 17
-        case .email: return 18
-        case .phoneNumber: return 19
+        case .countryCode: 10
+        case .addressLine1: 11
+        case .postalCode: 12
+        case .state: 13
+        case .city: 14
+        case .addressLine2: 15
+        case .firstName: 16
+        case .lastName: 17
+        case .email: 18
+        case .phoneNumber: 19
 
         // Other fields
-        case .otp: return 20
-        case .retailer: return 21
-        case .unknown, .all: return 999
+        case .otp: 20
+        case .retailer: 21
+        case .unknown, .all: 999
         }
     }
 
     /// Human-readable field name for display
     var displayName: String {
         switch self {
-        case .cardNumber: return "Card Number"
-        case .expiryDate: return "Expiry Date"
-        case .cvv: return "CVV"
-        case .cardholderName: return "Cardholder Name"
-        case .firstName: return "First Name"
-        case .lastName: return "Last Name"
-        case .addressLine1: return "Address Line 1"
-        case .addressLine2: return "Address Line 2"
-        case .city: return "City"
-        case .state: return "State"
-        case .postalCode: return "Postal Code"
-        case .countryCode: return "Country"
-        case .phoneNumber: return "Phone Number"
-        case .email: return "Email"
-        case .otp: return "OTP Code"
-        case .retailer: return "Retail Outlet"
-        case .unknown: return "Unknown"
-        case .all: return "All Fields"
+        case .cardNumber: "Card Number"
+        case .expiryDate: "Expiry Date"
+        case .cvv: "CVV"
+        case .cardholderName: "Cardholder Name"
+        case .firstName: "First Name"
+        case .lastName: "Last Name"
+        case .addressLine1: "Address Line 1"
+        case .addressLine2: "Address Line 2"
+        case .city: "City"
+        case .state: "State"
+        case .postalCode: "Postal Code"
+        case .countryCode: "Country"
+        case .phoneNumber: "Phone Number"
+        case .email: "Email"
+        case .otp: "OTP Code"
+        case .retailer: "Retail Outlet"
+        case .unknown: "Unknown"
+        case .all: "All Fields"
         }
     }
 }

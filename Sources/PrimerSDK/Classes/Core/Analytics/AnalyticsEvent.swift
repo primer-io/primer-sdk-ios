@@ -249,6 +249,7 @@ extension Analytics.Event {
             case retry                              = "RETRY"
             case retryFailed                        = "RETRY_FAILED"
             case retrySuccess                       = "RETRY_SUCCESS"
+            case backendDrivenCheckoutStarted       = "BDC_FLOW_START"
         }
 
         enum TimerType: String, Codable {
