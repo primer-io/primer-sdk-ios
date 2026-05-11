@@ -9,6 +9,7 @@ import Foundation
 protocol CardValidationService {
     func validateCardNetworks(withCardNumber cardNumber: String)
     func createValidationMetadata(networks: [CardNetwork], source: PrimerCardValidationSource) -> PrimerCardNumberEntryMetadata
+    func cachedMetadata(forCardNumber cardNumber: String) -> PrimerCardNumberEntryMetadata?
 }
 
 final class DefaultCardValidationService: CardValidationService, LogReporter {
@@ -60,10 +61,20 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
         }
     }
 
-    init(rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
-         allowedCardNetworks: [CardNetwork] = [CardNetwork].allowedCardNetworks,
-         apiClient: PrimerAPIClientBINDataProtocol = PrimerAPIClient(),
-         debouncer: Debouncer = .init(delay: 0.35)) {
+    private func binKey(for cardNumber: String) -> String {
+        String(cardNumber.prefix(Self.maximumBinLength))
+    }
+
+    func cachedMetadata(forCardNumber cardNumber: String) -> PrimerCardNumberEntryMetadata? {
+        getCachedMetadata(for: binKey(for: cardNumber.withoutWhiteSpace))
+    }
+
+    init(
+        rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
+        allowedCardNetworks: [CardNetwork] = [CardNetwork].allowedCardNetworks,
+        apiClient: PrimerAPIClientBINDataProtocol = PrimerAPIClient(),
+        debouncer: Debouncer = .init(delay: 0.35)
+    ) {
         self.rawDataManager = rawDataManager
         self.allowedCardNetworks = allowedCardNetworks
         self.apiClient = apiClient
@@ -103,10 +114,12 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
     }
 
     private func useRemoteValidation(withCardState cardState: PrimerCardNumberEntryState) {
-        delegate?.primerRawDataManager?(rawDataManager,
-                                        willFetchMetadataForState: cardState)
+        delegate?.primerRawDataManager?(
+            rawDataManager,
+            willFetchMetadataForState: cardState
+        )
 
-        let cacheKey = cardState.cardNumber
+        let cacheKey = binKey(for: cardState.cardNumber)
         if let cached = getCachedMetadata(for: cacheKey) {
             handle(cardMetadata: cached, forCardState: cardState)
             if let cachedBin = getCachedBinData(for: cacheKey) {
@@ -148,7 +161,7 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
                 handle(cardMetadata: metadata, forCardState: cardState)
 
                 let binData = buildBinData(from: enrichedNetworks, firstDigits: result.firstDigits, status: .complete)
-                setCachedBinData(binData, for: cardState.cardNumber)
+                setCachedBinData(binData, for: binKey(for: cardState.cardNumber))
                 delegate?.primerRawDataManager?(rawDataManager, didReceiveBinData: binData)
             } catch {
                 sendEvent(forError: error)
@@ -180,9 +193,11 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
             Analytics.Service.fire(event: event)
         }
 
-        delegate?.primerRawDataManager?(rawDataManager,
-                                        didReceiveMetadata: metadata,
-                                        forState: cardState)
+        delegate?.primerRawDataManager?(
+            rawDataManager,
+            didReceiveMetadata: metadata,
+            forState: cardState
+        )
 
         let localNetworks = networks.map(PrimerCardNetwork.init(network:))
         let binData = buildBinData(from: localNetworks, firstDigits: nil, status: .partial)
@@ -196,15 +211,16 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
     }
 
     private func handle(cardMetadata: PrimerCardNumberEntryMetadata, forCardState cardState: PrimerCardNumberEntryState) {
-        let cacheKey = cardState.cardNumber
-        setCachedMetadata(cardMetadata, for: cacheKey)
+        setCachedMetadata(cardMetadata, for: binKey(for: cardState.cardNumber))
 
         let trackable = cardMetadata.selectableCardNetworks ?? cardMetadata.detectedCardNetworks
         sendEvent(forNetworks: trackable.items, source: cardMetadata.source)
 
-        delegate?.primerRawDataManager?(rawDataManager,
-                                        didReceiveMetadata: cardMetadata,
-                                        forState: cardState)
+        delegate?.primerRawDataManager?(
+            rawDataManager,
+            didReceiveMetadata: cardMetadata,
+            forState: cardState
+        )
 
         guard lastValidatedCardNumber != cardState.cardNumber else {
             return
@@ -229,14 +245,18 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
 
     // MARK: Model generation
 
-    func createValidationMetadata(networks: [CardNetwork],
-                                  source: PrimerCardValidationSource) -> PrimerCardNumberEntryMetadata {
+    func createValidationMetadata(
+        networks: [CardNetwork],
+        source: PrimerCardValidationSource
+    ) -> PrimerCardNumberEntryMetadata {
         createValidationMetadata(networks: networks, source: source, enrichedNetworks: nil)
     }
 
-    private func createValidationMetadata(networks: [CardNetwork],
-                                          source: PrimerCardValidationSource,
-                                          enrichedNetworks: [PrimerCardNetwork]?) -> PrimerCardNumberEntryMetadata
+    private func createValidationMetadata(
+        networks: [CardNetwork],
+        source: PrimerCardValidationSource,
+        enrichedNetworks: [PrimerCardNetwork]?
+    ) -> PrimerCardNumberEntryMetadata
     {
         let selectable: [PrimerCardNetwork]
         let detected: [PrimerCardNetwork]
