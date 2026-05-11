@@ -1,11 +1,12 @@
 //
 //  InternalCardComponentsManagerTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import XCTest
+import PrimerFoundation
 @testable import PrimerSDK
+import XCTest
 
 final class InternalCardComponentsManagerTests: XCTestCase {
 
@@ -70,8 +71,10 @@ final class InternalCardComponentsManagerTests: XCTestCase {
     }
 
     func test_card_component_manager_initialization_with_invalid_access_token() throws {
-        let clientAccessToken = try JWTFactory().create(accessToken: "39edaba8-ba49-4c09-9936-a43334f69223",
-                                                        expiry: 1625901334)
+        let clientAccessToken = try JWTFactory().create(
+            accessToken: "39edaba8-ba49-4c09-9936-a43334f69223",
+            expiry: 1625901334
+        )
         AppState.current.clientToken = clientAccessToken
 
         let cardComponentManager = MockCardComponentsManager(cardnumber: nil)
@@ -158,7 +161,7 @@ class MockCardComponentsManager: InternalCardComponentsManagerProtocol {
     var currency: Currency?
 
     var decodedJWTToken: DecodedJWTToken? {
-        return PrimerAPIConfigurationModule.decodedJWTToken
+        PrimerAPIConfigurationModule.decodedJWTToken
     }
 
     var paymentMethodsConfig: PrimerAPIConfiguration?
@@ -198,7 +201,9 @@ class MockCardComponentsManager: InternalCardComponentsManagerProtocol {
 }
 
 class MockCardComponentsManagerDelegate: InternalCardComponentsManagerDelegate {
-    func cardComponentsManager(_ cardComponentsManager: InternalCardComponentsManager,
-                               onTokenizeSuccess paymentMethodToken: PrimerPaymentMethodTokenData) {
+    func cardComponentsManager(
+        _ cardComponentsManager: InternalCardComponentsManager,
+        onTokenizeSuccess paymentMethodToken: PrimerPaymentMethodTokenData
+    ) {
     }
 }

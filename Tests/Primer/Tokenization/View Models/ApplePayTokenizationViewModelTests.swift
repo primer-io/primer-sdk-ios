@@ -1,12 +1,13 @@
 //
 //  ApplePayTokenizationViewModelTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import PassKit
-import XCTest
+import PrimerFoundation
 @testable import PrimerSDK
+import XCTest
 
 private typealias ShippingMethodOptions = Response.Body.Configuration.CheckoutModule.ShippingMethodOptions
 private typealias ShippingMethod = Response.Body.Configuration.CheckoutModule.ShippingMethodOptions.ShippingMethod
@@ -131,8 +132,10 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
             createResumePaymentService: createResumePaymentService
         )
 
-        let settings = PrimerSettings(paymentMethodOptions:
-            PrimerPaymentMethodOptions(applePayOptions:
+        let settings = PrimerSettings(
+            paymentMethodOptions:
+            PrimerPaymentMethodOptions(
+                applePayOptions:
                 PrimerApplePayOptions(merchantIdentifier: "merchant_id", merchantName: "merchant_name")
             )
         )
@@ -177,8 +180,10 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
             let settings = PrimerSettings(paymentMethodOptions: PrimerPaymentMethodOptions())
             DependencyContainer.register(settings as PrimerSettingsProtocol)
             XCTAssertThrowsError(try sut.validate())
-            let resetSettings = PrimerSettings(paymentMethodOptions:
-                PrimerPaymentMethodOptions(applePayOptions:
+            let resetSettings = PrimerSettings(
+                paymentMethodOptions:
+                PrimerPaymentMethodOptions(
+                    applePayOptions:
                     PrimerApplePayOptions(merchantIdentifier: "merchant_id", merchantName: "merchant_name")
                 )
             )
@@ -642,8 +647,10 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
         XCTAssertNotNil(update2.errors)
 
         // Test Error when no shipping methods and Settings requireShippingMethod
-        let settings = PrimerSettings(paymentMethodOptions:
-            PrimerPaymentMethodOptions(applePayOptions:
+        let settings = PrimerSettings(
+            paymentMethodOptions:
+            PrimerPaymentMethodOptions(
+                applePayOptions:
                 PrimerApplePayOptions(
                     merchantIdentifier: "merchant_id",
                     merchantName: "merchant_name",

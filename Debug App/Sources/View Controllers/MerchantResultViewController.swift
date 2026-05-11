@@ -1,11 +1,12 @@
 //
 //  MerchantResultViewController.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import UIKit
+import PrimerFoundation
 import PrimerSDK
+import UIKit
 
 final class MerchantResultViewController: UIViewController {
 
@@ -37,16 +38,20 @@ final class MerchantResultViewController: UIViewController {
         var error: PrimerErrorEncodable?
 
         if let primerError = self.error as? PrimerError {
-            let encodable = PrimerErrorEncodable(errorId: primerError.errorId,
-                                                 errorDescription: primerError.localizedDescription,
-                                                 diagnosticId: primerError.diagnosticsId,
-                                                 recoverySuggestion: primerError.recoverySuggestion)
+            let encodable = PrimerErrorEncodable(
+                errorId: primerError.errorId,
+                errorDescription: primerError.localizedDescription,
+                diagnosticId: primerError.diagnosticsId,
+                recoverySuggestion: primerError.recoverySuggestion
+            )
             error = encodable
         }
 
         if error != nil || checkoutData != nil {
-            let paymentEncodable = PrimerPaymentResultEncodable(id: checkoutData?.payment?.id,
-                                                                orderId: checkoutData?.payment?.orderId)
+            let paymentEncodable = PrimerPaymentResultEncodable(
+                id: checkoutData?.payment?.id,
+                orderId: checkoutData?.payment?.orderId
+            )
             let encodable = PrimerResultEncodable(payment: paymentEncodable, error: error)
             guard let data = try? JSONEncoder().encode(encodable), let string = String(data: data, encoding: .utf8) else {
                 responseTextView.text = "[\"Couldn't encode result to JSON\"]"
@@ -67,7 +72,7 @@ final class MerchantResultViewController: UIViewController {
         responseStatus.textColor = self.error == nil ? .green : .red
         responseStatus.text = self.error == nil ? "Success" : "Failure"
 
-        if logs.count > 0 {
+        if !logs.isEmpty {
             if let data = try? JSONSerialization.data(withJSONObject: logs) {
                 if let prettyNSStr = data.prettyPrintedJSONString as? String {
                     logsTextView.text = prettyNSStr

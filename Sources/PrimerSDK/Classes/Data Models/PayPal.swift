@@ -1,8 +1,10 @@
 //
 //  PayPal.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
+
+import PrimerFoundation
 
 extension Request.Body {
     public final class PayPal {}
@@ -86,13 +88,15 @@ extension Response.Body.Tokenization {
                        firstName, firstNameSnakeCase,
                        lastName, lastNameSnakeCase: String?
 
-            public init(externalPayerId: String,
-                        externalPayerIdSnakeCase: String? = nil,
-                        email: String,
-                        firstName: String?,
-                        firstNameSnakeCase: String? = nil,
-                        lastName: String,
-                        lastNameSnakeCase: String? = nil) {
+            public init(
+                externalPayerId: String,
+                externalPayerIdSnakeCase: String? = nil,
+                email: String,
+                firstName: String?,
+                firstNameSnakeCase: String? = nil,
+                lastName: String,
+                lastNameSnakeCase: String? = nil
+            ) {
                 self.externalPayerId = externalPayerId
                 self.externalPayerIdSnakeCase = externalPayerIdSnakeCase ?? externalPayerId
                 self.email = email
@@ -108,48 +112,55 @@ extension Response.Body.Tokenization {
 
                 self.externalPayerId = try container.decodeIfPresent(
                     String.self,
-                    forKey: Response.Body.Tokenization.PayPal.ExternalPayerInfo.CodingKeys.externalPayerId)
+                    forKey: Response.Body.Tokenization.PayPal.ExternalPayerInfo.CodingKeys.externalPayerId
+                )
 
                 self.externalPayerIdSnakeCase = try container.decodeIfPresent(
                     String.self,
-                    forKey: Response.Body.Tokenization.PayPal.ExternalPayerInfo.CodingKeys.externalPayerIdSnakeCase)
+                    forKey: Response.Body.Tokenization.PayPal.ExternalPayerInfo.CodingKeys.externalPayerIdSnakeCase
+                )
 
                 self.email = try container.decodeIfPresent(
                     String.self,
-                    forKey: Response.Body.Tokenization.PayPal.ExternalPayerInfo.CodingKeys.email)
+                    forKey: Response.Body.Tokenization.PayPal.ExternalPayerInfo.CodingKeys.email
+                )
 
                 self.firstName = try container.decodeIfPresent(
                     String.self,
-                    forKey: Response.Body.Tokenization.PayPal.ExternalPayerInfo.CodingKeys.firstName)
+                    forKey: Response.Body.Tokenization.PayPal.ExternalPayerInfo.CodingKeys.firstName
+                )
 
                 self.firstNameSnakeCase = try container.decodeIfPresent(
                     String.self,
-                    forKey: Response.Body.Tokenization.PayPal.ExternalPayerInfo.CodingKeys.firstNameSnakeCase)
+                    forKey: Response.Body.Tokenization.PayPal.ExternalPayerInfo.CodingKeys.firstNameSnakeCase
+                )
 
                 self.lastName = try container.decodeIfPresent(
                     String.self,
-                    forKey: Response.Body.Tokenization.PayPal.ExternalPayerInfo.CodingKeys.lastName)
+                    forKey: Response.Body.Tokenization.PayPal.ExternalPayerInfo.CodingKeys.lastName
+                )
 
                 self.lastNameSnakeCase = try container.decodeIfPresent(
                     String.self,
-                    forKey: Response.Body.Tokenization.PayPal.ExternalPayerInfo.CodingKeys.lastNameSnakeCase)
+                    forKey: Response.Body.Tokenization.PayPal.ExternalPayerInfo.CodingKeys.lastNameSnakeCase
+                )
 
                 // This logic ensures we mirror externalPayerId to external_payer_id and vice versa
-                if self.externalPayerId == nil && self.externalPayerIdSnakeCase != nil {
+                if self.externalPayerId == nil, self.externalPayerIdSnakeCase != nil {
                     self.externalPayerId = self.externalPayerIdSnakeCase
-                } else if self.externalPayerIdSnakeCase == nil && self.externalPayerId != nil {
+                } else if self.externalPayerIdSnakeCase == nil, self.externalPayerId != nil {
                     self.externalPayerIdSnakeCase = self.externalPayerId
                 }
 
-                if firstName == nil && firstNameSnakeCase != nil {
+                if firstName == nil, firstNameSnakeCase != nil {
                     firstName = firstNameSnakeCase
-                } else if firstNameSnakeCase == nil && firstName != nil {
+                } else if firstNameSnakeCase == nil, firstName != nil {
                     firstNameSnakeCase = firstName
                 }
 
-                if lastName == nil && lastNameSnakeCase != nil {
+                if lastName == nil, lastNameSnakeCase != nil {
                     lastName = lastNameSnakeCase
-                } else if lastNameSnakeCase == nil && lastName != nil {
+                } else if lastNameSnakeCase == nil, lastName != nil {
                     lastNameSnakeCase = lastName
                 }
             }

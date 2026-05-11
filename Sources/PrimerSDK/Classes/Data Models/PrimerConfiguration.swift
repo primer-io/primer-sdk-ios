@@ -8,6 +8,7 @@
 
 import Foundation
 import PassKit
+import PrimerFoundation
 
 typealias PrimerAPIConfiguration = Response.Body.Configuration
 
@@ -97,9 +98,9 @@ extension Response.Body {
                 .first(where: {
                     (
                         ($0["networks"] as? [[String: Any]])?
-                        .first(where: {
-                            $0["surcharge"] as? Int != nil
-                        })
+                            .first(where: {
+                                $0["surcharge"] as? Int != nil
+                            })
                     ) != nil
                 })
             return pmSurcharge != nil || cardSurcharge != nil
@@ -120,42 +121,42 @@ extension Response.Body {
             }
 
             #if !canImport(PrimerKlarnaSDK)
-            if let klarnaViewModelIndex = viewModels.firstIndex(where: { $0.config.type == PrimerPaymentMethodType.klarna.rawValue }) {
-                viewModels.remove(at: klarnaViewModelIndex)
-                let message =
-                    """
-Klarna configuration has been found but module 'PrimerKlarnaSDK' is missing. \
-Add `PrimerKlarnaSDK' in your project by adding \"pod 'PrimerKlarnaSDK'\" in your Podfile, \
-or by adding \"primer-klarna-sdk-ios\" in your Swift Package Manager.
-"""
-                logger.warn(message: message)
+                if let klarnaViewModelIndex = viewModels.firstIndex(where: { $0.config.type == PrimerPaymentMethodType.klarna.rawValue }) {
+                    viewModels.remove(at: klarnaViewModelIndex)
+                    let message =
+                        """
+                        Klarna configuration has been found but module 'PrimerKlarnaSDK' is missing. \
+                        Add `PrimerKlarnaSDK' in your project by adding \"pod 'PrimerKlarnaSDK'\" in your Podfile, \
+                        or by adding \"primer-klarna-sdk-ios\" in your Swift Package Manager.
+                        """
+                    logger.warn(message: message)
 
-                let event = Analytics.Event.message(
-                    message: "PrimerKlarnaSDK has not been integrated",
-                    messageType: .error,
-                    severity: .error
-                )
-                Analytics.Service.fire(events: [event])
-            }
+                    let event = Analytics.Event.message(
+                        message: "PrimerKlarnaSDK has not been integrated",
+                        messageType: .error,
+                        severity: .error
+                    )
+                    Analytics.Service.fire(events: [event])
+                }
             #endif
 
             #if !canImport(PrimerIPay88MYSDK)
-            if let iPay88ViewModelIndex = viewModels.firstIndex(where: { $0.config.type == PrimerPaymentMethodType.iPay88Card.rawValue }) {
-                viewModels.remove(at: iPay88ViewModelIndex)
-                let message =
-                    """
-iPay88 configuration has been found but module 'PrimerIPay88SDK' is missing. \
-Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in your Podfile.
-"""
-                logger.warn(message: message)
+                if let iPay88ViewModelIndex = viewModels.firstIndex(where: { $0.config.type == PrimerPaymentMethodType.iPay88Card.rawValue }) {
+                    viewModels.remove(at: iPay88ViewModelIndex)
+                    let message =
+                        """
+                        iPay88 configuration has been found but module 'PrimerIPay88SDK' is missing. \
+                        Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in your Podfile.
+                        """
+                    logger.warn(message: message)
 
-                let event = Analytics.Event.message(
-                    message: "PrimerIPay88MYSDK has not been integrated",
-                    messageType: .error,
-                    severity: .error
-                )
-                Analytics.Service.fire(events: [event])
-            }
+                    let event = Analytics.Event.message(
+                        message: "PrimerIPay88MYSDK has not been integrated",
+                        messageType: .error,
+                        severity: .error
+                    )
+                    Analytics.Service.fire(events: [event])
+                }
             #endif
 
             var validViewModels: [PaymentMethodTokenizationViewModelProtocol] = []
@@ -265,7 +266,7 @@ Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in you
                             for network in networks {
                                 guard network["type"] is String,
                                       network["surcharge"] is Int,
-                                    let surchargeValue = network["surcharge"] as? Int
+                                      let surchargeValue = network["surcharge"] as? Int
                                 else { continue }
                                 hasCardSurcharge = surchargeValue > 0
                             }
@@ -432,14 +433,14 @@ extension Response.Body.Configuration {
                 self.state = (try? container.decode(Bool?.self, forKey: .state)) ?? nil
 
                 if self.firstName == nil,
-                    self.lastName == nil,
-                    self.city == nil,
-                    self.postalCode == nil,
-                    self.addressLine1 == nil,
-                    self.addressLine2 == nil,
-                    self.countryCode == nil,
-                    self.phoneNumber == nil,
-                    self.state == nil {
+                   self.lastName == nil,
+                   self.city == nil,
+                   self.postalCode == nil,
+                   self.addressLine1 == nil,
+                   self.addressLine2 == nil,
+                   self.countryCode == nil,
+                   self.phoneNumber == nil,
+                   self.state == nil {
                     throw handled(error: InternalError.failedToDecode(message: "All fields are nil"))
                 }
             }

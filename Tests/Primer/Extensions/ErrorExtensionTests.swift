@@ -1,11 +1,12 @@
 //
 //  ErrorExtensionTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import XCTest
+import PrimerFoundation
 @testable import PrimerSDK
+import XCTest
 
 final class ErrorExtensionTests: XCTestCase {
 
@@ -39,11 +40,10 @@ final class ErrorExtensionTests: XCTestCase {
 
         // MARK: Underlying errors
 
-
         let multipleUnderlyingErrorsError = PrimerError.underlyingErrors(errors: [dummyError, PrimerError.unknown()])
 
         switch multipleUnderlyingErrorsError.normalizedForSDK {
-        case PrimerError.underlyingErrors(let errors, _):
+        case let PrimerError.underlyingErrors(errors, _):
             XCTAssertEqual(errors.count, 2)
             break
         default:
@@ -72,8 +72,10 @@ final class ErrorExtensionTests: XCTestCase {
             "[unknown] Something went wrong (diagnosticsId: )"
         }
 
-        XCTAssertEqual(arrayOfErrors.combinedDescription,
-                       "[\(singleDescription("1")) | \(singleDescription("2")) | \(singleDescription("3"))]")
+        XCTAssertEqual(
+            arrayOfErrors.combinedDescription,
+            "[\(singleDescription("1")) | \(singleDescription("2")) | \(singleDescription("3"))]"
+        )
     }
 
     func testCombinedDescriptionForNSErrors() {
@@ -91,8 +93,10 @@ final class ErrorExtensionTests: XCTestCase {
         let desc2 = singleDescription("domain2", 2)
         let desc3 = singleDescription("domain3", 3)
 
-        XCTAssertEqual(arrayOfErrors.map { $0 as Error }.combinedDescription,
-                       "[\(desc1) | \(desc2) | \(desc3)]")
+        XCTAssertEqual(
+            arrayOfErrors.map { $0 as Error }.combinedDescription,
+            "[\(desc1) | \(desc2) | \(desc3)]"
+        )
     }
 
     func testIsNetworkError_WithNetworkErrors_ShouldReturnTrue() {

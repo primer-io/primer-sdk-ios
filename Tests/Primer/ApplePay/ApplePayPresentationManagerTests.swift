@@ -1,12 +1,13 @@
 //
 //  ApplePayPresentationManagerTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import XCTest
 import PassKit
+import PrimerFoundation
 @testable import PrimerSDK
+import XCTest
 
 final class ApplePayPresentationManagerTests: XCTestCase {
 
@@ -21,17 +22,21 @@ final class ApplePayPresentationManagerTests: XCTestCase {
     }
 
     func testCreateRequest() throws {
-        let applePayRequest = ApplePayRequest(currency: Currency(code: "GBP", decimalDigits: 2),
-                                              merchantIdentifier: "merchant_id",
-                                              countryCode: .gb,
-                                              items: [
-                                                try .init(name: "line_item_name",
-                                                          unitAmount: 123,
-                                                          quantity: 1,
-                                                          discountAmount: nil,
-                                                          taxAmount: nil)
-                                              ],
-                                              shippingMethods: [.init(label: "Shipping", amount: 100)])
+        let applePayRequest = ApplePayRequest(
+            currency: Currency(code: "GBP", decimalDigits: 2),
+            merchantIdentifier: "merchant_id",
+            countryCode: .gb,
+            items: [
+                try .init(
+                    name: "line_item_name",
+                    unitAmount: 123,
+                    quantity: 1,
+                    discountAmount: nil,
+                    taxAmount: nil
+                )
+            ],
+            shippingMethods: [.init(label: "Shipping", amount: 100)]
+        )
         let request = try sut.createRequest(for: applePayRequest)
 
         XCTAssertEqual(request.countryCode, "GB")
@@ -59,20 +64,28 @@ final class ApplePayPresentationManagerTests: XCTestCase {
     func testShippingContactFields() throws {
         let additionalFields: [PrimerApplePayOptions.RequiredContactField] = [.name, .emailAddress, .phoneNumber, .postalAddress ]
 
-        var applePayOptions = PrimerApplePayOptions(merchantIdentifier: "merchant_id",
-                                                    merchantName: "merchant_name",
-                                                    checkProvidedNetworks: true,
-                                                    shippingOptions: .init(shippingContactFields: additionalFields,
-                                                                           requireShippingMethod: true))
+        var applePayOptions = PrimerApplePayOptions(
+            merchantIdentifier: "merchant_id",
+            merchantName: "merchant_name",
+            checkProvidedNetworks: true,
+            shippingOptions: .init(
+                shippingContactFields: additionalFields,
+                requireShippingMethod: true
+            )
+        )
         var shippingFields = sut.mapContactFieldsFromOptions(applePayOptions: applePayOptions).mappedShippingContactFields
 
         XCTAssertEqual(shippingFields, [.name, .emailAddress, .phoneNumber, .postalAddress])
 
-        applePayOptions = PrimerApplePayOptions(merchantIdentifier: "merchant_id",
-                                                merchantName: "merchant_name",
-                                                checkProvidedNetworks: true,
-                                                shippingOptions: .init(shippingContactFields: nil,
-                                                                       requireShippingMethod: true))
+        applePayOptions = PrimerApplePayOptions(
+            merchantIdentifier: "merchant_id",
+            merchantName: "merchant_name",
+            checkProvidedNetworks: true,
+            shippingOptions: .init(
+                shippingContactFields: nil,
+                requireShippingMethod: true
+            )
+        )
 
         shippingFields = sut.mapContactFieldsFromOptions(applePayOptions: applePayOptions).mappedShippingContactFields
 
@@ -142,24 +155,31 @@ final class ApplePayPresentationManagerTests: XCTestCase {
     // MARK: Helpers
 
     func registerApplePayOptions() {
-        let settings = PrimerSettings(paymentMethodOptions:
-                                        .init(applePayOptions:
-                                                .init(merchantIdentifier: "merchant_id", merchantName: "merchant_name", checkProvidedNetworks: true)
-                                        )
+        let settings = PrimerSettings(
+            paymentMethodOptions:
+            .init(
+                applePayOptions:
+                .init(merchantIdentifier: "merchant_id", merchantName: "merchant_name", checkProvidedNetworks: true)
+            )
         )
         DependencyContainer.register(settings as PrimerSettingsProtocol)
     }
 
     func registerAllowedCardNetworks() {
-        PrimerAPIConfigurationModule.apiConfiguration?.clientSession = .init(clientSessionId: "client_session_id",
-                                                                             paymentMethod: .init(vaultOnSuccess: false,
-                                                                                                  options: nil,
-                                                                                                  orderedAllowedCardNetworks: [
-                                                                                                    "CARTES_BANCAIRES"
-                                                                                                  ], descriptor: nil),
-                                                                             order: nil,
-                                                                             customer: nil,
-                                                                             testId: nil)
+        PrimerAPIConfigurationModule.apiConfiguration?.clientSession = .init(
+            clientSessionId: "client_session_id",
+            paymentMethod: .init(
+                vaultOnSuccess: false,
+                options: nil,
+                orderedAllowedCardNetworks: [
+                    "CARTES_BANCAIRES"
+                ],
+                descriptor: nil
+            ),
+            order: nil,
+            customer: nil,
+            testId: nil
+        )
 
     }
 
@@ -275,12 +295,18 @@ final class ApplePayPresentationManagerTests: XCTestCase {
     
     func testErrorForDisplayWithCheckProvidedNetworksFalse() {
         // First ensure settings without checkProvidedNetworks
-        let settings = PrimerSettings(paymentMethodOptions:
-                                        .init(applePayOptions:
-                                                .init(merchantIdentifier: "merchant_id", 
-                                                      merchantName: "merchant_name", 
-                                                      checkProvidedNetworks: false)
-                                        )
+        let settings = PrimerSettings(
+            paymentMethodOptions:
+            .init(
+                applePayOptions:
+                .init(
+                    merchantIdentifier: "merchant_id",
+                    
+                    merchantName: "merchant_name",
+                    
+                    checkProvidedNetworks: false
+                )
+            )
         )
         DependencyContainer.register(settings as PrimerSettingsProtocol)
         

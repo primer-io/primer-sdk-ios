@@ -5,6 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+import PrimerFoundation
 
 protocol PrimerPaymentMethodProviding {
     func paymentMethod(for paymentMethodType: String) -> PrimerPaymentMethod?
@@ -74,15 +75,15 @@ extension PrimerHeadlessUniversalCheckout {
         // swiftlint:enable nesting
 
         #if DEBUG
-        init(
-            type: String,
-            supportedPrimerSessionIntents: [PrimerSessionIntent] = [],
-            paymentMethodManagerCategories: [PrimerPaymentMethodManagerCategory] = [.nativeUI]
-        ) {
-            self.paymentMethodType = type
-            self.supportedPrimerSessionIntents = supportedPrimerSessionIntents
-            self.paymentMethodManagerCategories = paymentMethodManagerCategories
-        }
+            init(
+                type: String,
+                supportedPrimerSessionIntents: [PrimerSessionIntent] = [],
+                paymentMethodManagerCategories: [PrimerPaymentMethodManagerCategory] = [.nativeUI]
+            ) {
+                self.paymentMethodType = type
+                self.supportedPrimerSessionIntents = supportedPrimerSessionIntents
+                self.paymentMethodManagerCategories = paymentMethodManagerCategories
+            }
         #endif
     }
 }

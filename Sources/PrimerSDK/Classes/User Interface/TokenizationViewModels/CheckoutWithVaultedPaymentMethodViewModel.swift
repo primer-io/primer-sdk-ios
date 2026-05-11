@@ -11,6 +11,7 @@
 // swiftlint:disable type_body_length
 
 import Foundation
+import PrimerFoundation
 
 final class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
 
@@ -36,11 +37,13 @@ final class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
     var willDismissPaymentMethodUI: (() -> Void)?
     var didDismissPaymentMethodUI: (() -> Void)?
 
-    init(configuration: PrimerPaymentMethod,
-         selectedPaymentMethodTokenData: PrimerPaymentMethodTokenData,
-         additionalData: PrimerVaultedCardAdditionalData?,
-         tokenizationService: TokenizationServiceProtocol = TokenizationService(),
-         createResumePaymentService: CreateResumePaymentServiceProtocol) {
+    init(
+        configuration: PrimerPaymentMethod,
+        selectedPaymentMethodTokenData: PrimerPaymentMethodTokenData,
+        additionalData: PrimerVaultedCardAdditionalData?,
+        tokenizationService: TokenizationServiceProtocol = TokenizationService(),
+        createResumePaymentService: CreateResumePaymentServiceProtocol
+    ) {
         self.config = configuration
         self.selectedPaymentMethodTokenData = selectedPaymentMethodTokenData
         self.additionalData = additionalData
