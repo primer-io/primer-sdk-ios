@@ -8,7 +8,7 @@
 // swiftlint:disable large_tuple
 
 import Foundation
-import PrimerFoundation
+@_spi(PrimerInternal) import PrimerFoundation
 
 typealias PhoneMetadataCompletion = (Result<(PrimerValidationStatus, String?, String?), PrimerError>) -> Void
 

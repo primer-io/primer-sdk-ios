@@ -9,6 +9,7 @@
 
 import Foundation
 @_spi(PrimerInternal) import PrimerStepResolver
+@_spi(PrimerInternal) import PrimerFoundation
 
 protocol AnalyticsServiceProtocol: Actor {
     func record(events: [any AnalyticsEvent]) async throws

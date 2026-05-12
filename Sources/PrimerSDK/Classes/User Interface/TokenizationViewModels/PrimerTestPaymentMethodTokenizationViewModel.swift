@@ -5,6 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import UIKit
+@_spi(PrimerInternal) import PrimerFoundation
 
 // swiftlint:disable:next type_name
 final class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel {
@@ -160,7 +161,8 @@ final class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizat
             context: Analytics.Event.Property.Context(
                 issuerId: nil,
                 paymentMethodType: config.type,
-                url: nil),
+                url: nil
+            ),
             extra: nil,
             objectType: .button,
             objectId: .submit,

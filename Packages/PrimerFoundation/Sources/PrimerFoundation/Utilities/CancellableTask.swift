@@ -4,7 +4,8 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-actor CancellableTask<Success> {
+@_spi(PrimerInternal)
+public actor CancellableTask<Success: Sendable> {
     private var continuation: CheckedContinuation<Success, Error>?
     private var finished = false
     private var task: Task<Void, Never>?
@@ -12,7 +13,7 @@ actor CancellableTask<Success> {
     private let onCancel: (@Sendable () -> Void)?
     private let operation: @Sendable () async throws -> Success
 
-    init(
+    public init(
         onCancel: (@Sendable () -> Void)? = nil,
         operation: @Sendable @escaping () async throws -> Success
     ) {
@@ -24,7 +25,7 @@ actor CancellableTask<Success> {
         task?.cancel()
     }
 
-    func wait() async throws -> Success {
+    public func wait() async throws -> Success {
         if let cancellationError {
             throw cancellationError
         }
@@ -55,7 +56,7 @@ actor CancellableTask<Success> {
         }
     }
 
-    func cancel(with error: Error) {
+    public func cancel(with error: Error) {
         cancellationError = error
         tryResume(.failure(error))
         task?.cancel()

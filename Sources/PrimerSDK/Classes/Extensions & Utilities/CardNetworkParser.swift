@@ -1,10 +1,11 @@
 //
 //  CardNetworkParser.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+@_spi(PrimerInternal) import PrimerFoundation
 
 final class CardNetworkParser {
 
@@ -27,9 +28,9 @@ final class CardNetworkParser {
                     return bounds[0]...bounds[1]
                 } else {
                     PrimerLogging.shared.logger.warn(message: """
-Encountered a card network validation range with \(bounds.count) bounds.
-Ensure ranges have exactly one or exactly two bounds.
-""")
+                    Encountered a card network validation range with \(bounds.count) bounds.
+                    Ensure ranges have exactly one or exactly two bounds.
+                    """)
                     return nil
                 }
             }

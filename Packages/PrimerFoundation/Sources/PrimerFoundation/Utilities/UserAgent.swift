@@ -1,21 +1,25 @@
 //
 //  UserAgent.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
 import UIKit
 
-struct UserAgent {
+public struct UserAgent {
 
     // eg. Darwin/16.3.0
     private static func darwinVersion() -> String {
         var sysinfo = utsname()
         uname(&sysinfo)
-        let darwinVersion = String(bytes: Data(bytes: &sysinfo.release,
-                                               count: Int(_SYS_NAMELEN)),
-                                   encoding: .ascii)!
+        let darwinVersion = String(
+            bytes: Data(
+                bytes: &sysinfo.release,
+                count: Int(_SYS_NAMELEN)
+            ),
+            encoding: .ascii
+        )!
             .trimmingCharacters(in: .controlCharacters)
         return "Darwin/\(darwinVersion)"
     }
@@ -38,9 +42,13 @@ struct UserAgent {
     private static func deviceName() -> String {
         var sysinfo = utsname()
         uname(&sysinfo)
-        return String(bytes: Data(bytes: &sysinfo.machine,
-                                  count: Int(_SYS_NAMELEN)),
-                      encoding: .ascii)!
+        return String(
+            bytes: Data(
+                bytes: &sysinfo.machine,
+                count: Int(_SYS_NAMELEN)
+            ),
+            encoding: .ascii
+        )!
             .trimmingCharacters(in: .controlCharacters)
     }
     // eg. PrimerApp/1
@@ -52,6 +60,6 @@ struct UserAgent {
     }
 }
 
-extension UserAgent {
-    static var userAgentAsString: String = "\(appNameAndVersion()) \(deviceName()) \(deviceVersion()) \(cFNetworkVersion()) \(darwinVersion())"
+public extension UserAgent {
+    static let userAgentAsString = "\(appNameAndVersion()) \(deviceName()) \(deviceVersion()) \(cFNetworkVersion()) \(darwinVersion())"
 }

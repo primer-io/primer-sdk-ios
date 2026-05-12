@@ -1,10 +1,11 @@
 //
 //  Mock3DSService.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+@_spi(PrimerInternal) import PrimerFoundation
 import UIKit
 
 final class Mock3DSService: ThreeDSServiceProtocol {
@@ -14,7 +15,8 @@ final class Mock3DSService: ThreeDSServiceProtocol {
     func perform3DS(
         paymentMethodTokenData: PrimerPaymentMethodTokenData,
         sdkDismissed: (() -> Void)?,
-        completion: @escaping (_ result: Result<String, Error>) -> Void) {
+        completion: @escaping (_ result: Result<String, Error>) -> Void
+    ) {
 
         if let windowScene = UIApplication.shared.connectedScenes.filter({ $0.activationState == .foregroundActive }).first as? UIWindowScene {
             demo3DSWindow = UIWindow(windowScene: windowScene)

@@ -1,10 +1,11 @@
 //
 //  PaymentMethodConfigurationOptions.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+@_spi(PrimerInternal) import PrimerFoundation
 
 protocol PaymentMethodOptions: Codable { }
 
@@ -15,23 +16,23 @@ struct PayPalOptions: PaymentMethodOptions {
 }
 
 enum ApplePayRecurringInterval: String, Codable {
-        case minute
-        case hour
-        case day
-        case month
-        case year
-        case unknown
+    case minute
+    case hour
+    case day
+    case month
+    case year
+    case unknown
 
-        var nsCalendarUnit: NSCalendar.Unit? {
-            switch self {
-            case .minute: .minute
-            case .hour: .hour
-            case .day: .day
-            case .month: .month
-            case .year: .year
-            case .unknown: nil
-            }
+    var nsCalendarUnit: NSCalendar.Unit? {
+        switch self {
+        case .minute: .minute
+        case .hour: .hour
+        case .day: .day
+        case .month: .month
+        case .year: .year
+        case .unknown: nil
         }
+    }
 }
 
 protocol ApplePayBillingBase: Codable {

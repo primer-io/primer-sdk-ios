@@ -1,13 +1,13 @@
 //
-//  IntExtension.swift
+//  Int.swift
 //
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
-import PrimerFoundation
 
-extension Int {
+@_spi(PrimerInternal)
+public extension Int {
     func toCurrencyString(currency: Currency, locale: Locale = Locale.current) -> String {
         let currencySymbol = currency.symbol ?? currency.code
 

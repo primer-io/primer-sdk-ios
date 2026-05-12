@@ -1,10 +1,11 @@
 //
 //  VoucherValue.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+@_spi(PrimerInternal) import PrimerFoundation
 
 struct VoucherValue {
     let id: String
@@ -15,7 +16,7 @@ struct VoucherValue {
 extension VoucherValue: Equatable {
 
     static func == (lhs: VoucherValue, rhs: VoucherValue) -> Bool {
-        return lhs.id == rhs.id
+        lhs.id == rhs.id
     }
 }
 
@@ -23,12 +24,16 @@ extension VoucherValue {
 
     fileprivate static var defaultVoucherValues: [VoucherValue] {
         [
-            VoucherValue(id: "entity",
-                         description: Strings.VoucherInfoPaymentView.entityLabelText,
-                         value: PrimerAPIConfigurationModule.decodedJWTToken?.entity),
-            VoucherValue(id: "reference",
-                         description: Strings.VoucherInfoPaymentView.referenceLabelText,
-                         value: PrimerAPIConfigurationModule.decodedJWTToken?.reference)
+            VoucherValue(
+                id: "entity",
+                description: Strings.VoucherInfoPaymentView.entityLabelText,
+                value: PrimerAPIConfigurationModule.decodedJWTToken?.entity
+            ),
+            VoucherValue(
+                id: "reference",
+                description: Strings.VoucherInfoPaymentView.referenceLabelText,
+                value: PrimerAPIConfigurationModule.decodedJWTToken?.reference
+            )
         ]
     }
 
@@ -36,9 +41,11 @@ extension VoucherValue {
 
         var currentVoucherValues = defaultVoucherValues
         if let currency = AppState.current.currency, let amount = AppState.current.amount {
-            currentVoucherValues.append(VoucherValue(id: "amount",
-                                                     description: Strings.VoucherInfoPaymentView.amountLabelText,
-                                                     value: "\(amount.toCurrencyString(currency: currency))"))
+            currentVoucherValues.append(VoucherValue(
+                id: "amount",
+                description: Strings.VoucherInfoPaymentView.amountLabelText,
+                value: "\(amount.toCurrencyString(currency: currency))"
+            ))
         }
 
         return currentVoucherValues
@@ -62,9 +69,11 @@ extension VoucherValue {
             let formatter = DateFormatter()
             formatter.dateStyle = .medium
             formatter.timeStyle = .short
-            sharableVoucherValues.append(VoucherValue(id: "expirationDate",
-                                                      description: Strings.VoucherInfoPaymentView.expiresAt,
-                                                      value: formatter.string(from: expirationDate)))
+            sharableVoucherValues.append(VoucherValue(
+                id: "expirationDate",
+                description: Strings.VoucherInfoPaymentView.expiresAt,
+                value: formatter.string(from: expirationDate)
+            ))
         }
 
         let description = sharableVoucherValues.compactMap { voucherValue in
