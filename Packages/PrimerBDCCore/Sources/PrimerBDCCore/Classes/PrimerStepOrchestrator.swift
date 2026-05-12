@@ -5,9 +5,9 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
-import PrimerBDCEngine
-import PrimerFoundation
-import PrimerStepResolver
+@_spi(PrimerInternal) import PrimerBDCEngine
+@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerStepResolver
 
 @MainActor
 protocol StepOrchestrating: AnyObject {

@@ -5,9 +5,10 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
-import PrimerFoundation
-import PrimerStepResolver
+@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerStepResolver
 
+@_spi(PrimerInternal)
 public struct StateProcessorResponse: Decodable {
     public let newState: CodableState
     public let action: WorkflowStep?
@@ -15,6 +16,7 @@ public struct StateProcessorResponse: Decodable {
     public let error: StateProcessorError?
 }
 
+@_spi(PrimerInternal)
 public struct Terminal: Decodable {
     public let outcome: TerminalOutcome
 }

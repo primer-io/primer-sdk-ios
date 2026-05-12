@@ -5,12 +5,13 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
-import PrimerFoundation
+@_spi(PrimerInternal) import PrimerFoundation
 
 public protocol SignedManifestProvider {
     func fetchSignedManifest() async throws -> SignedManifest
 }
 
+@_spi(PrimerInternal)
 public final class ManifestRepository {
     
     private let provider: SignedManifestProvider

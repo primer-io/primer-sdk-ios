@@ -6,8 +6,10 @@
 
 import Foundation
 
+@_spi(PrimerInternal)
 public typealias CodableState = [String: CodableValue]
 
+@_spi(PrimerInternal)
 public extension CodableState {
     init(_ dict: [String: Any]) throws {
         self = try JSONDecoder().decode([String: CodableValue].self, from: dict.data())

@@ -10,8 +10,8 @@
 //
 //  Created by Henry Cooper on 14/04/2026.
 //
-import PrimerFoundation
-import PrimerStepResolver
+@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerStepResolver
 
 final class MockStepResolver: StepResolver {
     nonisolated(unsafe) var resolveCallCount = 0

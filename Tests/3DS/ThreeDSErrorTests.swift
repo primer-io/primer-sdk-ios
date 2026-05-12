@@ -6,7 +6,7 @@
 
 #if canImport(Primer3DS)
     import Primer3DS
-    import PrimerFoundation
+    @_spi(PrimerInternal) import PrimerFoundation
     @testable import PrimerSDK
     import XCTest
 

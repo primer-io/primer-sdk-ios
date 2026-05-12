@@ -5,8 +5,9 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
-import PrimerFoundation
+@_spi(PrimerInternal) import PrimerFoundation
 
+@_spi(PrimerInternal)
 public protocol SDKWorkflowStepHandler: ObservableObject, StepResolver {
     var callback: ((ApplyEventCallback) async throws -> Void)? { get set }
     var updateUITree: ((AnyDict) -> Void)? { get }

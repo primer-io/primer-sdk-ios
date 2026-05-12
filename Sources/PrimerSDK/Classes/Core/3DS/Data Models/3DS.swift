@@ -8,7 +8,8 @@
 // swiftlint:disable file_length
 
 import Foundation
-import PrimerFoundation
+@_spi(PrimerInternal) import PrimerFoundation
+
 #if canImport(Primer3DS)
     import Primer3DS
 #endif

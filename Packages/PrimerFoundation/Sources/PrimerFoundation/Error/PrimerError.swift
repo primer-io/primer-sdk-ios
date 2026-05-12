@@ -8,7 +8,7 @@
 // swiftlint:disable type_body_length
 import Foundation
 
-public enum AnalyticsContextKeys {
+@_spi(PrimerInternal) public enum AnalyticsContextKeys {
     public static let createdAt = "createdAt"
     public static let paymentMethodType = "paymentMethodType"
     public static let reasonCode = "reasonCode"

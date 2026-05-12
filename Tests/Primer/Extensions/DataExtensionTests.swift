@@ -1,10 +1,11 @@
 //
 //  DataExtensionTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import XCTest
+@_spi(PrimerInternal) import PrimerFoundation
 @testable import PrimerSDK
 
 private struct MockEncodable: Encodable {
@@ -19,12 +20,12 @@ final class DataExtensionTests: XCTestCase {
         let data = try JSONEncoder().encode(MockEncodable())
 
         let expected = """
-{
-  "age" : 33,
-  "location" : "California",
-  "name" : "John Appleseed"
-}
-"""
+        {
+          "age" : 33,
+          "location" : "California",
+          "name" : "John Appleseed"
+        }
+        """
 
         XCTAssertEqual(data.prettyPrintedJSONString, expected)
     }

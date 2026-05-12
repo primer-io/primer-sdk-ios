@@ -6,6 +6,7 @@
 
 import Foundation
 
+@_spi(PrimerInternal)
 public struct Manifest: Decodable {
     
     public let stateProcessorContainer: URLContainer

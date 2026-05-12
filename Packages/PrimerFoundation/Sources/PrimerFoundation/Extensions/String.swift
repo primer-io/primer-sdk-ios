@@ -8,7 +8,10 @@ import Foundation
 
 public extension String {
     static var uuid: String { UUID().uuidString }
-    
+}
+
+@_spi(PrimerInternal)
+public extension String {
     func jsonObject<T>() throws -> T {
         do {
             let object = try JSONSerialization.jsonObject(with: Data(utf8), options: [])

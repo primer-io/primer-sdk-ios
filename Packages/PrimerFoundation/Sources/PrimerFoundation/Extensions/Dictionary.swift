@@ -6,6 +6,7 @@
 
 import Foundation
 
+@_spi(PrimerInternal)
 public extension Dictionary {
     func data(options: JSONSerialization.WritingOptions = []) throws -> Data {
         try JSONSerialization.data(withJSONObject: self, options: options)

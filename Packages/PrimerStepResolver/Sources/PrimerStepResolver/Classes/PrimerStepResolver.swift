@@ -5,12 +5,14 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
-import PrimerFoundation
+@_spi(PrimerInternal) import PrimerFoundation
 
+@_spi(PrimerInternal)
 public protocol StepResolver: Sendable {
     func resolve(_ step: CodableValue) async throws -> StepResolutionResult
 }
 
+@_spi(PrimerInternal)
 public struct StepResolutionResult: Sendable {
     public let outcome: TerminalOutcome
     public let data: CodableValue?
@@ -21,6 +23,7 @@ public struct StepResolutionResult: Sendable {
     }
 }
 
+@_spi(PrimerInternal)
 public actor PrimerStepResolverRegistry {
     public static let shared = PrimerStepResolverRegistry()
 

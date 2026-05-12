@@ -6,7 +6,7 @@
 
 import CryptoKit
 import JavaScriptCore
-import PrimerFoundation
+@_spi(PrimerInternal) import PrimerFoundation
 import PrimerStepResolver
 
 private enum EngineError: Error {
@@ -15,7 +15,7 @@ private enum EngineError: Error {
     case sha256Mismatch
 }
 
-@MainActor
+@MainActor @_spi(PrimerInternal)
 public final class PrimerBDCEngine: NSObject, BDCEngineProtocol {
     let context: JSContext
 
