@@ -97,11 +97,11 @@ public enum Primer3DSErrorContainer: PrimerErrorProtocol {
         }
     }
 
-    var exposedError: Error {
+    public var exposedError: Error {
         self
     }
 
-    var analyticsContext: [String: Any] {
+    public var analyticsContext: [String: Any] {
         var context: [String: Any] = [:]
 
         context[K.initProtocolVersion] = continueInfo.initProtocolVersion
@@ -139,7 +139,7 @@ public enum Primer3DSErrorContainer: PrimerErrorProtocol {
         info ?? [:]
     }
 
-    var diagnosticsId: String {
+    public var diagnosticsId: String {
         switch self {
         case let .missingSdkDependency(diagnosticsId),
              let .invalid3DSSdkVersion(diagnosticsId, _, _),

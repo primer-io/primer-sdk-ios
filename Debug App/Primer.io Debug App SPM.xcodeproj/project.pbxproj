@@ -31,7 +31,6 @@
 		E11F475E2B06C5A40091C31F /* BanksListModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F475A2B06C5A40091C31F /* BanksListModel.swift */; };
 		E11F475F2B06C5A40091C31F /* ImageViewWithUrl.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F475B2B06C5A40091C31F /* ImageViewWithUrl.swift */; };
 		F00C65F82ACC67FA00187028 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAC5687FF32E8661F1A00CE5 /* AppDelegate.swift */; };
-		F00C65F92ACC67FA00187028 /* Data+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1594BC5C96ECC3F46C811B2F /* Data+Extensions.swift */; };
 		F00C65FA2ACC67FA00187028 /* Range+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9128566126AA7F571FFECA3A /* Range+Extensions.swift */; };
 		F00C65FB2ACC67FA00187028 /* String+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9023841AFCE8E3205CB713A /* String+Extensions.swift */; };
 		F00C65FC2ACC67FA00187028 /* UIStackViewExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93F15C1E46C70C3D73B50F31 /* UIStackViewExtensions.swift */; };
@@ -95,7 +94,6 @@
 		0ED746F8924E70AD868BC0F4 /* MerchantNewLineItemViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchantNewLineItemViewController.swift; sourceTree = "<group>"; };
 		0FD08B8CE57A11D1E35A8684 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		13FA89917603E4BA5BB66AFC /* da */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = da; path = da.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
-		1594BC5C96ECC3F46C811B2F /* Data+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+Extensions.swift"; sourceTree = "<group>"; };
 		1D05E65C196E6715D7D8B0C6 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/Main.strings; sourceTree = "<group>"; };
 		1F23211288F9B61390C0BF8D /* Pods_Debug_App_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Debug_App_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		229849A3DBE0858EE90673B9 /* CreateClientToken.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateClientToken.swift; sourceTree = "<group>"; };
@@ -265,7 +263,6 @@
 		553A7EDE72B8249F55A0E6B9 /* Extension */ = {
 			isa = PBXGroup;
 			children = (
-				1594BC5C96ECC3F46C811B2F /* Data+Extensions.swift */,
 				BA6BF5902E78581A003D8B3D /* Collection+Extensions.swift */,
 				9128566126AA7F571FFECA3A /* Range+Extensions.swift */,
 				F9023841AFCE8E3205CB713A /* String+Extensions.swift */,
@@ -503,7 +500,6 @@
 				8723ADE42B8E0FAB00A5FE23 /* MerchantHeadlessKlarnaInitializationView.swift in Sources */,
 				044F805D2C6B4F9800E9F878 /* MerchantHeadlessStripeAchFieldsViewModel.swift in Sources */,
 				F00C65F82ACC67FA00187028 /* AppDelegate.swift in Sources */,
-				F00C65F92ACC67FA00187028 /* Data+Extensions.swift in Sources */,
 				044F805A2C6B4F9800E9F878 /* MerchantHeadlessCheckoutStripeAchViewController.swift in Sources */,
 				F00C65FA2ACC67FA00187028 /* Range+Extensions.swift in Sources */,
 				8723ADE72B8E0FAB00A5FE23 /* MerchantHeadlessCheckoutKlarnaViewController+Klarna.swift in Sources */,
