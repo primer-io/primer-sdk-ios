@@ -1,9 +1,10 @@
 //
 //  MerchantSessionAndSettingsViewController.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+import PrimerFoundation
 import PrimerSDK
 import UIKit
 
@@ -70,7 +71,6 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     @IBOutlet weak var disableInitScreenSwitch: UISwitch!
     @IBOutlet weak var enableCVVRecaptureFlowSwitch: UISwitch!
     @IBOutlet weak var addNewCardSwitch: UISwitch!
-
 
     // MARK: Apple Pay Inputs
     @IBOutlet weak var applePayCaptureBillingAddressSwitch: UISwitch!
@@ -143,7 +143,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
 
     var lineItems: [ClientSessionRequestBody.Order.LineItem] {
         get {
-            return self.clientSession.order?.lineItems ?? []
+            self.clientSession.order?.lineItems ?? []
         }
         set {
             self.clientSession.order?.lineItems = newValue
@@ -223,7 +223,8 @@ class MerchantSessionAndSettingsViewController: UIViewController {
         populateSessionSettingsFields()
 
         customerIdTextField.addTarget(
-            self, action: #selector(customerIdChanged(_:)), for: .editingDidEnd)
+            self, action: #selector(customerIdChanged(_:)), for: .editingDidEnd
+        )
 
         handleAppetizeIfNeeded(AppLinkConfigProvider())
 
@@ -231,7 +232,8 @@ class MerchantSessionAndSettingsViewController: UIViewController {
 
         NotificationCenter.default.addObserver(
             self, selector: #selector(handleAppetizeConfig), name: NSNotification.Name.appetizeURLHandled,
-            object: nil)
+            object: nil
+        )
     }
 
     @objc func handleAppetizeConfig(_ notification: NSNotification) {
@@ -329,13 +331,13 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             }
         case .deepLink:
             [environmentStackView,
-            testParamsGroupStackView,
-            apiKeyStackView,
-            clientTokenStackView,
-            sdkSettingsStackView,
-            orderStackView,
-            customerStackView,
-            surchargeGroupStackView,
+             testParamsGroupStackView,
+             apiKeyStackView,
+             clientTokenStackView,
+             sdkSettingsStackView,
+             orderStackView,
+             customerStackView,
+             surchargeGroupStackView,
              klarnaEMDStackView].forEach { $0.isHidden = true }
             deepLinkStackView.isHidden = false
         }
@@ -367,7 +369,8 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             horizontalStackView.addArrangedSubview(priceLbl)
 
             let lineItemTapGesture = UITapGestureRecognizer(
-                target: self, action: #selector(lineItemTapped))
+                target: self, action: #selector(lineItemTapped)
+            )
             horizontalStackView.addGestureRecognizer(lineItemTapGesture)
 
             lineItemsStackView.addArrangedSubview(horizontalStackView)
@@ -637,24 +640,33 @@ class MerchantSessionAndSettingsViewController: UIViewController {
         }
 
         clientSession.paymentMethod = MerchantMockDataManager.getPaymentMethod(
-            sessionType: paymentSessionType)
-        if paymentSessionType == .generic && enableCVVRecaptureFlowSwitch.isOn {
-            let option = ClientSessionRequestBody.PaymentMethod.PaymentMethodOption(surcharge: nil,
-                                                                                    instalmentDuration: nil,
-                                                                                    extraMerchantData: nil,
-                                                                                    captureVaultedCardCvv: enableCVVRecaptureFlowSwitch.isOn,
-                                                                                    merchantName: nil,
-                                                                                    networks: nil)
+            sessionType: paymentSessionType
+        )
+        if paymentSessionType == .generic, enableCVVRecaptureFlowSwitch.isOn {
+            let option = ClientSessionRequestBody.PaymentMethod.PaymentMethodOption(
+                surcharge: nil,
+                instalmentDuration: nil,
+                extraMerchantData: nil,
+                captureVaultedCardCvv: enableCVVRecaptureFlowSwitch.isOn,
+                merchantName: nil,
+                networks: nil
+            )
 
             clientSession.paymentMethod?.options?.PAYMENT_CARD = option
         }
 
-        let applePayOptions = ClientSessionRequestBody.PaymentMethod.PaymentMethodOption(surcharge: nil,
-                                                                                         instalmentDuration: nil, 
-                                                                                         extraMerchantData: nil, 
-                                                                                         captureVaultedCardCvv: nil, 
-                                                                                         merchantName: "Primer Merchant iOS", 
-                                                                                         networks: nil)
+        let applePayOptions = ClientSessionRequestBody.PaymentMethod.PaymentMethodOption(
+            surcharge: nil,
+            instalmentDuration: nil,
+            
+            extraMerchantData: nil,
+            
+            captureVaultedCardCvv: nil,
+            
+            merchantName: "Primer Merchant iOS",
+            
+            networks: nil
+        )
 
         clientSession.paymentMethod?.options?.APPLE_PAY = applePayOptions
 
@@ -664,12 +676,14 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             networkOptionGroup.VISA = ClientSessionRequestBody.PaymentMethod.NetworkOption(surcharge: surcharge)
             networkOptionGroup.JCB = ClientSessionRequestBody.PaymentMethod.NetworkOption(surcharge: surcharge)
             networkOptionGroup.MASTERCARD = ClientSessionRequestBody.PaymentMethod.NetworkOption(surcharge: surcharge)
-            let paymentCardOptions = ClientSessionRequestBody.PaymentMethod.PaymentMethodOption(surcharge: nil,
-                                                                                                instalmentDuration: nil,
-                                                                                                extraMerchantData: nil,
-                                                                                                captureVaultedCardCvv: nil,
-                                                                                                merchantName: "Primer Merchant iOS",
-                                                                                                networks: networkOptionGroup)
+            let paymentCardOptions = ClientSessionRequestBody.PaymentMethod.PaymentMethodOption(
+                surcharge: nil,
+                instalmentDuration: nil,
+                extraMerchantData: nil,
+                captureVaultedCardCvv: nil,
+                merchantName: "Primer Merchant iOS",
+                networks: networkOptionGroup
+            )
             clientSession.paymentMethod?.options?.PAYMENT_CARD = paymentCardOptions
         }
 
@@ -708,7 +722,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
         clientSession = MerchantMockDataManager.getClientSession(sessionType: paymentSessionType)
 
         enableCVVRecaptureFlowSwitch.isOn =
-        clientSession.paymentMethod?.options?.PAYMENT_CARD?.captureVaultedCardCvv == true
+            clientSession.paymentMethod?.options?.PAYMENT_CARD?.captureVaultedCardCvv == true
 
         currencyTextField.text = clientSession.currencyCode
         countryCodeTextField.text = clientSession.order?.countryCode?.rawValue
@@ -744,7 +758,8 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     func configureTestScenario() {
         guard let selectedTestScenario = selectedTestScenario else {
             let alert = UIAlertController(
-                title: "Error", message: "Please choose Test Scenario", preferredStyle: .alert)
+                title: "Error", message: "Please choose Test Scenario", preferredStyle: .alert
+            )
             alert.addAction(UIAlertAction(title: "OK", style: .default))
             present(alert, animated: true)
             return
@@ -755,13 +770,15 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             result: .success,
             network: nil,
             polling: nil,
-            threeDS: nil)
+            threeDS: nil
+        )
 
         if testResultSegmentedControl.selectedSegmentIndex == 1 {
             guard let selectedTestFlow = selectedTestFlow else {
                 let alert = UIAlertController(
                     title: "Error", message: "Please choose failure flow in the Failure Parameters",
-                    preferredStyle: .alert)
+                    preferredStyle: .alert
+                )
                 alert.addAction(UIAlertAction(title: "OK", style: .default))
                 present(alert, animated: true)
                 return
@@ -771,14 +788,17 @@ class MerchantSessionAndSettingsViewController: UIViewController {
                 flow: selectedTestFlow,
                 error: Test.Params.Failure.Error(
                     errorId: testErrorIdTextField.text ?? "test-error-id",
-                    description: testErrorDescriptionTextField.text ?? "test-error-description"))
+                    description: testErrorDescriptionTextField.text ?? "test-error-description"
+                )
+            )
 
             testParams.result = .failure(failure: failure)
 
         } else if case .testNative3DS = selectedTestScenario {
             guard let selectedTest3DSScenario = selectedTest3DSScenario else {
                 let alert = UIAlertController(
-                    title: "Error", message: "Please choose 3DS scenario", preferredStyle: .alert)
+                    title: "Error", message: "Please choose 3DS scenario", preferredStyle: .alert
+                )
                 alert.addAction(UIAlertAction(title: "OK", style: .default))
                 present(alert, animated: true)
                 return
@@ -801,18 +821,21 @@ class MerchantSessionAndSettingsViewController: UIViewController {
                 configureTestScenario()
             }
             let vc = MerchantDropInUIViewController.instantiate(
-                settings: settings, clientSession: clientSession, clientToken: nil)
+                settings: settings, clientSession: clientSession, clientToken: nil
+            )
             navigationController?.pushViewController(vc, animated: true)
 
         case .clientToken:
             let vc = MerchantDropInUIViewController.instantiate(
-                settings: settings, clientSession: nil, clientToken: clientTokenTextField.text)
+                settings: settings, clientSession: nil, clientToken: clientTokenTextField.text
+            )
             navigationController?.pushViewController(vc, animated: true)
 
         case .deepLink:
             if let clientToken = self.deepLinkClientToken, let settings = self.deepLinkSettings {
                 let vc = MerchantDropInUIViewController.instantiate(
-                    settings: settings, clientSession: nil, clientToken: clientToken)
+                    settings: settings, clientSession: nil, clientToken: clientToken
+                )
                 navigationController?.pushViewController(vc, animated: true)
             }
         }
@@ -832,20 +855,23 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             let vc = MerchantHeadlessCheckoutAvailablePaymentMethodsViewController.instantiate(
                 settings: settings,
                 clientSession: clientSession,
-                clientToken: nil)
+                clientToken: nil
+            )
             navigationController?.pushViewController(vc, animated: true)
         case .clientToken:
             let vc = MerchantHeadlessCheckoutAvailablePaymentMethodsViewController.instantiate(
                 settings: settings,
                 clientSession: nil,
-                clientToken: clientTokenTextField.text)
+                clientToken: clientTokenTextField.text
+            )
             navigationController?.pushViewController(vc, animated: true)
         case .deepLink:
             if let clientToken = self.deepLinkClientToken, let settings = self.deepLinkSettings {
                 let vc = MerchantHeadlessCheckoutAvailablePaymentMethodsViewController.instantiate(
                     settings: settings,
                     clientSession: nil,
-                    clientToken: clientToken)
+                    clientToken: clientToken
+                )
                 navigationController?.pushViewController(vc, animated: true)
             }
         }
@@ -872,14 +898,17 @@ class MerchantSessionAndSettingsViewController: UIViewController {
                 dismissalMechanism: selectedDismissalMechanisms,
                 cardFormUIOptions: PrimerCardFormUIOptions(payButtonAddNewCard: addNewCardSwitch.isOn),
                 appearanceMode: .system,
-                theme: applyThemingSwitch.isOn ? CheckoutTheme.tropical : nil)
+                theme: applyThemingSwitch.isOn ? CheckoutTheme.tropical : nil
+            )
         }
 
         let mandateData = PrimerStripeOptions.MandateData.templateMandate(merchantName: "Primer Inc.")
 
         let shippingOptions = applePayCaptureShippingDetails ?
-            PrimerApplePayOptions.ShippingOptions(shippingContactFields: applePayShippingAdditionalContactFields,
-                                                  requireShippingMethod: applePayRequireShippingMethod) : nil
+            PrimerApplePayOptions.ShippingOptions(
+                shippingContactFields: applePayShippingAdditionalContactFields,
+                requireShippingMethod: applePayRequireShippingMethod
+            ) : nil
 
         let billingOptions = applePayCaptureBillingAddress ?
             PrimerApplePayOptions.BillingOptions(requiredBillingContactFields: applePayBillingAdditionalContactFields) : nil
@@ -897,8 +926,10 @@ class MerchantSessionAndSettingsViewController: UIViewController {
                     showApplePayForUnsupportedDevice: false,
                     checkProvidedNetworks: applePayCheckProvidedNetworks,
                     shippingOptions: shippingOptions,
-                    billingOptions: billingOptions),
-                stripeOptions: stripePublishableKey == nil ? nil : PrimerStripeOptions(publishableKey: stripePublishableKey!, mandateData: mandateData)),
+                    billingOptions: billingOptions
+                ),
+                stripeOptions: stripePublishableKey == nil ? nil : PrimerStripeOptions(publishableKey: stripePublishableKey!, mandateData: mandateData)
+            ),
             uiOptions: uiOptions,
             debugOptions: PrimerDebugOptions(is3DSSanityCheckEnabled: false),
             apiVersion: apiVersion
@@ -925,7 +956,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
 extension MerchantSessionAndSettingsViewController: UIPickerViewDataSource, UIPickerViewDelegate {
 
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
-        return 1
+        1
     }
 
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
@@ -941,7 +972,7 @@ extension MerchantSessionAndSettingsViewController: UIPickerViewDataSource, UIPi
     }
 
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int)
-    -> String? {
+        -> String? {
         if row == 0 {
             return "-"
         } else {

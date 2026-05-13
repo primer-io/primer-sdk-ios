@@ -11,7 +11,7 @@
 // swiftlint:disable type_body_length
 
 import Foundation
-import PrimerFoundation
+@_spi(PrimerInternal) import PrimerFoundation
 import UIKit
 
 class Input {

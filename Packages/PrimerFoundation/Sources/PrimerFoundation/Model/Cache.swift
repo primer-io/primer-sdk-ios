@@ -1,26 +1,29 @@
 //
 //  Cache.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
 
-final class Cache<Key: Hashable, Value> {
+@_spi(PrimerInternal)
+public final class Cache<Key: Hashable, Value> {
     private let cache = NSCache<WrappedKey, Entry>()
+    
+    public init() {}
 
-    func insert(_ value: Value, forKey key: Key) {
+    public func insert(_ value: Value, forKey key: Key) {
         cache.setObject(Entry(value: value), forKey: WrappedKey(key))
     }
 
-    func value(forKey key: Key) -> Value? {
+    public func value(forKey key: Key) -> Value? {
         guard let entry = cache.object(forKey: WrappedKey(key)) else {
             return nil
         }
         return entry.value
     }
 
-    func removeValue(forKey key: Key) {
+    public func removeValue(forKey key: Key) {
         cache.removeObject(forKey: WrappedKey(key))
     }
 }
@@ -30,7 +33,7 @@ private extension Cache {
         let key: Key
         init(_ key: Key) { self.key = key }
 
-        override var hash: Int { return key.hashValue }
+        override var hash: Int { key.hashValue }
 
         override func isEqual(_ object: Any?) -> Bool {
             guard let value = object as? WrappedKey else {

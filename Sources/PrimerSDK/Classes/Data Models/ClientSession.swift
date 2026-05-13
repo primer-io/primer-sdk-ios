@@ -8,7 +8,7 @@
 // swiftlint:disable file_length
 
 import Foundation
-import PrimerFoundation
+@_spi(PrimerInternal) import PrimerFoundation
 
 final class ClientSession {
 

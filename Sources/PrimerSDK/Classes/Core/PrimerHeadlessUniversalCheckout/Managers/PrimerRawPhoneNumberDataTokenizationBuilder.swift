@@ -8,7 +8,7 @@
 // swiftlint:disable type_name
 
 import Foundation
-import PrimerFoundation
+@_spi(PrimerInternal) import PrimerFoundation
 
 // MARK: MISSING_TESTS
 final class PrimerRawPhoneNumberDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProtocol {

@@ -8,21 +8,8 @@
 
 import Foundation
 import PassKit
-import PrimerFoundation
+@_spi(PrimerInternal) import PrimerFoundation
 import UIKit
-
-struct CardNetworkValidation {
-    var niceType: String
-    var patterns: [[Int]]
-    var gaps: [Int]
-    var lengths: [Int]
-    var code: CardNetworkCode
-}
-
-struct CardNetworkCode {
-    var name: String
-    var length: Int
-}
 
 public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
 

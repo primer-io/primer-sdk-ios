@@ -11,7 +11,7 @@ private typealias TokenizationViewModelType = (
 )
 
 import Foundation
-import PrimerFoundation
+@_spi(PrimerInternal) import PrimerFoundation
 
 extension PrimerHeadlessUniversalCheckout {
     @objc public final class ComponentWithRedirectManager: NSObject {

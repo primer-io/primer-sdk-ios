@@ -8,7 +8,7 @@
 // swiftlint:disable file_length
 // swiftlint:disable orphaned_doc_comment
 
-import PrimerFoundation
+@_spi(PrimerInternal) import PrimerFoundation
 import SafariServices
 import UIKit
 
