@@ -6,6 +6,7 @@
 
 import Foundation
 
+@_spi(PrimerInternal)
 public extension Data {
     // NSString gives us a nice sanitized debugDescription
     var prettyPrintedJSONString: String? {

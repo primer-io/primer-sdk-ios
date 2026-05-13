@@ -63,10 +63,14 @@ PODS:
 DEPENDENCIES:
   - IQKeyboardManagerSwift
   - Primer3DS
+  - PrimerBDCCore (from `../`)
+  - PrimerBDCEngine (from `../`)
+  - PrimerFoundation (from `../`)
   - PrimerIPay88MYSDK
   - PrimerKlarnaSDK
   - PrimerNolPaySDK
   - PrimerSDK (from `../`)
+  - PrimerStepResolver (from `../`)
   - PrimerStripeSDK
 
 SPEC REPOS:
@@ -80,17 +84,21 @@ SPEC REPOS:
     - IQTextInputViewNotification
     - IQTextView
     - Primer3DS
-    - PrimerBDCCore
-    - PrimerBDCEngine
-    - PrimerFoundation
     - PrimerIPay88MYSDK
     - PrimerKlarnaSDK
     - PrimerNolPaySDK
-    - PrimerStepResolver
     - PrimerStripeSDK
 
 EXTERNAL SOURCES:
+  PrimerBDCCore:
+    :path: "../"
+  PrimerBDCEngine:
+    :path: "../"
+  PrimerFoundation:
+    :path: "../"
   PrimerSDK:
+    :path: "../"
+  PrimerStepResolver:
     :path: "../"
 
 SPEC CHECKSUMS:
@@ -113,6 +121,6 @@ SPEC CHECKSUMS:
   PrimerStepResolver: fded5733b09668a7146480637dbd90616ac6f971
   PrimerStripeSDK: dce5e37d10223ee724f33d1cdeaa17235a71ddbb
 
-PODFILE CHECKSUM: 665eac28ae49fa5a7b983ebc01493e77d5e13406
+PODFILE CHECKSUM: b8e7ac67d7c58bd5df400fbd39c0740865fb3ccd
 
 COCOAPODS: 1.16.2

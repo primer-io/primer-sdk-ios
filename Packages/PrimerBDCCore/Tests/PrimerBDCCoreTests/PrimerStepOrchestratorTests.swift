@@ -6,8 +6,8 @@
 
 @testable import PrimerBDCCore
 import PrimerBDCEngine
-import PrimerFoundation
-import PrimerStepResolver
+@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerStepResolver
 import XCTest
 
 @MainActor

@@ -8,7 +8,7 @@
 // swiftlint:disable file_length
 
 import Foundation
-import PrimerStepResolver
+@_spi(PrimerInternal) import PrimerStepResolver
 
 protocol AnalyticsServiceProtocol: Actor {
     func record(events: [any AnalyticsEvent]) async throws

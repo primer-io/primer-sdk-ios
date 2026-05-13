@@ -4,8 +4,10 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+@_spi(PrimerInternal)
 public protocol SingleValueContained: Codable & Equatable, RawRepresentable where RawValue == String {}
 
+@_spi(PrimerInternal)
 public extension SingleValueContained {
     init(from decoder: any Decoder) throws {
         let container = try decoder.singleValueContainer()

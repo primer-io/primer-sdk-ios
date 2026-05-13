@@ -6,10 +6,12 @@
 
 import Foundation
 
+@_spi(PrimerInternal)
 public struct PrimerServerErrorResponse: Codable {
     public let error: PrimerServerError
 }
 
+@_spi(PrimerInternal)
 public struct PrimerServerError: Codable {
     public var errorId: String
     public var `description`: String

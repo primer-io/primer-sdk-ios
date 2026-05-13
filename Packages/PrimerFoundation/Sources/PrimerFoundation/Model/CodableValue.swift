@@ -6,6 +6,7 @@
 
 import Foundation
 
+@_spi(PrimerInternal)
 public enum CodableValue: Codable, Equatable, Hashable, Sendable, CustomStringConvertible {
     case string(String)
     case int(Int)

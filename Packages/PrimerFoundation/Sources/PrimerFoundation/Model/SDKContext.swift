@@ -4,6 +4,7 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+@_spi(PrimerInternal)
 public struct SDKContext: Encodable {
     let sdk: SDK
     let device: SDKDevice
@@ -32,6 +33,7 @@ public struct SDKContext: Encodable {
     }
 }
 
+@_spi(PrimerInternal)
 public struct SDK: Encodable {
     let type: String
     let version: String
@@ -46,6 +48,7 @@ public struct SDK: Encodable {
     }
 }
 
+@_spi(PrimerInternal)
 public struct SDKDevice: Encodable {
     let type: String?
     let make: String
@@ -74,6 +77,7 @@ public struct SDKDevice: Encodable {
     }
 }
 
+@_spi(PrimerInternal)
 public struct SDKApp: Encodable {
     let identifier: String
     
@@ -82,6 +86,7 @@ public struct SDKApp: Encodable {
     }
 }
 
+@_spi(PrimerInternal)
 public struct SDKSession: Encodable {
     let checkoutSessionId: String?
     let clientSessionId: String?
@@ -98,6 +103,7 @@ public struct SDKSession: Encodable {
     }
 }
 
+@_spi(PrimerInternal)
 public struct SDKPayment: Encodable {
     let paymentMethodType: String
     
@@ -106,6 +112,7 @@ public struct SDKPayment: Encodable {
     }
 }
 
+@_spi(PrimerInternal)
 public struct SDKMerchant: Encodable {
     let primerAccountId: String?
     
@@ -114,6 +121,7 @@ public struct SDKMerchant: Encodable {
     }
 }
 
+@_spi(PrimerInternal)
 public struct SDKAnalytics: Encodable {
     let url: String?
     

@@ -8,7 +8,7 @@
 
 import Foundation
 import PassKit
-import PrimerFoundation
+@_spi(PrimerInternal) import PrimerFoundation
 
 typealias PrimerAPIConfiguration = Response.Body.Configuration
 

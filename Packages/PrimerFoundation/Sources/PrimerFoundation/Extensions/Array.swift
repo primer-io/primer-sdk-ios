@@ -6,6 +6,7 @@
 
 import Foundation
 
+@_spi(PrimerInternal)
 public extension Array where Element: Equatable {
     func toBatches(of size: UInt) -> [[Element]] {
         stride(from: 0, to: count, by: Int(size)).map {
@@ -14,6 +15,7 @@ public extension Array where Element: Equatable {
     }
 }
 
+@_spi(PrimerInternal)
 public extension Array where Element == Error {
 
     var combinedDescription: String {

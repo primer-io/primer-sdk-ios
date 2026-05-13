@@ -6,6 +6,7 @@
 
 import Foundation
 
+@_spi(PrimerInternal)
 public extension Encodable {
     func casted<T: Decodable>(to type: T.Type) throws -> T {
         try JSONDecoder().decode(T.self, from: try data())

@@ -6,7 +6,7 @@
 
 import Foundation   
 
-public enum InternalError {
+@_spi(PrimerInternal) public enum InternalError {
     case failedToDecode(message: String?, diagnosticsId: String = .uuid)
     case invalidUrl(url: String?, diagnosticsId: String = .uuid)
     case invalidValue(key: String, value: Any? = nil, diagnosticsId: String = .uuid)

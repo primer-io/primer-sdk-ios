@@ -6,6 +6,7 @@
 
 import Foundation
 
+@_spi(PrimerInternal)
 public extension Date {
 
     var startOfDay: Date {

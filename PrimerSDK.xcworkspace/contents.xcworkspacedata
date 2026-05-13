@@ -441,9 +441,6 @@
                   location = "group:PaymentMethodTypeProviding.swift">
                </FileRef>
                <FileRef
-                  location = "group:AnyDecodable.swift">
-               </FileRef>
-               <FileRef
                   location = "group:CardNetworkParser.swift">
                </FileRef>
                <FileRef
@@ -511,12 +508,6 @@
                </FileRef>
                <FileRef
                   location = "group:Error+Extensions.swift">
-               </FileRef>
-               <FileRef
-                  location = "group:AnyCodable.swift">
-               </FileRef>
-               <FileRef
-                  location = "group:AnyEncodable.swift">
                </FileRef>
             </Group>
             <Group
