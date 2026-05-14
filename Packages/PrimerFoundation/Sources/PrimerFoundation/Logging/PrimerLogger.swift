@@ -1,12 +1,12 @@
 //
 //  PrimerLogger.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
 #if canImport(OSLog)
-import OSLog
+    import OSLog
 #endif
 
 public struct PrimerLogMetadata {
@@ -52,58 +52,71 @@ public protocol PrimerLogger {
 
 extension PrimerLogger {
 
-    public func debug(message: String,
-                      userInfo: Encodable? = nil,
-                      file: String = #file,
-                      line: Int = #line,
-                      function: String = #function) {
+    public func debug(
+        message: String,
+        userInfo: Encodable? = nil,
+        file: String = #file,
+        line: Int = #line,
+        function: String = #function
+    ) {
         let metadata = PrimerLogMetadata(file: file, line: line, function: function)
         logProxy(level: .debug, message: message, userInfo: userInfo, metadata: metadata)
     }
 
-    public func info(message: String,
-                     userInfo: Encodable? = nil,
-                     file: String = #file,
-                     line: Int = #line,
-                     function: String = #function) {
+    public func info(
+        message: String,
+        userInfo: Encodable? = nil,
+        file: String = #file,
+        line: Int = #line,
+        function: String = #function
+    ) {
         let metadata = PrimerLogMetadata(file: file, line: line, function: function)
         logProxy(level: .info, message: message, userInfo: userInfo, metadata: metadata)
     }
 
-    public func warn(message: String,
-                     userInfo: Encodable? = nil,
-                     file: String = #file,
-                     line: Int = #line,
-                     function: String = #function) {
+    public func warn(
+        message: String,
+        userInfo: Encodable? = nil,
+        file: String = #file,
+        line: Int = #line,
+        function: String = #function
+    ) {
         let metadata = PrimerLogMetadata(file: file, line: line, function: function)
         logProxy(level: .warning, message: message, userInfo: userInfo, metadata: metadata)
     }
 
-    public func error(message: String,
-                      userInfo: Encodable? = nil,
-                      file: String = #file,
-                      line: Int = #line,
-                      function: String = #function) {
+    public func error(
+        message: String,
+        userInfo: Encodable? = nil,
+        file: String = #file,
+        line: Int = #line,
+        function: String = #function
+    ) {
         let metadata = PrimerLogMetadata(file: file, line: line, function: function)
         logProxy(level: .error, message: message, userInfo: userInfo, metadata: metadata)
     }
 
-    private func logUserInfo(level: LogLevel,
-                             userInfo: Encodable?, metadata: PrimerLogMetadata) {
+    private func logUserInfo(
+        level: LogLevel,
+        userInfo: Encodable?,
+        metadata: PrimerLogMetadata
+    ) {
         guard let userInfo = userInfo, let dictionary = try? userInfo.asDictionary() else {
             return
         }
         logProxy(level: level, message: dictionary.debugDescription, userInfo: nil, metadata: metadata)
     }
 
-    private func logProxy(level: LogLevel,
-                          message: String,
-                          userInfo: Encodable?,
-                          metadata: PrimerLogMetadata) {
+    private func logProxy(
+        level: LogLevel,
+        message: String,
+        userInfo: Encodable?,
+        metadata: PrimerLogMetadata
+    ) {
         // Currently we only send logs for debug builds to avoid transmission of PII / PCI data in production
         #if DEBUG
-        guard level.rawValue >= self.logLevel.rawValue else { return }
-        log(level: level, message: message, userInfo: nil, metadata: metadata)
+            guard level.rawValue >= self.logLevel.rawValue else { return }
+            log(level: level, message: message, userInfo: nil, metadata: metadata)
         #endif
     }
 }
@@ -118,7 +131,7 @@ public final class DefaultLogger: PrimerLogger {
         self.logLevel = logLevel
     }
 
-    public func log(level: PrimerSDK.LogLevel, message: String, userInfo: Encodable?, metadata: PrimerLogMetadata) {
+    public func log(level: LogLevel, message: String, userInfo: Encodable?, metadata: PrimerLogMetadata) {
 
         let message = format(level: level, message: message, metadata: metadata)
 
@@ -161,7 +174,7 @@ public final class DefaultLogger: PrimerLogger {
         }
 
         let subsystem = Bundle.main.bundleIdentifier ?? "PrimerSDK"
-        let logger = Logger.init(subsystem: subsystem, category: category)
+        let logger = Logger(subsystem: subsystem, category: category)
         categoryLoggers[category] = logger
         return logger
     }
