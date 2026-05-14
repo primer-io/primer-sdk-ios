@@ -10,7 +10,7 @@
 // swiftlint:disable file_length
 
 import Foundation
-import PrimerFoundation
+@_spi(PrimerInternal) import PrimerFoundation
 
 // MARK: MISSING_TESTS
 final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProtocol {

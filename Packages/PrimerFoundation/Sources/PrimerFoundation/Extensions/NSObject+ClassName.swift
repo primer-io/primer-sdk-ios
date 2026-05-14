@@ -1,12 +1,13 @@
 //
 //  NSObject+ClassName.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
 
-extension NSObject {
+@_spi(PrimerInternal)
+public extension NSObject {
 
     // MARK: - Class Names
 
@@ -19,6 +20,7 @@ extension NSObject {
     }
 }
 
+@_spi(PrimerInternal)
 extension NSObject {
 
     private static func classNameFromString(_ name: String) -> String {

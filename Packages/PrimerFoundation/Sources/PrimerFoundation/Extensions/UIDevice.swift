@@ -1,13 +1,14 @@
 //
-//  UIDeviceExtension.swift
+//  UIDevice.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import UIKit
 
 // swiftlint:disable identifier_name
-internal enum Model: String, Codable {
+@_spi(PrimerInternal)
+public enum Model: String, Codable {
 
     // Simulator
     case simulator     = "simulator",
@@ -120,7 +121,8 @@ internal enum Model: String, Codable {
          unrecognized       = "?unrecognized?"
 }
 
-internal extension UIDevice {
+@_spi(PrimerInternal)
+public extension UIDevice {
 
     static var modelIdentifier: String? {
         var systemInfo = utsname()

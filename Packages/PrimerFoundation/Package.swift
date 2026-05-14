@@ -6,6 +6,7 @@ import PackageDescription
 // DO NOT ADD DEPENDENCIES
 let package = Package(
     name: "PrimerFoundation",
+    platforms: [.iOS(.v13)],
     products: [.library(name: "PrimerFoundation", targets: ["PrimerFoundation"])],
     targets: [
         .target(name: "PrimerFoundation"),

@@ -7,7 +7,7 @@
 // swiftlint:disable function_body_length
 
 import Foundation
-import PrimerFoundation
+@_spi(PrimerInternal) import PrimerFoundation
 
 final class PrimerRawOTPDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProtocol {
 

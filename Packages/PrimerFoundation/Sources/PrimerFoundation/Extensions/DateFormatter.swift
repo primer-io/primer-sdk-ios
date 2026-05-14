@@ -1,12 +1,13 @@
 //
-//  DateFormatter+Extensions.swift
+//  DateFormatter.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
 
-internal extension DateFormatter {
+@_spi(PrimerInternal)
+public extension DateFormatter {
 
     /**
      The provided function sets the `dateFormat` property of DateFormatter.
@@ -21,7 +22,8 @@ internal extension DateFormatter {
     }
 }
 
-internal extension DateFormatter {
+@_spi(PrimerInternal)
+public extension DateFormatter {
 
     /**
      The provided function sets the `style` of `date` and `time` property of DateFormatter.

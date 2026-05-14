@@ -1,11 +1,12 @@
 //
 //  ClientToken.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable function_body_length
 import Foundation
+@_spi(PrimerInternal) import PrimerFoundation
 
 extension Request.Body {
 
@@ -168,8 +169,10 @@ struct DecodedJWTToken: Codable {
         self.threeDSecureInitUrl = try? container.decode(String.self, forKey: .threeDSecureInitUrl)
         self.threeDSecureToken = try? container.decode(String.self, forKey: .threeDSecureToken)
         self.useThreeDsWeakValidation = try? container.decode(Bool.self, forKey: .useThreeDsWeakValidation)
-        self.supportedThreeDsProtocolVersions = try container.decodeIfPresent([String].self,
-                                                                              forKey: .supportedThreeDsProtocolVersions)
+        self.supportedThreeDsProtocolVersions = try container.decodeIfPresent(
+            [String].self,
+            forKey: .supportedThreeDsProtocolVersions
+        )
         self.coreUrl = try? container.decode(String.self, forKey: .coreUrl)
         self.pciUrl = try? container.decode(String.self, forKey: .pciUrl)
         self.env = try? container.decode(String.self, forKey: .env)
