@@ -887,9 +887,6 @@
                <Group
                   location = "group:Keychain"
                   name = "Keychain">
-                  <FileRef
-                     location = "group:Keychain.swift">
-                  </FileRef>
                </Group>
                <Group
                   location = "group:3DS"
