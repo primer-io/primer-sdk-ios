@@ -15,21 +15,21 @@ let package = Package(
         )
     ],
     dependencies: [
-        .package(url: "https://github.com/primer-io/primer-sdk-3ds-ios", from: "2.7.0"),
-        .package(path: "Packages/PrimerBDCCore"),
-        .package(path: "Packages/PrimerBDCEngine"),
-        .package(path: "Packages/PrimerFoundation"),
-        .package(path: "Packages/PrimerStepResolver")
+        .package(url: "https://github.com/primer-io/primer-sdk-3ds-ios", from: "2.7.0")
     ],
     targets: [
+        packageTarget(name: "PrimerFoundation"),
+        packageTarget(name: "PrimerStepResolver", dependencies: ["PrimerFoundation"]),
+        packageTarget(name: "PrimerBDCEngine", dependencies: ["PrimerFoundation", "PrimerStepResolver"]),
+        packageTarget(name: "PrimerBDCCore", dependencies: ["PrimerBDCEngine", "PrimerFoundation", "PrimerStepResolver"]),
         .target(
             name: "PrimerSDK",
             dependencies: [
                 .product(name: "Primer3DS", package: "primer-sdk-3ds-ios"),
-                .product(name: "PrimerBDCCore", package: "PrimerBDCCore"),
-                .product(name: "PrimerBDCEngine", package: "PrimerBDCEngine"),
-                .product(name: "PrimerFoundation", package: "PrimerFoundation"),
-                .product(name: "PrimerStepResolver", package: "PrimerStepResolver")
+                "PrimerBDCCore",
+                "PrimerBDCEngine",
+                "PrimerFoundation",
+                "PrimerStepResolver"
             ],
             path: "Sources/PrimerSDK",
             resources: [
@@ -62,10 +62,10 @@ let package = Package(
                 "Primer/"
             ]
         ),
-        bdcTestTarget(name: "PrimerBDCCore"),
-        bdcTestTarget(name: "PrimerBDCEngine"),
-        bdcTestTarget(name: "PrimerFoundation"),
-        bdcTestTarget(name: "PrimerStepResolver"),
+        packageTestTarget(name: "PrimerBDCCore", dependencies: ["PrimerBDCCore", "PrimerFoundation", "PrimerStepResolver", "PrimerBDCEngine"]),
+        packageTestTarget(name: "PrimerBDCEngine", dependencies: ["PrimerBDCEngine"]),
+        packageTestTarget(name: "PrimerFoundation", dependencies: ["PrimerFoundation"]),
+        packageTestTarget(name: "PrimerStepResolver", dependencies: ["PrimerStepResolver"]),
         .testTarget(
             name: "DebugAppTests",
             dependencies: [
@@ -84,10 +84,10 @@ let package = Package(
     swiftLanguageVersions: [.v5]
 )
 
-private func bdcTestTarget(name: String) -> Target {
-    .testTarget(
-        name: "\(name)Tests",
-        dependencies: [.product(name: name, package: name)],
-        path: "Packages/\(name)/Tests/\(name)Tests"
-    )
+private func packageTarget(name: String, dependencies: [Target.Dependency] = []) -> Target {
+    .target(name: name, dependencies: dependencies, path: "Packages/\(name)/Sources")
+}
+
+private func packageTestTarget(name: String, dependencies: [Target.Dependency]) -> Target {
+    .testTarget(name: "\(name)Tests", dependencies: dependencies, path: "Packages/\(name)/Tests/\(name)Tests")
 }
