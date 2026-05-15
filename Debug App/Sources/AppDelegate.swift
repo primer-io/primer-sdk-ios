@@ -1,9 +1,10 @@
 //
 //  AppDelegate.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+import PrimerFoundation
 import PrimerSDK
 import UIKit
 
@@ -20,14 +21,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
         #if DEBUG
-        TestHelper.handle(url: url)
+            TestHelper.handle(url: url)
         #endif
         return Primer.shared.application(app, open: url, options: options)
     }
 
-    func application(_ application: UIApplication,
-                     continue userActivity: NSUserActivity,
-                     restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
+    func application(
+        _ application: UIApplication,
+        continue userActivity: NSUserActivity,
+        restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void
+    ) -> Bool {
         if let url = userActivity.webpageURL {
             let handled = SDKDemoUrlHandler.handleUrl(url)
             if handled == true {

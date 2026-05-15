@@ -1,15 +1,16 @@
 //
 //  PrimerSettings.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
 import PassKit
+@_spi(PrimerInternal) import PrimerFoundation
 
 // MARK: - PRIMER SETTINGS
 
-internal protocol PrimerSettingsProtocol {
+protocol PrimerSettingsProtocol {
     var paymentHandling: PrimerPaymentHandling { get }
     var localeData: PrimerLocaleData { get }
     var paymentMethodOptions: PrimerPaymentMethodOptions { get }
@@ -62,7 +63,7 @@ public enum PrimerPaymentHandling: String, Codable {
 
 // MARK: - PAYMENT METHOD OPTIONS
 
-internal protocol PrimerPaymentMethodOptionsProtocol {
+protocol PrimerPaymentMethodOptionsProtocol {
     var applePayOptions: PrimerApplePayOptions? { get }
     var klarnaOptions: PrimerKlarnaOptions? { get }
     var threeDsOptions: PrimerThreeDsOptions? { get }
@@ -94,8 +95,8 @@ public final class PrimerPaymentMethodOptions: PrimerPaymentMethodOptionsProtoco
         self.urlScheme = urlScheme
         if let urlScheme = urlScheme, URL(string: urlScheme) == nil {
             PrimerLogging.shared.logger.warn(message: """
-The provided url scheme '\(urlScheme)' is not a valid URL. Please ensure that a valid url scheme is provided of the form 'myurlscheme://myapp'
-""")
+            The provided url scheme '\(urlScheme)' is not a valid URL. Please ensure that a valid url scheme is provided of the form 'myurlscheme://myapp'
+            """)
         }
         self.applePayOptions = applePayOptions
         self.klarnaOptions = klarnaOptions
@@ -150,11 +151,13 @@ public final class PrimerApplePayOptions: Codable {
     let shippingOptions: ShippingOptions?
     let billingOptions: BillingOptions?
 
-    public init(merchantIdentifier: String,
-                merchantName: String?,
-                isCaptureBillingAddressEnabled: Bool = false,
-                showApplePayForUnsupportedDevice: Bool = true,
-                checkProvidedNetworks: Bool = true) {
+    public init(
+        merchantIdentifier: String,
+        merchantName: String?,
+        isCaptureBillingAddressEnabled: Bool = false,
+        showApplePayForUnsupportedDevice: Bool = true,
+        checkProvidedNetworks: Bool = true
+    ) {
         self.merchantIdentifier = merchantIdentifier
         self.merchantName = merchantName
         self.isCaptureBillingAddressEnabled = isCaptureBillingAddressEnabled
@@ -164,13 +167,15 @@ public final class PrimerApplePayOptions: Codable {
         self.billingOptions = nil
     }
 
-    public init(merchantIdentifier: String,
-                merchantName: String?,
-                isCaptureBillingAddressEnabled: Bool = false,
-                showApplePayForUnsupportedDevice: Bool = true,
-                checkProvidedNetworks: Bool = true,
-                shippingOptions: ShippingOptions? = nil,
-                billingOptions: BillingOptions? = nil) {
+    public init(
+        merchantIdentifier: String,
+        merchantName: String?,
+        isCaptureBillingAddressEnabled: Bool = false,
+        showApplePayForUnsupportedDevice: Bool = true,
+        checkProvidedNetworks: Bool = true,
+        shippingOptions: ShippingOptions? = nil,
+        billingOptions: BillingOptions? = nil
+    ) {
         self.merchantIdentifier = merchantIdentifier
         self.merchantName = merchantName
         self.isCaptureBillingAddressEnabled = isCaptureBillingAddressEnabled
@@ -184,8 +189,10 @@ public final class PrimerApplePayOptions: Codable {
         public let shippingContactFields: [RequiredContactField]?
         public let requireShippingMethod: Bool
 
-        public init(shippingContactFields: [RequiredContactField]? = nil,
-                    requireShippingMethod: Bool) {
+        public init(
+            shippingContactFields: [RequiredContactField]? = nil,
+            requireShippingMethod: Bool
+        ) {
             self.shippingContactFields = shippingContactFields
             self.requireShippingMethod = requireShippingMethod
         }
