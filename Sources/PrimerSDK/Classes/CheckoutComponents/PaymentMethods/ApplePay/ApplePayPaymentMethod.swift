@@ -43,8 +43,8 @@ extension ApplePayPaymentMethod {
   static func register() {
     PaymentMethodRegistry.shared.register(
       forKey: paymentMethodType,
-      scopeCreator: { try await createScope(checkoutScope: $0, diContainer: $1) },
-      viewCreator: { createView(checkoutScope: $0) }
+      scopeCreator: createScope,
+      viewCreator: createView
     )
   }
 }

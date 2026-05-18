@@ -142,13 +142,13 @@ enum FormRedirectPaymentMethod {
   static func register() {
     PaymentMethodRegistry.shared.register(
       forKey: BlikPaymentMethod.paymentMethodType,
-      scopeCreator: { try await BlikPaymentMethod.createScope(checkoutScope: $0, diContainer: $1) },
-      viewCreator: { BlikPaymentMethod.createView(checkoutScope: $0) }
+      scopeCreator: BlikPaymentMethod.createScope,
+      viewCreator: BlikPaymentMethod.createView
     )
     PaymentMethodRegistry.shared.register(
       forKey: MBWayPaymentMethod.paymentMethodType,
-      scopeCreator: { try await MBWayPaymentMethod.createScope(checkoutScope: $0, diContainer: $1) },
-      viewCreator: { MBWayPaymentMethod.createView(checkoutScope: $0) }
+      scopeCreator: MBWayPaymentMethod.createScope,
+      viewCreator: MBWayPaymentMethod.createView
     )
   }
 }
