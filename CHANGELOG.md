@@ -5,6 +5,16 @@ All notable changes to `primer-sdk-ios` are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 2.48.0 (2026-05-18)
+
+### Feat
+
+- Handle BACKEND_DRIVEN implementation type (#1738)
+
+### Fix
+
+- Only expose BDC packages as targets (#1740)
+
 ## 2.47.0 (2026-04-24)
 
 ### Feat
