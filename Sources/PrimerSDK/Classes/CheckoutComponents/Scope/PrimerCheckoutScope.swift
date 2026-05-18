@@ -135,16 +135,16 @@ public protocol PrimerCheckoutScope: AnyObject {
 
 @available(iOS 15.0, *)
 public extension PrimerCheckoutScope {
-  func getPaymentMethodScope(_ scopeType: (any PrimerCardFormScope).Type) -> (any PrimerCardFormScope)? { nil }
-  func getPaymentMethodScope(_ scopeType: (any PrimerKlarnaScope).Type) -> (any PrimerKlarnaScope)? { nil }
-  func getPaymentMethodScope(_ scopeType: (any PrimerAdyenKlarnaScope).Type) -> (any PrimerAdyenKlarnaScope)? { nil }
-  func getPaymentMethodScope(_ scopeType: (any PrimerWebRedirectScope).Type) -> (any PrimerWebRedirectScope)? { nil }
-  func getPaymentMethodScope(_ scopeType: (any PrimerFormRedirectScope).Type) -> (any PrimerFormRedirectScope)? { nil }
-  func getPaymentMethodScope(_ scopeType: (any PrimerBillingAddressRedirectScope).Type) -> (any PrimerBillingAddressRedirectScope)? { nil }
-  func getPaymentMethodScope(_ scopeType: (any PrimerApplePayScope).Type) -> (any PrimerApplePayScope)? { nil }
-  func getPaymentMethodScope(_ scopeType: (any PrimerPayPalScope).Type) -> (any PrimerPayPalScope)? { nil }
-  func getPaymentMethodScope(_ scopeType: (any PrimerQRCodeScope).Type) -> (any PrimerQRCodeScope)? { nil }
-  func getPaymentMethodScope(_ scopeType: (any PrimerAchScope).Type) -> (any PrimerAchScope)? { nil }
+  func getPaymentMethodScope(_: (any PrimerCardFormScope).Type) -> (any PrimerCardFormScope)? { nil }
+  func getPaymentMethodScope(_: (any PrimerKlarnaScope).Type) -> (any PrimerKlarnaScope)? { nil }
+  func getPaymentMethodScope(_: (any PrimerAdyenKlarnaScope).Type) -> (any PrimerAdyenKlarnaScope)? { nil }
+  func getPaymentMethodScope(_: (any PrimerWebRedirectScope).Type) -> (any PrimerWebRedirectScope)? { nil }
+  func getPaymentMethodScope(_: (any PrimerFormRedirectScope).Type) -> (any PrimerFormRedirectScope)? { nil }
+  func getPaymentMethodScope(_: (any PrimerBillingAddressRedirectScope).Type) -> (any PrimerBillingAddressRedirectScope)? { nil }
+  func getPaymentMethodScope(_: (any PrimerApplePayScope).Type) -> (any PrimerApplePayScope)? { nil }
+  func getPaymentMethodScope(_: (any PrimerPayPalScope).Type) -> (any PrimerPayPalScope)? { nil }
+  func getPaymentMethodScope(_: (any PrimerQRCodeScope).Type) -> (any PrimerQRCodeScope)? { nil }
+  func getPaymentMethodScope(_: (any PrimerAchScope).Type) -> (any PrimerAchScope)? { nil }
 }
 
 // MARK: - State Definition
