@@ -459,6 +459,17 @@ final class DefaultCheckoutScopeBehaviorTests: XCTestCase {
         }
     }
 
+    func test_currentNavigationState_returnsLatestNavigationState() {
+        // Given
+        sut = makeSut()
+
+        // When
+        sut.updateNavigationState(.processing)
+
+        // Then
+        XCTAssertEqual(sut.currentNavigationState, .processing)
+    }
+
     func test_checkoutNavigator_returnsNavigator() {
         // Given
         sut = makeSut()
@@ -642,6 +653,52 @@ final class DefaultCheckoutScopeBehaviorTests: XCTestCase {
         } else {
             XCTFail("Expected initializing state, got \(state)")
         }
+    }
+
+    // MARK: - navigationStateStream Tests
+
+    func test_navigationStateStream_emitsInitialNavigationState() async throws {
+        // Given — disable init screen so the async init task cannot mutate the navigation state.
+        sut = makeSut(settings: PrimerSettings(uiOptions: PrimerUIOptions(isInitScreenEnabled: false)))
+
+        // When
+        let value = try await awaitFirst(sut.navigationStateStream)
+
+        // Then
+        XCTAssertEqual(value, .loading)
+    }
+
+    func test_navigationStateStream_emitsUpdatedNavigationStates() async throws {
+        // Given
+        sut = makeSut(settings: PrimerSettings(uiOptions: PrimerUIOptions(isInitScreenEnabled: false)))
+        let stream = sut.navigationStateStream
+        let waitTask = Task { try await awaitValue(stream, equalTo: .processing) }
+
+        // Allow the iteration task to subscribe before mutating.
+        try await Task.sleep(nanoseconds: 100_000_000)
+
+        // When
+        sut.updateNavigationState(.processing)
+
+        // Then
+        let value = try await waitTask.value
+        XCTAssertEqual(value, .processing)
+    }
+
+    func test_navigationStateStream_consumerEarlyExit_terminatesCleanly() async {
+        // Given
+        sut = makeSut(settings: PrimerSettings(uiOptions: PrimerUIOptions(isInitScreenEnabled: false)))
+        var receivedCount = 0
+
+        // When — break after the first value to trigger the onTermination handler.
+        for await value in sut.navigationStateStream {
+            receivedCount += 1
+            XCTAssertEqual(value, .loading)
+            break
+        }
+
+        // Then
+        XCTAssertEqual(receivedCount, 1)
     }
 
     // MARK: - invokeBeforePaymentCreate Tests

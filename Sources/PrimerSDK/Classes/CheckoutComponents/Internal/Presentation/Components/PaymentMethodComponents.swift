@@ -10,21 +10,16 @@ import SwiftUI
 @MainActor
 struct PaymentMethodScreen: View {
   let paymentMethodType: String
-  let checkoutScope: PrimerCheckoutScope
+  let checkoutScope: any CheckoutScopeInternal
 
   @ViewBuilder
   var body: some View {
-    // Truly generic dynamic view resolution via registry - NO hardcoded payment method checks!
-    // Each payment method registers its own view builder, making this fully extensible
     if let paymentMethodView = PaymentMethodRegistry.shared.getView(
       for: paymentMethodType,
       checkoutScope: checkoutScope
     ) {
-      // Payment method has a registered view implementation
       paymentMethodView
     } else {
-      // Payment method not registered or doesn't have view implementation yet
-      // Show placeholder that works for any payment method type
       AnyView(
         PaymentMethodPlaceholder(
           paymentMethodType: paymentMethodType,
@@ -39,7 +34,7 @@ struct PaymentMethodScreen: View {
 @MainActor
 struct PaymentMethodPlaceholder: View {
   let paymentMethodType: String
-  let checkoutScope: PrimerCheckoutScope
+  let checkoutScope: any CheckoutScopeInternal
 
   @Environment(\.designTokens) private var tokens
   @Environment(\.sizeCategory) private var sizeCategory  // Observes Dynamic Type changes
@@ -70,43 +65,23 @@ struct PaymentMethodPlaceholder: View {
 
   private var navigationBar: some View {
     HStack {
-      // Try to navigate back if we have access to the navigator, otherwise just show cancel
-      if let defaultScope = checkoutScope as? DefaultCheckoutScope {
-        Button(
-          action: {
-            defaultScope.checkoutNavigator.navigateBack()
-          },
-          label: {
-            HStack(spacing: PrimerSpacing.xsmall(tokens: tokens)) {
-              Image(systemName: RTLIcon.backChevron)
-                .font(PrimerFont.bodyMedium(tokens: tokens))
-              Text(CheckoutComponentsStrings.backButton)
-            }
-            .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
+      Button(
+        action: checkoutScope.checkoutNavigator.navigateBack,
+        label: {
+          HStack(spacing: PrimerSpacing.xsmall(tokens: tokens)) {
+            Image(systemName: RTLIcon.backChevron)
+              .font(PrimerFont.bodyMedium(tokens: tokens))
+            Text(CheckoutComponentsStrings.backButton)
           }
-        )
-        .accessibility(
-          config: AccessibilityConfiguration(
-            identifier: AccessibilityIdentifiers.Common.backButton,
-            label: CheckoutComponentsStrings.a11yBack,
-            traits: [.isButton]
-          ))
-      } else {
-        // Fallback to cancel button if we can't access internal navigator
-        Button(
-          CheckoutComponentsStrings.cancelButton,
-          action: {
-            checkoutScope.onDismiss()
-          }
-        )
-        .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
-        .accessibility(
-          config: AccessibilityConfiguration(
-            identifier: AccessibilityIdentifiers.Common.closeButton,
-            label: CheckoutComponentsStrings.a11yCancel,
-            traits: [.isButton]
-          ))
-      }
+          .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
+        }
+      )
+      .accessibility(
+        config: AccessibilityConfiguration(
+          identifier: AccessibilityIdentifiers.Common.backButton,
+          label: CheckoutComponentsStrings.a11yBack,
+          traits: [.isButton]
+        ))
 
       Spacer()
     }
