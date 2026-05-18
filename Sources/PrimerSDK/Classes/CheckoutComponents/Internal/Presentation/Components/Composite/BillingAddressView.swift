@@ -22,14 +22,14 @@ struct BillingAddressConfiguration {
 
 @available(iOS 15.0, *)
 struct BillingAddressView: View, LogReporter {
-  let cardFormScope: DefaultCardFormScope
+  let cardFormScope: any CardFormFieldScopeInternal
   let configuration: BillingAddressConfiguration
   let styling: PrimerFieldStyling?
 
   @Environment(\.designTokens) private var tokens
 
   init(
-    cardFormScope: DefaultCardFormScope,
+    cardFormScope: any CardFormFieldScopeInternal,
     configuration: BillingAddressConfiguration,
     styling: PrimerFieldStyling? = nil
   ) {
