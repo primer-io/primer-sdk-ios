@@ -65,6 +65,8 @@ final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, 
   @Published var structuredState = PrimerCardFormState()
   var fieldValidationStates = FieldValidationStates()
 
+  var currentState: PrimerCardFormState { structuredState }
+
   private weak var checkoutScope: DefaultCheckoutScope?
   private let processCardPaymentInteractor: ProcessCardPaymentInteractor
   private let validateInputInteractor: ValidateInputInteractor?

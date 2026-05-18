@@ -24,7 +24,7 @@ import SwiftUI
 ///         checkoutScope.splashScreen = { CustomSplash() }
 ///
 ///         // Customize card form fields via InputFieldConfig
-///         if let cardFormScope = checkoutScope.getPaymentMethodScope(PrimerCardFormScope.self) as? DefaultCardFormScope {
+///         if let cardFormScope = checkoutScope.getPaymentMethodScope(PrimerCardFormScope.self) {
 ///             cardFormScope.cardNumberConfig = InputFieldConfig(placeholder: "Enter card number")
 ///             cardFormScope.cvvConfig = InputFieldConfig(styling: PrimerFieldStyling(borderColor: .blue))
 ///         }

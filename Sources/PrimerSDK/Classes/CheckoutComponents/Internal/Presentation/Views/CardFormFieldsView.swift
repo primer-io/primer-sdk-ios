@@ -168,16 +168,14 @@ struct CardFormFieldsView: View {
       .onSubmit { moveToNextField(from: .postalCode) }
 
     case .countryCode:
-      if let defaultCardFormScope = scope as? DefaultCardFormScope {
-        CountryInputField(
-          label: CheckoutComponentsStrings.countryLabel,
-          placeholder: CheckoutComponentsStrings.selectCountryPlaceholder,
-          scope: defaultCardFormScope,
-          styling: styling
-        )
-        .focused($focusedField, equals: .countryCode)
-        .onSubmit { moveToNextField(from: .countryCode) }
-      }
+      CountryInputField(
+        label: CheckoutComponentsStrings.countryLabel,
+        placeholder: CheckoutComponentsStrings.selectCountryPlaceholder,
+        scope: scope,
+        styling: styling
+      )
+      .focused($focusedField, equals: .countryCode)
+      .onSubmit { moveToNextField(from: .countryCode) }
 
     case .city:
       CityInputField(

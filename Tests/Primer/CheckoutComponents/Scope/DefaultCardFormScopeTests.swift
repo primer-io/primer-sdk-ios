@@ -37,6 +37,23 @@ final class DefaultCardFormScopeTests: XCTestCase {
         )
     }
 
+    // MARK: - currentState Tests
+
+    func test_currentState_mirrorsStructuredState() async throws {
+        let container = try await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createCardFormScope(checkoutScope: checkoutScope)
+
+            scope.updateCardNumber(TestData.CardNumbers.validVisa)
+            scope.updateCvv("123")
+
+            XCTAssertEqual(scope.currentState, scope.structuredState)
+            XCTAssertEqual(scope.currentState.data[.cardNumber], scope.structuredState.data[.cardNumber])
+        }
+    }
+
     // MARK: - Card Number Field Validation Tests
 
     func test_cardNumberField_validatesCorrectly() async throws {

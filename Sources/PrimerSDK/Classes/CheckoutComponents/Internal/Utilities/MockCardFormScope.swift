@@ -242,6 +242,21 @@
       log("updateValidationStateIfNeeded field: \(field), isValid: \(isValid)")
     }
 
+    public var currentState: PrimerCardFormState {
+      PrimerCardFormState(
+        data: FormData(),
+        isLoading: initialIsLoading,
+        isValid: initialIsValid,
+        selectedNetwork: initialSelectedNetwork.map { PrimerCardNetwork(network: $0) },
+        availableNetworks: initialAvailableNetworks.map { PrimerCardNetwork(network: $0) },
+        surchargeAmount: initialSurchargeAmount
+      )
+    }
+
+    public func performSubmit() async {
+      log("performSubmit() called")
+    }
+
     // MARK: - Structured State Support
 
     public func updateField(_ fieldType: PrimerInputElementType, value: String) {
