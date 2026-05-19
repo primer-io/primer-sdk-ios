@@ -33,7 +33,7 @@ final class PaymentMethodRegistryTests: XCTestCase {
         XCTAssertFalse(PaymentMethodRegistry.shared.registeredTypes.contains("MOCK_PAYMENT"))
 
         // When
-        PaymentMethodRegistry.shared.register(MockPaymentMethod.self)
+        MockPaymentMethod.register()
 
         // Then
         XCTAssertTrue(PaymentMethodRegistry.shared.registeredTypes.contains("MOCK_PAYMENT"))
@@ -41,8 +41,8 @@ final class PaymentMethodRegistryTests: XCTestCase {
 
     func test_register_multiplePaymentMethods_addsAllToRegistry() {
         // When
-        PaymentMethodRegistry.shared.register(MockPaymentMethod.self)
-        PaymentMethodRegistry.shared.register(MockPaymentMethod2.self)
+        MockPaymentMethod.register()
+        MockPaymentMethod2.register()
 
         // Then
         XCTAssertEqual(PaymentMethodRegistry.shared.registeredTypes.count, 2)
@@ -52,8 +52,8 @@ final class PaymentMethodRegistryTests: XCTestCase {
 
     func test_register_samePaymentMethodTwice_replacesPrevious() {
         // When
-        PaymentMethodRegistry.shared.register(MockPaymentMethod.self)
-        PaymentMethodRegistry.shared.register(MockPaymentMethod.self)
+        MockPaymentMethod.register()
+        MockPaymentMethod.register()
 
         // Then
         let count = PaymentMethodRegistry.shared.registeredTypes.filter { $0 == "MOCK_PAYMENT" }.count
@@ -65,7 +65,7 @@ final class PaymentMethodRegistryTests: XCTestCase {
     func test_createScope_forRegisteredType_returnsScope() async throws {
         // Given — register after scope creation since init calls reset()
         let checkoutScope = await createMockCheckoutScope()
-        PaymentMethodRegistry.shared.register(MockPaymentMethod.self)
+        MockPaymentMethod.register()
 
         // When
         let scope = try await PaymentMethodRegistry.shared.createScope(
@@ -98,7 +98,7 @@ final class PaymentMethodRegistryTests: XCTestCase {
     func test_getView_forRegisteredType_returnsView() async {
         // Given — register after scope creation since init calls reset()
         let checkoutScope = await createMockCheckoutScope()
-        PaymentMethodRegistry.shared.register(MockPaymentMethod.self)
+        MockPaymentMethod.register()
 
         // When
         let view = PaymentMethodRegistry.shared.getView(
@@ -128,8 +128,8 @@ final class PaymentMethodRegistryTests: XCTestCase {
 
     func test_reset_clearsAllRegisteredPaymentMethods() {
         // Given
-        PaymentMethodRegistry.shared.register(MockPaymentMethod.self)
-        PaymentMethodRegistry.shared.register(MockPaymentMethod2.self)
+        MockPaymentMethod.register()
+        MockPaymentMethod2.register()
         XCTAssertEqual(PaymentMethodRegistry.shared.registeredTypes.count, 2)
 
         // When
@@ -141,7 +141,7 @@ final class PaymentMethodRegistryTests: XCTestCase {
 
     func test_reset_afterReset_createScopeReturnsNil() async throws {
         // Given
-        PaymentMethodRegistry.shared.register(MockPaymentMethod.self)
+        MockPaymentMethod.register()
         PaymentMethodRegistry.shared.reset()
         let checkoutScope = await createMockCheckoutScope()
 
@@ -196,15 +196,13 @@ struct MockPaymentMethodState: Equatable {
 
 @available(iOS 15.0, *)
 struct MockPaymentMethod: PaymentMethodProtocol {
-    typealias ScopeType = MockPaymentMethodScope
-
     static var paymentMethodType: String { "MOCK_PAYMENT" }
 
     @MainActor
     static func createScope(
         checkoutScope: PrimerCheckoutScope,
         diContainer: any ContainerProtocol
-    ) async throws -> MockPaymentMethodScope {
+    ) async throws -> any PrimerPaymentMethodScope {
         MockPaymentMethodScope()
     }
 
@@ -214,13 +212,12 @@ struct MockPaymentMethod: PaymentMethodProtocol {
     }
 
     @MainActor
-    func content<V: View>(@ViewBuilder content: @escaping (MockPaymentMethodScope) -> V) -> AnyView {
-        AnyView(EmptyView())
-    }
-
-    @MainActor
-    func defaultContent() -> AnyView {
-        AnyView(Text("Default Mock Content"))
+    static func register() {
+        PaymentMethodRegistry.shared.register(
+            forKey: paymentMethodType,
+            scopeCreator: { try await createScope(checkoutScope: $0, diContainer: $1) },
+            viewCreator: { createView(checkoutScope: $0) }
+        )
     }
 }
 
@@ -245,15 +242,13 @@ final class MockPaymentMethod2Scope: PrimerPaymentMethodScope {
 
 @available(iOS 15.0, *)
 struct MockPaymentMethod2: PaymentMethodProtocol {
-    typealias ScopeType = MockPaymentMethod2Scope
-
     static var paymentMethodType: String { "MOCK_PAYMENT_2" }
 
     @MainActor
     static func createScope(
         checkoutScope: PrimerCheckoutScope,
         diContainer: any ContainerProtocol
-    ) async throws -> MockPaymentMethod2Scope {
+    ) async throws -> any PrimerPaymentMethodScope {
         MockPaymentMethod2Scope()
     }
 
@@ -263,12 +258,11 @@ struct MockPaymentMethod2: PaymentMethodProtocol {
     }
 
     @MainActor
-    func content<V: View>(@ViewBuilder content: @escaping (MockPaymentMethod2Scope) -> V) -> AnyView {
-        AnyView(EmptyView())
-    }
-
-    @MainActor
-    func defaultContent() -> AnyView {
-        AnyView(Text("Default Mock 2 Content"))
+    static func register() {
+        PaymentMethodRegistry.shared.register(
+            forKey: paymentMethodType,
+            scopeCreator: { try await createScope(checkoutScope: $0, diContainer: $1) },
+            viewCreator: { createView(checkoutScope: $0) }
+        )
     }
 }

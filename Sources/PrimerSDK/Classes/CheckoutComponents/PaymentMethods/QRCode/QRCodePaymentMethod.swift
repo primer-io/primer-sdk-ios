@@ -64,7 +64,7 @@ enum QRCodePaymentMethod {
 
   @MainActor
   static func createView(checkoutScope: any PrimerCheckoutScope) -> AnyView? {
-    checkoutScope.getPaymentMethodScope(DefaultQRCodeScope.self)
+    checkoutScope.getPaymentMethodScope(PrimerQRCodeScope.self)
       .map { scope in
         scope.screen.map { AnyView($0(scope)) }
           ?? AnyView(QRCodeView(scope: scope))

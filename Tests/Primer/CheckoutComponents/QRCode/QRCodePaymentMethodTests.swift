@@ -125,10 +125,8 @@ final class QRCodePaymentMethodTests: XCTestCase {
         )
 
         // Then
-        XCTAssertNotNil(scope)
-        if let qrScope = scope as? DefaultQRCodeScope {
-            XCTAssertEqual(qrScope.presentationContext, .direct)
-        }
+        let qrScope = try XCTUnwrap(scope as? DefaultQRCodeScope)
+        XCTAssertEqual(qrScope.presentationContext, .direct)
     }
 
     func test_createScope_withMultiplePaymentMethods_usesPaymentSelectionContext() async throws {
@@ -145,10 +143,8 @@ final class QRCodePaymentMethodTests: XCTestCase {
         )
 
         // Then
-        XCTAssertNotNil(scope)
-        if let qrScope = scope as? DefaultQRCodeScope {
-            XCTAssertEqual(qrScope.presentationContext, .fromPaymentSelection)
-        }
+        let qrScope = try XCTUnwrap(scope as? DefaultQRCodeScope)
+        XCTAssertEqual(qrScope.presentationContext, .fromPaymentSelection)
     }
 
     // MARK: - createView Tests

@@ -301,7 +301,7 @@ final class DefaultFormRedirectScopeTests: XCTestCase {
     @MainActor
     func test_submit_pollingStarted_transitionsToAwaitingExternalCompletion() async throws {
         mockInteractor.shouldCallOnPollingStarted = true
-        mockInteractor.executeDelay = 0.3
+        mockInteractor.executeDelay = 0.6
         let scope = createScope(paymentMethodType: FormRedirectTestData.Constants.blikPaymentMethodType)
         scope.start()
         try await Task.sleep(nanoseconds: 50_000_000)

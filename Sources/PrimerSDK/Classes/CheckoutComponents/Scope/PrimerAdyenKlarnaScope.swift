@@ -51,9 +51,6 @@ public typealias AdyenKlarnaButtonComponent = (any PrimerAdyenKlarnaScope) -> an
 @MainActor
 public protocol PrimerAdyenKlarnaScope: PrimerPaymentMethodScope where State == PrimerAdyenKlarnaState {
 
-    /// The payment method type identifier (`"ADYEN_KLARNA"`).
-    var paymentMethodType: String { get }
-
     /// Selects a Klarna payment option and initiates the redirect payment flow.
     func selectOption(_ option: AdyenKlarnaPaymentOption)
 

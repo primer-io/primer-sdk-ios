@@ -9,8 +9,6 @@ import SwiftUI
 @available(iOS 15.0, *)
 struct WebRedirectPaymentMethod: PaymentMethodProtocol {
 
-  typealias ScopeType = DefaultWebRedirectScope
-
   static var paymentMethodType: String { "WEB_REDIRECT" }
 
   @MainActor
@@ -29,7 +27,7 @@ struct WebRedirectPaymentMethod: PaymentMethodProtocol {
     for paymentMethodType: String,
     checkoutScope: any PrimerCheckoutScope,
     container: any ContainerProtocol
-  ) async throws -> DefaultWebRedirectScope {
+  ) async throws -> any PrimerPaymentMethodScope {
     let (defaultCheckoutScope, paymentMethodContext) = try DefaultCheckoutScope.validated(from: checkoutScope)
 
     let mapper = try? await container.resolve(PaymentMethodMapper.self)
@@ -60,6 +58,9 @@ struct WebRedirectPaymentMethod: PaymentMethodProtocol {
     for paymentMethodType: String,
     checkoutScope: any PrimerCheckoutScope
   ) -> AnyView? {
+    // ACC-7173: string-keyed `getPaymentMethodScope<T>(for:)` carries the same
+    // `T: PrimerPaymentMethodScope` constraint that rejects existentials. Keep concrete metatype
+    // here; the downstream WebRedirectScreen still accepts `any PrimerWebRedirectScope`.
     guard let webRedirectScope: DefaultWebRedirectScope = checkoutScope.getPaymentMethodScope(for: paymentMethodType) else {
       return nil
     }
@@ -72,7 +73,7 @@ struct WebRedirectPaymentMethod: PaymentMethodProtocol {
   static func createScope(
     checkoutScope: PrimerCheckoutScope,
     diContainer: any ContainerProtocol
-  ) async throws -> DefaultWebRedirectScope {
+  ) async throws -> any PrimerPaymentMethodScope {
     throw PrimerError.invalidArchitecture(
       description: "WebRedirectPaymentMethod.createScope requires a payment method type parameter",
       recoverSuggestion: "Use register(types:) for dynamic registration instead"
@@ -82,16 +83,6 @@ struct WebRedirectPaymentMethod: PaymentMethodProtocol {
   @MainActor
   static func createView(checkoutScope: any PrimerCheckoutScope) -> AnyView? {
     nil
-  }
-
-  @MainActor
-  func content<V: View>(@ViewBuilder content: @escaping (DefaultWebRedirectScope) -> V) -> AnyView {
-    fatalError("Use register(types:) for dynamic registration instead")
-  }
-
-  @MainActor
-  func defaultContent() -> AnyView {
-    fatalError("Use register(types:) for dynamic registration instead")
   }
 }
 

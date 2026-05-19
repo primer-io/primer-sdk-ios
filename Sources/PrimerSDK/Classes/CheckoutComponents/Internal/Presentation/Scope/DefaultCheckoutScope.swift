@@ -394,6 +394,60 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
     getPaymentMethodScope(for: methodType.rawValue)
   }
 
+  // MARK: - Per-protocol scope access (existential metatypes)
+  //
+  // The metatype parameter is unused at runtime — it exists only as a type discriminator
+  // for overload resolution at the call site. `findScope<P>()` infers `P` from the return type.
+
+  func getPaymentMethodScope(_: (any PrimerCardFormScope).Type) -> (any PrimerCardFormScope)? {
+    findScope()
+  }
+
+  func getPaymentMethodScope(_: (any PrimerKlarnaScope).Type) -> (any PrimerKlarnaScope)? {
+    findScope()
+  }
+
+  func getPaymentMethodScope(_: (any PrimerAdyenKlarnaScope).Type) -> (any PrimerAdyenKlarnaScope)? {
+    findScope()
+  }
+
+  func getPaymentMethodScope(_: (any PrimerWebRedirectScope).Type) -> (any PrimerWebRedirectScope)? {
+    findScope()
+  }
+
+  func getPaymentMethodScope(_: (any PrimerFormRedirectScope).Type) -> (any PrimerFormRedirectScope)? {
+    findScope()
+  }
+
+  func getPaymentMethodScope(_: (any PrimerBillingAddressRedirectScope).Type) -> (any PrimerBillingAddressRedirectScope)? {
+    findScope()
+  }
+
+  func getPaymentMethodScope(_: (any PrimerApplePayScope).Type) -> (any PrimerApplePayScope)? {
+    findScope()
+  }
+
+  func getPaymentMethodScope(_: (any PrimerPayPalScope).Type) -> (any PrimerPayPalScope)? {
+    findScope()
+  }
+
+  func getPaymentMethodScope(_: (any PrimerQRCodeScope).Type) -> (any PrimerQRCodeScope)? {
+    findScope()
+  }
+
+  func getPaymentMethodScope(_: (any PrimerAchScope).Type) -> (any PrimerAchScope)? {
+    findScope()
+  }
+
+  /// Returns the first cached scope conforming to the requested protocol existential.
+  private func findScope<P>() -> P? {
+    guard let scope = paymentMethodScopeCache.values.first(where: { $0 is P }) as? P else { return nil }
+    if let paymentMethodScope = scope as? any PrimerPaymentMethodScope {
+      currentPaymentMethodScope = paymentMethodScope
+    }
+    return scope
+  }
+
   func onDismiss() {
     updateState(.dismissed)
     updateNavigationState(.dismissed)

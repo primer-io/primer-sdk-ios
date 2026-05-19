@@ -93,12 +93,10 @@ extension PrimerPaymentMethodScope {
 @available(iOS 15.0, *)
 protocol PaymentMethodProtocol {
 
-  associatedtype ScopeType: PrimerPaymentMethodScope
-
   /// The payment method type identifier (e.g., "PAYMENT_CARD", "PAYPAL", "APPLE_PAY")
   static var paymentMethodType: String { get }
 
-  /// Creates a scope instance for this payment method
+  /// Creates a scope instance for this payment method.
   /// - Parameters:
   ///   - checkoutScope: The parent checkout scope for navigation and coordination
   ///   - diContainer: The dependency injection container for resolving services
@@ -107,7 +105,7 @@ protocol PaymentMethodProtocol {
   static func createScope(
     checkoutScope: PrimerCheckoutScope,
     diContainer: any ContainerProtocol
-  ) async throws -> ScopeType
+  ) async throws -> any PrimerPaymentMethodScope
 
   /// Creates the view for this payment method by retrieving its scope and rendering the appropriate UI.
   /// This method handles both custom screens (if provided) and default screens.
@@ -115,16 +113,6 @@ protocol PaymentMethodProtocol {
   /// - Returns: The view for this payment method, or nil if the scope cannot be retrieved
   @MainActor
   static func createView(checkoutScope: any PrimerCheckoutScope) -> AnyView?
-
-  /// Provides custom UI for this payment method using ViewBuilder.
-  /// - Parameter content: A ViewBuilder closure that uses the payment method's scope as a parameter,
-  ///                      allowing full access to the payment method's state and behavior.
-  @MainActor
-  func content<V: View>(@ViewBuilder content: @escaping (ScopeType) -> V) -> AnyView
-
-  /// Provides the default UI implementation for this payment method.
-  @MainActor
-  func defaultContent() -> AnyView
 }
 
 // MARK: - Payment Method Registry
@@ -141,12 +129,12 @@ final class PaymentMethodRegistry: LogReporter {
 
   private var creators: [String: ScopeCreator] = [:]
   private var viewBuilders: [String: ViewCreator] = [:]
-  private var typeToIdentifier: [String: String] = [:]
 
   static let shared = PaymentMethodRegistry()
 
   private init() {}
 
+  /// Registers a payment method by its type identifier with explicit scope/view creators.
   func register(
     forKey key: String,
     scopeCreator: @escaping @MainActor (PrimerCheckoutScope, any ContainerProtocol) async throws -> any PrimerPaymentMethodScope,
@@ -154,45 +142,25 @@ final class PaymentMethodRegistry: LogReporter {
   ) {
     creators[key] = scopeCreator
     viewBuilders[key] = viewCreator
-    logger.debug(message: "[PaymentMethodRegistry] Payment method \(key) registered")
-  }
 
-  /// Registers a payment method implementation
-  /// - Parameter paymentMethodType: The payment method implementation to register
-  func register<T: PaymentMethodProtocol>(_ paymentMethodType: T.Type) {
-    let typeKey = paymentMethodType.paymentMethodType
-    creators[typeKey] = { checkoutScope, diContainer in
-      try await paymentMethodType.createScope(checkoutScope: checkoutScope, diContainer: diContainer)
-    }
-
-    // Register view builder for dynamic UI creation
-    viewBuilders[typeKey] = { checkoutScope in
-      paymentMethodType.createView(checkoutScope: checkoutScope)
-    }
-
-    // Register type-to-identifier mapping for type-safe lookups
-    let scopeTypeName = String(describing: T.ScopeType.self)
-    typeToIdentifier[scopeTypeName] = typeKey
-
-    // PAYMENT METHOD OPTIONS INTEGRATION: Log when payment methods requiring special settings are registered
-    // Based on PrimerPaymentMethodOptionsProtocol: applePayOptions, klarnaOptions, stripeOptions
-    if typeKey == PrimerPaymentMethodType.applePay.rawValue {
+    // PAYMENT METHOD OPTIONS INTEGRATION: log when payment methods requiring special settings are registered.
+    if key == PrimerPaymentMethodType.applePay.rawValue {
       logger.info(
         message:
           "[PaymentMethodRegistry] Apple Pay registered - requires PrimerSettings.paymentMethodOptions.applePayOptions"
       )
-    } else if [PrimerPaymentMethodType.klarna, .primerTestKlarna].map(\.rawValue).contains(typeKey) {
+    } else if [PrimerPaymentMethodType.klarna, .primerTestKlarna].map(\.rawValue).contains(key) {
       logger.info(
         message:
           "[PaymentMethodRegistry] Klarna registered - requires PrimerSettings.paymentMethodOptions.klarnaOptions"
       )
-    } else if typeKey.contains("STRIPE") {
+    } else if key.contains("STRIPE") {
       logger.info(
         message:
-          "[PaymentMethodRegistry] Stripe (\(typeKey)) registered - requires PrimerSettings.paymentMethodOptions.stripeOptions"
+          "[PaymentMethodRegistry] Stripe (\(key)) registered - requires PrimerSettings.paymentMethodOptions.stripeOptions"
       )
     } else {
-      logger.debug(message: "[PaymentMethodRegistry] Payment method \(typeKey) registered")
+      logger.debug(message: "[PaymentMethodRegistry] Payment method \(key) registered")
     }
   }
 
@@ -231,26 +199,6 @@ final class PaymentMethodRegistry: LogReporter {
 
     let scope = try await creator(checkoutScope, diContainer)
     return scope as? T
-  }
-
-  /// Creates a scope for the specified scope type (type-safe with metatype)
-  /// - Parameters:
-  ///   - scopeType: The scope type to create (e.g., PrimerCardFormScope.self)
-  ///   - checkoutScope: The parent checkout scope
-  ///   - diContainer: The dependency injection container
-  /// - Returns: A configured scope instance, or nil if the scope type is not registered
-  func createScope<T: PrimerPaymentMethodScope>(
-    _ scopeType: T.Type,
-    checkoutScope: PrimerCheckoutScope,
-    diContainer: any ContainerProtocol
-  ) async throws -> T? {
-    let typeName = String(describing: scopeType)
-    guard let paymentMethodType = typeToIdentifier[typeName] else {
-      return nil
-    }
-
-    return try await createScope(
-      for: paymentMethodType, checkoutScope: checkoutScope, diContainer: diContainer)
   }
 
   /// Creates a scope for the specified payment method enum case
@@ -298,6 +246,5 @@ final class PaymentMethodRegistry: LogReporter {
   func reset() {
     creators.removeAll()
     viewBuilders.removeAll()
-    typeToIdentifier.removeAll()
   }
 }
