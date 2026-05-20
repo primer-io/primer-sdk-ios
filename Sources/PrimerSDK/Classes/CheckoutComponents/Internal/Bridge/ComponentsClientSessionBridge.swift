@@ -30,6 +30,15 @@ public final class ComponentsClientSessionBridge {
         return PrimerClientSession(from: configuration)
     }
 
+    public func getOrderedAllowedCardNetworks() -> [String]? {
+        Analytics.Service.fire(event: Analytics.Event.sdk(
+            name: "\(Self.self).\(#function)",
+            params: ["category": "CLIENT_SESSION"]
+        ))
+
+        return configurationProvider()?.clientSession?.paymentMethod?.orderedAllowedCardNetworks
+    }
+
     public func getCheckoutModules() -> [ComponentsCheckoutModule]? {
         Analytics.Service.fire(event: Analytics.Event.sdk(
             name: "\(Self.self).\(#function)",
