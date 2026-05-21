@@ -22,6 +22,7 @@ let package = Package(
         packageTarget(name: "PrimerStepResolver", dependencies: ["PrimerFoundation"]),
         packageTarget(name: "PrimerBDCEngine", dependencies: ["PrimerFoundation", "PrimerStepResolver"]),
         packageTarget(name: "PrimerBDCCore", dependencies: ["PrimerBDCEngine", "PrimerFoundation", "PrimerStepResolver"]),
+        packageTarget(name: "PrimerCore", dependencies: ["PrimerFoundation"]),
         .target(
             name: "PrimerSDK",
             dependencies: [
