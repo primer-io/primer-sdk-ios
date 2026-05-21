@@ -6,7 +6,7 @@
 
 @_spi(PrimerInternal) import PrimerFoundation
 
-public extension KeyedEncodingContainer {
+@_spi(PrimerInternal) public extension KeyedEncodingContainer {
     mutating func encodeIfPresent(_ dictionary: [String: Any]?, forKey key: KeyedEncodingContainer<K>.Key, mapNilToUndefined: Bool = false) throws {
         guard let dictionary = dictionary else {
             if !mapNilToUndefined {

@@ -8,29 +8,30 @@ import Foundation
 @_spi(PrimerInternal) import PrimerFoundation
 import UIKit
 
-struct Device: Codable {
+@_spi(PrimerInternal) public struct Device: Codable {
+    
+    public let uniqueDeviceIdentifier: String
+    public var locale: String?
+    public let modelIdentifier: String?
+    public let modelName: String
+    public let platformVersion: String
 
-    var batteryLevel: Int
-    var batteryStatus: String
-    var locale: String?
+    let batteryLevel: Int
+    let batteryStatus: String
     var memoryFootprint: Int?
-    var modelIdentifier: String?
-    var modelName: String
-    var platformVersion: String
-    var screen: Device.Screen
-    var uniqueDeviceIdentifier: String
+    let screen: Device.Screen
     var userAgent: String?
-
+    
     private enum CodingKeys: String, CodingKey {
         case batteryLevel, batteryStatus, memoryFootprint, modelIdentifier, modelName, platformVersion, screen, uniqueDeviceIdentifier, userAgent
     }
-
-    init() {
+    
+    public init(uniqueDeviceIdentifier: String) {
         UIDevice.current.isBatteryMonitoringEnabled = true
         batteryLevel = Int((UIDevice.current.batteryLevel * 100).rounded())
         batteryStatus = batteryLevel == -100 ? "CHARGING" : "NOT_CHARGING"
         UIDevice.current.isBatteryMonitoringEnabled = false
-
+        
         if let languageCode = Locale.current.languageCode {
             if let regionCode = Locale.current.regionCode {
                 self.locale = "\(languageCode)-\(regionCode)"
@@ -38,34 +39,33 @@ struct Device: Codable {
                 self.locale = "\(languageCode)"
             }
         }
-
+        
         self.modelIdentifier = UIDevice.modelIdentifier
         self.modelName = UIDevice.model.rawValue
         self.platformVersion = UIDevice.current.systemVersion
         self.screen = Device.Screen()
-        self.uniqueDeviceIdentifier = Self.uniqueDeviceIdentifier
-
+        self.uniqueDeviceIdentifier = uniqueDeviceIdentifier
         if let mem = reportMemory() {
             self.memoryFootprint = mem
         }
-
+        
     }
-
+    
     struct Screen: Codable {
         let width: CGFloat
         let height: CGFloat
-
+        
         init() {
             width = UIScreen.main.bounds.width
             height = UIScreen.main.bounds.height
         }
     }
-
+    
     func reportMemory() -> Int? {
         var info = mach_task_basic_info()
         let machTaskBasicInfoCount = MemoryLayout<mach_task_basic_info>.stride/MemoryLayout<natural_t>.stride
         var count = mach_msg_type_number_t(machTaskBasicInfoCount)
-
+        
         let kerr: kern_return_t = withUnsafeMutablePointer(to: &info) {
             $0.withMemoryRebound(to: integer_t.self, capacity: machTaskBasicInfoCount) {
                 task_info(
@@ -76,7 +76,7 @@ struct Device: Codable {
                 )
             }
         }
-
+        
         if kerr == KERN_SUCCESS {
             let memoryInMegabytes = Double(info.resident_size) / 1048576
             return Int(memoryInMegabytes.rounded())
@@ -85,20 +85,4 @@ struct Device: Codable {
         }
     }
 
-    static var uniqueDeviceIdentifier: String {
-        // Prefer identifierForVendor
-        if let udid = UIDevice.current.identifierForVendor?.uuidString {
-            return udid
-        }
-        let userDefaults = UserDefaults.primerFramework
-        let udidKey = "Primer.uniqueDeviceIdentifier"
-        // If we have a previous UDID, use it
-        if let udid = userDefaults.string(forKey: udidKey) {
-            return udid
-        }
-        // If we have no previous UDID, create one
-        let udid = UUID().uuidString
-        userDefaults.setValue(udid, forKey: udidKey)
-        return udid
-    }
 }
