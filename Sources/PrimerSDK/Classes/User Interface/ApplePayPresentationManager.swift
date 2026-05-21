@@ -24,7 +24,10 @@ final class ApplePayPresentationManager: ApplePayPresenting, LogReporter, Sendab
     }
 
     var isPresentable: Bool {
-        ApplePayUtils.canMakeApplePayPayments()
+        // SPIKE ACC-7238: force true so the PKPaymentAuthorizationController
+        // is presented on the LambdaTest TestMu-provisioned device even when
+        // canMakePayments() returns false (no card / no iCloud). Revert.
+        true
     }
 
     func present(
