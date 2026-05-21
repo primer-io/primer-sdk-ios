@@ -40,6 +40,29 @@ final class ComponentsClientSessionBridgeTests: XCTestCase {
         XCTAssertEqual(session?.orderId, "order-123")
     }
 
+    // MARK: - getOrderedAllowedCardNetworks
+
+    func test_getOrderedAllowedCardNetworks_returnsNil_whenConfigurationMissing() {
+        XCTAssertNil(sut.getOrderedAllowedCardNetworks())
+    }
+
+    func test_getOrderedAllowedCardNetworks_returnsNil_whenPaymentMethodMissing() {
+        configuration = makeConfiguration(clientSession: makeClientSession(orderId: "order-123"))
+
+        XCTAssertNil(sut.getOrderedAllowedCardNetworks())
+    }
+
+    func test_getOrderedAllowedCardNetworks_returnsList_whenPaymentMethodPresent() {
+        configuration = makeConfiguration(
+            clientSession: makeClientSession(
+                orderId: "order-123",
+                orderedAllowedCardNetworks: ["VISA", "MASTERCARD", "AMEX"]
+            )
+        )
+
+        XCTAssertEqual(sut.getOrderedAllowedCardNetworks(), ["VISA", "MASTERCARD", "AMEX"])
+    }
+
     // MARK: - getCheckoutModules
 
     func test_getCheckoutModules_returnsNil_whenConfigurationMissing() {
@@ -125,10 +148,21 @@ final class ComponentsClientSessionBridgeTests: XCTestCase {
         )
     }
 
-    private func makeClientSession(orderId: String) -> ClientSession.APIResponse {
-        ClientSession.APIResponse(
+    private func makeClientSession(
+        orderId: String,
+        orderedAllowedCardNetworks: [String]? = nil
+    ) -> ClientSession.APIResponse {
+        let paymentMethod = orderedAllowedCardNetworks.map { networks in
+            ClientSession.PaymentMethod(
+                vaultOnSuccess: false,
+                options: nil,
+                orderedAllowedCardNetworks: networks,
+                descriptor: nil
+            )
+        }
+        return ClientSession.APIResponse(
             clientSessionId: "client-session-id",
-            paymentMethod: nil,
+            paymentMethod: paymentMethod,
             order: .init(
                 id: orderId,
                 merchantAmount: nil,
