@@ -113,12 +113,15 @@ extension Response.Body {
                 .compactMap(\.tokenizationViewModel)
                 ?? []
 
-            if !ApplePayUtils.canMakeApplePayPayments() {
-                if let applePayViewModel = viewModels.filter({ $0.config.type == PrimerPaymentMethodType.applePay.rawValue }).first,
-                   let applePayViewModelIndex = viewModels.firstIndex(where: { $0 == applePayViewModel }) {
-                    viewModels.remove(at: applePayViewModelIndex)
-                }
-            }
+            // SPIKE ACC-7238: filter bypassed to test whether LambdaTest's
+            // applePay cap surfaces the tile even when canMakePayments()
+            // returns false on the provisioned device. Revert before merge.
+            // if !ApplePayUtils.canMakeApplePayPayments() {
+            //     if let applePayViewModel = viewModels.filter({ $0.config.type == PrimerPaymentMethodType.applePay.rawValue }).first,
+            //        let applePayViewModelIndex = viewModels.firstIndex(where: { $0 == applePayViewModel }) {
+            //         viewModels.remove(at: applePayViewModelIndex)
+            //     }
+            // }
 
             #if !canImport(PrimerKlarnaSDK)
                 if let klarnaViewModelIndex = viewModels.firstIndex(where: { $0.config.type == PrimerPaymentMethodType.klarna.rawValue }) {
