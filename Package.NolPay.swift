@@ -49,9 +49,9 @@ let package = Package(
 )
 
 private func packageTarget(name: String, dependencies: [Target.Dependency] = []) -> Target {
-    .target(name: name, dependencies: dependencies, path: "Packages/\(name)/Sources")
+    .target(name: name, dependencies: dependencies, path: "Modules/\(name)/Sources")
 }
 
 private func packageTestTarget(name: String, dependencies: [Target.Dependency]) -> Target {
-    .testTarget(name: "\(name)Tests", dependencies: dependencies, path: "Packages/\(name)/Tests/\(name)Tests")
+    .testTarget(name: "\(name)Tests", dependencies: dependencies, path: "Modules/\(name)/Tests/\(name)Tests")
 }
