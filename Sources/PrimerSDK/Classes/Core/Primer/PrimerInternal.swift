@@ -6,6 +6,7 @@
 
 @_spi(PrimerInternal) import PrimerFoundation
 import UIKit
+@_spi(PrimerInternal) import PrimerCore
 
 #if canImport(Primer3DS)
     import Primer3DS

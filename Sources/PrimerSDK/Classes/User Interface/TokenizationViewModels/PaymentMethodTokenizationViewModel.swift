@@ -7,6 +7,7 @@
 import Foundation
 @_spi(PrimerInternal) import PrimerFoundation
 import UIKit
+@_spi(PrimerInternal) import PrimerCore
 
 typealias TokenizationCompletion = ((PrimerPaymentMethodTokenData?, Error?) -> Void)
 typealias PaymentCompletion = ((PrimerCheckoutData?, Error?) -> Void)

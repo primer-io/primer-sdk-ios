@@ -10,6 +10,7 @@
 // swiftlint:disable file_length
 
 import Foundation
+@_spi(PrimerInternal) import PrimerCore
 @_spi(PrimerInternal) import PrimerFoundation
 
 // MARK: MISSING_TESTS

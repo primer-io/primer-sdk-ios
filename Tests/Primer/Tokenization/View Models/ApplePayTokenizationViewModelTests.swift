@@ -8,6 +8,7 @@ import PassKit
 import PrimerFoundation
 @testable import PrimerSDK
 import XCTest
+@_spi(PrimerInternal) @testable import PrimerCore
 
 private typealias ShippingMethodOptions = Response.Body.Configuration.CheckoutModule.ShippingMethodOptions
 private typealias ShippingMethod = Response.Body.Configuration.CheckoutModule.ShippingMethodOptions.ShippingMethod

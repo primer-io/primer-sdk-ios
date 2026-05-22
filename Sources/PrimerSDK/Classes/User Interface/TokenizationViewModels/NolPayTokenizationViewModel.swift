@@ -11,6 +11,7 @@ import Foundation
 @_spi(PrimerInternal) import PrimerFoundation
 import SafariServices
 import UIKit
+@_spi(PrimerInternal) import PrimerCore
 
 class NolPayTokenizationViewModel: PaymentMethodTokenizationViewModel {
 

@@ -6,6 +6,7 @@
 
 import Foundation
 import PrimerFoundation
+@_spi(PrimerInternal) import PrimerCore
 
 extension Response.Body {
 

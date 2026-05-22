@@ -9,6 +9,7 @@
 
 import Foundation
 @_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerCore
 
 typealias FileName = String
 typealias FileExtension = String

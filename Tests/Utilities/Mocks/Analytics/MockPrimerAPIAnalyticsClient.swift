@@ -6,6 +6,8 @@
 
 import PrimerFoundation
 @testable import PrimerSDK
+@_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) @testable import PrimerSDK
 import XCTest
 
 class MockPrimerAPIAnalyticsClient: PrimerAPIClientAnalyticsProtocol {

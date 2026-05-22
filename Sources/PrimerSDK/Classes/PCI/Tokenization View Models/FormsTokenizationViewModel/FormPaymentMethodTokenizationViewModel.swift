@@ -13,6 +13,7 @@
 import Foundation
 @_spi(PrimerInternal) import PrimerFoundation
 import UIKit
+@_spi(PrimerInternal) import PrimerCore
 
 class Input {
     var name: String?

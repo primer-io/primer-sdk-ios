@@ -6,6 +6,7 @@
 
 #if canImport(PrimerKlarnaSDK)
     @_spi(PrimerInternal) import PrimerFoundation
+    @_spi(PrimerInternal) import PrimerCore
     @testable import PrimerSDK
     import XCTest
 
