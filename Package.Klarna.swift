@@ -16,20 +16,22 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/primer-io/primer-klarna-sdk-ios", from: "1.3.1"),
-        .package(path: "Packages/PrimerBDCCore"),
-        .package(path: "Packages/PrimerBDCEngine"),
-        .package(path: "Packages/PrimerFoundation"),
-        .package(path: "Packages/PrimerStepResolver")
     ],
     targets: [
+        packageTarget(name: "PrimerFoundation"),
+        packageTarget(name: "PrimerStepResolver", dependencies: ["PrimerFoundation"]),
+        packageTarget(name: "PrimerBDCEngine", dependencies: ["PrimerFoundation", "PrimerStepResolver"]),
+        packageTarget(name: "PrimerBDCCore", dependencies: ["PrimerBDCEngine", "PrimerFoundation", "PrimerStepResolver"]),
+        packageTarget(name: "PrimerCore", dependencies: ["PrimerFoundation"]),
         .target(
             name: "PrimerSDK",
             dependencies: [
                 .product(name: "PrimerKlarnaSDK", package: "primer-klarna-sdk-ios"),
-                .product(name: "PrimerBDCCore", package: "PrimerBDCCore"),
-                .product(name: "PrimerBDCEngine", package: "PrimerBDCEngine"),
-                .product(name: "PrimerFoundation", package: "PrimerFoundation"),
-                .product(name: "PrimerStepResolver", package: "PrimerStepResolver")
+                "PrimerBDCCore",
+                "PrimerBDCEngine",
+                "PrimerFoundation",
+                "PrimerStepResolver",
+                "PrimerCore"
             ],
             path: "Sources/PrimerSDK",
             resources: [
@@ -51,3 +53,11 @@ let package = Package(
     ],
     swiftLanguageVersions: [.v5]
 )
+
+private func packageTarget(name: String, dependencies: [Target.Dependency] = []) -> Target {
+    .target(name: name, dependencies: dependencies, path: "Packages/\(name)/Sources")
+}
+
+private func packageTestTarget(name: String, dependencies: [Target.Dependency]) -> Target {
+    .testTarget(name: "\(name)Tests", dependencies: dependencies, path: "Packages/\(name)/Tests/\(name)Tests")
+}
