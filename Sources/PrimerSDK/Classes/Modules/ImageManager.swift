@@ -8,6 +8,7 @@
 
 @_spi(PrimerInternal) import PrimerFoundation
 import UIKit
+@_spi(PrimerInternal) import PrimerCore
 
 // MARK: MISSING_TESTS
 final class ImageFile: File {

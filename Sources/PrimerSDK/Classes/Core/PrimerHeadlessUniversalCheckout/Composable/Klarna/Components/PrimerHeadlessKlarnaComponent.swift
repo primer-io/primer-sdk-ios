@@ -7,6 +7,7 @@
 #if canImport(PrimerKlarnaSDK)
     import Foundation
     import PrimerFoundation
+    @_spi(PrimerInternal) import PrimerCore
     import PrimerKlarnaSDK
     import UIKit
 

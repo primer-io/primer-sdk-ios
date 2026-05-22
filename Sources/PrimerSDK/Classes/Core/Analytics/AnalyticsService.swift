@@ -8,6 +8,7 @@
 // swiftlint:disable file_length
 
 import Foundation
+@_spi(PrimerInternal) import PrimerCore
 @_spi(PrimerInternal) import PrimerStepResolver
 @_spi(PrimerInternal) import PrimerFoundation
 
@@ -61,7 +62,7 @@ extension Analytics {
         }
 
         func record(events: [any AnalyticsEvent]) async throws {
-            let events = events.flatMap(StoredEvent.init)
+            let events = events.compactMap(StoredEvent.init)
             let storedEvents = storage.loadEvents()
             let storedEventsIds = storedEvents.map(\.localId)
             var eventsToAppend: [StoredEvent] = []

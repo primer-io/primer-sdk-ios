@@ -7,6 +7,7 @@
 import PrimerFoundation
 @testable import PrimerSDK
 import XCTest
+@_spi(PrimerInternal) @testable import PrimerCore
 
 final class PayPalServiceTests: XCTestCase {
     var sut: PayPalService!

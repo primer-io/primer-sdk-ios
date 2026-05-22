@@ -12,6 +12,7 @@ import Foundation
 @_spi(PrimerInternal) import PrimerFoundation
 import SafariServices
 import UIKit
+@_spi(PrimerInternal) import PrimerCore
 
 // swiftlint:disable:next type_name
 class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel {

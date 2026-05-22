@@ -6,6 +6,7 @@
 
 import Foundation
 @_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerCore
 
 public struct Primer3DSErrorInfo {
     let errorId: String

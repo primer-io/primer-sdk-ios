@@ -8,6 +8,7 @@
 
 // swiftlint:disable function_body_length
 import UIKit
+@_spi(PrimerInternal) import PrimerCore
 
 public class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
 

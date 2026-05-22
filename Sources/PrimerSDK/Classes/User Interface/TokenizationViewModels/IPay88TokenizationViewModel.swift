@@ -12,6 +12,7 @@
 import Foundation
 @_spi(PrimerInternal) import PrimerFoundation
 import UIKit
+@_spi(PrimerInternal) import PrimerCore
 
 #if canImport(PrimerIPay88MYSDK)
     import PrimerIPay88MYSDK

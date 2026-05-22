@@ -10,6 +10,7 @@
 
 @_spi(PrimerInternal) import PrimerFoundation
 import UIKit
+@_spi(PrimerInternal) import PrimerCore
 #if canImport(PrimerNolPaySDK)
     import PrimerNolPaySDK
 #endif

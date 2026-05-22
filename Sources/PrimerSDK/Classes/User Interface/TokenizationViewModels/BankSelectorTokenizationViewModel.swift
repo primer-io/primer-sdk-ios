@@ -11,6 +11,7 @@
 @_spi(PrimerInternal) import PrimerFoundation
 import SafariServices
 import UIKit
+@_spi(PrimerInternal) import PrimerCore
 
 final class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationViewModel {
     private(set) var banks: [AdyenBank] = []

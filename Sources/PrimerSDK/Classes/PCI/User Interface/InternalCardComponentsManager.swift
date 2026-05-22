@@ -11,6 +11,7 @@
 
 @_spi(PrimerInternal) import PrimerFoundation
 import UIKit
+@_spi(PrimerInternal) import PrimerCore
 
 @objc
 protocol InternalCardComponentsManagerDelegate {
