@@ -11,6 +11,8 @@ import Foundation
 final class MockCardNetworkDetectionInteractor: CardNetworkDetectionInteractor {
 
     private(set) var detectNetworksCallCount = 0
+    private(set) var selectNetworkCallCount = 0
+    private(set) var selectedNetwork: CardNetwork?
 
     var networkDetectionStream: AsyncStream<[CardNetwork]> {
         AsyncStream { continuation in
@@ -29,5 +31,8 @@ final class MockCardNetworkDetectionInteractor: CardNetworkDetectionInteractor {
         detectNetworksCallCount += 1
     }
 
-    func selectNetwork(_ network: CardNetwork) async {}
+    func selectNetwork(_ network: CardNetwork) async {
+        selectNetworkCallCount += 1
+        selectedNetwork = network
+    }
 }
