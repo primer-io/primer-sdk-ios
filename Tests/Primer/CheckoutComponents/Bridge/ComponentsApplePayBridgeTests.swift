@@ -134,4 +134,61 @@ final class ComponentsApplePayBridgeTests: XCTestCase {
         XCTAssertFalse(errorMessage.isEmpty)
         XCTAssertEqual(diagnosticsId, error.diagnosticsId)
     }
+
+    // MARK: - Bridge lifecycle (without setup)
+
+    @MainActor
+    func test_startPayment_withoutSetup_throwsUnableToPresentPaymentMethod() async {
+        // Given
+        let sut = ComponentsApplePayBridge()
+
+        // When / Then
+        do {
+            try await sut.startPayment()
+            XCTFail("expected startPayment to throw")
+        } catch let error as PrimerError {
+            guard case let .unableToPresentPaymentMethod(paymentMethodType, _, _) = error else {
+                return XCTFail("expected .unableToPresentPaymentMethod, got \(error)")
+            }
+            XCTAssertEqual(paymentMethodType, "APPLE_PAY")
+        } catch {
+            XCTFail("expected PrimerError, got \(error)")
+        }
+    }
+
+    @MainActor
+    func test_cancel_withoutSetup_isNoOp() async {
+        // Given
+        let sut = ComponentsApplePayBridge()
+
+        // When / Then — no scope to cancel against; must not throw or crash.
+        await sut.cancel()
+    }
+
+    @MainActor
+    func test_dispose_finishesStateAndOutcomeStreams() async {
+        // Given
+        let sut = ComponentsApplePayBridge()
+        let stateStream = sut.stateStream
+        let outcomeStream = sut.outcomeStream
+        let stateTask = Task {
+            var count = 0
+            for await _ in stateStream { count += 1 }
+            return count
+        }
+        let outcomeTask = Task {
+            var count = 0
+            for await _ in outcomeStream { count += 1 }
+            return count
+        }
+
+        // When
+        await sut.dispose()
+
+        // Then — both streams terminate without emitting.
+        let stateCount = await stateTask.value
+        let outcomeCount = await outcomeTask.value
+        XCTAssertEqual(stateCount, 0)
+        XCTAssertEqual(outcomeCount, 0)
+    }
 }
