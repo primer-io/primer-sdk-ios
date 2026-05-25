@@ -29,8 +29,6 @@ public final class ComponentsCardNetworkSelectionBridge: LogReporter {
     )
   }
 
-  private static let identifierPattern = #"^[A-Z][A-Z0-9_]*$"#
-
   private let interactorResolver: () async -> CardNetworkDetectionInteractor?
   private let allowedNetworksProvider: () -> [String]?
 
@@ -53,32 +51,21 @@ public final class ComponentsCardNetworkSelectionBridge: LogReporter {
     self.allowedNetworksProvider = allowedNetworksProvider
   }
 
-  public func setSelectedNetwork(_ identifier: String) async throws {
-    logger.debug(message: "[CardNetworkSelectionBridge] setSelectedNetwork(identifier=\(identifier))")
+  public func setSelectedNetwork(_ network: CardNetwork) async throws {
+    logger.debug(message: "[CardNetworkSelectionBridge] setSelectedNetwork(network=\(network.rawValue))")
 
     Analytics.Service.fire(event: Analytics.Event.sdk(
       name: "\(Self.self).\(#function)",
       params: ["category": "CARD_NETWORK_SELECTION"]
     ))
 
-    do {
-      try Self.validate(identifier: identifier)
-    } catch {
-      logger.error(message: "[CardNetworkSelectionBridge] identifier=\"\(identifier)\" failed format validation")
-      throw error
-    }
-
-    guard let cardNetwork = CardNetwork(rawValue: identifier) else {
-      logger.error(message: "[CardNetworkSelectionBridge] identifier=\(identifier) is not a known CardNetwork")
-      throw PrimerValidationError.invalidRawData()
-    }
     guard let interactor = await interactorResolver() else {
       logger.error(message: "[CardNetworkSelectionBridge] no CardNetworkDetectionInteractor registered in DI")
       throw PrimerError.unknown(message: "No active CardNetworkDetectionInteractor")
     }
-    logger.debug(message: "[CardNetworkSelectionBridge] -> interactor.selectNetwork(\(identifier))")
-    await interactor.selectNetwork(cardNetwork)
-    logger.info(message: "[CardNetworkSelectionBridge] selectNetwork(\(identifier)) completed")
+    logger.debug(message: "[CardNetworkSelectionBridge] -> interactor.selectNetwork(\(network.rawValue))")
+    await interactor.selectNetwork(network)
+    logger.info(message: "[CardNetworkSelectionBridge] selectNetwork(\(network.rawValue)) completed")
   }
 
   public var state: AsyncStream<State> {
@@ -123,12 +110,6 @@ public final class ComponentsCardNetworkSelectionBridge: LogReporter {
     let available = snapshot.availableNetworks.map(\.identifier)
     let selected = snapshot.selectedIdentifier ?? "nil"
     return "[CardNetworkSelectionBridge] yield(\(label)): available=\(available) selected=\(selected) selectable=\(snapshot.isNetworkSelectable)"
-  }
-
-  private static func validate(identifier: String) throws {
-    guard identifier.range(of: identifierPattern, options: .regularExpression) != nil else {
-      throw PrimerValidationError.invalidRawData()
-    }
   }
 
   static func makeDescriptor(for network: CardNetwork, allowed: Set<String>) -> NetworkDescriptor? {

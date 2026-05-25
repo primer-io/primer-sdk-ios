@@ -31,52 +31,20 @@ final class ComponentsCardNetworkSelectionBridgeTests: XCTestCase {
         super.tearDown()
     }
 
-    // MARK: - setSelectedNetwork — validation
-
-    func test_setSelectedNetwork_throwsValidationError_whenIdentifierIsEmpty() async {
-        await assertThrowsValidationError {
-            try await self.sut.setSelectedNetwork("")
-        }
-    }
-
-    func test_setSelectedNetwork_throwsValidationError_whenIdentifierIsLowercase() async {
-        await assertThrowsValidationError {
-            try await self.sut.setSelectedNetwork("visa")
-        }
-    }
-
-    func test_setSelectedNetwork_throwsValidationError_whenIdentifierContainsHyphen() async {
-        await assertThrowsValidationError {
-            try await self.sut.setSelectedNetwork("CARTES-BANCAIRES")
-        }
-    }
-
-    func test_setSelectedNetwork_throwsValidationError_whenIdentifierStartsWithDigit() async {
-        await assertThrowsValidationError {
-            try await self.sut.setSelectedNetwork("3DS")
-        }
-    }
-
-    func test_setSelectedNetwork_throwsValidationError_whenIdentifierIsNotAKnownCardNetwork() async {
-        await assertThrowsValidationError {
-            try await self.sut.setSelectedNetwork("MADE_UP_NETWORK")
-        }
-    }
-
     // MARK: - setSelectedNetwork — forwarding
 
     func test_setSelectedNetwork_forwardsToInteractor_forKnownNetwork() async throws {
-        try await sut.setSelectedNetwork("VISA")
+        try await sut.setSelectedNetwork(.visa)
 
         XCTAssertEqual(interactor.selectNetworkCallCount, 1)
-        XCTAssertEqual(interactor.selectedNetwork, CardNetwork.visa)
+        XCTAssertEqual(interactor.selectedNetwork, .visa)
     }
 
     func test_setSelectedNetwork_forwardsCartesBancaires() async throws {
-        try await sut.setSelectedNetwork("CARTES_BANCAIRES")
+        try await sut.setSelectedNetwork(.cartesBancaires)
 
         XCTAssertEqual(interactor.selectNetworkCallCount, 1)
-        XCTAssertEqual(interactor.selectedNetwork, CardNetwork.cartesBancaires)
+        XCTAssertEqual(interactor.selectedNetwork, .cartesBancaires)
     }
 
     func test_setSelectedNetwork_throwsPrimerError_whenInteractorMissing() async {
@@ -86,7 +54,7 @@ final class ComponentsCardNetworkSelectionBridgeTests: XCTestCase {
         )
 
         do {
-            try await sut.setSelectedNetwork("VISA")
+            try await sut.setSelectedNetwork(.visa)
             XCTFail("Expected error")
         } catch let error as PrimerError {
             // Expected — exact case is `.unknown` but we don't assert on the enum case
@@ -140,20 +108,4 @@ final class ComponentsCardNetworkSelectionBridgeTests: XCTestCase {
         XCTAssertFalse(descriptor?.allowsUserSelection ?? true)
     }
 
-    // MARK: - Helpers
-
-    private func assertThrowsValidationError(
-        _ block: @escaping () async throws -> Void,
-        file: StaticString = #file,
-        line: UInt = #line
-    ) async {
-        do {
-            try await block()
-            XCTFail("Expected PrimerValidationError", file: file, line: line)
-        } catch is PrimerValidationError {
-            // Expected.
-        } catch {
-            XCTFail("Expected PrimerValidationError, got \(error)", file: file, line: line)
-        }
-    }
 }
