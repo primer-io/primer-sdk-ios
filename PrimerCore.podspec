@@ -11,7 +11,7 @@ Pod::Spec.new do |s|
     s.swift_version = '5'
     s.ios.deployment_target = '13.0'
 
-    s.ios.source_files = "Packages/PrimerCore/Sources/**/*.{swift}"
+    s.ios.source_files = "Modules/PrimerCore/Sources/**/*.{swift}"
     s.ios.frameworks   = "Foundation", "UIKit"
 
     s.dependency "PrimerFoundation", "= #{s.version}"
