@@ -133,7 +133,7 @@ final class PrimerInternal: LogReporter {
         let releaseVersionNumber = VersionUtils.releaseVersionNumber
         events.append(
             Analytics.Event.message(
-                message: "Version number (\(releaseVersionNumber ?? "n/a")) detected.",
+                message: "Version number (\(releaseVersionNumber)) detected.",
                 messageType: .other,
                 severity: .info
             )

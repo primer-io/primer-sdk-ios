@@ -10,4 +10,4 @@ protocol AnalyticsEvent: Sendable {
     var createdAt: Int { get }
 }
 
-extension Analytics.Event: AnalyticsEvent {}
+extension Analytics.Event: @retroactive AnalyticsEvent {}
