@@ -1,0 +1,39 @@
+name: SPM resolution check
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+
+jobs:
+  spm-resolve:
+    runs-on: macos-26
+    name: "SPM resolution check"
+
+    steps:
+      - name: Cancel previous jobs
+        uses: styfle/cancel-workflow-action@d07a454dad7609a92316b57b23c9ccfd4f59af66 # v0.13.1
+        with:
+          access_token: ${{ github.token }}
+
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Select Xcode Version
+        uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90 # v1.7.0
+        with:
+          xcode-version: '26.2'
+
+      - name: Create local branch ref
+        run: git checkout -b ${{ github.head_ref }}
+
+      - name: Create test consumer package
+        run: |
+          mkdir -p /tmp/spm-test/Sources/SPMTest
+          echo 'import PrimerSDK' > /tmp/spm-test/Sources/SPMTest/Test.swift
+          sed -e "s|__REPO_URL__|file://${{ github.workspace }}|" \
+              -e "s|__BRANCH__|${{ github.head_ref }}|" \
+              .github/templates/SPMResolveTest/Package.swift > /tmp/spm-test/Package.swift
+
+      - name: Resolve dependencies
+        run: swift package --package-path /tmp/spm-test resolve
