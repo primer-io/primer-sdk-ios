@@ -6,6 +6,7 @@
 
 import PassKit
 import PrimerFoundation
+@_spi(PrimerInternal) import PrimerCore
 
 enum ApplePayUtils {
 

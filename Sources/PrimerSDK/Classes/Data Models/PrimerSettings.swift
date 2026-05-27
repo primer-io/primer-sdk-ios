@@ -6,7 +6,7 @@
 
 import Foundation
 import PassKit
-import PrimerCore
+@_spi(PrimerInternal) import PrimerCore
 @_spi(PrimerInternal) import PrimerFoundation
 
 // MARK: - PRIMER SETTINGS
@@ -67,7 +67,23 @@ protocol PrimerPaymentMethodOptionsProtocol {
     func validSchemeForUrlScheme() throws -> String
 }
 
+extension PrimerPaymentMethodOptions: PrimerPaymentMethodOptionsProtocol {
+    func validUrlForUrlScheme() throws -> URL {
+        guard let urlScheme = urlScheme, let url = URL(string: urlScheme), url.scheme != nil else {
+            throw handled(primerError: .invalidValue(key: "urlScheme"))
+        }
+        return url
+    }
+    
+    func validSchemeForUrlScheme() throws -> String {
+        let url = try validUrlForUrlScheme()
+        guard let scheme = url.scheme else { throw handled(primerError: .invalidValue(key: "urlScheme")) }
+        return scheme
+    }
+}
+
 // MARK: - UI OPTIONS
+
 public final class PrimerUIOptions: Codable {
 
     public internal(set) var isInitScreenEnabled: Bool

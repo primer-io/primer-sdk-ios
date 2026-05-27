@@ -4,25 +4,21 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-//
-//  PrimerPaymentMethodOptions.swift
-//  
-//
-//  Created by Henry Cooper on 27/05/2026.
-//
 import Foundation
+import PrimerFoundation
 
-public final class PrimerPaymentMethodOptions: PrimerPaymentMethodOptionsProtocol, Codable {
+public final class PrimerPaymentMethodOptions: Codable {
 
-    private let urlScheme: String?
-    let applePayOptions: PrimerApplePayOptions?
-    var klarnaOptions: PrimerKlarnaOptions?
-
+    @_spi(PrimerInternal) public let urlScheme: String?
+    
+    @_spi(PrimerInternal) public let applePayOptions: PrimerApplePayOptions?
+    @_spi(PrimerInternal) public let klarnaOptions: PrimerKlarnaOptions?
+    @_spi(PrimerInternal) public let threeDsOptions: PrimerThreeDsOptions?
+    @_spi(PrimerInternal) public let stripeOptions: PrimerStripeOptions?
+        
     // Was producing warning: Immutable property will not be decoded because it is declared with an initial value which cannot be overwritten
     // Was it intentional?
     var cardPaymentOptions: PrimerCardPaymentOptions = PrimerCardPaymentOptions()
-    var threeDsOptions: PrimerThreeDsOptions?
-    var stripeOptions: PrimerStripeOptions?
 
     public init(
         urlScheme: String? = nil,
@@ -54,19 +50,7 @@ public final class PrimerPaymentMethodOptions: PrimerPaymentMethodOptionsProtoco
         self.urlScheme = urlScheme
         self.applePayOptions = applePayOptions
         self.klarnaOptions = klarnaOptions
+        threeDsOptions = nil
         self.stripeOptions = stripeOptions
-    }
-
-    func validUrlForUrlScheme() throws -> URL {
-        guard let urlScheme = urlScheme, let url = URL(string: urlScheme), url.scheme != nil else {
-            throw handled(primerError: .invalidValue(key: "urlScheme"))
-        }
-        return url
-    }
-
-    func validSchemeForUrlScheme() throws -> String {
-        let url = try validUrlForUrlScheme()
-        guard let scheme = url.scheme else { throw handled(primerError: .invalidValue(key: "urlScheme")) }
-        return scheme
     }
 }
