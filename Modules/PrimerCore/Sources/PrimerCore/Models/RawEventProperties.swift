@@ -6,21 +6,20 @@
 
 import Foundation
 @_spi(PrimerInternal) import PrimerFoundation
-@_spi(PrimerInternal) import PrimerCore
 
-struct RawEventProperties: AnalyticsEventProperties {
+@_spi(PrimerInternal) public struct RawEventProperties: AnalyticsEventProperties {
     private let values: [String: AnyCodable]
 
-    init(data: Data) throws {
+    public init(data: Data) throws {
         values = try JSONDecoder().decode([String: AnyCodable].self, from: data)
     }
 
-    init(from decoder: Decoder) throws {
+    public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         values = try container.decode([String: AnyCodable].self)
     }
 
-    func encode(to encoder: Encoder) throws {
+    public func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
         try container.encode(values)
     }
