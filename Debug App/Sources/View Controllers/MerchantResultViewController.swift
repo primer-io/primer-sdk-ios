@@ -74,7 +74,7 @@ final class MerchantResultViewController: UIViewController {
 
         if !logs.isEmpty {
             if let data = try? JSONSerialization.data(withJSONObject: logs) {
-                if let prettyNSStr = data.prettyPrintedJSONString as? String {
+                if let prettyNSStr = data.prettyPrintedJSONString {
                     logsTextView.text = prettyNSStr
                 } else {
                     logsTextView.text = "[\"Failed to create pretty string from logs\"]"

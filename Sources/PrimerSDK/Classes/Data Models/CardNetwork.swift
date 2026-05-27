@@ -347,7 +347,7 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
     }
 }
 
-extension [CardNetwork]: LogReporter {
+extension [CardNetwork]: @retroactive LogReporter {
 
     /// A list of card networks that the merchant supports
     static var allowedCardNetworks: Self {

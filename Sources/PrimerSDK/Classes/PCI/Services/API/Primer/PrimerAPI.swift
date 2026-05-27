@@ -114,7 +114,7 @@ extension PrimerAPI {
 
     static let headers: [String: String] = [
         "Content-Type": "application/json",
-        "Primer-SDK-Version": VersionUtils.releaseVersionNumber ?? "n/a",
+        "Primer-SDK-Version": VersionUtils.releaseVersionNumber,
         "Primer-SDK-Client": PrimerSource.sdkSourceType.sourceType
     ]
 

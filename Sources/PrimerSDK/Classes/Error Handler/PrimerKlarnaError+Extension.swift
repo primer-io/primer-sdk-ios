@@ -10,7 +10,7 @@ import Foundation
 #if canImport(PrimerKlarnaSDK)
     import PrimerKlarnaSDK
 
-    extension PrimerKlarnaError: PrimerErrorProtocol {
+    extension PrimerKlarnaError: @retroactive PrimerErrorProtocol {
         typealias InfoType = [String: String]
         public var exposedError: Error {
             self

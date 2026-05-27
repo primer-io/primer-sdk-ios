@@ -7,7 +7,7 @@
 import Foundation
 @_spi(PrimerInternal) import PrimerFoundation
 
-extension InternalError: PrimerErrorProtocol {
+extension InternalError: @retroactive PrimerErrorProtocol {
     public var exposedError: Error {
         switch self {
         case let .failedToPerform3dsButShouldContinue(error): error.normalizedForSDK
