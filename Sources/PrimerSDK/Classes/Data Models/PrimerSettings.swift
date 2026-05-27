@@ -6,6 +6,7 @@
 
 import Foundation
 import PassKit
+import PrimerCore
 @_spi(PrimerInternal) import PrimerFoundation
 
 // MARK: - PRIMER SETTINGS

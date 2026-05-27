@@ -6,6 +6,7 @@
 
 import PrimerFoundation
 import UIKit
+@_spi(PrimerInternal) import PrimerCore
 
 final class StripeAchHeadlessComponent {
     // MARK: - Tokenization

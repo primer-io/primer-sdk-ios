@@ -5,6 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+@_spi(PrimerInternal) import PrimerCore
 
 enum NetworkEventType {
     case requestStart(identifier: String, endpoint: Endpoint, request: URLRequest)
@@ -52,7 +53,8 @@ final class DefaultNetworkReportingService: NetworkReportingService {
                 method: endpoint.method,
                 errorBody: nil,
                 responseCode: nil,
-                duration: nil)
+                duration: nil
+            )
         case let .requestEnd(id, endpoint, response, duration):
             event = Analytics.Event.networkCall(
                 callType: .requestEnd,

@@ -6,6 +6,7 @@
 
 import Foundation
 @_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerCore
 
 protocol UniversalCheckoutViewModelProtocol {
     var paymentMethods: [PrimerPaymentMethodTokenData] { get }

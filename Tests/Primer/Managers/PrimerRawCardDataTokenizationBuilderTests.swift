@@ -6,6 +6,7 @@
 
 @testable import PrimerSDK
 import XCTest
+@_spi(PrimerInternal) import PrimerCore
 
 final class PrimerRawCardDataTokenizationBuilderTests: XCTestCase {
 

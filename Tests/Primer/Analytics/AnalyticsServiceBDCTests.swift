@@ -5,8 +5,9 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 @_spi(PrimerInternal) import PrimerFoundation
-@testable import PrimerSDK
+@_spi(PrimerInternal) @testable import PrimerSDK
 @_spi(PrimerInternal) import PrimerStepResolver
+@_spi(PrimerInternal) import PrimerCore
 import XCTest
 
 final class AnalyticsServiceBDCTests: XCTestCase {

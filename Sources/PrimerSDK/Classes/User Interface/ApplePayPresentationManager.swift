@@ -7,6 +7,7 @@
 import Foundation
 import PassKit
 @_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerCore
 
 protocol ApplePayPresenting {
     var isPresentable: Bool { get }

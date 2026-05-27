@@ -6,6 +6,7 @@
 
 import Foundation
 @_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerCore
 
 public enum Primer3DSErrorContainer: PrimerErrorProtocol {
     // swiftlint:disable:next type_name

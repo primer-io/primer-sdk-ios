@@ -6,6 +6,7 @@
 
 @_exported import PrimerFoundation
 import UIKit
+@_exported @_spi(PrimerInternal) import PrimerCore
 
 // swiftlint:disable identifier_name
 #if DEBUG

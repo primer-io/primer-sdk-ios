@@ -10,6 +10,7 @@ import Foundation
 import PassKit
 @_spi(PrimerInternal) import PrimerFoundation
 import UIKit
+@_spi(PrimerInternal) import PrimerCore
 
 public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
 

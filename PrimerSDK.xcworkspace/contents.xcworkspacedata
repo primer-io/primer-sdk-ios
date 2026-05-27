@@ -234,9 +234,6 @@
                   location = "group:ImageName.swift">
                </FileRef>
                <FileRef
-                  location = "group:PrimerLocaleData.swift">
-               </FileRef>
-               <FileRef
                   location = "group:PrimerInitializationData.swift">
                </FileRef>
                <FileRef
@@ -271,9 +268,6 @@
                </FileRef>
                <FileRef
                   location = "group:PayPal.swift">
-               </FileRef>
-               <FileRef
-                  location = "group:PrimerSDKIntegrationType.swift">
                </FileRef>
                <FileRef
                   location = "group:PrimerVaultedCardAdditionalData.swift">
@@ -421,9 +415,6 @@
                </FileRef>
                <FileRef
                   location = "group:NSObject+ClassName.swift">
-               </FileRef>
-               <FileRef
-                  location = "group:EncodingDecodingContainerExtensions.swift">
                </FileRef>
                <FileRef
                   location = "group:VersionUtils.swift">

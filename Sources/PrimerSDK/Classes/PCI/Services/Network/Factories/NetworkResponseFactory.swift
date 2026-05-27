@@ -6,6 +6,7 @@
 
 import Foundation
 @_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerCore
 
 protocol NetworkResponseFactory: AnyObject {
     func model<T>(for response: Data, forMetadata metadata: ResponseMetadata) throws -> T where T: Decodable

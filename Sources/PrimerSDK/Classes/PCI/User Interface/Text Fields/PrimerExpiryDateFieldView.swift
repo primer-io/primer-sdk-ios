@@ -8,6 +8,7 @@
 
 @_spi(PrimerInternal) import PrimerFoundation
 import UIKit
+@_spi(PrimerInternal) import PrimerCore
 
 public final class PrimerExpiryDateFieldView: PrimerTextFieldView {
 

@@ -7,6 +7,7 @@
 import Foundation
 import PrimerFoundation
 @testable import PrimerSDK
+@_spi(PrimerInternal) import PrimerCore
 import XCTest
 
 final class StripeAchHeadlessComponentTests: XCTestCase {
