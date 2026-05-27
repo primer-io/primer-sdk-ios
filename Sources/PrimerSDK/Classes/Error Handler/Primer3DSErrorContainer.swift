@@ -7,18 +7,6 @@
 import Foundation
 @_spi(PrimerInternal) import PrimerFoundation
 
-public struct Primer3DSErrorInfo {
-    let errorId: String
-    let errorDescription: String
-    let recoverySuggestion: String?
-    let threeDsErrorCode: Int?
-    let threeDsErrorType: String?
-    let threeDsErrorComponent: String?
-    let threeDsSdkTranscationId: String?
-    let threeDsSErrorVersion: String?
-    let threeDsErrorDetail: String?
-}
-
 public enum Primer3DSErrorContainer: PrimerErrorProtocol {
     // swiftlint:disable:next type_name
     typealias K = AnalyticsContextKeys
