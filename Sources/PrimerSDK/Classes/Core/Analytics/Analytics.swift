@@ -7,7 +7,6 @@
 import Foundation
 @_spi(PrimerInternal) import PrimerCore
 
-final class Analytics {
-    static let queue: DispatchQueue = DispatchQueue(label: "primer.analytics", qos: .utility)
+extension Analytics {
     static var apiClient: PrimerAPIClientProtocol?
 }

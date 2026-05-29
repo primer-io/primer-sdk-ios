@@ -12,13 +12,6 @@ import Foundation
 @_spi(PrimerInternal) import PrimerStepResolver
 @_spi(PrimerInternal) import PrimerFoundation
 
-protocol AnalyticsServiceProtocol: Actor {
-    func record(events: [any AnalyticsEvent]) async throws
-    func fire(events: [any AnalyticsEvent])
-    func record(event: any AnalyticsEvent) async throws
-    func fire(event: any AnalyticsEvent)
-}
-
 extension Analytics {
 
     final actor Service: AnalyticsServiceProtocol, LogReporter {
