@@ -339,8 +339,6 @@ extension Analytics.Event {
 
 }
 
-protocol AnalyticsEventProperties: Codable {}
-
 extension Analytics.Event {
 
     static func sdk(name: String, params: [String: String]?) -> Self {
