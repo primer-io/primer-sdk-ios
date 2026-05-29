@@ -6,7 +6,7 @@
 
 public final class PrimerKlarnaOptions: Codable {
 
-    let recurringPaymentDescription: String
+    @_spi(PrimerInternal) public let recurringPaymentDescription: String
 
     public init(recurringPaymentDescription: String) {
         self.recurringPaymentDescription = recurringPaymentDescription

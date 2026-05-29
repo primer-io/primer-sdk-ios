@@ -6,20 +6,20 @@
 
 public final class PrimerApplePayOptions: Codable {
 
-    let merchantIdentifier: String
+    @_spi(PrimerInternal) public let merchantIdentifier: String
     @available(*, deprecated, message: "Use Client Session API to provide merchant name value: https://primer.io/docs/payment-methods/apple-pay/direct-integration#prepare-the-client-session")
-    let merchantName: String?
+    @_spi(PrimerInternal) public let merchantName: String?
     @available(*, deprecated, message: "Use BillingOptions to configure required billing fields.")
-    let isCaptureBillingAddressEnabled: Bool
+    @_spi(PrimerInternal) public let isCaptureBillingAddressEnabled: Bool
     /// If in some cases you dont want to present ApplePay option if the device is not supporting it set this to `false`.
     /// Default value is `true`.
-    let showApplePayForUnsupportedDevice: Bool
+    @_spi(PrimerInternal) public let showApplePayForUnsupportedDevice: Bool
     /// Due to merchant report about ApplePay flow which was not presenting because
     /// canMakePayments(usingNetworks:) was returning false if there were no cards in the Wallet,
     /// we introduced this flag to continue supporting the old behaviour. Default value is `true`.
-    let checkProvidedNetworks: Bool
-    let shippingOptions: ShippingOptions?
-    let billingOptions: BillingOptions?
+    @_spi(PrimerInternal) public let checkProvidedNetworks: Bool
+    @_spi(PrimerInternal) public let shippingOptions: ShippingOptions?
+    @_spi(PrimerInternal) public let billingOptions: BillingOptions?
 
     public init(
         merchantIdentifier: String,

@@ -11,8 +11,8 @@ public final class PrimerStripeOptions: Codable {
         case templateMandate(merchantName: String)
     }
 
-    var publishableKey: String
-    var mandateData: MandateData?
+    public let publishableKey: String
+    public let mandateData: MandateData?
 
     public init(publishableKey: String, mandateData: MandateData? = nil) {
         self.publishableKey = publishableKey
