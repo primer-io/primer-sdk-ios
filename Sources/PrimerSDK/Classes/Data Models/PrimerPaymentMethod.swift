@@ -186,6 +186,10 @@ final class PrimerPaymentMethod: Codable, LogReporter {
             return true
         }
     }
+    
+    var isBackendDriven: Bool {
+        implementationType == .backendDriven || (capabilities?.contains(.backendDriven) ?? false)
+    }
 
     lazy var isEnabled: Bool = {
         if !implementationType.isEnabled { return false }
