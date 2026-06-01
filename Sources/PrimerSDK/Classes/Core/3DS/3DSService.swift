@@ -10,9 +10,10 @@
 // swiftlint:disable large_tuple
 
 import Foundation
+@_spi(PrimerInternal) import PrimerCore
 @_spi(PrimerInternal) import PrimerFoundation
 import UIKit
-@_spi(PrimerInternal) import PrimerCore
+
 #if canImport(Primer3DS)
     import Primer3DS
 #endif
@@ -197,8 +198,9 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
             } else if case let InternalError.failedToPerform3dsAndShouldBreak(primerErr) = error {
                 ErrorHandler.handle(error: primerErr)
                 throw primerErr
-            } else if case let InternalError.failedToPerform3dsButShouldContinue(primer3DSErrorContainer) = error,
-                      let container = primer3DSErrorContainer as? Primer3DSErrorContainer {
+            } else if
+                case let InternalError.failedToPerform3dsButShouldContinue(primer3DSErrorContainer) = error,
+                let container = primer3DSErrorContainer as? Primer3DSErrorContainer {
                 ErrorHandler.handle(error: primer3DSErrorContainer)
                 continueInfo = container.continueInfo
             } else {
@@ -547,15 +549,17 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
 
     private extension Primer3DSErrorInfo {
         init(_ primer3DSError: Primer3DSError) {
-            errorId = primer3DSError.errorId
-            errorDescription = primer3DSError.errorDescription
-            recoverySuggestion = primer3DSError.recoverySuggestion
-            threeDsErrorCode = primer3DSError.threeDsErrorCode
-            threeDsErrorType = primer3DSError.threeDsErrorType
-            threeDsErrorComponent = primer3DSError.threeDsErrorComponent
-            threeDsSdkTranscationId = primer3DSError.threeDsSdkTranscationId
-            threeDsSErrorVersion = primer3DSError.threeDsSErrorVersion
-            threeDsErrorDetail = primer3DSError.threeDsErrorDetail
+            self.init(
+                errorId: primer3DSError.errorId,
+                errorDescription: primer3DSError.errorDescription,
+                recoverySuggestion: primer3DSError.recoverySuggestion,
+                threeDsErrorCode: primer3DSError.threeDsErrorCode,
+                threeDsErrorType: primer3DSError.threeDsErrorType,
+                threeDsErrorComponent: primer3DSError.threeDsErrorComponent,
+                threeDsSdkTranscationId: primer3DSError.threeDsSdkTranscationId,
+                threeDsSErrorVersion: primer3DSError.threeDsSErrorVersion,
+                threeDsErrorDetail: primer3DSError.threeDsErrorDetail
+            )
         }
     }
 #endif
