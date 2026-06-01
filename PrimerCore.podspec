@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
     s.name         = "PrimerCore"
-    s.version      = "2.48.0"
+    s.version      = "2.49.0"
     s.summary      = "Core objects + utilities for Primer SDK"
     s.description  = "Core objects and utilities used by PrimerSDK."
     s.homepage     = "https://www.primer.io"
