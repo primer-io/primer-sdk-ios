@@ -8,6 +8,41 @@ import Foundation
 @_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerCore
 
+extension NetworkCallEventProperties {
+    init(
+        callType: Analytics.Event.Property.NetworkCallType,
+        id: String,
+        url: String,
+        method: HTTPMethod,
+        errorBody: String?,
+        responseCode: Int?,
+        duration: TimeInterval? = nil
+    ) {
+        var parameters: [String: AnyCodable]?
+        let sdkProperties = SDKProperties()
+        if let sdkPropertiesDict = try? sdkProperties.asDictionary(),
+           let data = try? JSONSerialization.data(withJSONObject: sdkPropertiesDict, options: .fragmentsAllowed) {
+            let decoder = JSONDecoder()
+            if let anyDecodableDictionary = try? decoder.decode([String: AnyCodable].self, from: data) {
+                parameters = anyDecodableDictionary
+            }
+        } else {
+            parameters = nil
+        }
+        
+        self.init(
+            callType: callType,
+            id: id,
+            url: url,
+            method: method.rawValue,
+            errorBody: errorBody,
+            responseCode: responseCode,
+            params: parameters,
+            duration: duration
+        )
+    }
+}
+
 extension AppLifecycleEventProperties {
     init(lifecycleType: LifecycleType) {
         let sdkProperties = SDKProperties()
@@ -50,6 +85,56 @@ extension SDKEventProperties {
             }
         }
         self.init(name: name, parameters: finalParams)
+    }
+}
+
+extension TimerEventProperties {
+    init(
+        momentType: Analytics.Event.Property.TimerType,
+        id: String?,
+        duration: TimeInterval? = nil,
+        context: [String: Any]? = nil
+    ) {
+        var params: [String: AnyCodable]?
+        let sdkProperties = SDKProperties()
+        if let sdkPropertiesDict = try? sdkProperties.asDictionary(),
+           let data = try? JSONSerialization.data(withJSONObject: sdkPropertiesDict, options: .fragmentsAllowed) {
+            let decoder = JSONDecoder()
+            if let anyDecodableDictionary = try? decoder.decode([String: AnyCodable].self, from: data) {
+                params = anyDecodableDictionary
+            }
+        }
+        self.init(momentType: momentType, id: id, params: params, duration: duration, context: context)
+    }
+}
+
+extension UIEventProperties {
+    init(
+        action: Analytics.Event.Property.Action,
+        context: Analytics.Event.Property.Context?,
+        extra: String?,
+        objectType: Analytics.Event.Property.ObjectType,
+        objectId: Analytics.Event.Property.ObjectId?,
+        objectClass: String?,
+        place: Analytics.Event.Property.Place
+    ) {
+        var parameters: [String: String]?
+        if let jsonData = try? JSONEncoder().encode(SDKProperties()),
+           let jsonObject = try? JSONSerialization.jsonObject(with: jsonData, options: .allowFragments),
+           let params = jsonObject as? [String: String] {
+            parameters = params
+        }
+        
+        self.init(
+            action: action,
+            context: context,
+            extra: extra,
+            objectType: objectType,
+            objectId: objectId,
+            objectClass: objectClass,
+            place: place,
+            params: parameters
+        )
     }
 }
 
