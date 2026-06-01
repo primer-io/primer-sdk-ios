@@ -16,6 +16,7 @@ cocoapods-session-keepalive:
 
 build-and-release:
   stage: build
+  timeout: 2h
   image:  ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/ruby:$RUBY_VERSION
   before_script:
     - apt-get update -y
@@ -23,23 +24,37 @@ build-and-release:
   script:
     - bundle install
     - |
-      for POD in PrimerFoundation PrimerStepResolver PrimerBDCEngine PrimerBDCCore; do
-        echo "Pushing ${POD}.podspec"
-        pod trunk push "${POD}.podspec" --allow-root --allow-warnings --synchronous
+      VERSION=$(ruby -e "require 'cocoapods-core'; puts Pod::Specification.from_file('PrimerSDK.podspec').version")
+
+      notify_slack() {
+        [ -z "$SLACK_REPORTER_BOT_TOKEN" ] && return
+        curl -s -X POST https://slack.com/api/chat.postMessage \
+          -H "Authorization: Bearer $SLACK_REPORTER_BOT_TOKEN" \
+          -H 'Content-type: application/json' \
+          --data "{\"channel\": \"$SLACK_MOBILE_SDK_CHANNEL\", \"text\": \"$1\"}" >/dev/null
+      }
+
+      push_and_wait() {
+        local pod=$1
+        until (pod trunk push "${pod}.podspec" --allow-root --allow-warnings) || \
+              (pod trunk info "$pod" 2>&1 | grep -q "$VERSION"); do
+          sleep 10
+        done
+        notify_slack "✅ ${pod} ${VERSION} pushed to trunk"
+        until pod spec cat "$pod" --version="$VERSION" >/dev/null 2>&1; do sleep 10; done
+      }
+
+      for POD in PrimerFoundation PrimerStepResolver PrimerCore PrimerBDCEngine PrimerBDCCore PrimerSDK; do
+        push_and_wait "$POD"
       done
+      notify_slack "🚀 All pods for ${VERSION} published successfully"
+  after_script:
     - |
-      ATTEMPTS=60
-      SLEEP=30
-      for i in $(seq 1 $ATTEMPTS); do
-        pod repo update trunk >/dev/null 2>&1 || true
-        if pod trunk push PrimerSDK.podspec --allow-root --allow-warnings --synchronous; then
-          echo "Pushing PrimerSDK: succeeded after $i/$ATTEMPTS"
-          exit 0
-        fi
-        echo "Pushing PrimerSDK: attempt $i/$ATTEMPTS failed; sleeping ${SLEEP}s"
-        sleep "$SLEEP"
-      done
-      echo "Pushing PrimerSDK: never succeeded after $ATTEMPTS attempts" >&2
-      exit 1
+      if [ "$CI_JOB_STATUS" != "success" ]; then
+        curl -s -X POST https://slack.com/api/chat.postMessage \
+          -H "Authorization: Bearer $SLACK_REPORTER_BOT_TOKEN" \
+          -H 'Content-type: application/json' \
+          --data "{\"channel\": \"$SLACK_MOBILE_SDK_CHANNEL\", \"text\": \"❌ CocoaPods release failed or timed out. Check pipeline: $CI_PIPELINE_URL\"}" >/dev/null 2>&1
+      fi
   when: manual
   environment: production
