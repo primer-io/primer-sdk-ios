@@ -7,8 +7,22 @@ on:
       - synchronize
 
 jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      relevant: ${{ steps.filter.outputs.relevant }}
+    steps:
+      - uses: dorny/paths-filter@fbd0ab8f3e69293af611ebaee6363fc25e6d187d # v4.0.1
+        id: filter
+        with:
+          filters: |
+            relevant:
+              - '**/*.swift'
+              - '**/*.podspec'
+
   pod-lint:
-    if: ${{ github.event.pull_request.base.ref == 'master' }}
+    needs: changes
+    if: ${{ github.event.pull_request.base.ref == 'master' && needs.changes.outputs.relevant == 'true' }}
     runs-on: macos-26
     name: "Pod lint"
     strategy:

@@ -7,7 +7,21 @@ on:
       - synchronize
 
 jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      swift: ${{ steps.filter.outputs.swift }}
+    steps:
+      - uses: dorny/paths-filter@fbd0ab8f3e69293af611ebaee6363fc25e6d187d # v4.0.1
+        id: filter
+        with:
+          filters: |
+            swift:
+              - '**/*.swift'
+
   spm-resolve:
+    needs: changes
+    if: ${{ needs.changes.outputs.swift == 'true' }}
     runs-on: macos-26
     name: "SPM resolution check"
 
