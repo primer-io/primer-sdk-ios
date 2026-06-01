@@ -4,23 +4,48 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import Foundation
 @_spi(PrimerInternal) import PrimerFoundation
 
-struct SDKProperties: Codable {
+@_spi(PrimerInternal) public struct SDKProperties: Codable {
 
-    let clientToken: String?
-    let integrationType: String?
-    let paymentMethodType: String?
-    let sdkIntegrationType: PrimerSDKIntegrationType?
-    let sdkIntent: PrimerSessionIntent?
-    let sdkPaymentHandling: PrimerPaymentHandling?
-    let sdkSessionId: String?
-    let sdkSettings: [String: AnyCodable]?
-    let sdkType: String?
-    let sdkVersion: String?
-    let context: [String: AnyCodable]?
-
+    public let clientToken: String?
+    public let integrationType: String?
+    public let paymentMethodType: String?
+    public let sdkIntegrationType: PrimerSDKIntegrationType?
+    public let sdkIntent: PrimerSessionIntent?
+    public let sdkPaymentHandling: PrimerPaymentHandling?
+    public let sdkSessionId: String?
+    public let sdkSettings: [String: AnyCodable]?
+    public let sdkType: String?
+    public let sdkVersion: String?
+    public let context: [String: AnyCodable]?
+    
+    public init(
+        clientToken: String?,
+        integrationType: String?,
+        paymentMethodType: String?,
+        sdkIntegrationType: PrimerSDKIntegrationType?,
+        sdkIntent: PrimerSessionIntent?,
+        sdkPaymentHandling: PrimerPaymentHandling?,
+        sdkSessionId: String?,
+        sdkSettings: [String: AnyCodable]?,
+        sdkType: String?,
+        sdkVersion: String?,
+        context: [String: AnyCodable]?
+    ) {
+        self.clientToken = clientToken
+        self.integrationType = integrationType
+        self.paymentMethodType = paymentMethodType
+        self.sdkIntegrationType = sdkIntegrationType
+        self.sdkIntent = sdkIntent
+        self.sdkPaymentHandling = sdkPaymentHandling
+        self.sdkSessionId = sdkSessionId
+        self.sdkSettings = sdkSettings
+        self.sdkType = sdkType
+        self.sdkVersion = sdkVersion
+        self.context = context
+    }
+    
     private enum CodingKeys: String, CodingKey {
         case clientToken
         case integrationType
@@ -35,35 +60,7 @@ struct SDKProperties: Codable {
         case context
     }
 
-    init() {
-        self.clientToken = AppState.current.clientToken
-        self.sdkIntegrationType = PrimerInternal.shared.sdkIntegrationType
-        #if COCOAPODS
-            self.integrationType = "COCOAPODS"
-        #else
-            self.integrationType = "SPM"
-        #endif
-        self.paymentMethodType = PrimerInternal.shared.selectedPaymentMethodType
-        self.sdkIntent = PrimerInternal.shared.intent
-        self.sdkPaymentHandling = PrimerSettings.current.paymentHandling
-        self.sdkSessionId = PrimerInternal.shared.checkoutSessionId
-
-        self.sdkType = Primer.shared.integrationOptions?.reactNativeVersion == nil ? "IOS_NATIVE" : "RN_IOS"
-        self.sdkVersion = VersionUtils.releaseVersionNumber
-        self.context = nil
-
-        if let settingsData = try? JSONEncoder().encode(PrimerSettings.current) {
-            let decoder = JSONDecoder()
-            if let anyDecodableDictionary = try? decoder.decode([String: AnyCodable].self, from: settingsData) {
-                self.sdkSettings = anyDecodableDictionary
-                return
-            }
-        }
-
-        self.sdkSettings = nil
-    }
-
-    init(from decoder: Decoder) throws {
+    public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.clientToken = try container.decodeIfPresent(String.self, forKey: .clientToken)
         self.integrationType = try container.decodeIfPresent(String.self, forKey: .integrationType)
@@ -79,7 +76,7 @@ struct SDKProperties: Codable {
 
     }
 
-    func encode(to encoder: Encoder) throws {
+    public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encodeIfPresent(clientToken, forKey: .clientToken)
         try container.encodeIfPresent(integrationType, forKey: .integrationType)

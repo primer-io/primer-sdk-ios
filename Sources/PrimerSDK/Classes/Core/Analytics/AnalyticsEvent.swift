@@ -48,7 +48,7 @@ extension Analytics {
             self.clientSessionId = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.clientSessionId
             self.createdAt = Date().millisecondsSince1970
             self.customerId = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.customer?.id
-            self.device = Device()
+            self.device = Device(uniqueDeviceIdentifier: Device.deviceIdentifier)
             self.eventType = eventType
             self.primerAccountId = PrimerAPIConfigurationModule.apiConfiguration?.primerAccountId
             self.properties = properties

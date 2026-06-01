@@ -10,7 +10,7 @@ import UIKit
 
 extension SDKDevice {
     init() {
-        let device = Device()
+        let device = Device(uniqueDeviceIdentifier: Device.deviceIdentifier)
         self.init(
             type: UIDevice.deviceTypeName,
             make: "Apple",
