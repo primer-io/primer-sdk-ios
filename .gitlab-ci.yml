@@ -16,7 +16,7 @@ cocoapods-session-keepalive:
 
 build-and-release:
   stage: build
-  timeout: 2h
+  timeout: 3h
   image:  ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/ruby:$RUBY_VERSION
   before_script:
     - apt-get update -y
@@ -36,12 +36,26 @@ build-and-release:
 
       push_and_wait() {
         local pod=$1
-        until (pod trunk push "${pod}.podspec" --allow-root --allow-warnings) || \
-              (pod trunk info "$pod" 2>&1 | grep -q "$VERSION"); do
+        while true; do
+          if output=$(pod trunk push "${pod}.podspec" --allow-root --allow-warnings 2>&1); then
+            echo "$output"
+            break
+          fi
+          echo "$output"
+          if echo "$output" | grep -q "Unable to accept duplicate entry"; then
+            echo "✅ ${pod} ${VERSION} already on trunk — skipping push"
+            break
+          fi
+          echo "⏳ ${pod} ${VERSION}: push not confirmed yet, retrying in 10s…"
           sleep 10
         done
         notify_slack "✅ ${pod} ${VERSION} pushed to trunk"
-        until pod spec cat "$pod" --version="$VERSION" >/dev/null 2>&1; do sleep 10; done
+        echo "⏳ ${pod} ${VERSION}: waiting for CDN version index to propagate…"
+        until (pod repo update trunk >/dev/null 2>&1 || true; pod spec cat "$pod" --version="$VERSION" >/dev/null 2>&1); do
+          echo "⏳ ${pod} ${VERSION}: not yet resolvable via 'pod spec cat', retrying in 10s…"
+          sleep 10
+        done
+        echo "✅ ${pod} ${VERSION}: resolvable via CDN"
       }
 
       for POD in PrimerFoundation PrimerStepResolver PrimerCore PrimerBDCEngine PrimerBDCCore PrimerSDK; do
