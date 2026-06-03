@@ -25,7 +25,7 @@ slack:
       curl -s -X POST https://slack.com/api/chat.postMessage \
         -H "Authorization: Bearer $SLACK_REPORTER_BOT_TOKEN" \
         -H 'Content-type: application/json' \
-        --data "{\"channel\": \"$SLACK_MOBILE_SDK_CHANNEL\", \"text\": \"Hello world\"}" >/dev/null 2>&1
+        --data "{\"channel\": \"$SLACK_MOBILE_SDK_CHANNEL\", \"text\": \"Hello, world\"}" >/dev/null 2>&1
 
 build-and-release:
   stage: build
