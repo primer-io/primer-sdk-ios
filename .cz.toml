@@ -3,10 +3,5 @@ version_scheme = "semver"
 version = "2.49.0"
 version_files = [
   "Sources/PrimerSDK/Classes/version.swift:let PrimerSDKVersion",
-  "PrimerSDK.podspec:s.version",
-  "PrimerCore.podspec:s.version",
-  "PrimerBDCCore.podspec:s.version",
-  "PrimerBDCEngine.podspec:s.version",
-  "PrimerFoundation.podspec:s.version",
-  "PrimerStepResolver.podspec:s.version"
+  "*.podspec:s.version"
 ]
