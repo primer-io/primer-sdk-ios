@@ -20,11 +20,24 @@ final class PrimerUniversalCheckoutViewController: PrimerFormViewController {
     private var payButton: PrimerButton!
     private var selectedPaymentMethod: PrimerPaymentMethodTokenData?
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-    private let paymentMethodConfigViewModels = PrimerAPIConfiguration.paymentMethodConfigViewModels
+    private let paymentMethodConfigViewModels: [PaymentMethodTokenizationViewModelProtocol]
     private var onClientSessionActionUpdateCompletion: ((Error?) -> Void)?
     private var singleUsePaymentMethod: PrimerPaymentMethodTokenData?
     private var resumePaymentId: String?
     private var cardButtonViewModel: CardButtonViewModel?
+    
+    override init() {
+        let isManual = PrimerSettings.current.paymentHandling == .manual
+        let viewModels = PrimerAPIConfiguration.paymentMethodConfigViewModels
+        
+        for config in viewModels.map(\.config) where isManual && config.isBackendDriven {
+            PrimerLogging.shared.logger.info(message: "\(config.type) is not supported in manual mode")
+        }
+        
+        paymentMethodConfigViewModels = viewModels
+            .filter { !(isManual && $0.config.isBackendDriven) }
+        super.init()
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
