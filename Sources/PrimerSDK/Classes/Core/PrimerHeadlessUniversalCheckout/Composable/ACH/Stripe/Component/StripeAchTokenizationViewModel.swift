@@ -8,6 +8,7 @@
 // swiftlint:disable file_length
 
 @_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerNetworking
 import UIKit
 @_spi(PrimerInternal) import PrimerCore
 #if canImport(PrimerStripeSDK)

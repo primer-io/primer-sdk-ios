@@ -7,6 +7,7 @@
 import Foundation
 @_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerNetworking
 
 protocol NetworkRequestFactory: Sendable {
     func request(for endpoint: Endpoint, identifier: String?) throws -> URLRequest

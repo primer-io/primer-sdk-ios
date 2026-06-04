@@ -13,6 +13,7 @@ target 'Debug App' do
   pod 'PrimerStepResolver', :path => '../'
   pod 'PrimerBDCEngine', :path => '../'
   pod 'PrimerBDCCore', :path => '../'
+  pod 'PrimerNetworking', :path => '../'
   pod 'PrimerSDK', :path => '../'
   pod 'Primer3DS'
   pod 'PrimerKlarnaSDK'

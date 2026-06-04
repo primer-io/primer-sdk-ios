@@ -10,6 +10,7 @@ import Foundation
 @_spi(PrimerInternal) import PrimerBDCCore
 import PrimerBDCEngine
 @_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerNetworking
 import UIKit
 
 final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {

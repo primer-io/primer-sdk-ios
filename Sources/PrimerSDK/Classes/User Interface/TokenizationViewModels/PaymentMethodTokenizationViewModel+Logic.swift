@@ -12,6 +12,7 @@ import Foundation
 @_spi(PrimerInternal) import PrimerFoundation
 import UIKit
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerNetworking
 
 extension PaymentMethodTokenizationViewModel {
     @objc

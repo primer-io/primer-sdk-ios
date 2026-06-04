@@ -9,6 +9,7 @@
 
 import Foundation
 @_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerNetworking
 
 protocol PayPalServiceProtocol {
     func startOrderSession(_ completion: @escaping (Result<Response.Body.PayPal.CreateOrder, Error>) -> Void)

@@ -6,6 +6,7 @@
 
 import Foundation
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerNetworking
 
 enum NetworkEventType {
     case requestStart(identifier: String, endpoint: Endpoint, request: URLRequest)

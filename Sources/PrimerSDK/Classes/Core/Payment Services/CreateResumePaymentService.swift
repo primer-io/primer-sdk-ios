@@ -6,6 +6,7 @@
 
 import Foundation
 import PrimerFoundation
+@_spi(PrimerInternal) import PrimerNetworking
 
 protocol CreateResumePaymentServiceProtocol {
     func createPayment(paymentRequest: Request.Body.Payment.Create) async throws -> Response.Body.Payment

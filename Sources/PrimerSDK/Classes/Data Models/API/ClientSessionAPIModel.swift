@@ -6,6 +6,7 @@
 
 import Foundation
 import PrimerFoundation
+@_spi(PrimerInternal) import PrimerNetworking
 
 extension Request.Body {
 

@@ -32,7 +32,8 @@ let package = Package(
                 "PrimerBDCEngine",
                 "PrimerFoundation",
                 "PrimerStepResolver",
-                "PrimerCore"
+                "PrimerCore",
+                "PrimerNetworking"
             ],
             path: "Sources/PrimerSDK",
             resources: [

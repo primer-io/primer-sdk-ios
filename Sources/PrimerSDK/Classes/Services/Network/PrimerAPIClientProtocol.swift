@@ -6,6 +6,7 @@
 
 import Foundation
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerNetworking
 
 typealias APIResult<T> = Result<T, Error>
 typealias APICompletion<T> = (APIResult<T>) -> Void

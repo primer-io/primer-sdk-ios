@@ -6,6 +6,7 @@
 
 import UIKit
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
 
 final class QRCodeViewController: PrimerFormViewController {
 

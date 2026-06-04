@@ -6,6 +6,7 @@
 
 import Foundation
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerNetworking
 
 extension Request.Body {
     public final class Klarna {}

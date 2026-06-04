@@ -21,6 +21,7 @@ let package = Package(
         packageTarget(name: "PrimerBDCEngine", dependencies: ["PrimerFoundation", "PrimerStepResolver"]),
         packageTarget(name: "PrimerBDCCore", dependencies: ["PrimerBDCEngine", "PrimerFoundation", "PrimerStepResolver"]),
         packageTarget(name: "PrimerCore", dependencies: ["PrimerFoundation"]),
+        packageTarget(name: "PrimerNetworking", dependencies: ["PrimerFoundation"]),
         .target(
             name: "PrimerSDK",
             dependencies: [
@@ -29,7 +30,8 @@ let package = Package(
                 "PrimerBDCEngine",
                 "PrimerFoundation",
                 "PrimerStepResolver",
-                "PrimerCore"
+                "PrimerCore",
+                "PrimerNetworking"
             ],
         ),
         .testTarget(
