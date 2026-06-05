@@ -7,6 +7,7 @@
 import Foundation
 import PrimerFoundation
 @testable import PrimerSDK
+@_spi(PrimerInternal) @testable import PrimerNetworking
 
 protocol TokenizationViewModelTestCase {}
 

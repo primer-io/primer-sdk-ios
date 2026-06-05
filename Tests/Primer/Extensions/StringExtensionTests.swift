@@ -6,6 +6,7 @@
 
 @_spi(PrimerInternal) import PrimerFoundation
 @testable import PrimerSDK
+@_spi(PrimerInternal) import PrimerNetworking
 import XCTest
 
 final class StringExtensionTests: XCTestCase {

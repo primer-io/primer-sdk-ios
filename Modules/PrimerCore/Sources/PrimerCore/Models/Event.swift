@@ -6,7 +6,7 @@
 
 @_spi(PrimerInternal) public extension Analytics {
     
-    struct Event: Codable, Equatable {
+    struct Event: Codable, Equatable, AnalyticsEvent {
         
         public static func == (lhs: Analytics.Event, rhs: Analytics.Event) -> Bool {
             lhs.localId == rhs.localId

@@ -7,6 +7,7 @@
 @_spi(PrimerInternal) import PrimerFoundation
 @testable import PrimerSDK
 import XCTest
+@_spi(PrimerInternal) import PrimerNetworking
 
 final class InternalCardComponentsManagerTests: XCTestCase {
 

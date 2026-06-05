@@ -6,6 +6,7 @@
 
 import PrimerFoundation
 @testable import PrimerSDK
+@_spi(PrimerInternal) @testable import PrimerNetworking
 import XCTest
 
 final class WebRedirectPaymentMethodTokenizationViewModelTests: XCTestCase {
