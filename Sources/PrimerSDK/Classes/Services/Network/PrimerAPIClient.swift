@@ -7,6 +7,7 @@
 import Foundation
 @_spi(PrimerInternal) import PrimerCore
 @_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerNetworking
 
 let defaultNetworkService = DefaultNetworkService(
     requestFactory: DefaultNetworkRequestFactory(),
@@ -96,7 +97,7 @@ final class PrimerAPIClient: PrimerAPIClientProtocol {
 
     func deleteVaultedPaymentMethod(clientToken: DecodedJWTToken, id: String, completion: @escaping APICompletion<Void>) {
         let endpoint = PrimerAPI.deleteVaultedPaymentMethod(clientToken: clientToken, id: id)
-        networkService.request(endpoint) { (result: Result<DummySuccess, Error>) in
+        networkService.request(endpoint) { (result: Result<SuccessResponse, Error>) in
             switch result {
             case .success:
                 completion(.success(()))
@@ -109,7 +110,7 @@ final class PrimerAPIClient: PrimerAPIClientProtocol {
 
     func deleteVaultedPaymentMethod(clientToken: DecodedJWTToken, id: String) async throws {
         do {
-            let _: DummySuccess = try await networkService.request(
+            let _: SuccessResponse = try await networkService.request(
                 .deleteVaultedPaymentMethod(clientToken: clientToken, id: id)
             )
         } catch {

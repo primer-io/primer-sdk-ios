@@ -6,6 +6,7 @@
 
 import Foundation
 @_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerNetworking
 
 protocol KlarnaTokenizationManagerProtocol {
     /**

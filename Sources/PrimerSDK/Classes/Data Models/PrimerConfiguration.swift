@@ -10,6 +10,7 @@ import Foundation
 import PassKit
 @_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerNetworking
 
 typealias PrimerAPIConfiguration = Response.Body.Configuration
 

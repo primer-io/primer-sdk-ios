@@ -7,6 +7,7 @@
 import Foundation
 import PrimerFoundation
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerNetworking
 
 extension Response.Body {
 

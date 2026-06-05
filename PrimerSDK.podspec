@@ -23,6 +23,7 @@ Pod::Spec.new do |s|
         ss.dependency "PrimerBDCCore", "= #{s.version}"
         ss.dependency "PrimerFoundation", "= #{s.version}"
         ss.dependency "PrimerStepResolver", "= #{s.version}"
+        ss.dependency "PrimerNetworking", "= #{s.version}"
         ss.ios.resource_bundles = {
             "PrimerResources" => [
                 "Sources/PrimerSDK/Resources/*.xcassets",

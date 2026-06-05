@@ -9,6 +9,7 @@
 
 import Foundation
 @_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerNetworking
 
 // MARK: MISSING_TESTS
 final class PrimerRawPhoneNumberDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProtocol {

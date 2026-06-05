@@ -6,6 +6,7 @@
 
 import Foundation
 @_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerNetworking
 
 // KlarnaHelpers: A utility structure to facilitate various operations related to Klarna payment sessions.
 struct KlarnaHelpers {

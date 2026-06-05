@@ -6,6 +6,7 @@
 
 @_spi(PrimerInternal) import PrimerBDCCore
 import PrimerFoundation
+@_spi(PrimerInternal) import PrimerNetworking
 
 struct NetworkClientInstructionProvider: ClientInstructionProvider {
 

@@ -6,6 +6,7 @@
 
 // swiftlint:disable file_length
 import Foundation
+@_spi(PrimerInternal) import PrimerNetworking
 
 public struct PaymentAPIModelAddress: Codable {
     let firstName: String?

@@ -7,6 +7,7 @@
 import Foundation
 @_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerNetworking
 
 typealias DispatcherCompletion = (Result<DispatcherResponse, Error>) -> Void
 
@@ -61,7 +62,7 @@ final class DefaultRequestDispatcher: RequestDispatcher, LogReporter {
     }
 
     @discardableResult
-    func dispatch(request: URLRequest, completion: @escaping DispatcherCompletion) -> PrimerCancellable? {
+    public func dispatch(request: URLRequest, completion: @escaping DispatcherCompletion) -> PrimerCancellable? {
         let startTime = DispatchTime.now()
         let task = urlSession.dataTask(with: request) { data, urlResponse, error in
             let endTime = DispatchTime.now()
@@ -86,7 +87,7 @@ final class DefaultRequestDispatcher: RequestDispatcher, LogReporter {
     }
 
     @discardableResult
-    func dispatchWithRetry(request: URLRequest, retryConfig: RetryConfig, completion: @escaping DispatcherCompletion) -> PrimerCancellable? {
+    public func dispatchWithRetry(request: URLRequest, retryConfig: RetryConfig, completion: @escaping DispatcherCompletion) -> PrimerCancellable? {
         retryHandler = RetryHandler(request: request, retryConfig: retryConfig, completion: completion, urlSession: urlSession)
         retryHandler?.attempt()
         return retryHandler?.currentTask

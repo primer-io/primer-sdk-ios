@@ -12,6 +12,7 @@ import Foundation
 import PassKit
 @_spi(PrimerInternal) import PrimerFoundation
 import UIKit
+@_spi(PrimerInternal) import PrimerNetworking
 @_spi(PrimerInternal) import PrimerCore
 
 extension PKPaymentMethodType {

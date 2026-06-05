@@ -7,6 +7,7 @@
 import UIKit
 @_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerNetworking
 
 // swiftlint:disable:next type_name
 final class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel {

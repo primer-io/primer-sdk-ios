@@ -13,6 +13,7 @@ import Foundation
 @_spi(PrimerInternal) import PrimerFoundation
 import SafariServices
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerNetworking
 
 // swiftlint:disable type_name
 @objc

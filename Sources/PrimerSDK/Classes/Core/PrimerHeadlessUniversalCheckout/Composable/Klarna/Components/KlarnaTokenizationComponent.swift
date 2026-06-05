@@ -6,6 +6,7 @@
 
 import Foundation
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerNetworking
 
 protocol KlarnaTokenizationComponentProtocol: KlarnaTokenizationManagerProtocol {
     /// - Validates the necessary conditions for proceeding with a payment operation.
