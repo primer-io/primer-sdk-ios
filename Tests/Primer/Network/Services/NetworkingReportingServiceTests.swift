@@ -6,6 +6,7 @@
 
 @testable import PrimerSDK
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerNetworking
 import XCTest
 
 final class NetworkingReportingServiceTests: XCTestCase {

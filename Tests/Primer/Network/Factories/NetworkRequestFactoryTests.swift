@@ -6,6 +6,7 @@
 
 @_spi(PrimerInternal) import PrimerFoundation
 @testable import PrimerSDK
+@_spi(PrimerInternal) @testable import PrimerNetworking
 import XCTest
 
 final class NetworkRequestFactoryTests: XCTestCase {
@@ -19,7 +20,7 @@ final class NetworkRequestFactoryTests: XCTestCase {
     ) -> [String: String] {
         var headers = [
             "X-Api-Version": apiVersion,
-            "Primer-SDK-Version": VersionUtils.releaseVersionNumber ?? "n/a",
+            "Primer-SDK-Version": VersionUtils.releaseVersionNumber,
             "Primer-SDK-Client": "IOS_NATIVE"
         ]
         if isPost {
