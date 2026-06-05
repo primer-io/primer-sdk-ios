@@ -5,9 +5,8 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
-@_spi(PrimerInternal) import PrimerNetworking
 
-protocol PrimerAPIClientCreateResumePaymentProtocol {
+@_spi(PrimerInternal) public protocol PrimerAPIClientCreateResumePaymentProtocol {
     func createPayment(
         clientToken: DecodedJWTToken,
         paymentRequestBody: Request.Body.Payment.Create,

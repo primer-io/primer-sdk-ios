@@ -5,9 +5,8 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
-@_spi(PrimerInternal) import PrimerNetworking
 
-protocol PrimerAPIClientBanksProtocol {
+@_spi(PrimerInternal) public protocol PrimerAPIClientBanksProtocol {
     func listAdyenBanks(
         clientToken: DecodedJWTToken,
         request: Request.Body.Adyen.BanksList,

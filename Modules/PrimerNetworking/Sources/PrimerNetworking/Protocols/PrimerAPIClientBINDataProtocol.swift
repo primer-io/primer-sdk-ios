@@ -6,9 +6,8 @@
 
 import Foundation
 @_spi(PrimerInternal) import PrimerFoundation
-@_spi(PrimerInternal) import PrimerNetworking
 
-protocol PrimerAPIClientBINDataProtocol {
+@_spi(PrimerInternal) public protocol PrimerAPIClientBINDataProtocol {
     // BIN Data
     func listCardNetworks(
         clientToken: DecodedJWTToken,
