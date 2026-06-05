@@ -7,6 +7,7 @@
 import PrimerFoundation
 @testable import PrimerSDK
 import XCTest
+@_spi(PrimerInternal) @testable import PrimerNetworking
 
 final class CreateResumePaymentServiceTests: XCTestCase {
     var sut: CreateResumePaymentService!
