@@ -7,6 +7,7 @@
 import Foundation
 import PrimerFoundation
 @testable import PrimerSDK
+@_spi(PrimerInternal) import PrimerNetworking
 
 final class MockCreateResumePaymentService: CreateResumePaymentServiceProtocol {
     

@@ -8,6 +8,7 @@
 @_spi(PrimerInternal) import PrimerFoundation
 @testable import PrimerSDK
 @_spi(PrimerInternal) @testable import PrimerSDK
+@_spi(PrimerInternal) @testable import PrimerNetworking
 import XCTest
 
 class MockPrimerAPIClient: PrimerAPIClientProtocol {
