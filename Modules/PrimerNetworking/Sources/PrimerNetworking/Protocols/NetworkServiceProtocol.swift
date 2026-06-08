@@ -7,10 +7,10 @@
 import Foundation
 @_spi(PrimerInternal) import PrimerFoundation
 
-typealias ResponseCompletion<T> = (Result<T, Error>) -> Void
-typealias ResponseCompletionWithHeaders<T> = (Result<T, Error>, [String: String]?) -> Void
+@_spi(PrimerInternal) public typealias ResponseCompletion<T> = (Result<T, Error>) -> Void
+@_spi(PrimerInternal) public typealias ResponseCompletionWithHeaders<T> = (Result<T, Error>, [String: String]?) -> Void
 
-protocol NetworkServiceProtocol: Sendable {
+@_spi(PrimerInternal) public protocol NetworkServiceProtocol: Sendable {
     @discardableResult
     func request<T: Decodable>(_ endpoint: Endpoint, completion: @escaping ResponseCompletion<T>) -> PrimerCancellable?
     func request<T: Decodable>(_ endpoint: Endpoint) async throws -> T
