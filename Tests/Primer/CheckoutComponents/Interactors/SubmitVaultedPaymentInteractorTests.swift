@@ -113,7 +113,7 @@ private actor SpyHeadlessRepository: HeadlessRepository {
             if Date() > deadline {
                 throw WaitError.timeout
             }
-            try? await Task.sleep(nanoseconds: 5_000_000)
+            await Task.yield()
         }
         return processVaultedPaymentCalls.removeFirst()
     }

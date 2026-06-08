@@ -35,33 +35,6 @@ final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, 
     }
   }
 
-  var title: String?
-  var screen: CardFormScreenComponent?
-  var cobadgedCardsView:
-    ((_ availableNetworks: [String], _ selectNetwork: @escaping (String) -> Void) -> any View)?
-  var errorScreen: ErrorComponent?
-  var submitButtonText: String?
-  var showSubmitLoadingIndicator: Bool = true
-  var cardNumberConfig: InputFieldConfig?
-  var expiryDateConfig: InputFieldConfig?
-  var cvvConfig: InputFieldConfig?
-  var cardholderNameConfig: InputFieldConfig?
-  var postalCodeConfig: InputFieldConfig?
-  var countryConfig: InputFieldConfig?
-  var cityConfig: InputFieldConfig?
-  var stateConfig: InputFieldConfig?
-  var addressLine1Config: InputFieldConfig?
-  var addressLine2Config: InputFieldConfig?
-  var phoneNumberConfig: InputFieldConfig?
-  var firstNameConfig: InputFieldConfig?
-  var lastNameConfig: InputFieldConfig?
-  var emailConfig: InputFieldConfig?
-  var retailOutletConfig: InputFieldConfig?
-  var otpCodeConfig: InputFieldConfig?
-  var cardInputSection: Component?
-  var billingAddressSection: Component?
-  var submitButton: Component?
-
   @Published var structuredState = PrimerCardFormState()
   var fieldValidationStates = FieldValidationStates()
 
@@ -77,29 +50,11 @@ final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, 
   private var networkDetectionTask: Task<Void, Never>?
   private var binDataTask: Task<Void, Never>?
   private var preferredNetwork: CardNetwork?
+  /// The network the user explicitly picked from the co-badge selector. Auto-detection (keystroke
+  /// and BIN stream) must not overwrite it while it remains in `availableNetworks`.
+  private var userSelectedNetwork: CardNetwork?
   private var currentCardData: PrimerCardData?
   private var formConfiguration: CardFormConfiguration = .default
-
-  private func buildBillingAddressFields() -> [PrimerInputElementType] {
-    guard let options = configurationService.billingAddressOptions,
-      options.postalCode == true
-    else {
-      return []
-    }
-
-    var fields: [PrimerInputElementType] = []
-
-    if options.countryCode != false { fields.append(.countryCode) }
-    if options.firstName != false { fields.append(.firstName) }
-    if options.lastName != false { fields.append(.lastName) }
-    if options.addressLine1 != false { fields.append(.addressLine1) }
-    if options.addressLine2 != false { fields.append(.addressLine2) }
-    fields.append(.postalCode)
-    if options.city != false { fields.append(.city) }
-    if options.state != false { fields.append(.state) }
-
-    return fields
-  }
 
   init(
     checkoutScope: DefaultCheckoutScope,
@@ -156,14 +111,23 @@ final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, 
         guard let self else { return }
         structuredState.availableNetworks = networks.map { PrimerCardNetwork(network: $0) }
 
-        if let firstNetwork = networks.first {
-          structuredState.selectedNetwork = PrimerCardNetwork(network: firstNetwork)
-          updateSurchargeAmount(for: networks.count == 1 ? firstNetwork : nil)
+        // Drop a manual selection the latest detection no longer offers (card number changed).
+        if let userSelectedNetwork, !networks.contains(userSelectedNetwork) {
+          self.userSelectedNetwork = nil
+        }
+
+        // Keep the user's pinned network when it is still available; otherwise default to the first.
+        if let effective = userSelectedNetwork ?? networks.first {
+          structuredState.selectedNetwork = PrimerCardNetwork(network: effective)
+          preferredNetwork = effective
+          let showsSurcharge = networks.count == 1 || userSelectedNetwork != nil
+          updateSurchargeAmount(for: showsSurcharge ? effective : nil)
         } else {
           structuredState.selectedNetwork = nil
+          preferredNetwork = nil
+          userSelectedNetwork = nil
           updateSurchargeAmount(for: nil)
         }
-        preferredNetwork = nil
       }
     }
   }
@@ -313,23 +277,42 @@ final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, 
         dialCode: country.dialCode
       )
     }
-
-    objectWillChange.send()
   }
 
   func updateOtpCode(_ otpCode: String) {
     structuredState.data[.otp] = otpCode
   }
 
+  /// Manual selection from the co-badge selector — pins the network so auto-detection won't override it.
   func updateSelectedCardNetwork(_ network: String) {
+    applySelectedNetwork(network, userInitiated: true)
+  }
+
+  /// Auto-detection (keystroke / BIN prefix) — applies only when the user hasn't pinned a still-available network.
+  func autoSelectDetectedNetwork(_ network: String) {
+    guard pinnedNetworkIfStillAvailable == nil else { return }
+    applySelectedNetwork(network, userInitiated: false)
+  }
+
+  /// The user's pinned network, but only while it remains in `availableNetworks`.
+  private var pinnedNetworkIfStillAvailable: CardNetwork? {
+    guard let userSelectedNetwork,
+      structuredState.availableNetworks.contains(where: { $0.network == userSelectedNetwork })
+    else { return nil }
+    return userSelectedNetwork
+  }
+
+  private func applySelectedNetwork(_ network: String, userInitiated: Bool) {
     if let cardNetwork = CardNetwork(rawValue: network) {
       if cardNetwork == .unknown {
         structuredState.selectedNetwork = nil
         preferredNetwork = nil
+        if userInitiated { userSelectedNetwork = nil }
         updateSurchargeAmount(for: nil)
       } else {
         structuredState.selectedNetwork = PrimerCardNetwork(network: cardNetwork)
         preferredNetwork = cardNetwork
+        if userInitiated { userSelectedNetwork = cardNetwork }
         updateSurchargeAmount(for: cardNetwork)
       }
     }
@@ -372,7 +355,7 @@ final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, 
     networkDetectionTask = nil
     binDataTask?.cancel()
     binDataTask = nil
-    checkoutScope?.onDismiss()
+    checkoutScope?.cancelActivePaymentMethod(returnToSelection: presentationContext.shouldShowBackButton)
   }
 
   lazy var selectCountry: PrimerSelectCountryScope = DefaultSelectCountryScope(cardFormScope: self)
@@ -520,11 +503,15 @@ final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, 
     let hasValidCvv = cvv && !structuredState.data[.cvv].isEmpty
     let hasValidExpiry = expiry && !structuredState.data[.expiryDate].isEmpty
     let hasValidCardholderName = cardholderName && !structuredState.data[.cardholderName].isEmpty
+    // OTP only gates submission when it is a configured field.
+    let hasValidOtp =
+      !formConfiguration.allFields.contains(.otp)
+      || (fieldValidationStates.otp && !structuredState.data[.otp].isEmpty)
 
     let wasValid = structuredState.isValid
 
     structuredState.isValid =
-      hasValidCardNumber && hasValidCvv && hasValidExpiry && hasValidCardholderName
+      hasValidCardNumber && hasValidCvv && hasValidExpiry && hasValidCardholderName && hasValidOtp
 
     if structuredState.isValid {
       structuredState.fieldErrors.removeAll()
@@ -563,20 +550,26 @@ final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, 
     formConfiguration
   }
 
-  func getBillingAddressConfiguration() -> BillingAddressConfiguration {
-    let fields = formConfiguration.billingFields
-    return BillingAddressConfiguration(
-      showFirstName: fields.contains(.firstName),
-      showLastName: fields.contains(.lastName),
-      showEmail: fields.contains(.email),
-      showPhoneNumber: fields.contains(.phoneNumber),
-      showAddressLine1: fields.contains(.addressLine1),
-      showAddressLine2: fields.contains(.addressLine2),
-      showCity: fields.contains(.city),
-      showState: fields.contains(.state),
-      showPostalCode: fields.contains(.postalCode),
-      showCountry: fields.contains(.countryCode)
-    )
+  private func buildBillingAddressFields() -> [PrimerInputElementType] {
+    guard let options = configurationService.billingAddressOptions,
+      options.postalCode == true
+    else {
+      return []
+    }
+
+    var fields: [PrimerInputElementType] = []
+
+    if options.countryCode != false { fields.append(.countryCode) }
+    if options.firstName != false { fields.append(.firstName) }
+    if options.lastName != false { fields.append(.lastName) }
+    if options.addressLine1 != false { fields.append(.addressLine1) }
+    if options.addressLine2 != false { fields.append(.addressLine2) }
+    fields.append(.postalCode)
+    if options.city != false { fields.append(.city) }
+    if options.state != false { fields.append(.state) }
+    if options.phoneNumber == true { fields.append(.phoneNumber) }
+
+    return fields
   }
 
   private func announceFieldErrors() {

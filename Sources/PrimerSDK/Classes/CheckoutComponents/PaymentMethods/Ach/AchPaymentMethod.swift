@@ -46,7 +46,7 @@ struct AchPaymentMethod: PaymentMethodProtocol {
 
   @MainActor
   static func createView(checkoutScope: any PrimerCheckoutScope) -> AnyView? {
-    guard let achScope = checkoutScope.getPaymentMethodScope(PrimerAchScope.self) else {
+    guard let achScope = checkoutScope.getPaymentMethodScope(DefaultAchScope.self) else {
       PrimerLogging.shared.logger.error(message: "Failed to retrieve ACH scope from checkout scope")
       return nil
     }

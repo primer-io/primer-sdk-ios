@@ -1,6 +1,5 @@
 "accessibility_action_delete" = "Видалити спосіб оплати";
 "accessibility_action_edit" = "Редагувати дані картки";
-"accessibility_action_set_default" = "Встановити як основний спосіб оплати";
 "accessibility_card_form_billing_address_address_line_1_label" = "Адресний рядок 1, обов'язково";
 "accessibility_card_form_billing_address_address_line_2_label" = "Адресний рядок 2, необов'язково";
 "accessibility_card_form_billing_address_city_hint" = "Введіть назву міста";
@@ -19,7 +18,7 @@
 "accessibility_card_form_cardholder_name_hint" = "Введіть ім'я, як вказано на картці";
 "accessibility_card_form_cardholder_name_label" = "Ім'я власника картки";
 "accessibility_card_form_cvc_error_invalid" = "Невірний код безпеки.";
-"accessibility_card_form_cvc_hint" = "3 або 4-значний код на звороті картки";
+"accessibility_card_form_cvc_hint" = "Код безпеки, 3 або 4 цифри";
 "accessibility_card_form_cvc_label" = "Код безпеки, обов'язково";
 "accessibility_card_form_cvv_icon" = "Код безпеки CVV";
 "accessibility_card_form_expiry_error_invalid" = "Невірний термін дії.";
@@ -27,11 +26,11 @@
 "accessibility_card_form_expiry_icon" = "Термін дії картки";
 "accessibility_card_form_expiry_label" = "Термін дії, обов'язково";
 "accessibility_card_form_network_selector" = "Вибрати платіжну систему";
-"accessibility_card_form_network_selector_hint" = "Двічі натисніть, щоб вибрати іншу платіжну систему";
-"accessibility_card_form_network_selector_inline_hint" = "Двічі натисніть, щоб вибрати цю платіжну систему";
+"accessibility_card_form_network_selector_hint" = "Вибрати іншу карткову мережу";
+"accessibility_card_form_network_selector_inline_hint" = "Вибрати цю мережу";
 "accessibility_card_form_network_selector_label" = "Вибір платіжної системи";
 "accessibility_card_form_submit_disabled" = "Кнопка вимкнена. Заповніть усі обов'язкові поля для здійснення платежу";
-"accessibility_card_form_submit_hint" = "Двічі натисніть, щоб здійснити платіж";
+"accessibility_card_form_submit_hint" = "Надіслати платіж";
 "accessibility_card_form_submit_label" = "Здійснити платіж";
 "accessibility_card_form_submit_loading" = "Обробка платежу, будь ласка, зачекайте";
 "accessibility_checkout_error_icon" = "Помилка";
@@ -52,8 +51,6 @@
 "accessibility_country_selection_search_icon" = "Пошук";
 "accessibility_error_generic" = "Виникла помилка. Будь ласка, спробуйте ще раз.";
 "accessibility_error_multiple_errors" = "Знайдено помилок: %d";
-"accessibility_payment_selection_card_full" = "Картка %1$@, що закінчується на %2$@, дійсна до %3$@";
-"accessibility_payment_selection_card_masked" = "картка, що закінчується на приховані цифри";
 "accessibility_payment_selection_coming_soon" = "Спосіб оплати незабаром з'явиться";
 "accessibility_payment_selection_pay_with_card" = "Оплатити карткою";
 "accessibility_payment_selection_pay_with_ideal" = "Оплатити через iDEAL";
@@ -65,6 +62,7 @@
 "accessibility_screen_loading_payment_methods" = "Завантаження способів оплати";
 "accessibility_screen_payment_method" = "Спосіб оплати %@";
 "accessibility_payment_method_button" = "Оплатити через %@";
+"accessibility_payment_method_selected" = "Вибрано: %@";
 "accessibility_screen_processing_payment" = "Обробка платежу";
 "accessibility_screen_success" = "Платіж успішний";
 "accessibility_vault_delete_payment_method" = "Видалити цей спосіб оплати";
@@ -144,7 +142,6 @@
 "primer_card_form_placeholder_state" = "Київська обл.";
 "primer_card_form_retail_not_implemented" = "Вибір торгової точки ще не реалізовано";
 "primer_card_form_title" = "Оплатити карткою";
-"primer_checkout_auto_dismiss_message" = "Цей екран закриється автоматично через 3 секунди";
 "primer_checkout_dismissing" = "Закриття...";
 "primer_checkout_error_button_other_methods" = "Обрати інші способи оплати";
 "primer_checkout_error_subtitle" = "Виникла проблема з мережею.";
@@ -209,8 +206,8 @@
 "accessibility_klarna_category" = "Варіант оплати %@";
 "accessibility_klarna_category_selected" = "Варіант оплати %@, обрано";
 "accessibility_klarna_payment_view" = "Форма оплати Klarna";
-"accessibility_klarna_authorize_hint" = "Торкніться двічі, щоб продовжити з Klarna";
-"accessibility_klarna_finalize_hint" = "Торкніться двічі, щоб завершити оплату";
+"accessibility_klarna_authorize_hint" = "Продовжити з Klarna";
+"accessibility_klarna_finalize_hint" = "Завершити платіж";
 
 /* ACH */
 "primer_ach_title" = "Банківський рахунок";
@@ -223,9 +220,9 @@
 "primer_ach_mandate_button_accept" = "Я погоджуюся";
 "primer_ach_mandate_button_decline" = "Скасувати";
 "primer_ach_mandate_template" = "Натискаючи \"Я погоджуюся\", ви дозволяєте %1$@ списувати з вказаного вище банківського рахунку будь-яку суму заборгованості за платежі, що виникають у зв'язку з використанням послуг %1$@ та/або придбанням продуктів у %1$@, відповідно до веб-сайту та умов %1$@, до скасування цього дозволу. Ви можете змінити або скасувати цей дозвіл у будь-який час, повідомивши %1$@ за 30 (тридцять) днів.";
-"accessibility_ach_continue_hint" = "Торкніться двічі, щоб продовжити до вибору банківського рахунку";
-"accessibility_ach_mandate_accept_hint" = "Торкніться двічі, щоб прийняти авторизацію та завершити оплату";
-"accessibility_ach_mandate_decline_hint" = "Торкніться двічі, щоб відхилити та скасувати оплату";
+"accessibility_ach_continue_hint" = "Перейти до вибору банківського рахунку";
+"accessibility_ach_mandate_accept_hint" = "Прийняти авторизацію та завершити платіж";
+"accessibility_ach_mandate_decline_hint" = "Відхилити та скасувати платіж";
 
 "accessibility_card_form_billing_address_hint" = "Введіть свою адресу";
 "accessibility_card_form_billing_address_state_hint" = "Введіть штат або провінцію";
@@ -285,3 +282,5 @@
 "primer_adyen_klarna_option_pay_later" = "Оплатити пізніше";
 "primer_adyen_klarna_option_pay_over_time" = "Оплатити частинами";
 "primer_adyen_klarna_option_pay_now" = "Оплатити зараз";
+"primer_vaulted_gocardless_direct_debit_suffix" = "Пряме дебетування";
+"accessibility_card_form_billing_address_country_hint" = "Відкриває список для вибору вашої країни";

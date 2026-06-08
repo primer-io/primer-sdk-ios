@@ -119,20 +119,19 @@ final class CheckoutComponentsAnalyticsInteractorTests: XCTestCase {
         }
     }
 
-    // MARK: - Fire-and-Forget Pattern Tests
+    // MARK: - Delivery Ordering Tests
 
-    func testTrackEvent_DoesNotBlock() async throws {
+    func testTrackEvent_AwaitsServiceDelivery() async throws {
         // Given
         let service = SpyAnalyticsService(delayNanoseconds: 100_000_000) // 100ms delay
         let interactor = DefaultAnalyticsInteractor(eventService: service)
 
         // When
-        let startTime = Date()
         await interactor.trackEvent(.sdkInitStart, metadata: nil)
-        let elapsed = Date().timeIntervalSince(startTime)
 
-        // Then - should return almost immediately (fire-and-forget)
-        XCTAssertLessThan(elapsed, 0.05, "trackEvent should not block caller")
+        // Then - awaiting trackEvent guarantees the event was handed off to the service
+        let call = try await service.nextCall()
+        XCTAssertEqual(call.eventType, .sdkInitStart)
     }
 
     // MARK: - Metadata Tests
@@ -185,7 +184,8 @@ private actor SpyAnalyticsService: CheckoutComponentsAnalyticsServiceProtocol {
         let metadata: AnalyticsEventMetadata?
     }
 
-    private var calls: [Call] = []
+    private var buffer: [Call] = []
+    private var waiters: [CheckedContinuation<Call, Never>] = []
     private let delayNanoseconds: UInt64
 
     init(delayNanoseconds: UInt64 = 0) {
@@ -195,26 +195,44 @@ private actor SpyAnalyticsService: CheckoutComponentsAnalyticsServiceProtocol {
     func initialize(config: AnalyticsSessionConfig) async {}
 
     func sendEvent(_ eventType: AnalyticsEventType, metadata: AnalyticsEventMetadata?) async {
-        calls.append(Call(
+        let call = Call(
             priority: Task.currentPriority,
             isCancelled: Task.isCancelled,
             eventType: eventType,
             metadata: metadata
-        ))
+        )
+        if waiters.isEmpty {
+            buffer.append(call)
+        } else {
+            waiters.removeFirst().resume(returning: call)
+        }
         if delayNanoseconds > 0 {
+            // why: scenario input — a deliberately-slow service the delivery-ordering test depends on; no signal to await.
             try? await Task.sleep(nanoseconds: delayNanoseconds)
         }
     }
 
+    /// Awaits the next recorded call, waking immediately when an event arrives
+    /// (no polling). Times out via a race against the deadline.
     func nextCall(timeout: TimeInterval = 1) async throws -> Call {
-        let deadline = Date().addingTimeInterval(timeout)
-        while calls.isEmpty {
-            if Date() > deadline {
+        if !buffer.isEmpty {
+            return buffer.removeFirst()
+        }
+        return try await withThrowingTaskGroup(of: Call.self) { group in
+            group.addTask { await self.awaitNextCall() }
+            group.addTask {
+                // why: deadline-race primitive for the event-driven mock (mirrors XCTestCase+Async helpers); not a poll-and-assert wait.
+                try await Task.sleep(nanoseconds: UInt64(timeout * 1_000_000_000))
                 throw WaitError.timeout
             }
-            try? await Task.sleep(nanoseconds: 5_000_000)
+            let result = try await group.next()!
+            group.cancelAll()
+            return result
         }
-        return calls.removeFirst()
+    }
+
+    private func awaitNextCall() async -> Call {
+        await withCheckedContinuation { waiters.append($0) }
     }
 }
 

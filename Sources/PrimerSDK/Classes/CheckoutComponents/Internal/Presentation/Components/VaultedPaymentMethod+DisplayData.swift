@@ -159,7 +159,7 @@ extension PrimerHeadlessUniversalCheckout.VaultedPaymentMethod {
   private func goCardlessDisplayData(from data: Response.Body.Tokenization.PaymentInstrumentData)
     -> VaultedPaymentMethodDisplayData {
     let bankName = data.bankName ?? "Bank"
-    let brandName = "\(bankName) (Direct Debit)"
+    let brandName = "\(bankName) (\(CheckoutComponentsStrings.goCardlessDirectDebitSuffix))"
 
     let last4 = data.accountNumberLast4Digits
     let primaryValue = last4.map { CheckoutComponentsStrings.maskedCardNumberFormatted($0) }

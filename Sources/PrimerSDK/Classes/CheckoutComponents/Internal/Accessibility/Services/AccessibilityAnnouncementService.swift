@@ -6,6 +6,8 @@
 
 import Foundation
 
+// @MainActor: conformers post UIAccessibility notifications, which are main-thread-only.
+@MainActor
 protocol AccessibilityAnnouncementService {
 
   /// **Notification type**: `.announcement` (interrupts current speech)

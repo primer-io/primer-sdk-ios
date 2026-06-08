@@ -11,7 +11,9 @@ struct QRCodeView: View, LogReporter {
   let scope: any PrimerQRCodeScope
 
   @Environment(\.designTokens) private var tokens
+  @Environment(\.diContainer) private var container
   @State private var qrCodeState = PrimerQRCodeState()
+  @State private var configurationService: ConfigurationService?
 
   private enum Layout {
     static let amountFontSize: CGFloat = 34
@@ -33,11 +35,17 @@ struct QRCodeView: View, LogReporter {
     .navigationBarHidden(true)
     .background(CheckoutColors.background(tokens: tokens))
     .accessibilityIdentifier(AccessibilityIdentifiers.QRCode.container)
+    .onAppear(perform: resolveConfigurationService)
     .task {
       for await state in scope.state {
         qrCodeState = state
       }
     }
+  }
+
+  private func resolveConfigurationService() {
+    guard let container else { return }
+    configurationService = try? container.resolveSync(ConfigurationService.self)
   }
 
   // MARK: - Header Section
@@ -130,8 +138,8 @@ struct QRCodeView: View, LogReporter {
 
   private func makeAmountLabel() -> some View {
     Group {
-      if let amount = AppState.current.amount,
-        let currency = AppState.current.currency {
+      if let amount = configurationService?.amount,
+        let currency = configurationService?.currency {
         Text(amount.toCurrencyString(currency: currency))
           .font(PrimerFont.titleXLarge(tokens: tokens))
           .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
@@ -174,6 +182,7 @@ struct QRCodeView: View, LogReporter {
           .accessibilityIdentifier(AccessibilityIdentifiers.QRCode.qrCodeImage)
           .accessibilityLabel(CheckoutComponentsStrings.a11yQrCodeImage)
           .accessibilityHint(CheckoutComponentsStrings.a11yQrCodeScanHint)
+          .accessibilityAddTraits(.isImage)
       }
     }
   }

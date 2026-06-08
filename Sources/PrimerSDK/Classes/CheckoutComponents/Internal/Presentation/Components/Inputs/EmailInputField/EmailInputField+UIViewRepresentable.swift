@@ -15,7 +15,6 @@ struct EmailTextField: UIViewRepresentable, LogReporter {
   @Binding var errorMessage: String?
   @Binding var isFocused: Bool
   let placeholder: String
-  let styling: PrimerFieldStyling?
   let validationService: ValidationService
   let scope: (any CardFormFieldScopeInternal)?
   let onEmailChange: ((String) -> Void)?
@@ -29,7 +28,6 @@ struct EmailTextField: UIViewRepresentable, LogReporter {
     textField.configurePrimerStyle(
       placeholder: placeholder,
       configuration: .email,
-      styling: styling,
       tokens: tokens,
       doneButtonTarget: context.coordinator,
       doneButtonAction: #selector(Coordinator.doneButtonTapped)
@@ -150,6 +148,7 @@ struct EmailTextField: UIViewRepresentable, LogReporter {
         isValid = false  // Email is required
         errorMessage = nil  // Never show error message for empty fields
         onValidationChange?(false)
+        scope?.updateValidationState(\.email, isValid: false)
         return
       }
 
@@ -163,6 +162,7 @@ struct EmailTextField: UIViewRepresentable, LogReporter {
       onValidationChange?(result.isValid)
 
       if let scope {
+        scope.updateValidationState(\.email, isValid: result.isValid)
         if result.isValid {
           scope.clearFieldError(.email)
         } else if let message = result.errorMessage {

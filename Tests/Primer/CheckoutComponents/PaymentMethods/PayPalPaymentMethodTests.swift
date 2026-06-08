@@ -233,7 +233,6 @@ final class PayPalPaymentMethodTests: XCTestCase {
         let scope = DefaultCheckoutScope(
             clientToken: TestData.Tokens.valid,
             settings: settings,
-            diContainer: DIContainer.shared,
             navigator: navigator
         )
 
@@ -274,10 +273,6 @@ private final class MockNonDefaultCheckoutScope: PrimerCheckoutScope {
         }
     }
 
-    var container: ContainerComponent?
-    var splashScreen: Component?
-    var loadingScreen: Component?
-    var errorScreen: ErrorComponent?
     var onBeforePaymentCreate: BeforePaymentCreateHandler?
 
     var paymentMethodSelection: PrimerPaymentMethodSelectionScope {

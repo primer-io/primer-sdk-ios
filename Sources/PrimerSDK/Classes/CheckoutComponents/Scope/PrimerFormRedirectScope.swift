@@ -10,15 +10,15 @@ import SwiftUI
 
 /// Type alias for form redirect screen customization component.
 @available(iOS 15.0, *)
-public typealias FormRedirectScreenComponent = (any PrimerFormRedirectScope) -> any View
+typealias FormRedirectScreenComponent = (any PrimerFormRedirectScope) -> any View
 
 /// Type alias for form redirect button customization component.
 @available(iOS 15.0, *)
-public typealias FormRedirectButtonComponent = (any PrimerFormRedirectScope) -> any View
+typealias FormRedirectButtonComponent = (any PrimerFormRedirectScope) -> any View
 
 /// Type alias for form redirect form section customization component.
 @available(iOS 15.0, *)
-public typealias FormRedirectFormSectionComponent = (any PrimerFormRedirectScope) -> any View
+typealias FormRedirectFormSectionComponent = (any PrimerFormRedirectScope) -> any View
 
 // MARK: - Scope Protocol
 
@@ -51,7 +51,7 @@ public typealias FormRedirectFormSectionComponent = (any PrimerFormRedirectScope
 /// ```
 @available(iOS 15.0, *)
 @MainActor
-public protocol PrimerFormRedirectScope: PrimerPaymentMethodScope where State == PrimerFormRedirectState {
+protocol PrimerFormRedirectScope: PrimerPaymentMethodScope where State == PrimerFormRedirectState {
 
   /// The payment method type identifier (e.g., "ADYEN_BLIK", "ADYEN_MBWAY").
   var paymentMethodType: String { get }

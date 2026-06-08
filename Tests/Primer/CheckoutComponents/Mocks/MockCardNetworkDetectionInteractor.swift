@@ -11,23 +11,36 @@ import Foundation
 final class MockCardNetworkDetectionInteractor: CardNetworkDetectionInteractor {
 
     private(set) var detectNetworksCallCount = 0
+    private(set) var selectNetworkCallCount = 0
+    private(set) var lastSelectedNetwork: CardNetwork?
 
-    var networkDetectionStream: AsyncStream<[CardNetwork]> {
-        AsyncStream { continuation in
-            continuation.yield([])
-            continuation.finish()
-        }
+    private let networkStreamPair = AsyncStream<[CardNetwork]>.makeStream()
+    private let binStreamPair = AsyncStream<PrimerBinData>.makeStream()
+
+    var networkDetectionStream: AsyncStream<[CardNetwork]> { networkStreamPair.stream }
+    var binDataStream: AsyncStream<PrimerBinData> { binStreamPair.stream }
+
+    /// Drives the network-detection stream so tests can simulate co-badge BIN emissions on demand.
+    func emitNetworks(_ networks: [CardNetwork]) {
+        networkStreamPair.continuation.yield(networks)
     }
 
-    var binDataStream: AsyncStream<PrimerBinData> {
-        AsyncStream { continuation in
-            continuation.finish()
-        }
+    func emitBinData(_ binData: PrimerBinData) {
+        binStreamPair.continuation.yield(binData)
     }
 
     func detectNetworks(for cardNumber: String) async {
         detectNetworksCallCount += 1
     }
 
-    func selectNetwork(_ network: CardNetwork) async {}
+    func selectNetwork(_ network: CardNetwork) async {
+        selectNetworkCallCount += 1
+        lastSelectedNetwork = network
+    }
+
+    func reset() {
+        detectNetworksCallCount = 0
+        selectNetworkCallCount = 0
+        lastSelectedNetwork = nil
+    }
 }

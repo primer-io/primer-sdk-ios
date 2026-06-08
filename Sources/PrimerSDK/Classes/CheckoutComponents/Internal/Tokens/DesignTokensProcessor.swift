@@ -229,8 +229,13 @@ enum DesignTokensProcessor {
     }
   }
 
-  // Limitation: does not handle negative numbers (e.g. "-0.6") as operands,
-  // since '-' is also treated as the subtraction operator.
+  // Evaluates a single binary operation ("operand operator operand"), e.g. "base * factor".
+  // It is deliberately not a general expression parser: only one operator is honoured.
+  // Limitations:
+  // - Negative operands (e.g. "-0.6") are unsupported, since '-' is also the subtraction operator.
+  // - Multi-operator expressions (e.g. "4 + 2 * 3") are not evaluated and return nil, since the
+  //   first matching operator splits the string into operands that fail Double parsing.
+  // Design tokens only emit single binary expressions; expand this into a real parser if that changes.
   private static func evaluateExpression(_ expression: String) -> Double? {
     let trimmed = expression.trimmingCharacters(in: .whitespacesAndNewlines)
     let operators: [(Character, (Double, Double) -> Double)] = [

@@ -28,6 +28,15 @@ struct AchStripeData {
 }
 
 @available(iOS 15.0, *)
+extension AchStripeData: CustomStringConvertible, CustomDebugStringConvertible {
+  var description: String {
+    "AchStripeData(stripeClientSecret: <redacted>, sdkCompleteUrl: \(sdkCompleteUrl), paymentId: \(paymentId), decodedJWTToken: <redacted>)"
+  }
+
+  var debugDescription: String { description }
+}
+
+@available(iOS 15.0, *)
 @MainActor
 protocol AchRepository {
   func loadUserDetails() async throws -> AchUserDetailsResult

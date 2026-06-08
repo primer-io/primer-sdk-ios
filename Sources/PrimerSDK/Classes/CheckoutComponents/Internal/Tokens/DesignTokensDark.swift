@@ -5,27 +5,32 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable all
-import SwiftUI
 
-// This class is generated automatically by Style Dictionary.
-// It represents the design tokens for the Dark theme.
-final class DesignTokensDark: Decodable {
-  public var primerColorGray100: Color? = Color(red: 0.161, green: 0.161, blue: 0.161, opacity: 1)
-  public var primerColorGray200: Color? = Color(red: 0.259, green: 0.259, blue: 0.259, opacity: 1)
-  public var primerColorGray300: Color? = Color(red: 0.341, green: 0.341, blue: 0.341, opacity: 1)
-  public var primerColorGray400: Color? = Color(red: 0.522, green: 0.522, blue: 0.522, opacity: 1)
-  public var primerColorGray500: Color? = Color(red: 0.463, green: 0.459, blue: 0.467, opacity: 1)
-  public var primerColorGray600: Color? = Color(red: 0.780, green: 0.780, blue: 0.780, opacity: 1)
-  public var primerColorGray700: Color? = Color(red: 0.858, green: 0.858, blue: 0.858, opacity: 1)
-  public var primerColorGray900: Color? = Color(red: 0.937, green: 0.937, blue: 0.937, opacity: 1)
-  public var primerColorGray000: Color? = Color(red: 0.090, green: 0.086, blue: 0.098, opacity: 1)
-  public var primerColorGreen500: Color? = Color(red: 0.153, green: 0.694, blue: 0.490, opacity: 1)
-  public var primerColorBrand: Color? = Color(red: 0.184, green: 0.596, blue: 1.000, opacity: 1)
-  public var primerColorRed100: Color? = Color(red: 0.196, green: 0.110, blue: 0.125, opacity: 1)
-  public var primerColorRed500: Color? = Color(red: 0.894, green: 0.427, blue: 0.439, opacity: 1)
-  public var primerColorRed900: Color? = Color(red: 0.965, green: 0.749, blue: 0.749, opacity: 1)
-  public var primerColorBlue500: Color? = Color(red: 0.247, green: 0.576, blue: 0.894, opacity: 1)
-  public var primerColorBlue900: Color? = Color(red: 0.290, green: 0.682, blue: 1.000, opacity: 1)
+// Dark mode in production is resolved by merging dark.json over base.json and decoding into
+// `DesignTokens` (see DesignTokensManager.fetchTokens). This generated class is only used by
+// MockDesignTokens for SwiftUI previews and tests, so it is compiled into DEBUG builds only.
+#if DEBUG
+  import SwiftUI
+
+  // This class is generated automatically by Style Dictionary.
+  // It represents the design tokens for the Dark theme.
+  final class DesignTokensDark: Decodable {
+  var primerColorGray100: Color? = Color(red: 0.161, green: 0.161, blue: 0.161, opacity: 1)
+  var primerColorGray200: Color? = Color(red: 0.259, green: 0.259, blue: 0.259, opacity: 1)
+  var primerColorGray300: Color? = Color(red: 0.341, green: 0.341, blue: 0.341, opacity: 1)
+  var primerColorGray400: Color? = Color(red: 0.522, green: 0.522, blue: 0.522, opacity: 1)
+  var primerColorGray500: Color? = Color(red: 0.463, green: 0.459, blue: 0.467, opacity: 1)
+  var primerColorGray600: Color? = Color(red: 0.780, green: 0.780, blue: 0.780, opacity: 1)
+  var primerColorGray700: Color? = Color(red: 0.858, green: 0.858, blue: 0.858, opacity: 1)
+  var primerColorGray900: Color? = Color(red: 0.937, green: 0.937, blue: 0.937, opacity: 1)
+  var primerColorGray000: Color? = Color(red: 0.090, green: 0.086, blue: 0.098, opacity: 1)
+  var primerColorGreen500: Color? = Color(red: 0.153, green: 0.694, blue: 0.490, opacity: 1)
+  var primerColorBrand: Color? = Color(red: 0.184, green: 0.596, blue: 1.000, opacity: 1)
+  var primerColorRed100: Color? = Color(red: 0.196, green: 0.110, blue: 0.125, opacity: 1)
+  var primerColorRed500: Color? = Color(red: 0.894, green: 0.427, blue: 0.439, opacity: 1)
+  var primerColorRed900: Color? = Color(red: 0.965, green: 0.749, blue: 0.749, opacity: 1)
+  var primerColorBlue500: Color? = Color(red: 0.247, green: 0.576, blue: 0.894, opacity: 1)
+  var primerColorBlue900: Color? = Color(red: 0.290, green: 0.682, blue: 1.000, opacity: 1)
 
   enum CodingKeys: String, CodingKey {
     case primerColorGray100
@@ -68,12 +73,13 @@ final class DesignTokensDark: Decodable {
   }
 }
 
-private extension KeyedDecodingContainer {
-  func decodeColorIfPresent(forKey key: Key) throws -> Color? {
-    guard let components = try decodeIfPresent([CGFloat].self, forKey: key),
-      components.count >= 4
-    else { return nil }
-    return Color(red: components[0], green: components[1], blue: components[2], opacity: components[3])
+  private extension KeyedDecodingContainer {
+    func decodeColorIfPresent(forKey key: Key) throws -> Color? {
+      guard let components = try decodeIfPresent([CGFloat].self, forKey: key),
+        components.count >= 4
+      else { return nil }
+      return Color(red: components[0], green: components[1], blue: components[2], opacity: components[3])
+    }
   }
-}
+#endif
 // swiftlint:enable all

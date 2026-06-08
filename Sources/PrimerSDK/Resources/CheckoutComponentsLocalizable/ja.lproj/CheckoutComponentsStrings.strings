@@ -1,6 +1,5 @@
 "accessibility_action_delete" = "お支払い方法を削除";
 "accessibility_action_edit" = "カード情報を編集";
-"accessibility_action_set_default" = "デフォルトのお支払い方法に設定";
 "accessibility_card_form_billing_address_address_line_1_label" = "住所1、必須";
 "accessibility_card_form_billing_address_address_line_2_label" = "住所2、任意";
 "accessibility_card_form_billing_address_city_hint" = "市区町村名を入力してください";
@@ -19,7 +18,7 @@
 "accessibility_card_form_cardholder_name_hint" = "カードに記載されている名前を入力してください";
 "accessibility_card_form_cardholder_name_label" = "カード名義人";
 "accessibility_card_form_cvc_error_invalid" = "セキュリティコードが無効です。";
-"accessibility_card_form_cvc_hint" = "カード裏面の3桁または4桁のコード";
+"accessibility_card_form_cvc_hint" = "セキュリティコード、3桁または4桁";
 "accessibility_card_form_cvc_label" = "セキュリティコード、必須";
 "accessibility_card_form_cvv_icon" = "CVVセキュリティコード";
 "accessibility_card_form_expiry_error_invalid" = "有効期限が無効です。";
@@ -27,11 +26,11 @@
 "accessibility_card_form_expiry_icon" = "カード有効期限";
 "accessibility_card_form_expiry_label" = "有効期限、必須";
 "accessibility_card_form_network_selector" = "カードネットワークを選択";
-"accessibility_card_form_network_selector_hint" = "ダブルタップで別のカードネットワークを選択します";
-"accessibility_card_form_network_selector_inline_hint" = "ダブルタップでこのカードネットワークを選択します";
+"accessibility_card_form_network_selector_hint" = "別のカードネットワークを選択";
+"accessibility_card_form_network_selector_inline_hint" = "このネットワークを選択";
 "accessibility_card_form_network_selector_label" = "カードネットワーク選択";
 "accessibility_card_form_submit_disabled" = "ボタンが無効です。お支払いを有効にするには、すべての必須項目を入力してください";
-"accessibility_card_form_submit_hint" = "ダブルタップでお支払いを送信します";
+"accessibility_card_form_submit_hint" = "支払いを送信";
 "accessibility_card_form_submit_label" = "お支払いを送信";
 "accessibility_card_form_submit_loading" = "お支払い処理中です。お待ちください";
 "accessibility_checkout_error_icon" = "エラー";
@@ -52,8 +51,6 @@
 "accessibility_country_selection_search_icon" = "検索";
 "accessibility_error_generic" = "エラーが発生しました。もう一度お試しください。";
 "accessibility_error_multiple_errors" = "%d件のエラーが見つかりました";
-"accessibility_payment_selection_card_full" = "%1$@カード、末尾%2$@、有効期限%3$@";
-"accessibility_payment_selection_card_masked" = "末尾がマスクされたカード";
 "accessibility_payment_selection_coming_soon" = "お支払い方法は近日公開予定です";
 "accessibility_payment_selection_pay_with_card" = "カードでお支払い";
 "accessibility_payment_selection_pay_with_ideal" = "iDEALでお支払い";
@@ -65,6 +62,7 @@
 "accessibility_screen_loading_payment_methods" = "お支払い方法を読み込み中";
 "accessibility_screen_payment_method" = "%@のお支払い方法";
 "accessibility_payment_method_button" = "%@で支払う";
+"accessibility_payment_method_selected" = "%@を選択しました";
 "accessibility_screen_processing_payment" = "お支払い処理中";
 "accessibility_screen_success" = "お支払いが完了しました";
 "accessibility_vault_delete_payment_method" = "このお支払い方法を削除";
@@ -144,7 +142,6 @@
 "primer_card_form_placeholder_state" = "東京都";
 "primer_card_form_retail_not_implemented" = "店舗選択は未実装です";
 "primer_card_form_title" = "カードでお支払い";
-"primer_checkout_auto_dismiss_message" = "この画面は3秒後に自動的に閉じます";
 "primer_checkout_dismissing" = "閉じています...";
 "primer_checkout_error_button_other_methods" = "他のお支払い方法を選択";
 "primer_checkout_error_subtitle" = "ネットワークの問題が発生しました。";
@@ -209,8 +206,8 @@
 "accessibility_klarna_category" = "%@ 支払いオプション";
 "accessibility_klarna_category_selected" = "%@ 支払いオプション、選択済み";
 "accessibility_klarna_payment_view" = "Klarna支払いフォーム";
-"accessibility_klarna_authorize_hint" = "ダブルタップしてKlarnaで続行";
-"accessibility_klarna_finalize_hint" = "ダブルタップして支払いを完了";
+"accessibility_klarna_authorize_hint" = "Klarnaで続行";
+"accessibility_klarna_finalize_hint" = "支払いを完了";
 
 /* ACH */
 "primer_ach_title" = "銀行口座";
@@ -223,9 +220,9 @@
 "primer_ach_mandate_button_accept" = "同意する";
 "primer_ach_mandate_button_decline" = "キャンセル";
 "primer_ach_mandate_template" = "「同意する」をクリックすることにより、%1$@のサービスの利用および/または%1$@からの製品購入に伴う料金のために発生した債務について、%1$@のウェブサイトおよび規約に従い、この承認が取り消されるまで、上記の銀行口座から引き落とすことを%1$@に承認します。30（三十）日前に%1$@に通知することで、いつでもこの承認を変更または取り消すことができます。";
-"accessibility_ach_continue_hint" = "ダブルタップして銀行口座の選択に進む";
-"accessibility_ach_mandate_accept_hint" = "ダブルタップして承認を受け入れ、支払いを完了する";
-"accessibility_ach_mandate_decline_hint" = "ダブルタップして拒否し、支払いをキャンセルする";
+"accessibility_ach_continue_hint" = "銀行口座の選択に進む";
+"accessibility_ach_mandate_accept_hint" = "承認を受け入れて支払いを完了";
+"accessibility_ach_mandate_decline_hint" = "拒否して支払いをキャンセル";
 
 "accessibility_card_form_billing_address_hint" = "住所を入力してください";
 "accessibility_card_form_billing_address_state_hint" = "都道府県を入力してください";
@@ -285,3 +282,5 @@
 "primer_adyen_klarna_option_pay_later" = "後で支払う";
 "primer_adyen_klarna_option_pay_over_time" = "分割で支払う";
 "primer_adyen_klarna_option_pay_now" = "今すぐ支払う";
+"primer_vaulted_gocardless_direct_debit_suffix" = "口座振替";
+"accessibility_card_form_billing_address_country_hint" = "国を選択するリストを開きます";

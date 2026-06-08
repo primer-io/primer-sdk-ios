@@ -6,13 +6,12 @@
 
 import Foundation
 
-public struct PaymentResult {
+public struct PaymentResult: Sendable, Equatable {
   public let paymentId: String
   public let status: PaymentStatus
   public let token: String?
   public let redirectUrl: String?
   public let errorMessage: String?
-  public let metadata: [String: Any]?
   public let amount: Int?
   public let currencyCode: String?
   public let paymentMethodType: String?
@@ -23,7 +22,6 @@ public struct PaymentResult {
     token: String? = nil,
     redirectUrl: String? = nil,
     errorMessage: String? = nil,
-    metadata: [String: Any]? = nil,
     amount: Int? = nil,
     currencyCode: String? = nil,
     paymentMethodType: String? = nil
@@ -33,7 +31,6 @@ public struct PaymentResult {
     self.token = token
     self.redirectUrl = redirectUrl
     self.errorMessage = errorMessage
-    self.metadata = metadata
     self.amount = amount
     self.currencyCode = currencyCode
     self.paymentMethodType = paymentMethodType
@@ -41,15 +38,10 @@ public struct PaymentResult {
 }
 
 /// When switching on this enum, always include a `default` case to handle future additions.
-public enum PaymentStatus {
+public enum PaymentStatus: Sendable {
   case pending
-  case processing
-  case authorized
   case success
   case failed
-  case cancelled
-  case requires3DS
-  case requiresAction
 
   init(from apiStatus: Response.Body.Payment.Status) {
     switch apiStatus {

@@ -13,7 +13,6 @@ struct CardNumberInputField: View, LogReporter {
   let scope: any CardFormFieldScopeInternal
   let selectedNetwork: CardNetwork?
   let availableNetworks: [CardNetwork]
-  let styling: PrimerFieldStyling?
 
   // MARK: - Private Properties
 
@@ -37,15 +36,13 @@ struct CardNumberInputField: View, LogReporter {
     placeholder: String,
     scope: any CardFormFieldScopeInternal,
     selectedNetwork: CardNetwork? = nil,
-    availableNetworks: [CardNetwork] = [],
-    styling: PrimerFieldStyling? = nil
+    availableNetworks: [CardNetwork] = []
   ) {
     self.label = label
     self.placeholder = placeholder
     self.scope = scope
     self.selectedNetwork = selectedNetwork
     self.availableNetworks = availableNetworks
-    self.styling = styling
   }
 
   private var displayNetwork: CardNetwork {
@@ -57,7 +54,6 @@ struct CardNumberInputField: View, LogReporter {
   var body: some View {
     PrimerInputFieldContainer(
       label: label,
-      styling: styling,
       text: $cardNumber,
       isValid: $isValid,
       errorMessage: $errorMessage,
@@ -72,7 +68,6 @@ struct CardNumberInputField: View, LogReporter {
             isFocused: $isFocused,
             scope: scope,
             placeholder: placeholder,
-            styling: styling,
             validationService: validationService,
             tokens: tokens
           )

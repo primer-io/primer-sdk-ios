@@ -29,8 +29,13 @@ public struct GeneralEvent: Sendable {
 
   public static var formattedCurrentLocale: String {
     let locale = Locale.current
-    guard let languageCode = locale.languageCode else { return "en-US" }
-    return locale.regionCode.map { "\(languageCode)-\($0)" } ?? languageCode
+    if #available(iOS 16.0, *) {
+      guard let languageCode = locale.language.languageCode?.identifier else { return "en-US" }
+      return locale.region.map { "\(languageCode)-\($0.identifier)" } ?? languageCode
+    } else {
+      guard let languageCode = locale.languageCode else { return "en-US" }
+      return locale.regionCode.map { "\(languageCode)-\($0)" } ?? languageCode
+    }
   }
 }
 

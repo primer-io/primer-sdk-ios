@@ -20,9 +20,9 @@ extension PrimerInputFieldContainer {
 extension PrimerInputFieldContainer {
   func makeTextFieldContainer() -> some View {
     HStack(spacing: PrimerSpacing.small(tokens: tokens), content: makeTextFieldContainerContent)
-      .padding(.leading, styling?.padding?.leading ?? PrimerSpacing.medium(tokens: tokens))
-      .padding(.trailing, styling?.padding?.trailing ?? PrimerSpacing.medium(tokens: tokens))
-      .frame(height: styling?.fieldHeight ?? PrimerSize.xxlarge(tokens: tokens))
+      .padding(.leading, PrimerSpacing.medium(tokens: tokens))
+      .padding(.trailing, PrimerSpacing.medium(tokens: tokens))
+      .frame(height: PrimerSize.xxlarge(tokens: tokens))
       .background(makeTextFieldContainerBackground())
   }
 
@@ -44,7 +44,7 @@ extension PrimerInputFieldContainer {
 
   func makeTextFieldContainerBackgroundBackground() -> some View {
     RoundedRectangle(cornerRadius: fieldCornerRadius)
-      .fill(styling?.backgroundColor ?? CheckoutColors.background(tokens: tokens))
+      .fill(CheckoutColors.background(tokens: tokens))
   }
 
   func makeTextFieldContainerWarning() -> some View {
@@ -54,30 +54,21 @@ extension PrimerInputFieldContainer {
       .aspectRatio(contentMode: .fit)
       .frame(width: iconSize, height: iconSize)
       .foregroundColor(CheckoutColors.iconNegative(tokens: tokens))
-      .offset(x: hasError ? 0 : (RTLSupport.isRightToLeft ? 10 : -10))
-      .opacity(hasError ? 1.0 : 0.0)
-      .animation(.spring(response: 0.3, dampingFraction: 0.7), value: hasError)
   }
 }
 
 @available(iOS 15.0, *)
 extension PrimerInputFieldContainer {
   func makeErrorMessage(_ errorMessage: String) -> some View {
+    // No standalone .accessibility(config:) here: the container combines label + field +
+    // error into one element, so the error must fold into that element rather than compete
+    // as a separate node. announceError below handles the transient VoiceOver notification.
     Text(errorMessage)
       .font(errorMessageFont)
       .foregroundColor(errorMessageForegroundColor)
-      .frame(height: errorMessageHeight)
-      .offset(y: hasError ? 0 : -10)
-      .opacity(hasError ? 1.0 : 0.0)
+      .fixedSize(horizontal: false, vertical: true)
+      .frame(minHeight: errorMessageMinHeight)
       .padding(.top, errorMessageTopPadding)
-      .animation(.spring(response: 0.3, dampingFraction: 0.7), value: hasError)
-      .accessibility(
-        config: AccessibilityConfiguration(
-          identifier: AccessibilityIdentifiers.Error.messageContainer,
-          label: errorMessage,
-          traits: [.isStaticText]
-        )
-      )
       .onAppear {
         // Announce error to VoiceOver when error appears
         if hasError {

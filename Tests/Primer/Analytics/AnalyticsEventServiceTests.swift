@@ -82,7 +82,8 @@ final class AnalyticsEventServiceTests: XCTestCase {
         // Queue event before initialization
         await service.sendEvent(.sdkInitStart, metadata: nil)
 
-        // Wait to ensure we cross a second boundary (timestamps are in seconds)
+        // why: no async signal to await — the test needs real wall-clock seconds to
+        // elapse so the buffered timestamp is provably earlier than init time.
         try await Task.sleep(nanoseconds: 1_500_000_000) // 1.5 seconds
 
         // When - initialize later
@@ -301,7 +302,8 @@ final class AnalyticsEventServiceTests: XCTestCase {
         // Send first event before initialization (will be buffered)
         await service.sendEvent(.sdkInitStart, metadata: nil)
 
-        // Wait to cross second boundary (timestamps are in seconds)
+        // why: no async signal to await — the test needs real wall-clock seconds to
+        // elapse so the two buffered events land on distinct, earlier timestamps.
         try await Task.sleep(nanoseconds: 1_500_000_000) // 1.5 seconds
 
         let event2Timestamp = Int(Date().timeIntervalSince1970)
@@ -309,7 +311,8 @@ final class AnalyticsEventServiceTests: XCTestCase {
         // Send second event before initialization (will also be buffered)
         await service.sendEvent(.checkoutFlowStarted, metadata: nil)
 
-        // Wait a bit more to ensure second event timestamp is also in the past
+        // why: real wall-clock time must elapse so the second buffered timestamp is
+        // also provably earlier than init time.
         try await Task.sleep(nanoseconds: 1_500_000_000) // 1.5 seconds
 
         // When - initialize the service (flushes buffered events)
@@ -361,7 +364,8 @@ final class AnalyticsEventServiceTests: XCTestCase {
         let bufferedTimestamp1 = Int(Date().timeIntervalSince1970)
         await service.sendEvent(.sdkInitStart, metadata: nil)
 
-        // Wait to cross second boundary
+        // why: no async signal to await — real wall-clock seconds must elapse so the
+        // two buffered events land on distinct timestamps.
         try await Task.sleep(nanoseconds: 1_500_000_000) // 1.5 seconds
 
         let bufferedTimestamp2 = Int(Date().timeIntervalSince1970)
@@ -431,6 +435,8 @@ final class AnalyticsEventServiceTests: XCTestCase {
         await testService.sendEvent(.sdkInitStart, metadata: nil)
 
         // Then - event should be dropped (no network call)
+        // why: negative assertion — sendEvent already awaited fully, so this only needs
+        // a short tick to confirm no call lands; there is no positive signal to await.
         try await Task.sleep(nanoseconds: 100_000_000) // 100ms to ensure no delayed call
         let hasCall = await mockNetworkClient.hasCall()
         XCTAssertFalse(hasCall, "Event should be dropped when endpoint URL is invalid")

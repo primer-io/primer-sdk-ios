@@ -12,11 +12,11 @@ final class MockValidateInputInteractor: ValidateInputInteractor {
 
     var validationResults: [PrimerInputElementType: ValidationResult] = [:]
 
-    func validate(value: String, type: PrimerInputElementType) async -> ValidationResult {
+    func validate(value: String, type: PrimerInputElementType) -> ValidationResult {
         validationResults[type] ?? ValidationResult(isValid: true, errorCode: nil, errorMessage: nil)
     }
 
-    func validateMultiple(fields: [PrimerInputElementType: String]) async -> [PrimerInputElementType: ValidationResult] {
+    func validateMultiple(fields: [PrimerInputElementType: String]) -> [PrimerInputElementType: ValidationResult] {
         var results: [PrimerInputElementType: ValidationResult] = [:]
         for (type, _) in fields {
             results[type] = validationResults[type] ?? ValidationResult(isValid: true, errorCode: nil, errorMessage: nil)

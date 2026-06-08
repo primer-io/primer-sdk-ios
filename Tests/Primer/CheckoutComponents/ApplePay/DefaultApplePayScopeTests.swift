@@ -125,7 +125,7 @@ final class DefaultApplePayScopeTests: XCTestCase {
     // MARK: - Submit Tests
 
     @MainActor
-    func test_submit_whenUnavailable_doesNotTriggerPresentation() async {
+    func test_submit_whenUnavailable_doesNotTriggerPresentation() {
         // Given
         mockPresentationManager.isPresentable = false
         let scope = createScope()
@@ -135,13 +135,11 @@ final class DefaultApplePayScopeTests: XCTestCase {
             return .success(())
         }
 
-        // When
+        // When — submit's availability guard rejects synchronously, so no payment Task is spawned
         scope.submit()
 
-        // Wait briefly for any async operations
-        try? await Task.sleep(nanoseconds: 100_000_000)
-
         // Then
+        // why: asserting an absence — the guard returns before any awaitable signal exists
         XCTAssertFalse(presentCalled)
     }
 
@@ -161,7 +159,8 @@ final class DefaultApplePayScopeTests: XCTestCase {
         // When
         scope.submit()
 
-        // Wait briefly for any async operations
+        // why: the already-loading guard returns synchronously without spawning a
+        // payment Task, so there is no awaitable signal — assert the absence after a tick.
         try? await Task.sleep(nanoseconds: 100_000_000)
 
         // Then
@@ -186,67 +185,31 @@ final class DefaultApplePayScopeTests: XCTestCase {
     // MARK: - State AsyncStream Tests
 
     @MainActor
-    func test_state_emitsCurrentState() async {
+    func test_state_emitsCurrentState() async throws {
         // Given
         mockPresentationManager.isPresentable = true
         let scope = createScope()
 
         // When
-        var receivedState: PrimerApplePayState?
-        let expectation = expectation(description: "Receive state with white button style")
-
-        let task = Task { @MainActor in
-            for await state in scope.state {
-                receivedState = state
-                if state.buttonStyle == .white {
-                    expectation.fulfill()
-                    break
-                }
-            }
-        }
-
-        // Wait for subscription to be established
-        try? await Task.sleep(nanoseconds: 50_000_000)
-
-        // Trigger a state update
         scope.structuredState.buttonStyle = .white
 
         // Then
-        await fulfillment(of: [expectation], timeout: 2.0)
-        task.cancel()
-
-        XCTAssertNotNil(receivedState)
-        XCTAssertEqual(receivedState?.buttonStyle, .white)
+        let receivedState = try await awaitValue(scope.state, matching: { $0.buttonStyle == .white })
+        XCTAssertEqual(receivedState.buttonStyle, .white)
     }
 
     @MainActor
-    func test_state_multipleUpdatesEmitMultipleStates() async {
+    func test_state_multipleUpdatesEmitMultipleStates() async throws {
         // Given
         mockPresentationManager.isPresentable = true
         let scope = createScope()
 
-        // When
-        var receivedStates: [PrimerApplePayState] = []
-        let task = Task {
-            for await state in scope.state {
-                receivedStates.append(state)
-                if receivedStates.count >= 3 { break }
-            }
-        }
-
-        // Wait for subscription
-        try? await Task.sleep(nanoseconds: 50_000_000)
-
-        // Trigger multiple state updates
+        // When — trigger multiple state updates
         scope.structuredState.buttonStyle = .white
-        try? await Task.sleep(nanoseconds: 50_000_000)
         scope.structuredState.buttonType = .buy
 
-        // Wait for emissions
-        try? await Task.sleep(nanoseconds: 100_000_000)
-        task.cancel()
-
-        // Then
+        // Then — collect until the final update is observed
+        let receivedStates = try await collectUntil(scope.state) { $0.buttonType == .buy }
         XCTAssertGreaterThanOrEqual(receivedStates.count, 1)
     }
 
@@ -325,6 +288,20 @@ final class DefaultApplePayScopeTests: XCTestCase {
 
         // Then
         XCTAssertNotNil(view)
+        XCTAssertFalse(buttonTapped)
+    }
+
+    // Guards the a11y contract ApplePayButtonView relies on: PKPaymentButton must
+    // expose its own system-localized accessibility label and button trait, so the
+    // SDK must not override the label with a hardcoded English string.
+    @MainActor
+    func test_pkPaymentButton_providesNativeAccessibilityLabelAndTrait() {
+        // Given / When
+        let button = PKPaymentButton(paymentButtonType: .buy, paymentButtonStyle: .black)
+
+        // Then
+        XCTAssertFalse(button.accessibilityLabel?.isEmpty ?? true)
+        XCTAssertTrue(button.accessibilityTraits.contains(.button))
     }
 
     // MARK: - Unavailable State Detail Tests
@@ -378,6 +355,9 @@ final class DefaultApplePayScopeTests: XCTestCase {
 
         // When
         scope.submit()
+
+        // why: the unavailable guard returns synchronously without spawning a payment
+        // Task, so there is no awaitable signal — assert the absence after a tick.
         try? await Task.sleep(nanoseconds: 100_000_000)
 
         // Then
@@ -397,16 +377,42 @@ final class DefaultApplePayScopeTests: XCTestCase {
         XCTAssertNil(scope.applePayButton)
     }
 
+    // MARK: - Dismissal Mechanism Tests
+
+    @MainActor
+    func test_dismissalMechanism_forwardsCheckoutScopeConfiguration() {
+        // Given
+        let settings = PrimerSettings(
+            uiOptions: PrimerUIOptions(dismissalMechanism: [.gestures, .closeButton])
+        )
+        let scope = createScope(settings: settings)
+
+        // Then
+        XCTAssertEqual(scope.dismissalMechanism, [.gestures, .closeButton])
+    }
+
+    @MainActor
+    func test_dismissalMechanism_withoutCloseButton_doesNotContainCloseButton() {
+        // Given
+        let settings = PrimerSettings(
+            uiOptions: PrimerUIOptions(dismissalMechanism: [.gestures])
+        )
+        let scope = createScope(settings: settings)
+
+        // Then
+        XCTAssertFalse(scope.dismissalMechanism.contains(.closeButton))
+    }
+
     // MARK: - Helper
 
     @MainActor
     private func createScope(
-        presentationContext: PresentationContext = .fromPaymentSelection
+        presentationContext: PresentationContext = .fromPaymentSelection,
+        settings: PrimerSettings = PrimerSettings()
     ) -> DefaultApplePayScope {
         let checkoutScope = DefaultCheckoutScope(
             clientToken: "mock_token",
-            settings: PrimerSettings(),
-            diContainer: DIContainer.shared,
+            settings: settings,
             navigator: CheckoutNavigator()
         )
 
@@ -450,6 +456,9 @@ final class DefaultApplePayScopeFactoryTests: XCTestCase {
 
         // When
         sut.submit()
+
+        // why: the not-available guard returns synchronously without spawning a payment
+        // Task, so there is no awaitable signal — assert the absence after a tick.
         try? await Task.sleep(nanoseconds: 100_000_000)
 
         // Then
@@ -466,6 +475,9 @@ final class DefaultApplePayScopeFactoryTests: XCTestCase {
 
         // When
         sut.submit()
+
+        // why: the already-loading guard returns synchronously without spawning a payment
+        // Task, so there is no awaitable signal — assert the absence after a tick.
         try? await Task.sleep(nanoseconds: 100_000_000)
 
         // Then
@@ -482,9 +494,12 @@ final class DefaultApplePayScopeFactoryTests: XCTestCase {
 
         // When
         sut.submit()
-        try await Task.sleep(nanoseconds: 300_000_000)
 
-        // Then
+        // Then — payment Task sets loading true, then resets it when the factory throws
+        try await withTimeout(2.0) { [self] in
+            while !sut.structuredState.isLoading { await Task.yield() }
+            while sut.structuredState.isLoading { await Task.yield() }
+        }
         XCTAssertFalse(sut.structuredState.isLoading)
     }
 
@@ -501,9 +516,12 @@ final class DefaultApplePayScopeFactoryTests: XCTestCase {
 
         // When
         sut.submit()
-        try await Task.sleep(nanoseconds: 300_000_000)
 
-        // Then
+        // Then — payment Task sets loading true, then resets it on the cancelled error
+        try await withTimeout(2.0) { [self] in
+            while !sut.structuredState.isLoading { await Task.yield() }
+            while sut.structuredState.isLoading { await Task.yield() }
+        }
         XCTAssertFalse(sut.structuredState.isLoading)
     }
 
@@ -520,9 +538,11 @@ final class DefaultApplePayScopeFactoryTests: XCTestCase {
 
         // When
         sut.submit()
-        try await Task.sleep(nanoseconds: 300_000_000)
 
-        // Then
+        // Then — wait until the payment Task records the selectPaymentMethod call
+        try await withTimeout(2.0) { [self] in
+            while mockClientSessionActions.selectPaymentMethodCalls.isEmpty { await Task.yield() }
+        }
         XCTAssertEqual(mockClientSessionActions.selectPaymentMethodCalls.count, 1)
         XCTAssertEqual(
             mockClientSessionActions.selectPaymentMethodCalls.first?.type,
@@ -540,9 +560,12 @@ final class DefaultApplePayScopeFactoryTests: XCTestCase {
 
         // When
         sut.submit()
-        try await Task.sleep(nanoseconds: 300_000_000)
 
-        // Then
+        // Then — payment Task sets loading true, then resets it when selectPaymentMethod throws
+        try await withTimeout(2.0) { [self] in
+            while !sut.structuredState.isLoading { await Task.yield() }
+            while sut.structuredState.isLoading { await Task.yield() }
+        }
         XCTAssertFalse(sut.structuredState.isLoading)
     }
 
@@ -557,9 +580,12 @@ final class DefaultApplePayScopeFactoryTests: XCTestCase {
 
         // When
         sut.submit()
-        try await Task.sleep(nanoseconds: 300_000_000)
 
-        // Then
+        // Then — payment Task sets loading true, then resets it on the wrapped error
+        try await withTimeout(2.0) { [self] in
+            while !sut.structuredState.isLoading { await Task.yield() }
+            while sut.structuredState.isLoading { await Task.yield() }
+        }
         XCTAssertFalse(sut.structuredState.isLoading)
     }
 
@@ -578,9 +604,12 @@ final class DefaultApplePayScopeFactoryTests: XCTestCase {
 
         // When
         sut.submit()
-        try await Task.sleep(nanoseconds: 300_000_000)
 
-        // Then
+        // Then — wait until the payment Task invokes the presentation manager and resets loading
+        try await withTimeout(2.0) { [self] in
+            while !presentWasCalled { await Task.yield() }
+            while sut.structuredState.isLoading { await Task.yield() }
+        }
         XCTAssertTrue(presentWasCalled)
         XCTAssertFalse(sut.structuredState.isLoading)
     }
@@ -600,9 +629,13 @@ final class DefaultApplePayScopeFactoryTests: XCTestCase {
 
         // When
         sut.submit()
-        try await Task.sleep(nanoseconds: 300_000_000)
 
-        // Then
+        // Then — the factory throws before presentation; once the loading cycle completes
+        // the Task has finished and present was never reached
+        try await withTimeout(2.0) { [self] in
+            while !sut.structuredState.isLoading { await Task.yield() }
+            while sut.structuredState.isLoading { await Task.yield() }
+        }
         XCTAssertFalse(presentWasCalled)
         XCTAssertFalse(sut.structuredState.isLoading)
     }
@@ -616,7 +649,6 @@ final class DefaultApplePayScopeFactoryTests: XCTestCase {
         let checkoutScope = DefaultCheckoutScope(
             clientToken: TestData.Tokens.valid,
             settings: PrimerSettings(),
-            diContainer: DIContainer.shared,
             navigator: CheckoutNavigator()
         )
 

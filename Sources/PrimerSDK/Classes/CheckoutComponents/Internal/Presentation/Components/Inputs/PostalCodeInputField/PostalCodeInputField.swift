@@ -13,7 +13,6 @@ struct PostalCodeInputField: View, LogReporter {
   let placeholder: String
   let countryCode: String?
   let scope: any CardFormFieldScopeInternal
-  let styling: PrimerFieldStyling?
 
   // MARK: - Private Properties
 
@@ -40,14 +39,12 @@ struct PostalCodeInputField: View, LogReporter {
     label: String?,
     placeholder: String,
     countryCode: String? = nil,
-    scope: any CardFormFieldScopeInternal,
-    styling: PrimerFieldStyling? = nil
+    scope: any CardFormFieldScopeInternal
   ) {
     self.label = label
     self.placeholder = placeholder
     self.countryCode = countryCode
     self.scope = scope
-    self.styling = styling
   }
 
   // MARK: - Body
@@ -55,7 +52,6 @@ struct PostalCodeInputField: View, LogReporter {
   var body: some View {
     PrimerInputFieldContainer(
       label: label,
-      styling: styling,
       text: $postalCode,
       isValid: $isValid,
       errorMessage: $errorMessage,
@@ -70,7 +66,6 @@ struct PostalCodeInputField: View, LogReporter {
           placeholder: placeholder,
           countryCode: countryCode,
           keyboardType: keyboardTypeForCountry,
-          styling: styling,
           validationService: validationService,
           scope: scope,
           tokens: tokens

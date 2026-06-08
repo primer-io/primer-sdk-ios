@@ -23,6 +23,7 @@ final class ComposableContainer: LogReporter {
     await registerInteractors()
     await registerPaymentInteractors()
     try await registerData()
+    await registerLogging()
 
     try await validateCriticalDependencies()
 
@@ -107,7 +108,7 @@ extension ComposableContainer {
     await guardedRegister(AccessibilityAnnouncementService.self) {
       _ = try await container.register(AccessibilityAnnouncementService.self)
         .asSingleton()
-        .with { _ in DefaultAccessibilityAnnouncementService() }
+        .with { _ in await MainActor.run { DefaultAccessibilityAnnouncementService() } }
     }
 
     try await criticalRegister(ConfigurationService.self) {
@@ -309,6 +310,31 @@ extension ComposableContainer {
       _ = try await container.register(QRCodeRepository.self)
         .asTransient()
         .with { _ in QRCodeRepositoryImpl() }
+    }
+  }
+
+  fileprivate func registerLogging() async {
+    await guardedRegister(LogNetworkClient.self) {
+      _ = try await container.register(LogNetworkClient.self)
+        .asSingleton()
+        .with { _ in LogNetworkClient() }
+    }
+
+    await guardedRegister(LogPayloadBuilding.self) {
+      _ = try await container.register(LogPayloadBuilding.self)
+        .asSingleton()
+        .with { _ in LogPayloadBuilder() }
+    }
+
+    await guardedRegister(LoggingService.self) {
+      _ = try await container.register(LoggingService.self)
+        .asSingleton()
+        .with { resolver in
+          LoggingService(
+            networkClient: try await resolver.resolve(LogNetworkClient.self),
+            payloadBuilder: try await resolver.resolve(LogPayloadBuilding.self)
+          )
+        }
     }
   }
 

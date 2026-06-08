@@ -17,7 +17,7 @@ extension PrimerInputFieldContainer {
   }
 
   var labelForegroundColor: Color {
-    styling?.labelColor ?? CheckoutColors.textPrimary(tokens: tokens)
+    CheckoutColors.textPrimary(tokens: tokens)
   }
 
   var errorMessageForegroundColor: Color {
@@ -25,32 +25,28 @@ extension PrimerInputFieldContainer {
   }
 
   var errorBorderColor: Color {
-    styling?.errorBorderColor ?? CheckoutColors.borderError(tokens: tokens)
+    CheckoutColors.borderError(tokens: tokens)
   }
 
   var focusedBorderColor: Color {
-    styling?.focusedBorderColor ?? CheckoutColors.borderFocus(tokens: tokens)
+    CheckoutColors.borderFocus(tokens: tokens)
   }
 
   var defaultBorderColor: Color {
-    styling?.borderColor ?? CheckoutColors.borderDefault(tokens: tokens)
+    CheckoutColors.borderDefault(tokens: tokens)
   }
 }
 
 @available(iOS 15.0, *)
 extension PrimerInputFieldContainer {
   var errorMessageFont: Font { PrimerFont.bodySmall(tokens: tokens) }
-  var labelFont: Font {
-    styling?.resolvedLabelFont(tokens: tokens) ?? PrimerFont.bodySmall(tokens: tokens)
-  }
+  var labelFont: Font { PrimerFont.bodySmall(tokens: tokens) }
 }
 
 @available(iOS 15.0, *)
 extension PrimerInputFieldContainer {
-  var fieldCornerRadius: CGFloat { styling?.cornerRadius ?? PrimerRadius.small(tokens: tokens) }
-  var textFieldContainerBackgroundLineWidth: CGFloat {
-    styling?.borderWidth ?? PrimerBorderWidth.standard
-  }
-  var errorMessageHeight: CGFloat { hasError ? PrimerComponentHeight.errorMessage : 0 }
+  var fieldCornerRadius: CGFloat { PrimerRadius.small(tokens: tokens) }
+  var textFieldContainerBackgroundLineWidth: CGFloat { PrimerBorderWidth.standard(tokens: tokens) }
+  var errorMessageMinHeight: CGFloat { hasError ? PrimerComponentHeight.errorMessage : 0 }
   var errorMessageTopPadding: CGFloat { hasError ? PrimerSpacing.xsmall(tokens: tokens) : 0 }
 }

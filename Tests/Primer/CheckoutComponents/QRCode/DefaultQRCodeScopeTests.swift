@@ -47,6 +47,8 @@ final class DefaultQRCodeScopeTests: XCTestCase {
     func test_start_afterStartPayment_transitionsToDisplayingWithQRImage() async throws {
         mockInteractor.startPaymentResult = .success(QRCodeTestData.defaultPaymentData)
         mockInteractor.onPollAndComplete = {
+            // why: keep polling in-flight so the scope settles on .displaying; the test
+            // awaits that state deterministically and never reaches this success result.
             try await Task.sleep(nanoseconds: 5_000_000_000)
             return QRCodeTestData.successPaymentResult
         }
@@ -84,7 +86,7 @@ final class DefaultQRCodeScopeTests: XCTestCase {
     func test_start_pollingError_transitionsToFailure() async throws {
         mockInteractor.startPaymentResult = .success(QRCodeTestData.defaultPaymentData)
         mockInteractor.pollAndCompleteResult = .failure(
-            PrimerError.cancelled(paymentMethodType: QRCodeTestData.Constants.paymentMethodType)
+            PrimerError.invalidValue(key: "test", value: nil, reason: "Polling failed")
         )
         let sut = createScope()
 
@@ -99,6 +101,29 @@ final class DefaultQRCodeScopeTests: XCTestCase {
             XCTAssertEqual(mockInteractor.pollAndCompleteCallCount, 1)
         } else {
             XCTFail("Expected failure status")
+        }
+    }
+
+    func test_start_pollingCancelled_doesNotTransitionToFailure() async throws {
+        mockInteractor.startPaymentResult = .success(QRCodeTestData.defaultPaymentData)
+        mockInteractor.pollAndCompleteResult = .failure(
+            PrimerError.cancelled(paymentMethodType: QRCodeTestData.Constants.paymentMethodType)
+        )
+        let sut = createScope()
+
+        sut.start()
+
+        // Polling must run, but user cancellation must not surface as a payment failure.
+        _ = try await awaitValue(sut.state, matching: { $0.status == .displaying })
+
+        do {
+            _ = try await awaitValue(sut.state, matching: {
+                if case .failure = $0.status { return true }
+                return false
+            }, timeout: 0.5)
+            XCTFail("Cancellation should not transition to failure")
+        } catch {
+            XCTAssertEqual(mockInteractor.pollAndCompleteCallCount, 1)
         }
     }
 
@@ -136,7 +161,6 @@ final class DefaultQRCodeScopeTests: XCTestCase {
         let checkoutScope = DefaultCheckoutScope(
             clientToken: QRCodeTestData.Constants.mockToken,
             settings: PrimerSettings(),
-            diContainer: DIContainer.shared,
             navigator: CheckoutNavigator()
         )
 

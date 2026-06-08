@@ -14,7 +14,7 @@ final class DefaultPaymentMethodSelectionScope: PaymentMethodSelectionScopeInter
 
   @Published private var internalState = PrimerPaymentMethodSelectionState()
 
-  public var state: AsyncStream<PrimerPaymentMethodSelectionState> {
+  var state: AsyncStream<PrimerPaymentMethodSelectionState> {
     AsyncStream { continuation in
       let task = Task { @MainActor in
         for await value in $internalState.values {
@@ -29,23 +29,18 @@ final class DefaultPaymentMethodSelectionScope: PaymentMethodSelectionScopeInter
     }
   }
 
-  public var dismissalMechanism: [DismissalMechanism] {
+  var currentState: PrimerPaymentMethodSelectionState { internalState }
+
+  var dismissalMechanism: [DismissalMechanism] {
     checkoutScope?.dismissalMechanism ?? []
   }
-
-  // MARK: - UI Customization Properties
-
-  public var screen: PaymentMethodSelectionScreenComponent?
-  public var container: ContainerComponent?
-  public var paymentMethodItem: PaymentMethodItemComponent?
-  public var categoryHeader: CategoryHeaderComponent?
-  public var emptyStateView: Component?
 
   // MARK: - Private Properties
 
   private weak var checkoutScope: DefaultCheckoutScope?
   private let analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol?
   private var accessibilityAnnouncementService: AccessibilityAnnouncementService?
+  private var setupTask: Task<Void, Never>?
 
   // MARK: - Initialization
 
@@ -56,7 +51,7 @@ final class DefaultPaymentMethodSelectionScope: PaymentMethodSelectionScopeInter
     self.checkoutScope = checkoutScope
     self.analyticsInteractor = analyticsInteractor
 
-    Task {
+    setupTask = Task { [self] in
       await loadPaymentMethods()
       await refreshVaultedPaymentMethods()
       await resolveAccessibilityService()
@@ -110,9 +105,10 @@ final class DefaultPaymentMethodSelectionScope: PaymentMethodSelectionScopeInter
         let mapper: PaymentMethodMapper
         do {
           guard let container = await DIContainer.current else {
-            throw NSError(
-              domain: "DIContainer", code: 1,
-              userInfo: [NSLocalizedDescriptionKey: "DIContainer.current is nil"])
+            throw PrimerError.invalidArchitecture(
+              description: "DIContainer.current is nil",
+              recoverSuggestion: nil
+            )
           }
           mapper = try await container.resolve(PaymentMethodMapper.self)
         } catch {
@@ -122,8 +118,7 @@ final class DefaultPaymentMethodSelectionScope: PaymentMethodSelectionScopeInter
               id: method.id,
               type: method.type,
               name: method.name,
-              icon: method.icon,
-              metadata: nil
+              icon: method.icon
             )
           }
           internalState.paymentMethods = composablePaymentMethods
@@ -140,16 +135,18 @@ final class DefaultPaymentMethodSelectionScope: PaymentMethodSelectionScopeInter
       } else if case let .failure(error) = checkoutState {
         internalState.error = error.localizedDescription
         break
+      } else if case .dismissed = checkoutState {
+        break
       }
     }
   }
 
   // MARK: - Public Methods
 
-  public func onPaymentMethodSelected(paymentMethod: CheckoutPaymentMethod) {
+  func onPaymentMethodSelected(paymentMethod: CheckoutPaymentMethod) {
     internalState.selectedPaymentMethod = paymentMethod
 
-    let selectionMessage = "\(paymentMethod.name) selected"
+    let selectionMessage = CheckoutComponentsStrings.a11yPaymentMethodSelected(paymentMethod.name)
     accessibilityAnnouncementService?.announceStateChange(selectionMessage)
     logger.debug(message: "[A11Y] Payment method selected announcement: \(selectionMessage)")
 
@@ -172,13 +169,14 @@ final class DefaultPaymentMethodSelectionScope: PaymentMethodSelectionScopeInter
       .paymentMethodSelection, metadata: .payment(PaymentEvent(paymentMethod: paymentMethodType)))
   }
 
-  public func cancel() {
+  func cancel() {
+    setupTask?.cancel()
     checkoutScope?.onDismiss()
   }
 
   // MARK: - Vault Payment
 
-  public func payWithVaultedPaymentMethod() async {
+  func payWithVaultedPaymentMethod() async {
     guard let vaultedMethod = internalState.selectedVaultedPaymentMethod else {
       logger.warn(message: "[Vault] No vaulted payment method selected")
       return
@@ -200,7 +198,7 @@ final class DefaultPaymentMethodSelectionScope: PaymentMethodSelectionScopeInter
     await executeVaultPayment(vaultedMethod: vaultedMethod, additionalData: nil)
   }
 
-  public func payWithVaultedPaymentMethodAndCvv(_ cvv: String) async {
+  func payWithVaultedPaymentMethodAndCvv(_ cvv: String) async {
     guard let vaultedMethod = internalState.selectedVaultedPaymentMethod else {
       logger.warn(message: "[Vault] No vaulted payment method selected")
       return
@@ -213,7 +211,7 @@ final class DefaultPaymentMethodSelectionScope: PaymentMethodSelectionScopeInter
     await executeVaultPayment(vaultedMethod: vaultedMethod, additionalData: additionalData)
   }
 
-  public func updateCvvInput(_ cvv: String) {
+  func updateCvvInput(_ cvv: String) {
     internalState.cvvInput = cvv
     let validationResult = validateCvv(cvv)
     internalState.isCvvValid = validationResult.isValid
@@ -333,12 +331,12 @@ final class DefaultPaymentMethodSelectionScope: PaymentMethodSelectionScopeInter
     internalState.cvvError = nil
   }
 
-  public func showAllVaultedPaymentMethods() {
+  func showAllVaultedPaymentMethods() {
     logger.info(message: "[Vault] Navigating to all vaulted payment methods screen")
     checkoutScope?.updateNavigationState(.vaultedPaymentMethods)
   }
 
-  public func showOtherWaysToPay() {
+  func showOtherWaysToPay() {
     logger.info(message: "[PaymentSelection] Expanding to show all payment methods")
     internalState.isPaymentMethodsExpanded = true
   }
@@ -348,7 +346,7 @@ final class DefaultPaymentMethodSelectionScope: PaymentMethodSelectionScopeInter
     internalState.isPaymentMethodsExpanded = false
   }
 
-  public func searchPaymentMethods(_ query: String) {
+  func searchPaymentMethods(_ query: String) {
     internalState.searchQuery = query
 
     if query.isEmpty {
@@ -379,12 +377,24 @@ final class DefaultPaymentMethodSelectionScope: PaymentMethodSelectionScopeInter
     }
   }
 
+  var vaultedPaymentMethods: [PrimerHeadlessUniversalCheckout.VaultedPaymentMethod] {
+    checkoutScope?.vaultedPaymentMethods ?? []
+  }
+
+  func selectVaultedPaymentMethod(_ method: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod) {
+    checkoutScope?.setSelectedVaultedPaymentMethod(method)
+  }
+
+  func navigateToDeleteConfirmation(_ method: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod) {
+    checkoutScope?.updateNavigationState(.deleteVaultedPaymentMethodConfirmation(method))
+  }
+
   // MARK: - Vault Delete
 
   /// Deletes a vaulted payment method and refreshes the list
   /// - Parameter method: The vaulted payment method to delete
   /// - Throws: Error if deletion fails
-  public func deleteVaultedPaymentMethod(
+  func deleteVaultedPaymentMethod(
     _ method: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod
   ) async throws {
     logger.info(message: "[Vault] Deleting vaulted payment method: \(method.id)")

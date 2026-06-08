@@ -42,7 +42,6 @@ final class AdyenKlarnaPaymentMethodTests: XCTestCase {
         let checkoutScope = DefaultCheckoutScope(
             clientToken: TestData.Tokens.valid,
             settings: PrimerSettings(),
-            diContainer: DIContainer.shared,
             navigator: CheckoutNavigator()
         )
 
@@ -171,7 +170,6 @@ final class AdyenKlarnaPaymentMethodTests: XCTestCase {
         let checkoutScope = DefaultCheckoutScope(
             clientToken: TestData.Tokens.valid,
             settings: PrimerSettings(paymentHandling: .manual),
-            diContainer: DIContainer.shared,
             navigator: navigator
         )
         checkoutScope.availablePaymentMethods = [
@@ -246,10 +244,6 @@ private final class MockNonDefaultCheckoutScopeForAdyenKlarna: PrimerCheckoutSco
         AsyncStream { $0.finish() }
     }
 
-    var container: ContainerComponent?
-    var splashScreen: Component?
-    var loadingScreen: Component?
-    var errorScreen: ErrorComponent?
     var onBeforePaymentCreate: BeforePaymentCreateHandler?
     var paymentMethodSelection: PrimerPaymentMethodSelectionScope {
         fatalError("Not implemented for mock")

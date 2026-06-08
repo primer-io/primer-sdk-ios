@@ -29,7 +29,6 @@ import SwiftUI
     var body: some View {
       PrimerInputFieldContainer(
         label: label,
-        styling: nil,
         text: $currentText,
         isValid: $isValid,
         errorMessage: $currentErrorMessage,
@@ -66,7 +65,6 @@ import SwiftUI
     var body: some View {
       PrimerInputFieldContainer(
         label: label,
-        styling: nil,
         text: $currentText,
         isValid: $isValid,
         errorMessage: $errorMessage,

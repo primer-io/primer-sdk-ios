@@ -387,29 +387,27 @@ final class ProcessPayPalPaymentInteractorTests: XCTestCase {
         XCTAssertEqual(result.status, .pending)
     }
 
-    func test_execute_returnsCorrectPaymentStatus_requires3DS() async throws {
+    func test_execute_returnsCorrectPaymentStatus_failed() async throws {
         // Given
         PrimerInternal.shared.intent = .checkout
-        mockRepository.tokenizeResult = .success(PaymentResult(paymentId: "3ds-payment", status: .requires3DS))
+        mockRepository.tokenizeResult = .success(PaymentResult(paymentId: "failed-payment", status: .failed))
 
         // When
         let result = try await sut.execute()
 
         // Then
-        XCTAssertEqual(result.status, .requires3DS)
+        XCTAssertEqual(result.status, .failed)
     }
 
     func test_execute_returnsFullPaymentResult() async throws {
         // Given
         PrimerInternal.shared.intent = .checkout
-        let testMetadata: [String: Any] = ["key": "value"]
         mockRepository.tokenizeResult = .success(PaymentResult(
             paymentId: "full-payment",
             status: .success,
             token: "token-abc",
             redirectUrl: "https://redirect.com",
             errorMessage: nil,
-            metadata: testMetadata,
             amount: 1000,
             currencyCode: "USD",
             paymentMethodType: "PAYPAL"

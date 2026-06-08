@@ -11,7 +11,6 @@ import UIKit
 struct CountryInputField: View, LogReporter {
   let label: String?
   let placeholder: String
-  let styling: PrimerFieldStyling?
 
   // MARK: - Private Properties
 
@@ -31,31 +30,27 @@ struct CountryInputField: View, LogReporter {
 
   private var countryTextColor: Color {
     guard !countryName.isEmpty else {
-      return styling?.placeholderColor ?? CheckoutColors.textPlaceholder(tokens: tokens)
+      return CheckoutColors.textPlaceholder(tokens: tokens)
     }
-    return styling?.textColor ?? CheckoutColors.textPrimary(tokens: tokens)
+    return CheckoutColors.textPrimary(tokens: tokens)
   }
 
   private var selectedCountryFromScope: PrimerCountry? {
     scope.currentState.selectedCountry
   }
 
-  private var fieldFont: Font {
-    styling?.resolvedFont(tokens: tokens) ?? PrimerFont.bodyLarge(tokens: tokens)
-  }
+  private var fieldFont: Font { PrimerFont.bodyLarge(tokens: tokens) }
 
   // MARK: - Initialization
 
   init(
     label: String?,
     placeholder: String,
-    scope: any CardFormFieldScopeInternal,
-    styling: PrimerFieldStyling? = nil
+    scope: any CardFormFieldScopeInternal
   ) {
     self.label = label
     self.placeholder = placeholder
     self.scope = scope
-    self.styling = styling
   }
 
   // MARK: - Body
@@ -63,7 +58,6 @@ struct CountryInputField: View, LogReporter {
   var body: some View {
     PrimerInputFieldContainer(
       label: label,
-      styling: styling,
       text: $countryName,
       isValid: $isValid,
       errorMessage: $errorMessage,
@@ -101,6 +95,15 @@ struct CountryInputField: View, LogReporter {
         Image(systemName: "chevron.down")
           .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
       }
+    )
+    .accessibility(
+      config: AccessibilityConfiguration(
+        identifier: AccessibilityIdentifiers.CardForm.billingAddressField("country"),
+        label: label ?? CheckoutComponentsStrings.a11yBillingAddressCountryLabel,
+        hint: CheckoutComponentsStrings.a11yBillingAddressCountryHint,
+        value: errorMessage,
+        traits: []
+      )
     )
     .onAppear {
       setupValidationService()

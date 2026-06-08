@@ -189,7 +189,6 @@ final class ApplePayPaymentMethodTests: XCTestCase {
         let scope = DefaultCheckoutScope(
             clientToken: "mock_token",
             settings: PrimerSettings(),
-            diContainer: DIContainer.shared,
             navigator: CheckoutNavigator()
         )
 
@@ -223,10 +222,6 @@ private final class MockInvalidCheckoutScope: PrimerCheckoutScope {
     }
 
     var onBeforePaymentCreate: BeforePaymentCreateHandler?
-    var container: ContainerComponent?
-    var splashScreen: Component?
-    var loadingScreen: Component?
-    var errorScreen: ErrorComponent?
     var paymentMethodSelection: PrimerPaymentMethodSelectionScope {
         fatalError("Not implemented")
     }

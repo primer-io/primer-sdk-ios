@@ -68,14 +68,10 @@ struct CardPaymentMethod: PaymentMethodProtocol {
 
   @MainActor
   static func createView(checkoutScope: any PrimerCheckoutScope) -> AnyView? {
-    // ACC-7173: audit §2a — CardFormScreen takes `any CardFormFieldScopeInternal` (sub-protocol of
-    // PrimerCardFormScope); rebinding to PrimerCardFormScope.self would force a downcast through
-    // an internal protocol which reintroduces the silent-no-op pattern. Keep concrete metatype.
+    // CardFormScreen takes `any CardFormFieldScopeInternal` (sub-protocol of PrimerCardFormScope);
+    // keep the concrete metatype to avoid a downcast through an internal protocol.
     checkoutScope.getPaymentMethodScope(DefaultCardFormScope.self)
-      .map { scope in
-        scope.screen.map { AnyView($0(scope)) }
-          ?? AnyView(CardFormScreen(scope: scope))
-      }
+      .map { AnyView(CardFormScreen(scope: $0)) }
   }
 }
 

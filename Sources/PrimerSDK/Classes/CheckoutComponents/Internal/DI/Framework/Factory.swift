@@ -78,7 +78,7 @@ extension ContainerProtocol {
     name: String? = nil
   ) async throws -> Self {
     let builder = register(F.self)
-    let namedBuilder = name != nil ? builder.named(name!) : builder
+    let namedBuilder = if let name { builder.named(name) } else { builder }
 
     let policyBuilder =
       switch policy {
@@ -106,7 +106,7 @@ extension ContainerProtocol {
     factory: @Sendable @escaping (ContainerProtocol) async throws -> F
   ) async throws -> Self {
     let builder = register(F.self)
-    let namedBuilder = name != nil ? builder.named(name!) : builder
+    let namedBuilder = if let name { builder.named(name) } else { builder }
 
     let policyBuilder =
       switch policy {

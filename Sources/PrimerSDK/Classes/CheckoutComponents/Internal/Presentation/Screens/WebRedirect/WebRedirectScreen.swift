@@ -27,7 +27,7 @@ struct WebRedirectScreen: View {
         }
         .padding(.horizontal, PrimerSpacing.large(tokens: tokens))
         .padding(.vertical, PrimerSpacing.large(tokens: tokens))
-        .frame(maxWidth: UIScreen.main.bounds.width)
+        .frame(maxWidth: .infinity)
         .navigationBarHidden(true)
         .background(CheckoutColors.background(tokens: tokens))
         .accessibilityIdentifier(AccessibilityIdentifiers.WebRedirect.container)

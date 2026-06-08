@@ -45,6 +45,8 @@ final class DefaultAdyenKlarnaScope: PrimerAdyenKlarnaScope, ObservableObject, L
 
     @Published private var internalState: PrimerAdyenKlarnaState
 
+    private var hasStarted = false
+
     init(
         paymentMethodType: String = PrimerPaymentMethodType.adyenKlarna.rawValue,
         checkoutScope: DefaultCheckoutScope,
@@ -70,6 +72,8 @@ final class DefaultAdyenKlarnaScope: PrimerAdyenKlarnaScope, ObservableObject, L
     }
 
     func start() {
+        guard !hasStarted else { return }
+        hasStarted = true
         Task { [self] in
             await loadPaymentOptions()
         }
@@ -90,7 +94,7 @@ final class DefaultAdyenKlarnaScope: PrimerAdyenKlarnaScope, ObservableObject, L
     func cancel() {
         repository?.cancelPolling(paymentMethodType: paymentMethodType)
         internalState.status = .idle
-        checkoutScope?.onDismiss()
+        checkoutScope?.cancelActivePaymentMethod(returnToSelection: presentationContext.shouldShowBackButton)
     }
 
     func onBack() {
@@ -114,6 +118,7 @@ final class DefaultAdyenKlarnaScope: PrimerAdyenKlarnaScope, ObservableObject, L
                 )
                 ErrorHandler.handle(error: error)
                 internalState.status = .failure(error.localizedDescription)
+                checkoutScope?.handlePaymentError(error)
                 return
             }
 
@@ -126,8 +131,14 @@ final class DefaultAdyenKlarnaScope: PrimerAdyenKlarnaScope, ObservableObject, L
                 internalState.status = .optionSelection
             }
         } catch {
-            let errorMessage = extractUserFriendlyErrorMessage(from: error)
-            internalState.status = .failure(errorMessage)
+            let primerError = error as? PrimerError ?? PrimerError.unknown(message: error.localizedDescription)
+            if case .cancelled = primerError {
+                logger.debug(message: "loadPaymentOptions cancelled by user")
+                checkoutScope?.cancelActivePaymentMethod(returnToSelection: presentationContext.shouldShowBackButton)
+                return
+            }
+            internalState.status = .failure(extractUserFriendlyErrorMessage(from: error))
+            checkoutScope?.handlePaymentError(primerError)
         }
     }
 
@@ -170,12 +181,15 @@ final class DefaultAdyenKlarnaScope: PrimerAdyenKlarnaScope, ObservableObject, L
             checkoutScope.handlePaymentSuccess(result)
 
         } catch {
-            checkoutScope.startProcessing()
-
-            let errorMessage = extractUserFriendlyErrorMessage(from: error)
-            internalState.status = .failure(errorMessage)
-
             let primerError = error as? PrimerError ?? PrimerError.unknown(message: error.localizedDescription)
+            if case .cancelled = primerError {
+                logger.debug(message: "performPayment cancelled by user")
+                checkoutScope.cancelActivePaymentMethod(returnToSelection: presentationContext.shouldShowBackButton)
+                return
+            }
+
+            checkoutScope.startProcessing()
+            internalState.status = .failure(extractUserFriendlyErrorMessage(from: error))
             checkoutScope.handlePaymentError(primerError)
         }
     }

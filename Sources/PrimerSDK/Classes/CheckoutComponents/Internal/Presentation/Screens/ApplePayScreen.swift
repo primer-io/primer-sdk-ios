@@ -56,18 +56,20 @@ struct ApplePayScreen: View {
 
       Spacer()
 
-      Button(action: scope.onDismiss) {
-        Image(systemName: "xmark")
-          .font(PrimerFont.bodyMedium(tokens: tokens))
-          .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
+      if scope.dismissalMechanism.contains(.closeButton) {
+        Button(action: scope.onDismiss) {
+          Image(systemName: "xmark")
+            .font(PrimerFont.bodyMedium(tokens: tokens))
+            .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
+        }
+        .padding(.trailing, PrimerSpacing.large(tokens: tokens))
+        .accessibility(
+          config: AccessibilityConfiguration(
+            identifier: AccessibilityIdentifiers.Common.closeButton,
+            label: CheckoutComponentsStrings.a11yCancel,
+            traits: [.isButton]
+          ))
       }
-      .padding(.trailing, PrimerSpacing.large(tokens: tokens))
-      .accessibility(
-        config: AccessibilityConfiguration(
-          identifier: AccessibilityIdentifiers.Common.closeButton,
-          label: CheckoutComponentsStrings.a11yCancel,
-          traits: [.isButton]
-        ))
     }
     .frame(height: 56)
     .background(CheckoutColors.background(tokens: tokens))

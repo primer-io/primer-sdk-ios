@@ -8,19 +8,17 @@ import PassKit
 import SwiftUI
 
 @available(iOS 15.0, *)
-public typealias ApplePayScreenComponent = (_ scope: any PrimerApplePayScope) -> any View
+typealias ApplePayScreenComponent = (_ scope: any PrimerApplePayScope) -> any View
 
 @available(iOS 15.0, *)
-public typealias ApplePayButtonComponent = (_ action: @escaping () -> Void) -> any View
+typealias ApplePayButtonComponent = (_ action: @escaping () -> Void) -> any View
 
 /// Protocol defining the Apple Pay scope interface for CheckoutComponents.
 /// Provides access to Apple Pay state, button customization, and payment flow control.
 /// Access availability and button configuration through the `state` async stream.
 @available(iOS 15.0, *)
 @MainActor
-public protocol PrimerApplePayScope: PrimerPaymentMethodScope where State == PrimerApplePayState {
-
-  // MARK: - State
+protocol PrimerApplePayScope: PrimerPaymentMethodScope where State == PrimerApplePayState {
 
   // MARK: - UI Customization
 

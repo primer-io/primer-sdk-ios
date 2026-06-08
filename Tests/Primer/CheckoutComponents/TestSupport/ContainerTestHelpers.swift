@@ -22,7 +22,11 @@ enum ContainerTestHelpers {
         // Register mock AccessibilityAnnouncementService
         _ = try await container.register(AccessibilityAnnouncementService.self)
             .asSingleton()
-            .with { _ in DefaultAccessibilityAnnouncementService(publisher: MockUIAccessibilityNotificationPublisher()) }
+            .with { _ in
+                await MainActor.run {
+                    DefaultAccessibilityAnnouncementService(publisher: MockUIAccessibilityNotificationPublisher())
+                }
+            }
 
         // Register mock AnalyticsInteractor
         _ = try await container.register(CheckoutComponentsAnalyticsInteractorProtocol.self)
@@ -49,7 +53,6 @@ enum ContainerTestHelpers {
         return DefaultCheckoutScope(
             clientToken: TestData.Tokens.valid,
             settings: settings,
-            diContainer: DIContainer.shared,
             navigator: navigator
         )
     }
@@ -74,7 +77,6 @@ enum ContainerTestHelpers {
         let scope = DefaultCheckoutScope(
             clientToken: TestData.Tokens.valid,
             settings: settings,
-            diContainer: DIContainer.shared,
             navigator: navigator
         )
 

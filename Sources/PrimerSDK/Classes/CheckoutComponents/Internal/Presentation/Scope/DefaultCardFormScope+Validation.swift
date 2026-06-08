@@ -48,7 +48,8 @@ private extension PrimerInputElementType {
     case .postalCode: \.postalCode
     case .countryCode: \.countryCode
     case .phoneNumber: \.phoneNumber
-    case .retailer, .otp, .unknown, .all: nil
+    case .otp: \.otp
+    case .retailer, .unknown, .all: nil
     }
   }
 }

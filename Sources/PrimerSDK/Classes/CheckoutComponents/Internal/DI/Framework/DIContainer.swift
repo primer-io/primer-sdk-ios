@@ -9,7 +9,7 @@ import Foundation
 @available(iOS 15.0, *)
 @MainActor
 final class DIContainer: LogReporter {
-  public static let shared = DIContainer()
+  static let shared = DIContainer()
 
   /// Isolated actor for thread-safe container operations
   private actor ContainerStorage {
@@ -28,6 +28,13 @@ final class DIContainer: LogReporter {
       container = newContainer
     }
 
+    /// Atomically installs `newContainer` and returns the previous one in a single actor hop.
+    func swap(to newContainer: (any ContainerProtocol)?) -> (any ContainerProtocol)? {
+      let previous = container
+      container = newContainer
+      return previous
+    }
+
     func getScopedContainer(for scopeId: String) -> (any ContainerProtocol)? {
       scopedContainers[scopeId]
     }
@@ -43,7 +50,7 @@ final class DIContainer: LogReporter {
 
   private let storage: ContainerStorage
 
-  public static var current: (any ContainerProtocol)? {
+  static var current: (any ContainerProtocol)? {
     get async {
       await shared.storage.getContainer()
     }
@@ -51,7 +58,7 @@ final class DIContainer: LogReporter {
 
   /// Access to the current container (synchronous)
   /// Note: This uses a cached reference that is updated when the container changes
-  public static var currentSync: (any ContainerProtocol)? {
+  static var currentSync: (any ContainerProtocol)? {
     shared.cachedContainer
   }
 
@@ -64,28 +71,32 @@ final class DIContainer: LogReporter {
     cachedContainer = container
   }
 
-  public static func createContainer() -> any ContainerProtocol {
+  static func createContainer() -> any ContainerProtocol {
     Container()
   }
 
-  public static func setContainer(_ container: any ContainerProtocol) async {
+  static func setContainer(_ container: any ContainerProtocol) async {
     await shared.storage.setContainer(container)
     shared.cachedContainer = container
   }
 
-  public static func clearContainer() async {
+  static func clearContainer() async {
     await shared.storage.setContainer(nil)
     shared.cachedContainer = nil
   }
 
-  public static func setupMainContainer() async {
+  static func setupMainContainer() async {
     let container = Container()
     await registerDependencies(in: container)
     await setContainer(container)
   }
 
-  /// Execute a block with a temporary container and restore the previous one afterward
-  /// Useful for isolated testing contexts
+  /// Executes a block with a temporary container, restoring the previous one afterward.
+  ///
+  /// Intended for single-context test scoping (setUp / test / tearDown). It is **not** safe under
+  /// concurrent container mutation: `cachedContainer` (main-actor) and the backing storage actor are
+  /// distinct sources of truth, so a concurrent `setContainer`/`withContainer` during `action` can
+  /// make the restore observe a stale snapshot. Drive it from one task at a time.
   ///
   /// - Parameters:
   ///   - container: The container to use during the execution of the action
@@ -93,14 +104,12 @@ final class DIContainer: LogReporter {
   /// - Returns: The result of the action
   /// - Throws: Any error thrown by the action
   @discardableResult
-  public static func withContainer<T>(
+  static func withContainer<T>(
     _ container: any ContainerProtocol,
     perform action: () async throws -> T
   ) async rethrows -> T {
-    let previous = await shared.storage.getContainer()
     let previousSync = shared.cachedContainer
-
-    await shared.storage.setContainer(container)
+    let previous = await shared.storage.swap(to: container)
     shared.cachedContainer = container
 
     do {
@@ -115,23 +124,20 @@ final class DIContainer: LogReporter {
     }
   }
 
-  public static func setScopedContainer(_ container: any ContainerProtocol, for scopeId: String)
+  static func setScopedContainer(_ container: any ContainerProtocol, for scopeId: String)
     async {
     await shared.storage.setScopedContainer(container, for: scopeId)
   }
 
-  public static func scopedContainer(for scopeId: String) async -> (any ContainerProtocol)? {
+  static func scopedContainer(for scopeId: String) async -> (any ContainerProtocol)? {
     await shared.storage.getScopedContainer(for: scopeId)
   }
 
-  public static func removeScopedContainer(for scopeId: String) async {
+  static func removeScopedContainer(for scopeId: String) async {
     await shared.storage.removeScopedContainer(for: scopeId)
   }
 
   private static func registerDependencies(in container: Container) async {
-    _ = try? await container.register(ContainerProtocol.self).asSingleton().with { container in
-      container
-    }
+    _ = try? await container.register(ContainerProtocol.self).asSingleton().with { $0 }
   }
-
 }

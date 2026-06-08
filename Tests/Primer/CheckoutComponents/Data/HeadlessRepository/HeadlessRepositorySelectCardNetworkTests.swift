@@ -49,7 +49,11 @@ final class SelectCardNetworkTests: XCTestCase {
             mockClientSessionActions.reset()
 
             await repository.selectCardNetwork(network)
-            try await Task.sleep(nanoseconds: 100_000_000)
+            try await withTimeout(2.0) { [self] in
+                while mockClientSessionActions.selectPaymentMethodCalls.isEmpty {
+                    await Task.yield()
+                }
+            }
 
             XCTAssertEqual(
                 mockClientSessionActions.selectPaymentMethodCalls.count,
@@ -76,7 +80,11 @@ final class SelectCardNetworkTests: XCTestCase {
             await repository.selectCardNetwork(network)
         }
 
-        try await Task.sleep(nanoseconds: 300_000_000)
+        try await withTimeout(2.0) { [self] in
+            while mockClientSessionActions.selectPaymentMethodCalls.count < networks.count {
+                await Task.yield()
+            }
+        }
 
         XCTAssertEqual(mockClientSessionActions.selectPaymentMethodCalls.count, 3)
     }
@@ -87,7 +95,11 @@ final class SelectCardNetworkTests: XCTestCase {
 
         await repository.selectCardNetwork(network)
 
-        try await Task.sleep(nanoseconds: 100_000_000)
+        try await withTimeout(2.0) { [self] in
+            while mockClientSessionActions.selectPaymentMethodCalls.isEmpty {
+                await Task.yield()
+            }
+        }
 
         XCTAssertEqual(mockClientSessionActions.selectPaymentMethodCalls.count, 1)
     }

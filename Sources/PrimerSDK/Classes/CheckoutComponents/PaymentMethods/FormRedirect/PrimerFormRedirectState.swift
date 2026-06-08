@@ -8,10 +8,10 @@ import Foundation
 
 /// Flow: `ready` -> `submitting` -> `awaitingExternalCompletion` -> `success` | `failure`
 @available(iOS 15.0, *)
-public struct PrimerFormRedirectState: Equatable, @unchecked Sendable {
+struct PrimerFormRedirectState: Equatable, @unchecked Sendable {
 
   /// When switching on this enum, always include a `default` case to handle future additions.
-  public enum Status: Equatable {
+  enum Status: Equatable {
     case ready
     case submitting
     case awaitingExternalCompletion
@@ -19,12 +19,12 @@ public struct PrimerFormRedirectState: Equatable, @unchecked Sendable {
     case failure(String)
   }
 
-  public internal(set) var status: Status
-  public internal(set) var fields: [PrimerFormFieldState]
-  public internal(set) var pendingMessage: String?
-  public internal(set) var surchargeAmount: String?
+  var status: Status
+  var fields: [PrimerFormFieldState]
+  var pendingMessage: String?
+  var surchargeAmount: String?
 
-  public init(
+  init(
     status: Status = .ready,
     fields: [PrimerFormFieldState] = [],
     pendingMessage: String? = nil,
@@ -40,23 +40,23 @@ public struct PrimerFormRedirectState: Equatable, @unchecked Sendable {
 @available(iOS 15.0, *)
 extension PrimerFormRedirectState {
 
-  public var isSubmitEnabled: Bool {
+  var isSubmitEnabled: Bool {
     !fields.isEmpty && fields.allSatisfy(\.isValid)
   }
 
-  public var otpField: PrimerFormFieldState? {
+  var otpField: PrimerFormFieldState? {
     fields.first { $0.fieldType == .otpCode }
   }
 
-  public var phoneField: PrimerFormFieldState? {
+  var phoneField: PrimerFormFieldState? {
     fields.first { $0.fieldType == .phoneNumber }
   }
 
-  public var isLoading: Bool {
+  var isLoading: Bool {
     status == .submitting
   }
 
-  public var isTerminal: Bool {
+  var isTerminal: Bool {
     switch status {
     case .success, .failure:
       true

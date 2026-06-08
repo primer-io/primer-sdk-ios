@@ -43,12 +43,12 @@ struct PrimerTextFieldConfiguration {
     isSecureTextEntry: false
   )
 
-  /// Secure entry with number pad and one-time code content type
+  /// Secure entry with number pad and no autofill
   static let cvv = PrimerTextFieldConfiguration(
     keyboardType: .numberPad,
     autocapitalizationType: .none,
     autocorrectionType: .no,
-    textContentType: .oneTimeCode,
+    textContentType: nil,
     returnKeyType: .done,
     isSecureTextEntry: true
   )
@@ -95,7 +95,6 @@ extension UITextField {
   func configurePrimerStyle(
     placeholder: String,
     configuration: PrimerTextFieldConfiguration,
-    styling: PrimerFieldStyling?,
     tokens: DesignTokens?,
     doneButtonTarget: Any?,
     doneButtonAction: Selector
@@ -113,52 +112,49 @@ extension UITextField {
     isSecureTextEntry = configuration.isSecureTextEntry
 
     // Text styling with design tokens
-    if let fontName = styling?.fontName {
-      font = PrimerFont.uiFont(
-        family: fontName,
-        weight: styling?.fontWeight,
-        size: styling?.fontSize
-      )
-    } else {
-      font = PrimerFont.uiFontBodyLarge(tokens: tokens)
-    }
-    textColor =
-      styling?.textColor.map(UIColor.init) ?? UIColor(CheckoutColors.textPrimary(tokens: tokens))
+    let textFont = PrimerFont.uiFontBodyLarge(tokens: tokens)
+    font = textFont
+    adjustsFontForContentSizeCategory = true
+    textColor = UIColor(CheckoutColors.textPrimary(tokens: tokens))
 
     // Placeholder styling with design tokens
-    let placeholderColor =
-      styling?.placeholderColor.map(UIColor.init)
-      ?? UIColor(CheckoutColors.textPlaceholder(tokens: tokens))
+    let placeholderColor = UIColor(CheckoutColors.textPlaceholder(tokens: tokens))
     attributedPlaceholder = NSAttributedString(
       string: placeholder,
-      attributes: [.foregroundColor: placeholderColor, .font: font as Any]
+      attributes: [.foregroundColor: placeholderColor, .font: textFont]
     )
 
-    // Add keyboard accessory view with "Done" button
-    let accessoryView = UIView(
-      frame: CGRect(
-        x: 0, y: 0, width: UIScreen.main.bounds.width,
-        height: PrimerComponentHeight.keyboardAccessory))
-    accessoryView.backgroundColor = UIColor.systemGray6
-    // Hide container from accessibility - only the button should be accessible
-    accessoryView.isAccessibilityElement = false
+    inputAccessoryView = Self.makeDoneAccessory(
+      tokens: tokens,
+      target: doneButtonTarget,
+      action: doneButtonAction
+    )
+  }
 
-    let doneButton = UIButton(type: .system)
-    doneButton.setTitle(CheckoutComponentsStrings.a11yDone, for: .normal)
-    doneButton.titleLabel?.font = UIFont.systemFont(ofSize: 17, weight: .medium)
-    doneButton.accessibilityLabel = CheckoutComponentsStrings.a11yDone
-    doneButton.accessibilityTraits = .button
-    if let target = doneButtonTarget {
-      doneButton.addTarget(target, action: doneButtonAction, for: .touchUpInside)
-    }
+  /// Auto-sizing keyboard toolbar with a trailing "Done" button.
+  private static func makeDoneAccessory(
+    tokens: DesignTokens?,
+    target: Any?,
+    action: Selector
+  ) -> UIToolbar {
+    let toolbar = UIToolbar(
+      frame: CGRect(x: 0, y: 0, width: 0, height: PrimerComponentHeight.keyboardAccessory)
+    )
+    toolbar.barStyle = .default
+    toolbar.sizeToFit()
 
-    accessoryView.addSubview(doneButton)
-    doneButton.translatesAutoresizingMaskIntoConstraints = false
-    NSLayoutConstraint.activate([
-      doneButton.trailingAnchor.constraint(equalTo: accessoryView.trailingAnchor, constant: -16),
-      doneButton.centerYAnchor.constraint(equalTo: accessoryView.centerYAnchor)
-    ])
+    let doneItem = UIBarButtonItem(
+      title: CheckoutComponentsStrings.doneButton,
+      style: .done,
+      target: target,
+      action: action
+    )
+    doneItem.accessibilityLabel = CheckoutComponentsStrings.doneButton
+    let titleFont = PrimerFont.uiFontTitleLarge(tokens: tokens)
+    doneItem.setTitleTextAttributes([.font: titleFont], for: .normal)
+    doneItem.setTitleTextAttributes([.font: titleFont], for: .highlighted)
 
-    inputAccessoryView = accessoryView
+    toolbar.items = [.flexibleSpace(), doneItem]
+    return toolbar
   }
 }

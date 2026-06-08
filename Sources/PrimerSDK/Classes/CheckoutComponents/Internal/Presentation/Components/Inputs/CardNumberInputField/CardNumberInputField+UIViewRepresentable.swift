@@ -17,7 +17,6 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
 
   let scope: any CardFormFieldScopeInternal
   let placeholder: String
-  let styling: PrimerFieldStyling?
   let validationService: ValidationService
   let tokens: DesignTokens?
 
@@ -28,7 +27,6 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
     textField.configurePrimerStyle(
       placeholder: placeholder,
       configuration: .numberPad,
-      styling: styling,
       tokens: tokens,
       doneButtonTarget: context.coordinator,
       doneButtonAction: #selector(Coordinator.doneButtonTapped)
@@ -38,8 +36,9 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
   }
 
   func updateUIView(_ textField: SecureTextField, context: Context) {
-    if textField.internalText != formatCardNumber(cardNumber, for: cardNetwork) {
-      textField.internalText = formatCardNumber(cardNumber, for: cardNetwork)
+    let formatted = CardNumberFormatter.format(cardNumber, for: cardNetwork)
+    if textField.internalText != formatted {
+      textField.internalText = formatted
     }
   }
 
@@ -54,17 +53,6 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
       isFocused: $isFocused
     )
   }
-  private func formatCardNumber(_ number: String, for network: CardNetwork) -> String {
-    let gaps = network.validation?.gaps ?? [4, 8, 12]
-    var formatted = ""
-    for (index, char) in number.enumerated() {
-      formatted.append(char)
-      if gaps.contains(index + 1), index + 1 < number.count {
-        formatted.append(" ")
-      }
-    }
-    return formatted
-  }
 
   final class Coordinator: NSObject, UITextFieldDelegate, LogReporter {
     // MARK: - Properties
@@ -77,7 +65,6 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
     private let scope: any CardFormFieldScopeInternal
     private let validationService: ValidationService
     private var savedCursorPosition: Int = 0
-    private var networkDetectionTimer: Timer?
     private var validationTimer: Timer?
 
     init(
@@ -142,7 +129,7 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
       cardNumber = newCardNumber
       scope.updateCardNumber(newCardNumber)
       updateCardNetworkIfNeeded(newCardNumber)
-      let formattedText = formatCardNumber(newCardNumber, for: cardNetwork)
+      let formattedText = CardNumberFormatter.format(newCardNumber, for: cardNetwork)
       secureTextField?.internalText = formattedText
       restoreCursorPosition(
         textField: textField,
@@ -231,28 +218,24 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
     }
 
     private func calculateUnformattedPosition(upToIndex index: Int, in formattedText: String) -> Int {
-      var unformattedPos = 0
-      for i in 0..<index where i < formattedText.count {
-        let charIndex = formattedText.index(formattedText.startIndex, offsetBy: i)
-        if formattedText[charIndex].isNumber {
-          unformattedPos += 1
+      formattedText.enumerated().reduce(into: 0) { count, element in
+        if element.offset < index, element.element.isNumber {
+          count += 1
         }
       }
-      return unformattedPos
     }
 
     private func updateCardNetworkIfNeeded(_ newCardNumber: String) {
       let newNetwork = CardNetwork(cardNumber: newCardNumber)
       if newNetwork != cardNetwork {
+        // Keep the local binding updated for formatting, but let the scope decide whether to apply
+        // it: a user-pinned co-badge network must not be overwritten by auto-detection.
         cardNetwork = newNetwork
-        scope.updateSelectedCardNetwork(newNetwork.rawValue)
+        scope.autoSelectDetectedNetwork(newNetwork.rawValue)
       }
     }
 
     private func updateValidationState(_ newCardNumber: String) {
-      if newCardNumber.count >= 6 {
-        debouncedNetworkDetection(newCardNumber)
-      }
       if newCardNumber.count >= 13 {
         debouncedValidation(newCardNumber)
       } else if newCardNumber.isEmpty {
@@ -296,24 +279,14 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
     private func getUnformattedRange(
       formattedRange: NSRange, formattedText: String, unformattedText: String
     ) -> NSRange {
-      var digitCount = 0
-      for (index, char) in formattedText.enumerated() {
-        if index >= formattedRange.location {
-          break
-        }
-        if char.isNumber {
-          digitCount += 1
-        }
-      }
-      let unformattedLocation = digitCount
+      let rangeEnd = formattedRange.location + formattedRange.length
+      var unformattedLocation = 0
       var unformattedLength = 0
-      if formattedRange.length > 0 {
-        let rangeEnd = min(formattedRange.location + formattedRange.length, formattedText.count)
-        for index in formattedRange.location..<rangeEnd where index < formattedText.count {
-          let charIndex = formattedText.index(formattedText.startIndex, offsetBy: index)
-          if formattedText[charIndex].isNumber {
-            unformattedLength += 1
-          }
+      for (index, char) in formattedText.enumerated() where char.isNumber {
+        if index < formattedRange.location {
+          unformattedLocation += 1
+        } else if index < rangeEnd {
+          unformattedLength += 1
         }
       }
       return NSRange(location: unformattedLocation, length: unformattedLength)
@@ -342,18 +315,6 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
       return currentText
     }
 
-    private func formatCardNumber(_ number: String, for network: CardNetwork) -> String {
-      let gaps = network.validation?.gaps ?? [4, 8, 12]
-      var formatted = ""
-      for (index, char) in number.enumerated() {
-        formatted.append(char)
-        if gaps.contains(index + 1), index + 1 < number.count {
-          formatted.append(" ")
-        }
-      }
-      return formatted
-    }
-
     private func debouncedValidation(_ number: String) {
       validationTimer?.invalidate()
       validationTimer = Timer.scheduledTimer(withTimeInterval: 1.5, repeats: false) {
@@ -361,19 +322,6 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
         guard let self else { return }
         validateCardNumberWhileTyping(number)
       }
-    }
-
-    private func debouncedNetworkDetection(_ number: String) {
-      networkDetectionTimer?.invalidate()
-      networkDetectionTimer = Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) {
-        [weak self] _ in
-        guard let self else { return }
-        detectNetworksForCardNumber(number)
-      }
-    }
-
-    private func detectNetworksForCardNumber(_ cardNumber: String) {
-      logger.debug(message: "Detecting card networks")
     }
 
     private func validateCardNumberWhileTyping(_ number: String) {
@@ -442,8 +390,21 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
     }
     deinit {
       validationTimer?.invalidate()
-      networkDetectionTimer?.invalidate()
     }
+  }
+}
+
+enum CardNumberFormatter {
+  static func format(_ number: String, for network: CardNetwork) -> String {
+    let gaps = network.validation?.gaps ?? [4, 8, 12]
+    var formatted = ""
+    for (index, char) in number.enumerated() {
+      formatted.append(char)
+      if gaps.contains(index + 1), index + 1 < number.count {
+        formatted.append(" ")
+      }
+    }
+    return formatted
   }
 }
 

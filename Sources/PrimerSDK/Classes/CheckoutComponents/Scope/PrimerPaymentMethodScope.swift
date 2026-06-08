@@ -22,7 +22,7 @@ import SwiftUI
 /// ```
 @available(iOS 15.0, *)
 @MainActor
-public protocol PrimerPaymentMethodScope: AnyObject {
+protocol PrimerPaymentMethodScope: AnyObject {
 
   associatedtype State: Equatable
 
@@ -73,15 +73,15 @@ public protocol PrimerPaymentMethodScope: AnyObject {
 @available(iOS 15.0, *)
 extension PrimerPaymentMethodScope {
 
-  public var presentationContext: PresentationContext { .fromPaymentSelection }
+  var presentationContext: PresentationContext { .fromPaymentSelection }
 
-  public var dismissalMechanism: [DismissalMechanism] { [] }
+  var dismissalMechanism: [DismissalMechanism] { [] }
 
-  public func onBack() {
+  func onBack() {
     cancel()
   }
 
-  public func onDismiss() {
+  func onDismiss() {
     cancel()
   }
 }
@@ -239,8 +239,7 @@ final class PaymentMethodRegistry: LogReporter {
     scopeCreator: @escaping @MainActor (PrimerCheckoutScope, any ContainerProtocol) async throws -> any PrimerPaymentMethodScope,
     viewCreator: @escaping @MainActor (any PrimerCheckoutScope) -> AnyView?
   ) {
-    creators[typeKey] = scopeCreator
-    viewBuilders[typeKey] = viewCreator
+    register(forKey: typeKey, scopeCreator: scopeCreator, viewCreator: viewCreator)
   }
 
   func reset() {

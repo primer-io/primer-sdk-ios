@@ -227,7 +227,11 @@ struct LogPayloadBuilder: LogPayloadBuilding {
     let filteredEntries = userInfo.filter { !excludingKeys.contains($0.key) }
     guard !filteredEntries.isEmpty else { return nil }
 
-    return filteredEntries
+    // Stringify values that aren't JSON-serializable so one bad merchant-supplied
+    // field can't fail encoding and drop the entire log entry.
+    return filteredEntries.mapValues { value in
+      JSONSerialization.isValidJSONObject([value]) ? value : String(describing: value)
+    }
   }
 }
 

@@ -180,7 +180,7 @@ final class UpdateCardNumberStreamTests: XCTestCase {
         // Then - no crash
     }
 
-    func test_selectCardNetwork_updatesRawCardData() async {
+    func test_selectCardNetwork_updatesRawCardData() async throws {
         // Given
         let mockClientSessionActions = MockClientSessionActionsModule()
         let sut = HeadlessRepositoryImpl(
@@ -190,8 +190,12 @@ final class UpdateCardNumberStreamTests: XCTestCase {
         // When
         await sut.selectCardNetwork(.visa)
 
-        // Then - should not crash, network stored internally
-        try? await Task.sleep(nanoseconds: 100_000_000)
+        // Then - network stored internally via an async select-payment-method call
+        try await withTimeout(2.0) {
+            while mockClientSessionActions.selectPaymentMethodCalls.isEmpty {
+                await Task.yield()
+            }
+        }
         XCTAssertEqual(mockClientSessionActions.selectPaymentMethodCalls.count, 1)
     }
 }

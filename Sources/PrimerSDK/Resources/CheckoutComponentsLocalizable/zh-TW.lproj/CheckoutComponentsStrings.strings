@@ -1,6 +1,5 @@
 "accessibility_action_delete" = "刪除付款方式";
 "accessibility_action_edit" = "編輯卡片資訊";
-"accessibility_action_set_default" = "設為預設付款方式";
 "accessibility_card_form_billing_address_address_line_1_label" = "地址第一行,必填";
 "accessibility_card_form_billing_address_address_line_2_label" = "地址第二行,選填";
 "accessibility_card_form_billing_address_city_hint" = "請輸入城市名稱";
@@ -19,7 +18,7 @@
 "accessibility_card_form_cardholder_name_hint" = "請輸入卡片上顯示的姓名";
 "accessibility_card_form_cardholder_name_label" = "持卡人姓名";
 "accessibility_card_form_cvc_error_invalid" = "安全碼無效。";
-"accessibility_card_form_cvc_hint" = "卡片背面的3或4位數代碼";
+"accessibility_card_form_cvc_hint" = "安全碼，3 位或 4 位數字";
 "accessibility_card_form_cvc_label" = "安全碼,必填";
 "accessibility_card_form_cvv_icon" = "CVV安全碼";
 "accessibility_card_form_expiry_error_invalid" = "有效期限無效。";
@@ -27,11 +26,11 @@
 "accessibility_card_form_expiry_icon" = "卡片有效期限";
 "accessibility_card_form_expiry_label" = "有效期限,必填";
 "accessibility_card_form_network_selector" = "選擇卡片網路";
-"accessibility_card_form_network_selector_hint" = "點擊兩下以選擇不同的卡片網路";
-"accessibility_card_form_network_selector_inline_hint" = "點擊兩下以選擇此網路";
+"accessibility_card_form_network_selector_hint" = "選擇其他卡片網路";
+"accessibility_card_form_network_selector_inline_hint" = "選擇此卡片網路";
 "accessibility_card_form_network_selector_label" = "卡片網路選擇器";
 "accessibility_card_form_submit_disabled" = "按鈕已停用。請填寫所有必填欄位以啟用付款";
-"accessibility_card_form_submit_hint" = "點擊兩下以提交付款";
+"accessibility_card_form_submit_hint" = "提交付款";
 "accessibility_card_form_submit_label" = "提交付款";
 "accessibility_card_form_submit_loading" = "正在處理付款,請稍候";
 "accessibility_checkout_error_icon" = "錯誤";
@@ -52,8 +51,6 @@
 "accessibility_country_selection_search_icon" = "搜尋";
 "accessibility_error_generic" = "發生錯誤。請重試。";
 "accessibility_error_multiple_errors" = "發現%d個錯誤";
-"accessibility_payment_selection_card_full" = "%1$@卡,末四碼%2$@,有效期限%3$@";
-"accessibility_payment_selection_card_masked" = "卡片末碼已遮蔽";
 "accessibility_payment_selection_coming_soon" = "付款方式即將推出";
 "accessibility_payment_selection_pay_with_card" = "使用卡片付款";
 "accessibility_payment_selection_pay_with_ideal" = "使用iDEAL付款";
@@ -65,6 +62,7 @@
 "accessibility_screen_loading_payment_methods" = "正在載入付款方式";
 "accessibility_screen_payment_method" = "%@付款方式";
 "accessibility_payment_method_button" = "使用%@付款";
+"accessibility_payment_method_selected" = "已選擇%@";
 "accessibility_screen_processing_payment" = "正在處理付款";
 "accessibility_screen_success" = "付款成功";
 "accessibility_vault_delete_payment_method" = "刪除此付款方式";
@@ -144,7 +142,6 @@
 "primer_card_form_placeholder_state" = "台北市";
 "primer_card_form_retail_not_implemented" = "零售據點選擇功能尚未實作";
 "primer_card_form_title" = "使用卡片付款";
-"primer_checkout_auto_dismiss_message" = "此畫面將在3秒後自動關閉";
 "primer_checkout_dismissing" = "關閉中...";
 "primer_checkout_error_button_other_methods" = "選擇其他付款方式";
 "primer_checkout_error_subtitle" = "發生網路問題。";
@@ -209,8 +206,8 @@
 "accessibility_klarna_category" = "%@ 付款選項";
 "accessibility_klarna_category_selected" = "%@ 付款選項，已選取";
 "accessibility_klarna_payment_view" = "Klarna付款表單";
-"accessibility_klarna_authorize_hint" = "點兩下以繼續使用Klarna";
-"accessibility_klarna_finalize_hint" = "點兩下以完成付款";
+"accessibility_klarna_authorize_hint" = "繼續使用 Klarna";
+"accessibility_klarna_finalize_hint" = "完成付款";
 
 /* ACH */
 "primer_ach_title" = "銀行帳戶";
@@ -223,9 +220,9 @@
 "primer_ach_mandate_button_accept" = "我同意";
 "primer_ach_mandate_button_decline" = "取消";
 "primer_ach_mandate_template" = "點擊「我同意」，即表示您授權 %1$@ 根據 %1$@ 的網站和條款，從上述指定的銀行帳戶中扣除因使用 %1$@ 服務和/或從 %1$@ 購買產品而產生的任何應付費用金額，直至該授權被撤銷。您可以隨時提前 30（三十）天通知 %1$@ 來修改或取消此授權。";
-"accessibility_ach_continue_hint" = "點兩下以繼續選擇銀行帳戶";
-"accessibility_ach_mandate_accept_hint" = "點兩下以接受授權並完成付款";
-"accessibility_ach_mandate_decline_hint" = "點兩下以拒絕並取消付款";
+"accessibility_ach_continue_hint" = "繼續選擇銀行帳戶";
+"accessibility_ach_mandate_accept_hint" = "接受授權並完成付款";
+"accessibility_ach_mandate_decline_hint" = "拒絕並取消付款";
 
 "accessibility_card_form_billing_address_hint" = "輸入您的地址";
 "accessibility_card_form_billing_address_state_hint" = "輸入省/州";
@@ -285,3 +282,5 @@
 "primer_adyen_klarna_option_pay_later" = "延後支付";
 "primer_adyen_klarna_option_pay_over_time" = "分期支付";
 "primer_adyen_klarna_option_pay_now" = "立即支付";
+"primer_vaulted_gocardless_direct_debit_suffix" = "直接扣款";
+"accessibility_card_form_billing_address_country_hint" = "開啟清單以選擇您的國家/地區";

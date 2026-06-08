@@ -21,6 +21,7 @@ struct FieldValidationStates: Equatable {
   var lastName: Bool = false
   var email: Bool = false
   var phoneNumber: Bool = false
+  var otp: Bool = false
 }
 
 @available(iOS 15.0, *)
@@ -28,7 +29,14 @@ struct FieldValidationStates: Equatable {
 protocol CardFormFieldScopeInternal: PrimerCardFormScope {
   var currentState: PrimerCardFormState { get }
 
+  /// Nested country-selection scope (internal — mirrors Android's internal country controller).
+  var selectCountry: PrimerSelectCountryScope { get }
+
   func updateValidationState(_ keyPath: WritableKeyPath<FieldValidationStates, Bool>, isValid: Bool)
   func updateValidationStateIfNeeded(for field: PrimerInputElementType, isValid: Bool)
   func performSubmit() async
+
+  /// Auto-detected network from the card number (keystroke/BIN prefix); ignored while the user has
+  /// pinned a still-available co-badge network.
+  func autoSelectDetectedNetwork(_ network: String)
 }

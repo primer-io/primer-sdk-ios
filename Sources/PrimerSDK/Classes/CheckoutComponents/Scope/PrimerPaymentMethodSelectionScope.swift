@@ -9,7 +9,7 @@ import SwiftUI
 /// Scope interface for payment method selection screen interactions and customization.
 @available(iOS 15.0, *)
 @MainActor
-public protocol PrimerPaymentMethodSelectionScope: AnyObject {
+protocol PrimerPaymentMethodSelectionScope: AnyObject {
 
   /// The current state of the payment method selection as an async stream.
   var state: AsyncStream<PrimerPaymentMethodSelectionState> { get }
@@ -44,26 +44,6 @@ public protocol PrimerPaymentMethodSelectionScope: AnyObject {
   /// Expands the payment methods section to show all available payment methods.
   /// Called when user taps "Show other ways to pay" button.
   func showOtherWaysToPay()
-
-  // MARK: - Customizable UI Components
-
-  /// Default implementation provides standard payment method grid/list.
-  /// The closure receives the scope for full access to payment methods and navigation actions.
-  var screen: PaymentMethodSelectionScreenComponent? { get set }
-
-  /// Default implementation shows payment method with selection state.
-  var paymentMethodItem: PaymentMethodItemComponent? { get set }
-
-  /// Category header component for grouping payment methods.
-  /// Default implementation shows category name in uppercase.
-  var categoryHeader: CategoryHeaderComponent? { get set }
-
-  /// Empty state view when no payment methods are available.
-  /// Default implementation shows icon and message.
-  var emptyStateView: Component? { get set }
-
-  // MARK: - State Definition
-
 }
 
 /// Represents the current state of available payment methods and loading status.
@@ -176,9 +156,6 @@ public struct CheckoutPaymentMethod: Equatable, Identifiable {
   /// Icon image to display for this payment method.
   public let icon: UIImage?
 
-  /// Additional metadata associated with this payment method.
-  public let metadata: [String: Any]?
-
   /// Surcharge amount in minor currency units (e.g., cents), if applicable.
   public let surcharge: Int?
 
@@ -211,7 +188,6 @@ public struct CheckoutPaymentMethod: Equatable, Identifiable {
     type: String,
     name: String,
     icon: UIImage? = nil,
-    metadata: [String: Any]? = nil,
     surcharge: Int? = nil,
     hasUnknownSurcharge: Bool = false,
     formattedSurcharge: String? = nil,
@@ -226,7 +202,6 @@ public struct CheckoutPaymentMethod: Equatable, Identifiable {
     self.type = type
     self.name = name
     self.icon = icon
-    self.metadata = metadata
     self.surcharge = surcharge
     self.hasUnknownSurcharge = hasUnknownSurcharge
     self.formattedSurcharge = formattedSurcharge
@@ -239,9 +214,9 @@ public struct CheckoutPaymentMethod: Equatable, Identifiable {
   }
 
   /// Compares two payment methods by identity and payment-relevant properties only.
-  /// Intentionally excludes `metadata` (not `Equatable`), `icon`, `buttonText`,
-  /// `textColor`, `borderColor`, `borderWidth`, and `cornerRadius` — these are
-  /// display-only properties that should not trigger state change propagation.
+  /// Intentionally excludes `icon`, `buttonText`, `textColor`, `borderColor`, `borderWidth`,
+  /// and `cornerRadius` — these are display-only properties that should not trigger state
+  /// change propagation.
   public static func == (lhs: CheckoutPaymentMethod, rhs: CheckoutPaymentMethod) -> Bool {
     lhs.id == rhs.id && lhs.type == rhs.type && lhs.name == rhs.name
       && lhs.surcharge == rhs.surcharge && lhs.hasUnknownSurcharge == rhs.hasUnknownSurcharge

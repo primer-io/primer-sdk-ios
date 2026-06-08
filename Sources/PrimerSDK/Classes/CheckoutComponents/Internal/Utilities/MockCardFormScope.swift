@@ -11,7 +11,7 @@
   /// Mock implementation of PrimerCardFormScope for SwiftUI previews
   /// Provides configurable behavior and debug logging to help test different UI states
   @available(iOS 15.0, *)
-  public class MockCardFormScope: CardFormFieldScopeInternal {
+  final class MockCardFormScope: CardFormFieldScopeInternal {
 
     // MARK: - Configuration Properties
 
@@ -45,44 +45,7 @@
       }
     }
 
-    // MARK: - Screen-Level Customization
-
-    public var title: String?
-    public var screen: CardFormScreenComponent?
-    public var cobadgedCardsView: (([String], @escaping (String) -> Void) -> any View)?
-    public var errorScreen: ErrorComponent?
-
-    // MARK: - Submit Button Customization
-
-    public var submitButtonText: String?
-    public var showSubmitLoadingIndicator: Bool = true
-
-    // MARK: - Field-Level Customization via InputFieldConfig
-
-    public var cardNumberConfig: InputFieldConfig?
-    public var expiryDateConfig: InputFieldConfig?
-    public var cvvConfig: InputFieldConfig?
-    public var cardholderNameConfig: InputFieldConfig?
-    public var postalCodeConfig: InputFieldConfig?
-    public var countryConfig: InputFieldConfig?
-    public var cityConfig: InputFieldConfig?
-    public var stateConfig: InputFieldConfig?
-    public var addressLine1Config: InputFieldConfig?
-    public var addressLine2Config: InputFieldConfig?
-    public var phoneNumberConfig: InputFieldConfig?
-    public var firstNameConfig: InputFieldConfig?
-    public var lastNameConfig: InputFieldConfig?
-    public var emailConfig: InputFieldConfig?
-    public var retailOutletConfig: InputFieldConfig?
-    public var otpCodeConfig: InputFieldConfig?
-
-    // MARK: - Section-Level Customization
-
-    public var cardInputSection: Component?
-    public var billingAddressSection: Component?
-    public var submitButton: Component?
-
-    public var selectCountry: PrimerSelectCountryScope {
+    var selectCountry: PrimerSelectCountryScope {
       fatalError("Not implemented for preview")
     }
 
@@ -230,6 +193,10 @@
       log("updateSelectedCardNetwork: \(network)")
     }
 
+    func autoSelectDetectedNetwork(_ network: String) {
+      log("autoSelectDetectedNetwork: \(network)")
+    }
+
     public func updateCountryCode(_ countryCode: String) {
       log("updateCountryCode: \(countryCode)")
     }
@@ -281,76 +248,6 @@
     public func getFieldError(_ fieldType: PrimerInputElementType) -> String? {
       log("getFieldError(\(fieldType))")
       return nil
-    }
-
-    // MARK: - ViewBuilder Methods
-
-    public func PrimerCardNumberField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
-      AnyView(EmptyView())
-    }
-
-    public func PrimerExpiryDateField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
-      AnyView(EmptyView())
-    }
-
-    public func PrimerCvvField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
-      AnyView(EmptyView())
-    }
-
-    public func PrimerCardholderNameField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
-      AnyView(EmptyView())
-    }
-
-    public func PrimerCountryField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
-      AnyView(EmptyView())
-    }
-
-    public func PrimerPostalCodeField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
-      AnyView(EmptyView())
-    }
-
-    public func PrimerCityField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
-      AnyView(EmptyView())
-    }
-
-    public func PrimerStateField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
-      AnyView(EmptyView())
-    }
-
-    public func PrimerAddressLine1Field(label: String?, styling: PrimerFieldStyling?) -> AnyView {
-      AnyView(EmptyView())
-    }
-
-    public func PrimerAddressLine2Field(label: String?, styling: PrimerFieldStyling?) -> AnyView {
-      AnyView(EmptyView())
-    }
-
-    public func PrimerFirstNameField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
-      AnyView(EmptyView())
-    }
-
-    public func PrimerLastNameField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
-      AnyView(EmptyView())
-    }
-
-    public func PrimerEmailField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
-      AnyView(EmptyView())
-    }
-
-    public func PrimerPhoneNumberField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
-      AnyView(EmptyView())
-    }
-
-    public func PrimerRetailOutletField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
-      AnyView(EmptyView())
-    }
-
-    public func PrimerOtpCodeField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
-      AnyView(EmptyView())
-    }
-
-    public func DefaultCardFormView(styling _: PrimerFieldStyling?) -> AnyView {
-      AnyView(EmptyView())
     }
 
     // MARK: - Form Configuration

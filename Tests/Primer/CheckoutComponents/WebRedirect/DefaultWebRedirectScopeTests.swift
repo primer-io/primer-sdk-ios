@@ -360,6 +360,26 @@ final class DefaultWebRedirectScopeTests: XCTestCase {
         }
     }
 
+    @MainActor
+    func test_submit_cancelledError_doesNotTransitionToFailure() async throws {
+        // Given
+        mockInteractor.errorToThrow = PrimerError.cancelled(paymentMethodType: "ADYEN_SOFORT")
+        let scope = createScope()
+
+        // When
+        scope.submit()
+        _ = try await awaitValue(scope.state, matching: { $0.status == .redirecting })
+        await Task.yield()
+        await Task.yield()
+
+        // Then - cancellation is a clean dismissal, never surfaced as a payment failure
+        let firstState = try await awaitFirst(scope.state)
+        if case .failure = firstState.status {
+            XCTFail("Cancellation must not transition to failure")
+        }
+        XCTAssertEqual(mockInteractor.executeCallCount, 1)
+    }
+
     // MARK: - cancel Tests
 
     @MainActor
@@ -509,7 +529,6 @@ final class DefaultWebRedirectScopeTests: XCTestCase {
         DefaultCheckoutScope(
             clientToken: TestData.Tokens.valid,
             settings: PrimerSettings(),
-            diContainer: DIContainer.shared,
             navigator: CheckoutNavigator()
         )
     }

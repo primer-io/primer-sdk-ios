@@ -58,7 +58,6 @@ final class AchPaymentMethodTests: XCTestCase {
         let checkoutScope = DefaultCheckoutScope(
             clientToken: TestData.Tokens.valid,
             settings: PrimerSettings(),
-            diContainer: DIContainer.shared,
             navigator: CheckoutNavigator()
         )
 
@@ -301,7 +300,6 @@ final class AchPaymentMethodTests: XCTestCase {
         let checkoutScope = DefaultCheckoutScope(
             clientToken: TestData.Tokens.valid,
             settings: settings,
-            diContainer: DIContainer.shared,
             navigator: navigator
         )
         checkoutScope.availablePaymentMethods = [
@@ -354,10 +352,6 @@ private final class MockInvalidCheckoutScope: PrimerCheckoutScope {
 
     var onBeforePaymentCreate: ((_ data: PrimerCheckoutPaymentMethodData,
                                  _ decisionHandler: @escaping (PrimerPaymentCreationDecision) -> Void) -> Void)?
-    var container: ContainerComponent?
-    var splashScreen: Component?
-    var loadingScreen: Component?
-    var errorScreen: ErrorComponent?
 
     var state: AsyncStream<PrimerCheckoutState> {
         AsyncStream { _ in }

@@ -7,16 +7,16 @@
 import SwiftUI
 
 @available(iOS 15.0, *)
-public typealias SelectCountryScreenComponent = (_ scope: PrimerSelectCountryScope) -> any View
+typealias SelectCountryScreenComponent = (_ scope: PrimerSelectCountryScope) -> any View
 
 @available(iOS 15.0, *)
-public typealias SearchBarComponent =
+typealias SearchBarComponent =
   (_ query: String, _ onQueryChange: @escaping (String) -> Void, _ placeholder: String) -> any View
 
 /// Scope interface for country selection functionality with search capabilities.
 @MainActor
 @available(iOS 15.0, *)
-public protocol PrimerSelectCountryScope: AnyObject {
+protocol PrimerSelectCountryScope: AnyObject {
 
   /// The current state of the country selection as an async stream.
   var state: AsyncStream<PrimerSelectCountryState> { get }
@@ -47,14 +47,14 @@ public protocol PrimerSelectCountryScope: AnyObject {
 // MARK: - State Definition
 
 @available(iOS 15.0, *)
-public struct PrimerSelectCountryState: Equatable {
-  public internal(set) var countries: [PrimerCountry] = []
-  public internal(set) var filteredCountries: [PrimerCountry] = []
-  public internal(set) var searchQuery: String = ""
-  public internal(set) var isLoading: Bool = false
-  public internal(set) var selectedCountry: PrimerCountry?
+struct PrimerSelectCountryState: Equatable {
+  var countries: [PrimerCountry] = []
+  var filteredCountries: [PrimerCountry] = []
+  var searchQuery: String = ""
+  var isLoading: Bool = false
+  var selectedCountry: PrimerCountry?
 
-  public init(
+  init(
     countries: [PrimerCountry] = [],
     filteredCountries: [PrimerCountry] = [],
     searchQuery: String = "",

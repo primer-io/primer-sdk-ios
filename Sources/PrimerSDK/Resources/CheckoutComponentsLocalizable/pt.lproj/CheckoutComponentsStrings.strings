@@ -1,6 +1,5 @@
 "accessibility_action_delete" = "Eliminar método de pagamento";
 "accessibility_action_edit" = "Editar dados do cartão";
-"accessibility_action_set_default" = "Definir como método de pagamento predefinido";
 "accessibility_card_form_billing_address_address_line_1_label" = "Linha de endereço 1, obrigatório";
 "accessibility_card_form_billing_address_address_line_2_label" = "Linha de endereço 2, opcional";
 "accessibility_card_form_billing_address_city_hint" = "Introduza o nome da cidade";
@@ -19,7 +18,7 @@
 "accessibility_card_form_cardholder_name_hint" = "Introduza o nome conforme indicado no cartão";
 "accessibility_card_form_cardholder_name_label" = "Nome do titular";
 "accessibility_card_form_cvc_error_invalid" = "Código de segurança inválido.";
-"accessibility_card_form_cvc_hint" = "Código de 3 ou 4 dígitos no verso do cartão";
+"accessibility_card_form_cvc_hint" = "Código de segurança, 3 ou 4 dígitos";
 "accessibility_card_form_cvc_label" = "Código de segurança, obrigatório";
 "accessibility_card_form_cvv_icon" = "Código de segurança CVV";
 "accessibility_card_form_expiry_error_invalid" = "Data de validade inválida.";
@@ -27,11 +26,11 @@
 "accessibility_card_form_expiry_icon" = "Data de validade do cartão";
 "accessibility_card_form_expiry_label" = "Data de validade, obrigatório";
 "accessibility_card_form_network_selector" = "Selecionar rede";
-"accessibility_card_form_network_selector_hint" = "Toque duas vezes para selecionar uma rede diferente";
-"accessibility_card_form_network_selector_inline_hint" = "Toque duas vezes para selecionar esta rede";
+"accessibility_card_form_network_selector_hint" = "Selecionar outra rede de cartões";
+"accessibility_card_form_network_selector_inline_hint" = "Selecionar esta rede";
 "accessibility_card_form_network_selector_label" = "Seletor de rede do cartão";
 "accessibility_card_form_submit_disabled" = "Botão desativado. Preencha todos os campos obrigatórios para ativar o pagamento";
-"accessibility_card_form_submit_hint" = "Toque duas vezes para submeter o pagamento";
+"accessibility_card_form_submit_hint" = "Enviar o pagamento";
 "accessibility_card_form_submit_label" = "Submeter pagamento";
 "accessibility_card_form_submit_loading" = "A processar pagamento, aguarde";
 "accessibility_checkout_error_icon" = "Erro";
@@ -52,8 +51,6 @@
 "accessibility_country_selection_search_icon" = "Pesquisar";
 "accessibility_error_generic" = "Ocorreu um erro. Tente novamente.";
 "accessibility_error_multiple_errors" = "%d erros encontrados";
-"accessibility_payment_selection_card_full" = "Cartão %1$@ terminado em %2$@, expira em %3$@";
-"accessibility_payment_selection_card_masked" = "cartão terminado em dígitos ocultos";
 "accessibility_payment_selection_coming_soon" = "Método de pagamento brevemente disponível";
 "accessibility_payment_selection_pay_with_card" = "Pagar com cartão";
 "accessibility_payment_selection_pay_with_ideal" = "Pagar com iDEAL";
@@ -65,6 +62,7 @@
 "accessibility_screen_loading_payment_methods" = "A carregar métodos de pagamento";
 "accessibility_screen_payment_method" = "Método de pagamento %@";
 "accessibility_payment_method_button" = "Pagar com %@";
+"accessibility_payment_method_selected" = "%@ selecionado";
 "accessibility_screen_processing_payment" = "A processar pagamento";
 "accessibility_screen_success" = "Pagamento bem-sucedido";
 "accessibility_vault_delete_payment_method" = "Eliminar este método de pagamento";
@@ -144,7 +142,6 @@
 "primer_card_form_placeholder_state" = "Lisboa";
 "primer_card_form_retail_not_implemented" = "Seleção de ponto de venda ainda não implementada";
 "primer_card_form_title" = "Pagar com cartão";
-"primer_checkout_auto_dismiss_message" = "Este ecrã será fechado automaticamente em 3 segundos";
 "primer_checkout_dismissing" = "A fechar...";
 "primer_checkout_error_button_other_methods" = "Escolher outros métodos de pagamento";
 "primer_checkout_error_subtitle" = "Ocorreu um problema de rede.";
@@ -209,8 +206,8 @@
 "accessibility_klarna_category" = "Opção de pagamento %@";
 "accessibility_klarna_category_selected" = "Opção de pagamento %@, selecionado";
 "accessibility_klarna_payment_view" = "Formulário de pagamento Klarna";
-"accessibility_klarna_authorize_hint" = "Toque duas vezes para continuar com Klarna";
-"accessibility_klarna_finalize_hint" = "Toque duas vezes para concluir o pagamento";
+"accessibility_klarna_authorize_hint" = "Continuar com a Klarna";
+"accessibility_klarna_finalize_hint" = "Concluir o pagamento";
 
 /* ACH */
 "primer_ach_title" = "Conta bancária";
@@ -223,9 +220,9 @@
 "primer_ach_mandate_button_accept" = "Concordo";
 "primer_ach_mandate_button_decline" = "Cancelar";
 "primer_ach_mandate_template" = "Ao clicar em \"Concordo\", autoriza %1$@ a debitar a conta bancária especificada acima por qualquer montante devido por encargos decorrentes da utilização dos serviços de %1$@ e/ou compra de produtos de %1$@, de acordo com o website e os termos de %1$@, até que esta autorização seja revogada. Pode alterar ou cancelar esta autorização a qualquer momento, notificando %1$@ com 30 (trinta) dias de antecedência.";
-"accessibility_ach_continue_hint" = "Toque duas vezes para continuar para a seleção da conta bancária";
-"accessibility_ach_mandate_accept_hint" = "Toque duas vezes para aceitar a autorização e concluir o pagamento";
-"accessibility_ach_mandate_decline_hint" = "Toque duas vezes para recusar e cancelar o pagamento";
+"accessibility_ach_continue_hint" = "Continuar para a seleção de conta bancária";
+"accessibility_ach_mandate_accept_hint" = "Aceitar a autorização e concluir o pagamento";
+"accessibility_ach_mandate_decline_hint" = "Recusar e cancelar o pagamento";
 
 "accessibility_card_form_billing_address_hint" = "Introduza a sua morada";
 "accessibility_card_form_billing_address_state_hint" = "Introduza o estado ou província";
@@ -285,3 +282,5 @@
 "primer_adyen_klarna_option_pay_later" = "Pagar mais tarde";
 "primer_adyen_klarna_option_pay_over_time" = "Pagar ao longo do tempo";
 "primer_adyen_klarna_option_pay_now" = "Pagar agora";
+"primer_vaulted_gocardless_direct_debit_suffix" = "Débito direto";
+"accessibility_card_form_billing_address_country_hint" = "Abre uma lista para selecionar o seu país";

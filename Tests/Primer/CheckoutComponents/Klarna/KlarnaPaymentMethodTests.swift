@@ -37,7 +37,6 @@ final class KlarnaPaymentMethodTests: XCTestCase {
         let checkoutScope = DefaultCheckoutScope(
             clientToken: TestData.Tokens.valid,
             settings: PrimerSettings(),
-            diContainer: DIContainer.shared,
             navigator: CheckoutNavigator()
         )
 
@@ -171,7 +170,6 @@ final class KlarnaPaymentMethodTests: XCTestCase {
         let checkoutScope = DefaultCheckoutScope(
             clientToken: KlarnaTestData.Constants.mockToken,
             settings: PrimerSettings(),
-            diContainer: DIContainer.shared,
             navigator: CheckoutNavigator()
         )
 
@@ -270,7 +268,6 @@ final class KlarnaPaymentMethodTests: XCTestCase {
         let checkoutScope = DefaultCheckoutScope(
             clientToken: TestData.Tokens.valid,
             settings: settings,
-            diContainer: DIContainer.shared,
             navigator: navigator
         )
         checkoutScope.availablePaymentMethods = [
@@ -348,10 +345,6 @@ private final class MockNonDefaultCheckoutScopeForKlarna: PrimerCheckoutScope {
         AsyncStream { $0.finish() }
     }
 
-    var container: ContainerComponent?
-    var splashScreen: Component?
-    var loadingScreen: Component?
-    var errorScreen: ErrorComponent?
     var onBeforePaymentCreate: BeforePaymentCreateHandler?
     var paymentMethodSelection: PrimerPaymentMethodSelectionScope {
         fatalError("Not implemented for mock")

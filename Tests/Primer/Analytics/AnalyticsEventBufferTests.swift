@@ -32,10 +32,8 @@ final class AnalyticsEventBufferTests: XCTestCase {
         await buffer.buffer(eventType: eventType, metadata: nil, timestamp: timestamp)
 
         // Then
-        let hasBuffered = await buffer.hasBufferedEvents
-        let count = await buffer.count
-        XCTAssertTrue(hasBuffered)
-        XCTAssertEqual(count, 1)
+        let bufferedEvents = await buffer.flush()
+        XCTAssertEqual(bufferedEvents.count, 1)
     }
 
     func testBuffer_MultipleEvents_MaintainsOrder() async {
@@ -117,10 +115,8 @@ final class AnalyticsEventBufferTests: XCTestCase {
         _ = await buffer.flush()
 
         // Then
-        let hasBuffered = await buffer.hasBufferedEvents
-        let count = await buffer.count
-        XCTAssertFalse(hasBuffered)
-        XCTAssertEqual(count, 0)
+        let remaining = await buffer.flush()
+        XCTAssertTrue(remaining.isEmpty)
     }
 
     func testFlush_EmptyBuffer_ReturnsEmptyArray() async {
@@ -149,29 +145,29 @@ final class AnalyticsEventBufferTests: XCTestCase {
 
     // MARK: - State Tests
 
-    func testHasBufferedEvents_WhenEmpty_ReturnsFalse() async {
+    func testFlush_WhenEmpty_ReturnsEmpty() async {
         // Given - empty buffer
 
         // When
-        let hasBuffered = await buffer.hasBufferedEvents
+        let bufferedEvents = await buffer.flush()
 
         // Then
-        XCTAssertFalse(hasBuffered)
+        XCTAssertTrue(bufferedEvents.isEmpty)
     }
 
-    func testHasBufferedEvents_WhenNotEmpty_ReturnsTrue() async {
+    func testFlush_WhenNotEmpty_ReturnsEvents() async {
         // Given
         let timestamp = Int(Date().timeIntervalSince1970)
         await buffer.buffer(eventType: .sdkInitStart, metadata: nil, timestamp: timestamp)
 
         // When
-        let hasBuffered = await buffer.hasBufferedEvents
+        let bufferedEvents = await buffer.flush()
 
         // Then
-        XCTAssertTrue(hasBuffered)
+        XCTAssertFalse(bufferedEvents.isEmpty)
     }
 
-    func testCount_ReflectsBufferedEvents() async {
+    func testFlush_ReflectsBufferedEventCount() async {
         // Given
         let timestamp = Int(Date().timeIntervalSince1970)
         await buffer.buffer(eventType: .sdkInitStart, metadata: nil, timestamp: timestamp)
@@ -179,13 +175,13 @@ final class AnalyticsEventBufferTests: XCTestCase {
         await buffer.buffer(eventType: .paymentMethodSelection, metadata: nil, timestamp: timestamp + 2)
 
         // When
-        let count = await buffer.count
+        let count = (await buffer.flush()).count
 
         // Then
         XCTAssertEqual(count, 3)
     }
 
-    func testCount_AfterFlush_ReturnsZero() async {
+    func testFlush_AfterFlush_ReturnsZero() async {
         // Given
         let timestamp = Int(Date().timeIntervalSince1970)
         await buffer.buffer(eventType: .sdkInitStart, metadata: nil, timestamp: timestamp)
@@ -193,7 +189,7 @@ final class AnalyticsEventBufferTests: XCTestCase {
 
         // When
         _ = await buffer.flush()
-        let count = await buffer.count
+        let count = (await buffer.flush()).count
 
         // Then
         XCTAssertEqual(count, 0)
@@ -217,7 +213,7 @@ final class AnalyticsEventBufferTests: XCTestCase {
         }
 
         // Then - all events should be buffered
-        let count = await buffer.count
+        let count = (await buffer.flush()).count
         XCTAssertEqual(count, 100)
     }
 
@@ -250,7 +246,7 @@ final class AnalyticsEventBufferTests: XCTestCase {
         }
 
         // Then - should not crash (some events may be flushed, others buffered)
-        let count = await buffer.count
+        let count = (await buffer.flush()).count
         XCTAssertGreaterThanOrEqual(count, 0)
         XCTAssertLessThanOrEqual(count, 20)
     }

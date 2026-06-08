@@ -14,17 +14,17 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
   @Published var navigationState = CheckoutNavigationState.loading
 
   var onBeforePaymentCreate: BeforePaymentCreateHandler?
-  var container: ContainerComponent?
-  var splashScreen: Component?
-  var loadingScreen: Component?
+  var idempotencyKeyProvider: (@Sendable () -> String?)?
   var successScreen: ((_ result: PaymentResult) -> AnyView)?
-  var errorScreen: ErrorComponent?
   var paymentMethodSelectionScreen: PaymentMethodSelectionScreenComponent?
 
   var paymentHandling: PrimerPaymentHandling {
     settings.paymentHandling
   }
 
+  // The producer Task strongly captures `self`; the scope stays alive until the consumer stops
+  // iterating, which cancels the Task via `onTermination`. `PrimerCheckoutSession.start()` relies
+  // on this to pin the scope for the session lifetime.
   var state: AsyncStream<PrimerCheckoutState> {
     AsyncStream { continuation in
       let task = Task { [self] in
@@ -99,6 +99,7 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
 
   private var currentPaymentMethodScope: (any PrimerPaymentMethodScope)?
   private var navigationObservationTask: Task<Void, Never>?
+  private var isReloading = false
   private let navigator: CheckoutNavigator
   private var configurationService: ConfigurationService?
   private var paymentMethodsInteractor: GetPaymentMethodsInteractor?
@@ -109,17 +110,23 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
   private let clientToken: String
   private let settings: PrimerSettings
 
+  /// True when driven by inline embedding (`PrimerCheckoutSession`); false for the modal
+  /// `PrimerCheckout` path. Inline embedding must not auto-route to a single payment method on
+  /// launch (the merchant's own view owns that) — mirrors Android's `LocalIsInlineFlow`.
+  private let isInlineFlow: Bool
+
   init(
     clientToken: String,
     settings: PrimerSettings,
-    diContainer: DIContainer,
     navigator: CheckoutNavigator,
-    presentationContext: PresentationContext = .fromPaymentSelection
+    presentationContext: PresentationContext = .fromPaymentSelection,
+    isInlineFlow: Bool = false
   ) {
     self.clientToken = clientToken
     self.settings = settings
     self.navigator = navigator
     self.presentationContext = presentationContext
+    self.isInlineFlow = isInlineFlow
 
     vaultManager.onSelectionChanged = { [weak self] _ in
       self?.cachedPaymentMethodSelection?.syncSelectedVaultedPaymentMethod()
@@ -133,6 +140,23 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
     }
 
     observeNavigationEvents()
+  }
+
+  /// Re-runs interactor setup and payment-method loading after the configuration is refreshed,
+  /// resetting cached scopes so the session's sub-sessions rebind to fresh state. Drives the scope
+  /// back to `.ready` (or `.failure`) via the same path as the initial load. Concurrent calls are ignored.
+  func reload() async {
+    guard !isReloading else { return }
+    isReloading = true
+    defer { isReloading = false }
+
+    cachedPaymentMethodSelection = nil
+    currentPaymentMethodScope = nil
+    paymentMethodScopeCache.removeAll()
+    availablePaymentMethods = []
+
+    await setupInteractors()
+    await loadPaymentMethods()
   }
 
   private func registerPaymentMethods() {
@@ -208,11 +232,14 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
         updateNavigationState(.failure(error))
         updateState(.failure(error))
       } else {
-          let totalAmount = configurationService?.amount ?? 0
+        let totalAmount = configurationService?.amount ?? 0
         let currencyCode = configurationService?.currency?.code ?? ""
         updateState(.ready(totalAmount: totalAmount, currencyCode: currencyCode))
 
-        if availablePaymentMethods.count == 1,
+        // Inline embedding must not auto-present a payment method on launch — the merchant's own
+        // inline view renders once `.ready`, and the flow sheet appears only after the merchant
+        // triggers it. Stay on selection so the inline host treats this as a non-flow state.
+        if availablePaymentMethods.count == 1, !isInlineFlow,
           let singlePaymentMethod = availablePaymentMethods.first {
           updateNavigationState(.paymentMethod(singlePaymentMethod.type))
         } else {
@@ -268,6 +295,7 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
   func updateNavigationState(_ newState: CheckoutNavigationState, syncToNavigator: Bool) {
     navigationState = newState
 
+    trackLifecycle(for: newState)
     announceScreenChange(for: newState)
 
     // Update navigation based on state (only if not syncing from navigator to avoid loops)
@@ -294,6 +322,20 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
         // Dismissal is handled by the view layer through onCompletion callback
         break
       }
+    }
+  }
+
+  /// Tracks navigation-driven lifecycle side effects: the active payment scope (so retryPayment
+  /// targets the screen the merchant is on, independent of incidental getPaymentMethodScope lookups)
+  /// and clearing the selected name on terminal states.
+  private func trackLifecycle(for state: CheckoutNavigationState) {
+    switch state {
+    case let .paymentMethod(type):
+      currentPaymentMethodScope = paymentMethodScopeCache[type]
+    case .success, .failure, .dismissed:
+      selectedPaymentMethodName = nil
+    default:
+      break
     }
   }
 
@@ -326,13 +368,10 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
       message = CheckoutComponentsStrings.a11yScreenProcessingPayment
     case .success:
       message = CheckoutComponentsStrings.a11yScreenSuccess
-      selectedPaymentMethodName = nil
     case .failure:
       message = CheckoutComponentsStrings.a11yScreenError
-      selectedPaymentMethodName = nil
     case .dismissed:
       message = nil
-      selectedPaymentMethodName = nil
     }
 
     if let message {
@@ -375,17 +414,11 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
   func getPaymentMethodScope<T: PrimerPaymentMethodScope>(
     for paymentMethodType: String
   ) -> T? {
-    guard let scope = paymentMethodScopeCache[paymentMethodType] as? T else { return nil }
-    currentPaymentMethodScope = scope
-    return scope
+    paymentMethodScopeCache[paymentMethodType] as? T
   }
 
   func getPaymentMethodScope<T: PrimerPaymentMethodScope>(_ scopeType: T.Type) -> T? {
-    guard let scope = paymentMethodScopeCache.values.first(where: { $0 is T }) as? T else {
-      return nil
-    }
-    currentPaymentMethodScope = scope
-    return scope
+    paymentMethodScopeCache.values.first { $0 is T } as? T
   }
 
   func getPaymentMethodScope<T: PrimerPaymentMethodScope>(
@@ -439,13 +472,31 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
     findScope()
   }
 
-  /// Returns the first cached scope conforming to the requested protocol existential.
+  /// Returns the scope conforming to the requested protocol existential, preferring the active
+  /// payment method. Resolving by the active scope first is deterministic even when several methods
+  /// share one scope protocol (e.g. the three QR-code methods all conform to `PrimerQRCodeScope`).
+  /// The cache fallback (used before a method is active) stays guarded by the debug assertion.
   private func findScope<P>() -> P? {
-    guard let scope = paymentMethodScopeCache.values.first(where: { $0 is P }) as? P else { return nil }
-    if let paymentMethodScope = scope as? any PrimerPaymentMethodScope {
-      currentPaymentMethodScope = paymentMethodScope
+    if let active = currentPaymentMethodScope as? P { return active }
+    let matches = paymentMethodScopeCache.values.filter { $0 is P }
+    assert(matches.count <= 1, "Multiple cached scopes conform to \(P.self); match is nondeterministic")
+    return matches.first as? P
+  }
+
+  /// The user backed out of the active payment method (closed a redirect/native sheet, declined,
+  /// tapped cancel). Returns to the payment-method list — keeping the checkout session alive — when
+  /// the method was opened from selection; dismisses the whole checkout when it was presented
+  /// directly (no list to return to). Mirrors Drop-In's popToMainScreen-on-cancel. Payment FAILURES
+  /// must use `handlePaymentError` instead (error screen + dismiss).
+  func cancelActivePaymentMethod(returnToSelection: Bool) {
+    if returnToSelection {
+      // Navigation-only: leaves the checkout state at `.ready` so no terminal outcome is delivered.
+      // In the inline flow this closes the sheet and reveals the merchant's embedded list; in the
+      // modal flow it re-renders the selection screen.
+      updateNavigationState(.paymentMethodSelection)
+    } else {
+      onDismiss()
     }
-    return scope
   }
 
   func onDismiss() {
@@ -466,7 +517,6 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
     selectedPaymentMethodName = method.name
 
     if let scope = paymentMethodScopeCache[method.type] {
-      currentPaymentMethodScope = scope
       scope.start()
       updateNavigationState(.paymentMethod(method.type))
     } else {
@@ -485,7 +535,11 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
   ///   This matches the pattern used in Drop-In and Headless flows. A proper DI solution would require
   ///   refactoring the networking layer to use injected dependencies instead of the enum pattern.
   func invokeBeforePaymentCreate(paymentMethodType: String) async throws {
-    guard let callback = onBeforePaymentCreate else { return }
+    guard let callback = onBeforePaymentCreate else {
+      // No imperative handler — fall back to the declarative idempotency-key provider (Android parity).
+      PrimerInternal.shared.currentIdempotencyKey = idempotencyKeyProvider?()
+      return
+    }
 
     let decision = await withCheckedContinuation { (continuation: CheckedContinuation<PrimerPaymentCreationDecision, Never>) in
       let data = PrimerCheckoutPaymentMethodData(
@@ -500,8 +554,9 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
     case let .abort(errorMessage):
       throw PrimerError.merchantError(message: errorMessage ?? "Payment creation aborted")
     case let .continue(idempotencyKey):
+      // The imperative decision's key wins; fall back to the declarative provider only when it omits one.
       // TODO: Refactor to use DI when networking layer is updated to support injected dependencies
-      PrimerInternal.shared.currentIdempotencyKey = idempotencyKey
+      PrimerInternal.shared.currentIdempotencyKey = idempotencyKey ?? idempotencyKeyProvider?()
     }
   }
 
@@ -521,10 +576,8 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
   }
 
   func handleAutoDismiss() {
-    // This will be handled by the parent view (PrimerCheckout) to dismiss the entire checkout
-    Task { @MainActor in
-      updateState(.dismissed)
-    }
+    // The parent view (PrimerCheckout) observes .dismissed to tear down the entire checkout.
+    updateState(.dismissed)
   }
 
   func retryPayment() {

@@ -11,7 +11,6 @@ struct StateInputField: View, LogReporter {
   let label: String?
   let placeholder: String
   let scope: any CardFormFieldScopeInternal
-  let styling: PrimerFieldStyling?
 
   // MARK: - Private Properties
 
@@ -28,13 +27,11 @@ struct StateInputField: View, LogReporter {
   init(
     label: String?,
     placeholder: String,
-    scope: any CardFormFieldScopeInternal,
-    styling: PrimerFieldStyling? = nil
+    scope: any CardFormFieldScopeInternal
   ) {
     self.label = label
     self.placeholder = placeholder
     self.scope = scope
-    self.styling = styling
   }
 
   // MARK: - Body
@@ -42,7 +39,6 @@ struct StateInputField: View, LogReporter {
   var body: some View {
     PrimerInputFieldContainer(
       label: label,
-      styling: styling,
       text: $state,
       isValid: $isValid,
       errorMessage: $errorMessage,
@@ -55,7 +51,6 @@ struct StateInputField: View, LogReporter {
           errorMessage: $errorMessage,
           isFocused: $isFocused,
           placeholder: placeholder,
-          styling: styling,
           validationService: validationService,
           scope: scope,
           tokens: tokens

@@ -1,6 +1,5 @@
 "accessibility_action_delete" = "Ștergeți metoda de plată";
 "accessibility_action_edit" = "Editați detaliile cardului";
-"accessibility_action_set_default" = "Setați ca metodă de plată implicită";
 "accessibility_card_form_billing_address_address_line_1_label" = "Adresă principală, obligatoriu";
 "accessibility_card_form_billing_address_address_line_2_label" = "Alte detalii adresă, opțional";
 "accessibility_card_form_billing_address_city_hint" = "Introduceți numele orașului";
@@ -19,7 +18,7 @@
 "accessibility_card_form_cardholder_name_hint" = "Introduceți numele așa cum apare pe card";
 "accessibility_card_form_cardholder_name_label" = "Nume titular card";
 "accessibility_card_form_cvc_error_invalid" = "Cod de securitate invalid.";
-"accessibility_card_form_cvc_hint" = "Cod de 3 sau 4 cifre de pe spatele cardului";
+"accessibility_card_form_cvc_hint" = "Cod de securitate, 3 sau 4 cifre";
 "accessibility_card_form_cvc_label" = "Cod de securitate, obligatoriu";
 "accessibility_card_form_cvv_icon" = "Cod de securitate CVV";
 "accessibility_card_form_expiry_error_invalid" = "Dată de expirare invalidă.";
@@ -27,11 +26,11 @@
 "accessibility_card_form_expiry_icon" = "Dată de expirare card";
 "accessibility_card_form_expiry_label" = "Data de expirare, obligatorie";
 "accessibility_card_form_network_selector" = "Selectați rețeaua";
-"accessibility_card_form_network_selector_hint" = "Apăsați de două ori pentru a selecta o altă rețea de card";
-"accessibility_card_form_network_selector_inline_hint" = "Apăsați de două ori pentru a selecta această rețea";
+"accessibility_card_form_network_selector_hint" = "Selectați o altă rețea de carduri";
+"accessibility_card_form_network_selector_inline_hint" = "Selectați această rețea";
 "accessibility_card_form_network_selector_label" = "Selector rețea card";
 "accessibility_card_form_submit_disabled" = "Buton dezactivat. Completați toate câmpurile obligatorii pentru a activa plata";
-"accessibility_card_form_submit_hint" = "Apăsați de două ori pentru a finaliza plata";
+"accessibility_card_form_submit_hint" = "Trimiteți plata";
 "accessibility_card_form_submit_label" = "Trimiteți plata";
 "accessibility_card_form_submit_loading" = "Se procesează plata, vă rugăm așteptați";
 "accessibility_checkout_error_icon" = "Eroare";
@@ -52,8 +51,6 @@
 "accessibility_country_selection_search_icon" = "Căutare";
 "accessibility_error_generic" = "A apărut o eroare. Vă rugăm să încercați din nou.";
 "accessibility_error_multiple_errors" = "%d erori găsite";
-"accessibility_payment_selection_card_full" = "Card %1$@ care se termină în %2$@, expiră %3$@";
-"accessibility_payment_selection_card_masked" = "card care se termină în cifre mascate";
 "accessibility_payment_selection_coming_soon" = "Metodă de plată în curând";
 "accessibility_payment_selection_pay_with_card" = "Plătiți cu cardul";
 "accessibility_payment_selection_pay_with_ideal" = "Plătiți cu iDEAL";
@@ -65,6 +62,7 @@
 "accessibility_screen_loading_payment_methods" = "Se încarcă metodele de plată";
 "accessibility_screen_payment_method" = "Metodă de plată %@";
 "accessibility_payment_method_button" = "Plătește cu %@";
+"accessibility_payment_method_selected" = "%@ selectat";
 "accessibility_screen_processing_payment" = "Se procesează plata";
 "accessibility_screen_success" = "Plată reușită";
 "accessibility_vault_delete_payment_method" = "Ștergeți această metodă de plată";
@@ -144,7 +142,6 @@
 "primer_card_form_placeholder_state" = "B";
 "primer_card_form_retail_not_implemented" = "Selecția punctului de vânzare nu este încă implementată";
 "primer_card_form_title" = "Plătiți cu cardul";
-"primer_checkout_auto_dismiss_message" = "Acest ecran se va închide automat în 3 secunde";
 "primer_checkout_dismissing" = "Se închide...";
 "primer_checkout_error_button_other_methods" = "Alegeți alte metode de plată";
 "primer_checkout_error_subtitle" = "A apărut o problemă de rețea.";
@@ -209,8 +206,8 @@
 "accessibility_klarna_category" = "Opțiune de plată %@";
 "accessibility_klarna_category_selected" = "Opțiune de plată %@, selectat";
 "accessibility_klarna_payment_view" = "Formular de plată Klarna";
-"accessibility_klarna_authorize_hint" = "Atingeți de două ori pentru a continua cu Klarna";
-"accessibility_klarna_finalize_hint" = "Atingeți de două ori pentru a finaliza plata";
+"accessibility_klarna_authorize_hint" = "Continuați cu Klarna";
+"accessibility_klarna_finalize_hint" = "Finalizați plata";
 
 /* ACH */
 "primer_ach_title" = "Cont bancar";
@@ -223,9 +220,9 @@
 "primer_ach_mandate_button_accept" = "Sunt de acord";
 "primer_ach_mandate_button_decline" = "Anulează";
 "primer_ach_mandate_template" = "Făcând clic pe \"Sunt de acord\", autorizați %1$@ să debiteze contul bancar specificat mai sus pentru orice sumă datorată pentru taxele rezultate din utilizarea serviciilor %1$@ și/sau achiziționarea de produse de la %1$@, conform site-ului web și termenilor %1$@, până când această autorizare este revocată. Puteți modifica sau anula această autorizare în orice moment, notificând %1$@ cu 30 (treizeci) de zile în avans.";
-"accessibility_ach_continue_hint" = "Atingeți de două ori pentru a continua la selectarea contului bancar";
-"accessibility_ach_mandate_accept_hint" = "Atingeți de două ori pentru a accepta autorizarea și a finaliza plata";
-"accessibility_ach_mandate_decline_hint" = "Atingeți de două ori pentru a refuza și a anula plata";
+"accessibility_ach_continue_hint" = "Continuați la selectarea contului bancar";
+"accessibility_ach_mandate_accept_hint" = "Acceptați autorizarea și finalizați plata";
+"accessibility_ach_mandate_decline_hint" = "Refuzați și anulați plata";
 
 "accessibility_card_form_billing_address_hint" = "Introduceți adresa dvs.";
 "accessibility_card_form_billing_address_state_hint" = "Introduceți statul sau provincia";
@@ -285,3 +282,5 @@
 "primer_adyen_klarna_option_pay_later" = "Plătește mai târziu";
 "primer_adyen_klarna_option_pay_over_time" = "Plătește eșalonat";
 "primer_adyen_klarna_option_pay_now" = "Plătește acum";
+"primer_vaulted_gocardless_direct_debit_suffix" = "Debit direct";
+"accessibility_card_form_billing_address_country_hint" = "Deschide o listă pentru a selecta țara dvs.";

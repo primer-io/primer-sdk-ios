@@ -38,13 +38,15 @@ struct ApplePayRequestBuilder {
       currency: currency,
       merchantIdentifier: merchantIdentifier,
       countryCode: countryCode,
-      items: try createOrderItems(from: clientSession),
+      items: try createOrderItems(from: clientSession, selectedShippingItem: shippingMethods.selectedItem),
       shippingMethods: shippingMethods.methods
     )
   }
 
-  private static func createOrderItems(from clientSession: ClientSession.APIResponse) throws
-    -> [ApplePayOrderItem] {
+  private static func createOrderItems(
+    from clientSession: ClientSession.APIResponse,
+    selectedShippingItem: ApplePayOrderItem?
+  ) throws -> [ApplePayOrderItem] {
     var orderItems: [ApplePayOrderItem] = []
 
     let merchantName =
@@ -81,7 +83,7 @@ struct ApplePayRequestBuilder {
         }
       }
 
-      if let selectedShippingItem = getShippingMethods().selectedItem {
+      if let selectedShippingItem {
         orderItems.append(selectedShippingItem)
       }
 

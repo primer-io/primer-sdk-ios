@@ -138,14 +138,12 @@ extension PrimerCheckoutPresenterDelegate {
     ///   - viewController: The view controller to present from
     ///   - primerSettings: Configuration settings to apply for this checkout session
     ///   - primerTheme: Theme configuration for design tokens
-    ///   - scope: Optional closure to configure the checkout scope with custom UI components
     ///   - completion: Optional completion handler
     public static func presentCheckout(
         clientToken: String,
         from viewController: UIViewController,
         primerSettings: PrimerSettings,
         primerTheme: PrimerCheckoutTheme,
-        scope: ((PrimerCheckoutScope) -> Void)? = nil,
         completion: (() -> Void)? = nil
     ) {
         shared.presentCheckout(
@@ -153,7 +151,6 @@ extension PrimerCheckoutPresenterDelegate {
             from: viewController,
             primerSettings: primerSettings,
             primerTheme: primerTheme,
-            scope: scope,
             completion: completion
         )
     }
@@ -259,7 +256,6 @@ extension PrimerCheckoutPresenterDelegate {
         from viewController: UIViewController,
         primerSettings: PrimerSettings,
         primerTheme: PrimerCheckoutTheme,
-        scope: ((PrimerCheckoutScope) -> Void)? = nil,
         completion: (() -> Void)?
     ) {
         guard !isPresentingCheckout else {
@@ -276,11 +272,9 @@ extension PrimerCheckoutPresenterDelegate {
                 clientToken: clientToken,
                 settings: primerSettings,
                 theme: primerTheme,
-                diContainer: DIContainer.shared,
                 navigator: CheckoutNavigator(),
                 presentationContext: .direct,
                 integrationType: .uiKit,
-                scope: scope,
                 onCompletion: { [weak self] state in
                     switch state {
                     case let .success(paymentResult):
@@ -429,17 +423,5 @@ extension PrimerCheckoutPresenter {
         }
 
         return viewController
-    }
-}
-
-// MARK: - Delegate Integration
-
-@available(iOS 15.0, *)
-extension PrimerCheckoutPresenter {
-
-    /// Set the Primer delegate (uses the shared Primer.delegate)
-    @objc public static var delegate: PrimerDelegate? {
-        get { Primer.shared.delegate }
-        set { Primer.shared.delegate = newValue }
     }
 }

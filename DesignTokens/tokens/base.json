@@ -299,6 +299,20 @@
         }
       }
     },
+    "borderWidth": {
+      "thin": {
+        "type": "dimension",
+        "value": 1
+      },
+      "medium": {
+        "type": "dimension",
+        "value": 2
+      },
+      "thick": {
+        "type": "dimension",
+        "value": 3
+      }
+    },
     "radius": {
       "medium": {
         "type": "dimension",
@@ -471,6 +485,10 @@
       "xlarge": {
         "type": "dimension",
         "value": "{primer.space.base} * 5.00"
+      },
+      "xxlarge": {
+        "type": "dimension",
+        "value": "{primer.space.base} * 6.00"
       },
       "base": {
         "type": "dimension",

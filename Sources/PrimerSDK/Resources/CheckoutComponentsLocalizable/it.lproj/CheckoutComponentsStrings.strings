@@ -1,6 +1,5 @@
 "accessibility_action_delete" = "Elimina metodo di pagamento";
 "accessibility_action_edit" = "Modifica i dati della carta";
-"accessibility_action_set_default" = "Imposta come metodo di pagamento predefinito";
 "accessibility_card_form_billing_address_address_line_1_label" = "Indirizzo riga 1, obbligatorio";
 "accessibility_card_form_billing_address_address_line_2_label" = "Indirizzo riga 2, facoltativo";
 "accessibility_card_form_billing_address_city_hint" = "Inserisci il nome della città";
@@ -19,7 +18,7 @@
 "accessibility_card_form_cardholder_name_hint" = "Inserisci il nome come riportato sulla carta";
 "accessibility_card_form_cardholder_name_label" = "Nome titolare";
 "accessibility_card_form_cvc_error_invalid" = "Il codice di sicurezza non è valido.";
-"accessibility_card_form_cvc_hint" = "Codice a 3 o 4 cifre sul retro della carta";
+"accessibility_card_form_cvc_hint" = "Codice di sicurezza, 3 o 4 cifre";
 "accessibility_card_form_cvc_label" = "Codice di sicurezza, obbligatorio";
 "accessibility_card_form_cvv_icon" = "Codice di sicurezza CVV";
 "accessibility_card_form_expiry_error_invalid" = "La data di scadenza non è valida.";
@@ -27,11 +26,11 @@
 "accessibility_card_form_expiry_icon" = "Data di scadenza della carta";
 "accessibility_card_form_expiry_label" = "Data di scadenza, obbligatoria";
 "accessibility_card_form_network_selector" = "Seleziona circuito";
-"accessibility_card_form_network_selector_hint" = "Tocca due volte per selezionare un altro circuito";
-"accessibility_card_form_network_selector_inline_hint" = "Tocca due volte per selezionare questo circuito";
+"accessibility_card_form_network_selector_hint" = "Seleziona un'altra rete di carte";
+"accessibility_card_form_network_selector_inline_hint" = "Seleziona questa rete";
 "accessibility_card_form_network_selector_label" = "Selettore del circuito della carta";
 "accessibility_card_form_submit_disabled" = "Pulsante disabilitato. Completa tutti i campi obbligatori per abilitare il pagamento";
-"accessibility_card_form_submit_hint" = "Tocca due volte per inviare il pagamento";
+"accessibility_card_form_submit_hint" = "Invia il pagamento";
 "accessibility_card_form_submit_label" = "Invia pagamento";
 "accessibility_card_form_submit_loading" = "Elaborazione del pagamento in corso, attendere";
 "accessibility_checkout_error_icon" = "Errore";
@@ -52,8 +51,6 @@
 "accessibility_country_selection_search_icon" = "Cerca";
 "accessibility_error_generic" = "Si è verificato un errore. Riprova.";
 "accessibility_error_multiple_errors" = "%d errori trovati";
-"accessibility_payment_selection_card_full" = "La carta %1$@ che termina con %2$@, scade il %3$@";
-"accessibility_payment_selection_card_masked" = "carta che termina con cifre nascoste";
 "accessibility_payment_selection_coming_soon" = "Metodo di pagamento in arrivo";
 "accessibility_payment_selection_pay_with_card" = "Paga con carta";
 "accessibility_payment_selection_pay_with_ideal" = "Paga con iDEAL";
@@ -65,6 +62,7 @@
 "accessibility_screen_loading_payment_methods" = "Caricamento dei metodi di pagamento";
 "accessibility_screen_payment_method" = "Metodo di pagamento %@";
 "accessibility_payment_method_button" = "Paga con %@";
+"accessibility_payment_method_selected" = "%@ selezionato";
 "accessibility_screen_processing_payment" = "Elaborazione pagamento";
 "accessibility_screen_success" = "Pagamento riuscito";
 "accessibility_vault_delete_payment_method" = "Elimina questo metodo di pagamento";
@@ -144,7 +142,6 @@
 "primer_card_form_placeholder_state" = "MI";
 "primer_card_form_retail_not_implemented" = "Selezione punto vendita non ancora implementata";
 "primer_card_form_title" = "Paga con carta";
-"primer_checkout_auto_dismiss_message" = "Questa schermata si chiuderà automaticamente tra 3 secondi";
 "primer_checkout_dismissing" = "Chiusura in corso...";
 "primer_checkout_error_button_other_methods" = "Scegli un altro metodo di pagamento";
 "primer_checkout_error_subtitle" = "Si è verificato un problema di rete.";
@@ -209,8 +206,8 @@
 "accessibility_klarna_category" = "Opzione di pagamento %@";
 "accessibility_klarna_category_selected" = "Opzione di pagamento %@, selezionato";
 "accessibility_klarna_payment_view" = "Modulo di pagamento Klarna";
-"accessibility_klarna_authorize_hint" = "Tocca due volte per continuare con Klarna";
-"accessibility_klarna_finalize_hint" = "Tocca due volte per completare il pagamento";
+"accessibility_klarna_authorize_hint" = "Continua con Klarna";
+"accessibility_klarna_finalize_hint" = "Completa il pagamento";
 
 /* ACH */
 "primer_ach_title" = "Conto bancario";
@@ -223,9 +220,9 @@
 "primer_ach_mandate_button_accept" = "Accetto";
 "primer_ach_mandate_button_decline" = "Annulla";
 "primer_ach_mandate_template" = "Cliccando su \"Accetto\", autorizzi %1$@ ad addebitare sul conto bancario sopra specificato qualsiasi importo dovuto per addebiti derivanti dall'utilizzo dei servizi di %1$@ e/o dall'acquisto di prodotti da %1$@, in conformità al sito web e ai termini di %1$@, fino alla revoca di questa autorizzazione. Puoi modificare o annullare questa autorizzazione in qualsiasi momento notificando %1$@ con un preavviso di 30 (trenta) giorni.";
-"accessibility_ach_continue_hint" = "Tocca due volte per continuare alla selezione del conto bancario";
-"accessibility_ach_mandate_accept_hint" = "Tocca due volte per accettare l'autorizzazione e completare il pagamento";
-"accessibility_ach_mandate_decline_hint" = "Tocca due volte per rifiutare e annullare il pagamento";
+"accessibility_ach_continue_hint" = "Continua alla selezione del conto bancario";
+"accessibility_ach_mandate_accept_hint" = "Accetta l'autorizzazione e completa il pagamento";
+"accessibility_ach_mandate_decline_hint" = "Rifiuta e annulla il pagamento";
 
 "accessibility_card_form_billing_address_hint" = "Inserisci il tuo indirizzo";
 "accessibility_card_form_billing_address_state_hint" = "Inserisci stato o provincia";
@@ -285,3 +282,5 @@
 "primer_adyen_klarna_option_pay_later" = "Paga più tardi";
 "primer_adyen_klarna_option_pay_over_time" = "Paga in modo dilazionato";
 "primer_adyen_klarna_option_pay_now" = "Paga ora";
+"primer_vaulted_gocardless_direct_debit_suffix" = "Addebito diretto";
+"accessibility_card_form_billing_address_country_hint" = "Apre un elenco per selezionare il tuo paese";

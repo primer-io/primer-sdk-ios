@@ -82,6 +82,9 @@ final class DefaultRulesFactory: RulesFactory {
     StateRule()
   }
 
+  // Structured validation is intentionally country-agnostic: the returned rule applies only the
+  // generic 3-10 character check. Country-specific postal-code validation runs through the live
+  // PostalCodeInputField, which constructs PostalCodeRule with the selected countryCode.
   func createBillingPostalCodeRule() -> BillingPostalCodeRule {
     BillingPostalCodeRule()
   }

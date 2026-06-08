@@ -8,14 +8,9 @@ import Foundation
 
 struct AnalyticsEnvironmentProvider {
 
-  private let endpoints: [AnalyticsEnvironment: String] = [
-    .dev: "https://analytics.dev.data.primer.io/v1/sdk-analytic-events",
-    .staging: "https://analytics.staging.data.primer.io/v1/sdk-analytic-events",
-    .sandbox: "https://analytics.sandbox.data.primer.io/v1/sdk-analytic-events",
-    .production: "https://analytics.production.data.primer.io/v1/sdk-analytic-events"
-  ]
+  private static let path = "/v1/sdk-analytic-events"
 
   func getEndpointURL(for environment: AnalyticsEnvironment) -> URL? {
-    endpoints[environment].flatMap(URL.init(string:))
+    URL(string: "\(environment.baseURL)\(Self.path)")
   }
 }

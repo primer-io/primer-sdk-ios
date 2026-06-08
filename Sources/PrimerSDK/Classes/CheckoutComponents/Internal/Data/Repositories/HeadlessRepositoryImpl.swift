@@ -10,125 +10,6 @@ import Foundation
   import Primer3DS
 #endif
 
-/// Payment completion handler that implements delegate callbacks for async payment processing
-@available(iOS 15.0, *)
-@MainActor
-private final class PaymentCompletionHandler: NSObject,
-  @preconcurrency PrimerHeadlessUniversalCheckoutDelegate,
-  @preconcurrency PrimerHeadlessUniversalCheckoutRawDataManagerDelegate,
-  LogReporter {
-
-  private let completion: (Result<PaymentResult, Error>) -> Void
-  private var hasCompleted = false
-  private weak var repository: HeadlessRepositoryImpl?
-  private var validationCompletion: ((Bool, [Error]?) -> Void)?
-  private let paymentMethodType: String
-
-  init(
-    repository: HeadlessRepositoryImpl,
-    paymentMethodType: String = "PAYMENT_CARD",
-    completion: @escaping (Result<PaymentResult, Error>) -> Void
-  ) {
-    self.repository = repository
-    self.paymentMethodType = paymentMethodType
-    self.completion = completion
-    super.init()
-  }
-
-  func setValidationCompletion(_ validationCompletion: @escaping (Bool, [Error]?) -> Void) {
-    self.validationCompletion = validationCompletion
-  }
-
-  // MARK: - PrimerHeadlessUniversalCheckoutDelegate (Payment Completion)
-
-  func primerHeadlessUniversalCheckoutDidCompleteCheckoutWithData(_ data: PrimerCheckoutData) {
-    guard !hasCompleted else {
-      return
-    }
-    hasCompleted = true
-
-    let result = PaymentResult(
-      paymentId: data.payment?.id ?? UUID().uuidString,
-      status: .success,
-      token: data.payment?.id,
-      amount: nil,
-      paymentMethodType: paymentMethodType
-    )
-    completion(.success(result))
-  }
-
-  func primerHeadlessUniversalCheckoutDidFail(
-    withError err: Error, checkoutData: PrimerCheckoutData?
-  ) {
-    guard !hasCompleted else {
-      return
-    }
-    hasCompleted = true
-
-    completion(.failure(err))
-  }
-
-  func primerHeadlessUniversalCheckoutWillCreatePaymentWithData(
-    _ data: PrimerCheckoutPaymentMethodData,
-    decisionHandler: @escaping (PrimerPaymentCreationDecision) -> Void
-  ) {
-    decisionHandler(.continuePaymentCreation())
-  }
-
-  // MARK: - 3DS Support
-
-  func primerHeadlessUniversalCheckoutDidTokenizePaymentMethod(
-    _ paymentMethodTokenData: PrimerPaymentMethodTokenData,
-    decisionHandler: @escaping (PrimerHeadlessUniversalCheckoutResumeDecision) -> Void
-  ) {
-    repository?.trackThreeDSChallengeIfNeeded(from: paymentMethodTokenData)
-
-    // For CheckoutComponents, we simply complete the tokenization
-    // 3DS handling will be done at the payment creation level, not here
-    decisionHandler(.complete())
-  }
-
-  func primerHeadlessUniversalCheckoutDidResumeWith(
-    _ resumeToken: String,
-    decisionHandler: @escaping (PrimerHeadlessUniversalCheckoutResumeDecision) -> Void
-  ) {
-    decisionHandler(.complete())
-  }
-
-  func primerHeadlessUniversalCheckoutDidEnterResumePendingWithPaymentAdditionalInfo(
-    _ additionalInfo: PrimerCheckoutAdditionalInfo?
-  ) {
-    repository?.trackRedirectToThirdPartyIfNeeded(from: additionalInfo, paymentMethodType: paymentMethodType)
-  }
-
-  func primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo(
-    _ additionalInfo: PrimerCheckoutAdditionalInfo?
-  ) {
-    repository?.trackRedirectToThirdPartyIfNeeded(from: additionalInfo, paymentMethodType: paymentMethodType)
-  }
-
-  // MARK: - PrimerHeadlessUniversalCheckoutRawDataManagerDelegate (Validation)
-
-  func primerRawDataManager(
-    _ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
-    dataIsValid isValid: Bool,
-    errors: [Error]?
-  ) {
-    // Notify validation completion handler - continuation is resumed in submitPaymentWithValidation
-    if let validationCompletion {
-      self.validationCompletion = nil
-      validationCompletion(isValid, errors)
-    }
-  }
-
-  func primerRawDataManager(
-    _ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
-    didReceiveMetadata metadata: PrimerPaymentMethodMetadata,
-    forState state: PrimerValidationState
-  ) {
-  }
-}
-
 @available(iOS 15.0, *)
 @MainActor
 final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogReporter {
@@ -150,6 +31,8 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
     )
   }()
 
+  private var didConfigureRawDataManager = false
+
   // MARK: - Vault Support
 
   private lazy var vaultManager: any VaultManagerProtocol = {
@@ -166,21 +49,21 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
 
   /// Retains the completion handler during vault payment processing to prevent deallocation.
   ///
-  /// CLEANUP NOTE: This handler is explicitly set to nil in the completion callback (see processVaultedPayment).
-  /// If payment is interrupted (e.g., app backgrounded/terminated), cleanup happens automatically because
-  /// HeadlessRepository uses transient DI scope - each checkout session creates a fresh instance,
-  /// and the old instance (with any retained handler) is deallocated when the session ends.
+  /// CLEANUP NOTE: HeadlessRepository is registered as a DI singleton, so this instance is not
+  /// freed when a checkout session ends. The handler is explicitly set to nil in the completion
+  /// callback (see processVaultedPayment); that explicit reset is the cleanup mechanism.
   private var vaultPaymentCompletionHandler: PaymentCompletionHandler?
   private var cardPaymentCompletionHandler: PaymentCompletionHandler?
 
   private var rawCardData = PrimerCardData(
     cardNumber: "", expiryDate: "", cvv: "", cardholderName: "")
   // swiftformat:disable:next wrap
-  private let (networkDetectionStream, networkDetectionContinuation) = AsyncStream<[CardNetwork]>.makeStream()
+  // Accessed by the RawDataManager delegate extension (separate file), so not `private`.
+  let (networkDetectionStream, networkDetectionContinuation) = AsyncStream<[CardNetwork]>.makeStream()
   // swiftformat:disable:next wrap
-  private let (binDataStream, binDataContinuation) = AsyncStream<PrimerBinData>.makeStream()
+  let (binDataStream, binDataContinuation) = AsyncStream<PrimerBinData>.makeStream()
   // Last detected networks to avoid duplicate notifications
-  private var lastDetectedNetworks: [CardNetwork] = []
+  var lastDetectedNetworks: [CardNetwork] = []
   private var lastTrackedRedirectDestination: String?
 
   private let clientSessionActionsFactory: () -> ClientSessionActionsProtocol
@@ -216,12 +99,6 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
     }
   }
 
-  private func ensureSettings() async {
-    if settings == nil {
-      await injectSettings()
-    }
-  }
-
   private func injectConfigurationService() async {
     guard configurationService == nil else { return }
 
@@ -241,14 +118,8 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
     }
   }
 
-  private func ensureConfigurationService() async {
-    if configurationService == nil {
-      await injectConfigurationService()
-    }
-  }
-
   func getPaymentMethods() async throws -> [InternalPaymentMethod] {
-    await ensureConfigurationService()
+    await injectConfigurationService()
 
     let primerMethods = configurationService?.apiConfiguration?.paymentMethods ?? []
 
@@ -267,7 +138,6 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
         isEnabled: true,
         supportedCurrencies: nil,
         requiredInputElements: NetworkSurchargeExtractor.getRequiredInputElements(for: primerMethod.type),
-        metadata: nil,
         surcharge: primerMethod.surcharge,
         hasUnknownSurcharge: primerMethod.hasUnknownSurcharge,
         networkSurcharges: networkSurcharges,
@@ -295,6 +165,13 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
     try await withCheckedThrowingContinuation { continuation in
       let oneShot = OneShotContinuation(continuation)
       Task { @MainActor [self] in
+        let timeoutTask = Task {
+          try? await Task.sleep(nanoseconds: 60_000_000_000)
+          oneShot.resume(
+            throwing: PrimerError.unknown(
+              message: "Card payment timed out after 60 seconds"))
+        }
+
         do {
           let cardData = createCardData(
             cardNumber: cardNumber,
@@ -306,6 +183,7 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
           )
 
           let paymentHandler = PaymentCompletionHandler(repository: self) { [weak self] result in
+            timeoutTask.cancel()
             self?.cardPaymentCompletionHandler = nil
             oneShot.resume(with: result)
           }
@@ -317,13 +195,6 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
             delegate: paymentHandler
           )
 
-          let timeoutTask = Task {
-            try? await Task.sleep(nanoseconds: 60_000_000_000)
-            oneShot.resume(
-              throwing: PrimerError.unknown(
-                message: "Card payment timed out after 60 seconds"))
-          }
-
           configureRawDataManagerAndSubmit(
             rawDataManager: rawDataManager,
             cardData: cardData,
@@ -333,6 +204,7 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
             timeoutTask: timeoutTask
           )
         } catch {
+          timeoutTask.cancel()
           oneShot.resume(throwing: error)
         }
       }
@@ -382,18 +254,14 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
       }
 
       paymentHandler.setValidationCompletion { [weak self] isValid, errors in
-        guard let self else { return }
-
-        DispatchQueue.main.async {
-          self.submitPaymentWithValidation(
-            rawDataManager: rawDataManager,
-            selectedNetwork: selectedNetwork,
-            oneShot: oneShot,
-            validationResult: isValid,
-            validationErrors: errors,
-            timeoutTask: timeoutTask
-          )
-        }
+        self?.submitPaymentWithValidation(
+          rawDataManager: rawDataManager,
+          selectedNetwork: selectedNetwork,
+          oneShot: oneShot,
+          validationResult: isValid,
+          validationErrors: errors,
+          timeoutTask: timeoutTask
+        )
       }
 
       rawDataManager.rawData = cardData
@@ -435,7 +303,7 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
 
   @MainActor
   private func submitPaymentWithHandlingMode(rawDataManager: RawDataManagerProtocol) async {
-    await ensureSettings()
+    await injectSettings()
     let paymentHandlingMode = settings?.paymentHandling ?? .auto
 
     if paymentHandlingMode == .manual {
@@ -487,7 +355,9 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
 
   @MainActor
   func updateCardNumberInRawDataManager(_ cardNumber: String) async {
-    rawDataManager?.configure { _, _ in
+    if !didConfigureRawDataManager {
+      didConfigureRawDataManager = true
+      rawDataManager?.configure { _, _ in }
     }
 
     let sanitizedCardNumber = cardNumber.replacingOccurrences(of: " ", with: "")
@@ -509,7 +379,7 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
 
     // Use Client Session Actions to select payment method based on network
     let clientSessionActionsModule = clientSessionActionsFactory()
-    Task {
+    Task { [self] in
       do {
         try await clientSessionActionsModule
           .selectPaymentMethodIfNeeded("PAYMENT_CARD", cardNetwork: cardNetwork.rawValue)
@@ -545,8 +415,8 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
     // ARCHITECTURE NOTE: This fetch is required even if vaulted methods were recently fetched.
     //
     // VaultManager internally validates payment IDs against its own `vaultedPaymentMethods` cache
-    // (not AppState or any shared state). Since HeadlessRepository uses transient scope in DI,
-    // each checkout session creates a fresh instance with an empty VaultManager cache.
+    // (not AppState or any shared state). HeadlessRepository is a DI singleton, so its VaultManager
+    // instance and cache persist across operations and may be empty or stale at this point.
     //
     // Without this fetch, VaultManager.startPaymentFlow() would fail validation because its
     // internal cache is empty. This is the correct architectural pattern - it ensures each
@@ -766,80 +636,5 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
     } catch {
       logger.error(message: "Failed to resolve dependency: \(error)")
     }
-  }
-}
-
-// MARK: - RawDataManager Delegate Extension
-
-@available(iOS 15.0, *)
-extension HeadlessRepositoryImpl: @preconcurrency PrimerHeadlessUniversalCheckoutRawDataManagerDelegate {
-
-  func primerRawDataManager(
-    _ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
-    dataIsValid isValid: Bool,
-    errors: [Error]?
-  ) {
-    // RawDataManager validation state updated
-  }
-
-  func primerRawDataManager(
-    _ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
-    metadataDidChange metadata: [String: Any]?
-  ) {
-    // RawDataManager metadata changed
-  }
-
-  func primerRawDataManager(
-    _ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
-    willFetchMetadataForState cardState: PrimerValidationState
-  ) {
-    guard cardState is PrimerCardNumberEntryState else {
-      return
-    }
-  }
-
-  func primerRawDataManager(
-    _ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
-    didReceiveMetadata metadata: PrimerPaymentMethodMetadata,
-    forState cardState: PrimerValidationState
-  ) {
-    guard let metadataModel = metadata as? PrimerCardNumberEntryMetadata,
-      cardState is PrimerCardNumberEntryState
-    else {
-      return
-    }
-
-    // Extract networks following traditional SDK pattern
-    let primerNetworks: [PrimerCardNetwork] = if metadataModel.source == .remote,
-      let selectable = metadataModel.selectableCardNetworks?.items,
-      !selectable.isEmpty {
-      selectable
-    } else if let preferred = metadataModel.detectedCardNetworks.preferred {
-      [preferred]
-    } else if let first = metadataModel.detectedCardNetworks.items.first {
-      [first]
-    } else {
-      []
-    }
-
-    let filteredNetworks = primerNetworks.filter { $0.displayName != "Unknown" }
-
-    // Convert PrimerCardNetwork to CardNetwork
-    let cardNetworks = filteredNetworks.compactMap { CardNetwork(rawValue: $0.network.rawValue) }
-
-    // Only emit if networks changed to avoid duplicate notifications
-    if cardNetworks != lastDetectedNetworks {
-      lastDetectedNetworks = cardNetworks
-
-      // Emit networks via AsyncStream for SwiftUI consumption
-      networkDetectionContinuation.yield(cardNetworks)
-    }
-  }
-
-  func primerRawDataManager(
-    _ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
-    didReceiveBinData binData: PrimerBinData
-  ) {
-    binDataContinuation.yield(binData)
   }
 }

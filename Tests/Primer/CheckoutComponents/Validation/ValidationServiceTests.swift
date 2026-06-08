@@ -14,11 +14,16 @@ final class ValidationServiceTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
+        // Card-number validation reads the merchant's allowed networks from the client session
+        // ([CardNetwork].allowedCardNetworks); without a session it is empty and every card is
+        // rejected, so seed a session that allows the networks these tests exercise.
+        SDKSessionHelper.setUp()
         sut = DefaultValidationService(rulesFactory: DefaultRulesFactory())
     }
 
     override func tearDown() {
         sut = nil
+        SDKSessionHelper.tearDown()
         super.tearDown()
     }
 

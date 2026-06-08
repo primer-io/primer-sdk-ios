@@ -105,7 +105,8 @@ struct PaymentMethodSelectionScreen: View, LogReporter {
         .background(
           RoundedRectangle(cornerRadius: PrimerRadius.medium(tokens: tokens))
             .stroke(
-              CheckoutColors.borderDefault(tokens: tokens), lineWidth: PrimerBorderWidth.standard)
+              CheckoutColors.borderDefault(tokens: tokens),
+              lineWidth: PrimerBorderWidth.standard(tokens: tokens))
         )
     }
     .accessibility(

@@ -36,7 +36,18 @@ final class PrimerTextField: UITextField {
         }
     }
 
-    var internalText: String?
+    // Sensitive entry (card number, CVV, …) is held as a mutable byte buffer rather than a
+    // `String` so it can be zeroed in place on `wipe()`. A `String`'s backing storage cannot be
+    // reliably overwritten — reassigning only releases it, leaving the secret in freed memory.
+    private var secureStorage: [UInt8]?
+
+    var internalText: String? {
+        get { secureStorage.flatMap { String(bytes: $0, encoding: .utf8) } }
+        set {
+            zeroSecureStorage()
+            secureStorage = newValue.map { Array($0.utf8) }
+        }
+    }
 
     override var text: String? {
         get {
@@ -53,10 +64,18 @@ final class PrimerTextField: UITextField {
     }
 
     func wipe() {
-        if var bytes = internalText?.utf8CString {
-            for idx in bytes.indices { bytes[idx] = 0 }
-        }
-        internalText = nil
+        zeroSecureStorage()
+        secureStorage = nil
         super.text = nil
+    }
+
+    // Overwrites the live secret buffer in place before release. `memset_s` is guaranteed not to
+    // be optimised away, unlike a plain loop or a reassignment.
+    private func zeroSecureStorage() {
+        guard secureStorage?.isEmpty == false else { return }
+        secureStorage?.withUnsafeMutableBytes { raw in
+            guard let base = raw.baseAddress else { return }
+            memset_s(base, raw.count, 0, raw.count)
+        }
     }
 }

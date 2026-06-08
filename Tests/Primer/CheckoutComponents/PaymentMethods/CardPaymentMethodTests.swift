@@ -249,7 +249,6 @@ final class CardPaymentMethodTests: XCTestCase {
         let scope = DefaultCheckoutScope(
             clientToken: TestData.Tokens.valid,
             settings: settings,
-            diContainer: DIContainer.shared,
             navigator: navigator
         )
         scope.availablePaymentMethods = methods
@@ -267,10 +266,6 @@ private final class MockInvalidCheckoutScopeForCardTests: PrimerCheckoutScope {
         }
     }
 
-    var container: ContainerComponent?
-    var splashScreen: Component?
-    var loadingScreen: Component?
-    var errorScreen: ErrorComponent?
     var onBeforePaymentCreate: BeforePaymentCreateHandler?
     var paymentMethodSelection: PrimerPaymentMethodSelectionScope {
         fatalError("Not implemented")
@@ -295,11 +290,11 @@ private final class StubProcessCardPaymentInteractor: ProcessCardPaymentInteract
 
 @available(iOS 15.0, *)
 private final class StubValidateInputInteractor: ValidateInputInteractor {
-    func validate(value: String, type: PrimerInputElementType) async -> ValidationResult {
+    func validate(value: String, type: PrimerInputElementType) -> ValidationResult {
         ValidationResult(isValid: true, errorCode: nil, errorMessage: nil)
     }
 
-    func validateMultiple(fields: [PrimerInputElementType: String]) async -> [PrimerInputElementType: ValidationResult] {
+    func validateMultiple(fields: [PrimerInputElementType: String]) -> [PrimerInputElementType: ValidationResult] {
         [:]
     }
 }

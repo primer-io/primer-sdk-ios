@@ -12,6 +12,9 @@ import XCTest
 final class DefaultAchScopeTests: XCTestCase {
 
     private var mockInteractor: MockProcessAchPaymentInteractor!
+    // DefaultAchScope holds checkoutScope weakly; retain it here when a test needs to
+    // observe the terminal navigation state after a cancel/decline.
+    private var retainedCheckoutScope: DefaultCheckoutScope?
 
     override func setUp() {
         super.setUp()
@@ -20,6 +23,7 @@ final class DefaultAchScopeTests: XCTestCase {
 
     override func tearDown() {
         mockInteractor = nil
+        retainedCheckoutScope = nil
         super.tearDown()
     }
 
@@ -632,12 +636,59 @@ final class DefaultAchScopeTests: XCTestCase {
     }
 
     @MainActor
-    func test_declineMandate_doesNotCrash() {
-        // Given
-        let scope = createScope()
+    func test_declineMandate_fromSelection_returnsToSelectionNotFailure() {
+        // Given - reached from the payment-method list
+        let scope = createScopeRetainingCheckout(presentationContext: .fromPaymentSelection)
 
-        // When/Then - should not crash
+        // When
         scope.declineMandate()
+
+        // Then - declining the mandate returns to the list (session alive), never a failure/dismiss
+        guard case .paymentMethodSelection = retainedCheckoutScope?.navigationState else {
+            return XCTFail("Expected return to selection, got \(String(describing: retainedCheckoutScope?.navigationState))")
+        }
+    }
+
+    @MainActor
+    func test_declineMandate_direct_dismissesNotFailure() {
+        // Given - presented directly (no list to return to)
+        let scope = createScopeRetainingCheckout(presentationContext: .direct)
+
+        // When
+        scope.declineMandate()
+
+        // Then - dismiss the checkout (clean dismissal, not a failure)
+        guard case .dismissed = retainedCheckoutScope?.navigationState else {
+            return XCTFail("Expected dismissal when presented directly, got \(String(describing: retainedCheckoutScope?.navigationState))")
+        }
+    }
+
+    @MainActor
+    func test_achBankCollectorDidCancel_fromSelection_returnsToSelection() {
+        // Given
+        let scope = createScopeRetainingCheckout(presentationContext: .fromPaymentSelection)
+
+        // When
+        scope.achBankCollectorDidCancel()
+
+        // Then - dismissing the bank-selection sheet returns to the list, never a failure
+        guard case .paymentMethodSelection = retainedCheckoutScope?.navigationState else {
+            return XCTFail("Expected return to selection, got \(String(describing: retainedCheckoutScope?.navigationState))")
+        }
+    }
+
+    @MainActor
+    func test_achBankCollectorDidCancel_direct_dismisses() {
+        // Given
+        let scope = createScopeRetainingCheckout(presentationContext: .direct)
+
+        // When
+        scope.achBankCollectorDidCancel()
+
+        // Then
+        guard case .dismissed = retainedCheckoutScope?.navigationState else {
+            return XCTFail("Expected dismissal when presented directly, got \(String(describing: retainedCheckoutScope?.navigationState))")
+        }
     }
 
     // MARK: - Navigation Tests
@@ -923,9 +974,26 @@ final class DefaultAchScopeTests: XCTestCase {
         let checkoutScope = DefaultCheckoutScope(
             clientToken: AchTestData.Constants.mockToken,
             settings: PrimerSettings(),
-            diContainer: DIContainer.shared,
             navigator: CheckoutNavigator()
         )
+
+        return DefaultAchScope(
+            checkoutScope: checkoutScope,
+            presentationContext: presentationContext,
+            processAchInteractor: mockInteractor
+        )
+    }
+
+    @MainActor
+    private func createScopeRetainingCheckout(
+        presentationContext: PresentationContext = .fromPaymentSelection
+    ) -> DefaultAchScope {
+        let checkoutScope = DefaultCheckoutScope(
+            clientToken: AchTestData.Constants.mockToken,
+            settings: PrimerSettings(),
+            navigator: CheckoutNavigator()
+        )
+        retainedCheckoutScope = checkoutScope
 
         return DefaultAchScope(
             checkoutScope: checkoutScope,

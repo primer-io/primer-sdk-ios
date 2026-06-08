@@ -16,7 +16,6 @@ struct AddressLineTextField: UIViewRepresentable, LogReporter {
   let placeholder: String
   let isRequired: Bool
   let inputType: PrimerInputElementType
-  let styling: PrimerFieldStyling?
   let validationService: ValidationService
   let scope: (any CardFormFieldScopeInternal)?
   let onAddressChange: ((String) -> Void)?
@@ -30,7 +29,6 @@ struct AddressLineTextField: UIViewRepresentable, LogReporter {
     textField.configurePrimerStyle(
       placeholder: placeholder,
       configuration: .standard,
-      styling: styling,
       tokens: tokens,
       doneButtonTarget: context.coordinator,
       doneButtonAction: #selector(Coordinator.doneButtonTapped)

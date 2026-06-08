@@ -465,7 +465,6 @@ final class DefaultKlarnaScopeTests: XCTestCase {
         let checkoutScope = DefaultCheckoutScope(
             clientToken: KlarnaTestData.Constants.mockToken,
             settings: PrimerSettings(),
-            diContainer: DIContainer.shared,
             navigator: CheckoutNavigator()
         )
 

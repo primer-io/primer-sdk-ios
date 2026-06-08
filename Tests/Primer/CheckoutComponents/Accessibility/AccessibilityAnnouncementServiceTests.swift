@@ -11,47 +11,16 @@ import XCTest
 @available(iOS 15.0, *)
 final class AccessibilityAnnouncementServiceTests: XCTestCase {
 
-    private var service: AccessibilityAnnouncementService!
-
-    override func setUp() {
-        super.setUp()
-        service = DefaultAccessibilityAnnouncementService()
-    }
-
-    override func tearDown() {
-        service = nil
-        super.tearDown()
-    }
-
-    // MARK: - Thread Safety Tests
-
-    func test_concurrentAnnouncements_multipleThreads_doNotCrash() {
-        // Given: Multiple concurrent announcement operations
-        let concurrentOperationCount = TestData.Accessibility.concurrentOperationCount
-        let expectation = expectation(description: TestData.Accessibility.concurrentExpectationDescription)
-        expectation.expectedFulfillmentCount = concurrentOperationCount
-
-        let queue = DispatchQueue(label: TestData.Accessibility.testQueueLabel, attributes: .concurrent)
-
-        // When: Making concurrent announcements
-        for i in 0..<concurrentOperationCount {
-            queue.async { [self] in
-                service.announceError("\(TestData.Accessibility.errorPrefix) \(i)")
-                service.announceStateChange("\(TestData.Accessibility.statePrefix) \(i)")
-                expectation.fulfill()
-            }
-        }
-
-        // Then: Should complete without crashing
-        wait(for: [expectation], timeout: TestData.Accessibility.testTimeout)
-    }
-
     // MARK: - Notification Type Verification Tests
 
+    // The service is @MainActor (it posts main-thread-only UIAccessibility notifications), so this
+    // runs on the main actor. Off-main-actor usage is now a compile error, which supersedes the
+    // former concurrent-threads "does not crash" test — the threading contract is enforced by the type system.
+    @MainActor
     func test_announcements_eachType_usesCorrectNotificationType() {
         // Given: Test cases for each announcement type with expected notification
         let testCases: [(
-            method: (DefaultAccessibilityAnnouncementService, String) -> Void,
+            method: @MainActor (DefaultAccessibilityAnnouncementService, String) -> Void,
             expectedType: UIAccessibility.Notification,
             message: String,
             description: String

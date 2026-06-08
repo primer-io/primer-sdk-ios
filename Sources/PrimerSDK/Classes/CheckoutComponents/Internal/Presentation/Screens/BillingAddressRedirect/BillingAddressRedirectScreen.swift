@@ -12,9 +12,7 @@ struct BillingAddressRedirectScreen: View {
   let scope: any PrimerBillingAddressRedirectScope
 
   @Environment(\.designTokens) private var tokens
-  @Environment(\.diContainer) private var container
   @State private var billingState = PrimerBillingAddressRedirectState()
-  @State private var validationService: ValidationService?
 
   // MARK: - Local field state for text fields
 
@@ -35,7 +33,7 @@ struct BillingAddressRedirectScreen: View {
       .padding(.horizontal, PrimerSpacing.large(tokens: tokens))
       .padding(.vertical, PrimerSpacing.large(tokens: tokens))
     }
-    .frame(maxWidth: UIScreen.main.bounds.width)
+    .frame(maxWidth: .infinity)
     .navigationBarHidden(true)
     .background(CheckoutColors.background(tokens: tokens))
     .accessibilityIdentifier(AccessibilityIdentifiers.BillingAddressRedirect.screen)
@@ -44,7 +42,6 @@ struct BillingAddressRedirectScreen: View {
         billingState = newState
       }
     }
-    .onAppear { resolveValidationService() }
   }
 
   // MARK: - Header
@@ -174,7 +171,7 @@ struct BillingAddressRedirectScreen: View {
         .background(CheckoutColors.background(tokens: tokens))
         .overlay(
           RoundedRectangle(cornerRadius: PrimerRadius.small(tokens: tokens))
-            .stroke(fieldBorderColor(for: .countryCode), lineWidth: PrimerBorderWidth.standard)
+            .stroke(fieldBorderColor(for: .countryCode), lineWidth: PrimerBorderWidth.standard(tokens: tokens))
         )
       }
       .accessibilityIdentifier(AccessibilityIdentifiers.BillingAddressRedirect.countryCodeField)
@@ -208,7 +205,7 @@ struct BillingAddressRedirectScreen: View {
         .background(CheckoutColors.background(tokens: tokens))
         .overlay(
           RoundedRectangle(cornerRadius: PrimerRadius.small(tokens: tokens))
-            .stroke(fieldBorderColor(for: fieldType), lineWidth: PrimerBorderWidth.standard)
+            .stroke(fieldBorderColor(for: fieldType), lineWidth: PrimerBorderWidth.standard(tokens: tokens))
         )
         .autocapitalization(.words)
         .disableAutocorrection(true)
@@ -286,10 +283,5 @@ struct BillingAddressRedirectScreen: View {
 
   private var paymentMethodDisplayName: String {
     billingState.paymentMethod?.name ?? scope.paymentMethodType
-  }
-
-  private func resolveValidationService() {
-    guard let container else { return }
-    validationService = try? container.resolveSync(ValidationService.self)
   }
 }

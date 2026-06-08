@@ -102,7 +102,7 @@ final class DefaultBillingAddressRedirectScope: PrimerBillingAddressRedirectScop
   func cancel() {
     repository?.cancelPolling(paymentMethodType: paymentMethodType)
     internalState.status = .ready
-    checkoutScope?.onDismiss()
+    checkoutScope?.cancelActivePaymentMethod(returnToSelection: presentationContext.shouldShowBackButton)
   }
 
   func onBack() {
@@ -157,10 +157,10 @@ final class DefaultBillingAddressRedirectScope: PrimerBillingAddressRedirectScop
 
     if result.isValid {
       internalState.errors.removeValue(forKey: fieldType)
-    } else if let message = result.errorMessage {
+    } else {
       internalState.errors[fieldType] = FieldError(
         fieldType: fieldType,
-        message: message,
+        message: result.errorMessage ?? "",
         errorCode: result.errorCode
       )
     }
@@ -243,12 +243,15 @@ final class DefaultBillingAddressRedirectScope: PrimerBillingAddressRedirectScop
       checkoutScope.handlePaymentSuccess(result)
 
     } catch {
-      checkoutScope.startProcessing()
-
-      let errorMessage = (error as? PrimerError)?.localizedDescription ?? error.localizedDescription
-      internalState.status = .failure(errorMessage)
-
       let primerError = error as? PrimerError ?? PrimerError.unknown(message: error.localizedDescription)
+      if case .cancelled = primerError {
+        logger.debug(message: "performPayment cancelled by user")
+        checkoutScope.cancelActivePaymentMethod(returnToSelection: presentationContext.shouldShowBackButton)
+        return
+      }
+
+      checkoutScope.startProcessing()
+      internalState.status = .failure(primerError.localizedDescription)
       checkoutScope.handlePaymentError(primerError)
     }
   }
@@ -259,18 +262,12 @@ final class DefaultBillingAddressRedirectScope: PrimerBillingAddressRedirectScop
     return ClientSession.Address(
       firstName: nil,
       lastName: nil,
-      addressLine1: internalState.addressLine1.nilIfEmpty,
-      addressLine2: internalState.addressLine2.nilIfEmpty,
-      city: internalState.city.nilIfEmpty,
-      postalCode: internalState.postalCode.nilIfEmpty,
-      state: internalState.state.nilIfEmpty,
-      countryCode: internalState.countryCode.nilIfEmpty.flatMap { CountryCode(rawValue: $0) }
+      addressLine1: internalState.addressLine1.isEmpty ? nil : internalState.addressLine1,
+      addressLine2: internalState.addressLine2.isEmpty ? nil : internalState.addressLine2,
+      city: internalState.city.isEmpty ? nil : internalState.city,
+      postalCode: internalState.postalCode.isEmpty ? nil : internalState.postalCode,
+      state: internalState.state.isEmpty ? nil : internalState.state,
+      countryCode: internalState.countryCode.isEmpty ? nil : CountryCode(rawValue: internalState.countryCode)
     )
-  }
-}
-
-private extension String {
-  var nilIfEmpty: String? {
-    isEmpty ? nil : self
   }
 }

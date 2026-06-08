@@ -14,7 +14,6 @@ struct CardholderNameTextField: UIViewRepresentable, LogReporter {
   @Binding var errorMessage: String?
   @Binding var isFocused: Bool
   let placeholder: String
-  let styling: PrimerFieldStyling?
   let validationService: ValidationService
   let scope: any CardFormFieldScopeInternal
   let tokens: DesignTokens?
@@ -26,7 +25,6 @@ struct CardholderNameTextField: UIViewRepresentable, LogReporter {
     textField.configurePrimerStyle(
       placeholder: placeholder,
       configuration: .standard,
-      styling: styling,
       tokens: tokens,
       doneButtonTarget: context.coordinator,
       doneButtonAction: #selector(Coordinator.doneButtonTapped)

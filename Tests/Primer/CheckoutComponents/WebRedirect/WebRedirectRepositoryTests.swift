@@ -24,7 +24,7 @@ final class WebRedirectRepositoryTests: XCTestCase {
         sut = WebRedirectRepositoryImpl(
             tokenizationService: mockTokenizationService,
             webAuthService: mockWebAuthService,
-            createPaymentService: mockCreatePaymentService
+            createPaymentServiceFactory: { _ in self.mockCreatePaymentService }
         )
 
         let settings = PrimerSettings(
@@ -1076,7 +1076,7 @@ final class WebRedirectRepositoryTests: XCTestCase {
         sut = WebRedirectRepositoryImpl(
             tokenizationService: mockTokenizationService,
             webAuthService: mockWebAuthService,
-            createPaymentService: mockCreatePaymentService,
+            createPaymentServiceFactory: { _ in self.mockCreatePaymentService },
             apiConfigurationModule: mockConfigModule
         )
 
@@ -1136,7 +1136,7 @@ final class WebRedirectRepositoryTests: XCTestCase {
         sut = WebRedirectRepositoryImpl(
             tokenizationService: mockTokenizationService,
             webAuthService: mockWebAuthService,
-            createPaymentService: mockCreatePaymentService,
+            createPaymentServiceFactory: { _ in self.mockCreatePaymentService },
             apiConfigurationModule: mockConfigModule
         )
 
@@ -1204,7 +1204,7 @@ final class WebRedirectRepositoryTests: XCTestCase {
         sut = WebRedirectRepositoryImpl(
             tokenizationService: mockTokenizationService,
             webAuthService: mockWebAuthService,
-            createPaymentService: mockCreatePaymentService,
+            createPaymentServiceFactory: { _ in self.mockCreatePaymentService },
             apiConfigurationModule: mockConfigModule
         )
 
@@ -1252,7 +1252,7 @@ final class WebRedirectRepositoryTests: XCTestCase {
         sut = WebRedirectRepositoryImpl(
             tokenizationService: mockTokenizationService,
             webAuthService: mockWebAuthService,
-            createPaymentService: mockCreatePaymentService,
+            createPaymentServiceFactory: { _ in self.mockCreatePaymentService },
             pollingModuleFactory: { url in
                 factoryCalled = true
                 return PollingModule(url: url)
@@ -1272,14 +1272,19 @@ final class WebRedirectRepositoryTests: XCTestCase {
 
     // MARK: - cancelPolling After pollForCompletion Starts
 
-    func test_cancelPolling_afterPollStarts_setsCancellationError() async {
+    func test_cancelPolling_afterPollStarts_setsCancellationError() async throws {
         // Given
         let statusUrl = URL(string: "https://api.primer.io/status/123")!
+        var continuation: AsyncStream<Void>.Continuation!
+        let pollingStarted = AsyncStream<Void> { continuation = $0 }
         sut = WebRedirectRepositoryImpl(
             tokenizationService: mockTokenizationService,
             webAuthService: mockWebAuthService,
-            createPaymentService: mockCreatePaymentService,
-            pollingModuleFactory: { PollingModule(url: $0) }
+            createPaymentServiceFactory: { _ in self.mockCreatePaymentService },
+            pollingModuleFactory: { url in
+                continuation.yield()
+                return PollingModule(url: url)
+            }
         )
 
         // Start polling in background (will fail, but creates the module)
@@ -1287,8 +1292,8 @@ final class WebRedirectRepositoryTests: XCTestCase {
             _ = try? await sut.pollForCompletion(statusUrl: statusUrl)
         }
 
-        // Give polling time to start
-        try? await Task.sleep(nanoseconds: 100_000_000)
+        // Wait until polling actually started (factory invoked) instead of sleeping
+        _ = try await awaitFirst(pollingStarted)
 
         // When
         sut.cancelPolling(paymentMethodType: "ADYEN_TWINT")
@@ -1392,7 +1397,7 @@ final class WebRedirectRepositoryTests: XCTestCase {
         sut = WebRedirectRepositoryImpl(
             tokenizationService: mockTokenizationService,
             webAuthService: mockWebAuthService,
-            createPaymentService: mockCreatePaymentService,
+            createPaymentServiceFactory: { _ in self.mockCreatePaymentService },
             apiConfigurationModule: mockConfigModule
         )
 

@@ -46,32 +46,17 @@ final class CheckoutNavigatorTests: XCTestCase {
         task.cancel()
     }
 
-    func test_navigationEvents_emitsRouteChanges() async {
-        // Given
-        let expectation = XCTestExpectation(description: "Receive navigation updates")
-        var receivedRoutes: [CheckoutRoute] = []
-
-        // When - subscribe and make navigation changes
-        let task = Task {
-            for await route in sut.navigationEvents {
-                receivedRoutes.append(route)
-                if receivedRoutes.count >= 3 {
-                    expectation.fulfill()
-                    break
-                }
+    func test_navigationEvents_emitsRouteChanges() async throws {
+        // When - drive each navigation off the previously observed route, so the stream is
+        // guaranteed subscribed before each transition is triggered.
+        let receivedRoutes = try await collectUntil(sut.navigationEvents) { [self] route in
+            switch route {
+            case .splash: sut.navigateToLoading()
+            case .loading: sut.navigateToPaymentSelection()
+            default: break
             }
+            return route == .paymentMethodSelection
         }
-
-        // Give stream time to start
-        try? await Task.sleep(nanoseconds: 50_000_000) // 0.05 seconds
-
-        // Navigate
-        sut.navigateToLoading()
-        try? await Task.sleep(nanoseconds: 50_000_000)
-        sut.navigateToPaymentSelection()
-
-        await fulfillment(of: [expectation], timeout: 2.0)
-        task.cancel()
 
         // Then - should have received splash, loading, paymentMethodSelection
         XCTAssertGreaterThanOrEqual(receivedRoutes.count, 3)
@@ -103,86 +88,56 @@ final class CheckoutNavigatorTests: XCTestCase {
         let countBeforeNavigation = receivedCount
         sut.navigateToLoading()
 
-        // Small delay to ensure no more emissions
+        // why: asserting the ABSENCE of an emission after cancellation — there is no signal to
+        // await, so we give any erroneous emission a tick to (not) arrive.
         try? await Task.sleep(nanoseconds: 100_000_000)
 
-        // Then - count should not have increased significantly
-        // (the stream was broken out of)
+        // Then - count should not have increased (the stream was broken out of)
         XCTAssertEqual(receivedCount, countBeforeNavigation)
     }
 
-    func test_navigationEvents_multipleSubscribers() async {
-        // Given
-        let expectation1 = XCTestExpectation(description: "Subscriber 1 receives")
-        let expectation2 = XCTestExpectation(description: "Subscriber 2 receives")
-        var routes1: [CheckoutRoute] = []
-        var routes2: [CheckoutRoute] = []
-
-        // When - create two subscribers
-        let task1 = Task {
-            for await route in sut.navigationEvents {
-                routes1.append(route)
-                if routes1.count >= 2 {
-                    expectation1.fulfill()
-                    break
-                }
-            }
+    func test_navigationEvents_multipleSubscribers() async throws {
+        // When - collect from both subscribers concurrently. Navigation is deferred until BOTH have
+        // observed `.splash`, proving both iterations are subscribed before the transition is
+        // delivered — so each is guaranteed to receive splash then loading without a timing hack.
+        var splashSeen = 0
+        func onSplash() {
+            splashSeen += 1
+            if splashSeen == 2 { sut.navigateToLoading() }
         }
 
-        let task2 = Task {
-            for await route in sut.navigationEvents {
-                routes2.append(route)
-                if routes2.count >= 2 {
-                    expectation2.fulfill()
-                    break
-                }
+        let stream1 = sut.navigationEvents
+        let stream2 = sut.navigationEvents
+        let subscriber2 = Task { [self] in
+            try await collectUntil(stream2) { route in
+                if route == .splash { onSplash() }
+                return route == .loading
             }
         }
-
-        // Give streams time to start
-        try? await Task.sleep(nanoseconds: 50_000_000)
-
-        // Navigate
-        sut.navigateToLoading()
-
-        await fulfillment(of: [expectation1, expectation2], timeout: 2.0)
-        task1.cancel()
-        task2.cancel()
+        let routes1 = try await collectUntil(stream1) { route in
+            if route == .splash { onSplash() }
+            return route == .loading
+        }
+        let routes2 = try await subscriber2.value
 
         // Then - both subscribers should receive routes
         XCTAssertGreaterThanOrEqual(routes1.count, 2)
         XCTAssertGreaterThanOrEqual(routes2.count, 2)
     }
 
-    func test_navigationEvents_emitsCorrectRouteAfterMultipleChanges() async {
-        // Given
-        let expectation = XCTestExpectation(description: "Receive all routes")
-        var receivedRoutes: [CheckoutRoute] = []
-
-        // When
-        let task = Task {
-            for await route in sut.navigationEvents {
-                receivedRoutes.append(route)
-                if receivedRoutes.count >= 5 {
-                    expectation.fulfill()
-                    break
-                }
+    func test_navigationEvents_emitsCorrectRouteAfterMultipleChanges() async throws {
+        // When - chain the full navigation flow off each observed route, guaranteeing the stream is
+        // subscribed before every transition without timing hacks.
+        let receivedRoutes = try await collectUntil(sut.navigationEvents, timeout: 3.0) { [self] route in
+            switch route {
+            case .splash: sut.navigateToLoading()
+            case .loading: sut.navigateToPaymentSelection()
+            case .paymentMethodSelection: sut.navigateToPaymentMethod(TestData.PaymentMethodTypes.card)
+            case .paymentMethod: sut.navigateToProcessing()
+            default: break
             }
+            return route == .processing
         }
-
-        try? await Task.sleep(nanoseconds: 50_000_000)
-
-        // Full navigation flow
-        sut.navigateToLoading()
-        try? await Task.sleep(nanoseconds: 30_000_000)
-        sut.navigateToPaymentSelection()
-        try? await Task.sleep(nanoseconds: 30_000_000)
-        sut.navigateToPaymentMethod(TestData.PaymentMethodTypes.card)
-        try? await Task.sleep(nanoseconds: 30_000_000)
-        sut.navigateToProcessing()
-
-        await fulfillment(of: [expectation], timeout: 3.0)
-        task.cancel()
 
         // Then - verify the sequence
         XCTAssertGreaterThanOrEqual(receivedRoutes.count, 5)

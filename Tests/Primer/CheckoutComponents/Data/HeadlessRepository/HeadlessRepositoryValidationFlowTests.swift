@@ -20,6 +20,10 @@ final class ValidationFailureHandlingTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
+        // processCardPayment validates the card network against the session's allowed networks;
+        // without a session [CardNetwork].allowedCardNetworks is empty and the call fails before
+        // reaching the behavior under test, so seed a session that allows the test card networks.
+        SDKSessionHelper.setUp()
         mockRawDataManager = MockRawDataManager()
         mockRawDataManagerFactory = MockRawDataManagerFactory()
         mockRawDataManagerFactory.mockRawDataManager = mockRawDataManager
@@ -36,6 +40,7 @@ final class ValidationFailureHandlingTests: XCTestCase {
         mockClientSessionActions = nil
         sut = nil
         PrimerHeadlessUniversalCheckout.current.delegate = nil
+        SDKSessionHelper.tearDown()
         super.tearDown()
     }
 
@@ -163,6 +168,10 @@ final class ClientSessionUpdateBeforePaymentTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
+        // processCardPayment validates the card network against the session's allowed networks;
+        // without a session [CardNetwork].allowedCardNetworks is empty and the call fails before
+        // reaching the behavior under test, so seed a session that allows the test card networks.
+        SDKSessionHelper.setUp()
         mockRawDataManager = MockRawDataManager()
         mockRawDataManagerFactory = MockRawDataManagerFactory()
         mockRawDataManagerFactory.mockRawDataManager = mockRawDataManager
@@ -179,6 +188,7 @@ final class ClientSessionUpdateBeforePaymentTests: XCTestCase {
         mockClientSessionActions = nil
         sut = nil
         PrimerHeadlessUniversalCheckout.current.delegate = nil
+        SDKSessionHelper.tearDown()
         super.tearDown()
     }
 

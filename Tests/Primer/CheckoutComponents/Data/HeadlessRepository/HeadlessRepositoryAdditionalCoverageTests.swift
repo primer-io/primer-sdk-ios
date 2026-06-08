@@ -75,12 +75,10 @@ final class HeadlessRepositoryCardDataTests: XCTestCase {
         super.tearDown()
     }
 
-    func test_processCardPayment_sanitizesSpacesFromCardNumber() async {
+    func test_processCardPayment_sanitizesSpacesFromCardNumber() async throws {
         // Given
-        var capturedCardData: PrimerCardData?
-        mockRawDataManager.onRawDataSet = { data in
-            capturedCardData = data as? PrimerCardData
-        }
+        let (cardDataStream, continuation) = AsyncStream<PrimerCardData?>.makeStream()
+        mockRawDataManager.onRawDataSet = { continuation.yield($0 as? PrimerCardData) }
 
         let task = Task { [self] in
             _ = try? await sut.processCardPayment(
@@ -92,23 +90,17 @@ final class HeadlessRepositoryCardDataTests: XCTestCase {
                 selectedNetwork: nil
             )
         }
+        defer { task.cancel() }
 
-        // Wait for raw data to be set
-        try? await Task.sleep(nanoseconds: 500_000_000)
-        task.cancel()
-
-        // Then
-        if let captured = capturedCardData {
-            XCTAssertEqual(captured.cardNumber, "4242424242424242")
-        }
+        // Then — await the real signal: raw data being set on the manager
+        let captured = try await awaitValue(cardDataStream, matching: { $0 != nil })
+        XCTAssertEqual(captured?.cardNumber, "4242424242424242")
     }
 
-    func test_processCardPayment_emptyCardholderName_setsNil() async {
+    func test_processCardPayment_emptyCardholderName_setsNil() async throws {
         // Given
-        var capturedCardData: PrimerCardData?
-        mockRawDataManager.onRawDataSet = { data in
-            capturedCardData = data as? PrimerCardData
-        }
+        let (cardDataStream, continuation) = AsyncStream<PrimerCardData?>.makeStream()
+        mockRawDataManager.onRawDataSet = { continuation.yield($0 as? PrimerCardData) }
 
         let task = Task { [self] in
             _ = try? await sut.processCardPayment(
@@ -120,22 +112,17 @@ final class HeadlessRepositoryCardDataTests: XCTestCase {
                 selectedNetwork: nil
             )
         }
-
-        try? await Task.sleep(nanoseconds: 500_000_000)
-        task.cancel()
+        defer { task.cancel() }
 
         // Then
-        if let captured = capturedCardData {
-            XCTAssertNil(captured.cardholderName)
-        }
+        let captured = try await awaitValue(cardDataStream, matching: { $0 != nil })
+        XCTAssertNil(captured?.cardholderName)
     }
 
-    func test_processCardPayment_formatsExpiryDate() async {
+    func test_processCardPayment_formatsExpiryDate() async throws {
         // Given
-        var capturedCardData: PrimerCardData?
-        mockRawDataManager.onRawDataSet = { data in
-            capturedCardData = data as? PrimerCardData
-        }
+        let (cardDataStream, continuation) = AsyncStream<PrimerCardData?>.makeStream()
+        mockRawDataManager.onRawDataSet = { continuation.yield($0 as? PrimerCardData) }
 
         let task = Task { [self] in
             _ = try? await sut.processCardPayment(
@@ -147,22 +134,17 @@ final class HeadlessRepositoryCardDataTests: XCTestCase {
                 selectedNetwork: nil
             )
         }
-
-        try? await Task.sleep(nanoseconds: 500_000_000)
-        task.cancel()
+        defer { task.cancel() }
 
         // Then
-        if let captured = capturedCardData {
-            XCTAssertEqual(captured.expiryDate, "03/28")
-        }
+        let captured = try await awaitValue(cardDataStream, matching: { $0 != nil })
+        XCTAssertEqual(captured?.expiryDate, "03/28")
     }
 
-    func test_processCardPayment_withSelectedNetwork_setsCardNetwork() async {
+    func test_processCardPayment_withSelectedNetwork_setsCardNetwork() async throws {
         // Given
-        var capturedCardData: PrimerCardData?
-        mockRawDataManager.onRawDataSet = { data in
-            capturedCardData = data as? PrimerCardData
-        }
+        let (cardDataStream, continuation) = AsyncStream<PrimerCardData?>.makeStream()
+        mockRawDataManager.onRawDataSet = { continuation.yield($0 as? PrimerCardData) }
 
         let task = Task { [self] in
             _ = try? await sut.processCardPayment(
@@ -174,14 +156,11 @@ final class HeadlessRepositoryCardDataTests: XCTestCase {
                 selectedNetwork: .visa
             )
         }
-
-        try? await Task.sleep(nanoseconds: 500_000_000)
-        task.cancel()
+        defer { task.cancel() }
 
         // Then
-        if let captured = capturedCardData {
-            XCTAssertEqual(captured.cardNetwork, .visa)
-        }
+        let captured = try await awaitValue(cardDataStream, matching: { $0 != nil })
+        XCTAssertEqual(captured?.cardNetwork, .visa)
     }
 
     func test_processCardPayment_factoryThrows_resumesWithError() async {

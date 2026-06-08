@@ -15,6 +15,7 @@ struct FormRedirectPendingScreen: View {
     private let currentState: PrimerFormRedirectState
 
     @Environment(\.designTokens) private var tokens
+    @Environment(\.diContainer) private var container
 
     // MARK: - Initialization
 
@@ -74,19 +75,21 @@ struct FormRedirectPendingScreen: View {
         HStack {
             Spacer()
 
-            Button(action: scope.cancel) {
-                Text(CheckoutComponentsStrings.cancelButton)
-                    .font(PrimerFont.titleLarge(tokens: tokens))
-                    .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
-            }
-            .accessibilityIdentifier(AccessibilityIdentifiers.FormRedirect.cancelButton)
-            .accessibility(
-                config: AccessibilityConfiguration(
-                    identifier: AccessibilityIdentifiers.FormRedirect.cancelButton,
-                    label: CheckoutComponentsStrings.a11yCancel,
-                    traits: [.isButton]
+            if scope.dismissalMechanism.contains(.closeButton) {
+                Button(action: scope.cancel) {
+                    Text(CheckoutComponentsStrings.cancelButton)
+                        .font(PrimerFont.titleLarge(tokens: tokens))
+                        .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
+                }
+                .accessibilityIdentifier(AccessibilityIdentifiers.FormRedirect.cancelButton)
+                .accessibility(
+                    config: AccessibilityConfiguration(
+                        identifier: AccessibilityIdentifiers.FormRedirect.cancelButton,
+                        label: CheckoutComponentsStrings.a11yCancel,
+                        traits: [.isButton]
+                    )
                 )
-            )
+            }
         }
         .padding(.horizontal, PrimerSpacing.large(tokens: tokens))
         .padding(.vertical, PrimerSpacing.medium(tokens: tokens))
@@ -107,8 +110,10 @@ struct FormRedirectPendingScreen: View {
     // MARK: - Accessibility
 
     private func announceScreenChange() {
-        let announcement = "\(CheckoutComponentsStrings.formRedirectPendingTitle). \(currentState.pendingMessage ?? CheckoutComponentsStrings.formRedirectPendingMessage)"
-        UIAccessibility.post(notification: .screenChanged, argument: announcement)
+        let title = CheckoutComponentsStrings.formRedirectPendingTitle
+        let message = currentState.pendingMessage ?? CheckoutComponentsStrings.formRedirectPendingMessage
+        guard let service = try? container?.resolveSync(AccessibilityAnnouncementService.self) else { return }
+        service.announceScreenChange("\(title). \(message)")
     }
 }
 

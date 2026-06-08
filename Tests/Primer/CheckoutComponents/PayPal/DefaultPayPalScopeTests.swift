@@ -39,8 +39,21 @@ final class DefaultPayPalScopeTests: XCTestCase {
             PaymentResult(paymentId: TestData.PaymentIds.success, status: .success)
         )
 
+        // When set, execute() suspends until release() is called — lets a test observe the
+        // transient `.redirecting` step deterministically instead of racing a fast return.
+        var shouldHold = false
+        private var continuation: CheckedContinuation<Void, Never>?
+
         func execute() async throws -> PaymentResult {
-            try executeResult.get()
+            if shouldHold {
+                await withCheckedContinuation { continuation = $0 }
+            }
+            return try executeResult.get()
+        }
+
+        func release() {
+            continuation?.resume()
+            continuation = nil
         }
     }
 
@@ -144,36 +157,46 @@ final class DefaultPayPalScopeTests: XCTestCase {
     }
 
     @MainActor
-    func test_submit_emitsRedirectingDuringPayment() async {
+    func test_submit_cancelledError_doesNotTransitionToFailure() async throws {
         // Given
         sut = DefaultPayPalScope(
             checkoutScope: mockCheckoutScope,
             processPayPalInteractor: mockInteractor
         )
+        mockInteractor.executeResult = .failure(
+            PrimerError.cancelled(paymentMethodType: PrimerPaymentMethodType.payPal.rawValue)
+        )
 
-        var receivedStates: [PrimerPayPalState.Step] = []
-        let redirectingExpectation = expectation(description: "Receive redirecting state")
-        redirectingExpectation.assertForOverFulfill = false
+        // When
+        sut.submit()
+        _ = try await awaitValue(sut.state, matching: { $0.step == .redirecting })
+        await Task.yield()
+        await Task.yield()
 
-        let stateTask = Task { @MainActor in
-            for await state in sut.state {
-                receivedStates.append(state.step)
-                if case .redirecting = state.step {
-                    redirectingExpectation.fulfill()
-                }
-            }
+        // Then - dismissing the PayPal sheet is a clean dismissal, never a payment failure
+        let firstState = try await awaitFirst(sut.state)
+        if case .failure = firstState.step {
+            XCTFail("Cancellation must not transition to failure")
         }
+    }
 
-        try? await Task.sleep(nanoseconds: 10_000_000) // 10ms
+    @MainActor
+    func test_submit_emitsRedirectingDuringPayment() async throws {
+        // Given — hold the interactor so the `.redirecting` step persists long enough to observe
+        // deterministically (otherwise it is immediately replaced by `.success`).
+        mockInteractor.shouldHold = true
+        sut = DefaultPayPalScope(
+            checkoutScope: mockCheckoutScope,
+            processPayPalInteractor: mockInteractor
+        )
 
         // When
         sut.submit()
 
         // Then
-        await fulfillment(of: [redirectingExpectation], timeout: 2.0)
-        stateTask.cancel()
-
-        XCTAssertTrue(receivedStates.contains(.redirecting))
+        let state = try await awaitValue(sut.state, matching: { $0.step == .redirecting })
+        XCTAssertEqual(state.step, .redirecting)
+        mockInteractor.release()
     }
 
     // MARK: - Helpers
@@ -183,7 +206,6 @@ final class DefaultPayPalScopeTests: XCTestCase {
         DefaultCheckoutScope(
             clientToken: TestData.Tokens.valid,
             settings: PrimerSettings(),
-            diContainer: DIContainer.shared,
             navigator: CheckoutNavigator()
         )
     }

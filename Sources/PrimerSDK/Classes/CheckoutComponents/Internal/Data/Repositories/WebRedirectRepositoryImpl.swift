@@ -52,22 +52,6 @@ final class WebRedirectRepositoryImpl: WebRedirectRepository, LogReporter {
     self.settings = settings
   }
 
-  init(
-    tokenizationService: TokenizationServiceProtocol,
-    webAuthService: WebAuthenticationService,
-    createPaymentService: CreateResumePaymentServiceProtocol,
-    apiConfigurationModule: PrimerAPIConfigurationModuleProtocol = PrimerAPIConfigurationModule(),
-    pollingModuleFactory: @escaping (URL) -> PollingModule = { PollingModule(url: $0) },
-    settings: PrimerSettingsProtocol = PrimerSettings.current
-  ) {
-    self.tokenizationService = tokenizationService
-    self.webAuthService = webAuthService
-    self.createPaymentService = createPaymentService
-    self.apiConfigurationModule = apiConfigurationModule
-    self.pollingModuleFactory = pollingModuleFactory
-    self.settings = settings
-  }
-
   // MARK: - WebRedirectRepository Protocol
 
   func tokenize(

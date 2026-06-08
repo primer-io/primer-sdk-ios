@@ -15,7 +15,6 @@ struct AddressLineInputField: View, LogReporter {
   let scope: (any CardFormFieldScopeInternal)?
   let onAddressChange: ((String) -> Void)?
   let onValidationChange: ((Bool) -> Void)?
-  let styling: PrimerFieldStyling?
 
   // MARK: - Private Properties
 
@@ -35,15 +34,13 @@ struct AddressLineInputField: View, LogReporter {
     placeholder: String,
     isRequired: Bool,
     inputType: PrimerInputElementType,
-    scope: any CardFormFieldScopeInternal,
-    styling: PrimerFieldStyling? = nil
+    scope: any CardFormFieldScopeInternal
   ) {
     self.label = label
     self.placeholder = placeholder
     self.isRequired = isRequired
     self.inputType = inputType
     self.scope = scope
-    self.styling = styling
     onAddressChange = nil
     onValidationChange = nil
   }
@@ -53,7 +50,6 @@ struct AddressLineInputField: View, LogReporter {
     placeholder: String,
     isRequired: Bool,
     inputType: PrimerInputElementType,
-    styling: PrimerFieldStyling? = nil,
     onAddressChange: ((String) -> Void)? = nil,
     onValidationChange: ((Bool) -> Void)? = nil
   ) {
@@ -62,7 +58,6 @@ struct AddressLineInputField: View, LogReporter {
     self.isRequired = isRequired
     self.inputType = inputType
     scope = nil
-    self.styling = styling
     self.onAddressChange = onAddressChange
     self.onValidationChange = onValidationChange
   }
@@ -72,7 +67,6 @@ struct AddressLineInputField: View, LogReporter {
   var body: some View {
     PrimerInputFieldContainer(
       label: label,
-      styling: styling,
       text: $addressLine,
       isValid: $isValid,
       errorMessage: $errorMessage,
@@ -87,7 +81,6 @@ struct AddressLineInputField: View, LogReporter {
           placeholder: placeholder,
           isRequired: isRequired,
           inputType: inputType,
-          styling: styling,
           validationService: validationService,
           scope: scope,
           onAddressChange: onAddressChange,

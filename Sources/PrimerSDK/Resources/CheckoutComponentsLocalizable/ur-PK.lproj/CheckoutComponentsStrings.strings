@@ -26,7 +26,6 @@
 "primer_checkout_dismissing" = "بند ہو رہا ہے...";
 "primer_checkout_system_error_title" = "ادائیگی کے نظام میں خرابی";
 "primer_checkout_scope_unavailable" = "چیک آؤٹ دستیاب نہیں ہے";
-"primer_checkout_auto_dismiss_message" = "یہ اسکرین 3 سیکنڈ میں خود بخود بند ہو جائے گی";
 "primer_card_form_label_number" = "کارڈ نمبر";
 "primer_card_form_label_name" = "کارڈ پر نام";
 "primer_card_form_label_expiry" = "میعاد ختم ہونے کی تاریخ";
@@ -125,7 +124,7 @@
 "accessibility_card_form_cardholder_name_label" = "کارڈ ہولڈر کا نام";
 "accessibility_card_form_card_number_hint" = "اپنا کارڈ نمبر درج کریں";
 "accessibility_card_form_expiry_hint" = "میعاد ختم ہونے کی تاریخ MM/YY فارمیٹ میں درج کریں";
-"accessibility_card_form_cvc_hint" = "کارڈ کے پچھلے حصے پر 3 یا 4 ہندسوں کا کوڈ";
+"accessibility_card_form_cvc_hint" = "سیکیورٹی کوڈ، 3 یا 4 ہندسے";
 "accessibility_card_form_cardholder_name_hint" = "کارڈ پر دکھایا گیا نام درج کریں";
 "accessibility_card_form_billing_address_first_name_label" = "پہلا نام، ضروری";
 "accessibility_card_form_billing_address_last_name_label" = "آخری نام، ضروری";
@@ -139,10 +138,10 @@
 "accessibility_card_form_billing_address_country_label" = "ملک، ضروری";
 "accessibility_card_form_network_selector" = "نیٹ ورک منتخب کریں";
 "accessibility_card_form_network_selector_label" = "کارڈ نیٹ ورک کا انتخاب کنندہ";
-"accessibility_card_form_network_selector_hint" = "مختلف کارڈ نیٹ ورک منتخب کرنے کے لیے دو بار ٹیپ کریں";
-"accessibility_card_form_network_selector_inline_hint" = "یہ نیٹ ورک منتخب کرنے کے لیے دو بار ٹیپ کریں";
+"accessibility_card_form_network_selector_hint" = "مختلف کارڈ نیٹ ورک منتخب کریں";
+"accessibility_card_form_network_selector_inline_hint" = "یہ نیٹ ورک منتخب کریں";
 "accessibility_card_form_submit_label" = "ادائیگی جمع کروائیں";
-"accessibility_card_form_submit_hint" = "ادائیگی جمع کروانے کے لیے دو بار ٹیپ کریں";
+"accessibility_card_form_submit_hint" = "ادائیگی جمع کرائیں";
 "accessibility_card_form_submit_loading" = "ادائیگی پر کارروائی ہو رہی ہے، براہ کرم انتظار کریں";
 "accessibility_card_form_submit_disabled" = "بٹن غیر فعال ہے۔ ادائیگی کو فعال کرنے کے لیے تمام ضروری فیلڈز مکمل کریں";
 "accessibility_card_form_card_number_error_invalid" = "غلط کارڈ نمبر۔ براہ کرم چیک کریں اور دوبارہ کوشش کریں۔";
@@ -172,15 +171,12 @@
 "accessibility_payment_selection_pay_with_klarna" = "Klarna سے ادائیگی کریں";
 "accessibility_payment_selection_pay_with_ideal" = "iDEAL سے ادائیگی کریں";
 "accessibility_payment_selection_coming_soon" = "ادائیگی کا طریقہ جلد آ رہا ہے";
-"accessibility_payment_selection_card_full" = "%1$@ کارڈ جو %2$@ پر ختم ہوتا ہے، میعاد ختم ہوتی ہے %3$@";
-"accessibility_payment_selection_card_masked" = "کارڈ جو نقاب پوش ہندسوں پر ختم ہوتا ہے";
 "accessibility_country_selection_item" = "%1$@، ملک";
 "accessibility_country_selection_search" = "ممالک تلاش کریں";
 "accessibility_country_selection_search_icon" = "تلاش";
 "accessibility_country_selection_clear" = "صاف کریں";
 "accessibility_action_delete" = "ادائیگی کا طریقہ حذف کریں";
 "accessibility_action_edit" = "کارڈ کی تفصیلات میں ترمیم کریں";
-"accessibility_action_set_default" = "بطور ڈیفالٹ ادائیگی کا طریقہ مقرر کریں";
 "accessibility_checkout_success_icon" = "ادائیگی کامیاب";
 "accessibility_checkout_error_icon" = "خرابی";
 "accessibility_vault_delete_payment_method" = "یہ ادائیگی کا طریقہ حذف کریں";
@@ -195,6 +191,7 @@
 "accessibility_vaulted_paypal_email" = "PayPal, %@";
 "accessibility_screen_payment_method" = "%@ ادائیگی کا طریقہ";
 "accessibility_payment_method_button" = "%@ سے ادائیگی کریں";
+"accessibility_payment_method_selected" = "%@ منتخب کیا گیا";
 "accessibility_paypal_logo" = "PayPal";
 "accessibility_error_generic" = "ایک خرابی پیش آئی۔ براہ کرم دوبارہ کوشش کریں۔";
 "accessibility_error_multiple_errors" = "%d خرابیاں ملیں";
@@ -209,8 +206,8 @@
 "accessibility_klarna_category" = "%@ ادائیگی کا آپشن";
 "accessibility_klarna_category_selected" = "%@ ادائیگی کا آپشن، منتخب";
 "accessibility_klarna_payment_view" = "Klarna ادائیگی فارم";
-"accessibility_klarna_authorize_hint" = "Klarna کے ساتھ جاری رکھنے کے لیے ڈبل ٹیپ کریں";
-"accessibility_klarna_finalize_hint" = "ادائیگی مکمل کرنے کے لیے ڈبل ٹیپ کریں";
+"accessibility_klarna_authorize_hint" = "Klarna کے ساتھ جاری رکھیں";
+"accessibility_klarna_finalize_hint" = "ادائیگی مکمل کریں";
 
 /* ACH */
 "primer_ach_title" = "بینک اکاؤنٹ";
@@ -223,9 +220,9 @@
 "primer_ach_mandate_button_accept" = "میں متفق ہوں";
 "primer_ach_mandate_button_decline" = "منسوخ کریں";
 "primer_ach_mandate_template" = "\"میں متفق ہوں\" پر کلک کرکے، آپ %1$@ کو اوپر بیان کردہ بینک اکاؤنٹ سے %1$@ کی خدمات کے استعمال اور/یا %1$@ سے مصنوعات کی خریداری سے پیدا ہونے والے چارجز کے لیے واجب الادا کسی بھی رقم کو، %1$@ کی ویب سائٹ اور شرائط کے مطابق، جب تک یہ اجازت منسوخ نہ ہو، کاٹنے کی اجازت دیتے ہیں۔ آپ %1$@ کو 30 (تیس) دن پہلے نوٹس دے کر کسی بھی وقت اس اجازت میں ترمیم یا منسوخی کر سکتے ہیں۔";
-"accessibility_ach_continue_hint" = "بینک اکاؤنٹ کے انتخاب پر جاری رکھنے کے لیے ڈبل ٹیپ کریں";
-"accessibility_ach_mandate_accept_hint" = "اجازت قبول کرنے اور ادائیگی مکمل کرنے کے لیے ڈبل ٹیپ کریں";
-"accessibility_ach_mandate_decline_hint" = "مسترد کرنے اور ادائیگی منسوخ کرنے کے لیے ڈبل ٹیپ کریں";
+"accessibility_ach_continue_hint" = "بینک اکاؤنٹ کے انتخاب پر جاری رکھیں";
+"accessibility_ach_mandate_accept_hint" = "اجازت قبول کریں اور ادائیگی مکمل کریں";
+"accessibility_ach_mandate_decline_hint" = "مسترد کریں اور ادائیگی منسوخ کریں";
 
 "accessibility_card_form_billing_address_hint" = "اپنا پتہ درج کریں";
 "accessibility_card_form_billing_address_state_hint" = "ریاست یا صوبہ درج کریں";
@@ -285,3 +282,5 @@
 "primer_adyen_klarna_option_pay_later" = "بعد میں ادائیگی کریں";
 "primer_adyen_klarna_option_pay_over_time" = "قسطوں میں ادائیگی کریں";
 "primer_adyen_klarna_option_pay_now" = "ابھی ادائیگی کریں";
+"primer_vaulted_gocardless_direct_debit_suffix" = "ڈائریکٹ ڈیبٹ";
+"accessibility_card_form_billing_address_country_hint" = "آپ کا ملک منتخب کرنے کے لیے ایک فہرست کھولتا ہے";

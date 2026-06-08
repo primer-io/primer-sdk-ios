@@ -47,6 +47,8 @@ final class DefaultKlarnaScope: PrimerKlarnaScope, ObservableObject, LogReporter
 
   private var authorizationToken: String?
 
+  private var hasStarted = false
+
   init(
     checkoutScope: DefaultCheckoutScope,
     presentationContext: PresentationContext = .fromPaymentSelection,
@@ -60,6 +62,8 @@ final class DefaultKlarnaScope: PrimerKlarnaScope, ObservableObject, LogReporter
   }
 
   func start() {
+    guard !hasStarted else { return }
+    hasStarted = true
     logger.debug(message: "Klarna scope started")
     Task { [self] in
       await createSession()
@@ -76,7 +80,7 @@ final class DefaultKlarnaScope: PrimerKlarnaScope, ObservableObject, LogReporter
       logger.warn(message: "Klarna checkout scope was deallocated during cancel")
       return
     }
-    checkoutScope.onDismiss()
+    checkoutScope.cancelActivePaymentMethod(returnToSelection: presentationContext.shouldShowBackButton)
   }
 
   func selectPaymentCategory(_ categoryId: String) {

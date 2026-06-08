@@ -1,6 +1,5 @@
 "accessibility_action_delete" = "결제 수단 삭제";
 "accessibility_action_edit" = "카드 정보 수정";
-"accessibility_action_set_default" = "기본 결제 수단으로 설정";
 "accessibility_card_form_billing_address_address_line_1_label" = "주소 1번 줄, 필수";
 "accessibility_card_form_billing_address_address_line_2_label" = "주소 2번 줄, 선택사항";
 "accessibility_card_form_billing_address_city_hint" = "도시명 입력";
@@ -19,7 +18,7 @@
 "accessibility_card_form_cardholder_name_hint" = "카드에 표시된 이름을 입력하세요";
 "accessibility_card_form_cardholder_name_label" = "카드 소유자 이름";
 "accessibility_card_form_cvc_error_invalid" = "유효하지 않은 보안 코드입니다.";
-"accessibility_card_form_cvc_hint" = "카드 뒷면의 3자리 또는 4자리 코드";
+"accessibility_card_form_cvc_hint" = "보안 코드, 3자리 또는 4자리";
 "accessibility_card_form_cvc_label" = "보안 코드, 필수";
 "accessibility_card_form_cvv_icon" = "CVV 보안 코드";
 "accessibility_card_form_expiry_error_invalid" = "유효하지 않은 만료일입니다.";
@@ -27,11 +26,11 @@
 "accessibility_card_form_expiry_icon" = "카드 만료일";
 "accessibility_card_form_expiry_label" = "만료일, 필수";
 "accessibility_card_form_network_selector" = "네트워크 선택";
-"accessibility_card_form_network_selector_hint" = "두 번 탭하여 다른 카드 네트워크를 선택하세요";
-"accessibility_card_form_network_selector_inline_hint" = "두 번 탭하여 이 네트워크를 선택하세요";
+"accessibility_card_form_network_selector_hint" = "다른 카드 네트워크 선택";
+"accessibility_card_form_network_selector_inline_hint" = "이 네트워크 선택";
 "accessibility_card_form_network_selector_label" = "카드 네트워크 선택기";
 "accessibility_card_form_submit_disabled" = "버튼이 비활성화되었습니다. 모든 필수 입력란을 완료하여 결제를 활성화하세요";
-"accessibility_card_form_submit_hint" = "두 번 탭하여 결제를 제출하세요";
+"accessibility_card_form_submit_hint" = "결제 제출";
 "accessibility_card_form_submit_label" = "결제 제출";
 "accessibility_card_form_submit_loading" = "결제를 처리하는 중입니다. 잠시만 기다려 주세요";
 "accessibility_checkout_error_icon" = "오류";
@@ -52,8 +51,6 @@
 "accessibility_country_selection_search_icon" = "검색";
 "accessibility_error_generic" = "오류가 발생했습니다. 다시 시도해 주세요.";
 "accessibility_error_multiple_errors" = "%d개의 오류가 발견되었습니다";
-"accessibility_payment_selection_card_full" = "%1$@ 카드 끝자리 %2$@, 만료일 %3$@";
-"accessibility_payment_selection_card_masked" = "마스킹된 끝자리 카드";
 "accessibility_payment_selection_coming_soon" = "곧 출시될 결제 수단";
 "accessibility_payment_selection_pay_with_card" = "카드로 결제";
 "accessibility_payment_selection_pay_with_ideal" = "iDEAL로 결제";
@@ -65,6 +62,7 @@
 "accessibility_screen_loading_payment_methods" = "결제 수단을 로딩하는 중입니다";
 "accessibility_screen_payment_method" = "%@ 결제 수단";
 "accessibility_payment_method_button" = "%@(으)로 결제";
+"accessibility_payment_method_selected" = "%@ 선택됨";
 "accessibility_screen_processing_payment" = "결제를 처리하는 중입니다";
 "accessibility_screen_success" = "결제 완료";
 "accessibility_vault_delete_payment_method" = "이 결제 수단 삭제";
@@ -144,7 +142,6 @@
 "primer_card_form_placeholder_state" = "서울특별시";
 "primer_card_form_retail_not_implemented" = "소매점 선택 기능이 아직 구현되지 않았습니다";
 "primer_card_form_title" = "카드로 결제";
-"primer_checkout_auto_dismiss_message" = "이 화면은 3초 후 자동으로 닫힙니다";
 "primer_checkout_dismissing" = "닫는 중...";
 "primer_checkout_error_button_other_methods" = "다른 결제 수단 선택";
 "primer_checkout_error_subtitle" = "네트워크 문제가 발생했습니다.";
@@ -209,8 +206,8 @@
 "accessibility_klarna_category" = "%@ 결제 옵션";
 "accessibility_klarna_category_selected" = "%@ 결제 옵션, 선택됨";
 "accessibility_klarna_payment_view" = "Klarna 결제 양식";
-"accessibility_klarna_authorize_hint" = "Klarna로 계속하려면 두 번 탭하세요";
-"accessibility_klarna_finalize_hint" = "결제를 완료하려면 두 번 탭하세요";
+"accessibility_klarna_authorize_hint" = "Klarna로 계속";
+"accessibility_klarna_finalize_hint" = "결제 완료";
 
 /* ACH */
 "primer_ach_title" = "은행 계좌";
@@ -223,9 +220,9 @@
 "primer_ach_mandate_button_accept" = "동의합니다";
 "primer_ach_mandate_button_decline" = "취소";
 "primer_ach_mandate_template" = "\"동의합니다\"를 클릭하면 %1$@의 서비스 이용 및/또는 %1$@의 제품 구매로 인해 발생하는 요금에 대해 위에 명시된 은행 계좌에서 %1$@의 웹사이트 및 약관에 따라 이 승인이 취소될 때까지 모든 미지급 금액을 인출할 수 있도록 %1$@에 승인합니다. 30(삼십)일 전에 %1$@에 통지하여 언제든지 이 승인을 수정하거나 취소할 수 있습니다.";
-"accessibility_ach_continue_hint" = "은행 계좌 선택으로 계속하려면 두 번 탭하세요";
-"accessibility_ach_mandate_accept_hint" = "승인을 수락하고 결제를 완료하려면 두 번 탭하세요";
-"accessibility_ach_mandate_decline_hint" = "거절하고 결제를 취소하려면 두 번 탭하세요";
+"accessibility_ach_continue_hint" = "은행 계좌 선택으로 계속";
+"accessibility_ach_mandate_accept_hint" = "승인을 수락하고 결제 완료";
+"accessibility_ach_mandate_decline_hint" = "거절하고 결제 취소";
 
 "accessibility_card_form_billing_address_hint" = "주소를 입력하세요";
 "accessibility_card_form_billing_address_state_hint" = "시/도를 입력하세요";
@@ -285,3 +282,5 @@
 "primer_adyen_klarna_option_pay_later" = "나중에 결제";
 "primer_adyen_klarna_option_pay_over_time" = "시간을 두고 결제";
 "primer_adyen_klarna_option_pay_now" = "지금 결제";
+"primer_vaulted_gocardless_direct_debit_suffix" = "자동 이체";
+"accessibility_card_form_billing_address_country_hint" = "국가를 선택하는 목록을 엽니다";

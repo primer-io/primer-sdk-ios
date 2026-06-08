@@ -376,6 +376,9 @@ final class FormRedirectRepositoryImplTests: XCTestCase {
     func test_cancelPolling_cancelsActivePollingModule() async throws {
         // Given
         PrimerAPIConfigurationModule.clientToken = MockAppState.mockClientToken
+        // A non-zero per-poll delay gives the canceller a poll-boundary window to surface the
+        // cancellation before the polling sequence completes on its own.
+        mockApiClient.mockedNetworkDelay = 0.1
 
         // Set up a slow polling response
         mockApiClient.pollingResults = [
@@ -390,15 +393,33 @@ final class FormRedirectRepositoryImplTests: XCTestCase {
             try await sut.pollForCompletion(statusUrl: FormRedirectTestData.Constants.statusUrl)
         }
 
-        // Give polling time to start
-        try await Task.sleep(nanoseconds: 50_000_000)
-
-        // When
+        // When: keep requesting cancellation until polling terminates. cancelPolling is a
+        // no-op until pollForCompletion has set its active module (done synchronously before
+        // its first suspension), and the module only surfaces the cancellation on its next
+        // poll cycle — so retry each tick rather than guessing a sleep duration.
         let cancelError = PrimerError.cancelled(paymentMethodType: "test")
-        sut.cancelPolling(error: cancelError)
+        let canceller = Task { [self] in
+            while !Task.isCancelled {
+                sut.cancelPolling(error: cancelError)
+                await Task.yield()
+            }
+        }
 
-        // Then - the task should complete (either with result or cancelled)
+        // Then - the active module surfaces the cancellation error, terminating the task.
+        var thrownError: Error?
+        do {
+            _ = try await withTimeout(3.0) { try await pollingTask.value }
+            XCTFail("Expected polling to be cancelled")
+        } catch {
+            thrownError = error
+        }
+        canceller.cancel()
         pollingTask.cancel()
+
+        let primerError = try XCTUnwrap(thrownError as? PrimerError)
+        guard case .cancelled = primerError else {
+            return XCTFail("Expected cancelled error, got \(primerError)")
+        }
     }
 
     // MARK: - Helper Methods

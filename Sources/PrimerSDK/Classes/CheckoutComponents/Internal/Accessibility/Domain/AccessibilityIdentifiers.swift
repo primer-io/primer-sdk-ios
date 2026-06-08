@@ -85,6 +85,13 @@ enum AccessibilityIdentifiers {
     static let otherPaymentMethodButton = "checkout_components_error_other_payment_method_button"
   }
 
+  enum Success {
+    static let container = "checkout_components_success_container"
+    static let icon = "checkout_components_success_icon"
+    static let title = "checkout_components_success_title"
+    static let description = "checkout_components_success_description"
+  }
+
   enum PayPal {
     static let container = "checkout_components_paypal_container"
     static let logo = "checkout_components_paypal_logo"

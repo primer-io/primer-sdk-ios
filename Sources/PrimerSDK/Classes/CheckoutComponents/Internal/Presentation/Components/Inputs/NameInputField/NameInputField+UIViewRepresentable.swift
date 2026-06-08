@@ -16,7 +16,6 @@ struct NameTextField: UIViewRepresentable, LogReporter {
   @Binding var isFocused: Bool
   let placeholder: String
   let inputType: PrimerInputElementType
-  let styling: PrimerFieldStyling?
   let validationService: ValidationService
   let scope: (any CardFormFieldScopeInternal)?
   let onNameChange: ((String) -> Void)?
@@ -30,7 +29,6 @@ struct NameTextField: UIViewRepresentable, LogReporter {
     textField.configurePrimerStyle(
       placeholder: placeholder,
       configuration: .standard,
-      styling: styling,
       tokens: tokens,
       doneButtonTarget: context.coordinator,
       doneButtonAction: #selector(Coordinator.doneButtonTapped)

@@ -27,12 +27,16 @@ struct CheckoutScopeObserver: View, LogReporter {
   }
 
   var body: some View {
+    makeWrappedContent()
+      .background(CheckoutColors.background(tokens: designTokensManager.tokens))
+  }
+
+  @ViewBuilder
+  private func makeWrappedContent() -> some View {
     if bridgeController != nil {
       makeContentView()
-        .background(CheckoutColors.background(tokens: designTokensManager.tokens))
     } else {
       BackportedNavigationStack(content: makeContentView)
-      .background(CheckoutColors.background(tokens: designTokensManager.tokens))
     }
   }
 
@@ -62,166 +66,14 @@ struct CheckoutScopeObserver: View, LogReporter {
     }
   }
 
-  @ViewBuilder
   private func getCurrentView() -> some View {
-    switch navigationState {
-    case .loading:
-      makeLoadingView()
-    case .paymentMethodSelection:
-      makePaymentMethodSelectionView()
-    case .vaultedPaymentMethods:
-      makeVaultedPaymentMethodsView()
-    case let .deleteVaultedPaymentMethodConfirmation(method):
-      makeDeleteConfirmationView(method: method)
-    case let .paymentMethod(paymentMethodType):
-      makePaymentMethodView(type: paymentMethodType)
-    case .processing:
-      makeProcessingView()
-    case let .success(result):
-      makeSuccessView(result: result)
-    case let .failure(error):
-      makeFailureView(error: error)
-    case .dismissed:
-      makeDismissedView()
-    }
-  }
-
-  @ViewBuilder
-  private func makeLoadingView() -> some View {
-    if scope.isInitScreenEnabled {
-      if let customSplash = scope.splashScreen {
-        AnyView(customSplash())
-      } else {
-        SplashScreen()
-      }
-    } else {
-      EmptyView().onAppear {
-        logger.debug(message: "[CheckoutComponents] Init screen disabled - skipping loading view")
-      }
-    }
-  }
-
-  @ViewBuilder
-  private func makePaymentMethodSelectionView() -> some View {
-    if let customPaymentMethodSelectionScreen = scope.paymentMethodSelection.screen {
-      AnyView(customPaymentMethodSelectionScreen(scope.paymentMethodSelection))
-    } else if let customPaymentSelection = scope.paymentMethodSelectionScreen {
-      AnyView(customPaymentSelection(scope.paymentMethodSelection))
-    } else {
-      PaymentMethodSelectionScreen(
-        scope: scope.paymentMethodSelection
-      )
-    }
-  }
-
-  @ViewBuilder
-  private func makeVaultedPaymentMethodsView() -> some View {
-    VaultedPaymentMethodsListScreen(
-      vaultedPaymentMethods: scope.vaultedPaymentMethods,
-      selectedVaultedPaymentMethod: scope.selectedVaultedPaymentMethod,
-      onSelect: { method in
-        scope.setSelectedVaultedPaymentMethod(method)
-        scope.paymentMethodSelectionInternal.collapsePaymentMethods()
-        scope.checkoutNavigator.navigateBack()
-      },
-      onBack: {
-        scope.checkoutNavigator.navigateBack()
-      },
-      onDeleteTapped: { method in
-        scope.updateNavigationState(.deleteVaultedPaymentMethodConfirmation(method))
-      }
+    FlowScreenFactory(
+      scope: scope,
+      theme: theme,
+      onCompletion: onCompletion,
+      isInlineFlow: false
     )
-  }
-
-  private func makeDeleteConfirmationView(
-    method: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod
-  ) -> some View {
-    DeleteVaultedPaymentMethodConfirmationScreen(
-      vaultedPaymentMethod: method,
-      navigator: scope.checkoutNavigator,
-      scope: scope.paymentMethodSelectionInternal
-    )
-  }
-
-  @ViewBuilder
-  private func makePaymentMethodView(type: String) -> some View {
-    PaymentMethodScreen(
-      paymentMethodType: type,
-      checkoutScope: scope
-    )
-  }
-
-  @ViewBuilder
-  private func makeProcessingView() -> some View {
-    if let customLoading = scope.loadingScreen {
-      AnyView(customLoading())
-    } else {
-      DefaultLoadingScreen()
-    }
-  }
-
-  @ViewBuilder
-  private func makeSuccessView(result: PaymentResult) -> some View {
-    if scope.isSuccessScreenEnabled {
-      if let customSuccess = scope.successScreen {
-        AnyView(customSuccess(result))
-      } else {
-        SuccessScreen(result: result) {
-          logger.info(message: "Success screen auto-dismiss, calling completion callback")
-          onCompletion?(scope.currentState)
-        }
-      }
-    } else {
-      EmptyView().onAppear {
-        logger.debug(message: "[CheckoutComponents] Success screen disabled - auto-dismissing")
-        DispatchQueue.main.async {
-          onCompletion?(scope.currentState)
-        }
-      }
-    }
-  }
-
-  @ViewBuilder
-  private func makeFailureView(error: PrimerError) -> some View {
-    if scope.isErrorScreenEnabled {
-      if let customError = scope.errorScreen {
-        AnyView(customError(error.localizedDescription))
-      } else {
-        ErrorScreen(
-          error: error,
-          onRetry: {
-            logger.info(message: "Error screen retry tapped")
-            scope.retryPayment()
-          },
-          onChooseOtherPaymentMethods: scope.availablePaymentMethods.count > 1 ? {
-            logger.info(message: "Error screen choose other payment method tapped")
-            scope.checkoutNavigator.handleOtherPaymentMethods()
-          } : nil
-        )
-      }
-    } else {
-      EmptyView().onAppear {
-        logger.debug(message: "[CheckoutComponents] Error screen disabled - auto-dismissing")
-        DispatchQueue.main.async {
-          onCompletion?(scope.currentState)
-        }
-      }
-    }
-  }
-
-  @ViewBuilder
-  private func makeDismissedView() -> some View {
-    VStack {
-      Text(CheckoutComponentsStrings.dismissingMessage)
-        .font(.caption)
-        .foregroundColor(.secondary)
-    }
-    .onAppear {
-      logger.info(message: "Checkout dismissed, calling completion callback")
-      DispatchQueue.main.async {
-        onCompletion?(.dismissed)
-      }
-    }
+    .view(for: navigationState)
   }
 
   private func setupDesignTokens() async {

@@ -270,6 +270,15 @@ extension ErrorMessageResolver {
     for inputElementType: ValidationError.InputElementType
   ) -> String {
     switch inputElementType {
+    // Card fields have no dedicated required-message; reuse their "enter valid …" message.
+    case .cardNumber:
+      "checkout_components_card_number_invalid"
+    case .cvv:
+      "checkout_components_cvv_invalid"
+    case .expiryDate:
+      "checkout_components_expiry_date_invalid"
+    case .cardholderName:
+      "checkout_components_cardholder_name_invalid"
     case .firstName:
       "checkout_components_first_name_required"
     case .lastName:

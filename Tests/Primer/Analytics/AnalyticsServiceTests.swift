@@ -257,6 +257,9 @@ final class AnalyticsServiceTests: XCTestCase {
 
         for event in events {
             if let delay {
+                // why: this delay is the scenario input, not a wait-for-state — it paces
+                // event recording so concurrent batching produces a deterministic batch count.
+                // The tests assert on the API-client send callback (a real signal), not on this sleep.
                 try await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
             }
             try await sut.record(event: event)

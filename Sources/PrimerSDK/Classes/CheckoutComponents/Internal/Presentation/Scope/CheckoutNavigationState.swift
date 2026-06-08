@@ -35,7 +35,7 @@ enum CheckoutNavigationState: Equatable {
     case let (.success(lhsResult), .success(rhsResult)):
       lhsResult.paymentId == rhsResult.paymentId
     case let (.failure(lhsError), .failure(rhsError)):
-      lhsError.localizedDescription == rhsError.localizedDescription
+      lhsError.diagnosticsId == rhsError.diagnosticsId
     default:
       false
     }

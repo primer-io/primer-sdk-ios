@@ -26,7 +26,6 @@
 "primer_checkout_dismissing" = "Tê girtin...";
 "primer_checkout_system_error_title" = "Xeletîya Pergala Daynê";
 "primer_checkout_scope_unavailable" = "Qada daynê ne berdest e";
-"primer_checkout_auto_dismiss_message" = "Ev dîmender ê di 3 çirkeyan de bixweber were girtin";
 "primer_card_form_label_number" = "Hejmara kartê";
 "primer_card_form_label_name" = "Nav li ser kartê";
 "primer_card_form_label_expiry" = "Dîroka qedandinê";
@@ -125,7 +124,7 @@
 "accessibility_card_form_cardholder_name_label" = "Navê xwediyê kartê";
 "accessibility_card_form_card_number_hint" = "Hejmara kartê xwe binivîse";
 "accessibility_card_form_expiry_hint" = "Dîroka qedandinê bi formata MM/YY binivîse";
-"accessibility_card_form_cvc_hint" = "Koda 3 an 4 hejmarî li pişta kartê";
+"accessibility_card_form_cvc_hint" = "Koda ewlehiyê, 3 an 4 reqem";
 "accessibility_card_form_cardholder_name_hint" = "Navê ku li ser kartê ye binivîse";
 "accessibility_card_form_billing_address_first_name_label" = "Nav, pêwîst e";
 "accessibility_card_form_billing_address_last_name_label" = "Paşnav, pêwîst e";
@@ -139,10 +138,10 @@
 "accessibility_card_form_billing_address_country_label" = "Welat, pêwîst e";
 "accessibility_card_form_network_selector" = "Torê hilbijêre";
 "accessibility_card_form_network_selector_label" = "Hilbijêrê torê ya kartê";
-"accessibility_card_form_network_selector_hint" = "Du car bikin ji bo hilbijartina torê ya kartê yê cuda";
-"accessibility_card_form_network_selector_inline_hint" = "Du car bikin ji bo hilbijartina vê torê";
+"accessibility_card_form_network_selector_hint" = "Tora kartê ya din hilbijêre";
+"accessibility_card_form_network_selector_inline_hint" = "Vê torê hilbijêre";
 "accessibility_card_form_submit_label" = "Daynê bişîne";
-"accessibility_card_form_submit_hint" = "Du car bikin ji bo şandina daynê";
+"accessibility_card_form_submit_hint" = "Dravdanê bişîne";
 "accessibility_card_form_submit_loading" = "Dayn tê pêvekirin, ji kerema xwe bisekine";
 "accessibility_card_form_submit_disabled" = "Bişkok neçalak e. Hemû zeviyên pêwîst temam bike ji bo çalakkirina daynê";
 "accessibility_card_form_card_number_error_invalid" = "Hejmara kartê ne derbasdar e. Ji kerema xwe kontrol bike û dîsa biceribîne.";
@@ -169,20 +168,18 @@
 "accessibility_screen_loading_payment_methods" = "Rêbazên daynê tên barkirin";
 "accessibility_screen_payment_method" = "Rêbaza daynê %@";
 "accessibility_payment_method_button" = "Bi %@ re bide";
+"accessibility_payment_method_selected" = "%@ hate hilbijartin";
 "accessibility_payment_selection_pay_with_card" = "Bi kartê bide";
 "accessibility_payment_selection_pay_with_paypal" = "Bi PayPal bide";
 "accessibility_payment_selection_pay_with_klarna" = "Bi Klarna bide";
 "accessibility_payment_selection_pay_with_ideal" = "Bi iDEAL bide";
 "accessibility_payment_selection_coming_soon" = "Zû tê";
-"accessibility_payment_selection_card_full" = "Karta %1$@ bi dawî dibe bi %2$@, diqede %3$@";
-"accessibility_payment_selection_card_masked" = "Kart bi dawî dibe bi hejmarên veşartî";
 "accessibility_country_selection_item" = "%1$@, welat";
 "accessibility_country_selection_search" = "Li welatan bigere";
 "accessibility_country_selection_search_icon" = "Lêgerîn";
 "accessibility_country_selection_clear" = "Paqij bike";
 "accessibility_action_delete" = "Rêbaza daynê jê bibe";
 "accessibility_action_edit" = "Zanyariyên kartê biguherîne";
-"accessibility_action_set_default" = "Wekî rêbaza daynê ya pêşdanasînî destnîşan bike";
 "accessibility_checkout_success_icon" = "Serkeftî";
 "accessibility_checkout_error_icon" = "Xeletî";
 "accessibility_paypal_logo" = "PayPal";
@@ -209,8 +206,8 @@
 "accessibility_klarna_category" = "Vebijarka daynê %@";
 "accessibility_klarna_category_selected" = "Vebijarka daynê %@, hatiye hilbijartin";
 "accessibility_klarna_payment_view" = "Forma daynê ya Klarna";
-"accessibility_klarna_authorize_hint" = "Du car bikin ji bo domandina bi Klarna";
-"accessibility_klarna_finalize_hint" = "Du car bikin ji bo temamkirina daynê";
+"accessibility_klarna_authorize_hint" = "Bi Klarna berdewam bike";
+"accessibility_klarna_finalize_hint" = "Dravdanê temam bike";
 
 /* ACH */
 "primer_ach_title" = "Hesabê Bankê";
@@ -223,9 +220,9 @@
 "primer_ach_mandate_button_accept" = "Ez razî me";
 "primer_ach_mandate_button_decline" = "Betal bike";
 "primer_ach_mandate_template" = "Bi tikandina \"Ez razî me\", hûn destûr didin %1$@ ku ji hesabê bankê yê ku li jor hatiye diyarkirin ji bo her mîqdarê deyndarî ji bo lêçûnên ku ji bikaranîna karûbarên %1$@ û/an kirîna hilberên ji %1$@ derdikevin, li gorî malpera û mercên %1$@, heya ku ev destûr were betalkirin, were derxistin. Hûn dikarin vê destûrê her dem bi agahdarkirina %1$@ bi 30 (sî) roj berê biguherînin an betal bikin.";
-"accessibility_ach_continue_hint" = "Du car bikin ji bo domandina hilbijartina hesabê bankê";
-"accessibility_ach_mandate_accept_hint" = "Du car bikin ji bo qebûlkirina destûrê û temamkirina daynê";
-"accessibility_ach_mandate_decline_hint" = "Du car bikin ji bo redkirin û betalkirina daynê";
+"accessibility_ach_continue_hint" = "Berdewamî hilbijartina hesabê bankê";
+"accessibility_ach_mandate_accept_hint" = "Destûrnameyê qebûl bike û dravdanê temam bike";
+"accessibility_ach_mandate_decline_hint" = "Red bike û dravdanê betal bike";
 
 "accessibility_card_form_billing_address_hint" = "Navîşana xwe binivîsîne";
 "accessibility_card_form_billing_address_state_hint" = "Eyalet an parêzgehê binivîsîne";
@@ -285,3 +282,5 @@
 "primer_adyen_klarna_option_pay_later" = "Paşê bide";
 "primer_adyen_klarna_option_pay_over_time" = "Bi demê re bide";
 "primer_adyen_klarna_option_pay_now" = "Niha bide";
+"primer_vaulted_gocardless_direct_debit_suffix" = "Debîta Rasterast";
+"accessibility_card_form_billing_address_country_hint" = "Lîsteyek vedike ji bo hilbijartina welatê te";

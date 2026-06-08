@@ -66,7 +66,7 @@ final class DefaultPayPalScope: PrimerPayPalScope, ObservableObject, LogReporter
 
   func cancel() {
     logger.debug(message: "PayPal payment cancelled")
-    checkoutScope?.onDismiss()
+    checkoutScope?.cancelActivePaymentMethod(returnToSelection: presentationContext.shouldShowBackButton)
   }
 
   func onBack() {
@@ -101,11 +101,19 @@ final class DefaultPayPalScope: PrimerPayPalScope, ObservableObject, LogReporter
       internalState.step = .success
       checkoutScope?.handlePaymentSuccess(result)
     } catch {
-      logger.error(message: "PayPal payment failed: \(error.localizedDescription)")
-      internalState.step = .failure(error.localizedDescription)
-
       let primerError =
         error as? PrimerError ?? PrimerError.unknown(message: error.localizedDescription)
+
+      // Dismissing the PayPal browser sheet is a cancellation, not a failure. The system sheet
+      // does not invoke cancel(), so the catch drives the return-to-list / dismiss itself.
+      if case .cancelled = primerError {
+        logger.debug(message: "PayPal payment cancelled by user")
+        checkoutScope?.cancelActivePaymentMethod(returnToSelection: presentationContext.shouldShowBackButton)
+        return
+      }
+
+      logger.error(message: "PayPal payment failed: \(error.localizedDescription)")
+      internalState.step = .failure(error.localizedDescription)
       checkoutScope?.handlePaymentError(primerError)
     }
   }

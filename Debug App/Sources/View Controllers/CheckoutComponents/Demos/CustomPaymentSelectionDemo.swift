@@ -81,27 +81,13 @@ struct CustomPaymentSelectionDemo: View, CheckoutComponentsDemo {
         } else if let error {
             ErrorView(error: error, onRetry: { Task { await createSession() } })
         } else if let clientToken {
-            PrimerCheckout(
+            // Custom selection is built inline on the session-based API (the old
+            // `paymentMethodSelection.screen` / `loadingScreen` customization slots no longer exist).
+            InlineCustomSelection(
                 clientToken: clientToken,
-                primerSettings: configuration.settings,
-                primerTheme: demoTheme,
-                scope: { checkoutScope in
-                    // Override the payment method selection screen with custom content
-                    // Pass checkoutScope as a parameter to access card form and checkout state
-                    checkoutScope.paymentMethodSelection.screen = { selectionScope in
-                        CustomPaymentSelectionContent(
-                            scope: selectionScope,
-                            checkoutScope: checkoutScope,
-                            onDismiss: { dismiss() }
-                        )
-                    }
-
-                    // Custom loading screen during payment processing (matches Android's checkout.loading)
-                    checkoutScope.loadingScreen = {
-                        CustomProcessingOverlay()
-                    }
-                },
-                onCompletion: { _ in dismiss() }
+                settings: configuration.settings,
+                theme: demoTheme,
+                onDismiss: { dismiss() }
             )
         }
     }
@@ -133,6 +119,56 @@ struct CustomPaymentSelectionDemo: View, CheckoutComponentsDemo {
         } catch {
             self.error = error.localizedDescription
             isLoading = false
+        }
+    }
+}
+
+// MARK: - Inline Custom Selection (session-based)
+
+/// Hosts a `PrimerCheckoutSession` and renders the custom selection inline once ready — the
+/// session-API replacement for the removed `paymentMethodSelection.screen` slot.
+@available(iOS 15.0, *)
+private struct InlineCustomSelection: View {
+    let clientToken: String
+    let settings: PrimerSettings
+    let theme: PrimerCheckoutTheme
+    let onDismiss: () -> Void
+
+    @StateObject private var session: PrimerCheckoutSession
+
+    init(
+        clientToken: String,
+        settings: PrimerSettings,
+        theme: PrimerCheckoutTheme,
+        onDismiss: @escaping () -> Void
+    ) {
+        self.clientToken = clientToken
+        self.settings = settings
+        self.theme = theme
+        self.onDismiss = onDismiss
+        _session = StateObject(
+            wrappedValue: PrimerCheckoutSession(clientToken: clientToken, settings: settings, theme: theme)
+        )
+    }
+
+    var body: some View {
+        content
+            .primerCheckoutSession(session) { _ in onDismiss() }
+    }
+
+    @ViewBuilder
+    private var content: some View {
+        switch session.phase {
+        case .ready:
+            if let checkoutScope = session.checkoutScope {
+                CustomPaymentSelectionContent(
+                    scope: checkoutScope.paymentMethodSelection,
+                    checkoutScope: checkoutScope,
+                    onDismiss: onDismiss
+                )
+            }
+        case .initializing:
+            LoadingView()
         }
     }
 }
@@ -598,14 +634,7 @@ private struct CustomPaymentSelectionContent: View {
 
             // Always visible card form - using SDK's default card form view
             if let cardFormScope {
-                cardFormScope.DefaultCardFormView(
-                    styling: PrimerFieldStyling(
-                        backgroundColor: DemoColors.cardBackground,
-                        borderColor: DemoColors.border,
-                        cornerRadius: 12,
-                        borderWidth: 1
-                    )
-                )
+                CardFormFieldsView(scope: cardFormScope)
                 .padding()
                 .background(DemoColors.cardBackground)
                 .cornerRadius(16)

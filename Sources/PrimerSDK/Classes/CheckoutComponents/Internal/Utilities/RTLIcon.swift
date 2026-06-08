@@ -5,6 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 @available(iOS 15.0, *)
+@MainActor
 enum RTLIcon {
   static var backChevron: String {
     RTLSupport.isRightToLeft ? "chevron.right" : "chevron.left"

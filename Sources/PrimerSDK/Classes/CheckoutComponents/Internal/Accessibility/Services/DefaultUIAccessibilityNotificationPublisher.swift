@@ -7,6 +7,7 @@
 import UIKit
 
 @available(iOS 15.0, *)
+@MainActor
 final class DefaultUIAccessibilityNotificationPublisher: UIAccessibilityNotificationPublisher {
 
   func post(notification: UIAccessibility.Notification, argument: Any?) {

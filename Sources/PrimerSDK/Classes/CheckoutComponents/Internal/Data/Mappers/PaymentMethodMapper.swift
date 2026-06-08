@@ -30,7 +30,6 @@ final class PaymentMethodMapperImpl: PaymentMethodMapper {
       type: internalMethod.type,
       name: internalMethod.name,
       icon: internalMethod.icon,
-      metadata: internalMethod.metadata,
       surcharge: internalMethod.surcharge,
       hasUnknownSurcharge: internalMethod.hasUnknownSurcharge,
       formattedSurcharge: formattedSurcharge,

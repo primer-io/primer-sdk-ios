@@ -19,6 +19,7 @@ protocol ProcessCardPaymentInteractor {
   func execute(cardData: CardPaymentData) async throws -> PaymentResult
 }
 
+@available(iOS 15.0, *)
 final class ProcessCardPaymentInteractorImpl: ProcessCardPaymentInteractor, LogReporter {
 
   private let repository: HeadlessRepository

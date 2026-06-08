@@ -46,7 +46,7 @@ struct KlarnaPaymentMethod: PaymentMethodProtocol {
 
   @MainActor
   static func createView(checkoutScope: any PrimerCheckoutScope) -> AnyView? {
-    guard let klarnaScope = checkoutScope.getPaymentMethodScope(PrimerKlarnaScope.self) else {
+    guard let klarnaScope = checkoutScope.getPaymentMethodScope(DefaultKlarnaScope.self) else {
       PrimerLogging.shared.logger.error(message: "Failed to retrieve Klarna scope from checkout scope")
       return nil
     }

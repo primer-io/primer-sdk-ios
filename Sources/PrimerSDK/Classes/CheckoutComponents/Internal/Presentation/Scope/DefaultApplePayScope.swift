@@ -33,6 +33,10 @@ final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
   var screen: ApplePayScreenComponent?
   var applePayButton: ApplePayButtonComponent?
 
+  var dismissalMechanism: [DismissalMechanism] {
+    checkoutScope?.dismissalMechanism ?? []
+  }
+
   private(set) var presentationContext: PresentationContext = .fromPaymentSelection
 
   private weak var checkoutScope: DefaultCheckoutScope?
@@ -93,9 +97,7 @@ final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
 
   func cancel() {
     structuredState.isLoading = false
-    if presentationContext.shouldShowBackButton {
-      checkoutScope?.checkoutNavigator.navigateBack()
-    }
+    checkoutScope?.cancelActivePaymentMethod(returnToSelection: presentationContext.shouldShowBackButton)
   }
 
   func onBack() {
@@ -161,6 +163,7 @@ final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
     } catch let error as PrimerError {
       if case .cancelled = error {
         structuredState.isLoading = false
+        checkoutScope?.cancelActivePaymentMethod(returnToSelection: presentationContext.shouldShowBackButton)
         return
       }
       await handlePaymentError(error)

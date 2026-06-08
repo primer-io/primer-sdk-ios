@@ -1,6 +1,5 @@
 "accessibility_action_delete" = "Ta bort betalningsmetod";
 "accessibility_action_edit" = "Redigera kortuppgifter";
-"accessibility_action_set_default" = "Ange som standardbetalningsmetod";
 "accessibility_card_form_billing_address_address_line_1_label" = "Adressrad 1, obligatorisk";
 "accessibility_card_form_billing_address_address_line_2_label" = "Adressrad 2, valfri";
 "accessibility_card_form_billing_address_city_hint" = "Ange ortnamn";
@@ -19,7 +18,7 @@
 "accessibility_card_form_cardholder_name_hint" = "Ange namn som det står på kortet";
 "accessibility_card_form_cardholder_name_label" = "Kortinnehavarens namn";
 "accessibility_card_form_cvc_error_invalid" = "Ogiltig säkerhetskod.";
-"accessibility_card_form_cvc_hint" = "3- eller 4-siffrig kod på kortets baksida";
+"accessibility_card_form_cvc_hint" = "Säkerhetskod, 3 eller 4 siffror";
 "accessibility_card_form_cvc_label" = "Säkerhetskod, obligatorisk";
 "accessibility_card_form_cvv_icon" = "CVV-säkerhetskod";
 "accessibility_card_form_expiry_error_invalid" = "Ogiltigt utgångsdatum.";
@@ -27,11 +26,11 @@
 "accessibility_card_form_expiry_icon" = "Kortets utgångsdatum";
 "accessibility_card_form_expiry_label" = "Utgångsdatum, obligatoriskt";
 "accessibility_card_form_network_selector" = "Välj nätverk";
-"accessibility_card_form_network_selector_hint" = "Dubbeltryck för att välja ett annat kortnätverk";
-"accessibility_card_form_network_selector_inline_hint" = "Dubbeltryck för att välja detta nätverk";
+"accessibility_card_form_network_selector_hint" = "Välj ett annat kortnätverk";
+"accessibility_card_form_network_selector_inline_hint" = "Välj detta nätverk";
 "accessibility_card_form_network_selector_label" = "Välj kortnätverk";
 "accessibility_card_form_submit_disabled" = "Knapp inaktiverad. Fyll i alla obligatoriska fält för att aktivera betalning";
-"accessibility_card_form_submit_hint" = "Dubbeltryck för att skicka betalning";
+"accessibility_card_form_submit_hint" = "Skicka betalningen";
 "accessibility_card_form_submit_label" = "Skicka betalning";
 "accessibility_card_form_submit_loading" = "Behandlar betalning, vänligen vänta";
 "accessibility_checkout_error_icon" = "Fel";
@@ -52,8 +51,6 @@
 "accessibility_country_selection_search_icon" = "Sök";
 "accessibility_error_generic" = "Ett fel uppstod. Försök igen.";
 "accessibility_error_multiple_errors" = "%d fel upptäcktes";
-"accessibility_payment_selection_card_full" = "%1$@-kort som slutar på %2$@, utgår %3$@";
-"accessibility_payment_selection_card_masked" = "kort som slutar på maskerade siffror";
 "accessibility_payment_selection_coming_soon" = "Betalningsmetod kommer snart";
 "accessibility_payment_selection_pay_with_card" = "Betala med kort";
 "accessibility_payment_selection_pay_with_ideal" = "Betala med iDEAL";
@@ -65,6 +62,7 @@
 "accessibility_screen_loading_payment_methods" = "Laddar betalningsmetoder";
 "accessibility_screen_payment_method" = "%@ betalningsmetod";
 "accessibility_payment_method_button" = "Betala med %@";
+"accessibility_payment_method_selected" = "%@ valt";
 "accessibility_screen_processing_payment" = "Behandlar betalning";
 "accessibility_screen_success" = "Betalningen lyckades";
 "accessibility_vault_delete_payment_method" = "Ta bort denna betalningsmetod";
@@ -144,7 +142,6 @@
 "primer_card_form_placeholder_state" = "Stockholms län";
 "primer_card_form_retail_not_implemented" = "Val av butik är inte implementerat än";
 "primer_card_form_title" = "Betala med kort";
-"primer_checkout_auto_dismiss_message" = "Denna skärm kommer att stängas automatiskt om 3 sekunder";
 "primer_checkout_dismissing" = "Stänger...";
 "primer_checkout_error_button_other_methods" = "Välj andra betalningsmetoder";
 "primer_checkout_error_subtitle" = "Det uppstod ett nätverksproblem.";
@@ -209,8 +206,8 @@
 "accessibility_klarna_category" = "%@ betalningsalternativ";
 "accessibility_klarna_category_selected" = "%@ betalningsalternativ, valt";
 "accessibility_klarna_payment_view" = "Klarna-betalningsformulär";
-"accessibility_klarna_authorize_hint" = "Dubbeltryck för att fortsätta med Klarna";
-"accessibility_klarna_finalize_hint" = "Dubbeltryck för att slutföra betalningen";
+"accessibility_klarna_authorize_hint" = "Fortsätt med Klarna";
+"accessibility_klarna_finalize_hint" = "Slutför betalningen";
 
 /* ACH */
 "primer_ach_title" = "Bankkonto";
@@ -223,9 +220,9 @@
 "primer_ach_mandate_button_accept" = "Jag godkänner";
 "primer_ach_mandate_button_decline" = "Avbryt";
 "primer_ach_mandate_template" = "Genom att klicka på \"Jag godkänner\" auktoriserar du %1$@ att debitera det ovan angivna bankkontot för eventuellt belopp som är skyldigt för avgifter som uppstår från din användning av %1$@s tjänster och/eller köp av produkter från %1$@, i enlighet med %1$@s webbplats och villkor, tills denna auktorisering återkallas. Du kan ändra eller avbryta denna auktorisering när som helst genom att meddela %1$@ med 30 (trettio) dagars varsel.";
-"accessibility_ach_continue_hint" = "Dubbeltryck för att fortsätta till val av bankkonto";
-"accessibility_ach_mandate_accept_hint" = "Dubbeltryck för att godkänna auktoriseringen och slutföra betalningen";
-"accessibility_ach_mandate_decline_hint" = "Dubbeltryck för att avvisa och avbryta betalningen";
+"accessibility_ach_continue_hint" = "Fortsätt till val av bankkonto";
+"accessibility_ach_mandate_accept_hint" = "Godkänn auktoriseringen och slutför betalningen";
+"accessibility_ach_mandate_decline_hint" = "Avvisa och avbryt betalningen";
 
 "accessibility_card_form_billing_address_hint" = "Ange din adress";
 "accessibility_card_form_billing_address_state_hint" = "Ange delstat eller provins";
@@ -285,3 +282,5 @@
 "primer_adyen_klarna_option_pay_later" = "Betala senare";
 "primer_adyen_klarna_option_pay_over_time" = "Delbetala";
 "primer_adyen_klarna_option_pay_now" = "Betala nu";
+"primer_vaulted_gocardless_direct_debit_suffix" = "Autogiro";
+"accessibility_card_form_billing_address_country_hint" = "Öppnar en lista för att välja ditt land";

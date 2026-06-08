@@ -8,11 +8,11 @@ import SwiftUI
 
 /// Closure that provides a custom screen for ACH payment steps.
 @available(iOS 15.0, *)
-public typealias AchScreenComponent = (any PrimerAchScope) -> any View
+typealias AchScreenComponent = (any PrimerAchScope) -> any View
 
 /// Closure that provides a custom button for ACH payment actions.
 @available(iOS 15.0, *)
-public typealias AchButtonComponent = (any PrimerAchScope) -> any View
+typealias AchButtonComponent = (any PrimerAchScope) -> any View
 
 /// Scope protocol for ACH bank payment methods (Stripe ACH).
 ///
@@ -38,7 +38,7 @@ public typealias AchButtonComponent = (any PrimerAchScope) -> any View
 /// ```
 @available(iOS 15.0, *)
 @MainActor
-public protocol PrimerAchScope: PrimerPaymentMethodScope where State == PrimerAchState {
+protocol PrimerAchScope: PrimerPaymentMethodScope where State == PrimerAchState {
 
   /// The bank collector view controller provided by Stripe SDK.
   /// Present this when `state.step` is `.bankAccountCollection`.

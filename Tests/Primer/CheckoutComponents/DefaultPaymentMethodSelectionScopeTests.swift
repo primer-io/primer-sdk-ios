@@ -110,8 +110,10 @@ final class DefaultPaymentMethodSelectionScopeTests: XCTestCase {
         // When
         sut.onPaymentMethodSelected(paymentMethod: method)
 
-        // Then — allow async task to complete
-        try await Task.sleep(nanoseconds: 200_000_000)
+        // Then — await the analytics tracking to land
+        try await withTimeout(2.0) { [self] in
+            while await !mockAnalytics.hasTracked(.paymentMethodSelection) { await Task.yield() }
+        }
         let hasTracked = await mockAnalytics.hasTracked(.paymentMethodSelection)
         XCTAssertTrue(hasTracked)
     }
@@ -468,20 +470,6 @@ final class DefaultPaymentMethodSelectionScopeTests: XCTestCase {
         XCTAssertEqual(state.filteredPaymentMethods, state.paymentMethods)
     }
 
-    // MARK: - UI Customization Properties Tests
-
-    func test_uiCustomizationProperties_defaultToNil() {
-        // Given
-        sut = makeSut()
-
-        // Then
-        XCTAssertNil(sut.screen)
-        XCTAssertNil(sut.container)
-        XCTAssertNil(sut.paymentMethodItem)
-        XCTAssertNil(sut.categoryHeader)
-        XCTAssertNil(sut.emptyStateView)
-    }
-
     // MARK: - Expansion/Collapse Integration Tests
 
     func test_showOtherWaysToPay_afterCollapse_reexpands() async throws {
@@ -779,10 +767,11 @@ final class DefaultPaymentMethodSelectionScopeAdditionalTests: XCTestCase {
         // When — should not crash
         sut.cancel()
 
-        // Wait for async dismissal task
-        try await Task.sleep(nanoseconds: 200_000_000)
-
-        // Then — cancel delegates to checkout scope's onDismiss (no crash = success)
+        // Then — cancel delegates to checkout scope's onDismiss, which dismisses navigation
+        try await withTimeout(2.0) { [self] in
+            while mockCheckoutScope.navigationState != .dismissed { await Task.yield() }
+        }
+        XCTAssertEqual(mockCheckoutScope.navigationState, .dismissed)
     }
 }
 
@@ -894,7 +883,9 @@ final class DefaultPaymentMethodSelectionScopeVaultTests: XCTestCase {
         let method = makeVaultedPaymentMethod()
 
         // Let the sut's init Task settle — it calls refreshVaultedPaymentMethods() once on startup.
-        try await Task.sleep(nanoseconds: 200_000_000)
+        try await withTimeout(2.0) {
+            while mockRepo.fetchVaultedPaymentMethodsCallCount < 1 { await Task.yield() }
+        }
         let fetchBaseline = mockRepo.fetchVaultedPaymentMethodsCallCount
 
         // When / Then
@@ -1054,9 +1045,11 @@ final class DefaultPaymentMethodSelectionScopeVaultTests: XCTestCase {
 
         // When
         sut.onPaymentMethodSelected(paymentMethod: method)
-        try await Task.sleep(nanoseconds: 200_000_000)
 
-        // Then
+        // Then — await the analytics tracking to land
+        try await withTimeout(2.0) { [self] in
+            while await !mockAnalytics.hasTracked(.paymentMethodSelection) { await Task.yield() }
+        }
         let hasTracked = await mockAnalytics.hasTracked(.paymentMethodSelection)
         XCTAssertTrue(hasTracked)
     }

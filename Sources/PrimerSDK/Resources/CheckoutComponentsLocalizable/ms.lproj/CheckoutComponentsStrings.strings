@@ -1,6 +1,5 @@
 "accessibility_action_delete" = "Padam kaedah pembayaran";
 "accessibility_action_edit" = "Edit butiran kad";
-"accessibility_action_set_default" = "Tetapkan sebagai kaedah pembayaran lalai";
 "accessibility_card_form_billing_address_address_line_1_label" = "Baris alamat 1, diperlukan";
 "accessibility_card_form_billing_address_address_line_2_label" = "Baris alamat 2, pilihan";
 "accessibility_card_form_billing_address_city_hint" = "Masukkan nama bandar";
@@ -19,7 +18,7 @@
 "accessibility_card_form_cardholder_name_hint" = "Masukkan nama seperti yang dipamerkan di kad";
 "accessibility_card_form_cardholder_name_label" = "Nama pemegang kad";
 "accessibility_card_form_cvc_error_invalid" = "Kod keselamatan tidak sah.";
-"accessibility_card_form_cvc_hint" = "Kod 3 atau 4 digit di belakang kad";
+"accessibility_card_form_cvc_hint" = "Kod keselamatan, 3 atau 4 digit";
 "accessibility_card_form_cvc_label" = "Kod keselamatan, diperlukan";
 "accessibility_card_form_cvv_icon" = "Kod keselamatan CVV";
 "accessibility_card_form_expiry_error_invalid" = "Tarikh luput tidak sah.";
@@ -27,11 +26,11 @@
 "accessibility_card_form_expiry_icon" = "Tarikh luput kad";
 "accessibility_card_form_expiry_label" = "Tarikh luput, diperlukan";
 "accessibility_card_form_network_selector" = "Pilih rangkaian";
-"accessibility_card_form_network_selector_hint" = "Ketik dua kali untuk memilih rangkaian kad yang berbeza";
-"accessibility_card_form_network_selector_inline_hint" = "Ketik dua kali untuk memilih rangkaian ini";
+"accessibility_card_form_network_selector_hint" = "Pilih rangkaian kad lain";
+"accessibility_card_form_network_selector_inline_hint" = "Pilih rangkaian ini";
 "accessibility_card_form_network_selector_label" = "Pemilih rangkaian kad";
 "accessibility_card_form_submit_disabled" = "Butang dilumpuhkan. Lengkapkan semua medan yang diperlukan untuk membolehkan pembayaran";
-"accessibility_card_form_submit_hint" = "Ketik-dua kali untuk hantar pembayaran";
+"accessibility_card_form_submit_hint" = "Hantar pembayaran";
 "accessibility_card_form_submit_label" = "Hantar pembayaran";
 "accessibility_card_form_submit_loading" = "Pembayaran sedang diproses, sila tunggu";
 "accessibility_checkout_error_icon" = "Ralat";
@@ -52,8 +51,6 @@
 "accessibility_country_selection_search_icon" = "Cari";
 "accessibility_error_generic" = "Ralat berlaku. Sila cuba lagi.";
 "accessibility_error_multiple_errors" = "%d ralat ditemui";
-"accessibility_payment_selection_card_full" = "Kad %1$@ berakhir dengan %2$@, luput %3$@";
-"accessibility_payment_selection_card_masked" = "kad berakhir dengan digit tersembunyi";
 "accessibility_payment_selection_coming_soon" = "Kaedah pembayaran akan datang";
 "accessibility_payment_selection_pay_with_card" = "Bayar dengan kad";
 "accessibility_payment_selection_pay_with_ideal" = "Bayar dengan iDEAL";
@@ -65,6 +62,7 @@
 "accessibility_screen_loading_payment_methods" = "Memuatkan kaedah pembayaran";
 "accessibility_screen_payment_method" = "Kaedah pembayaran %@";
 "accessibility_payment_method_button" = "Bayar dengan %@";
+"accessibility_payment_method_selected" = "%@ dipilih";
 "accessibility_screen_processing_payment" = "Memproses pembayaran";
 "accessibility_screen_success" = "Pembayaran berjaya";
 "accessibility_vault_delete_payment_method" = "Padam kaedah pembayaran ini";
@@ -144,7 +142,6 @@
 "primer_card_form_placeholder_state" = "Selangor";
 "primer_card_form_retail_not_implemented" = "Pemilihan premis runcit belum dilaksanakan";
 "primer_card_form_title" = "Bayar dengan kad";
-"primer_checkout_auto_dismiss_message" = "Skrin ini akan ditutup secara automatik dalam 3 saat";
 "primer_checkout_dismissing" = "Menutup...";
 "primer_checkout_error_button_other_methods" = "Pilih kaedah pembayaran lain";
 "primer_checkout_error_subtitle" = "Terdapat masalah rangkaian.";
@@ -209,8 +206,8 @@
 "accessibility_klarna_category" = "Pilihan pembayaran %@";
 "accessibility_klarna_category_selected" = "Pilihan pembayaran %@, dipilih";
 "accessibility_klarna_payment_view" = "Borang pembayaran Klarna";
-"accessibility_klarna_authorize_hint" = "Ketik dua kali untuk meneruskan dengan Klarna";
-"accessibility_klarna_finalize_hint" = "Ketik dua kali untuk menyelesaikan pembayaran";
+"accessibility_klarna_authorize_hint" = "Teruskan dengan Klarna";
+"accessibility_klarna_finalize_hint" = "Lengkapkan pembayaran";
 
 /* ACH */
 "primer_ach_title" = "Akaun Bank";
@@ -223,9 +220,9 @@
 "primer_ach_mandate_button_accept" = "Saya Setuju";
 "primer_ach_mandate_button_decline" = "Batal";
 "primer_ach_mandate_template" = "Dengan mengklik \"Saya Setuju\", anda membenarkan %1$@ untuk mendebit akaun bank yang dinyatakan di atas untuk sebarang jumlah yang terhutang bagi caj yang timbul daripada penggunaan perkhidmatan %1$@ dan/atau pembelian produk daripada %1$@, menurut laman web dan terma %1$@, sehingga kebenaran ini dibatalkan. Anda boleh meminda atau membatalkan kebenaran ini pada bila-bila masa dengan memberikan notis kepada %1$@ dengan 30 (tiga puluh) hari notis.";
-"accessibility_ach_continue_hint" = "Ketik dua kali untuk meneruskan pemilihan akaun bank";
-"accessibility_ach_mandate_accept_hint" = "Ketik dua kali untuk menerima kebenaran dan menyelesaikan pembayaran";
-"accessibility_ach_mandate_decline_hint" = "Ketik dua kali untuk menolak dan membatalkan pembayaran";
+"accessibility_ach_continue_hint" = "Teruskan ke pemilihan akaun bank";
+"accessibility_ach_mandate_accept_hint" = "Terima kebenaran dan lengkapkan pembayaran";
+"accessibility_ach_mandate_decline_hint" = "Tolak dan batalkan pembayaran";
 
 "accessibility_card_form_billing_address_hint" = "Masukkan alamat anda";
 "accessibility_card_form_billing_address_state_hint" = "Masukkan negeri atau wilayah";
@@ -285,3 +282,5 @@
 "primer_adyen_klarna_option_pay_later" = "Bayar nanti";
 "primer_adyen_klarna_option_pay_over_time" = "Beli sekarang bayar nanti";
 "primer_adyen_klarna_option_pay_now" = "Bayar sekarang";
+"primer_vaulted_gocardless_direct_debit_suffix" = "Debit Terus";
+"accessibility_card_form_billing_address_country_hint" = "Membuka senarai untuk memilih negara anda";

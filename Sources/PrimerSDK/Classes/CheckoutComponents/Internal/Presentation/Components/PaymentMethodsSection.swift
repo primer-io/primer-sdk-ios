@@ -50,22 +50,18 @@ struct PaymentMethodsSection: View {
 
   // MARK: - Empty State
 
-  @ViewBuilder
   private func makeEmptyStateView() -> some View {
-    if let customEmptyState = scope.emptyStateView {
-      AnyView(customEmptyState())
-    } else {
-      VStack(spacing: PrimerSpacing.large(tokens: tokens)) {
-        Image(systemName: "creditcard.and.123")
-          .font(PrimerFont.largeIcon(tokens: tokens))
-          .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
-        Text(CheckoutComponentsStrings.noPaymentMethodsAvailable)
-          .font(PrimerFont.body(tokens: tokens))
-          .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
-      }
-      .frame(maxWidth: .infinity)
-      .padding(.top, PrimerComponentHeight.emptyStateTopPadding)
+    VStack(spacing: PrimerSpacing.large(tokens: tokens)) {
+      Image(systemName: "creditcard.and.123")
+        .font(PrimerFont.largeIcon(tokens: tokens))
+        .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
+        .accessibilityHidden(true)
+      Text(CheckoutComponentsStrings.noPaymentMethodsAvailable)
+        .font(PrimerFont.body(tokens: tokens))
+        .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
     }
+    .frame(maxWidth: .infinity)
+    .padding(.top, PrimerComponentHeight.emptyStateTopPadding)
   }
 
   // MARK: - Payment Methods List
@@ -75,7 +71,6 @@ struct PaymentMethodsSection: View {
       ForEach(state.paymentMethods, id: \.id) { method in
         PaymentMethodButton(
           method: method,
-          customItem: scope.paymentMethodItem,
           onSelect: { scope.onPaymentMethodSelected(paymentMethod: method) }
         )
       }

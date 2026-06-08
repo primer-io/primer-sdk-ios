@@ -29,6 +29,8 @@ struct SuccessScreen: View {
           .font(PrimerFont.extraLargeIcon(tokens: tokens))
           .foregroundColor(CheckoutColors.green(tokens: tokens))
           .scaleEffect(iconScale)
+          .accessibilityIdentifier(AccessibilityIdentifiers.Success.icon)
+          .accessibilityHidden(true)
 
         VStack(spacing: PrimerSpacing.xsmall(tokens: tokens)) {
           // Primary success message
@@ -36,24 +38,24 @@ struct SuccessScreen: View {
             .font(PrimerFont.bodyLarge(tokens: tokens))
             .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
             .multilineTextAlignment(.center)
+            .accessibilityIdentifier(AccessibilityIdentifiers.Success.title)
+            .accessibilityAddTraits(.isHeader)
 
           // Secondary redirect message
           Text(CheckoutComponentsStrings.redirectConfirmationMessage)
             .font(PrimerFont.bodyMedium(tokens: tokens))
             .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
             .multilineTextAlignment(.center)
+            .accessibilityIdentifier(AccessibilityIdentifiers.Success.description)
         }
       }
       .padding(.horizontal, PrimerSpacing.xxlarge(tokens: tokens))
-    }
-    .onAppear {
-      DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-        withAnimation(AnimationConstants.successSpringAnimation) {
-          iconScale = 1.0
-        }
-      }
+      .accessibilityIdentifier(AccessibilityIdentifiers.Success.container)
     }
     .task {
+      withAnimation(AnimationConstants.successSpringAnimation) {
+        iconScale = 1.0
+      }
       try? await Task.sleep(nanoseconds: UInt64(AnimationConstants.autoDismissDelay * 1_000_000_000))
       onDismiss?()
     }

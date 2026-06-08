@@ -934,7 +934,7 @@ final class QRCodeRepositoryImplTests: XCTestCase {
 
     // MARK: - cancelPolling — With Active Polling Module
 
-    func test_cancelPolling_withActivePolling_cancelsModule() async {
+    func test_cancelPolling_withActivePolling_cancelsModule() async throws {
         // Given
         var factoryCalled = false
         sut = QRCodeRepositoryImpl(
@@ -945,12 +945,14 @@ final class QRCodeRepositoryImplTests: XCTestCase {
             }
         )
 
-        let pollTask = Task {
+        let pollTask = Task { [self] in
             try? await sut.pollForCompletion(statusUrl: QRCodeTestData.Constants.statusUrl)
         }
 
-        // Allow polling to start and factory to be called
-        try? await Task.sleep(nanoseconds: 100_000_000)
+        // Wait for polling to start and the factory to be invoked
+        try await withTimeout(2.0) {
+            while !factoryCalled { await Task.yield() }
+        }
 
         // When
         sut.cancelPolling(paymentMethodType: QRCodeTestData.Constants.paymentMethodType)

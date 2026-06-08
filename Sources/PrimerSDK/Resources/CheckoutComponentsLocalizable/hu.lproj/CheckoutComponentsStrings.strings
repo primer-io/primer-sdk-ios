@@ -1,6 +1,5 @@
 "accessibility_action_delete" = "Fizetési mód törlése";
 "accessibility_action_edit" = "Kártyaadatok szerkesztése";
-"accessibility_action_set_default" = "Beállítás alapértelmezett fizetési módként";
 "accessibility_card_form_billing_address_address_line_1_label" = "1. címsor, kötelező";
 "accessibility_card_form_billing_address_address_line_2_label" = "2. címsor, opcionális";
 "accessibility_card_form_billing_address_city_hint" = "Adja meg a város nevét";
@@ -19,7 +18,7 @@
 "accessibility_card_form_cardholder_name_hint" = "Adja meg a kártyán szereplő nevet";
 "accessibility_card_form_cardholder_name_label" = "Kártyabirtokos neve";
 "accessibility_card_form_cvc_error_invalid" = "Érvénytelen biztonsági kód.";
-"accessibility_card_form_cvc_hint" = "3 vagy 4 számjegyű kód a kártya hátoldalán";
+"accessibility_card_form_cvc_hint" = "Biztonsági kód, 3 vagy 4 számjegy";
 "accessibility_card_form_cvc_label" = "Biztonsági kód, kötelező";
 "accessibility_card_form_cvv_icon" = "CVV biztonsági kód";
 "accessibility_card_form_expiry_error_invalid" = "Érvénytelen lejárati dátum.";
@@ -27,11 +26,11 @@
 "accessibility_card_form_expiry_icon" = "Kártya lejárati dátuma";
 "accessibility_card_form_expiry_label" = "Lejárati dátum, kötelező";
 "accessibility_card_form_network_selector" = "Hálózat kiválasztása";
-"accessibility_card_form_network_selector_hint" = "Dupla koppintással válasszon másik kártyahálózatot";
-"accessibility_card_form_network_selector_inline_hint" = "Dupla koppintással válassza ezt a hálózatot";
+"accessibility_card_form_network_selector_hint" = "Válasszon másik kártyahálózatot";
+"accessibility_card_form_network_selector_inline_hint" = "Válassza ezt a hálózatot";
 "accessibility_card_form_network_selector_label" = "Kártyahálózat választó";
 "accessibility_card_form_submit_disabled" = "Gomb letiltva. Töltse ki az összes kötelező mezőt a fizetés engedélyezéséhez";
-"accessibility_card_form_submit_hint" = "Dupla koppintás a fizetés beküldéséhez";
+"accessibility_card_form_submit_hint" = "Fizetés elküldése";
 "accessibility_card_form_submit_label" = "Fizetés beküldése";
 "accessibility_card_form_submit_loading" = "Fizetés feldolgozása folyamatban, kérjük várjon";
 "accessibility_checkout_error_icon" = "Hiba";
@@ -52,8 +51,6 @@
 "accessibility_country_selection_search_icon" = "Keresés";
 "accessibility_error_generic" = "Hiba történt. Kérjük, próbálja újra.";
 "accessibility_error_multiple_errors" = "%d hiba található";
-"accessibility_payment_selection_card_full" = "%1$@ kártya, utolsó számok: %2$@, lejár: %3$@";
-"accessibility_payment_selection_card_masked" = "kártya, utolsó számok maszkolva";
 "accessibility_payment_selection_coming_soon" = "Fizetési mód hamarosan elérhető";
 "accessibility_payment_selection_pay_with_card" = "Fizetés kártyával";
 "accessibility_payment_selection_pay_with_ideal" = "Fizetés iDEAL-lal";
@@ -65,6 +62,7 @@
 "accessibility_screen_loading_payment_methods" = "Fizetési módok betöltése";
 "accessibility_screen_payment_method" = "%@ fizetési mód";
 "accessibility_payment_method_button" = "Fizetés %@-val";
+"accessibility_payment_method_selected" = "%@ kiválasztva";
 "accessibility_screen_processing_payment" = "Fizetés feldolgozása";
 "accessibility_screen_success" = "Sikeres fizetés";
 "accessibility_vault_delete_payment_method" = "Törölje ezt a fizetési módot";
@@ -144,7 +142,6 @@
 "primer_card_form_placeholder_state" = "Pest";
 "primer_card_form_retail_not_implemented" = "Üzlet kiválasztása még nem elérhető";
 "primer_card_form_title" = "Fizetés kártyával";
-"primer_checkout_auto_dismiss_message" = "Ez a képernyő automatikusan bezáródik 3 másodperc múlva";
 "primer_checkout_dismissing" = "Bezárás...";
 "primer_checkout_error_button_other_methods" = "Más fizetési módok választása";
 "primer_checkout_error_subtitle" = "Hálózati probléma merült fel.";
@@ -209,8 +206,8 @@
 "accessibility_klarna_category" = "%@ fizetési lehetőség";
 "accessibility_klarna_category_selected" = "%@ fizetési lehetőség, kiválasztva";
 "accessibility_klarna_payment_view" = "Klarna fizetési űrlap";
-"accessibility_klarna_authorize_hint" = "Koppintson duplán a Klarnával való folytatáshoz";
-"accessibility_klarna_finalize_hint" = "Koppintson duplán a fizetés befejezéséhez";
+"accessibility_klarna_authorize_hint" = "Folytatás a Klarnával";
+"accessibility_klarna_finalize_hint" = "Fizetés befejezése";
 
 /* ACH */
 "primer_ach_title" = "Bankszámla";
@@ -223,9 +220,9 @@
 "primer_ach_mandate_button_accept" = "Elfogadom";
 "primer_ach_mandate_button_decline" = "Mégse";
 "primer_ach_mandate_template" = "Az \"Elfogadom\" gombra kattintva felhatalmazza a(z) %1$@ céget, hogy a fent megadott bankszámláról bármilyen tartozás összegét levonja a(z) %1$@ szolgáltatásainak használatából és/vagy a(z) %1$@ termékeinek vásárlásából eredő díjakért, a(z) %1$@ weboldalának és feltételeinek megfelelően, amíg ezt a felhatalmazást vissza nem vonják. Ezt a felhatalmazást bármikor módosíthatja vagy visszavonhatja a(z) %1$@ értesítésével 30 (harminc) napos határidővel.";
-"accessibility_ach_continue_hint" = "Koppintson duplán a bankszámla kiválasztásához";
-"accessibility_ach_mandate_accept_hint" = "Koppintson duplán a felhatalmazás elfogadásához és a fizetés befejezéséhez";
-"accessibility_ach_mandate_decline_hint" = "Koppintson duplán az elutasításhoz és a fizetés megszakításához";
+"accessibility_ach_continue_hint" = "Folytatás a bankszámla kiválasztásához";
+"accessibility_ach_mandate_accept_hint" = "Fogadja el az engedélyezést és fejezze be a fizetést";
+"accessibility_ach_mandate_decline_hint" = "Utasítsa el és vonja vissza a fizetést";
 
 "accessibility_card_form_billing_address_hint" = "Adja meg a címét";
 "accessibility_card_form_billing_address_state_hint" = "Adja meg az államot vagy tartományt";
@@ -285,3 +282,5 @@
 "primer_adyen_klarna_option_pay_later" = "Későbbi fizetés";
 "primer_adyen_klarna_option_pay_over_time" = "Fizetés idővel";
 "primer_adyen_klarna_option_pay_now" = "Fizetés most";
+"primer_vaulted_gocardless_direct_debit_suffix" = "Csoportos beszedés";
+"accessibility_card_form_billing_address_country_hint" = "Megnyit egy listát az ország kiválasztásához";

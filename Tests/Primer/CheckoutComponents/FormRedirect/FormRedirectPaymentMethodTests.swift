@@ -163,6 +163,7 @@ final class FormRedirectPaymentMethodTests: XCTestCase {
             _ = try await FormRedirectPaymentMethodHelper.createScopeForPaymentMethodType(
                 PrimerPaymentMethodType.adyenBlik.rawValue,
                 checkoutScope: checkoutScope,
+                presentationContext: .direct,
                 diContainer: emptyContainer
             )
             XCTFail("Expected error")
@@ -184,6 +185,7 @@ final class FormRedirectPaymentMethodTests: XCTestCase {
         let scope = try await FormRedirectPaymentMethodHelper.createScopeForPaymentMethodType(
             PrimerPaymentMethodType.adyenBlik.rawValue,
             checkoutScope: checkoutScope,
+            presentationContext: .direct,
             diContainer: container
         )
 
@@ -201,6 +203,7 @@ final class FormRedirectPaymentMethodTests: XCTestCase {
         let scope = try await FormRedirectPaymentMethodHelper.createScopeForPaymentMethodType(
             PrimerPaymentMethodType.adyenMBWay.rawValue,
             checkoutScope: checkoutScope,
+            presentationContext: .fromPaymentSelection,
             diContainer: container
         )
 
@@ -329,6 +332,7 @@ final class FormRedirectPaymentMethodTests: XCTestCase {
         let scope = try await FormRedirectPaymentMethodHelper.createScopeForPaymentMethodType(
             PrimerPaymentMethodType.adyenMBWay.rawValue,
             checkoutScope: checkoutScope,
+            presentationContext: .direct,
             diContainer: container
         )
 
@@ -428,7 +432,6 @@ final class FormRedirectPaymentMethodTests: XCTestCase {
         let scope = DefaultCheckoutScope(
             clientToken: TestData.Tokens.valid,
             settings: settings,
-            diContainer: DIContainer.shared,
             navigator: navigator
         )
         scope.availablePaymentMethods = [
@@ -470,10 +473,6 @@ private final class MockNonDefaultCheckoutScopeForFormRedirect: PrimerCheckoutSc
         AsyncStream { $0.finish() }
     }
 
-    var container: ContainerComponent?
-    var splashScreen: Component?
-    var loadingScreen: Component?
-    var errorScreen: ErrorComponent?
     var onBeforePaymentCreate: BeforePaymentCreateHandler?
     var paymentMethodSelection: PrimerPaymentMethodSelectionScope {
         fatalError("Not implemented for mock")

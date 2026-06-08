@@ -153,7 +153,7 @@ final class ConfigureRawDataManagerFlowTests: XCTestCase {
         }
     }
 
-    func testConfigure_WhenSucceeds_SetsRawData() async {
+    func testConfigure_WhenSucceeds_SetsRawData() async throws {
         var rawDataWasSet = false
         mockRawDataManager.onRawDataSet = { _ in
             rawDataWasSet = true
@@ -170,14 +170,16 @@ final class ConfigureRawDataManagerFlowTests: XCTestCase {
             )
         }
 
-        try? await Task.sleep(nanoseconds: 200_000_000)
+        try await withTimeout(2.0) { [self] in
+            while mockRawDataManager.rawDataSetCount < 1 { await Task.yield() }
+        }
         task.cancel()
 
         XCTAssertTrue(rawDataWasSet)
         XCTAssertEqual(mockRawDataManager.rawDataSetCount, 1)
     }
 
-    func testConfigure_SetsCardDataWithCorrectValues() async {
+    func testConfigure_SetsCardDataWithCorrectValues() async throws {
         var capturedCardData: PrimerCardData?
         mockRawDataManager.onRawDataSet = { rawData in
             capturedCardData = rawData as? PrimerCardData
@@ -194,7 +196,7 @@ final class ConfigureRawDataManagerFlowTests: XCTestCase {
             )
         }
 
-        try? await Task.sleep(nanoseconds: 200_000_000)
+        try await withTimeout(2.0) { while capturedCardData == nil { await Task.yield() } }
         task.cancel()
 
         XCTAssertNotNil(capturedCardData)
@@ -204,7 +206,7 @@ final class ConfigureRawDataManagerFlowTests: XCTestCase {
         XCTAssertEqual(capturedCardData?.cardholderName, "John Doe")
     }
 
-    func testConfigure_WithEmptyCardholderName_SetsNilCardholderName() async {
+    func testConfigure_WithEmptyCardholderName_SetsNilCardholderName() async throws {
         var capturedCardData: PrimerCardData?
         mockRawDataManager.onRawDataSet = { rawData in
             capturedCardData = rawData as? PrimerCardData
@@ -221,13 +223,13 @@ final class ConfigureRawDataManagerFlowTests: XCTestCase {
             )
         }
 
-        try? await Task.sleep(nanoseconds: 200_000_000)
+        try await withTimeout(2.0) { while capturedCardData == nil { await Task.yield() } }
         task.cancel()
 
         XCTAssertNil(capturedCardData?.cardholderName)
     }
 
-    func testConfigure_With4DigitYear_FormatsCorrectly() async {
+    func testConfigure_With4DigitYear_FormatsCorrectly() async throws {
         var capturedCardData: PrimerCardData?
         mockRawDataManager.onRawDataSet = { rawData in
             capturedCardData = rawData as? PrimerCardData
@@ -244,7 +246,7 @@ final class ConfigureRawDataManagerFlowTests: XCTestCase {
             )
         }
 
-        try? await Task.sleep(nanoseconds: 200_000_000)
+        try await withTimeout(2.0) { while capturedCardData == nil { await Task.yield() } }
         task.cancel()
 
         XCTAssertEqual(capturedCardData?.expiryDate, "12/2025")
@@ -284,7 +286,7 @@ final class CardNetworkSelectionInPaymentTests: XCTestCase {
         try await super.tearDown()
     }
 
-    func testPayment_WithSelectedNetwork_SetsNetworkOnCardData() async {
+    func testPayment_WithSelectedNetwork_SetsNetworkOnCardData() async throws {
         let networksToTest: [CardNetwork] = [.visa, .masterCard, .amex, .cartesBancaires]
 
         for expectedNetwork in networksToTest {
@@ -305,14 +307,14 @@ final class CardNetworkSelectionInPaymentTests: XCTestCase {
                 )
             }
 
-            try? await Task.sleep(nanoseconds: 200_000_000)
+            try await withTimeout(2.0) { while capturedNetwork != expectedNetwork { await Task.yield() } }
             task.cancel()
 
             XCTAssertEqual(capturedNetwork, expectedNetwork, "Expected \(expectedNetwork) to be set")
         }
     }
 
-    func testPayment_WithNilNetwork_DoesNotSetNetworkOnCardData() async {
+    func testPayment_WithNilNetwork_DoesNotSetNetworkOnCardData() async throws {
         var capturedCardData: PrimerCardData?
         mockRawDataManager.onRawDataSet = { rawData in
             capturedCardData = rawData as? PrimerCardData
@@ -329,7 +331,7 @@ final class CardNetworkSelectionInPaymentTests: XCTestCase {
             )
         }
 
-        try? await Task.sleep(nanoseconds: 200_000_000)
+        try await withTimeout(2.0) { while capturedCardData == nil { await Task.yield() } }
         task.cancel()
 
         XCTAssertNotNil(capturedCardData)
@@ -369,7 +371,7 @@ final class PaymentInputSanitizationTests: XCTestCase {
         try await super.tearDown()
     }
 
-    func testCardNumber_WithSpaces_StripsSpaces() async {
+    func testCardNumber_WithSpaces_StripsSpaces() async throws {
         var capturedCardNumber: String?
         mockRawDataManager.onRawDataSet = { rawData in
             capturedCardNumber = (rawData as? PrimerCardData)?.cardNumber
@@ -386,13 +388,13 @@ final class PaymentInputSanitizationTests: XCTestCase {
             )
         }
 
-        try? await Task.sleep(nanoseconds: 200_000_000)
+        try await withTimeout(2.0) { while capturedCardNumber == nil { await Task.yield() } }
         task.cancel()
 
         XCTAssertEqual(capturedCardNumber, "4242424242424242")
     }
 
-    func testExpiryDate_FormatsCorrectly() async {
+    func testExpiryDate_FormatsCorrectly() async throws {
         var capturedExpiryDate: String?
         mockRawDataManager.onRawDataSet = { rawData in
             capturedExpiryDate = (rawData as? PrimerCardData)?.expiryDate
@@ -409,7 +411,7 @@ final class PaymentInputSanitizationTests: XCTestCase {
             )
         }
 
-        try? await Task.sleep(nanoseconds: 200_000_000)
+        try await withTimeout(2.0) { while capturedExpiryDate == nil { await Task.yield() } }
         task.cancel()
 
         XCTAssertEqual(capturedExpiryDate, "03/28")

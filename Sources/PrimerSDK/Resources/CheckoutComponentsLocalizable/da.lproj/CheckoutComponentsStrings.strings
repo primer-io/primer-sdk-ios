@@ -1,6 +1,5 @@
 "accessibility_action_delete" = "Slet betalingsmetode";
 "accessibility_action_edit" = "Rediger kortoplysninger";
-"accessibility_action_set_default" = "Indstil som standardbetalingsmetode";
 "accessibility_card_form_billing_address_address_line_1_label" = "Adresselinje 1, påkrævet";
 "accessibility_card_form_billing_address_address_line_2_label" = "Adresselinje 2, valgfri";
 "accessibility_card_form_billing_address_city_hint" = "Indtast bynavn";
@@ -19,7 +18,7 @@
 "accessibility_card_form_cardholder_name_hint" = "Indtast navn som vist på kortet";
 "accessibility_card_form_cardholder_name_label" = "Kortholders navn";
 "accessibility_card_form_cvc_error_invalid" = "Ugyldig sikkerhedskode.";
-"accessibility_card_form_cvc_hint" = "3- eller 4-cifret kode på bagsiden af kortet";
+"accessibility_card_form_cvc_hint" = "Sikkerhedskode, 3 eller 4 cifre";
 "accessibility_card_form_cvc_label" = "Sikkerhedskode, påkrævet";
 "accessibility_card_form_cvv_icon" = "CVV sikkerhedskode";
 "accessibility_card_form_expiry_error_invalid" = "Ugyldig udløbsdato.";
@@ -27,11 +26,11 @@
 "accessibility_card_form_expiry_icon" = "Kortets udløbsdato";
 "accessibility_card_form_expiry_label" = "Udløbsdato, påkrævet";
 "accessibility_card_form_network_selector" = "Vælg netværk";
-"accessibility_card_form_network_selector_hint" = "Dobbelttryk for at vælge et andet kortnetværk";
-"accessibility_card_form_network_selector_inline_hint" = "Dobbelttryk for at vælge dette netværk";
+"accessibility_card_form_network_selector_hint" = "Vælg et andet kortnetværk";
+"accessibility_card_form_network_selector_inline_hint" = "Vælg dette netværk";
 "accessibility_card_form_network_selector_label" = "Kortnetværksvælger";
 "accessibility_card_form_submit_disabled" = "Knap deaktiveret. Udfyld alle påkrævede felter for at aktivere betaling";
-"accessibility_card_form_submit_hint" = "Dobbelttryk for at indsende betaling";
+"accessibility_card_form_submit_hint" = "Send betaling";
 "accessibility_card_form_submit_label" = "Indsend betaling";
 "accessibility_card_form_submit_loading" = "Behandler betaling, vent venligst";
 "accessibility_checkout_error_icon" = "Fejl";
@@ -52,8 +51,6 @@
 "accessibility_country_selection_search_icon" = "Søg";
 "accessibility_error_generic" = "Der opstod en fejl. Prøv venligst igen.";
 "accessibility_error_multiple_errors" = "%d fejl fundet";
-"accessibility_payment_selection_card_full" = "%1$@ kort der slutter på %2$@, udløber %3$@";
-"accessibility_payment_selection_card_masked" = "kort der slutter på maskerede cifre";
 "accessibility_payment_selection_coming_soon" = "Betalingsmetode kommer snart";
 "accessibility_payment_selection_pay_with_card" = "Betal med kort";
 "accessibility_payment_selection_pay_with_ideal" = "Betal med iDEAL";
@@ -65,6 +62,7 @@
 "accessibility_screen_loading_payment_methods" = "Indlæser betalingsmetoder";
 "accessibility_screen_payment_method" = "%@ betalingsmetode";
 "accessibility_payment_method_button" = "Betal med %@";
+"accessibility_payment_method_selected" = "%@ valgt";
 "accessibility_screen_processing_payment" = "Behandler betaling";
 "accessibility_screen_success" = "Betaling gennemført";
 "accessibility_vault_delete_payment_method" = "Slet denne betalingsmetode";
@@ -144,7 +142,6 @@
 "primer_card_form_placeholder_state" = "Region Hovedstaden";
 "primer_card_form_retail_not_implemented" = "Valg af detailudsalg er endnu ikke implementeret";
 "primer_card_form_title" = "Betal med kort";
-"primer_checkout_auto_dismiss_message" = "Denne skærm lukker automatisk om 3 sekunder";
 "primer_checkout_dismissing" = "Lukker...";
 "primer_checkout_error_button_other_methods" = "Vælg andre betalingsmetoder";
 "primer_checkout_error_subtitle" = "Der opstod et netværksproblem.";
@@ -209,8 +206,8 @@
 "accessibility_klarna_category" = "%@ betalingsmulighed";
 "accessibility_klarna_category_selected" = "%@ betalingsmulighed, valgt";
 "accessibility_klarna_payment_view" = "Klarna-betalingsformular";
-"accessibility_klarna_authorize_hint" = "Dobbelttryk for at fortsætte med Klarna";
-"accessibility_klarna_finalize_hint" = "Dobbelttryk for at gennemføre betalingen";
+"accessibility_klarna_authorize_hint" = "Fortsæt med Klarna";
+"accessibility_klarna_finalize_hint" = "Gennemfør betaling";
 
 /* ACH */
 "primer_ach_title" = "Bankkonto";
@@ -223,9 +220,9 @@
 "primer_ach_mandate_button_accept" = "Jeg accepterer";
 "primer_ach_mandate_button_decline" = "Annuller";
 "primer_ach_mandate_template" = "Ved at klikke på \"Jeg accepterer\" giver du %1$@ tilladelse til at hæve ethvert skyldigt beløb fra ovenstående bankkonto for gebyrer, der opstår som følge af din brug af %1$@s tjenester og/eller køb af produkter fra %1$@, i henhold til %1$@s hjemmeside og vilkår, indtil denne autorisation tilbagekaldes. Du kan ændre eller annullere denne autorisation når som helst ved at give %1$@ besked med 30 (tredive) dages varsel.";
-"accessibility_ach_continue_hint" = "Dobbelttryk for at fortsætte til valg af bankkonto";
-"accessibility_ach_mandate_accept_hint" = "Dobbelttryk for at acceptere autorisationen og gennemføre betalingen";
-"accessibility_ach_mandate_decline_hint" = "Dobbelttryk for at afvise og annullere betalingen";
+"accessibility_ach_continue_hint" = "Fortsæt til valg af bankkonto";
+"accessibility_ach_mandate_accept_hint" = "Accepter godkendelsen og gennemfør betalingen";
+"accessibility_ach_mandate_decline_hint" = "Afvis og annuller betalingen";
 
 "accessibility_card_form_billing_address_hint" = "Indtast din adresse";
 "accessibility_card_form_billing_address_state_hint" = "Indtast stat eller provins";
@@ -285,3 +282,5 @@
 "primer_adyen_klarna_option_pay_later" = "Betal senere";
 "primer_adyen_klarna_option_pay_over_time" = "Betal over tid";
 "primer_adyen_klarna_option_pay_now" = "Betal nu";
+"primer_vaulted_gocardless_direct_debit_suffix" = "Betalingsservice";
+"accessibility_card_form_billing_address_country_hint" = "Åbner en liste for at vælge dit land";

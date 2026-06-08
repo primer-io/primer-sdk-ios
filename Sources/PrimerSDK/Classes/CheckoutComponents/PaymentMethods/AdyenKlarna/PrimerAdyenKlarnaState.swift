@@ -8,10 +8,10 @@ import Foundation
 
 /// Adyen Klarna flow: `idle` -> `loading` -> `optionSelection` -> `submitting` -> `redirecting` -> `polling` -> `success` | `failure`
 @available(iOS 15.0, *)
-public struct PrimerAdyenKlarnaState: Equatable, @unchecked Sendable {
+struct PrimerAdyenKlarnaState: Equatable, @unchecked Sendable {
 
     /// When switching on this enum, always include a `default` case to handle future additions.
-    public enum Status: Equatable {
+    enum Status: Equatable {
         case idle
         case loading
         case optionSelection
@@ -22,13 +22,13 @@ public struct PrimerAdyenKlarnaState: Equatable, @unchecked Sendable {
         case failure(String)
     }
 
-    public internal(set) var status: Status
-    public internal(set) var paymentOptions: [AdyenKlarnaPaymentOption]
-    public internal(set) var selectedOption: AdyenKlarnaPaymentOption?
-    public internal(set) var paymentMethod: CheckoutPaymentMethod?
-    public internal(set) var surchargeAmount: String?
+    var status: Status
+    var paymentOptions: [AdyenKlarnaPaymentOption]
+    var selectedOption: AdyenKlarnaPaymentOption?
+    var paymentMethod: CheckoutPaymentMethod?
+    var surchargeAmount: String?
 
-    public init(
+    init(
         status: Status = .idle,
         paymentOptions: [AdyenKlarnaPaymentOption] = [],
         selectedOption: AdyenKlarnaPaymentOption? = nil,

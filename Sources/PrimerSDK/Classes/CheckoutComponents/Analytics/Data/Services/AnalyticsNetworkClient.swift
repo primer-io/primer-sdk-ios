@@ -9,7 +9,7 @@ import Foundation
 actor AnalyticsNetworkClient: LogReporter {
 
   func send(payload: AnalyticsPayload, to endpoint: URL, token: String?) async throws {
-    let request = buildRequest(payload: payload, endpoint: endpoint, token: token)
+    let request = try buildRequest(payload: payload, endpoint: endpoint, token: token)
 
     logger.info(
       message: "[Analytics] Dispatching \(payload.eventName) -> \(endpoint.absoluteString)")
@@ -29,7 +29,7 @@ actor AnalyticsNetworkClient: LogReporter {
     logger.info(message: "[Analytics] \(payload.eventName) acknowledged")
   }
 
-  private func buildRequest(payload: AnalyticsPayload, endpoint: URL, token: String?) -> URLRequest {
+  private func buildRequest(payload: AnalyticsPayload, endpoint: URL, token: String?) throws -> URLRequest {
     var request = URLRequest(url: endpoint)
     request.httpMethod = "POST"
     request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -44,7 +44,8 @@ actor AnalyticsNetworkClient: LogReporter {
     do {
       request.httpBody = try encoder.encode(payload)
     } catch {
-      logger.error(message: "[Analytics] Failed to encode payload: \(error)")
+      logger.error(message: "[Analytics] Failed to encode \(payload.eventName): \(error)")
+      throw error
     }
 
     return request

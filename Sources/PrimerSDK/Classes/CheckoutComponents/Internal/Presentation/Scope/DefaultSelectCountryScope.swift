@@ -15,7 +15,7 @@ final class DefaultSelectCountryScope: PrimerSelectCountryScope, LogReporter {
 
   // MARK: - Properties
 
-  public var state: AsyncStream<PrimerSelectCountryState> {
+  var state: AsyncStream<PrimerSelectCountryState> {
     AsyncStream { continuation in
       let task = Task { @MainActor in
         for await value in $internalState.values {
@@ -32,9 +32,9 @@ final class DefaultSelectCountryScope: PrimerSelectCountryScope, LogReporter {
 
   // MARK: - UI Customization Properties
 
-  public var screen: SelectCountryScreenComponent?
-  public var searchBar: SearchBarComponent?
-  public var countryItem: CountryItemComponent?
+  var screen: SelectCountryScreenComponent?
+  var searchBar: SearchBarComponent?
+  var countryItem: CountryItemComponent?
 
   // MARK: - Private Properties
 
@@ -50,17 +50,17 @@ final class DefaultSelectCountryScope: PrimerSelectCountryScope, LogReporter {
 
   // MARK: - Selection Methods
 
-  public func onCountrySelected(countryCode: String, countryName: String) {
+  func onCountrySelected(countryCode: String, countryName: String) {
     // Update the card form with the selected country code
     // Navigation is handled by the local sheet in CountryInputField
     cardFormScope?.updateCountryCode(countryCode)
   }
 
-  public func cancel() {
+  func cancel() {
     // No-op: Navigation is handled by the local sheet dismissal in CountryInputField
   }
 
-  public func onSearch(query: String) {
+  func onSearch(query: String) {
     internalState.searchQuery = query
     filterCountries(with: query)
   }

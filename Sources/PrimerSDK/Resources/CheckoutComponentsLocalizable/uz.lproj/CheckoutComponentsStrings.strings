@@ -26,7 +26,6 @@
 "primer_checkout_dismissing" = "Yopilmoqda...";
 "primer_checkout_system_error_title" = "To'lov tizimida xatolik";
 "primer_checkout_scope_unavailable" = "To'lov doirasi mavjud emas";
-"primer_checkout_auto_dismiss_message" = "Bu ekran 3 soniyada avtomatik yopiladi";
 "primer_card_form_label_number" = "Karta raqami";
 "primer_card_form_label_name" = "Kartadagi ism";
 "primer_card_form_label_expiry" = "Amal qilish muddati";
@@ -125,7 +124,7 @@
 "accessibility_card_form_cardholder_name_label" = "Karta egasining ismi";
 "accessibility_card_form_card_number_hint" = "Karta raqamingizni kiriting";
 "accessibility_card_form_expiry_hint" = "Amal qilish muddatini OY/YIL formatida kiriting";
-"accessibility_card_form_cvc_hint" = "Karta orqasidagi 3 yoki 4 raqamli kod";
+"accessibility_card_form_cvc_hint" = "Xavfsizlik kodi, 3 yoki 4 raqam";
 "accessibility_card_form_cardholder_name_hint" = "Kartada ko'rsatilgan ismni kiriting";
 "accessibility_card_form_billing_address_first_name_label" = "Ism, majburiy";
 "accessibility_card_form_billing_address_last_name_label" = "Familiya, majburiy";
@@ -139,10 +138,10 @@
 "accessibility_card_form_billing_address_country_label" = "Mamlakat, majburiy";
 "accessibility_card_form_network_selector" = "Tarmoqni tanlang";
 "accessibility_card_form_network_selector_label" = "Karta tarmoqini tanlash";
-"accessibility_card_form_network_selector_hint" = "Boshqa karta tarmoqini tanlash uchun ikki marta bosing";
-"accessibility_card_form_network_selector_inline_hint" = "Ushbu tarmoqni tanlash uchun ikki marta bosing";
+"accessibility_card_form_network_selector_hint" = "Boshqa karta tarmog'ini tanlang";
+"accessibility_card_form_network_selector_inline_hint" = "Ushbu tarmoqni tanlang";
 "accessibility_card_form_submit_label" = "To'lovni yuborish";
-"accessibility_card_form_submit_hint" = "To'lovni yuborish uchun ikki marta bosing";
+"accessibility_card_form_submit_hint" = "To'lovni yuboring";
 "accessibility_card_form_submit_loading" = "To'lov qayta ishlanmoqda, iltimos, kuting";
 "accessibility_card_form_submit_disabled" = "Tugma o'chirilgan. To'lovni yoqish uchun barcha majburiy maydonlarni to'ldiring";
 "accessibility_card_form_card_number_error_invalid" = "Karta raqami noto'g'ri. Iltimos, tekshirib qayta urinib ko'ring.";
@@ -172,15 +171,12 @@
 "accessibility_payment_selection_pay_with_klarna" = "Klarna bilan to'lash";
 "accessibility_payment_selection_pay_with_ideal" = "iDEAL bilan to'lash";
 "accessibility_payment_selection_coming_soon" = "To'lov usuli tez orada";
-"accessibility_payment_selection_card_full" = "%1$@ karta %2$@ bilan tugaydi, amal qilish muddati %3$@";
-"accessibility_payment_selection_card_masked" = "yashirin raqamlar bilan tugagan karta";
 "accessibility_country_selection_item" = "%1$@, mamlakat";
 "accessibility_country_selection_search" = "Mamlakatlarni qidirish";
 "accessibility_country_selection_search_icon" = "Qidirish";
 "accessibility_country_selection_clear" = "Tozalash";
 "accessibility_action_delete" = "To'lov usulini o'chirish";
 "accessibility_action_edit" = "Karta ma'lumotlarini tahrirlash";
-"accessibility_action_set_default" = "Asosiy to'lov usuli sifatida belgilash";
 "accessibility_checkout_success_icon" = "To'lov muvaffaqiyatli";
 "accessibility_checkout_error_icon" = "Xato";
 "accessibility_paypal_logo" = "PayPal";
@@ -198,6 +194,7 @@
 "accessibility_error_multiple_errors" = "%d ta xato topildi";
 "accessibility_screen_payment_method" = "%@ to'lov usuli";
 "accessibility_payment_method_button" = "%@ orqali to‘lash";
+"accessibility_payment_method_selected" = "%@ tanlandi";
 
 /* Klarna */
 "primer_vault_default_klarna" = "Klarna";
@@ -209,8 +206,8 @@
 "accessibility_klarna_category" = "%@ toʻlov varianti";
 "accessibility_klarna_category_selected" = "%@ toʻlov varianti, tanlangan";
 "accessibility_klarna_payment_view" = "Klarna toʻlov formasi";
-"accessibility_klarna_authorize_hint" = "Klarna bilan davom etish uchun ikki marta bosing";
-"accessibility_klarna_finalize_hint" = "Toʻlovni yakunlash uchun ikki marta bosing";
+"accessibility_klarna_authorize_hint" = "Klarna bilan davom eting";
+"accessibility_klarna_finalize_hint" = "To'lovni yakunlang";
 
 /* ACH */
 "primer_ach_title" = "Bank hisobi";
@@ -223,9 +220,9 @@
 "primer_ach_mandate_button_accept" = "Roziman";
 "primer_ach_mandate_button_decline" = "Bekor qilish";
 "primer_ach_mandate_template" = "\"Roziman\" tugmasini bosish orqali siz %1$@ga yuqorida koʻrsatilgan bank hisobidan %1$@ xizmatlaridan foydalanish va/yoki %1$@dan mahsulotlar sotib olish natijasida yuzaga keladigan toʻlovlar uchun qarzdor boʻlgan har qanday summani, %1$@ veb-sayti va shartlariga muvofiq, ushbu avtorizatsiya bekor qilinmaguncha yechib olish huquqini berasiz. Siz ushbu avtorizatsiyani istalgan vaqtda %1$@ga 30 (oʻttiz) kun oldin xabar berib oʻzgartirishingiz yoki bekor qilishingiz mumkin.";
-"accessibility_ach_continue_hint" = "Bank hisobini tanlashga davom etish uchun ikki marta bosing";
-"accessibility_ach_mandate_accept_hint" = "Avtorizatsiyani qabul qilish va toʻlovni yakunlash uchun ikki marta bosing";
-"accessibility_ach_mandate_decline_hint" = "Rad etish va toʻlovni bekor qilish uchun ikki marta bosing";
+"accessibility_ach_continue_hint" = "Bank hisobini tanlashga o'ting";
+"accessibility_ach_mandate_accept_hint" = "Avtorizatsiyani qabul qiling va to'lovni yakunlang";
+"accessibility_ach_mandate_decline_hint" = "Rad eting va to'lovni bekor qiling";
 
 "accessibility_card_form_billing_address_hint" = "Manzilingizni kiriting";
 "accessibility_card_form_billing_address_state_hint" = "Shtat yoki viloyatni kiriting";
@@ -285,3 +282,5 @@
 "primer_adyen_klarna_option_pay_later" = "Keyinroq toʻlash";
 "primer_adyen_klarna_option_pay_over_time" = "Boʻlib toʻlash";
 "primer_adyen_klarna_option_pay_now" = "Hozir toʻlash";
+"primer_vaulted_gocardless_direct_debit_suffix" = "To'g'ridan-to'g'ri debet";
+"accessibility_card_form_billing_address_country_hint" = "Mamlakatingizni tanlash uchun ro'yxat ochadi";

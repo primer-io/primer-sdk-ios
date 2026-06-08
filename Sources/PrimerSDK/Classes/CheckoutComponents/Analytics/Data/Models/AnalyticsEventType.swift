@@ -8,7 +8,7 @@ import Foundation
 
 /// Enum defining all 13 CheckoutComponents analytics event types.
 /// Values match the SCREAMING_SNAKE_CASE format from the Notion spec.
-public enum AnalyticsEventType: String, Codable {
+public enum AnalyticsEventType: String, Codable, Sendable {
   /// SDK starts initialization and begins contacting Primer backend services
   case sdkInitStart = "SDK_INIT_START"
 

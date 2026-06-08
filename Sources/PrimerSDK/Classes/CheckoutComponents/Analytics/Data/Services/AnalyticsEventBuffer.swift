@@ -28,12 +28,4 @@ actor AnalyticsEventBuffer: LogReporter {
     defer { pendingEvents.removeAll() }
     return pendingEvents
   }
-
-  var hasBufferedEvents: Bool {
-    !pendingEvents.isEmpty
-  }
-
-  var count: Int {
-    pendingEvents.count
-  }
 }

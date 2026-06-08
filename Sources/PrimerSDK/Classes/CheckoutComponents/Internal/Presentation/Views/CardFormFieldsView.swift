@@ -18,10 +18,20 @@ import SwiftUI
 /// - Allowed card networks view
 /// - Co-badged cards selector (when multiple networks detected)
 /// - Dynamic billing address fields (based on configuration)
+/// Which portion of the card form to render. Lets the public `CardFormDefaults` expose the card and
+/// billing sections independently while sharing this single config-aware renderer.
+@available(iOS 15.0, *)
+enum CardFormSection: Equatable {
+  case card
+  case billing
+  case both
+  case single(PrimerInputElementType)
+}
+
 @available(iOS 15.0, *)
 struct CardFormFieldsView: View {
   let scope: any CardFormFieldScopeInternal
-  let styling: PrimerFieldStyling?
+  var section: CardFormSection = .both
 
   @Environment(\.designTokens) private var tokens
   @State private var cardFormState: PrimerCardFormState = .init()
@@ -31,8 +41,16 @@ struct CardFormFieldsView: View {
 
   var body: some View {
     VStack(spacing: 0) {
-      cardFieldsSection
-      billingAddressSection
+      if case let .single(type) = section {
+        renderField(type)
+      } else {
+        if section != .billing {
+          cardFieldsSection
+        }
+        if section != .card {
+          billingAddressSection
+        }
+      }
     }
     .onAppear {
       formConfiguration = scope.getFormConfiguration()
@@ -110,7 +128,7 @@ struct CardFormFieldsView: View {
 
   @MainActor
   @ViewBuilder
-  private func renderField(_ fieldType: PrimerInputElementType) -> some View {
+  func renderField(_ fieldType: PrimerInputElementType) -> some View {
     switch fieldType {
     case .cardNumber:
       CardNumberInputField(
@@ -118,8 +136,7 @@ struct CardFormFieldsView: View {
         placeholder: CheckoutComponentsStrings.cardNumberPlaceholder,
         scope: scope,
         selectedNetwork: getSelectedCardNetwork(),
-        availableNetworks: cardFormState.availableNetworks.map(\.network),
-        styling: styling
+        availableNetworks: cardFormState.availableNetworks.map(\.network)
       )
       .focused($focusedField, equals: .cardNumber)
       .onSubmit { moveToNextField(from: .cardNumber) }
@@ -128,8 +145,7 @@ struct CardFormFieldsView: View {
       ExpiryDateInputField(
         label: CheckoutComponentsStrings.expiryDateLabel,
         placeholder: CheckoutComponentsStrings.expiryDatePlaceholder,
-        scope: scope,
-        styling: styling
+        scope: scope
       )
       .focused($focusedField, equals: .expiryDate)
       .onSubmit { moveToNextField(from: .expiryDate) }
@@ -141,8 +157,7 @@ struct CardFormFieldsView: View {
           ? CheckoutComponentsStrings.cvvAmexPlaceholder
           : CheckoutComponentsStrings.cvvStandardPlaceholder,
         scope: scope,
-        cardNetwork: getCardNetworkForCvv(),
-        styling: styling
+        cardNetwork: getCardNetworkForCvv()
       )
       .focused($focusedField, equals: .cvv)
       .onSubmit { moveToNextField(from: .cvv) }
@@ -151,8 +166,7 @@ struct CardFormFieldsView: View {
       CardholderNameInputField(
         label: CheckoutComponentsStrings.cardholderNameLabel,
         placeholder: CheckoutComponentsStrings.fullNamePlaceholder,
-        scope: scope,
-        styling: styling
+        scope: scope
       )
       .focused($focusedField, equals: .cardholderName)
       .onSubmit { moveToNextField(from: .cardholderName) }
@@ -161,8 +175,7 @@ struct CardFormFieldsView: View {
       PostalCodeInputField(
         label: CheckoutComponentsStrings.postalCodeLabel,
         placeholder: CheckoutComponentsStrings.postalCodePlaceholder,
-        scope: scope,
-        styling: styling
+        scope: scope
       )
       .focused($focusedField, equals: .postalCode)
       .onSubmit { moveToNextField(from: .postalCode) }
@@ -171,8 +184,7 @@ struct CardFormFieldsView: View {
       CountryInputField(
         label: CheckoutComponentsStrings.countryLabel,
         placeholder: CheckoutComponentsStrings.selectCountryPlaceholder,
-        scope: scope,
-        styling: styling
+        scope: scope
       )
       .focused($focusedField, equals: .countryCode)
       .onSubmit { moveToNextField(from: .countryCode) }
@@ -181,8 +193,7 @@ struct CardFormFieldsView: View {
       CityInputField(
         label: CheckoutComponentsStrings.cityLabel,
         placeholder: CheckoutComponentsStrings.cityPlaceholder,
-        scope: scope,
-        styling: styling
+        scope: scope
       )
       .focused($focusedField, equals: .city)
       .onSubmit { moveToNextField(from: .city) }
@@ -191,9 +202,10 @@ struct CardFormFieldsView: View {
       StateInputField(
         label: CheckoutComponentsStrings.stateLabel,
         placeholder: CheckoutComponentsStrings.statePlaceholder,
-        scope: scope,
-        styling: styling
+        scope: scope
       )
+      .focused($focusedField, equals: .state)
+      .onSubmit { moveToNextField(from: .state) }
 
     case .addressLine1:
       AddressLineInputField(
@@ -201,9 +213,10 @@ struct CardFormFieldsView: View {
         placeholder: CheckoutComponentsStrings.addressLine1Placeholder,
         isRequired: true,
         inputType: .addressLine1,
-        scope: scope,
-        styling: styling
+        scope: scope
       )
+      .focused($focusedField, equals: .addressLine1)
+      .onSubmit { moveToNextField(from: .addressLine1) }
 
     case .addressLine2:
       AddressLineInputField(
@@ -211,44 +224,49 @@ struct CardFormFieldsView: View {
         placeholder: CheckoutComponentsStrings.addressLine2Placeholder,
         isRequired: false,
         inputType: .addressLine2,
-        scope: scope,
-        styling: styling
+        scope: scope
       )
+      .focused($focusedField, equals: .addressLine2)
+      .onSubmit { moveToNextField(from: .addressLine2) }
 
     case .phoneNumber:
       NameInputField(
         label: CheckoutComponentsStrings.phoneNumberLabel,
         placeholder: CheckoutComponentsStrings.phoneNumberPlaceholder,
         inputType: .phoneNumber,
-        scope: scope,
-        styling: styling
+        scope: scope
       )
+      .focused($focusedField, equals: .phoneNumber)
+      .onSubmit { moveToNextField(from: .phoneNumber) }
 
     case .firstName:
       NameInputField(
         label: CheckoutComponentsStrings.firstNameLabel,
         placeholder: CheckoutComponentsStrings.firstNamePlaceholder,
         inputType: .firstName,
-        scope: scope,
-        styling: styling
+        scope: scope
       )
+      .focused($focusedField, equals: .firstName)
+      .onSubmit { moveToNextField(from: .firstName) }
 
     case .lastName:
       NameInputField(
         label: CheckoutComponentsStrings.lastNameLabel,
         placeholder: CheckoutComponentsStrings.lastNamePlaceholder,
         inputType: .lastName,
-        scope: scope,
-        styling: styling
+        scope: scope
       )
+      .focused($focusedField, equals: .lastName)
+      .onSubmit { moveToNextField(from: .lastName) }
 
     case .email:
       EmailInputField(
         label: CheckoutComponentsStrings.emailLabel,
         placeholder: CheckoutComponentsStrings.emailPlaceholder,
-        scope: scope,
-        styling: styling
+        scope: scope
       )
+      .focused($focusedField, equals: .email)
+      .onSubmit { moveToNextField(from: .email) }
 
     case .retailer:
       Text(CheckoutComponentsStrings.retailOutletNotImplemented)
@@ -260,9 +278,10 @@ struct CardFormFieldsView: View {
       OTPCodeInputField(
         label: CheckoutComponentsStrings.otpLabel,
         placeholder: CheckoutComponentsStrings.otpCodeNumericPlaceholder,
-        scope: scope,
-        styling: styling
+        scope: scope
       )
+      .focused($focusedField, equals: .otp)
+      .onSubmit { moveToNextField(from: .otp) }
 
     case .unknown, .all:
       EmptyView()
@@ -320,20 +339,9 @@ struct CardFormFieldsView: View {
 
   private func observeState() {
     observationTask?.cancel()
-    observationTask = Task {
-      await MainActor.run {
-        formConfiguration = scope.getFormConfiguration()
-      }
-
+    observationTask = Task { @MainActor in
       for await state in scope.state {
-        let updatedFormConfig = await MainActor.run {
-          scope.getFormConfiguration()
-        }
-
-        await MainActor.run {
-          cardFormState = state
-          formConfiguration = updatedFormConfig
-        }
+        cardFormState = state
       }
     }
   }

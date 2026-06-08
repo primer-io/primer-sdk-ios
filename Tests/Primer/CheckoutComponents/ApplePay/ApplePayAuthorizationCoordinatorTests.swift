@@ -66,8 +66,12 @@ final class ApplePayAuthorizationCoordinatorTests: XCTestCase {
             )
         }
 
-        // Give time for authorization to start
-        try await Task.sleep(nanoseconds: 100_000_000)
+        // Wait until the presentation manager has actually been invoked
+        try await withTimeout(2.0) { [self] in
+            while !mockPresentationManager.presentWasCalled {
+                await Task.yield()
+            }
+        }
         task.cancel()
 
         // Then

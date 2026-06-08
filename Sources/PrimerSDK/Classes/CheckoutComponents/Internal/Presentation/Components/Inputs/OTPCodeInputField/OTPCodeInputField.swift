@@ -14,7 +14,6 @@ struct OTPCodeInputField: View, LogReporter {
   let scope: (any PrimerCardFormScope)?
   let onOTPCodeChange: ((String) -> Void)?
   let onValidationChange: ((Bool) -> Void)?
-  let styling: PrimerFieldStyling?
 
   // MARK: - Private Properties
 
@@ -26,23 +25,19 @@ struct OTPCodeInputField: View, LogReporter {
   @State private var isFocused: Bool = false
   @Environment(\.designTokens) private var tokens
 
-  private var fieldFont: Font {
-    styling?.resolvedFont(tokens: tokens) ?? PrimerFont.bodyLarge(tokens: tokens)
-  }
+  private var fieldFont: Font { PrimerFont.bodyLarge(tokens: tokens) }
 
   // MARK: - Initialization
 
   init(
     label: String?,
     placeholder: String,
-    scope: any PrimerCardFormScope,
-    styling: PrimerFieldStyling? = nil
+    scope: any PrimerCardFormScope
   ) {
     self.label = label
     self.placeholder = placeholder
     expectedLength = 6
     self.scope = scope
-    self.styling = styling
     onOTPCodeChange = nil
     onValidationChange = nil
   }
@@ -51,7 +46,6 @@ struct OTPCodeInputField: View, LogReporter {
     label: String?,
     placeholder: String,
     expectedLength: Int,
-    styling: PrimerFieldStyling? = nil,
     onOTPCodeChange: ((String) -> Void)? = nil,
     onValidationChange: ((Bool) -> Void)? = nil
   ) {
@@ -59,7 +53,6 @@ struct OTPCodeInputField: View, LogReporter {
     self.placeholder = placeholder
     self.expectedLength = expectedLength
     scope = nil
-    self.styling = styling
     self.onOTPCodeChange = onOTPCodeChange
     self.onValidationChange = onValidationChange
   }
@@ -69,7 +62,6 @@ struct OTPCodeInputField: View, LogReporter {
   var body: some View {
     PrimerInputFieldContainer(
       label: label,
-      styling: styling,
       text: $otpCode,
       isValid: $isValid,
       errorMessage: $errorMessage,
@@ -80,11 +72,10 @@ struct OTPCodeInputField: View, LogReporter {
         text: $otpCode,
         prompt: Text(placeholder)
           .font(fieldFont)
-          .foregroundColor(
-            styling?.placeholderColor ?? CheckoutColors.textPlaceholder(tokens: tokens))
+          .foregroundColor(CheckoutColors.textPlaceholder(tokens: tokens))
       )
       .font(fieldFont)
-      .foregroundColor(styling?.textColor ?? CheckoutColors.textPrimary(tokens: tokens))
+      .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
       .keyboardType(.numberPad)
       .textContentType(.oneTimeCode)
       .frame(height: PrimerSize.xxlarge(tokens: tokens))
@@ -129,20 +120,26 @@ struct OTPCodeInputField: View, LogReporter {
 
   @MainActor
   private func validateOTPCode() {
-    // Use OTPCodeRule with expected length
-    let otpRule = OTPCodeRule(expectedLength: expectedLength)
-    let result = otpRule.validate(otpCode)
-
+    let result = OTPCodeRule(expectedLength: expectedLength).validate(otpCode)
     isValid = result.isValid
-    errorMessage = result.errorMessage
     onValidationChange?(result.isValid)
+    // Feed OTP validity into the form's submit gate (no-op unless OTP is a configured field).
+    (scope as? (any CardFormFieldScopeInternal))?.updateValidationStateIfNeeded(for: .otp, isValid: result.isValid)
 
-    if let scope {
-      if result.isValid {
-        scope.clearFieldError(.otp)
-      } else if let message = result.errorMessage {
-        scope.setFieldError(.otp, message: message, errorCode: result.errorCode)
-      }
+    // Never show errors while the code is empty or still being typed; only once it reaches full length.
+    guard otpCode.count >= expectedLength else {
+      errorMessage = nil
+      scope?.clearFieldError(.otp)
+      return
+    }
+
+    errorMessage = result.errorMessage
+
+    guard let scope else { return }
+    if result.isValid {
+      scope.clearFieldError(.otp)
+    } else if let message = result.errorMessage {
+      scope.setFieldError(.otp, message: message, errorCode: result.errorCode)
     }
   }
 }

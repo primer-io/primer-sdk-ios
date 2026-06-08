@@ -14,7 +14,6 @@ struct EmailInputField: View, LogReporter {
   let scope: (any CardFormFieldScopeInternal)?
   let onEmailChange: ((String) -> Void)?
   let onValidationChange: ((Bool) -> Void)?
-  let styling: PrimerFieldStyling?
 
   // MARK: - Private Properties
 
@@ -31,14 +30,12 @@ struct EmailInputField: View, LogReporter {
   init(
     label: String?,
     placeholder: String,
-    scope: any CardFormFieldScopeInternal,
-    styling: PrimerFieldStyling? = nil
+    scope: any CardFormFieldScopeInternal
   ) {
     self.label = label
     self.placeholder = placeholder
     initialValue = ""
     self.scope = scope
-    self.styling = styling
     onEmailChange = nil
     onValidationChange = nil
   }
@@ -47,7 +44,6 @@ struct EmailInputField: View, LogReporter {
     label: String?,
     placeholder: String,
     initialValue: String = "",
-    styling: PrimerFieldStyling? = nil,
     onEmailChange: ((String) -> Void)? = nil,
     onValidationChange: ((Bool) -> Void)? = nil
   ) {
@@ -55,7 +51,6 @@ struct EmailInputField: View, LogReporter {
     self.placeholder = placeholder
     self.initialValue = initialValue
     scope = nil
-    self.styling = styling
     self.onEmailChange = onEmailChange
     self.onValidationChange = onValidationChange
   }
@@ -65,7 +60,6 @@ struct EmailInputField: View, LogReporter {
   var body: some View {
     PrimerInputFieldContainer(
       label: label,
-      styling: styling,
       text: $email,
       isValid: $isValid,
       errorMessage: $errorMessage,
@@ -78,7 +72,6 @@ struct EmailInputField: View, LogReporter {
           errorMessage: $errorMessage,
           isFocused: $isFocused,
           placeholder: placeholder,
-          styling: styling,
           validationService: validationService,
           scope: scope,
           onEmailChange: onEmailChange,

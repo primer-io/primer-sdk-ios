@@ -8,18 +8,16 @@ import SwiftUI
 
 @available(iOS 15.0, *)
 @MainActor
-public final class DefaultQRCodeScope: PrimerQRCodeScope, ObservableObject, LogReporter {
+final class DefaultQRCodeScope: PrimerQRCodeScope, ObservableObject, LogReporter {
 
-  // MARK: - Public Properties
+  private(set) var presentationContext: PresentationContext
+  var screen: QRCodeScreenComponent?
 
-  public private(set) var presentationContext: PresentationContext
-  public var screen: QRCodeScreenComponent?
-
-  public var dismissalMechanism: [DismissalMechanism] {
+  var dismissalMechanism: [DismissalMechanism] {
     checkoutScope?.dismissalMechanism ?? []
   }
 
-  public var state: AsyncStream<PrimerQRCodeState> {
+  var state: AsyncStream<PrimerQRCodeState> {
     AsyncStream { continuation in
       let task = Task { @MainActor in
         for await _ in $internalState.values {
@@ -43,6 +41,8 @@ public final class DefaultQRCodeScope: PrimerQRCodeScope, ObservableObject, LogR
 
   @Published private var internalState = PrimerQRCodeState()
 
+  private var hasStarted = false
+
   // MARK: - Initialization
 
   init(
@@ -61,7 +61,9 @@ public final class DefaultQRCodeScope: PrimerQRCodeScope, ObservableObject, LogR
 
   // MARK: - PrimerPaymentMethodScope Methods
 
-  public func start() {
+  func start() {
+    guard !hasStarted else { return }
+    hasStarted = true
     logger.debug(message: "QR code scope started")
     Task { [self] in
       await performPayment()
@@ -69,17 +71,17 @@ public final class DefaultQRCodeScope: PrimerQRCodeScope, ObservableObject, LogR
   }
 
   // No-op: QR code payments auto-submit via start()
-  public func submit() {}
+  func submit() {}
 
-  public func cancel() {
+  func cancel() {
     logger.debug(message: "QR code payment cancelled")
     interactor.cancelPolling()
-    checkoutScope?.onDismiss()
+    checkoutScope?.cancelActivePaymentMethod(returnToSelection: presentationContext.shouldShowBackButton)
   }
 
   // MARK: - Navigation Methods
 
-  public func onBack() {
+  func onBack() {
     if presentationContext.shouldShowBackButton {
       interactor.cancelPolling()
       checkoutScope?.checkoutNavigator.navigateBack()
@@ -112,11 +114,15 @@ public final class DefaultQRCodeScope: PrimerQRCodeScope, ObservableObject, LogR
       internalState.status = .success
       checkoutScope?.handlePaymentSuccess(result)
     } catch {
-      logger.error(message: "QR code payment failed: \(error.localizedDescription)")
-      internalState.status = .failure(error.localizedDescription)
-
       let primerError =
         error as? PrimerError ?? PrimerError.unknown(message: error.localizedDescription)
+      if case .cancelled = primerError {
+        logger.debug(message: "QR code payment cancelled by user")
+        checkoutScope?.cancelActivePaymentMethod(returnToSelection: presentationContext.shouldShowBackButton)
+        return
+      }
+      logger.error(message: "QR code payment failed: \(error.localizedDescription)")
+      internalState.status = .failure(error.localizedDescription)
       checkoutScope?.handlePaymentError(primerError)
     }
   }

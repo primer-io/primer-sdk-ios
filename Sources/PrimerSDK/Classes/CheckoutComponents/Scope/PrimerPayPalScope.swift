@@ -8,17 +8,17 @@ import SwiftUI
 
 /// Type alias for PayPal screen customization component.
 @available(iOS 15.0, *)
-public typealias PayPalScreenComponent = (any PrimerPayPalScope) -> any View
+typealias PayPalScreenComponent = (any PrimerPayPalScope) -> any View
 
 /// Type alias for PayPal button customization component.
 @available(iOS 15.0, *)
-public typealias PayPalButtonComponent = (any PrimerPayPalScope) -> any View
+typealias PayPalButtonComponent = (any PrimerPayPalScope) -> any View
 
 /// Scope protocol for PayPal payment method.
 /// Provides state observation and UI customization for redirect-based PayPal payments.
 @available(iOS 15.0, *)
 @MainActor
-public protocol PrimerPayPalScope: PrimerPaymentMethodScope where State == PrimerPayPalState {
+protocol PrimerPayPalScope: PrimerPaymentMethodScope where State == PrimerPayPalState {
 
   // MARK: - Screen-Level Customization
 

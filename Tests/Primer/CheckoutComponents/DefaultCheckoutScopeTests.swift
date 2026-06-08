@@ -35,7 +35,6 @@ final class DefaultCheckoutScopeBehaviorTests: XCTestCase {
         DefaultCheckoutScope(
             clientToken: TestData.Tokens.valid,
             settings: settings,
-            diContainer: DIContainer.shared,
             navigator: navigator
         )
     }
@@ -494,11 +493,7 @@ final class DefaultCheckoutScopeBehaviorTests: XCTestCase {
 
         // Then
         XCTAssertNil(sut.onBeforePaymentCreate)
-        XCTAssertNil(sut.container)
-        XCTAssertNil(sut.splashScreen)
-        XCTAssertNil(sut.loadingScreen)
         XCTAssertNil(sut.successScreen)
-        XCTAssertNil(sut.errorScreen)
         XCTAssertNil(sut.paymentMethodSelectionScreen)
     }
 
@@ -705,17 +700,17 @@ final class DefaultCheckoutScopeBehaviorTests: XCTestCase {
         // Given
         sut = makeSut(settings: PrimerSettings(uiOptions: PrimerUIOptions(isInitScreenEnabled: false)))
         let stream = sut.navigationStateStream
-        let waitTask = Task { try await awaitValue(stream, equalTo: .processing) }
 
-        // Allow the iteration task to subscribe before mutating.
-        try await Task.sleep(nanoseconds: 100_000_000)
-
-        // When
-        sut.updateNavigationState(.processing)
+        // When — collect from the replayed initial `.loading` through to `.processing`. Mutating
+        // once `.loading` is observed proves the iteration is subscribed, so the transition is
+        // guaranteed to be delivered without a timing hack.
+        let states = try await collectUntil(stream) { [self] value in
+            if value == .loading { sut.updateNavigationState(.processing) }
+            return value == .processing
+        }
 
         // Then
-        let value = try await waitTask.value
-        XCTAssertEqual(value, .processing)
+        XCTAssertEqual(states.last, .processing)
     }
 
     func test_navigationStateStream_consumerEarlyExit_terminatesCleanly() async {
@@ -770,5 +765,140 @@ final class DefaultCheckoutScopeBehaviorTests: XCTestCase {
 
         // When / Then — should not throw
         try await sut.invokeBeforePaymentCreate(paymentMethodType: TestData.PaymentMethodTypes.card)
+    }
+}
+
+// MARK: - DefaultCheckoutScope reload & idempotency Tests
+
+@available(iOS 15.0, *)
+@MainActor
+final class DefaultCheckoutScopeReloadTests: XCTestCase {
+
+    private var sut: DefaultCheckoutScope!
+
+    override func setUp() async throws {
+        try await super.setUp()
+        await ContainerTestHelpers.resetSharedContainer()
+        PrimerInternal.shared.currentIdempotencyKey = nil
+    }
+
+    override func tearDown() async throws {
+        sut = nil
+        PrimerInternal.shared.currentIdempotencyKey = nil
+        await ContainerTestHelpers.resetSharedContainer()
+        try await super.tearDown()
+    }
+
+    // MARK: - reload Tests
+
+    func test_reload_clearsPaymentMethodScopeCache() async throws {
+        // Given a settled scope with a stale sentinel scope cached.
+        sut = try await ContainerTestHelpers.createSettledCheckoutScope()
+        sut.paymentMethodScopeCache["STALE"] = MockCardFormScope(enableLogging: false)
+        XCTAssertNotNil(sut.paymentMethodScopeCache["STALE"])
+
+        // When
+        await sut.reload()
+
+        // Then — the sentinel is gone; reload rebuilds the cache from the registry.
+        XCTAssertNil(sut.paymentMethodScopeCache["STALE"])
+    }
+
+    func test_reload_rebuildsCachedPaymentMethodSelection() async throws {
+        // Given — force creation of the selection scope so it is cached.
+        sut = try await ContainerTestHelpers.createSettledCheckoutScope()
+        let before = sut.paymentMethodSelection
+
+        // When
+        await sut.reload()
+
+        // Then — the cached selection scope is rebuilt as a fresh instance.
+        let after = sut.paymentMethodSelection
+        XCTAssertFalse(before === after)
+    }
+
+    func test_reload_resetsAvailablePaymentMethods() async throws {
+        // Given
+        sut = try await ContainerTestHelpers.createSettledCheckoutScope()
+        sut.availablePaymentMethods = [
+            InternalPaymentMethod(id: "pm_1", type: TestData.PaymentMethodTypes.card, name: TestData.PaymentMethodNames.cardName)
+        ]
+
+        // When
+        await sut.reload()
+
+        // Then — reload re-runs the load path; with the mock config (no payment methods) it ends empty.
+        XCTAssertTrue(sut.availablePaymentMethods.isEmpty)
+    }
+
+    func test_reload_concurrentCall_isIgnoredByReentrancyGuard() async throws {
+        // Given
+        sut = try await ContainerTestHelpers.createSettledCheckoutScope()
+        sut.paymentMethodScopeCache["STALE"] = MockCardFormScope(enableLogging: false)
+
+        // When — fire two reloads concurrently; the reentrancy guard drops the overlapping one.
+        async let first: Void = sut.reload()
+        async let second: Void = sut.reload()
+        _ = await (first, second)
+
+        // Then — completes cleanly and the cache reset still holds (no crash, no stale entry).
+        XCTAssertNil(sut.paymentMethodScopeCache["STALE"])
+    }
+
+    // MARK: - Idempotency fallback Tests
+
+    func test_invokeBeforePaymentCreate_noCallback_usesIdempotencyKeyProvider() async throws {
+        // Given — no imperative handler, but a declarative provider.
+        sut = await ContainerTestHelpers.createMockCheckoutScope()
+        sut.onBeforePaymentCreate = nil
+        sut.idempotencyKeyProvider = { "declarative-key" }
+
+        // When
+        try await sut.invokeBeforePaymentCreate(paymentMethodType: TestData.PaymentMethodTypes.card)
+
+        // Then — the provider's key flows into the shared idempotency slot.
+        XCTAssertEqual(PrimerInternal.shared.currentIdempotencyKey, "declarative-key")
+    }
+
+    func test_invokeBeforePaymentCreate_noCallbackNoProvider_clearsIdempotencyKey() async throws {
+        // Given — neither imperative handler nor provider.
+        sut = await ContainerTestHelpers.createMockCheckoutScope()
+        sut.onBeforePaymentCreate = nil
+        sut.idempotencyKeyProvider = nil
+        PrimerInternal.shared.currentIdempotencyKey = "stale"
+
+        // When
+        try await sut.invokeBeforePaymentCreate(paymentMethodType: TestData.PaymentMethodTypes.card)
+
+        // Then — the slot is reset to nil (provider returned nil).
+        XCTAssertNil(PrimerInternal.shared.currentIdempotencyKey)
+    }
+
+    func test_invokeBeforePaymentCreate_imperativeContinueKey_winsOverProvider() async throws {
+        // Given — both an imperative handler returning a key and a declarative provider.
+        sut = await ContainerTestHelpers.createMockCheckoutScope()
+        sut.idempotencyKeyProvider = { "declarative-key" }
+        sut.onBeforePaymentCreate = { _, handler in
+            handler(PrimerPaymentCreationDecision.continuePaymentCreation(withIdempotencyKey: "imperative-key"))
+        }
+
+        // When
+        try await sut.invokeBeforePaymentCreate(paymentMethodType: TestData.PaymentMethodTypes.card)
+
+        // Then — the imperative decision's key wins; the provider is ignored.
+        XCTAssertEqual(PrimerInternal.shared.currentIdempotencyKey, "imperative-key")
+    }
+
+    func test_invokeBeforePaymentCreate_imperativeContinueNoKey_fallsBackToProvider() async throws {
+        // Given — an imperative handler that continues without a key, plus a declarative provider.
+        sut = await ContainerTestHelpers.createMockCheckoutScope()
+        sut.idempotencyKeyProvider = { "declarative-key" }
+        sut.onBeforePaymentCreate = { _, handler in handler(.continuePaymentCreation()) }
+
+        // When
+        try await sut.invokeBeforePaymentCreate(paymentMethodType: TestData.PaymentMethodTypes.card)
+
+        // Then — the provider fills the gap rather than the key being silently dropped.
+        XCTAssertEqual(PrimerInternal.shared.currentIdempotencyKey, "declarative-key")
     }
 }

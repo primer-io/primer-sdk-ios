@@ -6,31 +6,26 @@
 
 import SwiftUI
 
-/// Pure SwiftUI implementation for CheckoutComponents SDK.
+/// Pure SwiftUI implementation for CheckoutComponents SDK — the prebuilt, fully managed modal flow.
 ///
 /// Example usage (minimal):
 /// ```swift
 /// PrimerCheckout(clientToken: "your_client_token")
 /// ```
 ///
-/// With scope-based customization:
+/// This modal renders the SDK's default screens; it does not expose the composable views or their
+/// `@ViewBuilder` slots. To customize the UI, embed the composable views (e.g. ``PrimerCardForm``)
+/// inline in your own layout and wire them up with `.primerCheckoutSession(_:)`, which injects the
+/// session those views resolve from the environment:
 /// ```swift
-/// PrimerCheckout(
-///     clientToken: "your_client_token",
-///     primerSettings: PrimerSettings(),
-///     primerTheme: PrimerCheckoutTheme(),
-///     scope: { checkoutScope in
-///         // Customize checkout screens
-///         checkoutScope.splashScreen = { CustomSplash() }
+/// @StateObject private var session = PrimerCheckoutSession(clientToken: "your_client_token")
 ///
-///         // Customize card form fields via InputFieldConfig
-///         if let cardFormScope = checkoutScope.getPaymentMethodScope(PrimerCardFormScope.self) {
-///             cardFormScope.cardNumberConfig = InputFieldConfig(placeholder: "Enter card number")
-///             cardFormScope.cvvConfig = InputFieldConfig(styling: PrimerFieldStyling(borderColor: .blue))
-///         }
-///     },
-///     onCompletion: { print("Checkout completed") }
-/// )
+/// ScrollView {
+///     PrimerCardForm(submitButton: { session in
+///         MyPayButton(isLoading: session.state.isLoading) { session.scope.submit() }
+///     })
+/// }
+/// .primerCheckoutSession(session) { state in handle(state) }
 /// ```
 @available(iOS 15.0, *)
 @MainActor
@@ -39,7 +34,6 @@ public struct PrimerCheckout: View {
   private let clientToken: String
   private let settings: PrimerSettings
   private let theme: PrimerCheckoutTheme
-  private let scope: ((PrimerCheckoutScope) -> Void)?
   private let onCompletion: ((PrimerCheckoutState) -> Void)?
   @StateObject private var navigator: CheckoutNavigator
   private let presentationContext: PresentationContext
@@ -50,19 +44,16 @@ public struct PrimerCheckout: View {
   ///   - clientToken: The client token obtained from your backend.
   ///   - primerSettings: Configuration settings including payment options and UI preferences. Default: `PrimerSettings()`
   ///   - primerTheme: Theme configuration for design tokens. Default: `PrimerCheckoutTheme()`
-  ///   - scope: Optional closure to configure the checkout scope with custom UI components.
   ///   - onCompletion: Optional completion callback called when checkout completes with the final state (success, failure, or dismissed).
   public init(
     clientToken: String,
     primerSettings: PrimerSettings = PrimerSettings(),
     primerTheme: PrimerCheckoutTheme = PrimerCheckoutTheme(),
-    scope: ((PrimerCheckoutScope) -> Void)? = nil,
     onCompletion: ((PrimerCheckoutState) -> Void)? = nil
   ) {
     self.clientToken = clientToken
     settings = primerSettings
     theme = primerTheme
-    self.scope = scope
     self.onCompletion = onCompletion
     _navigator = StateObject(wrappedValue: CheckoutNavigator())
     presentationContext = .fromPaymentSelection
@@ -73,17 +64,14 @@ public struct PrimerCheckout: View {
     clientToken: String,
     primerSettings: PrimerSettings,
     primerTheme: PrimerCheckoutTheme,
-    diContainer: DIContainer,
     navigator: CheckoutNavigator,
     presentationContext: PresentationContext,
     integrationType: CheckoutComponentsIntegrationType,
-    scope: ((PrimerCheckoutScope) -> Void)? = nil,
     onCompletion: ((PrimerCheckoutState) -> Void)? = nil
   ) {
     self.clientToken = clientToken
     settings = primerSettings
     theme = primerTheme
-    self.scope = scope
     self.onCompletion = onCompletion
     _navigator = StateObject(wrappedValue: navigator)
     self.presentationContext = presentationContext
@@ -95,9 +83,7 @@ public struct PrimerCheckout: View {
       clientToken: clientToken,
       settings: settings,
       theme: theme,
-      diContainer: DIContainer.shared,
       navigator: navigator,
-      scope: scope,
       presentationContext: presentationContext,
       integrationType: integrationType,
       onCompletion: onCompletion
@@ -113,9 +99,7 @@ struct InternalCheckout: View, LogReporter {
   private let clientToken: String
   private let settings: PrimerSettings
   private let theme: PrimerCheckoutTheme
-  private let diContainer: DIContainer
   private let navigator: CheckoutNavigator
-  private let scope: ((PrimerCheckoutScope) -> Void)?
   private let presentationContext: PresentationContext
   private let integrationType: CheckoutComponentsIntegrationType
   private let onCompletion: ((PrimerCheckoutState) -> Void)?
@@ -141,9 +125,7 @@ struct InternalCheckout: View, LogReporter {
     clientToken: String,
     settings: PrimerSettings,
     theme: PrimerCheckoutTheme,
-    diContainer: DIContainer,
     navigator: CheckoutNavigator,
-    scope: ((PrimerCheckoutScope) -> Void)?,
     presentationContext: PresentationContext,
     integrationType: CheckoutComponentsIntegrationType,
     onCompletion: ((PrimerCheckoutState) -> Void)?
@@ -151,9 +133,7 @@ struct InternalCheckout: View, LogReporter {
     self.clientToken = clientToken
     self.settings = settings
     self.theme = theme
-    self.diContainer = diContainer
     self.navigator = navigator
-    self.scope = scope
     self.presentationContext = presentationContext
     self.integrationType = integrationType
     self.onCompletion = onCompletion
@@ -162,7 +142,6 @@ struct InternalCheckout: View, LogReporter {
       clientToken: clientToken,
       primerSettings: settings,
       primerTheme: theme,
-      diContainer: diContainer,
       navigator: navigator,
       presentationContext: presentationContext
     )
@@ -200,7 +179,7 @@ struct InternalCheckout: View, LogReporter {
       await setupDesignTokens()
       await initializeSDK()
     }
-    .onChange(of: colorScheme) { newColorScheme in
+    .onColorSchemeChange(of: colorScheme) { newColorScheme in
       Task {
         await loadDesignTokens(for: newColorScheme)
       }
@@ -242,33 +221,18 @@ struct InternalCheckout: View, LogReporter {
 
   // MARK: - Content Builders
 
-  @ViewBuilder
   private var splashContent: some View {
-    if let customSplash = checkoutScope?.splashScreen {
-      AnyView(customSplash())
-    } else {
-      SplashScreen()
-    }
+    SplashScreen()
   }
 
-  @ViewBuilder
   private var loadingContent: some View {
-    if let customLoading = checkoutScope?.loadingScreen {
-      AnyView(customLoading())
-    } else {
-      DefaultLoadingScreen()
-    }
+    DefaultLoadingScreen()
   }
 
-  @ViewBuilder
   private func errorContent(error: PrimerError) -> some View {
-    if let customError = checkoutScope?.errorScreen {
-      AnyView(customError(error.localizedDescription))
-    } else {
-      SDKInitializationErrorView(error: error) {
-        Task {
-          await initializeSDK(isRetry: true)
-        }
+    SDKInitializationErrorView(error: error) {
+      Task {
+        await initializeSDK(isRetry: true)
       }
     }
   }
@@ -286,11 +250,6 @@ struct InternalCheckout: View, LogReporter {
     do {
       let result = try await sdkInitializer.initialize()
       checkoutScope = result.checkoutScope
-
-      // Apply scope configuration if provided
-      if let scope, let checkoutScope {
-        scope(checkoutScope)
-      }
 
       initializationState = .initialized
     } catch {
@@ -313,6 +272,20 @@ extension View {
       preferredColorScheme(.light)
     case .dark:
       preferredColorScheme(.dark)
+    }
+  }
+
+  /// Reacts to color-scheme changes, using the two-parameter `onChange` on iOS 17+ to avoid the
+  /// single-parameter form deprecated there, and falling back to the original form on earlier OS.
+  @ViewBuilder
+  fileprivate func onColorSchemeChange(
+    of colorScheme: ColorScheme,
+    _ action: @escaping (ColorScheme) -> Void
+  ) -> some View {
+    if #available(iOS 17.0, *) {
+      onChange(of: colorScheme) { _, newColorScheme in action(newColorScheme) }
+    } else {
+      onChange(of: colorScheme) { newColorScheme in action(newColorScheme) }
     }
   }
 }

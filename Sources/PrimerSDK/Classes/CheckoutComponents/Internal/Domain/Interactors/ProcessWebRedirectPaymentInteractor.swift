@@ -68,7 +68,8 @@ final class ProcessWebRedirectPaymentInteractorImpl: ProcessWebRedirectPaymentIn
       logger.debug(message: "[WebRedirect] Payment completed: \(result.status)")
       return result
     } catch {
-      throw handled(error: error)
+      logger.error(message: "[WebRedirect] Payment failed: \(error)", error: error)
+      throw error
     }
   }
 
@@ -102,7 +103,7 @@ final class ProcessWebRedirectPaymentInteractorImpl: ProcessWebRedirectPaymentIn
 
     switch decision.type {
     case let .abort(errorMessage):
-      throw PrimerError.merchantError(message: errorMessage ?? "")
+      throw PrimerError.merchantError(message: errorMessage ?? "Payment creation aborted")
     case .continue:
       return
     }

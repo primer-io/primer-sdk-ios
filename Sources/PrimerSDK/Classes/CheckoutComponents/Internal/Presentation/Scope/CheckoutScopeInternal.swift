@@ -29,4 +29,5 @@ protocol CheckoutScopeInternal: PrimerCheckoutScope {
   func updateNavigationState(_ newState: CheckoutNavigationState)
   func setSelectedVaultedPaymentMethod(_ method: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod?)
   func retryPayment()
+  func reload() async
 }

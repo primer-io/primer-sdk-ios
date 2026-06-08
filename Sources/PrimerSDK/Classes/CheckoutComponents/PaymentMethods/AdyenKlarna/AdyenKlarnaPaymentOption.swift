@@ -7,7 +7,7 @@
 import Foundation
 
 @available(iOS 15.0, *)
-public struct AdyenKlarnaPaymentOption: Equatable, Sendable {
-    public let id: String
-    public let name: String
+struct AdyenKlarnaPaymentOption: Equatable, Sendable {
+    let id: String
+    let name: String
 }

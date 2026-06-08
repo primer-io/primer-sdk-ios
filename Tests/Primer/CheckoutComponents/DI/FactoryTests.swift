@@ -42,7 +42,8 @@ final class FactoryTests: XCTestCase {
         typealias Params = TestParams
 
         func create(with params: Params) async throws -> TestProduct {
-            // Simulate async work
+            // why: fixture's own async-work simulation, not a test-level wait — every test
+            // awaits create()'s returned product directly, so this is already deterministic.
             try? await Task.sleep(nanoseconds: TestData.DIContainer.Timing.oneMillisecondNanoseconds)
             return TestProduct(id: params.id, value: params.multiplier * TestData.DIContainer.Factory.defaultMultiplier)
         }

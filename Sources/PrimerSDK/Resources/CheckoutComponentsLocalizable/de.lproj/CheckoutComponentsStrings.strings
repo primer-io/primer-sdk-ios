@@ -1,6 +1,5 @@
 "accessibility_action_delete" = "Zahlungsmethode löschen";
 "accessibility_action_edit" = "Kartendaten bearbeiten";
-"accessibility_action_set_default" = "Als Standard-Zahlungsmethode festlegen";
 "accessibility_card_form_billing_address_address_line_1_label" = "Adresszeile 1, erforderlich";
 "accessibility_card_form_billing_address_address_line_2_label" = "Adresszeile 2, optional";
 "accessibility_card_form_billing_address_city_hint" = "Stadtname eingeben";
@@ -19,7 +18,7 @@
 "accessibility_card_form_cardholder_name_hint" = "Namen wie auf der Karte angegeben eingeben";
 "accessibility_card_form_cardholder_name_label" = "Name des Karteninhabers";
 "accessibility_card_form_cvc_error_invalid" = "Ungültiger Sicherheitscode.";
-"accessibility_card_form_cvc_hint" = "3- oder 4-stelliger Code auf der Kartenrückseite";
+"accessibility_card_form_cvc_hint" = "Sicherheitscode, 3 oder 4 Ziffern";
 "accessibility_card_form_cvc_label" = "Sicherheitscode, erforderlich";
 "accessibility_card_form_cvv_icon" = "CVV-Sicherheitscode";
 "accessibility_card_form_expiry_error_invalid" = "Ungültiges Ablaufdatum.";
@@ -27,11 +26,11 @@
 "accessibility_card_form_expiry_icon" = "Ablaufdatum der Karte";
 "accessibility_card_form_expiry_label" = "Ablaufdatum, erforderlich";
 "accessibility_card_form_network_selector" = "Netzwerk auswählen";
-"accessibility_card_form_network_selector_hint" = "Doppeltippen, um ein anderes Kartennetzwerk auszuwählen";
-"accessibility_card_form_network_selector_inline_hint" = "Doppeltippen, um dieses Netzwerk auszuwählen";
+"accessibility_card_form_network_selector_hint" = "Ein anderes Kartennetzwerk auswählen";
+"accessibility_card_form_network_selector_inline_hint" = "Dieses Netzwerk auswählen";
 "accessibility_card_form_network_selector_label" = "Kartennetzwerk-Auswahl";
 "accessibility_card_form_submit_disabled" = "Schaltfläche deaktiviert. Füllen Sie alle erforderlichen Felder aus, um die Zahlung zu aktivieren";
-"accessibility_card_form_submit_hint" = "Doppeltippen, um die Zahlung abzusenden";
+"accessibility_card_form_submit_hint" = "Zahlung absenden";
 "accessibility_card_form_submit_label" = "Zahlung absenden";
 "accessibility_card_form_submit_loading" = "Zahlung wird verarbeitet, bitte warten";
 "accessibility_checkout_error_icon" = "Fehler";
@@ -52,8 +51,6 @@
 "accessibility_country_selection_search_icon" = "Suchen";
 "accessibility_error_generic" = "Ein Fehler ist aufgetreten. Bitte erneut versuchen.";
 "accessibility_error_multiple_errors" = "%d Fehler gefunden";
-"accessibility_payment_selection_card_full" = "%1$@-Karte endend auf %2$@, gültig bis %3$@";
-"accessibility_payment_selection_card_masked" = "Karte endend auf verdeckten Ziffern";
 "accessibility_payment_selection_coming_soon" = "Zahlungsmethode demnächst verfügbar";
 "accessibility_payment_selection_pay_with_card" = "Mit Karte bezahlen";
 "accessibility_payment_selection_pay_with_ideal" = "Mit iDEAL bezahlen";
@@ -65,6 +62,7 @@
 "accessibility_screen_loading_payment_methods" = "Zahlungsmethoden werden geladen";
 "accessibility_screen_payment_method" = "%@ Zahlungsmethode";
 "accessibility_payment_method_button" = "Bezahlen mit %@";
+"accessibility_payment_method_selected" = "%@ ausgewählt";
 "accessibility_screen_processing_payment" = "Zahlung wird verarbeitet";
 "accessibility_screen_success" = "Zahlung erfolgreich";
 "accessibility_vault_delete_payment_method" = "Diese Zahlungsmethode löschen";
@@ -144,7 +142,6 @@
 "primer_card_form_placeholder_state" = "BE";
 "primer_card_form_retail_not_implemented" = "Filialauswahl noch nicht implementiert";
 "primer_card_form_title" = "Mit Karte bezahlen";
-"primer_checkout_auto_dismiss_message" = "Dieses Fenster wird in 3 Sekunden automatisch geschlossen";
 "primer_checkout_dismissing" = "Wird geschlossen...";
 "primer_checkout_error_button_other_methods" = "Andere Zahlungsmethoden wählen";
 "primer_checkout_error_subtitle" = "Es gab ein Netzwerkproblem.";
@@ -209,8 +206,8 @@
 "accessibility_klarna_category" = "%@ Zahlungsoption";
 "accessibility_klarna_category_selected" = "%@ Zahlungsoption, ausgewählt";
 "accessibility_klarna_payment_view" = "Klarna-Zahlungsformular";
-"accessibility_klarna_authorize_hint" = "Doppeltippen, um mit Klarna fortzufahren";
-"accessibility_klarna_finalize_hint" = "Doppeltippen, um die Zahlung abzuschließen";
+"accessibility_klarna_authorize_hint" = "Mit Klarna fortfahren";
+"accessibility_klarna_finalize_hint" = "Zahlung abschließen";
 
 /* ACH */
 "primer_ach_title" = "Bankkonto";
@@ -223,9 +220,9 @@
 "primer_ach_mandate_button_accept" = "Ich stimme zu";
 "primer_ach_mandate_button_decline" = "Abbrechen";
 "primer_ach_mandate_template" = "Mit Klick auf \"Ich stimme zu\" autorisieren Sie %1$@, das oben angegebene Bankkonto für alle geschuldeten Beträge zu belasten, die aus Ihrer Nutzung der Dienste von %1$@ und/oder dem Kauf von Produkten von %1$@ entstehen, gemäß der Website und den Bedingungen von %1$@, bis diese Autorisierung widerrufen wird. Sie können diese Autorisierung jederzeit ändern oder widerrufen, indem Sie %1$@ mit einer Frist von 30 (dreißig) Tagen benachrichtigen.";
-"accessibility_ach_continue_hint" = "Doppeltippen, um zur Bankkontoauswahl fortzufahren";
-"accessibility_ach_mandate_accept_hint" = "Doppeltippen, um die Autorisierung zu akzeptieren und die Zahlung abzuschließen";
-"accessibility_ach_mandate_decline_hint" = "Doppeltippen, um abzulehnen und die Zahlung abzubrechen";
+"accessibility_ach_continue_hint" = "Zur Bankkontoauswahl fortfahren";
+"accessibility_ach_mandate_accept_hint" = "Autorisierung akzeptieren und Zahlung abschließen";
+"accessibility_ach_mandate_decline_hint" = "Ablehnen und Zahlung abbrechen";
 
 "accessibility_card_form_billing_address_hint" = "Geben Sie Ihre Adresse ein";
 "accessibility_card_form_billing_address_state_hint" = "Geben Sie Bundesland oder Provinz ein";
@@ -285,3 +282,5 @@
 "primer_adyen_klarna_option_pay_later" = "Später zahlen";
 "primer_adyen_klarna_option_pay_over_time" = "In Raten zahlen";
 "primer_adyen_klarna_option_pay_now" = "Jetzt bezahlen";
+"primer_vaulted_gocardless_direct_debit_suffix" = "Lastschrift";
+"accessibility_card_form_billing_address_country_hint" = "Öffnet eine Liste zur Auswahl Ihres Landes";

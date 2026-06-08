@@ -12,4 +12,14 @@ public enum AnalyticsEnvironment: String, Codable, Sendable {
   case staging = "STAGING"
   case sandbox = "SANDBOX"
   case production = "PRODUCTION"
+
+  /// Base host shared by analytics and logs endpoints for this environment.
+  var baseURL: String {
+    switch self {
+    case .dev: "https://analytics.dev.data.primer.io"
+    case .staging: "https://analytics.staging.data.primer.io"
+    case .sandbox: "https://analytics.sandbox.data.primer.io"
+    case .production: "https://analytics.production.data.primer.io"
+    }
+  }
 }

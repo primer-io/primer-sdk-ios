@@ -1,6 +1,5 @@
 "accessibility_action_delete" = "Izbriši način plaćanja";
 "accessibility_action_edit" = "Uredi podatke kartice";
-"accessibility_action_set_default" = "Postavi kao zadani način plaćanja";
 "accessibility_card_form_billing_address_address_line_1_label" = "Adresni redak 1, obvezno";
 "accessibility_card_form_billing_address_address_line_2_label" = "Adresni redak 2, nije obvezno";
 "accessibility_card_form_billing_address_city_hint" = "Unesite naziv grada";
@@ -19,7 +18,7 @@
 "accessibility_card_form_cardholder_name_hint" = "Unesite ime kako je prikazano na kartici";
 "accessibility_card_form_cardholder_name_label" = "Ime vlasnika kartice";
 "accessibility_card_form_cvc_error_invalid" = "Nevažeći sigurnosni kod.";
-"accessibility_card_form_cvc_hint" = "3 ili 4 znamenke na stražnjoj strani kartice";
+"accessibility_card_form_cvc_hint" = "Sigurnosni kod, 3 ili 4 znamenke";
 "accessibility_card_form_cvc_label" = "Sigurnosni kod, obvezno";
 "accessibility_card_form_cvv_icon" = "CVV sigurnosni kod";
 "accessibility_card_form_expiry_error_invalid" = "Nevažeći datum isteka.";
@@ -27,11 +26,11 @@
 "accessibility_card_form_expiry_icon" = "Datum isteka kartice";
 "accessibility_card_form_expiry_label" = "Datum isteka, obvezno";
 "accessibility_card_form_network_selector" = "Odaberite tip kartice";
-"accessibility_card_form_network_selector_hint" = "Dvaput dodirnite za odabir drugog tipa kartice";
-"accessibility_card_form_network_selector_inline_hint" = "Dvaput dodirnite za odabir ovog tipa kartice";
+"accessibility_card_form_network_selector_hint" = "Odaberite drugu kartičnu mrežu";
+"accessibility_card_form_network_selector_inline_hint" = "Odaberite ovu mrežu";
 "accessibility_card_form_network_selector_label" = "Odabir tipa kartice";
 "accessibility_card_form_submit_disabled" = "Gumb je onemogućen. Ispunite sva obvezna polja kako biste omogućili plaćanje";
-"accessibility_card_form_submit_hint" = "Dvaput dodirnite za slanje plaćanja";
+"accessibility_card_form_submit_hint" = "Pošaljite plaćanje";
 "accessibility_card_form_submit_label" = "Pošalji plaćanje";
 "accessibility_card_form_submit_loading" = "Obrada plaćanja, molimo pričekajte";
 "accessibility_checkout_error_icon" = "Greška";
@@ -52,8 +51,6 @@
 "accessibility_country_selection_search_icon" = "Pretraži";
 "accessibility_error_generic" = "Došlo je do greške. Pokušajte ponovno.";
 "accessibility_error_multiple_errors" = "Pronađeno %d grešaka";
-"accessibility_payment_selection_card_full" = "%1$@ kartica koja završava na %2$@, ističe %3$@";
-"accessibility_payment_selection_card_masked" = "kartica koja završava maskirnim znamenkama";
 "accessibility_payment_selection_coming_soon" = "Način plaćanja uskoro dostupan";
 "accessibility_payment_selection_pay_with_card" = "Plati karticom";
 "accessibility_payment_selection_pay_with_ideal" = "Plati s iDEAL";
@@ -65,6 +62,7 @@
 "accessibility_screen_loading_payment_methods" = "Učitavanje načina plaćanja";
 "accessibility_screen_payment_method" = "%@ način plaćanja";
 "accessibility_payment_method_button" = "Plati s %@";
+"accessibility_payment_method_selected" = "%@ odabran";
 "accessibility_screen_processing_payment" = "Obrada plaćanja";
 "accessibility_screen_success" = "Plaćanje uspješno";
 "accessibility_vault_delete_payment_method" = "Izbriši ovaj način plaćanja";
@@ -144,7 +142,6 @@
 "primer_card_form_placeholder_state" = "Grad Zagreb";
 "primer_card_form_retail_not_implemented" = "Odabir prodajnog mjesta još nije implementiran";
 "primer_card_form_title" = "Plati karticom";
-"primer_checkout_auto_dismiss_message" = "Ovaj će se zaslon zatvoriti automatski za 3 sekunde";
 "primer_checkout_dismissing" = "Zatvaranje...";
 "primer_checkout_error_button_other_methods" = "Odaberite druge načine plaćanja";
 "primer_checkout_error_subtitle" = "Došlo je do problema s mrežom.";
@@ -209,8 +206,8 @@
 "accessibility_klarna_category" = "Opcija plaćanja %@";
 "accessibility_klarna_category_selected" = "Opcija plaćanja %@, odabrano";
 "accessibility_klarna_payment_view" = "Obrazac za plaćanje Klarna";
-"accessibility_klarna_authorize_hint" = "Dvaput dodirnite za nastavak s Klarna";
-"accessibility_klarna_finalize_hint" = "Dvaput dodirnite za dovršetak plaćanja";
+"accessibility_klarna_authorize_hint" = "Nastavite s Klarna";
+"accessibility_klarna_finalize_hint" = "Dovršite plaćanje";
 
 /* ACH */
 "primer_ach_title" = "Bankovni račun";
@@ -223,9 +220,9 @@
 "primer_ach_mandate_button_accept" = "Slažem se";
 "primer_ach_mandate_button_decline" = "Odustani";
 "primer_ach_mandate_template" = "Klikom na \"Slažem se\" ovlašćujete %1$@ da tereti gore navedeni bankovni račun za bilo koji iznos dugovanja za naknade koje proizlaze iz vašeg korištenja usluga %1$@ i/ili kupnje proizvoda od %1$@, u skladu s web stranicom i uvjetima %1$@, dok se ova autorizacija ne opozove. Možete izmijeniti ili otkazati ovu autorizaciju u bilo kojem trenutku obavještavanjem %1$@ s 30 (trideset) dana unaprijed.";
-"accessibility_ach_continue_hint" = "Dvaput dodirnite za nastavak odabira bankovnog računa";
-"accessibility_ach_mandate_accept_hint" = "Dvaput dodirnite za prihvaćanje autorizacije i dovršetak plaćanja";
-"accessibility_ach_mandate_decline_hint" = "Dvaput dodirnite za odbijanje i otkazivanje plaćanja";
+"accessibility_ach_continue_hint" = "Nastavite na odabir bankovnog računa";
+"accessibility_ach_mandate_accept_hint" = "Prihvatite autorizaciju i dovršite plaćanje";
+"accessibility_ach_mandate_decline_hint" = "Odbijte i otkažite plaćanje";
 
 "accessibility_card_form_billing_address_hint" = "Unesite svoju adresu";
 "accessibility_card_form_billing_address_state_hint" = "Unesite državu ili pokrajinu";
@@ -285,3 +282,5 @@
 "primer_adyen_klarna_option_pay_later" = "Plati kasnije";
 "primer_adyen_klarna_option_pay_over_time" = "Plati na rate";
 "primer_adyen_klarna_option_pay_now" = "Plati sada";
+"primer_vaulted_gocardless_direct_debit_suffix" = "Izravno terećenje";
+"accessibility_card_form_billing_address_country_hint" = "Otvara popis za odabir vaše države";

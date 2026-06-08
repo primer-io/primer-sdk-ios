@@ -13,11 +13,9 @@ enum FormRedirectPaymentMethodHelper {
   static func createScopeForPaymentMethodType(
     _ paymentMethodType: String,
     checkoutScope: DefaultCheckoutScope,
+    presentationContext: PresentationContext,
     diContainer: any ContainerProtocol
   ) async throws -> any PrimerPaymentMethodScope {
-    let paymentMethodContext: PresentationContext =
-      checkoutScope.availablePaymentMethods.count > 1 ? .fromPaymentSelection : .direct
-
     do {
       let processPaymentInteractor: ProcessFormRedirectPaymentInteractor = try await diContainer.resolve(
         ProcessFormRedirectPaymentInteractor.self
@@ -32,7 +30,7 @@ enum FormRedirectPaymentMethodHelper {
       return DefaultFormRedirectScope(
         paymentMethodType: paymentMethodType,
         checkoutScope: checkoutScope,
-        presentationContext: paymentMethodContext,
+        presentationContext: presentationContext,
         processPaymentInteractor: processPaymentInteractor,
         validationService: validationService,
         analyticsInteractor: analyticsInteractor
@@ -52,8 +50,8 @@ enum FormRedirectPaymentMethodHelper {
 
   @MainActor
   static func createView(checkoutScope: any PrimerCheckoutScope) -> AnyView? {
-    // ACC-7173: audit §2a — FormRedirectContainerView uses @ObservedObject DefaultFormRedirectScope
-    // so the metatype must stay concrete; SwiftUI's ObservableObject requires a concrete class.
+    // FormRedirectContainerView uses @ObservedObject DefaultFormRedirectScope, so the metatype must
+    // stay concrete; SwiftUI's ObservableObject requires a concrete class.
     checkoutScope.getPaymentMethodScope(DefaultFormRedirectScope.self)
       .map { scope in
         scope.screen.map { AnyView($0(scope)) }
@@ -95,10 +93,11 @@ struct BlikPaymentMethod: PaymentMethodProtocol {
     checkoutScope: PrimerCheckoutScope,
     diContainer: any ContainerProtocol
   ) async throws -> any PrimerPaymentMethodScope {
-    let (scope, _) = try DefaultCheckoutScope.validated(from: checkoutScope)
+    let (scope, context) = try DefaultCheckoutScope.validated(from: checkoutScope)
     return try await FormRedirectPaymentMethodHelper.createScopeForPaymentMethodType(
       paymentMethodType,
       checkoutScope: scope,
+      presentationContext: context,
       diContainer: diContainer
     )
   }
@@ -120,10 +119,11 @@ struct MBWayPaymentMethod: PaymentMethodProtocol {
     checkoutScope: PrimerCheckoutScope,
     diContainer: any ContainerProtocol
   ) async throws -> any PrimerPaymentMethodScope {
-    let (scope, _) = try DefaultCheckoutScope.validated(from: checkoutScope)
+    let (scope, context) = try DefaultCheckoutScope.validated(from: checkoutScope)
     return try await FormRedirectPaymentMethodHelper.createScopeForPaymentMethodType(
       paymentMethodType,
       checkoutScope: scope,
+      presentationContext: context,
       diContainer: diContainer
     )
   }

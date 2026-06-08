@@ -16,6 +16,8 @@ struct SelectCountryScreen: View, LogReporter {
   @State private var countryState: PrimerSelectCountryState = .init()
 
   var body: some View {
+    // NavigationView is deprecated but retained: NavigationStack requires iOS 16 and this module
+    // supports iOS 15. The trailing item below uses the modern .toolbar API (valid on iOS 15).
     NavigationView {
       mainContent
     }
@@ -35,13 +37,15 @@ struct SelectCountryScreen: View, LogReporter {
     .background(CheckoutColors.background(tokens: tokens))
     .navigationTitle(CheckoutComponentsStrings.selectCountryTitle)
     .navigationBarTitleDisplayMode(.inline)
-    .navigationBarItems(
-      trailing: Button(CheckoutComponentsStrings.cancelButton) {
-        onDismiss?()
+    .toolbar {
+      ToolbarItem(placement: .navigationBarTrailing) {
+        Button(CheckoutComponentsStrings.cancelButton) {
+          onDismiss?()
+        }
+        .foregroundColor(CheckoutColors.blue(tokens: tokens))
+        .accessibilityLabel(CheckoutComponentsStrings.a11yCancel)
       }
-      .foregroundColor(CheckoutColors.blue(tokens: tokens))
-      .accessibilityLabel(CheckoutComponentsStrings.a11yCancel)
-    )
+    }
   }
 
   private var searchBarSection: some View {
@@ -146,7 +150,7 @@ struct SelectCountryScreen: View, LogReporter {
           } else {
             CountryItemView(
               country: country,
-              isSelected: false,  // No selection state in current scope
+              isSelected: country.code == countryState.selectedCountry?.code,
               onTap: {
                 selectCountry(country)
               }

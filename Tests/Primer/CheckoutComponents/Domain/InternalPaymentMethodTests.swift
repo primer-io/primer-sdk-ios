@@ -26,7 +26,6 @@ final class InternalPaymentMethodTests: XCTestCase {
         XCTAssertTrue(method.isEnabled)
         XCTAssertNil(method.supportedCurrencies)
         XCTAssertTrue(method.requiredInputElements.isEmpty)
-        XCTAssertNil(method.metadata)
         XCTAssertNil(method.surcharge)
         XCTAssertFalse(method.hasUnknownSurcharge)
         XCTAssertNil(method.networkSurcharges)
@@ -49,7 +48,6 @@ final class InternalPaymentMethodTests: XCTestCase {
             isEnabled: false,
             supportedCurrencies: ["USD", "EUR"],
             requiredInputElements: [.cardNumber],
-            metadata: ["key": "value"],
             surcharge: 50,
             hasUnknownSurcharge: true,
             networkSurcharges: ["VISA": 25],
@@ -116,20 +114,31 @@ final class InternalPaymentMethodTests: XCTestCase {
         XCTAssertNotEqual(method1, method2)
     }
 
-    func test_equality_ignoresNonComparedProperties() {
-        // configId, supportedCurrencies, requiredInputElements, metadata, networkSurcharges etc.
-        // are NOT compared in the custom == implementation
-        let method1 = InternalPaymentMethod(
-            id: "pm-1", type: "CARD", name: "Card",
-            configId: "config-1",
-            supportedCurrencies: ["USD"]
-        )
-        let method2 = InternalPaymentMethod(
-            id: "pm-1", type: "CARD", name: "Card",
-            configId: "config-2",
-            supportedCurrencies: ["EUR"]
-        )
+    func test_equality_differentConfigId_areNotEqual() {
+        let method1 = InternalPaymentMethod(id: "pm-1", type: "CARD", name: "Card", configId: "config-1")
+        let method2 = InternalPaymentMethod(id: "pm-1", type: "CARD", name: "Card", configId: "config-2")
 
-        XCTAssertEqual(method1, method2)
+        XCTAssertNotEqual(method1, method2)
+    }
+
+    func test_equality_differentSupportedCurrencies_areNotEqual() {
+        let method1 = InternalPaymentMethod(id: "pm-1", type: "CARD", name: "Card", supportedCurrencies: ["USD"])
+        let method2 = InternalPaymentMethod(id: "pm-1", type: "CARD", name: "Card", supportedCurrencies: ["EUR"])
+
+        XCTAssertNotEqual(method1, method2)
+    }
+
+    func test_equality_differentNetworkSurcharges_areNotEqual() {
+        let method1 = InternalPaymentMethod(id: "pm-1", type: "CARD", name: "Card", networkSurcharges: ["VISA": 25])
+        let method2 = InternalPaymentMethod(id: "pm-1", type: "CARD", name: "Card", networkSurcharges: ["VISA": 50])
+
+        XCTAssertNotEqual(method1, method2)
+    }
+
+    func test_equality_differentStyling_areNotEqual() {
+        let method1 = InternalPaymentMethod(id: "pm-1", type: "CARD", name: "Card", borderWidth: 1.0, cornerRadius: 8.0)
+        let method2 = InternalPaymentMethod(id: "pm-1", type: "CARD", name: "Card", borderWidth: 2.0, cornerRadius: 8.0)
+
+        XCTAssertNotEqual(method1, method2)
     }
 }
