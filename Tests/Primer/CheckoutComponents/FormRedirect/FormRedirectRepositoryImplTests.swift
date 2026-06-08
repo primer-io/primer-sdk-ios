@@ -374,52 +374,51 @@ final class FormRedirectRepositoryImplTests: XCTestCase {
     // MARK: - cancelPolling Tests
 
     func test_cancelPolling_cancelsActivePollingModule() async throws {
-        // Given
+        // Given — a bounded sequence (a couple of `.pending` cycles then `.complete`) so the poll
+        // task always terminates rather than spinning.
         PrimerAPIConfigurationModule.clientToken = MockAppState.mockClientToken
-        // A small per-poll delay just provides clear poll boundaries.
         mockApiClient.mockedNetworkDelay = 0.1
+        mockApiClient.pollingResults = [
+            (PollingResponse(status: .pending, id: "0", source: "src"), nil),
+            (PollingResponse(status: .pending, id: "0", source: "src"), nil),
+            (PollingResponse(status: .complete, id: "0", source: "src"), nil)
+        ]
 
-        // Stay `.pending` for far more cycles (50 × 0.1s = 5s) than the 3s test timeout below, so
-        // the sequence cannot self-complete within the test window — cancellation (which surfaces
-        // within a poll cycle or two) deterministically wins the race rather than losing to a short
-        // finite sequence on a fast/busy runner. The trailing `.complete` still bounds the sequence
-        // so a stray poll terminates instead of spinning indefinitely.
-        let pendingPoll: (PollingResponse?, Error?) = (PollingResponse(status: .pending, id: "0", source: "src"), nil)
-        let completePoll: (PollingResponse?, Error?) = (PollingResponse(status: .complete, id: "0", source: "src"), nil)
-        mockApiClient.pollingResults = Array(repeating: pendingPoll, count: 50) + [completePoll]
-
-        // Start polling in a task
-        let pollingTask = Task { [self] in
-            try await sut.pollForCompletion(statusUrl: FormRedirectTestData.Constants.statusUrl)
-        }
-
-        // When: keep requesting cancellation until polling terminates. cancelPolling is a
-        // no-op until pollForCompletion has set its active module (done synchronously before
-        // its first suspension), and the module only surfaces the cancellation on its next
-        // poll cycle — so retry each tick rather than guessing a sleep duration.
-        let cancelError = PrimerError.cancelled(paymentMethodType: "test")
-        let canceller = Task { [self] in
-            while !Task.isCancelled {
-                sut.cancelPolling(error: cancelError)
-                await Task.yield()
+        // Capture the polling module and signal the moment it is created. By the time the signal is
+        // observed, `pollForCompletion` has already assigned `activePollingModule` (synchronously,
+        // before its first suspension in `start()`), so cancelling targets the active module with no
+        // race against a spinning canceller, the module being set, or the sequence completing.
+        var createdModule: PollingModule?
+        var startedContinuation: AsyncStream<Void>.Continuation!
+        let pollingStarted = AsyncStream<Void> { startedContinuation = $0 }
+        sut = FormRedirectRepositoryImpl(
+            tokenizationService: mockTokenizationService,
+            paymentServiceFactory: { [weak self] _ in self?.mockPaymentService ?? MockCreateResumePaymentService() },
+            apiConfigurationModule: mockApiConfigurationModule,
+            pollingModuleFactory: { url in
+                let module = PollingModule(url: url)
+                createdModule = module
+                startedContinuation.yield()
+                return module
             }
+        )
+
+        let pollingTask = Task { [self] in
+            _ = try? await sut.pollForCompletion(statusUrl: FormRedirectTestData.Constants.statusUrl)
         }
 
-        // Then - the active module surfaces the cancellation error, terminating the task.
-        var thrownError: Error?
-        do {
-            _ = try await withTimeout(3.0) { try await pollingTask.value }
-            XCTFail("Expected polling to be cancelled")
-        } catch {
-            thrownError = error
+        // When — wait until polling has actually started, then cancel exactly once.
+        _ = try await awaitFirst(pollingStarted)
+        sut.cancelPolling(error: PrimerError.cancelled(paymentMethodType: "test"))
+
+        // Then — cancellation is propagated synchronously to the active module (the poll loop reads
+        // this on its next cycle to terminate). Asserting the module state avoids racing the loop's
+        // ~1s retry interval, which made the previous error-throwing assertion flaky on CI.
+        guard case .cancelled = createdModule?.cancellationError else {
+            pollingTask.cancel()
+            return XCTFail("Expected active module to be cancelled, got \(String(describing: createdModule?.cancellationError))")
         }
-        canceller.cancel()
         pollingTask.cancel()
-
-        let primerError = try XCTUnwrap(thrownError as? PrimerError)
-        guard case .cancelled = primerError else {
-            return XCTFail("Expected cancelled error, got \(primerError)")
-        }
     }
 
     // MARK: - Helper Methods
