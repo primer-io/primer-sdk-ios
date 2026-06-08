@@ -376,17 +376,17 @@ final class FormRedirectRepositoryImplTests: XCTestCase {
     func test_cancelPolling_cancelsActivePollingModule() async throws {
         // Given
         PrimerAPIConfigurationModule.clientToken = MockAppState.mockClientToken
-        // A non-zero per-poll delay gives the canceller a poll-boundary window to surface the
-        // cancellation before the polling sequence completes on its own.
+        // A small per-poll delay just provides clear poll boundaries.
         mockApiClient.mockedNetworkDelay = 0.1
 
-        // Set up a slow polling response
-        mockApiClient.pollingResults = [
-            (PollingResponse(status: .pending, id: "0", source: "src"), nil),
-            (PollingResponse(status: .pending, id: "0", source: "src"), nil),
-            (PollingResponse(status: .pending, id: "0", source: "src"), nil),
-            (PollingResponse(status: .complete, id: "0", source: "src"), nil)
-        ]
+        // Stay `.pending` for far more cycles (50 × 0.1s = 5s) than the 3s test timeout below, so
+        // the sequence cannot self-complete within the test window — cancellation (which surfaces
+        // within a poll cycle or two) deterministically wins the race rather than losing to a short
+        // finite sequence on a fast/busy runner. The trailing `.complete` still bounds the sequence
+        // so a stray poll terminates instead of spinning indefinitely.
+        let pendingPoll: (PollingResponse?, Error?) = (PollingResponse(status: .pending, id: "0", source: "src"), nil)
+        let completePoll: (PollingResponse?, Error?) = (PollingResponse(status: .complete, id: "0", source: "src"), nil)
+        mockApiClient.pollingResults = Array(repeating: pendingPoll, count: 50) + [completePoll]
 
         // Start polling in a task
         let pollingTask = Task { [self] in
