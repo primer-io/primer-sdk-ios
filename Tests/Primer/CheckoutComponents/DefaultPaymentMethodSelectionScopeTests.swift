@@ -559,8 +559,11 @@ final class DefaultPaymentMethodSelectionScopeTests: XCTestCase {
         // Then
         XCTAssertEqual(mockRepo.deleteVaultedPaymentMethodCallCount, 1)
         XCTAssertEqual(mockRepo.lastDeletedVaultedPaymentMethodId, "vault_to_delete")
-        // Also refreshes vaulted methods after delete
-        XCTAssertGreaterThanOrEqual(mockRepo.fetchVaultedPaymentMethodsCallCount, 1)
+        // Also refreshes vaulted methods after delete. The scope's init kicks off a refresh on a
+        // detached task too, so poll rather than reading the count synchronously to avoid a race.
+        try await withTimeout(2.0) {
+            while mockRepo.fetchVaultedPaymentMethodsCallCount < 1 { await Task.yield() }
+        }
     }
 
     func test_deleteVaultedPaymentMethod_repositoryThrows_propagatesError() async throws {
@@ -866,7 +869,10 @@ final class DefaultPaymentMethodSelectionScopeVaultTests: XCTestCase {
         // Then
         XCTAssertEqual(mockRepo.deleteVaultedPaymentMethodCallCount, 1)
         XCTAssertEqual(mockRepo.lastDeletedVaultedPaymentMethodId, "vault_delete_me")
-        XCTAssertGreaterThanOrEqual(mockRepo.fetchVaultedPaymentMethodsCallCount, 1)
+        // The scope's init kicks off a refresh on a detached task too; poll to avoid racing it.
+        try await withTimeout(2.0) {
+            while mockRepo.fetchVaultedPaymentMethodsCallCount < 1 { await Task.yield() }
+        }
     }
 
     // MARK: - deleteVaultedPaymentMethod: repository delete throws
@@ -917,8 +923,10 @@ final class DefaultPaymentMethodSelectionScopeVaultTests: XCTestCase {
         // When
         await sut.refreshVaultedPaymentMethods()
 
-        // Then
-        XCTAssertGreaterThanOrEqual(mockRepo.fetchVaultedPaymentMethodsCallCount, 1)
+        // Then — the scope's init also refreshes on a detached task; poll to avoid racing it.
+        try await withTimeout(2.0) {
+            while mockRepo.fetchVaultedPaymentMethodsCallCount < 1 { await Task.yield() }
+        }
     }
 
     // MARK: - refreshVaultedPaymentMethods: repository throws logs error

@@ -20,6 +20,7 @@ final class PrimerCheckoutSessionTests: XCTestCase {
 
   override func tearDown() async throws {
     await ContainerTestHelpers.resetSharedContainer()
+    SDKSessionHelper.tearDown()
     try await super.tearDown()
   }
 
@@ -175,10 +176,11 @@ final class PrimerCheckoutSessionTests: XCTestCase {
 
   // MARK: - observeCheckoutState lifecycle
 
-  // A settled scope (init complete, sitting at `.ready`) so the only state changes the observation
-  // loop sees are the ones the test drives — no race with the scope's async interactor setup.
+  // A settled scope sitting at `.ready` (config carries a payment method, so the load path does not
+  // race to a `.failure(missingConfiguration)`), leaving the only terminal the observation loop sees
+  // as the one the test drives.
   private func makeSettledScope() async throws -> DefaultCheckoutScope {
-    try await ContainerTestHelpers.createSettledCheckoutScope()
+    try await ContainerTestHelpers.createReadyCheckoutScope()
   }
 
   func test_observeCheckoutState_deliversSuccessExactlyOnce() async throws {
