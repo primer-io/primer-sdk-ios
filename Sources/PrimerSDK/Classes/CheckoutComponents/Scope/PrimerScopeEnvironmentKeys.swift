@@ -30,7 +30,7 @@ private struct PrimerSelectCountryScopeKey: EnvironmentKey {
 
 // MARK: - EnvironmentValues Extension
 
-// These accessors are SDK-internal: the scope protocols are internal (mirroring Android v3),
+// These accessors are SDK-internal: the scope protocols are internal,
 // so the environment values are propagated only within the SDK's own view hierarchy.
 @available(iOS 15.0, *)
 extension EnvironmentValues {

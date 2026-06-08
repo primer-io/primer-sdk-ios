@@ -112,7 +112,7 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
 
   /// True when driven by inline embedding (`PrimerCheckoutSession`); false for the modal
   /// `PrimerCheckout` path. Inline embedding must not auto-route to a single payment method on
-  /// launch (the merchant's own view owns that) — mirrors Android's `LocalIsInlineFlow`.
+  /// launch (the merchant's own view owns that).
   private let isInlineFlow: Bool
 
   init(
@@ -536,7 +536,7 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
   ///   refactoring the networking layer to use injected dependencies instead of the enum pattern.
   func invokeBeforePaymentCreate(paymentMethodType: String) async throws {
     guard let callback = onBeforePaymentCreate else {
-      // No imperative handler — fall back to the declarative idempotency-key provider (Android parity).
+      // No imperative handler — fall back to the declarative idempotency-key provider.
       PrimerInternal.shared.currentIdempotencyKey = idempotencyKeyProvider?()
       return
     }

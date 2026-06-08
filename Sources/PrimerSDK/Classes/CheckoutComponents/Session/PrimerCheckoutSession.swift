@@ -19,7 +19,7 @@ import SwiftUI
 @MainActor
 public final class PrimerCheckoutSession: ObservableObject {
 
-  /// Lifecycle phase of the session. Mirrors Android's `PrimerCheckoutState` (Loading / Ready).
+  /// Lifecycle phase of the session (Loading / Ready).
   /// Outcomes (success / failure / dismissed) are delivered via the modifier's `onCompletion`, not here.
   public enum Phase: Equatable {
     case initializing
@@ -36,8 +36,7 @@ public final class PrimerCheckoutSession: ObservableObject {
   }
 
   /// Declarative idempotency-key provider, invoked once per payment attempt just before the SDK
-  /// creates the payment; return nil (default) to opt out. Mirrors Android's
-  /// `rememberPrimerCheckoutController(idempotencyKey:)`. Ignored when `onBeforePaymentCreate` is set.
+  /// creates the payment; return nil (default) to opt out. Ignored when `onBeforePaymentCreate` is set.
   /// Mutations are forwarded to the checkout scope immediately, so post-`.ready` assignment still applies.
   public var idempotencyKey: @Sendable () -> String? {
     didSet { checkoutScope?.idempotencyKeyProvider = idempotencyKey }
@@ -125,8 +124,8 @@ public final class PrimerCheckoutSession: ObservableObject {
   }
 
   /// Re-fetches configuration and payment methods from the backend and returns the session to
-  /// `.ready`. Mirrors Android `PrimerCheckoutController.refresh()`. No-op unless the session has
-  /// finished initializing; concurrent calls are ignored. Failures are delivered via `onCompletion`.
+  /// `.ready`. No-op unless the session has finished initializing; concurrent calls are ignored.
+  /// Failures are delivered via `onCompletion`.
   public func refresh() async {
     guard case .ready = phase, let checkoutScope, !isRefreshing else { return }
     isRefreshing = true

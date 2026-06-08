@@ -148,7 +148,7 @@ struct FlowScreenFactory: LogReporter {
     }
   }
 
-  /// Inline embedding nulls the "choose other payment methods" affordance (Android parity): the
+  /// Inline embedding nulls the "choose other payment methods" affordance: the
   /// merchant owns method selection, so the inline failure sheet only offers retry.
   private var showOtherMethodsAction: (() -> Void)? {
     // Counts total methods (the failed one is still present), so >1 means at least one alternative exists.

@@ -13,10 +13,9 @@ import SwiftUI
 /// `Billing`, `Submit`) at the default-value site; an opaque `some View` return cannot satisfy a
 /// generic placeholder there.
 ///
-/// Field-level helpers (`cardNumber`, `cvv`, …) mirror Android's per-field composables. Android also
-/// exposes per-field slot lambdas on its section composables; Swift default arguments cannot reference
-/// the `session` init parameter at the default-value site, so rather than force awkward per-field
-/// closure inits we keep the no-arg `cardDetails`/`billingAddress` shared renderer as the default.
+/// Field-level helpers (`cardNumber`, `cvv`, …) are per-field building blocks. Swift default arguments
+/// cannot reference the `session` init parameter at the default-value site, so rather than force awkward
+/// per-field closure inits we keep the no-arg `cardDetails`/`billingAddress` shared renderer as the default.
 /// Merchants get full field recomposition by composing these 15 building blocks inside the existing
 /// `PrimerCardForm(cardDetails:)` / `PrimerCardForm(billingAddress:)` section slots.
 @available(iOS 15.0, *)
@@ -161,8 +160,8 @@ public struct BillingAddressContent: View {
 
 /// A single card-form field, rendered through the shared config-aware renderer.
 ///
-/// Renders nothing unless the field is part of the API-driven form configuration (matching Android's
-/// per-field `isFieldRequired` gating), so merchants can drop every building block into a custom
+/// Renders nothing unless the field is part of the API-driven form configuration (per-field
+/// `isFieldRequired` gating), so merchants can drop every building block into a custom
 /// layout without worrying about which fields the current session actually requires.
 @available(iOS 15.0, *)
 public struct CardFieldContent: View {
@@ -183,7 +182,7 @@ public struct CardFieldContent: View {
   }
 }
 
-/// Co-badged card network selector. Mirrors Android's standalone `CardNetworkField`: renders only when
+/// Co-badged card network selector. A standalone field that renders only when
 /// more than one network is available, reusing the SDK's `DropdownCardNetworkSelector`.
 @available(iOS 15.0, *)
 public struct CardNetworkFieldContent: View {

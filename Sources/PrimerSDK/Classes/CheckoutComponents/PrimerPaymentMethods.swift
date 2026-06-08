@@ -9,7 +9,7 @@ import SwiftUI
 /// The payment-method list, composed from a header, per-method row, and empty-state slot.
 ///
 /// Resolves its ``PrimerSelectionSession`` from the environment (provided by
-/// `.primerCheckoutSession(_:)`). Mirrors Android v3's `PrimerPaymentMethods`.
+/// `.primerCheckoutSession(_:)`).
 ///
 /// ```swift
 /// PrimerPaymentMethods(method: { method, onSelect in

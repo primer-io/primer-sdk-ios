@@ -9,7 +9,7 @@
 import Foundation
 
 /// Centralized strings for CheckoutComponents to make localization easier
-/// Keys use underscore_case format to match Android SDK for cross-platform consistency
+/// Keys use underscore_case format for cross-platform consistency
 enum CheckoutComponentsStrings {
   /// The localization table name for CheckoutComponents strings
   private static let tableName = "CheckoutComponentsStrings"
@@ -741,7 +741,6 @@ enum CheckoutComponentsStrings {
   )
 
   /// Simple "Loading" text shown in the default loading screen during payment processing.
-  /// Matches Android SDK naming convention.
   static let loading = NSLocalizedString(
     "primer_checkout_loading_indicator",
     tableName: tableName,
@@ -1372,7 +1371,7 @@ enum CheckoutComponentsStrings {
   // MARK: - Accessibility Strings
 
   // VoiceOver labels, hints, and announcements for CheckoutComponents accessibility support
-  // Keys use underscore_case format to match Android SDK for cross-platform consistency
+  // Keys use underscore_case format for cross-platform consistency
 
   // MARK: Card Form Accessibility Labels
 

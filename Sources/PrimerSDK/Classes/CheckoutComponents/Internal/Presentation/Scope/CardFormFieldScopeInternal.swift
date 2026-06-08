@@ -29,7 +29,7 @@ struct FieldValidationStates: Equatable {
 protocol CardFormFieldScopeInternal: PrimerCardFormScope {
   var currentState: PrimerCardFormState { get }
 
-  /// Nested country-selection scope (internal — mirrors Android's internal country controller).
+  /// Nested country-selection scope (internal).
   var selectCountry: PrimerSelectCountryScope { get }
 
   func updateValidationState(_ keyPath: WritableKeyPath<FieldValidationStates, Bool>, isValid: Bool)

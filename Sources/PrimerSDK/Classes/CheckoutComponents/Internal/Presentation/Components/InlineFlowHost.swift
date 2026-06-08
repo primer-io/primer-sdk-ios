@@ -7,7 +7,7 @@
 import SwiftUI
 
 /// Presents follow-up checkout screens in a sheet when a Primer composable is embedded inline via
-/// `.primerCheckoutSession`. iOS analogue of Android's `FlowSheetOverlayInline`.
+/// `.primerCheckoutSession`.
 ///
 /// Inline embedding mounts no navigation observer of its own, so when the merchant's inline view
 /// (e.g. ``PrimerCardForm``) triggers a payment that needs a follow-up screen — a native APM

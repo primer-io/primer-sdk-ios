@@ -45,7 +45,7 @@ public final class PrimerSelectionSession: ObservableObject {
 
   // MARK: - Selection
 
-  /// Selects a payment method, starting its flow. Mirrors Android's `select(method:)`.
+  /// Selects a payment method, starting its flow.
   public func select(_ method: CheckoutPaymentMethod) {
     scope.onPaymentMethodSelected(paymentMethod: method)
   }
@@ -55,17 +55,16 @@ public final class PrimerSelectionSession: ObservableObject {
   // MARK: - Vaulted
 
   /// Marks a vaulted method as selected so a subsequent submit targets it.
-  /// Mirrors Android's `select(method:)` on the vaulted controller.
   public func selectVaulted(_ method: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod) {
     internalScope?.selectVaultedPaymentMethod(method)
   }
 
-  /// Routes to the delete-confirmation screen for a vaulted method. Mirrors Android's `delete(method:)`.
+  /// Routes to the delete-confirmation screen for a vaulted method.
   public func delete(_ method: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod) {
     internalScope?.navigateToDeleteConfirmation(method)
   }
 
-  /// Navigates to the full list of saved payment methods. Mirrors Android's `showAll()`.
+  /// Navigates to the full list of saved payment methods.
   public func showAll() {
     scope.showAllVaultedPaymentMethods()
   }

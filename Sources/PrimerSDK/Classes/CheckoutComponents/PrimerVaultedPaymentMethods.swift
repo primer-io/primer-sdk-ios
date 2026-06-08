@@ -8,9 +8,8 @@ import SwiftUI
 
 /// The saved (vaulted) payment-methods list, composed from a header, per-item row, and submit slot.
 ///
-/// Resolves its ``PrimerSelectionSession`` from the environment. Mirrors Android v3's
-/// `PrimerVaultedPaymentMethods`. Tapping an item selects it; the submit button pays with the
-/// currently selected vaulted method.
+/// Resolves its ``PrimerSelectionSession`` from the environment. Tapping an item selects it; the
+/// submit button pays with the currently selected vaulted method.
 ///
 /// Slots are type-erased (`AnyView`) rather than generic — the 3-argument item/submit builders hit
 /// Swift's generic-default inference limits, so this view trades the opaque-return ergonomics of
@@ -62,7 +61,7 @@ public struct PrimerVaultedPaymentMethods: View {
             session.selectVaulted(vaulted)
           }
         }
-        // SDK-handled CVV recapture (not a customizable slot, matching Android).
+        // SDK-handled CVV recapture (not a customizable slot).
         VaultedPaymentMethodsDefaults.cvvInput(session)
         submitButton(session.state.isVaultPaymentLoading, isSubmitEnabled) {
           Task { await session.submitSelectedVaulted() }

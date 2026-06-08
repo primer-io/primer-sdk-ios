@@ -62,7 +62,7 @@ public final class PrimerCardFormSession: ObservableObject {
   public func updateFirstName(_ value: String) { fieldScope?.updateFirstName(value) }
   public func updateLastName(_ value: String) { fieldScope?.updateLastName(value) }
 
-  /// Selects a co-badged card network. Mirrors Android's `selectCardNetwork(network:)`.
+  /// Selects a co-badged card network.
   public func selectCardNetwork(_ network: PrimerCardNetwork) {
     fieldScope?.updateSelectedCardNetwork(network.network.rawValue)
   }
