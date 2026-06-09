@@ -432,6 +432,7 @@ final class DefaultApplePayScopeFactoryTests: XCTestCase {
 
     private var mockPresentationManager: MockApplePayPresentationManager!
     private var mockClientSessionActions: MockClientSessionActionsModule!
+    private var createdScopes: [DefaultApplePayScope] = []
 
     override func setUp() {
         super.setUp()
@@ -440,10 +441,17 @@ final class DefaultApplePayScopeFactoryTests: XCTestCase {
         mockClientSessionActions = MockClientSessionActionsModule()
     }
 
-    override func tearDown() {
+    override func tearDown() async throws {
+        // `submit()` spawns a detached payment Task; drain it here so it can't outlive the test and
+        // touch torn-down state on a later test (a flaky cross-test crash on slow CI runners).
+        for scope in createdScopes {
+            scope.paymentTask?.cancel()
+            await scope.paymentTask?.value
+        }
+        createdScopes.removeAll()
         mockClientSessionActions = nil
         mockPresentationManager = nil
-        super.tearDown()
+        try await super.tearDown()
     }
 
     // MARK: - submit guard: not available
@@ -661,12 +669,14 @@ final class DefaultApplePayScopeFactoryTests: XCTestCase {
             )
         }
 
-        return DefaultApplePayScope(
+        let scope = DefaultApplePayScope(
             checkoutScope: checkoutScope,
             presentationContext: presentationContext,
             applePayPresentationManager: mockPresentationManager,
             clientSessionActionsFactory: { [unowned self] in mockClientSessionActions },
             applePayRequestFactory: defaultRequestFactory
         )
+        createdScopes.append(scope)
+        return scope
     }
 }

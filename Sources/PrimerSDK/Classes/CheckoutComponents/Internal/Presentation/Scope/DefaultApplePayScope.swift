@@ -43,6 +43,7 @@ final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
   private var processPaymentInteractor: ProcessApplePayPaymentInteractor?
   private let applePayPresentationManager: ApplePayPresenting
   private var authorizationCoordinator: ApplePayAuthorizationCoordinator?
+  private(set) var paymentTask: Task<Void, Never>?
 
   private let clientSessionActionsFactory: () -> ClientSessionActionsProtocol
   private let applePayRequestFactory: () throws -> ApplePayRequest
@@ -96,8 +97,14 @@ final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
   }
 
   func cancel() {
+    paymentTask?.cancel()
+    paymentTask = nil
     structuredState.isLoading = false
     checkoutScope?.cancelActivePaymentMethod(returnToSelection: presentationContext.shouldShowBackButton)
+  }
+
+  deinit {
+    paymentTask?.cancel()
   }
 
   func onBack() {
@@ -113,7 +120,7 @@ final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
   func submit() {
     guard structuredState.isAvailable, !structuredState.isLoading else { return }
 
-    Task { [self] in
+    paymentTask = Task { [self] in
       await performPayment()
     }
   }
