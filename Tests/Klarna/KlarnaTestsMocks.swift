@@ -8,6 +8,7 @@
     import PrimerFoundation
     import PrimerKlarnaSDK
     @testable import PrimerSDK
+    @_spi(PrimerInternal) @testable import PrimerNetworking
     import XCTest
 
     class KlarnaTestsMocks {
