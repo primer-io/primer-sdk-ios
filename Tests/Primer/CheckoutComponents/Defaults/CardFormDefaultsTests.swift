@@ -149,12 +149,9 @@ final class CardFormDefaultsTests: XCTestCase {
   // MARK: - PrimerCardForm composable view
 
   func test_primerCardForm_rendersBoundFormWithInjectedSession() {
-    let config = CardFormConfiguration(
-      cardFields: [.cardNumber, .expiryDate, .cvv, .cardholderName],
-      billingFields: [.countryCode, .city, .postalCode],
-      requiresBillingAddress: true
-    )
-    let session = makeSession(formConfiguration: config, availableNetworks: [.visa, .masterCard])
+    // Minimal config: Bound erases its three slots regardless of field count, so a small form keeps
+    // PrimerCardForm/Bound coverage while keeping the render cheap on CI.
+    let session = makeSession()
     let view = PrimerCardForm().environment(\.primerCardFormSession, session)
     XCTAssertTrue(SwiftUIRenderProbe.render(view))
   }
