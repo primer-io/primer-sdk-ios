@@ -11,7 +11,6 @@ extension DefaultCardFormScope {
 
   /// Updates the validation state for a specific field using a KeyPath.
   ///
-  /// Required when using custom field components via `InputFieldConfig(component:)`.
   /// The SDK uses this to track which fields are valid and determine overall form validity.
   ///
   /// ```swift

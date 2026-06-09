@@ -22,7 +22,7 @@ import SwiftUI
 ///
 /// ScrollView {
 ///     PrimerCardForm(submitButton: { session in
-///         MyPayButton(isLoading: session.state.isLoading) { session.scope.submit() }
+///         MyPayButton(isLoading: session.state.isLoading) { session.submit() }
 ///     })
 /// }
 /// .primerCheckoutSession(session) { state in handle(state) }

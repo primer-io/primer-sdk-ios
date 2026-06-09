@@ -18,7 +18,7 @@ import SwiftUI
 ///
 /// // Custom submit button (label the slot — a bare trailing closure binds to the last slot)
 /// PrimerCardForm(submitButton: { session in
-///   MyPayButton(isLoading: session.state.isLoading) { session.scope.submit() }
+///   MyPayButton(isLoading: session.state.isLoading) { session.submit() }
 /// })
 ///
 /// // Recomposed card section

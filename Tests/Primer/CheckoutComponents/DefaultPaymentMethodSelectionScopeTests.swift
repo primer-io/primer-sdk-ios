@@ -553,17 +553,24 @@ final class DefaultPaymentMethodSelectionScopeTests: XCTestCase {
         sut = makeSut()
         let method = makeVaultedPaymentMethod(id: "vault_to_delete")
 
+        // Let the sut's init Task settle (it refreshes once on startup) so the post-delete refresh
+        // is attributable to the delete, not to init.
+        try await withTimeout(2.0) {
+            while mockRepo.fetchVaultedPaymentMethodsCallCount < 1 { await Task.yield() }
+        }
+        let fetchBaseline = mockRepo.fetchVaultedPaymentMethodsCallCount
+
         // When
         try await sut.deleteVaultedPaymentMethod(method)
 
         // Then
         XCTAssertEqual(mockRepo.deleteVaultedPaymentMethodCallCount, 1)
         XCTAssertEqual(mockRepo.lastDeletedVaultedPaymentMethodId, "vault_to_delete")
-        // Also refreshes vaulted methods after delete. The scope's init kicks off a refresh on a
-        // detached task too, so poll rather than reading the count synchronously to avoid a race.
+        // The delete triggers exactly one additional refresh on top of the init refresh.
         try await withTimeout(2.0) {
-            while mockRepo.fetchVaultedPaymentMethodsCallCount < 1 { await Task.yield() }
+            while mockRepo.fetchVaultedPaymentMethodsCallCount < fetchBaseline + 1 { await Task.yield() }
         }
+        XCTAssertEqual(mockRepo.fetchVaultedPaymentMethodsCallCount, fetchBaseline + 1)
     }
 
     func test_deleteVaultedPaymentMethod_repositoryThrows_propagatesError() async throws {
@@ -863,16 +870,23 @@ final class DefaultPaymentMethodSelectionScopeVaultTests: XCTestCase {
         sut = makeSut()
         let methodToDelete = makeVaultedPaymentMethod(id: "vault_delete_me")
 
+        // Let the sut's init refresh settle so the post-delete refresh is attributable to the delete.
+        try await withTimeout(2.0) {
+            while mockRepo.fetchVaultedPaymentMethodsCallCount < 1 { await Task.yield() }
+        }
+        let fetchBaseline = mockRepo.fetchVaultedPaymentMethodsCallCount
+
         // When
         try await sut.deleteVaultedPaymentMethod(methodToDelete)
 
         // Then
         XCTAssertEqual(mockRepo.deleteVaultedPaymentMethodCallCount, 1)
         XCTAssertEqual(mockRepo.lastDeletedVaultedPaymentMethodId, "vault_delete_me")
-        // The scope's init kicks off a refresh on a detached task too; poll to avoid racing it.
+        // The delete triggers exactly one additional refresh.
         try await withTimeout(2.0) {
-            while mockRepo.fetchVaultedPaymentMethodsCallCount < 1 { await Task.yield() }
+            while mockRepo.fetchVaultedPaymentMethodsCallCount < fetchBaseline + 1 { await Task.yield() }
         }
+        XCTAssertEqual(mockRepo.fetchVaultedPaymentMethodsCallCount, fetchBaseline + 1)
     }
 
     // MARK: - deleteVaultedPaymentMethod: repository delete throws
@@ -920,13 +934,18 @@ final class DefaultPaymentMethodSelectionScopeVaultTests: XCTestCase {
         await DIContainer.setContainer(container)
         sut = makeSut()
 
-        // When
-        await sut.refreshVaultedPaymentMethods()
-
-        // Then — the scope's init also refreshes on a detached task; poll to avoid racing it.
+        // Let the init refresh settle so the explicit refresh below is attributable to the call.
         try await withTimeout(2.0) {
             while mockRepo.fetchVaultedPaymentMethodsCallCount < 1 { await Task.yield() }
         }
+        let fetchBaseline = mockRepo.fetchVaultedPaymentMethodsCallCount
+
+        // When
+        await sut.refreshVaultedPaymentMethods()
+
+        // Then — the explicit refresh fetched again and synced the selected vaulted method.
+        XCTAssertEqual(mockRepo.fetchVaultedPaymentMethodsCallCount, fetchBaseline + 1)
+        XCTAssertEqual(sut.vaultedPaymentMethods.map(\.id), ["vault_synced"])
     }
 
     // MARK: - refreshVaultedPaymentMethods: repository throws logs error

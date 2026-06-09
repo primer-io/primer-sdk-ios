@@ -87,6 +87,10 @@ final class DefaultBillingAddressRedirectScope: PrimerBillingAddressRedirectScop
     }
   }
 
+  func prepareForReentry() {
+    hasStarted = false
+  }
+
   func submit() {
     guard internalState.isFormValid else {
       logger.warn(message: "Submit called but billing address form is not valid")

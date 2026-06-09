@@ -219,13 +219,14 @@ Bridges the payment-method selection scope into an observable object consumed by
 @MainActor
 public final class PrimerSelectionSession: ObservableObject {
   @Published public private(set) var state: PrimerPaymentMethodSelectionState
-  public var vaultedPaymentMethods: [PrimerHeadlessUniversalCheckout.VaultedPaymentMethod]
+  public var vaultedPaymentMethods: [PrimerHeadlessUniversalCheckout.VaultedPaymentMethod] { get }
 
   public func select(_ method: CheckoutPaymentMethod)
   public func cancel()
   public func selectVaulted(_ method: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod)
   public func delete(_ method: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod)
   public func showAll()
+  public func updateCvvInput(_ cvv: String)
 }
 ```
 

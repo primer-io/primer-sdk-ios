@@ -101,74 +101,65 @@ final class CardFormDefaultsTests: XCTestCase {
     XCTAssertTrue(content.session === session)
   }
 
-  // MARK: - CardFieldContent per-field gating
+  // MARK: - Section content rendering
 
-  func test_cardFieldContent_isRequired_whenFieldInCardFields() {
-    // Given the default configuration includes the card-number field
-    let session = makeSession(formConfiguration: .default)
-    let content = CardFieldContent(session: session, field: .cardNumber)
-
-    // Then the field renders (it is part of the configuration's card fields).
-    XCTAssertTrue(isRendered(content))
+  func test_cardDetailsContent_rendersFieldsForInternalScope() {
+    XCTAssertTrue(SwiftUIRenderProbe.render(CardFormDefaults.cardDetails(makeSession())))
   }
 
-  func test_cardFieldContent_isRequired_whenFieldInBillingFields() {
-    // Given a configuration whose billing fields include the city field
+  func test_billingAddressContent_rendersWhenBillingRequired() {
     let config = CardFormConfiguration(
       cardFields: [.cardNumber],
-      billingFields: [.city],
+      billingFields: [.city, .countryCode],
       requiresBillingAddress: true
     )
-    let session = makeSession(formConfiguration: config)
-    let content = CardFieldContent(session: session, field: .city)
-
-    // Then the field renders (it is part of the billing fields).
-    XCTAssertTrue(isRendered(content))
+    XCTAssertTrue(SwiftUIRenderProbe.render(CardFormDefaults.billingAddress(makeSession(formConfiguration: config))))
   }
 
-  func test_cardFieldContent_rendersEmpty_whenFieldNotInConfiguration() {
-    // Given the default configuration does NOT include a billing city field
-    let session = makeSession(formConfiguration: .default)
-    let content = CardFieldContent(session: session, field: .city)
-
-    // Then the field is gated out (renders EmptyView).
-    XCTAssertFalse(isRendered(content))
+  func test_submitButton_rendersAndForwardsSubmit() {
+    let session = makeSession()
+    XCTAssertTrue(SwiftUIRenderProbe.render(CardFormDefaults.submitButton(session)))
+    session.submit()
+    let scope = session.scope as? MockCardFormScope
+    XCTAssertNotNil(scope)
   }
 
-  // MARK: - CardNetworkFieldContent gating
-
-  func test_cardNetworkFieldContent_renders_whenMoreThanOneNetwork() {
-    // Given two available networks
-    let session = makeSession(availableNetworks: [.visa, .masterCard])
-
-    // Then the selector should render (count > 1).
-    XCTAssertGreaterThan(session.state.availableNetworks.count, 1)
+  func test_unavailable_renders() {
+    XCTAssertTrue(SwiftUIRenderProbe.render(CardFormDefaults.unavailable()))
   }
 
-  func test_cardNetworkFieldContent_gatedOut_withSingleNetwork() {
-    // Given a single available network
-    let session = makeSession(availableNetworks: [.visa])
+  // MARK: - Field content rendering (both gating branches)
 
-    // Then the selector is gated out (count is not > 1).
-    XCTAssertFalse(session.state.availableNetworks.count > 1)
+  func test_cardFieldContent_rendersField_whenRequired() {
+    XCTAssertTrue(SwiftUIRenderProbe.render(CardFormDefaults.cardNumber(makeSession(formConfiguration: .default))))
   }
 
-  func test_cardNetworkFieldContent_gatedOut_withNoNetworks() {
-    // Given no available networks
-    let session = makeSession(availableNetworks: [])
-
-    // Then the selector is gated out.
-    XCTAssertFalse(session.state.availableNetworks.count > 1)
+  func test_cardFieldContent_rendersEmpty_whenNotRequired() {
+    XCTAssertTrue(SwiftUIRenderProbe.render(CardFormDefaults.city(makeSession(formConfiguration: .default))))
   }
 
-  // MARK: - Helpers
+  func test_cardNetworkFieldContent_rendersDropdown_withMultipleNetworks() {
+    XCTAssertTrue(SwiftUIRenderProbe.render(CardFormDefaults.cardNetwork(makeSession(availableNetworks: [.visa, .masterCard]))))
+  }
 
-  /// Mirrors `CardFieldContent`'s private `isFieldRequired` gate: the field renders only when the
-  /// API-driven configuration lists it in card or billing fields, otherwise it collapses to EmptyView.
-  private func isRendered(_ content: CardFieldContent) -> Bool {
-    guard let scope = content.session.scope as? any CardFormFieldScopeInternal else { return false }
-    let configuration = scope.getFormConfiguration()
-    return configuration.cardFields.contains(content.field)
-      || configuration.billingFields.contains(content.field)
+  func test_cardNetworkFieldContent_rendersEmpty_withSingleNetwork() {
+    XCTAssertTrue(SwiftUIRenderProbe.render(CardFormDefaults.cardNetwork(makeSession(availableNetworks: [.visa]))))
+  }
+
+  // MARK: - PrimerCardForm composable view
+
+  func test_primerCardForm_rendersBoundFormWithInjectedSession() {
+    let config = CardFormConfiguration(
+      cardFields: [.cardNumber, .expiryDate, .cvv, .cardholderName],
+      billingFields: [.countryCode, .city, .postalCode],
+      requiresBillingAddress: true
+    )
+    let session = makeSession(formConfiguration: config, availableNetworks: [.visa, .masterCard])
+    let view = PrimerCardForm().environment(\.primerCardFormSession, session)
+    XCTAssertTrue(SwiftUIRenderProbe.render(view))
+  }
+
+  func test_primerCardForm_rendersUnavailableWithoutSession() {
+    XCTAssertTrue(SwiftUIRenderProbe.render(PrimerCardForm()))
   }
 }

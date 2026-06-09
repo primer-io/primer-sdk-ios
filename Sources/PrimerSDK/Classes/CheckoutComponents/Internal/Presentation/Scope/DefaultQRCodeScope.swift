@@ -70,6 +70,10 @@ final class DefaultQRCodeScope: PrimerQRCodeScope, ObservableObject, LogReporter
     }
   }
 
+  func prepareForReentry() {
+    hasStarted = false
+  }
+
   // No-op: QR code payments auto-submit via start()
   func submit() {}
 

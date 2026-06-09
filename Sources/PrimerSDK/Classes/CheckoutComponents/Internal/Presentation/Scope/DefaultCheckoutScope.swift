@@ -492,7 +492,9 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
     if returnToSelection {
       // Navigation-only: leaves the checkout state at `.ready` so no terminal outcome is delivered.
       // In the inline flow this closes the sheet and reveals the merchant's embedded list; in the
-      // modal flow it re-renders the selection screen.
+      // modal flow it re-renders the selection screen. Reset the cached scope's one-shot start guard
+      // so re-selecting the same method restarts its flow instead of showing a stale screen.
+      currentPaymentMethodScope?.prepareForReentry()
       updateNavigationState(.paymentMethodSelection)
     } else {
       onDismiss()

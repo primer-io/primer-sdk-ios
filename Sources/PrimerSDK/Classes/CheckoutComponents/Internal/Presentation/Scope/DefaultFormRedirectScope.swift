@@ -82,6 +82,10 @@ final class DefaultFormRedirectScope: PrimerFormRedirectScope, ObservableObject,
     }
   }
 
+  func prepareForReentry() {
+    hasStarted = false
+  }
+
   func submit() {
     guard internalState.isSubmitEnabled else {
       logger.warn(message: "Submit called but form is not valid")

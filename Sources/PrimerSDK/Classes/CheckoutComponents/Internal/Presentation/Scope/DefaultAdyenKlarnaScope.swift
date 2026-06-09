@@ -79,6 +79,10 @@ final class DefaultAdyenKlarnaScope: PrimerAdyenKlarnaScope, ObservableObject, L
         }
     }
 
+    func prepareForReentry() {
+        hasStarted = false
+    }
+
     func selectOption(_ option: AdyenKlarnaPaymentOption) {
         internalState.selectedOption = option
         submit()

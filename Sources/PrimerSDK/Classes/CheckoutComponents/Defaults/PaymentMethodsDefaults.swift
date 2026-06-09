@@ -87,6 +87,11 @@ private struct VaultedCVVContent: View {
       cardNetwork: cardNetwork,
       onCvvChange: session.updateCvvInput
     )
+    // The scope clears `cvvInput` on payment error / success / cancel; mirror that reset into the
+    // local field so stale digits don't linger after a failed vaulted payment.
+    .onChange(of: session.state.cvvInput) { newValue in
+      if newValue.isEmpty { cvv = "" }
+    }
   }
 
   private var cardNetwork: CardNetwork {

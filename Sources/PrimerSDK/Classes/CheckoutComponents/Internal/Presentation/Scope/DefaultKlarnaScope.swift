@@ -70,6 +70,10 @@ final class DefaultKlarnaScope: PrimerKlarnaScope, ObservableObject, LogReporter
     }
   }
 
+  func prepareForReentry() {
+    hasStarted = false
+  }
+
   func submit() {
     authorizePayment()
   }

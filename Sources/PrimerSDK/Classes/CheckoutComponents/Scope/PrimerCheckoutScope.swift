@@ -97,7 +97,7 @@ protocol PrimerCheckoutScope: AnyObject {
 // MARK: - Default no-op implementations
 //
 // Each per-protocol overload defaults to nil so SDK test-mock conformers don't have to stub all
-// eleven. The SDK's `DefaultCheckoutScope` overrides every one with the real cache-backed lookup.
+// ten. The SDK's `DefaultCheckoutScope` overrides every one with the real cache-backed lookup.
 
 @available(iOS 15.0, *)
 extension PrimerCheckoutScope {

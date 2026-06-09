@@ -120,8 +120,9 @@ final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, 
         if let effective = userSelectedNetwork ?? networks.first {
           structuredState.selectedNetwork = PrimerCardNetwork(network: effective)
           preferredNetwork = effective
-          let showsSurcharge = networks.count == 1 || userSelectedNetwork != nil
-          updateSurchargeAmount(for: showsSurcharge ? effective : nil)
+          // Show the surcharge for the network actually dispatched (the user's pin, or the
+          // auto-defaulted first network), so the displayed amount matches what the backend charges.
+          updateSurchargeAmount(for: effective)
         } else {
           structuredState.selectedNetwork = nil
           preferredNetwork = nil
@@ -503,15 +504,11 @@ final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, 
     let hasValidCvv = cvv && !structuredState.data[.cvv].isEmpty
     let hasValidExpiry = expiry && !structuredState.data[.expiryDate].isEmpty
     let hasValidCardholderName = cardholderName && !structuredState.data[.cardholderName].isEmpty
-    // OTP only gates submission when it is a configured field.
-    let hasValidOtp =
-      !formConfiguration.allFields.contains(.otp)
-      || (fieldValidationStates.otp && !structuredState.data[.otp].isEmpty)
 
     let wasValid = structuredState.isValid
 
     structuredState.isValid =
-      hasValidCardNumber && hasValidCvv && hasValidExpiry && hasValidCardholderName && hasValidOtp
+      hasValidCardNumber && hasValidCvv && hasValidExpiry && hasValidCardholderName
 
     if structuredState.isValid {
       structuredState.fieldErrors.removeAll()

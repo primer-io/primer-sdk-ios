@@ -194,21 +194,29 @@ final class FormRedirectPaymentMethodTests: XCTestCase {
         XCTAssertEqual(scope.presentationContext, .direct)
     }
 
-    func test_helper_createScope_withMultiplePaymentMethods_setsPaymentSelectionContext() async throws {
-        // Given
-        await registerFormRedirectDependencies()
+    func test_validated_withMultiplePaymentMethods_derivesPaymentSelectionContext() throws {
+        // Given a checkout scope offering more than one payment method
         let checkoutScope = createCheckoutScopeWithMultiplePaymentMethods()
 
-        // When
-        let scope = try await FormRedirectPaymentMethodHelper.createScopeForPaymentMethodType(
-            PrimerPaymentMethodType.adyenMBWay.rawValue,
-            checkoutScope: checkoutScope,
-            presentationContext: .fromPaymentSelection,
-            diContainer: container
-        )
+        // When the presentation context is derived
+        let (_, context) = try DefaultCheckoutScope.validated(from: checkoutScope)
 
-        // Then
-        XCTAssertEqual(scope.presentationContext, .fromPaymentSelection)
+        // Then it shows the back button (the method was reached from the selection list).
+        XCTAssertEqual(context, .fromPaymentSelection)
+    }
+
+    func test_validated_withSinglePaymentMethod_derivesDirectContext() throws {
+        // Given a checkout scope offering exactly one payment method
+        let checkoutScope = createCheckoutScopeWithMultiplePaymentMethods()
+        checkoutScope.availablePaymentMethods = [
+            InternalPaymentMethod(id: "blik-1", type: PrimerPaymentMethodType.adyenBlik.rawValue, name: "BLIK")
+        ]
+
+        // When the presentation context is derived
+        let (_, context) = try DefaultCheckoutScope.validated(from: checkoutScope)
+
+        // Then it shows a cancel button (no list to return to).
+        XCTAssertEqual(context, .direct)
     }
 
     func test_blik_createScope_setsCorrectPaymentMethodType() async throws {

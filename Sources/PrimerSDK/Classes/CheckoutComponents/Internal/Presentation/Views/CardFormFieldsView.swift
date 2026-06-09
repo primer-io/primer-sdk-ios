@@ -11,7 +11,7 @@
 import SwiftUI
 
 /// Reusable card form fields view that renders card input fields and billing address fields.
-/// This component is used by both `CardFormScreen` (full screen) and `DefaultCardFormView` (embeddable).
+/// This component is used by both `CardFormScreen` (full screen) and `PrimerCardForm` (embeddable).
 ///
 /// Features:
 /// - Dynamic card fields (card number, expiry, CVV, cardholder name)

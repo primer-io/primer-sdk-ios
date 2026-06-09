@@ -89,7 +89,6 @@ struct VaultedCardCVVInput: View {
   private func makeCvvTextField() -> some View {
     SecureField(cvvPlaceholder, text: filteredCvvBinding)
       .keyboardType(.numberPad)
-      .textContentType(.creditCardNumber)
       .focused($isFocused)
       .multilineTextAlignment(.leading)
       .font(PrimerFont.bodyLarge(tokens: tokens))

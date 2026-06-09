@@ -66,6 +66,10 @@ protocol PrimerPaymentMethodScope: AnyObject {
 
   /// Handles dismissal (e.g., close button tap). Default implementation calls `cancel()`.
   func onDismiss()
+
+  /// Resets a scope's one-shot `start()` guard when it is returned to the payment-method list, so
+  /// re-selecting the same method restarts its flow. Default no-op for scopes that have no guard.
+  func prepareForReentry()
 }
 
 // MARK: - Default Implementations
@@ -84,6 +88,8 @@ extension PrimerPaymentMethodScope {
   func onDismiss() {
     cancel()
   }
+
+  func prepareForReentry() {}
 }
 
 // MARK: - Payment Method Protocol

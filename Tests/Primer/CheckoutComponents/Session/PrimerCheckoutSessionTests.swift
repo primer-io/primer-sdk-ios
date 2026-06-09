@@ -266,4 +266,88 @@ final class PrimerCheckoutSessionTests: XCTestCase {
     scope.onDismiss()  // end the observation loop
     await task.value
   }
+
+  // MARK: - Ready-state sub-sessions and lifecycle
+
+  /// Drives `sut` to `.ready` by observing a settled scope, leaving the observation task running so the
+  /// `.ready`-gated surface (cardForm, selection, refresh, cancel) is reachable.
+  private func driveToReady() async throws -> (PrimerCheckoutSession, Task<Void, Never>) {
+    let scope = try await makeSettledScope()
+    let sut = PrimerCheckoutSession(clientToken: token)
+    let task = Task { await sut.observeCheckoutState(scope) }
+    try await withTimeout(3.0) { [sut] in
+      while sut.phase != .ready { await Task.yield() }
+    }
+    return (sut, task)
+  }
+
+  func test_ready_flipsPhaseAndForwardsReassignedHandlersToScope() async throws {
+    let (sut, task) = try await driveToReady()
+    defer { task.cancel() }
+
+    // didSet now forwards to the live scope (non-nil path).
+    sut.onBeforePaymentCreate = { _, handler in handler(.continuePaymentCreation()) }
+    sut.idempotencyKey = { "live-key" }
+
+    XCTAssertEqual(sut.phase, .ready)
+    XCTAssertNotNil(sut.checkoutScope?.onBeforePaymentCreate)
+    XCTAssertEqual(sut.checkoutScope?.idempotencyKeyProvider?(), "live-key")
+  }
+
+  func test_cardForm_getterIsIdempotent_whenReady() async throws {
+    // The card-form scope is registry-vended; whether or not the test registry provides one, the
+    // getter must be safe and return the same value across calls (cached, or consistently nil).
+    let (sut, task) = try await driveToReady()
+    defer { task.cancel() }
+
+    XCTAssertTrue(sut.cardForm === sut.cardForm)
+  }
+
+  func test_selection_isVendedAndCached_whenReady() async throws {
+    let (sut, task) = try await driveToReady()
+    defer { task.cancel() }
+
+    let first = sut.selection
+    XCTAssertNotNil(first)
+    XCTAssertTrue(first === sut.selection)
+  }
+
+  func test_refresh_whenReady_returnsToReady() async throws {
+    let (sut, task) = try await driveToReady()
+    defer { task.cancel() }
+
+    await sut.refresh()
+
+    XCTAssertEqual(sut.phase, .ready)
+  }
+
+  func test_cancel_whenReady_resetsToRestartableState() async throws {
+    let (sut, task) = try await driveToReady()
+
+    XCTAssertNotNil(sut.selection)
+    sut.cancel()
+    await task.value
+
+    // Restartable: phase resets so a reappearing inline view can re-initialize (not bricked at .ready).
+    XCTAssertEqual(sut.phase, .initializing)
+    XCTAssertNil(sut.selection)
+    XCTAssertNil(sut.cardForm)
+  }
+
+  func test_cancel_thenObserveAgain_reVendsSubSessions() async throws {
+    // Simulates the inline lifecycle: ready -> transient onDisappear (cancel) -> reappear (re-observe).
+    let (sut, task) = try await driveToReady()
+    sut.cancel()
+    await task.value
+    XCTAssertEqual(sut.phase, .initializing)
+
+    let scope = try await makeSettledScope()
+    let task2 = Task { await sut.observeCheckoutState(scope) }
+    defer { task2.cancel() }
+    try await withTimeout(3.0) { [sut] in
+      while sut.phase != .ready { await Task.yield() }
+    }
+
+    XCTAssertNotNil(sut.selection)
+  }
 }

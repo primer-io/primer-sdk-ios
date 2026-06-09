@@ -14,8 +14,8 @@ paths:
 1. **Drop-In UI**: `Sources/.../User Interface/Root/PrimerUniversalCheckoutViewController.swift` — fully managed UI, entry via `Primer.shared.showUniversalCheckout(clientToken:)`
 2. **Headless**: `Sources/.../Core/PrimerHeadlessUniversalCheckout/` — custom UI with SDK payment logic
 3. **CheckoutComponents (iOS 15+)**: `Sources/.../CheckoutComponents/` — SwiftUI-based modular components with exact Android API parity, scope-based architecture
-   - SwiftUI: `PrimerCheckout(clientToken:primerSettings:primerTheme:scope:onCompletion:)`
-   - UIKit: `PrimerCheckoutPresenter.presentCheckout(clientToken:from:primerSettings:primerTheme:scope:completion:)`
+   - SwiftUI: `PrimerCheckout(clientToken:primerSettings:primerTheme:onCompletion:)`
+   - UIKit: `PrimerCheckoutPresenter.presentCheckout(clientToken:from:primerSettings:primerTheme:completion:)`
 
 ## Payment Flow
 1. Generate client token from backend (create client session)

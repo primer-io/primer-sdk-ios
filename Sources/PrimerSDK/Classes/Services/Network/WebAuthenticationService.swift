@@ -53,7 +53,14 @@ final class DefaultWebAuthenticationService: NSObject, WebAuthenticationService 
                     if let url {
                         continuation.resume(returning: url)
                     } else if let error {
-                        continuation.resume(throwing: error)
+                        // Normalize a user cancel to `PrimerError.cancelled` here so every caller
+                        // (PayPal, AdyenKlarna, WebRedirect) routes cancellation to return-to-list
+                        // instead of the failure path. Matches the completion-based overload above.
+                        if let authError = error as? ASWebAuthenticationSessionError, authError.code == .canceledLogin {
+                            continuation.resume(throwing: PrimerError.cancelled(paymentMethodType: paymentMethodType))
+                        } else {
+                            continuation.resume(throwing: error)
+                        }
                     } else {
                         continuation.resume(throwing: PrimerError.unknown(message: "Failed to create web authentication session"))
                     }

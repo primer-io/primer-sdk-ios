@@ -153,6 +153,33 @@ final class DefaultQRCodeScopeTests: XCTestCase {
         XCTAssertEqual(mockInteractor.cancelPollingCallCount, 1)
     }
 
+    // MARK: - Re-entry after return-to-selection
+
+    func test_prepareForReentry_restartsFlowAfterReturnToSelection() async throws {
+        // Regression: the one-shot `start()` guard was never reset, so re-selecting a cancelled
+        // payment method showed a stale screen and never restarted polling.
+        mockInteractor.startPaymentResult = .success(QRCodeTestData.defaultPaymentData)
+        mockInteractor.pollAndCompleteResult = .success(QRCodeTestData.successPaymentResult)
+        let interactor = mockInteractor!
+        let sut = createScope()
+
+        sut.start()
+        _ = try await awaitValue(sut.state, matching: { $0.status == .success })
+        XCTAssertEqual(interactor.startPaymentCallCount, 1)
+
+        // The guard blocks a redundant restart while still active.
+        sut.start()
+        XCTAssertEqual(interactor.startPaymentCallCount, 1)
+
+        // Returning to selection resets the guard, so re-selecting restarts the payment.
+        sut.prepareForReentry()
+        sut.start()
+        try await withTimeout(2.0) {
+            while interactor.startPaymentCallCount < 2 { await Task.yield() }
+        }
+        XCTAssertEqual(interactor.startPaymentCallCount, 2)
+    }
+
     // MARK: - Helpers
 
     private func createScope(

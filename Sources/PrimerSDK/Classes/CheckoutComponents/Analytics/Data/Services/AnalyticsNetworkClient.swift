@@ -8,6 +8,10 @@ import Foundation
 
 actor AnalyticsNetworkClient: LogReporter {
 
+  // Some analytics events are awaited on the payment hot path, so bound the request to keep a
+  // stalled endpoint from delaying payment progression (URLSession's default is ~60s).
+  private static let requestTimeout: TimeInterval = 10
+
   func send(payload: AnalyticsPayload, to endpoint: URL, token: String?) async throws {
     let request = try buildRequest(payload: payload, endpoint: endpoint, token: token)
 
@@ -32,6 +36,7 @@ actor AnalyticsNetworkClient: LogReporter {
   private func buildRequest(payload: AnalyticsPayload, endpoint: URL, token: String?) throws -> URLRequest {
     var request = URLRequest(url: endpoint)
     request.httpMethod = "POST"
+    request.timeoutInterval = Self.requestTimeout
     request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
     if let token {

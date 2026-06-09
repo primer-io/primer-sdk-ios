@@ -152,12 +152,20 @@ public final class PrimerCheckoutSession: ObservableObject {
   }
 
   /// Tears the session down: dismisses the checkout scope, clears the DI container, drops cached
-  /// sub-sessions. Idempotent.
+  /// sub-sessions, and resets to a restartable state. Idempotent.
+  ///
+  /// The modifier wires this to `onDisappear`, which also fires on *transient* disappearance (tab
+  /// switch, push/pop, parent sheet re-present). Resetting `phase`/`hasCompleted`/`initializer` lets
+  /// the next `start()` rebuild the session on reappear; without it `start()` would early-return on a
+  /// stale `.ready` phase and the embedded checkout would silently never recover.
   public func cancel() {
     checkoutScope?.onDismiss()
     initializer?.cleanup()
     sessionCache.removeAll()
     checkoutScope = nil
+    initializer = nil
+    hasCompleted = false
+    phase = .initializing
   }
 
   /// The card-form sub-session, lazily created and cached. Non-nil only once `phase == .ready`.
