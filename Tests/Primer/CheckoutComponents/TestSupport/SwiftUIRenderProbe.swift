@@ -17,7 +17,10 @@ enum SwiftUIRenderProbe {
     let controller = UIHostingController(rootView: view)
     let window = UIWindow(frame: CGRect(x: 0, y: 0, width: width, height: height))
     window.rootViewController = controller
-    window.makeKeyAndVisible()
+    // Make the window visible enough to trigger a render pass, but deliberately do NOT call
+    // makeKeyAndVisible(): that hijacks the global key window and can break presentation-based
+    // tests that run later in the same process. A visible (non-key) window still evaluates bodies.
+    window.isHidden = false
     controller.view.setNeedsLayout()
     controller.view.layoutIfNeeded()
     RunLoop.current.run(until: Date().addingTimeInterval(0.02))
