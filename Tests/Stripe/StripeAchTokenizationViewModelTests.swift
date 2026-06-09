@@ -8,6 +8,7 @@ import PrimerFoundation
 @testable import PrimerSDK
 import XCTest
 @_spi(PrimerInternal) @testable import PrimerCore
+@_spi(PrimerInternal) @testable import PrimerNetworking
 
 final class StripeAchTokenizationViewModelTests: XCTestCase {
     // MARK: - Test Dependencies

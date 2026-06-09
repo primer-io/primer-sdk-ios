@@ -8,6 +8,7 @@ import Foundation
 import PrimerFoundation
 @testable import PrimerSDK
 import XCTest
+@_spi(PrimerInternal) @testable import PrimerNetworking
 
 final class ACHMocks {
     static var stripeACHPaymentMethodId = "STRIPE_ACH"

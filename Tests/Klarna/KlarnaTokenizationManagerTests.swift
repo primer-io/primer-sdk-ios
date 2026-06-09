@@ -8,6 +8,7 @@
     import PrimerFoundation
     import PrimerKlarnaSDK
     @testable import PrimerSDK
+    @_spi(PrimerInternal) import PrimerNetworking
     import XCTest
 
     final class KlarnaTokenizationManagerTests: XCTestCase {

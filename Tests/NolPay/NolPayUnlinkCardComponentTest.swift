@@ -8,6 +8,7 @@
     import PrimerFoundation
     import PrimerNolPaySDK
     @testable import PrimerSDK
+    @_spi(PrimerInternal) @testable import PrimerNetworking
     import XCTest
 
     final class NolPayUnlinkCardComponentTest: XCTestCase {
