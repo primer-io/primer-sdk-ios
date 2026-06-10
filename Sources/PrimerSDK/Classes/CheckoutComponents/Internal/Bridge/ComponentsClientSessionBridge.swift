@@ -48,6 +48,17 @@ public final class ComponentsClientSessionBridge {
         guard let modules = configurationProvider()?.checkoutModules else { return nil }
         return modules.map(ComponentsCheckoutModule.init(module:))
     }
+
+    public func getCaptureVaultedCardCvv() -> Bool {
+        Analytics.Service.fire(event: Analytics.Event.sdk(
+            name: "\(Self.self).\(#function)",
+            params: ["category": "CLIENT_SESSION"]
+        ))
+
+        let cardPaymentMethod = configurationProvider()?.paymentMethods?
+            .first { $0.type == PrimerPaymentMethodType.paymentCard.rawValue }
+        return (cardPaymentMethod?.options as? CardOptions)?.captureVaultedCardCvv == true
+    }
 }
 
 @available(iOS 15.0, *)
