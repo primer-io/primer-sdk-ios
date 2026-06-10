@@ -358,8 +358,10 @@ extension Response.Body.Configuration {
                 self.cardHolderName = (try? container.decode(Bool?.self, forKey: .cardHolderName)) ?? nil
                 self.saveCardCheckbox = (try? container.decode(Bool?.self, forKey: .saveCardCheckbox)) ?? nil
 
+                // Signals "not this module type" to the polymorphic decode in CheckoutModule.init(from:),
+                // where it is caught by `try?`. It is expected control flow, so it must not be logged.
                 if self.cardHolderName == nil, self.saveCardCheckbox == nil {
-                    throw handled(error: InternalError.failedToDecode(message: "All fields are nil"))
+                    throw InternalError.failedToDecode(message: "All fields are nil")
                 }
             }
         }
@@ -434,6 +436,8 @@ extension Response.Body.Configuration {
                 self.phoneNumber = (try? container.decode(Bool?.self, forKey: .phoneNumber)) ?? nil
                 self.state = (try? container.decode(Bool?.self, forKey: .state)) ?? nil
 
+                // Signals "not this module type" to the polymorphic decode in CheckoutModule.init(from:),
+                // where it is caught by `try?`. It is expected control flow, so it must not be logged.
                 if self.firstName == nil,
                    self.lastName == nil,
                    self.city == nil,
@@ -443,7 +447,7 @@ extension Response.Body.Configuration {
                    self.countryCode == nil,
                    self.phoneNumber == nil,
                    self.state == nil {
-                    throw handled(error: InternalError.failedToDecode(message: "All fields are nil"))
+                    throw InternalError.failedToDecode(message: "All fields are nil")
                 }
             }
         }
