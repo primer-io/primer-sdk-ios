@@ -10,7 +10,7 @@
 // swiftlint:disable nesting
 
 import Foundation
-import PrimerResources
+@_spi(PrimerInternal) import PrimerResources
 
 // MARK: - Strings
 
