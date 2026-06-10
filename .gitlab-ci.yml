@@ -58,7 +58,7 @@ build-and-release:
         echo "✅ ${pod} ${VERSION}: resolvable via CDN"
       }
 
-      for POD in PrimerFoundation PrimerStepResolver PrimerCore PrimerBDCEngine PrimerBDCCore PrimerSDK; do
+      for POD in PrimerFoundation PrimerNetworking PrimerCore PrimerStepResolver PrimerBDCEngine PrimerBDCCore PrimerSDK; do
         push_and_wait "$POD"
       done
       notify_slack "🚀 All pods for ${VERSION} published successfully"
