@@ -4,10 +4,13 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+@_spi(PrimerInternal) import PrimerFoundation
 import UIKit
+@_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerNetworking
 
 #if canImport(Primer3DS)
-import Primer3DS
+    import Primer3DS
 #endif
 
 // swiftlint:disable identifier_name
@@ -42,27 +45,39 @@ final class PrimerInternal: LogReporter {
     }
 
     fileprivate init() {
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(onAppStateChange),
-                                               name: UIApplication.willTerminateNotification, object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(onAppStateChange),
-                                               name: UIApplication.willResignActiveNotification, object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(onAppDidEnterBackground),
-                                               name: UIApplication.didEnterBackgroundNotification, object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(onAppWillEnterForeground),
-                                               name: UIApplication.willEnterForegroundNotification, object: nil)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(onAppStateChange),
+            name: UIApplication.willTerminateNotification,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(onAppStateChange),
+            name: UIApplication.willResignActiveNotification,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(onAppDidEnterBackground),
+            name: UIApplication.didEnterBackgroundNotification,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(onAppWillEnterForeground),
+            name: UIApplication.willEnterForegroundNotification,
+            object: nil
+        )
     }
 
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
         #if canImport(Primer3DS)
-        let is3DSHandled = Primer3DS.application(app, open: url, options: options)
+            let is3DSHandled = Primer3DS.application(app, open: url, options: options)
 
-        if is3DSHandled {
-            return true
-        }
+            if is3DSHandled {
+                return true
+            }
         #endif
 
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
@@ -78,13 +93,15 @@ final class PrimerInternal: LogReporter {
         return false
     }
 
-    func application(_ application: UIApplication,
-                              continue userActivity: NSUserActivity,
-                              restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
+    func application(
+        _ application: UIApplication,
+        continue userActivity: NSUserActivity,
+        restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void
+    ) -> Bool {
         #if canImport(Primer3DS)
-        return Primer3DS.application(application, continue: userActivity, restorationHandler: restorationHandler)
+            return Primer3DS.application(application, continue: userActivity, restorationHandler: restorationHandler)
         #else
-        return false
+            return false
         #endif
     }
 
@@ -118,7 +135,7 @@ final class PrimerInternal: LogReporter {
         let releaseVersionNumber = VersionUtils.releaseVersionNumber
         events.append(
             Analytics.Event.message(
-                message: "Version number (\(releaseVersionNumber ?? "n/a")) detected.",
+                message: "Version number (\(releaseVersionNumber)) detected.",
                 messageType: .other,
                 severity: .info
             )
@@ -167,13 +184,15 @@ final class PrimerInternal: LogReporter {
                 try await PrimerUIManager.preparePresentation(clientToken: clientToken)
                 await PrimerUIManager.presentPaymentUI()
 
-                let currencyLoader = CurrencyLoader(storage: DefaultCurrencyStorage(),
-                                                    networkService: CurrencyNetworkService())
+                let currencyLoader = CurrencyLoader(
+                    storage: DefaultCurrencyStorage(),
+                    networkService: CurrencyNetworkService()
+                )
                 currencyLoader.updateCurrenciesFromAPI()
                 self.recordLoadedEvent(start, source: .universalCheckout)
                 completion?(nil)
             } catch {
-                let primerErr = error.asPrimerError
+                let primerErr = handled(primerError: error.asPrimerError)
                 PrimerUIManager.handleErrorBasedOnSDKSettings(primerErr)
                 completion?(error)
             }
@@ -211,7 +230,7 @@ final class PrimerInternal: LogReporter {
                 self.recordLoadedEvent(start, source: .vaultManager)
                 completion?(nil)
             } catch {
-                let primerErr = error.asPrimerError
+                let primerErr = handled(primerError: error.asPrimerError)
                 PrimerUIManager.handleErrorBasedOnSDKSettings(primerErr)
                 completion?(error)
             }
@@ -248,7 +267,7 @@ final class PrimerInternal: LogReporter {
                 self.recordLoadedEvent(start, source: .showPaymentMethod)
                 completion?(nil)
             } catch {
-                let primerErr = error.asPrimerError
+                let primerErr = handled(primerError: error.asPrimerError)
                 PrimerUIManager.handleErrorBasedOnSDKSettings(primerErr)
                 completion?(error)
             }

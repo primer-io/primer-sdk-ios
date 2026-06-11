@@ -1,13 +1,14 @@
 //
 //  MerchantHeadlessCheckoutBankViewController.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
-import UIKit
-import SwiftUI
+import PrimerFoundation
 import PrimerSDK
+import SwiftUI
+import UIKit
 
 final class MerchantHeadlessCheckoutBankViewController: UIViewController {
     private lazy var manager: PrimerHeadlessUniversalCheckout.ComponentWithRedirectManager = PrimerHeadlessUniversalCheckout.ComponentWithRedirectManager()
@@ -37,13 +38,13 @@ final class MerchantHeadlessCheckoutBankViewController: UIViewController {
 
     private func addBanksListViewController() {
         let headerView = BanksListView(paymentMethodModel: PaymentMethodModel(name: paymentMethodType, logo: nil), banksModel: banksModel, didSelectBank: { [weak self] bankId in
-            guard let self = self else { return }
-            self.showLoadingOverlay()
-            self.bankComponent?.updateCollectedData(collectableData: BanksCollectableData.bankId(bankId: bankId))
+            guard let self else { return }
+            showLoadingOverlay()
+            bankComponent?.updateCollectedData(collectableData: BanksCollectableData.bankId(bankId: bankId))
         }, didFilterByText: { [weak self] filterText in
-            guard let self = self else { return }
-            self.showLoadingOverlay()
-            self.bankComponent?.updateCollectedData(collectableData: BanksCollectableData.bankFilterText(text: filterText))
+            guard let self else { return }
+            showLoadingOverlay()
+            bankComponent?.updateCollectedData(collectableData: BanksCollectableData.bankFilterText(text: filterText))
         })
         let listViewController = UIHostingController(rootView: headerView)
         listViewController.view.translatesAutoresizingMaskIntoConstraints = false
@@ -64,8 +65,8 @@ final class MerchantHeadlessCheckoutBankViewController: UIViewController {
 
 // MARK: - PrimerHeadlessErrorableDelegate, PrimerHeadlessValidatableDelegate, PrimerHeadlessStepableDelegate
 extension MerchantHeadlessCheckoutBankViewController: PrimerHeadlessErrorableDelegate,
-                                                      PrimerHeadlessValidatableDelegate,
-                                                      PrimerHeadlessSteppableDelegate {
+    PrimerHeadlessValidatableDelegate,
+    PrimerHeadlessSteppableDelegate {
 
     func didUpdate(validationStatus: PrimerSDK.PrimerValidationStatus, for data: PrimerSDK.PrimerCollectableData?) {
         switch validationStatus {
@@ -80,31 +81,31 @@ extension MerchantHeadlessCheckoutBankViewController: PrimerHeadlessErrorableDel
                     break
                 }
             }
-        case .invalid(errors: let errors):
+        case let .invalid(errors: errors):
             var message = ""
             for error in errors {
                 message += (error.errorDescription ?? error.localizedDescription) + "\n"
             }
             hideLoadingOverlay()
-            self.showAlert(title: "Validation Error", message: "\(message)")
-        case .error(error: let error):
-            self.showAlert(title: "Error", message: error.errorDescription ?? error.localizedDescription)
+            showAlert(title: "Validation Error", message: "\(message)")
+        case let .error(error: error):
+            showAlert(title: "Error", message: error.errorDescription ?? error.localizedDescription)
             hideLoadingOverlay()
         }
     }
 
     func didReceiveError(error: PrimerError) {
-        self.showAlert(title: "Error", message: error.errorDescription ?? error.localizedDescription)
+        showAlert(title: "Error", message: error.errorDescription ?? error.localizedDescription)
     }
 
     func didReceiveStep(step: PrimerHeadlessStep) {
         guard let step = step as? BanksStep else {
-            self.showAlert(title: "Error", message: "Received wrong step of \(step)")
+            showAlert(title: "Error", message: "Received wrong step of \(step)")
             return
         }
         switch step {
         case .loading: showLoadingOverlay()
-        case .banksRetrieved(banks: let banks): renderBanks(banks)
+        case let .banksRetrieved(banks: banks): renderBanks(banks)
         }
     }
 }

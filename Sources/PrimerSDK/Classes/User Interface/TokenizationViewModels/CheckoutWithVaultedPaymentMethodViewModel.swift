@@ -11,6 +11,9 @@
 // swiftlint:disable type_body_length
 
 import Foundation
+@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerNetworking
 
 final class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
 
@@ -36,11 +39,13 @@ final class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
     var willDismissPaymentMethodUI: (() -> Void)?
     var didDismissPaymentMethodUI: (() -> Void)?
 
-    init(configuration: PrimerPaymentMethod,
-         selectedPaymentMethodTokenData: PrimerPaymentMethodTokenData,
-         additionalData: PrimerVaultedCardAdditionalData?,
-         tokenizationService: TokenizationServiceProtocol = TokenizationService(),
-         createResumePaymentService: CreateResumePaymentServiceProtocol) {
+    init(
+        configuration: PrimerPaymentMethod,
+        selectedPaymentMethodTokenData: PrimerPaymentMethodTokenData,
+        additionalData: PrimerVaultedCardAdditionalData?,
+        tokenizationService: TokenizationServiceProtocol = TokenizationService(),
+        createResumePaymentService: CreateResumePaymentServiceProtocol
+    ) {
         config = configuration
         self.selectedPaymentMethodTokenData = selectedPaymentMethodTokenData
         self.additionalData = additionalData
@@ -62,7 +67,7 @@ final class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
             await handleSuccessfulFlow()
         } catch {
             didFinishPayment?(error)
-            let primerErr = error.asPrimerError
+            let primerErr = handled(primerError: error.asPrimerError)
             let merchantErrorMessage = await PrimerDelegateProxy.raisePrimerDidFailWithError(primerErr, data: paymentCheckoutData)
             await handleFailureFlow(errorMessage: merchantErrorMessage)
         }
@@ -129,7 +134,7 @@ final class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
             guard let self else { return }
             logger.warn(
                 message:
-                    """
+                """
                 The 'decisionHandler' of 'primerHeadlessUniversalCheckoutWillCreatePaymentWithData' hasn't been called.
                 Make sure you call the decision handler otherwise the SDK will hang.
                 """
@@ -222,7 +227,7 @@ final class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
     }
 
     private func startManualPaymentFlowAndFetchToken(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) async throws
-    -> DecodedJWTToken? {
+        -> DecodedJWTToken? {
         let resumeDecision = await PrimerDelegateProxy.primerDidTokenizePaymentMethod(paymentMethodTokenData)
         if let resumeDecisionType = resumeDecision.type as? PrimerResumeDecision.DecisionType {
             switch resumeDecisionType {

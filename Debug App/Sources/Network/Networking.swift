@@ -5,7 +5,10 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+import PrimerCore
+import PrimerFoundation
 import PrimerSDK
+@_spi(PrimerInternal) import PrimerNetworking
 
 enum APIVersion: String {
     case v2_4 = "2.4"
@@ -40,9 +43,9 @@ final class Networking {
 
     var endpoint: String {
         if environment == .local {
-            return "https://primer-mock-back-end.herokuapp.com"
+            "https://primer-mock-back-end.herokuapp.com"
         } else {
-            return "https://us-central1-primerdemo-8741b.cloudfunctions.net"
+            "https://us-central1-primerdemo-8741b.cloudfunctions.net"
         }
     }
 
@@ -57,13 +60,14 @@ final class Networking {
     ) {
         var components = URLComponents(url: url, resolvingAgainstBaseURL: false)!
 
-        if let queryParameters = queryParameters {
+        if let queryParameters {
             components.queryItems = queryParameters.map { (key, value) in
                 URLQueryItem(name: key, value: value)
             }
         }
         components.percentEncodedQuery = components.percentEncodedQuery?.replacingOccurrences(
-            of: "+", with: "%2B")
+            of: "+", with: "%2B"
+        )
 
         logger.debug(message: "URL: \(components.url!.absoluteString )")
 
@@ -75,11 +79,11 @@ final class Networking {
             request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         }
 
-        if let customDefinedApiKey = customDefinedApiKey {
+        if let customDefinedApiKey {
             request.addValue(customDefinedApiKey, forHTTPHeaderField: "x-api-key")
         }
 
-        if let headers = headers {
+        if let headers {
             // We have a dedicated argument that takes x-api-key into account
             // in case a custom one gets defined before SDK initialization
             // so in case this array contains the same key, it won't be added
@@ -88,7 +92,7 @@ final class Networking {
             }
         }
 
-        if let apiVersion = apiVersion {
+        if let apiVersion {
             request.addValue(apiVersion.rawValue, forHTTPHeaderField: "x-api-version")
             request.addValue("IOS", forHTTPHeaderField: "Client")
         }
@@ -99,7 +103,7 @@ final class Networking {
             } ?? []
         logger.debug(message: "Request Headers:\n\(headerDescriptions.joined(separator: "\n"))")
 
-        if let body = body {
+        if let body {
             request.httpBody = body
             if let bodyJson = try? JSONSerialization.jsonObject(with: body, options: .allowFragments) {
                 logger.debug(message: "Request Body (json):\n\(bodyJson)")
@@ -126,14 +130,14 @@ final class Networking {
 
                     if httpResponse.statusCode < 200 || httpResponse.statusCode > 399 {
                         logger.debug(message: "Status Code: \(httpResponse.statusCode)")
-                        if let data = data,
+                        if let data,
                            let resJson =
-                            (try? JSONSerialization.jsonObject(with: data, options: .allowFragments))
-                            as? [String: Any] {
+                           (try? JSONSerialization.jsonObject(with: data, options: .allowFragments))
+                               as? [String: Any] {
                             logger.debug(message: "Response Body (json):\n\(resJson)")
                         }
 
-                        guard let data = data else {
+                        guard let data else {
                             logger.error(message: "No data")
                             completion(.failure(NetworkError.invalidResponse))
                             return
@@ -149,7 +153,7 @@ final class Networking {
                         return
                     }
 
-                    guard let data = data else {
+                    guard let data else {
                         logger.debug(message: "Status Code: \(httpResponse.statusCode)")
                         logger.debug(message: "Response Body: No data")
                         completion(.failure(NetworkError.invalidResponse))
@@ -163,7 +167,8 @@ final class Networking {
                     } else {
                         logger.debug(
                             message:
-                                "Response Body (text):\n\(String(describing: String(data: data, encoding: .utf8)))")
+                            "Response Body (text):\n\(String(describing: String(data: data, encoding: .utf8)))"
+                        )
                     }
 
                     completion(.success(data))
@@ -291,13 +296,16 @@ final class Networking {
             case let .success(data):
                 do {
                     if let token =
-                        (try JSONSerialization.jsonObject(with: data, options: .allowFragments)
-                            as? [String: Any])?["clientToken"] as? String {
+                        (
+                            try JSONSerialization.jsonObject(with: data, options: .allowFragments)
+                                as? [String: Any]
+                        )?["clientToken"] as? String {
                         completion(token, nil)
                     } else {
                         let err = NSError(
                             domain: "example", code: 10,
-                            userInfo: [NSLocalizedDescriptionKey: "Failed to find client token"])
+                            userInfo: [NSLocalizedDescriptionKey: "Failed to find client token"]
+                        )
                         completion(nil, err)
                     }
 
@@ -342,13 +350,16 @@ final class Networking {
             case let .success(data):
                 do {
                     if let token =
-                        (try JSONSerialization.jsonObject(with: data, options: .allowFragments)
-                            as? [String: Any])?["clientToken"] as? String {
+                        (
+                            try JSONSerialization.jsonObject(with: data, options: .allowFragments)
+                                as? [String: Any]
+                        )?["clientToken"] as? String {
                         completion(token, nil)
                     } else {
                         let err = NSError(
                             domain: "example", code: 10,
-                            userInfo: [NSLocalizedDescriptionKey: "Failed to find client token"])
+                            userInfo: [NSLocalizedDescriptionKey: "Failed to find client token"]
+                        )
                         completion(nil, err)
                     }
 
@@ -364,7 +375,7 @@ final class Networking {
 
 extension String {
     func toDate(withFormat f: String = "yyyy-MM-dd'T'HH:mm:ss.SSSZ", timeZone: TimeZone? = nil)
-    -> Date? {
+        -> Date? {
         let df = DateFormatter()
         df.dateFormat = f
         df.locale = Locale(identifier: "en_US_POSIX")
@@ -379,7 +390,7 @@ public struct Payment {
         let paymentMethodToken: String
 
         public init(token: String) {
-            self.paymentMethodToken = token
+            paymentMethodToken = token
         }
     }
 
@@ -387,7 +398,7 @@ public struct Payment {
         let resumeToken: String
 
         public init(token: String) {
-            self.resumeToken = token
+            resumeToken = token
         }
     }
 

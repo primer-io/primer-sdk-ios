@@ -6,9 +6,11 @@
 
 import CryptoKit
 import Foundation
-import PrimerBDCCore
+@_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerBDCCore
 import PrimerBDCEngine
-import PrimerFoundation
+@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerNetworking
 import UIKit
 
 final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {

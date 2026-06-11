@@ -1,25 +1,27 @@
 //
 //  PrimerCustomResultViewController.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import UIKit
+@_spi(PrimerInternal) import PrimerFoundation
 import SwiftUI
+import UIKit
+@_spi(PrimerInternal) import PrimerCore
 
 final class PrimerCustomResultViewController: PrimerViewController {
 
-    internal enum PaymentStatus {
+    enum PaymentStatus {
         case success, failed, cancelled
     }
 
-    private(set) internal var paymentStatusView: PrimerResultPaymentStatusView?
-    private(set) internal var paymentMethodType: PrimerPaymentMethodType
-    private(set) internal var paymentStatusViewModel: PrimerResultPaymentStatusViewModel
+    private(set) var paymentStatusView: PrimerResultPaymentStatusView?
+    private(set) var paymentMethodType: PrimerPaymentMethodType
+    private(set) var paymentStatusViewModel: PrimerResultPaymentStatusViewModel
 
     init(paymentMethodType: PrimerPaymentMethodType, error: PrimerError?) {
         self.paymentMethodType = paymentMethodType
-        self.paymentStatusViewModel = PrimerResultPaymentStatusViewModel(paymentMethodType: paymentMethodType, error: error)
+        paymentStatusViewModel = PrimerResultPaymentStatusViewModel(paymentMethodType: paymentMethodType, error: error)
         super.init()
     }
 
@@ -32,14 +34,14 @@ final class PrimerCustomResultViewController: PrimerViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        if let parentVC = self.parent as? PrimerContainerViewController {
+        if let parentVC = parent as? PrimerContainerViewController {
             parentVC.mockedNavigationBar.hidesBackButton = true
         }
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        if let parentVC = self.parent as? PrimerContainerViewController {
+        if let parentVC = parent as? PrimerContainerViewController {
             parentVC.mockedNavigationBar.hidesBackButton = false
         }
     }
@@ -68,9 +70,9 @@ final class PrimerCustomResultViewController: PrimerViewController {
     private func getOriginPaymentMethodScreenType() -> PrimerViewController.Type {
         switch paymentMethodType {
         case .stripeAch:
-            return ACHUserDetailsViewController.self
+            ACHUserDetailsViewController.self
         default:
-            return PrimerViewController.self
+            PrimerViewController.self
         }
     }
 }

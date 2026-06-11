@@ -1,35 +1,37 @@
 PODS:
-  - IQKeyboardCore (1.0.8)
-  - IQKeyboardManagerSwift (8.0.1):
-    - IQKeyboardManagerSwift/Appearance (= 8.0.1)
-    - IQKeyboardManagerSwift/Core (= 8.0.1)
-    - IQKeyboardManagerSwift/IQKeyboardReturnManager (= 8.0.1)
-    - IQKeyboardManagerSwift/IQKeyboardToolbarManager (= 8.0.1)
-    - IQKeyboardManagerSwift/IQTextView (= 8.0.1)
-    - IQKeyboardManagerSwift/Resign (= 8.0.1)
-  - IQKeyboardManagerSwift/Appearance (8.0.1):
+  - IQKeyboardCore (1.0.9)
+  - IQKeyboardManagerSwift (8.0.3):
+    - IQKeyboardManagerSwift/Appearance (= 8.0.3)
+    - IQKeyboardManagerSwift/Core (= 8.0.3)
+    - IQKeyboardManagerSwift/IQKeyboardReturnManager (= 8.0.3)
+    - IQKeyboardManagerSwift/IQKeyboardToolbarManager (= 8.0.3)
+    - IQKeyboardManagerSwift/IQTextView (= 8.0.3)
+    - IQKeyboardManagerSwift/Resign (= 8.0.3)
+  - IQKeyboardManagerSwift/Appearance (8.0.3):
     - IQKeyboardManagerSwift/Core
-  - IQKeyboardManagerSwift/Core (8.0.1):
+    - IQTextInputViewNotification
+  - IQKeyboardManagerSwift/Core (8.0.3):
     - IQKeyboardNotification
     - IQTextInputViewNotification
-  - IQKeyboardManagerSwift/IQKeyboardReturnManager (8.0.1):
+  - IQKeyboardManagerSwift/IQKeyboardReturnManager (8.0.3):
     - IQKeyboardReturnManager
-  - IQKeyboardManagerSwift/IQKeyboardToolbarManager (8.0.1):
+  - IQKeyboardManagerSwift/IQKeyboardToolbarManager (8.0.3):
     - IQKeyboardManagerSwift/Core
     - IQKeyboardToolbarManager
-  - IQKeyboardManagerSwift/IQTextView (8.0.1):
+  - IQKeyboardManagerSwift/IQTextView (8.0.3):
     - IQTextView
-  - IQKeyboardManagerSwift/Resign (8.0.1):
+  - IQKeyboardManagerSwift/Resign (8.0.3):
     - IQKeyboardManagerSwift/Core
-  - IQKeyboardNotification (1.0.6)
+    - IQTextInputViewNotification
+  - IQKeyboardNotification (1.0.7)
   - IQKeyboardReturnManager (1.0.6):
     - IQKeyboardCore
-  - IQKeyboardToolbar (1.1.3):
-    - IQKeyboardToolbar/Core (= 1.1.3)
-  - IQKeyboardToolbar/Core (1.1.3):
+  - IQKeyboardToolbar (1.1.4):
+    - IQKeyboardToolbar/Core (= 1.1.4)
+  - IQKeyboardToolbar/Core (1.1.4):
     - IQKeyboardCore
     - IQKeyboardToolbar/Placeholderable
-  - IQKeyboardToolbar/Placeholderable (1.1.3)
+  - IQKeyboardToolbar/Placeholderable (1.1.4)
   - IQKeyboardToolbarManager (1.1.5):
     - IQKeyboardToolbar
     - IQTextInputViewNotification
@@ -38,26 +40,35 @@ PODS:
   - IQTextView (1.0.5):
     - IQKeyboardToolbar/Placeholderable
   - Primer3DS (2.8.0)
-  - PrimerBDCCore (3.0.0-b0):
-    - PrimerBDCEngine (= 3.0.0-b0)
-    - PrimerFoundation (= 3.0.0-b0)
-    - PrimerStepResolver (= 3.0.0-b0)
-  - PrimerBDCEngine (3.0.0-b0):
-    - PrimerFoundation (= 3.0.0-b0)
-    - PrimerStepResolver (= 3.0.0-b0)
-  - PrimerFoundation (3.0.0-b0)
+  - PrimerBDCCore (2.49.0):
+    - PrimerBDCEngine (= 2.49.0)
+    - PrimerFoundation (= 2.49.0)
+    - PrimerStepResolver (= 2.49.0)
+  - PrimerBDCEngine (2.49.0):
+    - PrimerFoundation (= 2.49.0)
+    - PrimerStepResolver (= 2.49.0)
+  - PrimerCore (2.49.0):
+    - Primer3DS
+    - PrimerFoundation (= 2.49.0)
+  - PrimerFoundation (2.49.0)
   - PrimerIPay88MYSDK (0.1.7)
-  - PrimerKlarnaSDK (1.3.1)
+  - PrimerKlarnaSDK (1.4.0)
+  - PrimerNetworking (2.49.0):
+    - PrimerFoundation (= 2.49.0)
   - PrimerNolPaySDK (1.0.1)
-  - PrimerSDK (3.0.0-b0):
-    - PrimerSDK/Core (= 3.0.0-b0)
-  - PrimerSDK/Core (3.0.0-b0):
-    - PrimerBDCCore (= 3.0.0-b0)
-    - PrimerBDCEngine (= 3.0.0-b0)
-    - PrimerFoundation (= 3.0.0-b0)
-    - PrimerStepResolver (= 3.0.0-b0)
-  - PrimerStepResolver (3.0.0-b0):
-    - PrimerFoundation (= 3.0.0-b0)
+  - PrimerResources (2.49.0)
+  - PrimerSDK (2.49.0):
+    - PrimerSDK/Core (= 2.49.0)
+  - PrimerSDK/Core (2.49.0):
+    - PrimerBDCCore (= 2.49.0)
+    - PrimerBDCEngine (= 2.49.0)
+    - PrimerCore (= 2.49.0)
+    - PrimerFoundation (= 2.49.0)
+    - PrimerNetworking (= 2.49.0)
+    - PrimerResources (= 2.49.0)
+    - PrimerStepResolver (= 2.49.0)
+  - PrimerStepResolver (2.49.0):
+    - PrimerFoundation (= 2.49.0)
   - PrimerStripeSDK (1.0.1)
 
 DEPENDENCIES:
@@ -65,10 +76,13 @@ DEPENDENCIES:
   - Primer3DS
   - PrimerBDCCore (from `../`)
   - PrimerBDCEngine (from `../`)
+  - PrimerCore (from `../`)
   - PrimerFoundation (from `../`)
   - PrimerIPay88MYSDK
   - PrimerKlarnaSDK
+  - PrimerNetworking (from `../`)
   - PrimerNolPaySDK
+  - PrimerResources (from `../`)
   - PrimerSDK (from `../`)
   - PrimerStepResolver (from `../`)
   - PrimerStripeSDK
@@ -94,7 +108,13 @@ EXTERNAL SOURCES:
     :path: "../"
   PrimerBDCEngine:
     :path: "../"
+  PrimerCore:
+    :path: "../"
   PrimerFoundation:
+    :path: "../"
+  PrimerNetworking:
+    :path: "../"
+  PrimerResources:
     :path: "../"
   PrimerSDK:
     :path: "../"
@@ -102,25 +122,28 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  IQKeyboardCore: 8652977ec919cf5351aa2977fedd1a6546476fbc
-  IQKeyboardManagerSwift: 835fc9c6e4732398113406d84900ad2e8f141218
-  IQKeyboardNotification: eb4910401f5a0e68f97e71c62f8a0c5b7e9d535c
+  IQKeyboardCore: 250a88dfc713b2ecbe1dce250811d054fc016959
+  IQKeyboardManagerSwift: 7f6a9a1e2285732d3ff5f485ff921215253ea77e
+  IQKeyboardNotification: 3b9bc812a5af2cf97df08a363d9daa9fc0dc1848
   IQKeyboardReturnManager: fcbf51fc68d7536fc1fbcca5231c4e82576b12ac
-  IQKeyboardToolbar: 9fe900f8e7def414be4025af0ca098df764d4fe3
+  IQKeyboardToolbar: 8e3c1360d11f9edb16a64494761674eccb053fe9
   IQKeyboardToolbarManager: d449479b5843d4a3fb902d03bf62d6ca031ac20e
   IQTextInputViewNotification: 3b9fb27a16e7ee8958cc9092cfb07a1a9e1fd559
   IQTextView: ae13b4922f22e6f027f62c557d9f4f236b19d5c7
   Primer3DS: b8b583ef260f703180870358bc55069de74f8f51
-  PrimerBDCCore: c605ac8752627ec45e319fabc54dcdf5dd6b1df2
-  PrimerBDCEngine: 987ae084a2d02f41b73ac869c3b342833ca918c8
-  PrimerFoundation: 85277369f88e839c9ec483fd5fa46249aab64fe7
+  PrimerBDCCore: c12a1c92a45895a0e628beb2ae380f0b17fd4117
+  PrimerBDCEngine: 326fa95c79ee94706619bebeb257fdbb8f3918bf
+  PrimerCore: fb32ea396861120d5b6e07174598fda652b03ac1
+  PrimerFoundation: 879930406228bfc7dbc60e3449ba0b5295e834d3
   PrimerIPay88MYSDK: 436ee0be7e2c97e4e81456ccddee20175e9e3c4d
-  PrimerKlarnaSDK: 104962584ac6baad20424f73ee8493c8503fd487
+  PrimerKlarnaSDK: 871d684b3a43d1f0f7cd5c3b19a6f3a23e581d49
+  PrimerNetworking: b04c5f3c91e07fb02e273460262a67604e4699e2
   PrimerNolPaySDK: 08b140ed39b378a0b33b4f8746544a402175c0cc
-  PrimerSDK: 79625a1f2f5852970c8fd05c96358932c2163811
-  PrimerStepResolver: c2e1cc4fa8602d55122a61c7f1be227bbdbfdb13
+  PrimerResources: c75c20efb63adcd16a40bedde9059ae00a0e0733
+  PrimerSDK: 4dcdabaf7952ae71d6015c04770d4cd37ba925dc
+  PrimerStepResolver: f1a49765775fa945d20fb868b0f750a7dd5bb53b
   PrimerStripeSDK: dce5e37d10223ee724f33d1cdeaa17235a71ddbb
 
-PODFILE CHECKSUM: b8e7ac67d7c58bd5df400fbd39c0740865fb3ccd
+PODFILE CHECKSUM: 117643bca330d62ae491279b4af809375bd85c79
 
 COCOAPODS: 1.16.2

@@ -22,7 +22,7 @@ jobs:
           - '26.2'
     steps:
       - name: Git - Checkout
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           ref: ${{ github.ref }}
       - name: Select Xcode Version
@@ -38,12 +38,12 @@ jobs:
       - uses: webfactory/ssh-agent@e83874834305fe9a4a2997156cb26c5de65a8555 # v0.10.0
         with:
           ssh-private-key: ${{ secrets.SSH_KEY }}
-      - uses: ruby/setup-ruby@c4e5b1316158f92e3d49443a9d58b31d25ac0f8f  # v1.306.0
+      - uses: ruby/setup-ruby@afeafc3d1ab54a631816aba4c914a0081c12ff2f  # v1.310.0
         with:
           ruby-version: "3.2"
           bundler-cache: true
       - name: Setup node
-        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f #v6.3.0
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e #v6.4.0
         with:
           node-version: 18.3.0
       - run: npm install --save slack-message-builder
@@ -77,7 +77,7 @@ jobs:
           node Report\ Scripts/multixcode-failure-report.js createMultiXcodeFailureReport ${{ github.head_ref || github.ref_name }} ${{ matrix.xcode}} ${{ matrix.variant }}
       - name: Slack Notification
         if: ${{ failure() }}
-        uses: slackapi/slack-github-action@03ea5433c137af7c0495bc0cad1af10403fc800c #v3.0.2
+        uses: slackapi/slack-github-action@45a88b9581bfab2566dc881e2cd66d334e621e2c #v3.0.3
         with:
           channel-id: ${{ secrets.SLACK_MOBILE_SDK_CHANNEL }}
           payload-file-path: '/var/tmp/multixcode-failure-report.json'
@@ -89,11 +89,11 @@ jobs:
     runs-on: macos-26
     steps:
       - name: Git - Checkout
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           ref: ${{ github.ref }}
       - name: Setup node
-        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f #v6.3.0
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e #v6.4.0
         with:
           node-version: 18.3.0
       - run: npm install --save slack-message-builder
@@ -103,7 +103,7 @@ jobs:
           node Report\ Scripts/multixcode-success-report.js createMultiXcodeSummaryReport ${{ github.head_ref || github.ref_name }} "14.3.1, 14.2, 14.1" "cocoapods, spm"
       - name: Slack Notification
         if: ${{ success() }}
-        uses: slackapi/slack-github-action@03ea5433c137af7c0495bc0cad1af10403fc800c #v3.0.2
+        uses: slackapi/slack-github-action@45a88b9581bfab2566dc881e2cd66d334e621e2c #v3.0.3
         with:
           channel-id: ${{ secrets.SLACK_MOBILE_SDK_CHANNEL }}
           payload-file-path: '/var/tmp/multixcode-success-summary.json'

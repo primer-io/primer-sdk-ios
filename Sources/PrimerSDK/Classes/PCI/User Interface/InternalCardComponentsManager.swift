@@ -9,7 +9,10 @@
 // swiftlint:disable type_body_length
 // swiftlint:disable large_tuple
 
+@_spi(PrimerInternal) import PrimerFoundation
 import UIKit
+@_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerNetworking
 
 @objc
 protocol InternalCardComponentsManagerDelegate {
@@ -195,9 +198,9 @@ final class InternalCardComponentsManager: NSObject, InternalCardComponentsManag
 
         if expiryDateField.expiryMonth == nil || expiryDateField.expiryYear == nil {
             let message = """
-Expiry date is not valid. Valid expiry date format is 2 characters for expiry month\
-and 4 characters for expiry year separated by '/'.
-"""
+            Expiry date is not valid. Valid expiry date format is 2 characters for expiry month\
+            and 4 characters for expiry year separated by '/'.
+            """
             errors.append(PrimerValidationError.invalidExpiryDate(message: message))
         }
 

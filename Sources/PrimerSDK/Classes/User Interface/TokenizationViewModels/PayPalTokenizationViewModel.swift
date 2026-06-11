@@ -11,6 +11,8 @@
 import AuthenticationServices
 import SafariServices
 import UIKit
+@_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerNetworking
 
 final class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
 

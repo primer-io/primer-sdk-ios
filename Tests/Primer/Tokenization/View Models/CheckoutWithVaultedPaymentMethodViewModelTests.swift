@@ -1,11 +1,13 @@
 //
 //  CheckoutWithVaultedPaymentMethodViewModelTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+import PrimerFoundation
 @testable import PrimerSDK
 import XCTest
+@_spi(PrimerInternal) @testable import PrimerNetworking
 
 final class CheckoutWithVaultedPaymentMethodViewModelTests: XCTestCase {
     // MARK: - Test Dependencies
@@ -35,26 +37,32 @@ final class CheckoutWithVaultedPaymentMethodViewModelTests: XCTestCase {
         paymentId: "payment_id",
         amount: 123,
         currencyCode: "GBP",
-        customer: .init(firstName: "first_name",
-                        lastName: "last_name",
-                        emailAddress: "email_address",
-                        mobileNumber: "+44(0)7891234567",
-                        billingAddress: .init(firstName: "billing_first_name",
-                                              lastName: "billing_last_name",
-                                              addressLine1: "billing_line_1",
-                                              addressLine2: "billing_line_2",
-                                              city: "billing_city",
-                                              state: "billing_state",
-                                              countryCode: "billing_country_code",
-                                              postalCode: "billing_postal_code"),
-                        shippingAddress: .init(firstName: "shipping_first_name",
-                                               lastName: "shipping_last_name",
-                                               addressLine1: "shipping_line_1",
-                                               addressLine2: "shipping_line_2",
-                                               city: "shipping_city",
-                                               state: "shipping_state",
-                                               countryCode: "shipping_country_code",
-                                               postalCode: "shipping_postal_code")),
+        customer: .init(
+            firstName: "first_name",
+            lastName: "last_name",
+            emailAddress: "email_address",
+            mobileNumber: "+44(0)7891234567",
+            billingAddress: .init(
+                firstName: "billing_first_name",
+                lastName: "billing_last_name",
+                addressLine1: "billing_line_1",
+                addressLine2: "billing_line_2",
+                city: "billing_city",
+                state: "billing_state",
+                countryCode: "billing_country_code",
+                postalCode: "billing_postal_code"
+            ),
+            shippingAddress: .init(
+                firstName: "shipping_first_name",
+                lastName: "shipping_last_name",
+                addressLine1: "shipping_line_1",
+                addressLine2: "shipping_line_2",
+                city: "shipping_city",
+                state: "shipping_state",
+                countryCode: "shipping_country_code",
+                postalCode: "shipping_postal_code"
+            )
+        ),
         customerId: "customer_id",
         orderId: "order_id",
         status: .success
@@ -87,14 +95,14 @@ final class CheckoutWithVaultedPaymentMethodViewModelTests: XCTestCase {
         let delegate = MockPrimerHeadlessUniversalCheckoutDelegate()
         PrimerHeadlessUniversalCheckout.current.delegate = delegate
 
-        let expectWillCreatePaymentWithData = self.expectation(description: "payment data creation requested")
+        let expectWillCreatePaymentWithData = expectation(description: "payment data creation requested")
         delegate.onWillCreatePaymentWithData = { data, decision in
             XCTAssertEqual(data.paymentMethodType.type, "PAYMENT_CARD")
             decision(.abortPaymentCreation())
             expectWillCreatePaymentWithData.fulfill()
         }
 
-        let expectDidFail = self.expectation(description: "flow fails with error")
+        let expectDidFail = expectation(description: "flow fails with error")
         delegate.onDidFail = { error in
             switch error {
             case PrimerError.merchantError:
@@ -107,11 +115,13 @@ final class CheckoutWithVaultedPaymentMethodViewModelTests: XCTestCase {
 
         try await sut.start()
 
-        await fulfillment(of: [
-            expectWillCreatePaymentWithData,
-            expectDidFail
-        ],
-        timeout: 5.0)
+        await fulfillment(
+            of: [
+                expectWillCreatePaymentWithData,
+                expectDidFail
+            ],
+            timeout: 5.0
+        )
     }
 
     func test_startFlow_fullCheckout_shouldCompleteSuccessfully() async throws {
@@ -123,27 +133,27 @@ final class CheckoutWithVaultedPaymentMethodViewModelTests: XCTestCase {
         PrimerAPIConfigurationModule.apiClient = apiClient
         apiClient.fetchConfigurationWithActionsResult = (PrimerAPIConfiguration.current, nil)
 
-        let expectWillCreatePaymentWithData = self.expectation(description: "payment data creation requested")
+        let expectWillCreatePaymentWithData = expectation(description: "payment data creation requested")
         delegate.onWillCreatePaymentWithData = { data, decision in
             XCTAssertEqual(data.paymentMethodType.type, "PAYMENT_CARD")
             decision(.continuePaymentCreation())
             expectWillCreatePaymentWithData.fulfill()
         }
 
-        let expectDidExchangeToken = self.expectation(description: "payment method token exchanged")
+        let expectDidExchangeToken = expectation(description: "payment method token exchanged")
         tokenizationService.onExchangePaymentMethodToken = { tokenId, _ in
             XCTAssertEqual(tokenId, "mock_payment_method_token_data_id")
             expectDidExchangeToken.fulfill()
             return Result.success(self.tokenizationResponseBody)
         }
 
-        let expectDidCreatePayment = self.expectation(description: "payment created")
+        let expectDidCreatePayment = expectation(description: "payment created")
         createResumePaymentService.onCreatePayment = { _ in
             expectDidCreatePayment.fulfill()
             return self.paymentResponseBody
         }
 
-        let expectDidCompleteCheckoutWithData = self.expectation(description: "checkout completes successfully")
+        let expectDidCompleteCheckoutWithData = expectation(description: "checkout completes successfully")
         delegate.onDidCompleteCheckoutWithData = { data in
             XCTAssertEqual(data.payment?.id, "id")
             XCTAssertEqual(data.payment?.orderId, "order_id")

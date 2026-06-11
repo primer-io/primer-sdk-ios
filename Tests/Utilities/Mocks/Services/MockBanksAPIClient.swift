@@ -1,10 +1,12 @@
 //
 //  MockBanksAPIClient.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+import PrimerFoundation
 @testable import PrimerSDK
+@_spi(PrimerInternal) import PrimerNetworking
 
 final class MockBanksAPIClient: PrimerAPIClientBanksProtocol {
 
@@ -12,15 +14,15 @@ final class MockBanksAPIClient: PrimerAPIClientBanksProtocol {
 
     var error: Error?
 
-    func listAdyenBanks(clientToken: PrimerSDK.DecodedJWTToken, request: Request.Body.Adyen.BanksList, completion: @escaping PrimerSDK.APICompletion<BanksListSessionResponse>) {
-        if let error = error {
+    func listAdyenBanks(clientToken: DecodedJWTToken, request: Request.Body.Adyen.BanksList, completion: @escaping PrimerSDK.APICompletion<BanksListSessionResponse>) {
+        if let error {
             completion(.failure(error))
-        } else if let result = result {
+        } else if let result {
             completion(.success(result))
         }
     }
 
-    func listAdyenBanks(clientToken: PrimerSDK.DecodedJWTToken, request: Request.Body.Adyen.BanksList) async throws -> BanksListSessionResponse {
+    func listAdyenBanks(clientToken: DecodedJWTToken, request: Request.Body.Adyen.BanksList) async throws -> BanksListSessionResponse {
         if let error { throw error }
         if let result { return result }
         throw PrimerError.unknown()

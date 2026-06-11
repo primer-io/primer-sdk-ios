@@ -1,25 +1,27 @@
 //
 //  PrimerRawOTPDataTokenizationBuilder.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable function_body_length
 
 import Foundation
+@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerNetworking
 
 final class PrimerRawOTPDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProtocol {
 
     var rawData: PrimerRawData? {
         didSet {
-            if let rawOTPInput = self.rawData as? PrimerOTPData {
+            if let rawOTPInput = rawData as? PrimerOTPData {
                 rawOTPInput.onDataDidChange = { [weak self] in
-                    guard let self = self else { return }
+                    guard let self else { return }
                     Task { try? await self.validateRawData(rawOTPInput) }
                 }
             }
 
-            if let rawData = self.rawData {
+            if let rawData {
                 Task { try? await self.validateRawData(rawData) }
             }
         }

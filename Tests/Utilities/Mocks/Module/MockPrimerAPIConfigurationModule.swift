@@ -1,11 +1,12 @@
 //
 //  MockPrimerAPIConfigurationModule.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 @testable import PrimerSDK
 import XCTest
+@_spi(PrimerInternal) import PrimerNetworking
 
 final class MockPrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol {
     static var apiClient: PrimerAPIClientProtocol?
@@ -49,7 +50,7 @@ final class MockPrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoc
     }
 
     func updateSession(withActions actionsRequest: ClientSessionUpdateRequest) async throws {
-        guard let mockedAPIConfiguration = mockedAPIConfiguration else {
+        guard let mockedAPIConfiguration else {
             XCTAssert(false, "Set 'mockedAPIConfiguration' on your MockPrimerAPIConfigurationModule")
             return
         }

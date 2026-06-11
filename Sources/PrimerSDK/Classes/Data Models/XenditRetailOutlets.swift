@@ -1,13 +1,14 @@
 //
 //  XenditRetailOutlets.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+import PrimerFoundation
 
 // swiftlint:disable:next type_name
-internal struct RetailOutletTokenizationSessionRequestParameters: OffSessionPaymentSessionInfo {
+struct RetailOutletTokenizationSessionRequestParameters: OffSessionPaymentSessionInfo {
     let locale: String = PrimerSettings.current.localeData.localeCode
     let platform: String = "IOS"
     let retailOutlet: String
@@ -32,7 +33,7 @@ internal struct RetailOutletTokenizationSessionRequestParameters: OffSessionPaym
         super.init()
     }
 
-    public override func encode(to encoder: Encoder) throws {
+    override public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(result, forKey: .result)
     }

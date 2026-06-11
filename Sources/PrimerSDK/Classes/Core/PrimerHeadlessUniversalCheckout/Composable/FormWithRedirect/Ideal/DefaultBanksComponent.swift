@@ -5,6 +5,8 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerCore
 
 final class DefaultBanksComponent: BanksComponent {
 
@@ -20,9 +22,11 @@ final class DefaultBanksComponent: BanksComponent {
     private let onFinished: () -> WebRedirectComponent
     private let tokenizationProvidingModel: BankSelectorTokenizationProviding
 
-    init(paymentMethodType: PrimerPaymentMethodType,
-         tokenizationProvidingModel: BankSelectorTokenizationProviding,
-         onFinished: @escaping () -> WebRedirectComponent) {
+    init(
+        paymentMethodType: PrimerPaymentMethodType,
+        tokenizationProvidingModel: BankSelectorTokenizationProviding,
+        onFinished: @escaping () -> WebRedirectComponent
+    ) {
         self.paymentMethodType = paymentMethodType
         self.tokenizationProvidingModel = tokenizationProvidingModel
         self.onFinished = onFinished
@@ -88,7 +92,7 @@ final class DefaultBanksComponent: BanksComponent {
         switch nextDataStep {
         case .loading: break
         case .banksRetrieved:
-            guard let bankId = self.bankId else { return }
+            guard let bankId else { return }
             let redirectComponent = onFinished()
             redirectComponent.start()
 

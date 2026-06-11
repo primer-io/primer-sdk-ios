@@ -5,6 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+@_spi(PrimerInternal) import PrimerFoundation
 import UIKit
 
 extension PrimerTheme {
@@ -81,7 +82,8 @@ final class PrimerPaymentMethod: Codable, LogReporter {
 
         } else if implementationType == .iPay88Sdk {
             return IPay88TokenizationViewModel(config: self, apiClient: apiClient)
-
+        } else if implementationType == .backendDriven {
+            return BackendDrivenCheckoutViewModel(config: self, apiClient: apiClient)
         } else if let internalPaymentMethodType {
             switch internalPaymentMethodType {
             case PrimerPaymentMethodType.adyenBlik,
@@ -184,6 +186,10 @@ final class PrimerPaymentMethod: Codable, LogReporter {
             return true
         }
     }
+    
+    var isBackendDriven: Bool {
+        implementationType == .backendDriven || (capabilities?.contains(.backendDriven) ?? false)
+    }
 
     lazy var isEnabled: Bool = {
         if !implementationType.isEnabled { return false }
@@ -202,7 +208,7 @@ final class PrimerPaymentMethod: Codable, LogReporter {
     lazy var paymentMethodManagerCategories: [PrimerPaymentMethodManagerCategory]? = {
         var categories: [PrimerPaymentMethodManagerCategory] = []
 
-        if implementationType == .webRedirect || implementationType == .iPay88Sdk {
+        if [.webRedirect, .iPay88Sdk, .backendDriven].contains(implementationType) {
             categories.append(PrimerPaymentMethodManagerCategory.nativeUI)
             return categories
         }
@@ -342,6 +348,7 @@ extension PrimerPaymentMethod {
         case webRedirect    = "WEB_REDIRECT"
         case iPay88Sdk      = "IPAY88_SDK"
         case formWithRedirect = "FORM_WITH_REDIRECT"
+        case backendDriven  = "BACKEND_DRIVEN"
 
         var isEnabled: Bool {
             true

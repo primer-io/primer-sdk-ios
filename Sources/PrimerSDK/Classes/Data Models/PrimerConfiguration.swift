@@ -8,9 +8,13 @@
 
 import Foundation
 import PassKit
+@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerNetworking
 
 typealias PrimerAPIConfiguration = Response.Body.Configuration
 
+// swiftlint:disable file_length
 extension Request.URLParameters {
 
     final class Configuration: Codable {
@@ -89,16 +93,16 @@ extension Response.Body {
 
         var hasSurchargeEnabled: Bool {
             let pmSurcharge = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.paymentMethod?.options?
-                .first(where: { $0["surcharge"] is Int })
+                .first(where: { $0["surcharge"] as? Int != nil })
 
             let options = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.paymentMethod?.options
             let cardSurcharge = options?
                 .first(where: {
                     (
                         ($0["networks"] as? [[String: Any]])?
-                        .first(where: {
-                            $0["surcharge"] as? Int != nil
-                        })
+                            .first(where: {
+                                $0["surcharge"] as? Int != nil
+                            })
                     ) != nil
                 })
             return pmSurcharge != nil || cardSurcharge != nil
@@ -119,42 +123,42 @@ extension Response.Body {
             }
 
             #if !canImport(PrimerKlarnaSDK)
-            if let klarnaViewModelIndex = viewModels.firstIndex(where: { $0.config.type == PrimerPaymentMethodType.klarna.rawValue }) {
-                viewModels.remove(at: klarnaViewModelIndex)
-                let message =
-                    """
-Klarna configuration has been found but module 'PrimerKlarnaSDK' is missing. \
-Add `PrimerKlarnaSDK' in your project by adding \"pod 'PrimerKlarnaSDK'\" in your Podfile, \
-or by adding \"primer-klarna-sdk-ios\" in your Swift Package Manager.
-"""
-                logger.warn(message: message)
+                if let klarnaViewModelIndex = viewModels.firstIndex(where: { $0.config.type == PrimerPaymentMethodType.klarna.rawValue }) {
+                    viewModels.remove(at: klarnaViewModelIndex)
+                    let message =
+                        """
+                        Klarna configuration has been found but module 'PrimerKlarnaSDK' is missing. \
+                        Add `PrimerKlarnaSDK' in your project by adding \"pod 'PrimerKlarnaSDK'\" in your Podfile, \
+                        or by adding \"primer-klarna-sdk-ios\" in your Swift Package Manager.
+                        """
+                    logger.warn(message: message)
 
-                let event = Analytics.Event.message(
-                    message: "PrimerKlarnaSDK has not been integrated",
-                    messageType: .error,
-                    severity: .error
-                )
-                Analytics.Service.fire(events: [event])
-            }
+                    let event = Analytics.Event.message(
+                        message: "PrimerKlarnaSDK has not been integrated",
+                        messageType: .error,
+                        severity: .error
+                    )
+                    Analytics.Service.fire(events: [event])
+                }
             #endif
 
             #if !canImport(PrimerIPay88MYSDK)
-            if let iPay88ViewModelIndex = viewModels.firstIndex(where: { $0.config.type == PrimerPaymentMethodType.iPay88Card.rawValue }) {
-                viewModels.remove(at: iPay88ViewModelIndex)
-                let message =
-                    """
-iPay88 configuration has been found but module 'PrimerIPay88SDK' is missing. \
-Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in your Podfile.
-"""
-                logger.warn(message: message)
+                if let iPay88ViewModelIndex = viewModels.firstIndex(where: { $0.config.type == PrimerPaymentMethodType.iPay88Card.rawValue }) {
+                    viewModels.remove(at: iPay88ViewModelIndex)
+                    let message =
+                        """
+                        iPay88 configuration has been found but module 'PrimerIPay88SDK' is missing. \
+                        Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in your Podfile.
+                        """
+                    logger.warn(message: message)
 
-                let event = Analytics.Event.message(
-                    message: "PrimerIPay88MYSDK has not been integrated",
-                    messageType: .error,
-                    severity: .error
-                )
-                Analytics.Service.fire(events: [event])
-            }
+                    let event = Analytics.Event.message(
+                        message: "PrimerIPay88MYSDK has not been integrated",
+                        messageType: .error,
+                        severity: .error
+                    )
+                    Analytics.Service.fire(events: [event])
+                }
             #endif
 
             var validViewModels: [PaymentMethodTokenizationViewModelProtocol] = []
@@ -354,8 +358,10 @@ extension Response.Body.Configuration {
                 cardHolderName = (try? container.decode(Bool?.self, forKey: .cardHolderName)) ?? nil
                 saveCardCheckbox = (try? container.decode(Bool?.self, forKey: .saveCardCheckbox)) ?? nil
 
+                // Signals "not this module type" to the polymorphic decode in CheckoutModule.init(from:),
+                // where it is caught by `try?`. It is expected control flow, so it must not be logged.
                 if cardHolderName == nil, saveCardCheckbox == nil {
-                    throw handled(error: InternalError.failedToDecode(message: "All fields are nil"))
+                    throw InternalError.failedToDecode(message: "All fields are nil")
                 }
             }
         }
@@ -430,16 +436,18 @@ extension Response.Body.Configuration {
                 phoneNumber = (try? container.decode(Bool?.self, forKey: .phoneNumber)) ?? nil
                 state = (try? container.decode(Bool?.self, forKey: .state)) ?? nil
 
+                // Signals "not this module type" to the polymorphic decode in CheckoutModule.init(from:),
+                // where it is caught by `try?`. It is expected control flow, so it must not be logged.
                 if firstName == nil,
-                    lastName == nil,
-                    city == nil,
-                    postalCode == nil,
-                    addressLine1 == nil,
-                    addressLine2 == nil,
-                    countryCode == nil,
-                    phoneNumber == nil,
-                    state == nil {
-                    throw handled(error: InternalError.failedToDecode(message: "All fields are nil"))
+                   lastName == nil,
+                   city == nil,
+                   postalCode == nil,
+                   addressLine1 == nil,
+                   addressLine2 == nil,
+                   countryCode == nil,
+                   phoneNumber == nil,
+                   state == nil {
+                    throw InternalError.failedToDecode(message: "All fields are nil")
                 }
             }
         }

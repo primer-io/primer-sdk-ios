@@ -1,10 +1,11 @@
 //
 //  PrimerNavigationBar.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import UIKit
+@_spi(PrimerInternal) import PrimerCore
 
 final class PrimerNavigationBar: PrimerView {
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
@@ -28,7 +29,7 @@ final class PrimerNavigationBar: PrimerView {
                 view.removeFromSuperview()
             }
 
-            if let rightBarButton = rightBarButton {
+            if let rightBarButton {
                 rightView.addSubview(rightBarButton)
                 rightBarButton.translatesAutoresizingMaskIntoConstraints = false
                 NSLayoutConstraint.activate([
@@ -51,7 +52,7 @@ final class PrimerNavigationBar: PrimerView {
                 view.removeFromSuperview()
             }
 
-            if let leftBarButton = leftBarButton {
+            if let leftBarButton {
                 leftView.addSubview(leftBarButton)
                 leftBarButton.translatesAutoresizingMaskIntoConstraints = false
                 NSLayoutConstraint.activate([
@@ -190,7 +191,7 @@ extension PrimerNavigationBar {
 
     private func renderImageViewIfNeeded() {
 
-        guard let titleImage = titleImage else {
+        guard let titleImage else {
             return
         }
 
@@ -204,7 +205,7 @@ extension PrimerNavigationBar {
 
     private func renderTitleLabelIfNeeded() {
 
-        guard let title = title else {
+        guard let title else {
             return
         }
 

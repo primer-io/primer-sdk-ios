@@ -1,10 +1,13 @@
 //
 //  PrimerHeadlessRedirectComponent.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerCore
+
 protocol PrimerHeadlessRedirectComponent: PrimerHeadlessStartable {}
 final class WebRedirectComponent: PrimerHeadlessRedirectComponent {
     let paymentMethodType: PrimerPaymentMethodType
@@ -16,7 +19,7 @@ final class WebRedirectComponent: PrimerHeadlessRedirectComponent {
     init(paymentMethodType: PrimerPaymentMethodType, tokenizationModelDelegate: WebRedirectTokenizationDelegate) {
         self.paymentMethodType = paymentMethodType
         self.tokenizationModelDelegate = tokenizationModelDelegate
-        self.stepDelegate = self
+        stepDelegate = self
         self.tokenizationModelDelegate.didPresentPaymentMethodUI = {
             self.step = .loaded
             self.stepDelegate?.didReceiveStep(step: self.step)
@@ -34,7 +37,7 @@ final class WebRedirectComponent: PrimerHeadlessRedirectComponent {
 
     func start() {
         step = .loading
-        self.stepDelegate?.didReceiveStep(step: self.step)
+        stepDelegate?.didReceiveStep(step: step)
     }
 }
 
@@ -52,9 +55,11 @@ extension WebRedirectComponent: LogReporter {
     func logStep() {
         let logMessage = step.logMessage(paymentMethodType: paymentMethodType.rawValue)
         logger.info(message: logMessage)
-        let stepEvent = Analytics.Event.message(message: logMessage,
-                                                messageType: .info,
-                                                severity: .info)
+        let stepEvent = Analytics.Event.message(
+            message: logMessage,
+            messageType: .info,
+            severity: .info
+        )
         Analytics.Service.fire(events: [stepEvent])
     }
 }
@@ -62,11 +67,11 @@ extension WebRedirectComponent: LogReporter {
 extension WebStep {
     func logMessage(paymentMethodType: String) -> String {
         switch self {
-        case .loading: return "Web redirect is loading for '\(paymentMethodType)'"
-        case .loaded: return "Web redirect has loaded for '\(paymentMethodType)'"
-        case .dismissed: return "Payment for '\(paymentMethodType)' was dismissed by user"
-        case .success: return "Payment for '\(paymentMethodType)' was successfull"
-        case .failure: return "Payment for '\(paymentMethodType)' was not successfull"
+        case .loading: "Web redirect is loading for '\(paymentMethodType)'"
+        case .loaded: "Web redirect has loaded for '\(paymentMethodType)'"
+        case .dismissed: "Payment for '\(paymentMethodType)' was dismissed by user"
+        case .success: "Payment for '\(paymentMethodType)' was successfull"
+        case .failure: "Payment for '\(paymentMethodType)' was not successfull"
         }
     }
 }

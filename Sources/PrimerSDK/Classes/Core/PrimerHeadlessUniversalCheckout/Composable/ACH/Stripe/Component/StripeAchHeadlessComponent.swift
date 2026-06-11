@@ -1,10 +1,12 @@
 //
 //  StripeAchHeadlessComponent.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+import PrimerFoundation
 import UIKit
+@_spi(PrimerInternal) import PrimerCore
 
 final class StripeAchHeadlessComponent {
     // MARK: - Tokenization
@@ -23,7 +25,7 @@ final class StripeAchHeadlessComponent {
     // MARK: - Init
     init(tokenizationViewModel: StripeAchTokenizationViewModel) {
         self.tokenizationViewModel = tokenizationViewModel
-        self.clientSessionService = ACHClientSessionService()
+        clientSessionService = ACHClientSessionService()
     }
 
     func setDelegate() {}

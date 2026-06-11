@@ -16,20 +16,26 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/primer-io/primer-stripe-sdk-ios", from: "1.0.0"),
-        .package(path: "Packages/PrimerBDCCore"),
-        .package(path: "Packages/PrimerBDCEngine"),
-        .package(path: "Packages/PrimerFoundation"),
-        .package(path: "Packages/PrimerStepResolver")
     ],
     targets: [
+        packageTarget(name: "PrimerFoundation"),
+        packageTarget(name: "PrimerStepResolver", dependencies: ["PrimerFoundation"]),
+        packageTarget(name: "PrimerBDCEngine", dependencies: ["PrimerFoundation", "PrimerStepResolver"]),
+        packageTarget(name: "PrimerBDCCore", dependencies: ["PrimerBDCEngine", "PrimerFoundation", "PrimerStepResolver"]),
+        packageTarget(name: "PrimerCore", dependencies: ["PrimerFoundation"]),
+        packageTarget(name: "PrimerNetworking", dependencies: ["PrimerFoundation"]),
+        packageTarget(name: "PrimerResources", resources: [.process("PrimerResources/Resources")]),
         .target(
             name: "PrimerSDK",
             dependencies: [
                 .product(name: "PrimerStripeSDK", package: "primer-stripe-sdk-ios"),
-                .product(name: "PrimerBDCCore", package: "PrimerBDCCore"),
-                .product(name: "PrimerBDCEngine", package: "PrimerBDCEngine"),
-                .product(name: "PrimerFoundation", package: "PrimerFoundation"),
-                .product(name: "PrimerStepResolver", package: "PrimerStepResolver")
+                "PrimerBDCCore",
+                "PrimerBDCEngine",
+                "PrimerFoundation",
+                "PrimerStepResolver",
+                "PrimerCore",
+                "PrimerNetworking",
+                "PrimerResources"
             ],
             path: "Sources/PrimerSDK",
             resources: [
@@ -51,3 +57,11 @@ let package = Package(
     ],
     swiftLanguageVersions: [.v5]
 )
+
+private func packageTarget(name: String, dependencies: [Target.Dependency] = [], resources: [Resource] = []) -> Target {
+    .target(name: name, dependencies: dependencies, path: "Modules/\(name)/Sources", resources: resources)
+}
+
+private func packageTestTarget(name: String, dependencies: [Target.Dependency]) -> Target {
+    .testTarget(name: "\(name)Tests", dependencies: dependencies, path: "Modules/\(name)/Tests/\(name)Tests")
+}

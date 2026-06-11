@@ -1,26 +1,28 @@
 //
 //  PrimerNibView.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import UIKit
+@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerResources
 
 public class PrimerNibView: UIView {
 
-    internal var view: UIView!
+    var view: UIView!
 
-    override internal init(frame: CGRect) {
+    override init(frame: CGRect) {
         super.init(frame: frame)
         xibSetup()
     }
 
-    required internal init?(coder aDecoder: NSCoder) {
+    required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         xibSetup()
     }
 
-    internal func xibSetup() {
+    func xibSetup() {
         backgroundColor = UIColor.clear
         view = loadNib()
         // use bounds not frame or it'll be offset
@@ -29,14 +31,18 @@ public class PrimerNibView: UIView {
         addSubview(view)
 
         view.translatesAutoresizingMaskIntoConstraints = false
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[childView]|",
-                                                      options: [],
-                                                      metrics: nil,
-                                                      views: ["childView": view as UIView]))
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[childView]|",
-                                                      options: [],
-                                                      metrics: nil,
-                                                      views: ["childView": view as UIView]))
+        addConstraints(NSLayoutConstraint.constraints(
+            withVisualFormat: "H:|[childView]|",
+            options: [],
+            metrics: nil,
+            views: ["childView": view as UIView]
+        ))
+        addConstraints(NSLayoutConstraint.constraints(
+            withVisualFormat: "V:|[childView]|",
+            options: [],
+            metrics: nil,
+            views: ["childView": view as UIView]
+        ))
     }
 
     /** Loads instance from nib with the same name. */

@@ -1,12 +1,14 @@
 //
 //  ImageManager.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable function_body_length
 
+@_spi(PrimerInternal) import PrimerFoundation
 import UIKit
+@_spi(PrimerInternal) import PrimerCore
 
 // MARK: MISSING_TESTS
 final class ImageFile: File {
@@ -19,7 +21,7 @@ final class ImageFile: File {
         tmpFileName = tmpFileName.replacingOccurrences(of: "-light", with: "")
         tmpFileName = tmpFileName.uppercased().replacingOccurrences(of: "-", with: "_")
 
-        let paymentMethodTypeRawValues = PrimerPaymentMethodType.allCases.compactMap({ $0.rawValue })
+        let paymentMethodTypeRawValues = PrimerPaymentMethodType.allCases.compactMap(\.rawValue)
         let results = paymentMethodTypeRawValues.filter({ $0 == tmpFileName })
 
         if results.isEmpty {
@@ -43,14 +45,18 @@ final class ImageFile: File {
         } else if supportedPaymentMethodType.provider == paymentMethodType {
             tmpPaymentMethodFileNameFirstComponent = paymentMethodType
         } else if paymentMethodType.starts(with: "\(supportedPaymentMethodType.provider)_") {
-            tmpPaymentMethodFileNameFirstComponent = paymentMethodType.replacingOccurrences(of: "\(supportedPaymentMethodType.provider)_",
-                                                                                            with: "")
+            tmpPaymentMethodFileNameFirstComponent = paymentMethodType.replacingOccurrences(
+                of: "\(supportedPaymentMethodType.provider)_",
+                with: ""
+            )
         } else {
             return nil
         }
 
-        tmpPaymentMethodFileNameFirstComponent = tmpPaymentMethodFileNameFirstComponent!.lowercased().replacingOccurrences(of: "_",
-                                                                                                                           with: "-")
+        tmpPaymentMethodFileNameFirstComponent = tmpPaymentMethodFileNameFirstComponent!.lowercased().replacingOccurrences(
+            of: "_",
+            with: "-"
+        )
 
         switch assetType {
         case .logo:
@@ -61,36 +67,42 @@ final class ImageFile: File {
     }
 
     var cachedImage: UIImage? {
-        guard let data = self.data, let image = UIImage(data: data, scale: 2.0) else { return nil }
+        guard let data, let image = UIImage(data: data, scale: 2.0) else { return nil }
         return image
     }
 
     var bundledImage: UIImage? {
-        let paymentMethodType = ImageFile.getPaymentMethodType(fromFileName: self.fileName) ?? self.fileName
+        let paymentMethodType = ImageFile.getPaymentMethodType(fromFileName: fileName) ?? fileName
 
-        if self.fileName.contains("dark") == true {
-            if let paymentMethodLogoFileName = ImageFile.getBundledImageFileName(forPaymentMethodType: paymentMethodType,
-                                                                                 themeMode: .dark,
-                                                                                 assetType: .logo),
-               let image = UIImage(primerResource: paymentMethodLogoFileName) {
+        if fileName.contains("dark") == true {
+            if let paymentMethodLogoFileName = ImageFile.getBundledImageFileName(
+                forPaymentMethodType: paymentMethodType,
+                themeMode: .dark,
+                assetType: .logo
+            ),
+                let image = UIImage(primerResource: paymentMethodLogoFileName) {
                 return image
             } else if let image = UIImage(primerResource: fileName) {
                 return image
             }
-        } else if self.fileName.contains("light") == true {
-            if let paymentMethodLogoFileName = ImageFile.getBundledImageFileName(forPaymentMethodType: paymentMethodType,
-                                                                                 themeMode: .light,
-                                                                                 assetType: .logo),
-               let image = UIImage(primerResource: paymentMethodLogoFileName) {
+        } else if fileName.contains("light") == true {
+            if let paymentMethodLogoFileName = ImageFile.getBundledImageFileName(
+                forPaymentMethodType: paymentMethodType,
+                themeMode: .light,
+                assetType: .logo
+            ),
+                let image = UIImage(primerResource: paymentMethodLogoFileName) {
                 return image
             } else if let image = UIImage(primerResource: fileName) {
                 return image
             }
-        } else if self.fileName.contains("colored") == true {
-            if let paymentMethodLogoFileName = ImageFile.getBundledImageFileName(forPaymentMethodType: paymentMethodType,
-                                                                                 themeMode: .colored,
-                                                                                 assetType: .logo),
-               let image = UIImage(primerResource: paymentMethodLogoFileName) {
+        } else if fileName.contains("colored") == true {
+            if let paymentMethodLogoFileName = ImageFile.getBundledImageFileName(
+                forPaymentMethodType: paymentMethodType,
+                themeMode: .colored,
+                assetType: .logo
+            ),
+                let image = UIImage(primerResource: paymentMethodLogoFileName) {
                 return image
             } else if let image = UIImage(primerResource: fileName) {
                 return image
@@ -101,7 +113,7 @@ final class ImageFile: File {
     }
 
     var image: UIImage? {
-        return cachedImage ?? bundledImage
+        cachedImage ?? bundledImage
     }
 }
 
@@ -198,8 +210,10 @@ final class ImageManager: LogReporter {
     }
 
     static func clean() {
-        guard let documentDirectoryUrl = FileManager.default.urls(for: .documentDirectory,
-                                                                  in: .userDomainMask).first
+        guard let documentDirectoryUrl = FileManager.default.urls(
+            for: .documentDirectory,
+            in: .userDomainMask
+        ).first
         else { return }
         let documentsPath = documentDirectoryUrl.path
 

@@ -9,8 +9,11 @@
 // swiftlint:disable type_body_length
 
 import Foundation
+@_spi(PrimerInternal) import PrimerFoundation
 import SafariServices
 import UIKit
+@_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerNetworking
 
 final class BanksTokenizationComponent: NSObject, LogReporter {
 
@@ -56,11 +59,13 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
 
     let apiClient: PrimerAPIClientBanksProtocol
 
-    init(config: PrimerPaymentMethod,
-         uiManager: PrimerUIManaging,
-         tokenizationService: TokenizationServiceProtocol,
-         createResumePaymentService: CreateResumePaymentServiceProtocol,
-         apiClient: PrimerAPIClientBanksProtocol) {
+    init(
+        config: PrimerPaymentMethod,
+        uiManager: PrimerUIManaging,
+        tokenizationService: TokenizationServiceProtocol,
+        createResumePaymentService: CreateResumePaymentServiceProtocol,
+        apiClient: PrimerAPIClientBanksProtocol
+    ) {
         self.config = config
         self.uiManager = uiManager
         self.tokenizationService = tokenizationService
@@ -132,14 +137,16 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
                PrimerInternal.shared.sdkIntegrationType == .dropIn,
                PrimerInternal.shared.selectedPaymentMethodType == nil,
                config.implementationType == .webRedirect ||
-                config.type == PrimerPaymentMethodType.applePay.rawValue ||
-                config.type == PrimerPaymentMethodType.adyenIDeal.rawValue ||
-                config.type == PrimerPaymentMethodType.payPal.rawValue {
+               config.type == PrimerPaymentMethodType.applePay.rawValue ||
+               config.type == PrimerPaymentMethodType.adyenIDeal.rawValue ||
+               config.type == PrimerPaymentMethodType.payPal.rawValue {
                 await uiManager.primerRootViewController?.popToMainScreen(completion: nil)
             } else {
-                let primerErr = error.asPrimerError
-                let merchantErrorMessage = await PrimerDelegateProxy.raisePrimerDidFailWithError(primerErr,
-                                                                                                 data: paymentCheckoutData)
+                let primerErr = handled(primerError: error.asPrimerError)
+                let merchantErrorMessage = await PrimerDelegateProxy.raisePrimerDidFailWithError(
+                    primerErr,
+                    data: paymentCheckoutData
+                )
 
                 await handleFailureFlow(errorMessage: merchantErrorMessage)
             }
@@ -281,8 +288,10 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
         )
     }
 
-    func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken,
-                                          paymentMethodTokenData: PrimerPaymentMethodTokenData) async throws -> String? {
+    func handleDecodedClientTokenIfNeeded(
+        _ decodedJWTToken: DecodedJWTToken,
+        paymentMethodTokenData: PrimerPaymentMethodTokenData
+    ) async throws -> String? {
         guard decodedJWTToken.intent?.contains("_REDIRECTION") == true else {
             return nil
         }
@@ -360,7 +369,8 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
                 action: .view,
                 context: Analytics.Event.Property.Context(
                     paymentMethodType: self.config.type,
-                    url: self.redirectUrlComponents?.url?.absoluteString ?? ""),
+                    url: self.redirectUrlComponents?.url?.absoluteString ?? ""
+                ),
                 extra: nil,
                 objectType: .button,
                 objectId: nil,
@@ -420,9 +430,11 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
 
     @MainActor
     func handleFailureFlow(errorMessage: String?) {
-        uiManager.dismissOrShowResultScreen(type: .failure,
-                                            paymentMethodManagerCategories: config.paymentMethodManagerCategories ?? [],
-                                            withMessage: errorMessage)
+        uiManager.dismissOrShowResultScreen(
+            type: .failure,
+            paymentMethodManagerCategories: config.paymentMethodManagerCategories ?? [],
+            withMessage: errorMessage
+        )
     }
 
     func tokenize() async throws -> PrimerPaymentMethodTokenData {
@@ -677,13 +689,14 @@ extension BanksTokenizationComponent: PaymentMethodTokenizationModelProtocol {
 
         let checkoutPaymentMethodType = PrimerCheckoutPaymentMethodType(type: paymentMethodData.type)
         let checkoutPaymentMethodData = PrimerCheckoutPaymentMethodData(type: checkoutPaymentMethodType)
-
+        
         // MARK: Check this cancellation (5 seconds?)
         let task = Task { @MainActor [weak self] in
             try? await Task.sleep(nanoseconds: 5_000_000_000)
             guard let self else { return }
-            logger.warn(message:
-                            """
+            logger.warn(
+                message:
+                """
                 The 'decisionHandler' of 'primerHeadlessUniversalCheckoutWillCreatePaymentWithData' \
                 hasn't been called. Make sure you call the decision handler otherwise the SDK will hang.
                 """

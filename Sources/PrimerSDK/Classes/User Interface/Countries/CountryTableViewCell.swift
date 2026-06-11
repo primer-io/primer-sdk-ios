@@ -1,9 +1,10 @@
 //
 //  CountryTableViewCell.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+import PrimerFoundation
 import UIKit
 
 final class CountryTableViewCell: UITableViewCell {
@@ -12,14 +13,14 @@ final class CountryTableViewCell: UITableViewCell {
     var flag = UILabel()
     var nameLabel = UILabel()
 
-    internal private(set) var countryCode: CountryCode!
+    private(set) var countryCode: CountryCode!
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
-        self.preservesSuperviewLayoutMargins = false
-        self.contentView.preservesSuperviewLayoutMargins = false
-        self.selectionStyle = .none
+        preservesSuperviewLayoutMargins = false
+        contentView.preservesSuperviewLayoutMargins = false
+        selectionStyle = .none
 
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         backgroundColor = theme.view.backgroundColor
@@ -53,7 +54,7 @@ final class CountryTableViewCell: UITableViewCell {
     }
 
     func configure(viewModel: CountryCode) {
-        self.countryCode = viewModel
+        countryCode = viewModel
         nameLabel.text = viewModel.country
         flag.text = viewModel.flag
     }

@@ -18,22 +18,13 @@ Pod::Spec.new do |s|
 
     s.subspec "Core" do |ss|
         ss.ios.source_files = "Sources/PrimerSDK/Classes/**/*.{h,m,swift}"
+        ss.dependency "PrimerCore", "= #{s.version}"
         ss.dependency "PrimerBDCEngine", "= #{s.version}"
         ss.dependency "PrimerBDCCore", "= #{s.version}"
         ss.dependency "PrimerFoundation", "= #{s.version}"
         ss.dependency "PrimerStepResolver", "= #{s.version}"
-        ss.ios.resource_bundles = {
-            "PrimerResources" => [
-                "Sources/PrimerSDK/Resources/*.xcassets",
-                "Sources/PrimerSDK/Resources/Localizable/**/*.strings",
-                "Sources/PrimerSDK/Resources/Localizable/**/*.stringsdict",
-                "Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/**/*.strings",
-                "Sources/PrimerSDK/Resources/Storyboards/*.{storyboard}",
-                "Sources/PrimerSDK/Resources/Nibs/*",
-                "Sources/PrimerSDK/Resources/JSONs/**/*.json",
-                "Sources/PrimerSDK/Resources/Fonts/*.ttf"
-            ]
-        }
+        ss.dependency "PrimerNetworking", "= #{s.version}"
+        ss.dependency "PrimerResources", "= #{s.version}"
         ss.ios.pod_target_xcconfig = {
             "FRAMEWORK_SEARCH_PATHS" => [
                 "$(inherited)",

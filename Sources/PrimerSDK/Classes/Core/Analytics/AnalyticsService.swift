@@ -8,14 +8,9 @@
 // swiftlint:disable file_length
 
 import Foundation
-import PrimerStepResolver
-
-protocol AnalyticsServiceProtocol: Actor {
-    func record(events: [any AnalyticsEvent]) async throws
-    func fire(events: [any AnalyticsEvent])
-    func record(event: any AnalyticsEvent) async throws
-    func fire(event: any AnalyticsEvent)
-}
+@_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerStepResolver
+@_spi(PrimerInternal) import PrimerFoundation
 
 extension Analytics {
 
@@ -60,7 +55,7 @@ extension Analytics {
         }
 
         func record(events: [any AnalyticsEvent]) async throws {
-            let events = events.flatMap(StoredEvent.init)
+            let events = events.compactMap(StoredEvent.init)
             let storedEvents = storage.loadEvents()
             let storedEventsIds = storedEvents.map(\.localId)
             var eventsToAppend: [StoredEvent] = []

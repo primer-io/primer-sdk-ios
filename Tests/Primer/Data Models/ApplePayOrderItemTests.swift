@@ -1,22 +1,25 @@
 //
 //  ApplePayOrderItemTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import XCTest
+import PrimerFoundation
 @testable import PrimerSDK
+import XCTest
 
 final class ApplePayOrderItemTests: XCTestCase {
 
     func testInitWithErrors() {
         do {
-            _ = try ApplePayOrderItem(name: "",
-                                      unitAmount: nil,
-                                      quantity: 1,
-                                      discountAmount: nil,
-                                      taxAmount: 1,
-                                      isPending: false)
+            _ = try ApplePayOrderItem(
+                name: "",
+                unitAmount: nil,
+                quantity: 1,
+                discountAmount: nil,
+                taxAmount: 1,
+                isPending: false
+            )
             XCTFail("Error should be thrown for nil unitAmount when not pending")
         } catch let error {
             if case let PrimerError.invalidValue(key, value, reason, _) = error {
@@ -29,12 +32,14 @@ final class ApplePayOrderItemTests: XCTestCase {
         }
 
         do {
-            _ = try ApplePayOrderItem(name: "",
-                                      unitAmount: 1,
-                                      quantity: 1,
-                                      discountAmount: nil,
-                                      taxAmount: 1,
-                                      isPending: true)
+            _ = try ApplePayOrderItem(
+                name: "",
+                unitAmount: 1,
+                quantity: 1,
+                discountAmount: nil,
+                taxAmount: 1,
+                isPending: true
+            )
             XCTFail("Error should be thrown for non-nil unitAmount when pending")
         } catch let error {
             if case let PrimerError.invalidValue(key, value, reason, _) = error {

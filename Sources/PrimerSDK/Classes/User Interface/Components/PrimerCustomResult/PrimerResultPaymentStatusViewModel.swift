@@ -1,9 +1,10 @@
 //
 //  PrimerResultPaymentStatusViewModel.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+@_spi(PrimerInternal) import PrimerFoundation
 import SwiftUI
 
 final class PrimerResultPaymentStatusViewModel: ObservableObject {
@@ -17,12 +18,11 @@ final class PrimerResultPaymentStatusViewModel: ObservableObject {
     }
 
     var title: String {
-        var paymentMethod: String
-        switch paymentMethodType {
+        var paymentMethod: String = switch paymentMethodType {
         case .stripeAch:
-            paymentMethod = "ACH"
+            "ACH"
         default:
-            paymentMethod = ""
+            ""
         }
 
         return String(format: Strings.ResultView.paymentTitle, paymentMethod)
@@ -31,35 +31,35 @@ final class PrimerResultPaymentStatusViewModel: ObservableObject {
     var subtitle: String {
         switch paymentStatus {
         case .success:
-            return Strings.ResultView.Subtitle.successful
+            Strings.ResultView.Subtitle.successful
         case .failed:
-            return Strings.ResultView.Subtitle.failed
+            Strings.ResultView.Subtitle.failed
         case .cancelled:
-            return Strings.ResultView.Subtitle.cancelled
+            Strings.ResultView.Subtitle.cancelled
         }
     }
 
     var paymentMessage: String {
-        return paymentStatus == .success ? successMessage : errorMessage
+        paymentStatus == .success ? successMessage : errorMessage
     }
 
     private var successMessage: String {
         switch paymentMethodType {
         case .stripeAch:
-            return Strings.ResultView.successMessage
+            Strings.ResultView.successMessage
         default:
-            return ""
+            ""
         }
     }
 
     private var errorMessage: String {
         switch paymentStatus {
         case .failed:
-            return error?.plainDescription ?? error.debugDescription
+            error?.plainDescription ?? error.debugDescription
         case .cancelled:
-            return Strings.ResultView.cancelMessage
+            Strings.ResultView.cancelMessage
         default:
-            return ""
+            ""
         }
     }
 
@@ -67,25 +67,25 @@ final class PrimerResultPaymentStatusViewModel: ObservableObject {
         if let error {
             switch error {
             case .cancelled:
-                return .cancelled
+                .cancelled
             default:
-                return .failed
+                .failed
             }
         } else {
-            return .success
+            .success
         }
     }
 
     var showOnRetry: Bool {
-        return paymentStatus == .failed
+        paymentStatus == .failed
     }
 
     var showChooseOtherPaymentMethod: Bool {
-        return paymentStatus != .success
+        paymentStatus != .success
     }
 
     var statusIconString: String {
-        return paymentStatus == .success ? "checkmark.circle" : "xmark.circle"
+        paymentStatus == .success ? "checkmark.circle" : "xmark.circle"
     }
 
     var statusIconAccessibilityIdentifier: String {
@@ -95,14 +95,14 @@ final class PrimerResultPaymentStatusViewModel: ObservableObject {
     }
 
     var statusIconColor: Color {
-        return paymentStatus == .success ? .blue.opacity(0.8) : .red.opacity(0.8)
+        paymentStatus == .success ? .blue.opacity(0.8) : .red.opacity(0.8)
     }
 
     var titleBottomSpacing: CGFloat {
-        return paymentStatus == .success ? 20 : 40
+        paymentStatus == .success ? 20 : 40
     }
 
     var paymentMessageBottomSpacing: CGFloat {
-        return paymentStatus == .success ? 60 : 40
+        paymentStatus == .success ? 60 : 40
     }
 }

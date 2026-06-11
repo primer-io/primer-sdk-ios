@@ -1,0 +1,53 @@
+name: SPM resolution check
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      swift: ${{ steps.filter.outputs.swift }}
+    steps:
+      - uses: dorny/paths-filter@fbd0ab8f3e69293af611ebaee6363fc25e6d187d # v4.0.1
+        id: filter
+        with:
+          filters: |
+            swift:
+              - '**/*.swift'
+
+  spm-resolve:
+    needs: changes
+    if: ${{ needs.changes.outputs.swift == 'true' }}
+    runs-on: macos-26
+    name: "SPM resolution check"
+
+    steps:
+      - name: Cancel previous jobs
+        uses: styfle/cancel-workflow-action@d07a454dad7609a92316b57b23c9ccfd4f59af66 # v0.13.1
+        with:
+          access_token: ${{ github.token }}
+
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+
+      - name: Select Xcode Version
+        uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90 # v1.7.0
+        with:
+          xcode-version: '26.2'
+
+      - name: Create local branch ref
+        run: git checkout -b ${{ github.head_ref }}
+
+      - name: Create test consumer package
+        run: |
+          mkdir -p /tmp/spm-test/Sources/SPMTest
+          echo 'import PrimerSDK' > /tmp/spm-test/Sources/SPMTest/Test.swift
+          sed -e "s|__REPO_URL__|file://${{ github.workspace }}|" \
+              -e "s|__BRANCH__|${{ github.head_ref }}|" \
+              .github/templates/SPMResolveTest/Package.swift > /tmp/spm-test/Package.swift
+
+      - name: Resolve dependencies
+        run: swift package --package-path /tmp/spm-test resolve

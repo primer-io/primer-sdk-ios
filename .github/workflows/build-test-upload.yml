@@ -10,13 +10,14 @@ concurrency:
 
 jobs:
   unit-tests-sdk-and-debug-app:
+    needs: check-optional-tests
     runs-on: macos-26-large
     timeout-minutes: 20
     name: "Unit Tests - SDK & Debug App"
-    if: "!startsWith(github.head_ref, 'dependabot/')"
+    if: ${{ !startsWith(github.head_ref, 'dependabot/') && needs.check-optional-tests.outputs.should-run-swift == 'true' }}
     steps:
       - name: Git - Checkout
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           ref: ${{ github.ref }}
       - name: Run SDK and Debug App tests
@@ -41,14 +42,17 @@ jobs:
       should-run-threeds: ${{ steps.changes.outputs.threeds }}
       should-run-stripe: ${{ steps.changes.outputs.stripe }}
       should-run-any: ${{ steps.changes.outputs.any }}
+      should-run-swift: ${{ steps.changes.outputs.swift }}
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           fetch-depth: 0
       - uses: dorny/paths-filter@fbd0ab8f3e69293af611ebaee6363fc25e6d187d # v4.0.1
         id: changes
         with:
           filters: |
+            swift:
+              - '**/*.swift'
             nolpay:
               - 'Sources/PrimerSDK/Classes/**/NolPay/**'
               - 'Tests/NolPay/**'
@@ -101,7 +105,7 @@ jobs:
     steps:
       - name: Git - Checkout
         if: ${{ !matrix.skip }}
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           ref: ${{ github.ref }}
       - name: Run SDK tests
@@ -126,7 +130,7 @@ jobs:
     name: "Build app with SPM Integration"
     steps:
       - name: Git - Checkout
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           ref: ${{ github.ref }}
       - name: Select Xcode Version
@@ -142,7 +146,7 @@ jobs:
       - uses: webfactory/ssh-agent@e83874834305fe9a4a2997156cb26c5de65a8555 # v0.10.0
         with:
           ssh-private-key: ${{ secrets.SSH_KEY }}
-      - uses: ruby/setup-ruby@c4e5b1316158f92e3d49443a9d58b31d25ac0f8f  # v1.306.0
+      - uses: ruby/setup-ruby@afeafc3d1ab54a631816aba4c914a0081c12ff2f  # v1.310.0
         with:
           ruby-version: "3.2"
           bundler-cache: true
@@ -167,7 +171,7 @@ jobs:
     runs-on: macos-26
     if: always() && !cancelled() && needs.unit-tests-sdk-and-debug-app.result == 'success' && (needs.check-optional-tests.outputs.should-run-any != 'true' || needs.optional-sdk-tests.result == 'success')
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
       - name: Determine coverage files
@@ -212,7 +216,7 @@ jobs:
     name: "Build and upload app to Appetize"
     steps:
       - name: Git - Checkout
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           ref: ${{ github.ref }}
       - name: Upload preview to Appetize

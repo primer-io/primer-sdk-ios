@@ -54,3 +54,20 @@ public final class ComponentsBillingAddressBridge {
         }
     }
 }
+
+// The mapping previously lived in ClientSession+PrimerAddress.swift, which was removed together
+// with the public RawDataManager.setBillingAddress API; the bridge still needs it.
+private extension ClientSession.Address {
+    init(from primerAddress: PrimerAddress) {
+        self.init(
+            firstName: primerAddress.firstName,
+            lastName: primerAddress.lastName,
+            addressLine1: primerAddress.addressLine1,
+            addressLine2: primerAddress.addressLine2,
+            city: primerAddress.city,
+            postalCode: primerAddress.postalCode,
+            state: primerAddress.state,
+            countryCode: primerAddress.countryCode.flatMap { CountryCode(rawValue: $0) }
+        )
+    }
+}

@@ -1,11 +1,13 @@
 //
 //  VoucherValueTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import XCTest
+@_spi(PrimerInternal) import PrimerFoundation
 @testable import PrimerSDK
+@_spi(PrimerInternal) import PrimerNetworking
+import XCTest
 
 final class VoucherValueTests: XCTestCase {
 
@@ -57,10 +59,10 @@ final class VoucherValueTests: XCTestCase {
         let dateString = formatter.string(from: PrimerAPIConfigurationModule.decodedJWTToken!.expiresAt!)
 
         XCTAssertEqual(withAmountString, """
-Entity: entity_value
-Reference: reference_value
-Expires at: \(dateString)
-""")
+        Entity: entity_value
+        Reference: reference_value
+        Expires at: \(dateString)
+        """)
     }
 
     @discardableResult
