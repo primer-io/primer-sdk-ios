@@ -149,12 +149,6 @@ final class ApplePayPaymentMethodTests: XCTestCase {
         XCTAssertNotNil(view)
     }
 
-    // MARK: - Static Properties
-
-    func test_paymentMethodType_isApplePay() {
-        XCTAssertEqual(ApplePayPaymentMethod.paymentMethodType, "APPLE_PAY")
-    }
-
     // MARK: - Register Tests
 
     @MainActor
@@ -164,22 +158,6 @@ final class ApplePayPaymentMethodTests: XCTestCase {
 
         // Then
         XCTAssertTrue(PaymentMethodRegistry.shared.registeredTypes.contains("APPLE_PAY"))
-    }
-
-    // MARK: - createView with Custom Screen
-
-    @MainActor
-    func test_createView_withCustomScreen_returnsCustomView() {
-        // Given
-        let checkoutScope = createCheckoutScope()
-        let scope = checkoutScope.getPaymentMethodScope(DefaultApplePayScope.self)
-        scope?.screen = { _ in AnyView(EmptyView()) }
-
-        // When
-        let view = ApplePayPaymentMethod.createView(checkoutScope: checkoutScope)
-
-        // Then
-        XCTAssertNotNil(view)
     }
 
     // MARK: - Helpers

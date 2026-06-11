@@ -247,16 +247,6 @@ final class DefaultAdyenKlarnaScopeTests: XCTestCase {
         XCTAssertEqual(mockInteractor.executeCallCount, 0)
     }
 
-    // MARK: - Customization
-
-    func test_submitButtonText_canBeSet() {
-        // When
-        sut.submitButtonText = "Custom Text"
-
-        // Then
-        XCTAssertEqual(sut.submitButtonText, "Custom Text")
-    }
-
     // MARK: - State with Payment Method
 
     func test_initialState_withPaymentMethod_includesPaymentMethod() {

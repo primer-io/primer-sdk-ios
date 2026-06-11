@@ -826,22 +826,6 @@ final class KlarnaRepositoryImplTests: XCTestCase {
         XCTAssertEqual(result?.clientToken, "ct")
     }
 
-    // MARK: - KlarnaSessionResult — Empty Categories
-
-    func test_klarnaSessionResult_emptyCategories() {
-        // Given/When
-        let result = KlarnaSessionResult(
-            clientToken: "ct",
-            sessionId: "sid",
-            categories: [],
-            hppSessionId: "hpp"
-        )
-
-        // Then
-        XCTAssertTrue(result.categories.isEmpty)
-        XCTAssertEqual(result.hppSessionId, "hpp")
-    }
-
     // MARK: - KlarnaAuthorizationResult — Finalization Different Tokens
 
     func test_authorizationResult_finalizationRequiredDifferentTokens_notEqual() {

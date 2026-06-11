@@ -274,23 +274,6 @@ final class DefaultApplePayScopeTests: XCTestCase {
         XCTAssertFalse(scope.structuredState.isLoading)
     }
 
-    // MARK: - PrimerApplePayButton Tests
-
-    @MainActor
-    func test_primerApplePayButton_returnsAnyView() {
-        // Given
-        mockPresentationManager.isPresentable = true
-        let scope = createScope()
-
-        // When
-        var buttonTapped = false
-        let view = scope.PrimerApplePayButton { buttonTapped = true }
-
-        // Then
-        XCTAssertNotNil(view)
-        XCTAssertFalse(buttonTapped)
-    }
-
     // Guards the a11y contract ApplePayButtonView relies on: PKPaymentButton must
     // expose its own system-localized accessibility label and button trait, so the
     // SDK must not override the label with a hardcoded English string.
@@ -302,24 +285,6 @@ final class DefaultApplePayScopeTests: XCTestCase {
         // Then
         XCTAssertFalse(button.accessibilityLabel?.isEmpty ?? true)
         XCTAssertTrue(button.accessibilityTraits.contains(.button))
-    }
-
-    // MARK: - Unavailable State Detail Tests
-
-    @MainActor
-    func test_init_unavailable_errorContainsDescription() {
-        // Given
-        mockPresentationManager.isPresentable = false
-        mockPresentationManager.errorForDisplay = PrimerError.unableToPresentPaymentMethod(
-            paymentMethodType: "APPLE_PAY"
-        )
-
-        // When
-        let scope = createScope()
-
-        // Then
-        XCTAssertFalse(scope.structuredState.isAvailable)
-        XCTAssertNotNil(scope.structuredState.availabilityError)
     }
 
     // MARK: - start when initially unavailable then becomes available

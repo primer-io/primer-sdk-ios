@@ -55,15 +55,6 @@ final class PaymentFlowSetupTests: XCTestCase {
         XCTAssertEqual(mockRawDataManagerFactory.createCallCount, 1)
     }
 
-    @MainActor
-    func test_getNetworkDetectionStream_returnsStream() {
-        // When
-        let stream = repository.getNetworkDetectionStream()
-
-        // Then
-        XCTAssertNotNil(stream)
-    }
-
     func testProcessCardPayment_WhenFactoryThrows_PropagatesError() async {
         let factoryError = NSError(domain: "Factory", code: 500, userInfo: [NSLocalizedDescriptionKey: "Cannot create"])
         mockRawDataManagerFactory.createError = factoryError

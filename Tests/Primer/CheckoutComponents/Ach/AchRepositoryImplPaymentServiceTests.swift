@@ -228,45 +228,6 @@ final class AchRepositoryImplPaymentServiceTests: XCTestCase {
         }
     }
 
-    // MARK: - startPaymentAndGetStripeData — Happy Path With Mocked Services
-
-    func test_startPaymentAndGetStripeData_withValidSetup_returnsStripeData() async throws {
-        // Given
-        sut = makeSUT()
-        let tokenData = AchTestData.mockTokenData
-
-        let requiredActionToken = MockAppState.stripeACHToken
-        let paymentResponse = Response.Body.Payment(
-            id: AchTestData.Constants.paymentId,
-            paymentId: AchTestData.Constants.paymentId,
-            amount: 1000,
-            currencyCode: "USD",
-            customer: nil,
-            customerId: nil,
-            dateStr: nil,
-            order: nil,
-            orderId: nil,
-            requiredAction: Response.Body.Payment.RequiredAction(
-                clientToken: requiredActionToken,
-                name: .checkout,
-                description: nil
-            ),
-            status: .pending,
-            paymentFailureReason: nil
-        )
-        mockPaymentService.onCreatePayment = { _ in paymentResponse }
-        mockApiConfigurationModule.mockedNetworkDelay = 0
-
-        // When/Then - Will fail at JWT decode step in test env, but validates flow
-        do {
-            let result = try await sut.startPaymentAndGetStripeData()
-            XCTAssertNotNil(result.stripeClientSecret)
-        } catch {
-            // Expected — validates the flow reaches payment service
-            XCTAssertNotNil(error)
-        }
-    }
-
     // MARK: - startPaymentAndGetStripeData — Missing Required Action
 
     func test_startPaymentAndGetStripeData_missingRequiredAction_throwsError() async throws {

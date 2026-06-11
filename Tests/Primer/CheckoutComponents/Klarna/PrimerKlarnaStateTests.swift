@@ -60,26 +60,6 @@ final class KlarnaStateTests: XCTestCase {
 
     // MARK: - Step Equatable Tests
 
-    func test_step_loading_isEquatable() {
-        XCTAssertEqual(PrimerKlarnaState.Step.loading, PrimerKlarnaState.Step.loading)
-    }
-
-    func test_step_categorySelection_isEquatable() {
-        XCTAssertEqual(PrimerKlarnaState.Step.categorySelection, PrimerKlarnaState.Step.categorySelection)
-    }
-
-    func test_step_viewReady_isEquatable() {
-        XCTAssertEqual(PrimerKlarnaState.Step.viewReady, PrimerKlarnaState.Step.viewReady)
-    }
-
-    func test_step_authorizationStarted_isEquatable() {
-        XCTAssertEqual(PrimerKlarnaState.Step.authorizationStarted, PrimerKlarnaState.Step.authorizationStarted)
-    }
-
-    func test_step_awaitingFinalization_isEquatable() {
-        XCTAssertEqual(PrimerKlarnaState.Step.awaitingFinalization, PrimerKlarnaState.Step.awaitingFinalization)
-    }
-
     func test_step_differentSteps_areNotEqual() {
         XCTAssertNotEqual(PrimerKlarnaState.Step.loading, PrimerKlarnaState.Step.categorySelection)
         XCTAssertNotEqual(PrimerKlarnaState.Step.viewReady, PrimerKlarnaState.Step.authorizationStarted)
@@ -114,20 +94,4 @@ final class KlarnaStateTests: XCTestCase {
         XCTAssertNotEqual(state1, state2)
     }
 
-    // MARK: - Initialization Overwrite Tests
-
-    func test_state_canBeCreatedWithNewStep() {
-        let state = PrimerKlarnaState(step: .viewReady)
-        XCTAssertEqual(state.step, .viewReady)
-    }
-
-    func test_state_canBeCreatedWithNewCategories() {
-        let state = PrimerKlarnaState(categories: KlarnaTestData.allCategories)
-        XCTAssertEqual(state.categories.count, 3)
-    }
-
-    func test_state_canBeCreatedWithNewSelectedCategoryId() {
-        let state = PrimerKlarnaState(selectedCategoryId: KlarnaTestData.Constants.categoryPayNow)
-        XCTAssertEqual(state.selectedCategoryId, KlarnaTestData.Constants.categoryPayNow)
-    }
 }

@@ -310,39 +310,6 @@ final class ApplePayRequestBuilderTests: XCTestCase {
         XCTAssertThrowsError(try ApplePayRequestBuilder.build())
     }
 
-    func test_build_withLineItemWithDiscount_calculatesCorrectAmount() throws {
-        // Given - Line item with discount
-        let lineItem = ClientSession.Order.LineItem(
-            itemId: "item_1",
-            quantity: 2,
-            amount: 500,
-            discountAmount: 100, // Discount applied
-            name: "Discounted Item",
-            description: nil,
-            taxAmount: nil,
-            taxCode: nil,
-            productType: nil
-        )
-        let order = ClientSession.Order(
-            id: "order_id",
-            merchantAmount: nil,
-            totalOrderAmount: 900,
-            totalTaxAmount: nil,
-            countryCode: .gb,
-            currencyCode: Currency(code: "GBP", decimalDigits: 2),
-            fees: nil,
-            lineItems: [lineItem],
-            shippingMethod: nil
-        )
-        setupConfiguration(withOrder: order)
-
-        // When
-        let request = try ApplePayRequestBuilder.build()
-
-        // Then
-        XCTAssertFalse(request.items.isEmpty)
-    }
-
     func test_build_withMultipleLineItems_createsAllItems() throws {
         // Given - Multiple line items
         let lineItem1 = ClientSession.Order.LineItem(

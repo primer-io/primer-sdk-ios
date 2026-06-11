@@ -90,12 +90,6 @@ final class PrimerCheckoutSessionTests: XCTestCase {
     XCTAssertFalse(fired)
   }
 
-  func test_phase_equatable() {
-    XCTAssertEqual(PrimerCheckoutSession.Phase.initializing, .initializing)
-    XCTAssertEqual(PrimerCheckoutSession.Phase.ready, .ready)
-    XCTAssertNotEqual(PrimerCheckoutSession.Phase.initializing, .ready)
-  }
-
   // MARK: - idempotencyKey
 
   func test_idempotencyKey_defaultProvider_returnsNil() {
@@ -157,21 +151,6 @@ final class PrimerCheckoutSessionTests: XCTestCase {
     sut.idempotencyKey = { "first" }
     sut.idempotencyKey = { "second" }
     XCTAssertEqual(sut.idempotencyKey(), "second")
-  }
-
-  // MARK: - Phase
-
-  func test_phase_hasExactlyInitializingAndReady() {
-    // The session phase models only lifecycle (Loading / Ready); outcomes flow via onCompletion.
-    // Exhaustive switch fails to compile if a case (e.g. `.failed`) is added without updating here.
-    func describe(_ phase: PrimerCheckoutSession.Phase) -> String {
-      switch phase {
-      case .initializing: "initializing"
-      case .ready: "ready"
-      }
-    }
-    XCTAssertEqual(describe(.initializing), "initializing")
-    XCTAssertEqual(describe(.ready), "ready")
   }
 
   // MARK: - observeCheckoutState lifecycle

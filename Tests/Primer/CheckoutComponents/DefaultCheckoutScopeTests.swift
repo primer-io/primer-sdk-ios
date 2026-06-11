@@ -357,46 +357,6 @@ final class DefaultCheckoutScopeBehaviorTests: XCTestCase {
         XCTAssertEqual(sut.paymentHandling, .manual)
     }
 
-    func test_isInitScreenEnabled_delegatesToSettings() {
-        // Given
-        sut = makeSut()
-
-        // Then — default PrimerSettings
-        XCTAssertNotNil(sut.isInitScreenEnabled)
-    }
-
-    func test_isSuccessScreenEnabled_delegatesToSettings() {
-        // Given
-        sut = makeSut()
-
-        // Then
-        XCTAssertNotNil(sut.isSuccessScreenEnabled)
-    }
-
-    func test_isErrorScreenEnabled_delegatesToSettings() {
-        // Given
-        sut = makeSut()
-
-        // Then
-        XCTAssertNotNil(sut.isErrorScreenEnabled)
-    }
-
-    func test_dismissalMechanism_delegatesToSettings() {
-        // Given
-        sut = makeSut()
-
-        // Then
-        XCTAssertNotNil(sut.dismissalMechanism)
-    }
-
-    func test_is3DSSanityCheckEnabled_delegatesToSettings() {
-        // Given
-        sut = makeSut()
-
-        // Then
-        XCTAssertNotNil(sut.is3DSSanityCheckEnabled)
-    }
-
     func test_presentationContext_defaultsToFromPaymentSelection() {
         // Given
         sut = makeSut()
@@ -467,14 +427,6 @@ final class DefaultCheckoutScopeBehaviorTests: XCTestCase {
 
         // Then
         XCTAssertEqual(sut.currentNavigationState, .processing)
-    }
-
-    func test_checkoutNavigator_returnsNavigator() {
-        // Given
-        sut = makeSut()
-
-        // Then
-        XCTAssertNotNil(sut.checkoutNavigator)
     }
 
     func test_availablePaymentMethods_defaultsToEmpty() {

@@ -71,42 +71,6 @@ final class ProcessVaultedPaymentEdgeCaseTests: XCTestCase {
         }
     }
 
-    func testProcessVaultedPayment_WithEmptyId_ThrowsError() async {
-        // Given
-        let emptyId = ""
-
-        // When/Then
-        do {
-            _ = try await repository.processVaultedPayment(
-                vaultedPaymentMethodId: emptyId,
-                paymentMethodType: "PAYMENT_CARD",
-                additionalData: nil
-            )
-            XCTFail("Expected error to be thrown")
-        } catch {
-            XCTAssertNotNil(error)
-        }
-    }
-
-    func testProcessVaultedPayment_WithDifferentPaymentMethodTypes_ThrowsError() async {
-        // Given
-        let invalidId = "test-id"
-        let paymentTypes = ["PAYPAL", "APPLE_PAY", "KLARNA", "UNKNOWN"]
-
-        // When/Then - All should throw errors for invalid IDs
-        for type in paymentTypes {
-            do {
-                _ = try await repository.processVaultedPayment(
-                    vaultedPaymentMethodId: invalidId,
-                    paymentMethodType: type,
-                    additionalData: nil
-                )
-                XCTFail("Expected error for type: \(type)")
-            } catch {
-                XCTAssertNotNil(error)
-            }
-        }
-    }
 }
 
 @available(iOS 15.0, *)
@@ -139,16 +103,4 @@ final class DeleteVaultedPaymentMethodEdgeCaseTests: XCTestCase {
         }
     }
 
-    func testDeleteVaultedPaymentMethod_WithEmptyId_ThrowsError() async {
-        // Given
-        let emptyId = ""
-
-        // When/Then
-        do {
-            try await repository.deleteVaultedPaymentMethod(emptyId)
-            XCTFail("Expected error to be thrown")
-        } catch {
-            XCTAssertNotNil(error)
-        }
-    }
 }

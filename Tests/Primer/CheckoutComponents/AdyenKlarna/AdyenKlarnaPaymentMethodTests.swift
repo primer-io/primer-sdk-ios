@@ -213,27 +213,6 @@ final class AdyenKlarnaPaymentMethodTests: XCTestCase {
         XCTAssertNotNil(scope)
     }
 
-    // MARK: - createView with Registered Scope
-
-    @MainActor
-    func test_createView_withRegisteredScope_doesNotCrash() async throws {
-        // Given
-        let container = try await ContainerTestHelpers.createTestContainer()
-        _ = try? await container.register(ProcessAdyenKlarnaPaymentInteractor.self)
-            .asSingleton()
-            .with { _ in MockProcessAdyenKlarnaPaymentInteractor() }
-        let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
-        _ = try await AdyenKlarnaPaymentMethod.createScope(
-            checkoutScope: checkoutScope,
-            diContainer: container
-        )
-
-        // When
-        let view = AdyenKlarnaPaymentMethod.createView(checkoutScope: checkoutScope)
-
-        // Then — no crash; view may be nil since scope isn't auto-registered in registry
-        _ = view
-    }
 }
 
 // MARK: - Mock Non-Default Checkout Scope

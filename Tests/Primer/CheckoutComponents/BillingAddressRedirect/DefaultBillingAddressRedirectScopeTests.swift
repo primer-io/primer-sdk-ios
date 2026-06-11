@@ -203,12 +203,6 @@ final class DefaultBillingAddressRedirectScopeTests: XCTestCase {
 
   // MARK: - Start Tests
 
-  func test_start_doesNotCrash() async throws {
-    sut.start()
-    await assertStreamEmits(sut.state)
-    XCTAssertEqual(sut.paymentMethodType, PrimerPaymentMethodType.adyenAffirm.rawValue)
-  }
-
   func test_start_calledTwice_isIdempotent() async throws {
     sut.start()
     sut.start()
@@ -222,10 +216,6 @@ final class DefaultBillingAddressRedirectScopeTests: XCTestCase {
     sut.cancel()
     let state = try await awaitValue(sut.state, matching: { $0.status == .ready })
     XCTAssertEqual(state.status, .ready)
-  }
-
-  func test_cancel_withNilRepository_doesNotCrash() {
-    sut.cancel()
   }
 
   // MARK: - onBack Tests
@@ -274,13 +264,6 @@ final class DefaultBillingAddressRedirectScopeTests: XCTestCase {
     scope.onBack()
 
     XCTAssertEqual(coordinator.navigationStack.count, initialStackCount)
-  }
-
-  // MARK: - dismissalMechanism Tests
-
-  func test_dismissalMechanism_reflectsCheckoutScope() async {
-    let mechanism = sut.dismissalMechanism
-    XCTAssertNotNil(mechanism)
   }
 
   // MARK: - presentationContext Tests

@@ -208,44 +208,4 @@ final class PrimerCardFormScopeTests: XCTestCase {
 
         XCTAssertEqual(config, CardFormConfiguration.default)
     }
-
-    // MARK: - Behavioral Tests
-
-    func test_submit_callsSubmitOnScope() {
-        var submitCalled = false
-
-        final class TrackingScope: MockCardFormScopeImpl {
-            var submitHandler: (() -> Void)?
-
-            override func submit() {
-                submitHandler?()
-            }
-        }
-
-        let scope = TrackingScope()
-        scope.submitHandler = { submitCalled = true }
-
-        scope.submit()
-
-        XCTAssertTrue(submitCalled)
-    }
-
-    func test_cancel_callsCancelOnScope() {
-        var cancelCalled = false
-
-        final class TrackingScope: MockCardFormScopeImpl {
-            var cancelHandler: (() -> Void)?
-
-            override func cancel() {
-                cancelHandler?()
-            }
-        }
-
-        let scope = TrackingScope()
-        scope.cancelHandler = { cancelCalled = true }
-
-        scope.cancel()
-
-        XCTAssertTrue(cancelCalled)
-    }
 }

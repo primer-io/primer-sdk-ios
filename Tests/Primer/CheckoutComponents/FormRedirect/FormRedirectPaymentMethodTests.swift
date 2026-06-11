@@ -219,36 +219,6 @@ final class FormRedirectPaymentMethodTests: XCTestCase {
         XCTAssertEqual(context, .direct)
     }
 
-    func test_blik_createScope_setsCorrectPaymentMethodType() async throws {
-        // Given
-        await registerFormRedirectDependencies()
-        let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
-
-        // When
-        let scope = try await BlikPaymentMethod.createScope(
-            checkoutScope: checkoutScope,
-            diContainer: container
-        )
-
-        // Then
-        XCTAssertNotNil(scope)
-    }
-
-    func test_mbWay_createScope_setsCorrectPaymentMethodType() async throws {
-        // Given
-        await registerFormRedirectDependencies()
-        let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
-
-        // When
-        let scope = try await MBWayPaymentMethod.createScope(
-            checkoutScope: checkoutScope,
-            diContainer: container
-        )
-
-        // Then
-        XCTAssertNotNil(scope)
-    }
-
     // MARK: - createScope Success with Presentation Context
 
     func test_blik_createScope_withSinglePaymentMethod_usesDirectContext() async throws {
@@ -309,43 +279,6 @@ final class FormRedirectPaymentMethodTests: XCTestCase {
 
         // Then
         XCTAssertEqual(scope.presentationContext, .fromPaymentSelection)
-    }
-
-    // MARK: - createView With Registered Scope
-
-    func test_blik_createView_withRegisteredScope_returnsView() async throws {
-        // Given
-        await registerFormRedirectDependencies()
-        let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
-        _ = try await BlikPaymentMethod.createScope(
-            checkoutScope: checkoutScope,
-            diContainer: container
-        )
-
-        // When — createView depends on PaymentMethodRegistry, not scope creation
-        let view = BlikPaymentMethod.createView(checkoutScope: checkoutScope)
-
-        // Then — no crash, view may be nil since scope isn't auto-registered
-        _ = view
-    }
-
-    // MARK: - Helper createScope for MBWay Type
-
-    func test_helper_createScope_forMBWay_setsCorrectPaymentMethodType() async throws {
-        // Given
-        await registerFormRedirectDependencies()
-        let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
-
-        // When
-        let scope = try await FormRedirectPaymentMethodHelper.createScopeForPaymentMethodType(
-            PrimerPaymentMethodType.adyenMBWay.rawValue,
-            checkoutScope: checkoutScope,
-            presentationContext: .direct,
-            diContainer: container
-        )
-
-        // Then
-        XCTAssertNotNil(scope)
     }
 
     // MARK: - createView Tests

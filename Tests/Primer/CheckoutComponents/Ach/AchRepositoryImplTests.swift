@@ -199,32 +199,6 @@ final class AchRepositoryImplTests: XCTestCase {
         }
     }
 
-    // MARK: - completePayment
-
-    func test_completePayment_returnsSuccessResult() async throws {
-        // Given
-        sut = makeSUT()
-        setUpACHSession()
-        let stripeData = AchStripeData(
-            stripeClientSecret: AchTestData.Constants.stripeClientSecret,
-            sdkCompleteUrl: AchTestData.Constants.sdkCompleteUrl,
-            paymentId: AchTestData.Constants.paymentId,
-            decodedJWTToken: AchTestData.mockDecodedJWTToken
-        )
-
-        // When/Then - The service call will fail due to no real API,
-        // but we verify the method is reachable and parameter types are correct
-        do {
-            let result = try await sut.completePayment(stripeData: stripeData)
-            XCTAssertEqual(result.paymentId, AchTestData.Constants.paymentId)
-            XCTAssertEqual(result.status, .success)
-            XCTAssertEqual(result.paymentMethodType, PrimerPaymentMethodType.stripeAch.rawValue)
-        } catch {
-            // Expected in test environment without real API — validates error propagation
-            XCTAssertTrue(error is PrimerError || error is NSError)
-        }
-    }
-
     // MARK: - validate — With Token But No Payment Method
 
     func test_validate_withValidTokenButNoPaymentMethod_throwsInvalidValueError() async {
@@ -244,56 +218,6 @@ final class AchRepositoryImplTests: XCTestCase {
             }
         } catch {
             XCTFail("Unexpected error type: \(error)")
-        }
-    }
-
-    // MARK: - tokenize — With Payment Method Present
-
-    func test_tokenize_withPaymentMethod_callsTokenizationService() async {
-        // Given
-        sut = makeSUT()
-        setUpACHSession()
-
-        // When/Then - Will fail due to real TokenizationService needing API,
-        // but validates the service is created and invoked
-        do {
-            _ = try await sut.tokenize()
-            XCTFail("Expected error in test environment")
-        } catch {
-            // Expected — validates the flow reached the tokenization service
-            XCTAssertNotNil(error)
-        }
-    }
-
-    // MARK: - startPaymentAndGetStripeData — With Payment Method
-
-    func test_startPaymentAndGetStripeData_withPaymentMethod_failsOnTokenization() async {
-        // Given
-        sut = makeSUT()
-        setUpACHSession()
-
-        // When/Then - Will fail due to real TokenizationService
-        do {
-            _ = try await sut.startPaymentAndGetStripeData()
-            XCTFail("Expected error in test environment")
-        } catch {
-            XCTAssertNotNil(error)
-        }
-    }
-
-    // MARK: - createPayment — Valid Token
-
-    func test_createPayment_validToken_failsOnRealService() async {
-        // Given
-        sut = makeSUT()
-        setUpACHSession()
-
-        // When/Then - Real CreateResumePaymentService will fail in test
-        do {
-            _ = try await sut.createPayment(tokenData: AchTestData.mockTokenData)
-            XCTFail("Expected error in test environment")
-        } catch {
-            XCTAssertNotNil(error)
         }
     }
 
@@ -557,36 +481,6 @@ final class AchRepositoryImplTests: XCTestCase {
         }
     }
 
-    // MARK: - validate — With Valid Payment Method
-
-    func test_validate_withValidPaymentMethod_callsTokenizationServiceValidate() async {
-        // Given
-        sut = makeSUT()
-        setUpACHSession()
-
-        // When/Then — will propagate validation error from real ACHTokenizationService
-        do {
-            try await sut.validate()
-        } catch {
-            // Expected — real ACHTokenizationService.validate() may throw
-            XCTAssertNotNil(error)
-        }
-    }
-
-    // MARK: - getOrCreateTokenizationService — Caching Behavior
-
-    func test_validate_calledTwice_reusesSameTokenizationService() async {
-        // Given
-        sut = makeSUT()
-        setUpACHSession()
-
-        // When — call validate twice
-        do { try await sut.validate() } catch { /* Expected */ }
-        do { try await sut.validate() } catch { /* Expected */ }
-
-        // Then — no crash, service is reused (tested implicitly by no crash)
-    }
-
     // MARK: - getMandateData — Error Message Content
 
     func test_getMandateData_nilMandateData_errorContainsMandateDataReference() async {
@@ -650,44 +544,6 @@ final class AchRepositoryImplTests: XCTestCase {
         } catch {
             XCTAssertTrue(error is PrimerError || error is NSError)
         }
-    }
-
-    // MARK: - completePayment — Returns Correct Payment Method Type
-
-    func test_completePayment_resultContainsStripeAchPaymentMethodType() async {
-        // Given
-        sut = makeSUT()
-        setUpACHSession()
-        let stripeData = AchStripeData(
-            stripeClientSecret: AchTestData.Constants.stripeClientSecret,
-            sdkCompleteUrl: AchTestData.Constants.sdkCompleteUrl,
-            paymentId: "pay_456",
-            decodedJWTToken: AchTestData.mockDecodedJWTToken
-        )
-
-        // When/Then
-        do {
-            let result = try await sut.completePayment(stripeData: stripeData)
-            XCTAssertEqual(result.paymentMethodType, PrimerPaymentMethodType.stripeAch.rawValue)
-            XCTAssertEqual(result.paymentId, "pay_456")
-        } catch {
-            // Expected in test environment — validates error propagation path
-            XCTAssertTrue(error is PrimerError || error is NSError)
-        }
-    }
-
-    // MARK: - tokenize — Reuses Same Service
-
-    func test_tokenize_calledMultipleTimes_reusesSameService() async {
-        // Given
-        sut = makeSUT()
-        setUpACHSession()
-
-        // When — tokenize twice
-        do { _ = try await sut.tokenize() } catch { /* Expected */ }
-        do { _ = try await sut.tokenize() } catch { /* Expected */ }
-
-        // Then — no crash from service reuse
     }
 
     // MARK: - createBankCollector — Valid Stripe Options But No SDK

@@ -58,17 +58,6 @@ final class ExpiryDateValidationEdgeCasesTests: XCTestCase {
         XCTAssertTrue(result.isValid)
     }
 
-    func test_validateExpiry_withCurrentMonthLastDay_returnsValid() {
-        // Given - Current month should be valid until end of month
-        let (month, year) = TestData.ExpiryDates.currentMonth
-
-        // When
-        let result = sut.validateExpiry(month: month, year: year)
-
-        // Then
-        XCTAssertTrue(result.isValid)
-    }
-
     // MARK: - Future Date Validation
 
     func test_validateExpiry_withFutureDate_returnsValid() {

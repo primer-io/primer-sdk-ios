@@ -58,11 +58,6 @@ final class CardValidationRulesTests: XCTestCase {
         XCTAssertTrue(result.isValid)
     }
 
-    func test_validateCardNumber_with19Digits_hasCorrectLength() {
-        let cardNumber = TestData.CardNumbers.valid19Digit
-        XCTAssertEqual(cardNumber.count, 19)
-    }
-
     // MARK: - CVV Validation Tests
 
     func test_validateCVV_withValidCVVs_returnsValid() {

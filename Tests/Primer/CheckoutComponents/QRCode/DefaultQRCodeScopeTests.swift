@@ -145,14 +145,6 @@ final class DefaultQRCodeScopeTests: XCTestCase {
         XCTAssertEqual(mockInteractor.cancelPollingCallCount, 1)
     }
 
-    func test_cancel_cancelsPolling() {
-        let sut = createScope()
-
-        sut.cancel()
-
-        XCTAssertEqual(mockInteractor.cancelPollingCallCount, 1)
-    }
-
     // MARK: - Re-entry after return-to-selection
 
     func test_prepareForReentry_restartsFlowAfterReturnToSelection() async throws {

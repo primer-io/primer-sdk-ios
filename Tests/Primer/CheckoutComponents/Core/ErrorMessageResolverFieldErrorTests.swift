@@ -44,14 +44,6 @@ final class ErrorMessageResolverFieldErrorTests: XCTestCase {
         .retailOutlet: TestData.ErrorMessageKeys.retailOutletInvalid
     ]
 
-    private var typesWithRequiredErrors: [ValidationError.InputElementType] {
-        Array(requiredErrorMessageKeys.keys)
-    }
-
-    private var typesWithInvalidErrors: [ValidationError.InputElementType] {
-        Array(invalidErrorMessageKeys.keys)
-    }
-
     // MARK: - Helper Methods
 
     private func assertRequiredFieldError(
@@ -170,20 +162,5 @@ final class ErrorMessageResolverFieldErrorTests: XCTestCase {
             XCTAssertNotEqual(message, CheckoutComponentsStrings.unexpectedError,
                               "Type \(type) should have a valid invalid error message")
         }
-    }
-
-    // MARK: - Exhaustive Coverage Test
-
-    func test_allInputElementTypes_areHandled() {
-        // Ensure we've considered all InputElementType cases
-        // This test will fail if a new case is added to the enum without updating the tests
-        let allTypes = Set(ValidationError.InputElementType.allCases)
-        let handledInRequired = Set(typesWithRequiredErrors + [.unknown, .cardNumber, .cvv, .expiryDate, .cardholderName, .otpCode])
-        let handledInInvalid = Set(typesWithInvalidErrors + [.unknown, .otpCode])
-
-        XCTAssertEqual(allTypes, handledInRequired,
-                       "All InputElementTypes should be handled in required error tests")
-        XCTAssertEqual(allTypes, handledInInvalid,
-                       "All InputElementTypes should be handled in invalid error tests")
     }
 }

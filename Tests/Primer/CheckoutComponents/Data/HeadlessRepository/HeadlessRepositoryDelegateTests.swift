@@ -22,24 +22,6 @@ final class NetworkDetectionStreamTests: XCTestCase {
         repository = nil
         super.tearDown()
     }
-
-    func testGetNetworkDetectionStream_ReturnsNonNilStream() {
-        // When
-        let stream = repository.getNetworkDetectionStream()
-
-        // Then
-        XCTAssertNotNil(stream)
-    }
-
-    func testGetNetworkDetectionStream_ReturnsSameStreamOnMultipleCalls() {
-        // When
-        let stream1 = repository.getNetworkDetectionStream()
-        let stream2 = repository.getNetworkDetectionStream()
-
-        // Then - Should return the same stream instance
-        XCTAssertNotNil(stream1)
-        XCTAssertNotNil(stream2)
-    }
 }
 
 @available(iOS 15.0, *)

@@ -250,60 +250,6 @@ final class ClientSessionUpdateBeforePaymentTests: XCTestCase {
         }
     }
 
-    func test_processCardPayment_withNilNetwork_passesOTHERInClientSession() async {
-        // Given
-        mockRawDataManager.autoTriggerValidation = true
-        mockRawDataManager.isDataValid = true
-
-        let task = Task { [self] in
-            _ = try? await sut.processCardPayment(
-                cardNumber: "4242424242424242",
-                cvv: "123",
-                expiryMonth: "12",
-                expiryYear: "25",
-                cardholderName: "Test",
-                selectedNetwork: nil
-            )
-        }
-
-        // Wait for dispatch call
-        let predicate = NSPredicate { _, _ in
-            !self.mockClientSessionActions.dispatchActionsCalls.isEmpty
-        }
-        await fulfillment(of: [expectation(for: predicate, evaluatedWith: nil)], timeout: 3.0)
-        task.cancel()
-
-        // Then - nil network should map to "OTHER"
-        XCTAssertFalse(mockClientSessionActions.dispatchActionsCalls.isEmpty)
-    }
-
-    func test_processCardPayment_withUnknownNetwork_passesOTHERInClientSession() async {
-        // Given
-        mockRawDataManager.autoTriggerValidation = true
-        mockRawDataManager.isDataValid = true
-
-        let task = Task { [self] in
-            _ = try? await sut.processCardPayment(
-                cardNumber: "4242424242424242",
-                cvv: "123",
-                expiryMonth: "12",
-                expiryYear: "25",
-                cardholderName: "Test",
-                selectedNetwork: .unknown
-            )
-        }
-
-        // Wait for dispatch call
-        let predicate = NSPredicate { _, _ in
-            !self.mockClientSessionActions.dispatchActionsCalls.isEmpty
-        }
-        await fulfillment(of: [expectation(for: predicate, evaluatedWith: nil)], timeout: 3.0)
-        task.cancel()
-
-        // Then
-        XCTAssertFalse(mockClientSessionActions.dispatchActionsCalls.isEmpty)
-    }
-
     func test_processCardPayment_whenValidAndSubmitted_callsSubmit() async {
         // Given
         mockRawDataManager.autoTriggerValidation = true

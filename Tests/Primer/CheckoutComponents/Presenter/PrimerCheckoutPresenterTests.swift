@@ -41,16 +41,6 @@ final class PrimerCheckoutPresenterTests: XCTestCase {
         XCTAssertTrue(first === second)
     }
 
-    // MARK: - isAvailable
-
-    func test_isAvailable_returnsTrue() {
-        // Given / When
-        let available = PrimerCheckoutPresenter.isAvailable
-
-        // Then
-        XCTAssertTrue(available)
-    }
-
     // MARK: - isPresenting
 
     func test_isPresenting_initiallyFalse() {
@@ -76,15 +66,6 @@ final class PrimerCheckoutPresenterTests: XCTestCase {
         XCTAssertEqual(mockDelegate.capturedSuccessResult?.status, .success)
     }
 
-    func test_handlePaymentSuccess_withoutDelegate_doesNotCrash() {
-        // Given
-        sut.delegate = nil
-        let result = PaymentResult(paymentId: TestData.PaymentIds.success, status: .success)
-
-        // When / Then - should not crash
-        sut.handlePaymentSuccess(result)
-    }
-
     // MARK: - handlePaymentFailure
 
     func test_handlePaymentFailure_withDelegate_callsDidFailWithError() {
@@ -104,20 +85,6 @@ final class PrimerCheckoutPresenterTests: XCTestCase {
         XCTAssertNotNil(mockDelegate.capturedError)
     }
 
-    func test_handlePaymentFailure_withoutDelegate_doesNotCrash() {
-        // Given
-        sut.delegate = nil
-        let error = PrimerError.invalidValue(
-            key: TestData.ErrorKeys.test,
-            value: nil,
-            reason: nil,
-            diagnosticsId: TestData.DiagnosticsIds.test
-        )
-
-        // When / Then - should not crash
-        sut.handlePaymentFailure(error)
-    }
-
     // MARK: - handleCheckoutDismiss
 
     func test_handleCheckoutDismiss_withDelegate_callsDidDismiss() {
@@ -126,14 +93,6 @@ final class PrimerCheckoutPresenterTests: XCTestCase {
 
         // Then
         XCTAssertEqual(mockDelegate.didDismissCallCount, 1)
-    }
-
-    func test_handleCheckoutDismiss_withoutDelegate_doesNotCrash() {
-        // Given
-        sut.delegate = nil
-
-        // When / Then - should not crash
-        sut.handleCheckoutDismiss()
     }
 
     // MARK: - dismiss
@@ -180,10 +139,4 @@ final class PrimerCheckoutPresenterTests: XCTestCase {
         wait(for: [expectation], timeout: 1.0)
     }
 
-    // MARK: - dismissCheckout
-
-    func test_dismissCheckout_withNoController_completesWithoutCrash() {
-        // Given / When / Then - should not crash
-        sut.dismissCheckout()
-    }
 }

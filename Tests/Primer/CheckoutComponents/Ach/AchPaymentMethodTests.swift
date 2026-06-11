@@ -18,10 +18,6 @@ final class AchPaymentMethodTests: XCTestCase {
         XCTAssertEqual(AchPaymentMethod.paymentMethodType, PrimerPaymentMethodType.stripeAch.rawValue)
     }
 
-    func test_paymentMethodType_matchesExpectedString() {
-        XCTAssertEqual(AchPaymentMethod.paymentMethodType, "STRIPE_ACH")
-    }
-
     // MARK: - Registration Tests
 
     @MainActor
@@ -134,10 +130,6 @@ final class AchPaymentMethodTests: XCTestCase {
         // Then - In DEBUG, TestAchPaymentMethod should also be registered
         XCTAssertTrue(registry.registeredTypes.contains("PRIMER_TEST_STRIPE_ACH"))
     }
-
-    func test_testAchPaymentMethod_hasCorrectType() {
-        XCTAssertEqual(TestAchPaymentMethod.paymentMethodType, "PRIMER_TEST_STRIPE_ACH")
-    }
     #endif
 
     // MARK: - createView Tests
@@ -152,18 +144,6 @@ final class AchPaymentMethodTests: XCTestCase {
 
         // Then
         XCTAssertNil(view)
-    }
-
-    @MainActor
-    func test_getPaymentMethodScope_returnsNilForInvalidScope() {
-        // Given
-        let mockCheckoutScope = MockInvalidCheckoutScope()
-
-        // When
-        let scope: DefaultAchScope? = mockCheckoutScope.getPaymentMethodScope(DefaultAchScope.self)
-
-        // Then
-        XCTAssertNil(scope)
     }
 
     // MARK: - createScope Success
@@ -186,29 +166,6 @@ final class AchPaymentMethodTests: XCTestCase {
         // Then
         XCTAssertNotNil(scope)
         XCTAssertTrue(scope is DefaultAchScope)
-    }
-
-    // MARK: - createView With Registered Scope
-
-    @MainActor
-    func test_createView_withRegisteredScope_returnsView() async throws {
-        // Given
-        let container = try await ContainerTestHelpers.createTestContainer()
-        _ = try? await container.register(ProcessAchPaymentInteractor.self)
-            .asSingleton()
-            .with { _ in StubProcessAchPaymentInteractorForTests() }
-        let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
-        _ = try await AchPaymentMethod.createScope(
-            checkoutScope: checkoutScope,
-            diContainer: container
-        )
-
-        // When — ACH view requires the scope to be registered in the PaymentMethodRegistry
-        // createScope alone doesn't register it, so createView may return nil
-        let view = AchPaymentMethod.createView(checkoutScope: checkoutScope)
-
-        // Then — view creation depends on registry state; no crash = success
-        _ = view
     }
 
     // MARK: - createScope with Non-Default Checkout Scope

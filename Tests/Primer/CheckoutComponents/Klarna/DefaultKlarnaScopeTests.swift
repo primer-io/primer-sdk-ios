@@ -51,29 +51,6 @@ final class DefaultKlarnaScopeTests: XCTestCase {
         XCTAssertNil(scope.finalizeButton)
     }
 
-    // MARK: - UI Customization Tests
-
-    @MainActor
-    func test_screen_canBeSet() {
-        let scope = createScope()
-        scope.screen = { _ in EmptyView() }
-        XCTAssertNotNil(scope.screen)
-    }
-
-    @MainActor
-    func test_authorizeButton_canBeSet() {
-        let scope = createScope()
-        scope.authorizeButton = { _ in EmptyView() }
-        XCTAssertNotNil(scope.authorizeButton)
-    }
-
-    @MainActor
-    func test_finalizeButton_canBeSet() {
-        let scope = createScope()
-        scope.finalizeButton = { _ in EmptyView() }
-        XCTAssertNotNil(scope.finalizeButton)
-    }
-
     // MARK: - Start Tests
 
     @MainActor
@@ -103,25 +80,6 @@ final class DefaultKlarnaScopeTests: XCTestCase {
 
         // Then
         XCTAssertNotNil(firstState)
-    }
-
-    @MainActor
-    func test_state_streamCanBeCancelled() async {
-        // Given
-        let scope = createScope()
-
-        // When
-        let task = Task {
-            for await _ in scope.state {
-                // Just iterate
-            }
-        }
-
-        task.cancel()
-        await Task.yield()
-
-        // Then
-        XCTAssertTrue(task.isCancelled)
     }
 
     // MARK: - selectPaymentCategory Tests
@@ -268,13 +226,6 @@ final class DefaultKlarnaScopeTests: XCTestCase {
 
         // Should not crash
         scope.onBack()
-    }
-
-    @MainActor
-    func test_cancel_shouldNotCrash_viaCancel() {
-        let scope = createScope()
-        // Should not crash
-        scope.cancel()
     }
 
     @MainActor
