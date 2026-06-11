@@ -81,12 +81,9 @@ final class AddressRule: ValidationRule {
 
     // For optional fields (like address line 2), empty is valid
     if trimmedValue.isEmpty {
-      if isRequired {
-        let error = ErrorMessageResolver.createRequiredFieldError(for: inputElementType)
-        return .invalid(error: error)
-      } else {
-        return .valid
-      }
+      guard isRequired else { return .valid }
+      let error = ErrorMessageResolver.createRequiredFieldError(for: inputElementType)
+      return .invalid(error: error)
     }
 
     if trimmedValue.count < 3 {
@@ -143,9 +140,9 @@ final class CityRule: ValidationRule {
       return .invalid(error: error)
     }
 
-    // Allow letters, spaces, hyphens, periods
+    // Allow letters, spaces, hyphens, periods, apostrophes (e.g. L'Aquila, Coeur d'Alene)
     let allowedCharacters = CharacterSet.letters.union(.whitespaces).union(
-      CharacterSet(charactersIn: "-."))
+      CharacterSet(charactersIn: "-.'"))
     if !trimmedValue.unicodeScalars.allSatisfy({ allowedCharacters.contains($0) }) {
       let error = ErrorMessageResolver.createInvalidFieldError(for: .city)
       return .invalid(error: error)
@@ -344,6 +341,7 @@ final class PhoneNumberRule: ValidationRule {
   func validate(_ value: String) -> ValidationResult {
     let cleanedValue = value.replacingOccurrences(of: " ", with: "")
       .replacingOccurrences(of: "-", with: "")
+      .replacingOccurrences(of: ".", with: "")
       .replacingOccurrences(of: "(", with: "")
       .replacingOccurrences(of: ")", with: "")
       .replacingOccurrences(of: "+", with: "")

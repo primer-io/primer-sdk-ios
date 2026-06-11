@@ -26,7 +26,6 @@
 "primer_checkout_dismissing" = "Се затвора...";
 "primer_checkout_system_error_title" = "Системска грешка при плаќање";
 "primer_checkout_scope_unavailable" = "Опсегот на наплата не е достапен";
-"primer_checkout_auto_dismiss_message" = "Овој екран ќе се затвори автоматски за 3 секунди";
 "primer_card_form_label_number" = "Број на картичка";
 "primer_card_form_label_name" = "Име на картичка";
 "primer_card_form_label_expiry" = "Датум на истекување";
@@ -125,7 +124,7 @@
 "accessibility_card_form_cardholder_name_label" = "Име на картичар";
 "accessibility_card_form_card_number_hint" = "Внесете го бројот на картичката";
 "accessibility_card_form_expiry_hint" = "Внесете датум на истекување во формат ММ/ГГ";
-"accessibility_card_form_cvc_hint" = "3 или 4 цифрен код на задната страна на картичката";
+"accessibility_card_form_cvc_hint" = "Безбедносен код, 3 или 4 цифри";
 "accessibility_card_form_cardholder_name_hint" = "Внесете име како што е прикажано на картичката";
 "accessibility_card_form_billing_address_first_name_label" = "Име, задолжително";
 "accessibility_card_form_billing_address_last_name_label" = "Презиме, задолжително";
@@ -139,10 +138,10 @@
 "accessibility_card_form_billing_address_country_label" = "Држава, задолжително";
 "accessibility_card_form_network_selector" = "Избери мрежа";
 "accessibility_card_form_network_selector_label" = "Избирач на мрежа на картичка";
-"accessibility_card_form_network_selector_hint" = "Допрете двапати за да изберете различна мрежа на картичка";
-"accessibility_card_form_network_selector_inline_hint" = "Допрете двапати за да ја изберете оваа мрежа";
+"accessibility_card_form_network_selector_hint" = "Изберете друга картична мрежа";
+"accessibility_card_form_network_selector_inline_hint" = "Изберете ја оваа мрежа";
 "accessibility_card_form_submit_label" = "Поднеси плаќање";
-"accessibility_card_form_submit_hint" = "Допрете двапати за да го поднесете плаќањето";
+"accessibility_card_form_submit_hint" = "Испратете го плаќањето";
 "accessibility_card_form_submit_loading" = "Се обработува плаќањето, ве молиме почекајте";
 "accessibility_card_form_submit_disabled" = "Копчето е оневозможено. Пополнете ги сите задолжителни полиња за да го овозможите плаќањето";
 "accessibility_card_form_card_number_error_invalid" = "Невалиден број на картичка. Ве молиме проверете и обидете се повторно.";
@@ -172,22 +171,20 @@
 "accessibility_payment_selection_pay_with_klarna" = "Плати со Klarna";
 "accessibility_payment_selection_pay_with_ideal" = "Плати со iDEAL";
 "accessibility_payment_selection_coming_soon" = "Наскоро доаѓа";
-"accessibility_payment_selection_card_full" = "%1$@ картичка завршува на %2$@, истекува %3$@";
 "accessibility_country_selection_item" = "%1$@, држава";
 "accessibility_country_selection_search" = "Пребарај држави";
 "accessibility_country_selection_search_icon" = "Пребарување";
 "accessibility_country_selection_clear" = "Исчисти";
 "accessibility_action_delete" = "Избриши начин на плаќање";
 "accessibility_action_edit" = "Измени детали за картичка";
-"accessibility_action_set_default" = "Постави како основен начин на плаќање";
 "accessibility_checkout_success_icon" = "Плаќањето е успешно";
 "accessibility_checkout_error_icon" = "Грешка";
 "accessibility_error_generic" = "Настана грешка. Ве молиме обидете се повторно.";
 "accessibility_error_multiple_errors" = "Најдени %d грешки";
-"accessibility_payment_selection_card_masked" = "картичка завршува на маскирани цифри";
 "accessibility_paypal_logo" = "PayPal";
 "accessibility_screen_payment_method" = "%@ начин на плаќање";
 "accessibility_payment_method_button" = "Плати со %@";
+"accessibility_payment_method_selected" = "%@ е избран";
 "accessibility_vault_delete_payment_method" = "Избриши го овој начин на плаќање";
 "accessibility_vaulted_ach" = "%@ банкарска сметка";
 "accessibility_vaulted_ach_full" = "%@ банкарска сметка завршува на %@";
@@ -209,8 +206,8 @@
 "accessibility_klarna_category" = "Опција за плаќање %@";
 "accessibility_klarna_category_selected" = "Опција за плаќање %@, избрано";
 "accessibility_klarna_payment_view" = "Формулар за плаќање Klarna";
-"accessibility_klarna_authorize_hint" = "Допрете двапати за да продолжите со Klarna";
-"accessibility_klarna_finalize_hint" = "Допрете двапати за да го завршите плаќањето";
+"accessibility_klarna_authorize_hint" = "Продолжете со Klarna";
+"accessibility_klarna_finalize_hint" = "Завршете го плаќањето";
 
 /* ACH */
 "primer_ach_title" = "Банкарска сметка";
@@ -223,9 +220,9 @@
 "primer_ach_mandate_button_accept" = "Се согласувам";
 "primer_ach_mandate_button_decline" = "Откажи";
 "primer_ach_mandate_template" = "Со кликнување на \"Се согласувам\", го овластувате %1$@ да ја задолжи горенаведената банкарска сметка за која било должна сума за трошоци што произлегуваат од вашето користење на услугите на %1$@ и/или купување на производи од %1$@, согласно веб-страницата и условите на %1$@, додека ова овластување не биде отповикано. Можете да го измените или откажете ова овластување во секое време со известување на %1$@ со 30 (триесет) дена претходна најава.";
-"accessibility_ach_continue_hint" = "Допрете двапати за да продолжите со избор на банкарска сметка";
-"accessibility_ach_mandate_accept_hint" = "Допрете двапати за да го прифатите овластувањето и да го завршите плаќањето";
-"accessibility_ach_mandate_decline_hint" = "Допрете двапати за да одбиете и да го откажете плаќањето";
+"accessibility_ach_continue_hint" = "Продолжете кон избор на банкарска сметка";
+"accessibility_ach_mandate_accept_hint" = "Прифатете ја авторизацијата и завршете го плаќањето";
+"accessibility_ach_mandate_decline_hint" = "Одбијте и откажете го плаќањето";
 
 "accessibility_card_form_billing_address_hint" = "Внесете ја вашата адреса";
 "accessibility_card_form_billing_address_state_hint" = "Внесете држава или провинција";
@@ -285,3 +282,5 @@
 "primer_adyen_klarna_option_pay_later" = "Плати подоцна";
 "primer_adyen_klarna_option_pay_over_time" = "Плати на рати";
 "primer_adyen_klarna_option_pay_now" = "Плати сега";
+"primer_vaulted_gocardless_direct_debit_suffix" = "Директно задолжување";
+"accessibility_card_form_billing_address_country_hint" = "Отвора список за избор на вашата земја";

@@ -163,7 +163,6 @@ final class PaymentMethodRegistryTests: XCTestCase {
             DefaultCheckoutScope(
                 clientToken: TestData.Tokens.valid,
                 settings: PrimerSettings(),
-                diContainer: DIContainer.shared,
                 navigator: CheckoutNavigator()
             )
         }

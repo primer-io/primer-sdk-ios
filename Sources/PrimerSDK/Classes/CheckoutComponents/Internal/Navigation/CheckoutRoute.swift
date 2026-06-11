@@ -7,7 +7,7 @@
 import Foundation
 
 @available(iOS 15.0, *)
-public enum PresentationContext {
+enum PresentationContext {
   case direct
   case fromPaymentSelection
 
@@ -46,8 +46,8 @@ enum CheckoutRoute: Hashable, Identifiable {
     case .processing: "processing"
     case let .paymentMethod(type, context):
       "payment-method-\(type)-\(context == .direct ? "direct" : "selection")"
-    case .success: "success"
-    case .failure: "failure"
+    case let .success(result): "success-\(result.paymentId)"
+    case let .failure(error): "failure-\(error.diagnosticsId)"
     }
   }
 

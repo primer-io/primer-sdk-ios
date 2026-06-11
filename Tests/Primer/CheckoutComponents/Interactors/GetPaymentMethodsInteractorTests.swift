@@ -107,43 +107,4 @@ final class GetPaymentMethodsInteractorTests: XCTestCase {
         }
     }
 
-    // MARK: - State Change Tests
-
-    func test_execute_repositoryCanReturnDifferentResultsOnSubsequentCalls() async throws {
-        // Given - first call returns one method
-        mockRepository.paymentMethodsToReturn = [
-            InternalPaymentMethod(
-                id: "card-1",
-                type: "PAYMENT_CARD",
-                name: "Credit Card",
-                isEnabled: true
-            )
-        ]
-
-        // When - first call
-        let firstResult = try await sut.execute()
-
-        // Given - update for second call
-        mockRepository.paymentMethodsToReturn = [
-            InternalPaymentMethod(
-                id: "card-1",
-                type: "PAYMENT_CARD",
-                name: "Credit Card",
-                isEnabled: true
-            ),
-            InternalPaymentMethod(
-                id: "paypal-1",
-                type: "PAYPAL",
-                name: "PayPal",
-                isEnabled: true
-            )
-        ]
-
-        // When - second call
-        let secondResult = try await sut.execute()
-
-        // Then
-        XCTAssertEqual(firstResult.count, 1)
-        XCTAssertEqual(secondResult.count, 2)
-    }
 }

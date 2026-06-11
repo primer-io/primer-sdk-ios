@@ -76,7 +76,9 @@ final class ValidationResultCache {
   }
 
   private func cacheKey(for input: String, type: String, context: String = "") -> String {
-    "\(type)_\(input)_\(context)"
+    // Length-prefix each component so distinct (type, input, context) triples can never
+    // collapse to the same key even when a component itself contains the separator.
+    "\(type.count):\(type)|\(input.count):\(input)|\(context.count):\(context)"
   }
 
   /// Retrieves cached validation result or performs validation
@@ -177,7 +179,7 @@ extension DefaultValidationService {
         return .invalid(error: error)
       }
       let components = value.components(separatedBy: "/")
-      let month = components.count > 0 ? components[0] : ""
+      let month = !components.isEmpty ? components[0] : ""
       let year = components.count > 1 ? components[1] : ""
       return validateExpiry(month: month, year: year)
 
@@ -186,8 +188,10 @@ extension DefaultValidationService {
         let error = ErrorMessageResolver.createRequiredFieldError(for: .cvv)
         return .invalid(error: error)
       }
-      // Using a default network of .visa when none is provided
-      return validateCVV(value, cardNetwork: CardNetwork.visa)
+      // No network context is available on this path, so we assume a 3-digit network (.visa).
+      // Callers needing network-aware CVV validation (e.g. Amex 4-digit) must use
+      // validateCVV(_:cardNetwork:) directly.
+      return validateCVV(value, cardNetwork: .visa)
 
     case .cardholderName:
       guard let value else {

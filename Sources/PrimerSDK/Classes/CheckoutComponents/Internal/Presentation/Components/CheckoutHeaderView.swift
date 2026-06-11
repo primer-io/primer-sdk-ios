@@ -37,7 +37,7 @@ struct CheckoutHeaderView: View {
         icon: "pencil",
         action: action,
         accessibilityIdentifier: AccessibilityIdentifiers.Common.editButton,
-        accessibilityLabel: CheckoutComponentsStrings.a11yEdit
+        accessibilityLabel: CheckoutComponentsStrings.editButton
       )
     }
 
@@ -47,7 +47,7 @@ struct CheckoutHeaderView: View {
         icon: "checkmark",
         action: action,
         accessibilityIdentifier: AccessibilityIdentifiers.Common.doneButton,
-        accessibilityLabel: CheckoutComponentsStrings.a11yDone
+        accessibilityLabel: CheckoutComponentsStrings.doneButton
       )
     }
   }

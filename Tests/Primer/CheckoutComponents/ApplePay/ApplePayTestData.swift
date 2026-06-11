@@ -137,7 +137,11 @@ enum ApplePayTestData {
         )
     }
 
-    static func paymentResponse(status: Response.Body.Payment.Status = .success) -> Response.Body.Payment {
+    static func paymentResponse(
+        status: Response.Body.Payment.Status = .success,
+        requiredAction: Response.Body.Payment.RequiredAction? = nil,
+        showSuccessCheckoutOnPendingPayment: Bool? = nil
+    ) -> Response.Body.Payment {
         Response.Body.Payment(
             id: Constants.paymentId,
             paymentId: Constants.paymentId,
@@ -148,10 +152,10 @@ enum ApplePayTestData {
             dateStr: nil,
             order: nil,
             orderId: nil,
-            requiredAction: nil,
+            requiredAction: requiredAction,
             status: status,
             paymentFailureReason: nil,
-            showSuccessCheckoutOnPendingPayment: nil,
+            showSuccessCheckoutOnPendingPayment: showSuccessCheckoutOnPendingPayment,
             checkoutOutcome: nil
         )
     }

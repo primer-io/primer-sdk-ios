@@ -37,7 +37,6 @@ final class KlarnaPaymentMethodTests: XCTestCase {
         let checkoutScope = DefaultCheckoutScope(
             clientToken: TestData.Tokens.valid,
             settings: PrimerSettings(),
-            diContainer: DIContainer.shared,
             navigator: CheckoutNavigator()
         )
 
@@ -141,28 +140,6 @@ final class KlarnaPaymentMethodTests: XCTestCase {
         XCTAssertTrue(scope is DefaultKlarnaScope)
     }
 
-    // MARK: - createView With Registered Scope
-
-    @MainActor
-    func test_createView_withRegisteredScope_returnsView() async throws {
-        // Given
-        let container = try await ContainerTestHelpers.createTestContainer()
-        _ = try? await container.register(ProcessKlarnaPaymentInteractor.self)
-            .asSingleton()
-            .with { _ in StubProcessKlarnaPaymentInteractorForTests() }
-        let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
-        _ = try await KlarnaPaymentMethod.createScope(
-            checkoutScope: checkoutScope,
-            diContainer: container
-        )
-
-        // When — createView depends on PaymentMethodRegistry
-        let view = KlarnaPaymentMethod.createView(checkoutScope: checkoutScope)
-
-        // Then — no crash; view may be nil since scope isn't auto-registered in registry
-        _ = view
-    }
-
     // MARK: - createView Tests
 
     @MainActor
@@ -171,7 +148,6 @@ final class KlarnaPaymentMethodTests: XCTestCase {
         let checkoutScope = DefaultCheckoutScope(
             clientToken: KlarnaTestData.Constants.mockToken,
             settings: PrimerSettings(),
-            diContainer: DIContainer.shared,
             navigator: CheckoutNavigator()
         )
 
@@ -270,7 +246,6 @@ final class KlarnaPaymentMethodTests: XCTestCase {
         let checkoutScope = DefaultCheckoutScope(
             clientToken: TestData.Tokens.valid,
             settings: settings,
-            diContainer: DIContainer.shared,
             navigator: navigator
         )
         checkoutScope.availablePaymentMethods = [
@@ -348,10 +323,6 @@ private final class MockNonDefaultCheckoutScopeForKlarna: PrimerCheckoutScope {
         AsyncStream { $0.finish() }
     }
 
-    var container: ContainerComponent?
-    var splashScreen: Component?
-    var loadingScreen: Component?
-    var errorScreen: ErrorComponent?
     var onBeforePaymentCreate: BeforePaymentCreateHandler?
     var paymentMethodSelection: PrimerPaymentMethodSelectionScope {
         fatalError("Not implemented for mock")

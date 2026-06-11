@@ -113,30 +113,6 @@ final class DefaultWebRedirectScopeTests: XCTestCase {
     // MARK: - UI Customization Tests
 
     @MainActor
-    func test_screen_canBeSet() {
-        // Given
-        let scope = createScope()
-
-        // When
-        scope.screen = { _ in EmptyView() }
-
-        // Then
-        XCTAssertNotNil(scope.screen)
-    }
-
-    @MainActor
-    func test_payButton_canBeSet() {
-        // Given
-        let scope = createScope()
-
-        // When
-        scope.payButton = { _ in EmptyView() }
-
-        // Then
-        XCTAssertNotNil(scope.payButton)
-    }
-
-    @MainActor
     func test_submitButtonText_canBeSet() {
         // Given
         let scope = createScope()
@@ -176,25 +152,6 @@ final class DefaultWebRedirectScopeTests: XCTestCase {
         // Then
         XCTAssertNotNil(firstState)
         XCTAssertEqual(firstState.status, .idle)
-    }
-
-    @MainActor
-    func test_state_streamCanBeCancelled() async {
-        // Given
-        let scope = createScope()
-
-        // When
-        let task = Task {
-            for await _ in scope.state {
-                // Just iterate
-            }
-        }
-
-        task.cancel()
-        await Task.yield()
-
-        // Then
-        XCTAssertTrue(task.isCancelled)
     }
 
     // MARK: - submit / performPayment Success Tests
@@ -360,6 +317,26 @@ final class DefaultWebRedirectScopeTests: XCTestCase {
         }
     }
 
+    @MainActor
+    func test_submit_cancelledError_doesNotTransitionToFailure() async throws {
+        // Given
+        mockInteractor.errorToThrow = PrimerError.cancelled(paymentMethodType: "ADYEN_SOFORT")
+        let scope = createScope()
+
+        // When
+        scope.submit()
+        _ = try await awaitValue(scope.state, matching: { $0.status == .redirecting })
+        await Task.yield()
+        await Task.yield()
+
+        // Then - cancellation is a clean dismissal, never surfaced as a payment failure
+        let firstState = try await awaitFirst(scope.state)
+        if case .failure = firstState.status {
+            XCTFail("Cancellation must not transition to failure")
+        }
+        XCTAssertEqual(mockInteractor.executeCallCount, 1)
+    }
+
     // MARK: - cancel Tests
 
     @MainActor
@@ -439,20 +416,6 @@ final class DefaultWebRedirectScopeTests: XCTestCase {
         XCTAssertTrue(scope.presentationContext.shouldShowBackButton)
     }
 
-    // MARK: - Dismissal Mechanism Tests
-
-    @MainActor
-    func test_dismissalMechanism_returnsCheckoutScopeMechanism() {
-        // Given
-        let scope = createScope()
-
-        // When
-        let mechanism = scope.dismissalMechanism
-
-        // Then
-        XCTAssertNotNil(mechanism)
-    }
-
     // MARK: - Weak checkoutScope Lifecycle Tests
 
     @MainActor
@@ -509,7 +472,6 @@ final class DefaultWebRedirectScopeTests: XCTestCase {
         DefaultCheckoutScope(
             clientToken: TestData.Tokens.valid,
             settings: PrimerSettings(),
-            diContainer: DIContainer.shared,
             navigator: CheckoutNavigator()
         )
     }

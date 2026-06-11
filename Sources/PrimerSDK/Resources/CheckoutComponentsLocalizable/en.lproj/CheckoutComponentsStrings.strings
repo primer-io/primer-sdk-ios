@@ -1,6 +1,5 @@
 "accessibility_action_delete" = "Delete payment method";
 "accessibility_action_edit" = "Edit card details";
-"accessibility_action_set_default" = "Set as default payment method";
 "accessibility_card_form_billing_address_address_line_1_label" = "Address line 1, required";
 "accessibility_card_form_billing_address_address_line_2_label" = "Address line 2, optional";
 "accessibility_card_form_billing_address_hint" = "Enter your address";
@@ -24,7 +23,7 @@
 "accessibility_card_form_cardholder_name_hint" = "Enter name as shown on card";
 "accessibility_card_form_cardholder_name_label" = "Cardholder name";
 "accessibility_card_form_cvc_error_invalid" = "Invalid security code.";
-"accessibility_card_form_cvc_hint" = "3 or 4 digit code on back of card";
+"accessibility_card_form_cvc_hint" = "Security code, 3 or 4 digits";
 "accessibility_card_form_cvc_label" = "Security code, required";
 "accessibility_card_form_cvv_icon" = "CVV security code";
 "accessibility_card_form_expiry_error_invalid" = "Invalid expiry date.";
@@ -32,11 +31,11 @@
 "accessibility_card_form_expiry_icon" = "Card expiry date";
 "accessibility_card_form_expiry_label" = "Expiry date, required";
 "accessibility_card_form_network_selector" = "Select network";
-"accessibility_card_form_network_selector_hint" = "Double tap to select a different card network";
-"accessibility_card_form_network_selector_inline_hint" = "Double tap to select this network";
+"accessibility_card_form_network_selector_hint" = "Select a different card network";
+"accessibility_card_form_network_selector_inline_hint" = "Select this network";
 "accessibility_card_form_network_selector_label" = "Card network selector";
 "accessibility_card_form_submit_disabled" = "Button disabled. Complete all required fields to enable payment";
-"accessibility_card_form_submit_hint" = "Double-tap to submit payment";
+"accessibility_card_form_submit_hint" = "Submit payment";
 "accessibility_card_form_submit_label" = "Submit payment";
 "accessibility_card_form_submit_loading" = "Processing payment, please wait";
 "accessibility_checkout_error_icon" = "Error";
@@ -57,8 +56,6 @@
 "accessibility_country_selection_search_icon" = "Search";
 "accessibility_error_generic" = "An error occurred. Please try again.";
 "accessibility_error_multiple_errors" = "%d errors found";
-"accessibility_payment_selection_card_full" = "%1$@ card ending in %2$@, expires %3$@";
-"accessibility_payment_selection_card_masked" = "card ending in masked digits";
 "accessibility_payment_selection_coming_soon" = "Payment method coming soon";
 "accessibility_payment_selection_pay_with_card" = "Pay with card";
 "accessibility_payment_selection_pay_with_ideal" = "Pay with iDEAL";
@@ -70,6 +67,7 @@
 "accessibility_screen_loading_payment_methods" = "Loading payment methods";
 "accessibility_screen_payment_method" = "%@ payment method";
 "accessibility_payment_method_button" = "Pay with %@";
+"accessibility_payment_method_selected" = "%@ selected";
 "accessibility_screen_processing_payment" = "Processing payment";
 "accessibility_screen_success" = "Payment successful";
 "accessibility_vault_delete_payment_method" = "Delete this payment method";
@@ -154,7 +152,6 @@
 "primer_card_form_error_retail_outlet_invalid" = "Invalid retail outlet";
 "primer_card_form_retail_not_implemented" = "Retail outlet selection not yet implemented";
 "primer_card_form_title" = "Pay with card";
-"primer_checkout_auto_dismiss_message" = "This screen will close automatically in 3 seconds";
 "primer_checkout_dismissing" = "Dismissing...";
 "primer_checkout_error_button_other_methods" = "Choose other payment methods";
 "primer_checkout_error_subtitle" = "There was a network issue.";
@@ -220,8 +217,8 @@
 "accessibility_klarna_category" = "%@ payment option";
 "accessibility_klarna_category_selected" = "%@ payment option, selected";
 "accessibility_klarna_payment_view" = "Klarna payment form";
-"accessibility_klarna_authorize_hint" = "Double tap to continue with Klarna";
-"accessibility_klarna_finalize_hint" = "Double tap to complete payment";
+"accessibility_klarna_authorize_hint" = "Continue with Klarna";
+"accessibility_klarna_finalize_hint" = "Complete payment";
 
 /* ACH */
 "primer_ach_title" = "Bank Account";
@@ -234,9 +231,9 @@
 "primer_ach_mandate_button_accept" = "I Agree";
 "primer_ach_mandate_button_decline" = "Cancel";
 "primer_ach_mandate_template" = "By clicking \"I Agree\", you authorize %1$@ to debit the bank account specified above for any amount owed for charges arising from your use of %1$@'s services and/or purchase of products from %1$@, pursuant to %1$@'s website and terms, until this authorization is revoked. You may amend or cancel this authorization at any time by providing notice to %1$@ with 30 (thirty) days notice.";
-"accessibility_ach_continue_hint" = "Double tap to continue to bank account selection";
-"accessibility_ach_mandate_accept_hint" = "Double tap to accept the authorization and complete payment";
-"accessibility_ach_mandate_decline_hint" = "Double tap to decline and cancel the payment";
+"accessibility_ach_continue_hint" = "Continue to bank account selection";
+"accessibility_ach_mandate_accept_hint" = "Accept the authorization and complete payment";
+"accessibility_ach_mandate_decline_hint" = "Decline and cancel the payment";
 
 /* Web Redirect */
 "primer_web_redirect_button_continue" = "Continue with %@";
@@ -293,3 +290,5 @@
 "primer_adyen_klarna_option_pay_later" = "Pay later";
 "primer_adyen_klarna_option_pay_over_time" = "Pay over time";
 "primer_adyen_klarna_option_pay_now" = "Pay now";
+"primer_vaulted_gocardless_direct_debit_suffix" = "Direct Debit";
+"accessibility_card_form_billing_address_country_hint" = "Opens a list to select your country";

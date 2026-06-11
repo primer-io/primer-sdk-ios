@@ -26,7 +26,6 @@
 "primer_checkout_dismissing" = "Isinasara...";
 "primer_checkout_system_error_title" = "Error sa Sistema ng Pagbabayad";
 "primer_checkout_scope_unavailable" = "Hindi available ang checkout scope";
-"primer_checkout_auto_dismiss_message" = "Awtomatikong magsasara ang screen na ito sa loob ng 3 segundo";
 "primer_card_form_label_number" = "Numero ng Kard";
 "primer_card_form_label_name" = "Pangalan sa kard";
 "primer_card_form_label_expiry" = "Petsa ng Pag-expire";
@@ -125,7 +124,7 @@
 "accessibility_card_form_cardholder_name_label" = "Pangalan ng may-ari ng kard";
 "accessibility_card_form_card_number_hint" = "Ilagay ang iyong 16-digit na numero ng kard";
 "accessibility_card_form_expiry_hint" = "Ilagay ang petsa ng pag-expire sa format na MM/YY";
-"accessibility_card_form_cvc_hint" = "3 o 4 na digit na code sa likod ng kard";
+"accessibility_card_form_cvc_hint" = "Security code, 3 o 4 na digit";
 "accessibility_card_form_cardholder_name_hint" = "Ilagay ang pangalan gaya ng nakasulat sa kard";
 "accessibility_card_form_billing_address_first_name_label" = "Unang pangalan, kinakailangan";
 "accessibility_card_form_billing_address_last_name_label" = "Apelyido, kinakailangan";
@@ -139,10 +138,10 @@
 "accessibility_card_form_billing_address_country_label" = "Bansa, kinakailangan";
 "accessibility_card_form_network_selector" = "Pumili ng network";
 "accessibility_card_form_network_selector_label" = "Tagapili ng network ng kard";
-"accessibility_card_form_network_selector_hint" = "I-double tap upang pumili ng ibang network ng kard";
-"accessibility_card_form_network_selector_inline_hint" = "I-double tap upang piliin ang network na ito";
+"accessibility_card_form_network_selector_hint" = "Pumili ng ibang card network";
+"accessibility_card_form_network_selector_inline_hint" = "Piliin ang network na ito";
 "accessibility_card_form_submit_label" = "Isumite ang pagbabayad";
-"accessibility_card_form_submit_hint" = "I-double tap upang isumite ang pagbabayad";
+"accessibility_card_form_submit_hint" = "Isumite ang bayad";
 "accessibility_card_form_submit_loading" = "Pinoproseso ang pagbabayad, mangyaring maghintay";
 "accessibility_card_form_submit_disabled" = "Naka-disable ang button. Kumpletuhin ang lahat ng kinakailangang field upang ma-enable ang pagbabayad";
 "accessibility_card_form_card_number_error_invalid" = "Di-wastong numero ng kard. Mangyaring suriin at subukan muli.";
@@ -172,15 +171,12 @@
 "accessibility_payment_selection_pay_with_klarna" = "Magbayad gamit ang Klarna";
 "accessibility_payment_selection_pay_with_ideal" = "Magbayad gamit ang iDEAL";
 "accessibility_payment_selection_coming_soon" = "Paparating na";
-"accessibility_payment_selection_card_full" = "%1$@ kard na nagtatapos sa %2$@, mag-eexpire %3$@";
-"accessibility_payment_selection_card_masked" = "kard na nagtatapos sa naka-mask na mga digit";
 "accessibility_country_selection_item" = "%1$@, bansa";
 "accessibility_country_selection_search" = "Maghanap ng mga bansa";
 "accessibility_country_selection_search_icon" = "Maghanap";
 "accessibility_country_selection_clear" = "I-clear";
 "accessibility_action_delete" = "Tanggalin ang paraan ng pagbabayad";
 "accessibility_action_edit" = "I-edit ang mga detalye ng kard";
-"accessibility_action_set_default" = "Itakda bilang default na paraan ng pagbabayad";
 "accessibility_checkout_success_icon" = "Matagumpay ang pagbabayad";
 "accessibility_checkout_error_icon" = "Error";
 "accessibility_vault_delete_payment_method" = "Tanggalin ang paraan ng pagbabayad na ito";
@@ -198,6 +194,7 @@
 "accessibility_paypal_logo" = "PayPal";
 "accessibility_screen_payment_method" = "%@ na paraan ng pagbabayad";
 "accessibility_payment_method_button" = "Magbayad gamit ang %@";
+"accessibility_payment_method_selected" = "Napili ang %@";
 
 /* Klarna */
 "primer_vault_default_klarna" = "Klarna";
@@ -209,8 +206,8 @@
 "accessibility_klarna_category" = "%@ opsyon sa pagbabayad";
 "accessibility_klarna_category_selected" = "%@ opsyon sa pagbabayad, napili";
 "accessibility_klarna_payment_view" = "Klarna form sa pagbabayad";
-"accessibility_klarna_authorize_hint" = "I-double tap para magpatuloy sa Klarna";
-"accessibility_klarna_finalize_hint" = "I-double tap para makumpleto ang pagbabayad";
+"accessibility_klarna_authorize_hint" = "Magpatuloy sa Klarna";
+"accessibility_klarna_finalize_hint" = "Kumpletuhin ang bayad";
 
 /* ACH */
 "primer_ach_title" = "Bank Account";
@@ -223,9 +220,9 @@
 "primer_ach_mandate_button_accept" = "Sumasang-ayon Ako";
 "primer_ach_mandate_button_decline" = "Kanselahin";
 "primer_ach_mandate_template" = "Sa pag-click sa \"Sumasang-ayon Ako\", binibigyan mo ng awtorisasyon ang %1$@ na i-debit ang bank account na tinukoy sa itaas para sa anumang halagang utang para sa mga singil na nagmumula sa paggamit mo ng mga serbisyo ng %1$@ at/o pagbili ng mga produkto mula sa %1$@, alinsunod sa website at mga tuntunin ng %1$@, hanggang sa mabawi ang awtorisasyong ito. Maaari mong baguhin o kanselahin ang awtorisasyong ito anumang oras sa pamamagitan ng pagbibigay ng abiso sa %1$@ na may 30 (tatlumpung) araw na paunawa.";
-"accessibility_ach_continue_hint" = "I-double tap para magpatuloy sa pagpili ng bank account";
-"accessibility_ach_mandate_accept_hint" = "I-double tap para tanggapin ang awtorisasyon at kumpletuhin ang pagbabayad";
-"accessibility_ach_mandate_decline_hint" = "I-double tap para tanggihan at kanselahin ang pagbabayad";
+"accessibility_ach_continue_hint" = "Magpatuloy sa pagpili ng bank account";
+"accessibility_ach_mandate_accept_hint" = "Tanggapin ang awtorisasyon at kumpletuhin ang bayad";
+"accessibility_ach_mandate_decline_hint" = "Tanggihan at kanselahin ang bayad";
 
 "accessibility_card_form_billing_address_hint" = "Masukkan alamat Anda";
 "accessibility_card_form_billing_address_state_hint" = "Masukkan provinsi atau negara bagian";
@@ -285,3 +282,5 @@
 "primer_adyen_klarna_option_pay_later" = "Magbayad mamaya";
 "primer_adyen_klarna_option_pay_over_time" = "Magbayad sa paglipas ng panahon";
 "primer_adyen_klarna_option_pay_now" = "Magbayad ngayon";
+"primer_vaulted_gocardless_direct_debit_suffix" = "Direct Debit";
+"accessibility_card_form_billing_address_country_hint" = "Nagbubukas ng listahan para piliin ang iyong bansa";

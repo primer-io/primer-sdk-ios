@@ -26,7 +26,6 @@
 "primer_checkout_dismissing" = "Փակվում է...";
 "primer_checkout_system_error_title" = "Վճարման համակարգի սխալ";
 "primer_checkout_scope_unavailable" = "Վճարման դաշտը հասանելի չէ";
-"primer_checkout_auto_dismiss_message" = "Այս էկրանը ինքնաբերաբար կփակվի 3 վայրկյանից";
 "primer_card_form_label_number" = "Քարտի համար";
 "primer_card_form_label_name" = "Քարտին գրված անուն";
 "primer_card_form_label_expiry" = "Ժամկետի ավարտ";
@@ -125,7 +124,7 @@
 "accessibility_card_form_cardholder_name_label" = "Քարտապանի անուն";
 "accessibility_card_form_card_number_hint" = "Մուտքագրեք ձեր քարտի համարը";
 "accessibility_card_form_expiry_hint" = "Մուտքագրեք ժամկետի ավարտը ԱԱ/ՏՏ ձևաչափով";
-"accessibility_card_form_cvc_hint" = "3 կամ 4 նիշանոց ծածկագիր քարտի հետևի կողմում";
+"accessibility_card_form_cvc_hint" = "Անվտանգության կոդ, 3 կամ 4 թվանշան";
 "accessibility_card_form_cardholder_name_hint" = "Մուտքագրեք անունը, ինչպես ցուցադրված է քարտի վրա";
 "accessibility_card_form_billing_address_first_name_label" = "Անուն, պարտադիր";
 "accessibility_card_form_billing_address_last_name_label" = "Ազգանուն, պարտադիր";
@@ -139,10 +138,10 @@
 "accessibility_card_form_billing_address_country_label" = "Երկիր, պարտադիր";
 "accessibility_card_form_network_selector" = "Ընտրել ցանց";
 "accessibility_card_form_network_selector_label" = "Քարտի ցանցի ընտրություն";
-"accessibility_card_form_network_selector_hint" = "Կրկնակի հպեք՝ ընտրելու այլ քարտային ցանց";
-"accessibility_card_form_network_selector_inline_hint" = "Կրկնակի հպեք՝ ընտրելու այս ցանցը";
+"accessibility_card_form_network_selector_hint" = "Ընտրել այլ քարտի ցանց";
+"accessibility_card_form_network_selector_inline_hint" = "Ընտրել այս ցանցը";
 "accessibility_card_form_submit_label" = "Ուղարկել վճարումը";
-"accessibility_card_form_submit_hint" = "Կրկնակի հպեք՝ ուղարկելու վճարումը";
+"accessibility_card_form_submit_hint" = "Ուղարկել վճարումը";
 "accessibility_card_form_submit_loading" = "Վճարումը մշակվում է, խնդրում ենք սպասել";
 "accessibility_card_form_submit_disabled" = "Կոճակն անջատված է։ Լրացրեք բոլոր պարտադիր դաշտերը՝ վճարումն ակտիվացնելու համար";
 "accessibility_card_form_card_number_error_invalid" = "Սխալ քարտի համար։ Ստուգեք և կրկին փորձեք։";
@@ -172,15 +171,12 @@
 "accessibility_payment_selection_pay_with_klarna" = "Վճարել Klarna-ով";
 "accessibility_payment_selection_pay_with_ideal" = "Վճարել iDEAL-ով";
 "accessibility_payment_selection_coming_soon" = "Վճարման եղանակ շուտով";
-"accessibility_payment_selection_card_full" = "%1$@ քարտ ավարտվում է %2$@-ով, ժամկետ %3$@";
-"accessibility_payment_selection_card_masked" = "քարտ ավարտվում է թաքնված թվերով";
 "accessibility_country_selection_item" = "%1$@, երկիր";
 "accessibility_country_selection_search" = "Որոնել երկիրներ";
 "accessibility_country_selection_search_icon" = "Որոնում";
 "accessibility_country_selection_clear" = "Մաքրել";
 "accessibility_action_delete" = "Ջնջել վճարման եղանակը";
 "accessibility_action_edit" = "Խմբագրել քարտի տվյալները";
-"accessibility_action_set_default" = "Սահմանել որպես կանխադրված վճարման եղանակ";
 "accessibility_checkout_success_icon" = "Վճարումն իրականացվել է";
 "accessibility_checkout_error_icon" = "Սխալ";
 "accessibility_vault_delete_payment_method" = "Ջնջել այս վճարման եղանակը";
@@ -195,6 +191,7 @@
 "accessibility_vaulted_paypal_email" = "PayPal, %@";
 "accessibility_screen_payment_method" = "%@ վճարման եղանակ";
 "accessibility_payment_method_button" = "Վճարել %@-ով";
+"accessibility_payment_method_selected" = "%@ ընտրված է";
 "accessibility_paypal_logo" = "PayPal";
 "accessibility_error_generic" = "Սխալ է տեղի ունեցել։ Խնդրում ենք կրկին փորձել։";
 "accessibility_error_multiple_errors" = "%d սխալներ հայտնաբերվել են";
@@ -209,8 +206,8 @@
 "accessibility_klarna_category" = "%@ վճարման տարբերակ";
 "accessibility_klarna_category_selected" = "%@ վճարման տարբերակ, ընտրված";
 "accessibility_klarna_payment_view" = "Klarna վճարման ձև";
-"accessibility_klarna_authorize_hint" = "Կրկնակի հպեք՝ շարունակելու Klarna-ով";
-"accessibility_klarna_finalize_hint" = "Կրկնակի հպեք՝ վճարումն ավարտելու համար";
+"accessibility_klarna_authorize_hint" = "Շարունակել Klarna-ով";
+"accessibility_klarna_finalize_hint" = "Ավարտել վճարումը";
 
 /* ACH */
 "primer_ach_title" = "Բանկային հաշիվ";
@@ -223,9 +220,9 @@
 "primer_ach_mandate_button_accept" = "Համաձայն եմ";
 "primer_ach_mandate_button_decline" = "Չեղարկել";
 "primer_ach_mandate_template" = "«Համաձայն եմ» կոճակին սեղմելով՝ դուք թույլատրում եք %1$@-ին գումարներ դուրս գրել վերը նշված բանկային հաշվից՝ %1$@-ի ծառայությունների օգտագործման և/կամ %1$@-ից ապրանքներ գնելու համար ծագած պարտավորությունների ցանկացած գումարները՝ %1$@-ի կայքի և պայմանների համաձայն՝ մինչև այս թույլատվությունը չեղարկվի։ Դուք կարող եք փոփոխել կամ չեղարկել այս թույլատվությունը ցանկացած պահին՝ %1$@-ին 30 (երեսուն) օր առաջ ծանուցելով։";
-"accessibility_ach_continue_hint" = "Կրկնակի հպեք՝ բանկային հաշվի ընտրությանը շարունակելու համար";
-"accessibility_ach_mandate_accept_hint" = "Կրկնակի հպեք՝ թույլատվությունն ընդունելու և վճարումն ավարտելու համար";
-"accessibility_ach_mandate_decline_hint" = "Կրկնակի հպեք՝ մերժելու և վճարումը չեղարկելու համար";
+"accessibility_ach_continue_hint" = "Շարունակել դեպի բանկային հաշվի ընտրություն";
+"accessibility_ach_mandate_accept_hint" = "Ընդունել լիազորությունը և ավարտել վճարումը";
+"accessibility_ach_mandate_decline_hint" = "Մերժել և չեղարկել վճարումը";
 
 "accessibility_card_form_billing_address_hint" = "Մուտքագրեք ձեր հասցեն";
 "accessibility_card_form_billing_address_state_hint" = "Մուտքագրեք նահանգը կամ մարզը";
@@ -283,3 +280,5 @@
 "primer_adyen_klarna_option_pay_later" = "Վճարեք ավելի ուշ";
 "primer_adyen_klarna_option_pay_over_time" = "Վճարեք մասնակի վճարումներով";
 "primer_adyen_klarna_option_pay_now" = "Վճարեք հիմա";
+"primer_vaulted_gocardless_direct_debit_suffix" = "Ուղղակի դեբետ";
+"accessibility_card_form_billing_address_country_hint" = "Բացում է ցուցակ ձեր երկիրը ընտրելու համար";

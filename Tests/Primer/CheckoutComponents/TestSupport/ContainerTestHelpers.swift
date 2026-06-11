@@ -10,11 +10,12 @@ import Foundation
 @available(iOS 15.0, *)
 enum ContainerTestHelpers {
 
-    static func createTestContainer() async throws -> Container {
+    static func createTestContainer(apiConfiguration: PrimerAPIConfiguration? = nil) async throws -> Container {
         let container = Container()
 
         // Register mock ConfigurationService
         let mockConfig = MockConfigurationService.withDefaultConfiguration()
+        mockConfig.apiConfiguration = apiConfiguration
         _ = try await container.register(ConfigurationService.self)
             .asSingleton()
             .with { _ in mockConfig }
@@ -22,7 +23,11 @@ enum ContainerTestHelpers {
         // Register mock AccessibilityAnnouncementService
         _ = try await container.register(AccessibilityAnnouncementService.self)
             .asSingleton()
-            .with { _ in DefaultAccessibilityAnnouncementService(publisher: MockUIAccessibilityNotificationPublisher()) }
+            .with { _ in
+                await MainActor.run {
+                    DefaultAccessibilityAnnouncementService(publisher: MockUIAccessibilityNotificationPublisher())
+                }
+            }
 
         // Register mock AnalyticsInteractor
         _ = try await container.register(CheckoutComponentsAnalyticsInteractorProtocol.self)
@@ -49,7 +54,6 @@ enum ContainerTestHelpers {
         return DefaultCheckoutScope(
             clientToken: TestData.Tokens.valid,
             settings: settings,
-            diContainer: DIContainer.shared,
             navigator: navigator
         )
     }
@@ -74,12 +78,47 @@ enum ContainerTestHelpers {
         let scope = DefaultCheckoutScope(
             clientToken: TestData.Tokens.valid,
             settings: settings,
-            diContainer: DIContainer.shared,
             navigator: navigator
         )
 
         // Drain the state stream until the scope exits `.initializing`. Bounded by a generous timeout
         // so a broken init doesn't hang the suite forever.
+        let deadline = Date().addingTimeInterval(5)
+        for await state in scope.state {
+            switch state {
+            case .initializing:
+                if Date() > deadline { return scope }
+                continue
+            default:
+                return scope
+            }
+        }
+        return scope
+    }
+
+    /// Like ``createSettledCheckoutScope()`` but settles at `.ready` rather than racing to a
+    /// `.failure(missingConfiguration)`: it installs a global SDK configuration carrying a payment
+    /// method, so the scope's load path returns a non-empty list and reaches `.ready`. Use for tests
+    /// that drive the checkout `state` and need the scope quiescent (no stray terminal) before
+    /// injecting their own outcome. Pair with `SDKSessionHelper.tearDown()` to clear global config.
+    @MainActor
+    static func createReadyCheckoutScope() async throws -> DefaultCheckoutScope {
+        SDKSessionHelper.setUp()
+        let container = try await createTestContainer(apiConfiguration: PrimerAPIConfigurationModule.apiConfiguration)
+        await DIContainer.setContainer(container)
+
+        let navigator = CheckoutNavigator(coordinator: CheckoutCoordinator())
+        let settings = PrimerSettings(
+            paymentHandling: .manual,
+            paymentMethodOptions: PrimerPaymentMethodOptions(),
+            uiOptions: PrimerUIOptions(isInitScreenEnabled: false)
+        )
+        let scope = DefaultCheckoutScope(
+            clientToken: TestData.Tokens.valid,
+            settings: settings,
+            navigator: navigator
+        )
+
         let deadline = Date().addingTimeInterval(5)
         for await state in scope.state {
             switch state {

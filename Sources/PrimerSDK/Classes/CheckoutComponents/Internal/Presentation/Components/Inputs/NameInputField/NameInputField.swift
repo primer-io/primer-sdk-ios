@@ -15,7 +15,6 @@ struct NameInputField: View, LogReporter {
   let scope: (any CardFormFieldScopeInternal)?
   let onNameChange: ((String) -> Void)?
   let onValidationChange: ((Bool) -> Void)?
-  let styling: PrimerFieldStyling?
 
   // MARK: - Private Properties
 
@@ -33,15 +32,13 @@ struct NameInputField: View, LogReporter {
     label: String?,
     placeholder: String,
     inputType: PrimerInputElementType,
-    scope: any CardFormFieldScopeInternal,
-    styling: PrimerFieldStyling? = nil
+    scope: any CardFormFieldScopeInternal
   ) {
     self.label = label
     self.placeholder = placeholder
     self.inputType = inputType
     initialValue = ""
     self.scope = scope
-    self.styling = styling
     onNameChange = nil
     onValidationChange = nil
   }
@@ -51,7 +48,6 @@ struct NameInputField: View, LogReporter {
     placeholder: String,
     inputType: PrimerInputElementType,
     initialValue: String = "",
-    styling: PrimerFieldStyling? = nil,
     onNameChange: ((String) -> Void)? = nil,
     onValidationChange: ((Bool) -> Void)? = nil
   ) {
@@ -60,7 +56,6 @@ struct NameInputField: View, LogReporter {
     self.inputType = inputType
     self.initialValue = initialValue
     scope = nil
-    self.styling = styling
     self.onNameChange = onNameChange
     self.onValidationChange = onValidationChange
   }
@@ -70,7 +65,6 @@ struct NameInputField: View, LogReporter {
   var body: some View {
     PrimerInputFieldContainer(
       label: label,
-      styling: styling,
       text: $name,
       isValid: $isValid,
       errorMessage: $errorMessage,
@@ -84,7 +78,6 @@ struct NameInputField: View, LogReporter {
           isFocused: $isFocused,
           placeholder: placeholder,
           inputType: inputType,
-          styling: styling,
           validationService: validationService,
           scope: scope,
           onNameChange: onNameChange,

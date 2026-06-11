@@ -10,6 +10,7 @@ protocol GetPaymentMethodsInteractor {
   func execute() async throws -> [InternalPaymentMethod]
 }
 
+@available(iOS 15.0, *)
 final class GetPaymentMethodsInteractorImpl: GetPaymentMethodsInteractor, LogReporter {
 
   private let repository: HeadlessRepository

@@ -1,6 +1,5 @@
 "accessibility_action_delete" = "删除支付方式";
 "accessibility_action_edit" = "编辑卡片详情";
-"accessibility_action_set_default" = "设为默认支付方式";
 "accessibility_card_form_billing_address_address_line_1_label" = "地址行1，必填";
 "accessibility_card_form_billing_address_address_line_2_label" = "地址行2，可选";
 "accessibility_card_form_billing_address_city_hint" = "输入城市名称";
@@ -19,7 +18,7 @@
 "accessibility_card_form_cardholder_name_hint" = "输入卡上显示的姓名";
 "accessibility_card_form_cardholder_name_label" = "持卡人姓名";
 "accessibility_card_form_cvc_error_invalid" = "安全码无效。";
-"accessibility_card_form_cvc_hint" = "卡背面的3位或4位数字";
+"accessibility_card_form_cvc_hint" = "安全码，3位或4位数字";
 "accessibility_card_form_cvc_label" = "安全码，必填";
 "accessibility_card_form_cvv_icon" = "CVV安全码";
 "accessibility_card_form_expiry_error_invalid" = "有效期无效。";
@@ -27,11 +26,11 @@
 "accessibility_card_form_expiry_icon" = "卡片有效期";
 "accessibility_card_form_expiry_label" = "有效期，必填";
 "accessibility_card_form_network_selector" = "选择卡组织";
-"accessibility_card_form_network_selector_hint" = "双击以选择其他卡组织";
-"accessibility_card_form_network_selector_inline_hint" = "双击以选择此卡组织";
+"accessibility_card_form_network_selector_hint" = "选择其他卡组织";
+"accessibility_card_form_network_selector_inline_hint" = "选择此卡组织";
 "accessibility_card_form_network_selector_label" = "卡组织选择器";
 "accessibility_card_form_submit_disabled" = "按钮已禁用。请填写所有必填字段以启用支付";
-"accessibility_card_form_submit_hint" = "双击提交支付";
+"accessibility_card_form_submit_hint" = "提交支付";
 "accessibility_card_form_submit_label" = "提交支付";
 "accessibility_card_form_submit_loading" = "正在处理支付，请稍候";
 "accessibility_checkout_error_icon" = "错误";
@@ -52,8 +51,6 @@
 "accessibility_country_selection_search_icon" = "搜索";
 "accessibility_error_generic" = "发生错误。请重试。";
 "accessibility_error_multiple_errors" = "发现%d个错误";
-"accessibility_payment_selection_card_full" = "%1$@卡，尾号%2$@，有效期至%3$@";
-"accessibility_payment_selection_card_masked" = "卡片尾号已隐藏";
 "accessibility_payment_selection_coming_soon" = "支付方式即将推出";
 "accessibility_payment_selection_pay_with_card" = "使用银行卡支付";
 "accessibility_payment_selection_pay_with_ideal" = "使用iDEAL支付";
@@ -65,6 +62,7 @@
 "accessibility_screen_loading_payment_methods" = "正在加载支付方式";
 "accessibility_screen_payment_method" = "%@支付方式";
 "accessibility_payment_method_button" = "使用%@支付";
+"accessibility_payment_method_selected" = "已选择%@";
 "accessibility_screen_processing_payment" = "正在处理支付";
 "accessibility_screen_success" = "支付成功";
 "accessibility_vault_delete_payment_method" = "删除此支付方式";
@@ -144,7 +142,6 @@
 "primer_card_form_placeholder_state" = "北京";
 "primer_card_form_retail_not_implemented" = "零售网点选择尚未实现";
 "primer_card_form_title" = "使用银行卡支付";
-"primer_checkout_auto_dismiss_message" = "此页面将在3秒后自动关闭";
 "primer_checkout_dismissing" = "正在关闭...";
 "primer_checkout_error_button_other_methods" = "选择其他支付方式";
 "primer_checkout_error_subtitle" = "出现网络问题。";
@@ -209,8 +206,8 @@
 "accessibility_klarna_category" = "%@ 付款选项";
 "accessibility_klarna_category_selected" = "%@ 付款选项，已选择";
 "accessibility_klarna_payment_view" = "Klarna付款表单";
-"accessibility_klarna_authorize_hint" = "双击以继续使用Klarna";
-"accessibility_klarna_finalize_hint" = "双击以完成付款";
+"accessibility_klarna_authorize_hint" = "继续使用Klarna";
+"accessibility_klarna_finalize_hint" = "完成付款";
 
 /* ACH */
 "primer_ach_title" = "银行账户";
@@ -223,9 +220,9 @@
 "primer_ach_mandate_button_accept" = "我同意";
 "primer_ach_mandate_button_decline" = "取消";
 "primer_ach_mandate_template" = "点击\"我同意\"，即表示您授权 %1$@ 根据 %1$@ 的网站和条款，从上述指定的银行账户中扣除因使用 %1$@ 服务和/或从 %1$@ 购买产品而产生的任何应付费用金额，直至该授权被撤销。您可以随时通过提前 30（三十）天通知 %1$@ 来修改或取消此授权。";
-"accessibility_ach_continue_hint" = "双击以继续选择银行账户";
-"accessibility_ach_mandate_accept_hint" = "双击以接受授权并完成付款";
-"accessibility_ach_mandate_decline_hint" = "双击以拒绝并取消付款";
+"accessibility_ach_continue_hint" = "继续选择银行账户";
+"accessibility_ach_mandate_accept_hint" = "接受授权并完成付款";
+"accessibility_ach_mandate_decline_hint" = "拒绝并取消付款";
 
 "accessibility_card_form_billing_address_hint" = "请输入您的地址";
 "accessibility_card_form_billing_address_state_hint" = "请输入省/州";
@@ -285,3 +282,5 @@
 "primer_adyen_klarna_option_pay_later" = "稍后付款";
 "primer_adyen_klarna_option_pay_over_time" = "分期付款";
 "primer_adyen_klarna_option_pay_now" = "立即付款";
+"primer_vaulted_gocardless_direct_debit_suffix" = "直接借记";
+"accessibility_card_form_billing_address_country_hint" = "打开列表以选择您的国家/地区";

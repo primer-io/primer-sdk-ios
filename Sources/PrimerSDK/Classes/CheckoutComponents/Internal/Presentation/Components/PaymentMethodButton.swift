@@ -9,48 +9,24 @@ import SwiftUI
 @available(iOS 15.0, *)
 struct PaymentMethodButton: View {
   let method: CheckoutPaymentMethod
-  let customItem: PaymentMethodItemComponent?
   let onSelect: () -> Void
 
   @Environment(\.designTokens) private var tokens
 
   var body: some View {
-    if let customItem {
-      AnyView(customItem(method))
-        .onTapGesture { onSelect() }
-    } else {
-      let radius = method.cornerRadius ?? PrimerRadius.medium(tokens: tokens)
-      Button(action: onSelect) {
-        HStack(spacing: PrimerSpacing.large(tokens: tokens)) {
-          icon
-          Text(method.buttonText ?? method.name)
-            .font(PrimerFont.bodyLarge(tokens: tokens))
-            .foregroundColor(
-              method.textColor.map(Color.init) ?? CheckoutColors.textPrimary(tokens: tokens))
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.horizontal, PrimerSpacing.large(tokens: tokens))
-        .padding(.vertical, PrimerSpacing.medium(tokens: tokens))
-        .frame(minHeight: PrimerComponentHeight.paymentMethodCard)
-        .background(
-          RoundedRectangle(cornerRadius: radius)
-            .fill(
-              method.backgroundColor.map(Color.init) ?? CheckoutColors.background(tokens: tokens))
-        )
-        .overlay(
-          RoundedRectangle(cornerRadius: radius)
-            .strokeBorder(
-              borderColor(for: method),
-              lineWidth: borderWidth(for: method))
-        )
+    let radius = method.cornerRadius ?? PrimerRadius.medium(tokens: tokens)
+    return Button(action: onSelect) {
+      HStack(spacing: PrimerSpacing.large(tokens: tokens)) {
+        icon
+        Text(method.buttonText ?? method.name)
+          .font(PrimerFont.bodyLarge(tokens: tokens))
+          .foregroundColor(
+            method.textColor.map(Color.init) ?? CheckoutColors.textPrimary(tokens: tokens))
       }
-      .buttonStyle(PaymentMethodButtonStyle())
-      .accessibility(config: AccessibilityConfiguration(
-        identifier: AccessibilityIdentifiers.PaymentSelection.paymentMethodItem(
-          method.type, uniqueId: method.id),
-        label: CheckoutComponentsStrings.a11yPaymentMethodButton(method.buttonText ?? method.name),
-        traits: [.isButton]
-      ))
+      .frame(maxWidth: .infinity)
+      .padding(.horizontal, PrimerSpacing.large(tokens: tokens))
+      .padding(.vertical, PrimerSpacing.medium(tokens: tokens))
+      .frame(minHeight: PrimerComponentHeight.paymentMethodCard)
       .background(
         RoundedRectangle(cornerRadius: radius)
           .fill(
@@ -63,14 +39,24 @@ struct PaymentMethodButton: View {
             lineWidth: borderWidth(for: method))
       )
     }
+    .buttonStyle(PaymentMethodButtonStyle())
+    .accessibility(config: AccessibilityConfiguration(
+      identifier: AccessibilityIdentifiers.PaymentSelection.paymentMethodItem(
+        method.type, uniqueId: method.id),
+      label: CheckoutComponentsStrings.a11yPaymentMethodButton(method.buttonText ?? method.name),
+      traits: [.isButton]
+    ))
   }
 
   private var hasVisibleBackground: Bool {
     guard let bg = method.backgroundColor else { return false }
-    var white: CGFloat = 0
+    var red: CGFloat = 0
+    var green: CGFloat = 0
+    var blue: CGFloat = 0
     var alpha: CGFloat = 0
-    bg.getWhite(&white, alpha: &alpha)
-    return alpha > 0.1 && white < 0.95
+    bg.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
+    let luminance = 0.299 * red + 0.587 * green + 0.114 * blue
+    return alpha > 0.1 && luminance < 0.95
   }
 
   private func borderColor(for method: CheckoutPaymentMethod) -> Color {

@@ -1,6 +1,5 @@
 "accessibility_action_delete" = "מחק אמצעי תשלום";
 "accessibility_action_edit" = "ערוך פרטי כרטיס";
-"accessibility_action_set_default" = "הגדר כאמצעי תשלום ברירת מחדל";
 "accessibility_card_form_billing_address_address_line_1_label" = "שורת כתובת 1, נדרש";
 "accessibility_card_form_billing_address_address_line_2_label" = "שורת כתובת 2, אופציונלי";
 "accessibility_card_form_billing_address_city_hint" = "הזן שם עיר";
@@ -19,7 +18,7 @@
 "accessibility_card_form_cardholder_name_hint" = "הזן שם כפי שמופיע על הכרטיס";
 "accessibility_card_form_cardholder_name_label" = "שם בעל הכרטיס";
 "accessibility_card_form_cvc_error_invalid" = "קוד אבטחה לא תקין.";
-"accessibility_card_form_cvc_hint" = "קוד בן 3 או 4 ספרות בגב הכרטיס";
+"accessibility_card_form_cvc_hint" = "קוד אבטחה, 3 או 4 ספרות";
 "accessibility_card_form_cvc_label" = "קוד אבטחה, נדרש";
 "accessibility_card_form_cvv_icon" = "קוד אבטחה CVV";
 "accessibility_card_form_expiry_error_invalid" = "תאריך תפוגה לא תקין.";
@@ -27,11 +26,11 @@
 "accessibility_card_form_expiry_icon" = "תאריך תפוגת כרטיס";
 "accessibility_card_form_expiry_label" = "תאריך תפוגה, נדרש";
 "accessibility_card_form_network_selector" = "בחר רשת";
-"accessibility_card_form_network_selector_hint" = "הקש פעמיים כדי לבחור רשת כרטיסים אחרת";
-"accessibility_card_form_network_selector_inline_hint" = "הקש פעמיים כדי לבחור רשת זו";
+"accessibility_card_form_network_selector_hint" = "בחר רשת כרטיסים אחרת";
+"accessibility_card_form_network_selector_inline_hint" = "בחר רשת זו";
 "accessibility_card_form_network_selector_label" = "בוחר רשת כרטיסים";
 "accessibility_card_form_submit_disabled" = "הכפתור מושבת. השלם את כל השדות הנדרשים כדי לאפשר תשלום";
-"accessibility_card_form_submit_hint" = "הקש פעמיים כדי לשלוח תשלום";
+"accessibility_card_form_submit_hint" = "שלח את התשלום";
 "accessibility_card_form_submit_label" = "שלח תשלום";
 "accessibility_card_form_submit_loading" = "מעבד תשלום, אנא המתן";
 "accessibility_checkout_error_icon" = "שגיאה";
@@ -52,8 +51,6 @@
 "accessibility_country_selection_search_icon" = "חיפוש";
 "accessibility_error_generic" = "אירעה שגיאה. אנא נסה שוב.";
 "accessibility_error_multiple_errors" = "נמצאו %d שגיאות";
-"accessibility_payment_selection_card_full" = "כרטיס %1$@ המסתיים ב-%2$@, תוקף עד %3$@";
-"accessibility_payment_selection_card_masked" = "כרטיס המסתיים בספרות מוסתרות";
 "accessibility_payment_selection_coming_soon" = "אמצעי תשלום יגיע בקרוב";
 "accessibility_payment_selection_pay_with_card" = "שלם בכרטיס";
 "accessibility_payment_selection_pay_with_ideal" = "שלם עם iDEAL";
@@ -65,6 +62,7 @@
 "accessibility_screen_loading_payment_methods" = "טוען אמצעי תשלום";
 "accessibility_screen_payment_method" = "אמצעי תשלום %@";
 "accessibility_payment_method_button" = "שלם עם %@";
+"accessibility_payment_method_selected" = "%@ נבחר";
 "accessibility_screen_processing_payment" = "מעבד תשלום";
 "accessibility_screen_success" = "התשלום הושלם בהצלחה";
 "accessibility_vault_delete_payment_method" = "מחק אמצעי תשלום זה";
@@ -144,7 +142,6 @@
 "primer_card_form_placeholder_state" = "תל אביב";
 "primer_card_form_retail_not_implemented" = "בחירת נקודת מכירה טרם יושמה";
 "primer_card_form_title" = "שלם בכרטיס";
-"primer_checkout_auto_dismiss_message" = "מסך זה ייסגר אוטומטית תוך 3 שניות";
 "primer_checkout_dismissing" = "סוגר...";
 "primer_checkout_error_button_other_methods" = "בחר אמצעי תשלום אחרים";
 "primer_checkout_error_subtitle" = "אירעה בעיית רשת.";
@@ -209,8 +206,8 @@
 "accessibility_klarna_category" = "אפשרות תשלום %@";
 "accessibility_klarna_category_selected" = "אפשרות תשלום %@, נבחר";
 "accessibility_klarna_payment_view" = "טופס תשלום Klarna";
-"accessibility_klarna_authorize_hint" = "הקש פעמיים כדי להמשיך עם Klarna";
-"accessibility_klarna_finalize_hint" = "הקש פעמיים כדי להשלים את התשלום";
+"accessibility_klarna_authorize_hint" = "המשך עם Klarna";
+"accessibility_klarna_finalize_hint" = "השלם את התשלום";
 
 /* ACH */
 "primer_ach_title" = "חשבון בנק";
@@ -223,9 +220,9 @@
 "primer_ach_mandate_button_accept" = "אני מסכים";
 "primer_ach_mandate_button_decline" = "ביטול";
 "primer_ach_mandate_template" = "בלחיצה על \"אני מסכים\", אתה מאשר ל-%1$@ לחייב את חשבון הבנק המצוין לעיל בכל סכום המגיע עבור חיובים הנובעים משימושך בשירותי %1$@ ו/או רכישת מוצרים מ-%1$@, בהתאם לאתר ולתנאים של %1$@, עד לביטול הרשאה זו. תוכל לשנות או לבטל הרשאה זו בכל עת על ידי מתן הודעה ל-%1$@ בהתראה של 30 (שלושים) יום.";
-"accessibility_ach_continue_hint" = "הקש פעמיים כדי להמשיך לבחירת חשבון בנק";
-"accessibility_ach_mandate_accept_hint" = "הקש פעמיים כדי לאשר את ההרשאה ולהשלים את התשלום";
-"accessibility_ach_mandate_decline_hint" = "הקש פעמיים כדי לסרב ולבטל את התשלום";
+"accessibility_ach_continue_hint" = "המשך לבחירת חשבון בנק";
+"accessibility_ach_mandate_accept_hint" = "אשר את ההרשאה והשלם את התשלום";
+"accessibility_ach_mandate_decline_hint" = "דחה ובטל את התשלום";
 
 "accessibility_card_form_billing_address_hint" = "הזן את הכתובת שלך";
 "accessibility_card_form_billing_address_state_hint" = "הזן מדינה או מחוז";
@@ -285,3 +282,5 @@
 "primer_adyen_klarna_option_pay_later" = "שלמו מאוחר יותר";
 "primer_adyen_klarna_option_pay_over_time" = "שלמו לאורך זמן";
 "primer_adyen_klarna_option_pay_now" = "שלמו כעת";
+"primer_vaulted_gocardless_direct_debit_suffix" = "חיוב ישיר";
+"accessibility_card_form_billing_address_country_hint" = "פותח רשימה לבחירת המדינה שלך";

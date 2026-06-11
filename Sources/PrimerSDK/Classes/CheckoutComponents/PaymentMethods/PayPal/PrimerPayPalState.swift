@@ -8,10 +8,10 @@ import Foundation
 
 /// PayPal flow: `idle` -> `loading` -> `redirecting` -> `processing` -> `success` | `failure`
 @available(iOS 15.0, *)
-public struct PrimerPayPalState: Equatable, @unchecked Sendable {
+struct PrimerPayPalState: Equatable, @unchecked Sendable {
 
   /// When switching on this enum, always include a `default` case to handle future additions.
-  public enum Step: Equatable {
+  enum Step: Equatable {
     case idle
     case loading
     case redirecting
@@ -20,11 +20,11 @@ public struct PrimerPayPalState: Equatable, @unchecked Sendable {
     case failure(String)
   }
 
-  public internal(set) var step: Step
-  public internal(set) var paymentMethod: CheckoutPaymentMethod?
-  public internal(set) var surchargeAmount: String?
+  var step: Step
+  var paymentMethod: CheckoutPaymentMethod?
+  var surchargeAmount: String?
 
-  public init(
+  init(
     step: Step = .idle,
     paymentMethod: CheckoutPaymentMethod? = nil,
     surchargeAmount: String? = nil

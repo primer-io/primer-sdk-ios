@@ -90,7 +90,6 @@ final class PrimerPaymentMethodScopeTests: XCTestCase {
         let checkoutScope = DefaultCheckoutScope(
             clientToken: TestData.Tokens.valid,
             settings: PrimerSettings(),
-            diContainer: DIContainer.shared,
             navigator: CheckoutNavigator()
         )
 
@@ -112,7 +111,6 @@ final class PrimerPaymentMethodScopeTests: XCTestCase {
         let checkoutScope = DefaultCheckoutScope(
             clientToken: TestData.Tokens.valid,
             settings: PrimerSettings(),
-            diContainer: DIContainer.shared,
             navigator: CheckoutNavigator()
         )
 

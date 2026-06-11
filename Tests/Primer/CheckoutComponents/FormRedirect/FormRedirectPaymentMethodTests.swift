@@ -163,6 +163,7 @@ final class FormRedirectPaymentMethodTests: XCTestCase {
             _ = try await FormRedirectPaymentMethodHelper.createScopeForPaymentMethodType(
                 PrimerPaymentMethodType.adyenBlik.rawValue,
                 checkoutScope: checkoutScope,
+                presentationContext: .direct,
                 diContainer: emptyContainer
             )
             XCTFail("Expected error")
@@ -184,6 +185,7 @@ final class FormRedirectPaymentMethodTests: XCTestCase {
         let scope = try await FormRedirectPaymentMethodHelper.createScopeForPaymentMethodType(
             PrimerPaymentMethodType.adyenBlik.rawValue,
             checkoutScope: checkoutScope,
+            presentationContext: .direct,
             diContainer: container
         )
 
@@ -192,50 +194,29 @@ final class FormRedirectPaymentMethodTests: XCTestCase {
         XCTAssertEqual(scope.presentationContext, .direct)
     }
 
-    func test_helper_createScope_withMultiplePaymentMethods_setsPaymentSelectionContext() async throws {
-        // Given
-        await registerFormRedirectDependencies()
+    func test_validated_withMultiplePaymentMethods_derivesPaymentSelectionContext() throws {
+        // Given a checkout scope offering more than one payment method
         let checkoutScope = createCheckoutScopeWithMultiplePaymentMethods()
 
-        // When
-        let scope = try await FormRedirectPaymentMethodHelper.createScopeForPaymentMethodType(
-            PrimerPaymentMethodType.adyenMBWay.rawValue,
-            checkoutScope: checkoutScope,
-            diContainer: container
-        )
+        // When the presentation context is derived
+        let (_, context) = try DefaultCheckoutScope.validated(from: checkoutScope)
 
-        // Then
-        XCTAssertEqual(scope.presentationContext, .fromPaymentSelection)
+        // Then it shows the back button (the method was reached from the selection list).
+        XCTAssertEqual(context, .fromPaymentSelection)
     }
 
-    func test_blik_createScope_setsCorrectPaymentMethodType() async throws {
-        // Given
-        await registerFormRedirectDependencies()
-        let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+    func test_validated_withSinglePaymentMethod_derivesDirectContext() throws {
+        // Given a checkout scope offering exactly one payment method
+        let checkoutScope = createCheckoutScopeWithMultiplePaymentMethods()
+        checkoutScope.availablePaymentMethods = [
+            InternalPaymentMethod(id: "blik-1", type: PrimerPaymentMethodType.adyenBlik.rawValue, name: "BLIK")
+        ]
 
-        // When
-        let scope = try await BlikPaymentMethod.createScope(
-            checkoutScope: checkoutScope,
-            diContainer: container
-        )
+        // When the presentation context is derived
+        let (_, context) = try DefaultCheckoutScope.validated(from: checkoutScope)
 
-        // Then
-        XCTAssertNotNil(scope)
-    }
-
-    func test_mbWay_createScope_setsCorrectPaymentMethodType() async throws {
-        // Given
-        await registerFormRedirectDependencies()
-        let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
-
-        // When
-        let scope = try await MBWayPaymentMethod.createScope(
-            checkoutScope: checkoutScope,
-            diContainer: container
-        )
-
-        // Then
-        XCTAssertNotNil(scope)
+        // Then it shows a cancel button (no list to return to).
+        XCTAssertEqual(context, .direct)
     }
 
     // MARK: - createScope Success with Presentation Context
@@ -298,42 +279,6 @@ final class FormRedirectPaymentMethodTests: XCTestCase {
 
         // Then
         XCTAssertEqual(scope.presentationContext, .fromPaymentSelection)
-    }
-
-    // MARK: - createView With Registered Scope
-
-    func test_blik_createView_withRegisteredScope_returnsView() async throws {
-        // Given
-        await registerFormRedirectDependencies()
-        let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
-        _ = try await BlikPaymentMethod.createScope(
-            checkoutScope: checkoutScope,
-            diContainer: container
-        )
-
-        // When — createView depends on PaymentMethodRegistry, not scope creation
-        let view = BlikPaymentMethod.createView(checkoutScope: checkoutScope)
-
-        // Then — no crash, view may be nil since scope isn't auto-registered
-        _ = view
-    }
-
-    // MARK: - Helper createScope for MBWay Type
-
-    func test_helper_createScope_forMBWay_setsCorrectPaymentMethodType() async throws {
-        // Given
-        await registerFormRedirectDependencies()
-        let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
-
-        // When
-        let scope = try await FormRedirectPaymentMethodHelper.createScopeForPaymentMethodType(
-            PrimerPaymentMethodType.adyenMBWay.rawValue,
-            checkoutScope: checkoutScope,
-            diContainer: container
-        )
-
-        // Then
-        XCTAssertNotNil(scope)
     }
 
     // MARK: - createView Tests
@@ -428,7 +373,6 @@ final class FormRedirectPaymentMethodTests: XCTestCase {
         let scope = DefaultCheckoutScope(
             clientToken: TestData.Tokens.valid,
             settings: settings,
-            diContainer: DIContainer.shared,
             navigator: navigator
         )
         scope.availablePaymentMethods = [
@@ -470,10 +414,6 @@ private final class MockNonDefaultCheckoutScopeForFormRedirect: PrimerCheckoutSc
         AsyncStream { $0.finish() }
     }
 
-    var container: ContainerComponent?
-    var splashScreen: Component?
-    var loadingScreen: Component?
-    var errorScreen: ErrorComponent?
     var onBeforePaymentCreate: BeforePaymentCreateHandler?
     var paymentMethodSelection: PrimerPaymentMethodSelectionScope {
         fatalError("Not implemented for mock")

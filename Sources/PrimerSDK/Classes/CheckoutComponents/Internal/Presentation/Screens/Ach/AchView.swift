@@ -41,17 +41,20 @@ struct AchView: View, LogReporter {
       observer.stopObserving()
     }
     .onChange(of: observer.achState.step) { step in
-      let message: String = switch step {
+      let message: String? = switch step {
       case .loading, .processing:
         CheckoutComponentsStrings.loading
       case .userDetailsCollection:
         CheckoutComponentsStrings.achUserDetailsTitle
       case .bankAccountCollection:
-        CheckoutComponentsStrings.loading
+        // The bank-collector full-screen cover posts its own screen-change announcement.
+        nil
       case .mandateAcceptance:
         CheckoutComponentsStrings.achMandateTitle
       }
-      UIAccessibility.post(notification: .screenChanged, argument: message)
+      if let message {
+        UIAccessibility.post(notification: .screenChanged, argument: message)
+      }
     }
     .fullScreenCover(isPresented: $observer.showBankCollector) {
       if let bankCollectorVC = scope.bankCollectorViewController {

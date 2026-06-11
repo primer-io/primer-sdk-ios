@@ -9,7 +9,11 @@ import Foundation
 @available(iOS 15.0, *)
 @MainActor
 protocol PaymentMethodSelectionScopeInternal: PrimerPaymentMethodSelectionScope {
+  var currentState: PrimerPaymentMethodSelectionState { get }
+  var vaultedPaymentMethods: [PrimerHeadlessUniversalCheckout.VaultedPaymentMethod] { get }
   func syncSelectedVaultedPaymentMethod()
   func collapsePaymentMethods()
+  func selectVaultedPaymentMethod(_ method: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod)
   func deleteVaultedPaymentMethod(_ method: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod) async throws
+  func navigateToDeleteConfirmation(_ method: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod)
 }

@@ -8,11 +8,11 @@ import SwiftUI
 
 /// Type alias for Adyen Klarna screen customization component.
 @available(iOS 15.0, *)
-public typealias AdyenKlarnaScreenComponent = (any PrimerAdyenKlarnaScope) -> any View
+typealias AdyenKlarnaScreenComponent = (any PrimerAdyenKlarnaScope) -> any View
 
 /// Type alias for Adyen Klarna button customization component.
 @available(iOS 15.0, *)
-public typealias AdyenKlarnaButtonComponent = (any PrimerAdyenKlarnaScope) -> any View
+typealias AdyenKlarnaButtonComponent = (any PrimerAdyenKlarnaScope) -> any View
 
 /// Scope protocol for the Adyen Klarna payment method.
 ///
@@ -49,19 +49,19 @@ public typealias AdyenKlarnaButtonComponent = (any PrimerAdyenKlarnaScope) -> an
 /// ```
 @available(iOS 15.0, *)
 @MainActor
-public protocol PrimerAdyenKlarnaScope: PrimerPaymentMethodScope where State == PrimerAdyenKlarnaState {
+protocol PrimerAdyenKlarnaScope: PrimerPaymentMethodScope where State == PrimerAdyenKlarnaState {
 
-    /// Selects a Klarna payment option and initiates the redirect payment flow.
-    func selectOption(_ option: AdyenKlarnaPaymentOption)
+  /// Selects a Klarna payment option and initiates the redirect payment flow.
+  func selectOption(_ option: AdyenKlarnaPaymentOption)
 
-    // MARK: - Screen-Level Customization
+  // MARK: - Screen-Level Customization
 
-    /// Custom screen component to replace the entire Adyen Klarna screen.
-    var screen: AdyenKlarnaScreenComponent? { get set }
+  /// Custom screen component to replace the entire Adyen Klarna screen.
+  var screen: AdyenKlarnaScreenComponent? { get set }
 
-    /// Custom button component to replace the submit button.
-    var payButton: AdyenKlarnaButtonComponent? { get set }
+  /// Custom button component to replace the submit button.
+  var payButton: AdyenKlarnaButtonComponent? { get set }
 
-    /// Custom text for the submit button.
-    var submitButtonText: String? { get set }
+  /// Custom text for the submit button.
+  var submitButtonText: String? { get set }
 }

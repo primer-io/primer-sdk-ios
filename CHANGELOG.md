@@ -1,3 +1,16 @@
+## Unreleased
+
+### Feat
+
+- CheckoutComponents: customize the checkout UI with the new composable components — `PrimerCardForm`, `PrimerPaymentMethods`, and `PrimerVaultedPaymentMethods` — each with section slots you can override, plus the `CardFormDefaults` / `PaymentMethodsDefaults` / `VaultedPaymentMethodsDefaults` building blocks for recomposing individual fields.
+
+### BREAKING CHANGE
+
+- CheckoutComponents (beta): customization now goes through the composable components above. The previous scope/closure-based customization surface has been removed — including the `scope:` parameter on `PrimerCheckout` / `presentCheckout`, custom screen closures, and per-field configuration/styling types. Migrate by embedding the composable components under `.primerCheckoutSession(_:)` and overriding their slots.
+- The payment result no longer includes the unused `metadata` field (it was never populated).
+- Payment status values are simplified to `pending`, `success`, and `failed`.
+- Removed the static delegate on `PrimerCheckoutPresenter`; use the presenter instance's delegate instead.
+
 ## 3.0.0-b0 (2026-03-12)
 
 ### Feat

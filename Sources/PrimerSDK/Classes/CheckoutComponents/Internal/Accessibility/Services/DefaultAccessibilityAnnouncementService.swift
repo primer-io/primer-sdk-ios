@@ -7,14 +7,15 @@
 import UIKit
 
 @available(iOS 15.0, *)
+@MainActor
 final class DefaultAccessibilityAnnouncementService: AccessibilityAnnouncementService, LogReporter {
 
   private let publisher: UIAccessibilityNotificationPublisher
 
-  init(
-    publisher: UIAccessibilityNotificationPublisher = DefaultUIAccessibilityNotificationPublisher()
-  ) {
-    self.publisher = publisher
+  // Default constructed in-body (not as a default arg): the publisher is @MainActor-isolated,
+  // and default-argument expressions are evaluated in a nonisolated context.
+  init(publisher: UIAccessibilityNotificationPublisher? = nil) {
+    self.publisher = publisher ?? DefaultUIAccessibilityNotificationPublisher()
   }
 
   func announceError(_ message: String) {

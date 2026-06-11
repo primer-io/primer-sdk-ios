@@ -167,24 +167,6 @@ final class PayPalPaymentMethodTests: XCTestCase {
         }
     }
 
-    // MARK: - createView With Registered Scope
-
-    func test_createView_withRegisteredScope_returnsView() async throws {
-        // Given
-        await registerPayPalDependencies()
-        let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
-        _ = try await PayPalPaymentMethod.createScope(
-            checkoutScope: checkoutScope,
-            diContainer: container
-        )
-
-        // When — createView depends on PaymentMethodRegistry
-        let view = PayPalPaymentMethod.createView(checkoutScope: checkoutScope)
-
-        // Then — no crash; view may be nil since scope isn't auto-registered
-        _ = view
-    }
-
     // MARK: - createScope PrimerError Rethrow
 
     func test_createScope_whenResolveThrowsPrimerError_rethrowsSameError() async throws {
@@ -233,7 +215,6 @@ final class PayPalPaymentMethodTests: XCTestCase {
         let scope = DefaultCheckoutScope(
             clientToken: TestData.Tokens.valid,
             settings: settings,
-            diContainer: DIContainer.shared,
             navigator: navigator
         )
 
@@ -274,10 +255,6 @@ private final class MockNonDefaultCheckoutScope: PrimerCheckoutScope {
         }
     }
 
-    var container: ContainerComponent?
-    var splashScreen: Component?
-    var loadingScreen: Component?
-    var errorScreen: ErrorComponent?
     var onBeforePaymentCreate: BeforePaymentCreateHandler?
 
     var paymentMethodSelection: PrimerPaymentMethodSelectionScope {

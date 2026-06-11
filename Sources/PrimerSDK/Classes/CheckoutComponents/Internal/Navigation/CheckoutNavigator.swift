@@ -15,8 +15,12 @@ final class CheckoutNavigator: ObservableObject, LogReporter {
   var navigationEvents: AsyncStream<CheckoutRoute> {
     AsyncStream { continuation in
       let task = Task { @MainActor [self] in
+        var lastRoute: CheckoutRoute?
         for await _ in coordinator.$navigationStack.values {
-          continuation.yield(coordinator.currentRoute)
+          let route = coordinator.currentRoute
+          guard route != lastRoute else { continue }
+          lastRoute = route
+          continuation.yield(route)
         }
         continuation.finish()
       }

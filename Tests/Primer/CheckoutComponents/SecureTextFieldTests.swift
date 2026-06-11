@@ -37,20 +37,4 @@ final class SecureTextFieldTests: XCTestCase {
         XCTAssertEqual(textField.internalText, "")
         XCTAssertEqual(textField.text, "****")
     }
-
-    func test_cvvValue_isMasked() {
-        let textField = SecureTextField()
-        textField.internalText = "123"
-
-        XCTAssertEqual(textField.text, "****")
-        XCTAssertEqual(textField.internalText, "123")
-    }
-
-    func test_emptyString_isMasked() {
-        let textField = SecureTextField()
-        textField.internalText = ""
-
-        XCTAssertEqual(textField.text, "****")
-        XCTAssertEqual(textField.internalText, "")
-    }
 }

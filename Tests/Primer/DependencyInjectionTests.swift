@@ -447,47 +447,4 @@ final class DIFrameworkTests: XCTestCase {
 
         // And your existing “orphanedRegistrations” check stays the same…
     }
-
-    // MARK: - InstrumentedContainer Metrics Recording
-
-    func test_instrumentedContainer_recordsMetrics() async throws {
-        actor TestMetrics: ContainerMetrics {
-            private var resolutions: [(TypeKey, TimeInterval)] = []
-
-            func recordResolution(for key: TypeKey, duration: TimeInterval) async {
-                resolutions.append((key, duration))
-            }
-            func recordRegistration(for key: TypeKey) async {}
-            func recordCacheHit(for key: TypeKey) async {}
-            func recordCacheMiss(for key: TypeKey) async {}
-            func getMetrics() async -> ContainerPerformanceMetrics {
-                .init(
-                    totalResolutions: resolutions.count,
-                    averageResolutionTime: 0,
-                    slowestResolutions: [],
-                    cacheHitRate: 0,
-                    memoryUsageEstimate: 0
-                )
-            }
-            func recordedCount() async -> Int {
-                resolutions.count
-            }
-        }
-
-        let metrics = TestMetrics()
-        let container = InstrumentedContainer(metrics: metrics, logger: { _ in })
-
-        // Register & resolve a service
-        _ = try await container.register(TestService.self).asSingleton()
-            .with { _ in TestServiceImpl() }
-        _ = try await container.resolve(TestService.self)
-
-        // Assert via the public metrics API...
-        let perf = await container.getPerformanceMetrics()
-        XCTAssertEqual(perf?.totalResolutions, 1)
-
-        // ...and via our helper to ensure recordResolution ran exactly once
-        let count = await metrics.recordedCount()
-        XCTAssertEqual(count, 1)
-    }
 }

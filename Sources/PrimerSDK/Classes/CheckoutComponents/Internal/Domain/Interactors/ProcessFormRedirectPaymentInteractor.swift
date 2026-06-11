@@ -82,7 +82,10 @@ final class ProcessFormRedirectPaymentInteractorImpl: ProcessFormRedirectPayment
 
         logger.debug(message: "Payment resumed with status: \(paymentResponse.status.rawValue)")
 
-        if paymentResponse.status == .failed {
+        switch paymentResponse.status {
+        case .success:
+          break
+        case .failed, .pending:
           let error = PrimerError.paymentFailed(
             paymentMethodType: paymentMethodType,
             paymentId: paymentResponse.paymentId,
@@ -104,9 +107,8 @@ final class ProcessFormRedirectPaymentInteractorImpl: ProcessFormRedirectPayment
 
     return PaymentResult(
       paymentId: paymentResponse.paymentId,
-      status: .success,
+      status: PaymentStatus(from: paymentResponse.status),
       token: token,
-      amount: nil,
       paymentMethodType: paymentMethodType
     )
   }

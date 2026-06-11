@@ -7,34 +7,34 @@
 import Foundation
 
 @available(iOS 15.0, *)
-public struct PrimerFormFieldState: Equatable, Identifiable {
+struct PrimerFormFieldState: Equatable, Identifiable {
 
-  public enum FieldType: String, Sendable {
+  enum FieldType: String, Sendable {
     case otpCode
     case phoneNumber
   }
 
-  public enum KeyboardType: Sendable {
+  enum KeyboardType: Sendable {
     case numberPad
     case phonePad
     case `default`
   }
 
-  public let fieldType: FieldType
-  public let placeholder: String
-  public let label: String
-  public let helperText: String?
-  public let keyboardType: KeyboardType
-  public let maxLength: Int?
-  public internal(set) var value: String
-  public internal(set) var isValid: Bool
-  public internal(set) var errorMessage: String?
-  public internal(set) var countryCodePrefix: String?
-  public internal(set) var dialCode: String?
+  let fieldType: FieldType
+  let placeholder: String
+  let label: String
+  let helperText: String?
+  let keyboardType: KeyboardType
+  let maxLength: Int?
+  var value: String
+  var isValid: Bool
+  var errorMessage: String?
+  var countryCodePrefix: String?
+  var dialCode: String?
 
-  public var id: String { fieldType.rawValue }
+  var id: String { fieldType.rawValue }
 
-  public init(
+  init(
     fieldType: FieldType,
     value: String = "",
     isValid: Bool = false,

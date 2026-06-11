@@ -98,7 +98,7 @@ struct DeleteVaultedPaymentMethodConfirmationScreen: View, LogReporter {
           RoundedRectangle(cornerRadius: PrimerRadius.medium(tokens: tokens))
             .stroke(
               CheckoutColors.borderDefault(tokens: tokens),
-              lineWidth: PrimerBorderWidth.standard
+              lineWidth: PrimerBorderWidth.standard(tokens: tokens)
             )
         )
     }
@@ -138,7 +138,7 @@ struct DeleteVaultedPaymentMethodConfirmationScreen: View, LogReporter {
     .accessibility(
       config: AccessibilityConfiguration(
         identifier: AccessibilityIdentifiers.Common.deleteButton,
-        label: CheckoutComponentsStrings.a11yDelete,
+        label: CheckoutComponentsStrings.deleteButton,
         traits: [.isButton]
       ))
   }
@@ -150,7 +150,7 @@ struct DeleteVaultedPaymentMethodConfirmationScreen: View, LogReporter {
 
     isDeleting = true
 
-    Task { [self] in
+    deleteTask = Task { [self] in
       do {
         try await scope.deleteVaultedPaymentMethod(vaultedPaymentMethod)
         logger.info(message: "[Vault] Successfully deleted payment method from confirmation screen")
@@ -159,6 +159,7 @@ struct DeleteVaultedPaymentMethodConfirmationScreen: View, LogReporter {
           message: "[Vault] Failed to delete payment method: \(error.localizedDescription)")
       }
 
+      if Task.isCancelled { return }
       isDeleting = false
       navigator.navigateBack()
     }

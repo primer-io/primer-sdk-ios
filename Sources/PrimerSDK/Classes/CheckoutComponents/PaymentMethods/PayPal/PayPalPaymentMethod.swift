@@ -46,7 +46,7 @@ struct PayPalPaymentMethod: PaymentMethodProtocol {
 
   @MainActor
   static func createView(checkoutScope: any PrimerCheckoutScope) -> AnyView? {
-    guard let payPalScope = checkoutScope.getPaymentMethodScope(PrimerPayPalScope.self) else {
+    guard let payPalScope = checkoutScope.getPaymentMethodScope(DefaultPayPalScope.self) else {
       return nil
     }
 

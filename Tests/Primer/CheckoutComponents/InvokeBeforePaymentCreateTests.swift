@@ -256,7 +256,6 @@ final class InvokeBeforePaymentCreateTests: XCTestCase {
         DefaultCheckoutScope(
             clientToken: "mock_token",
             settings: PrimerSettings(),
-            diContainer: DIContainer.shared,
             navigator: CheckoutNavigator()
         )
     }

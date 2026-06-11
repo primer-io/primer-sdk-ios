@@ -45,33 +45,6 @@ final class TrackThreeDSChallengeTests: XCTestCase {
         sut.trackThreeDSChallengeIfNeeded(from: tokenData)
     }
 
-    func test_trackThreeDSChallenge_withAuthentication_doesNotCrash() {
-        // Given - token data with 3DS authentication
-        let auth = ThreeDS.AuthenticationDetails(
-            responseCode: .authSuccess,
-            reasonCode: nil,
-            reasonText: nil,
-            protocolVersion: "2.2.0",
-            challengeIssued: true
-        )
-        let tokenData = Response.Body.Tokenization(
-            analyticsId: "analytics-2",
-            id: "token-2",
-            isVaulted: false,
-            isAlreadyVaulted: false,
-            paymentInstrumentType: .paymentCard,
-            paymentMethodType: "PAYMENT_CARD",
-            paymentInstrumentData: nil,
-            threeDSecureAuthentication: auth,
-            token: "tok_456",
-            tokenType: .singleUse,
-            vaultData: nil
-        )
-
-        // When / Then - should process without crash
-        sut.trackThreeDSChallengeIfNeeded(from: tokenData)
-    }
-
     func test_trackThreeDSChallenge_withNilPaymentMethodType_usesDefault() {
         // Given - token data with auth but no payment method type
         let auth = ThreeDS.AuthenticationDetails(
@@ -182,15 +155,5 @@ final class BinDataStreamTests: XCTestCase {
 
         // Then
         XCTAssertNotNil(stream)
-    }
-
-    func test_getBinDataStream_returnsSameStreamOnMultipleCalls() {
-        // When
-        let stream1 = sut.getBinDataStream()
-        let stream2 = sut.getBinDataStream()
-
-        // Then
-        XCTAssertNotNil(stream1)
-        XCTAssertNotNil(stream2)
     }
 }

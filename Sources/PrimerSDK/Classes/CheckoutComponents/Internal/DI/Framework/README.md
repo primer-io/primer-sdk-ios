@@ -208,21 +208,23 @@ Create isolated dependency scopes for specific features:
 class PaymentFlowScope: DependencyScope {
     let scopeId = "payment-flow"
     
-    func setupContainer() async {
-        guard let container = try? await getContainer() else { return }
-        
+    func setupContainer(_ container: any ContainerProtocol) async {
         // Register flow-specific dependencies
-        _ = try await container.register(PaymentFlowState.self)
-            .asSingleton()
-            .with { _ in PaymentFlowState() }
+        do {
+            _ = try await container.register(PaymentFlowState.self)
+                .asSingleton()
+                .with { _ in PaymentFlowState() }
         
-        _ = try await container.register(PaymentStepValidator.self)
-            .asTransient()
-            .with { resolver in
-                PaymentStepValidator(
-                    state: try await resolver.resolve(PaymentFlowState.self)
-                )
-            }
+            _ = try await container.register(PaymentStepValidator.self)
+                .asTransient()
+                .with { resolver in
+                    PaymentStepValidator(
+                        state: try await resolver.resolve(PaymentFlowState.self)
+                    )
+                }
+        } catch {
+            // Handle registration failure
+        }
     }
     
     func cleanupScope() async {
@@ -251,7 +253,7 @@ class PaymentServiceTests: XCTestCase {
     var mockContainer: ContainerProtocol!
     
     override func setUp() async throws {
-        mockContainer = await DIContainer.createMockContainer()
+        mockContainer = MockDIContainer()
         
         // Register mocks
         _ = try await mockContainer.register(PaymentService.self)
@@ -444,7 +446,7 @@ let diagnostics = await container.getDiagnostics()
 print(diagnostics)
 
 // Print detailed report
-diagnostics.printDetailedReport()
+print(diagnostics)
 ```
 
 **Output Example:**
@@ -467,7 +469,7 @@ Perform automated health checks to detect potential issues:
 
 ```swift
 let healthReport = await container.performHealthCheck()
-healthReport.printReport()
+print(healthReport.status)
 
 // Check specific status
 switch healthReport.status {
@@ -495,24 +497,6 @@ await container.performMaintenanceCleanup()
 // - Remove dead weak references
 // - Log cleanup results
 // - Optimize memory usage
-```
-
-### Performance Monitoring
-
-Use `InstrumentedContainer` for detailed performance tracking:
-
-```swift
-// Create container with performance monitoring
-let container = InstrumentedContainer(
-    metrics: DefaultContainerMetrics()
-)
-
-// Register and use dependencies
-_ = try await container.register(PaymentService.self).asSingleton().with { _ in PaymentServiceImpl() }
-let service = try await container.resolve(PaymentService.self)
-
-// Get performance metrics
-await container.printPerformanceReport()
 ```
 
 ## Container Features

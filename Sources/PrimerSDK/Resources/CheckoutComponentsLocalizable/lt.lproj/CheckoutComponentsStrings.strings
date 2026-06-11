@@ -1,6 +1,5 @@
 "accessibility_action_delete" = "Ištrinti mokėjimo būdą";
 "accessibility_action_edit" = "Redaguoti kortelės duomenis";
-"accessibility_action_set_default" = "Nustatyti kaip numatytąjį mokėjimo būdą";
 "accessibility_card_form_billing_address_address_line_1_label" = "1 adreso eilutė, privaloma";
 "accessibility_card_form_billing_address_address_line_2_label" = "2 adreso eilutė, neprivaloma";
 "accessibility_card_form_billing_address_city_hint" = "Įveskite miesto pavadinimą";
@@ -19,7 +18,7 @@
 "accessibility_card_form_cardholder_name_hint" = "Įveskite vardą, kaip nurodyta kortelėje";
 "accessibility_card_form_cardholder_name_label" = "Kortelės turėtojo vardas";
 "accessibility_card_form_cvc_error_invalid" = "Neteisingas saugumo kodas.";
-"accessibility_card_form_cvc_hint" = "3 arba 4 skaitmenų kodas kortelės gale";
+"accessibility_card_form_cvc_hint" = "Saugos kodas, 3 arba 4 skaitmenys";
 "accessibility_card_form_cvc_label" = "Saugumo kodas, privaloma";
 "accessibility_card_form_cvv_icon" = "CVV saugumo kodas";
 "accessibility_card_form_expiry_error_invalid" = "Neteisinga galiojimo data.";
@@ -27,11 +26,11 @@
 "accessibility_card_form_expiry_icon" = "Kortelės galiojimo data";
 "accessibility_card_form_expiry_label" = "Galiojimo data, privaloma";
 "accessibility_card_form_network_selector" = "Pasirinkti tinklą";
-"accessibility_card_form_network_selector_hint" = "Dukart bakstelėkite, kad pasirinktumėte kitą kortelės tinklą";
-"accessibility_card_form_network_selector_inline_hint" = "Dukart bakstelėkite, kad pasirinktumėte šį tinklą";
+"accessibility_card_form_network_selector_hint" = "Pasirinkti kitą kortelių tinklą";
+"accessibility_card_form_network_selector_inline_hint" = "Pasirinkti šį tinklą";
 "accessibility_card_form_network_selector_label" = "Kortelės tinklo pasirinkimas";
 "accessibility_card_form_submit_disabled" = "Mygtukas išjungtas. Užpildykite visus privalomus laukus, kad galėtumėte mokėti";
-"accessibility_card_form_submit_hint" = "Dukart bakstelėkite, kad pateiktumėte mokėjimą";
+"accessibility_card_form_submit_hint" = "Pateikti mokėjimą";
 "accessibility_card_form_submit_label" = "Pateikti mokėjimą";
 "accessibility_card_form_submit_loading" = "Apdorojamas mokėjimas, prašome palaukti";
 "accessibility_checkout_error_icon" = "Klaida";
@@ -52,8 +51,6 @@
 "accessibility_country_selection_search_icon" = "Paieška";
 "accessibility_error_generic" = "Įvyko klaida. Prašome bandyti dar kartą.";
 "accessibility_error_multiple_errors" = "Rasta %d klaidų";
-"accessibility_payment_selection_card_full" = "%1$@ kortelė, pabaiga %2$@, galioja iki %3$@";
-"accessibility_payment_selection_card_masked" = "kortelė su paslėptais skaitmenimis";
 "accessibility_payment_selection_coming_soon" = "Mokėjimo būdas netrukus bus prieinamas";
 "accessibility_payment_selection_pay_with_card" = "Mokėti kortele";
 "accessibility_payment_selection_pay_with_ideal" = "Mokėti su iDEAL";
@@ -65,6 +62,7 @@
 "accessibility_screen_loading_payment_methods" = "Įkeliami mokėjimo būdai";
 "accessibility_screen_payment_method" = "%@ mokėjimo būdas";
 "accessibility_payment_method_button" = "Mokėti su %@";
+"accessibility_payment_method_selected" = "Pasirinkta: %@";
 "accessibility_screen_processing_payment" = "Apdorojamas mokėjimas";
 "accessibility_screen_success" = "Mokėjimas sėkmingas";
 "accessibility_vault_delete_payment_method" = "Ištrinti šį mokėjimo būdą";
@@ -144,7 +142,6 @@
 "primer_card_form_placeholder_state" = "Vilniaus apskritis";
 "primer_card_form_retail_not_implemented" = "Prekybos taško pasirinkimas dar neįgyvendintas";
 "primer_card_form_title" = "Mokėti kortele";
-"primer_checkout_auto_dismiss_message" = "Šis ekranas automatiškai užsidarys po 3 sekundžių";
 "primer_checkout_dismissing" = "Uždaroma...";
 "primer_checkout_error_button_other_methods" = "Pasirinkite kitus mokėjimo būdus";
 "primer_checkout_error_subtitle" = "Įvyko tinklo problema.";
@@ -209,8 +206,8 @@
 "accessibility_klarna_category" = "%@ mokėjimo parinktis";
 "accessibility_klarna_category_selected" = "%@ mokėjimo parinktis, pasirinkta";
 "accessibility_klarna_payment_view" = "Klarna mokėjimo forma";
-"accessibility_klarna_authorize_hint" = "Bakstelėkite du kartus, kad tęstumėte su Klarna";
-"accessibility_klarna_finalize_hint" = "Bakstelėkite du kartus, kad užbaigtumėte mokėjimą";
+"accessibility_klarna_authorize_hint" = "Tęsti su Klarna";
+"accessibility_klarna_finalize_hint" = "Užbaigti mokėjimą";
 
 /* ACH */
 "primer_ach_title" = "Banko sąskaita";
@@ -223,9 +220,9 @@
 "primer_ach_mandate_button_accept" = "Sutinku";
 "primer_ach_mandate_button_decline" = "Atšaukti";
 "primer_ach_mandate_template" = "Spustelėdami \"Sutinku\", jūs įgaliojate %1$@ nurašyti iš aukščiau nurodytos banko sąskaitos bet kokią sumą, skirtą mokesčiams, atsirandantiems dėl %1$@ paslaugų naudojimo ir/ar produktų įsigijimo iš %1$@, pagal %1$@ svetainę ir sąlygas, kol šis įgaliojimas bus atšauktas. Šį įgaliojimą galite pakeisti arba atšaukti bet kuriuo metu, pranešdami %1$@ prieš 30 (trisdešimt) dienų.";
-"accessibility_ach_continue_hint" = "Bakstelėkite du kartus, kad tęstumėte banko sąskaitos pasirinkimą";
-"accessibility_ach_mandate_accept_hint" = "Bakstelėkite du kartus, kad priimtumėte autorizaciją ir užbaigtumėte mokėjimą";
-"accessibility_ach_mandate_decline_hint" = "Bakstelėkite du kartus, kad atmestumėte ir atšauktumėte mokėjimą";
+"accessibility_ach_continue_hint" = "Tęsti banko sąskaitos pasirinkimą";
+"accessibility_ach_mandate_accept_hint" = "Priimti autorizaciją ir užbaigti mokėjimą";
+"accessibility_ach_mandate_decline_hint" = "Atmesti ir atšaukti mokėjimą";
 
 "accessibility_card_form_billing_address_hint" = "Įveskite savo adresą";
 "accessibility_card_form_billing_address_state_hint" = "Įveskite valstybę arba proviciją";
@@ -285,3 +282,5 @@
 "primer_adyen_klarna_option_pay_later" = "Sumokėti vėliau";
 "primer_adyen_klarna_option_pay_over_time" = "Sumokėti per tam tikrą laiką";
 "primer_adyen_klarna_option_pay_now" = "Sumokėti dabar";
+"primer_vaulted_gocardless_direct_debit_suffix" = "Tiesioginis debetas";
+"accessibility_card_form_billing_address_country_hint" = "Atveria sąrašą jūsų šaliai pasirinkti";

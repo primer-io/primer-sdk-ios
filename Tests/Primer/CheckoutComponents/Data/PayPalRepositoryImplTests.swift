@@ -252,6 +252,24 @@ final class PayPalRepositoryImplTests: XCTestCase {
         }
     }
 
+    func test_openWebAuthentication_mapsUserCancellationToCancelledError() async {
+        // Given
+        let testURL = URL(string: "https://paypal.com/test")!
+        mockWebAuthService.connectResult = .failure(ASWebAuthenticationSessionError(.canceledLogin))
+
+        // When/Then - dismissing the browser sheet must surface as PrimerError.cancelled
+        do {
+            _ = try await sut.openWebAuthentication(url: testURL)
+            XCTFail("Expected error to be thrown")
+        } catch let error as PrimerError {
+            guard case .cancelled = error else {
+                return XCTFail("Expected PrimerError.cancelled, got \(error)")
+            }
+        } catch {
+            XCTFail("Expected PrimerError.cancelled, got \(error)")
+        }
+    }
+
     // MARK: - confirmBillingAgreement Tests
 
     func test_confirmBillingAgreement_mapsShippingAddress() async throws {

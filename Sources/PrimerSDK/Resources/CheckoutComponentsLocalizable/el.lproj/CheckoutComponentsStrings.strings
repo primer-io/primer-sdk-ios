@@ -1,6 +1,5 @@
 "accessibility_action_delete" = "Διαγραφή μεθόδου πληρωμής";
 "accessibility_action_edit" = "Επεξεργασία στοιχείων κάρτας";
-"accessibility_action_set_default" = "Ορισμός ως προεπιλεγμένη μέθοδος πληρωμής";
 "accessibility_card_form_billing_address_address_line_1_label" = "Διεύθυνση γραμμή 1, απαιτείται";
 "accessibility_card_form_billing_address_address_line_2_label" = "Διεύθυνση γραμμή 2, προαιρετικό";
 "accessibility_card_form_billing_address_city_hint" = "Εισαγάγετε το όνομα της πόλης";
@@ -19,7 +18,7 @@
 "accessibility_card_form_cardholder_name_hint" = "Εισαγάγετε το όνομα όπως εμφανίζεται στην κάρτα";
 "accessibility_card_form_cardholder_name_label" = "Όνομα κατόχου κάρτας";
 "accessibility_card_form_cvc_error_invalid" = "Μη έγκυρος κωδικός ασφαλείας.";
-"accessibility_card_form_cvc_hint" = "Κωδικός 3 ή 4 ψηφίων στο πίσω μέρος της κάρτας";
+"accessibility_card_form_cvc_hint" = "Κωδικός ασφαλείας, 3 ή 4 ψηφία";
 "accessibility_card_form_cvc_label" = "Κωδικός ασφαλείας, απαιτείται";
 "accessibility_card_form_cvv_icon" = "Κωδικός ασφαλείας CVV";
 "accessibility_card_form_expiry_error_invalid" = "Μη έγκυρη ημερομηνία λήξης.";
@@ -27,11 +26,11 @@
 "accessibility_card_form_expiry_icon" = "Ημερομηνία λήξης κάρτας";
 "accessibility_card_form_expiry_label" = "Ημερομηνία λήξης, απαιτείται";
 "accessibility_card_form_network_selector" = "Επιλογή δικτύου";
-"accessibility_card_form_network_selector_hint" = "Πατήστε δύο φορές για να επιλέξετε διαφορετικό δίκτυο κάρτας";
-"accessibility_card_form_network_selector_inline_hint" = "Πατήστε δύο φορές για να επιλέξετε αυτό το δίκτυο";
+"accessibility_card_form_network_selector_hint" = "Επιλογή διαφορετικού δικτύου κάρτας";
+"accessibility_card_form_network_selector_inline_hint" = "Επιλογή αυτού του δικτύου";
 "accessibility_card_form_network_selector_label" = "Επιλογέας δικτύου κάρτας";
 "accessibility_card_form_submit_disabled" = "Το κουμπί είναι απενεργοποιημένο. Συμπληρώστε όλα τα απαιτούμενα πεδία για να ενεργοποιήσετε την πληρωμή";
-"accessibility_card_form_submit_hint" = "Πατήστε δύο φορές για να υποβάλετε την πληρωμή";
+"accessibility_card_form_submit_hint" = "Υποβολή πληρωμής";
 "accessibility_card_form_submit_label" = "Υποβολή πληρωμής";
 "accessibility_card_form_submit_loading" = "Επεξεργασία πληρωμής, παρακαλώ περιμένετε";
 "accessibility_checkout_error_icon" = "Σφάλμα";
@@ -52,8 +51,6 @@
 "accessibility_country_selection_search_icon" = "Αναζήτηση";
 "accessibility_error_generic" = "Προέκυψε σφάλμα. Παρακαλώ δοκιμάστε ξανά.";
 "accessibility_error_multiple_errors" = "%d σφάλματα βρέθηκαν";
-"accessibility_payment_selection_card_full" = "Κάρτα %1$@ που λήγει σε %2$@, λήγει %3$@";
-"accessibility_payment_selection_card_masked" = "κάρτα που λήγει σε κρυφά ψηφία";
 "accessibility_payment_selection_coming_soon" = "Η μέθοδος πληρωμής έρχεται σύντομα";
 "accessibility_payment_selection_pay_with_card" = "Πληρωμή με κάρτα";
 "accessibility_payment_selection_pay_with_ideal" = "Πληρωμή με iDEAL";
@@ -65,6 +62,7 @@
 "accessibility_screen_loading_payment_methods" = "Φόρτωση μεθόδων πληρωμής";
 "accessibility_screen_payment_method" = "Μέθοδος πληρωμής %@";
 "accessibility_payment_method_button" = "Πληρωμή με %@";
+"accessibility_payment_method_selected" = "Επιλέχθηκε %@";
 "accessibility_screen_processing_payment" = "Επεξεργασία πληρωμής";
 "accessibility_screen_success" = "Επιτυχής πληρωμή";
 "accessibility_vault_delete_payment_method" = "Διαγραφή αυτής της μεθόδου πληρωμής";
@@ -144,7 +142,6 @@
 "primer_card_form_placeholder_state" = "Αττική";
 "primer_card_form_retail_not_implemented" = "Η επιλογή σημείου λιανικής δεν έχει υλοποιηθεί ακόμα";
 "primer_card_form_title" = "Πληρωμή με κάρτα";
-"primer_checkout_auto_dismiss_message" = "Αυτή η οθόνη θα κλείσει αυτόματα σε 3 δευτερόλεπτα";
 "primer_checkout_dismissing" = "Κλείσιμο...";
 "primer_checkout_error_button_other_methods" = "Επιλέξτε άλλες μεθόδους πληρωμής";
 "primer_checkout_error_subtitle" = "Υπήρξε πρόβλημα δικτύου.";
@@ -209,8 +206,8 @@
 "accessibility_klarna_category" = "Επιλογή πληρωμής %@";
 "accessibility_klarna_category_selected" = "Επιλογή πληρωμής %@, επιλεγμένο";
 "accessibility_klarna_payment_view" = "Φόρμα πληρωμής Klarna";
-"accessibility_klarna_authorize_hint" = "Πατήστε δύο φορές για να συνεχίσετε με Klarna";
-"accessibility_klarna_finalize_hint" = "Πατήστε δύο φορές για να ολοκληρώσετε την πληρωμή";
+"accessibility_klarna_authorize_hint" = "Συνέχεια με Klarna";
+"accessibility_klarna_finalize_hint" = "Ολοκλήρωση πληρωμής";
 
 /* ACH */
 "primer_ach_title" = "Τραπεζικός λογαριασμός";
@@ -223,9 +220,9 @@
 "primer_ach_mandate_button_accept" = "Συμφωνώ";
 "primer_ach_mandate_button_decline" = "Ακύρωση";
 "primer_ach_mandate_template" = "Κάνοντας κλικ στο \"Συμφωνώ\", εξουσιοδοτείτε την %1$@ να χρεώσει τον τραπεζικό λογαριασμό που αναφέρεται παραπάνω για οποιοδήποτε οφειλόμενο ποσό για χρεώσεις που προκύπτουν από τη χρήση των υπηρεσιών της %1$@ και/ή την αγορά προϊόντων από την %1$@, σύμφωνα με τον ιστότοπο και τους όρους της %1$@, μέχρι να ανακληθεί αυτή η εξουσιοδότηση. Μπορείτε να τροποποιήσετε ή να ακυρώσετε αυτήν την εξουσιοδότηση ανά πάσα στιγμή ειδοποιώντας την %1$@ με 30 (τριάντα) ημέρες προειδοποίηση.";
-"accessibility_ach_continue_hint" = "Πατήστε δύο φορές για να συνεχίσετε στην επιλογή τραπεζικού λογαριασμού";
-"accessibility_ach_mandate_accept_hint" = "Πατήστε δύο φορές για να αποδεχτείτε την εξουσιοδότηση και να ολοκληρώσετε την πληρωμή";
-"accessibility_ach_mandate_decline_hint" = "Πατήστε δύο φορές για να απορρίψετε και να ακυρώσετε την πληρωμή";
+"accessibility_ach_continue_hint" = "Συνέχεια στην επιλογή τραπεζικού λογαριασμού";
+"accessibility_ach_mandate_accept_hint" = "Αποδοχή της εξουσιοδότησης και ολοκλήρωση πληρωμής";
+"accessibility_ach_mandate_decline_hint" = "Απόρριψη και ακύρωση πληρωμής";
 
 "accessibility_card_form_billing_address_hint" = "Εισαγάγετε τη διεύθυνσή σας";
 "accessibility_card_form_billing_address_state_hint" = "Εισαγάγετε πολιτεία ή επαρχία";
@@ -285,3 +282,5 @@
 "primer_adyen_klarna_option_pay_later" = "Πληρωμή αργότερα";
 "primer_adyen_klarna_option_pay_over_time" = "Πληρωμή με έντοκες δόσεις";
 "primer_adyen_klarna_option_pay_now" = "Πληρωμή τώρα";
+"primer_vaulted_gocardless_direct_debit_suffix" = "Άμεση χρέωση";
+"accessibility_card_form_billing_address_country_hint" = "Ανοίγει μια λίστα για να επιλέξετε τη χώρα σας";

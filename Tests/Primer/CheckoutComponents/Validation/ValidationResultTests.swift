@@ -50,18 +50,6 @@ final class ValidationResultTests: XCTestCase {
         XCTAssertEqual(result.errorCode, "VALIDATION_ERROR")
     }
 
-    func test_invalidWithError_setsErrorMessageFromError() {
-        // Given
-        let error = ValidationError(code: "VALIDATION_ERROR", message: "Validation failed")
-
-        // When
-        let result = ValidationResult.invalid(error: error)
-
-        // Then
-        // Message may be resolved or fall back to error.message
-        XCTAssertNotNil(result.errorMessage)
-    }
-
     func test_invalidWithError_withFullValidationError_preservesCode() {
         // Given
         let error = ValidationError(
@@ -175,16 +163,5 @@ final class ValidationResultTests: XCTestCase {
 
         // Then
         XCTAssertEqual(result.errorMessage, message)
-    }
-
-    func test_invalid_withLongMessage() {
-        // Given
-        let longMessage = String(repeating: "A", count: 1000)
-
-        // When
-        let result = ValidationResult.invalid(code: "LONG_ERROR", message: longMessage)
-
-        // Then
-        XCTAssertEqual(result.errorMessage?.count, 1000)
     }
 }

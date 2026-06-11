@@ -58,7 +58,7 @@ struct WebRedirectPaymentMethod: PaymentMethodProtocol {
     for paymentMethodType: String,
     checkoutScope: any PrimerCheckoutScope
   ) -> AnyView? {
-    // ACC-7173: string-keyed `getPaymentMethodScope<T>(for:)` carries the same
+    // The string-keyed `getPaymentMethodScope<T>(for:)` carries the same
     // `T: PrimerPaymentMethodScope` constraint that rejects existentials. Keep concrete metatype
     // here; the downstream WebRedirectScreen still accepts `any PrimerWebRedirectScope`.
     guard let webRedirectScope: DefaultWebRedirectScope = checkoutScope.getPaymentMethodScope(for: paymentMethodType) else {
@@ -69,6 +69,10 @@ struct WebRedirectPaymentMethod: PaymentMethodProtocol {
       ?? AnyView(WebRedirectScreen(scope: webRedirectScope))
   }
 
+  // Web redirect covers many dynamic payment method types, so it registers via the parameterized
+  // `register(types:)` path rather than a single static type. The two PaymentMethodProtocol creators
+  // below are required to satisfy the conformance but are never reached at runtime; the throw/nil
+  // guard against accidental use of the non-parameterized API.
   @MainActor
   static func createScope(
     checkoutScope: PrimerCheckoutScope,

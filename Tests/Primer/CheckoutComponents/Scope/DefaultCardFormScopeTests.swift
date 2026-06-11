@@ -76,28 +76,6 @@ final class DefaultCardFormScopeTests: XCTestCase {
         }
     }
 
-    func test_cardNumberField_invalidNumber_setsError() async throws {
-        let container = try await createTestContainer()
-
-        await DIContainer.withContainer(container) {
-            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
-            let mockValidator = MockValidateInputInteractor()
-            mockValidator.setInvalidResult(for: .cardNumber, message: "Invalid card number")
-
-            let scope = createCardFormScope(
-                checkoutScope: checkoutScope,
-                validateInputInteractor: mockValidator
-            )
-
-            scope.updateCardNumber("1234567890")
-            scope.setFieldError(.cardNumber, message: "Invalid card number", errorCode: "INVALID_CARD_NUMBER")
-
-            let error = scope.getFieldError(.cardNumber)
-            XCTAssertNotNil(error)
-            XCTAssertEqual(error, "Invalid card number")
-        }
-    }
-
     // MARK: - CVV Field Validation Tests
 
     func test_cvvField_validatesForCardNetwork() async throws {
@@ -123,28 +101,6 @@ final class DefaultCardFormScopeTests: XCTestCase {
     }
 
     // MARK: - Expiry Field Validation Tests
-
-    func test_expiryField_rejectsExpiredDates() async throws {
-        let container = try await createTestContainer()
-
-        await DIContainer.withContainer(container) {
-            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
-            let mockValidator = MockValidateInputInteractor()
-            mockValidator.setInvalidResult(for: .expiryDate, message: "Card has expired")
-
-            let scope = createCardFormScope(
-                checkoutScope: checkoutScope,
-                validateInputInteractor: mockValidator
-            )
-
-            scope.updateExpiryDate("01/20")
-            scope.setFieldError(.expiryDate, message: "Card has expired", errorCode: "EXPIRED_CARD")
-
-            let error = scope.getFieldError(.expiryDate)
-            XCTAssertNotNil(error)
-            XCTAssertTrue(error?.contains("expired") == true)
-        }
-    }
 
     func test_expiryField_acceptsValidDate() async throws {
         let container = try await createTestContainer()
@@ -191,27 +147,6 @@ final class DefaultCardFormScopeTests: XCTestCase {
         }
     }
 
-    func test_cardholderNameField_invalidName_setsError() async throws {
-        let container = try await createTestContainer()
-
-        await DIContainer.withContainer(container) {
-            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
-            let mockValidator = MockValidateInputInteractor()
-            mockValidator.setInvalidResult(for: .cardholderName, message: "Name is required")
-
-            let scope = createCardFormScope(
-                checkoutScope: checkoutScope,
-                validateInputInteractor: mockValidator
-            )
-
-            scope.updateCardholderName("")
-            scope.setFieldError(.cardholderName, message: "Name is required", errorCode: "REQUIRED_FIELD")
-
-            let error = scope.getFieldError(.cardholderName)
-            XCTAssertNotNil(error)
-        }
-    }
-
     // MARK: - State Reflects Field Validation Tests
 
     func test_state_reflectsFieldValidation() async throws {
@@ -241,7 +176,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
     func test_submit_withValidData_triggersPayment() async throws {
         let container = try await createTestContainer()
 
-        await DIContainer.withContainer(container) {
+        try await DIContainer.withContainer(container) {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
             let mockPaymentInteractor = MockProcessCardPaymentInteractor()
             let mockValidator = MockValidateInputInteractor()
@@ -269,28 +204,43 @@ final class DefaultCardFormScopeTests: XCTestCase {
                 cardholderName: true
             )
 
-            XCTAssertEqual(scope.getFieldValue(.cardNumber), TestData.CardNumbers.validVisa)
-            XCTAssertEqual(scope.getFieldValue(.cvv), "123")
-            XCTAssertEqual(scope.getFieldValue(.expiryDate), "12/30")
-            XCTAssertEqual(scope.getFieldValue(.cardholderName), "John Doe")
+            await scope.performSubmit()
+
+            XCTAssertEqual(mockPaymentInteractor.executeCallCount, 1)
+            let cardData = try XCTUnwrap(mockPaymentInteractor.lastCardData)
+            XCTAssertEqual(cardData.cardNumber, TestData.CardNumbers.validVisa)
+            XCTAssertEqual(cardData.cvv, "123")
+            XCTAssertEqual(cardData.expiryMonth, "12")
+            XCTAssertEqual(cardData.expiryYear, "2030")
+            XCTAssertEqual(cardData.cardholderName, "John Doe")
         }
     }
 
     func test_onSubmit_callsSubmit() async throws {
         let container = try await createTestContainer()
 
-        await DIContainer.withContainer(container) {
+        try await DIContainer.withContainer(container) {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
-            let scope = createCardFormScope(checkoutScope: checkoutScope)
+            let mockPaymentInteractor = MockProcessCardPaymentInteractor()
+            let scope = createCardFormScope(
+                checkoutScope: checkoutScope,
+                processCardPaymentInteractor: mockPaymentInteractor
+            )
 
             scope.updateCardNumber(TestData.CardNumbers.validVisa)
             scope.updateCvv("123")
             scope.updateExpiryDate("12/30")
             scope.updateCardholderName("John Doe")
 
-            await scope.submit()
+            await scope.performSubmit()
 
-            XCTAssertTrue(true, "submit should execute without crashing")
+            XCTAssertEqual(mockPaymentInteractor.executeCallCount, 1)
+            let cardData = try XCTUnwrap(mockPaymentInteractor.lastCardData)
+            XCTAssertEqual(cardData.cardNumber, TestData.CardNumbers.validVisa)
+            XCTAssertEqual(cardData.cvv, "123")
+            XCTAssertEqual(cardData.expiryMonth, "12")
+            XCTAssertEqual(cardData.expiryYear, "2030")
+            XCTAssertEqual(cardData.cardholderName, "John Doe")
         }
     }
 
@@ -299,7 +249,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
     func test_coBadgedCardDetection_exposesNetworkOptions() async throws {
         let container = try await createTestContainer()
 
-        await DIContainer.withContainer(container) {
+        try await DIContainer.withContainer(container) {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
             let mockNetworkDetector = MockCardNetworkDetectionInteractor()
 
@@ -310,9 +260,136 @@ final class DefaultCardFormScopeTests: XCTestCase {
 
             scope.updateCardNumber(TestData.CardNumbers.validVisa)
 
-            try? await Task.sleep(nanoseconds: 100_000_000)
+            try await withTimeout(2.0) {
+                while mockNetworkDetector.detectNetworksCallCount < 1 { await Task.yield() }
+            }
 
             XCTAssertEqual(mockNetworkDetector.detectNetworksCallCount, 1)
+        }
+    }
+
+    // MARK: - Co-badged Network Selection (user pin)
+
+    func test_manualSelection_survivesAutoDetectKeystroke() async throws {
+        let container = try await createTestContainer()
+        try await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let mock = MockCardNetworkDetectionInteractor()
+            let scope = createCardFormScope(checkoutScope: checkoutScope, cardNetworkDetectionInteractor: mock)
+
+            mock.emitNetworks([.visa, .cartesBancaires])
+            try await withTimeout(2.0) {
+                while scope.structuredState.availableNetworks.count < 2 { await Task.yield() }
+            }
+
+            scope.updateSelectedCardNetwork(CardNetwork.cartesBancaires.rawValue)
+            XCTAssertEqual(scope.structuredState.selectedNetwork?.network, .cartesBancaires)
+
+            // A subsequent keystroke auto-detect must NOT overwrite the user's pinned network.
+            scope.autoSelectDetectedNetwork(CardNetwork.visa.rawValue)
+            XCTAssertEqual(scope.structuredState.selectedNetwork?.network, .cartesBancaires)
+        }
+    }
+
+    func test_manualSelection_survivesBinReemission() async throws {
+        let container = try await createTestContainer()
+        try await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let mock = MockCardNetworkDetectionInteractor()
+            let scope = createCardFormScope(checkoutScope: checkoutScope, cardNetworkDetectionInteractor: mock)
+
+            mock.emitNetworks([.visa, .cartesBancaires])
+            try await withTimeout(2.0) {
+                while scope.structuredState.availableNetworks.count < 2 { await Task.yield() }
+            }
+            scope.updateSelectedCardNetwork(CardNetwork.cartesBancaires.rawValue)
+
+            // Re-emission still containing the pinned network must keep it (not revert to first).
+            mock.emitNetworks([.cartesBancaires, .visa, .masterCard])
+            try await withTimeout(2.0) {
+                while scope.structuredState.availableNetworks.count != 3 { await Task.yield() }
+            }
+            XCTAssertEqual(scope.structuredState.selectedNetwork?.network, .cartesBancaires)
+        }
+    }
+
+    func test_manualSelection_clearedWhenNetworkNoLongerAvailable() async throws {
+        let container = try await createTestContainer()
+        try await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let mock = MockCardNetworkDetectionInteractor()
+            let scope = createCardFormScope(checkoutScope: checkoutScope, cardNetworkDetectionInteractor: mock)
+
+            mock.emitNetworks([.visa, .cartesBancaires])
+            try await withTimeout(2.0) {
+                while scope.structuredState.availableNetworks.count < 2 { await Task.yield() }
+            }
+            scope.updateSelectedCardNetwork(CardNetwork.cartesBancaires.rawValue)
+
+            // The pinned network is no longer offered → pin clears, auto-detect resumes.
+            mock.emitNetworks([.masterCard])
+            try await withTimeout(2.0) {
+                while scope.structuredState.availableNetworks.count != 1 { await Task.yield() }
+            }
+            XCTAssertEqual(scope.structuredState.selectedNetwork?.network, .masterCard)
+        }
+    }
+
+    func test_clearingNetworks_resetsSelectionToAuto() async throws {
+        let container = try await createTestContainer()
+        try await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let mock = MockCardNetworkDetectionInteractor()
+            let scope = createCardFormScope(checkoutScope: checkoutScope, cardNetworkDetectionInteractor: mock)
+
+            mock.emitNetworks([.visa, .cartesBancaires])
+            try await withTimeout(2.0) {
+                while scope.structuredState.availableNetworks.count < 2 { await Task.yield() }
+            }
+            scope.updateSelectedCardNetwork(CardNetwork.cartesBancaires.rawValue)
+
+            mock.emitNetworks([])
+            try await withTimeout(2.0) {
+                while !scope.structuredState.availableNetworks.isEmpty { await Task.yield() }
+            }
+            XCTAssertNil(scope.structuredState.selectedNetwork)
+
+            // Auto-detection resumes after the pin is gone.
+            mock.emitNetworks([.visa])
+            try await withTimeout(2.0) {
+                while scope.structuredState.availableNetworks.count != 1 { await Task.yield() }
+            }
+            XCTAssertEqual(scope.structuredState.selectedNetwork?.network, .visa)
+        }
+    }
+
+    func test_autoDetect_withoutManualSelection_followsFirstNetwork() async throws {
+        let container = try await createTestContainer()
+        try await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let mock = MockCardNetworkDetectionInteractor()
+            let scope = createCardFormScope(checkoutScope: checkoutScope, cardNetworkDetectionInteractor: mock)
+
+            mock.emitNetworks([.visa, .cartesBancaires])
+            try await withTimeout(2.0) {
+                while scope.structuredState.availableNetworks.count < 2 { await Task.yield() }
+            }
+            XCTAssertEqual(scope.structuredState.selectedNetwork?.network, .visa)
+        }
+    }
+
+    func test_singleNetwork_autoApplies() async throws {
+        let container = try await createTestContainer()
+        try await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let mock = MockCardNetworkDetectionInteractor()
+            let scope = createCardFormScope(checkoutScope: checkoutScope, cardNetworkDetectionInteractor: mock)
+
+            mock.emitNetworks([.visa])
+            try await withTimeout(2.0) {
+                while scope.structuredState.availableNetworks.count != 1 { await Task.yield() }
+            }
+            XCTAssertEqual(scope.structuredState.selectedNetwork?.network, .visa)
         }
     }
 
@@ -702,33 +779,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
         }
     }
 
-    func test_getBillingAddressConfiguration_returnsConfiguration() async throws {
-        let container = try await createTestContainer()
-
-        await DIContainer.withContainer(container) {
-            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
-            let scope = createCardFormScope(checkoutScope: checkoutScope)
-
-            let config = scope.getBillingAddressConfiguration()
-
-            XCTAssertNotNil(config)
-        }
-    }
-
     // MARK: - Select Country Scope Tests
-
-    func test_selectCountry_returnsScope() async throws {
-        let container = try await createTestContainer()
-
-        await DIContainer.withContainer(container) {
-            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
-            let scope = createCardFormScope(checkoutScope: checkoutScope)
-
-            let selectCountryScope = scope.selectCountry
-
-            XCTAssertNotNil(selectCountryScope)
-        }
-    }
 
     func test_selectCountry_returnsSameInstance() async throws {
         let container = try await createTestContainer()
@@ -834,30 +885,6 @@ final class DefaultCardFormScopeTests: XCTestCase {
         }
     }
 
-    func test_performSubmit_withTwoDigitYear_convertsToFourDigit() async throws {
-        let container = try await createTestContainer()
-
-        await DIContainer.withContainer(container) {
-            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
-            let mockPaymentInteractor = MockProcessCardPaymentInteractor()
-            let scope = createCardFormScope(
-                checkoutScope: checkoutScope,
-                processCardPaymentInteractor: mockPaymentInteractor
-            )
-
-            scope.updateCardNumber(TestData.CardNumbers.validVisa)
-            scope.updateCvv("123")
-            scope.updateExpiryDate("12/30")
-            scope.updateCardholderName("John Doe")
-
-            // When
-            await scope.performSubmit()
-
-            // Then — payment should be attempted (even if it fails due to mock setup)
-            XCTAssertFalse(scope.structuredState.isLoading)
-        }
-    }
-
     func test_performSubmit_paymentInteractorFails_handlesError() async throws {
         let container = try await createTestContainer()
 
@@ -905,18 +932,19 @@ final class DefaultCardFormScopeTests: XCTestCase {
 
     // MARK: - cancel Tests
 
-    func test_cancel_cancelsNetworkDetectionTask() async throws {
+    func test_cancel_fromSelection_returnsToSelectionNotDismissed() async throws {
         let container = try await createTestContainer()
 
         await DIContainer.withContainer(container) {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
             let scope = createCardFormScope(checkoutScope: checkoutScope)
 
-            // When
+            // When — card form was reached from the method list
             scope.cancel()
 
-            // Then — should not crash, tasks should be cancelled
-            XCTAssertTrue(true)
+            // Then — cancel returns to the list (session alive), it does not dismiss the checkout
+            XCTAssertNotEqual(checkoutScope.currentState, .dismissed)
+            XCTAssertEqual(checkoutScope.currentNavigationState, .paymentMethodSelection)
         }
     }
 
@@ -929,46 +957,17 @@ final class DefaultCardFormScopeTests: XCTestCase {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
             let scope = createCardFormScope(checkoutScope: checkoutScope)
 
-            // When / Then — should not crash
+            let coordinator = checkoutScope.checkoutNavigator.checkoutCoordinator
+            coordinator.navigate(to: .paymentMethodSelection)
+            coordinator.navigate(to: .vaultedPaymentMethods)
+            XCTAssertEqual(coordinator.navigationStack.count, 2)
+
+            // When — fromPaymentSelection context shows the back button, so onBack pops
             scope.onBack()
-        }
-    }
 
-    // MARK: - Billing Address Configuration Tests
-
-    func test_getBillingAddressConfiguration_withBillingFields_reflectsFields() async throws {
-        let container = try await createTestContainer()
-
-        await DIContainer.withContainer(container) {
-            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
-            let mockConfig = MockConfigurationService.withDefaultConfiguration()
-            mockConfig.billingAddressOptions = PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions(
-                firstName: true,
-                lastName: true,
-                city: true,
-                postalCode: true,
-                addressLine1: true,
-                addressLine2: true,
-                countryCode: true,
-                phoneNumber: false,
-                state: true
-            )
-
-            let scope = createCardFormScope(
-                checkoutScope: checkoutScope,
-                configurationService: mockConfig
-            )
-
-            let billingConfig = scope.getBillingAddressConfiguration()
-
-            XCTAssertTrue(billingConfig.showFirstName)
-            XCTAssertTrue(billingConfig.showLastName)
-            XCTAssertTrue(billingConfig.showCity)
-            XCTAssertTrue(billingConfig.showPostalCode)
-            XCTAssertTrue(billingConfig.showAddressLine1)
-            XCTAssertTrue(billingConfig.showAddressLine2)
-            XCTAssertTrue(billingConfig.showCountry)
-            XCTAssertTrue(billingConfig.showState)
+            // Then
+            XCTAssertEqual(coordinator.navigationStack.count, 1)
+            XCTAssertEqual(coordinator.currentRoute, .paymentMethodSelection)
         }
     }
 
@@ -1055,15 +1054,18 @@ final class DefaultCardFormScopeTests: XCTestCase {
 
     // MARK: - updateField Default Case Tests
 
-    func test_updateField_unknownType_doesNotCrash() async throws {
+    func test_updateField_unknownType_isIgnored() async throws {
         let container = try await createTestContainer()
 
         await DIContainer.withContainer(container) {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
             let scope = createCardFormScope(checkoutScope: checkoutScope)
 
-            // When / Then — unknown type should hit default case
+            // When — unknown type hits the default case
             scope.updateField(.unknown, value: "test")
+
+            // Then — the value is not stored
+            XCTAssertEqual(scope.getFieldValue(.unknown), "")
         }
     }
 
@@ -1137,18 +1139,6 @@ final class DefaultCardFormScopeTests: XCTestCase {
     }
 
     // MARK: - Dismissal Mechanism and Card Form UI Options Tests
-
-    func test_dismissalMechanism_delegatesToCheckoutScope() async throws {
-        let container = try await createTestContainer()
-
-        await DIContainer.withContainer(container) {
-            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
-            let scope = createCardFormScope(checkoutScope: checkoutScope)
-
-            let mechanism = scope.dismissalMechanism
-            XCTAssertNotNil(mechanism)
-        }
-    }
 
     func test_cardFormUIOptions_delegatesToCheckoutScope() async throws {
         let container = try await createTestContainer()

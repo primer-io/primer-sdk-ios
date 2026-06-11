@@ -8,10 +8,10 @@ import Foundation
 
 /// Klarna flow: `loading` -> `categorySelection` -> `viewReady` -> `authorizationStarted` -> `awaitingFinalization`
 @available(iOS 15.0, *)
-public struct PrimerKlarnaState: Equatable, @unchecked Sendable {
+struct PrimerKlarnaState: Equatable, @unchecked Sendable {
 
   /// When switching on this enum, always include a `default` case to handle future additions.
-  public enum Step: Equatable {
+  enum Step: Equatable {
     case loading
     case categorySelection
     case viewReady
@@ -19,11 +19,11 @@ public struct PrimerKlarnaState: Equatable, @unchecked Sendable {
     case awaitingFinalization
   }
 
-  public internal(set) var step: Step
-  public internal(set) var categories: [KlarnaPaymentCategory]
-  public internal(set) var selectedCategoryId: String?
+  var step: Step
+  var categories: [KlarnaPaymentCategory]
+  var selectedCategoryId: String?
 
-  public init(
+  init(
     step: Step = .loading,
     categories: [KlarnaPaymentCategory] = [],
     selectedCategoryId: String? = nil

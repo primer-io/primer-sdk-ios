@@ -41,6 +41,7 @@ final class PrimerSwiftUIBridgeViewController: PrimerViewController {
   private let logger = PrimerLogging.shared.logger
   private var lastRecordedSize: CGSize = .zero
   private var isUpdatingSize = false
+  private var boundsObservation: NSKeyValueObservation?
 
   // MARK: - Initialization
 
@@ -103,43 +104,28 @@ final class PrimerSwiftUIBridgeViewController: PrimerViewController {
   }
 
   private func setupSizeObservation() {
-    // Add observer for SwiftUI view size changes
-    hostingController.view.addObserver(
-      self, forKeyPath: "bounds", options: [.new, .old], context: nil)
+    boundsObservation = hostingController.view.observe(\.bounds, options: [.new]) { [weak self] _, change in
+      guard let self, let newRect = change.newValue else { return }
+      handleBoundsChange(newRect)
+    }
 
     logger.debug(message: "[SwiftUIBridge] Size observation setup completed")
   }
 
-  override func observeValue(
-    forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey: Any]?,
-    context: UnsafeMutableRawPointer?
-  ) {
-    if keyPath == "bounds", let newBounds = change?[NSKeyValueChangeKey.newKey] as? NSValue {
-      let newRect = newBounds.cgRectValue
+  @MainActor
+  private func handleBoundsChange(_ newRect: CGRect) {
+    // Prevent infinite loops - don't update if we're already updating or size hasn't meaningfully changed
+    guard !isUpdatingSize else { return }
+    let heightChanged = abs(newRect.height - lastRecordedSize.height) > SheetSizing.boundsChangeThreshold
+    let widthChanged = abs(newRect.width - lastRecordedSize.width) > SheetSizing.boundsChangeThreshold
+    guard heightChanged || widthChanged else { return }
 
-      // Prevent infinite loops - don't update if we're already updating or size hasn't meaningfully changed
-      guard !isUpdatingSize else { return }
-      guard abs(newRect.height - lastRecordedSize.height) > SheetSizing.boundsChangeThreshold else {
-        return
-      }
-      guard abs(newRect.width - lastRecordedSize.width) > SheetSizing.boundsChangeThreshold else {
-        return
-      }
-
-      logger.debug(
-        message:
-          "[SwiftUIBridge] SwiftUI bounds changed significantly: \(lastRecordedSize) -> \(newRect.size)"
-      )
-      lastRecordedSize = newRect.size
-      updateContentSize()
-    } else {
-      super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
-    }
-  }
-
-  deinit {
-    // Clean up observer
-    hostingController.view.removeObserver(self, forKeyPath: "bounds")
+    logger.debug(
+      message:
+        "[SwiftUIBridge] SwiftUI bounds changed significantly: \(lastRecordedSize) -> \(newRect.size)"
+    )
+    lastRecordedSize = newRect.size
+    updateContentSize()
   }
 
   @MainActor
@@ -227,12 +213,7 @@ extension PrimerSwiftUIBridgeViewController {
     }
     set {
       super.preferredContentSize = newValue
-
-      // Trigger layout update when size changes
-      DispatchQueue.main.async { [weak self] in
-        self?.view.setNeedsLayout()
-        self?.view.layoutIfNeeded()
-      }
+      view.setNeedsLayout()
     }
   }
 }
@@ -246,11 +227,9 @@ extension PrimerSwiftUIBridgeViewController {
     clientToken: String,
     settings primerSettings: PrimerSettings,
     theme primerTheme: PrimerCheckoutTheme = PrimerCheckoutTheme(),
-    diContainer: DIContainer,
     navigator: CheckoutNavigator,
     presentationContext: PresentationContext = .direct,
     integrationType: CheckoutComponentsIntegrationType = .uiKit,
-    scope: ((PrimerCheckoutScope) -> Void)? = nil,
     onCompletion: ((PrimerCheckoutState) -> Void)? = nil
   ) -> PrimerSwiftUIBridgeViewController {
 
@@ -262,11 +241,9 @@ extension PrimerSwiftUIBridgeViewController {
       clientToken: clientToken,
       primerSettings: primerSettings,
       primerTheme: primerTheme,
-      diContainer: diContainer,
       navigator: navigator,
       presentationContext: presentationContext,
       integrationType: integrationType,
-      scope: scope,
       onCompletion: onCompletion
     )
 

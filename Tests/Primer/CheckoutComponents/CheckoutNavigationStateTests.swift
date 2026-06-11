@@ -31,8 +31,8 @@ final class CheckoutNavigationStateTests: XCTestCase {
         PaymentResult(paymentId: paymentId, status: .success)
     }
 
-    private func makeError(message: String) -> PrimerError {
-        PrimerError.unknown(message: message, diagnosticsId: "test_diagnostics")
+    private func makeError(message: String, diagnosticsId: String = "test_diagnostics") -> PrimerError {
+        PrimerError.unknown(message: message, diagnosticsId: diagnosticsId)
     }
 
     // MARK: - Simple State Equality
@@ -89,15 +89,21 @@ final class CheckoutNavigationStateTests: XCTestCase {
 
     // MARK: - Failure Equality
 
-    func test_failure_sameError_areEqual() {
-        let state1 = CheckoutNavigationState.failure(makeError(message: "Payment failed"))
-        let state2 = CheckoutNavigationState.failure(makeError(message: "Payment failed"))
+    func test_failure_sameDiagnosticsId_areEqual() {
+        let state1 = CheckoutNavigationState.failure(makeError(message: "Payment failed", diagnosticsId: "diag_1"))
+        let state2 = CheckoutNavigationState.failure(makeError(message: "Payment failed", diagnosticsId: "diag_1"))
         XCTAssertEqual(state1, state2)
     }
 
-    func test_failure_differentError_areNotEqual() {
-        let state1 = CheckoutNavigationState.failure(makeError(message: "Payment failed"))
-        let state2 = CheckoutNavigationState.failure(makeError(message: "Network error"))
+    func test_failure_differentDiagnosticsId_areNotEqual() {
+        let state1 = CheckoutNavigationState.failure(makeError(message: "Payment failed", diagnosticsId: "diag_1"))
+        let state2 = CheckoutNavigationState.failure(makeError(message: "Network error", diagnosticsId: "diag_2"))
+        XCTAssertNotEqual(state1, state2)
+    }
+
+    func test_failure_sameMessageDifferentDiagnosticsId_areNotEqual() {
+        let state1 = CheckoutNavigationState.failure(makeError(message: "Payment failed", diagnosticsId: "diag_1"))
+        let state2 = CheckoutNavigationState.failure(makeError(message: "Payment failed", diagnosticsId: "diag_2"))
         XCTAssertNotEqual(state1, state2)
     }
 

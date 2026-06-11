@@ -248,7 +248,6 @@ final class WebRedirectPaymentMethodTests: XCTestCase {
         let scope = DefaultCheckoutScope(
             clientToken: TestData.Tokens.valid,
             settings: settings,
-            diContainer: DIContainer.shared,
             navigator: navigator
         )
         scope.availablePaymentMethods = [
@@ -299,10 +298,6 @@ private final class MockNonDefaultCheckoutScopeForWebRedirect: PrimerCheckoutSco
         AsyncStream { $0.finish() }
     }
 
-    var container: ContainerComponent?
-    var splashScreen: Component?
-    var loadingScreen: Component?
-    var errorScreen: ErrorComponent?
     var onBeforePaymentCreate: BeforePaymentCreateHandler?
     var paymentMethodSelection: PrimerPaymentMethodSelectionScope {
         fatalError("Not implemented for mock")

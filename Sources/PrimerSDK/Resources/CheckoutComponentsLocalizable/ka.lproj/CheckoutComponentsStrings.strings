@@ -26,7 +26,6 @@
 "primer_checkout_dismissing" = "იხურება...";
 "primer_checkout_system_error_title" = "გადახდის სისტემის შეცდომა";
 "primer_checkout_scope_unavailable" = "გადახდის სესია არ არის ხელმისაწვდომი";
-"primer_checkout_auto_dismiss_message" = "ეს ეკრანი ავტომატურად დაიხურება 3 წამში";
 "primer_card_form_label_number" = "ბარათის ნომერი";
 "primer_card_form_label_name" = "სახელი ბარათზე";
 "primer_card_form_label_expiry" = "ვადის თარიღი";
@@ -125,7 +124,7 @@
 "accessibility_card_form_cardholder_name_label" = "ბარათის მფლობელის სახელი";
 "accessibility_card_form_card_number_hint" = "შეიყვანეთ ბარათის ნომერი";
 "accessibility_card_form_expiry_hint" = "შეიყვანეთ ვადის თარიღი თთ/წწ ფორმატში";
-"accessibility_card_form_cvc_hint" = "3 ან 4 ციფრიანი კოდი ბარათის უკან მხარეს";
+"accessibility_card_form_cvc_hint" = "უსაფრთხოების კოდი, 3 ან 4 ციფრი";
 "accessibility_card_form_cardholder_name_hint" = "შეიყვანეთ სახელი ბარათზე მითითებული";
 "accessibility_card_form_billing_address_first_name_label" = "სახელი, აუცილებელია";
 "accessibility_card_form_billing_address_last_name_label" = "გვარი, აუცილებელია";
@@ -139,10 +138,10 @@
 "accessibility_card_form_billing_address_country_label" = "ქვეყანა, აუცილებელია";
 "accessibility_card_form_network_selector" = "აირჩიეთ ქსელი";
 "accessibility_card_form_network_selector_label" = "ბარათის ქსელის არჩევა";
-"accessibility_card_form_network_selector_hint" = "ორმაგი შეხება სხვა ბარათის ქსელის ასარჩევად";
-"accessibility_card_form_network_selector_inline_hint" = "ორმაგი შეხება ამ ქსელის ასარჩევად";
+"accessibility_card_form_network_selector_hint" = "აირჩიეთ სხვა ბარათის ქსელი";
+"accessibility_card_form_network_selector_inline_hint" = "აირჩიეთ ეს ქსელი";
 "accessibility_card_form_submit_label" = "გადახდის გაგზავნა";
-"accessibility_card_form_submit_hint" = "ორმაგი შეხება გადახდის გასაგზავნად";
+"accessibility_card_form_submit_hint" = "გააგზავნეთ გადახდა";
 "accessibility_card_form_submit_loading" = "მუშავდება გადახდა, გთხოვთ დაელოდოთ";
 "accessibility_card_form_submit_disabled" = "ღილაკი გამორთულია. შეავსეთ ყველა აუცილებელი ველი გადახდის გასააქტიურებლად";
 "accessibility_card_form_card_number_error_invalid" = "ბარათის არასწორი ნომერი. გთხოვთ შეამოწმოთ და სცადოთ ხელახლა.";
@@ -172,15 +171,12 @@
 "accessibility_payment_selection_pay_with_klarna" = "გადახდა Klarna-ით";
 "accessibility_payment_selection_pay_with_ideal" = "გადახდა iDEAL-ით";
 "accessibility_payment_selection_coming_soon" = "გადახდის მეთოდი მალე გამოჩნდება";
-"accessibility_payment_selection_card_full" = "%1$@ ბარათი რომელიც მთავრდება %2$@, ვადის თარიღი %3$@";
-"accessibility_payment_selection_card_masked" = "ბარათი რომელიც მთავრდება დაფარული ციფრებით";
 "accessibility_country_selection_item" = "%1$@, ქვეყანა";
 "accessibility_country_selection_search" = "ქვეყნების ძიება";
 "accessibility_country_selection_search_icon" = "ძიება";
 "accessibility_country_selection_clear" = "გასუფთავება";
 "accessibility_action_delete" = "გადახდის მეთოდის წაშლა";
 "accessibility_action_edit" = "ბარათის დეტალების რედაქტირება";
-"accessibility_action_set_default" = "ნაგულისხმევ გადახდის მეთოდად დაყენება";
 "accessibility_checkout_success_icon" = "გადახდა წარმატებულია";
 "accessibility_checkout_error_icon" = "შეცდომა";
 "accessibility_error_generic" = "მოხდა შეცდომა. გთხოვთ სცადოთ ხელახლა.";
@@ -188,6 +184,7 @@
 "accessibility_paypal_logo" = "PayPal";
 "accessibility_screen_payment_method" = "%@ გადახდის მეთოდი";
 "accessibility_payment_method_button" = "%@-ით გადახდა";
+"accessibility_payment_method_selected" = "არჩეულია %@";
 "accessibility_vault_delete_payment_method" = "ამ გადახდის მეთოდის წაშლა";
 "accessibility_vaulted_ach" = "%@ საბანკო ანგარიში";
 "accessibility_vaulted_ach_full" = "%@ საბანკო ანგარიში, ბოლო ციფრები %@";
@@ -209,8 +206,8 @@
 "accessibility_klarna_category" = "%@ გადახდის ვარიანტი";
 "accessibility_klarna_category_selected" = "%@ გადახდის ვარიანტი, არჩეული";
 "accessibility_klarna_payment_view" = "Klarna გადახდის ფორმა";
-"accessibility_klarna_authorize_hint" = "ორჯერ შეეხეთ Klarna-ით გასაგრძელებლად";
-"accessibility_klarna_finalize_hint" = "ორჯერ შეეხეთ გადახდის დასასრულებლად";
+"accessibility_klarna_authorize_hint" = "გააგრძელეთ Klarna-ით";
+"accessibility_klarna_finalize_hint" = "დაასრულეთ გადახდა";
 
 /* ACH */
 "primer_ach_title" = "საბანკო ანგარიში";
@@ -223,9 +220,9 @@
 "primer_ach_mandate_button_accept" = "ვეთანხმები";
 "primer_ach_mandate_button_decline" = "გაუქმება";
 "primer_ach_mandate_template" = "\"ვეთანხმები\"-ზე დაჭერით, თქვენ აძლევთ %1$@-ს უფლებას ჩამოწეროს ზემოთ მითითებული საბანკო ანგარიშიდან ნებისმიერი დავალიანებული თანხა %1$@-ის სერვისების გამოყენებით და/ან %1$@-ისგან პროდუქტების შეძენით წარმოშობილი გადასახადებისთვის, %1$@-ის ვებგვერდისა და პირობების შესაბამისად, სანამ ეს ავტორიზაცია არ გაუქმდება. შეგიძლიათ შეცვალოთ ან გააუქმოთ ეს ავტორიზაცია ნებისმიერ დროს %1$@-ისთვის 30 (ოცდაათი) დღით ადრე შეტყობინებით.";
-"accessibility_ach_continue_hint" = "ორჯერ შეეხეთ საბანკო ანგარიშის არჩევისთვის გასაგრძელებლად";
-"accessibility_ach_mandate_accept_hint" = "ორჯერ შეეხეთ ავტორიზაციის მისაღებად და გადახდის დასასრულებლად";
-"accessibility_ach_mandate_decline_hint" = "ორჯერ შეეხეთ უარსათქმელად და გადახდის გასაუქმებლად";
+"accessibility_ach_continue_hint" = "გააგრძელეთ საბანკო ანგარიშის არჩევაზე";
+"accessibility_ach_mandate_accept_hint" = "მიიღეთ ავტორიზაცია და დაასრულეთ გადახდა";
+"accessibility_ach_mandate_decline_hint" = "უარყავით და გააუქმეთ გადახდა";
 
 "accessibility_card_form_billing_address_hint" = "შეიყვანეთ თქვენი მისამართი";
 "accessibility_card_form_billing_address_state_hint" = "შეიყვანეთ შტატი ან პროვინცია";
@@ -285,3 +282,5 @@
 "primer_adyen_klarna_option_pay_later" = "გადაიხადე მოგვიანებით";
 "primer_adyen_klarna_option_pay_over_time" = "გადაიხადე განვადებით";
 "primer_adyen_klarna_option_pay_now" = "გადაიხადე ახლა";
+"primer_vaulted_gocardless_direct_debit_suffix" = "პირდაპირი დებეტი";
+"accessibility_card_form_billing_address_country_hint" = "ხსნის სიას თქვენი ქვეყნის ასარჩევად";

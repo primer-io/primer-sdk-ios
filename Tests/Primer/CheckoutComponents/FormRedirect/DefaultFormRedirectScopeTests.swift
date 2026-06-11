@@ -35,28 +35,28 @@ final class DefaultFormRedirectScopeTests: XCTestCase {
     func test_init_blik_configuresOtpField() async throws {
         let scope = createScope(paymentMethodType: FormRedirectTestData.Constants.blikPaymentMethodType)
 
-        let state = await collectFirstState(from: scope)
-        XCTAssertEqual(state?.fields.count, 1)
-        XCTAssertEqual(state?.fields.first?.fieldType, .otpCode)
-        XCTAssertEqual(state?.status, .ready)
+        let state = try await awaitFirst(scope.state)
+        XCTAssertEqual(state.fields.count, 1)
+        XCTAssertEqual(state.fields.first?.fieldType, .otpCode)
+        XCTAssertEqual(state.status, .ready)
     }
 
     @MainActor
     func test_init_mbway_configuresPhoneField() async throws {
         let scope = createScope(paymentMethodType: FormRedirectTestData.Constants.mbwayPaymentMethodType)
 
-        let state = await collectFirstState(from: scope)
-        XCTAssertEqual(state?.fields.count, 1)
-        XCTAssertEqual(state?.fields.first?.fieldType, .phoneNumber)
-        XCTAssertEqual(state?.status, .ready)
+        let state = try await awaitFirst(scope.state)
+        XCTAssertEqual(state.fields.count, 1)
+        XCTAssertEqual(state.fields.first?.fieldType, .phoneNumber)
+        XCTAssertEqual(state.status, .ready)
     }
 
     @MainActor
     func test_init_unsupportedPaymentMethod_setsFailureStatus() async throws {
         let scope = createScope(paymentMethodType: "UNSUPPORTED_TYPE")
 
-        let state = await collectFirstState(from: scope)
-        if case .failure = state?.status {
+        let state = try await awaitFirst(scope.state)
+        if case .failure = state.status {
             // Expected
         } else {
             XCTFail("Expected failure status for unsupported payment method")
@@ -69,16 +69,15 @@ final class DefaultFormRedirectScopeTests: XCTestCase {
     func test_start_calledTwice_doesNotResetState() async throws {
         let scope = createScope(paymentMethodType: FormRedirectTestData.Constants.blikPaymentMethodType)
         scope.start()
-        try await Task.sleep(nanoseconds: 50_000_000)
 
         scope.updateField(.otpCode, value: "123456")
-        let stateAfterUpdate = await collectFirstState(from: scope)
-        XCTAssertEqual(stateAfterUpdate?.fields.first?.value, "123456")
+        let stateAfterUpdate = try await awaitValue(scope.state, matching: { $0.fields.first?.value == "123456" })
+        XCTAssertEqual(stateAfterUpdate.fields.first?.value, "123456")
 
         scope.start()
 
-        let stateAfterSecondStart = await collectFirstState(from: scope)
-        XCTAssertEqual(stateAfterSecondStart?.fields.first?.value, "123456")
+        let stateAfterSecondStart = try await awaitValue(scope.state, matching: { $0.fields.first?.value == "123456" })
+        XCTAssertEqual(stateAfterSecondStart.fields.first?.value, "123456")
     }
 
     // MARK: - UpdateField Tests
@@ -87,114 +86,107 @@ final class DefaultFormRedirectScopeTests: XCTestCase {
     func test_updateField_blik_filtersNonNumericCharacters() async throws {
         let scope = createScope(paymentMethodType: FormRedirectTestData.Constants.blikPaymentMethodType)
         scope.start()
-        try await Task.sleep(nanoseconds: 50_000_000)
 
         scope.updateField(.otpCode, value: "12ab34cd")
 
-        let state = await collectFirstState(from: scope)
-        XCTAssertEqual(state?.fields.first?.value, "1234")
+        let state = try await awaitValue(scope.state, matching: { $0.fields.first?.value == "1234" })
+        XCTAssertEqual(state.fields.first?.value, "1234")
     }
 
     @MainActor
     func test_updateField_blik_truncatesTo6Characters() async throws {
         let scope = createScope(paymentMethodType: FormRedirectTestData.Constants.blikPaymentMethodType)
         scope.start()
-        try await Task.sleep(nanoseconds: 50_000_000)
 
         scope.updateField(.otpCode, value: "12345678")
 
-        let state = await collectFirstState(from: scope)
-        XCTAssertEqual(state?.fields.first?.value, "123456")
+        let state = try await awaitValue(scope.state, matching: { $0.fields.first?.value == "123456" })
+        XCTAssertEqual(state.fields.first?.value, "123456")
     }
 
     @MainActor
     func test_updateField_blik_validCode_setsIsValidTrue() async throws {
         let scope = createScope(paymentMethodType: FormRedirectTestData.Constants.blikPaymentMethodType)
         scope.start()
-        try await Task.sleep(nanoseconds: 50_000_000)
 
         scope.updateField(.otpCode, value: "123456")
 
-        let state = await collectFirstState(from: scope)
-        XCTAssertTrue(state?.fields.first?.isValid ?? false)
-        XCTAssertNil(state?.fields.first?.errorMessage)
+        let state = try await awaitValue(scope.state, matching: { $0.fields.first?.value == "123456" })
+        XCTAssertTrue(state.fields.first?.isValid ?? false)
+        XCTAssertNil(state.fields.first?.errorMessage)
     }
 
     @MainActor
     func test_updateField_blik_partialCode_invalidWithNoError() async throws {
         let scope = createScope(paymentMethodType: FormRedirectTestData.Constants.blikPaymentMethodType)
         scope.start()
-        try await Task.sleep(nanoseconds: 50_000_000)
 
         scope.updateField(.otpCode, value: "12345")
 
-        let state = await collectFirstState(from: scope)
-        XCTAssertFalse(state?.fields.first?.isValid ?? true)
-        XCTAssertNil(state?.fields.first?.errorMessage)
+        let state = try await awaitValue(scope.state, matching: { $0.fields.first?.value == "12345" })
+        XCTAssertFalse(state.fields.first?.isValid ?? true)
+        XCTAssertNil(state.fields.first?.errorMessage)
     }
 
     @MainActor
     func test_updateField_blik_emptyValue_noErrorMessage() async throws {
         let scope = createScope(paymentMethodType: FormRedirectTestData.Constants.blikPaymentMethodType)
         scope.start()
-        try await Task.sleep(nanoseconds: 50_000_000)
 
+        scope.updateField(.otpCode, value: "1")
         scope.updateField(.otpCode, value: "")
 
-        let state = await collectFirstState(from: scope)
-        XCTAssertFalse(state?.fields.first?.isValid ?? true)
-        XCTAssertNil(state?.fields.first?.errorMessage)
+        let state = try await awaitValue(scope.state, matching: { $0.fields.first?.value == "" && $0.fields.first?.isValid == false })
+        XCTAssertFalse(state.fields.first?.isValid ?? true)
+        XCTAssertNil(state.fields.first?.errorMessage)
     }
 
     @MainActor
     func test_updateField_mbway_filtersNonNumericCharacters() async throws {
         let scope = createScope(paymentMethodType: FormRedirectTestData.Constants.mbwayPaymentMethodType)
         scope.start()
-        try await Task.sleep(nanoseconds: 50_000_000)
 
         scope.updateField(.phoneNumber, value: "912ab345cd678")
 
-        let state = await collectFirstState(from: scope)
-        XCTAssertEqual(state?.fields.first?.value, "912345678")
+        let state = try await awaitValue(scope.state, matching: { $0.fields.first?.value == "912345678" })
+        XCTAssertEqual(state.fields.first?.value, "912345678")
     }
 
     @MainActor
     func test_updateField_mbway_validPhone_setsIsValidTrue() async throws {
         let scope = createScope(paymentMethodType: FormRedirectTestData.Constants.mbwayPaymentMethodType)
         scope.start()
-        try await Task.sleep(nanoseconds: 50_000_000)
 
         scope.updateField(.phoneNumber, value: "912345678")
 
-        let state = await collectFirstState(from: scope)
-        XCTAssertTrue(state?.fields.first?.isValid ?? false)
+        let state = try await awaitValue(scope.state, matching: { $0.fields.first?.value == "912345678" })
+        XCTAssertTrue(state.fields.first?.isValid ?? false)
     }
 
     @MainActor
     func test_updateField_mbway_shortPhone_setsIsValidFalse() async throws {
         let scope = createScope(paymentMethodType: FormRedirectTestData.Constants.mbwayPaymentMethodType)
         scope.start()
-        try await Task.sleep(nanoseconds: 50_000_000)
 
         scope.updateField(.phoneNumber, value: "123456")
 
-        let state = await collectFirstState(from: scope)
-        XCTAssertFalse(state?.fields.first?.isValid ?? true)
+        let state = try await awaitValue(scope.state, matching: { $0.fields.first?.value == "123456" })
+        XCTAssertFalse(state.fields.first?.isValid ?? true)
     }
 
     @MainActor
     func test_updateField_nonExistentFieldType_isIgnored() async throws {
         let scope = createScope(paymentMethodType: FormRedirectTestData.Constants.blikPaymentMethodType)
         scope.start()
-        try await Task.sleep(nanoseconds: 50_000_000)
 
         // BLIK scope only has otpCode field, phoneNumber doesn't exist
         scope.updateField(.phoneNumber, value: "912345678")
 
-        let state = await collectFirstState(from: scope)
-        XCTAssertEqual(state?.fields.count, 1)
-        XCTAssertEqual(state?.fields.first?.fieldType, .otpCode)
-        XCTAssertEqual(state?.fields.first?.value, "")
+        // The ignored update yields no state change, so assert on the unchanged initial state
+        let state = try await awaitFirst(scope.state)
+        XCTAssertEqual(state.fields.count, 1)
+        XCTAssertEqual(state.fields.first?.fieldType, .otpCode)
+        XCTAssertEqual(state.fields.first?.value, "")
     }
 
     // MARK: - Submit Tests
@@ -203,10 +195,13 @@ final class DefaultFormRedirectScopeTests: XCTestCase {
     func test_submit_withInvalidForm_doesNotCallInteractor() async throws {
         let scope = createScope(paymentMethodType: FormRedirectTestData.Constants.blikPaymentMethodType)
         scope.start()
-        try await Task.sleep(nanoseconds: 50_000_000)
         scope.updateField(.otpCode, value: "12345")
+        // Ensure the field update has been applied before submitting
+        _ = try await awaitValue(scope.state, matching: { $0.fields.first?.value == "12345" })
 
         scope.submit()
+        // why: invalid form short-circuits submit synchronously; there is no signal to await, so
+        // tick once to confirm the interactor is never invoked
         try await Task.sleep(nanoseconds: 100_000_000)
 
         XCTAssertEqual(mockInteractor.executeCallCount, 0)
@@ -216,12 +211,13 @@ final class DefaultFormRedirectScopeTests: XCTestCase {
     func test_submit_withValidForm_callsInteractor() async throws {
         let scope = createScope(paymentMethodType: FormRedirectTestData.Constants.blikPaymentMethodType)
         scope.start()
-        try await Task.sleep(nanoseconds: 50_000_000)
         scope.updateField(.otpCode, value: "123456")
-        try await Task.sleep(nanoseconds: 50_000_000)
+        _ = try await awaitValue(scope.state, matching: { $0.isSubmitEnabled })
 
         scope.submit()
-        try await Task.sleep(nanoseconds: 200_000_000)
+        try await withTimeout(2.0) { [self] in
+            while mockInteractor.executeCallCount == 0 { await Task.yield() }
+        }
 
         XCTAssertEqual(mockInteractor.executeCallCount, 1)
     }
@@ -230,12 +226,13 @@ final class DefaultFormRedirectScopeTests: XCTestCase {
     func test_submit_blik_passesCorrectSessionInfo() async throws {
         let scope = createScope(paymentMethodType: FormRedirectTestData.Constants.blikPaymentMethodType)
         scope.start()
-        try await Task.sleep(nanoseconds: 50_000_000)
         scope.updateField(.otpCode, value: FormRedirectTestData.Constants.validBlikCode)
-        try await Task.sleep(nanoseconds: 50_000_000)
+        _ = try await awaitValue(scope.state, matching: { $0.isSubmitEnabled })
 
         scope.submit()
-        try await Task.sleep(nanoseconds: 200_000_000)
+        try await withTimeout(2.0) { [self] in
+            while mockInteractor.executeSessionInfo == nil { await Task.yield() }
+        }
 
         XCTAssertTrue(mockInteractor.executeSessionInfo is BlikSessionInfo)
         if let sessionInfo = mockInteractor.executeSessionInfo as? BlikSessionInfo {
@@ -247,12 +244,13 @@ final class DefaultFormRedirectScopeTests: XCTestCase {
     func test_submit_mbway_passesCorrectSessionInfo() async throws {
         let scope = createScope(paymentMethodType: FormRedirectTestData.Constants.mbwayPaymentMethodType)
         scope.start()
-        try await Task.sleep(nanoseconds: 50_000_000)
         scope.updateField(.phoneNumber, value: FormRedirectTestData.Constants.validPhoneNumber)
-        try await Task.sleep(nanoseconds: 50_000_000)
+        _ = try await awaitValue(scope.state, matching: { $0.isSubmitEnabled })
 
         scope.submit()
-        try await Task.sleep(nanoseconds: 200_000_000)
+        try await withTimeout(2.0) { [self] in
+            while mockInteractor.executeSessionInfo == nil { await Task.yield() }
+        }
 
         XCTAssertTrue(mockInteractor.executeSessionInfo is InputPhonenumberSessionInfo)
         if let sessionInfo = mockInteractor.executeSessionInfo as? InputPhonenumberSessionInfo {
@@ -267,15 +265,13 @@ final class DefaultFormRedirectScopeTests: XCTestCase {
         mockInteractor.executeResult = .success(FormRedirectTestData.successPaymentResult)
         let scope = createScope(paymentMethodType: FormRedirectTestData.Constants.blikPaymentMethodType)
         scope.start()
-        try await Task.sleep(nanoseconds: 50_000_000)
         scope.updateField(.otpCode, value: "123456")
-        try await Task.sleep(nanoseconds: 50_000_000)
+        _ = try await awaitValue(scope.state, matching: { $0.isSubmitEnabled })
 
         scope.submit()
-        try await Task.sleep(nanoseconds: 300_000_000)
 
-        let state = await collectFirstState(from: scope)
-        XCTAssertEqual(state?.status, .success)
+        let state = try await awaitValue(scope.state, matching: { $0.status == .success })
+        XCTAssertEqual(state.status, .success)
     }
 
     @MainActor
@@ -283,19 +279,43 @@ final class DefaultFormRedirectScopeTests: XCTestCase {
         mockInteractor.executeResult = .failure(PrimerError.unknown(message: "Payment failed"))
         let scope = createScope(paymentMethodType: FormRedirectTestData.Constants.blikPaymentMethodType)
         scope.start()
-        try await Task.sleep(nanoseconds: 50_000_000)
         scope.updateField(.otpCode, value: "123456")
-        try await Task.sleep(nanoseconds: 50_000_000)
+        _ = try await awaitValue(scope.state, matching: { $0.isSubmitEnabled })
 
         scope.submit()
-        try await Task.sleep(nanoseconds: 300_000_000)
 
-        let state = await collectFirstState(from: scope)
-        if case .failure = state?.status {
+        let state = try await awaitValue(scope.state, matching: {
+            if case .failure = $0.status { true } else { false }
+        })
+        if case .failure = state.status {
             // Expected
         } else {
             XCTFail("Expected failure status after payment error")
         }
+    }
+
+    @MainActor
+    func test_submit_cancelledError_doesNotTransitionToFailure() async throws {
+        mockInteractor.executeResult = .failure(
+            PrimerError.cancelled(paymentMethodType: FormRedirectTestData.Constants.blikPaymentMethodType)
+        )
+        let scope = createScope(paymentMethodType: FormRedirectTestData.Constants.blikPaymentMethodType)
+        scope.start()
+        scope.updateField(.otpCode, value: "123456")
+        _ = try await awaitValue(scope.state, matching: { $0.isSubmitEnabled })
+
+        scope.submit()
+        // Cancellation returns without a terminal state, so await the interactor call as the signal
+        try await withTimeout(2.0) { [self] in
+            while mockInteractor.executeCallCount == 0 { await Task.yield() }
+        }
+
+        // Cancellation is a clean dismissal, never surfaced as a payment failure
+        let state = try await awaitFirst(scope.state)
+        if case .failure = state.status {
+            XCTFail("Cancellation must not transition to failure")
+        }
+        XCTAssertEqual(mockInteractor.executeCallCount, 1)
     }
 
     @MainActor
@@ -304,16 +324,13 @@ final class DefaultFormRedirectScopeTests: XCTestCase {
         mockInteractor.executeDelay = 0.6
         let scope = createScope(paymentMethodType: FormRedirectTestData.Constants.blikPaymentMethodType)
         scope.start()
-        try await Task.sleep(nanoseconds: 50_000_000)
         scope.updateField(.otpCode, value: "123456")
-        try await Task.sleep(nanoseconds: 50_000_000)
+        _ = try await awaitValue(scope.state, matching: { $0.isSubmitEnabled })
 
         scope.submit()
-        // Wait enough for onPollingStarted to fire but not for the full execute to complete
-        try await Task.sleep(nanoseconds: 200_000_000)
 
-        let state = await collectFirstState(from: scope)
-        XCTAssertEqual(state?.status, .awaitingExternalCompletion)
+        let state = try await awaitValue(scope.state, matching: { $0.status == .awaitingExternalCompletion })
+        XCTAssertEqual(state.status, .awaitingExternalCompletion)
     }
 
     // MARK: - Cancel Tests
@@ -323,12 +340,14 @@ final class DefaultFormRedirectScopeTests: XCTestCase {
         mockInteractor.executeDelay = 1.0
         let scope = createScope(paymentMethodType: FormRedirectTestData.Constants.blikPaymentMethodType)
         scope.start()
-        try await Task.sleep(nanoseconds: 50_000_000)
         scope.updateField(.otpCode, value: "123456")
-        try await Task.sleep(nanoseconds: 50_000_000)
+        _ = try await awaitValue(scope.state, matching: { $0.isSubmitEnabled })
 
         scope.submit()
-        try await Task.sleep(nanoseconds: 100_000_000)
+        // Wait until execute is in-flight before cancelling
+        try await withTimeout(2.0) { [self] in
+            while mockInteractor.executeCallCount == 0 { await Task.yield() }
+        }
 
         scope.cancel()
 
@@ -356,7 +375,6 @@ final class DefaultFormRedirectScopeTests: XCTestCase {
         let checkoutScope = DefaultCheckoutScope(
             clientToken: TestData.Tokens.valid,
             settings: settings,
-            diContainer: DIContainer.shared,
             navigator: navigator,
             presentationContext: .fromPaymentSelection
         )
@@ -380,13 +398,14 @@ final class DefaultFormRedirectScopeTests: XCTestCase {
     func test_buildSessionInfo_unsupportedType_throwsError() async throws {
         let scope = createScope(paymentMethodType: "UNSUPPORTED_TYPE")
         scope.start()
-        try await Task.sleep(nanoseconds: 50_000_000)
 
         scope.submit()
-        try await Task.sleep(nanoseconds: 200_000_000)
 
-        let state = await collectFirstState(from: scope)
-        if case .failure = state?.status {
+        // Unsupported type fails configuration in init, so submit short-circuits and never calls execute
+        let state = try await awaitValue(scope.state, matching: {
+            if case .failure = $0.status { true } else { false }
+        })
+        if case .failure = state.status {
             // Expected
         } else {
             XCTFail("Expected failure status for unsupported payment method type")
@@ -406,19 +425,5 @@ final class DefaultFormRedirectScopeTests: XCTestCase {
             presentationContext: presentationContext,
             processPaymentInteractor: mockInteractor
         )
-    }
-
-    @MainActor
-    private func collectFirstState(from scope: DefaultFormRedirectScope) async -> PrimerFormRedirectState? {
-        var collectedState: PrimerFormRedirectState?
-        let task = Task {
-            for await state in scope.state {
-                collectedState = state
-                break
-            }
-        }
-        try? await Task.sleep(nanoseconds: 100_000_000)
-        task.cancel()
-        return collectedState
     }
 }

@@ -1,6 +1,5 @@
 "accessibility_action_delete" = "ลบวิธีการชำระเงิน";
 "accessibility_action_edit" = "แก้ไขรายละเอียดบัตร";
-"accessibility_action_set_default" = "ตั้งเป็นวิธีการชำระเงินหลัก";
 "accessibility_card_form_billing_address_address_line_1_label" = "ที่อยู่บรรทัดที่ 1 จำเป็น";
 "accessibility_card_form_billing_address_address_line_2_label" = "ที่อยู่บรรทัดที่ 2 ไม่บังคับ";
 "accessibility_card_form_billing_address_city_hint" = "กรอกชื่อเมือง";
@@ -19,7 +18,7 @@
 "accessibility_card_form_cardholder_name_hint" = "กรอกชื่อตามที่แสดงบนบัตร";
 "accessibility_card_form_cardholder_name_label" = "ชื่อผู้ถือบัตร";
 "accessibility_card_form_cvc_error_invalid" = "รหัสความปลอดภัยไม่ถูกต้อง";
-"accessibility_card_form_cvc_hint" = "รหัส 3 หรือ 4 หลักด้านหลังบัตร";
+"accessibility_card_form_cvc_hint" = "รหัสความปลอดภัย 3 หรือ 4 หลัก";
 "accessibility_card_form_cvc_label" = "รหัสความปลอดภัย จำเป็น";
 "accessibility_card_form_cvv_icon" = "รหัสความปลอดภัย CVV";
 "accessibility_card_form_expiry_error_invalid" = "วันหมดอายุไม่ถูกต้อง";
@@ -27,11 +26,11 @@
 "accessibility_card_form_expiry_icon" = "วันหมดอายุบัตร";
 "accessibility_card_form_expiry_label" = "วันหมดอายุ จำเป็น";
 "accessibility_card_form_network_selector" = "เลือกเครือข่าย";
-"accessibility_card_form_network_selector_hint" = "แตะสองครั้งเพื่อเลือกเครือข่ายบัตรอื่น";
-"accessibility_card_form_network_selector_inline_hint" = "แตะสองครั้งเพื่อเลือกเครือข่ายนี้";
+"accessibility_card_form_network_selector_hint" = "เลือกเครือข่ายบัตรอื่น";
+"accessibility_card_form_network_selector_inline_hint" = "เลือกเครือข่ายนี้";
 "accessibility_card_form_network_selector_label" = "ตัวเลือกเครือข่ายบัตร";
 "accessibility_card_form_submit_disabled" = "ปุ่มถูกปิดใช้งาน กรอกข้อมูลที่จำเป็นทั้งหมดเพื่อเปิดใช้งานการชำระเงิน";
-"accessibility_card_form_submit_hint" = "แตะสองครั้งเพื่อส่งการชำระเงิน";
+"accessibility_card_form_submit_hint" = "ส่งการชำระเงิน";
 "accessibility_card_form_submit_label" = "ส่งการชำระเงิน";
 "accessibility_card_form_submit_loading" = "กำลังดำเนินการชำระเงิน กรุณารอสักครู่";
 "accessibility_checkout_error_icon" = "ข้อผิดพลาด";
@@ -52,8 +51,6 @@
 "accessibility_country_selection_search_icon" = "ค้นหา";
 "accessibility_error_generic" = "เกิดข้อผิดพลาด กรุณาลองอีกครั้ง";
 "accessibility_error_multiple_errors" = "พบข้อผิดพลาด %d รายการ";
-"accessibility_payment_selection_card_full" = "บัตร %1$@ ลงท้ายด้วย %2$@ หมดอายุ %3$@";
-"accessibility_payment_selection_card_masked" = "บัตรลงท้ายด้วยตัวเลขที่ปิดบัง";
 "accessibility_payment_selection_coming_soon" = "วิธีการชำระเงินเร็วๆ นี้";
 "accessibility_payment_selection_pay_with_card" = "ชำระด้วยบัตร";
 "accessibility_payment_selection_pay_with_ideal" = "ชำระด้วย iDEAL";
@@ -65,6 +62,7 @@
 "accessibility_screen_loading_payment_methods" = "กำลังโหลดวิธีการชำระเงิน";
 "accessibility_screen_payment_method" = "วิธีการชำระเงิน %@";
 "accessibility_payment_method_button" = "ชำระเงินด้วย %@";
+"accessibility_payment_method_selected" = "เลือก %@ แล้ว";
 "accessibility_screen_processing_payment" = "กำลังดำเนินการชำระเงิน";
 "accessibility_screen_success" = "ชำระเงินสำเร็จ";
 "accessibility_vault_delete_payment_method" = "ลบวิธีการชำระเงินนี้";
@@ -144,7 +142,6 @@
 "primer_card_form_placeholder_state" = "กรุงเทพฯ";
 "primer_card_form_retail_not_implemented" = "ยังไม่รองรับการเลือกร้านค้าปลีก";
 "primer_card_form_title" = "ชำระด้วยบัตร";
-"primer_checkout_auto_dismiss_message" = "หน้าจอนี้จะปิดอัตโนมัติใน 3 วินาที";
 "primer_checkout_dismissing" = "กำลังปิด...";
 "primer_checkout_error_button_other_methods" = "เลือกวิธีการชำระเงินอื่น";
 "primer_checkout_error_subtitle" = "เกิดปัญหาการเชื่อมต่อเครือข่าย";
@@ -209,8 +206,8 @@
 "accessibility_klarna_category" = "ตัวเลือกการชำระเงิน %@";
 "accessibility_klarna_category_selected" = "ตัวเลือกการชำระเงิน %@, เลือกแล้ว";
 "accessibility_klarna_payment_view" = "แบบฟอร์มชำระเงิน Klarna";
-"accessibility_klarna_authorize_hint" = "แตะสองครั้งเพื่อดำเนินการต่อด้วย Klarna";
-"accessibility_klarna_finalize_hint" = "แตะสองครั้งเพื่อชำระเงินให้เสร็จสิ้น";
+"accessibility_klarna_authorize_hint" = "ดำเนินการต่อด้วย Klarna";
+"accessibility_klarna_finalize_hint" = "ดำเนินการชำระเงินให้เสร็จสิ้น";
 
 /* ACH */
 "primer_ach_title" = "บัญชีธนาคาร";
@@ -223,9 +220,9 @@
 "primer_ach_mandate_button_accept" = "ฉันยินยอม";
 "primer_ach_mandate_button_decline" = "ยกเลิก";
 "primer_ach_mandate_template" = "โดยการคลิก \"ฉันยินยอม\" คุณอนุญาตให้ %1$@ หักเงินจากบัญชีธนาคารที่ระบุไว้ข้างต้นสำหรับจำนวนเงินที่ค้างชำระสำหรับค่าใช้จ่ายที่เกิดจากการใช้บริการของ %1$@ และ/หรือการซื้อผลิตภัณฑ์จาก %1$@ ตามเว็บไซต์และข้อกำหนดของ %1$@ จนกว่าจะมีการยกเลิกการอนุญาตนี้ คุณสามารถแก้ไขหรือยกเลิกการอนุญาตนี้ได้ทุกเมื่อโดยแจ้งให้ %1$@ ทราบล่วงหน้า 30 (สามสิบ) วัน";
-"accessibility_ach_continue_hint" = "แตะสองครั้งเพื่อดำเนินการต่อไปยังการเลือกบัญชีธนาคาร";
-"accessibility_ach_mandate_accept_hint" = "แตะสองครั้งเพื่อยอมรับการอนุญาตและทำการชำระเงินให้เสร็จสิ้น";
-"accessibility_ach_mandate_decline_hint" = "แตะสองครั้งเพื่อปฏิเสธและยกเลิกการชำระเงิน";
+"accessibility_ach_continue_hint" = "ดำเนินการต่อไปยังการเลือกบัญชีธนาคาร";
+"accessibility_ach_mandate_accept_hint" = "ยอมรับการอนุมัติและดำเนินการชำระเงินให้เสร็จสิ้น";
+"accessibility_ach_mandate_decline_hint" = "ปฏิเสธและยกเลิกการชำระเงิน";
 
 "accessibility_card_form_billing_address_hint" = "กรอกที่อยู่ของคุณ";
 "accessibility_card_form_billing_address_state_hint" = "กรอกรัฐหรือจังหวัด";
@@ -285,3 +282,5 @@
 "primer_adyen_klarna_option_pay_later" = "ชำระภายหลัง";
 "primer_adyen_klarna_option_pay_over_time" = "ชำระแบบผ่อนชำระ";
 "primer_adyen_klarna_option_pay_now" = "ชำระตอนนี้";
+"primer_vaulted_gocardless_direct_debit_suffix" = "หักบัญชีอัตโนมัติ";
+"accessibility_card_form_billing_address_country_hint" = "เปิดรายการเพื่อเลือกประเทศของคุณ";

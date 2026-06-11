@@ -148,7 +148,6 @@ struct FormRedirectScreen: View {
             )
         }
         .disabled(!currentState.isSubmitEnabled || currentState.isLoading)
-        .accessibilityIdentifier(AccessibilityIdentifiers.FormRedirect.submitButton)
         .accessibility(
             config: AccessibilityConfiguration(
                 identifier: AccessibilityIdentifiers.FormRedirect.submitButton,
@@ -224,7 +223,7 @@ private struct FormFieldView: View {
         .padding(.vertical, PrimerSpacing.medium(tokens: tokens))
         .background(
             RoundedRectangle(cornerRadius: PrimerRadius.small(tokens: tokens))
-                .stroke(borderColor, lineWidth: PrimerBorderWidth.standard)
+                .stroke(borderColor, lineWidth: PrimerBorderWidth.standard(tokens: tokens))
                 .background(
                     RoundedRectangle(cornerRadius: PrimerRadius.small(tokens: tokens))
                         .fill(CheckoutColors.inputBackground(tokens: tokens))

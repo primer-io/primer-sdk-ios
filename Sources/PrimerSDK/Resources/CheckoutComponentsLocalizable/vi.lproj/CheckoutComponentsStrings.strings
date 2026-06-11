@@ -1,6 +1,5 @@
 "accessibility_action_delete" = "Xóa phương thức thanh toán";
 "accessibility_action_edit" = "Chỉnh sửa thông tin thẻ";
-"accessibility_action_set_default" = "Đặt làm phương thức thanh toán mặc định";
 "accessibility_card_form_billing_address_address_line_1_label" = "Dòng địa chỉ 1, bắt buộc";
 "accessibility_card_form_billing_address_address_line_2_label" = "Dòng địa chỉ 2, tùy chọn";
 "accessibility_card_form_billing_address_city_hint" = "Nhập tên thành phố";
@@ -19,7 +18,7 @@
 "accessibility_card_form_cardholder_name_hint" = "Nhập tên như trên thẻ";
 "accessibility_card_form_cardholder_name_label" = "Tên chủ thẻ";
 "accessibility_card_form_cvc_error_invalid" = "Mã bảo mật không hợp lệ.";
-"accessibility_card_form_cvc_hint" = "Mã 3 hoặc 4 chữ số ở mặt sau thẻ";
+"accessibility_card_form_cvc_hint" = "Mã bảo mật, 3 hoặc 4 chữ số";
 "accessibility_card_form_cvc_label" = "Mã bảo mật, bắt buộc";
 "accessibility_card_form_cvv_icon" = "Mã bảo mật CVV";
 "accessibility_card_form_expiry_error_invalid" = "Ngày hết hạn không hợp lệ.";
@@ -27,11 +26,11 @@
 "accessibility_card_form_expiry_icon" = "Ngày hết hạn thẻ";
 "accessibility_card_form_expiry_label" = "Ngày hết hạn, bắt buộc";
 "accessibility_card_form_network_selector" = "Chọn mạng lưới";
-"accessibility_card_form_network_selector_hint" = "Chạm hai lần để chọn mạng lưới thẻ khác";
-"accessibility_card_form_network_selector_inline_hint" = "Chạm hai lần để chọn mạng lưới này";
+"accessibility_card_form_network_selector_hint" = "Chọn mạng thẻ khác";
+"accessibility_card_form_network_selector_inline_hint" = "Chọn mạng này";
 "accessibility_card_form_network_selector_label" = "Bộ chọn mạng lưới thẻ";
 "accessibility_card_form_submit_disabled" = "Nút bị vô hiệu hóa. Điền đầy đủ các trường bắt buộc để kích hoạt thanh toán";
-"accessibility_card_form_submit_hint" = "Chạm hai lần để gửi thanh toán";
+"accessibility_card_form_submit_hint" = "Gửi thanh toán";
 "accessibility_card_form_submit_label" = "Gửi thanh toán";
 "accessibility_card_form_submit_loading" = "Đang xử lý thanh toán, vui lòng đợi";
 "accessibility_checkout_error_icon" = "Lỗi";
@@ -52,8 +51,6 @@
 "accessibility_country_selection_search_icon" = "Tìm kiếm";
 "accessibility_error_generic" = "Đã xảy ra lỗi. Vui lòng thử lại.";
 "accessibility_error_multiple_errors" = "Tìm thấy %d lỗi";
-"accessibility_payment_selection_card_full" = "Thẻ %1$@ kết thúc bằng %2$@, hết hạn %3$@";
-"accessibility_payment_selection_card_masked" = "thẻ kết thúc bằng các chữ số được ẩn";
 "accessibility_payment_selection_coming_soon" = "Phương thức thanh toán sắp ra mắt";
 "accessibility_payment_selection_pay_with_card" = "Thanh toán bằng thẻ";
 "accessibility_payment_selection_pay_with_ideal" = "Thanh toán bằng iDEAL";
@@ -65,6 +62,7 @@
 "accessibility_screen_loading_payment_methods" = "Đang tải phương thức thanh toán";
 "accessibility_screen_payment_method" = "Phương thức thanh toán %@";
 "accessibility_payment_method_button" = "Thanh toán bằng %@";
+"accessibility_payment_method_selected" = "Đã chọn %@";
 "accessibility_screen_processing_payment" = "Đang xử lý thanh toán";
 "accessibility_screen_success" = "Thanh toán thành công";
 "accessibility_vault_delete_payment_method" = "Xóa phương thức thanh toán này";
@@ -144,7 +142,6 @@
 "primer_card_form_placeholder_state" = "TP. HCM";
 "primer_card_form_retail_not_implemented" = "Tính năng chọn cửa hàng bán lẻ chưa được triển khai";
 "primer_card_form_title" = "Thanh toán bằng thẻ";
-"primer_checkout_auto_dismiss_message" = "Màn hình này sẽ tự động đóng trong 3 giây";
 "primer_checkout_dismissing" = "Đang đóng...";
 "primer_checkout_error_button_other_methods" = "Chọn phương thức thanh toán khác";
 "primer_checkout_error_subtitle" = "Đã xảy ra sự cố mạng.";
@@ -209,8 +206,8 @@
 "accessibility_klarna_category" = "Tùy chọn thanh toán %@";
 "accessibility_klarna_category_selected" = "Tùy chọn thanh toán %@, đã chọn";
 "accessibility_klarna_payment_view" = "Biểu mẫu thanh toán Klarna";
-"accessibility_klarna_authorize_hint" = "Nhấn đúp để tiếp tục với Klarna";
-"accessibility_klarna_finalize_hint" = "Nhấn đúp để hoàn tất thanh toán";
+"accessibility_klarna_authorize_hint" = "Tiếp tục với Klarna";
+"accessibility_klarna_finalize_hint" = "Hoàn tất thanh toán";
 
 /* ACH */
 "primer_ach_title" = "Tài khoản ngân hàng";
@@ -223,9 +220,9 @@
 "primer_ach_mandate_button_accept" = "Tôi đồng ý";
 "primer_ach_mandate_button_decline" = "Hủy";
 "primer_ach_mandate_template" = "Bằng cách nhấp vào \"Tôi đồng ý\", bạn cho phép %1$@ ghi nợ tài khoản ngân hàng được chỉ định ở trên cho bất kỳ khoản tiền nào phải trả cho các khoản phí phát sinh từ việc sử dụng dịch vụ của %1$@ và/hoặc mua sản phẩm từ %1$@, theo trang web và điều khoản của %1$@, cho đến khi ủy quyền này bị thu hồi. Bạn có thể sửa đổi hoặc hủy ủy quyền này bất cứ lúc nào bằng cách thông báo cho %1$@ trước 30 (ba mươi) ngày.";
-"accessibility_ach_continue_hint" = "Nhấn đúp để tiếp tục chọn tài khoản ngân hàng";
-"accessibility_ach_mandate_accept_hint" = "Nhấn đúp để chấp nhận ủy quyền và hoàn tất thanh toán";
-"accessibility_ach_mandate_decline_hint" = "Nhấn đúp để từ chối và hủy thanh toán";
+"accessibility_ach_continue_hint" = "Tiếp tục đến lựa chọn tài khoản ngân hàng";
+"accessibility_ach_mandate_accept_hint" = "Chấp nhận ủy quyền và hoàn tất thanh toán";
+"accessibility_ach_mandate_decline_hint" = "Từ chối và hủy thanh toán";
 
 "accessibility_card_form_billing_address_hint" = "Nhập địa chỉ của bạn";
 "accessibility_card_form_billing_address_state_hint" = "Nhập bang hoặc tỉnh";
@@ -285,3 +282,5 @@
 "primer_adyen_klarna_option_pay_later" = "Thanh toán sau";
 "primer_adyen_klarna_option_pay_over_time" = "Thanh toán theo thời gian";
 "primer_adyen_klarna_option_pay_now" = "Thanh toán ngay";
+"primer_vaulted_gocardless_direct_debit_suffix" = "Ghi nợ trực tiếp";
+"accessibility_card_form_billing_address_country_hint" = "Mở danh sách để chọn quốc gia của bạn";

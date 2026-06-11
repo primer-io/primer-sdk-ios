@@ -48,8 +48,37 @@ final class ProcessApplePayPaymentInteractorImpl: ProcessApplePayPaymentInteract
       let paymentResponse = try await createPaymentService.createPayment(
         paymentRequest: paymentRequest)
 
+      // createPayment only throws for hard failures (nil id / FAILED status). A PENDING payment
+      // or one carrying a requiredAction (3DS / resume) is returned without throwing, so we must
+      // gate it here: this native Apple Pay path has no resume/poll infrastructure wired in (unlike
+      // the web/form-redirect repositories), so surfacing such a response as a success-shaped
+      // PaymentResult would let a merchant fulfil an order whose payment is not yet complete.
+      if let requiredAction = paymentResponse.requiredAction {
+        throw PrimerError.failedToCreatePayment(
+          paymentMethodType: PrimerPaymentMethodType.applePay.rawValue,
+          description: "Apple Pay payment requires unsupported action: \(requiredAction.name.rawValue)"
+        )
+      }
+
+      // A non-success terminal/pending status must not be consumed as success by the scope. The
+      // backend may opt into success-on-pending via showSuccessCheckoutOnPendingPayment; honour it,
+      // otherwise treat anything other than SUCCESS as a payment failure.
+      let allowsSuccessOnPending = paymentResponse.showSuccessCheckoutOnPendingPayment == true
+      guard paymentResponse.status == .success || allowsSuccessOnPending else {
+        throw PrimerError.paymentFailed(
+          paymentMethodType: PrimerPaymentMethodType.applePay.rawValue,
+          paymentId: paymentResponse.id ?? "",
+          orderId: paymentResponse.orderId,
+          status: paymentResponse.status.rawValue
+        )
+      }
+
+      guard let paymentId = paymentResponse.id else {
+        throw PrimerError.invalidValue(key: "paymentResponse.id")
+      }
+
       return PaymentResult(
-        paymentId: paymentResponse.id ?? "",
+        paymentId: paymentId,
         status: PaymentStatus(from: paymentResponse.status),
         amount: paymentResponse.amount,
         currencyCode: paymentResponse.currencyCode,

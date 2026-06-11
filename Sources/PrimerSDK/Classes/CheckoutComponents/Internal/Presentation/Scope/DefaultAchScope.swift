@@ -79,7 +79,7 @@ final class DefaultAchScope: PrimerAchScope, ObservableObject, LogReporter {
       logger.warn(message: "ACH checkout scope was deallocated during cancel")
       return
     }
-    checkoutScope.onDismiss()
+    checkoutScope.cancelActivePaymentMethod(returnToSelection: presentationContext.shouldShowBackButton)
   }
 
   func updateFirstName(_ value: String) {
@@ -148,13 +148,12 @@ final class DefaultAchScope: PrimerAchScope, ObservableObject, LogReporter {
 
   func declineMandate() {
     logger.debug(message: "ACH mandate declined")
-
-    let error = ACHHelpers.getCancelledError(paymentMethodType: PrimerPaymentMethodType.stripeAch.rawValue)
     guard let checkoutScope else {
       logger.warn(message: "ACH checkout scope was deallocated during mandate decline")
       return
     }
-    checkoutScope.handlePaymentError(error)
+    // Declining the mandate is a deliberate user cancellation, not a payment failure.
+    checkoutScope.cancelActivePaymentMethod(returnToSelection: presentationContext.shouldShowBackButton)
   }
 
   func onBack() {
@@ -388,12 +387,12 @@ extension DefaultAchScope: AchBankCollectorDelegate {
   func achBankCollectorDidCancel() {
     logger.debug(message: "ACH bank collector cancelled")
     bankCollectorViewController = nil
-    let error = ACHHelpers.getCancelledError(paymentMethodType: PrimerPaymentMethodType.stripeAch.rawValue)
     guard let checkoutScope else {
       logger.error(message: "ACH checkout scope was deallocated during bank collector cancellation")
       return
     }
-    checkoutScope.handlePaymentError(error)
+    // Dismissing the bank-selection sheet is a user cancellation, not a payment failure.
+    checkoutScope.cancelActivePaymentMethod(returnToSelection: presentationContext.shouldShowBackButton)
   }
 
   func achBankCollectorDidFail(error: PrimerError) {

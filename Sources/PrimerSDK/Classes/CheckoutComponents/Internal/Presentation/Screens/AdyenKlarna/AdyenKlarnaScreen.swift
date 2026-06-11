@@ -32,7 +32,7 @@ struct AdyenKlarnaScreen: View {
         }
         .padding(.horizontal, PrimerSpacing.large(tokens: tokens))
         .padding(.vertical, PrimerSpacing.large(tokens: tokens))
-        .frame(maxWidth: UIScreen.main.bounds.width)
+        .frame(maxWidth: .infinity)
         .navigationBarHidden(true)
         .background(CheckoutColors.background(tokens: tokens))
         .accessibilityIdentifier(AccessibilityIdentifiers.AdyenKlarna.container)
@@ -93,10 +93,8 @@ struct AdyenKlarnaScreen: View {
         switch adyenKlarnaState.status {
         case .optionSelection:
             makeOptionSelectionContent()
-        case .loading:
-            makeLoadingContent()
-        case .submitting, .redirecting, .polling:
-            makeRedirectingContent()
+        case .loading, .submitting, .redirecting, .polling:
+            makeProgressContent()
         default:
             EmptyView()
         }
@@ -170,18 +168,7 @@ struct AdyenKlarnaScreen: View {
 
     // MARK: - Loading & Redirecting
 
-    private func makeLoadingContent() -> some View {
-        VStack(spacing: PrimerSpacing.large(tokens: tokens)) {
-            Spacer()
-            makePaymentMethodLogo()
-            ProgressView()
-                .progressViewStyle(CircularProgressViewStyle(tint: CheckoutColors.textSecondary(tokens: tokens)))
-                .scaleEffect(PrimerScale.small)
-            Spacer()
-        }
-    }
-
-    private func makeRedirectingContent() -> some View {
+    private func makeProgressContent() -> some View {
         VStack(spacing: PrimerSpacing.large(tokens: tokens)) {
             Spacer()
             makePaymentMethodLogo()

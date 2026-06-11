@@ -8,7 +8,7 @@ import SwiftUI
 
 /// Type alias for QR code screen customization component.
 @available(iOS 15.0, *)
-public typealias QRCodeScreenComponent = (any PrimerQRCodeScope) -> any View
+typealias QRCodeScreenComponent = (any PrimerQRCodeScope) -> any View
 
 /// Scope protocol for QR code payment methods (e.g., PromptPay, Xfers).
 ///
@@ -35,7 +35,7 @@ public typealias QRCodeScreenComponent = (any PrimerQRCodeScope) -> any View
 /// ```
 @available(iOS 15.0, *)
 @MainActor
-public protocol PrimerQRCodeScope: PrimerPaymentMethodScope where State == PrimerQRCodeState {
+protocol PrimerQRCodeScope: PrimerPaymentMethodScope where State == PrimerQRCodeState {
 
   /// Custom screen component to replace the entire QR code screen.
   var screen: QRCodeScreenComponent? { get set }

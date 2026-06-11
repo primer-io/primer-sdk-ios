@@ -16,7 +16,6 @@ struct CVVTextField: UIViewRepresentable, LogReporter {
   @Binding var isFocused: Bool
   let placeholder: String
   let cardNetwork: CardNetwork
-  let styling: PrimerFieldStyling?
   let validationService: ValidationService
   let scope: any CardFormFieldScopeInternal
   let tokens: DesignTokens?
@@ -28,7 +27,6 @@ struct CVVTextField: UIViewRepresentable, LogReporter {
     textField.configurePrimerStyle(
       placeholder: placeholder,
       configuration: .cvv,
-      styling: styling,
       tokens: tokens,
       doneButtonTarget: context.coordinator,
       doneButtonAction: #selector(Coordinator.doneButtonTapped)
@@ -95,22 +93,18 @@ struct CVVTextField: UIViewRepresentable, LogReporter {
       }
     }
 
-    func textFieldDidBeginEditing(_ textField: UITextField) {
-      DispatchQueue.main.async {
-        self.isFocused = true
-        self.errorMessage = nil
-        self.scope.clearFieldError(.cvv)
-      }
+    @MainActor func textFieldDidBeginEditing(_ textField: UITextField) {
+      isFocused = true
+      errorMessage = nil
+      scope.clearFieldError(.cvv)
     }
 
-    func textFieldDidEndEditing(_ textField: UITextField) {
-      DispatchQueue.main.async {
-        self.isFocused = false
-      }
+    @MainActor func textFieldDidEndEditing(_ textField: UITextField) {
+      isFocused = false
       validateCVV()
     }
 
-    func textField(
+    @MainActor func textField(
       _ textField: UITextField, shouldChangeCharactersIn range: NSRange,
       replacementString string: String
     ) -> Bool {
@@ -143,7 +137,7 @@ struct CVVTextField: UIViewRepresentable, LogReporter {
       return false
     }
 
-    private func validateCVV() {
+    @MainActor private func validateCVV() {
       // Empty field handling - don't show errors for empty fields
       let trimmedCVV = cvv.trimmingCharacters(in: .whitespacesAndNewlines)
       if trimmedCVV.isEmpty {

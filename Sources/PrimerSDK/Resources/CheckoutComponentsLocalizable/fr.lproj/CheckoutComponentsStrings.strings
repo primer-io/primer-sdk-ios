@@ -1,6 +1,5 @@
 "accessibility_action_delete" = "Supprimer le moyen de paiement";
 "accessibility_action_edit" = "Modifier les informations de votre carte";
-"accessibility_action_set_default" = "Définir comme moyen de paiement par défaut";
 "accessibility_card_form_billing_address_address_line_1_label" = "Adresse ligne 1, obligatoire";
 "accessibility_card_form_billing_address_address_line_2_label" = "Adresse ligne 2, facultatif";
 "accessibility_card_form_billing_address_city_hint" = "Entrez la ville de l'adresse de facturation";
@@ -19,7 +18,7 @@
 "accessibility_card_form_cardholder_name_hint" = "Entrez le nom du titulaire tel qu'il apparaît sur la carte";
 "accessibility_card_form_cardholder_name_label" = "Nom du titulaire";
 "accessibility_card_form_cvc_error_invalid" = "Code de sécurité (CVV/CVC) invalide.";
-"accessibility_card_form_cvc_hint" = "Code à 3 ou 4 chiffres au dos de la carte";
+"accessibility_card_form_cvc_hint" = "Code de sécurité, 3 ou 4 chiffres";
 "accessibility_card_form_cvc_label" = "Code de sécurité (CVV/CVC), obligatoire";
 "accessibility_card_form_cvv_icon" = "Code de sécurité (CVV/CVC)";
 "accessibility_card_form_expiry_error_invalid" = "Date d'expiration invalide.";
@@ -27,11 +26,11 @@
 "accessibility_card_form_expiry_icon" = "Date d'expiration de la carte";
 "accessibility_card_form_expiry_label" = "Date d'expiration, obligatoire";
 "accessibility_card_form_network_selector" = "Sélectionner le type de carte";
-"accessibility_card_form_network_selector_hint" = "Appuyez deux fois pour sélectionner un autre type de carte";
-"accessibility_card_form_network_selector_inline_hint" = "Appuyez deux fois pour sélectionner ce type de carte";
+"accessibility_card_form_network_selector_hint" = "Sélectionner un autre type de carte";
+"accessibility_card_form_network_selector_inline_hint" = "Sélectionner ce type de carte";
 "accessibility_card_form_network_selector_label" = "Choisir le type de carte";
 "accessibility_card_form_submit_disabled" = "Remplissez tous les champs obligatoires avant de payer";
-"accessibility_card_form_submit_hint" = "Appuyez deux fois pour payer";
+"accessibility_card_form_submit_hint" = "Soumettre le paiement";
 "accessibility_card_form_submit_label" = "Payer";
 "accessibility_card_form_submit_loading" = "Paiement en cours, veuillez patienter";
 "accessibility_checkout_error_icon" = "Erreur";
@@ -52,8 +51,6 @@
 "accessibility_country_selection_search_icon" = "Rechercher";
 "accessibility_error_generic" = "Une erreur s'est produite. Veuillez réessayer.";
 "accessibility_error_multiple_errors" = "%d erreurs trouvées";
-"accessibility_payment_selection_card_full" = "Carte %1$@ se terminant par %2$@, expirant le %3$@";
-"accessibility_payment_selection_card_masked" = "carte se terminant par ****";
 "accessibility_payment_selection_coming_soon" = "Moyen de paiement bientôt disponible";
 "accessibility_payment_selection_pay_with_card" = "Payer par carte";
 "accessibility_payment_selection_pay_with_ideal" = "Payer avec iDEAL";
@@ -65,6 +62,7 @@
 "accessibility_screen_loading_payment_methods" = "Chargement des moyens de paiement";
 "accessibility_screen_payment_method" = "Moyen de paiement %@";
 "accessibility_payment_method_button" = "Payer avec %@";
+"accessibility_payment_method_selected" = "%@ sélectionné";
 "accessibility_screen_processing_payment" = "Paiement en cours";
 "accessibility_screen_success" = "Paiement réussi";
 "accessibility_vault_delete_payment_method" = "Supprimer ce moyen de paiement";
@@ -144,7 +142,6 @@
 "primer_card_form_placeholder_state" = "Ile-de-France";
 "primer_card_form_retail_not_implemented" = "Sélection du point de vente non disponible";
 "primer_card_form_title" = "Payer par carte";
-"primer_checkout_auto_dismiss_message" = "Cette fenêtre se fermera dans 3 secondes";
 "primer_checkout_dismissing" = "Fermeture...";
 "primer_checkout_error_button_other_methods" = "Choisir un autre moyen de paiement";
 "primer_checkout_error_subtitle" = "Un problème s'est produit avec votre connexion Internet";
@@ -209,8 +206,8 @@
 "accessibility_klarna_category" = "Option de paiement %@";
 "accessibility_klarna_category_selected" = "Option de paiement %@, sélectionnée";
 "accessibility_klarna_payment_view" = "Formulaire de paiement Klarna";
-"accessibility_klarna_authorize_hint" = "Appuyez deux fois pour continuer avec Klarna";
-"accessibility_klarna_finalize_hint" = "Appuyez deux fois pour finaliser le paiement";
+"accessibility_klarna_authorize_hint" = "Continuer avec Klarna";
+"accessibility_klarna_finalize_hint" = "Finaliser le paiement";
 
 /* ACH */
 "primer_ach_title" = "Compte bancaire";
@@ -223,9 +220,9 @@
 "primer_ach_mandate_button_accept" = "J'accepte";
 "primer_ach_mandate_button_decline" = "Annuler";
 "primer_ach_mandate_template" = "En cliquant sur \"J'accepte\", vous autorisez %1$@ à débiter le compte bancaire spécifié ci-dessus pour tout montant dû au titre des frais résultant de votre utilisation des services de %1$@ et/ou de l'achat de produits auprès de %1$@, conformément au site web et aux conditions de %1$@, jusqu'à révocation de cette autorisation. Vous pouvez modifier ou annuler cette autorisation à tout moment en notifiant %1$@ avec un préavis de 30 (trente) jours.";
-"accessibility_ach_continue_hint" = "Appuyez deux fois pour continuer vers la sélection du compte bancaire";
-"accessibility_ach_mandate_accept_hint" = "Appuyez deux fois pour accepter l'autorisation et finaliser le paiement";
-"accessibility_ach_mandate_decline_hint" = "Appuyez deux fois pour refuser et annuler le paiement";
+"accessibility_ach_continue_hint" = "Continuer vers la sélection du compte bancaire";
+"accessibility_ach_mandate_accept_hint" = "Accepter l'autorisation et finaliser le paiement";
+"accessibility_ach_mandate_decline_hint" = "Refuser et annuler le paiement";
 
 "accessibility_card_form_billing_address_hint" = "Entrez votre adresse";
 "accessibility_card_form_billing_address_state_hint" = "Entrez l'état ou la province";
@@ -285,3 +282,5 @@
 "primer_adyen_klarna_option_pay_later" = "Payer plus tard";
 "primer_adyen_klarna_option_pay_over_time" = "Payer en plusieurs fois";
 "primer_adyen_klarna_option_pay_now" = "Payer maintenant";
+"primer_vaulted_gocardless_direct_debit_suffix" = "Prélèvement automatique";
+"accessibility_card_form_billing_address_country_hint" = "Ouvre une liste pour sélectionner votre pays";

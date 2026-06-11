@@ -6,6 +6,7 @@
 
 import Foundation
 
+@available(iOS 15.0, *)
 protocol HeadlessRepository {
   func getPaymentMethods() async throws -> [InternalPaymentMethod]
   func processCardPayment(

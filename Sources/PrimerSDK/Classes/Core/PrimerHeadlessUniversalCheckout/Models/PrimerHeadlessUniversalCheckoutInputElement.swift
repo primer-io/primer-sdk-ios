@@ -243,13 +243,13 @@ public enum PrimerInputElementType: Int {
 
     var keyboardType: UIKeyboardType {
         switch self {
-        case .cardNumber, .expiryDate, .cvv, .otp, .phoneNumber, .postalCode:
+        case .cardNumber, .expiryDate, .cvv, .otp, .phoneNumber:
             UIKeyboardType.numberPad
         case .cardholderName, .firstName, .lastName, .city, .state:
             UIKeyboardType.alphabet
         case .email:
             UIKeyboardType.emailAddress
-        case .addressLine1, .addressLine2, .countryCode, .retailer, .unknown, .all:
+        case .addressLine1, .addressLine2, .postalCode, .countryCode, .retailer, .unknown, .all:
             UIKeyboardType.default
         }
     }

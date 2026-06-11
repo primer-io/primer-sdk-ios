@@ -8,13 +8,13 @@ import PassKit
 import SwiftUI
 
 @available(iOS 15.0, *)
-public struct ApplePayButtonView: View {
+struct ApplePayButtonView: View {
   private let style: PKPaymentButtonStyle
   private let type: PKPaymentButtonType
   private let cornerRadius: CGFloat
   private let action: () -> Void
 
-  public init(
+  init(
     style: PKPaymentButtonStyle = .black,
     type: PKPaymentButtonType = .plain,
     cornerRadius: CGFloat = 8.0,
@@ -26,7 +26,7 @@ public struct ApplePayButtonView: View {
     self.action = action
   }
 
-  public var body: some View {
+  var body: some View {
     ApplePayButtonRepresentable(
       style: style,
       type: type,
@@ -34,8 +34,6 @@ public struct ApplePayButtonView: View {
       action: action
     )
     .frame(height: 50)
-    .accessibilityLabel("Pay with Apple Pay")
-    .accessibilityAddTraits(.isButton)
   }
 }
 
@@ -56,6 +54,7 @@ private struct ApplePayButtonRepresentable: UIViewRepresentable {
 
   func updateUIView(_ uiView: PKPaymentButton, context: Context) {
     uiView.cornerRadius = cornerRadius
+    context.coordinator.action = action
   }
 
   func makeCoordinator() -> Coordinator {
@@ -63,7 +62,7 @@ private struct ApplePayButtonRepresentable: UIViewRepresentable {
   }
 
   final class Coordinator: NSObject {
-    let action: () -> Void
+    var action: () -> Void
 
     init(action: @escaping () -> Void) {
       self.action = action

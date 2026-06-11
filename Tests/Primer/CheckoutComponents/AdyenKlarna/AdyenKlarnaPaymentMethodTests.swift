@@ -42,7 +42,6 @@ final class AdyenKlarnaPaymentMethodTests: XCTestCase {
         let checkoutScope = DefaultCheckoutScope(
             clientToken: TestData.Tokens.valid,
             settings: PrimerSettings(),
-            diContainer: DIContainer.shared,
             navigator: CheckoutNavigator()
         )
 
@@ -171,7 +170,6 @@ final class AdyenKlarnaPaymentMethodTests: XCTestCase {
         let checkoutScope = DefaultCheckoutScope(
             clientToken: TestData.Tokens.valid,
             settings: PrimerSettings(paymentHandling: .manual),
-            diContainer: DIContainer.shared,
             navigator: navigator
         )
         checkoutScope.availablePaymentMethods = [
@@ -215,27 +213,6 @@ final class AdyenKlarnaPaymentMethodTests: XCTestCase {
         XCTAssertNotNil(scope)
     }
 
-    // MARK: - createView with Registered Scope
-
-    @MainActor
-    func test_createView_withRegisteredScope_doesNotCrash() async throws {
-        // Given
-        let container = try await ContainerTestHelpers.createTestContainer()
-        _ = try? await container.register(ProcessAdyenKlarnaPaymentInteractor.self)
-            .asSingleton()
-            .with { _ in MockProcessAdyenKlarnaPaymentInteractor() }
-        let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
-        _ = try await AdyenKlarnaPaymentMethod.createScope(
-            checkoutScope: checkoutScope,
-            diContainer: container
-        )
-
-        // When
-        let view = AdyenKlarnaPaymentMethod.createView(checkoutScope: checkoutScope)
-
-        // Then — no crash; view may be nil since scope isn't auto-registered in registry
-        _ = view
-    }
 }
 
 // MARK: - Mock Non-Default Checkout Scope
@@ -246,10 +223,6 @@ private final class MockNonDefaultCheckoutScopeForAdyenKlarna: PrimerCheckoutSco
         AsyncStream { $0.finish() }
     }
 
-    var container: ContainerComponent?
-    var splashScreen: Component?
-    var loadingScreen: Component?
-    var errorScreen: ErrorComponent?
     var onBeforePaymentCreate: BeforePaymentCreateHandler?
     var paymentMethodSelection: PrimerPaymentMethodSelectionScope {
         fatalError("Not implemented for mock")

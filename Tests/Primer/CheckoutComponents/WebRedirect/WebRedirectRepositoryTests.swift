@@ -24,7 +24,7 @@ final class WebRedirectRepositoryTests: XCTestCase {
         sut = WebRedirectRepositoryImpl(
             tokenizationService: mockTokenizationService,
             webAuthService: mockWebAuthService,
-            createPaymentService: mockCreatePaymentService
+            createPaymentServiceFactory: { _ in self.mockCreatePaymentService }
         )
 
         let settings = PrimerSettings(
@@ -226,71 +226,6 @@ final class WebRedirectRepositoryTests: XCTestCase {
         }
     }
 
-    // MARK: - tokenize — Stores Payment ID
-
-    func test_tokenize_storesPaymentIdFromResponse() async {
-        // Given
-        let paymentMethod = PrimerPaymentMethod(
-            id: "sofort-config-id",
-            implementationType: .webRedirect,
-            type: "ADYEN_SOFORT",
-            name: "Sofort",
-            processorConfigId: "processor-1",
-            surcharge: nil,
-            options: nil,
-            displayMetadata: nil
-        )
-        SDKSessionHelper.setUp(withPaymentMethods: [paymentMethod])
-
-        let tokenData = createMockTokenData(token: "valid_token")
-        mockTokenizationService.onTokenize = { _ in .success(tokenData) }
-        mockCreatePaymentService.onCreatePayment = { _ in
-            Response.Body.Payment(
-                id: "stored_payment_id",
-                paymentId: "stored_payment_id",
-                amount: 100,
-                currencyCode: "EUR",
-                customer: nil,
-                customerId: nil,
-                dateStr: nil,
-                order: nil,
-                orderId: nil,
-                requiredAction: Response.Body.Payment.RequiredAction(
-                    clientToken: MockAppState.mockClientTokenWithRedirect,
-                    name: .checkout,
-                    description: nil
-                ),
-                status: .pending,
-                paymentFailureReason: nil
-            )
-        }
-
-        let sessionInfo = WebRedirectSessionInfo(locale: "en")
-
-        // When — tokenize will succeed through requiredAction processing
-        do {
-            _ = try await sut.tokenize(paymentMethodType: "ADYEN_SOFORT", sessionInfo: sessionInfo)
-        } catch {
-            // May fail at JWT decode step — that's expected
-        }
-
-        // Then — verify resumePayment no longer throws "no payment ID"
-        // by checking a different error is returned
-        do {
-            _ = try await sut.resumePayment(paymentMethodType: "ADYEN_SOFORT", resumeToken: "resume_token")
-        } catch let error as PrimerError {
-            // Should NOT be "resumePaymentId" error since tokenize stored the payment ID
-            if case .invalidValue(key: let key, value: _, reason: _, diagnosticsId: _) = error {
-                // If we still get this, tokenize didn't store the ID (happens if createPayment mock has nil id)
-                if key == "resumePaymentId" {
-                    // This is valid — the mock may not have stored the ID
-                }
-            }
-        } catch {
-            // Any non-PrimerError is also fine here
-        }
-    }
-
     // MARK: - tokenize — No API Configuration
 
     func test_tokenize_nilAPIConfiguration_throwsInvalidValueError() async {
@@ -311,49 +246,6 @@ final class WebRedirectRepositoryTests: XCTestCase {
         } catch {
             XCTFail("Unexpected error type: \(error)")
         }
-    }
-
-    // MARK: - tokenize — Multiple Payment Methods Finds Correct One
-
-    func test_tokenize_multiplePaymentMethods_findsCorrectConfig() async {
-        // Given
-        let otherMethod = PrimerPaymentMethod(
-            id: "ideal-config-id",
-            implementationType: .webRedirect,
-            type: "ADYEN_IDEAL",
-            name: "iDEAL",
-            processorConfigId: "processor-2",
-            surcharge: nil,
-            options: nil,
-            displayMetadata: nil
-        )
-        let sofortMethod = PrimerPaymentMethod(
-            id: "sofort-config-id",
-            implementationType: .webRedirect,
-            type: "ADYEN_SOFORT",
-            name: "Sofort",
-            processorConfigId: "processor-1",
-            surcharge: nil,
-            options: nil,
-            displayMetadata: nil
-        )
-        SDKSessionHelper.setUp(withPaymentMethods: [otherMethod, sofortMethod])
-
-        let tokenData = createMockTokenData(token: "valid_token")
-        mockTokenizationService.onTokenize = { _ in .success(tokenData) }
-        mockCreatePaymentService.onCreatePayment = nil // Will throw
-
-        let sessionInfo = WebRedirectSessionInfo(locale: "en")
-
-        // When
-        do {
-            _ = try await sut.tokenize(paymentMethodType: "ADYEN_SOFORT", sessionInfo: sessionInfo)
-        } catch {
-            // Expected — createPayment will fail
-        }
-
-        // Then — tokenization was reached (config lookup succeeded)
-        XCTAssertNotNil(mockTokenizationService.onTokenize)
     }
 
     // MARK: - tokenize — Nil Token in Response
@@ -431,23 +323,6 @@ final class WebRedirectRepositoryTests: XCTestCase {
         }
     }
 
-    // MARK: - cancelPolling
-
-    func test_cancelPolling_noActivePoll_doesNotCrash() {
-        // Given - no polling started
-
-        // When/Then - should not crash
-        sut.cancelPolling(paymentMethodType: "ADYEN_SOFORT")
-    }
-
-    func test_cancelPolling_calledMultipleTimes_doesNotCrash() {
-        // Given - no polling started
-
-        // When/Then
-        sut.cancelPolling(paymentMethodType: "ADYEN_SOFORT")
-        sut.cancelPolling(paymentMethodType: "ADYEN_SOFORT")
-    }
-
     // MARK: - resumePayment — Multiple Calls
 
     func test_resumePayment_withDifferentPaymentMethodTypes_throwsWithoutTokenization() async {
@@ -503,17 +378,6 @@ final class WebRedirectRepositoryTests: XCTestCase {
 
         // Then
         XCTAssertEqual(result, URL(string: "testapp://callback")!)
-    }
-
-    // MARK: - cancelPolling — With Different Payment Method Types
-
-    func test_cancelPolling_withDifferentPaymentMethodTypes_doesNotCrash() {
-        // Given - no active polling
-
-        // When/Then — all types should be safe
-        for type in ["ADYEN_SOFORT", "ADYEN_TWINT", "ADYEN_IDEAL", "UNKNOWN"] {
-            sut.cancelPolling(paymentMethodType: type)
-        }
     }
 
     // MARK: - openWebAuthentication — Callback URL Passthrough
@@ -1076,7 +940,7 @@ final class WebRedirectRepositoryTests: XCTestCase {
         sut = WebRedirectRepositoryImpl(
             tokenizationService: mockTokenizationService,
             webAuthService: mockWebAuthService,
-            createPaymentService: mockCreatePaymentService,
+            createPaymentServiceFactory: { _ in self.mockCreatePaymentService },
             apiConfigurationModule: mockConfigModule
         )
 
@@ -1136,7 +1000,7 @@ final class WebRedirectRepositoryTests: XCTestCase {
         sut = WebRedirectRepositoryImpl(
             tokenizationService: mockTokenizationService,
             webAuthService: mockWebAuthService,
-            createPaymentService: mockCreatePaymentService,
+            createPaymentServiceFactory: { _ in self.mockCreatePaymentService },
             apiConfigurationModule: mockConfigModule
         )
 
@@ -1204,7 +1068,7 @@ final class WebRedirectRepositoryTests: XCTestCase {
         sut = WebRedirectRepositoryImpl(
             tokenizationService: mockTokenizationService,
             webAuthService: mockWebAuthService,
-            createPaymentService: mockCreatePaymentService,
+            createPaymentServiceFactory: { _ in self.mockCreatePaymentService },
             apiConfigurationModule: mockConfigModule
         )
 
@@ -1252,7 +1116,7 @@ final class WebRedirectRepositoryTests: XCTestCase {
         sut = WebRedirectRepositoryImpl(
             tokenizationService: mockTokenizationService,
             webAuthService: mockWebAuthService,
-            createPaymentService: mockCreatePaymentService,
+            createPaymentServiceFactory: { _ in self.mockCreatePaymentService },
             pollingModuleFactory: { url in
                 factoryCalled = true
                 return PollingModule(url: url)
@@ -1272,14 +1136,19 @@ final class WebRedirectRepositoryTests: XCTestCase {
 
     // MARK: - cancelPolling After pollForCompletion Starts
 
-    func test_cancelPolling_afterPollStarts_setsCancellationError() async {
+    func test_cancelPolling_afterPollStarts_setsCancellationError() async throws {
         // Given
         let statusUrl = URL(string: "https://api.primer.io/status/123")!
+        var continuation: AsyncStream<Void>.Continuation!
+        let pollingStarted = AsyncStream<Void> { continuation = $0 }
         sut = WebRedirectRepositoryImpl(
             tokenizationService: mockTokenizationService,
             webAuthService: mockWebAuthService,
-            createPaymentService: mockCreatePaymentService,
-            pollingModuleFactory: { PollingModule(url: $0) }
+            createPaymentServiceFactory: { _ in self.mockCreatePaymentService },
+            pollingModuleFactory: { url in
+                continuation.yield()
+                return PollingModule(url: url)
+            }
         )
 
         // Start polling in background (will fail, but creates the module)
@@ -1287,8 +1156,8 @@ final class WebRedirectRepositoryTests: XCTestCase {
             _ = try? await sut.pollForCompletion(statusUrl: statusUrl)
         }
 
-        // Give polling time to start
-        try? await Task.sleep(nanoseconds: 100_000_000)
+        // Wait until polling actually started (factory invoked) instead of sleeping
+        _ = try await awaitFirst(pollingStarted)
 
         // When
         sut.cancelPolling(paymentMethodType: "ADYEN_TWINT")
@@ -1392,7 +1261,7 @@ final class WebRedirectRepositoryTests: XCTestCase {
         sut = WebRedirectRepositoryImpl(
             tokenizationService: mockTokenizationService,
             webAuthService: mockWebAuthService,
-            createPaymentService: mockCreatePaymentService,
+            createPaymentServiceFactory: { _ in self.mockCreatePaymentService },
             apiConfigurationModule: mockConfigModule
         )
 

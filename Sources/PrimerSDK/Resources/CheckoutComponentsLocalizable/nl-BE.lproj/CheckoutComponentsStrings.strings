@@ -26,7 +26,6 @@
 "primer_checkout_dismissing" = "Wordt afgesloten...";
 "primer_checkout_system_error_title" = "Fout in betalingssysteem";
 "primer_checkout_scope_unavailable" = "Afrekening niet beschikbaar";
-"primer_checkout_auto_dismiss_message" = "Dit scherm sluit automatisch over 3 seconden.";
 "primer_card_form_label_number" = "Kaartnummer";
 "primer_card_form_label_name" = "Naam op kaart";
 "primer_card_form_label_expiry" = "Vervaldatum";
@@ -125,7 +124,7 @@
 "accessibility_card_form_cardholder_name_label" = "Naam kaarthouder";
 "accessibility_card_form_card_number_hint" = "Voer uw kaartnummer in";
 "accessibility_card_form_expiry_hint" = "Voer vervaldatum in als MM/JJ";
-"accessibility_card_form_cvc_hint" = "3- of 4-cijferige code op achterkant van de kaart";
+"accessibility_card_form_cvc_hint" = "Beveiligingscode, 3 of 4 cijfers";
 "accessibility_card_form_cardholder_name_hint" = "Voer naam in zoals op de kaart staat";
 "accessibility_card_form_billing_address_first_name_label" = "Voornaam, verplicht";
 "accessibility_card_form_billing_address_last_name_label" = "Achternaam, verplicht";
@@ -139,10 +138,10 @@
 "accessibility_card_form_billing_address_country_label" = "Land, verplicht";
 "accessibility_card_form_network_selector" = "Selecteer netwerk";
 "accessibility_card_form_network_selector_label" = "Kaartnetwerkkiezer";
-"accessibility_card_form_network_selector_hint" = "Dubbeltik om een ander kaartnetwerk te selecteren";
-"accessibility_card_form_network_selector_inline_hint" = "Dubbeltik om dit netwerk te selecteren";
+"accessibility_card_form_network_selector_hint" = "Een ander kaartnetwerk selecteren";
+"accessibility_card_form_network_selector_inline_hint" = "Dit netwerk selecteren";
 "accessibility_card_form_submit_label" = "Betaling verzenden";
-"accessibility_card_form_submit_hint" = "Dubbeltik om betaling te verzenden";
+"accessibility_card_form_submit_hint" = "Betaling verzenden";
 "accessibility_card_form_submit_loading" = "Betaling wordt verwerkt, gelieve te wachten";
 "accessibility_card_form_submit_disabled" = "Knop uitgeschakeld. Vul alle verplichte velden in om betaling mogelijk te maken";
 "accessibility_card_form_card_number_error_invalid" = "Ongeldig kaartnummer. Gelieve te controleren en opnieuw te proberen.";
@@ -172,22 +171,20 @@
 "accessibility_payment_selection_pay_with_klarna" = "Betaal met Klarna";
 "accessibility_payment_selection_pay_with_ideal" = "Betaal met iDEAL";
 "accessibility_payment_selection_coming_soon" = "Binnenkort beschikbaar";
-"accessibility_payment_selection_card_full" = "%1$@ kaart eindigend op %2$@, verloopt %3$@";
 "accessibility_country_selection_item" = "%1$@, land";
 "accessibility_country_selection_search" = "Landen zoeken";
 "accessibility_country_selection_search_icon" = "Zoeken";
 "accessibility_country_selection_clear" = "Wissen";
 "accessibility_action_delete" = "Betaalmethode verwijderen";
 "accessibility_action_edit" = "Kaartgegevens bewerken";
-"accessibility_action_set_default" = "Instellen als standaard betaalmethode";
 "accessibility_checkout_success_icon" = "Betaling geslaagd";
 "accessibility_checkout_error_icon" = "Fout";
 "accessibility_error_generic" = "Er is een fout opgetreden. Probeer het opnieuw.";
 "accessibility_error_multiple_errors" = "%d fouten gevonden";
-"accessibility_payment_selection_card_masked" = "kaart eindigend op afgeschermde nummers";
 "accessibility_paypal_logo" = "PayPal";
 "accessibility_screen_payment_method" = "%@ betaalmethode";
 "accessibility_payment_method_button" = "Betalen met %@";
+"accessibility_payment_method_selected" = "%@ geselecteerd";
 "accessibility_vault_delete_payment_method" = "Verwijder deze betaalmethode";
 "accessibility_vaulted_ach" = "%@ bankrekening";
 "accessibility_vaulted_ach_full" = "%@ bankrekening eindigend op %@";
@@ -209,8 +206,8 @@
 "accessibility_klarna_category" = "%@ betaaloptie";
 "accessibility_klarna_category_selected" = "%@ betaaloptie, geselecteerd";
 "accessibility_klarna_payment_view" = "Klarna-betaalformulier";
-"accessibility_klarna_authorize_hint" = "Dubbeltik om door te gaan met Klarna";
-"accessibility_klarna_finalize_hint" = "Dubbeltik om de betaling te voltooien";
+"accessibility_klarna_authorize_hint" = "Doorgaan met Klarna";
+"accessibility_klarna_finalize_hint" = "Betaling voltooien";
 
 /* ACH */
 "primer_ach_title" = "Bankrekening";
@@ -223,9 +220,9 @@
 "primer_ach_mandate_button_accept" = "Ik ga akkoord";
 "primer_ach_mandate_button_decline" = "Annuleren";
 "primer_ach_mandate_template" = "Door op \"Ik ga akkoord\" te klikken, machtigt u %1$@ om de hierboven vermelde bankrekening te debiteren voor elk verschuldigd bedrag voor kosten die voortvloeien uit uw gebruik van de diensten van %1$@ en/of aankoop van producten van %1$@, overeenkomstig de website en voorwaarden van %1$@, totdat deze machtiging wordt ingetrokken. U kunt deze machtiging te allen tijde wijzigen of annuleren door %1$@ hiervan op de hoogte te stellen met 30 (dertig) dagen voorafgaande kennisgeving.";
-"accessibility_ach_continue_hint" = "Dubbeltik om door te gaan naar de selectie van de bankrekening";
-"accessibility_ach_mandate_accept_hint" = "Dubbeltik om de autorisatie te accepteren en de betaling te voltooien";
-"accessibility_ach_mandate_decline_hint" = "Dubbeltik om te weigeren en de betaling te annuleren";
+"accessibility_ach_continue_hint" = "Doorgaan naar selectie van bankrekening";
+"accessibility_ach_mandate_accept_hint" = "Accepteer de autorisatie en voltooi de betaling";
+"accessibility_ach_mandate_decline_hint" = "Weiger en annuleer de betaling";
 
 "accessibility_card_form_billing_address_hint" = "Voer uw adres in";
 "accessibility_card_form_billing_address_state_hint" = "Voer staat of provincie in";
@@ -285,3 +282,5 @@
 "primer_adyen_klarna_option_pay_later" = "Later betalen";
 "primer_adyen_klarna_option_pay_over_time" = "In termijnen betalen";
 "primer_adyen_klarna_option_pay_now" = "Nu betalen";
+"primer_vaulted_gocardless_direct_debit_suffix" = "Domiciliëring";
+"accessibility_card_form_billing_address_country_hint" = "Opent een lijst om uw land te selecteren";

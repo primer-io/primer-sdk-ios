@@ -309,7 +309,8 @@ extension MerchantHeadlessCheckoutRawDataViewController: PrimerHeadlessUniversal
         }
 
         let printableNetworks = metadata.detectedCardNetworks.items.map(\.network.rawValue).joined(separator: ", ")
-        print("[MerchantHeadlessCheckoutRawDataViewController] didReceiveCardMetadata: \(printableNetworks) forCardValidationState: \(cardState.cardNumber)")
+        let maskedCardNumber = "**** \(cardState.cardNumber.suffix(4))"
+        print("[MerchantHeadlessCheckoutRawDataViewController] didReceiveCardMetadata: \(printableNetworks) forCardValidationState: \(maskedCardNumber)")
 
         DispatchQueue.main.async {
             self.cardsStackView.removeAllArrangedSubviews()

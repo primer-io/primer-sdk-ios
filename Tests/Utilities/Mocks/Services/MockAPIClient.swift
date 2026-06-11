@@ -670,7 +670,9 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
         }
 
         DispatchQueue.main.asyncAfter(deadline: .now() + mockedNetworkDelay) {
-            let pollingResult = pollingResults[self.currentPollingIteration]
+            // Clamp once exhausted so an over-running poll keeps returning the final response
+            // instead of crashing with an index-out-of-range (see the async variant below).
+            let pollingResult = pollingResults[min(self.currentPollingIteration, pollingResults.count - 1)]
             self.currentPollingIteration += 1
 
             if pollingResult.0 == nil, pollingResult.1 == nil {
@@ -706,7 +708,10 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
 
         try await Task.sleep(nanoseconds: UInt64(mockedNetworkDelay * 1_000_000_000))
 
-        let pollingResult = pollingResults[currentPollingIteration]
+        // Clamp to the last configured result once the sequence is exhausted, so a poll that runs
+        // more cycles than expected (e.g. while a test waits for cancellation to surface) keeps
+        // returning the final response instead of crashing with an index-out-of-range.
+        let pollingResult = pollingResults[min(currentPollingIteration, pollingResults.count - 1)]
         currentPollingIteration += 1
 
         if pollingResult.0 == nil, pollingResult.1 == nil {

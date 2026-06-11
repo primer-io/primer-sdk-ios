@@ -81,9 +81,6 @@
                            location = "group:RetentionStrategy.swift">
                         </FileRef>
                         <FileRef
-                           location = "group:DIContainter+SwiftUI.swift">
-                        </FileRef>
-                        <FileRef
                            location = "group:Container.swift">
                         </FileRef>
                         <FileRef
@@ -497,16 +494,6 @@
                         <FileRef
                            location = "group:PaymentMethodsSection.swift">
                         </FileRef>
-                        <Group
-                           location = "group:Composite"
-                           name = "Composite">
-                           <FileRef
-                              location = "group:CardDetailsView.swift">
-                           </FileRef>
-                           <FileRef
-                              location = "group:BillingAddressView.swift">
-                           </FileRef>
-                        </Group>
                         <FileRef
                            location = "group:ApplePayButtonView.swift">
                         </FileRef>
@@ -580,12 +567,6 @@
                            <Group
                               location = "group:CountryInputField"
                               name = "CountryInputField">
-                              <FileRef
-                                 location = "group:CountryInputFieldWrapper.swift">
-                              </FileRef>
-                              <FileRef
-                                 location = "group:CountryInputField+SelectionButton.swift">
-                              </FileRef>
                               <FileRef
                                  location = "group:CountryInputField.swift">
                               </FileRef>
@@ -731,26 +712,7 @@
                   location = "group:Scope"
                   name = "Scope">
                   <FileRef
-                     location = "group:InputFieldConfig.swift">
-                  </FileRef>
-                  <FileRef
                      location = "group:PrimerSelectCountryScope.swift">
-                  </FileRef>
-                  <Group
-                     location = "group:Providers"
-                     name = "Providers">
-                     <FileRef
-                        location = "group:SelectCountryProvider.swift">
-                     </FileRef>
-                     <FileRef
-                        location = "group:PaymentMethodSelectionProvider.swift">
-                     </FileRef>
-                     <FileRef
-                        location = "group:CardFormProvider.swift">
-                     </FileRef>
-                  </Group>
-                  <FileRef
-                     location = "group:PrimerFieldStyling.swift">
                   </FileRef>
                   <FileRef
                      location = "group:PrimerApplePayScope.swift">
@@ -775,9 +737,6 @@
                   </FileRef>
                   <FileRef
                      location = "group:ComponentTypeAliases.swift">
-                  </FileRef>
-                  <FileRef
-                     location = "group:PrimerEnvironment.swift">
                   </FileRef>
                   <FileRef
                      location = "group:PrimerAchScope.swift">
@@ -1562,9 +1521,6 @@
                   location = "group:Models"
                   name = "Models">
                   <FileRef
-                     location = "group:TokenizationProtocols.swift">
-                  </FileRef>
-                  <FileRef
                      location = "group:BanksTokenizationComponent.swift">
                   </FileRef>
                </Group>
@@ -2292,9 +2248,6 @@
                   </FileRef>
                   <FileRef
                      location = "group:PrimerRootViewController.swift">
-                  </FileRef>
-                  <FileRef
-                     location = "group:PrimerSwiftUIBridgeViewController.swift">
                   </FileRef>
                   <FileRef
                      location = "group:PrimerInputViewController.swift">
@@ -3216,9 +3169,6 @@
                location = "group:WebRedirectComponentTests.swift">
             </FileRef>
             <FileRef
-               location = "group:BankComponentTests.swift">
-            </FileRef>
-            <FileRef
                location = "group:PrimerHeadlessFormWithRedirectManagerTests.swift">
             </FileRef>
             <FileRef
@@ -3235,9 +3185,6 @@
                location = "group:NativeUIManagerTests.swift">
             </FileRef>
             <FileRef
-               location = "group:KlarnaTokenizationManagerTests.swift">
-            </FileRef>
-            <FileRef
                location = "group:PrimerRawOTPDataTokenizationBuilderTests.swift">
             </FileRef>
             <FileRef
@@ -3248,9 +3195,6 @@
             </FileRef>
             <FileRef
                location = "group:PrimerOTPDataTests.swift">
-            </FileRef>
-            <FileRef
-               location = "group:PrimerRawCardDataManagerTests.swift">
             </FileRef>
          </Group>
          <Group
@@ -3452,9 +3396,6 @@
             <FileRef
                location = "group:UserInterfaceModuleTests.swift">
             </FileRef>
-            <FileRef
-               location = "group:HeadlessUniversalCheckoutTests.swift">
-            </FileRef>
          </Group>
          <Group
             location = "group:ApplePay"
@@ -3491,9 +3432,6 @@
             </FileRef>
             <FileRef
                location = "group:TokenizationServiceTests.swift">
-            </FileRef>
-            <FileRef
-               location = "group:InternalCardComponentManagerTests.swift">
             </FileRef>
             <FileRef
                location = "group:PayPalServiceTests.swift">
@@ -3630,9 +3568,6 @@
             name = "Helpers">
             <FileRef
                location = "group:CardData.swift">
-            </FileRef>
-            <FileRef
-               location = "group:Promises+Helper.swift">
             </FileRef>
          </Group>
       </Group>

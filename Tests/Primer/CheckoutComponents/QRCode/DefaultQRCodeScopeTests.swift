@@ -47,6 +47,8 @@ final class DefaultQRCodeScopeTests: XCTestCase {
     func test_start_afterStartPayment_transitionsToDisplayingWithQRImage() async throws {
         mockInteractor.startPaymentResult = .success(QRCodeTestData.defaultPaymentData)
         mockInteractor.onPollAndComplete = {
+            // why: keep polling in-flight so the scope settles on .displaying; the test
+            // awaits that state deterministically and never reaches this success result.
             try await Task.sleep(nanoseconds: 5_000_000_000)
             return QRCodeTestData.successPaymentResult
         }
@@ -84,7 +86,7 @@ final class DefaultQRCodeScopeTests: XCTestCase {
     func test_start_pollingError_transitionsToFailure() async throws {
         mockInteractor.startPaymentResult = .success(QRCodeTestData.defaultPaymentData)
         mockInteractor.pollAndCompleteResult = .failure(
-            PrimerError.cancelled(paymentMethodType: QRCodeTestData.Constants.paymentMethodType)
+            PrimerError.invalidValue(key: "test", value: nil, reason: "Polling failed")
         )
         let sut = createScope()
 
@@ -99,6 +101,29 @@ final class DefaultQRCodeScopeTests: XCTestCase {
             XCTAssertEqual(mockInteractor.pollAndCompleteCallCount, 1)
         } else {
             XCTFail("Expected failure status")
+        }
+    }
+
+    func test_start_pollingCancelled_doesNotTransitionToFailure() async throws {
+        mockInteractor.startPaymentResult = .success(QRCodeTestData.defaultPaymentData)
+        mockInteractor.pollAndCompleteResult = .failure(
+            PrimerError.cancelled(paymentMethodType: QRCodeTestData.Constants.paymentMethodType)
+        )
+        let sut = createScope()
+
+        sut.start()
+
+        // Polling must run, but user cancellation must not surface as a payment failure.
+        _ = try await awaitValue(sut.state, matching: { $0.status == .displaying })
+
+        do {
+            _ = try await awaitValue(sut.state, matching: {
+                if case .failure = $0.status { return true }
+                return false
+            }, timeout: 0.5)
+            XCTFail("Cancellation should not transition to failure")
+        } catch {
+            XCTAssertEqual(mockInteractor.pollAndCompleteCallCount, 1)
         }
     }
 
@@ -120,12 +145,31 @@ final class DefaultQRCodeScopeTests: XCTestCase {
         XCTAssertEqual(mockInteractor.cancelPollingCallCount, 1)
     }
 
-    func test_cancel_cancelsPolling() {
+    // MARK: - Re-entry after return-to-selection
+
+    func test_prepareForReentry_restartsFlowAfterReturnToSelection() async throws {
+        // Regression: the one-shot `start()` guard was never reset, so re-selecting a cancelled
+        // payment method showed a stale screen and never restarted polling.
+        mockInteractor.startPaymentResult = .success(QRCodeTestData.defaultPaymentData)
+        mockInteractor.pollAndCompleteResult = .success(QRCodeTestData.successPaymentResult)
+        let interactor = mockInteractor!
         let sut = createScope()
 
-        sut.cancel()
+        sut.start()
+        _ = try await awaitValue(sut.state, matching: { $0.status == .success })
+        XCTAssertEqual(interactor.startPaymentCallCount, 1)
 
-        XCTAssertEqual(mockInteractor.cancelPollingCallCount, 1)
+        // The guard blocks a redundant restart while still active.
+        sut.start()
+        XCTAssertEqual(interactor.startPaymentCallCount, 1)
+
+        // Returning to selection resets the guard, so re-selecting restarts the payment.
+        sut.prepareForReentry()
+        sut.start()
+        try await withTimeout(2.0) {
+            while interactor.startPaymentCallCount < 2 { await Task.yield() }
+        }
+        XCTAssertEqual(interactor.startPaymentCallCount, 2)
     }
 
     // MARK: - Helpers
@@ -136,7 +180,6 @@ final class DefaultQRCodeScopeTests: XCTestCase {
         let checkoutScope = DefaultCheckoutScope(
             clientToken: QRCodeTestData.Constants.mockToken,
             settings: PrimerSettings(),
-            diContainer: DIContainer.shared,
             navigator: CheckoutNavigator()
         )
 

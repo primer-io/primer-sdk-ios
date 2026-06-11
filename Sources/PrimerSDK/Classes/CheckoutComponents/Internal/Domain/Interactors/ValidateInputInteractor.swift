@@ -7,8 +7,8 @@
 import Foundation
 
 protocol ValidateInputInteractor {
-  func validate(value: String, type: PrimerInputElementType) async -> ValidationResult
-  func validateMultiple(fields: [PrimerInputElementType: String]) async -> [PrimerInputElementType:
+  func validate(value: String, type: PrimerInputElementType) -> ValidationResult
+  func validateMultiple(fields: [PrimerInputElementType: String]) -> [PrimerInputElementType:
     ValidationResult]
 }
 
@@ -20,7 +20,7 @@ final class ValidateInputInteractorImpl: ValidateInputInteractor, LogReporter {
     self.validationService = validationService
   }
 
-  func validate(value: String, type: PrimerInputElementType) async -> ValidationResult {
+  func validate(value: String, type: PrimerInputElementType) -> ValidationResult {
     let result = validationService.validateField(type: type, value: value)
     if !result.isValid {
       logger.debug(
@@ -29,11 +29,11 @@ final class ValidateInputInteractorImpl: ValidateInputInteractor, LogReporter {
     return result
   }
 
-  func validateMultiple(fields: [PrimerInputElementType: String]) async -> [PrimerInputElementType:
+  func validateMultiple(fields: [PrimerInputElementType: String]) -> [PrimerInputElementType:
     ValidationResult] {
     var results: [PrimerInputElementType: ValidationResult] = [:]
     for (type, value) in fields {
-      results[type] = await validate(value: value, type: type)
+      results[type] = validate(value: value, type: type)
     }
     return results
   }

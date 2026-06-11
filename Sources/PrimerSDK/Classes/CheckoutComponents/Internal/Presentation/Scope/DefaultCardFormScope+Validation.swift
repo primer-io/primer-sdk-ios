@@ -11,7 +11,6 @@ extension DefaultCardFormScope {
 
   /// Updates the validation state for a specific field using a KeyPath.
   ///
-  /// Required when using custom field components via `InputFieldConfig(component:)`.
   /// The SDK uses this to track which fields are valid and determine overall form validity.
   ///
   /// ```swift
@@ -48,7 +47,8 @@ private extension PrimerInputElementType {
     case .postalCode: \.postalCode
     case .countryCode: \.countryCode
     case .phoneNumber: \.phoneNumber
-    case .retailer, .otp, .unknown, .all: nil
+    case .otp: \.otp
+    case .retailer, .unknown, .all: nil
     }
   }
 }

@@ -7,6 +7,7 @@
 import SwiftUI
 
 @available(iOS 15.0, *)
+@MainActor
 enum RTLSupport {
   static var isRightToLeft: Bool {
     UIApplication.shared.userInterfaceLayoutDirection == .rightToLeft

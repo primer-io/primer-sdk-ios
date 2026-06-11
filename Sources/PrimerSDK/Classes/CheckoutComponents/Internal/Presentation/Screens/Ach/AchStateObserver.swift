@@ -35,9 +35,10 @@ final class AchStateObserver: ObservableObject {
   func startObserving() {
     guard observationTask == nil else { return }
 
-    observationTask = Task { [self] in
+    observationTask = Task { [weak self] in
+      guard let scope = self?.scope else { return }
       for await state in scope.state {
-        if Task.isCancelled { break }
+        guard let self, !Task.isCancelled else { break }
 
         achState = state
 

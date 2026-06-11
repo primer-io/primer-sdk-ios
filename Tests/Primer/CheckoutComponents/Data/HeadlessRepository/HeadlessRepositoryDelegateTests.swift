@@ -22,24 +22,6 @@ final class NetworkDetectionStreamTests: XCTestCase {
         repository = nil
         super.tearDown()
     }
-
-    func testGetNetworkDetectionStream_ReturnsNonNilStream() {
-        // When
-        let stream = repository.getNetworkDetectionStream()
-
-        // Then
-        XCTAssertNotNil(stream)
-    }
-
-    func testGetNetworkDetectionStream_ReturnsSameStreamOnMultipleCalls() {
-        // When
-        let stream1 = repository.getNetworkDetectionStream()
-        let stream2 = repository.getNetworkDetectionStream()
-
-        // Then - Should return the same stream instance
-        XCTAssertNotNil(stream1)
-        XCTAssertNotNil(stream2)
-    }
 }
 
 @available(iOS 15.0, *)
@@ -63,10 +45,34 @@ final class SelectCardNetworkDelegateTests: XCTestCase {
         super.tearDown()
     }
 
+    /// `selectCardNetwork` dispatches via a detached `Task`, so the recorded call lands asynchronously.
+    /// Polls the mock's recorded calls until at least `count` are observed, deterministically replacing fixed sleeps.
+    private func awaitSelectPaymentMethodCalls(
+        atLeast count: Int,
+        timeout: TimeInterval = 2.0,
+        file: StaticString = #file,
+        line: UInt = #line
+    ) async {
+        do {
+            try await withTimeout(timeout) { [self] in
+                while mockClientSessionActions.selectPaymentMethodCalls.count < count {
+                    await Task.yield()
+                }
+            }
+        } catch {
+            XCTFail(
+                "Timed out waiting for \(count) selectPaymentMethod call(s); "
+                    + "recorded \(mockClientSessionActions.selectPaymentMethodCalls.count)",
+                file: file,
+                line: line
+            )
+        }
+    }
+
     func test_selectCardNetwork_withVisa_dispatchesCorrectAction() async {
         // When
         await repository.selectCardNetwork(.visa)
-        try? await Task.sleep(nanoseconds: 100_000_000)
+        await awaitSelectPaymentMethodCalls(atLeast: 1)
 
         // Then
         XCTAssertEqual(mockClientSessionActions.selectPaymentMethodCalls.count, 1)
@@ -76,7 +82,7 @@ final class SelectCardNetworkDelegateTests: XCTestCase {
     func test_selectCardNetwork_withMastercard_dispatchesCorrectAction() async {
         // When
         await repository.selectCardNetwork(.masterCard)
-        try? await Task.sleep(nanoseconds: 100_000_000)
+        await awaitSelectPaymentMethodCalls(atLeast: 1)
 
         // Then
         XCTAssertEqual(mockClientSessionActions.lastSelectPaymentMethodCall?.network, "MASTERCARD")
@@ -85,7 +91,7 @@ final class SelectCardNetworkDelegateTests: XCTestCase {
     func test_selectCardNetwork_withAmex_dispatchesCorrectAction() async {
         // When
         await repository.selectCardNetwork(.amex)
-        try? await Task.sleep(nanoseconds: 100_000_000)
+        await awaitSelectPaymentMethodCalls(atLeast: 1)
 
         // Then
         XCTAssertEqual(mockClientSessionActions.lastSelectPaymentMethodCall?.network, "AMEX")
@@ -94,7 +100,7 @@ final class SelectCardNetworkDelegateTests: XCTestCase {
     func test_selectCardNetwork_withDiscover_dispatchesCorrectAction() async {
         // When
         await repository.selectCardNetwork(.discover)
-        try? await Task.sleep(nanoseconds: 100_000_000)
+        await awaitSelectPaymentMethodCalls(atLeast: 1)
 
         // Then
         XCTAssertEqual(mockClientSessionActions.lastSelectPaymentMethodCall?.network, "DISCOVER")
@@ -103,7 +109,7 @@ final class SelectCardNetworkDelegateTests: XCTestCase {
     func test_selectCardNetwork_withJCB_dispatchesCorrectAction() async {
         // When
         await repository.selectCardNetwork(.jcb)
-        try? await Task.sleep(nanoseconds: 100_000_000)
+        await awaitSelectPaymentMethodCalls(atLeast: 1)
 
         // Then
         XCTAssertEqual(mockClientSessionActions.lastSelectPaymentMethodCall?.network, "JCB")
@@ -112,7 +118,7 @@ final class SelectCardNetworkDelegateTests: XCTestCase {
     func test_selectCardNetwork_withDiners_dispatchesCorrectAction() async {
         // When
         await repository.selectCardNetwork(.diners)
-        try? await Task.sleep(nanoseconds: 100_000_000)
+        await awaitSelectPaymentMethodCalls(atLeast: 1)
 
         // Then
         XCTAssertEqual(mockClientSessionActions.lastSelectPaymentMethodCall?.network, "DINERS_CLUB")
@@ -121,7 +127,7 @@ final class SelectCardNetworkDelegateTests: XCTestCase {
     func test_selectCardNetwork_withCartesBancaires_dispatchesCorrectAction() async {
         // When
         await repository.selectCardNetwork(.cartesBancaires)
-        try? await Task.sleep(nanoseconds: 100_000_000)
+        await awaitSelectPaymentMethodCalls(atLeast: 1)
 
         // Then
         XCTAssertEqual(mockClientSessionActions.lastSelectPaymentMethodCall?.network, "CARTES_BANCAIRES")
@@ -131,7 +137,7 @@ final class SelectCardNetworkDelegateTests: XCTestCase {
         // When
         await repository.selectCardNetwork(.visa)
         await repository.selectCardNetwork(.masterCard)
-        try? await Task.sleep(nanoseconds: 500_000_000)
+        await awaitSelectPaymentMethodCalls(atLeast: 2)
 
         // Then
         XCTAssertGreaterThanOrEqual(mockClientSessionActions.selectPaymentMethodCalls.count, 2)
@@ -140,7 +146,7 @@ final class SelectCardNetworkDelegateTests: XCTestCase {
     func test_selectCardNetwork_always_passesPaymentCard() async {
         // When
         await repository.selectCardNetwork(.visa)
-        try? await Task.sleep(nanoseconds: 100_000_000)
+        await awaitSelectPaymentMethodCalls(atLeast: 1)
 
         // Then
         XCTAssertEqual(mockClientSessionActions.lastSelectPaymentMethodCall?.type, "PAYMENT_CARD")
@@ -155,57 +161,129 @@ final class UpdateCardNumberTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
+        // Register PAYMENT_CARD so RawDataManager init succeeds during metadata seeding.
+        SDKSessionHelper.setUp()
         repository = HeadlessRepositoryImpl()
     }
 
     override func tearDown() {
         repository = nil
+        SDKSessionHelper.tearDown()
         super.tearDown()
     }
 
-    @MainActor
-    func testUpdateCardNumber_WithValidCardNumber_DoesNotCrash() async {
-        // When/Then - Should not crash
+    /// Seeds `lastDetectedNetworks` with `[.visa]` by driving the metadata delegate, so a subsequent
+    /// sub-BIN-threshold card number produces an observable `[]` emission. Returns the network
+    /// detection stream after the seed value has been consumed.
+    private func seededNetworkStream() async throws -> AsyncStream<[CardNetwork]> {
+        let stream = repository.getNetworkDetectionStream()
+        let metadata = PrimerCardNumberEntryMetadata(
+            source: .local,
+            selectableCardNetworks: nil,
+            detectedCardNetworks: [PrimerCardNetwork(displayName: "Visa", network: .visa)]
+        )
+        let rawDataManager = try PrimerHeadlessUniversalCheckout.RawDataManager(
+            paymentMethodType: "PAYMENT_CARD"
+        )
+        repository.primerRawDataManager(
+            rawDataManager,
+            didReceiveMetadata: metadata,
+            forState: PrimerCardNumberEntryState(cardNumber: "4242424242424242")
+        )
+        // Consume the seed emission so later assertions observe only update-driven values.
+        let seededNetworks = try await awaitValue(stream, equalTo: [.visa])
+        XCTAssertEqual(seededNetworks, [.visa])
+        return stream
+    }
+
+    /// Asserts the stream emits no further value within `window`. Used to prove a card-number update
+    /// at/above the BIN threshold leaves the previously detected networks intact.
+    private func assertNoFurtherEmission(
+        _ stream: AsyncStream<[CardNetwork]>,
+        window: TimeInterval = 0.3
+    ) async {
+        do {
+            let unexpected = try await awaitFirst(stream, timeout: window)
+            XCTFail("Expected no emission, got \(unexpected)")
+        } catch AsyncTestError.timeout {
+            // Success - networks were preserved, nothing emitted.
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
+    }
+
+    func testUpdateCardNumber_WithFullCardNumber_KeepsDetectedNetworks() async throws {
+        // Given - networks already detected for a full card number
+        let stream = try await seededNetworkStream()
+
+        // When - a full (16-digit) number is entered
         await repository.updateCardNumberInRawDataManager("4242424242424242")
+
+        // Then - staying above the BIN threshold preserves the detected networks (no clear emitted)
+        await assertNoFurtherEmission(stream)
     }
 
-    @MainActor
-    func testUpdateCardNumber_WithSpacedCardNumber_StripsSpaces() async {
-        // When/Then - Should not crash
-        await repository.updateCardNumberInRawDataManager("4242 4242 4242 4242")
+    func testUpdateCardNumber_WithSpacedCardNumber_StripsSpaces() async throws {
+        // Given - networks already detected
+        let stream = try await seededNetworkStream()
+
+        // When - 13 raw chars (>= 8) but only 7 digits once spaces are stripped
+        await repository.updateCardNumberInRawDataManager("4 2 4 2 4 2 4")
+
+        // Then - stripping drops the value below the 8-digit BIN threshold, clearing networks.
+        // Without stripping the 13-char string would stay above the threshold and emit nothing.
+        let clearedNetworks = try await awaitValue(stream, equalTo: [])
+        XCTAssertEqual(clearedNetworks, [])
     }
 
-    @MainActor
-    func testUpdateCardNumber_WithEmptyString_DoesNotCrash() async {
-        // When/Then - Should not crash
+    func testUpdateCardNumber_WithEmptyString_ClearsDetectedNetworks() async throws {
+        // Given - networks already detected
+        let stream = try await seededNetworkStream()
+
+        // When - the field is cleared
         await repository.updateCardNumberInRawDataManager("")
+
+        // Then - networks are cleared below the BIN-lookup threshold
+        let clearedNetworks = try await awaitValue(stream, equalTo: [])
+        XCTAssertEqual(clearedNetworks, [])
     }
 
-    @MainActor
-    func testUpdateCardNumber_WithShortNumber_DoesNotCrash() async {
-        // When/Then - Should not crash (less than 8 digits for BIN lookup)
+    func testUpdateCardNumber_WithShortNumber_ClearsDetectedNetworks() async throws {
+        // Given - networks already detected
+        let stream = try await seededNetworkStream()
+
+        // When - fewer than 8 digits
         await repository.updateCardNumberInRawDataManager("4242")
+
+        // Then - networks are cleared below the BIN-lookup threshold
+        let clearedNetworks = try await awaitValue(stream, equalTo: [])
+        XCTAssertEqual(clearedNetworks, [])
     }
 
-    @MainActor
-    func testUpdateCardNumber_WithExactBINLength_DoesNotCrash() async {
-        // When/Then - Should not crash (exactly 8 digits)
+    func testUpdateCardNumber_WithExactBINLength_KeepsDetectedNetworks() async throws {
+        // Given - networks already detected
+        let stream = try await seededNetworkStream()
+
+        // When - exactly 8 digits (at the threshold, not below it)
         await repository.updateCardNumberInRawDataManager("42424242")
+
+        // Then - the 8-digit value sits at the threshold and must not clear networks
+        await assertNoFurtherEmission(stream)
     }
 
-    @MainActor
-    func testUpdateCardNumber_WithLongNumber_DoesNotCrash() async {
-        // When/Then - Should not crash
-        await repository.updateCardNumberInRawDataManager("4242424242424242424242")
-    }
+    func testUpdateCardNumber_CalledMultipleTimes_ClearsOnFirstThresholdCrossing() async throws {
+        // Given - networks already detected
+        let stream = try await seededNetworkStream()
 
-    @MainActor
-    func testUpdateCardNumber_CalledMultipleTimes_DoesNotCrash() async {
-        // When/Then - Should not crash when called multiple times
+        // When - cross below the threshold, climb back above it, then clear
         await repository.updateCardNumberInRawDataManager("4242")
         await repository.updateCardNumberInRawDataManager("42424242")
         await repository.updateCardNumberInRawDataManager("4242424242424242")
         await repository.updateCardNumberInRawDataManager("")
+
+        // Then - the first below-threshold update clears the seeded networks
+        let clearedNetworks = try await awaitValue(stream, equalTo: [])
+        XCTAssertEqual(clearedNetworks, [])
     }
 }
 

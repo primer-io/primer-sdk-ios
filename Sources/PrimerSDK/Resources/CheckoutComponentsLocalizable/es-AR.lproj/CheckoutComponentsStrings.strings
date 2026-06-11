@@ -1,6 +1,5 @@
 "accessibility_action_delete" = "Eliminar método de pago";
 "accessibility_action_edit" = "Editar datos de la tarjeta";
-"accessibility_action_set_default" = "Establecer como método de pago predeterminado";
 "accessibility_card_form_billing_address_address_line_1_label" = "Dirección línea 1, obligatorio";
 "accessibility_card_form_billing_address_address_line_2_label" = "Dirección línea 2, opcional";
 "accessibility_card_form_billing_address_city_hint" = "Ingresá el nombre de la ciudad";
@@ -19,7 +18,7 @@
 "accessibility_card_form_cardholder_name_hint" = "Ingresá el nombre como aparece en la tarjeta";
 "accessibility_card_form_cardholder_name_label" = "Nombre del titular";
 "accessibility_card_form_cvc_error_invalid" = "Código de seguridad no válido.";
-"accessibility_card_form_cvc_hint" = "Código de 3 o 4 dígitos en el reverso de la tarjeta";
+"accessibility_card_form_cvc_hint" = "Código de seguridad, 3 o 4 dígitos";
 "accessibility_card_form_cvc_label" = "Código de seguridad, obligatorio";
 "accessibility_card_form_cvv_icon" = "Código de seguridad CVV";
 "accessibility_card_form_expiry_error_invalid" = "Fecha de vencimiento no válida.";
@@ -27,11 +26,11 @@
 "accessibility_card_form_expiry_icon" = "Fecha de vencimiento de la tarjeta";
 "accessibility_card_form_expiry_label" = "Fecha de vencimiento, obligatorio";
 "accessibility_card_form_network_selector" = "Seleccionar red";
-"accessibility_card_form_network_selector_hint" = "Tocá dos veces para seleccionar otra red de tarjeta";
-"accessibility_card_form_network_selector_inline_hint" = "Tocá dos veces para seleccionar esta red";
+"accessibility_card_form_network_selector_hint" = "Seleccionar otra red de tarjeta";
+"accessibility_card_form_network_selector_inline_hint" = "Seleccionar esta red";
 "accessibility_card_form_network_selector_label" = "Selector de red de tarjeta";
 "accessibility_card_form_submit_disabled" = "Botón deshabilitado. Completá todos los campos obligatorios para habilitar el pago";
-"accessibility_card_form_submit_hint" = "Tocá dos veces para enviar el pago";
+"accessibility_card_form_submit_hint" = "Enviar el pago";
 "accessibility_card_form_submit_label" = "Enviar pago";
 "accessibility_card_form_submit_loading" = "Procesando el pago, por favor esperá";
 "accessibility_checkout_error_icon" = "Error";
@@ -52,8 +51,6 @@
 "accessibility_country_selection_search_icon" = "Buscar";
 "accessibility_error_generic" = "Ocurrió un error. Por favor intentá nuevamente.";
 "accessibility_error_multiple_errors" = "%d errores encontrados";
-"accessibility_payment_selection_card_full" = "Tarjeta %1$@ que termina en %2$@, vence %3$@";
-"accessibility_payment_selection_card_masked" = "tarjeta que termina en dígitos ocultos";
 "accessibility_payment_selection_coming_soon" = "Método de pago próximamente";
 "accessibility_payment_selection_pay_with_card" = "Pagar con tarjeta";
 "accessibility_payment_selection_pay_with_ideal" = "Pagar con iDEAL";
@@ -65,6 +62,7 @@
 "accessibility_screen_loading_payment_methods" = "Cargando métodos de pago";
 "accessibility_screen_payment_method" = "Método de pago %@";
 "accessibility_payment_method_button" = "Pagar con %@";
+"accessibility_payment_method_selected" = "%@ seleccionado";
 "accessibility_screen_processing_payment" = "Procesando el pago";
 "accessibility_screen_success" = "Pago exitoso";
 "accessibility_vault_delete_payment_method" = "Eliminar este método de pago";
@@ -144,7 +142,6 @@
 "primer_card_form_placeholder_state" = "CABA";
 "primer_card_form_retail_not_implemented" = "Selección de punto de venta aún no implementada";
 "primer_card_form_title" = "Pagar con tarjeta";
-"primer_checkout_auto_dismiss_message" = "Esta pantalla se cerrará automáticamente en 3 segundos";
 "primer_checkout_dismissing" = "Cerrando...";
 "primer_checkout_error_button_other_methods" = "Elegir otros métodos de pago";
 "primer_checkout_error_subtitle" = "Hubo un problema de red.";
@@ -209,8 +206,8 @@
 "accessibility_klarna_category" = "Opción de pago %@";
 "accessibility_klarna_category_selected" = "Opción de pago %@, seleccionado";
 "accessibility_klarna_payment_view" = "Formulario de pago Klarna";
-"accessibility_klarna_authorize_hint" = "Tocá dos veces para continuar con Klarna";
-"accessibility_klarna_finalize_hint" = "Tocá dos veces para completar el pago";
+"accessibility_klarna_authorize_hint" = "Continuar con Klarna";
+"accessibility_klarna_finalize_hint" = "Completar el pago";
 
 /* ACH */
 "primer_ach_title" = "Cuenta bancaria";
@@ -223,9 +220,9 @@
 "primer_ach_mandate_button_accept" = "Acepto";
 "primer_ach_mandate_button_decline" = "Cancelar";
 "primer_ach_mandate_template" = "Al hacer clic en \"Acepto\", autorizás a %1$@ a debitar de la cuenta bancaria especificada anteriormente cualquier monto adeudado por cargos derivados del uso de los servicios de %1$@ y/o la compra de productos de %1$@, de acuerdo con el sitio web y los términos de %1$@, hasta que se revoque esta autorización. Podés modificar o cancelar esta autorización en cualquier momento notificando a %1$@ con 30 (treinta) días de anticipación.";
-"accessibility_ach_continue_hint" = "Tocá dos veces para continuar a la selección de cuenta bancaria";
-"accessibility_ach_mandate_accept_hint" = "Tocá dos veces para aceptar la autorización y completar el pago";
-"accessibility_ach_mandate_decline_hint" = "Tocá dos veces para rechazar y cancelar el pago";
+"accessibility_ach_continue_hint" = "Continuar a la selección de cuenta bancaria";
+"accessibility_ach_mandate_accept_hint" = "Aceptar la autorización y completar el pago";
+"accessibility_ach_mandate_decline_hint" = "Rechazar y cancelar el pago";
 
 "accessibility_card_form_billing_address_hint" = "Ingresá tu dirección";
 "accessibility_card_form_billing_address_state_hint" = "Ingresá estado o provincia";
@@ -285,3 +282,5 @@
 "primer_adyen_klarna_option_pay_later" = "Pagar luego";
 "primer_adyen_klarna_option_pay_over_time" = "Pagar en cuotas";
 "primer_adyen_klarna_option_pay_now" = "Pagar ahora";
+"primer_vaulted_gocardless_direct_debit_suffix" = "Débito directo";
+"accessibility_card_form_billing_address_country_hint" = "Abre una lista para seleccionar tu país";

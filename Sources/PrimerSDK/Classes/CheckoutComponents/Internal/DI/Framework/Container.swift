@@ -33,6 +33,12 @@ final class SyncCache: @unchecked Sendable {
     storage[key] = value
   }
 
+  func remove(forKey key: TypeKey) {
+    lock.lock()
+    defer { lock.unlock() }
+    storage.removeValue(forKey: key)
+  }
+
   func clear() {
     lock.lock()
     defer { lock.unlock() }
@@ -95,31 +101,31 @@ actor Container: ContainerProtocol, LogReporter {
     }
 
     @discardableResult
-    public func named(_ name: String) -> Self {
+    func named(_ name: String) -> Self {
       self.name = name
       return self
     }
 
     @discardableResult
-    public func asSingleton() -> Self {
+    func asSingleton() -> Self {
       policy = .singleton
       return self
     }
 
     @discardableResult
-    public func asWeak() -> Self {
+    func asWeak() -> Self {
       policy = .weak
       return self
     }
 
     @discardableResult
-    public func asTransient() -> Self {
+    func asTransient() -> Self {
       policy = .transient
       return self
     }
 
     @discardableResult
-    public func with(
+    func with(
       _ factory: @escaping @Sendable (any ContainerProtocol) async throws -> T
     ) async throws -> Self {
       try await container.registerInternal(type: type, name: name, with: policy) { resolver in
@@ -129,7 +135,7 @@ actor Container: ContainerProtocol, LogReporter {
     }
 
     @discardableResult
-    public func with(
+    func with(
       _ factory: @escaping @Sendable (any ContainerProtocol) throws -> T
     ) async throws -> Self {
       try await container.registerInternal(type: type, name: name, with: policy) { resolver in
@@ -168,7 +174,7 @@ actor Container: ContainerProtocol, LogReporter {
   // MARK: - Registration
 
   @discardableResult
-  public nonisolated func register<T>(_ type: T.Type) -> any RegistrationBuilder<T> {
+  nonisolated func register<T>(_ type: T.Type) -> any RegistrationBuilder<T> {
     ContainerRegistrationBuilderImpl(container: self, type: type)
   }
 
@@ -188,6 +194,7 @@ actor Container: ContainerProtocol, LogReporter {
     // Clean up any existing instances
     instances.removeValue(forKey: key)
     weakBoxes.removeValue(forKey: key)
+    syncCache.remove(forKey: key)
 
     // Register the new factory
     factories[key] = FactoryRegistration(policy: policy) { container in
@@ -195,7 +202,7 @@ actor Container: ContainerProtocol, LogReporter {
     }
   }
 
-  public nonisolated func registerIfNeeded<T>(_ type: T.Type, name: String? = nil) async
+  nonisolated func registerIfNeeded<T>(_ type: T.Type, name: String? = nil) async
     -> ContainerRegistrationBuilderImpl<T>? {
     let key = TypeKey(type, name: name)
     let isRegistered = await isRegistered(key)
@@ -206,7 +213,7 @@ actor Container: ContainerProtocol, LogReporter {
     }
 
     let builder = ContainerRegistrationBuilderImpl(container: self, type: type)
-    return name != nil ? builder.named(name!) : builder
+    return name.map(builder.named) ?? builder
   }
 
   private func isRegistered(_ key: TypeKey) -> Bool {
@@ -214,7 +221,7 @@ actor Container: ContainerProtocol, LogReporter {
   }
 
   @discardableResult
-  public func unregister<T>(_ type: T.Type, name: String? = nil) async -> Self {
+  func unregister<T>(_ type: T.Type, name: String? = nil) async -> Self {
     unregisterInternal(type, name: name)
     return self
   }
@@ -226,11 +233,12 @@ actor Container: ContainerProtocol, LogReporter {
     factories.removeValue(forKey: key)
     instances.removeValue(forKey: key)
     weakBoxes.removeValue(forKey: key)
+    syncCache.remove(forKey: key)
   }
 
   // MARK: - Resolution
 
-  public func resolve<T>(_ type: T.Type, name: String? = nil) async throws -> T {
+  func resolve<T>(_ type: T.Type, name: String? = nil) async throws -> T {
     let key = TypeKey(type, name: name)
 
     guard let registration = factories[key] else {
@@ -323,25 +331,19 @@ actor Container: ContainerProtocol, LogReporter {
     }
   }
 
-  /// Resolve multiple dependencies concurrently
-  public func resolveBatch<T>(_ requests: [(type: T.Type, name: String?)]) async throws -> [T] {
-    try await withThrowingTaskGroup(of: (Int, T).self) { group in
-      for (index, request) in requests.enumerated() {
-        group.addTask {
-          let result = try await self.resolve(request.type, name: request.name)
-          return (index, result)
-        }
-      }
-
-      var results: [(Int, T)] = []
-      for try await result in group {
-        results.append(result)
-      }
-
-      // Sort by original order
-      results.sort { $0.0 < $1.0 }
-      return results.map(\.1)
+  /// Resolves multiple dependencies, in order.
+  ///
+  /// Resolution is sequential by design: circular-dependency detection uses the actor's shared
+  /// `resolutionStack`/`resolutionOrder`, so concurrent resolutions would interleave at await points
+  /// and corrupt that state (spurious circular-dependency errors, or singletons built twice).
+  /// Sequencing keeps each dependency's resolution chain isolated.
+  func resolveBatch<T>(_ requests: [(type: T.Type, name: String?)]) async throws -> [T] {
+    var results: [T] = []
+    results.reserveCapacity(requests.count)
+    for request in requests {
+      results.append(try await resolve(request.type, name: request.name))
     }
+    return results
   }
 
   // MARK: - Strategy Pattern
@@ -352,7 +354,7 @@ actor Container: ContainerProtocol, LogReporter {
 
   // MARK: - Resolve All
 
-  public func resolveAll<T>(_ type: T.Type) async -> [T] {
+  func resolveAll<T>(_ type: T.Type) async -> [T] {
     var result: [T] = []
 
     // 1) Strong instances
@@ -392,7 +394,7 @@ actor Container: ContainerProtocol, LogReporter {
   // MARK: - Container Lifecycle
 
   /// Reset all dependencies except those specified
-  public func reset<T>(ignoreDependencies: [T.Type] = []) async {
+  func reset<T>(ignoreDependencies: [T.Type] = []) async {
     // Build a set of keys to skip during reset
     let keysToIgnore = Set(ignoreDependencies.map { TypeKey($0) })
 
@@ -424,13 +426,13 @@ actor Container: ContainerProtocol, LogReporter {
   }
 
   /// Call during low-memory warnings
-  public func performMaintenanceCleanup() {
+  func performMaintenanceCleanup() {
     cleanupWeakReferences()
   }
 
   // MARK: - Factory Registration
 
-  public nonisolated func registerFactory<F: Factory>(_ factory: F) async throws -> Self {
+  nonisolated func registerFactory<F: Factory>(_ factory: F) async throws -> Self {
     _ = try await register(F.self)
       .asSingleton()
       .with { _ in factory }
@@ -440,7 +442,7 @@ actor Container: ContainerProtocol, LogReporter {
   // MARK: - Diagnostics
 
   /// Get diagnostic information about the container state
-  public func getDiagnostics() -> ContainerDiagnostics {
+  func getDiagnostics() -> ContainerDiagnostics {
     cleanupWeakReferences()  // Clean before reporting
 
     return ContainerDiagnostics(
@@ -453,14 +455,19 @@ actor Container: ContainerProtocol, LogReporter {
   }
 
   /// Perform health check on the container
-  public func performHealthCheck() -> ContainerHealthReport {
+  func performHealthCheck() -> ContainerHealthReport {
+    // Measure weak-reference efficiency before getDiagnostics() prunes dead boxes,
+    // otherwise the ratio is always ~1.0 and the <0.7 branch is unreachable.
+    let totalWeak = weakBoxes.count
+    let activeWeak = weakBoxes.values.compactMap(\.instance).count
+
     let diagnostics = getDiagnostics()
     var issues: [HealthIssue] = []
     var recommendations: [String] = []
 
     // Check for memory issues
-    if diagnostics.weakReferences > 0 {
-      let efficiency = Double(diagnostics.activeWeakReferences) / Double(diagnostics.weakReferences)
+    if totalWeak > 0 {
+      let efficiency = Double(activeWeak) / Double(totalWeak)
       if efficiency < 0.7 {
         issues.append(
           .memoryLeak("Low weak reference efficiency: \(String(format: "%.1f", efficiency * 100))%")
@@ -469,10 +476,14 @@ actor Container: ContainerProtocol, LogReporter {
       }
     }
 
-    // Check for orphaned registrations
-    let unusedRegistrations = factories.count - diagnostics.singletonInstances
-    if unusedRegistrations > diagnostics.totalRegistrations / 2 {
-      issues.append(.orphanedRegistrations(unusedRegistrations))
+    // Orphans are non-transient registrations that were never instantiated;
+    // transients are expected to have no retained instance, so exclude them.
+    let liveKeys = Set(instances.keys).union(weakBoxes.keys)
+    let orphanedRegistrations = factories.filter { key, registration in
+      registration.policy != .transient && !liveKeys.contains(key)
+    }.count
+    if orphanedRegistrations > 0 {
+      issues.append(.orphanedRegistrations(orphanedRegistrations))
       recommendations.append("Remove unused registrations to improve performance")
     }
 

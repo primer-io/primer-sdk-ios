@@ -34,10 +34,9 @@ struct VaultedCardCVVInput: View {
       get: { cvv },
       set: { newValue in
         let filtered = String(newValue.filter(\.isNumber).prefix(expectedCvvLength))
-        // Only update if the filtered value is different to avoid unnecessary updates
-        if cvv != filtered {
-          cvv = filtered
-        }
+        // Only propagate when the filtered value actually changes to avoid redundant validation round-trips
+        guard cvv != filtered else { return }
+        cvv = filtered
         onCvvChange(filtered)
       }
     )
@@ -90,7 +89,6 @@ struct VaultedCardCVVInput: View {
   private func makeCvvTextField() -> some View {
     SecureField(cvvPlaceholder, text: filteredCvvBinding)
       .keyboardType(.numberPad)
-      .textContentType(.oneTimeCode)
       .focused($isFocused)
       .multilineTextAlignment(.leading)
       .font(PrimerFont.bodyLarge(tokens: tokens))
@@ -105,7 +103,8 @@ struct VaultedCardCVVInput: View {
         RoundedRectangle(cornerRadius: PrimerRadius.small(tokens: tokens))
           .stroke(
             cvvBorderColor,
-            lineWidth: isFocused ? PrimerBorderWidth.selected : PrimerBorderWidth.standard)
+            lineWidth: isFocused
+              ? PrimerBorderWidth.selected(tokens: tokens) : PrimerBorderWidth.standard(tokens: tokens))
       )
       .accessibility(
         config: AccessibilityConfiguration(

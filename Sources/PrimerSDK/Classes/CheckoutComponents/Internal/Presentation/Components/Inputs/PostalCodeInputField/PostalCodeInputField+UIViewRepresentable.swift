@@ -17,7 +17,6 @@ struct PostalCodeTextField: UIViewRepresentable, LogReporter {
   let placeholder: String
   let countryCode: String?
   let keyboardType: UIKeyboardType
-  let styling: PrimerFieldStyling?
   let validationService: ValidationService
   let scope: any CardFormFieldScopeInternal
   let tokens: DesignTokens?
@@ -39,7 +38,6 @@ struct PostalCodeTextField: UIViewRepresentable, LogReporter {
     textField.configurePrimerStyle(
       placeholder: placeholder,
       configuration: configuration,
-      styling: styling,
       tokens: tokens,
       doneButtonTarget: context.coordinator,
       doneButtonAction: #selector(Coordinator.doneButtonTapped)

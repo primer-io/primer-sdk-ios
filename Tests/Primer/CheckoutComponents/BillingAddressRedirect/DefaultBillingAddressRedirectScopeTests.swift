@@ -16,6 +16,12 @@ final class DefaultBillingAddressRedirectScopeTests: XCTestCase {
 
   override func setUp() async throws {
     try await super.setUp()
+    // A valid-form submit dispatches a client-session billing-address update before redirecting,
+    // so the session + a mock API client must be in place for performPayment to reach the interactor.
+    SDKSessionHelper.setUp()
+    let apiClient = MockPrimerAPIClient()
+    apiClient.fetchConfigurationWithActionsResult = (PrimerAPIConfiguration.current, nil)
+    PrimerAPIConfigurationModule.apiClient = apiClient
     mockInteractor = MockBillingAddressWebRedirectInteractor()
     let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
     sut = DefaultBillingAddressRedirectScope(
@@ -28,6 +34,8 @@ final class DefaultBillingAddressRedirectScopeTests: XCTestCase {
   override func tearDown() async throws {
     sut = nil
     mockInteractor = nil
+    PrimerAPIConfigurationModule.apiClient = nil
+    SDKSessionHelper.tearDown()
     try await super.tearDown()
   }
 
@@ -167,12 +175,11 @@ final class DefaultBillingAddressRedirectScopeTests: XCTestCase {
 
   // MARK: - Submit Guard Tests
 
-  func test_submit_withInvalidForm_doesNotCallInteractor() async throws {
+  func test_submit_withInvalidForm_doesNotCallInteractor() async {
     // Given — form is empty (invalid)
 
-    // When
+    // When — invalid submit returns synchronously without spawning the payment task
     sut.submit()
-    try await Task.sleep(nanoseconds: 100_000_000)
 
     // Then
     XCTAssertEqual(mockInteractor.executeCallCount, 0)
@@ -196,17 +203,10 @@ final class DefaultBillingAddressRedirectScopeTests: XCTestCase {
 
   // MARK: - Start Tests
 
-  func test_start_doesNotCrash() async throws {
-    sut.start()
-    try await Task.sleep(nanoseconds: 100_000_000)
-    XCTAssertEqual(sut.paymentMethodType, PrimerPaymentMethodType.adyenAffirm.rawValue)
-  }
-
   func test_start_calledTwice_isIdempotent() async throws {
     sut.start()
     sut.start()
-    try await Task.sleep(nanoseconds: 100_000_000)
-    let state = await collectFirstState()
+    let state = try await awaitValue(sut.state, matching: { $0.status == .ready })
     XCTAssertEqual(state.status, .ready)
   }
 
@@ -214,13 +214,8 @@ final class DefaultBillingAddressRedirectScopeTests: XCTestCase {
 
   func test_cancel_setsStatusToReady() async throws {
     sut.cancel()
-    try await Task.sleep(nanoseconds: 50_000_000)
-    let state = await collectFirstState()
+    let state = try await awaitValue(sut.state, matching: { $0.status == .ready })
     XCTAssertEqual(state.status, .ready)
-  }
-
-  func test_cancel_withNilRepository_doesNotCrash() {
-    sut.cancel()
   }
 
   // MARK: - onBack Tests
@@ -233,7 +228,6 @@ final class DefaultBillingAddressRedirectScopeTests: XCTestCase {
     let checkoutScope = DefaultCheckoutScope(
       clientToken: TestData.Tokens.valid,
       settings: PrimerSettings(paymentHandling: .manual, paymentMethodOptions: PrimerPaymentMethodOptions()),
-      diContainer: DIContainer.shared,
       navigator: navigator,
       presentationContext: .fromPaymentSelection
     )
@@ -256,7 +250,6 @@ final class DefaultBillingAddressRedirectScopeTests: XCTestCase {
     let checkoutScope = DefaultCheckoutScope(
       clientToken: TestData.Tokens.valid,
       settings: PrimerSettings(paymentHandling: .manual, paymentMethodOptions: PrimerPaymentMethodOptions()),
-      diContainer: DIContainer.shared,
       navigator: navigator,
       presentationContext: .direct
     )
@@ -271,13 +264,6 @@ final class DefaultBillingAddressRedirectScopeTests: XCTestCase {
     scope.onBack()
 
     XCTAssertEqual(coordinator.navigationStack.count, initialStackCount)
-  }
-
-  // MARK: - dismissalMechanism Tests
-
-  func test_dismissalMechanism_reflectsCheckoutScope() async {
-    let mechanism = sut.dismissalMechanism
-    XCTAssertNotNil(mechanism)
   }
 
   // MARK: - presentationContext Tests
@@ -350,9 +336,9 @@ final class DefaultBillingAddressRedirectScopeTests: XCTestCase {
     XCTAssertFalse(state.isFormValid)
   }
 
-  func test_submit_withInvalidForm_triggersValidationOnAllFields() async throws {
+  func test_submit_withInvalidForm_triggersValidationOnAllFields() async {
+    // submit() with an invalid form validates synchronously and returns without spawning a payment task
     sut.submit()
-    try await Task.sleep(nanoseconds: 100_000_000)
 
     let state = await collectFirstState()
     XCTAssertFalse(state.isFormValid)
@@ -363,7 +349,7 @@ final class DefaultBillingAddressRedirectScopeTests: XCTestCase {
 
   func test_submit_withValidForm_transitionsOutOfReady() async throws {
     fillValidForm()
-    try await Task.sleep(nanoseconds: 50_000_000)
+    _ = try await awaitValue(sut.state, matching: { $0.isFormValid })
 
     sut.submit()
 
@@ -374,7 +360,7 @@ final class DefaultBillingAddressRedirectScopeTests: XCTestCase {
   func test_submit_whenInteractorThrows_eventuallyFails() async throws {
     mockInteractor.errorToThrow = PrimerError.unknown(message: "boom")
     fillValidForm()
-    try await Task.sleep(nanoseconds: 50_000_000)
+    _ = try await awaitValue(sut.state, matching: { $0.isFormValid })
 
     sut.submit()
 
@@ -386,6 +372,25 @@ final class DefaultBillingAddressRedirectScopeTests: XCTestCase {
       // Expected
     } else {
       XCTFail("Expected failure status")
+    }
+  }
+
+  func test_submit_whenInteractorThrowsCancelled_doesNotFail() async throws {
+    mockInteractor.errorToThrow = PrimerError.cancelled(paymentMethodType: PrimerPaymentMethodType.adyenAffirm.rawValue)
+    fillValidForm()
+    _ = try await awaitValue(sut.state, matching: { $0.isFormValid })
+
+    sut.submit()
+
+    // The cancelled path runs through submitting -> redirecting, then returns early without setting .failure.
+    // Awaiting the interactor call confirms the payment task reached (and threw from) execute.
+    try await withTimeout(2.0) { [self] in
+      while mockInteractor.executeCallCount == 0 { await Task.yield() }
+    }
+
+    let state = await collectFirstState()
+    if case .failure = state.status {
+      XCTFail("Cancellation must not produce a failure status")
     }
   }
 

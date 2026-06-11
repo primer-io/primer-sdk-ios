@@ -7,6 +7,7 @@
 @testable import PrimerSDK
 import XCTest
 
+@available(iOS 15.0, *)
 final class LoggingSessionContextTests: XCTestCase {
 
     // MARK: - Test initialize()
@@ -60,18 +61,20 @@ final class LoggingSessionContextTests: XCTestCase {
 
     // MARK: - Test recordInitStartTime()
 
-    func test_recordInitStartTime_capturesTimestamp() async {
+    func test_recordInitStartTime_capturesTimestamp() async throws {
         // Given: A session context
         let context = LoggingSessionContext.shared
 
         // When: Recording init start time
         await context.recordInitStartTime()
 
-        // Then: Should be able to calculate duration afterward
-        try? await Task.sleep(nanoseconds: 10_000_000) // Sleep 10ms
+        // Then: Should be able to calculate a duration of at least 10ms once enough wall-clock time elapses
+        try await withTimeout(2.0) {
+            while await (context.calculateInitDuration() ?? 0) < 10 { await Task.yield() }
+        }
         let duration = await context.calculateInitDuration()
         XCTAssertNotNil(duration)
-        XCTAssertGreaterThanOrEqual(duration ?? 0, 10) // At least 10ms
+        XCTAssertGreaterThanOrEqual(duration ?? 0, 10)
     }
 
     // MARK: - Test calculateInitDuration()
@@ -88,13 +91,15 @@ final class LoggingSessionContextTests: XCTestCase {
         XCTAssertNil(duration)
     }
 
-    func test_calculateInitDuration_returnsValidDuration() async {
+    func test_calculateInitDuration_returnsValidDuration() async throws {
         // Given: A session context with recorded start time
         let context = LoggingSessionContext.shared
         await context.recordInitStartTime()
 
-        // When: Waiting some time and calculating duration
-        try? await Task.sleep(nanoseconds: 50_000_000) // Sleep 50ms
+        // When: Waiting until the calculated duration reaches at least 50ms
+        try await withTimeout(2.0) {
+            while await (context.calculateInitDuration() ?? 0) < 50 { await Task.yield() }
+        }
         let duration = await context.calculateInitDuration()
 
         // Then: Duration should be at least 50ms

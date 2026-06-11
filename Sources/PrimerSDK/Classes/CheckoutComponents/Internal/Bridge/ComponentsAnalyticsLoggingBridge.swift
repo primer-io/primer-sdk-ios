@@ -75,7 +75,11 @@ public final class ComponentsAnalyticsLoggingBridge {
     // MARK: - Metadata Mapping
 
     static func mapMetadata(_ metadata: [String: String]?) -> AnalyticsEventMetadata {
-        guard let metadata, let paymentMethod = metadata["paymentMethod"] else { return .general() }
+        guard let metadata else { return .general() }
+
+        guard let paymentMethod = metadata["paymentMethod"], !paymentMethod.isEmpty else {
+            return .general()
+        }
 
         if let provider = metadata["threedsProvider"] {
             return .threeDS(ThreeDSEvent(paymentMethod: paymentMethod, provider: provider))

@@ -15,7 +15,6 @@ struct InternalPaymentMethod: Equatable {
   let isEnabled: Bool
   let supportedCurrencies: [String]?
   let requiredInputElements: [PrimerInputElementType]
-  let metadata: [String: Any]?
   let surcharge: Int?
   let hasUnknownSurcharge: Bool
   let networkSurcharges: [String: Int]?
@@ -35,7 +34,6 @@ struct InternalPaymentMethod: Equatable {
     isEnabled: Bool = true,
     supportedCurrencies: [String]? = nil,
     requiredInputElements: [PrimerInputElementType] = [],
-    metadata: [String: Any]? = nil,
     surcharge: Int? = nil,
     hasUnknownSurcharge: Bool = false,
     networkSurcharges: [String: Int]? = nil,
@@ -54,7 +52,6 @@ struct InternalPaymentMethod: Equatable {
     self.isEnabled = isEnabled
     self.supportedCurrencies = supportedCurrencies
     self.requiredInputElements = requiredInputElements
-    self.metadata = metadata
     self.surcharge = surcharge
     self.hasUnknownSurcharge = hasUnknownSurcharge
     self.networkSurcharges = networkSurcharges
@@ -66,10 +63,18 @@ struct InternalPaymentMethod: Equatable {
     self.cornerRadius = cornerRadius
   }
 
+  // Manual conformance: `UIImage`/`UIColor` fields block automatic synthesis. All
+  // rendering-affecting fields are included so that Equatable-based diffing (SwiftUI onChange,
+  // dedup) reflects styling and config changes.
   static func == (lhs: InternalPaymentMethod, rhs: InternalPaymentMethod) -> Bool {
-    lhs.id == rhs.id && lhs.type == rhs.type && lhs.name == rhs.name
-      && lhs.isEnabled == rhs.isEnabled && lhs.surcharge == rhs.surcharge
-      && lhs.hasUnknownSurcharge == rhs.hasUnknownSurcharge
-      && lhs.backgroundColor == rhs.backgroundColor
+    lhs.id == rhs.id && lhs.type == rhs.type && lhs.name == rhs.name && lhs.icon == rhs.icon
+      && lhs.configId == rhs.configId && lhs.isEnabled == rhs.isEnabled
+      && lhs.supportedCurrencies == rhs.supportedCurrencies
+      && lhs.requiredInputElements == rhs.requiredInputElements
+      && lhs.surcharge == rhs.surcharge && lhs.hasUnknownSurcharge == rhs.hasUnknownSurcharge
+      && lhs.networkSurcharges == rhs.networkSurcharges && lhs.backgroundColor == rhs.backgroundColor
+      && lhs.buttonText == rhs.buttonText && lhs.textColor == rhs.textColor
+      && lhs.borderColor == rhs.borderColor && lhs.borderWidth == rhs.borderWidth
+      && lhs.cornerRadius == rhs.cornerRadius
   }
 }

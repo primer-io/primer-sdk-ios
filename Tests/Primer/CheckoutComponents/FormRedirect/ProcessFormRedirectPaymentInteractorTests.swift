@@ -324,6 +324,33 @@ final class ProcessFormRedirectPaymentInteractorTests: XCTestCase {
         }
     }
 
+    func test_execute_resumePaymentStillPending_throwsPaymentFailedError() async {
+        // Given
+        let sessionInfo = FormRedirectTestData.blikSessionInfo
+        mockRepository.createPaymentResult = .success(FormRedirectTestData.pendingPaymentResponse)
+        mockRepository.resumePaymentResult = .success(FormRedirectTestData.pendingPaymentResponse)
+
+        // When / Then
+        do {
+            _ = try await sut.execute(
+                paymentMethodType: FormRedirectTestData.Constants.blikPaymentMethodType,
+                sessionInfo: sessionInfo
+            )
+            XCTFail("Expected error to be thrown for still-pending resumed payment")
+        } catch let error as PrimerError {
+            switch error {
+            case let .paymentFailed(paymentMethodType, paymentId, _, status, _):
+                XCTAssertEqual(paymentMethodType, FormRedirectTestData.Constants.blikPaymentMethodType)
+                XCTAssertEqual(paymentId, FormRedirectTestData.Constants.paymentId)
+                XCTAssertEqual(status, "PENDING")
+            default:
+                XCTFail("Expected paymentFailed error, got \(error)")
+            }
+        } catch {
+            XCTFail("Expected PrimerError, got \(error)")
+        }
+    }
+
     // MARK: - Tokenization Nil Token Tests
 
     func test_execute_tokenizationReturnsNilToken_throwsInvalidValueError() async {

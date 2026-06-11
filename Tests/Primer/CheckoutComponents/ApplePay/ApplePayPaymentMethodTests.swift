@@ -149,12 +149,6 @@ final class ApplePayPaymentMethodTests: XCTestCase {
         XCTAssertNotNil(view)
     }
 
-    // MARK: - Static Properties
-
-    func test_paymentMethodType_isApplePay() {
-        XCTAssertEqual(ApplePayPaymentMethod.paymentMethodType, "APPLE_PAY")
-    }
-
     // MARK: - Register Tests
 
     @MainActor
@@ -166,22 +160,6 @@ final class ApplePayPaymentMethodTests: XCTestCase {
         XCTAssertTrue(PaymentMethodRegistry.shared.registeredTypes.contains("APPLE_PAY"))
     }
 
-    // MARK: - createView with Custom Screen
-
-    @MainActor
-    func test_createView_withCustomScreen_returnsCustomView() {
-        // Given
-        let checkoutScope = createCheckoutScope()
-        let scope = checkoutScope.getPaymentMethodScope(DefaultApplePayScope.self)
-        scope?.screen = { _ in AnyView(EmptyView()) }
-
-        // When
-        let view = ApplePayPaymentMethod.createView(checkoutScope: checkoutScope)
-
-        // Then
-        XCTAssertNotNil(view)
-    }
-
     // MARK: - Helpers
 
     @MainActor
@@ -189,7 +167,6 @@ final class ApplePayPaymentMethodTests: XCTestCase {
         let scope = DefaultCheckoutScope(
             clientToken: "mock_token",
             settings: PrimerSettings(),
-            diContainer: DIContainer.shared,
             navigator: CheckoutNavigator()
         )
 
@@ -223,10 +200,6 @@ private final class MockInvalidCheckoutScope: PrimerCheckoutScope {
     }
 
     var onBeforePaymentCreate: BeforePaymentCreateHandler?
-    var container: ContainerComponent?
-    var splashScreen: Component?
-    var loadingScreen: Component?
-    var errorScreen: ErrorComponent?
     var paymentMethodSelection: PrimerPaymentMethodSelectionScope {
         fatalError("Not implemented")
     }

@@ -76,7 +76,6 @@ final class CheckoutSDKInitializerAnalyticsProviderTests: XCTestCase {
         let initializer = CheckoutSDKInitializer(
             clientToken: tokenWithIds,
             primerSettings: PrimerSettings(),
-            diContainer: DIContainer.shared,
             navigator: CheckoutNavigator(),
             presentationContext: .fromPaymentSelection,
             configurationModule: configurationModule

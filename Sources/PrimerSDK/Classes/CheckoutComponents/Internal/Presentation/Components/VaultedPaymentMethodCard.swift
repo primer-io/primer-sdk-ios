@@ -93,11 +93,11 @@ struct VaultedPaymentMethodCard: View {
       HStack {
         Spacer()
         Image(systemName: "xmark")
-          .font(.system(size: 10))
+          .font(PrimerFont.smallBadge(tokens: tokens))
           .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
-          .frame(width: 20, height: 20)
+          .frame(width: PrimerSize.medium(tokens: tokens), height: PrimerSize.medium(tokens: tokens))
       }
-      .frame(width: 44, height: 44)
+      .frame(width: PrimerSize.xxlarge(tokens: tokens), height: PrimerSize.xxlarge(tokens: tokens))
       .contentShape(Rectangle())
     }
     .buttonStyle(PlainButtonStyle())
@@ -212,7 +212,8 @@ struct VaultedPaymentMethodCard: View {
         isSelected
           ? CheckoutColors.borderFocus(tokens: tokens)
           : CheckoutColors.borderDefault(tokens: tokens),
-        lineWidth: isSelected ? PrimerBorderWidth.selected : PrimerBorderWidth.standard
+        lineWidth: isSelected
+          ? PrimerBorderWidth.selected(tokens: tokens) : PrimerBorderWidth.standard(tokens: tokens)
       )
   }
 }

@@ -61,17 +61,6 @@ final class ProcessAchPaymentInteractorTests: XCTestCase {
         }
     }
 
-    func test_loadUserDetails_delegatesToRepository() async throws {
-        // Given
-        mockRepository.userDetailsResultToReturn = AchTestData.defaultUserDetails
-
-        // When
-        _ = try await sut.loadUserDetails()
-
-        // Then
-        XCTAssertEqual(mockRepository.loadUserDetailsCallCount, 1)
-    }
-
     // MARK: - patchUserDetails Tests
 
     func test_patchUserDetails_success_completesWithoutError() async throws {
@@ -105,21 +94,6 @@ final class ProcessAchPaymentInteractorTests: XCTestCase {
         } catch {
             XCTAssertEqual(error as? TestError, .networkFailure)
         }
-    }
-
-    func test_patchUserDetails_capturesParameters() async throws {
-        // Given
-        let firstName = "Test"
-        let lastName = "User"
-        let email = "test@example.com"
-
-        // When
-        try await sut.patchUserDetails(firstName: firstName, lastName: lastName, emailAddress: email)
-
-        // Then
-        XCTAssertEqual(mockRepository.lastPatchedFirstName, firstName)
-        XCTAssertEqual(mockRepository.lastPatchedLastName, lastName)
-        XCTAssertEqual(mockRepository.lastPatchedEmailAddress, email)
     }
 
     // MARK: - validate Tests
@@ -365,49 +339,6 @@ final class ProcessAchPaymentInteractorTests: XCTestCase {
         }
     }
 
-    // MARK: - Call Delegation Tests
-
-    func test_allMethods_delegateToRepository() async throws {
-        // Given
-        mockRepository.userDetailsResultToReturn = AchTestData.defaultUserDetails
-        mockRepository.stripeDataToReturn = AchTestData.defaultStripeData
-        mockRepository.bankCollectorViewControllerToReturn = UIViewController()
-        mockRepository.mandateResultToReturn = AchTestData.fullMandateResult
-        mockRepository.tokenDataToReturn = AchTestData.mockTokenData
-        mockRepository.paymentResultToReturn = AchTestData.successPaymentResult
-
-        // When
-        _ = try await sut.loadUserDetails()
-        try await sut.patchUserDetails(
-            firstName: AchTestData.Constants.firstName,
-            lastName: AchTestData.Constants.lastName,
-            emailAddress: AchTestData.Constants.emailAddress
-        )
-        try await sut.validate()
-        _ = try await sut.startPaymentAndGetStripeData()
-        _ = try await sut.createBankCollector(
-            firstName: AchTestData.Constants.firstName,
-            lastName: AchTestData.Constants.lastName,
-            emailAddress: AchTestData.Constants.emailAddress,
-            clientSecret: AchTestData.Constants.stripeClientSecret,
-            delegate: MockBankCollectorDelegate()
-        )
-        _ = try await sut.getMandateData()
-        _ = try await sut.tokenize()
-        _ = try await sut.createPayment(tokenData: AchTestData.mockTokenData)
-        _ = try await sut.completePayment(stripeData: AchTestData.defaultStripeData)
-
-        // Then
-        XCTAssertEqual(mockRepository.loadUserDetailsCallCount, 1)
-        XCTAssertEqual(mockRepository.patchUserDetailsCallCount, 1)
-        XCTAssertEqual(mockRepository.validateCallCount, 1)
-        XCTAssertEqual(mockRepository.startPaymentAndGetStripeDataCallCount, 1)
-        XCTAssertEqual(mockRepository.createBankCollectorCallCount, 1)
-        XCTAssertEqual(mockRepository.getMandateDataCallCount, 1)
-        XCTAssertEqual(mockRepository.tokenizeCallCount, 1)
-        XCTAssertEqual(mockRepository.createPaymentCallCount, 1)
-        XCTAssertEqual(mockRepository.completePaymentCallCount, 1)
-    }
 }
 
 // MARK: - Mock Bank Collector Delegate

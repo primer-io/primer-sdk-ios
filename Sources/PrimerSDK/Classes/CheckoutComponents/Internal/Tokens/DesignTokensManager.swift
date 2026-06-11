@@ -42,17 +42,17 @@ final class DesignTokensManager: ObservableObject {
     let loadedTokens = try JSONDecoder().decode(DesignTokens.self, from: data)
 
     // Apply merchant theme overrides on top of loaded tokens
-    let finalTokens = applyThemeOverrides(to: loadedTokens)
+    applyThemeOverrides(to: loadedTokens)
 
-    tokens = finalTokens
+    tokens = loadedTokens
   }
 
   // MARK: - Apply Theme Overrides
 
   /// Applies merchant theme overrides to the loaded design tokens.
   /// This ensures that CheckoutColors and other direct token accessors respect theme customizations.
-  private func applyThemeOverrides(to tokens: DesignTokens) -> DesignTokens {
-    guard let theme = themeOverrides else { return tokens }
+  private func applyThemeOverrides(to tokens: DesignTokens) {
+    guard let theme = themeOverrides else { return }
 
     if let colors = theme.colors {
       applyColorOverrides(to: tokens, from: colors)
@@ -69,8 +69,9 @@ final class DesignTokensManager: ObservableObject {
     if let typography = theme.typography {
       applyTypographyOverrides(to: tokens, from: typography)
     }
-
-    return tokens
+    if let borderWidth = theme.borderWidth {
+      applyBorderWidthOverrides(to: tokens, from: borderWidth)
+    }
   }
 
   private func applyColorOverrides(to tokens: DesignTokens, from colors: ColorOverrides) {
@@ -206,6 +207,14 @@ final class DesignTokensManager: ObservableObject {
     if let value = sizes.primerSizeXxlarge { tokens.primerSizeXxlarge = value }
     if let value = sizes.primerSizeXxxlarge { tokens.primerSizeXxxlarge = value }
     if let value = sizes.primerSizeBase { tokens.primerSizeBase = value }
+  }
+
+  private func applyBorderWidthOverrides(
+    to tokens: DesignTokens, from borderWidth: BorderWidthOverrides
+  ) {
+    if let value = borderWidth.primerBorderWidthThin { tokens.primerBorderWidthThin = value }
+    if let value = borderWidth.primerBorderWidthMedium { tokens.primerBorderWidthMedium = value }
+    if let value = borderWidth.primerBorderWidthThick { tokens.primerBorderWidthThick = value }
   }
 
   private func applyTypographyOverrides(

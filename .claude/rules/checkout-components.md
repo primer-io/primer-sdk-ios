@@ -5,20 +5,34 @@ paths:
 
 # CheckoutComponents (iOS 15+)
 
-Scope-based payment checkout framework with SwiftUI, async/await, and full UI customization. Exact Android API parity.
+Payment checkout framework with SwiftUI, async/await, and UI customization through composable views. Mirrors Android v3's slot-based API.
 
 > Full API signatures: `Sources/PrimerSDK/Classes/CheckoutComponents/API_REFERENCE.md`
 
 ## Entry Points
 
-- **SwiftUI**: `PrimerCheckout(clientToken:primerSettings:primerTheme:scope:onCompletion:)`
-- **UIKit**: `PrimerCheckoutPresenter.presentCheckout(clientToken:from:primerSettings:primerTheme:scope:completion:)`
+- **SwiftUI (managed modal)**: `PrimerCheckout(clientToken:primerSettings:primerTheme:onCompletion:)` — renders the SDK's default screens, no customization slots
+- **SwiftUI (composable/inline)**: a `PrimerCheckoutSession` (held as `@StateObject`) wired in with the `.primerCheckoutSession(_:onCompletion:)` modifier, plus the composable views `PrimerCardForm`, `PrimerPaymentMethods`, `PrimerVaultedPaymentMethods`
+- **UIKit**: `PrimerCheckoutPresenter.presentCheckout(clientToken:from:primerSettings:primerTheme:completion:)` (+ convenience overloads)
 - **UIKit Delegate**: `PrimerCheckoutPresenterDelegate` — success, failure, dismiss, optional 3DS callbacks
 
-## Scope Hierarchy
+## Public Surface
+
+The scope protocols (`PrimerCheckoutScope`, `PrimerCardFormScope`, the per-method `Primer*Scope`, etc.) are **internal** — they are no longer part of the public API. Merchants integrate through:
+
+- **Entry**: `PrimerCheckout` (modal) or `PrimerCheckoutSession` + `.primerCheckoutSession(_:onCompletion:)` (composable/inline)
+- **Composable views**: `PrimerCardForm`, `PrimerPaymentMethods`, `PrimerVaultedPaymentMethods` — each exposes `@ViewBuilder` section slots and resolves its session from the environment
+- **Observable sessions** (injected by the modifier): `PrimerCardFormSession`, `PrimerSelectionSession` — each bridges its scope's `AsyncStream<State>` into a `@Published state` and exposes the mutation surface (e.g. `updateCardNumber`, `submit`, `select`)
+- **Defaults namespaces**: `CardFormDefaults`, `PaymentMethodsDefaults`, `VaultedPaymentMethodsDefaults` — default slot bodies plus per-field recomposition building blocks
+
+This mirrors Android v3: the only public payment-method components are the card form and payment-method selection (incl. vaulted). The APM/aux scopes (Klarna, ApplePay, PayPal, Ach, WebRedirect, FormRedirect, QRCode, AdyenKlarna, BillingAddressRedirect, SelectCountry) are internal and rendered by the SDK; there are no public per-APM views.
+
+## Internal Scope Hierarchy
+
+Internal architecture (not public API), reached via `PrimerCheckoutSession`:
 
 ```
-PrimerCheckoutScope (top-level)
+PrimerCheckoutScope (top-level, internal)
 ├── paymentMethodSelection: PrimerPaymentMethodSelectionScope
 └── getPaymentMethodScope<T>() → per-method scopes:
     ├── PrimerCardFormScope          → PrimerCardFormState
@@ -32,7 +46,7 @@ PrimerCheckoutScope (top-level)
     └── PrimerQRCodeScope            → PrimerQRCodeState
 ```
 
-All payment method scopes extend `PrimerPaymentMethodScope` (base protocol with `start()`, `submit()`, `cancel()`, `onBack()`, `onDismiss()` and `state: AsyncStream<State>`).
+All payment method scopes extend `PrimerPaymentMethodScope` (base protocol with `start()`, `submit()`, `cancel()`, `onBack()`, `onDismiss()` and `state: AsyncStream<State>`). The public `PrimerCardFormSession` / `PrimerSelectionSession` wrap the card-form and selection scopes respectively.
 
 ## State Flows
 
@@ -66,13 +80,13 @@ Per-payment-method and per-card-network surcharge amounts:
 
 ### Co-Badged Cards
 - `PrimerCardFormState`: `selectedNetwork: PrimerCardNetwork?`, `availableNetworks: [PrimerCardNetwork]`
-- `PrimerCardFormScope.updateSelectedCardNetwork(_ network:)` — select network
-- `cobadgedCardsView` closure — custom network selection UI
+- `PrimerCardFormSession.selectCardNetwork(_ network:)` — select network
+- `CardFormDefaults.cardNetwork(_:)` — standalone network selector building block (renders only when >1 network); the default `cardDetails` section already renders the selector
 
 ### Dynamic Billing Address
 - `CardFormConfiguration.requiresBillingAddress` — API-driven
 - Billing fields: firstName, lastName, email, addressLine1, addressLine2, city, state, postalCode, countryCode, phoneNumber, retailOutlet
-- `displayFields: [PrimerInputElementType]` — visible fields from API response
+- `CardFormDefaults.billingAddress(_:)` renders only when the configuration requires billing fields; each `CardFormDefaults.*` building block self-hides unless its field is in `CardFormConfiguration.cardFields`/`billingFields`
 
 ### 3DS
 - Automatic handling via `PrimerCheckoutPresenterDelegate` optional callbacks:
@@ -99,31 +113,42 @@ Per-payment-method and per-card-network surcharge amounts:
 
 Internal sources: `DesignTokens` (light), `DesignTokensDark` (dark), managed by `DesignTokensManager`.
 
-## Customization Levels
+## Customization (slot-based)
 
-1. **Field-level**: `InputFieldConfig` — partial (label, placeholder, `PrimerFieldStyling`) or full replacement (`component` closure)
-2. **Section-level**: Replace card/billing sections via scope closures (`cardInputSection`, `billingAddressSection`)
-3. **Screen-level**: Replace entire screens per scope (`screen` closure on each scope)
-4. **Checkout-level**: `container`, `splashScreen`, `loadingScreen`, `errorScreen` on `PrimerCheckoutScope`
+Customize by overriding a composable view's `@ViewBuilder` section slots, composing around the `*Defaults` building blocks. There is no field-config, section-closure, or screen-closure customization on scopes anymore — those properties were removed.
 
-`PrimerFieldStyling`: fontName, fontSize, fontWeight, labelFontName, labelFontSize, labelFontWeight, textColor, labelColor, backgroundColor, borderColor, focusedBorderColor, errorBorderColor, placeholderColor, cornerRadius, borderWidth, padding, fieldHeight.
+- **`PrimerCardForm`** — three slots: `cardDetails`, `billingAddress`, `submitButton` (each `(PrimerCardFormSession) -> some View`). Defaults: `CardFormDefaults.cardDetails/billingAddress/submitButton`. Recompose with the 15 field building blocks `CardFormDefaults.cardNumber/expiryDate/cvv/cardholderName/cardNetwork/countryCode/firstName/lastName/addressLine1/addressLine2/city/state/postalCode/phoneNumber/email`.
+- **`PrimerPaymentMethods`** — three slots: `header`, `method (CheckoutPaymentMethod, onSelect)`, `emptyState`. Defaults: `PaymentMethodsDefaults.header/method/emptyState`.
+- **`PrimerVaultedPaymentMethods`** — three `AnyView`-erased slots: `header`, `item (method, isSelected, onSelect)`, `submitButton (isLoading, isEnabled, onSubmit)`. Defaults: `VaultedPaymentMethodsDefaults.header/item/submitButton`.
 
-## Payment Methods
+Override a single slot with a **labeled** argument (a bare trailing closure binds to the last slot, `submitButton`):
+```swift
+PrimerCardForm(submitButton: { session in
+    MyPayButton(isLoading: session.state.isLoading) { session.submit() }
+})
+```
+`PrimerCheckout` (the managed modal) renders SDK defaults only — to customize, embed the composable views inline under `.primerCheckoutSession(_:)`.
 
-| Directory | Scope | State | Key Actions |
+Visual styling is theme-driven via `PrimerCheckoutTheme` (above), not per-field styling structs.
+
+## Payment Methods (internal scopes)
+
+Internal scope/state used by the SDK's own renderers (reached via `PrimerCheckoutSession`). Card and selection are surfaced publicly through the composable views above; the rest are internal-only.
+
+| Directory | Scope (internal) | State | Key Actions |
 |-----------|-------|-------|-------------|
-| `Card/` | `PrimerCardFormScope` | `PrimerCardFormState` | 20 field update methods, co-badged selection, 16 `InputFieldConfig` properties, 16 `PrimerXxxField()` ViewBuilders |
-| `ApplePay/` | `PrimerApplePayScope` | `PrimerApplePayState` | `PrimerApplePayButton(action:)` |
+| `Card/` | `PrimerCardFormScope` | `PrimerCardFormState` | ~19 field update methods, co-badged network selection; public via `PrimerCardForm` + `PrimerCardFormSession` |
+| `ApplePay/` | `PrimerApplePayScope` | `PrimerApplePayState` | SDK-rendered Apple Pay button |
 | `PayPal/` | `PrimerPayPalScope` | `PrimerPayPalState` | Submit button, redirect flow |
 | `Klarna/` | `PrimerKlarnaScope` | `PrimerKlarnaState` | `selectPaymentCategory(_:)`, `authorizePayment()`, `finalizePayment()`, `paymentView: UIView?` |
 | `Ach/` | `PrimerAchScope` | `PrimerAchState` | `updateFirstName/LastName/EmailAddress`, `submitUserDetails()`, `acceptMandate()`, `declineMandate()`, `bankCollectorViewController: UIViewController?` |
 | `WebRedirect/` | `PrimerWebRedirectScope` | `PrimerWebRedirectState` | Submit + auto-redirect + polling (Twint, etc.) |
-| `FormRedirect/` | `PrimerFormRedirectScope` | `PrimerFormRedirectState` | `updateField(fieldType:value:)` for OTP/phone (BLIK, MBWay) |
+| `FormRedirect/` | `PrimerFormRedirectScope` | `PrimerFormRedirectState` | `updateField(_:value:)` for OTP/phone (BLIK, MBWay) |
 | `QRCode/` | `PrimerQRCodeScope` | `PrimerQRCodeState` | Auto-polling after display (PromptPay, Xfers) |
 
 ## Architecture
 
-- **DI**: `ComposableContainer` — actor-based, async resolution, transient/singleton/weak retention
+- **DI**: `actor Container` provides async resolution and transient/singleton/weak retention (`ContainerRetainPolicy`), wrapped by the `final class ComposableContainer`
 - **Navigation**: `CheckoutCoordinator` + `CheckoutNavigator` (state-driven via AsyncStream)
 - **Registry**: `PaymentMethodRegistry.shared` — dynamic registration via `PaymentMethodProtocol`, three scope access patterns (metatype, enum, string)
 - **Clean Architecture**: Domain (Interactors) → Data (Repositories, Mappers) → Presentation (Scopes, Views)

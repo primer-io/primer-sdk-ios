@@ -9,7 +9,6 @@ import SwiftUI
 @available(iOS 15.0, *)
 struct PrimerInputFieldContainer<Content: View, RightContent: View>: View {
   let label: String?
-  let styling: PrimerFieldStyling?
   let textFieldBuilder: () -> Content
   let rightComponent: (() -> RightContent)?
 
@@ -24,7 +23,6 @@ struct PrimerInputFieldContainer<Content: View, RightContent: View>: View {
 
   init(
     label: String?,
-    styling: PrimerFieldStyling?,
     text: Binding<String>,
     isValid: Binding<Bool>,
     errorMessage: Binding<String?>,
@@ -33,7 +31,6 @@ struct PrimerInputFieldContainer<Content: View, RightContent: View>: View {
     @ViewBuilder rightComponent: @escaping () -> RightContent
   ) {
     self.label = label
-    self.styling = styling
     _text = text
     _isValid = isValid
     _errorMessage = errorMessage
@@ -48,6 +45,10 @@ struct PrimerInputFieldContainer<Content: View, RightContent: View>: View {
       spacing: PrimerSpacing.xsmall(tokens: tokens),
       content: makeContent
     )
+    // Combine label, field and error into one VoiceOver element so the label and
+    // its validation error stay associated with the field. The call site's
+    // accessibility(config:) supplies the identifier/label and the error value.
+    .accessibilityElement(children: .combine)
     .padding(.bottom, PrimerSpacing.medium(tokens: tokens))
   }
 
@@ -65,7 +66,6 @@ struct PrimerInputFieldContainer<Content: View, RightContent: View>: View {
 extension PrimerInputFieldContainer where RightContent == Never {
   init(
     label: String?,
-    styling: PrimerFieldStyling?,
     text: Binding<String>,
     isValid: Binding<Bool>,
     errorMessage: Binding<String?>,
@@ -73,7 +73,6 @@ extension PrimerInputFieldContainer where RightContent == Never {
     @ViewBuilder textFieldBuilder: @escaping () -> Content
   ) {
     self.label = label
-    self.styling = styling
     _text = text
     _isValid = isValid
     _errorMessage = errorMessage

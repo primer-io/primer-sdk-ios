@@ -8,11 +8,11 @@ import SwiftUI
 
 /// Closure that provides a custom screen for Klarna payment steps.
 @available(iOS 15.0, *)
-public typealias KlarnaScreenComponent = (any PrimerKlarnaScope) -> any View
+typealias KlarnaScreenComponent = (any PrimerKlarnaScope) -> any View
 
 /// Closure that provides a custom button for Klarna payment actions.
 @available(iOS 15.0, *)
-public typealias KlarnaButtonComponent = (any PrimerKlarnaScope) -> any View
+typealias KlarnaButtonComponent = (any PrimerKlarnaScope) -> any View
 
 /// Scope protocol for Klarna payment methods.
 ///
@@ -36,7 +36,7 @@ public typealias KlarnaButtonComponent = (any PrimerKlarnaScope) -> any View
 /// ```
 @available(iOS 15.0, *)
 @MainActor
-public protocol PrimerKlarnaScope: PrimerPaymentMethodScope where State == PrimerKlarnaState {
+protocol PrimerKlarnaScope: PrimerPaymentMethodScope where State == PrimerKlarnaState {
 
   /// The Klarna SDK payment view. Display this when `state.step` is `.viewReady`.
   var paymentView: UIView? { get }

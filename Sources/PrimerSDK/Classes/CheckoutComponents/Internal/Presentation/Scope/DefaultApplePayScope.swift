@@ -33,12 +33,17 @@ final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
   var screen: ApplePayScreenComponent?
   var applePayButton: ApplePayButtonComponent?
 
+  var dismissalMechanism: [DismissalMechanism] {
+    checkoutScope?.dismissalMechanism ?? []
+  }
+
   private(set) var presentationContext: PresentationContext = .fromPaymentSelection
 
   private weak var checkoutScope: DefaultCheckoutScope?
   private var processPaymentInteractor: ProcessApplePayPaymentInteractor?
   private let applePayPresentationManager: ApplePayPresenting
   private var authorizationCoordinator: ApplePayAuthorizationCoordinator?
+  private(set) var paymentTask: Task<Void, Never>?
 
   private let clientSessionActionsFactory: () -> ClientSessionActionsProtocol
   private let applePayRequestFactory: () throws -> ApplePayRequest
@@ -92,10 +97,14 @@ final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
   }
 
   func cancel() {
+    paymentTask?.cancel()
+    paymentTask = nil
     structuredState.isLoading = false
-    if presentationContext.shouldShowBackButton {
-      checkoutScope?.checkoutNavigator.navigateBack()
-    }
+    checkoutScope?.cancelActivePaymentMethod(returnToSelection: presentationContext.shouldShowBackButton)
+  }
+
+  deinit {
+    paymentTask?.cancel()
   }
 
   func onBack() {
@@ -111,7 +120,7 @@ final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
   func submit() {
     guard structuredState.isAvailable, !structuredState.isLoading else { return }
 
-    Task { [self] in
+    paymentTask = Task { [self] in
       await performPayment()
     }
   }
@@ -161,6 +170,7 @@ final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
     } catch let error as PrimerError {
       if case .cancelled = error {
         structuredState.isLoading = false
+        checkoutScope?.cancelActivePaymentMethod(returnToSelection: presentationContext.shouldShowBackButton)
         return
       }
       await handlePaymentError(error)

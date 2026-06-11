@@ -12,7 +12,6 @@ struct CVVInputField: View, LogReporter {
   let placeholder: String
   let scope: any CardFormFieldScopeInternal
   let cardNetwork: CardNetwork
-  let styling: PrimerFieldStyling?
 
   // MARK: - Private Properties
 
@@ -30,14 +29,12 @@ struct CVVInputField: View, LogReporter {
     label: String?,
     placeholder: String,
     scope: any CardFormFieldScopeInternal,
-    cardNetwork: CardNetwork,
-    styling: PrimerFieldStyling? = nil
+    cardNetwork: CardNetwork
   ) {
     self.label = label
     self.placeholder = placeholder
     self.scope = scope
     self.cardNetwork = cardNetwork
-    self.styling = styling
   }
 
   // MARK: - Body
@@ -45,7 +42,6 @@ struct CVVInputField: View, LogReporter {
   var body: some View {
     PrimerInputFieldContainer(
       label: label,
-      styling: styling,
       text: $cvv,
       isValid: $isValid,
       errorMessage: $errorMessage,
@@ -59,7 +55,6 @@ struct CVVInputField: View, LogReporter {
           isFocused: $isFocused,
           placeholder: placeholder,
           cardNetwork: cardNetwork,
-          styling: styling,
           validationService: validationService,
           scope: scope,
           tokens: tokens

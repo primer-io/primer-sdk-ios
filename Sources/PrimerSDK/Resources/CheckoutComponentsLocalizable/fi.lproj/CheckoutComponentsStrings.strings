@@ -1,6 +1,5 @@
 "accessibility_action_delete" = "Poista maksutapa";
 "accessibility_action_edit" = "Muokkaa kortin tietoja";
-"accessibility_action_set_default" = "Aseta oletusmaksutavaksi";
 "accessibility_card_form_billing_address_address_line_1_label" = "Osoiterivi 1, pakollinen";
 "accessibility_card_form_billing_address_address_line_2_label" = "Osoiterivi 2, valinnainen";
 "accessibility_card_form_billing_address_city_hint" = "Syötä kaupungin nimi";
@@ -19,7 +18,7 @@
 "accessibility_card_form_cardholder_name_hint" = "Syötä nimi kortilla näkyvän mukaisesti";
 "accessibility_card_form_cardholder_name_label" = "Kortinhaltijan nimi";
 "accessibility_card_form_cvc_error_invalid" = "Virheellinen turvakoodi.";
-"accessibility_card_form_cvc_hint" = "3- tai 4-numeroinen koodi kortin takana";
+"accessibility_card_form_cvc_hint" = "Turvakoodi, 3 tai 4 numeroa";
 "accessibility_card_form_cvc_label" = "Turvakoodi, pakollinen";
 "accessibility_card_form_cvv_icon" = "CVV-turvakoodi";
 "accessibility_card_form_expiry_error_invalid" = "Virheellinen viimeinen voimassaolopäivä.";
@@ -27,11 +26,11 @@
 "accessibility_card_form_expiry_icon" = "Kortin viimeinen voimassaolopäivä";
 "accessibility_card_form_expiry_label" = "Viimeinen voimassaolopäivä, pakollinen";
 "accessibility_card_form_network_selector" = "Valitse verkko";
-"accessibility_card_form_network_selector_hint" = "Kaksoisnapauta valitaksesi toisen korttiverkon";
-"accessibility_card_form_network_selector_inline_hint" = "Kaksoisnapauta valitaksesi tämän verkon";
+"accessibility_card_form_network_selector_hint" = "Valitse toinen korttiverkko";
+"accessibility_card_form_network_selector_inline_hint" = "Valitse tämä verkko";
 "accessibility_card_form_network_selector_label" = "Korttiverkon valitsin";
 "accessibility_card_form_submit_disabled" = "Painike ei käytössä. Täytä kaikki pakolliset kentät ottaaksesi maksun käyttöön";
-"accessibility_card_form_submit_hint" = "Kaksoisnapauta lähettääksesi maksun";
+"accessibility_card_form_submit_hint" = "Lähetä maksu";
 "accessibility_card_form_submit_label" = "Lähetä maksu";
 "accessibility_card_form_submit_loading" = "Käsitellään maksua, odota";
 "accessibility_checkout_error_icon" = "Virhe";
@@ -52,8 +51,6 @@
 "accessibility_country_selection_search_icon" = "Haku";
 "accessibility_error_generic" = "Tapahtui virhe. Yritä uudelleen.";
 "accessibility_error_multiple_errors" = "%d virhettä löydetty";
-"accessibility_payment_selection_card_full" = "%1$@ kortti päättyy numeroon %2$@, vanhenee %3$@";
-"accessibility_payment_selection_card_masked" = "kortti päättyy peitettyihin numeroihin";
 "accessibility_payment_selection_coming_soon" = "Maksutapa tulossa pian";
 "accessibility_payment_selection_pay_with_card" = "Maksa kortilla";
 "accessibility_payment_selection_pay_with_ideal" = "Maksa iDEAL:lla";
@@ -65,6 +62,7 @@
 "accessibility_screen_loading_payment_methods" = "Ladataan maksutapoja";
 "accessibility_screen_payment_method" = "%@ maksutapa";
 "accessibility_payment_method_button" = "Maksa %@";
+"accessibility_payment_method_selected" = "%@ valittu";
 "accessibility_screen_processing_payment" = "Käsitellään maksua";
 "accessibility_screen_success" = "Maksu onnistui";
 "accessibility_vault_delete_payment_method" = "Poista tämä maksutapa";
@@ -144,7 +142,6 @@
 "primer_card_form_placeholder_state" = "Uusimaa";
 "primer_card_form_retail_not_implemented" = "Myyntipisteen valinta ei ole vielä toteutettu";
 "primer_card_form_title" = "Maksa kortilla";
-"primer_checkout_auto_dismiss_message" = "Tämä näyttö sulkeutuu automaattisesti 3 sekunnin kuluttua";
 "primer_checkout_dismissing" = "Suljetaan...";
 "primer_checkout_error_button_other_methods" = "Valitse muita maksutapoja";
 "primer_checkout_error_subtitle" = "Verkko-ongelma tapahtui.";
@@ -209,8 +206,8 @@
 "accessibility_klarna_category" = "%@ maksuvaihtoehto";
 "accessibility_klarna_category_selected" = "%@ maksuvaihtoehto, valittu";
 "accessibility_klarna_payment_view" = "Klarna-maksulomake";
-"accessibility_klarna_authorize_hint" = "Kaksoisnapauta jatkaaksesi Klarnalla";
-"accessibility_klarna_finalize_hint" = "Kaksoisnapauta suorittaaksesi maksun";
+"accessibility_klarna_authorize_hint" = "Jatka Klarnalla";
+"accessibility_klarna_finalize_hint" = "Viimeistele maksu";
 
 /* ACH */
 "primer_ach_title" = "Pankkitili";
@@ -223,9 +220,9 @@
 "primer_ach_mandate_button_accept" = "Hyväksyn";
 "primer_ach_mandate_button_decline" = "Peruuta";
 "primer_ach_mandate_template" = "Klikkaamalla \"Hyväksyn\" valtuutat %1$@:n veloittamaan yllä määritettyä pankkitiliä kaikista velkasummista, jotka johtuvat %1$@:n palveluiden käytöstäsi ja/tai %1$@:n tuotteiden ostamisesta, %1$@:n verkkosivuston ja ehtojen mukaisesti, kunnes tämä valtuutus peruutetaan. Voit muuttaa tai peruuttaa tämän valtuutuksen milloin tahansa ilmoittamalla siitä %1$@:lle 30 (kolmekymmentä) päivää etukäteen.";
-"accessibility_ach_continue_hint" = "Kaksoisnapauta jatkaaksesi pankkitilin valintaan";
-"accessibility_ach_mandate_accept_hint" = "Kaksoisnapauta hyväksyäksesi valtuutuksen ja suorittaaksesi maksun";
-"accessibility_ach_mandate_decline_hint" = "Kaksoisnapauta hylätäksesi ja peruuttaaksesi maksun";
+"accessibility_ach_continue_hint" = "Jatka pankkitilin valintaan";
+"accessibility_ach_mandate_accept_hint" = "Hyväksy valtuutus ja viimeistele maksu";
+"accessibility_ach_mandate_decline_hint" = "Hylkää ja peruuta maksu";
 
 "accessibility_card_form_billing_address_hint" = "Syötä osoitteesi";
 "accessibility_card_form_billing_address_state_hint" = "Syötä osavaltio tai maakunta";
@@ -285,3 +282,5 @@
 "primer_adyen_klarna_option_pay_later" = "Maksa myöhemmin";
 "primer_adyen_klarna_option_pay_over_time" = "Maksa erissä";
 "primer_adyen_klarna_option_pay_now" = "Maksa nyt";
+"primer_vaulted_gocardless_direct_debit_suffix" = "Suoraveloitus";
+"accessibility_card_form_billing_address_country_hint" = "Avaa luettelon maasi valitsemiseksi";

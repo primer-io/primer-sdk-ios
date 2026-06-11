@@ -1,6 +1,5 @@
 "accessibility_action_delete" = "Odstranit platební metodu";
 "accessibility_action_edit" = "Upravit údaje karty";
-"accessibility_action_set_default" = "Nastavit jako výchozí platební metodu";
 "accessibility_card_form_billing_address_address_line_1_label" = "Řádek adresy 1, povinné";
 "accessibility_card_form_billing_address_address_line_2_label" = "Řádek adresy 2, nepovinné";
 "accessibility_card_form_billing_address_city_hint" = "Zadejte název města";
@@ -19,7 +18,7 @@
 "accessibility_card_form_cardholder_name_hint" = "Zadejte jméno uvedené na kartě";
 "accessibility_card_form_cardholder_name_label" = "Jméno držitele karty";
 "accessibility_card_form_cvc_error_invalid" = "Neplatný bezpečnostní kód.";
-"accessibility_card_form_cvc_hint" = "3 nebo 4místný kód na zadní straně karty";
+"accessibility_card_form_cvc_hint" = "Bezpečnostní kód, 3 nebo 4 číslice";
 "accessibility_card_form_cvc_label" = "Bezpečnostní kód, povinné";
 "accessibility_card_form_cvv_icon" = "CVV bezpečnostní kód";
 "accessibility_card_form_expiry_error_invalid" = "Neplatné datum platnosti.";
@@ -27,11 +26,11 @@
 "accessibility_card_form_expiry_icon" = "Datum platnosti karty";
 "accessibility_card_form_expiry_label" = "Datum platnosti, povinné";
 "accessibility_card_form_network_selector" = "Vybrat síť";
-"accessibility_card_form_network_selector_hint" = "Dvojitým poklepáním vyberte jinou kartovou síť";
-"accessibility_card_form_network_selector_inline_hint" = "Dvojitým poklepáním vyberte tuto síť";
+"accessibility_card_form_network_selector_hint" = "Vybrat jinou kartovou síť";
+"accessibility_card_form_network_selector_inline_hint" = "Vybrat tuto síť";
 "accessibility_card_form_network_selector_label" = "Výběr kartové sítě";
 "accessibility_card_form_submit_disabled" = "Tlačítko je deaktivováno. Vyplňte všechna povinná pole pro aktivaci platby";
-"accessibility_card_form_submit_hint" = "Dvojitým poklepáním odešlete platbu";
+"accessibility_card_form_submit_hint" = "Odeslat platbu";
 "accessibility_card_form_submit_label" = "Odeslat platbu";
 "accessibility_card_form_submit_loading" = "Zpracovává se platba, prosím čekejte";
 "accessibility_checkout_error_icon" = "Chyba";
@@ -52,8 +51,6 @@
 "accessibility_country_selection_search_icon" = "Hledat";
 "accessibility_error_generic" = "Došlo k chybě. Zkuste to prosím znovu.";
 "accessibility_error_multiple_errors" = "Nalezeno %d chyb";
-"accessibility_payment_selection_card_full" = "Karta %1$@ končící na %2$@, platnost %3$@";
-"accessibility_payment_selection_card_masked" = "karta končící na maskované číslice";
 "accessibility_payment_selection_coming_soon" = "Platební metoda již brzy";
 "accessibility_payment_selection_pay_with_card" = "Zaplatit kartou";
 "accessibility_payment_selection_pay_with_ideal" = "Zaplatit přes iDEAL";
@@ -65,6 +62,7 @@
 "accessibility_screen_loading_payment_methods" = "Načítání platebních metod";
 "accessibility_screen_payment_method" = "Platební metoda %@";
 "accessibility_payment_method_button" = "Zaplatit přes %@";
+"accessibility_payment_method_selected" = "Vybráno: %@";
 "accessibility_screen_processing_payment" = "Zpracovává se platba";
 "accessibility_screen_success" = "Platba úspěšná";
 "accessibility_vault_delete_payment_method" = "Odstranit tuto platební metodu";
@@ -144,7 +142,6 @@
 "primer_card_form_placeholder_state" = "Hlavní město Praha";
 "primer_card_form_retail_not_implemented" = "Výběr prodejny zatím není implementován";
 "primer_card_form_title" = "Zaplatit kartou";
-"primer_checkout_auto_dismiss_message" = "Tato obrazovka se automaticky zavře za 3 sekundy";
 "primer_checkout_dismissing" = "Zavírá se...";
 "primer_checkout_error_button_other_methods" = "Vybrat jiné platební metody";
 "primer_checkout_error_subtitle" = "Došlo k chybě sítě.";
@@ -209,8 +206,8 @@
 "accessibility_klarna_category" = "Platební možnost %@";
 "accessibility_klarna_category_selected" = "Platební možnost %@, vybráno";
 "accessibility_klarna_payment_view" = "Platební formulář Klarna";
-"accessibility_klarna_authorize_hint" = "Dvojitým klepnutím pokračujte s Klarna";
-"accessibility_klarna_finalize_hint" = "Dvojitým klepnutím dokončete platbu";
+"accessibility_klarna_authorize_hint" = "Pokračovat s Klarna";
+"accessibility_klarna_finalize_hint" = "Dokončit platbu";
 
 /* ACH */
 "primer_ach_title" = "Bankovní účet";
@@ -223,9 +220,9 @@
 "primer_ach_mandate_button_accept" = "Souhlasím";
 "primer_ach_mandate_button_decline" = "Zrušit";
 "primer_ach_mandate_template" = "Kliknutím na \"Souhlasím\" opravňujete %1$@ k inkasu z výše uvedeného bankovního účtu jakékoli dlužné částky za poplatky vzniklé v souvislosti s používáním služeb %1$@ a/nebo nákupem produktů od %1$@, v souladu s webovými stránkami a podmínkami %1$@, dokud nebude toto oprávnění odvoláno. Toto oprávnění můžete kdykoli změnit nebo zrušit oznámením %1$@ s 30 (třiceti) denní výpovědní lhůtou.";
-"accessibility_ach_continue_hint" = "Dvojitým klepnutím pokračujte k výběru bankovního účtu";
-"accessibility_ach_mandate_accept_hint" = "Dvojitým klepnutím přijměte autorizaci a dokončete platbu";
-"accessibility_ach_mandate_decline_hint" = "Dvojitým klepnutím odmítněte a zrušte platbu";
+"accessibility_ach_continue_hint" = "Pokračovat k výběru bankovního účtu";
+"accessibility_ach_mandate_accept_hint" = "Přijmout autorizaci a dokončit platbu";
+"accessibility_ach_mandate_decline_hint" = "Odmítnout a zrušit platbu";
 
 "accessibility_card_form_billing_address_hint" = "Zadejte svou adresu";
 "accessibility_card_form_billing_address_state_hint" = "Zadejte stát nebo provincii";
@@ -285,3 +282,5 @@
 "primer_adyen_klarna_option_pay_later" = "Zaplatit později";
 "primer_adyen_klarna_option_pay_over_time" = "Zaplatit v průběhu času";
 "primer_adyen_klarna_option_pay_now" = "Zaplatit nyní";
+"primer_vaulted_gocardless_direct_debit_suffix" = "Inkaso";
+"accessibility_card_form_billing_address_country_hint" = "Otevře seznam pro výběr vaší země";

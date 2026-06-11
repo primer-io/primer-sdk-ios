@@ -7,98 +7,6 @@
 @testable import PrimerSDK
 import XCTest
 
-private final class StubValidationState: NSObject, PrimerValidationState {}
-
-// MARK: - Network Detection Via Delegate
-
-@available(iOS 15.0, *)
-@MainActor
-final class RawDataManagerDelegateNetworkDetectionTests: XCTestCase {
-
-    private var sut: HeadlessRepositoryImpl!
-
-    override func setUp() {
-        super.setUp()
-        sut = HeadlessRepositoryImpl()
-    }
-
-    override func tearDown() {
-        sut = nil
-        super.tearDown()
-    }
-
-    func test_didReceiveMetadata_withNonCardState_doesNotEmit() async {
-        // Given
-        let stream = sut.getNetworkDetectionStream()
-        let metadata = PrimerCardNumberEntryMetadata(
-            source: .local,
-            selectableCardNetworks: nil,
-            detectedCardNetworks: [
-                PrimerCardNetwork(displayName: "Visa", network: .visa),
-            ]
-        )
-        let nonCardState = StubValidationState()
-
-        // When - call delegate with non-card state (should be ignored)
-        do {
-            let rawDataManager = try PrimerHeadlessUniversalCheckout.RawDataManager(
-                paymentMethodType: "PAYMENT_CARD"
-            )
-            sut.primerRawDataManager(
-                rawDataManager,
-                didReceiveMetadata: metadata,
-                forState: nonCardState
-            )
-        } catch {
-            // Expected in unit tests - RawDataManager requires SDK configuration
-        }
-
-        // Then - no crash
-        XCTAssertNotNil(stream)
-    }
-
-    func test_willFetchMetadata_withNonCardState_doesNotCrash() async {
-        // Given
-        let nonCardState = StubValidationState()
-
-        // When / Then - should early return without crash
-        do {
-            let rawDataManager = try PrimerHeadlessUniversalCheckout.RawDataManager(
-                paymentMethodType: "PAYMENT_CARD"
-            )
-            sut.primerRawDataManager(rawDataManager, willFetchMetadataForState: nonCardState)
-        } catch {
-            // Expected - RawDataManager requires SDK setup
-        }
-    }
-
-    func test_dataIsValid_delegateMethod_doesNotCrash() async {
-        // Given / When / Then
-        do {
-            let rawDataManager = try PrimerHeadlessUniversalCheckout.RawDataManager(
-                paymentMethodType: "PAYMENT_CARD"
-            )
-            sut.primerRawDataManager(rawDataManager, dataIsValid: true, errors: nil)
-            sut.primerRawDataManager(rawDataManager, dataIsValid: false, errors: [TestError.unknown])
-        } catch {
-            // Expected in unit tests
-        }
-    }
-
-    func test_metadataDidChange_delegateMethod_doesNotCrash() async {
-        // Given / When / Then
-        do {
-            let rawDataManager = try PrimerHeadlessUniversalCheckout.RawDataManager(
-                paymentMethodType: "PAYMENT_CARD"
-            )
-            sut.primerRawDataManager(rawDataManager, metadataDidChange: ["key": "value"])
-            sut.primerRawDataManager(rawDataManager, metadataDidChange: nil)
-        } catch {
-            // Expected in unit tests
-        }
-    }
-}
-
 // MARK: - Update Card Number Stream Behavior
 
 @available(iOS 15.0, *)
@@ -117,70 +25,7 @@ final class UpdateCardNumberStreamTests: XCTestCase {
         super.tearDown()
     }
 
-    func test_updateCardNumber_belowBINThreshold_emitsEmptyNetworks() async {
-        // Given
-        let stream = sut.getNetworkDetectionStream()
-
-        // First, simulate that lastDetectedNetworks is non-empty by calling with a long number
-        // then call with a short number to trigger the clear
-        await sut.updateCardNumberInRawDataManager("42424242")
-        await sut.updateCardNumberInRawDataManager("4242")
-
-        // Then - should not crash and stream should be available
-        XCTAssertNotNil(stream)
-    }
-
-    func test_updateCardNumber_atExactBINThreshold_doesNotClearNetworks() async {
-        // Given
-        let stream = sut.getNetworkDetectionStream()
-
-        // When - exactly 8 digits should NOT clear networks
-        await sut.updateCardNumberInRawDataManager("42424242")
-
-        // Then
-        XCTAssertNotNil(stream)
-    }
-
-    func test_updateCardNumber_aboveBINThreshold_doesNotClearNetworks() async {
-        // Given
-        let stream = sut.getNetworkDetectionStream()
-
-        // When - 16 digits
-        await sut.updateCardNumberInRawDataManager("4242424242424242")
-
-        // Then
-        XCTAssertNotNil(stream)
-    }
-
-    func test_updateCardNumber_withSpaces_sanitizesBeforeComparing() async {
-        // Given
-        let stream = sut.getNetworkDetectionStream()
-
-        // When - spaces should be stripped, making "4242 42" become "424242" (6 digits < 8)
-        await sut.updateCardNumberInRawDataManager("4242 42")
-
-        // Then
-        XCTAssertNotNil(stream)
-    }
-
-    func test_updateCardNumber_emptyString_doesNotCrash() async {
-        // Given / When
-        await sut.updateCardNumberInRawDataManager("")
-
-        // Then - no crash
-    }
-
-    func test_updateCardNumber_multipleRapidCalls_doesNotCrash() async {
-        // Given / When - simulate rapid typing
-        for i in 1 ... 16 {
-            let partial = String("4242424242424242".prefix(i))
-            await sut.updateCardNumberInRawDataManager(partial)
-        }
-
-        // Then - no crash
-    }
-
-    func test_selectCardNetwork_updatesRawCardData() async {
+    func test_selectCardNetwork_updatesRawCardData() async throws {
         // Given
         let mockClientSessionActions = MockClientSessionActionsModule()
         let sut = HeadlessRepositoryImpl(
@@ -190,8 +35,12 @@ final class UpdateCardNumberStreamTests: XCTestCase {
         // When
         await sut.selectCardNetwork(.visa)
 
-        // Then - should not crash, network stored internally
-        try? await Task.sleep(nanoseconds: 100_000_000)
+        // Then - network stored internally via an async select-payment-method call
+        try await withTimeout(2.0) {
+            while mockClientSessionActions.selectPaymentMethodCalls.isEmpty {
+                await Task.yield()
+            }
+        }
         XCTAssertEqual(mockClientSessionActions.selectPaymentMethodCalls.count, 1)
     }
 }

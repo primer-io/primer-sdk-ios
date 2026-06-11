@@ -37,8 +37,10 @@ final class CardNumberRule: ValidationRule {
       return .invalid(error: error)
     }
 
-    // Only validate network for complete card numbers (13+ digits)
-    if cleanedNumber.count >= 13 {
+    // Only validate network for complete card numbers (13+ digits). An empty allowed-network set
+    // means no client-session restriction is configured — allow every network rather than
+    // rejecting all of them (Luhn and length checks above still apply).
+    if cleanedNumber.count >= 13, !allowedCardNetworks.isEmpty {
       let detectedNetwork = CardNetwork(cardNumber: cleanedNumber)
       if !allowedCardNetworks.contains(detectedNetwork) {
         let error = ValidationError(

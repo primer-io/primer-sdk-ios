@@ -59,8 +59,8 @@ final class ProcessApplePayPaymentInteractorTests: XCTestCase {
         XCTAssertEqual(result.paymentMethodType, "APPLE_PAY")
     }
 
-    func test_execute_mapsPaymentStatus_pending() async throws {
-        // Given
+    func test_execute_pendingWithoutSuccessOnPendingFlag_throwsPaymentFailed() async throws {
+        // Given - a PENDING create response that the backend did not opt into completing
         setupValidConfiguration()
 
         mockTokenizationService.onTokenize = { _ in
@@ -73,14 +73,42 @@ final class ProcessApplePayPaymentInteractorTests: XCTestCase {
 
         let mockPayment = SharedMockPKPayment()
 
+        // When/Then - a pending payment must not be consumed by the scope as a success
+        do {
+            _ = try await sut.execute(payment: mockPayment)
+            XCTFail("Expected error to be thrown for pending payment")
+        } catch let error as PrimerError {
+            if case let .paymentFailed(_, _, _, status, _) = error {
+                XCTAssertEqual(status, Response.Body.Payment.Status.pending.rawValue)
+            } else {
+                XCTFail("Expected paymentFailed error, got \(error)")
+            }
+        }
+    }
+
+    func test_execute_pendingWithSuccessOnPendingFlag_returnsPendingResult() async throws {
+        // Given - backend opts into completing checkout on a pending payment
+        setupValidConfiguration()
+
+        mockTokenizationService.onTokenize = { _ in
+            .success(ApplePayTestData.tokenizationResponse)
+        }
+
+        mockCreatePaymentService.onCreatePayment = { _ in
+            ApplePayTestData.paymentResponse(status: .pending, showSuccessCheckoutOnPendingPayment: true)
+        }
+
+        let mockPayment = SharedMockPKPayment()
+
         // When
         let result = try await sut.execute(payment: mockPayment)
 
-        // Then
+        // Then - the pending status flows through rather than being rejected
         XCTAssertEqual(result.status, .pending)
+        XCTAssertEqual(result.paymentId, ApplePayTestData.Constants.paymentId)
     }
 
-    func test_execute_mapsPaymentStatus_failed() async throws {
+    func test_execute_failedStatus_throwsPaymentFailed() async throws {
         // Given
         setupValidConfiguration()
 
@@ -94,11 +122,51 @@ final class ProcessApplePayPaymentInteractorTests: XCTestCase {
 
         let mockPayment = SharedMockPKPayment()
 
-        // When
-        let result = try await sut.execute(payment: mockPayment)
+        // When/Then
+        do {
+            _ = try await sut.execute(payment: mockPayment)
+            XCTFail("Expected error to be thrown for failed payment")
+        } catch let error as PrimerError {
+            if case let .paymentFailed(_, _, _, status, _) = error {
+                XCTAssertEqual(status, Response.Body.Payment.Status.failed.rawValue)
+            } else {
+                XCTFail("Expected paymentFailed error, got \(error)")
+            }
+        }
+    }
 
-        // Then
-        XCTAssertEqual(result.status, .failed)
+    func test_execute_requiredActionPresent_throwsFailedToCreatePayment() async throws {
+        // Given - create response carries a 3DS required action this native path cannot handle
+        setupValidConfiguration()
+
+        mockTokenizationService.onTokenize = { _ in
+            .success(ApplePayTestData.tokenizationResponse)
+        }
+
+        mockCreatePaymentService.onCreatePayment = { _ in
+            ApplePayTestData.paymentResponse(
+                status: .pending,
+                requiredAction: Response.Body.Payment.RequiredAction(
+                    clientToken: "client_token",
+                    name: .threeDSAuthentication,
+                    description: nil
+                )
+            )
+        }
+
+        let mockPayment = SharedMockPKPayment()
+
+        // When/Then
+        do {
+            _ = try await sut.execute(payment: mockPayment)
+            XCTFail("Expected error to be thrown for required action")
+        } catch let error as PrimerError {
+            if case .failedToCreatePayment = error {
+                // Expected - resume/3DS is unsupported on this path
+            } else {
+                XCTFail("Expected failedToCreatePayment error, got \(error)")
+            }
+        }
     }
 
     // MARK: - Failure Tests

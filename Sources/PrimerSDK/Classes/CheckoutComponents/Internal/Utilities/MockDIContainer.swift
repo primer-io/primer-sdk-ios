@@ -35,11 +35,7 @@
     func resolveSync<T>(_ type: T.Type, name: String?) throws -> T {
       let key = String(describing: type)
       guard let instance = registrations[key] as? T else {
-        throw NSError(
-          domain: "MockDIContainer",
-          code: 404,
-          userInfo: [NSLocalizedDescriptionKey: "Type not registered: \(key)"]
-        )
+        throw ContainerError.dependencyNotRegistered(TypeKey(type, name: name))
       }
       return instance
     }

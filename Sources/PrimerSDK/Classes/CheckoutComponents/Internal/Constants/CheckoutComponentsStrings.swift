@@ -9,7 +9,7 @@
 import Foundation
 
 /// Centralized strings for CheckoutComponents to make localization easier
-/// Keys use underscore_case format to match Android SDK for cross-platform consistency
+/// Keys use underscore_case format for cross-platform consistency
 enum CheckoutComponentsStrings {
   /// The localization table name for CheckoutComponents strings
   private static let tableName = "CheckoutComponentsStrings"
@@ -741,7 +741,6 @@ enum CheckoutComponentsStrings {
   )
 
   /// Simple "Loading" text shown in the default loading screen during payment processing.
-  /// Matches Android SDK naming convention.
   static let loading = NSLocalizedString(
     "primer_checkout_loading_indicator",
     tableName: tableName,
@@ -918,6 +917,14 @@ enum CheckoutComponentsStrings {
     comment: "Default text for vaulted bank account payment methods"
   )
 
+  static let goCardlessDirectDebitSuffix = NSLocalizedString(
+    "primer_vaulted_gocardless_direct_debit_suffix",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Direct Debit",
+    comment: "Suffix for vaulted GoCardless Direct Debit payment methods"
+  )
+
   static func maskedCardNumberFormatted(_ last4: String) -> String {
     let format = NSLocalizedString(
       "primer_vault_format_masked",
@@ -981,14 +988,6 @@ enum CheckoutComponentsStrings {
     bundle: .primerResources,
     value: "No countries found",
     comment: "Message when country search returns no results"
-  )
-
-  static let autoDismissMessage = NSLocalizedString(
-    "primer_checkout_auto_dismiss_message",
-    tableName: tableName,
-    bundle: .primerResources,
-    value: "This screen will close automatically in 3 seconds",
-    comment: "Auto-dismiss message on success and error screens"
   )
 
   static let redirectConfirmationMessage = NSLocalizedString(
@@ -1233,7 +1232,7 @@ enum CheckoutComponentsStrings {
     "accessibility_klarna_authorize_hint",
     tableName: tableName,
     bundle: .primerResources,
-    value: "Double tap to continue with Klarna",
+    value: "Continue with Klarna",
     comment: "VoiceOver hint for Klarna authorize button"
   )
 
@@ -1241,7 +1240,7 @@ enum CheckoutComponentsStrings {
     "accessibility_klarna_finalize_hint",
     tableName: tableName,
     bundle: .primerResources,
-    value: "Double tap to complete payment",
+    value: "Complete payment",
     comment: "VoiceOver hint for Klarna finalize button"
   )
 
@@ -1372,7 +1371,7 @@ enum CheckoutComponentsStrings {
   // MARK: - Accessibility Strings
 
   // VoiceOver labels, hints, and announcements for CheckoutComponents accessibility support
-  // Keys use underscore_case format to match Android SDK for cross-platform consistency
+  // Keys use underscore_case format for cross-platform consistency
 
   // MARK: Card Form Accessibility Labels
 
@@ -1430,7 +1429,7 @@ enum CheckoutComponentsStrings {
     "accessibility_card_form_cvc_hint",
     tableName: tableName,
     bundle: .primerResources,
-    value: "3 or 4 digit code on back of card",
+    value: "Security code, 3 or 4 digits",
     comment: "VoiceOver hint for CVC/CVV field"
   )
 
@@ -1450,6 +1449,22 @@ enum CheckoutComponentsStrings {
     bundle: .primerResources,
     value: "Enter city name",
     comment: "VoiceOver hint for billing address city field"
+  )
+
+  static let a11yBillingAddressCountryLabel = NSLocalizedString(
+    "accessibility_card_form_billing_address_country_label",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Country, required",
+    comment: "VoiceOver label for billing address country field"
+  )
+
+  static let a11yBillingAddressCountryHint = NSLocalizedString(
+    "accessibility_card_form_billing_address_country_hint",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Opens a list to select your country",
+    comment: "VoiceOver hint for billing address country field"
   )
 
   static let a11yBillingAddressPostalCodeHint = NSLocalizedString(
@@ -1506,7 +1521,7 @@ enum CheckoutComponentsStrings {
     "accessibility_card_form_network_selector_inline_hint",
     tableName: tableName,
     bundle: .primerResources,
-    value: "Double tap to select this network",
+    value: "Select this network",
     comment: "VoiceOver hint for inline network selector button"
   )
 
@@ -1524,7 +1539,7 @@ enum CheckoutComponentsStrings {
     "accessibility_card_form_network_selector_hint",
     tableName: tableName,
     bundle: .primerResources,
-    value: "Double tap to select a different card network",
+    value: "Select a different card network",
     comment: "VoiceOver hint for dropdown network selector"
   )
 
@@ -1576,7 +1591,7 @@ enum CheckoutComponentsStrings {
     "accessibility_card_form_submit_hint",
     tableName: tableName,
     bundle: .primerResources,
-    value: "Double-tap to submit payment",
+    value: "Submit payment",
     comment: "VoiceOver hint for submit payment button"
   )
 
@@ -1595,27 +1610,6 @@ enum CheckoutComponentsStrings {
     value: "Button disabled. Complete all required fields to enable payment",
     comment: "VoiceOver hint when submit button is disabled due to validation errors"
   )
-
-  // MARK: Payment Selection Accessibility
-
-  static let a11ySavedCardMasked = NSLocalizedString(
-    "accessibility_payment_selection_card_masked",
-    tableName: tableName,
-    bundle: .primerResources,
-    value: "card ending in masked digits",
-    comment: "VoiceOver label for saved card with masked last 4 digits (privacy protection)"
-  )
-
-  static func a11ySavedCardLabel(cardType: String, expiry: String) -> String {
-    let format = NSLocalizedString(
-      "accessibility_payment_selection_card_full",
-      tableName: tableName,
-      bundle: .primerResources,
-      value: "%@ card ending in %@, expires %@",
-      comment: "VoiceOver full saved card announcement with card type, last 4 digits, and expiry"
-    )
-    return String(format: format, cardType, expiry)
-  }
 
   // MARK: PayPal Accessibility
 
@@ -1643,14 +1637,6 @@ enum CheckoutComponentsStrings {
     bundle: .primerResources,
     value: "Delete payment method",
     comment: "VoiceOver custom action to delete saved card"
-  )
-
-  static let a11yActionSetDefault = NSLocalizedString(
-    "accessibility_action_set_default",
-    tableName: tableName,
-    bundle: .primerResources,
-    value: "Set as default payment method",
-    comment: "VoiceOver custom action to set default payment method"
   )
 
   // MARK: Common Accessibility Strings
@@ -1711,30 +1697,6 @@ enum CheckoutComponentsStrings {
     comment: "VoiceOver label for back button"
   )
 
-  static let a11yEdit = NSLocalizedString(
-    "accessibility_action_edit",
-    tableName: tableName,
-    bundle: .primerResources,
-    value: "Edit saved payment methods",
-    comment: "VoiceOver label for edit button"
-  )
-
-  static let a11yDone = NSLocalizedString(
-    "primer_vault_manage_button_done",
-    tableName: tableName,
-    bundle: .primerResources,
-    value: "Done editing saved payment methods",
-    comment: "VoiceOver label for done button"
-  )
-
-  static let a11yDelete = NSLocalizedString(
-    "accessibility_action_delete",
-    tableName: tableName,
-    bundle: .primerResources,
-    value: "Delete",
-    comment: "VoiceOver label for delete button"
-  )
-
   static let a11yDeletePaymentMethod = NSLocalizedString(
     "accessibility_vault_delete_payment_method",
     tableName: tableName,
@@ -1780,6 +1742,18 @@ enum CheckoutComponentsStrings {
       bundle: .primerResources,
       value: "Pay with %@",
       comment: "VoiceOver label for payment method button. Parameter is the payment method name."
+    )
+    return String(format: format, name)
+  }
+
+  static func a11yPaymentMethodSelected(_ name: String) -> String {
+    let format = NSLocalizedString(
+      "accessibility_payment_method_selected",
+      tableName: tableName,
+      bundle: .primerResources,
+      value: "%@ selected",
+      comment:
+        "VoiceOver state-change announcement when a payment method is selected. Parameter is the payment method name."
     )
     return String(format: format, name)
   }
@@ -1974,7 +1948,7 @@ enum CheckoutComponentsStrings {
     "accessibility_ach_continue_hint",
     tableName: tableName,
     bundle: .primerResources,
-    value: "Double tap to continue to bank account selection",
+    value: "Continue to bank account selection",
     comment: "VoiceOver hint for ACH continue button"
   )
 
@@ -1982,7 +1956,7 @@ enum CheckoutComponentsStrings {
     "accessibility_ach_mandate_accept_hint",
     tableName: tableName,
     bundle: .primerResources,
-    value: "Double tap to accept the authorization and complete payment",
+    value: "Accept the authorization and complete payment",
     comment: "VoiceOver hint for ACH mandate accept button"
   )
 
@@ -1990,7 +1964,7 @@ enum CheckoutComponentsStrings {
     "accessibility_ach_mandate_decline_hint",
     tableName: tableName,
     bundle: .primerResources,
-    value: "Double tap to decline and cancel the payment",
+    value: "Decline and cancel the payment",
     comment: "VoiceOver hint for ACH mandate decline button"
   )
 

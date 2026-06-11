@@ -84,7 +84,7 @@ final class DefaultWebRedirectScope: PrimerWebRedirectScope, ObservableObject, L
         // Cancel any in-flight polling before resetting state
         repository?.cancelPolling(paymentMethodType: paymentMethodType)
         internalState.status = .idle
-        checkoutScope?.onDismiss()
+        checkoutScope?.cancelActivePaymentMethod(returnToSelection: presentationContext.shouldShowBackButton)
     }
 
     func onBack() {
@@ -140,6 +140,16 @@ final class DefaultWebRedirectScope: PrimerWebRedirectScope, ObservableObject, L
             checkoutScope.handlePaymentSuccess(result)
 
         } catch {
+            let primerError = error as? PrimerError ?? PrimerError.unknown(message: error.localizedDescription)
+
+            // User cancellation returns to the method list (or dismisses when presented directly),
+            // never a payment failure.
+            if case .cancelled = primerError {
+                logger.debug(message: "performPayment cancelled by user")
+                checkoutScope.cancelActivePaymentMethod(returnToSelection: presentationContext.shouldShowBackButton)
+                return
+            }
+
             // Show checkout processing screen to avoid WebRedirectScreen flash when returning from Safari
             checkoutScope.startProcessing()
 
@@ -147,7 +157,6 @@ final class DefaultWebRedirectScope: PrimerWebRedirectScope, ObservableObject, L
             internalState.status = .failure(errorMessage)
             accessibilityService?.announceError(CheckoutComponentsStrings.a11yWebRedirectFailure(errorMessage))
 
-            let primerError = error as? PrimerError ?? PrimerError.unknown(message: error.localizedDescription)
             checkoutScope.handlePaymentError(primerError)
         }
     }

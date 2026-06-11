@@ -211,34 +211,6 @@ final class QRCodeRepositoryImplTests: XCTestCase {
         }
     }
 
-    // MARK: - cancelPolling
-
-    func test_cancelPolling_withoutActivePoll_doesNotCrash() {
-        // Given - no polling started
-
-        // When/Then - should not crash
-        sut.cancelPolling(paymentMethodType: QRCodeTestData.Constants.paymentMethodType)
-    }
-
-    func test_cancelPolling_calledMultipleTimes_doesNotCrash() {
-        // Given - no polling started
-
-        // When/Then - multiple calls should be safe
-        sut.cancelPolling(paymentMethodType: QRCodeTestData.Constants.paymentMethodType)
-        sut.cancelPolling(paymentMethodType: QRCodeTestData.Constants.paymentMethodType)
-    }
-
-    // MARK: - cancelPolling — With Different Payment Method Types
-
-    func test_cancelPolling_withDifferentPaymentMethodTypes_doesNotCrash() {
-        // Given - no polling started
-
-        // When/Then — different types should all be safe
-        for type in ["XFERS_PAYNOW", "PROMPTPAY", "UNKNOWN_TYPE"] {
-            sut.cancelPolling(paymentMethodType: type)
-        }
-    }
-
     // MARK: - resumePayment — Error from Service
 
     func test_resumePayment_serviceFailure_propagatesError() async {
@@ -428,25 +400,6 @@ final class QRCodeRepositoryImplTests: XCTestCase {
 
     // MARK: - resumePayment — Constructs Correct Request
 
-    func test_resumePayment_usesProvidedPaymentIdAndResumeToken() async {
-        // Given
-        SDKSessionHelper.setUp()
-        let paymentId = "custom_pay_id"
-        let resumeToken = "custom_resume_token"
-
-        // When/Then — service will fail in test environment, but we verify the method accepts params
-        do {
-            _ = try await sut.resumePayment(
-                paymentId: paymentId,
-                resumeToken: resumeToken,
-                paymentMethodType: QRCodeTestData.Constants.paymentMethodType
-            )
-            XCTFail("Expected error in test environment")
-        } catch {
-            XCTAssertTrue(error is PrimerError)
-        }
-    }
-
     func test_resumePayment_withDifferentPaymentMethodTypes_propagatesError() async {
         // Given
         SDKSessionHelper.setUp()
@@ -520,18 +473,6 @@ final class QRCodeRepositoryImplTests: XCTestCase {
         } catch {
             XCTAssertTrue(error is PrimerError)
         }
-    }
-
-    // MARK: - cancelPolling — Idempotent After Cancel
-
-    func test_cancelPolling_afterPreviousCancel_isIdempotent() {
-        // Given — cancel called once
-        sut.cancelPolling(paymentMethodType: QRCodeTestData.Constants.paymentMethodType)
-
-        // When — cancel called again
-        sut.cancelPolling(paymentMethodType: QRCodeTestData.Constants.paymentMethodType)
-
-        // Then — no crash, pollingModule remains nil
     }
 
     // MARK: - startPayment — Config ID Verification
@@ -625,16 +566,6 @@ final class QRCodeRepositoryImplTests: XCTestCase {
 
         // Then
         XCTAssertEqual(mockTokenizationService.tokenizeCallCount, 1)
-    }
-
-    // MARK: - Default Initialization
-
-    func test_defaultInit_doesNotCrash() {
-        // Given/When
-        let repository = QRCodeRepositoryImpl()
-
-        // Then
-        XCTAssertNotNil(repository)
     }
 
     // MARK: - startPayment — Happy Path (Injected Mocks)
@@ -934,7 +865,7 @@ final class QRCodeRepositoryImplTests: XCTestCase {
 
     // MARK: - cancelPolling — With Active Polling Module
 
-    func test_cancelPolling_withActivePolling_cancelsModule() async {
+    func test_cancelPolling_withActivePolling_cancelsModule() async throws {
         // Given
         var factoryCalled = false
         sut = QRCodeRepositoryImpl(
@@ -945,12 +876,14 @@ final class QRCodeRepositoryImplTests: XCTestCase {
             }
         )
 
-        let pollTask = Task {
+        let pollTask = Task { [self] in
             try? await sut.pollForCompletion(statusUrl: QRCodeTestData.Constants.statusUrl)
         }
 
-        // Allow polling to start and factory to be called
-        try? await Task.sleep(nanoseconds: 100_000_000)
+        // Wait for polling to start and the factory to be invoked
+        try await withTimeout(2.0) {
+            while !factoryCalled { await Task.yield() }
+        }
 
         // When
         sut.cancelPolling(paymentMethodType: QRCodeTestData.Constants.paymentMethodType)

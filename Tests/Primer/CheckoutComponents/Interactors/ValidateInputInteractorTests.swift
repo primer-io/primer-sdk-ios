@@ -27,20 +27,20 @@ final class ValidateInputInteractorTests: XCTestCase {
 
     // MARK: - Single Field Validation Tests
 
-    func test_validate_withValidInput_returnsValidResult() async {
+    func test_validate_withValidInput_returnsValidResult() {
         // Given
         mockValidationService.stubbedValidationResult = ValidationResult.valid
         let value = TestData.CardNumbers.validVisa
         let type = PrimerInputElementType.cardNumber
 
         // When
-        let result = await sut.validate(value: value, type: type)
+        let result = sut.validate(value: value, type: type)
 
         // Then
         XCTAssertTrue(result.isValid)
     }
 
-    func test_validate_withInvalidInput_returnsInvalidResult() async {
+    func test_validate_withInvalidInput_returnsInvalidResult() {
         // Given
         mockValidationService.stubbedValidationResult = ValidationResult.invalid(
             code: TestData.ErrorCodes.invalidCard,
@@ -50,7 +50,7 @@ final class ValidateInputInteractorTests: XCTestCase {
         let type = PrimerInputElementType.cardNumber
 
         // When
-        let result = await sut.validate(value: value, type: type)
+        let result = sut.validate(value: value, type: type)
 
         // Then
         XCTAssertFalse(result.isValid)
@@ -60,7 +60,7 @@ final class ValidateInputInteractorTests: XCTestCase {
 
     // MARK: - Multiple Fields Validation Tests
 
-    func test_validateMultiple_allValid_returnsAllValidResults() async {
+    func test_validateMultiple_allValid_returnsAllValidResults() {
         // Given
         mockValidationService.stubbedValidationResult = ValidationResult.valid
         let fields: [PrimerInputElementType: String] = [
@@ -69,14 +69,14 @@ final class ValidateInputInteractorTests: XCTestCase {
         ]
 
         // When
-        let results = await sut.validateMultiple(fields: fields)
+        let results = sut.validateMultiple(fields: fields)
 
         // Then
         XCTAssertTrue(results[.cardNumber]?.isValid ?? false)
         XCTAssertTrue(results[.cvv]?.isValid ?? false)
     }
 
-    func test_validateMultiple_withMixedResults_returnsCorrectResults() async {
+    func test_validateMultiple_withMixedResults_returnsCorrectResults() {
         // Given
         mockValidationService.stubResult(
             for: .cardNumber,
@@ -93,7 +93,7 @@ final class ValidateInputInteractorTests: XCTestCase {
         ]
 
         // When
-        let results = await sut.validateMultiple(fields: fields)
+        let results = sut.validateMultiple(fields: fields)
 
         // Then
         XCTAssertTrue(results[.cardNumber]?.isValid ?? false)
@@ -101,19 +101,19 @@ final class ValidateInputInteractorTests: XCTestCase {
         XCTAssertEqual(results[.cvv]?.errorCode, TestData.ErrorCodes.invalidCVV)
     }
 
-    func test_validateMultiple_withEmptyFields_returnsEmptyResults() async {
+    func test_validateMultiple_withEmptyFields_returnsEmptyResults() {
         // Given
         let fields: [PrimerInputElementType: String] = [:]
 
         // When
-        let results = await sut.validateMultiple(fields: fields)
+        let results = sut.validateMultiple(fields: fields)
 
         // Then
         XCTAssertTrue(results.isEmpty)
         XCTAssertEqual(mockValidationService.validateFieldCallCount, 0)
     }
 
-    func test_validateMultiple_preservesFieldKeys() async {
+    func test_validateMultiple_preservesFieldKeys() {
         // Given
         let fields: [PrimerInputElementType: String] = [
             .firstName: TestData.Names.firstName,
@@ -122,7 +122,7 @@ final class ValidateInputInteractorTests: XCTestCase {
         ]
 
         // When
-        let results = await sut.validateMultiple(fields: fields)
+        let results = sut.validateMultiple(fields: fields)
 
         // Then
         XCTAssertNotNil(results[.firstName])

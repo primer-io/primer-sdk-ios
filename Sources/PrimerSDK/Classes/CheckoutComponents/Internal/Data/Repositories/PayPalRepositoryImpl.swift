@@ -4,6 +4,7 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+import AuthenticationServices
 import Foundation
 
 @available(iOS 15.0, *)
@@ -37,11 +38,15 @@ final class PayPalRepositoryImpl: PayPalRepository, LogReporter {
 
   func openWebAuthentication(url: URL) async throws -> URL {
     let scheme = try settings.paymentMethodOptions.validSchemeForUrlScheme()
-    return try await webAuthService.connect(
-      paymentMethodType: PrimerPaymentMethodType.payPal.rawValue,
-      url: url,
-      scheme: scheme
-    )
+    do {
+      return try await webAuthService.connect(
+        paymentMethodType: PrimerPaymentMethodType.payPal.rawValue,
+        url: url,
+        scheme: scheme
+      )
+    } catch let error as ASWebAuthenticationSessionError where error.code == .canceledLogin {
+      throw PrimerError.cancelled(paymentMethodType: PrimerPaymentMethodType.payPal.rawValue)
+    }
   }
 
   func confirmBillingAgreement() async throws -> PayPalBillingAgreementResult {

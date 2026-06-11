@@ -8,8 +8,12 @@ import Foundation
 
 actor AnalyticsNetworkClient: LogReporter {
 
+  // Some analytics events are awaited on the payment hot path, so bound the request to keep a
+  // stalled endpoint from delaying payment progression (URLSession's default is ~60s).
+  private static let requestTimeout: TimeInterval = 10
+
   func send(payload: AnalyticsPayload, to endpoint: URL, token: String?) async throws {
-    let request = buildRequest(payload: payload, endpoint: endpoint, token: token)
+    let request = try buildRequest(payload: payload, endpoint: endpoint, token: token)
 
     logger.info(
       message: "[Analytics] Dispatching \(payload.eventName) -> \(endpoint.absoluteString)")
@@ -29,9 +33,10 @@ actor AnalyticsNetworkClient: LogReporter {
     logger.info(message: "[Analytics] \(payload.eventName) acknowledged")
   }
 
-  private func buildRequest(payload: AnalyticsPayload, endpoint: URL, token: String?) -> URLRequest {
+  private func buildRequest(payload: AnalyticsPayload, endpoint: URL, token: String?) throws -> URLRequest {
     var request = URLRequest(url: endpoint)
     request.httpMethod = "POST"
+    request.timeoutInterval = Self.requestTimeout
     request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
     if let token {
@@ -44,7 +49,8 @@ actor AnalyticsNetworkClient: LogReporter {
     do {
       request.httpBody = try encoder.encode(payload)
     } catch {
-      logger.error(message: "[Analytics] Failed to encode payload: \(error)")
+      logger.error(message: "[Analytics] Failed to encode \(payload.eventName): \(error)")
+      throw error
     }
 
     return request

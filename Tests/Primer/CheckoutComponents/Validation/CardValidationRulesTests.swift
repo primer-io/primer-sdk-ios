@@ -49,17 +49,13 @@ final class CardValidationRulesTests: XCTestCase {
         XCTAssertEqual(result.errorCode, TestData.ErrorCodes.unsupportedCardType)
     }
 
-    func test_validateCardNumber_withEmptyAllowedNetworks_returnsUnsupportedError() {
+    func test_validateCardNumber_withEmptyAllowedNetworks_allowsAllNetworks() {
+        // An empty allowed-network set means no client-session restriction is configured,
+        // so any card passing the Luhn and length checks is accepted.
         let rule = CardNumberRule(allowedCardNetworks: [])
         let result = rule.validate(TestData.CardNumbers.validVisa)
 
-        XCTAssertFalse(result.isValid)
-        XCTAssertEqual(result.errorCode, TestData.ErrorCodes.unsupportedCardType)
-    }
-
-    func test_validateCardNumber_with19Digits_hasCorrectLength() {
-        let cardNumber = TestData.CardNumbers.valid19Digit
-        XCTAssertEqual(cardNumber.count, 19)
+        XCTAssertTrue(result.isValid)
     }
 
     // MARK: - CVV Validation Tests

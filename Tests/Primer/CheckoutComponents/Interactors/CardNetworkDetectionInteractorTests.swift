@@ -40,33 +40,16 @@ final class CardNetworkDetectionInteractorTests: XCTestCase {
         XCTAssertEqual(receivedNetworks, [.visa])
     }
 
-    func test_networkDetectionStream_emitsUpdatedValues() async {
-        // Given
+    func test_networkDetectionStream_emitsUpdatedValues() async throws {
+        // Given - stream is created once; the initial value is buffered immediately
         mockRepository.networkDetectionToReturn = []
+        let stream = sut.networkDetectionStream
 
-        // Setup expectation for stream values
-        let expectation = XCTestExpectation(description: "Receive network updates")
-        var receivedValues: [[CardNetwork]] = []
-
-        // Create task to collect stream values
-        let task = Task {
-            for await networks in sut.networkDetectionStream {
-                receivedValues.append(networks)
-                if receivedValues.count >= 2 {
-                    expectation.fulfill()
-                    break
-                }
-            }
-        }
-
-        // When - emit a new value
-        try? await Task.sleep(nanoseconds: 100_000_000) // 0.1 second
+        // When - emit a new value into the same buffered stream
         mockRepository.emitNetworkDetection([.visa, .masterCard])
 
         // Then
-        await fulfillment(of: [expectation], timeout: 2.0)
-        task.cancel()
-
+        let receivedValues = try await collect(stream, count: 2)
         XCTAssertEqual(receivedValues.count, 2)
         XCTAssertEqual(receivedValues[0], []) // Initial empty
         XCTAssertEqual(receivedValues[1], [.visa, .masterCard]) // Updated
@@ -199,23 +182,11 @@ final class CardNetworkDetectionInteractorTests: XCTestCase {
         XCTAssertTrue(receivedBinData?.alternatives.isEmpty ?? false)
     }
 
-    func test_binDataStream_emitsUpdatedValues() async {
-        // Given
-        let expectation = XCTestExpectation(description: "Receive bin data update")
-        var receivedValues: [PrimerBinData] = []
+    func test_binDataStream_emitsUpdatedValues() async throws {
+        // Given - no initial value is buffered (binDataToReturn is nil)
+        let stream = sut.binDataStream
 
-        let task = Task {
-            for await data in sut.binDataStream {
-                receivedValues.append(data)
-                if receivedValues.count >= 1 {
-                    expectation.fulfill()
-                    break
-                }
-            }
-        }
-
-        // When - emit a new value
-        try? await Task.sleep(nanoseconds: 100_000_000)
+        // When - emit a new value into the same buffered stream
         let binData = PrimerBinData(
             preferred: PrimerCardNetwork(network: .visa),
             alternatives: [],
@@ -225,11 +196,8 @@ final class CardNetworkDetectionInteractorTests: XCTestCase {
         mockRepository.emitBinData(binData)
 
         // Then
-        await fulfillment(of: [expectation], timeout: 2.0)
-        task.cancel()
-
-        XCTAssertEqual(receivedValues.count, 1)
-        XCTAssertEqual(receivedValues[0].status, .complete)
-        XCTAssertEqual(receivedValues[0].firstDigits, "411111")
+        let received = try await awaitFirst(stream)
+        XCTAssertEqual(received.status, .complete)
+        XCTAssertEqual(received.firstDigits, "411111")
     }
 }

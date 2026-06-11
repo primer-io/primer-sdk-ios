@@ -22,7 +22,7 @@ import SwiftUI
 /// ```
 @available(iOS 15.0, *)
 @MainActor
-public protocol PrimerPaymentMethodScope: AnyObject {
+protocol PrimerPaymentMethodScope: AnyObject {
 
   associatedtype State: Equatable
 
@@ -66,6 +66,10 @@ public protocol PrimerPaymentMethodScope: AnyObject {
 
   /// Handles dismissal (e.g., close button tap). Default implementation calls `cancel()`.
   func onDismiss()
+
+  /// Resets a scope's one-shot `start()` guard when it is returned to the payment-method list, so
+  /// re-selecting the same method restarts its flow. Default no-op for scopes that have no guard.
+  func prepareForReentry()
 }
 
 // MARK: - Default Implementations
@@ -73,17 +77,19 @@ public protocol PrimerPaymentMethodScope: AnyObject {
 @available(iOS 15.0, *)
 extension PrimerPaymentMethodScope {
 
-  public var presentationContext: PresentationContext { .fromPaymentSelection }
+  var presentationContext: PresentationContext { .fromPaymentSelection }
 
-  public var dismissalMechanism: [DismissalMechanism] { [] }
+  var dismissalMechanism: [DismissalMechanism] { [] }
 
-  public func onBack() {
+  func onBack() {
     cancel()
   }
 
-  public func onDismiss() {
+  func onDismiss() {
     cancel()
   }
+
+  func prepareForReentry() {}
 }
 
 // MARK: - Payment Method Protocol
@@ -239,8 +245,7 @@ final class PaymentMethodRegistry: LogReporter {
     scopeCreator: @escaping @MainActor (PrimerCheckoutScope, any ContainerProtocol) async throws -> any PrimerPaymentMethodScope,
     viewCreator: @escaping @MainActor (any PrimerCheckoutScope) -> AnyView?
   ) {
-    creators[typeKey] = scopeCreator
-    viewBuilders[typeKey] = viewCreator
+    register(forKey: typeKey, scopeCreator: scopeCreator, viewCreator: viewCreator)
   }
 
   func reset() {

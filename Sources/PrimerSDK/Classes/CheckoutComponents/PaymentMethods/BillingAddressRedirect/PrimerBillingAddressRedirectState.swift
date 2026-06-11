@@ -9,10 +9,10 @@ import Foundation
 /// Billing address redirect flow:
 /// `ready` -> `submitting` -> `redirecting` -> `polling` -> `success` | `failure`
 @available(iOS 15.0, *)
-public struct PrimerBillingAddressRedirectState: Equatable, @unchecked Sendable {
+struct PrimerBillingAddressRedirectState: Equatable, @unchecked Sendable {
 
   /// When switching on this enum, always include a `default` case to handle future additions.
-  public enum Status: Equatable {
+  enum Status: Equatable {
     case ready
     case submitting
     case redirecting
@@ -21,25 +21,25 @@ public struct PrimerBillingAddressRedirectState: Equatable, @unchecked Sendable 
     case failure(String)
   }
 
-  public internal(set) var status: Status
-  public internal(set) var paymentMethod: CheckoutPaymentMethod?
-  public internal(set) var surchargeAmount: String?
+  var status: Status
+  var paymentMethod: CheckoutPaymentMethod?
+  var surchargeAmount: String?
 
   // MARK: - Billing Address Fields
 
-  public internal(set) var countryCode: String
-  public internal(set) var addressLine1: String
-  public internal(set) var addressLine2: String
-  public internal(set) var postalCode: String
-  public internal(set) var city: String
-  public internal(set) var state: String
+  var countryCode: String
+  var addressLine1: String
+  var addressLine2: String
+  var postalCode: String
+  var city: String
+  var state: String
 
   // MARK: - Validation
 
-  public internal(set) var errors: [PrimerInputElementType: FieldError]
-  public internal(set) var isFormValid: Bool
+  var errors: [PrimerInputElementType: FieldError]
+  var isFormValid: Bool
 
-  public init(
+  init(
     status: Status = .ready,
     paymentMethod: CheckoutPaymentMethod? = nil,
     surchargeAmount: String? = nil

@@ -30,74 +30,26 @@ private struct PrimerSelectCountryScopeKey: EnvironmentKey {
 
 // MARK: - EnvironmentValues Extension
 
+// These accessors are SDK-internal: the scope protocols are internal,
+// so the environment values are propagated only within the SDK's own view hierarchy.
 @available(iOS 15.0, *)
 extension EnvironmentValues {
-  /// The checkout scope for accessing checkout state and actions
-  ///
-  /// Access from any custom view embedded in the checkout hierarchy:
-  /// ```swift
-  /// struct CustomPaymentView: View {
-  ///     @Environment(\.primerCheckoutScope) private var checkoutScope
-  ///
-  ///     var body: some View {
-  ///         Button("Cancel") {
-  ///             checkoutScope?.onDismiss()
-  ///         }
-  ///     }
-  /// }
-  /// ```
-  public var primerCheckoutScope: PrimerCheckoutScope? {
+  var primerCheckoutScope: PrimerCheckoutScope? {
     get { self[PrimerCheckoutScopeKey.self] }
     set { self[PrimerCheckoutScopeKey.self] = newValue }
   }
 
-  /// The card form scope for accessing card form state and actions
-  ///
-  /// Access from any custom view embedded in the card form hierarchy:
-  /// ```swift
-  /// struct CustomCardView: View {
-  ///     @Environment(\.primerCardFormScope) private var cardFormScope
-  ///
-  ///     var body: some View {
-  ///         Button("Submit", action: { cardFormScope?.submit() })
-  ///     }
-  /// }
-  /// ```
-  public var primerCardFormScope: (any PrimerCardFormScope)? {
+  var primerCardFormScope: (any PrimerCardFormScope)? {
     get { self[PrimerCardFormScopeKey.self] }
     set { self[PrimerCardFormScopeKey.self] = newValue }
   }
 
-  /// The payment method selection scope for accessing selection state and actions
-  ///
-  /// Access from any custom view embedded in the payment selection hierarchy:
-  /// ```swift
-  /// struct CustomSelectionView: View {
-  ///     @Environment(\.primerPaymentMethodSelectionScope) private var selectionScope
-  ///
-  ///     var body: some View {
-  ///         // Access available payment methods
-  ///     }
-  /// }
-  /// ```
-  public var primerPaymentMethodSelectionScope: PrimerPaymentMethodSelectionScope? {
+  var primerPaymentMethodSelectionScope: PrimerPaymentMethodSelectionScope? {
     get { self[PrimerPaymentMethodSelectionScopeKey.self] }
     set { self[PrimerPaymentMethodSelectionScopeKey.self] = newValue }
   }
 
-  /// The select country scope for accessing country selection state and actions
-  ///
-  /// Access from any custom view embedded in the country selection hierarchy:
-  /// ```swift
-  /// struct CustomCountryView: View {
-  ///     @Environment(\.primerSelectCountryScope) private var countryScope
-  ///
-  ///     var body: some View {
-  ///         // Access available countries
-  ///     }
-  /// }
-  /// ```
-  public var primerSelectCountryScope: PrimerSelectCountryScope? {
+  var primerSelectCountryScope: PrimerSelectCountryScope? {
     get { self[PrimerSelectCountryScopeKey.self] }
     set { self[PrimerSelectCountryScopeKey.self] = newValue }
   }

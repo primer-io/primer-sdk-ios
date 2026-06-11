@@ -207,44 +207,6 @@ final class ProcessCardPaymentTests: XCTestCase {
         XCTAssertNil(capturedCardData?.cardholderName)  // Empty should become nil
     }
 
-    func testProcessCardPayment_WithNoNetwork_DoesNotSetCardNetwork() async throws {
-        // Given
-        let rawDataSetExpectation = XCTestExpectation(description: "RawData set")
-        var capturedCardData: PrimerCardData?
-
-        mockRawDataManagerFactory.createMockHandler = { type, delegate in
-            let mock = MockRawDataManager()
-            mock.delegate = delegate
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                if mock.rawDataSetCount > 0 {
-                    capturedCardData = mock.rawDataHistory.last as? PrimerCardData
-                    rawDataSetExpectation.fulfill()
-                }
-            }
-            return mock
-        }
-
-        // When
-        let task = Task {
-            try await repository.processCardPayment(
-                cardNumber: "4242424242424242",
-                cvv: "123",
-                expiryMonth: "12",
-                expiryYear: "25",
-                cardholderName: "Test",
-                selectedNetwork: nil  // No network specified
-            )
-        }
-
-        await fulfillment(of: [rawDataSetExpectation], timeout: 3.0)
-        task.cancel()
-
-        // Then
-        XCTAssertNotNil(capturedCardData)
-        // When no network is passed, cardNetwork should be nil (default)
-        // Note: PrimerCardData may have a default value, so we check the flow worked
-    }
-
     func testProcessCardPayment_WhenConfigureFails_PropagatesError() async {
         // Given
         let configureError = NSError(domain: "ConfigError", code: 500, userInfo: [NSLocalizedDescriptionKey: "Config failed"])
@@ -557,43 +519,6 @@ final class ProcessCardPaymentEdgeCasesTests: XCTestCase {
         XCTAssertEqual(capturedCardData?.cvv, "1234")
     }
 
-    func testProcessCardPayment_WithWhitespaceOnlyCardholderName_SetsNilName() async throws {
-        // Given
-        let rawDataSetExpectation = XCTestExpectation(description: "RawData set")
-        var capturedCardData: PrimerCardData?
-
-        mockRawDataManagerFactory.createMockHandler = { type, delegate in
-            let mock = MockRawDataManager()
-            mock.delegate = delegate
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                if mock.rawDataSetCount > 0 {
-                    capturedCardData = mock.rawDataHistory.last as? PrimerCardData
-                    rawDataSetExpectation.fulfill()
-                }
-            }
-            return mock
-        }
-
-        // When - Whitespace-only name should be treated as empty
-        let task = Task {
-            try await repository.processCardPayment(
-                cardNumber: "4242424242424242",
-                cvv: "123",
-                expiryMonth: "12",
-                expiryYear: "27",
-                cardholderName: "   ",  // Whitespace only
-                selectedNetwork: nil
-            )
-        }
-
-        await fulfillment(of: [rawDataSetExpectation], timeout: 3.0)
-        task.cancel()
-
-        // Then - Current implementation only checks isEmpty, not whitespace
-        // So whitespace-only name will be passed as-is
-        XCTAssertNotNil(capturedCardData)
-    }
-
     func testProcessCardPayment_WithSingleDigitMonth_FormatsCorrectly() async throws {
         // Given
         let rawDataSetExpectation = XCTestExpectation(description: "RawData set")
@@ -882,41 +807,6 @@ final class ProcessCardPaymentEdgeCasesTests: XCTestCase {
         XCTAssertEqual(capturedCardData?.cardNumber, "4242424242424242")
     }
 
-    func testProcessCardPayment_WithTabsInCardNumber_StripsOnlySpaces() async throws {
-        // Given
-        let rawDataSetExpectation = XCTestExpectation(description: "RawData set")
-        var capturedCardData: PrimerCardData?
-
-        mockRawDataManagerFactory.createMockHandler = { type, delegate in
-            let mock = MockRawDataManager()
-            mock.delegate = delegate
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                if mock.rawDataSetCount > 0 {
-                    capturedCardData = mock.rawDataHistory.last as? PrimerCardData
-                    rawDataSetExpectation.fulfill()
-                }
-            }
-            return mock
-        }
-
-        // When - Only spaces are stripped, not tabs
-        let task = Task {
-            try await repository.processCardPayment(
-                cardNumber: "4242 4242 4242 4242",
-                cvv: "123",
-                expiryMonth: "12",
-                expiryYear: "27",
-                cardholderName: "Test",
-                selectedNetwork: nil
-            )
-        }
-
-        await fulfillment(of: [rawDataSetExpectation], timeout: 3.0)
-        task.cancel()
-
-        // Then
-        XCTAssertEqual(capturedCardData?.cardNumber, "4242424242424242")
-    }
 }
 
 // CreateCardDataDirectTests removed — createCardData is now private

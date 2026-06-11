@@ -294,6 +294,8 @@ final class ContainerTests: XCTestCase {
         _ = try await sut.register(SlowService.self)
             .asSingleton()
             .with { _ in
+                // why: this sleep IS the slow factory under test — it must exceed resolveSync's
+                // 500ms timeout so the sync path throws. There is no signal to await here.
                 try await Task.sleep(nanoseconds: TestData.DIContainer.Timing.oneSecondNanoseconds)
                 return SlowServiceImpl()
             }

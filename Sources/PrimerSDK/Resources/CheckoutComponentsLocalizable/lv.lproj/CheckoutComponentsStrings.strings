@@ -1,6 +1,5 @@
 "accessibility_action_delete" = "Dzēst maksājuma metodi";
 "accessibility_action_edit" = "Rediģēt kartes informāciju";
-"accessibility_action_set_default" = "Iestatīt kā noklusējuma maksājuma metodi";
 "accessibility_card_form_billing_address_address_line_1_label" = "Adreses 1. rindiņa, obligāti";
 "accessibility_card_form_billing_address_address_line_2_label" = "Adreses 2. rindiņa, neobligāti";
 "accessibility_card_form_billing_address_city_hint" = "Ievadiet pilsētas nosaukumu";
@@ -19,7 +18,7 @@
 "accessibility_card_form_cardholder_name_hint" = "Ievadiet vārdu, kas norādīts uz kartes";
 "accessibility_card_form_cardholder_name_label" = "Kartes īpašnieka vārds";
 "accessibility_card_form_cvc_error_invalid" = "Nederīgs drošības kods.";
-"accessibility_card_form_cvc_hint" = "3 vai 4 ciparu kods uz kartes aizmugures";
+"accessibility_card_form_cvc_hint" = "Drošības kods, 3 vai 4 cipari";
 "accessibility_card_form_cvc_label" = "Drošības kods, obligāti";
 "accessibility_card_form_cvv_icon" = "CVV drošības kods";
 "accessibility_card_form_expiry_error_invalid" = "Nederīgs derīguma termiņš.";
@@ -27,11 +26,11 @@
 "accessibility_card_form_expiry_icon" = "Kartes derīguma termiņš";
 "accessibility_card_form_expiry_label" = "Derīguma termiņš, obligāti";
 "accessibility_card_form_network_selector" = "Izvēlēties tīklu";
-"accessibility_card_form_network_selector_hint" = "Divreiz pieskarieties, lai izvēlētos citu kartes tīklu";
-"accessibility_card_form_network_selector_inline_hint" = "Divreiz pieskarieties, lai izvēlētos šo tīklu";
+"accessibility_card_form_network_selector_hint" = "Atlasīt citu karšu tīklu";
+"accessibility_card_form_network_selector_inline_hint" = "Atlasīt šo tīklu";
 "accessibility_card_form_network_selector_label" = "Kartes tīkla izvēle";
 "accessibility_card_form_submit_disabled" = "Poga atspējota. Aizpildiet visus obligātos laukus, lai iespējotu maksājumu";
-"accessibility_card_form_submit_hint" = "Divreiz pieskarieties, lai iesniegtu maksājumu";
+"accessibility_card_form_submit_hint" = "Iesniegt maksājumu";
 "accessibility_card_form_submit_label" = "Iesniegt maksājumu";
 "accessibility_card_form_submit_loading" = "Maksājums tiek apstrādāts, lūdzu, uzgaidiet";
 "accessibility_checkout_error_icon" = "Kļūda";
@@ -52,8 +51,6 @@
 "accessibility_country_selection_search_icon" = "Meklēt";
 "accessibility_error_generic" = "Radās kļūda. Lūdzu, mēģiniet vēlreiz.";
 "accessibility_error_multiple_errors" = "Atrastas %d kļūdas";
-"accessibility_payment_selection_card_full" = "%1$@ karte, kas beidzas ar %2$@, derīga līdz %3$@";
-"accessibility_payment_selection_card_masked" = "karte ar aizklātiem cipariem";
 "accessibility_payment_selection_coming_soon" = "Maksājuma metode drīzumā būs pieejama";
 "accessibility_payment_selection_pay_with_card" = "Maksāt ar karti";
 "accessibility_payment_selection_pay_with_ideal" = "Maksāt ar iDEAL";
@@ -65,6 +62,7 @@
 "accessibility_screen_loading_payment_methods" = "Maksājuma metodes tiek ielādētas";
 "accessibility_screen_payment_method" = "%@ maksājuma metode";
 "accessibility_payment_method_button" = "Maksāt ar %@";
+"accessibility_payment_method_selected" = "Atlasīts: %@";
 "accessibility_screen_processing_payment" = "Maksājums tiek apstrādāts";
 "accessibility_screen_success" = "Maksājums veiksmīgs";
 "accessibility_vault_delete_payment_method" = "Dzēst šo maksājuma metodi";
@@ -144,7 +142,6 @@
 "primer_card_form_placeholder_state" = "Rīga";
 "primer_card_form_retail_not_implemented" = "Tirdzniecības vietas izvēle vēl nav ieviesta";
 "primer_card_form_title" = "Maksāt ar karti";
-"primer_checkout_auto_dismiss_message" = "Šis ekrāns automātiski aizvērsies pēc 3 sekundēm";
 "primer_checkout_dismissing" = "Notiek aizvēršana...";
 "primer_checkout_error_button_other_methods" = "Izvēlēties citas maksājuma metodes";
 "primer_checkout_error_subtitle" = "Radās tīkla problēma.";
@@ -209,8 +206,8 @@
 "accessibility_klarna_category" = "%@ maksājuma iespēja";
 "accessibility_klarna_category_selected" = "%@ maksājuma iespēja, atlasīts";
 "accessibility_klarna_payment_view" = "Klarna maksājuma veidlapa";
-"accessibility_klarna_authorize_hint" = "Veiciet dubultskārienu, lai turpinātu ar Klarna";
-"accessibility_klarna_finalize_hint" = "Veiciet dubultskārienu, lai pabeigtu maksājumu";
+"accessibility_klarna_authorize_hint" = "Turpināt ar Klarna";
+"accessibility_klarna_finalize_hint" = "Pabeigt maksājumu";
 
 /* ACH */
 "primer_ach_title" = "Bankas konts";
@@ -223,9 +220,9 @@
 "primer_ach_mandate_button_accept" = "Es piekrītu";
 "primer_ach_mandate_button_decline" = "Atcelt";
 "primer_ach_mandate_template" = "Noklikšķinot uz \"Es piekrītu\", jūs pilnvarojat %1$@ norakstīt no iepriekš norādītā bankas konta jebkuru parāda summu par maksājumiem, kas rodas, izmantojot %1$@ pakalpojumus un/vai iegādājoties produktus no %1$@, saskaņā ar %1$@ vietni un noteikumiem, līdz šī pilnvara tiek atsaukta. Jūs varat mainīt vai atcelt šo pilnvaru jebkurā laikā, paziņojot %1$@ 30 (trīsdesmit) dienas iepriekš.";
-"accessibility_ach_continue_hint" = "Veiciet dubultskārienu, lai turpinātu bankas konta izvēli";
-"accessibility_ach_mandate_accept_hint" = "Veiciet dubultskārienu, lai pieņemtu autorizāciju un pabeigtu maksājumu";
-"accessibility_ach_mandate_decline_hint" = "Veiciet dubultskārienu, lai noraidītu un atceltu maksājumu";
+"accessibility_ach_continue_hint" = "Turpināt uz bankas konta atlasi";
+"accessibility_ach_mandate_accept_hint" = "Pieņemt autorizāciju un pabeigt maksājumu";
+"accessibility_ach_mandate_decline_hint" = "Noraidīt un atcelt maksājumu";
 
 "accessibility_card_form_billing_address_hint" = "Ievadiet savu adresi";
 "accessibility_card_form_billing_address_state_hint" = "Ievadiet štatu vai provinci";
@@ -285,3 +282,5 @@
 "primer_adyen_klarna_option_pay_later" = "Maksā vēlāk";
 "primer_adyen_klarna_option_pay_over_time" = "Maksā pēc tam";
 "primer_adyen_klarna_option_pay_now" = "Maksā tagad";
+"primer_vaulted_gocardless_direct_debit_suffix" = "Tiešais debets";
+"accessibility_card_form_billing_address_country_hint" = "Atver sarakstu valsts atlasei";

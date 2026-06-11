@@ -8,17 +8,17 @@ import Foundation
 import PassKit
 
 @available(iOS 15.0, *)
-public struct PrimerApplePayState: Equatable {
+struct PrimerApplePayState: Equatable, Sendable {
 
-  public internal(set) var isLoading: Bool
-  public internal(set) var isAvailable: Bool
-  public internal(set) var availabilityError: String?
+  var isLoading: Bool
+  var isAvailable: Bool
+  var availabilityError: String?
 
-  public internal(set) var buttonStyle: PKPaymentButtonStyle
-  public internal(set) var buttonType: PKPaymentButtonType
-  public internal(set) var cornerRadius: CGFloat
+  var buttonStyle: PKPaymentButtonStyle
+  var buttonType: PKPaymentButtonType
+  var cornerRadius: CGFloat
 
-  public init(
+  init(
     isLoading: Bool = false,
     isAvailable: Bool = false,
     availabilityError: String? = nil,
@@ -34,11 +34,11 @@ public struct PrimerApplePayState: Equatable {
     self.cornerRadius = cornerRadius
   }
 
-  public static var `default`: PrimerApplePayState {
+  static var `default`: PrimerApplePayState {
     PrimerApplePayState()
   }
 
-  public static func available(
+  static func available(
     buttonStyle: PKPaymentButtonStyle = .black,
     buttonType: PKPaymentButtonType = .plain,
     cornerRadius: CGFloat = 8.0
@@ -53,7 +53,7 @@ public struct PrimerApplePayState: Equatable {
     )
   }
 
-  public static func unavailable(error: String) -> PrimerApplePayState {
+  static func unavailable(error: String) -> PrimerApplePayState {
     PrimerApplePayState(
       isLoading: false,
       isAvailable: false,
@@ -61,7 +61,7 @@ public struct PrimerApplePayState: Equatable {
     )
   }
 
-  public static var loading: PrimerApplePayState {
+  static var loading: PrimerApplePayState {
     PrimerApplePayState(
       isLoading: true,
       isAvailable: true,

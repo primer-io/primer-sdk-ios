@@ -87,6 +87,11 @@ private extension ComponentsCheckoutModule {
             if let v = card.saveCardCheckbox { dict["saveCardCheckbox"] = v }
             return dict.isEmpty ? nil : dict
         }
+        if let options {
+            PrimerLogging.shared.logger.debug(
+                message: "[ClientSessionBridge] Unhandled CheckoutModuleOptions type: \(Swift.type(of: options))"
+            )
+        }
         return nil
     }
 }

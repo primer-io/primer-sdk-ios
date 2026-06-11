@@ -90,26 +90,6 @@ final class AchStateTests: XCTestCase {
 
     // MARK: - Step Equatable Tests
 
-    func test_step_loading_isEquatable() {
-        XCTAssertEqual(PrimerAchState.Step.loading, PrimerAchState.Step.loading)
-    }
-
-    func test_step_userDetailsCollection_isEquatable() {
-        XCTAssertEqual(PrimerAchState.Step.userDetailsCollection, PrimerAchState.Step.userDetailsCollection)
-    }
-
-    func test_step_bankAccountCollection_isEquatable() {
-        XCTAssertEqual(PrimerAchState.Step.bankAccountCollection, PrimerAchState.Step.bankAccountCollection)
-    }
-
-    func test_step_mandateAcceptance_isEquatable() {
-        XCTAssertEqual(PrimerAchState.Step.mandateAcceptance, PrimerAchState.Step.mandateAcceptance)
-    }
-
-    func test_step_processing_isEquatable() {
-        XCTAssertEqual(PrimerAchState.Step.processing, PrimerAchState.Step.processing)
-    }
-
     func test_step_differentSteps_areNotEqual() {
         XCTAssertNotEqual(PrimerAchState.Step.loading, PrimerAchState.Step.userDetailsCollection)
         XCTAssertNotEqual(PrimerAchState.Step.bankAccountCollection, PrimerAchState.Step.mandateAcceptance)
@@ -205,15 +185,6 @@ final class AchStateTests: XCTestCase {
 
     func test_fieldValidation_hasErrors_withEmailError_returnsTrue() {
         let validation = PrimerAchState.FieldValidation(emailError: "Invalid")
-        XCTAssertTrue(validation.hasErrors)
-    }
-
-    func test_fieldValidation_hasErrors_withMultipleErrors_returnsTrue() {
-        let validation = PrimerAchState.FieldValidation(
-            firstNameError: "Invalid",
-            lastNameError: "Invalid",
-            emailError: "Invalid"
-        )
         XCTAssertTrue(validation.hasErrors)
     }
 

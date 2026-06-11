@@ -26,7 +26,6 @@
 "primer_checkout_dismissing" = "Po mbyllet...";
 "primer_checkout_system_error_title" = "Gabim në sistemin e pagesës";
 "primer_checkout_scope_unavailable" = "Hapësira e pagesës nuk është e disponueshme";
-"primer_checkout_auto_dismiss_message" = "Kjo faqe do të mbyllet automatikisht për 3 sekonda";
 "primer_card_form_label_number" = "Numri i kartës";
 "primer_card_form_label_name" = "Emri në kartë";
 "primer_card_form_label_expiry" = "Data e skadimit";
@@ -125,7 +124,7 @@
 "accessibility_card_form_cardholder_name_label" = "Emri i mbajtësit të kartës";
 "accessibility_card_form_card_number_hint" = "Vendosni numrin e kartës tuaj";
 "accessibility_card_form_expiry_hint" = "Vendosni datën e skadimit në formatin MM/VV";
-"accessibility_card_form_cvc_hint" = "Kodi 3 ose 4 shifror në pjesën e pasme të kartës";
+"accessibility_card_form_cvc_hint" = "Kodi i sigurisë, 3 ose 4 shifra";
 "accessibility_card_form_cardholder_name_hint" = "Vendosni emrin siç shfaqet në kartë";
 "accessibility_card_form_billing_address_first_name_label" = "Emri, i detyrueshëm";
 "accessibility_card_form_billing_address_last_name_label" = "Mbiemri, i detyrueshëm";
@@ -139,10 +138,10 @@
 "accessibility_card_form_billing_address_country_label" = "Vendi, i detyrueshëm";
 "accessibility_card_form_network_selector" = "Zgjidhni rrjetin";
 "accessibility_card_form_network_selector_label" = "Zgjedhësi i rrjetit të kartës";
-"accessibility_card_form_network_selector_hint" = "Trokit dy herë për të zgjedhur një rrjet tjetër kartash";
-"accessibility_card_form_network_selector_inline_hint" = "Trokit dy herë për të zgjedhur këtë rrjet";
+"accessibility_card_form_network_selector_hint" = "Zgjidh një rrjet tjetër karte";
+"accessibility_card_form_network_selector_inline_hint" = "Zgjidh këtë rrjet";
 "accessibility_card_form_submit_label" = "Dërgo pagesën";
-"accessibility_card_form_submit_hint" = "Trokit dy herë për të dërguar pagesën";
+"accessibility_card_form_submit_hint" = "Dërgo pagesën";
 "accessibility_card_form_submit_loading" = "Po përpunohet pagesa, ju lutem prisni";
 "accessibility_card_form_submit_disabled" = "Butoni i çaktivizuar. Plotësoni të gjitha fushat e detyrueshme për të aktivizuar pagesën";
 "accessibility_card_form_card_number_error_invalid" = "Numri i kartës i pavlefshëm. Ju lutem kontrolloni dhe provoni përsëri.";
@@ -169,20 +168,18 @@
 "accessibility_screen_loading_payment_methods" = "Po ngarkohen metodat e pagesës";
 "accessibility_screen_payment_method" = "Metoda e pagesës %@";
 "accessibility_payment_method_button" = "Paguaj me %@";
+"accessibility_payment_method_selected" = "%@ u zgjodh";
 "accessibility_payment_selection_pay_with_card" = "Paguaj me kartë";
 "accessibility_payment_selection_pay_with_paypal" = "Paguaj me PayPal";
 "accessibility_payment_selection_pay_with_klarna" = "Paguaj me Klarna";
 "accessibility_payment_selection_pay_with_ideal" = "Paguaj me iDEAL";
 "accessibility_payment_selection_coming_soon" = "Metoda e pagesës së shpejti";
-"accessibility_payment_selection_card_full" = "Karta %1$@ që përfundon në %2$@, skadon %3$@";
-"accessibility_payment_selection_card_masked" = "kartë që përfundon me shifra të fshehura";
 "accessibility_country_selection_item" = "%1$@, vend";
 "accessibility_country_selection_search" = "Kërko vende";
 "accessibility_country_selection_search_icon" = "Kërko";
 "accessibility_country_selection_clear" = "Pastro";
 "accessibility_action_delete" = "Fshi metodën e pagesës";
 "accessibility_action_edit" = "Ndrysho detajet e kartës";
-"accessibility_action_set_default" = "Vendos si metodë pagese të parazgjedhur";
 "accessibility_checkout_success_icon" = "Pagesa e suksesshme";
 "accessibility_checkout_error_icon" = "Gabim";
 "accessibility_error_generic" = "Ndodhi një gabim. Ju lutem provoni përsëri.";
@@ -209,8 +206,8 @@
 "accessibility_klarna_category" = "Opsion pagese %@";
 "accessibility_klarna_category_selected" = "Opsion pagese %@, i zgjedhur";
 "accessibility_klarna_payment_view" = "Formulari i pagesës Klarna";
-"accessibility_klarna_authorize_hint" = "Prekni dy herë për të vazhduar me Klarna";
-"accessibility_klarna_finalize_hint" = "Prekni dy herë për të përfunduar pagesën";
+"accessibility_klarna_authorize_hint" = "Vazhdo me Klarna";
+"accessibility_klarna_finalize_hint" = "Përfundo pagesën";
 
 /* ACH */
 "primer_ach_title" = "Llogari bankare";
@@ -223,9 +220,9 @@
 "primer_ach_mandate_button_accept" = "Pranoj";
 "primer_ach_mandate_button_decline" = "Anulo";
 "primer_ach_mandate_template" = "Duke klikuar \"Pranoj\", ju autorizoni %1$@ të debitojë llogarinë bankare të specifikuar më sipër për çdo shumë të detyruar për tarifa që rrjedhin nga përdorimi juaj i shërbimeve të %1$@ dhe/ose blerja e produkteve nga %1$@, sipas faqes së internetit dhe kushteve të %1$@, derisa ky autorizim të revokohet. Ju mund ta ndryshoni ose anuloni këtë autorizim në çdo kohë duke njoftuar %1$@ me 30 (tridhjetë) ditë njoftim paraprak.";
-"accessibility_ach_continue_hint" = "Prekni dy herë për të vazhduar me zgjedhjen e llogarisë bankare";
-"accessibility_ach_mandate_accept_hint" = "Prekni dy herë për të pranuar autorizimin dhe përfunduar pagesën";
-"accessibility_ach_mandate_decline_hint" = "Prekni dy herë për të refuzuar dhe anuluar pagesën";
+"accessibility_ach_continue_hint" = "Vazhdo te zgjedhja e llogarisë bankare";
+"accessibility_ach_mandate_accept_hint" = "Prano autorizimin dhe përfundo pagesën";
+"accessibility_ach_mandate_decline_hint" = "Refuzo dhe anulo pagesën";
 
 "accessibility_card_form_billing_address_hint" = "Shkruani adresën tuaj";
 "accessibility_card_form_billing_address_state_hint" = "Shkruani shtetin ose provincen";
@@ -285,3 +282,5 @@
 "primer_adyen_klarna_option_pay_later" = "Paguaj më vonë";
 "primer_adyen_klarna_option_pay_over_time" = "Paguaj me këste";
 "primer_adyen_klarna_option_pay_now" = "Paguaj tani";
+"primer_vaulted_gocardless_direct_debit_suffix" = "Debitim direkt";
+"accessibility_card_form_billing_address_country_hint" = "Hap një listë për të zgjedhur vendin tuaj";

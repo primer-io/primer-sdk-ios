@@ -1,6 +1,5 @@
 "accessibility_action_delete" = "حذف طريقة الدفع";
 "accessibility_action_edit" = "تعديل بيانات البطاقة";
-"accessibility_action_set_default" = "تعيين كطريقة الدفع الافتراضية";
 "accessibility_card_form_billing_address_address_line_1_label" = "سطر العنوان 1، مطلوب";
 "accessibility_card_form_billing_address_address_line_2_label" = "سطر العنوان 2، اختياري";
 "accessibility_card_form_billing_address_city_hint" = "أدخل اسم المدينة";
@@ -19,7 +18,7 @@
 "accessibility_card_form_cardholder_name_hint" = "أدخل الاسم كما هو مكتوب على البطاقة";
 "accessibility_card_form_cardholder_name_label" = "اسم حامل البطاقة";
 "accessibility_card_form_cvc_error_invalid" = "رمز الأمان غير صالح.";
-"accessibility_card_form_cvc_hint" = "رمز مكون من 3 أو 4 أرقام على ظهر البطاقة";
+"accessibility_card_form_cvc_hint" = "رمز الأمان، 3 أو 4 أرقام";
 "accessibility_card_form_cvc_label" = "رمز الأمان، مطلوب";
 "accessibility_card_form_cvv_icon" = "رمز الأمان CVV";
 "accessibility_card_form_expiry_error_invalid" = "تاريخ الانتهاء غير صالح.";
@@ -27,11 +26,11 @@
 "accessibility_card_form_expiry_icon" = "تاريخ انتهاء البطاقة";
 "accessibility_card_form_expiry_label" = "تاريخ الانتهاء، مطلوب";
 "accessibility_card_form_network_selector" = "اختيار الشبكة";
-"accessibility_card_form_network_selector_hint" = "انقر مرتين لاختيار شبكة بطاقة مختلفة";
-"accessibility_card_form_network_selector_inline_hint" = "انقر مرتين لاختيار هذه الشبكة";
+"accessibility_card_form_network_selector_hint" = "اختيار شبكة بطاقة مختلفة";
+"accessibility_card_form_network_selector_inline_hint" = "اختيار هذه الشبكة";
 "accessibility_card_form_network_selector_label" = "محدد شبكة البطاقة";
 "accessibility_card_form_submit_disabled" = "الزر معطل. أكمل جميع الحقول المطلوبة لتفعيل الدفع";
-"accessibility_card_form_submit_hint" = "انقر مرتين لإرسال الدفع";
+"accessibility_card_form_submit_hint" = "إرسال الدفع";
 "accessibility_card_form_submit_label" = "الدفع";
 "accessibility_card_form_submit_loading" = "جاري تنفيذ عملية الدفع، يرجى الانتظار";
 "accessibility_checkout_error_icon" = "خطأ";
@@ -52,8 +51,6 @@
 "accessibility_country_selection_search_icon" = "بحث";
 "accessibility_error_generic" = "حدث خطأ. يرجى المحاولة مرة أخرى.";
 "accessibility_error_multiple_errors" = "تم العثور على %d أخطاء";
-"accessibility_payment_selection_card_full" = "هذه البطاقة %1$@ المنتهية بـ %2$@ تنتهي صلاحيتها في %3$@";
-"accessibility_payment_selection_card_masked" = "بطاقة تنتهي بأرقام مخفية";
 "accessibility_payment_selection_coming_soon" = "طريقة الدفع قريباً";
 "accessibility_payment_selection_pay_with_card" = "الدفع بالبطاقة";
 "accessibility_payment_selection_pay_with_ideal" = "الدفع بـ iDEAL";
@@ -65,6 +62,7 @@
 "accessibility_screen_loading_payment_methods" = "جاري تحميل طرق الدفع";
 "accessibility_screen_payment_method" = "طريقة الدفع %@";
 "accessibility_payment_method_button" = "الدفع بواسطة %@";
+"accessibility_payment_method_selected" = "تم تحديد %@";
 "accessibility_screen_processing_payment" = "جاري تنفيذ عملية الدفع";
 "accessibility_screen_success" = "تمت عملية الدفع بنجاح";
 "accessibility_vault_delete_payment_method" = "حذف طريقة الدفع هذه";
@@ -144,7 +142,6 @@
 "primer_card_form_placeholder_state" = "دبي";
 "primer_card_form_retail_not_implemented" = "اختيار منفذ البيع غير متاح بعد";
 "primer_card_form_title" = "الدفع بالبطاقة";
-"primer_checkout_auto_dismiss_message" = "ستغلق هذه الشاشة تلقائياً خلال 3 ثوانٍ";
 "primer_checkout_dismissing" = "جاري الإغلاق...";
 "primer_checkout_error_button_other_methods" = "اختر طرق دفع أخرى";
 "primer_checkout_error_subtitle" = "حدثت مشكلة في الشبكة.";
@@ -209,8 +206,8 @@
 "accessibility_klarna_category" = "خيار الدفع %@";
 "accessibility_klarna_category_selected" = "خيار الدفع %@، محدد";
 "accessibility_klarna_payment_view" = "نموذج الدفع Klarna";
-"accessibility_klarna_authorize_hint" = "انقر مرتين للمتابعة مع Klarna";
-"accessibility_klarna_finalize_hint" = "انقر مرتين لإتمام الدفع";
+"accessibility_klarna_authorize_hint" = "المتابعة مع Klarna";
+"accessibility_klarna_finalize_hint" = "إتمام الدفع";
 
 /* ACH */
 "primer_ach_title" = "حساب بنكي";
@@ -223,9 +220,9 @@
 "primer_ach_mandate_button_accept" = "أوافق";
 "primer_ach_mandate_button_decline" = "إلغاء";
 "primer_ach_mandate_template" = "بالنقر على \"أوافق\"، فإنك تفوّض %1$@ بخصم أي مبلغ مستحق من الحساب البنكي المحدد أعلاه مقابل الرسوم الناتجة عن استخدامك لخدمات %1$@ و/أو شراء منتجات من %1$@، وفقاً لموقع %1$@ وشروطه، حتى يتم إلغاء هذا التفويض. يمكنك تعديل أو إلغاء هذا التفويض في أي وقت بإخطار %1$@ قبل 30 (ثلاثين) يوماً.";
-"accessibility_ach_continue_hint" = "انقر مرتين للمتابعة إلى اختيار الحساب البنكي";
-"accessibility_ach_mandate_accept_hint" = "انقر مرتين لقبول التفويض وإتمام الدفع";
-"accessibility_ach_mandate_decline_hint" = "انقر مرتين للرفض وإلغاء الدفع";
+"accessibility_ach_continue_hint" = "المتابعة إلى اختيار الحساب البنكي";
+"accessibility_ach_mandate_accept_hint" = "قبول التفويض وإتمام الدفع";
+"accessibility_ach_mandate_decline_hint" = "رفض وإلغاء الدفع";
 
 "accessibility_card_form_billing_address_hint" = "أدخل عنوانك";
 "accessibility_card_form_billing_address_state_hint" = "أدخل الولاية أو المقاطعة";
@@ -285,3 +282,5 @@
 "primer_adyen_klarna_option_pay_later" = "ادفع لاحقاً";
 "primer_adyen_klarna_option_pay_over_time" = "ادفع بمرور الوقت";
 "primer_adyen_klarna_option_pay_now" = "ادفع الآن";
+"primer_vaulted_gocardless_direct_debit_suffix" = "الخصم المباشر";
+"accessibility_card_form_billing_address_country_hint" = "يفتح قائمة لاختيار بلدك";

@@ -15,26 +15,10 @@ public typealias BeforePaymentCreateHandler = @Sendable (_ data: PrimerCheckoutP
 /// The main scope interface for PrimerCheckout, providing lifecycle control and customizable UI components.
 @available(iOS 15.0, *)
 @MainActor
-public protocol PrimerCheckoutScope: AnyObject {
+protocol PrimerCheckoutScope: AnyObject {
 
   /// The current state of the checkout flow as an async stream.
   var state: AsyncStream<PrimerCheckoutState> { get }
-
-  // MARK: - Customizable Screens
-
-  /// Default implementation provides standard checkout container.
-  var container: ContainerComponent? { get set }
-
-  /// Custom splash screen shown during SDK initialization.
-  /// Default implementation shows Primer branding.
-  var splashScreen: Component? { get set }
-
-  /// Custom loading screen shown during payment processing.
-  /// Default implementation shows a centered loading indicator with "Loading" text.
-  var loadingScreen: Component? { get set }
-
-  /// Default implementation shows error icon and message.
-  var errorScreen: ErrorComponent? { get set }
 
   // MARK: - Nested Scopes
 
@@ -78,34 +62,17 @@ public protocol PrimerCheckoutScope: AnyObject {
 
   // MARK: - Per-protocol scope access (existential metatypes)
 
-  /// Gets the card-form scope as the public protocol existential.
+  /// Gets a payment method scope as its protocol existential, resolved from the metatype.
   func getPaymentMethodScope(_ scopeType: (any PrimerCardFormScope).Type) -> (any PrimerCardFormScope)?
-
-  /// Gets the Klarna scope as the public protocol existential.
   func getPaymentMethodScope(_ scopeType: (any PrimerKlarnaScope).Type) -> (any PrimerKlarnaScope)?
-
-  /// Gets the Adyen Klarna scope as the public protocol existential.
   func getPaymentMethodScope(_ scopeType: (any PrimerAdyenKlarnaScope).Type) -> (any PrimerAdyenKlarnaScope)?
-
-  /// Gets the web-redirect scope as the public protocol existential.
   func getPaymentMethodScope(_ scopeType: (any PrimerWebRedirectScope).Type) -> (any PrimerWebRedirectScope)?
-
-  /// Gets the form-redirect scope as the public protocol existential.
   func getPaymentMethodScope(_ scopeType: (any PrimerFormRedirectScope).Type) -> (any PrimerFormRedirectScope)?
-
-  /// Gets the billing-address-redirect scope as the public protocol existential.
-  func getPaymentMethodScope(_ scopeType: (any PrimerBillingAddressRedirectScope).Type) -> (any PrimerBillingAddressRedirectScope)?
-
-  /// Gets the Apple Pay scope as the public protocol existential.
+  func getPaymentMethodScope(_ scopeType: (any PrimerBillingAddressRedirectScope).Type)
+    -> (any PrimerBillingAddressRedirectScope)?
   func getPaymentMethodScope(_ scopeType: (any PrimerApplePayScope).Type) -> (any PrimerApplePayScope)?
-
-  /// Gets the PayPal scope as the public protocol existential.
   func getPaymentMethodScope(_ scopeType: (any PrimerPayPalScope).Type) -> (any PrimerPayPalScope)?
-
-  /// Gets the QR code scope as the public protocol existential.
   func getPaymentMethodScope(_ scopeType: (any PrimerQRCodeScope).Type) -> (any PrimerQRCodeScope)?
-
-  /// Gets the ACH scope as the public protocol existential.
   func getPaymentMethodScope(_ scopeType: (any PrimerAchScope).Type) -> (any PrimerAchScope)?
 
   // MARK: - Payment Callbacks
@@ -129,18 +96,18 @@ public protocol PrimerCheckoutScope: AnyObject {
 
 // MARK: - Default no-op implementations
 //
-// Each per-protocol overload defaults to nil so that custom `PrimerCheckoutScope` conformers
-// (test mocks, merchant-side implementations) don't have to stub all 10 methods. The SDK's
-// `DefaultCheckoutScope` overrides every one with the real cache-backed lookup.
+// Each per-protocol overload defaults to nil so SDK test-mock conformers don't have to stub all
+// ten. The SDK's `DefaultCheckoutScope` overrides every one with the real cache-backed lookup.
 
 @available(iOS 15.0, *)
-public extension PrimerCheckoutScope {
+extension PrimerCheckoutScope {
   func getPaymentMethodScope(_: (any PrimerCardFormScope).Type) -> (any PrimerCardFormScope)? { nil }
   func getPaymentMethodScope(_: (any PrimerKlarnaScope).Type) -> (any PrimerKlarnaScope)? { nil }
   func getPaymentMethodScope(_: (any PrimerAdyenKlarnaScope).Type) -> (any PrimerAdyenKlarnaScope)? { nil }
   func getPaymentMethodScope(_: (any PrimerWebRedirectScope).Type) -> (any PrimerWebRedirectScope)? { nil }
   func getPaymentMethodScope(_: (any PrimerFormRedirectScope).Type) -> (any PrimerFormRedirectScope)? { nil }
-  func getPaymentMethodScope(_: (any PrimerBillingAddressRedirectScope).Type) -> (any PrimerBillingAddressRedirectScope)? { nil }
+  func getPaymentMethodScope(_: (any PrimerBillingAddressRedirectScope).Type)
+    -> (any PrimerBillingAddressRedirectScope)? { nil }
   func getPaymentMethodScope(_: (any PrimerApplePayScope).Type) -> (any PrimerApplePayScope)? { nil }
   func getPaymentMethodScope(_: (any PrimerPayPalScope).Type) -> (any PrimerPayPalScope)? { nil }
   func getPaymentMethodScope(_: (any PrimerQRCodeScope).Type) -> (any PrimerQRCodeScope)? { nil }

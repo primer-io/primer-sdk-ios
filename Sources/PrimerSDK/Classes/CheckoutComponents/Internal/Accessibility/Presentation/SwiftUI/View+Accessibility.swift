@@ -41,24 +41,21 @@ private struct ConditionalAccessibilityElement: ViewModifier {
   @ViewBuilder
   func body(content: Content) -> some View {
     if combinesChildren {
-      content.accessibilityElement(children: .ignore)
-        .accessibilityIdentifier(config.identifier)
-        .accessibilityLabel(config.label)
-        .modifier(ConditionalAccessibilityHint(hint: config.hint))
-        .modifier(ConditionalAccessibilityValue(value: config.value))
-        .accessibilityAddTraits(config.traits)
-        .accessibilityHidden(config.isHidden)
-        .accessibilitySortPriority(Double(config.sortPriority))
+      applyMetadata(to: content.accessibilityElement(children: .ignore))
     } else {
-      content
-        .accessibilityIdentifier(config.identifier)
-        .accessibilityLabel(config.label)
-        .modifier(ConditionalAccessibilityHint(hint: config.hint))
-        .modifier(ConditionalAccessibilityValue(value: config.value))
-        .accessibilityAddTraits(config.traits)
-        .accessibilityHidden(config.isHidden)
-        .accessibilitySortPriority(Double(config.sortPriority))
+      applyMetadata(to: content)
     }
+  }
+
+  private func applyMetadata(to content: some View) -> some View {
+    content
+      .accessibilityIdentifier(config.identifier)
+      .accessibilityLabel(config.label)
+      .modifier(ConditionalAccessibilityHint(hint: config.hint))
+      .modifier(ConditionalAccessibilityValue(value: config.value))
+      .accessibilityAddTraits(config.traits)
+      .accessibilityHidden(config.isHidden)
+      .modifier(ConditionalAccessibilitySortPriority(sortPriority: config.sortPriority))
   }
 }
 
@@ -82,6 +79,19 @@ private struct ConditionalAccessibilityValue: ViewModifier {
   func body(content: Content) -> some View {
     if let value, !value.isEmpty {
       content.accessibilityValue(value)
+    } else {
+      content
+    }
+  }
+}
+
+@available(iOS 15.0, *)
+private struct ConditionalAccessibilitySortPriority: ViewModifier {
+  let sortPriority: Int
+
+  func body(content: Content) -> some View {
+    if sortPriority != 0 {
+      content.accessibilitySortPriority(Double(sortPriority))
     } else {
       content
     }

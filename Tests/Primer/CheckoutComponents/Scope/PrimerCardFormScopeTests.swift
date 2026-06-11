@@ -31,35 +31,6 @@ final class PrimerCardFormScopeTests: XCTestCase {
         var presentationContext: PresentationContext = .direct
         var cardFormUIOptions: PrimerCardFormUIOptions?
         var dismissalMechanism: [DismissalMechanism] = []
-        var selectCountry: PrimerSelectCountryScope { fatalError("Not implemented for test") }
-
-        var title: String?
-        var screen: CardFormScreenComponent?
-        var cobadgedCardsView: (([String], @escaping (String) -> Void) -> any View)?
-        var errorScreen: ErrorComponent?
-        var submitButtonText: String?
-        var showSubmitLoadingIndicator: Bool = false
-
-        var cardNumberConfig: InputFieldConfig?
-        var expiryDateConfig: InputFieldConfig?
-        var cvvConfig: InputFieldConfig?
-        var cardholderNameConfig: InputFieldConfig?
-        var postalCodeConfig: InputFieldConfig?
-        var countryConfig: InputFieldConfig?
-        var cityConfig: InputFieldConfig?
-        var stateConfig: InputFieldConfig?
-        var addressLine1Config: InputFieldConfig?
-        var addressLine2Config: InputFieldConfig?
-        var phoneNumberConfig: InputFieldConfig?
-        var firstNameConfig: InputFieldConfig?
-        var lastNameConfig: InputFieldConfig?
-        var emailConfig: InputFieldConfig?
-        var retailOutletConfig: InputFieldConfig?
-        var otpCodeConfig: InputFieldConfig?
-
-        var cardInputSection: Component?
-        var billingAddressSection: Component?
-        var submitButton: Component?
 
         func start() {}
         func submit() {}
@@ -131,74 +102,6 @@ final class PrimerCardFormScopeTests: XCTestCase {
         func updateSelectedCardNetwork(_ network: String) {}
         func updateCountryCode(_ countryCode: String) {
             updatedFields[.countryCode] = countryCode
-        }
-
-        func PrimerCardNumberField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
-            AnyView(EmptyView())
-        }
-
-        func PrimerExpiryDateField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
-            AnyView(EmptyView())
-        }
-
-        func PrimerCvvField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
-            AnyView(EmptyView())
-        }
-
-        func PrimerCardholderNameField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
-            AnyView(EmptyView())
-        }
-
-        func PrimerCountryField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
-            AnyView(EmptyView())
-        }
-
-        func PrimerPostalCodeField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
-            AnyView(EmptyView())
-        }
-
-        func PrimerCityField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
-            AnyView(EmptyView())
-        }
-
-        func PrimerStateField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
-            AnyView(EmptyView())
-        }
-
-        func PrimerAddressLine1Field(label: String?, styling: PrimerFieldStyling?) -> AnyView {
-            AnyView(EmptyView())
-        }
-
-        func PrimerAddressLine2Field(label: String?, styling: PrimerFieldStyling?) -> AnyView {
-            AnyView(EmptyView())
-        }
-
-        func PrimerFirstNameField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
-            AnyView(EmptyView())
-        }
-
-        func PrimerLastNameField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
-            AnyView(EmptyView())
-        }
-
-        func PrimerEmailField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
-            AnyView(EmptyView())
-        }
-
-        func PrimerPhoneNumberField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
-            AnyView(EmptyView())
-        }
-
-        func PrimerRetailOutletField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
-            AnyView(EmptyView())
-        }
-
-        func PrimerOtpCodeField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
-            AnyView(EmptyView())
-        }
-
-        func DefaultCardFormView(styling: PrimerFieldStyling?) -> AnyView {
-            AnyView(EmptyView())
         }
     }
 
@@ -304,45 +207,5 @@ final class PrimerCardFormScopeTests: XCTestCase {
         let config = scope.getFormConfiguration()
 
         XCTAssertEqual(config, CardFormConfiguration.default)
-    }
-
-    // MARK: - Behavioral Tests
-
-    func test_submit_callsSubmitOnScope() {
-        var submitCalled = false
-
-        final class TrackingScope: MockCardFormScopeImpl {
-            var submitHandler: (() -> Void)?
-
-            override func submit() {
-                submitHandler?()
-            }
-        }
-
-        let scope = TrackingScope()
-        scope.submitHandler = { submitCalled = true }
-
-        scope.submit()
-
-        XCTAssertTrue(submitCalled)
-    }
-
-    func test_cancel_callsCancelOnScope() {
-        var cancelCalled = false
-
-        final class TrackingScope: MockCardFormScopeImpl {
-            var cancelHandler: (() -> Void)?
-
-            override func cancel() {
-                cancelHandler?()
-            }
-        }
-
-        let scope = TrackingScope()
-        scope.cancelHandler = { cancelCalled = true }
-
-        scope.cancel()
-
-        XCTAssertTrue(cancelCalled)
     }
 }

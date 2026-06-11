@@ -8,10 +8,10 @@ import Foundation
 
 /// ACH flow: `loading` -> `userDetailsCollection` -> `bankAccountCollection` -> `mandateAcceptance` -> `processing`
 @available(iOS 15.0, *)
-public struct PrimerAchState: Equatable, @unchecked Sendable {
+struct PrimerAchState: Equatable, @unchecked Sendable {
 
   /// When switching on this enum, always include a `default` case to handle future additions.
-  public enum Step: Equatable {
+  enum Step: Equatable {
     case loading
     case userDetailsCollection
     case bankAccountCollection
@@ -19,24 +19,24 @@ public struct PrimerAchState: Equatable, @unchecked Sendable {
     case processing
   }
 
-  public struct UserDetails: Equatable {
-    public let firstName: String
-    public let lastName: String
-    public let emailAddress: String
+  struct UserDetails: Equatable {
+    let firstName: String
+    let lastName: String
+    let emailAddress: String
 
-    public init(firstName: String = "", lastName: String = "", emailAddress: String = "") {
+    init(firstName: String = "", lastName: String = "", emailAddress: String = "") {
       self.firstName = firstName
       self.lastName = lastName
       self.emailAddress = emailAddress
     }
   }
 
-  public struct FieldValidation: Equatable {
-    public let firstNameError: String?
-    public let lastNameError: String?
-    public let emailError: String?
+  struct FieldValidation: Equatable {
+    let firstNameError: String?
+    let lastNameError: String?
+    let emailError: String?
 
-    public init(
+    init(
       firstNameError: String? = nil,
       lastNameError: String? = nil,
       emailError: String? = nil
@@ -46,18 +46,18 @@ public struct PrimerAchState: Equatable, @unchecked Sendable {
       self.emailError = emailError
     }
 
-    public var hasErrors: Bool {
+    var hasErrors: Bool {
       firstNameError != nil || lastNameError != nil || emailError != nil
     }
   }
 
-  public internal(set) var step: Step
-  public internal(set) var userDetails: UserDetails
-  public internal(set) var fieldValidation: FieldValidation?
-  public internal(set) var mandateText: String?
-  public internal(set) var isSubmitEnabled: Bool
+  var step: Step
+  var userDetails: UserDetails
+  var fieldValidation: FieldValidation?
+  var mandateText: String?
+  var isSubmitEnabled: Bool
 
-  public init(
+  init(
     step: Step = .loading,
     userDetails: UserDetails = UserDetails(),
     fieldValidation: FieldValidation? = nil,

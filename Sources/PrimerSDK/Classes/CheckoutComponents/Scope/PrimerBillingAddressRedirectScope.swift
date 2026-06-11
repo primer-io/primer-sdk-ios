@@ -8,11 +8,11 @@ import SwiftUI
 
 /// Type alias for billing address redirect screen customization component.
 @available(iOS 15.0, *)
-public typealias BillingAddressRedirectScreenComponent = (any PrimerBillingAddressRedirectScope) -> any View
+typealias BillingAddressRedirectScreenComponent = (any PrimerBillingAddressRedirectScope) -> any View
 
 /// Type alias for billing address redirect button customization component.
 @available(iOS 15.0, *)
-public typealias BillingAddressRedirectButtonComponent = (any PrimerBillingAddressRedirectScope) -> any View
+typealias BillingAddressRedirectButtonComponent = (any PrimerBillingAddressRedirectScope) -> any View
 
 /// Scope protocol for payment methods that require a billing address form before redirect (e.g., Affirm).
 ///
@@ -45,7 +45,7 @@ public typealias BillingAddressRedirectButtonComponent = (any PrimerBillingAddre
 /// ```
 @available(iOS 15.0, *)
 @MainActor
-public protocol PrimerBillingAddressRedirectScope: PrimerPaymentMethodScope
+protocol PrimerBillingAddressRedirectScope: PrimerPaymentMethodScope
 where State == PrimerBillingAddressRedirectState {
 
   var paymentMethodType: String { get }

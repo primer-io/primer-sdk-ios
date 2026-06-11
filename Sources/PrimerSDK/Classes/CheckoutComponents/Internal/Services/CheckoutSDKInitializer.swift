@@ -10,20 +10,16 @@ import Foundation
 @MainActor
 final class CheckoutSDKInitializer {
 
-  // MARK: - Types
-
   struct InitializationResult {
     let checkoutScope: DefaultCheckoutScope
   }
 
-  // MARK: - Properties
-
   private let clientToken: String
   private let primerSettings: PrimerSettings
   private let primerTheme: PrimerCheckoutTheme
-  private let diContainer: DIContainer
   private let navigator: CheckoutNavigator
   private let presentationContext: PresentationContext
+  private let isInlineFlow: Bool
   private let configurationModule:
     (PrimerAPIConfigurationModuleProtocol & AnalyticsSessionConfigProviding)
   private var analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol?
@@ -34,22 +30,20 @@ final class CheckoutSDKInitializer {
     clientToken: String,
     primerSettings: PrimerSettings,
     primerTheme: PrimerCheckoutTheme = PrimerCheckoutTheme(),
-    diContainer: DIContainer,
     navigator: CheckoutNavigator,
     presentationContext: PresentationContext,
+    isInlineFlow: Bool = false,
     configurationModule: (PrimerAPIConfigurationModuleProtocol & AnalyticsSessionConfigProviding) =
       PrimerAPIConfigurationModule()
   ) {
     self.clientToken = clientToken
     self.primerSettings = primerSettings
     self.primerTheme = primerTheme
-    self.diContainer = diContainer
     self.navigator = navigator
     self.presentationContext = presentationContext
+    self.isInlineFlow = isInlineFlow
     self.configurationModule = configurationModule
   }
-
-  // MARK: - Public Methods
 
   func initialize() async throws -> InitializationResult {
     setupSDKIntegration()
@@ -63,7 +57,6 @@ final class CheckoutSDKInitializer {
     )
     try await composableContainer.configure()
 
-    // Resolve analytics interactor
     if let container = await DIContainer.current {
       analyticsInteractor = try? await container.resolve(
         CheckoutComponentsAnalyticsInteractorProtocol.self)
@@ -74,7 +67,6 @@ final class CheckoutSDKInitializer {
 
     try await initializeAPIConfiguration()
 
-    // Initialize analytics session
     await initializeAnalytics()
 
     // Track SDK initialization end - after all API calls complete
@@ -90,13 +82,17 @@ final class CheckoutSDKInitializer {
     return InitializationResult(checkoutScope: checkoutScope)
   }
 
+  /// Re-fetches the API configuration from the backend (the same fetch performed during
+  /// `initialize()`), so `PrimerCheckoutSession.refresh()` picks up server-side changes.
+  func refreshConfiguration() async throws {
+    try await initializeAPIConfiguration()
+  }
+
   func cleanup() {
     Task {
       await DIContainer.clearContainer()
     }
   }
-
-  // MARK: - Private Methods
 
   private func setupSDKIntegration() {
     PrimerInternal.shared.sdkIntegrationType = .checkoutComponents
@@ -117,9 +113,9 @@ final class CheckoutSDKInitializer {
     DefaultCheckoutScope(
       clientToken: clientToken,
       settings: primerSettings,
-      diContainer: diContainer,
       navigator: navigator,
-      presentationContext: presentationContext
+      presentationContext: presentationContext,
+      isInlineFlow: isInlineFlow
     )
   }
 

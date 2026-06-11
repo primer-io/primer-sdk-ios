@@ -8,11 +8,11 @@ import SwiftUI
 
 /// Type alias for web redirect screen customization component.
 @available(iOS 15.0, *)
-public typealias WebRedirectScreenComponent = (any PrimerWebRedirectScope) -> any View
+typealias WebRedirectScreenComponent = (any PrimerWebRedirectScope) -> any View
 
 /// Type alias for web redirect button customization component.
 @available(iOS 15.0, *)
-public typealias WebRedirectButtonComponent = (any PrimerWebRedirectScope) -> any View
+typealias WebRedirectButtonComponent = (any PrimerWebRedirectScope) -> any View
 
 /// Scope protocol for web redirect payment methods (e.g., Twint).
 ///
@@ -43,7 +43,7 @@ public typealias WebRedirectButtonComponent = (any PrimerWebRedirectScope) -> an
 /// ```
 @available(iOS 15.0, *)
 @MainActor
-public protocol PrimerWebRedirectScope: PrimerPaymentMethodScope where State == PrimerWebRedirectState {
+protocol PrimerWebRedirectScope: PrimerPaymentMethodScope where State == PrimerWebRedirectState {
 
   /// The payment method type identifier (e.g., "TWINT").
   var paymentMethodType: String { get }

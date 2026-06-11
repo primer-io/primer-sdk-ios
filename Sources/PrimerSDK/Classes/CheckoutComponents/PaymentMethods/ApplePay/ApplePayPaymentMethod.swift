@@ -26,8 +26,8 @@ struct ApplePayPaymentMethod: PaymentMethodProtocol {
 
   @MainActor
   static func createView(checkoutScope: any PrimerCheckoutScope) -> AnyView? {
-    // ACC-7173: audit §2a — ApplePayScreen uses @ObservedObject DefaultApplePayScope so the
-    // metatype must stay concrete; SwiftUI's ObservableObject requires a concrete class.
+    // ApplePayScreen uses @ObservedObject DefaultApplePayScope, so the metatype must stay concrete;
+    // SwiftUI's ObservableObject requires a concrete class.
     checkoutScope.getPaymentMethodScope(DefaultApplePayScope.self)
       .map { scope in
         scope.screen.map { AnyView($0(scope)) }

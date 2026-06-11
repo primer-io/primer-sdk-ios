@@ -4,24 +4,20 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-CheckoutComponents is a modern, scope-based payment checkout framework for iOS 15+ that provides complete UI customization with exact Android API parity. It represents the newest integration approach in the Primer iOS SDK, using SwiftUI, async/await, and a hierarchical scope-based architecture.
+CheckoutComponents is a modern, slot-based payment checkout framework for iOS 15+ that provides complete UI customization with exact Android API parity. It represents the newest integration approach in the Primer iOS SDK, using SwiftUI, async/await, and composable views with `@ViewBuilder` section slots.
 
 ## Key Architecture Patterns
 
-### Scope-Based API
+### Slot-Based Public API
 
-CheckoutComponents uses a hierarchical scope pattern where each major component exposes a scope interface:
+The public API is composed of:
 
-- **`PrimerCheckoutScope`**: Main checkout lifecycle, navigation, and screen customization (Scope/PrimerCheckoutScope.swift:13)
-- **`PrimerPaymentMethodSelectionScope`**: Payment method grid and selection UI
-- **`PrimerCardFormScope`**: Comprehensive card form with field-level customization
-- **`PrimerPaymentMethodScope`**: Base protocol for all payment method implementations
+- **Entry points**: `PrimerCheckout` (managed SwiftUI modal) or `PrimerCheckoutSession` + `.primerCheckoutSession(_:onCompletion:)` modifier (composable/inline); `PrimerCheckoutPresenter` for UIKit
+- **Composable views**: `PrimerCardForm`, `PrimerPaymentMethods`, `PrimerVaultedPaymentMethods` — each exposes `@ViewBuilder` section slots and resolves its session from the environment
+- **Observable sessions**: `PrimerCardFormSession`, `PrimerSelectionSession` — bridge internal scope `AsyncStream<State>` into `@Published state` and expose the mutation surface
+- **Defaults namespaces**: `CardFormDefaults`, `PaymentMethodsDefaults`, `VaultedPaymentMethodsDefaults` — default slot bodies and per-field building blocks for recomposition
 
-Each scope provides:
-- State observation via AsyncStream
-- UI component customization closures (ViewBuilder pattern)
-- SDK component access methods
-- Navigation and action methods
+The scope protocols (`PrimerCheckoutScope`, `PrimerCardFormScope`, etc.) are **internal** — not part of the public API.
 
 ### Dependency Injection
 
@@ -32,7 +28,7 @@ CheckoutComponents uses a custom DI container framework (Internal/DI/Framework/)
 - Factory pattern support for parameterized object creation
 - Scoped containers for feature isolation
 
-**Registration**: ComposableContainer.swift:24 configures all dependencies
+**Registration**: ComposableContainer.swift:20 configures all dependencies
 **Resolution**: Manual resolution with explicit error handling using `DIContainer.current` or `DIContainer.currentSync`
 
 ### Clean Architecture Layers
@@ -50,7 +46,7 @@ Internal/
 ### Navigation System
 
 - **CheckoutNavigator**: State publisher for navigation events (Internal/Navigation/CheckoutNavigator.swift)
-- **CheckoutCoordinator**: Handles navigation stack management (Internal/Navigation/CheckoutCoordinator.swift:29)
+- **CheckoutCoordinator**: Handles navigation stack management (Internal/Navigation/CheckoutCoordinator.swift:20)
 - **CheckoutRoute**: Enum defining all possible routes with navigation behaviors
 - State-driven navigation using AsyncStream
 
@@ -64,16 +60,17 @@ Dynamic payment method registration system:
 ## Entry Points
 
 ### UIKit Integration
-**PrimerCheckoutPresenter** (PrimerCheckoutPresenter.swift:64): Main UIKit entry point
+**PrimerCheckoutPresenter** (PrimerCheckoutPresenter.swift): Main UIKit entry point
 - `presentCheckout(clientToken:from:completion:)`: Present default UI
-- `presentCheckout(clientToken:from:primerSettings:primerTheme:scope:completion:)`: Present with scope-based customization
+- `presentCheckout(clientToken:from:primerSettings:primerTheme:completion:)`: Present with settings and theme
 - Acts as bridge between UIKit and SwiftUI implementation
 
 ### SwiftUI Integration
-**PrimerCheckout** view: Direct SwiftUI integration for pure SwiftUI apps
+**PrimerCheckout**: Managed modal — renders SDK defaults with no customization slots.
+**PrimerCheckoutSession** + `.primerCheckoutSession(_:onCompletion:)`: Composable/inline — embed `PrimerCardForm`, `PrimerPaymentMethods`, `PrimerVaultedPaymentMethods` in your own layout.
 
 ### Delegation, works only with UIKit Integration
-**PrimerCheckoutPresenterDelegate** protocol (PrimerCheckoutPresenter.swift:13):
+**PrimerCheckoutPresenterDelegate** protocol (PrimerCheckoutPresenter.swift:11):
 - `primerCheckoutPresenterDidCompleteWithSuccess(_:)`: Payment successful
 - `primerCheckoutPresenterDidFailWithError(_:)`: Payment failed
 - `primerCheckoutPresenterDidDismiss()`: Checkout dismissed
@@ -84,7 +81,7 @@ Dynamic payment method registration system:
 ### Checkout State Flow
 ```swift
 PrimerCheckoutState:
-.initializing → .ready → .success(PaymentResult) | .failure(PrimerError) → .dismissed
+.initializing → .ready(totalAmount:currencyCode:) → .success(PaymentResult) | .failure(PrimerError) → .dismissed
 ```
 
 ### Card Form State
@@ -104,56 +101,42 @@ for await state in scope.state {
 
 ## Customization Approaches
 
-### 1. Field-Level Customization via InputFieldConfig
-Customize individual fields with partial or full replacement via scope properties:
+### Slot Override
+Pass a labeled `@ViewBuilder` argument to replace one slot while keeping others as defaults:
 ```swift
-// Access card form scope and customize fields
-if let cardFormScope = checkoutScope.getPaymentMethodScope(PrimerCardFormScope.self) {
-    cardFormScope.cardNumberConfig = InputFieldConfig(
-        label: "Card Number",
-        placeholder: "0000 0000 0000 0000",
-        styling: PrimerFieldStyling(borderColor: .blue)
+PrimerCardForm(submitButton: { session in
+    MyPayButton(isLoading: session.state.isLoading) { session.submit() }
+})
+```
+
+### Recomposition with Building Blocks
+Use `CardFormDefaults.*` field building blocks inside a slot:
+```swift
+PrimerCardForm(cardDetails: { session in
+    CardFormDefaults.cardNumber(session)
+    HStack {
+        CardFormDefaults.expiryDate(session)
+        CardFormDefaults.cvv(session)
+    }
+    CardFormDefaults.cardholderName(session)
+    MyPromoBanner()
+})
+```
+
+### Full Slot Replacement
+Provide entirely custom content; `session` gives access to state and mutation methods:
+```swift
+PrimerCardForm(cardDetails: { session in
+    MyFullyCustomCardSection(
+        state: session.state,
+        onCardNumber: session.updateCardNumber,
+        onExpiry: session.updateExpiryDate,
+        onCvv: session.updateCvv
     )
-    cardFormScope.cvvConfig = InputFieldConfig(
-        component: { MyCustomCVVField() }
-    )
-}
+})
 ```
 
-### 2. Section-Level Customization
-Replace entire sections using scope section properties:
-```swift
-cardFormScope.cardInputSection = { scope in
-    AnyView(MyCustomCardDetailsSection(scope: scope))
-}
-```
-
-### 3. Full Screen Customization
-Replace the entire card form screen:
-```swift
-cardFormScope.screen = { scope in
-    AnyView(MyCustomCardFormScreen(scope: scope))
-}
-```
-
-### 4. Checkout-Level Screen Customization
-Customize checkout-level screens via scope properties:
-```swift
-// Custom splash screen (SDK initialization)
-checkoutScope.splashScreen = {
-    AnyView(MyCustomSplashScreen())
-}
-
-// Custom loading screen (payment processing) - matches Android's checkout.loading
-checkoutScope.loading = {
-    AnyView(MyCustomLoadingScreen())
-}
-
-// Custom error screen
-checkoutScope.errorScreen = { message in
-    AnyView(MyCustomErrorScreen(message: message))
-}
-```
+Visual styling is theme-driven via `PrimerCheckoutTheme` (design tokens). There are no per-field styling structs.
 
 ## Validation System
 
@@ -181,7 +164,7 @@ Tests follow XCTest framework located in `/Tests/` directory:
 
 ### Mock Container for Testing
 ```swift
-let mockContainer = await DIContainer.createMockContainer()
+let mockContainer = MockDIContainer()
 await DIContainer.withContainer(mockContainer) {
     // Test with mock dependencies
 }
@@ -191,8 +174,7 @@ await DIContainer.withContainer(mockContainer) {
 
 ### Settings Integration
 CheckoutComponents integrates with PrimerSettings via:
-- **CheckoutComponentsSettingsService** (Internal/Services/CheckoutComponentsSettingsService.swift): Wraps PrimerSettings
-- **SettingsObserver** (Internal/Services/SettingsObserver.swift): Dynamic settings updates
+- **CheckoutSDKInitializer** (Internal/Services/CheckoutSDKInitializer.swift): Holds PrimerSettings and bridges it into the DI container (via ComposableContainer and the core SDK's DependencyContainer)
 - Settings control screen visibility (init, success, error screens)
 - `is3DSSanityCheckEnabled` critical for production security
 
@@ -215,10 +197,10 @@ CheckoutComponents integrates with PrimerSettings via:
 4. Add registration call in DefaultCheckoutScope.registerPaymentMethods()
 
 ### Customizing UI Components
-Use the scope's customization closures:
-- For full control: Replace entire screens or sections
-- For styling: Use ViewBuilder methods with PrimerFieldStyling
-- For partial changes: Replace individual field closures
+Use the composable view's slot arguments:
+- For full control: Replace the entire slot content
+- For styling: Use `PrimerCheckoutTheme` design token overrides
+- For partial changes: Compose with `*Defaults` building blocks and add custom views around them
 
 ### Debugging Navigation
 - Check CheckoutNavigator.navigationEvents AsyncStream
@@ -240,9 +222,13 @@ CheckoutComponents uses a design token system (Internal/Tokens/):
 
 ## Key Files Reference
 
-- Entry: PrimerCheckoutPresenter.swift, PrimerCheckout.swift
-- Scope interfaces: Scope/PrimerCheckoutScope.swift, Scope/PrimerCardFormScope.swift
-- Scope implementations: Internal/Presentation/Scope/DefaultCheckoutScope.swift
+- Entry (UIKit): PrimerCheckoutPresenter.swift
+- Entry (SwiftUI managed): PrimerCheckout.swift
+- Entry (SwiftUI composable): Session/PrimerCheckoutSession.swift, Session/PrimerCheckoutSessionModifier.swift
+- Composable views: PrimerCardForm.swift, PrimerPaymentMethods.swift, PrimerVaultedPaymentMethods.swift
+- Observable sessions: Session/PrimerCardFormSession.swift, Session/PrimerSelectionSession.swift
+- Defaults: Defaults/CardFormDefaults.swift, Defaults/PaymentMethodsDefaults.swift
+- Scope implementations (internal): Internal/Presentation/Scope/DefaultCheckoutScope.swift
 - DI setup: Internal/DI/ComposableContainer.swift
 - Navigation: Internal/Navigation/CheckoutCoordinator.swift
 - Validation: Internal/Core/Validation/

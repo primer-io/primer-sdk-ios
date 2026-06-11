@@ -50,7 +50,9 @@ struct ErrorScreen: View {
       Spacer()
 
       VStack(spacing: PrimerSpacing.medium(tokens: tokens)) {
-        makeRetryButton()
+        if onRetry != nil {
+          makeRetryButton()
+        }
         if onChooseOtherPaymentMethods != nil {
           makeOtherPaymentButton()
         }

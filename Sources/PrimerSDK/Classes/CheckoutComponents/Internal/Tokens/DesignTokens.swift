@@ -10,119 +10,122 @@ import SwiftUI
 // This class is generated automatically by Style Dictionary.
 // It represents the design tokens for the Light theme.
 final class DesignTokens: Decodable {
-  public var primerColorBackground: Color? = Color(
+  var primerColorBackground: Color? = Color(
     red: 1.000, green: 1.000, blue: 1.000, opacity: 1)
-  public var primerColorTextPrimary: Color? = Color(
+  var primerColorTextPrimary: Color? = Color(
     red: 0.129, green: 0.129, blue: 0.129, opacity: 1)
-  public var primerColorTextPlaceholder: Color? = Color(
+  var primerColorTextPlaceholder: Color? = Color(
     red: 0.620, green: 0.620, blue: 0.620, opacity: 1)
-  public var primerColorTextDisabled: Color? = Color(
+  var primerColorTextDisabled: Color? = Color(
     red: 0.741, green: 0.741, blue: 0.741, opacity: 1)
-  public var primerColorTextNegative: Color? = Color(
+  var primerColorTextNegative: Color? = Color(
     red: 0.706, green: 0.196, blue: 0.294, opacity: 1)
-  public var primerColorTextLink: Color? = Color(red: 0.133, green: 0.439, blue: 0.957, opacity: 1)
-  public var primerColorTextSecondary: Color? = Color(
+  var primerColorTextLink: Color? = Color(red: 0.133, green: 0.439, blue: 0.957, opacity: 1)
+  var primerColorTextSecondary: Color? = Color(
     red: 0.459, green: 0.459, blue: 0.459, opacity: 1)
-  public var primerColorBorderOutlinedDefault: Color? = Color(
+  var primerColorBorderOutlinedDefault: Color? = Color(
     red: 0.878, green: 0.878, blue: 0.878, opacity: 1)
-  public var primerColorBorderOutlinedHover: Color? = Color(
+  var primerColorBorderOutlinedHover: Color? = Color(
     red: 0.741, green: 0.741, blue: 0.741, opacity: 1)
-  public var primerColorBorderOutlinedActive: Color? = Color(
+  var primerColorBorderOutlinedActive: Color? = Color(
     red: 0.620, green: 0.620, blue: 0.620, opacity: 1)
-  public var primerColorBorderOutlinedFocus: Color? = Color(
+  var primerColorBorderOutlinedFocus: Color? = Color(
     red: 0.184, green: 0.596, blue: 1.000, opacity: 1)
-  public var primerColorBorderOutlinedDisabled: Color? = Color(
+  var primerColorBorderOutlinedDisabled: Color? = Color(
     red: 0.933, green: 0.933, blue: 0.933, opacity: 1)
-  public var primerColorBorderOutlinedLoading: Color? = Color(
+  var primerColorBorderOutlinedLoading: Color? = Color(
     red: 0.933, green: 0.933, blue: 0.933, opacity: 1)
-  public var primerColorBorderOutlinedSelected: Color? = Color(
+  var primerColorBorderOutlinedSelected: Color? = Color(
     red: 0.184, green: 0.596, blue: 1.000, opacity: 1)
-  public var primerColorBorderOutlinedError: Color? = Color(
+  var primerColorBorderOutlinedError: Color? = Color(
     red: 1.000, green: 0.447, blue: 0.475, opacity: 1)
-  public var primerColorBorderTransparentDefault: Color? = Color(
+  var primerColorBorderTransparentDefault: Color? = Color(
     red: 1.000, green: 1.000, blue: 1.000, opacity: 0)
-  public var primerColorBorderTransparentHover: Color? = Color(
+  var primerColorBorderTransparentHover: Color? = Color(
     red: 1.000, green: 1.000, blue: 1.000, opacity: 0)
-  public var primerColorBorderTransparentActive: Color? = Color(
+  var primerColorBorderTransparentActive: Color? = Color(
     red: 1.000, green: 1.000, blue: 1.000, opacity: 0)
-  public var primerColorBorderTransparentFocus: Color? = Color(
+  var primerColorBorderTransparentFocus: Color? = Color(
     red: 0.184, green: 0.596, blue: 1.000, opacity: 1)
-  public var primerColorBorderTransparentDisabled: Color? = Color(
+  var primerColorBorderTransparentDisabled: Color? = Color(
     red: 1.000, green: 1.000, blue: 1.000, opacity: 0)
-  public var primerColorBorderTransparentSelected: Color? = Color(
+  var primerColorBorderTransparentSelected: Color? = Color(
     red: 1.000, green: 1.000, blue: 1.000, opacity: 0)
-  public var primerColorIconPrimary: Color? = Color(
+  var primerColorIconPrimary: Color? = Color(
     red: 0.129, green: 0.129, blue: 0.129, opacity: 1)
-  public var primerColorIconDisabled: Color? = Color(
+  var primerColorIconDisabled: Color? = Color(
     red: 0.741, green: 0.741, blue: 0.741, opacity: 1)
-  public var primerColorIconNegative: Color? = Color(
+  var primerColorIconNegative: Color? = Color(
     red: 1.000, green: 0.447, blue: 0.475, opacity: 1)
-  public var primerColorIconPositive: Color? = Color(
+  var primerColorIconPositive: Color? = Color(
     red: 0.243, green: 0.714, blue: 0.561, opacity: 1)
-  public var primerColorFocus: Color? = Color(red: 0.184, green: 0.596, blue: 1.000, opacity: 1)
-  public var primerColorLoader: Color? = Color(red: 0.184, green: 0.596, blue: 1.000, opacity: 1)
-  public var primerColorGray100: Color? = Color(red: 0.961, green: 0.961, blue: 0.961, opacity: 1)
-  public var primerColorGray200: Color? = Color(red: 0.933, green: 0.933, blue: 0.933, opacity: 1)
-  public var primerColorGray300: Color? = Color(red: 0.878, green: 0.878, blue: 0.878, opacity: 1)
-  public var primerColorGray400: Color? = Color(red: 0.741, green: 0.741, blue: 0.741, opacity: 1)
-  public var primerColorGray500: Color? = Color(red: 0.620, green: 0.620, blue: 0.620, opacity: 1)
-  public var primerColorGray600: Color? = Color(red: 0.459, green: 0.459, blue: 0.459, opacity: 1)
-  public var primerColorGray700: Color? = Color(red: 0.294, green: 0.294, blue: 0.294, opacity: 1)
-  public var primerColorGray900: Color? = Color(red: 0.129, green: 0.129, blue: 0.129, opacity: 1)
-  public var primerColorGray000: Color? = Color(red: 1.000, green: 1.000, blue: 1.000, opacity: 1)
-  public var primerColorGreen500: Color? = Color(red: 0.243, green: 0.714, blue: 0.561, opacity: 1)
-  public var primerColorBrand: Color? = Color(red: 0.184, green: 0.596, blue: 1.000, opacity: 1)
-  public var primerColorRed100: Color? = Color(red: 1.000, green: 0.925, blue: 0.925, opacity: 1)
-  public var primerColorRed500: Color? = Color(red: 1.000, green: 0.447, blue: 0.475, opacity: 1)
-  public var primerColorRed900: Color? = Color(red: 0.706, green: 0.196, blue: 0.294, opacity: 1)
-  public var primerColorBlue500: Color? = Color(red: 0.224, green: 0.616, blue: 1.000, opacity: 1)
-  public var primerColorBlue900: Color? = Color(red: 0.133, green: 0.439, blue: 0.957, opacity: 1)
-  public var primerRadiusMedium: CGFloat? = 8
-  public var primerRadiusSmall: CGFloat? = 4
-  public var primerRadiusLarge: CGFloat? = 12
-  public var primerRadiusXsmall: CGFloat? = 2
-  public var primerRadiusBase: CGFloat? = 4
-  public var primerTypographyBrand: String? = "Inter"
-  public var primerTypographyTitleXlargeFont: String? = "Inter"
-  public var primerTypographyTitleXlargeLetterSpacing: CGFloat? = -0.6
-  public var primerTypographyTitleXlargeWeight: CGFloat? = 550
-  public var primerTypographyTitleXlargeSize: CGFloat? = 24
-  public var primerTypographyTitleXlargeLineHeight: CGFloat? = 32
-  public var primerTypographyTitleLargeFont: String? = "Inter"
-  public var primerTypographyTitleLargeLetterSpacing: CGFloat? = -0.2
-  public var primerTypographyTitleLargeWeight: CGFloat? = 550
-  public var primerTypographyTitleLargeSize: CGFloat? = 16
-  public var primerTypographyTitleLargeLineHeight: CGFloat? = 20
-  public var primerTypographyBodyLargeFont: String? = "Inter"
-  public var primerTypographyBodyLargeLetterSpacing: CGFloat? = -0.2
-  public var primerTypographyBodyLargeWeight: CGFloat? = 400
-  public var primerTypographyBodyLargeSize: CGFloat? = 16
-  public var primerTypographyBodyLargeLineHeight: CGFloat? = 20
-  public var primerTypographyBodyMediumFont: String? = "Inter"
-  public var primerTypographyBodyMediumLetterSpacing: CGFloat? = 0
-  public var primerTypographyBodyMediumWeight: CGFloat? = 400
-  public var primerTypographyBodyMediumSize: CGFloat? = 14
-  public var primerTypographyBodyMediumLineHeight: CGFloat? = 20
-  public var primerTypographyBodySmallFont: String? = "Inter"
-  public var primerTypographyBodySmallLetterSpacing: CGFloat? = 0
-  public var primerTypographyBodySmallWeight: CGFloat? = 400
-  public var primerTypographyBodySmallSize: CGFloat? = 12
-  public var primerTypographyBodySmallLineHeight: CGFloat? = 16
-  public var primerSpaceXxsmall: CGFloat? = 2
-  public var primerSpaceXsmall: CGFloat? = 4
-  public var primerSpaceSmall: CGFloat? = 8
-  public var primerSpaceMedium: CGFloat? = 12
-  public var primerSpaceLarge: CGFloat? = 16
-  public var primerSpaceXlarge: CGFloat? = 20
-  public var primerSpaceXxlarge: CGFloat? = 24
-  public var primerSpaceBase: CGFloat? = 4
-  public var primerSizeSmall: CGFloat? = 16
-  public var primerSizeMedium: CGFloat? = 20
-  public var primerSizeLarge: CGFloat? = 24
-  public var primerSizeXlarge: CGFloat? = 32
-  public var primerSizeXxlarge: CGFloat? = 44
-  public var primerSizeXxxlarge: CGFloat? = 56
-  public var primerSizeBase: CGFloat? = 4
+  var primerColorFocus: Color? = Color(red: 0.184, green: 0.596, blue: 1.000, opacity: 1)
+  var primerColorLoader: Color? = Color(red: 0.184, green: 0.596, blue: 1.000, opacity: 1)
+  var primerColorGray100: Color? = Color(red: 0.961, green: 0.961, blue: 0.961, opacity: 1)
+  var primerColorGray200: Color? = Color(red: 0.933, green: 0.933, blue: 0.933, opacity: 1)
+  var primerColorGray300: Color? = Color(red: 0.878, green: 0.878, blue: 0.878, opacity: 1)
+  var primerColorGray400: Color? = Color(red: 0.741, green: 0.741, blue: 0.741, opacity: 1)
+  var primerColorGray500: Color? = Color(red: 0.620, green: 0.620, blue: 0.620, opacity: 1)
+  var primerColorGray600: Color? = Color(red: 0.459, green: 0.459, blue: 0.459, opacity: 1)
+  var primerColorGray700: Color? = Color(red: 0.294, green: 0.294, blue: 0.294, opacity: 1)
+  var primerColorGray900: Color? = Color(red: 0.129, green: 0.129, blue: 0.129, opacity: 1)
+  var primerColorGray000: Color? = Color(red: 1.000, green: 1.000, blue: 1.000, opacity: 1)
+  var primerColorGreen500: Color? = Color(red: 0.243, green: 0.714, blue: 0.561, opacity: 1)
+  var primerColorBrand: Color? = Color(red: 0.184, green: 0.596, blue: 1.000, opacity: 1)
+  var primerColorRed100: Color? = Color(red: 1.000, green: 0.925, blue: 0.925, opacity: 1)
+  var primerColorRed500: Color? = Color(red: 1.000, green: 0.447, blue: 0.475, opacity: 1)
+  var primerColorRed900: Color? = Color(red: 0.706, green: 0.196, blue: 0.294, opacity: 1)
+  var primerColorBlue500: Color? = Color(red: 0.224, green: 0.616, blue: 1.000, opacity: 1)
+  var primerColorBlue900: Color? = Color(red: 0.133, green: 0.439, blue: 0.957, opacity: 1)
+  var primerBorderWidthThin: CGFloat? = 1
+  var primerBorderWidthMedium: CGFloat? = 2
+  var primerBorderWidthThick: CGFloat? = 3
+  var primerRadiusMedium: CGFloat? = 8
+  var primerRadiusSmall: CGFloat? = 4
+  var primerRadiusLarge: CGFloat? = 12
+  var primerRadiusXsmall: CGFloat? = 2
+  var primerRadiusBase: CGFloat? = 4
+  var primerTypographyBrand: String? = "Inter"
+  var primerTypographyTitleXlargeFont: String? = "Inter"
+  var primerTypographyTitleXlargeLetterSpacing: CGFloat? = -0.6
+  var primerTypographyTitleXlargeWeight: CGFloat? = 550
+  var primerTypographyTitleXlargeSize: CGFloat? = 24
+  var primerTypographyTitleXlargeLineHeight: CGFloat? = 32
+  var primerTypographyTitleLargeFont: String? = "Inter"
+  var primerTypographyTitleLargeLetterSpacing: CGFloat? = -0.2
+  var primerTypographyTitleLargeWeight: CGFloat? = 550
+  var primerTypographyTitleLargeSize: CGFloat? = 16
+  var primerTypographyTitleLargeLineHeight: CGFloat? = 20
+  var primerTypographyBodyLargeFont: String? = "Inter"
+  var primerTypographyBodyLargeLetterSpacing: CGFloat? = -0.2
+  var primerTypographyBodyLargeWeight: CGFloat? = 400
+  var primerTypographyBodyLargeSize: CGFloat? = 16
+  var primerTypographyBodyLargeLineHeight: CGFloat? = 20
+  var primerTypographyBodyMediumFont: String? = "Inter"
+  var primerTypographyBodyMediumLetterSpacing: CGFloat? = 0
+  var primerTypographyBodyMediumWeight: CGFloat? = 400
+  var primerTypographyBodyMediumSize: CGFloat? = 14
+  var primerTypographyBodyMediumLineHeight: CGFloat? = 20
+  var primerTypographyBodySmallFont: String? = "Inter"
+  var primerTypographyBodySmallLetterSpacing: CGFloat? = 0
+  var primerTypographyBodySmallWeight: CGFloat? = 400
+  var primerTypographyBodySmallSize: CGFloat? = 12
+  var primerTypographyBodySmallLineHeight: CGFloat? = 16
+  var primerSpaceXxsmall: CGFloat? = 2
+  var primerSpaceXsmall: CGFloat? = 4
+  var primerSpaceSmall: CGFloat? = 8
+  var primerSpaceMedium: CGFloat? = 12
+  var primerSpaceLarge: CGFloat? = 16
+  var primerSpaceXlarge: CGFloat? = 20
+  var primerSpaceXxlarge: CGFloat? = 24
+  var primerSpaceBase: CGFloat? = 4
+  var primerSizeSmall: CGFloat? = 16
+  var primerSizeMedium: CGFloat? = 20
+  var primerSizeLarge: CGFloat? = 24
+  var primerSizeXlarge: CGFloat? = 32
+  var primerSizeXxlarge: CGFloat? = 44
+  var primerSizeXxxlarge: CGFloat? = 56
+  var primerSizeBase: CGFloat? = 4
 
   // Coding keys to map JSON keys to properties.
   enum CodingKeys: String, CodingKey {
@@ -169,6 +172,9 @@ final class DesignTokens: Decodable {
     case primerColorRed900
     case primerColorBlue500
     case primerColorBlue900
+    case primerBorderWidthThin
+    case primerBorderWidthMedium
+    case primerBorderWidthThick
     case primerRadiusMedium
     case primerRadiusSmall
     case primerRadiusLarge
@@ -267,83 +273,86 @@ final class DesignTokens: Decodable {
     primerColorRed900 = try container.decodeColorIfPresent(forKey: .primerColorRed900) ?? primerColorRed900
     primerColorBlue500 = try container.decodeColorIfPresent(forKey: .primerColorBlue500) ?? primerColorBlue500
     primerColorBlue900 = try container.decodeColorIfPresent(forKey: .primerColorBlue900) ?? primerColorBlue900
+    primerBorderWidthThin = try container.decodeIfPresent(CGFloat.self, forKey: .primerBorderWidthThin) ?? primerBorderWidthThin
+    primerBorderWidthMedium = try container.decodeIfPresent(CGFloat.self, forKey: .primerBorderWidthMedium) ?? primerBorderWidthMedium
+    primerBorderWidthThick = try container.decodeIfPresent(CGFloat.self, forKey: .primerBorderWidthThick) ?? primerBorderWidthThick
     primerRadiusMedium = try container.decodeIfPresent(
-      CGFloat.self, forKey: .primerRadiusMedium)
-    primerRadiusSmall = try container.decodeIfPresent(CGFloat.self, forKey: .primerRadiusSmall)
-    primerRadiusLarge = try container.decodeIfPresent(CGFloat.self, forKey: .primerRadiusLarge)
+      CGFloat.self, forKey: .primerRadiusMedium) ?? primerRadiusMedium
+    primerRadiusSmall = try container.decodeIfPresent(CGFloat.self, forKey: .primerRadiusSmall) ?? primerRadiusSmall
+    primerRadiusLarge = try container.decodeIfPresent(CGFloat.self, forKey: .primerRadiusLarge) ?? primerRadiusLarge
     primerRadiusXsmall = try container.decodeIfPresent(
-      CGFloat.self, forKey: .primerRadiusXsmall)
-    primerRadiusBase = try container.decodeIfPresent(CGFloat.self, forKey: .primerRadiusBase)
+      CGFloat.self, forKey: .primerRadiusXsmall) ?? primerRadiusXsmall
+    primerRadiusBase = try container.decodeIfPresent(CGFloat.self, forKey: .primerRadiusBase) ?? primerRadiusBase
     primerTypographyBrand = try container.decodeIfPresent(
-      String.self, forKey: .primerTypographyBrand)
+      String.self, forKey: .primerTypographyBrand) ?? primerTypographyBrand
     primerTypographyTitleXlargeFont = try container.decodeIfPresent(
-      String.self, forKey: .primerTypographyTitleXlargeFont)
+      String.self, forKey: .primerTypographyTitleXlargeFont) ?? primerTypographyTitleXlargeFont
     primerTypographyTitleXlargeLetterSpacing = try container.decodeIfPresent(
-      CGFloat.self, forKey: .primerTypographyTitleXlargeLetterSpacing)
+      CGFloat.self, forKey: .primerTypographyTitleXlargeLetterSpacing) ?? primerTypographyTitleXlargeLetterSpacing
     primerTypographyTitleXlargeWeight = try container.decodeIfPresent(
-      CGFloat.self, forKey: .primerTypographyTitleXlargeWeight)
+      CGFloat.self, forKey: .primerTypographyTitleXlargeWeight) ?? primerTypographyTitleXlargeWeight
     primerTypographyTitleXlargeSize = try container.decodeIfPresent(
-      CGFloat.self, forKey: .primerTypographyTitleXlargeSize)
+      CGFloat.self, forKey: .primerTypographyTitleXlargeSize) ?? primerTypographyTitleXlargeSize
     primerTypographyTitleXlargeLineHeight = try container.decodeIfPresent(
-      CGFloat.self, forKey: .primerTypographyTitleXlargeLineHeight)
+      CGFloat.self, forKey: .primerTypographyTitleXlargeLineHeight) ?? primerTypographyTitleXlargeLineHeight
     primerTypographyTitleLargeFont = try container.decodeIfPresent(
-      String.self, forKey: .primerTypographyTitleLargeFont)
+      String.self, forKey: .primerTypographyTitleLargeFont) ?? primerTypographyTitleLargeFont
     primerTypographyTitleLargeLetterSpacing = try container.decodeIfPresent(
-      CGFloat.self, forKey: .primerTypographyTitleLargeLetterSpacing)
+      CGFloat.self, forKey: .primerTypographyTitleLargeLetterSpacing) ?? primerTypographyTitleLargeLetterSpacing
     primerTypographyTitleLargeWeight = try container.decodeIfPresent(
-      CGFloat.self, forKey: .primerTypographyTitleLargeWeight)
+      CGFloat.self, forKey: .primerTypographyTitleLargeWeight) ?? primerTypographyTitleLargeWeight
     primerTypographyTitleLargeSize = try container.decodeIfPresent(
-      CGFloat.self, forKey: .primerTypographyTitleLargeSize)
+      CGFloat.self, forKey: .primerTypographyTitleLargeSize) ?? primerTypographyTitleLargeSize
     primerTypographyTitleLargeLineHeight = try container.decodeIfPresent(
-      CGFloat.self, forKey: .primerTypographyTitleLargeLineHeight)
+      CGFloat.self, forKey: .primerTypographyTitleLargeLineHeight) ?? primerTypographyTitleLargeLineHeight
     primerTypographyBodyLargeFont = try container.decodeIfPresent(
-      String.self, forKey: .primerTypographyBodyLargeFont)
+      String.self, forKey: .primerTypographyBodyLargeFont) ?? primerTypographyBodyLargeFont
     primerTypographyBodyLargeLetterSpacing = try container.decodeIfPresent(
-      CGFloat.self, forKey: .primerTypographyBodyLargeLetterSpacing)
+      CGFloat.self, forKey: .primerTypographyBodyLargeLetterSpacing) ?? primerTypographyBodyLargeLetterSpacing
     primerTypographyBodyLargeWeight = try container.decodeIfPresent(
-      CGFloat.self, forKey: .primerTypographyBodyLargeWeight)
+      CGFloat.self, forKey: .primerTypographyBodyLargeWeight) ?? primerTypographyBodyLargeWeight
     primerTypographyBodyLargeSize = try container.decodeIfPresent(
-      CGFloat.self, forKey: .primerTypographyBodyLargeSize)
+      CGFloat.self, forKey: .primerTypographyBodyLargeSize) ?? primerTypographyBodyLargeSize
     primerTypographyBodyLargeLineHeight = try container.decodeIfPresent(
-      CGFloat.self, forKey: .primerTypographyBodyLargeLineHeight)
+      CGFloat.self, forKey: .primerTypographyBodyLargeLineHeight) ?? primerTypographyBodyLargeLineHeight
     primerTypographyBodyMediumFont = try container.decodeIfPresent(
-      String.self, forKey: .primerTypographyBodyMediumFont)
+      String.self, forKey: .primerTypographyBodyMediumFont) ?? primerTypographyBodyMediumFont
     primerTypographyBodyMediumLetterSpacing = try container.decodeIfPresent(
-      CGFloat.self, forKey: .primerTypographyBodyMediumLetterSpacing)
+      CGFloat.self, forKey: .primerTypographyBodyMediumLetterSpacing) ?? primerTypographyBodyMediumLetterSpacing
     primerTypographyBodyMediumWeight = try container.decodeIfPresent(
-      CGFloat.self, forKey: .primerTypographyBodyMediumWeight)
+      CGFloat.self, forKey: .primerTypographyBodyMediumWeight) ?? primerTypographyBodyMediumWeight
     primerTypographyBodyMediumSize = try container.decodeIfPresent(
-      CGFloat.self, forKey: .primerTypographyBodyMediumSize)
+      CGFloat.self, forKey: .primerTypographyBodyMediumSize) ?? primerTypographyBodyMediumSize
     primerTypographyBodyMediumLineHeight = try container.decodeIfPresent(
-      CGFloat.self, forKey: .primerTypographyBodyMediumLineHeight)
+      CGFloat.self, forKey: .primerTypographyBodyMediumLineHeight) ?? primerTypographyBodyMediumLineHeight
     primerTypographyBodySmallFont = try container.decodeIfPresent(
-      String.self, forKey: .primerTypographyBodySmallFont)
+      String.self, forKey: .primerTypographyBodySmallFont) ?? primerTypographyBodySmallFont
     primerTypographyBodySmallLetterSpacing = try container.decodeIfPresent(
-      CGFloat.self, forKey: .primerTypographyBodySmallLetterSpacing)
+      CGFloat.self, forKey: .primerTypographyBodySmallLetterSpacing) ?? primerTypographyBodySmallLetterSpacing
     primerTypographyBodySmallWeight = try container.decodeIfPresent(
-      CGFloat.self, forKey: .primerTypographyBodySmallWeight)
+      CGFloat.self, forKey: .primerTypographyBodySmallWeight) ?? primerTypographyBodySmallWeight
     primerTypographyBodySmallSize = try container.decodeIfPresent(
-      CGFloat.self, forKey: .primerTypographyBodySmallSize)
+      CGFloat.self, forKey: .primerTypographyBodySmallSize) ?? primerTypographyBodySmallSize
     primerTypographyBodySmallLineHeight = try container.decodeIfPresent(
-      CGFloat.self, forKey: .primerTypographyBodySmallLineHeight)
+      CGFloat.self, forKey: .primerTypographyBodySmallLineHeight) ?? primerTypographyBodySmallLineHeight
     primerSpaceXxsmall = try container.decodeIfPresent(
-      CGFloat.self, forKey: .primerSpaceXxsmall)
-    primerSpaceXsmall = try container.decodeIfPresent(CGFloat.self, forKey: .primerSpaceXsmall)
-    primerSpaceSmall = try container.decodeIfPresent(CGFloat.self, forKey: .primerSpaceSmall)
-    primerSpaceMedium = try container.decodeIfPresent(CGFloat.self, forKey: .primerSpaceMedium)
-    primerSpaceLarge = try container.decodeIfPresent(CGFloat.self, forKey: .primerSpaceLarge)
-    primerSpaceXlarge = try container.decodeIfPresent(CGFloat.self, forKey: .primerSpaceXlarge)
+      CGFloat.self, forKey: .primerSpaceXxsmall) ?? primerSpaceXxsmall
+    primerSpaceXsmall = try container.decodeIfPresent(CGFloat.self, forKey: .primerSpaceXsmall) ?? primerSpaceXsmall
+    primerSpaceSmall = try container.decodeIfPresent(CGFloat.self, forKey: .primerSpaceSmall) ?? primerSpaceSmall
+    primerSpaceMedium = try container.decodeIfPresent(CGFloat.self, forKey: .primerSpaceMedium) ?? primerSpaceMedium
+    primerSpaceLarge = try container.decodeIfPresent(CGFloat.self, forKey: .primerSpaceLarge) ?? primerSpaceLarge
+    primerSpaceXlarge = try container.decodeIfPresent(CGFloat.self, forKey: .primerSpaceXlarge) ?? primerSpaceXlarge
     primerSpaceXxlarge = try container.decodeIfPresent(
-      CGFloat.self, forKey: .primerSpaceXxlarge)
-    primerSpaceBase = try container.decodeIfPresent(CGFloat.self, forKey: .primerSpaceBase)
-    primerSizeSmall = try container.decodeIfPresent(CGFloat.self, forKey: .primerSizeSmall)
-    primerSizeMedium = try container.decodeIfPresent(CGFloat.self, forKey: .primerSizeMedium)
-    primerSizeLarge = try container.decodeIfPresent(CGFloat.self, forKey: .primerSizeLarge)
-    primerSizeXlarge = try container.decodeIfPresent(CGFloat.self, forKey: .primerSizeXlarge)
-    primerSizeXxlarge = try container.decodeIfPresent(CGFloat.self, forKey: .primerSizeXxlarge)
+      CGFloat.self, forKey: .primerSpaceXxlarge) ?? primerSpaceXxlarge
+    primerSpaceBase = try container.decodeIfPresent(CGFloat.self, forKey: .primerSpaceBase) ?? primerSpaceBase
+    primerSizeSmall = try container.decodeIfPresent(CGFloat.self, forKey: .primerSizeSmall) ?? primerSizeSmall
+    primerSizeMedium = try container.decodeIfPresent(CGFloat.self, forKey: .primerSizeMedium) ?? primerSizeMedium
+    primerSizeLarge = try container.decodeIfPresent(CGFloat.self, forKey: .primerSizeLarge) ?? primerSizeLarge
+    primerSizeXlarge = try container.decodeIfPresent(CGFloat.self, forKey: .primerSizeXlarge) ?? primerSizeXlarge
+    primerSizeXxlarge = try container.decodeIfPresent(CGFloat.self, forKey: .primerSizeXxlarge) ?? primerSizeXxlarge
     primerSizeXxxlarge = try container.decodeIfPresent(
-      CGFloat.self, forKey: .primerSizeXxxlarge)
-    primerSizeBase = try container.decodeIfPresent(CGFloat.self, forKey: .primerSizeBase)
+      CGFloat.self, forKey: .primerSizeXxxlarge) ?? primerSizeXxxlarge
+    primerSizeBase = try container.decodeIfPresent(CGFloat.self, forKey: .primerSizeBase) ?? primerSizeBase
   }
 }
 
