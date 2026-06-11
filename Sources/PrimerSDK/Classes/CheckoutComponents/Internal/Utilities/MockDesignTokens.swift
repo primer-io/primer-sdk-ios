@@ -6,10 +6,11 @@
 
 // swiftlint:disable all
 
-#if DEBUG
-  import SwiftUI
 @_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerCore
+
+#if DEBUG
+  import SwiftUI
 
   /// Mock design tokens for SwiftUI previews and testing
   /// Provides convenient access to both light and dark theme tokens

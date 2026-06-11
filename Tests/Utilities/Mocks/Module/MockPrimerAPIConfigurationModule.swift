@@ -6,7 +6,7 @@
 
 @testable import PrimerSDK
 import XCTest
-@_spi(PrimerInternal) import PrimerNetworking
+@_spi(PrimerInternal) @testable import PrimerNetworking
 
 final class MockPrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol {
     static var apiClient: PrimerAPIClientProtocol?

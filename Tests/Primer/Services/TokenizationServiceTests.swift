@@ -7,7 +7,7 @@
 import PrimerFoundation
 @testable import PrimerSDK
 import XCTest
-@_spi(PrimerInternal) import PrimerNetworking
+@_spi(PrimerInternal) @testable import PrimerNetworking
 
 final class TokenizationServiceTests: XCTestCase {
     var sut: TokenizationService!

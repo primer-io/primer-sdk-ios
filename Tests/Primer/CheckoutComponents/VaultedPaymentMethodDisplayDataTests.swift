@@ -5,9 +5,10 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 @testable import PrimerSDK
+@_spi(PrimerInternal) @testable import PrimerNetworking
 import XCTest
-@_spi(PrimerInternal) import PrimerFoundation
-@_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) @testable import PrimerFoundation
+@_spi(PrimerInternal) @testable import PrimerCore
 
 @available(iOS 15.0, *)
 final class VaultedPaymentMethodDisplayDataTests: XCTestCase {

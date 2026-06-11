@@ -6,8 +6,9 @@
 
 import Foundation
 import PrimerFoundation
+@_spi(PrimerInternal) @testable import PrimerNetworking
 @testable import PrimerSDK
-@_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) @testable import PrimerCore
 import XCTest
 
 final class StripeAchHeadlessComponentTests: XCTestCase {

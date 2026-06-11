@@ -6,7 +6,8 @@
 
 import Foundation
 import PrimerFoundation
-@_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) @testable import PrimerNetworking
+@_spi(PrimerInternal) @testable import PrimerCore
 @testable import PrimerSDK
 import XCTest
 

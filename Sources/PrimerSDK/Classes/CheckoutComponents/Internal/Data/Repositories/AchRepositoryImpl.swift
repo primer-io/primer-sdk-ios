@@ -5,12 +5,12 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import UIKit
-
-#if canImport(PrimerStripeSDK)
-import PrimerStripeSDK
 @_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerNetworking
 @_spi(PrimerInternal) import PrimerCore
+
+#if canImport(PrimerStripeSDK)
+import PrimerStripeSDK
 #endif
 
 @available(iOS 15.0, *)

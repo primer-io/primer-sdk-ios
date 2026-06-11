@@ -5,8 +5,9 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import PrimerFoundation
+@_spi(PrimerInternal) @testable import PrimerNetworking
 @testable import PrimerSDK
-@_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) @testable import PrimerCore
 
 class MockKlarnaTokenizationComponent: KlarnaTokenizationComponentProtocol {
     var validateResult: Result<Void, Error>?

@@ -4,10 +4,11 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-#if DEBUG
-  import SwiftUI
 @_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerCore
+
+#if DEBUG
+  import SwiftUI
 
   @available(iOS 15.0, *)
   #Preview("All Fields - Light") {

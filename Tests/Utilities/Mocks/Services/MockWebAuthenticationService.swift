@@ -6,7 +6,7 @@
 
 import AuthenticationServices
 import PrimerFoundation
-@_spi(PrimerInternal) import PrimerNetworking
+@_spi(PrimerInternal) @testable import PrimerNetworking
 @testable import PrimerSDK
 
 final class MockWebAuthenticationService: WebAuthenticationService {

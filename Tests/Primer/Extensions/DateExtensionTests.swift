@@ -6,7 +6,7 @@
 
 @testable import PrimerSDK
 import XCTest
-@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) @testable import PrimerFoundation
 
 final class DateExtensionTests: XCTestCase {
     func testDateToString() {

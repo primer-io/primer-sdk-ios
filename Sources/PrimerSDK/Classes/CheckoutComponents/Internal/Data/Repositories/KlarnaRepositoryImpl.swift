@@ -5,6 +5,9 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import UIKit
+@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerNetworking
+@_spi(PrimerInternal) import PrimerCore
 
 @available(iOS 15.0, *)
 @MainActor
@@ -362,9 +365,6 @@ final class KlarnaRepositoryImpl: KlarnaRepository, LogReporter {
 
 #if canImport(PrimerKlarnaSDK)
   @preconcurrency import PrimerKlarnaSDK
-@_spi(PrimerInternal) import PrimerFoundation
-@_spi(PrimerInternal) import PrimerNetworking
-@_spi(PrimerInternal) import PrimerCore
 
   @available(iOS 15.0, *)
   extension KlarnaRepositoryImpl: PrimerKlarnaProviderAuthorizationDelegate {

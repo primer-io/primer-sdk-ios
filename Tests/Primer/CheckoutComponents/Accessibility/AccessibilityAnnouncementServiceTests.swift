@@ -7,8 +7,8 @@
 @testable import PrimerSDK
 import UIKit
 import XCTest
-@_spi(PrimerInternal) import PrimerFoundation
-@_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) @testable import PrimerFoundation
+@_spi(PrimerInternal) @testable import PrimerCore
 
 @available(iOS 15.0, *)
 final class AccessibilityAnnouncementServiceTests: XCTestCase {

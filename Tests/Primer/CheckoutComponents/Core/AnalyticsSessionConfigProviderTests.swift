@@ -6,9 +6,9 @@
 
 @testable import PrimerSDK
 import XCTest
-@_spi(PrimerInternal) import PrimerCore
-@_spi(PrimerInternal) import PrimerNetworking
-@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) @testable import PrimerCore
+@_spi(PrimerInternal) @testable import PrimerNetworking
+@_spi(PrimerInternal) @testable import PrimerFoundation
 
 @available(iOS 15.0, *)
 final class AnalyticsSessionConfigProviderTests: XCTestCase {

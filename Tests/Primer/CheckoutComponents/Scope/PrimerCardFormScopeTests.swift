@@ -7,8 +7,8 @@
 @testable import PrimerSDK
 import SwiftUI
 import XCTest
-@_spi(PrimerInternal) import PrimerFoundation
-@_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) @testable import PrimerFoundation
+@_spi(PrimerInternal) @testable import PrimerCore
 
 // MARK: - PrimerCardFormScope Protocol Extension Tests
 

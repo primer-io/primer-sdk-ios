@@ -5,10 +5,11 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable all
-#if DEBUG
-  import SwiftUI
 @_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerCore
+
+#if DEBUG
+  import SwiftUI
 
   /// Mock implementation of PrimerCardFormScope for SwiftUI previews
   /// Provides configurable behavior and debug logging to help test different UI states

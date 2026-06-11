@@ -4,10 +4,11 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-#if DEBUG
-  import SwiftUI
 @_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerCore
+
+#if DEBUG
+  import SwiftUI
 
   /// Preview implementation of ValidationService for SwiftUI previews
   /// Configurable to return either valid or invalid results for testing different UI states
