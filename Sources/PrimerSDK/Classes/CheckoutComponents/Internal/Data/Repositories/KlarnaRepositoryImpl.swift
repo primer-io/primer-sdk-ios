@@ -362,6 +362,9 @@ final class KlarnaRepositoryImpl: KlarnaRepository, LogReporter {
 
 #if canImport(PrimerKlarnaSDK)
   @preconcurrency import PrimerKlarnaSDK
+@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerNetworking
+@_spi(PrimerInternal) import PrimerCore
 
   @available(iOS 15.0, *)
   extension KlarnaRepositoryImpl: PrimerKlarnaProviderAuthorizationDelegate {

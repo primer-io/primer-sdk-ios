@@ -21,7 +21,7 @@ public protocol PrimerErrorProtocol: CustomNSError, LocalizedError {
     var exposedError: Error { get }
     var diagnosticsId: String { get }
     var analyticsContext: [String: Any] { get }
-    public var isReportable: Bool { get }
+    var isReportable: Bool { get }
 }
 
 /// Errors that can occur during payment processing with the Primer SDK.

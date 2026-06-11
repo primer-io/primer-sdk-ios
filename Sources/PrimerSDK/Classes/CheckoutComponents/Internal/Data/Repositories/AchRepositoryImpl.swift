@@ -8,6 +8,9 @@ import UIKit
 
 #if canImport(PrimerStripeSDK)
 import PrimerStripeSDK
+@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerNetworking
+@_spi(PrimerInternal) import PrimerCore
 #endif
 
 @available(iOS 15.0, *)

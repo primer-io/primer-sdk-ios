@@ -6,6 +6,7 @@
 
 import Foundation
 @_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerCore
 
 // NOTE: These overloads forward logs to the CheckoutComponents remote LoggingService,
 // so they must live in the PrimerSDK target where DIContainer/LoggingService are visible.

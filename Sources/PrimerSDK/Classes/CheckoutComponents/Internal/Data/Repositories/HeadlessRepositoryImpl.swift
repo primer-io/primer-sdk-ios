@@ -8,6 +8,8 @@ import Foundation
 
 #if canImport(Primer3DS)
   import Primer3DS
+@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerCore
 #endif
 
 @available(iOS 15.0, *)

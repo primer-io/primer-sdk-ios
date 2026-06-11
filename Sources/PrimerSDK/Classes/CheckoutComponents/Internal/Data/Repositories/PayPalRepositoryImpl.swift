@@ -6,6 +6,9 @@
 
 import AuthenticationServices
 import Foundation
+@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerNetworking
+@_spi(PrimerInternal) import PrimerCore
 
 @available(iOS 15.0, *)
 final class PayPalRepositoryImpl: PayPalRepository, LogReporter {

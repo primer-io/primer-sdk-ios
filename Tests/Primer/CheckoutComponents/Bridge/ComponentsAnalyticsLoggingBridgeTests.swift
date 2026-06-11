@@ -6,6 +6,8 @@
 
 import XCTest
 @_spi(PrimerInternal) @testable import PrimerSDK
+@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerCore
 
 @available(iOS 15.0, *)
 final class ComponentsAnalyticsLoggingBridgeTests: XCTestCase {

@@ -6,6 +6,8 @@
 
 #if DEBUG
   import SwiftUI
+@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerCore
 
   /// Mock implementation of ContainerProtocol for SwiftUI previews
   /// Provides basic dependency resolution for preview environments

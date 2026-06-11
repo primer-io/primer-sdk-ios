@@ -6,6 +6,8 @@
 
 #if DEBUG
   import SwiftUI
+@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerCore
 
   /// Preview implementation of ValidationService for SwiftUI previews
   /// Configurable to return either valid or invalid results for testing different UI states

@@ -5,6 +5,8 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import SwiftUI
+@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerCore
 
 /// Screen displaying all vaulted/saved payment methods with edit mode support
 @available(iOS 15.0, *)

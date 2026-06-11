@@ -6,6 +6,7 @@
 
 import PrimerFoundation
 @testable import PrimerSDK
+@_spi(PrimerInternal) import PrimerCore
 
 class MockKlarnaTokenizationComponent: KlarnaTokenizationComponentProtocol {
     var validateResult: Result<Void, Error>?

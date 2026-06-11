@@ -6,6 +6,8 @@
 
 import SwiftUI
 import UIKit
+@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerCore
 
 /// UIViewRepresentable wrapper for CVV text field
 @available(iOS 15.0, *)

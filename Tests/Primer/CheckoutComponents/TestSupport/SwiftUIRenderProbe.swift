@@ -6,6 +6,8 @@
 
 import SwiftUI
 import UIKit
+@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerCore
 
 /// Hosts a SwiftUI view offscreen and forces a layout pass so its `body` — and the bodies of its
 /// children — execute, exercising view code that is otherwise only reachable through rendering.

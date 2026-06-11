@@ -6,6 +6,8 @@
 
 import CoreGraphics
 import Foundation
+@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerCore
 
 /// Utility class for processing design token dictionaries.
 /// Provides static methods for merging, reference resolution, color conversion,

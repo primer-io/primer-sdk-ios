@@ -6,6 +6,8 @@
 
 import Foundation
 import UIKit
+@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerCore
 
 @available(iOS 15.0, *)
 protocol ProcessWebRedirectPaymentInteractor {

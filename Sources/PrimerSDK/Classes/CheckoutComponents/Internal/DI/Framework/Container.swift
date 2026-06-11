@@ -7,6 +7,8 @@
 // swiftlint:disable file_length
 
 import Foundation
+@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerCore
 
 final class WeakBox<T: AnyObject> {
   weak var instance: T?

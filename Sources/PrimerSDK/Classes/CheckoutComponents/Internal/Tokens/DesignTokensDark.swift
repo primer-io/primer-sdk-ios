@@ -11,6 +11,8 @@
 // MockDesignTokens for SwiftUI previews and tests, so it is compiled into DEBUG builds only.
 #if DEBUG
   import SwiftUI
+@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerCore
 
   // This class is generated automatically by Style Dictionary.
   // It represents the design tokens for the Dark theme.

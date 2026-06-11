@@ -5,6 +5,8 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import SwiftUI
+@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerCore
 
 /// Closure type for the `onBeforePaymentCreate` callback.
 /// Provides payment method data and a decision handler to continue or abort payment creation.

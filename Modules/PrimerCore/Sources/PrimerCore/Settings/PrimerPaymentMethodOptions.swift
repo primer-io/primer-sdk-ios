@@ -18,7 +18,7 @@ public final class PrimerPaymentMethodOptions: Codable {
         
     // Was producing warning: Immutable property will not be decoded because it is declared with an initial value which cannot be overwritten
     // Was it intentional?
-    var cardPaymentOptions: PrimerCardPaymentOptions = PrimerCardPaymentOptions()
+    @_spi(PrimerInternal) public var cardPaymentOptions: PrimerCardPaymentOptions = PrimerCardPaymentOptions()
 
     public init(
         urlScheme: String? = nil,

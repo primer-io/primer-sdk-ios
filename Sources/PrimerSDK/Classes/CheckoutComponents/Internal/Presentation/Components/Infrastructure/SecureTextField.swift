@@ -5,6 +5,8 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import UIKit
+@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerCore
 
 /// A UITextField subclass that masks the `.text` property to prevent sensitive data
 /// (card numbers, CVVs) from being exposed via debugger, logging, or view hierarchy dumps.
