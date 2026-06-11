@@ -59,7 +59,7 @@ final class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 try await vaultService.fetchVaultedPaymentMethods()
                 renderSelectedPaymentInstrument(insertAt: 1)
             } catch {
-                let primerErr = error.asPrimerError
+                let primerErr = handled(primerError: error.asPrimerError)
                 PrimerDelegateProxy.primerDidFailWithError(primerErr, data: nil) { errorDecision in
                     switch errorDecision.type {
                     case let .fail(message):

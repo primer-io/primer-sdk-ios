@@ -380,7 +380,7 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
                     } catch {}
                 } else {
                     do {
-                        let primerErr = error.asPrimerError
+                        let primerErr = handled(primerError: error.asPrimerError)
                         try await clientSessionActionsModule.unselectPaymentMethodIfNeeded()
                         await showResultScreenIfNeeded(error: primerErr)
                         let merchantErrorMessage = await PrimerDelegateProxy.raisePrimerDidFailWithError(primerErr, data: paymentCheckoutData)
