@@ -8,7 +8,7 @@ import Foundation
 
 private final class BundleHelper {}
 
-public extension Bundle {
+@_spi(PrimerInternal) public extension Bundle {
 
     static var primerResources: Bundle {
         #if COCOAPODS

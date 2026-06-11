@@ -6,6 +6,7 @@
 
 import UIKit
 @_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerResources
 
 public class PrimerNibView: UIView {
 
