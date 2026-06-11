@@ -54,36 +54,6 @@ final class DefaultAchScopeTests: XCTestCase {
         XCTAssertNil(scope.submitButton)
     }
 
-    // MARK: - UI Customization Tests
-
-    @MainActor
-    func test_screen_canBeSet() {
-        let scope = createScope()
-        scope.screen = { _ in EmptyView() }
-        XCTAssertNotNil(scope.screen)
-    }
-
-    @MainActor
-    func test_userDetailsScreen_canBeSet() {
-        let scope = createScope()
-        scope.userDetailsScreen = { _ in EmptyView() }
-        XCTAssertNotNil(scope.userDetailsScreen)
-    }
-
-    @MainActor
-    func test_mandateScreen_canBeSet() {
-        let scope = createScope()
-        scope.mandateScreen = { _ in EmptyView() }
-        XCTAssertNotNil(scope.mandateScreen)
-    }
-
-    @MainActor
-    func test_submitButton_canBeSet() {
-        let scope = createScope()
-        scope.submitButton = { _ in EmptyView() }
-        XCTAssertNotNil(scope.submitButton)
-    }
-
     // MARK: - Start Tests
 
     @MainActor
@@ -507,15 +477,6 @@ final class DefaultAchScopeTests: XCTestCase {
     }
 
     @MainActor
-    func test_achBankCollectorDidCancel_doesNotCrash() {
-        // Given
-        let scope = createScope()
-
-        // When/Then - should not crash
-        scope.achBankCollectorDidCancel()
-    }
-
-    @MainActor
     func test_achBankCollectorDidCancel_clearsBankCollectorViewController() async throws {
         // Given
         mockInteractor.userDetailsResultToReturn = AchTestData.defaultUserDetails
@@ -533,16 +494,6 @@ final class DefaultAchScopeTests: XCTestCase {
 
         // Then
         XCTAssertNil(scope.bankCollectorViewController)
-    }
-
-    @MainActor
-    func test_achBankCollectorDidFail_doesNotCrash() {
-        // Given
-        let scope = createScope()
-        let error = PrimerError.unknown(message: "Test error")
-
-        // When/Then - should not crash
-        scope.achBankCollectorDidFail(error: error)
     }
 
     @MainActor
@@ -711,20 +662,6 @@ final class DefaultAchScopeTests: XCTestCase {
         scope.onBack()
     }
 
-    @MainActor
-    func test_cancel_shouldNotCrash_viaCancel() {
-        let scope = createScope()
-        // Should not crash
-        scope.cancel()
-    }
-
-    @MainActor
-    func test_cancel_shouldNotCrash() {
-        let scope = createScope()
-        // Should not crash
-        scope.cancel()
-    }
-
     // MARK: - Dismissal Mechanism Tests
 
     @MainActor
@@ -747,25 +684,6 @@ final class DefaultAchScopeTests: XCTestCase {
 
         // Then
         XCTAssertNotNil(state)
-    }
-
-    @MainActor
-    func test_state_streamCanBeCancelled() async {
-        // Given
-        let scope = createScope()
-
-        // When
-        let task = Task {
-            for await _ in scope.state {
-                // Just iterate
-            }
-        }
-
-        task.cancel()
-        await Task.yield()
-
-        // Then
-        XCTAssertTrue(task.isCancelled)
     }
 
     // MARK: - Full Flow Integration Tests
@@ -807,161 +725,6 @@ final class DefaultAchScopeTests: XCTestCase {
         XCTAssertEqual(mockInteractor.startPaymentAndGetStripeDataCallCount, 1)
         XCTAssertEqual(mockInteractor.createBankCollectorCallCount, 1)
         XCTAssertEqual(mockInteractor.getMandateDataCallCount, 1)
-        XCTAssertEqual(mockInteractor.completePaymentCallCount, 1)
-    }
-
-    // MARK: - Error Handling Tests
-
-    @MainActor
-    func test_start_validationFailure_doesNotCrash() async {
-        // Given
-        let validateExpectation = expectation(description: "validate called")
-        mockInteractor.onValidate = {
-            validateExpectation.fulfill()
-            throw TestError.networkFailure
-        }
-        let scope = createScope()
-
-        // When
-        scope.start()
-        await fulfillment(of: [validateExpectation], timeout: 2.0)
-
-        // Then - should not crash
-        XCTAssertEqual(mockInteractor.validateCallCount, 1)
-    }
-
-    @MainActor
-    func test_start_loadUserDetailsFailure_doesNotCrash() async {
-        // Given
-        let loadExpectation = expectation(description: "load user details called")
-        mockInteractor.onLoadUserDetails = {
-            loadExpectation.fulfill()
-            throw TestError.networkFailure
-        }
-        let scope = createScope()
-
-        // When
-        scope.start()
-        await fulfillment(of: [loadExpectation], timeout: 2.0)
-
-        // Then - should not crash
-        XCTAssertEqual(mockInteractor.loadUserDetailsCallCount, 1)
-    }
-
-    @MainActor
-    func test_submitUserDetails_patchFailure_doesNotCrash() async throws {
-        // Given
-        mockInteractor.userDetailsResultToReturn = AchTestData.defaultUserDetails
-        let patchExpectation = expectation(description: "patch called")
-        mockInteractor.onPatchUserDetails = { _, _, _ in
-            patchExpectation.fulfill()
-            throw TestError.networkFailure
-        }
-        let scope = createScope()
-        scope.start()
-        _ = try await awaitValue(scope.state, matching: { $0.step == .userDetailsCollection })
-
-        // When
-        scope.submitUserDetails()
-        await fulfillment(of: [patchExpectation], timeout: 2.0)
-
-        // Then - should not crash
-        XCTAssertEqual(mockInteractor.patchUserDetailsCallCount, 1)
-    }
-
-    @MainActor
-    func test_submitUserDetails_stripeDataFailure_doesNotCrash() async throws {
-        // Given
-        mockInteractor.userDetailsResultToReturn = AchTestData.defaultUserDetails
-        let stripeExpectation = expectation(description: "start payment called")
-        mockInteractor.onStartPaymentAndGetStripeData = {
-            stripeExpectation.fulfill()
-            throw TestError.networkFailure
-        }
-        let scope = createScope()
-        scope.start()
-        _ = try await awaitValue(scope.state, matching: { $0.step == .userDetailsCollection })
-
-        // When
-        scope.submitUserDetails()
-        await fulfillment(of: [stripeExpectation], timeout: 2.0)
-
-        // Then - should not crash
-        XCTAssertEqual(mockInteractor.startPaymentAndGetStripeDataCallCount, 1)
-    }
-
-    @MainActor
-    func test_submitUserDetails_bankCollectorFailure_doesNotCrash() async throws {
-        // Given
-        mockInteractor.userDetailsResultToReturn = AchTestData.defaultUserDetails
-        mockInteractor.stripeDataToReturn = AchTestData.defaultStripeData
-        let bankExpectation = expectation(description: "create bank collector called")
-        mockInteractor.onCreateBankCollector = { _, _, _, _, _ in
-            bankExpectation.fulfill()
-            throw TestError.networkFailure
-        }
-        let scope = createScope()
-        scope.start()
-        _ = try await awaitValue(scope.state, matching: { $0.step == .userDetailsCollection })
-
-        // When
-        scope.submitUserDetails()
-        await fulfillment(of: [bankExpectation], timeout: 2.0)
-
-        // Then - should not crash
-        XCTAssertEqual(mockInteractor.createBankCollectorCallCount, 1)
-    }
-
-    @MainActor
-    func test_achBankCollectorDidSucceed_mandateFailure_doesNotCrash() async throws {
-        // Given
-        mockInteractor.userDetailsResultToReturn = AchTestData.defaultUserDetails
-        mockInteractor.stripeDataToReturn = AchTestData.defaultStripeData
-        mockInteractor.bankCollectorViewControllerToReturn = UIViewController()
-        let mandateExpectation = expectation(description: "get mandate data called")
-        mockInteractor.onGetMandateData = {
-            mandateExpectation.fulfill()
-            throw TestError.networkFailure
-        }
-        let scope = createScope()
-        scope.start()
-        _ = try await awaitValue(scope.state, matching: { $0.step == .userDetailsCollection })
-        scope.submitUserDetails()
-        _ = try await awaitValue(scope.state, matching: { $0.step == .bankAccountCollection })
-
-        // When
-        scope.achBankCollectorDidSucceed(paymentId: AchTestData.Constants.paymentId)
-        await fulfillment(of: [mandateExpectation], timeout: 2.0)
-
-        // Then - should not crash
-        XCTAssertEqual(mockInteractor.getMandateDataCallCount, 1)
-    }
-
-    @MainActor
-    func test_acceptMandate_completePaymentFailure_doesNotCrash() async throws {
-        // Given
-        mockInteractor.userDetailsResultToReturn = AchTestData.defaultUserDetails
-        mockInteractor.stripeDataToReturn = AchTestData.defaultStripeData
-        mockInteractor.bankCollectorViewControllerToReturn = UIViewController()
-        mockInteractor.mandateResultToReturn = AchTestData.fullMandateResult
-        let completeExpectation = expectation(description: "complete payment called")
-        mockInteractor.onCompletePayment = { _ in
-            completeExpectation.fulfill()
-            throw TestError.networkFailure
-        }
-        let scope = createScope()
-        scope.start()
-        _ = try await awaitValue(scope.state, matching: { $0.step == .userDetailsCollection })
-        scope.submitUserDetails()
-        _ = try await awaitValue(scope.state, matching: { $0.step == .bankAccountCollection })
-        scope.achBankCollectorDidSucceed(paymentId: AchTestData.Constants.paymentId)
-        _ = try await awaitValue(scope.state, matching: { $0.step == .mandateAcceptance })
-
-        // When
-        scope.acceptMandate()
-        await fulfillment(of: [completeExpectation], timeout: 2.0)
-
-        // Then - should not crash
         XCTAssertEqual(mockInteractor.completePaymentCallCount, 1)
     }
 

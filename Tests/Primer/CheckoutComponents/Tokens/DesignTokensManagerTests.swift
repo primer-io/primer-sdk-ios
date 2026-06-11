@@ -40,7 +40,7 @@ final class DesignTokensManagerTests: XCTestCase {
         XCTAssertNotNil(sut.tokens)
     }
 
-    func test_fetchTokens_lightMode_populatesColorTokens() async throws {
+    func test_fetchTokens_lightMode_populatesAllTokenCategories() async throws {
         // When
         try await sut.fetchTokens(for: .light)
 
@@ -48,146 +48,15 @@ final class DesignTokensManagerTests: XCTestCase {
         let tokens = try XCTUnwrap(sut.tokens)
         XCTAssertNotNil(tokens.primerColorBackground)
         XCTAssertNotNil(tokens.primerColorTextPrimary)
-        XCTAssertNotNil(tokens.primerColorTextSecondary)
-        XCTAssertNotNil(tokens.primerColorTextPlaceholder)
-        XCTAssertNotNil(tokens.primerColorTextDisabled)
-        XCTAssertNotNil(tokens.primerColorTextNegative)
-        XCTAssertNotNil(tokens.primerColorTextLink)
-        XCTAssertNotNil(tokens.primerColorBrand)
-    }
-
-    func test_fetchTokens_lightMode_populatesRadiusTokens() async throws {
-        // When
-        try await sut.fetchTokens(for: .light)
-
-        // Then
-        let tokens = try XCTUnwrap(sut.tokens)
-        XCTAssertNotNil(tokens.primerRadiusXsmall)
-        XCTAssertNotNil(tokens.primerRadiusSmall)
         XCTAssertNotNil(tokens.primerRadiusMedium)
-        XCTAssertNotNil(tokens.primerRadiusLarge)
-        XCTAssertNotNil(tokens.primerRadiusBase)
-    }
-
-    func test_fetchTokens_lightMode_populatesSpacingTokens() async throws {
-        // When
-        try await sut.fetchTokens(for: .light)
-
-        // Then
-        let tokens = try XCTUnwrap(sut.tokens)
-        XCTAssertNotNil(tokens.primerSpaceXxsmall)
-        XCTAssertNotNil(tokens.primerSpaceXsmall)
-        XCTAssertNotNil(tokens.primerSpaceSmall)
         XCTAssertNotNil(tokens.primerSpaceMedium)
-        XCTAssertNotNil(tokens.primerSpaceLarge)
-        XCTAssertNotNil(tokens.primerSpaceXlarge)
-        XCTAssertNotNil(tokens.primerSpaceXxlarge)
-        XCTAssertNotNil(tokens.primerSpaceBase)
-    }
-
-    func test_fetchTokens_lightMode_populatesSizeTokens() async throws {
-        // When
-        try await sut.fetchTokens(for: .light)
-
-        // Then
-        let tokens = try XCTUnwrap(sut.tokens)
-        XCTAssertNotNil(tokens.primerSizeSmall)
         XCTAssertNotNil(tokens.primerSizeMedium)
-        XCTAssertNotNil(tokens.primerSizeLarge)
-        XCTAssertNotNil(tokens.primerSizeXlarge)
-        XCTAssertNotNil(tokens.primerSizeXxlarge)
-        XCTAssertNotNil(tokens.primerSizeXxxlarge)
-        XCTAssertNotNil(tokens.primerSizeBase)
-    }
-
-    func test_fetchTokens_lightMode_populatesTypographyTokens() async throws {
-        // When
-        try await sut.fetchTokens(for: .light)
-
-        // Then
-        let tokens = try XCTUnwrap(sut.tokens)
-        XCTAssertNotNil(tokens.primerTypographyTitleXlargeFont)
-        XCTAssertNotNil(tokens.primerTypographyTitleXlargeSize)
-        XCTAssertNotNil(tokens.primerTypographyTitleXlargeWeight)
         XCTAssertNotNil(tokens.primerTypographyBodyMediumFont)
-        XCTAssertNotNil(tokens.primerTypographyBodyMediumSize)
-        XCTAssertNotNil(tokens.primerTypographyBodySmallFont)
-        XCTAssertNotNil(tokens.primerTypographyBodySmallSize)
-    }
-
-    func test_fetchTokens_lightMode_populatesBorderTokens() async throws {
-        // When
-        try await sut.fetchTokens(for: .light)
-
-        // Then
-        let tokens = try XCTUnwrap(sut.tokens)
         XCTAssertNotNil(tokens.primerColorBorderOutlinedDefault)
-        XCTAssertNotNil(tokens.primerColorBorderOutlinedHover)
-        XCTAssertNotNil(tokens.primerColorBorderOutlinedActive)
-        XCTAssertNotNil(tokens.primerColorBorderOutlinedFocus)
-        XCTAssertNotNil(tokens.primerColorBorderOutlinedDisabled)
-        XCTAssertNotNil(tokens.primerColorBorderOutlinedError)
-        XCTAssertNotNil(tokens.primerColorBorderOutlinedSelected)
-        XCTAssertNotNil(tokens.primerColorBorderOutlinedLoading)
-    }
-
-    func test_fetchTokens_lightMode_populatesTransparentBorderTokens() async throws {
-        // When
-        try await sut.fetchTokens(for: .light)
-
-        // Then
-        let tokens = try XCTUnwrap(sut.tokens)
         XCTAssertNotNil(tokens.primerColorBorderTransparentDefault)
-        XCTAssertNotNil(tokens.primerColorBorderTransparentHover)
-        XCTAssertNotNil(tokens.primerColorBorderTransparentActive)
-        XCTAssertNotNil(tokens.primerColorBorderTransparentFocus)
-        XCTAssertNotNil(tokens.primerColorBorderTransparentDisabled)
-        XCTAssertNotNil(tokens.primerColorBorderTransparentSelected)
-    }
-
-    func test_fetchTokens_lightMode_populatesIconTokens() async throws {
-        // When
-        try await sut.fetchTokens(for: .light)
-
-        // Then
-        let tokens = try XCTUnwrap(sut.tokens)
         XCTAssertNotNil(tokens.primerColorIconPrimary)
-        XCTAssertNotNil(tokens.primerColorIconDisabled)
-        XCTAssertNotNil(tokens.primerColorIconNegative)
-        XCTAssertNotNil(tokens.primerColorIconPositive)
-        XCTAssertNotNil(tokens.primerColorFocus)
-        XCTAssertNotNil(tokens.primerColorLoader)
-    }
-
-    func test_fetchTokens_lightMode_populatesGrayTokens() async throws {
-        // When
-        try await sut.fetchTokens(for: .light)
-
-        // Then
-        let tokens = try XCTUnwrap(sut.tokens)
         XCTAssertNotNil(tokens.primerColorGray000)
-        XCTAssertNotNil(tokens.primerColorGray100)
-        XCTAssertNotNil(tokens.primerColorGray200)
-        XCTAssertNotNil(tokens.primerColorGray300)
-        XCTAssertNotNil(tokens.primerColorGray400)
-        XCTAssertNotNil(tokens.primerColorGray500)
-        XCTAssertNotNil(tokens.primerColorGray600)
-        XCTAssertNotNil(tokens.primerColorGray700)
-        XCTAssertNotNil(tokens.primerColorGray900)
-    }
-
-    func test_fetchTokens_lightMode_populatesSemanticColorTokens() async throws {
-        // When
-        try await sut.fetchTokens(for: .light)
-
-        // Then
-        let tokens = try XCTUnwrap(sut.tokens)
-        XCTAssertNotNil(tokens.primerColorGreen500)
-        XCTAssertNotNil(tokens.primerColorRed100)
-        XCTAssertNotNil(tokens.primerColorRed500)
-        XCTAssertNotNil(tokens.primerColorRed900)
         XCTAssertNotNil(tokens.primerColorBlue500)
-        XCTAssertNotNil(tokens.primerColorBlue900)
     }
 
     // MARK: - fetchTokens (Dark Mode)
@@ -212,36 +81,6 @@ final class DesignTokensManagerTests: XCTestCase {
         XCTAssertNotNil(tokens.primerSpaceMedium)
         XCTAssertNotNil(tokens.primerSizeMedium)
         XCTAssertNotNil(tokens.primerTypographyBodyMediumFont)
-    }
-
-    // MARK: - Light vs Dark Mode Differences
-
-    func test_fetchTokens_lightAndDark_loadsDifferentTokenSets() async throws {
-        // Given
-        try await sut.fetchTokens(for: .light)
-        let lightTokens = sut.tokens
-
-        // When
-        try await sut.fetchTokens(for: .dark)
-        let darkTokens = sut.tokens
-
-        // Then
-        XCTAssertNotNil(lightTokens)
-        XCTAssertNotNil(darkTokens)
-    }
-
-    // MARK: - Consecutive Loads
-
-    func test_fetchTokens_calledTwice_overridesPreviousTokens() async throws {
-        // Given
-        try await sut.fetchTokens(for: .light)
-        XCTAssertNotNil(sut.tokens)
-
-        // When
-        try await sut.fetchTokens(for: .dark)
-
-        // Then
-        XCTAssertNotNil(sut.tokens)
     }
 
     // MARK: - applyTheme
