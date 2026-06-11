@@ -5,6 +5,20 @@ All notable changes to `primer-sdk-ios` are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 2.50.0 (2026-06-11)
+
+### Feat
+
+- Complete PrimerResources Modularisation (#1784)
+- Complete PrimerNetworking modularisation (#1780)
+
+### Fix
+
+- record diagnostics IDs for boundary-surfaced errors in backend analytics [ORC-7439] (#1793)
+- record diagnostics IDs for boundary-surfaced errors in backend analytics
+- close error-analytics logging gaps (searchable diagnostics IDs + decode spam) [ESC-905] (#1792)
+- Add BDC filtering to drop in (#1773)
+
 ## 2.49.0 (2026-06-01)
 
 ### Feat
