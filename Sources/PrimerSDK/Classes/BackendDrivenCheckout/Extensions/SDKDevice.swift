@@ -4,12 +4,13 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import PrimerFoundation
+@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerCore
 import UIKit
 
 extension SDKDevice {
     init() {
-        let device = Device()
+        let device = Device(uniqueDeviceIdentifier: Device.deviceIdentifier)
         self.init(
             type: UIDevice.deviceTypeName,
             make: "Apple",

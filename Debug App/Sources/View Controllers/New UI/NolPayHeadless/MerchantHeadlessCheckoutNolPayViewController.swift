@@ -1,13 +1,14 @@
 //
 //  MerchantHeadlessCheckoutNolPayViewController.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import UIKit
+import PrimerFoundation
 import PrimerSDK
+import UIKit
 #if canImport(IQKeyboardManagerSwift)
-import IQKeyboardManagerSwift
+    import IQKeyboardManagerSwift
 #endif
 
 class MerchantHeadlessCheckoutNolPayViewController: UIViewController {
@@ -76,14 +77,14 @@ class MerchantHeadlessCheckoutNolPayViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         #if canImport(IQKeyboardManagerSwift)
-        IQKeyboardManager.shared.isEnabled = true
+            IQKeyboardManager.shared.isEnabled = true
         #endif
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         #if canImport(IQKeyboardManagerSwift)
-        IQKeyboardManager.shared.isEnabled = false
+            IQKeyboardManager.shared.isEnabled = false
         #endif
     }
 
@@ -236,7 +237,7 @@ class MerchantHeadlessCheckoutNolPayViewController: UIViewController {
     @objc func startLinkingFlowButtonTapped() {
         paymentInProgress = false
         linkCardComponent.start()
-        self.showAlert(title: "Linking started", message: "Linking process started, please tap on 'Scan' button.")
+        showAlert(title: "Linking started", message: "Linking process started, please tap on 'Scan' button.")
     }
 
     @objc func scanCardButtonTapped() {
@@ -273,8 +274,10 @@ class MerchantHeadlessCheckoutNolPayViewController: UIViewController {
         }
 
         unlinkCardComponent.updateCollectedData(
-            collectableData: .cardAndPhoneData(nolPaymentCard: card,
-                                               mobileNumber: unlinkPhoneNumberTextField.text ?? "")
+            collectableData: .cardAndPhoneData(
+                nolPaymentCard: card,
+                mobileNumber: unlinkPhoneNumberTextField.text ?? ""
+            )
         )
     }
 
@@ -293,11 +296,11 @@ class MerchantHeadlessCheckoutNolPayViewController: UIViewController {
         getLinkedCardsComponent.getLinkedCardsFor(mobileNumber: listCardsPhoneNumberTextField.text ?? "") { result in
             switch result {
 
-            case .success(let cards):
+            case let .success(cards):
                 self.linkedCards = cards
                 self.linkedCardsTableView.reloadData()
                 self.showAlert(title: "Success", message: "Fetching of the listed cards done, you have: \(cards.count) linked cards")
-            case .failure(let error):
+            case let .failure(error):
                 self.showAlert(title: "Error", message: error.localizedDescription)
             }
         }
@@ -314,8 +317,9 @@ class MerchantHeadlessCheckoutNolPayViewController: UIViewController {
 
     @objc func submitPaymentPhoneNumberButtonTapped() {
         paymentComponent.updateCollectedData(collectableData: NolPayPaymentCollectableData.paymentData(
-                                                cardNumber: selectedCardForPayment?.cardNumber ?? "",
-                                                mobileNumber: startPaymentPhoneNumberTextField.text ?? ""))
+            cardNumber: selectedCardForPayment?.cardNumber ?? "",
+            mobileNumber: startPaymentPhoneNumberTextField.text ?? ""
+        ))
     }
 
     // MARK: - Helper
@@ -330,7 +334,7 @@ class MerchantHeadlessCheckoutNolPayViewController: UIViewController {
 // MARK: - UITableViewDataSource, UITableViewDelegate
 extension MerchantHeadlessCheckoutNolPayViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return linkedCards.count
+        linkedCards.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -357,8 +361,8 @@ extension MerchantHeadlessCheckoutNolPayViewController: UITableViewDataSource, U
 
 // MARK: - PrimerHeadlessErrorableDelegate, PrimerHeadlessValidatableDelegate, PrimerHeadlessStepableDelegate
 extension MerchantHeadlessCheckoutNolPayViewController: PrimerHeadlessErrorableDelegate,
-                                                        PrimerHeadlessValidatableDelegate,
-                                                        PrimerHeadlessSteppableDelegate {
+    PrimerHeadlessValidatableDelegate,
+    PrimerHeadlessSteppableDelegate {
 
     func didUpdate(validationStatus: PrimerSDK.PrimerValidationStatus, for data: PrimerSDK.PrimerCollectableData?) {
         switch validationStatus {
@@ -373,19 +377,19 @@ extension MerchantHeadlessCheckoutNolPayViewController: PrimerHeadlessErrorableD
             } else if data is NolPayPaymentCollectableData {
                 paymentComponent.submit()
             }
-        case .invalid(errors: let errors):
+        case let .invalid(errors: errors):
             var message = ""
             for error in errors {
                 message += (error.errorDescription ?? error.localizedDescription) + "\n"
             }
-            self.showAlert(title: "Validation Error", message: "\(message)")
-        case .error(error: let error):
-            self.showAlert(title: "Error", message: error.errorDescription ?? error.localizedDescription)
+            showAlert(title: "Validation Error", message: "\(message)")
+        case let .error(error: error):
+            showAlert(title: "Error", message: error.errorDescription ?? error.localizedDescription)
         }
     }
 
     func didReceiveError(error: PrimerError) {
-        self.showAlert(title: "Error", message: error.errorDescription ?? error.localizedDescription)
+        showAlert(title: "Error", message: error.errorDescription ?? error.localizedDescription)
     }
 
     func didReceiveStep(step: PrimerHeadlessStep) {
@@ -393,11 +397,11 @@ extension MerchantHeadlessCheckoutNolPayViewController: PrimerHeadlessErrorableD
             switch step {
 
             case let .collectPhoneData(cardNumber):
-                self.showAlert(title: "Next step", message: "Enter phone number and country code, for card number: \(cardNumber)")
+                showAlert(title: "Next step", message: "Enter phone number and country code, for card number: \(cardNumber)")
             case let .collectOtpData(phoneNumber):
-                self.showAlert(title: "OTP Sent", message: "Check \(phoneNumber) SMS inbox")
+                showAlert(title: "OTP Sent", message: "Check \(phoneNumber) SMS inbox")
             case .cardLinked:
-                self.showAlert(title: "Success", message: "Card linked successfully! To list it use LIST LINKED CARDS FLOW")
+                showAlert(title: "Success", message: "Card linked successfully! To list it use LIST LINKED CARDS FLOW")
             default: break
             }
 
@@ -405,20 +409,20 @@ extension MerchantHeadlessCheckoutNolPayViewController: PrimerHeadlessErrorableD
             switch step {
 
             case .collectCardAndPhoneData:
-                self.showAlert(title: "Next step", message: "Select card to be unlinked, and enter phone number and country code")
+                showAlert(title: "Next step", message: "Select card to be unlinked, and enter phone number and country code")
             case .collectOtpData:
-                self.showAlert(title: "OTP Sent", message: "Check you SMS inbox")
+                showAlert(title: "OTP Sent", message: "Check you SMS inbox")
             case .cardUnlinked:
-                self.showAlert(title: "Success", message: "Card unlinked successfully!")
+                showAlert(title: "Success", message: "Card unlinked successfully!")
             }
         } else if let step = step as? NolPayPaymentStep {
             switch step {
 
             case .collectCardAndPhoneData:
-                self.showAlert(title: "Payment started", message: "Please wait")
+                showAlert(title: "Payment started", message: "Please wait")
             case .paymentRequested:
                 paymentInProgress = false
-                self.showAlert(title: "Payment requested", message: "You made a succesfull payment request with your Nol card, show spinner and wait for the successful payment")
+                showAlert(title: "Payment requested", message: "You made a succesfull payment request with your Nol card, show spinner and wait for the successful payment")
             }
         }
     }

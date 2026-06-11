@@ -5,6 +5,8 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import SwiftUI
+@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerCore
 
 /// The SDK's default modal card screen: header + the shared `CardFormFieldsView` (the single,
 /// config-aware field renderer, also used by the public `CardFormDefaults`) + the amount-aware

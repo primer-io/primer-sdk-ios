@@ -1,15 +1,17 @@
 //
 //  PrimerStateFieldView.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import UIKit
+@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerCore
 
 public final class PrimerStateFieldView: PrimerSimpleCardFormTextFieldView {
 
-    internal var state: String? {
-        return textField.internalText
+    var state: String? {
+        textField.internalText
     }
 
     override func xibSetup() {
@@ -21,11 +23,11 @@ public final class PrimerStateFieldView: PrimerSimpleCardFormTextFieldView {
         editingAnalyticsObjectId = .billingAddressState
         validationError = .invalidState(message: "State is not valid.")
         isValid = { text in
-            return text.isValidNonDecimalString
+            text.isValidNonDecimalString
         }
     }
 
-    public override func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+    override public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         guard string.isValidNonDecimalString == true || string.isEmpty else { return false }
         return super.textField(textField, shouldChangeCharactersIn: range, replacementString: string)
     }

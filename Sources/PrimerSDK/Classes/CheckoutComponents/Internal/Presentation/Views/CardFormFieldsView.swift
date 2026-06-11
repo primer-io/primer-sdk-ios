@@ -9,6 +9,8 @@
 // swiftlint:disable function_body_length
 
 import SwiftUI
+@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerCore
 
 /// Reusable card form fields view that renders card input fields and billing address fields.
 /// This component is used by both `CardFormScreen` (full screen) and `PrimerCardForm` (embeddable).

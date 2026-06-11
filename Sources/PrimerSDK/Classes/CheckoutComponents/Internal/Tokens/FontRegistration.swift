@@ -6,6 +6,9 @@
 
 import CoreText
 import UIKit
+@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerResources
+@_spi(PrimerInternal) import PrimerCore
 
 enum FontRegistration: LogReporter {
 

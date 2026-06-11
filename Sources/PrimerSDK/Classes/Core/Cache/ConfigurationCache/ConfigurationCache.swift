@@ -1,10 +1,11 @@
 //
 //  ConfigurationCache.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+@_spi(PrimerInternal) import PrimerFoundation
 
 protocol ConfigurationCaching {
     func clearCache()
@@ -23,7 +24,7 @@ final class ConfigurationCache: ConfigurationCaching {
     func data(forKey key: String) -> ConfigurationCachedData? {
         guard cachingEnabled else { return nil }
         return Self.queue.sync(flags: .barrier) { [weak self] in
-            guard let self = self else {
+            guard let self else {
                 return nil
             }
             if let cachedData = cache.value(forKey: key) {
@@ -40,7 +41,7 @@ final class ConfigurationCache: ConfigurationCaching {
     func setData(_ data: ConfigurationCachedData, forKey key: String) {
         guard cachingEnabled else { return }
         return Self.queue.sync(flags: .barrier) { [weak self] in
-            guard let self = self else {
+            guard let self else {
                 return
             }
             // Cache includes at most one cached configuration
@@ -77,8 +78,8 @@ final class ConfigurationCachedData {
     init(config: PrimerAPIConfiguration, headers: [String: String]? = nil) {
         // Extract ttl from headers
         self.config = config
-        self.timestamp = Date().timeIntervalSince1970
-        self.ttl = Self.extractTtlFromHeaders(headers)
+        timestamp = Date().timeIntervalSince1970
+        ttl = Self.extractTtlFromHeaders(headers)
     }
 
     static let FallbackCacheExpiration: TimeInterval = 0

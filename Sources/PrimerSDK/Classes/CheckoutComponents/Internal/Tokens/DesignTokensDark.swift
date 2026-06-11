@@ -9,6 +9,9 @@
 // Dark mode in production is resolved by merging dark.json over base.json and decoding into
 // `DesignTokens` (see DesignTokensManager.fetchTokens). This generated class is only used by
 // MockDesignTokens for SwiftUI previews and tests, so it is compiled into DEBUG builds only.
+@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerCore
+
 #if DEBUG
   import SwiftUI
 

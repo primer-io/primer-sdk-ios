@@ -8,6 +8,8 @@
 // swiftlint:disable type_body_length
 
 import Foundation
+@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerNetworking
 
 protocol PayPalServiceProtocol {
     func startOrderSession(_ completion: @escaping (Result<Response.Body.PayPal.CreateOrder, Error>) -> Void)
@@ -153,8 +155,10 @@ final class PayPalService: PayPalServiceProtocol {
             cancelUrl: "\(scheme)://paypal-cancel"
         )
 
-        apiClient.createPayPalBillingAgreementSession(clientToken: decodedJWTToken,
-                                                      payPalCreateBillingAgreementRequest: body) { [weak self] (result) in
+        apiClient.createPayPalBillingAgreementSession(
+            clientToken: decodedJWTToken,
+            payPalCreateBillingAgreementRequest: body
+        ) { [weak self] (result) in
             switch result {
             case let .failure(err):
                 completion(.failure(handled(primerError: .failedToCreateSession(error: err))))
@@ -208,8 +212,10 @@ final class PayPalService: PayPalServiceProtocol {
 
         let body = Request.Body.PayPal.ConfirmBillingAgreement(paymentMethodConfigId: configId, tokenId: paypalTokenId)
 
-        apiClient.confirmPayPalBillingAgreement(clientToken: decodedJWTToken,
-                                                payPalConfirmBillingAgreementRequest: body) { result in
+        apiClient.confirmPayPalBillingAgreement(
+            clientToken: decodedJWTToken,
+            payPalConfirmBillingAgreementRequest: body
+        ) { result in
             switch result {
             case let .failure(err):
                 completion(.failure(handled(primerError: .failedToCreateSession(error: err))))

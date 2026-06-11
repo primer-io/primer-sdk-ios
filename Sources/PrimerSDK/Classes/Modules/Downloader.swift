@@ -1,16 +1,18 @@
 //
 //  Downloader.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable cyclomatic_complexity
 // swiftlint:disable function_body_length
 
 import Foundation
+@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerCore
 
-internal typealias FileName = String
-internal typealias FileExtension = String
+typealias FileName = String
+typealias FileExtension = String
 
 class File: LogReporter {
 
@@ -19,8 +21,8 @@ class File: LogReporter {
     var localUrl: URL? {
         guard let documentDirectoryUrl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else { return nil }
 
-        var tmpFilename: String = self.fileName
-        if let fileExtension = self.fileExtension {
+        var tmpFilename: String = fileName
+        if let fileExtension {
             tmpFilename += "." + fileExtension
         }
 
@@ -31,7 +33,7 @@ class File: LogReporter {
     private var base64Data: Data?
 
     var data: Data? {
-        guard let localUrl = localUrl else { return nil }
+        guard let localUrl else { return nil }
         return try? Data(contentsOf: localUrl)
     }
 
@@ -66,7 +68,7 @@ class File: LogReporter {
     }
 }
 
-internal protocol DownloaderModule {
+protocol DownloaderModule {
     func download(files: [File]) async throws -> [File]
 }
 
@@ -74,7 +76,7 @@ internal protocol DownloaderModule {
 final class Downloader: NSObject, DownloaderModule {
 
     private var documentDirectoryUrl: URL? {
-        return FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
+        FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
     }
 
     func download(files: [File]) async throws -> [File] {
@@ -90,7 +92,7 @@ final class Downloader: NSObject, DownloaderModule {
             }
         }
 
-        if !errors.isEmpty && errors.count == files.count {
+        if !errors.isEmpty, errors.count == files.count {
             throw handled(primerError: .underlyingErrors(errors: errors))
         }
 
@@ -111,7 +113,7 @@ final class Downloader: NSObject, DownloaderModule {
             return file
         } catch {
             if let primerErr = error as? PrimerError,
-               case .underlyingErrors(let errors, _) = primerErr,
+               case let .underlyingErrors(errors, _) = primerErr,
                errors.contains(where: { ($0 as NSError).code == 516 }) {
                 return file
             }
@@ -169,9 +171,9 @@ final class Downloader: NSObject, DownloaderModule {
 
     private func executeDownloadTask(for request: URLRequest, on session: URLSession) async throws -> (URL, URLResponse) {
         if #available(iOS 15.0, *) {
-            return try await session.download(for: request)
+            try await session.download(for: request)
         } else {
-            return try await withCheckedThrowingContinuation { continuation in
+            try await withCheckedThrowingContinuation { continuation in
                 let task = session.downloadTask(with: request) { tempLocalUrl, response, error in
                     if let error {
                         continuation.resume(throwing: error)
@@ -192,9 +194,9 @@ final class Downloader: NSObject, DownloaderModule {
 
     private func fileExists(at url: URL) -> Bool {
         if #available(iOS 16.0, *) {
-            return FileManager.default.fileExists(atPath: url.path())
+            FileManager.default.fileExists(atPath: url.path())
         } else {
-            return FileManager.default.fileExists(atPath: url.path)
+            FileManager.default.fileExists(atPath: url.path)
         }
     }
 }
@@ -202,7 +204,7 @@ final class Downloader: NSObject, DownloaderModule {
 extension Downloader: FileManagerDelegate {
 
     func fileManager(_ fileManager: FileManager, shouldProceedAfterError error: Error, copyingItemAt srcURL: URL, to dstURL: URL) -> Bool {
-        return true
+        true
     }
 }
 // swiftlint:enable cyclomatic_complexity

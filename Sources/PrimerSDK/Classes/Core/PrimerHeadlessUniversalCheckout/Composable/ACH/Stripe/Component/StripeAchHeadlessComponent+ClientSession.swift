@@ -1,10 +1,12 @@
 //
 //  StripeAchHeadlessComponent+ClientSession.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+import PrimerFoundation
 import UIKit
+@_spi(PrimerInternal) import PrimerCore
 
 // MARK: - Client session methods
 extension StripeAchHeadlessComponent {
@@ -122,11 +124,11 @@ extension StripeAchHeadlessComponent {
     private func createAction(from validationError: ACHUserDetailsError) -> ClientSession.Action? {
         switch validationError {
         case .invalidFirstName:
-            return ClientSession.Action.setCustomerFirstName(inputUserDetails.firstName)
+            ClientSession.Action.setCustomerFirstName(inputUserDetails.firstName)
         case .invalidLastName:
-            return ClientSession.Action.setCustomerLastName(inputUserDetails.lastName)
+            ClientSession.Action.setCustomerLastName(inputUserDetails.lastName)
         case .invalidEmailAddress:
-            return ClientSession.Action.setCustomerEmailAddress(inputUserDetails.emailAddress)
+            ClientSession.Action.setCustomerEmailAddress(inputUserDetails.emailAddress)
         }
     }
 }

@@ -8,6 +8,8 @@
 // swiftlint:disable file_length
 
 import Foundation
+@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerCore
 
 final class ClientSession {
 
@@ -28,23 +30,31 @@ final class ClientSession {
         }
 
         static func setBillingAddressActionWithParameters(_ parameters: [String: Any]) -> ClientSession.Action {
-            ClientSession.Action(type: .setBillingAddress,
-                                 params: makeBillingAddressDictionaryRequestFromParameters(parameters))
+            ClientSession.Action(
+                type: .setBillingAddress,
+                params: makeBillingAddressDictionaryRequestFromParameters(parameters)
+            )
         }
 
         static func setCustomerFirstName(_ firstName: String) -> ClientSession.Action {
-            ClientSession.Action(type: .setCustomerFirstName,
-                                 params: ["firstName": firstName])
+            ClientSession.Action(
+                type: .setCustomerFirstName,
+                params: ["firstName": firstName]
+            )
         }
 
         static func setCustomerLastName(_ lastName: String) -> ClientSession.Action {
-            ClientSession.Action(type: .setCustomerLastName,
-                                 params: ["lastName": lastName])
+            ClientSession.Action(
+                type: .setCustomerLastName,
+                params: ["lastName": lastName]
+            )
         }
 
         static func setCustomerEmailAddress(_ emailAddress: String) -> ClientSession.Action {
-            ClientSession.Action(type: .setCustomerEmailAddress,
-                                 params: ["emailAddress": emailAddress])
+            ClientSession.Action(
+                type: .setCustomerEmailAddress,
+                params: ["emailAddress": emailAddress]
+            )
         }
 
         static func setShippingAddressActionWithParameters(_ parameters: [String: Any]) -> ClientSession.Action {
@@ -227,8 +237,10 @@ final class ClientSession {
             totalTaxAmount = (try? container.decode(Int?.self, forKey: .totalTaxAmount)) ?? nil
             countryCode = (try? container.decode(CountryCode?.self, forKey: .countryCode)) ?? nil
             if let cCode = try? container.decode(String.self, forKey: .currencyCode) {
-                let currencyLoader = CurrencyLoader(storage: DefaultCurrencyStorage(),
-                                                    networkService: CurrencyNetworkService())
+                let currencyLoader = CurrencyLoader(
+                    storage: DefaultCurrencyStorage(),
+                    networkService: CurrencyNetworkService()
+                )
                 currencyCode = currencyLoader.getCurrency(cCode)
             } else {
                 currencyCode = nil
@@ -274,7 +286,8 @@ final class ClientSession {
                     quantity: quantity,
                     discountAmount: discountAmount,
                     taxAmount: taxAmount,
-                    isPending: false)
+                    isPending: false
+                )
             }
         }
 
@@ -349,8 +362,10 @@ final class ClientSession {
 
             if let tmpOptions = (try? container.decode([[String: AnyCodable]]?.self, forKey: .options)),
                let optionsData = try? JSONEncoder().encode(tmpOptions),
-               let optionsJson = (try? JSONSerialization.jsonObject(with: optionsData,
-                                                                    options: .allowFragments)) as? [[String: Any]] {
+               let optionsJson = (try? JSONSerialization.jsonObject(
+                   with: optionsData,
+                   options: .allowFragments
+               )) as? [[String: Any]] {
                 options = optionsJson
             } else {
                 options = nil
@@ -400,8 +415,10 @@ final class ClientSession {
         required init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
             clientSessionId = (try? container.decode(String?.self, forKey: .clientSessionId)) ?? nil
-            paymentMethod = (try? container.decode(ClientSession.PaymentMethod?.self,
-                                                        forKey: .paymentMethod)) ?? nil
+            paymentMethod = (try? container.decode(
+                ClientSession.PaymentMethod?.self,
+                forKey: .paymentMethod
+            )) ?? nil
             order = (try? container.decode(ClientSession.Order?.self, forKey: .order)) ?? nil
             customer = (try? container.decode(ClientSession.Customer?.self, forKey: .customer)) ?? nil
             testId = (try? container.decode(String?.self, forKey: .testId)) ?? nil
@@ -420,11 +437,15 @@ final class ClientSession {
 extension Encodable {
     func asDictionary() throws -> [String: Any] {
         let data = try JSONEncoder().encode(self)
-        guard let dictionary = try JSONSerialization.jsonObject(with: data,
-                                                                options: .allowFragments) as? [String: Any] else {
-            let error = NSError(domain: "EncodableError",
-                                code: 1001,
-                                userInfo: [NSLocalizedDescriptionKey: "Failed to serialize object to dictionary"])
+        guard let dictionary = try JSONSerialization.jsonObject(
+            with: data,
+            options: .allowFragments
+        ) as? [String: Any] else {
+            let error = NSError(
+                domain: "EncodableError",
+                code: 1001,
+                userInfo: [NSLocalizedDescriptionKey: "Failed to serialize object to dictionary"]
+            )
             throw error
         }
         return dictionary

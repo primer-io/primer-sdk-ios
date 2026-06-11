@@ -5,6 +5,8 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerCore
 
 protocol PrimerPaymentMethodProviding {
     func paymentMethod(for paymentMethodType: String) -> PrimerPaymentMethod?
@@ -15,19 +17,27 @@ extension PrimerHeadlessUniversalCheckout {
     public final class PaymentMethod: NSObject {
 
         static var availablePaymentMethods: [PrimerHeadlessUniversalCheckout.PaymentMethod] {
-            var availablePaymentMethods = PrimerAPIConfiguration.paymentMethodConfigs?
+            let isManual = PrimerSettings.current.paymentHandling == .manual
+            let configs = PrimerAPIConfiguration.paymentMethodConfigs ?? []
+            
+            for config in configs where isManual && config.isBackendDriven {
+                PrimerLogging.shared.logger.info(message: "\(config.type) is not supported in manual mode")
+            }
+            
+            var availablePaymentMethods = configs
+                .filter { !(isManual && $0.isBackendDriven) }
                 .compactMap(\.type)
                 .compactMap({ PrimerHeadlessUniversalCheckout.PaymentMethod(paymentMethodType: $0) })
 
             if PrimerSettings.current.paymentMethodOptions.applePayOptions?.showApplePayForUnsupportedDevice != true {
                 if !ApplePayUtils.canMakeApplePayPayments() {
-                    availablePaymentMethods = availablePaymentMethods?.filter({ (method: PrimerHeadlessUniversalCheckout.PaymentMethod) in
+                    availablePaymentMethods = availablePaymentMethods.filter({ (method: PrimerHeadlessUniversalCheckout.PaymentMethod) in
                         method.paymentMethodType != "APPLE_PAY"
                     })
                 }
             }
 
-            return availablePaymentMethods ?? []
+            return availablePaymentMethods
         }
 
         public private(set) var paymentMethodType: String
@@ -74,15 +84,15 @@ extension PrimerHeadlessUniversalCheckout {
         // swiftlint:enable nesting
 
         #if DEBUG
-        init(
-            type: String,
-            supportedPrimerSessionIntents: [PrimerSessionIntent] = [],
-            paymentMethodManagerCategories: [PrimerPaymentMethodManagerCategory] = [.nativeUI]
-        ) {
-            paymentMethodType = type
-            self.supportedPrimerSessionIntents = supportedPrimerSessionIntents
-            self.paymentMethodManagerCategories = paymentMethodManagerCategories
-        }
+            init(
+                type: String,
+                supportedPrimerSessionIntents: [PrimerSessionIntent] = [],
+                paymentMethodManagerCategories: [PrimerPaymentMethodManagerCategory] = [.nativeUI]
+            ) {
+                paymentMethodType = type
+                self.supportedPrimerSessionIntents = supportedPrimerSessionIntents
+                self.paymentMethodManagerCategories = paymentMethodManagerCategories
+            }
         #endif
     }
 }

@@ -1,10 +1,12 @@
 //
 //  WebRedirectPaymentMethodTokenizationViewModelTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+import PrimerFoundation
 @testable import PrimerSDK
+@_spi(PrimerInternal) @testable import PrimerNetworking
 import XCTest
 
 final class WebRedirectPaymentMethodTokenizationViewModelTests: XCTestCase {
@@ -86,7 +88,7 @@ final class WebRedirectPaymentMethodTokenizationViewModelTests: XCTestCase {
         let expectDidFail = expectation(description: "onDidFail called with cancellation error")
         delegate.onDidFail = { error in
             switch error {
-            case PrimerError.cancelled(let paymentMethodType, _):
+            case let PrimerError.cancelled(paymentMethodType, _):
                 XCTAssertEqual(paymentMethodType, self.expectedPaymentMethodType)
             default:
                 XCTFail("Expected cancellation error, got \(error)")
@@ -113,7 +115,7 @@ final class WebRedirectPaymentMethodTokenizationViewModelTests: XCTestCase {
         let expectDidFail = expectation(description: "onDidFail called with cancellation error")
         delegate.onDidFail = { error in
             switch error {
-            case PrimerError.cancelled(let paymentMethodType, _):
+            case let PrimerError.cancelled(paymentMethodType, _):
                 XCTAssertEqual(paymentMethodType, Mocks.Static.Strings.webRedirectPaymentMethodType)
             default:
                 XCTFail("Expected cancellation error, got \(error)")
@@ -287,20 +289,24 @@ final class WebRedirectPaymentMethodTokenizationViewModelTests: XCTestCase {
     // MARK: - Session Info Tests
 
     func test_adyenVippsSessionInfo_shouldReturnCorrectPlatform() throws {
-        sut = WebRedirectPaymentMethodTokenizationViewModel(config: Mocks.PaymentMethods.adyenVippsPaymentMethod,
-                                                            uiManager: uiManager,
-                                                            tokenizationService: tokenizationService,
-                                                            createResumePaymentService: createResumePaymentService,
-                                                            deeplinkAbilityProvider: MockDeeplinkAbilityProvider(isDeeplinkAvailable: true))
+        sut = WebRedirectPaymentMethodTokenizationViewModel(
+            config: Mocks.PaymentMethods.adyenVippsPaymentMethod,
+            uiManager: uiManager,
+            tokenizationService: tokenizationService,
+            createResumePaymentService: createResumePaymentService,
+            deeplinkAbilityProvider: MockDeeplinkAbilityProvider(isDeeplinkAvailable: true)
+        )
 
         var sessionInfo = sut.sessionInfo()
         XCTAssertEqual(sessionInfo.platform, "IOS")
 
-        sut = WebRedirectPaymentMethodTokenizationViewModel(config: Mocks.PaymentMethods.adyenVippsPaymentMethod,
-                                                            uiManager: uiManager,
-                                                            tokenizationService: tokenizationService,
-                                                            createResumePaymentService: createResumePaymentService,
-                                                            deeplinkAbilityProvider: MockDeeplinkAbilityProvider(isDeeplinkAvailable: false))
+        sut = WebRedirectPaymentMethodTokenizationViewModel(
+            config: Mocks.PaymentMethods.adyenVippsPaymentMethod,
+            uiManager: uiManager,
+            tokenizationService: tokenizationService,
+            createResumePaymentService: createResumePaymentService,
+            deeplinkAbilityProvider: MockDeeplinkAbilityProvider(isDeeplinkAvailable: false)
+        )
 
         sessionInfo = sut.sessionInfo()
         XCTAssertEqual(sessionInfo.platform, "WEB")

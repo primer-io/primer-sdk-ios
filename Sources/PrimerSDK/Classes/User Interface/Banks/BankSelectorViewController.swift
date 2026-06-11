@@ -1,10 +1,11 @@
 //
 //  BankSelectorViewController.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import UIKit
+@_spi(PrimerInternal) import PrimerCore
 
 final class BankSelectorViewController: PrimerFormViewController {
 
@@ -21,7 +22,7 @@ final class BankSelectorViewController: PrimerFormViewController {
     init(viewModel: BankSelectorTokenizationViewModel) {
         self.viewModel = viewModel
         super.init()
-        self.titleImage = viewModel.uiModule.invertedLogo
+        titleImage = viewModel.uiModule.invertedLogo
     }
 
     override func viewDidLoad() {
@@ -45,7 +46,7 @@ final class BankSelectorViewController: PrimerFormViewController {
         verticalStackView.addArrangedSubview(bankTitleLabel)
         bankTitleLabel.accessibilityIdentifier = AccessibilityIdentifier.BanksComponent.title.rawValue
 
-        if let subtitle = subtitle {
+        if let subtitle {
             let bankSubtitleLabel = UILabel()
             bankSubtitleLabel.text = subtitle
             bankSubtitleLabel.font = UIFont.systemFont(ofSize: 14)
@@ -67,11 +68,11 @@ final class BankSelectorViewController: PrimerFormViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        if self.viewModel.tableView.superview == nil {
-            let lastView = self.verticalStackView.arrangedSubviews.last!
-            self.verticalStackView.removeArrangedSubview(lastView)
-            self.verticalStackView.addArrangedSubview(self.viewModel.tableView)
-            self.viewModel.tableView.translatesAutoresizingMaskIntoConstraints = false
+        if viewModel.tableView.superview == nil {
+            let lastView = verticalStackView.arrangedSubviews.last!
+            verticalStackView.removeArrangedSubview(lastView)
+            verticalStackView.addArrangedSubview(viewModel.tableView)
+            viewModel.tableView.translatesAutoresizingMaskIntoConstraints = false
         }
     }
 

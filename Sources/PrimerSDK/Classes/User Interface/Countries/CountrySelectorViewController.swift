@@ -1,10 +1,12 @@
 //
 //  CountrySelectorViewController.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+import PrimerFoundation
 import UIKit
+@_spi(PrimerInternal) import PrimerCore
 
 final class CountrySelectorViewController: PrimerFormViewController {
 
@@ -12,7 +14,7 @@ final class CountrySelectorViewController: PrimerFormViewController {
 
     private var viewModel: SearchableItemsPaymentMethodTokenizationViewModelProtocol!
     private let countries = CountryCode.allCases
-    internal private(set) var subtitle: String?
+    private(set) var subtitle: String?
 
     deinit {
         viewModel.cancel()
@@ -56,11 +58,11 @@ final class CountrySelectorViewController: PrimerFormViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        if self.viewModel.tableView.superview == nil {
-            let lastView = self.verticalStackView.arrangedSubviews.last!
-            self.verticalStackView.removeArrangedSubview(lastView)
-            self.verticalStackView.addArrangedSubview(self.viewModel.tableView)
-            self.viewModel.tableView.translatesAutoresizingMaskIntoConstraints = false
+        if viewModel.tableView.superview == nil {
+            let lastView = verticalStackView.arrangedSubviews.last!
+            verticalStackView.removeArrangedSubview(lastView)
+            verticalStackView.addArrangedSubview(viewModel.tableView)
+            viewModel.tableView.translatesAutoresizingMaskIntoConstraints = false
         }
     }
 }

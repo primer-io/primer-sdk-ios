@@ -5,6 +5,8 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+@_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
 
 @available(iOS 15.0, *)
 @_spi(PrimerInternal)
@@ -52,5 +54,22 @@ public final class ComponentsBillingAddressBridge {
         if let code = address.countryCode, !code.isEmpty, CountryCode(rawValue: code) == nil {
             throw PrimerValidationError.invalidRawData()
         }
+    }
+}
+
+// The mapping previously lived in ClientSession+PrimerAddress.swift, which was removed together
+// with the public RawDataManager.setBillingAddress API; the bridge still needs it.
+private extension ClientSession.Address {
+    init(from primerAddress: PrimerAddress) {
+        self.init(
+            firstName: primerAddress.firstName,
+            lastName: primerAddress.lastName,
+            addressLine1: primerAddress.addressLine1,
+            addressLine2: primerAddress.addressLine2,
+            city: primerAddress.city,
+            postalCode: primerAddress.postalCode,
+            state: primerAddress.state,
+            countryCode: primerAddress.countryCode.flatMap { CountryCode(rawValue: $0) }
+        )
     }
 }

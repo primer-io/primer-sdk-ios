@@ -8,8 +8,11 @@
 // swiftlint:disable file_length
 // swiftlint:disable orphaned_doc_comment
 
+@_spi(PrimerInternal) import PrimerFoundation
 import SafariServices
 import UIKit
+@_spi(PrimerInternal) import PrimerNetworking
+@_spi(PrimerInternal) import PrimerCore
 
 final class QRCodeTokenizationViewModel: WebRedirectPaymentMethodTokenizationViewModel {
 
@@ -71,8 +74,10 @@ final class QRCodeTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
         let pollingModule = PollingModule(url: statusUrl)
 
         didCancel = {
-            pollingModule.cancel(withError: handled(primerError:
-                                                        .cancelled(paymentMethodType: self.config.type)))
+            pollingModule.cancel(withError: handled(
+                primerError:
+                .cancelled(paymentMethodType: self.config.type)
+            ))
         }
 
         defer {
@@ -187,13 +192,17 @@ extension QRCodeTokenizationViewModel {
             let expiresAtDateString = formatter.string(from: expiresAt)
 
             if qrCodeString.isHttpOrHttpsURL, URL(string: qrCodeString) != nil {
-                additionalInfo = PromptPayCheckoutAdditionalInfo(expiresAt: expiresAtDateString,
-                                                                 qrCodeUrl: qrCodeString,
-                                                                 qrCodeBase64: nil)
+                additionalInfo = PromptPayCheckoutAdditionalInfo(
+                    expiresAt: expiresAtDateString,
+                    qrCodeUrl: qrCodeString,
+                    qrCodeBase64: nil
+                )
             } else {
-                additionalInfo = PromptPayCheckoutAdditionalInfo(expiresAt: expiresAtDateString,
-                                                                 qrCodeUrl: nil,
-                                                                 qrCodeBase64: qrCodeString)
+                additionalInfo = PromptPayCheckoutAdditionalInfo(
+                    expiresAt: expiresAtDateString,
+                    qrCodeUrl: nil,
+                    qrCodeBase64: qrCodeString
+                )
             }
         default:
             logger.info(message: "UNHANDLED PAYMENT METHOD RESULT")

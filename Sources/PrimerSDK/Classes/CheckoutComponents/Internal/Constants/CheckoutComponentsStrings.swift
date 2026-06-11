@@ -7,6 +7,9 @@
 // swiftlint:disable file_length
 
 import Foundation
+@_spi(PrimerInternal) import PrimerResources
+@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerCore
 
 /// Centralized strings for CheckoutComponents to make localization easier
 /// Keys use underscore_case format for cross-platform consistency

@@ -7,6 +7,8 @@
 // swiftlint:disable file_length
 
 import Foundation
+@_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerNetworking
 
 enum PrimerAPI: Endpoint, Equatable {
     // MARK: - Pull ApiVersion from PrimerSettings
@@ -116,7 +118,7 @@ extension PrimerAPI {
 
     static let headers: [String: String] = [
         "Content-Type": "application/json",
-        "Primer-SDK-Version": VersionUtils.releaseVersionNumber ?? "n/a",
+        "Primer-SDK-Version": VersionUtils.releaseVersionNumber,
         "Primer-SDK-Client": PrimerSource.sdkSourceType.sourceType
     ]
 

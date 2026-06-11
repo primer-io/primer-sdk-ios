@@ -7,6 +7,8 @@
 @testable import PrimerSDK
 import SwiftUI
 import UIKit
+@_spi(PrimerInternal) @testable import PrimerFoundation
+@_spi(PrimerInternal) @testable import PrimerCore
 
 @available(iOS 15.0, *)
 @MainActor

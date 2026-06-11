@@ -8,7 +8,9 @@
 // swiftlint:disable function_body_length
 // swiftlint:disable type_body_length
 
+@_spi(PrimerInternal) import PrimerFoundation
 import UIKit
+@_spi(PrimerInternal) import PrimerCore
 
 final class PrimerUniversalCheckoutViewController: PrimerFormViewController {
 
@@ -18,11 +20,24 @@ final class PrimerUniversalCheckoutViewController: PrimerFormViewController {
     private var payButton: PrimerButton!
     private var selectedPaymentMethod: PrimerPaymentMethodTokenData?
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-    private let paymentMethodConfigViewModels = PrimerAPIConfiguration.paymentMethodConfigViewModels
+    private let paymentMethodConfigViewModels: [PaymentMethodTokenizationViewModelProtocol]
     private var onClientSessionActionUpdateCompletion: ((Error?) -> Void)?
     private var singleUsePaymentMethod: PrimerPaymentMethodTokenData?
     private var resumePaymentId: String?
     private var cardButtonViewModel: CardButtonViewModel?
+    
+    override init() {
+        let isManual = PrimerSettings.current.paymentHandling == .manual
+        let viewModels = PrimerAPIConfiguration.paymentMethodConfigViewModels
+        
+        for config in viewModels.map(\.config) where isManual && config.isBackendDriven {
+            PrimerLogging.shared.logger.info(message: "\(config.type) is not supported in manual mode")
+        }
+        
+        paymentMethodConfigViewModels = viewModels
+            .filter { !(isManual && $0.config.isBackendDriven) }
+        super.init()
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -44,7 +59,7 @@ final class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 try await vaultService.fetchVaultedPaymentMethods()
                 renderSelectedPaymentInstrument(insertAt: 1)
             } catch {
-                let primerErr = error.asPrimerError
+                let primerErr = handled(primerError: error.asPrimerError)
                 PrimerDelegateProxy.primerDidFailWithError(primerErr, data: nil) { errorDecision in
                     switch errorDecision.type {
                     case let .fail(message):
@@ -140,9 +155,11 @@ final class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 let err = PrimerError.invalidValue(key: "amount or currency")
                 Task {
                     let errMessage = await PrimerDelegateProxy.raisePrimerDidFailWithError(err, data: nil)
-                    PrimerUIManager.dismissOrShowResultScreen(type: .failure,
-                                                              paymentMethodManagerCategories: [],
-                                                              withMessage: errMessage)
+                    PrimerUIManager.dismissOrShowResultScreen(
+                        type: .failure,
+                        paymentMethodManagerCategories: [],
+                        withMessage: errMessage
+                    )
                 }
                 return
             }
@@ -176,7 +193,7 @@ final class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 title += " \(amount.toCurrencyString(currency: currency))"
             }
 
-          payButton.layer.cornerRadius = theme.mainButton.cornerRadius
+            payButton.layer.cornerRadius = theme.mainButton.cornerRadius
             payButton.setTitle(title, for: .normal)
             payButton.setTitleColor(theme.mainButton.text.color, for: .normal)
             payButton.titleLabel?.font = .boldSystemFont(ofSize: 19)
@@ -205,7 +222,7 @@ final class PrimerUniversalCheckoutViewController: PrimerFormViewController {
 
         PrimerUIManager.primerRootViewController?.layoutIfNeeded()
     }
-
+	
     private func removeSavedCardsView() {
         if savedCardView != nil {
             verticalStackView.removeArrangedSubview(savedCardView)
@@ -269,7 +286,8 @@ final class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 configuration: config,
                 selectedPaymentMethodTokenData: selectedPaymentMethod,
                 additionalData: additionalData,
-                createResumePaymentService: CreateResumePaymentService(paymentMethodType: selectedPaymentMethodType))
+                createResumePaymentService: CreateResumePaymentService(paymentMethodType: selectedPaymentMethodType)
+            )
 
             Task {
                 try? await checkoutWithVaultedPaymentMethodVM.start()

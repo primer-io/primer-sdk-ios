@@ -6,6 +6,8 @@
 
 @testable import PrimerSDK
 import XCTest
+@_spi(PrimerInternal) @testable import PrimerFoundation
+@_spi(PrimerInternal) @testable import PrimerCore
 
 private typealias ResolutionRequest<T> = (type: T.Type, name: String?)
 

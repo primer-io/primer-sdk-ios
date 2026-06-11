@@ -1,26 +1,28 @@
 //
 //  PrimerRawRetailerDataTokenizationBuilder.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable function_body_length
 
 import Foundation
+import PrimerFoundation
+@_spi(PrimerInternal) import PrimerNetworking
 
 // MARK: MISSING_TESTS
 final class PrimerRawRetailerDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProtocol {
 
     var rawData: PrimerRawData? {
         didSet {
-            if let rawRetailerData = self.rawData as? PrimerRetailerData {
+            if let rawRetailerData = rawData as? PrimerRetailerData {
                 rawRetailerData.onDataDidChange = { [weak self] in
-                    guard let self = self else { return }
+                    guard let self else { return }
                     Task { try? await self.validateRawData(rawRetailerData) }
                 }
             }
 
-            if let rawData = self.rawData {
+            if let rawData {
                 Task { try? await self.validateRawData(rawData) }
             }
         }

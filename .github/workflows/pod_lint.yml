@@ -7,8 +7,22 @@ on:
       - synchronize
 
 jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      relevant: ${{ steps.filter.outputs.relevant }}
+    steps:
+      - uses: dorny/paths-filter@fbd0ab8f3e69293af611ebaee6363fc25e6d187d # v4.0.1
+        id: filter
+        with:
+          filters: |
+            relevant:
+              - '**/*.swift'
+              - '**/*.podspec'
+
   pod-lint:
-    if: ${{ github.event.pull_request.base.ref == 'master' }}
+    needs: changes
+    if: ${{ github.event.pull_request.base.ref == 'master' && needs.changes.outputs.relevant == 'true' }}
     runs-on: macos-26
     name: "Pod lint"
     strategy:
@@ -21,12 +35,12 @@ jobs:
         uses: styfle/cancel-workflow-action@d07a454dad7609a92316b57b23c9ccfd4f59af66 # v0.13.1
         with:
           access_token: ${{ github.token }}
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
       - name: Select Xcode Version
         uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90  # v1.7.0
         with:
             xcode-version: '26.2'
-      - uses: ruby/setup-ruby@c4e5b1316158f92e3d49443a9d58b31d25ac0f8f  # v1.306.0
+      - uses: ruby/setup-ruby@afeafc3d1ab54a631816aba4c914a0081c12ff2f  # v1.310.0
         with:
           ruby-version: "3.2"
           bundler-cache: true
@@ -34,6 +48,6 @@ jobs:
       - name: Lint pod
         run: |
           set -eo pipefail
-          pod lib lint --allow-warnings --swift-version=${{ matrix.version }} --analyze
+          pod lib lint PrimerSDK.podspec --allow-warnings --swift-version=${{ matrix.version }} --analyze --include-podspecs='*.podspec'
         env:
           COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}

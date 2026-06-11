@@ -1,11 +1,13 @@
 //
 //  PaymentMethodsGroupViewTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import XCTest
+import PrimerFoundation
 @testable import PrimerSDK
+@_spi(PrimerInternal) @testable import PrimerNetworking
+import XCTest
 
 final class PaymentMethodsGroupViewTests: XCTestCase {
 
@@ -22,7 +24,7 @@ final class PaymentMethodsGroupViewTests: XCTestCase {
         XCTAssertNotNil(paymentMethodButton)
         XCTAssertEqual(paymentMethodButton?.title(for: .normal), "Pay with card")
 
-        let expectStart = self.expectation(description: "Tokenization is started")
+        let expectStart = expectation(description: "Tokenization is started")
         viewModel.onStart = {
             expectStart.fulfill()
         }
@@ -93,8 +95,10 @@ private class MockTokenizationViewModel: NSObject, PaymentMethodTokenizationView
         throw PrimerError.unknown()
     }
 
-    func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken,
-                                             paymentMethodTokenData: PrimerPaymentMethodTokenData) async throws -> String? {
+    func handleDecodedClientTokenIfNeeded(
+        _ decodedJWTToken: DecodedJWTToken,
+        paymentMethodTokenData: PrimerPaymentMethodTokenData
+    ) async throws -> String? {
         throw PrimerError.unknown()
     }
 

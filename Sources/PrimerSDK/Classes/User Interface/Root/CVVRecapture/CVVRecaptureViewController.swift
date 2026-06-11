@@ -5,6 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import UIKit
+@_spi(PrimerInternal) import PrimerCore
 
 final class CVVRecaptureViewController: UIViewController {
 
@@ -76,8 +77,10 @@ final class CVVRecaptureViewController: UIViewController {
     }
 
     private func setupExplanationLabel() {
-        let explanationText = String(format: Strings.CVVRecapture.explanation,
-                                     viewModel.cvvLength)
+        let explanationText = String(
+            format: Strings.CVVRecapture.explanation,
+            viewModel.cvvLength
+        )
         explanationLabel.text = explanationText
         explanationLabel.numberOfLines = 0
         explanationLabel.textColor = theme.text.body.color

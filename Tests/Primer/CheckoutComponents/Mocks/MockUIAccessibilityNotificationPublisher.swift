@@ -6,6 +6,8 @@
 
 @testable import PrimerSDK
 import UIKit
+@_spi(PrimerInternal) @testable import PrimerFoundation
+@_spi(PrimerInternal) @testable import PrimerCore
 
 @available(iOS 15.0, *)
 final class MockUIAccessibilityNotificationPublisher: UIAccessibilityNotificationPublisher {

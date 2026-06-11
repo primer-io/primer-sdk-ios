@@ -11,7 +11,10 @@
 // swiftlint:disable type_body_length
 
 import Foundation
+@_spi(PrimerInternal) import PrimerFoundation
 import UIKit
+@_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerNetworking
 
 class Input {
     var name: String?
@@ -561,8 +564,10 @@ final class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
         }
 
         let paymentMethodType = PrimerPaymentMethodType(rawValue: config.type)
-        let isPaymentMethodNeedingExternalCompletion = (needingExternalCompletionPaymentMethodDictionary
-                                                            .first { $0.key == paymentMethodType } != nil) == true
+        let isPaymentMethodNeedingExternalCompletion = (
+            needingExternalCompletionPaymentMethodDictionary
+                .first { $0.key == paymentMethodType } != nil
+        ) == true
 
         defer {
             didCancel = nil
@@ -668,7 +673,8 @@ final class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
             context: Analytics.Event.Property.Context(
                 issuerId: nil,
                 paymentMethodType: config.type,
-                url: nil),
+                url: nil
+            ),
             extra: nil,
             objectType: .button,
             objectId: .submit,
@@ -865,9 +871,11 @@ extension FormPaymentMethodTokenizationViewModel: UITableViewDataSource, UITable
 
 extension FormPaymentMethodTokenizationViewModel: UITextFieldDelegate {
 
-    func textField(_ textField: UITextField,
-                   shouldChangeCharactersIn range: NSRange,
-                   replacementString string: String) -> Bool {
+    func textField(
+        _ textField: UITextField,
+        shouldChangeCharactersIn range: NSRange,
+        replacementString string: String
+    ) -> Bool {
 
         if string == "\n" {
             // Keyboard's return button tapoped
@@ -889,11 +897,17 @@ extension FormPaymentMethodTokenizationViewModel: UITextFieldDelegate {
         var countryResults: [CountryCode] = []
 
         for country in countries where country.country.lowercased()
-            .folding(options: .diacriticInsensitive,
-                     locale: nil)
-            .contains(query.lowercased()
-                        .folding(options: .diacriticInsensitive,
-                                 locale: nil)) == true {
+            .folding(
+                options: .diacriticInsensitive,
+                locale: nil
+            )
+            .contains(
+                query.lowercased()
+                    .folding(
+                        options: .diacriticInsensitive,
+                        locale: nil
+                    )
+            ) == true {
             countryResults.append(country)
         }
 

@@ -9,8 +9,11 @@
 // swiftlint:disable function_body_length
 // swiftlint:disable type_body_length
 
+@_spi(PrimerInternal) import PrimerFoundation
 import SafariServices
 import UIKit
+@_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerNetworking
 
 extension PrimerHeadlessUniversalCheckout {
 
@@ -93,8 +96,10 @@ extension PrimerHeadlessUniversalCheckout {
 
         public func validate(vaultedPaymentMethodId: String, vaultedPaymentMethodAdditionalData: PrimerVaultedPaymentMethodAdditionalData, completion: @escaping (_ errors: [Error]?) -> Void) {
             DispatchQueue.global(qos: .userInteractive).async {
-                let errors = self.validateAdditionalDataSynchronously(vaultedPaymentMethodId: vaultedPaymentMethodId,
-                                                                      vaultedPaymentMethodAdditionalData: vaultedPaymentMethodAdditionalData)
+                let errors = self.validateAdditionalDataSynchronously(
+                    vaultedPaymentMethodId: vaultedPaymentMethodId,
+                    vaultedPaymentMethodAdditionalData: vaultedPaymentMethodAdditionalData
+                )
                 DispatchQueue.main.async {
                     completion(errors)
                 }
@@ -203,7 +208,7 @@ extension PrimerHeadlessUniversalCheckout {
 
                     return await PrimerDelegateProxy.primerDidCompleteCheckoutWithData(paymentCheckoutData)
                 } catch {
-                    let primerError = error.asPrimerErrorProtocol
+                    let primerError = handled(error: error.asPrimerErrorProtocol)
                     _ = await PrimerDelegateProxy.primerDidFailWithError(primerError, data: self.paymentCheckoutData)
                 }
             }
@@ -319,8 +324,10 @@ extension PrimerHeadlessUniversalCheckout {
             }
         }
 
-        private func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken,
-                                                      paymentMethodTokenData: PrimerPaymentMethodTokenData) async throws -> String? {
+        private func handleDecodedClientTokenIfNeeded(
+            _ decodedJWTToken: DecodedJWTToken,
+            paymentMethodTokenData: PrimerPaymentMethodTokenData
+        ) async throws -> String? {
             if decodedJWTToken.intent?.contains("STRIPE_ACH") == true {
                 return try await handleStripeACHForDecodedClientToken(decodedJWTToken)
             } else if decodedJWTToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
@@ -344,9 +351,11 @@ extension PrimerHeadlessUniversalCheckout {
                 PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
             }
 
-            try await createResumePaymentService.completePayment(clientToken: decodedJWTToken,
-                                                                 completeUrl: sdkCompleteUrl,
-                                                                 body: StripeAchTokenizationViewModel.defaultCompleteBodyWithTimestamp)
+            try await createResumePaymentService.completePayment(
+                clientToken: decodedJWTToken,
+                completeUrl: sdkCompleteUrl,
+                body: StripeAchTokenizationViewModel.defaultCompleteBodyWithTimestamp
+            )
 
             return nil
         }
@@ -530,17 +539,17 @@ extension PrimerHeadlessUniversalCheckout {
                 }
 
                 #if DEBUG
-                if TEST {
-                    // This ensures that the presentation completion is correctly handled in headless unit tests
-                    guard !UIApplication.shared.windows.isEmpty else {
-                        DispatchQueue.main.async {
-                            guard !didResume else { return }
-                            didResume = true
-                            continuation.resume()
+                    if TEST {
+                        // This ensures that the presentation completion is correctly handled in headless unit tests
+                        guard !UIApplication.shared.windows.isEmpty else {
+                            DispatchQueue.main.async {
+                                guard !didResume else { return }
+                                didResume = true
+                                continuation.resume()
+                            }
+                            return
                         }
-                        return
                     }
-                }
                 #endif
 
                 Task { @MainActor in

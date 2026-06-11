@@ -1,11 +1,13 @@
 //
 //  PaymentMethodTokenizationModelProtocol.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
-internal protocol PaymentMethodTokenizationModelProtocol: NSObject {
+@_spi(PrimerInternal) import PrimerNetworking
+
+protocol PaymentMethodTokenizationModelProtocol: NSObject {
     var checkoutEventsNotifierModule: CheckoutEventsNotifierModule { get }
 
     // Events
@@ -26,8 +28,10 @@ internal protocol PaymentMethodTokenizationModelProtocol: NSObject {
     func startPaymentFlow(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) async throws -> PrimerCheckoutData?
     func presentPaymentMethodUserInterface() async throws
     func awaitUserInput() async throws
-    func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken,
-                                          paymentMethodTokenData: PrimerPaymentMethodTokenData) async throws -> String?
+    func handleDecodedClientTokenIfNeeded(
+        _ decodedJWTToken: DecodedJWTToken,
+        paymentMethodTokenData: PrimerPaymentMethodTokenData
+    ) async throws -> String?
     func handleResumeStepsBasedOnSDKSettings(resumeToken: String) async throws -> PrimerCheckoutData?
 
     @MainActor
@@ -38,7 +42,7 @@ internal protocol PaymentMethodTokenizationModelProtocol: NSObject {
     func cancel()
 }
 
-internal protocol PaymentMethodTokenizationViewProtocol: NSObject {
+protocol PaymentMethodTokenizationViewProtocol: NSObject {
     var willPresentPaymentMethodUI: (() -> Void)? { get set }
     var didPresentPaymentMethodUI: (() -> Void)? { get set }
     var willDismissPaymentMethodUI: (() -> Void)? { get set }

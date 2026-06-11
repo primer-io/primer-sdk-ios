@@ -1,10 +1,11 @@
 //
 //  CreateClientToken.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+import PrimerFoundation
 import PrimerSDK
 
 enum Environment: String, Codable {
@@ -30,24 +31,24 @@ enum Environment: String, Codable {
     var intValue: Int {
         switch self {
         case .local:
-            return 0
+            0
         case .dev:
-            return 1
+            1
         case .sandbox:
-            return 2
+            2
         case .staging:
-            return 3
+            3
         case .production:
-            return 4
+            4
         }
     }
 
     var baseUrl: URL {
         switch self {
         case .local:
-            return URL(string: "https://primer-mock-back-end.herokuapp.com")!
+            URL(string: "https://primer-mock-back-end.herokuapp.com")!
         default:
-            return URL(string: "https://us-central1-primerdemo-8741b.cloudfunctions.net")!
+            URL(string: "https://us-central1-primerdemo-8741b.cloudfunctions.net")!
         }
     }
 
@@ -116,12 +117,14 @@ struct ClientSessionRequestBody: Encodable {
                 case surcharge, instalmentDuration, extraMerchantData, captureVaultedCardCvv, merchantName, networks
             }
 
-            init(surcharge: SurchargeOption?,
-                 instalmentDuration: String?,
-                 extraMerchantData: ExtraMerchantData?,
-                 captureVaultedCardCvv: Bool?,
-                 merchantName: String?,
-                 networks: NetworkOptionGroup?) {
+            init(
+                surcharge: SurchargeOption?,
+                instalmentDuration: String?,
+                extraMerchantData: ExtraMerchantData?,
+                captureVaultedCardCvv: Bool?,
+                merchantName: String?,
+                networks: NetworkOptionGroup?
+            ) {
                 self.surcharge = surcharge
                 self.instalmentDuration = instalmentDuration
                 self.extraMerchantData = extraMerchantData
@@ -133,29 +136,29 @@ struct ClientSessionRequestBody: Encodable {
             func encode(to encoder: Encoder) throws {
                 var container = encoder.container(keyedBy: CodingKeys.self)
 
-                if let surcharge = surcharge {
+                if let surcharge {
                     try container.encode(surcharge, forKey: .surcharge)
                 }
 
-                if let instalmentDuration = instalmentDuration {
+                if let instalmentDuration {
                     try container.encode(instalmentDuration, forKey: .instalmentDuration)
                 }
 
-                if let extraMerchantData = extraMerchantData {
+                if let extraMerchantData {
                     let jsonData = try JSONSerialization.data(withJSONObject: extraMerchantData, options: [])
                     let jsonString = String(data: jsonData, encoding: .utf8)
                     try container.encode(jsonString, forKey: .extraMerchantData)
                 }
 
-                if let captureVaultedCardCvv = captureVaultedCardCvv {
+                if let captureVaultedCardCvv {
                     try container.encode(captureVaultedCardCvv, forKey: .captureVaultedCardCvv)
                 }
 
-                if let merchantName = merchantName {
+                if let merchantName {
                     try container.encode(merchantName, forKey: .merchantName)
                 }
 
-                if let networks = networks {
+                if let networks {
                     try container.encode(networks, forKey: .networks)
                 }
             }
@@ -183,7 +186,7 @@ struct ClientSessionRequestBody: Encodable {
             var amount: Int?
 
             var dictionaryValue: [String: Any] {
-                return ["amount": amount ?? 0]
+                ["amount": amount ?? 0]
             }
 
         }
@@ -196,15 +199,15 @@ struct ClientSessionRequestBody: Encodable {
             var dictionaryValue: [String: Any]? {
                 var dic: [String: Any] = [:]
 
-                if let VISA = VISA {
+                if let VISA {
                     dic["VISA"] = VISA.dictionaryValue
                 }
 
-                if let MASTERCARD = MASTERCARD {
+                if let MASTERCARD {
                     dic["MASTERCARD"] = MASTERCARD.dictionaryValue
                 }
 
-                if let JCB = JCB {
+                if let JCB {
                     dic["JCB"] = JCB.dictionaryValue
                 }
 
@@ -216,7 +219,7 @@ struct ClientSessionRequestBody: Encodable {
             var surcharge: SurchargeOption
 
             var dictionaryValue: [String: Any] {
-                return ["surcharge": surcharge.dictionaryValue]
+                ["surcharge": surcharge.dictionaryValue]
             }
         }
     }
@@ -258,12 +261,10 @@ struct ExtraMerchantData: Codable {
     }
 }
 
-
-
 extension String {
 
     var jwtTokenPayload: JWTToken? {
-        let components = self.split(separator: ".")
+        let components = split(separator: ".")
         if components.count < 2 { return nil }
         let segment = String(components[1]).fixedBase64Format
         guard !segment.isEmpty, let data = Data(base64Encoded: segment, options: .ignoreUnknownCharacters) else { return nil }
@@ -271,7 +272,7 @@ extension String {
     }
 
     var fixedBase64Format: Self {
-        let str = self.replacingOccurrences(of: "-", with: "+").replacingOccurrences(of: "_", with: "/")
+        let str = replacingOccurrences(of: "-", with: "+").replacingOccurrences(of: "_", with: "/")
         let offset = str.count % 4
         guard offset != 0 else { return str }
         return str.padding(toLength: str.count + 4 - offset, withPad: "=", startingAt: 0)
@@ -283,7 +284,7 @@ struct JWTToken: Decodable {
     var accessToken: String?
     var exp: Int?
     var expDate: Date? {
-        guard let exp = exp else { return nil }
+        guard let exp else { return nil }
         return Date(timeIntervalSince1970: TimeInterval(exp))
     }
     var configurationUrl: String?
@@ -330,38 +331,38 @@ public struct Address: Codable {
     var dictionaryValue: [String: Any]? {
         var dic: [String: Any] = [:]
 
-        if let firstName = firstName {
+        if let firstName {
             dic["firstName"] = firstName
         }
 
-        if let lastName = lastName {
+        if let lastName {
             dic["lastName"] = lastName
         }
 
-        if let addressLine1 = addressLine1 {
+        if let addressLine1 {
             dic["addressLine1"] = addressLine1
         }
 
-        if let addressLine2 = addressLine2 {
+        if let addressLine2 {
             dic["addressLine2"] = addressLine2
         }
 
-        if let city = city {
+        if let city {
             dic["city"] = city
         }
 
-        if let postalCode = postalCode {
+        if let postalCode {
             dic["postalCode"] = postalCode
         }
 
-        if let state = state {
+        if let state {
             dic["state"] = state
         }
 
-        if let countryCode = countryCode {
+        if let countryCode {
             dic["countryCode"] = countryCode
         }
 
-        return dic.keys.count == 0 ? nil : dic
+        return dic.keys.isEmpty ? nil : dic
     }
 }

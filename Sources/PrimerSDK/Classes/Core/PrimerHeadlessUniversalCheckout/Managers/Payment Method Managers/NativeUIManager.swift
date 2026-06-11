@@ -1,10 +1,12 @@
 //
 //  NativeUIManager.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerCore
 
 extension PrimerHeadlessUniversalCheckout {
 
@@ -16,7 +18,7 @@ extension PrimerHeadlessUniversalCheckout {
         private let validationComponent: NativeUIValidateable
         private let presentationComponent: NativeUIPresentable
 
-        required public init(paymentMethodType: String) throws {
+        public required init(paymentMethodType: String) throws {
             PrimerInternal.shared.sdkIntegrationType = .headless
 
             let sdkEvent = Analytics.Event.sdk(
@@ -31,17 +33,17 @@ extension PrimerHeadlessUniversalCheckout {
 
             switch paymentMethodType {
             case PrimerPaymentMethodType.applePay.rawValue:
-                self.validationComponent = ApplePayValidationComponent()
+                validationComponent = ApplePayValidationComponent()
             case PrimerPaymentMethodType.payPal.rawValue:
-                self.validationComponent = PayPalValidationComponent()
+                validationComponent = PayPalValidationComponent()
             default:
-                self.validationComponent = GenericValidationComponent(paymentMethodType: paymentMethodType)
+                validationComponent = GenericValidationComponent(paymentMethodType: paymentMethodType)
             }
 
-            self.presentationComponent = NativeUIPresentationComponent(paymentMethodType: paymentMethodType)
+            presentationComponent = NativeUIPresentationComponent(paymentMethodType: paymentMethodType)
 
             self.paymentMethodType = paymentMethodType
-            self.paymentMethod = try self.validatePaymentMethod(withType: paymentMethodType)
+            paymentMethod = try validatePaymentMethod(withType: paymentMethodType)
 
             let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
             settings.uiOptions.isInitScreenEnabled = false
@@ -51,8 +53,10 @@ extension PrimerHeadlessUniversalCheckout {
         }
 
         @discardableResult
-        private func validatePaymentMethod(withType paymentMethodType: String,
-                                           andIntent intent: PrimerSessionIntent? = nil) throws -> PrimerPaymentMethod {
+        private func validatePaymentMethod(
+            withType paymentMethodType: String,
+            andIntent intent: PrimerSessionIntent? = nil
+        ) throws -> PrimerPaymentMethod {
             try validationComponent.validate(intent: intent)
         }
 
@@ -71,17 +75,19 @@ extension PrimerHeadlessUniversalCheckout {
             Analytics.Service.fire(events: [sdkEvent])
 
             do {
-                try self.validatePaymentMethod(withType: self.paymentMethodType, andIntent: intent)
+                try validatePaymentMethod(withType: paymentMethodType, andIntent: intent)
             } catch {
                 throw error
             }
 
-            self.presentationComponent.present(intent: intent,
-                                               clientToken: PrimerAPIConfigurationModule.clientToken!)
+            presentationComponent.present(
+                intent: intent,
+                clientToken: PrimerAPIConfigurationModule.clientToken!
+            )
         }
 
         private func cancel() {
-            self.paymentMethod?.tokenizationViewModel?.cancel()
+            paymentMethod?.tokenizationViewModel?.cancel()
         }
     }
 

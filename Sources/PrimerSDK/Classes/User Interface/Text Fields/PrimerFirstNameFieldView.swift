@@ -1,15 +1,17 @@
 //
 //  PrimerFirstNameFieldView.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+@_spi(PrimerInternal) import PrimerFoundation
 import UIKit
+@_spi(PrimerInternal) import PrimerCore
 
 public final class PrimerFirstNameFieldView: PrimerSimpleCardFormTextFieldView {
 
-    internal var firstName: String? {
-        return textField.internalText
+    var firstName: String? {
+        textField.internalText
     }
 
     override func xibSetup() {
@@ -21,11 +23,11 @@ public final class PrimerFirstNameFieldView: PrimerSimpleCardFormTextFieldView {
         editingAnalyticsObjectId = .billingAddressFirstName
         validationError = .invalidFirstName(message: "First name is not valid.")
         isValid = { text in
-            return text.isValidNonDecimalString
+            text.isValidNonDecimalString
         }
     }
 
-    public override func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+    override public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         guard string.isValidNonDecimalString == true || string.isEmpty else { return false }
         return super.textField(textField, shouldChangeCharactersIn: range, replacementString: string)
     }

@@ -1,11 +1,14 @@
 //
 //  PaymentMethodTokenizationViewModel.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerNetworking
 import UIKit
+@_spi(PrimerInternal) import PrimerCore
 
 typealias TokenizationCompletion = ((PrimerPaymentMethodTokenData?, Error?) -> Void)
 typealias PaymentCompletion = ((PrimerCheckoutData?, Error?) -> Void)
@@ -56,26 +59,33 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
 
     let createResumePaymentService: CreateResumePaymentServiceProtocol
 
-    convenience init(config: PrimerPaymentMethod,
-                     apiClient: PrimerAPIClientProtocol = PrimerAPIClient()) {
-        self.init(config: config,
-                  uiManager: PrimerUIManager.shared,
-                  tokenizationService: TokenizationService(apiClient: apiClient),
-                  createResumePaymentService: CreateResumePaymentService(paymentMethodType: config.type,
-                                                                         apiClient: apiClient)
+    convenience init(
+        config: PrimerPaymentMethod,
+        apiClient: PrimerAPIClientProtocol = PrimerAPIClient()
+    ) {
+        self.init(
+            config: config,
+            uiManager: PrimerUIManager.shared,
+            tokenizationService: TokenizationService(apiClient: apiClient),
+            createResumePaymentService: CreateResumePaymentService(
+                paymentMethodType: config.type,
+                apiClient: apiClient
+            )
         )
     }
 
-    init(config: PrimerPaymentMethod,
-         uiManager: PrimerUIManaging,
-         tokenizationService: TokenizationServiceProtocol,
-         createResumePaymentService: CreateResumePaymentServiceProtocol) {
+    init(
+        config: PrimerPaymentMethod,
+        uiManager: PrimerUIManaging,
+        tokenizationService: TokenizationServiceProtocol,
+        createResumePaymentService: CreateResumePaymentServiceProtocol
+    ) {
         self.config = config
         self.uiManager = uiManager
         self.tokenizationService = tokenizationService
         self.createResumePaymentService = createResumePaymentService
         super.init()
-        self.uiModule = UserInterfaceModule(paymentMethodTokenizationViewModel: self)
+        uiModule = UserInterfaceModule(paymentMethodTokenizationViewModel: self)
     }
 
     deinit {
@@ -141,10 +151,12 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
     @MainActor
     func handleSuccessfulFlow() {
         if config.internalPaymentMethodType != .stripeAch {
-            let categories = self.config.paymentMethodManagerCategories
-            PrimerUIManager.dismissOrShowResultScreen(type: .success,
-                                                      paymentMethodManagerCategories: categories ?? [],
-                                                      withMessage: self.successMessage)
+            let categories = config.paymentMethodManagerCategories
+            PrimerUIManager.dismissOrShowResultScreen(
+                type: .success,
+                paymentMethodManagerCategories: categories ?? [],
+                withMessage: successMessage
+            )
         }
     }
 
@@ -156,8 +168,10 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
         fatalError("\(#function) must be overriden")
     }
 
-    func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken,
-                                          paymentMethodTokenData: PrimerPaymentMethodTokenData) async throws -> String? {
+    func handleDecodedClientTokenIfNeeded(
+        _ decodedJWTToken: DecodedJWTToken,
+        paymentMethodTokenData: PrimerPaymentMethodTokenData
+    ) async throws -> String? {
         fatalError("\(#function) must be overriden")
     }
 
@@ -166,7 +180,7 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
     }
 
     func cancel() {
-        self.didCancel?()
+        didCancel?()
         Task {
             await startTokenizationFlowTask?.cancel(with: handled(primerError: .cancelled(paymentMethodType: config.type)))
             await startPaymentFlowTask?.cancel(with: handled(primerError: .cancelled(paymentMethodType: config.type)))

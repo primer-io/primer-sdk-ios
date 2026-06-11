@@ -5,6 +5,8 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerCore
 
 /// Enum defining all 13 CheckoutComponents analytics event types.
 /// Values match the SCREAMING_SNAKE_CASE format from the Notion spec.

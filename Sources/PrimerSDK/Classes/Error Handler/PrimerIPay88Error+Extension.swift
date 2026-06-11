@@ -5,53 +5,54 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+@_spi(PrimerInternal) import PrimerFoundation
 
 #if canImport(PrimerIPay88MYSDK)
-import PrimerIPay88MYSDK
+    import PrimerIPay88MYSDK
 
-extension PrimerIPay88Error: PrimerErrorProtocol {
-    var exposedError: Error {
-        self
-    }
-
-    var errorId: String {
-        switch self {
-        case .iPay88Error:
-            "ipay88"
-        }
-    }
-
-    var info: [String: Any]? {
-        var tmpUserInfo: [String: String] = ["createdAt": Date().toString()]
-
-        switch self {
-        case let .iPay88Error(description, userInfo):
-            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
-            tmpUserInfo["description"] = description
-            tmpUserInfo["diagnosticsId"] = diagnosticsId
+    extension PrimerIPay88Error: PrimerErrorProtocol {
+        public var exposedError: Error {
+            self
         }
 
-        return tmpUserInfo
-    }
-
-    public var errorDescription: String? {
-        switch self {
-        case let .iPay88Error(description, _):
-            "[\(errorId)] iPay88 failed with error \(description) (diagnosticsId: \(diagnosticsId))"
+        public var errorId: String {
+            switch self {
+            case .iPay88Error:
+                "ipay88"
+            }
         }
-    }
 
-    var analyticsContext: [String: Any] {
-        [
-            AnalyticsContextKeys.errorId: errorId,
-            AnalyticsContextKeys.paymentMethodType: PrimerPaymentMethodType.iPay88Card.rawValue
-        ]
-    }
+        public var errorDescription: String? {
+            switch self {
+            case let .iPay88Error(description, _):
+                "[\(errorId)] iPay88 failed with error \(description) (diagnosticsId: \(diagnosticsId))"
+            }
+        }
 
-    var diagnosticsId: String {
-        UUID().uuidString
-    }
+        public var analyticsContext: [String: Any] {
+            [
+                AnalyticsContextKeys.errorId: errorId,
+                AnalyticsContextKeys.paymentMethodType: PrimerPaymentMethodType.iPay88Card.rawValue
+            ]
+        }
 
-    var isReportable: Bool { true }
-}
+        public var diagnosticsId: String {
+            UUID().uuidString
+        }
+        
+        var info: [String: Any]? {
+            var tmpUserInfo: [String: String] = ["createdAt": Date().toString()]
+
+            switch self {
+            case let .iPay88Error(description, userInfo):
+                tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
+                tmpUserInfo["description"] = description
+                tmpUserInfo["diagnosticsId"] = diagnosticsId
+            }
+
+            return tmpUserInfo
+        }
+
+        public var isReportable: Bool { true }
+    }
 #endif

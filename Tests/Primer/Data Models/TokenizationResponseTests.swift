@@ -1,11 +1,12 @@
 //
 //  TokenizationResponseTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import XCTest
 @testable import PrimerSDK
+import XCTest
+@_spi(PrimerInternal) @testable import PrimerCore
 
 class TokenizationResponseTests: XCTestCase {
 
@@ -63,7 +64,7 @@ class TokenizationResponseTests: XCTestCase {
         var tokenizationResponseDictionary = _tokenizationResponseDictionary
         var tokenizationResponseData = try JSONSerialization.data(withJSONObject: tokenizationResponseDictionary)
         var primerPaymentMethodToken = try JSONDecoder().decode(PrimerPaymentMethodTokenData.self, from: tokenizationResponseData)
-        self.validatePaymentMethodTokenData(forResponse: tokenizationResponseDictionary, withToken: primerPaymentMethodToken)
+        validatePaymentMethodTokenData(forResponse: tokenizationResponseDictionary, withToken: primerPaymentMethodToken)
 
         tokenizationResponseDictionary["analyticsId"] = nil
         tokenizationResponseDictionary["isAlreadyVaulted"] = true
@@ -77,7 +78,7 @@ class TokenizationResponseTests: XCTestCase {
 
         tokenizationResponseData = try JSONSerialization.data(withJSONObject: tokenizationResponseDictionary)
         primerPaymentMethodToken = try JSONDecoder().decode(PrimerPaymentMethodTokenData.self, from: tokenizationResponseData)
-        self.validatePaymentMethodTokenData(forResponse: tokenizationResponseDictionary, withToken: primerPaymentMethodToken)
+        validatePaymentMethodTokenData(forResponse: tokenizationResponseDictionary, withToken: primerPaymentMethodToken)
     }
 
     func test_tokenization_response_with_missing_payment_method_type() throws {

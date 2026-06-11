@@ -1,11 +1,13 @@
 //
 //  FormPaymentMethodTokenizationViewModelTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+import PrimerFoundation
 @testable import PrimerSDK
 import XCTest
+@_spi(PrimerInternal) @testable import PrimerNetworking
 
 final class FormPaymentMethodTokenizationViewModelTests: XCTestCase {
     
@@ -25,10 +27,12 @@ final class FormPaymentMethodTokenizationViewModelTests: XCTestCase {
         uiManager = MockPrimerUIManager()
         uiManager.primerRootViewController = MockPrimerRootViewController()
         
-        sut = FormPaymentMethodTokenizationViewModel(config: Mocks.PaymentMethods.adyenBlikPaymentMethod,
-                                                     uiManager: uiManager,
-                                                     tokenizationService: tokenizationService,
-                                                     createResumePaymentService: createResumePaymentService)
+        sut = FormPaymentMethodTokenizationViewModel(
+            config: Mocks.PaymentMethods.adyenBlikPaymentMethod,
+            uiManager: uiManager,
+            tokenizationService: tokenizationService,
+            createResumePaymentService: createResumePaymentService
+        )
         
         uiDelegate = MockPrimerHeadlessUniversalCheckoutUIDelegate()
         PrimerHeadlessUniversalCheckout.current.uiDelegate = uiDelegate
@@ -55,20 +59,20 @@ final class FormPaymentMethodTokenizationViewModelTests: XCTestCase {
         let delegate = MockPrimerHeadlessUniversalCheckoutDelegate()
         PrimerHeadlessUniversalCheckout.current.delegate = delegate
 
-        let expectDidShowPaymentMethod = self.expectation(description: "UI shows payment method")
+        let expectDidShowPaymentMethod = expectation(description: "UI shows payment method")
         uiDelegate.onUIDidShowPaymentMethod = { _ in
             self.sut.userInputCompletion?()
             expectDidShowPaymentMethod.fulfill()
         }
 
-        let expectWillCreatePaymentWithData = self.expectation(description: "Will create payment with data")
+        let expectWillCreatePaymentWithData = expectation(description: "Will create payment with data")
         delegate.onWillCreatePaymentWithData = { data, decision in
             XCTAssertEqual(data.paymentMethodType.type, "ADYEN_BLIK")
             decision(.abortPaymentCreation())
             expectWillCreatePaymentWithData.fulfill()
         }
 
-        let expectDidFail = self.expectation(description: "Payment flow fails")
+        let expectDidFail = expectation(description: "Payment flow fails")
         delegate.onDidFail = { error in
             switch error {
             case PrimerError.merchantError:
@@ -100,7 +104,7 @@ final class FormPaymentMethodTokenizationViewModelTests: XCTestCase {
         PrimerAPIConfigurationModule.apiClient = apiClient
         apiClient.fetchConfigurationWithActionsResult = (PrimerAPIConfiguration.current, nil)
 
-        let expectDidShowPaymentMethod = self.expectation(description: "UI shows payment method")
+        let expectDidShowPaymentMethod = expectation(description: "UI shows payment method")
         uiDelegate.onUIDidShowPaymentMethod = { _ in
             self.sut.userInputCompletion?()
             expectDidShowPaymentMethod.fulfill()
@@ -108,27 +112,27 @@ final class FormPaymentMethodTokenizationViewModelTests: XCTestCase {
 
         sut.inputs.append(MockInput(name: "blikCode", text: "123456"))
 
-        let expectWillCreatePaymentWithData = self.expectation(description: "Will create payment with data")
+        let expectWillCreatePaymentWithData = expectation(description: "Will create payment with data")
         delegate.onWillCreatePaymentWithData = { data, decision in
             XCTAssertEqual(data.paymentMethodType.type, "ADYEN_BLIK")
             decision(.continuePaymentCreation())
             expectWillCreatePaymentWithData.fulfill()
         }
 
-        let expectDidCompleteCheckout = self.expectation(description: "Checkout completes successfully")
+        let expectDidCompleteCheckout = expectation(description: "Checkout completes successfully")
         delegate.onDidCompleteCheckoutWithData = { data in
             XCTAssertEqual(data.payment?.id, "id")
             XCTAssertEqual(data.payment?.orderId, "order_id")
             expectDidCompleteCheckout.fulfill()
         }
 
-        let expectDidTokenize = self.expectation(description: "Payment method tokenizes")
+        let expectDidTokenize = expectation(description: "Payment method tokenizes")
         tokenizationService.onTokenize = { _ in
             expectDidTokenize.fulfill()
             return .success(self.tokenizationResponseBody)
         }
 
-        let expectDidCreatePayment = self.expectation(description: "Payment gets created")
+        let expectDidCreatePayment = expectation(description: "Payment gets created")
         createResumePaymentService.onCreatePayment = { _ in
             expectDidCreatePayment.fulfill()
             return self.paymentResponseBody
@@ -152,53 +156,57 @@ final class FormPaymentMethodTokenizationViewModelTests: XCTestCase {
     // MARK: - Test Helper Data
 
     private var tokenizationResponseBody: Response.Body.Tokenization {
-        .init(analyticsId: "analytics_id",
-              id: "id",
-              isVaulted: false,
-              isAlreadyVaulted: false,
-              paymentInstrumentType: .offSession,
-              paymentMethodType: Mocks.Static.Strings.webRedirectPaymentMethodType,
-              paymentInstrumentData: nil,
-              threeDSecureAuthentication: nil,
-              token: "token",
-              tokenType: .singleUse,
-              vaultData: nil)
+        .init(
+            analyticsId: "analytics_id",
+            id: "id",
+            isVaulted: false,
+            isAlreadyVaulted: false,
+            paymentInstrumentType: .offSession,
+            paymentMethodType: Mocks.Static.Strings.webRedirectPaymentMethodType,
+            paymentInstrumentData: nil,
+            threeDSecureAuthentication: nil,
+            token: "token",
+            tokenType: .singleUse,
+            vaultData: nil
+        )
     }
 
     private var paymentResponseBody: Response.Body.Payment {
-        .init(id: "id",
-              paymentId: "payment_id",
-              amount: 123,
-              currencyCode: "GBP",
-              customer: .init(
-                  firstName: "first_name",
-                  lastName: "last_name",
-                  emailAddress: "email_address",
-                  mobileNumber: "+44(0)7891234567",
-                  billingAddress: .init(
-                      firstName: "billing_first_name",
-                      lastName: "billing_last_name",
-                      addressLine1: "billing_line_1",
-                      addressLine2: "billing_line_2",
-                      city: "billing_city",
-                      state: "billing_state",
-                      countryCode: "billing_country_code",
-                      postalCode: "billing_postal_code"
-                  ),
-                  shippingAddress: .init(
-                      firstName: "shipping_first_name",
-                      lastName: "shipping_last_name",
-                      addressLine1: "shipping_line_1",
-                      addressLine2: "shipping_line_2",
-                      city: "shipping_city",
-                      state: "shipping_state",
-                      countryCode: "shipping_country_code",
-                      postalCode: "shipping_postal_code"
-                  )
-              ),
-              customerId: "customer_id",
-              orderId: "order_id",
-              status: .success)
+        .init(
+            id: "id",
+            paymentId: "payment_id",
+            amount: 123,
+            currencyCode: "GBP",
+            customer: .init(
+                firstName: "first_name",
+                lastName: "last_name",
+                emailAddress: "email_address",
+                mobileNumber: "+44(0)7891234567",
+                billingAddress: .init(
+                    firstName: "billing_first_name",
+                    lastName: "billing_last_name",
+                    addressLine1: "billing_line_1",
+                    addressLine2: "billing_line_2",
+                    city: "billing_city",
+                    state: "billing_state",
+                    countryCode: "billing_country_code",
+                    postalCode: "billing_postal_code"
+                ),
+                shippingAddress: .init(
+                    firstName: "shipping_first_name",
+                    lastName: "shipping_last_name",
+                    addressLine1: "shipping_line_1",
+                    addressLine2: "shipping_line_2",
+                    city: "shipping_city",
+                    state: "shipping_state",
+                    countryCode: "shipping_country_code",
+                    postalCode: "shipping_postal_code"
+                )
+            ),
+            customerId: "customer_id",
+            orderId: "order_id",
+            status: .success
+        )
     }
 }
 
@@ -209,6 +217,6 @@ private final class MockInput: Input {
     init(name: String, text: String) {
         super.init()
         self.name = name
-        self.mockText = text
+        mockText = text
     }
 }

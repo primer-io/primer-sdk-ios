@@ -5,7 +5,9 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+@_spi(PrimerInternal) @testable import PrimerFoundation
 @testable import PrimerSDK
+@_spi(PrimerInternal) @testable import PrimerNetworking
 
 final class MockBINDataAPIClient: PrimerAPIClientBINDataProtocol {
 
@@ -35,9 +37,11 @@ final class MockBINDataAPIClient: PrimerAPIClientBINDataProtocol {
 
     typealias ResponseCompletion = (Result<PrimerSDK.Response.Body.Bin.Networks, Error>) -> Void
 
-    func listCardNetworks(clientToken: PrimerSDK.DecodedJWTToken,
-                          bin: String,
-                          completion: @escaping ResponseCompletion) -> PrimerSDK.PrimerCancellable? {
+    func listCardNetworks(
+        clientToken: PrimerSDK.DecodedJWTToken,
+        bin: String,
+        completion: @escaping ResponseCompletion
+    ) -> PrimerCancellable? {
         let workItem = DispatchWorkItem { [self] in
             if let error {
                 completion(.failure(error))
@@ -57,7 +61,7 @@ final class MockBINDataAPIClient: PrimerAPIClientBINDataProtocol {
         return cancellable
     }
 
-    func listCardNetworks(clientToken: PrimerSDK.DecodedJWTToken, bin: String) async throws -> PrimerSDK.Response.Body.Bin.Networks {
+    func listCardNetworks(clientToken: DecodedJWTToken, bin: String) async throws -> PrimerSDK.Response.Body.Bin.Networks {
         try await Task.sleep(nanoseconds: 250_000_000) // 0.25 seconds
 
         if let error {
@@ -82,18 +86,20 @@ final class MockBINDataAPIClient: PrimerAPIClientBINDataProtocol {
             return Response.Body.Bin.Data(
                 firstDigits: String(bin.prefix(6)),
                 binData: networks.networks.map {
-                    .init(displayName: nil,
-                          network: $0.value,
-                          issuerCountryCode: nil,
-                          issuerName: nil,
-                          accountFundingType: nil,
-                          prepaidReloadableIndicator: nil,
-                          productUsageType: nil,
-                          productCode: nil,
-                          productName: nil,
-                          issuerCurrencyCode: nil,
-                          regionalRestriction: nil,
-                          accountNumberType: nil)
+                    .init(
+                        displayName: nil,
+                        network: $0.value,
+                        issuerCountryCode: nil,
+                        issuerName: nil,
+                        accountFundingType: nil,
+                        prepaidReloadableIndicator: nil,
+                        productUsageType: nil,
+                        productCode: nil,
+                        productName: nil,
+                        issuerCurrencyCode: nil,
+                        regionalRestriction: nil,
+                        accountNumberType: nil
+                    )
                 }
             )
         } else {

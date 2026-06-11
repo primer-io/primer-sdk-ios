@@ -1,12 +1,13 @@
 //
 //  ACHUserDetailsViewController.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import UIKit
-import SwiftUI
 import Combine
+import PrimerFoundation
+import SwiftUI
+import UIKit
 
 protocol ACHUserDetailsDelegate: AnyObject {
     func restartSession()
@@ -28,13 +29,13 @@ final class ACHUserDetailsViewController: PrimerViewController {
     var didReceiveStepCompletion: ((_ step: PrimerSDK.ACHUserDetailsStep) -> Void)?
 
     init(tokenizationViewModel: StripeAchTokenizationViewModel, delegate: ACHUserDetailsDelegate) {
-        self.stripeAchComponent = StripeAchHeadlessComponent(tokenizationViewModel: tokenizationViewModel)
+        stripeAchComponent = StripeAchHeadlessComponent(tokenizationViewModel: tokenizationViewModel)
         self.delegate = delegate
         super.init()
 
-        self.stripeAchComponent?.errorDelegate = self
-        self.stripeAchComponent?.stepDelegate = self
-        self.stripeAchComponent?.validationDelegate = self
+        stripeAchComponent?.errorDelegate = self
+        stripeAchComponent?.stepDelegate = self
+        stripeAchComponent?.validationDelegate = self
     }
 
     override func viewDidLoad() {
@@ -48,7 +49,7 @@ final class ACHUserDetailsViewController: PrimerViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        if let parentVC = self.parent as? PrimerContainerViewController {
+        if let parentVC = parent as? PrimerContainerViewController {
             parentVC.mockedNavigationBar.hidesBackButton = true
         }
     }
@@ -63,7 +64,7 @@ final class ACHUserDetailsViewController: PrimerViewController {
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        if let parentVC = self.parent as? PrimerContainerViewController {
+        if let parentVC = parent as? PrimerContainerViewController {
             parentVC.mockedNavigationBar.hidesBackButton = false
         }
     }
@@ -123,10 +124,10 @@ final class ACHUserDetailsViewController: PrimerViewController {
 }
 
 extension ACHUserDetailsViewController: PrimerHeadlessErrorableDelegate,
-                                        PrimerHeadlessValidatableDelegate,
-                                        PrimerHeadlessSteppableDelegate {
+    PrimerHeadlessValidatableDelegate,
+    PrimerHeadlessSteppableDelegate {
     // MARK: - PrimerHeadlessErrorableDelegate
-    func didReceiveError(error: PrimerSDK.PrimerError) {
+    func didReceiveError(error: PrimerError) {
         delegate?.didReceivedError(error: error)
     }
 
@@ -136,7 +137,7 @@ extension ACHUserDetailsViewController: PrimerHeadlessErrorableDelegate,
         switch validationStatus {
         case .valid:
             updateFieldStatus(data)
-        case .invalid(errors: let errors):
+        case let .invalid(errors: errors):
             guard let error = errors.first else { return }
             updateFieldStatus(data, error: error)
         default:
@@ -148,7 +149,7 @@ extension ACHUserDetailsViewController: PrimerHeadlessErrorableDelegate,
     func didReceiveStep(step: PrimerSDK.PrimerHeadlessStep) {
         guard let step = step as? ACHUserDetailsStep else { return }
         switch step {
-        case .retrievedUserDetails(let userDetails):
+        case let .retrievedUserDetails(userDetails):
             achUserDetailsViewModel.firstName = userDetails.firstName
             achUserDetailsViewModel.lastName = userDetails.lastName
             achUserDetailsViewModel.emailAddress = userDetails.emailAddress

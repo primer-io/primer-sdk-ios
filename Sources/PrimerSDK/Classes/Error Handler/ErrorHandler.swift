@@ -5,6 +5,8 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerCore
 
 final class ErrorHandler: LogReporter {
 
@@ -34,52 +36,63 @@ final class ErrorHandler: LogReporter {
             return
         }
 
-        var event: Analytics.Event!
+        Analytics.Service.fire(event: event(for: error))
+    }
 
+    // Preserves the `diagnosticsId` for every `PrimerErrorProtocol` error (notably `InternalError`);
+    // without this they fall through to the NSError branch and the id surfaced to the merchant has
+    // no matching backend log entry.
+    func event(for error: Error) -> Analytics.Event {
         if let threeDsError = error as? Primer3DSErrorContainer {
-
-            event = Analytics.Event.message(
+            var event = Analytics.Event.message(
                 message: threeDsError.errorDescription,
                 messageType: .error,
                 severity: .error,
                 diagnosticsId: threeDsError.diagnosticsId,
                 context: threeDsError.analyticsContext
             )
-
             if let createdAt = (threeDsError.info?["createdAt"] as? String)?.toDate() {
                 event.createdAt = createdAt.millisecondsSince1970
             }
-        } else if let primerError = error as? PrimerError {
-            event = Analytics.Event.message(
+            return event
+        }
+
+        if let primerError = error as? PrimerError {
+            var event = Analytics.Event.message(
                 message: primerError.errorDescription,
                 messageType: .error,
                 severity: determineErrorSeverity(primerError),
                 diagnosticsId: primerError.diagnosticsId,
                 context: primerError.analyticsContext
             )
-
             if let createdAt = (primerError.errorUserInfo["createdAt"] as? String)?.toDate() {
                 event.createdAt = createdAt.millisecondsSince1970
             }
-        } else {
-            let nsError = error as NSError
-            var userInfo = nsError.userInfo
-            userInfo["description"] = nsError.description
+            return event
+        }
 
-            if userInfo[NSLocalizedDescriptionKey] != nil {
-                userInfo[NSLocalizedDescriptionKey] = nil
-            }
-
-            event = Analytics.Event.message(
-                message: "\(nsError.domain) [\(nsError.code)]: \(nsError.localizedDescription)",
+        if let primerError = error as? (any PrimerErrorProtocol) {
+            return Analytics.Event.message(
+                message: primerError.errorDescription,
                 messageType: .error,
                 severity: .error,
-                diagnosticsId: nil,
-                context: userInfo
+                diagnosticsId: primerError.diagnosticsId,
+                context: primerError.analyticsContext
             )
         }
 
-        Analytics.Service.fire(event: event)
+        let nsError = error as NSError
+        var userInfo = nsError.userInfo
+        userInfo["description"] = nsError.description
+        userInfo[NSLocalizedDescriptionKey] = nil
+
+        return Analytics.Event.message(
+            message: "\(nsError.domain) [\(nsError.code)]: \(nsError.localizedDescription)",
+            messageType: .error,
+            severity: .error,
+            diagnosticsId: nil,
+            context: userInfo
+        )
     }
 
     private func shouldFilterError(_ error: Error) -> Bool {

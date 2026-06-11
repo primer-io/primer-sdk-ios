@@ -1,11 +1,13 @@
 //
 //  CurrencyLoader.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable function_body_length
 import Foundation
+@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerCore
 
 var inMemoryCurrencies: [Currency]? = []
 
@@ -15,8 +17,8 @@ public final class CurrencyLoader: LogReporter {
     private var networkService: CurrencyNetworkServiceProtocol
 
     public init() {
-        self.storage = DefaultCurrencyStorage()
-        self.networkService = CurrencyNetworkService()
+        storage = DefaultCurrencyStorage()
+        networkService = CurrencyNetworkService()
     }
 
     init(storage: CurrencyStorageProtocol, networkService: CurrencyNetworkServiceProtocol) {
@@ -58,8 +60,8 @@ public final class CurrencyLoader: LogReporter {
 
         let request = URLRequest(url: url)
         networkService.fetchData(with: request) { [weak self] data, _, error in
-            guard let data = data, error == nil else {
-                if let error = error {
+            guard let data, error == nil else {
+                if let error {
                     ErrorHandler.handle(error: error)
                 }
                 self?.logger.error(message: "Error fetching currencies from API: \(error?.localizedDescription ?? "Unknown error")")
@@ -73,8 +75,10 @@ public final class CurrencyLoader: LogReporter {
                 inMemoryCurrencies = currencies
                 self?.logger.debug(message: "Successfully updated the list of currencies.")
 
-                let sdkEvent = Analytics.Event.sdk(name: #function,
-                                                   params: ["message": "Successfully updated the list of currencies."])
+                let sdkEvent = Analytics.Event.sdk(
+                    name: #function,
+                    params: ["message": "Successfully updated the list of currencies."]
+                )
                 Analytics.Service.fire(events: [sdkEvent])
                 completion?(nil)
             } catch {

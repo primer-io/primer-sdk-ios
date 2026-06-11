@@ -1,11 +1,13 @@
 //
 //  HeadlessUniversalCheckoutManualTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+@_spi(PrimerInternal) @testable import PrimerFoundation
 @testable import PrimerSDK
 import XCTest
+@_spi(PrimerInternal) @testable import PrimerNetworking
 
 final class HeadlessUniversalCheckoutManualTests: XCTestCase {
     private let nativePaymentMethod = Mocks.PaymentMethods.adyenGiroPayRedirectPaymentMethod
@@ -134,13 +136,16 @@ extension HeadlessUniversalCheckoutManualTests {
         PollingModule.apiClient = mockApiClient
     }
 
-    private func expectationsForDelegates(paymentMethod: PrimerPaymentMethod, shouldAbort: Bool = false,
-                                          surchargeAmount: Int? = nil) -> [XCTestExpectation] {
+    private func expectationsForDelegates(
+        paymentMethod: PrimerPaymentMethod,
+        shouldAbort: Bool = false,
+        surchargeAmount: Int? = nil
+    ) -> [XCTestExpectation] {
         var orderedExpectations: [XCTestExpectation] = []
 
         uiDelegate.onUIDidDismissPaymentMethod = {}
 
-        let expectPreparationDidStart = self.expectation(description: "Expected UI delegate method: preparationDidStart")
+        let expectPreparationDidStart = expectation(description: "Expected UI delegate method: preparationDidStart")
         uiDelegate.onUIDidStartPreparation = { paymentMethodType in
             XCTAssertEqual(paymentMethodType, paymentMethod.type)
             expectPreparationDidStart.fulfill()
@@ -148,13 +153,13 @@ extension HeadlessUniversalCheckoutManualTests {
         orderedExpectations.append(expectPreparationDidStart)
 
         if let surchargeAmount {
-            let expectClientSessionWillUpdate = self.expectation(description: "Expected delegate method: willUpdateClientSession")
+            let expectClientSessionWillUpdate = expectation(description: "Expected delegate method: willUpdateClientSession")
             delegate.onWillUpdateClientSession = {
                 expectClientSessionWillUpdate.fulfill()
             }
             orderedExpectations.append(expectClientSessionWillUpdate)
 
-            let expectClientSessionDidUpdate = self.expectation(description: "Expected delegate method: didUpdateClientSession")
+            let expectClientSessionDidUpdate = expectation(description: "Expected delegate method: didUpdateClientSession")
             delegate.onDidUpdateClientSession = { _ in
                 guard let _surchargeAmount = self.clientSession?.paymentMethod?.options?[0]["surcharge"] as? Int else {
                     XCTFail(); return
@@ -165,7 +170,7 @@ extension HeadlessUniversalCheckoutManualTests {
             orderedExpectations.append(expectClientSessionDidUpdate)
         }
 
-        let expectWillCreatePaymentWithData = self.expectation(description: "Expected delegate method: willCreatePaymentWithData")
+        let expectWillCreatePaymentWithData = expectation(description: "Expected delegate method: willCreatePaymentWithData")
         delegate.onWillCreatePaymentWithData = { data, decisionHandler in
             XCTAssertEqual(data.paymentMethodType.type, paymentMethod.type)
             decisionHandler(shouldAbort ? .abortPaymentCreation() : .continuePaymentCreation())
@@ -174,7 +179,7 @@ extension HeadlessUniversalCheckoutManualTests {
         orderedExpectations.append(expectWillCreatePaymentWithData)
 
         if shouldAbort {
-            let expectDidFail = self.expectation(description: "Expected delegate method: didFail")
+            let expectDidFail = expectation(description: "Expected delegate method: didFail")
             delegate.onDidFail = { err in
                 XCTAssertNotNil(err)
                 expectDidFail.fulfill()
@@ -184,14 +189,14 @@ extension HeadlessUniversalCheckoutManualTests {
             return orderedExpectations
         }
 
-        let expectDidStartTokenization = self.expectation(description: "Expected delegate method: didStartTokenization")
+        let expectDidStartTokenization = expectation(description: "Expected delegate method: didStartTokenization")
         delegate.onDidStartTokenization = { paymentMethodType in
             XCTAssertEqual(paymentMethodType, paymentMethod.type)
             expectDidStartTokenization.fulfill()
         }
         orderedExpectations.append(expectDidStartTokenization)
 
-        let expectDidTokenizePaymentMethod = self.expectation(description: "Expected delegate method: didTokenizePaymentMethod")
+        let expectDidTokenizePaymentMethod = expectation(description: "Expected delegate method: didTokenizePaymentMethod")
         delegate.onDidTokenizePaymentMethod = { _, decisionHandler in
             // TODO: based on isImplementingPaymentMethodWithRequiredAction from HUC tests
             if paymentMethod.internalPaymentMethodType == .paymentCard {
@@ -204,14 +209,14 @@ extension HeadlessUniversalCheckoutManualTests {
         orderedExpectations.append(expectDidTokenizePaymentMethod)
 
         if paymentMethod.internalPaymentMethodType != .paymentCard {
-            let expectUIDidShowPaymentMethod = self.expectation(description: "Expected delegate method: UIDidShowPaymentMethod")
+            let expectUIDidShowPaymentMethod = expectation(description: "Expected delegate method: UIDidShowPaymentMethod")
             uiDelegate.onUIDidShowPaymentMethod = { paymentMethodType in
                 XCTAssertEqual(paymentMethodType, paymentMethod.type)
                 expectUIDidShowPaymentMethod.fulfill()
             }
             orderedExpectations.append(expectUIDidShowPaymentMethod)
 
-            let expectDidResumeWith = self.expectation(description: "Expected delegate method: didResumeWith")
+            let expectDidResumeWith = expectation(description: "Expected delegate method: didResumeWith")
             delegate.onDidResumeWith = { _, decisionHandler in
                 // TODO: decision handler?
                 expectDidResumeWith.fulfill()
@@ -244,7 +249,7 @@ extension HeadlessUniversalCheckoutManualTests {
 
         wait(for: orderedExpectations, timeout: timeout, enforceOrder: true)
 
-        let expectUIDidDismissPaymentMethod = self.expectation(description: "Expected UI delegate method: UIDidDismissPaymentMethod")
+        let expectUIDidDismissPaymentMethod = expectation(description: "Expected UI delegate method: UIDidDismissPaymentMethod")
         uiDelegate.onUIDidDismissPaymentMethod = {
             expectUIDidDismissPaymentMethod.fulfill()
         }
@@ -255,19 +260,25 @@ extension HeadlessUniversalCheckoutManualTests {
 
     private func submitWithRawDataManager(paymentMethod: PrimerPaymentMethod, expecting orderedExpectations: [XCTestExpectation]) throws {
         do {
-            let rawDataManager = try PrimerHeadlessUniversalCheckout.RawDataManager(paymentMethodType: paymentMethod.type,
-                                                                                    delegate: rawDataManagerDelegate)
+            let rawDataManager = try PrimerHeadlessUniversalCheckout.RawDataManager(
+                paymentMethodType: paymentMethod.type,
+                delegate: rawDataManagerDelegate
+            )
 
             let mockApiClient = PrimerAPIConfigurationModule.apiClient!
 
             rawDataManager.tokenizationService = TokenizationService(apiClient: mockApiClient)
-            rawDataManager.createResumePaymentService = CreateResumePaymentService(paymentMethodType: paymentMethod.type,
-                                                                                   apiClient: mockApiClient)
+            rawDataManager.createResumePaymentService = CreateResumePaymentService(
+                paymentMethodType: paymentMethod.type,
+                apiClient: mockApiClient
+            )
 
             let rawDataTokenizationBuilder = PrimerRawCardDataTokenizationBuilder(paymentMethodType: paymentMethod.type)
             rawDataTokenizationBuilder.rawDataManager = rawDataManager
-            rawDataTokenizationBuilder.cardValidationService = DefaultCardValidationService(rawDataManager: rawDataManager,
-                                                                                            apiClient: mockApiClient)
+            rawDataTokenizationBuilder.cardValidationService = DefaultCardValidationService(
+                rawDataManager: rawDataManager,
+                apiClient: mockApiClient
+            )
             rawDataManager.rawDataTokenizationBuilder = rawDataTokenizationBuilder
 
             let rawCardData = PrimerCardData(

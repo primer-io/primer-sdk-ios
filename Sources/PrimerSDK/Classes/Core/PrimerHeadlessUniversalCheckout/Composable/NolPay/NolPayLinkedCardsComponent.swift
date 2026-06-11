@@ -6,14 +6,17 @@
 
 // swiftlint:disable function_body_length
 
+@_spi(PrimerInternal) import PrimerFoundation
 import UIKit
+@_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerNetworking
 #if canImport(PrimerNolPaySDK)
-import PrimerNolPaySDK
+    import PrimerNolPaySDK
 #endif
 
 public final class NolPayLinkedCardsComponent {
     #if canImport(PrimerNolPaySDK)
-    var nolPay: PrimerNolPayProtocol?
+        var nolPay: PrimerNolPayProtocol?
     #endif
     public weak var errorDelegate: PrimerHeadlessErrorableDelegate?
     public weak var validationDelegate: PrimerHeadlessValidatableDelegate?
@@ -61,9 +64,9 @@ public final class NolPayLinkedCardsComponent {
 
     func start(completion: @escaping (Result<Void, PrimerError>) -> Void) {
         guard let nolPaymentMethodOption = PrimerAPIConfiguration.current?.paymentMethods?
-                .first(where: { $0.internalPaymentMethodType == .nolPay })?
-                .options as? MerchantOptions,
-              let nolPayAppId = nolPaymentMethodOption.appId
+            .first(where: { $0.internalPaymentMethodType == .nolPay })?
+            .options as? MerchantOptions,
+            let nolPayAppId = nolPaymentMethodOption.appId
         else {
             let error = handled(primerError: .invalidValue(key: "nolPayAppId"))
             errorDelegate?.didReceiveError(error: error)
@@ -81,41 +84,45 @@ public final class NolPayLinkedCardsComponent {
         let isSandbox = clientToken.env != "PRODUCTION"
         var isDebug = false
         #if DEBUG
-        isDebug = PrimerLogging.shared.logger.logLevel == .debug
+            isDebug = PrimerLogging.shared.logger.logLevel == .debug
         #endif
 
         #if canImport(PrimerNolPaySDK)
 
-        guard nolPay == nil else {
-            completion(.success(()))
-            return
-        }
+            guard nolPay == nil else {
+                completion(.success(()))
+                return
+            }
 
-        nolPay = PrimerNolPay(appId: nolPayAppId, isDebug: isDebug, isSandbox: isSandbox) { sdkId, deviceId in
+            nolPay = PrimerNolPay(appId: nolPayAppId, isDebug: isDebug, isSandbox: isSandbox) { sdkId, deviceId in
 
-            let requestBody = await Request.Body.NolPay.NolPaySecretDataRequest(nolSdkId: deviceId,
-                                                                                nolAppId: sdkId,
-                                                                                phoneVendor: "Apple",
-                                                                                phoneModel: UIDevice.modelIdentifier!)
+                let requestBody = await Request.Body.NolPay.NolPaySecretDataRequest(
+                    nolSdkId: deviceId,
+                    nolAppId: sdkId,
+                    phoneVendor: "Apple",
+                    phoneModel: UIDevice.modelIdentifier!
+                )
 
-            return try await withCheckedThrowingContinuation { continuation in
-                self.apiClient.fetchNolSdkSecret(clientToken: clientToken, paymentRequestBody: requestBody) { result in
-                    switch result {
-                    case let .success(appSecret):
-                        continuation.resume(returning: appSecret.sdkSecret)
-                        completion(.success(()))
-                    case let .failure(error):
-                        continuation.resume(throwing: error)
-                        completion(.failure(handled(primerError: error.asPrimerError)))
+                return try await withCheckedThrowingContinuation { continuation in
+                    self.apiClient.fetchNolSdkSecret(clientToken: clientToken, paymentRequestBody: requestBody) { result in
+                        switch result {
+                        case let .success(appSecret):
+                            continuation.resume(returning: appSecret.sdkSecret)
+                            completion(.success(()))
+                        case let .failure(error):
+                            continuation.resume(throwing: error)
+                            completion(.failure(handled(primerError: error.asPrimerError)))
+                        }
                     }
                 }
             }
-        }
         #endif
     }
 
-    func continueWithLinkedCardsFetch(mobileNumber: String,
-                                      completion: @escaping (Result<[PrimerNolPaymentCard], PrimerError>) -> Void) {
+    func continueWithLinkedCardsFetch(
+        mobileNumber: String,
+        completion: @escaping (Result<[PrimerNolPaymentCard], PrimerError>) -> Void
+    ) {
         let sdkEvent = Analytics.Event.sdk(
             name: NolPayAnalyticsConstants.linkedCardsGetCardsMethod,
             params: ["category": "NOL_PAY"]
@@ -123,11 +130,11 @@ public final class NolPayLinkedCardsComponent {
         Analytics.Service.fire(events: [sdkEvent])
         #if canImport(PrimerNolPaySDK)
 
-        guard let nolPay else {
-            let error = handled(primerError: .nolSdkInitError())
-            errorDelegate?.didReceiveError(error: error)
-            return completion(.failure(error))
-        }
+            guard let nolPay else {
+                let error = handled(primerError: .nolSdkInitError())
+                errorDelegate?.didReceiveError(error: error)
+                return completion(.failure(error))
+            }
 
         #endif
 
@@ -146,16 +153,16 @@ public final class NolPayLinkedCardsComponent {
                     }
 
                     #if canImport(PrimerNolPaySDK)
-                    nolPay.getAvailableCards(for: mobileNumber, with: countryCode) { result in
-                        switch result {
-                        case let .success(cards):
-                            completion(.success(PrimerNolPaymentCard.makeFrom(arrayOf: cards)))
-                        case let .failure(error):
-                            let error = handled(primerError: .nolError(code: error.errorCode, message: error.description))
-                            self.errorDelegate?.didReceiveError(error: error)
-                            completion(.failure(error))
+                        nolPay.getAvailableCards(for: mobileNumber, with: countryCode) { result in
+                            switch result {
+                            case let .success(cards):
+                                completion(.success(PrimerNolPaymentCard.makeFrom(arrayOf: cards)))
+                            case let .failure(error):
+                                let error = handled(primerError: .nolError(code: error.errorCode, message: error.description))
+                                self.errorDelegate?.didReceiveError(error: error)
+                                completion(.failure(error))
+                            }
                         }
-                    }
                     #endif
 
                 case let .invalid(errors: validationErrors):

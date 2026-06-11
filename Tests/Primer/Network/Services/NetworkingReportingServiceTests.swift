@@ -5,6 +5,8 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 @testable import PrimerSDK
+@_spi(PrimerInternal) @testable import PrimerCore
+@_spi(PrimerInternal) @testable import PrimerNetworking
 import XCTest
 
 final class NetworkingReportingServiceTests: XCTestCase {
@@ -100,7 +102,7 @@ final class NetworkingReportingServiceTests: XCTestCase {
             XCTAssertTrue(event?.properties is NetworkConnectivityEventProperties)
 
             let properties = event?.properties as! NetworkConnectivityEventProperties
-            XCTAssertEqual(properties.networkType, .wifi)
+            XCTAssertEqual(properties.networkType, Connectivity.NetworkType.wifi.rawValue)
             expectation.fulfill()
         }
 

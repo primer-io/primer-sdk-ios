@@ -4,10 +4,11 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-@testable import PrimerSDK
+@_spi(PrimerInternal) @testable import PrimerCore
+@_spi(PrimerInternal) @testable import PrimerSDK
 import XCTest
 
-class MockAnalyticsStorage: Analytics.Storage {
+final class MockAnalyticsStorage: Analytics.Storage {
 
     var events: [StoredEvent] = []
 

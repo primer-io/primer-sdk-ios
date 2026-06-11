@@ -10,7 +10,10 @@
 
 import Foundation
 import PassKit
+@_spi(PrimerInternal) import PrimerFoundation
 import UIKit
+@_spi(PrimerInternal) import PrimerNetworking
+@_spi(PrimerInternal) import PrimerCore
 
 extension PKPaymentMethodType {
     var primerValue: String? {
@@ -168,11 +171,13 @@ final class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
             isCancelled = true
 
             try await applePayPresentationManager.present(
-                withRequest: ApplePayRequest(currency: currency,
-                                             merchantIdentifier: merchantIdentifier,
-                                             countryCode: countryCode,
-                                             items: orderItems,
-                                             shippingMethods: shippingMethodsInfo.shippingMethods),
+                withRequest: ApplePayRequest(
+                    currency: currency,
+                    merchantIdentifier: merchantIdentifier,
+                    countryCode: countryCode,
+                    items: orderItems,
+                    shippingMethods: shippingMethodsInfo.shippingMethods
+                ),
                 delegate: self
             )
             didPresentPaymentMethodUI?()
@@ -221,14 +226,14 @@ final class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
 
     func getShippingMethodsInfo() -> ShippingMethodsInfo {
         guard let options = PrimerAPIConfigurationModule
-                .apiConfiguration?
-                .checkoutModules?
-                .first(where: { $0.type == "SHIPPING"})?
-                .options as? ShippingMethodOptions else {
+            .apiConfiguration?
+            .checkoutModules?
+            .first(where: { $0.type == "SHIPPING"})?
+            .options as? ShippingMethodOptions else {
             return .init(shippingMethods: nil, selectedShippingMethodOrderItem: nil)
         }
 
-        let factor: NSDecimalNumber = if AppState.current.currency?.isZeroDecimal == true {
+        var factor: NSDecimalNumber = if AppState.current.currency?.isZeroDecimal == true {
             1
         } else {
             100
@@ -257,8 +262,10 @@ final class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
             )
         }
 
-        return .init(shippingMethods: apShippingMethods,
-                     selectedShippingMethodOrderItem: shippingItem)
+        return .init(
+            shippingMethods: apShippingMethods,
+            selectedShippingMethodOrderItem: shippingItem
+        )
 
     }
 }
@@ -282,19 +289,23 @@ extension ApplePayTokenizationViewModel {
         let addressLine1 = addressLines.first
         let addressLine2 = addressLines.count > 1 ? addressLines[1] : nil
 
-        return ClientSession.Address(firstName: contact?.name?.givenName,
-                                     lastName: contact?.name?.familyName,
-                                     addressLine1: addressLine1,
-                                     addressLine2: addressLine2,
-                                     city: address.city,
-                                     postalCode: address.postalCode,
-                                     state: address.state,
-                                     countryCode: CountryCode(rawValue: address.isoCountryCode))
+        return ClientSession.Address(
+            firstName: contact?.name?.givenName,
+            lastName: contact?.name?.familyName,
+            addressLine1: addressLine1,
+            addressLine2: addressLine2,
+            city: address.city,
+            postalCode: address.postalCode,
+            state: address.state,
+            countryCode: CountryCode(rawValue: address.isoCountryCode)
+        )
     }
 
-    func createOrderItemsFromClientSession(_ clientSession: ClientSession.APIResponse,
-                                                    applePayOptions: ApplePayOptions?,
-                                                    selectedShippingItem: ApplePayOrderItem? = nil) throws -> [ApplePayOrderItem] {
+    func createOrderItemsFromClientSession(
+        _ clientSession: ClientSession.APIResponse,
+        applePayOptions: ApplePayOptions?,
+        selectedShippingItem: ApplePayOrderItem? = nil
+    ) throws -> [ApplePayOrderItem] {
         var orderItems: [ApplePayOrderItem] = []
 
         // For merchantName, we prefer data being passed from server rather than local settings.
@@ -307,7 +318,8 @@ extension ApplePayTokenizationViewModel {
                 unitAmount: merchantAmount,
                 quantity: 1,
                 discountAmount: nil,
-                taxAmount: nil)
+                taxAmount: nil
+            )
             orderItems.append(summaryItem)
 
         } else if let lineItems = clientSession.order?.lineItems {
@@ -331,7 +343,8 @@ extension ApplePayTokenizationViewModel {
                             unitAmount: fee.amount,
                             quantity: 1,
                             discountAmount: nil,
-                            taxAmount: nil)
+                            taxAmount: nil
+                        )
                         orderItems.append(feeItem)
                     }
                 }
@@ -347,7 +360,8 @@ extension ApplePayTokenizationViewModel {
                 unitAmount: clientSession.order?.totalOrderAmount,
                 quantity: 1,
                 discountAmount: nil,
-                taxAmount: nil)
+                taxAmount: nil
+            )
             orderItems.append(summaryItem)
 
         } else {
@@ -370,13 +384,17 @@ extension ApplePayTokenizationViewModel {
 // MARK: - PKPaymentAuthorizationControllerDelegate
 extension ApplePayTokenizationViewModel: PKPaymentAuthorizationControllerDelegate {
 
-    func paymentAuthorizationController(_ controller: PKPaymentAuthorizationController,
-                                        didSelectShippingContact contact: PKContact) async -> PKPaymentRequestShippingContactUpdate {
+    func paymentAuthorizationController(
+        _ controller: PKPaymentAuthorizationController,
+        didSelectShippingContact contact: PKContact
+    ) async -> PKPaymentRequestShippingContactUpdate {
         await processShippingContactChange(contact)
     }
 
-    func paymentAuthorizationController(_ controller: PKPaymentAuthorizationController,
-                                        didSelectShippingMethod shippingMethod: PKShippingMethod) async -> PKPaymentRequestShippingMethodUpdate {
+    func paymentAuthorizationController(
+        _ controller: PKPaymentAuthorizationController,
+        didSelectShippingMethod shippingMethod: PKShippingMethod
+    ) async -> PKPaymentRequestShippingMethodUpdate {
         await processShippingMethodChange(shippingMethod)
     }
 
@@ -394,32 +412,34 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationControllerDelegat
         }
     }
 
-    func paymentAuthorizationController(_ controller: PKPaymentAuthorizationController,
-                                        didAuthorizePayment payment: PKPayment,
-                                        handler completion: @escaping (PKPaymentAuthorizationResult) -> Void) {
+    func paymentAuthorizationController(
+        _ controller: PKPaymentAuthorizationController,
+        didAuthorizePayment payment: PKPayment,
+        handler completion: @escaping (PKPaymentAuthorizationResult) -> Void
+    ) {
         var isMockedBE: Bool = false
         #if DEBUG
-        if PrimerAPIConfiguration.current?.clientSession?.testId != nil {
-            isMockedBE = true
-        }
+            if PrimerAPIConfiguration.current?.clientSession?.testId != nil {
+                isMockedBE = true
+            }
         #endif
 
         #if targetEnvironment(simulator)
-        //        if payment.token.paymentData.count == 0 && !isMockedBE {
-        //            let err = PrimerError.invalidArchitecture(
-        //                description: "Apple Pay does not work with Primer when used in the simulator due to a limitation from Apple Pay.",
-        //                recoverSuggestion: "Use a real device instead of the simulator",
-        //                userInfo: .errorUserInfoDictionary(),
-        //                diagnosticsId: UUID().uuidString)
-        //            ErrorHandler.handle(error: err)
-        //            completion(PKPaymentAuthorizationResult(status: .failure, errors: [err]))
-        //            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-        //                controller.dismiss(completion: nil)
-        //            }
-        //            applePayReceiveDataCompletion?(.failure(err))
-        //            applePayReceiveDataCompletion = nil
-        //            return
-        //        }
+            //        if payment.token.paymentData.count == 0 && !isMockedBE {
+            //            let err = PrimerError.invalidArchitecture(
+            //                description: "Apple Pay does not work with Primer when used in the simulator due to a limitation from Apple Pay.",
+            //                recoverSuggestion: "Use a real device instead of the simulator",
+            //                userInfo: .errorUserInfoDictionary(),
+            //                diagnosticsId: UUID().uuidString)
+            //            ErrorHandler.handle(error: err)
+            //            completion(PKPaymentAuthorizationResult(status: .failure, errors: [err]))
+            //            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            //                controller.dismiss(completion: nil)
+            //            }
+            //            applePayReceiveDataCompletion?(.failure(err))
+            //            applePayReceiveDataCompletion = nil
+            //            return
+            //        }
         #endif
 
         isCancelled = false
@@ -439,10 +459,14 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationControllerDelegat
                     header: ApplePayTokenPaymentDataHeader(
                         ephemeralPublicKey: "apple-pay-mock-ephemeral-key",
                         publicKeyHash: "apple-pay-mock-public-key-hash",
-                        transactionId: "apple-pay-mock--transaction-id"))
+                        transactionId: "apple-pay-mock--transaction-id"
+                    )
+                )
             } else {
-                try JSONDecoder().decode(ApplePayPaymentResponseTokenPaymentData.self,
-                                                            from: payment.token.paymentData)
+                try JSONDecoder().decode(
+                    ApplePayPaymentResponseTokenPaymentData.self,
+                    from: payment.token.paymentData
+                )
             }
 
             let billingAddress = clientSessionAddressFromApplePayBillingContact(payment.billingContact)
@@ -463,7 +487,8 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationControllerDelegat
                 billingAddress: billingAddress,
                 shippingAddress: shippingAddress,
                 mobileNumber: mobileNumber,
-                emailAddress: emailAddress)
+                emailAddress: emailAddress
+            )
 
             didTimeout = false
             completion(PKPaymentAuthorizationResult(status: .success, errors: nil))
@@ -529,9 +554,11 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationControllerDelegat
 
             return shippingContactUpdate
         } catch {
-            return PKPaymentRequestShippingContactUpdate(errors: [error],
-                                                         paymentSummaryItems: [],
-                                                         shippingMethods: [])
+            return PKPaymentRequestShippingContactUpdate(
+                errors: [error],
+                paymentSummaryItems: [],
+                shippingMethods: []
+            )
         }
     }
 

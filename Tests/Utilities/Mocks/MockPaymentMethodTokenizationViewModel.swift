@@ -4,7 +4,9 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+import PrimerFoundation
 @testable import PrimerSDK
+@_spi(PrimerInternal) @testable import PrimerNetworking
 import XCTest
 
 class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationViewModelProtocol {
@@ -35,18 +37,22 @@ class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizatio
     var paymentResult: (PrimerCheckoutData?, Error?)?
 
     convenience init(config: PrimerPaymentMethod) {
-        self.init(config: config,
-                  uiManager: PrimerUIManager.shared,
-                  tokenizationService: TokenizationService())
+        self.init(
+            config: config,
+            uiManager: PrimerUIManager.shared,
+            tokenizationService: TokenizationService()
+        )
     }
 
-    required init(config: PrimerPaymentMethod,
-                  uiManager: PrimerUIManaging,
-                  tokenizationService: TokenizationServiceProtocol) {
+    required init(
+        config: PrimerPaymentMethod,
+        uiManager: PrimerUIManaging,
+        tokenizationService: TokenizationServiceProtocol
+    ) {
         self.config = config
         self.uiManager = uiManager
         self.tokenizationService = tokenizationService
-        self.checkoutEventsNotifierModule = CheckoutEventsNotifierModule()
+        checkoutEventsNotifierModule = CheckoutEventsNotifierModule()
     }
 
     convenience init(
@@ -66,7 +72,7 @@ class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizatio
     }
 
     func validate() throws {
-        if let validationError = validationError {
+        if let validationError {
             throw validationError
         }
     }
@@ -126,7 +132,7 @@ class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizatio
     func performPostTokenizationSteps() async throws {}
 
     func tokenize() async throws -> PrimerPaymentMethodTokenData {
-        guard let tokenizationResult = tokenizationResult,
+        guard let tokenizationResult,
               tokenizationResult.0 != nil || tokenizationResult.1 != nil else {
             XCTAssert(false, "Set 'tokenizationResult' on your MockPaymentMethodTokenizationViewModel")
             throw PrimerError.invalidValue(key: "tokenizationResult")
@@ -163,7 +169,7 @@ class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizatio
     }
 
     func handleResumeStepsBasedOnSDKSettings(resumeToken: String) async throws -> PrimerCheckoutData? {
-        guard let paymentResult = paymentResult,
+        guard let paymentResult,
               paymentResult.0 != nil || paymentResult.1 != nil else {
             XCTAssert(false, "Set 'paymentResult' on your MockPaymentMethodTokenizationViewModel")
             throw PrimerError.invalidValue(key: "paymentResult")
@@ -193,7 +199,7 @@ class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizatio
             return
         }
 
-        guard let paymentCreationDecision = paymentCreationDecision else {
+        guard let paymentCreationDecision else {
             XCTAssert(false, "Set 'mockPaymentCreationDecision' on your MockPaymentMethodTokenizationViewModel")
             throw PrimerError.invalidValue(key: "paymentCreationDecision")
         }
@@ -213,7 +219,7 @@ class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizatio
     }
 
     private func nullifyEventCallbacks() {
-        self.didStartPayment = nil
-        self.didFinishPayment = nil
+        didStartPayment = nil
+        didFinishPayment = nil
     }
 }

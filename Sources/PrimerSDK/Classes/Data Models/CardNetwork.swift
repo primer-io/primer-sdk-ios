@@ -8,20 +8,9 @@
 
 import Foundation
 import PassKit
+@_spi(PrimerInternal) import PrimerFoundation
 import UIKit
-
-struct CardNetworkValidation {
-    var niceType: String
-    var patterns: [[Int]]
-    var gaps: [Int]
-    var lengths: [Int]
-    var code: CardNetworkCode
-}
-
-struct CardNetworkCode {
-    var name: String
-    var length: Int
-}
+@_spi(PrimerInternal) import PrimerCore
 
 /// Represents a card network (card scheme) that can process card payments.
 ///
@@ -420,7 +409,7 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
     }
 }
 
-extension [CardNetwork]: LogReporter {
+extension [CardNetwork]: @retroactive LogReporter {
 
     /// A list of card networks that the merchant supports
     static var allowedCardNetworks: Self {

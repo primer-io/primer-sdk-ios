@@ -5,61 +5,14 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerNetworking
 
-typealias DispatcherCompletion = (Result<DispatcherResponse, Error>) -> Void
-
-protocol RequestDispatcher: Sendable {
-    func dispatch(request: URLRequest) async throws -> DispatcherResponse
-    func dispatch(request: URLRequest, completion: @escaping DispatcherCompletion) -> PrimerCancellable?
-    func dispatchWithRetry(request: URLRequest, retryConfig: RetryConfig, completion: @escaping DispatcherCompletion) -> PrimerCancellable?
-}
-
-struct DispatcherResponseModel: DispatcherResponse {
-    let metadata: ResponseMetadata
-    let requestDuration: TimeInterval
-    let data: Data?
-    let error: Error?
-}
-
-struct ResponseMetadataModel: ResponseMetadata {
-    let responseUrl: String?
-    let statusCode: Int
-    let headers: [String: String]?
-}
-
-protocol DispatcherResponse {
-    var metadata: ResponseMetadata { get }
-    var requestDuration: TimeInterval { get }
-    var data: Data? { get }
-    var error: Error? { get }
-}
-
-protocol URLSessionProtocol: Sendable {
-    func dataTask(with request: URLRequest, completionHandler: @escaping @Sendable (Data?, URLResponse?, (any Error)?) -> Void) -> URLSessionDataTask
-}
-
-extension URLSession: URLSessionProtocol {}
-
-final class DefaultRequestDispatcher: RequestDispatcher, @unchecked Sendable, LogReporter {
-
-    let urlSession: URLSessionProtocol
-    
-    private var retryHandler: RetryHandler?
-
-    init(urlSession: URLSessionProtocol = URLSession.shared) {
-        self.urlSession = urlSession
-    }
-
-    func dispatch(request: URLRequest) async throws -> DispatcherResponse {
-        try await withCheckedThrowingContinuation { continuation in
-            dispatch(request: request) { response in
-                continuation.resume(with: response)
-            }
-        }
-    }
+extension DefaultRequestDispatcher: @retroactive RequestDispatcher, @retroactive LogReporter {
 
     @discardableResult
-    func dispatch(request: URLRequest, completion: @escaping DispatcherCompletion) -> PrimerCancellable? {
+    public func dispatch(request: URLRequest, completion: @escaping DispatcherCompletion) -> PrimerCancellable? {
         let startTime = DispatchTime.now()
         let task = urlSession.dataTask(with: request) { data, urlResponse, error in
             let endTime = DispatchTime.now()
@@ -69,9 +22,11 @@ final class DefaultRequestDispatcher: RequestDispatcher, @unchecked Sendable, Lo
                 return completion(.failure(InternalError.missingHTTPResponse(underlyingError: error)))
             }
 
-            let metadata = ResponseMetadataModel(responseUrl: httpResponse.responseUrl,
-                                                 statusCode: httpResponse.statusCode,
-                                                 headers: httpResponse.headers)
+            let metadata = ResponseMetadataModel(
+                responseUrl: httpResponse.responseUrl,
+                statusCode: httpResponse.statusCode,
+                headers: httpResponse.headers
+            )
             let responseModel = DispatcherResponseModel(metadata: metadata, requestDuration: requestDuration, data: data, error: error)
             completion(.success(responseModel))
         }
@@ -82,11 +37,9 @@ final class DefaultRequestDispatcher: RequestDispatcher, @unchecked Sendable, Lo
     }
 
     @discardableResult
-    func dispatchWithRetry(request: URLRequest, retryConfig: RetryConfig, completion: @escaping DispatcherCompletion) -> PrimerCancellable? {
+    public func dispatchWithRetry(request: URLRequest, retryConfig: RetryConfig, completion: @escaping DispatcherCompletion) -> PrimerCancellable? {
         retryHandler = RetryHandler(request: request, retryConfig: retryConfig, completion: completion, urlSession: urlSession)
         retryHandler?.attempt()
         return retryHandler?.currentTask
     }
 }
-
-extension Task: PrimerCancellable {}
