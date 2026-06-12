@@ -263,6 +263,18 @@ platform :ios do
 
   end
 
+  desc 'Publish all Primer pods to CocoaPods trunk in dependency-ordered waves'
+  lane :release_pods do
+    version = get_sdk_version
+    UI.message("Releasing Primer pods @ #{version}")
+    pod_release_waves.each do |wave|
+      UI.message("── wave: #{wave.join(', ')}")
+      wave.each { |pod| push_pod(pod, version) }
+      wave.each { |pod| wait_for_cdn(pod, version) }
+    end
+    notify_slack("🚀 All pods for #{version} published successfully")
+  end
+
   ######################### PRIVATE LANES #########################
 
   desc 'Common build pre-action'
@@ -356,6 +368,76 @@ platform :ios do
 
   def update_livedemostore_url(url)
     sh("echo LIVEDEMOSTORE_URL=#{url} >> $GITHUB_ENV")
+  end
+
+  def pod_release_waves
+    [%w[PrimerFoundation PrimerResources],
+     %w[PrimerNetworking PrimerCore PrimerStepResolver],
+     %w[PrimerBDCEngine], %w[PrimerBDCCore], %w[PrimerSDK]]
+  end
+
+  def podspec(pod)
+    File.expand_path("../#{pod}.podspec", __dir__)
+  end
+
+  # Trunk can report an error on push even when the upload succeeded — so we verify here.
+  def on_trunk?(pod, version)
+    `pod trunk info #{pod} 2>/dev/null`.include?("- #{version} (")
+  end
+
+  # The sharded CDN index file holding this pod, e.g. all_pods_versions_1_5_a.txt.
+  def cdn_index_url(pod)
+    require 'digest'
+    a, b, c = Digest::MD5.hexdigest(pod)[0, 3].chars
+    URI("https://cdn.cocoapods.org/all_pods_versions_#{a}_#{b}_#{c}.txt")
+  end
+
+  # Fetch fresh, bypassing any CDN/proxy cache.
+  def fetch_uncached(uri)
+    require 'net/http'
+    req = Net::HTTP::Get.new(uri)
+    req['Cache-Control'] = 'no-cache'
+    Net::HTTP.start(uri.host, 443, use_ssl: true) { |http| http.request(req).body }
+  end
+
+  # Versions of `pod` currently listed on the CDN, e.g. ["1.0.0", "2.50.0"].
+  def cdn_versions(pod)
+    line = fetch_uncached(cdn_index_url(pod)).lines.find { |l| l.start_with?("#{pod}/") } || ''
+    line.strip.split('/').drop(1)
+  end
+
+  def on_cdn?(pod, version)
+    cdn_versions(pod).include?(version)
+  end
+
+  def push_pod(pod, version)
+    return UI.message("⏭  #{pod} #{version} already on trunk") if on_trunk?(pod, version)
+    5.times do |i|
+      UI.message("⬆️  pushing #{pod} #{version} (attempt #{i + 1}/5)")
+      sh("pod trunk push #{podspec(pod)} --allow-root --allow-warnings") { } # don't raise on false errors
+      return notify_slack("✅ #{pod} #{version} pushed to trunk") if on_trunk?(pod, version)
+      sleep 10
+    end
+    UI.user_error!("❌ #{pod} #{version} failed to publish after 5 attempts")
+  end
+
+  def wait_for_cdn(pod, version)
+    UI.message("⏳ #{pod} #{version}: waiting for CDN…")
+    deadline = Time.now + 120 * 60
+    until on_cdn?(pod, version)
+      UI.user_error!("❌ #{pod} #{version} not on CDN after 2h") if Time.now > deadline
+      sleep 30
+    end
+    UI.success("✅ #{pod} #{version}: on CDN")
+  end
+
+  def notify_slack(text)
+    require 'net/http'; require 'json'
+    token = ENV['SLACK_REPORTER_BOT_TOKEN']
+    return if token.to_s.empty?
+    Net::HTTP.post(URI('https://slack.com/api/chat.postMessage'),
+      { channel: ENV['SLACK_MOBILE_SDK_CHANNEL'], text: text }.to_json,
+      'Authorization' => "Bearer #{token}", 'Content-type' => 'application/json')
   end
 
   desc 'Store the LambdaTest ID into a file'
