@@ -2,62 +2,78 @@
 
 import PackageDescription
 
+// swift-tools-version:5.3
+
+import PackageDescription
+
 let package = Package(
     name: "PrimerSDK",
     defaultLocalization: "en",
-    platforms: [
-        .iOS("13.1")
-    ],
-    products: [
-        .library(
-            name: "PrimerSDK",
-            targets: ["PrimerSDK"]
-        )
-    ],
+    platforms: [.iOS("13.1")],
+    products: [.library(name: "PrimerSDK", targets: ["PrimerSDK"])],
     dependencies: [.package(url: "https://github.com/primer-io/primer-nol-pay-sdk-ios", from: "1.0.2")],
-    targets: [
-        packageTarget(name: "PrimerFoundation"),
-        packageTarget(name: "PrimerStepResolver", dependencies: ["PrimerFoundation"]),
-        packageTarget(name: "PrimerBDCEngine", dependencies: ["PrimerFoundation", "PrimerStepResolver"]),
-        packageTarget(name: "PrimerBDCCore", dependencies: ["PrimerBDCEngine", "PrimerFoundation", "PrimerStepResolver"]),
-        packageTarget(name: "PrimerCore", dependencies: ["PrimerFoundation"]),
-        packageTarget(name: "PrimerNetworking", dependencies: ["PrimerFoundation"]),
-        packageTarget(name: "PrimerResources", resources: [.process("PrimerResources/Resources")]),
-        packageTarget(name: "PrimerUI"),
-        .target(
-            name: "PrimerSDK",
-            dependencies: [
-                .product(name: "PrimerNolPaySDK", package: "primer-nol-pay-sdk-ios"),
-                "PrimerBDCCore",
-                "PrimerBDCEngine",
-                "PrimerFoundation",
-                "PrimerStepResolver",
-                "PrimerCore",
-                "PrimerNetworking",
-                "PrimerResources",
-                "PrimerUI"
-            ],
-        ),
-        .testTarget(
-            name: "Tests",
-            dependencies: [
-                .product(name: "PrimerNolPaySDK", package: "primer-nol-pay-sdk-ios"),
-                .byName(name: "PrimerSDK")
-            ],
-            path: "Tests/",
-            sources: [
-                "NolPay/",
-                "Utilities/"
-            ]
-        )
-    ],
+    targets: packageTargets,
     swiftLanguageVersions: [.v5]
 )
 
-private func packageTarget(name: String, dependencies: [Target.Dependency] = [], resources: [Resource] = []) -> Target {
+private var packageTargets: [Target] {
+    [
+        primerSDKTarget,
+        
+        target(name: "PrimerFoundation"),
+        target(name: "PrimerStepResolver", dependencies: ["PrimerFoundation"]),
+        target(name: "PrimerBDCEngine", dependencies: ["PrimerFoundation", "PrimerStepResolver"]),
+        target(name: "PrimerBDCCore", dependencies: ["PrimerBDCEngine", "PrimerFoundation", "PrimerStepResolver"]),
+        target(name: "PrimerCore", dependencies: ["PrimerFoundation"]),
+        target(name: "PrimerNetworking", dependencies: ["PrimerFoundation"]),
+        target(name: "PrimerResources", resources: [.process("PrimerResources/Resources")]),
+        target(name: "PrimerUI"),
+        
+        sdkTestsTarget,
+        
+        testTarget(name: "PrimerBDCCore", dependencies: ["PrimerBDCCore", "PrimerFoundation", "PrimerStepResolver", "PrimerBDCEngine"]),
+        testTarget(name: "PrimerBDCEngine", dependencies: ["PrimerBDCEngine"]),
+        testTarget(name: "PrimerFoundation", dependencies: ["PrimerFoundation"]),
+        testTarget(name: "PrimerStepResolver", dependencies: ["PrimerStepResolver"]),
+    ]
+}
+
+private var primerSDKTarget: Target {
+    .target(
+        name: "PrimerSDK",
+        dependencies: primerSDKDependencies,
+        path: "Sources/PrimerSDK",
+        resources: [.process("Resources")]
+    )
+}
+
+private var primerSDKDependencies: [Target.Dependency] {
+    [
+        .product(name: "PrimerNolPaySDK", package: "primer-nol-pay-sdk-ios"),
+        "PrimerBDCCore",
+        "PrimerBDCEngine",
+        "PrimerFoundation",
+        "PrimerStepResolver",
+        "PrimerCore",
+        "PrimerNetworking",
+        "PrimerResources",
+        "PrimerUI"
+    ]
+}
+
+private var sdkTestsTarget: Target {
+    .testTarget(
+        name: "Tests",
+        dependencies: [.product(name: "PrimerNolPaySDK", package: "primer-nol-pay-sdk-ios"), .byName(name: "PrimerSDK")],
+        path: "Tests/",
+        sources: ["NolPay/", "Utilities/"]
+    )
+}
+
+private func target(name: String, dependencies: [Target.Dependency] = [], resources: [Resource] = []) -> Target {
     .target(name: name, dependencies: dependencies, path: "Modules/\(name)/Sources", resources: resources)
 }
 
-private func packageTestTarget(name: String, dependencies: [Target.Dependency]) -> Target {
+private func testTarget(name: String, dependencies: [Target.Dependency]) -> Target {
     .testTarget(name: "\(name)Tests", dependencies: dependencies, path: "Modules/\(name)/Tests/\(name)Tests")
 }
