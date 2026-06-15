@@ -23,6 +23,7 @@ let package = Package(
         packageTarget(name: "PrimerCore", dependencies: ["PrimerFoundation"]),
         packageTarget(name: "PrimerNetworking", dependencies: ["PrimerFoundation"]),
         packageTarget(name: "PrimerResources", resources: [.process("PrimerResources/Resources")]),
+        packageTarget(name: "PrimerUI"),
         .target(
             name: "PrimerSDK",
             dependencies: [
@@ -33,7 +34,8 @@ let package = Package(
                 "PrimerStepResolver",
                 "PrimerCore",
                 "PrimerNetworking",
-                "PrimerResources"
+                "PrimerResources",
+                "PrimerUI"
             ],
         ),
         .testTarget(
