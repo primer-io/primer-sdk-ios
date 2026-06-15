@@ -25,6 +25,7 @@ Pod::Spec.new do |s|
         ss.dependency "PrimerStepResolver", "= #{s.version}"
         ss.dependency "PrimerNetworking", "= #{s.version}"
         ss.dependency "PrimerResources", "= #{s.version}"
+        ss.dependency "PrimerUI", "= #{s.version}"
         ss.ios.pod_target_xcconfig = {
             "FRAMEWORK_SEARCH_PATHS" => [
                 "$(inherited)",

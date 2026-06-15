@@ -6,6 +6,7 @@
 
 import Foundation
 @_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerUI
 import UIKit
 
 final class Mock3DSService: ThreeDSServiceProtocol {

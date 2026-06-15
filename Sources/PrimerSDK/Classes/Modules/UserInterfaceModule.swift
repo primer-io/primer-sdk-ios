@@ -8,6 +8,7 @@
 // swiftlint:disable type_body_length
 
 @_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerUI
 
 protocol UserInterfaceModuleProtocol {
 

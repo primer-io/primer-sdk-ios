@@ -15,6 +15,7 @@ target 'Debug App' do
   pod 'PrimerBDCCore', :path => '../'
   pod 'PrimerNetworking', :path => '../'
   pod 'PrimerResources', :path => '../'
+  pod 'PrimerUI', :path => '../'
   pod 'PrimerSDK', :path => '../'
   pod 'Primer3DS'
   pod 'PrimerKlarnaSDK'

@@ -15,6 +15,7 @@ import Foundation
 import UIKit
 @_spi(PrimerInternal) import PrimerCore
 @_spi(PrimerInternal) import PrimerNetworking
+@_spi(PrimerInternal) import PrimerUI
 
 class Input {
     var name: String?
