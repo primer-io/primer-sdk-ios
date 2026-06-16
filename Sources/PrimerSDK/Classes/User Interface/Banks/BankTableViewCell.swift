@@ -6,6 +6,7 @@
 
 import UIKit
 @_spi(PrimerInternal) import PrimerNetworking
+@_spi(PrimerInternal) import PrimerUI
 
 final class BankTableViewCell: UITableViewCell {
 

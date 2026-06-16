@@ -6,6 +6,7 @@
 
 import UIKit
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerUI
 
 /// PrimerLoadingViewController is a loading view controller, with variable height.
 final class PrimerLoadingViewController: PrimerViewController {
