@@ -1,11 +1,11 @@
 //
 //  PrimerExpiryDateFieldViewTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import XCTest
 @testable import PrimerSDK
+import XCTest
 
 final class PrimerExpiryDateFieldViewTests: XCTestCase {
 
@@ -40,9 +40,11 @@ final class PrimerExpiryDateFieldViewTests: XCTestCase {
             expectation.fulfill()
         }
 
-        _ = view.textField(view.textField,
-                           shouldChangeCharactersIn: NSRange(location: 0, length: 0),
-                           replacementString: "03/30")
+        _ = view.textField(
+            view.textField,
+            shouldChangeCharactersIn: NSRange(location: 0, length: 0),
+            replacementString: "03/30"
+        )
 
         waitForExpectations(timeout: 2.0)
     }
@@ -55,18 +57,22 @@ final class PrimerExpiryDateFieldViewTests: XCTestCase {
             XCTAssertNotNil(isValid)
             XCTAssertFalse(isValid!)
             switch self.view.validation {
-            case .invalid(let error):
-                XCTAssertEqual(error?.localizedDescription,
-                               "[invalid-expiry-date] Expiry date is not valid. Valid expiry date format is 2 characters for expiry month and 4 characters for expiry year separated by \'/\'.")
+            case let .invalid(error):
+                XCTAssertEqual(
+                    error?.localizedDescription,
+                    "[invalid-expiry-date] Expiry date is not valid. Valid expiry date format is 2 characters for expiry month and 4 characters for expiry year separated by \'/\'."
+                )
             default:
                 XCTFail()
             }
             expectation.fulfill()
         }
 
-        _ = view.textField(view.textField,
-                           shouldChangeCharactersIn: NSRange(location: 0, length: 0),
-                           replacementString: "03/19")
+        _ = view.textField(
+            view.textField,
+            shouldChangeCharactersIn: NSRange(location: 0, length: 0),
+            replacementString: "03/19"
+        )
 
         waitForExpectations(timeout: 2.0)
     }
@@ -88,13 +94,17 @@ final class PrimerExpiryDateFieldViewTests: XCTestCase {
             expectation.fulfill()
         }
 
-        _ = view.textField(view.textField,
-                           shouldChangeCharactersIn: NSRange(location: 0, length: 0),
-                           replacementString: "03")
+        _ = view.textField(
+            view.textField,
+            shouldChangeCharactersIn: NSRange(location: 0, length: 0),
+            replacementString: "03"
+        )
 
-        _ = view.textField(view.textField,
-                           shouldChangeCharactersIn: NSRange(location: 3, length: 0),
-                           replacementString: "40")
+        _ = view.textField(
+            view.textField,
+            shouldChangeCharactersIn: NSRange(location: 3, length: 0),
+            replacementString: "40"
+        )
 
         waitForExpectations(timeout: 2.0)
     }

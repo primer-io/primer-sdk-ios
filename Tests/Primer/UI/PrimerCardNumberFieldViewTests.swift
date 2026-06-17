@@ -1,11 +1,11 @@
 //
 //  PrimerCardNumberFieldViewTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import XCTest
 @testable import PrimerSDK
+import XCTest
 
 final class PrimerCardNumberFieldViewTests: XCTestCase {
 
@@ -42,9 +42,11 @@ final class PrimerCardNumberFieldViewTests: XCTestCase {
             expectation.fulfill()
         }
 
-        _ = view.textField(view.textField,
-                           shouldChangeCharactersIn: NSRange(location: 0, length: 0),
-                           replacementString: Constants.testCardNumbers[.masterCard]!.first!)
+        _ = view.textField(
+            view.textField,
+            shouldChangeCharactersIn: NSRange(location: 0, length: 0),
+            replacementString: Constants.testCardNumbers[.masterCard]!.first!
+        )
 
         waitForExpectations(timeout: 2.0)
     }
@@ -57,7 +59,7 @@ final class PrimerCardNumberFieldViewTests: XCTestCase {
             XCTAssertNotNil(isValid)
             XCTAssertFalse(isValid!)
             switch self.view.validation {
-            case .invalid(let error):
+            case let .invalid(error):
                 XCTAssertEqual(error?.localizedDescription, "[invalid-card-number] Card number is not valid.")
             default:
                 XCTFail()
@@ -65,9 +67,11 @@ final class PrimerCardNumberFieldViewTests: XCTestCase {
             expectation.fulfill()
         }
 
-        _ = view.textField(view.textField,
-                           shouldChangeCharactersIn: NSRange(location: 0, length: 0),
-                           replacementString: "4111 1111 1111 1111 111")
+        _ = view.textField(
+            view.textField,
+            shouldChangeCharactersIn: NSRange(location: 0, length: 0),
+            replacementString: "4111 1111 1111 1111 111"
+        )
 
         waitForExpectations(timeout: 2.0)
     }
@@ -79,7 +83,7 @@ final class PrimerCardNumberFieldViewTests: XCTestCase {
         delegate.onIsValid = { isValid in
             XCTAssertNil(isValid)
             switch self.view.validation {
-            case .invalid(let error):
+            case let .invalid(error):
                 XCTAssertEqual(error?.localizedDescription, "[invalid-card-number] Card number can not be blank.")
             default:
                 XCTFail()
@@ -87,9 +91,11 @@ final class PrimerCardNumberFieldViewTests: XCTestCase {
             expectation.fulfill()
         }
 
-        _ = view.textField(view.textField,
-                           shouldChangeCharactersIn: NSRange(location: 0, length: 4),
-                           replacementString: "")
+        _ = view.textField(
+            view.textField,
+            shouldChangeCharactersIn: NSRange(location: 0, length: 4),
+            replacementString: ""
+        )
 
         waitForExpectations(timeout: 2.0)
     }
@@ -101,7 +107,7 @@ final class PrimerCardNumberFieldViewTests: XCTestCase {
         delegate.onIsValid = { isValid in
             XCTAssertNil(isValid)
             switch self.view.validation {
-            case .invalid(let error):
+            case let .invalid(error):
                 XCTAssertEqual(error?.localizedDescription, "[invalid-card-number] Card number is not valid.")
             default:
                 XCTFail()
@@ -109,9 +115,11 @@ final class PrimerCardNumberFieldViewTests: XCTestCase {
             expectation.fulfill()
         }
 
-        _ = view.textField(view.textField,
-                           shouldChangeCharactersIn: NSRange(location: 0, length: 0),
-                           replacementString: "4111 1111 1111 11")
+        _ = view.textField(
+            view.textField,
+            shouldChangeCharactersIn: NSRange(location: 0, length: 0),
+            replacementString: "4111 1111 1111 11"
+        )
 
         waitForExpectations(timeout: 2.0)
     }
@@ -120,9 +128,11 @@ final class PrimerCardNumberFieldViewTests: XCTestCase {
         view.text = ""
 
         // Simulate pasting a card number
-        _ = view.textField(view.textField,
-                           shouldChangeCharactersIn: NSRange(location: 0, length: 0),
-                           replacementString: "4242424242424242")
+        _ = view.textField(
+            view.textField,
+            shouldChangeCharactersIn: NSRange(location: 0, length: 0),
+            replacementString: "4242424242424242"
+        )
 
         // Add a small delay to ensure the cursor movement code has executed
         let expectation = XCTestExpectation(description: "Wait for cursor to move")

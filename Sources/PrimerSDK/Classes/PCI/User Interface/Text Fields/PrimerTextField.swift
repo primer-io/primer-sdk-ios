@@ -1,14 +1,14 @@
 //
 //  PrimerTextField.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import UIKit
 
 final class PrimerTextField: UITextField {
 
-    internal enum Validation: Equatable {
+    enum Validation: Equatable {
         case valid, invalid(_ error: Error?), notAvailable
 
         static func == (lhs: Validation, rhs: Validation) -> Bool {
@@ -27,7 +27,7 @@ final class PrimerTextField: UITextField {
 
     override var delegate: UITextFieldDelegate? {
         get {
-            return super.delegate
+            super.delegate
         }
         set {
             if let primerTextFieldView = newValue as? PrimerTextFieldView {
@@ -36,11 +36,11 @@ final class PrimerTextField: UITextField {
         }
     }
 
-    internal var internalText: String?
+    var internalText: String?
 
     override var text: String? {
         get {
-            return "****"
+            "****"
         }
         set {
             super.text = newValue
@@ -48,8 +48,8 @@ final class PrimerTextField: UITextField {
         }
     }
 
-    internal var isEmpty: Bool {
-        return (internalText ?? "").isEmpty
+    var isEmpty: Bool {
+        (internalText ?? "").isEmpty
     }
 
 }

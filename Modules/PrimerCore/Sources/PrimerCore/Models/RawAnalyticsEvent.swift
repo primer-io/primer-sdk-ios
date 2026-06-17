@@ -6,15 +6,14 @@
 
 import Foundation
 @_spi(PrimerInternal) import PrimerFoundation
-@_spi(PrimerInternal) import PrimerCore
 
-struct RawAnalyticsEvent: AnalyticsEvent, Codable {
-    let analyticsUrl: String?
-    let localId: String
-    let createdAt: Int
-    let payload: CodableValue
+@_spi(PrimerInternal) public struct RawAnalyticsEvent: AnalyticsEvent, Codable {
+    public let analyticsUrl: String?
+    public let localId: String
+    public let createdAt: Int
+    public let payload: CodableValue
 
-    init(payload: CodableValue) {
+    public init(payload: CodableValue) {
         let params = try? payload.casted(to: AnalyticsStepParams.self)
         self.analyticsUrl = params?.analyticsUrl
         self.localId = String.randomString(length: 32)
@@ -24,7 +23,7 @@ struct RawAnalyticsEvent: AnalyticsEvent, Codable {
 }
 
 extension RawAnalyticsEvent: Equatable {
-    static func == (lhs: Self, rhs: Self) -> Bool { lhs.localId == rhs.localId }
+    public static func == (lhs: Self, rhs: Self) -> Bool { lhs.localId == rhs.localId }
 }
 
 private struct AnalyticsStepParams: Decodable {
