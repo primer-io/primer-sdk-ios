@@ -1,19 +1,19 @@
 //
 //  PrimerFormView.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import UIKit
 
-final class PrimerFormView: PrimerView {
+@_spi(PrimerInternal) public final class PrimerFormView: PrimerView {
 
     // MARK: - Properties
 
-    private(set) internal var verticalStackView = UIStackView()
-    private(set) internal var formViews: [[UIView?]]?
-    private(set) internal var verticalStackSpacing: CGFloat = PrimerDimensions.StackViewSpacing.default
-    private(set) internal var horizontalStackSpacing: CGFloat = PrimerDimensions.StackViewSpacing.default
+    public private(set) var verticalStackView = UIStackView()
+    private(set) var formViews: [[UIView?]]?
+    private(set) var verticalStackSpacing: CGFloat = PrimerDimensions.StackViewSpacing.default
+    private(set) var horizontalStackSpacing: CGFloat = PrimerDimensions.StackViewSpacing.default
 
     // MARK: - Init
 
@@ -28,12 +28,14 @@ final class PrimerFormView: PrimerView {
     }
 }
 
-extension PrimerFormView {
+@_spi(PrimerInternal) public extension PrimerFormView {
 
-    convenience init(frame: CGRect = .zero,
-                     formViews: [[UIView?]]?,
-                     verticalStackSpacing: CGFloat = PrimerDimensions.StackViewSpacing.default,
-                     horizontalStackSpacing: CGFloat = PrimerDimensions.StackViewSpacing.default) {
+    convenience init(
+        frame: CGRect = .zero,
+        formViews: [[UIView?]]?,
+        verticalStackSpacing: CGFloat = PrimerDimensions.StackViewSpacing.default,
+        horizontalStackSpacing: CGFloat = PrimerDimensions.StackViewSpacing.default
+    ) {
         self.init(frame: frame)
         self.formViews = formViews
         self.verticalStackSpacing = verticalStackSpacing
