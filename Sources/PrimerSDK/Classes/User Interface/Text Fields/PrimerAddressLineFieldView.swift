@@ -6,10 +6,11 @@
 
 import UIKit
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerUI
 
 public class PrimerAddressLineFieldView: PrimerSimpleCardFormTextFieldView {
 
-    override func xibSetup() {
+    override public func xibSetup() {
         super.xibSetup()
         isTextFieldAccessibilityElement = true
         isEditingAnalyticsEnabled = true
@@ -27,7 +28,7 @@ public final class PrimerAddressLine1FieldView: PrimerAddressLineFieldView {
         textField.internalText
     }
 
-    override func xibSetup() {
+    override public func xibSetup() {
         super.xibSetup()
         textFieldaccessibilityIdentifier = "address_line_1_txt_fld"
         editingAnalyticsObjectId = .billingAddressLine1
@@ -40,7 +41,7 @@ public final class PrimerAddressLine2FieldView: PrimerSimpleCardFormTextFieldVie
         textField.internalText
     }
 
-    override func xibSetup() {
+    override public func xibSetup() {
         super.xibSetup()
         textFieldaccessibilityIdentifier = "address_line_2_txt_fld"
         editingAnalyticsObjectId = .billingAddressLine2

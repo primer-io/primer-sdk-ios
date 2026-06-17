@@ -128,3 +128,14 @@ public extension String {
         }
     }
 }
+
+@_spi(PrimerInternal) public extension String {
+    
+    func isTypingValidCVV(cardNetwork: CardNetwork?) -> Bool? {
+        let maxDigits = cardNetwork?.validation?.code.length ?? 4
+        if !isNumeric, !isEmpty { return false }
+        if count > maxDigits { return false }
+        if count >= 3, count <= maxDigits { return true }
+        return nil
+    }
+}

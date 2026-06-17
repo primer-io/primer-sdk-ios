@@ -6,12 +6,13 @@
 
 @_spi(PrimerInternal) import PrimerFoundation
 import UIKit
+@_spi(PrimerInternal) import PrimerUI
 
 public class PrimerSimpleCardFormTextFieldView: PrimerTextFieldView {
 
     var validationError: PrimerValidationError?
 
-    override func xibSetup() {
+    override public func xibSetup() {
         super.xibSetup()
         keyboardType = .namePhonePad
     }

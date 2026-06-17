@@ -8,21 +8,21 @@ import UIKit
 @_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerResources
 
-public class PrimerNibView: UIView {
+open class PrimerNibView: UIView {
 
     var view: UIView!
 
-    override init(frame: CGRect) {
+    override public init(frame: CGRect) {
         super.init(frame: frame)
         xibSetup()
     }
 
-    required init?(coder aDecoder: NSCoder) {
+    public required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         xibSetup()
     }
 
-    func xibSetup() {
+    open func xibSetup() {
         backgroundColor = UIColor.clear
         view = loadNib()
         // use bounds not frame or it'll be offset

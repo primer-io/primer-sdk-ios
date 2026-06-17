@@ -6,12 +6,12 @@
 
 import UIKit
 
-final class PrimerTextField: UITextField {
+@_spi(PrimerInternal) public final class PrimerTextField: UITextField {
 
-    enum Validation: Equatable {
+    public enum Validation: Equatable {
         case valid, invalid(_ error: Error?), notAvailable
 
-        static func == (lhs: Validation, rhs: Validation) -> Bool {
+        public static func == (lhs: Validation, rhs: Validation) -> Bool {
             switch (lhs, rhs) {
             case (.valid, .valid):
                 return lhs == rhs
@@ -25,7 +25,7 @@ final class PrimerTextField: UITextField {
         }
     }
 
-    override var delegate: UITextFieldDelegate? {
+    override public var delegate: UITextFieldDelegate? {
         get {
             super.delegate
         }
@@ -36,9 +36,9 @@ final class PrimerTextField: UITextField {
         }
     }
 
-    var internalText: String?
+    public var internalText: String?
 
-    override var text: String? {
+    override public var text: String? {
         get {
             "****"
         }

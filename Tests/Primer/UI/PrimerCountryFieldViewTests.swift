@@ -6,6 +6,7 @@
 
 @testable import PrimerSDK
 import XCTest
+@_spi(PrimerInternal) import PrimerUI
 
 final class PrimerCountryFieldViewTests: XCTestCase {
 
@@ -20,7 +21,7 @@ final class PrimerCountryFieldViewTests: XCTestCase {
     }
 
     func testValidationValidCountry() throws {
-        let result  = view.textField(
+        let result = view.textField(
             view.textField,
             shouldChangeCharactersIn: NSRange(location: 0, length: 0),
             replacementString: "Australia"
