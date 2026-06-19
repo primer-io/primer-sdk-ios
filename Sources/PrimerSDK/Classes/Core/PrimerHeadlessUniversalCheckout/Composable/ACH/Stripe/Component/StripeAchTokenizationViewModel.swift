@@ -11,6 +11,7 @@
 @_spi(PrimerInternal) import PrimerNetworking
 import UIKit
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerUI
 #if canImport(PrimerStripeSDK)
     import PrimerStripeSDK
 #endif

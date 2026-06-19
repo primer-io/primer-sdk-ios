@@ -13,6 +13,7 @@ import Foundation
 @_spi(PrimerInternal) import PrimerCore
 @_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerNetworking
+@_spi(PrimerInternal) import PrimerUI
 import UIKit
 
 #if canImport(Primer3DS)

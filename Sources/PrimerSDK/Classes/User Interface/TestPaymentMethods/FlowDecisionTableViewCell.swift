@@ -1,23 +1,24 @@
 //
 //  FlowDecisionTableViewCell.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import UIKit
+@_spi(PrimerInternal) import PrimerUI
 
 final class FlowDecisionTableViewCell: UITableViewCell {
 
     static var identifier: String = "FlowDecisionTableViewCell"
 
-    internal private(set) var decision: PrimerTestPaymentMethodSessionInfo.FlowDecision!
+    private(set) var decision: PrimerTestPaymentMethodSessionInfo.FlowDecision!
     private let cellInternalPadding: CGFloat = 4
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
-        self.preservesSuperviewLayoutMargins = false
-        self.contentView.preservesSuperviewLayoutMargins = false
-        self.selectionStyle = .none
+        preservesSuperviewLayoutMargins = false
+        contentView.preservesSuperviewLayoutMargins = false
+        selectionStyle = .none
 
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         backgroundColor = theme.view.backgroundColor
@@ -33,7 +34,7 @@ final class FlowDecisionTableViewCell: UITableViewCell {
 
     override var frame: CGRect {
         get {
-            return super.frame
+            super.frame
         }
         set (newFrame) {
             var frame =  newFrame

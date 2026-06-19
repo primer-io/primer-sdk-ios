@@ -1,11 +1,12 @@
 //
 //  PrimerFormViewTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import XCTest
 @testable import PrimerSDK
+import XCTest
+@_spi(PrimerInternal) import PrimerUI
 
 final class PrimerFormViewTests: XCTestCase {
 
@@ -13,8 +14,8 @@ final class PrimerFormViewTests: XCTestCase {
 
     func testViewInit() throws {
         sut = PrimerFormView(formViews: [
-            [ UILabel(text: "Testing 1"),
-              UILabel(text: "Testing 2") ],
+            [UILabel(text: "Testing 1"),
+             UILabel(text: "Testing 2") ],
             [ UILabel(text: "Testing 3") ]
         ])
 
@@ -33,7 +34,7 @@ extension UILabel {
     convenience init(text: String) {
         self.init(frame: .zero)
         self.text = text
-        self.layoutIfNeeded()
+        layoutIfNeeded()
     }
 
 }

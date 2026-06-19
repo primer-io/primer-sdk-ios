@@ -951,9 +951,6 @@
                            location = "group:CardholderNameField.swift">
                         </FileRef>
                         <FileRef
-                           location = "group:Field.swift">
-                        </FileRef>
-                        <FileRef
                            location = "group:StateField.swift">
                         </FileRef>
                         <FileRef
@@ -1173,28 +1170,6 @@
                   <FileRef
                      location = "group:PrimerColor.swift">
                   </FileRef>
-                  <Group
-                     location = "group:Internal"
-                     name = "Internal">
-                     <FileRef
-                        location = "group:PrimerTheme+TextStyles.swift">
-                     </FileRef>
-                     <FileRef
-                        location = "group:PrimerTheme+Inputs.swift">
-                     </FileRef>
-                     <FileRef
-                        location = "group:PrimerTheme+Views.swift">
-                     </FileRef>
-                     <FileRef
-                        location = "group:PrimerTheme+Colors.swift">
-                     </FileRef>
-                     <FileRef
-                        location = "group:PrimerTheme+Borders.swift">
-                     </FileRef>
-                     <FileRef
-                        location = "group:PrimerTheme+Buttons.swift">
-                     </FileRef>
-                  </Group>
                   <FileRef
                      location = "group:PrimerTheme+Images.swift">
                   </FileRef>
@@ -1288,9 +1263,6 @@
                   location = "group:VersionUtils.swift">
                </FileRef>
                <FileRef
-                  location = "group:UIColorExtension.swift">
-               </FileRef>
-               <FileRef
                   location = "group:PaymentMethodTypeProviding.swift">
                </FileRef>
                <FileRef
@@ -1303,34 +1275,10 @@
                   location = "group:BundleExtension.swift">
                </FileRef>
                <FileRef
-                  location = "group:AlertController.swift">
-               </FileRef>
-               <FileRef
-                  location = "group:PrimerStackVIew.swift">
-               </FileRef>
-               <FileRef
-                  location = "group:UINavigationController+Extensions.swift">
-               </FileRef>
-               <FileRef
-                  location = "group:PrimerImageView.swift">
-               </FileRef>
-               <FileRef
-                  location = "group:UILocalizableUtil.swift">
-               </FileRef>
-               <FileRef
-                  location = "group:PrimerButton.swift">
-               </FileRef>
-               <FileRef
                   location = "group:ApplePayUtils.swift">
                </FileRef>
                <FileRef
-                  location = "group:PrimerViewController.swift">
-               </FileRef>
-               <FileRef
                   location = "group:StringExtension.swift">
-               </FileRef>
-               <FileRef
-                  location = "group:PrimerViewExtensions.swift">
                </FileRef>
                <FileRef
                   location = "group:UserDefaultsExtension.swift">
@@ -1384,9 +1332,6 @@
                   name = "Constants">
                   <FileRef
                      location = "group:Strings.swift">
-                  </FileRef>
-                  <FileRef
-                     location = "group:Dimensions.swift">
                   </FileRef>
                   <FileRef
                      location = "group:Content.swift">
@@ -1858,21 +1803,11 @@
             <Group
                location = "group:User Interface"
                name = "User Interface">
-               <FileRef
-                  location = "group:UIUtils.swift">
-               </FileRef>
                <Group
                   location = "group:Primer"
                   name = "Primer">
                   <FileRef
                      location = "group:CardButton.swift">
-                  </FileRef>
-               </Group>
-               <Group
-                  location = "group:OAuth"
-                  name = "OAuth">
-                  <FileRef
-                     location = "group:PrimerWebViewController.swift">
                   </FileRef>
                </Group>
                <Group
@@ -1954,13 +1889,6 @@
                   location = "group:AccessibilityIdentifier.swift">
                </FileRef>
                <Group
-                  location = "group:UI Delegates"
-                  name = "UI Delegates">
-                  <FileRef
-                     location = "group:ReloadDelegate.swift">
-                  </FileRef>
-               </Group>
-               <Group
                   location = "group:Components"
                   name = "Components">
                   <FileRef
@@ -1980,19 +1908,10 @@
                      </FileRef>
                   </Group>
                   <FileRef
-                     location = "group:PrimerResultComponentView.swift">
-                  </FileRef>
-                  <FileRef
                      location = "group:PrimerSearchTextField.swift">
                   </FileRef>
                   <FileRef
-                     location = "group:HeaderFooterLabelView.swift">
-                  </FileRef>
-                  <FileRef
                      location = "group:PrimerNibView.swift">
-                  </FileRef>
-                  <FileRef
-                     location = "group:PrimerFormView.swift">
                   </FileRef>
                </Group>
                <Group

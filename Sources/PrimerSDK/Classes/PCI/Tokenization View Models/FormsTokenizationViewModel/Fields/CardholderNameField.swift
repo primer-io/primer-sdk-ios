@@ -1,17 +1,18 @@
 //
 //  CardholderNameField.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import UIKit
+@_spi(PrimerInternal) import PrimerUI
 
 final class PrimerCardholderNameField: PrimerCardFormFieldProtocol {
 
     private static let theme: PrimerThemeProtocol = DependencyContainer.resolve()
 
     static func cardholderNameContainerViewFieldView(_ view: PrimerTextFieldView?) -> PrimerCustomFieldView? {
-        guard let view = view else {
+        guard let view else {
             return nil
         }
         let cardholderNameContainerView = PrimerCustomFieldView()
@@ -34,7 +35,7 @@ final class PrimerCardholderNameField: PrimerCardFormFieldProtocol {
 
 extension PrimerCardholderNameField {
 
-    internal static var isCardholderNameFieldEnabled: Bool {
+    static var isCardholderNameFieldEnabled: Bool {
         let cardInfoOptions = PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules?
             .first(where: { $0.type == "CARD_INFORMATION" })?
             .options as? PrimerAPIConfiguration.CheckoutModule.CardInformationOptions

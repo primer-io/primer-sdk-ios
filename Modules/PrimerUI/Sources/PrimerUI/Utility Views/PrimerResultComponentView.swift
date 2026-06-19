@@ -1,0 +1,73 @@
+//
+//  PrimerResultComponentView.swift
+//
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
+
+import UIKit
+
+@_spi(PrimerInternal) public final class PrimerResultComponentView: PrimerView {
+
+    private(set) var verticalStackView = UIStackView()
+    private(set) var imageView: UIImageView?
+    private(set) var message: String?
+    private(set) var loadingIndicator: UIActivityIndicatorView?
+
+    public convenience init(
+        frame: CGRect = .zero,
+        imageView: UIImageView? = nil,
+        message: String? = nil,
+        loadingIndicator: UIActivityIndicatorView? = nil
+    ) {
+        self.init(frame: frame)
+        self.imageView = imageView
+        self.message = message
+        self.loadingIndicator = loadingIndicator
+        initialize()
+    }
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        initialize()
+    }
+
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        initialize()
+    }
+
+    fileprivate func initialize() {
+        addSubview(verticalStackView)
+
+        verticalStackView.axis = .vertical
+        verticalStackView.spacing = 20.0
+        verticalStackView.alignment = .center
+
+        verticalStackView.translatesAutoresizingMaskIntoConstraints = false
+        verticalStackView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
+        verticalStackView.topAnchor.constraint(greaterThanOrEqualTo: topAnchor).isActive = true
+        verticalStackView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
+        verticalStackView.bottomAnchor.constraint(lessThanOrEqualTo: bottomAnchor).isActive = true
+        verticalStackView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+
+        if let imageView {
+            verticalStackView.addArrangedSubview(imageView)
+        }
+
+        if let message {
+            let messageLabel = UILabel()
+            messageLabel.text = message
+            messageLabel.accessibilityIdentifier = "Result Component View Message Label"
+            messageLabel.numberOfLines = 0
+            messageLabel.font = .systemFont(ofSize: 16)
+            messageLabel.textColor = UIColor(red: 142.0/255, green: 142.0/255, blue: 147.0/255, alpha: 1.0)
+            messageLabel.textAlignment = .center
+            verticalStackView.addArrangedSubview(messageLabel)
+        }
+
+        if let loadingIndicator {
+            verticalStackView.addArrangedSubview(loadingIndicator)
+        }
+    }
+
+}

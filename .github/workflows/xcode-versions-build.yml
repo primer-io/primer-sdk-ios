@@ -38,7 +38,7 @@ jobs:
       - uses: webfactory/ssh-agent@e83874834305fe9a4a2997156cb26c5de65a8555 # v0.10.0
         with:
           ssh-private-key: ${{ secrets.SSH_KEY }}
-      - uses: ruby/setup-ruby@afeafc3d1ab54a631816aba4c914a0081c12ff2f  # v1.310.0
+      - uses: ruby/setup-ruby@89f90524b88a01fe6e0b732220432cc6142926af  # v1.313.0
         with:
           ruby-version: "3.2"
           bundler-cache: true

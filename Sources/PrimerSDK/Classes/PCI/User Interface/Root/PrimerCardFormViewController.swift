@@ -6,6 +6,7 @@
 
 import UIKit
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerUI
 
 /// Subclass of the PrimerFormViewController that uses the checkout components and the card components manager
 final class PrimerCardFormViewController: PrimerFormViewController {

@@ -1,11 +1,12 @@
 //
 //  PrimerThemeData.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable type_body_length
 import UIKit
+@_spi(PrimerInternal) import PrimerUI
 
 public final class PrimerThemeData {
     public var colors: ColorSwatch
@@ -46,7 +47,7 @@ public final class PrimerThemeData {
             self.paymentMethod = paymentMethod
         }
 
-        internal func theme(for type: ButtonType, with data: PrimerThemeData) -> ButtonTheme {
+        func theme(for type: ButtonType, with data: PrimerThemeData) -> ButtonTheme {
             switch type {
             case .main:
                 let button = main
@@ -142,16 +143,16 @@ public final class PrimerThemeData {
             self.safeMargin = safeMargin
         }
 
-        internal func theme(for viewType: ViewType, with data: PrimerThemeData) -> ViewTheme {
+        func theme(for viewType: ViewType, with data: PrimerThemeData) -> ViewTheme {
             switch viewType {
             case .blurredBackground:
-                return ViewTheme(
+                ViewTheme(
                     backgroundColor: data.blurView.backgroundColor ?? PrimerColors.blurredBackground,
                     cornerRadius: PrimerDimensions.zero,
                     safeMargin: PrimerDimensions.zero
                 )
             case .main:
-                return ViewTheme(
+                ViewTheme(
                     backgroundColor: data.view.backgroundColor ?? data.colors.light,
                     cornerRadius: data.view.cornerRadius ?? PrimerDimensions.cornerRadius,
                     safeMargin: data.view.safeMargin ?? PrimerDimensions.safeArea
@@ -184,35 +185,35 @@ public final class PrimerThemeData {
             self.error = error
         }
 
-        internal func theme(for type: TextType, with data: PrimerThemeData) -> TextTheme {
+        func theme(for type: TextType, with data: PrimerThemeData) -> TextTheme {
             switch type {
             case .body:
-                return TextTheme(
+                TextTheme(
                     color: body.defaultColor ?? data.colors.dark,
                     fontSize: body.fontSize ?? Int(PrimerDimensions.Font.body)
                 )
             case .subtitle:
-                return TextTheme(
+                TextTheme(
                     color: subtitle.defaultColor ?? data.colors.gray,
                     fontSize: subtitle.fontSize ?? Int(PrimerDimensions.Font.subtitle)
                 )
             case .title:
-                return TextTheme(
+                TextTheme(
                     color: title.defaultColor ?? data.colors.dark,
                     fontSize: title.fontSize ?? Int(PrimerDimensions.Font.title)
                 )
             case .amountLabel:
-                return TextTheme(
+                TextTheme(
                     color: amountLabel.defaultColor ?? data.colors.dark,
                     fontSize: amountLabel.fontSize ?? Int(PrimerDimensions.Font.amountLabel)
                 )
             case .system:
-                return TextTheme(
+                TextTheme(
                     color: system.defaultColor ?? data.colors.primary,
                     fontSize: system.fontSize ?? Int(PrimerDimensions.Font.system)
                 )
             case .error:
-                return TextTheme(
+                TextTheme(
                     color: error.defaultColor ?? data.colors.error,
                     fontSize: error.fontSize ?? Int(PrimerDimensions.Font.error)
                 )
@@ -226,7 +227,7 @@ public final class PrimerThemeData {
 
         public init(defaultColor: UIColor? = nil, fontsize: Int? = nil) {
             self.defaultColor = defaultColor
-            self.fontSize = fontsize
+            fontSize = fontsize
         }
     }
 
@@ -267,7 +268,7 @@ public final class PrimerThemeData {
             self.cornerRadius = cornerRadius
         }
 
-        internal func theme(with data: PrimerThemeData) -> InputTheme {
+        func theme(with data: PrimerThemeData) -> InputTheme {
             InputTheme(
                 color: backgroundColor ?? data.colors.light,
                 cornerRadius: cornerRadius ?? PrimerDimensions.Component.cornerRadius,

@@ -6,6 +6,7 @@
 
 import PrimerFoundation
 import UIKit
+@_spi(PrimerInternal) import PrimerUI
 
 final class CountryTableViewCell: UITableViewCell {
 

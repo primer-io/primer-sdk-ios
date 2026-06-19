@@ -1,10 +1,11 @@
 //
 //  PrimerVoucherInfoPaymentViewController.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import UIKit
+@_spi(PrimerInternal) import PrimerUI
 
 final class PrimerVoucherInfoPaymentViewController: PrimerFormViewController {
 
@@ -27,7 +28,7 @@ final class PrimerVoucherInfoPaymentViewController: PrimerFormViewController {
         self.formPaymentMethodTokenizationViewModel = formPaymentMethodTokenizationViewModel
         self.textToShare = textToShare
         super.init()
-        self.titleImage = navigationBarLogo
+        titleImage = navigationBarLogo
     }
 
     override func viewDidLoad() {
@@ -35,11 +36,11 @@ final class PrimerVoucherInfoPaymentViewController: PrimerFormViewController {
 
         verticalStackView.spacing = 16
 
-        if let infoView = self.formPaymentMethodTokenizationViewModel.infoView {
+        if let infoView = formPaymentMethodTokenizationViewModel.infoView {
             verticalStackView.addArrangedSubview(infoView)
         }
 
-        if let submitButton = self.formPaymentMethodTokenizationViewModel.uiModule.submitButton {
+        if let submitButton = formPaymentMethodTokenizationViewModel.uiModule.submitButton {
             verticalStackView.addArrangedSubview(submitButton)
         }
     }
@@ -55,12 +56,12 @@ extension PrimerVoucherInfoPaymentViewController {
 
     @IBAction func shareVoucherInfoTapped(_ sender: UIButton) {
 
-        guard let textToShare = textToShare else {
+        guard let textToShare else {
             return
         }
 
         let activityViewController = UIActivityViewController(activityItems: [textToShare], applicationActivities: nil)
-        activityViewController.popoverPresentationController?.sourceView = self.view
-        self.present(activityViewController, animated: true, completion: nil)
+        activityViewController.popoverPresentationController?.sourceView = view
+        present(activityViewController, animated: true, completion: nil)
     }
 }

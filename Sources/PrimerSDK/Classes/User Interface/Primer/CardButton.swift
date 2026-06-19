@@ -1,10 +1,11 @@
 //
 //  CardButton.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import UIKit
+@_spi(PrimerInternal) import PrimerUI
 
 final class CardButton: PrimerButton {
 
@@ -16,7 +17,7 @@ final class CardButton: PrimerButton {
     private var border = PrimerView()
 
     func render(model: CardButtonViewModel?) {
-        guard let model = model else { return }
+        guard let model else { return }
         accessibilityIdentifier = "saved_payment_method_button"
 
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()

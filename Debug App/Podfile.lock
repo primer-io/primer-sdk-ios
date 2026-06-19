@@ -67,9 +67,11 @@ PODS:
     - PrimerNetworking (= 3.0.0-b0)
     - PrimerResources (= 3.0.0-b0)
     - PrimerStepResolver (= 3.0.0-b0)
+    - PrimerUI (= 3.0.0-b0)
   - PrimerStepResolver (3.0.0-b0):
     - PrimerFoundation (= 3.0.0-b0)
   - PrimerStripeSDK (1.0.1)
+  - PrimerUI (3.0.0-b0)
 
 DEPENDENCIES:
   - IQKeyboardManagerSwift
@@ -86,6 +88,7 @@ DEPENDENCIES:
   - PrimerSDK (from `../`)
   - PrimerStepResolver (from `../`)
   - PrimerStripeSDK
+  - PrimerUI (from `../`)
 
 SPEC REPOS:
   trunk:
@@ -120,6 +123,8 @@ EXTERNAL SOURCES:
     :path: "../"
   PrimerStepResolver:
     :path: "../"
+  PrimerUI:
+    :path: "../"
 
 SPEC CHECKSUMS:
   IQKeyboardCore: 250a88dfc713b2ecbe1dce250811d054fc016959
@@ -140,10 +145,11 @@ SPEC CHECKSUMS:
   PrimerNetworking: 32f9934825cd8901f0b348abc4e8cfc8231b4a47
   PrimerNolPaySDK: 08b140ed39b378a0b33b4f8746544a402175c0cc
   PrimerResources: 39c19a51861969e08871d43360774499d8805654
-  PrimerSDK: 6109a3fb4c8dfcf8fb6587a7dfb7a84d9b120ca1
+  PrimerSDK: 6b506e6b87852b715c4a3a7d6d3ac04cd2a5cb9c
   PrimerStepResolver: 82eedb02781c1ed18dea930baba04dabe5e3b7b3
   PrimerStripeSDK: dce5e37d10223ee724f33d1cdeaa17235a71ddbb
+  PrimerUI: 1f4110d2369d9fdf885e9d0045c8967a112d6b91
 
-PODFILE CHECKSUM: 92529dcaff526ac71f5cd093b6d5fb4aa6774d89
+PODFILE CHECKSUM: 98d1048cba1fd1f0cc031e88ea8b9ab9519b2ae8
 
 COCOAPODS: 1.16.2

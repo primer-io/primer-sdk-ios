@@ -7,6 +7,7 @@
 import SwiftUI
 @_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerUI
 
 @available(iOS 15.0, *)
 private struct BridgeControllerKey: EnvironmentKey {

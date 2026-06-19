@@ -1,10 +1,11 @@
 //
 //  PrimerInputViewController.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import UIKit
+@_spi(PrimerInternal) import PrimerUI
 
 final class PrimerInputViewController: PrimerFormViewController {
 
@@ -17,7 +18,7 @@ final class PrimerInputViewController: PrimerFormViewController {
     ) {
         self.formPaymentMethodTokenizationViewModel = formPaymentMethodTokenizationViewModel
         super.init()
-        self.titleImage = navigationBarLogo
+        titleImage = navigationBarLogo
 
     }
 
@@ -30,7 +31,7 @@ final class PrimerInputViewController: PrimerFormViewController {
             verticalStackView.addArrangedSubview(inputStackView)
         }
 
-        guard let submitButton = self.formPaymentMethodTokenizationViewModel.uiModule.submitButton else { return }
+        guard let submitButton = formPaymentMethodTokenizationViewModel.uiModule.submitButton else { return }
         verticalStackView.addArrangedSubview(submitButton)
     }
 

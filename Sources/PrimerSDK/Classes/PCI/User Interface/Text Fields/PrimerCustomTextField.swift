@@ -1,10 +1,11 @@
 //
 //  PrimerCustomTextField.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import UIKit
+@_spi(PrimerInternal) import PrimerUI
 
 // swiftlint:disable type_body_length
 class PrimerCustomFieldView: UIView {
@@ -18,8 +19,8 @@ class PrimerCustomFieldView: UIView {
     var cardNetworks: [PrimerCardNetwork] = [] {
         didSet {
             DispatchQueue.main.async { [weak self] in
-                guard let self = self else { return }
-                self.updateNetworksDropdownViewVisibility()
+                guard let self else { return }
+                updateNetworksDropdownViewVisibility()
             }
         }
     }
@@ -97,13 +98,13 @@ class PrimerCustomFieldView: UIView {
     // Function to reset the card network selection to the initial state
     func resetCardNetworkSelection() {
         DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
+            guard let self else { return }
 
-            self.selectedCardNetwork = nil
-            self.networkIconImageView?.image = self.cardNetworks.first?.network.icon  // Reset to the first available icon
-            self.rightImageView.image = self.cardNetworks.first?.network.icon
+            selectedCardNetwork = nil
+            networkIconImageView?.image = cardNetworks.first?.network.icon  // Reset to the first available icon
+            rightImageView.image = cardNetworks.first?.network.icon
             // Update visibility based on card network count
-            self.updateNetworksDropdownViewVisibility()
+            updateNetworksDropdownViewVisibility()
         }
     }
 
@@ -112,19 +113,19 @@ class PrimerCustomFieldView: UIView {
     private func setupSurchargeView() {
         surchargeView = createSurchargeView(withAmount: "")
         surchargeView?.isHidden = true
-        if let surchargeView = surchargeView {
+        if let surchargeView {
             textFieldStackView.insertArrangedSubview(surchargeView, at: 1)
         }
     }
 
     func updateSurcharge(amount: String?) {
         DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
-            if let amount = amount, !amount.isEmpty {
-                self.surchargeLabel?.text = amount
-                self.surchargeView?.isHidden = false
+            guard let self else { return }
+            if let amount, !amount.isEmpty {
+                surchargeLabel?.text = amount
+                surchargeView?.isHidden = false
             } else {
-                self.surchargeView?.isHidden = true
+                surchargeView?.isHidden = true
             }
         }
     }
