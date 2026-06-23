@@ -1,11 +1,11 @@
 //
 //  PrimerCVVFieldViewTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import XCTest
 @testable import PrimerSDK
+import XCTest
 
 final class PrimerCVVFieldViewTests: XCTestCase {
 
@@ -41,9 +41,11 @@ final class PrimerCVVFieldViewTests: XCTestCase {
             expectation.fulfill()
         }
 
-        _ = view.textField(view.textField,
-                           shouldChangeCharactersIn: NSRange(location: 0, length: 4),
-                           replacementString: "4567")
+        _ = view.textField(
+            view.textField,
+            shouldChangeCharactersIn: NSRange(location: 0, length: 4),
+            replacementString: "4567"
+        )
 
         waitForExpectations(timeout: 2.0)
     }
@@ -57,7 +59,7 @@ final class PrimerCVVFieldViewTests: XCTestCase {
             XCTAssertNotNil(isValid)
             XCTAssertFalse(isValid!)
             switch self.view.validation {
-            case .invalid(let error):
+            case let .invalid(error):
                 XCTAssertEqual(error?.localizedDescription, "[invalid-cvv] CVV is not valid.")
                 break
             default:
@@ -66,9 +68,11 @@ final class PrimerCVVFieldViewTests: XCTestCase {
             expectation.fulfill()
         }
 
-        _ = view.textField(view.textField,
-                           shouldChangeCharactersIn: NSRange(location: 0, length: 4),
-                           replacementString: "4567")
+        _ = view.textField(
+            view.textField,
+            shouldChangeCharactersIn: NSRange(location: 0, length: 4),
+            replacementString: "4567"
+        )
 
         waitForExpectations(timeout: 2.0)
     }
@@ -84,7 +88,7 @@ final class PrimerCVVFieldViewTests: XCTestCase {
             XCTAssertNotNil(isValid)
             XCTAssertFalse(isValid!)
             switch self.view.validation {
-            case .invalid(let error):
+            case let .invalid(error):
                 XCTAssertEqual(error?.localizedDescription, "[invalid-cvv] CVV cannot be blank.")
                 break
             default:
@@ -93,9 +97,11 @@ final class PrimerCVVFieldViewTests: XCTestCase {
             expectation.fulfill()
         }
 
-        _ = view.textField(view.textField,
-                           shouldChangeCharactersIn: NSRange(location: 0, length: 4),
-                           replacementString: "")
+        _ = view.textField(
+            view.textField,
+            shouldChangeCharactersIn: NSRange(location: 0, length: 4),
+            replacementString: ""
+        )
 
         waitForExpectations(timeout: 2.0)
     }

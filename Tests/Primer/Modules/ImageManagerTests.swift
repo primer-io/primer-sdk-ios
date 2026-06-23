@@ -1,11 +1,12 @@
 //
 //  ImageManagerTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import XCTest
 @testable import PrimerSDK
+import XCTest
+@_spi(PrimerInternal) import PrimerCore
 
 final class ImageManagerTests: XCTestCase {
     
@@ -141,7 +142,7 @@ final class ImageManagerTests: XCTestCase {
 
 // MARK: - Mock Classes
 
-final private class MockDownloader {
+private final class MockDownloader {
     var shouldSucceed = true
     var mockFile: File?
     var mockError: Error = NSError(domain: "test", code: 0, userInfo: nil)
