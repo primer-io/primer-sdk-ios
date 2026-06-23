@@ -26,7 +26,7 @@ final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, 
     AsyncStream { continuation in
       let task = Task { [self] in
         for await _ in $structuredState.values {
-          continuation.yield(structuredState)
+          continuation.yield(structuredState.redactedForMerchant())
         }
         continuation.finish()
       }
@@ -40,7 +40,7 @@ final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, 
   @Published var structuredState = PrimerCardFormState()
   var fieldValidationStates = FieldValidationStates()
 
-  var currentState: PrimerCardFormState { structuredState }
+  var currentState: PrimerCardFormState { structuredState.redactedForMerchant() }
 
   private weak var checkoutScope: DefaultCheckoutScope?
   private let processCardPaymentInteractor: ProcessCardPaymentInteractor
@@ -527,7 +527,11 @@ final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, 
   }
 
   func getFieldValue(_ fieldType: PrimerInputElementType) -> String {
-    structuredState.data[fieldType]
+    switch fieldType {
+    case .cardNumber: PrimerCardFormState.maskedPAN(structuredState.data[.cardNumber])
+    case .cvv: ""
+    default: structuredState.data[fieldType]
+    }
   }
 
   func setFieldError(
