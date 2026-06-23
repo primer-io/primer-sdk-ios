@@ -40,13 +40,21 @@ runs:
         brew install sonar-scanner
     - name: Update sonar-project.properties
       shell: bash
+      env:
+        PR_NUMBER: ${{ inputs.pull-request-number }}
+        PR_BRANCH: ${{ inputs.branch }}
+        PR_BASE: ${{ inputs.base-branch }}
+        PR_SHA: ${{ inputs.pull-request-sha }}
+        COVERAGE_FILE_NAMES: ${{ inputs.coverage-file-names }}
       run: |
-        echo "sonar.pullrequest.key=${{ inputs.pull-request-number }}" >> sonar-project.properties
-        echo "sonar.pullrequest.branch=${{ inputs.branch }}" >> sonar-project.properties
-        echo "sonar.pullrequest.base=${{ inputs.base-branch }}" >> sonar-project.properties
-        echo "sonar.scm.revision=${{ inputs.pull-request-sha }}" >> sonar-project.properties
-        echo "sonar.coverageReportPaths=${{ inputs.coverage-file-names }}" >> sonar-project.properties
+        echo "sonar.pullrequest.key=${PR_NUMBER}" >> sonar-project.properties
+        echo "sonar.pullrequest.branch=${PR_BRANCH}" >> sonar-project.properties
+        echo "sonar.pullrequest.base=${PR_BASE}" >> sonar-project.properties
+        echo "sonar.scm.revision=${PR_SHA}" >> sonar-project.properties
+        echo "sonar.coverageReportPaths=${COVERAGE_FILE_NAMES}" >> sonar-project.properties
     - name: Run Sonar
       shell: bash
+      env:
+        SONAR_TOKEN: ${{ inputs.sonar-token }}
       run: |
-        sonar-scanner -Dsonar.token=${{ inputs.sonar-token }}
+        sonar-scanner -Dsonar.token="${SONAR_TOKEN}"

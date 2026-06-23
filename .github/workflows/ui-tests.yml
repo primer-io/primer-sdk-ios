@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       appiumTestsBranch:
-        description: The branch to run from mobile-appium-tests 
+        description: The branch to run from mobile-appium-tests
         required: true
         default: develop
         type: string
@@ -19,11 +19,17 @@ on:
     branches:
       - 'release/**'
 
+permissions:
+  contents: read
+
 jobs:
   build-and-upload-to-appetize:
     runs-on: macos-26
     timeout-minutes: 20
     name: "Build and upload app to Appetize"
+    permissions:
+      contents: read
+      actions: write
     steps:
       - name: Cancel previous jobs
         uses: styfle/cancel-workflow-action@d07a454dad7609a92316b57b23c9ccfd4f59af66 # v0.13.1
@@ -33,6 +39,7 @@ jobs:
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           ref: ${{ github.ref }}
+          persist-credentials: false
       - name: Upload preview to Appetize
         id: appetize-upload
         uses: ./.github/actions/appetize-build
@@ -58,6 +65,9 @@ jobs:
     runs-on: macos-26
     timeout-minutes: 20
     name: "Distribute app to Firebase and LambdaTest"
+    permissions:
+      contents: read
+      actions: write
     outputs:
       artifact-url: ${{ steps.save_app_artifact_step.outputs.artifact-url }}
     steps:
@@ -70,6 +80,7 @@ jobs:
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           ref: ${{ github.ref }}
+          persist-credentials: false
 
       - name: Select Xcode Version
         uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90  # v1.7.0
@@ -87,7 +98,7 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_KEY }}
 
-      - uses: ruby/setup-ruby@89f90524b88a01fe6e0b732220432cc6142926af  # v1.313.0
+      - uses: ruby/setup-ruby@89f90524b88a01fe6e0b732220432cc6142926af # zizmor: ignore[cache-poisoning] ruby gem cache for the build runner; not a published release artifact
         with:
           ruby-version: "3.2"
           bundler-cache: true
@@ -101,15 +112,17 @@ jobs:
 
       - name: Create secrets.defaults.properties
         shell: bash
+        env:
+          STRIPE_PUBLISHABLE_KEY: ${{ secrets.STRIPE_PUBLISHABLE_KEY }}
         run: |
-          echo "STRIPE_PUBLISHABLE_KEY=${{ secrets.STRIPE_PUBLISHABLE_KEY }}" > Debug\ App/secrets.defaults.properties
+          echo "STRIPE_PUBLISHABLE_KEY=$STRIPE_PUBLISHABLE_KEY" > Debug\ App/secrets.defaults.properties
 
       - name: Distribute internally on Firebase and upload to LambdaTest 🚀
         run: |
           bundle exec fastlane qa_release
         env:
           FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
-          FIREBASE_COMMA_SEPARATED_TEST_GROUPS: ${{ 'primer-internal' }}
+          FIREBASE_COMMA_SEPARATED_TEST_GROUPS: primer-internal
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
           MATCH_GIT_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
           FASTLANE_PASSWORD: ${{ secrets.FASTLANE_PASSWORD }}
@@ -154,6 +167,7 @@ jobs:
         with:
           ref: ${{ github.ref }}
           sparse-checkout: .github
+          persist-credentials: false
       - name: Run UI Tests via LambdaTest [${{ inputs.testType }}] 🧪
         id: ui-tests-test-via-lambdatest
         uses: ./.github/actions/ui-tests
@@ -179,6 +193,7 @@ jobs:
         with:
           ref: ${{ github.ref }}
           sparse-checkout: .github
+          persist-credentials: false
       - name: Run UI Tests via LambdaTest [${{ inputs.testType }}] 🧪
         id: ui-tests-test-via-lambdatest
         uses: ./.github/actions/ui-tests

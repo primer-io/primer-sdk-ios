@@ -13,13 +13,16 @@ on:
           - beta
           - rc
 
+permissions:
+  contents: read
+
 jobs:
   bump-version:
     runs-on: ubuntu-latest
     name: "Bump release version and create changelog"
     steps:
       - name: Check out repo
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # zizmor: ignore[artipacked] persisted RELEASE_ACCESS_TOKEN is required to push the release branch
         with:
           fetch-depth: 0
           token: ${{ secrets.RELEASE_ACCESS_TOKEN }}
@@ -27,7 +30,7 @@ jobs:
         run: pip install --user -U Commitizen
       - name: Record from version
         run: |
-          echo "FROM_VERSION=$(cz version --project)" >> $GITHUB_ENV
+          echo "FROM_VERSION=$(cz version --project)" >> "$GITHUB_ENV"
       - name: Create release branch
         run: |
           git checkout -b release/next
@@ -39,10 +42,12 @@ jobs:
       # Bump version and create CHANGELOG - prereleasee
       - name: Create bump and changelog
         if: ${{ inputs.releaseType != 'default' }}
-        run: cz bump --files-only --yes --changelog --prerelease ${{ inputs.releaseType }}
+        env:
+          RELEASE_TYPE: ${{ inputs.releaseType }}
+        run: cz bump --files-only --yes --changelog --prerelease "$RELEASE_TYPE"
       - name: Record to version
         run: |
-          echo "TO_VERSION=$(cz version --project)" >> $GITHUB_ENV
+          echo "TO_VERSION=$(cz version --project)" >> "$GITHUB_ENV"
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 #v8.1.1
         with:
