@@ -14,7 +14,7 @@ let package = Package(
 
 private var packageTargets: [Target] {
     [
-        primerSDKTarget,
+        .target(name: "PrimerSDK",dependencies: primerSDKDependencies, path: "Sources/PrimerSDK"),
         
         target(name: "PrimerFoundation"),
         target(name: "PrimerStepResolver", dependencies: ["PrimerFoundation"]),
@@ -32,15 +32,6 @@ private var packageTargets: [Target] {
         testTarget(name: "PrimerFoundation", dependencies: ["PrimerFoundation"]),
         testTarget(name: "PrimerStepResolver", dependencies: ["PrimerStepResolver"]),
     ]
-}
-
-private var primerSDKTarget: Target {
-    .target(
-        name: "PrimerSDK",
-        dependencies: primerSDKDependencies,
-        path: "Sources/PrimerSDK",
-        resources: [.process("Resources")]
-    )
 }
 
 private var primerSDKDependencies: [Target.Dependency] {

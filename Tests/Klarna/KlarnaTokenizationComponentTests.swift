@@ -5,13 +5,18 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 #if canImport(PrimerKlarnaSDK)
-    import PrimerFoundation
-    @testable import PrimerSDK
+    @_spi(PrimerInternal) import PrimerFoundation
+    @_spi(PrimerInternal) import PrimerCore
+    @_spi(PrimerInternal) @testable import PrimerSDK
     import XCTest
 
     final class KlarnaTokenizationComponentTests: XCTestCase {
         var tokenizationComponent: KlarnaTokenizationComponent!
         var paymentMethod: PrimerPaymentMethod!
+        
+        override class func setUp() {
+            ErrorHandler.fire = { Analytics.Service.fire(event: Analytics.event(for: $0)) }
+        }
 
         override func setUp() {
             super.setUp()

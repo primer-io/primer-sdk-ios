@@ -13,6 +13,7 @@ import Foundation
 import UIKit
 @_spi(PrimerInternal) import PrimerCore
 @_spi(PrimerInternal) import PrimerNetworking
+@_spi(PrimerInternal) import PrimerFoundation
 
 #if canImport(PrimerKlarnaSDK)
     import PrimerKlarnaSDK
