@@ -10,8 +10,7 @@ import SwiftUI
 @available(iOS 15.0, *)
 enum DemoRegistry {
     static let allDemos: [(metadata: DemoMetadata, factory: (DemoConfiguration) -> AnyView)] = [
-        (DefaultCheckoutDemo.metadata, { config in AnyView(DefaultCheckoutDemo(configuration: config)) }),
-        (CustomPaymentSelectionDemo.metadata, { config in AnyView(CustomPaymentSelectionDemo(configuration: config)) })
+        (DefaultCheckoutDemo.metadata, { config in AnyView(DefaultCheckoutDemo(configuration: config)) })
     ]
 
     static var allMetadata: [DemoMetadata] {

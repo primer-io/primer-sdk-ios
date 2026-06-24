@@ -48,7 +48,6 @@
 		A79D98252EE6DCE70024B330 /* DemoRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = A79D98162EE6DCE70024B330 /* DemoRow.swift */; };
 		A79D98262EE6DCE70024B330 /* SimpleCountryPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A79D98222EE6DCE70024B330 /* SimpleCountryPicker.swift */; };
 		A79D98272EE6DCE70024B330 /* NetworkingUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = A79D98212EE6DCE70024B330 /* NetworkingUtils.swift */; };
-		A79D98282EE6DCE70024B330 /* CustomPaymentSelectionDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = A79D98132EE6DCE70024B330 /* CustomPaymentSelectionDemo.swift */; };
 		A79D982A2EE6DCE70024B330 /* ErrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A79D98172EE6DCE70024B330 /* ErrorView.swift */; };
 		A79D982B2EE6DCE70024B330 /* CheckoutComponentsMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A79D981D2EE6DCE70024B330 /* CheckoutComponentsMenuViewController.swift */; };
 		A79D982C2EE6DCE70024B330 /* DefaultCheckoutDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = A79D98142EE6DCE70024B330 /* DefaultCheckoutDemo.swift */; };
@@ -221,7 +220,6 @@
 		A1A701452C739C1D002E236F /* id */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = id; path = id.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		A1A701462C739C1D002E236F /* id */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = id; path = id.lproj/Main.strings; sourceTree = "<group>"; };
 		A6AEF11B151368BF993C3EA9 /* TestScenario.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestScenario.swift; sourceTree = "<group>"; };
-		A79D98132EE6DCE70024B330 /* CustomPaymentSelectionDemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomPaymentSelectionDemo.swift; sourceTree = "<group>"; };
 		A79D98142EE6DCE70024B330 /* DefaultCheckoutDemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultCheckoutDemo.swift; sourceTree = "<group>"; };
 		A79D98162EE6DCE70024B330 /* DemoRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoRow.swift; sourceTree = "<group>"; };
 		A79D98172EE6DCE70024B330 /* ErrorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorView.swift; sourceTree = "<group>"; };
@@ -459,7 +457,6 @@
 		A79D98152EE6DCE70024B330 /* Demos */ = {
 			isa = PBXGroup;
 			children = (
-				A79D98132EE6DCE70024B330 /* CustomPaymentSelectionDemo.swift */,
 				A79D98142EE6DCE70024B330 /* DefaultCheckoutDemo.swift */,
 			);
 			path = Demos;
@@ -796,7 +793,6 @@
 				A79D98252EE6DCE70024B330 /* DemoRow.swift in Sources */,
 				A79D98262EE6DCE70024B330 /* SimpleCountryPicker.swift in Sources */,
 				A79D98272EE6DCE70024B330 /* NetworkingUtils.swift in Sources */,
-				A79D98282EE6DCE70024B330 /* CustomPaymentSelectionDemo.swift in Sources */,
 				A79D982A2EE6DCE70024B330 /* ErrorView.swift in Sources */,
 				A79D982B2EE6DCE70024B330 /* CheckoutComponentsMenuViewController.swift in Sources */,
 				A79D982C2EE6DCE70024B330 /* DefaultCheckoutDemo.swift in Sources */,

@@ -24,7 +24,6 @@
 		8723ADE72B8E0FAB00A5FE23 /* MerchantHeadlessCheckoutKlarnaViewController+Klarna.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8723ADE22B8E0FAB00A5FE23 /* MerchantHeadlessCheckoutKlarnaViewController+Klarna.swift */; };
 		8723ADE82B8E0FAB00A5FE23 /* MerchantHeadlessCheckoutKlarnaViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8723ADE32B8E0FAB00A5FE23 /* MerchantHeadlessCheckoutKlarnaViewController.swift */; };
 		A79D98422EE700350024B330 /* DefaultCheckoutDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = A79D98322EE700350024B330 /* DefaultCheckoutDemo.swift */; };
-		A79D98432EE700350024B330 /* CustomPaymentSelectionDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = A79D98312EE700350024B330 /* CustomPaymentSelectionDemo.swift */; };
 		A79D98442EE700350024B330 /* LoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A79D98362EE700350024B330 /* LoadingView.swift */; };
 		A79D98452EE700350024B330 /* CheckoutComponentsExamplesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A79D983B2EE700350024B330 /* CheckoutComponentsExamplesView.swift */; };
 		A79D98462EE700350024B330 /* ErrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A79D98352EE700350024B330 /* ErrorView.swift */; };
@@ -140,7 +139,6 @@
 		9874F439DA3EA5854A454687 /* MerchantDropInUIViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchantDropInUIViewController.swift; sourceTree = "<group>"; };
 		A1604A656AF654D7422A2A5E /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Main.strings; sourceTree = "<group>"; };
 		A6AEF11B151368BF993C3EA9 /* TestScenario.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestScenario.swift; sourceTree = "<group>"; };
-		A79D98312EE700350024B330 /* CustomPaymentSelectionDemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomPaymentSelectionDemo.swift; sourceTree = "<group>"; };
 		A79D98322EE700350024B330 /* DefaultCheckoutDemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultCheckoutDemo.swift; sourceTree = "<group>"; };
 		A79D98342EE700350024B330 /* DemoRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoRow.swift; sourceTree = "<group>"; };
 		A79D98352EE700350024B330 /* ErrorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorView.swift; sourceTree = "<group>"; };
@@ -351,7 +349,6 @@
 		A79D98332EE700350024B330 /* Demos */ = {
 			isa = PBXGroup;
 			children = (
-				A79D98312EE700350024B330 /* CustomPaymentSelectionDemo.swift */,
 				A79D98322EE700350024B330 /* DefaultCheckoutDemo.swift */,
 			);
 			path = Demos;
@@ -578,7 +575,6 @@
 				F00C66052ACC67FA00187028 /* Networking.swift in Sources */,
 				F00C66062ACC67FA00187028 /* MerchantDropInUIViewController.swift in Sources */,
 				A79D98422EE700350024B330 /* DefaultCheckoutDemo.swift in Sources */,
-				A79D98432EE700350024B330 /* CustomPaymentSelectionDemo.swift in Sources */,
 				A79D98442EE700350024B330 /* LoadingView.swift in Sources */,
 				A79D98452EE700350024B330 /* CheckoutComponentsExamplesView.swift in Sources */,
 				A79D98462EE700350024B330 /* ErrorView.swift in Sources */,
