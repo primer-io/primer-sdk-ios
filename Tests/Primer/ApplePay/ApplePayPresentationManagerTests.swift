@@ -336,4 +336,150 @@ final class ApplePayPresentationManagerTests: XCTestCase {
         XCTAssertEqual(PrimerApplePayOptions.RequiredContactField.phoneNumber.toPKContact(), .phoneNumber)
         XCTAssertEqual(PrimerApplePayOptions.RequiredContactField.postalAddress.toPKContact(), .postalAddress)
     }
+
+    // MARK: - Card type filtering (merchantCapabilities)
+
+    func testMerchantCapabilitiesDefaultsTo3DSWhenNoCardTypes() throws {
+        SDKSessionHelper.setUp()
+        defer { SDKSessionHelper.tearDown() }
+        registerApplePayOptions(allowedCardTypes: nil, allowedCardNetworks: nil)
+
+        let request = try sut.createRequest(for: makeApplePayRequest())
+
+        XCTAssertEqual(request.merchantCapabilities, [.capability3DS])
+    }
+
+    func testMerchantCapabilitiesCreditAddsCreditKeeps3DS() throws {
+        SDKSessionHelper.setUp()
+        defer { SDKSessionHelper.tearDown() }
+        registerApplePayOptions(allowedCardTypes: [.credit], allowedCardNetworks: nil)
+
+        let request = try sut.createRequest(for: makeApplePayRequest())
+
+        XCTAssertEqual(request.merchantCapabilities, [.capability3DS, .capabilityCredit])
+    }
+
+    func testMerchantCapabilitiesDebitAddsDebitKeeps3DS() throws {
+        SDKSessionHelper.setUp()
+        defer { SDKSessionHelper.tearDown() }
+        registerApplePayOptions(allowedCardTypes: [.debit], allowedCardNetworks: nil)
+
+        let request = try sut.createRequest(for: makeApplePayRequest())
+
+        XCTAssertEqual(request.merchantCapabilities, [.capability3DS, .capabilityDebit])
+    }
+
+    func testMerchantCapabilitiesCreditAndDebitAddsBoth() throws {
+        SDKSessionHelper.setUp()
+        defer { SDKSessionHelper.tearDown() }
+        registerApplePayOptions(allowedCardTypes: [.credit, .debit], allowedCardNetworks: nil)
+
+        let request = try sut.createRequest(for: makeApplePayRequest())
+
+        XCTAssertEqual(request.merchantCapabilities, [.capability3DS, .capabilityCredit, .capabilityDebit])
+    }
+
+    func testMerchantCapabilitiesEmptyStaysUnrestricted() throws {
+        SDKSessionHelper.setUp()
+        defer { SDKSessionHelper.tearDown() }
+        registerApplePayOptions(allowedCardTypes: [], allowedCardNetworks: nil)
+
+        let request = try sut.createRequest(for: makeApplePayRequest())
+
+        XCTAssertEqual(request.merchantCapabilities, [.capability3DS])
+    }
+
+    // MARK: - Card network filtering (supportedNetworks)
+
+    func testSupportedNetworksIntersectAccountNetworks() throws {
+        SDKSessionHelper.setUp()
+        defer { SDKSessionHelper.tearDown() }
+        SDKSessionHelper.updateAllowedCardNetworks(cardNetworks: [.visa, .masterCard, .cartesBancaires])
+        registerApplePayOptions(allowedCardTypes: nil, allowedCardNetworks: [.visa, .masterCard])
+
+        let request = try sut.createRequest(for: makeApplePayRequest())
+
+        XCTAssertEqual(request.supportedNetworks, [.visa, .masterCard])
+    }
+
+    func testSupportedNetworksCannotWidenBeyondAccount() throws {
+        SDKSessionHelper.setUp()
+        defer { SDKSessionHelper.tearDown() }
+        SDKSessionHelper.updateAllowedCardNetworks(cardNetworks: [.visa])
+        registerApplePayOptions(allowedCardTypes: nil, allowedCardNetworks: [.visa, .masterCard])
+
+        let request = try sut.createRequest(for: makeApplePayRequest())
+
+        XCTAssertEqual(request.supportedNetworks, [.visa])
+    }
+
+    func testSupportedNetworksNilUsesAccountNetworks() throws {
+        SDKSessionHelper.setUp()
+        defer { SDKSessionHelper.tearDown() }
+        SDKSessionHelper.updateAllowedCardNetworks(cardNetworks: [.visa, .masterCard])
+        registerApplePayOptions(allowedCardTypes: nil, allowedCardNetworks: nil)
+
+        let request = try sut.createRequest(for: makeApplePayRequest())
+
+        XCTAssertEqual(request.supportedNetworks, [.visa, .masterCard])
+    }
+
+    func testSupportedNetworksEmptyWhenNoOverlapWithAccount() throws {
+        SDKSessionHelper.setUp()
+        defer { SDKSessionHelper.tearDown() }
+        SDKSessionHelper.updateAllowedCardNetworks(cardNetworks: [.visa])
+        registerApplePayOptions(allowedCardTypes: nil, allowedCardNetworks: [.masterCard])
+
+        let request = try sut.createRequest(for: makeApplePayRequest())
+
+        XCTAssertEqual(request.supportedNetworks, [])
+    }
+
+    func testTypeAndNetworkFiltersCombined() throws {
+        SDKSessionHelper.setUp()
+        defer { SDKSessionHelper.tearDown() }
+        SDKSessionHelper.updateAllowedCardNetworks(cardNetworks: [.visa, .masterCard])
+        registerApplePayOptions(allowedCardTypes: [.credit], allowedCardNetworks: [.visa])
+
+        let request = try sut.createRequest(for: makeApplePayRequest())
+
+        XCTAssertEqual(request.merchantCapabilities, [.capability3DS, .capabilityCredit])
+        XCTAssertEqual(request.supportedNetworks, [.visa])
+    }
+
+    func testNilApplePayOptionsUsesAccountNetworksAndDefaultCapabilities() throws {
+        SDKSessionHelper.setUp()
+        defer { SDKSessionHelper.tearDown() }
+        DependencyContainer.register(PrimerSettings(paymentMethodOptions: .init(applePayOptions: nil)) as PrimerSettingsProtocol)
+
+        let request = try sut.createRequest(for: makeApplePayRequest())
+
+        XCTAssertEqual(request.merchantCapabilities, [.capability3DS])
+        XCTAssertEqual(request.supportedNetworks, [.visa, .masterCard, .amex, .discover])
+    }
+
+    func makeApplePayRequest() -> ApplePayRequest {
+        ApplePayRequest(
+            currency: Currency(code: "GBP", decimalDigits: 2),
+            merchantIdentifier: "merchant_id",
+            countryCode: .gb,
+            items: [],
+            shippingMethods: nil
+        )
+    }
+
+    func registerApplePayOptions(allowedCardTypes: [CardType]?, allowedCardNetworks: [CardNetwork]?) {
+        let settings = PrimerSettings(
+            paymentMethodOptions: .init(
+                applePayOptions: .init(
+                    merchantIdentifier: "merchant_id",
+                    merchantName: "merchant_name",
+                    checkProvidedNetworks: true,
+                    allowedCardTypes: allowedCardTypes,
+                    allowedCardNetworks: allowedCardNetworks
+                )
+            )
+        )
+        DependencyContainer.register(settings as PrimerSettingsProtocol)
+    }
 }
