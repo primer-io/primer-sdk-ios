@@ -5,18 +5,206 @@ All notable changes to `primer-sdk-ios` are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## 3.0.0-beta.1 (2026-06-24)
 
 ### Feat
 
-- CheckoutComponents: customize the checkout UI with the new composable components — `PrimerCardForm`, `PrimerPaymentMethods`, and `PrimerVaultedPaymentMethods` — each with section slots you can override, plus the `CardFormDefaults` / `PaymentMethodsDefaults` / `VaultedPaymentMethodsDefaults` building blocks for recomposing individual fields.
+- Auto-launch redirect & Apple Pay on selection (Android parity)
+- Complete PrimerUI Modularisation (#1801)
+- Complete PrimerResources Modularisation (#1784)
+- Complete PrimerNetworking modularisation (#1780)
+- Complete PrimerCore modularisation (#1764)
+- Handle BACKEND_DRIVEN implementation type (#1738)
+- Add ViewBuilder slot API for CheckoutComponents [ORC-7263] (#1785)
+- Add getCaptureVaultedCardCvv to ComponentsClientSessionBridge (ACC-7315) (#1787)
+- Add Apple Pay bridge for React Native consumers [ACC-6923] (#1754)
+- Expose orderedAllowedCardNetworks via ComponentsClientSessionBridge [ACC-7158] (#1747)
+- Add ComponentsClientSessionBridge for RN interop (#1731)
+- Add ComponentsBillingAddressBridge for RN interop (#1727)
+- Add setBillingAddress public API on RawDataManager (ACC-6916) (#1707)
+- Expose PrimerCardNetworkTraits for card network data access (#1710)
+- Implement Backend Driven Checkout (#1679)
+- Implement ADYEN_AFFIRM billing address redirect in CheckoutComponents (#1691)
+- Add ComponentsAnalyticsLoggingBridge for React Native SDK (#1668)
+- Add MOLLIE_GIFTCARD payment method type (#1663)
+- Implement ADYEN_KLARNA in CheckoutComponents (#1664)
+- ApplePayScreen full design system pass with localization + accessibility
+- Complete translations for all 56 languages
+- Add 29 missing translation keys for Web Redirect, Form Redirect, QR Code
+- Add accessibility hint translations for input fields
+- Filter unsupported payment methods and map display metadata (#1564)
+- Add onBinDataAvailable support (Headless + CheckoutComponents) (#1528)
+- Add analytics events for QR Code APM (#1544)
+- Add translations and accessibility strings for QR Code APM (#1540)
+- Add QR Code APM to Checkout Components (#1537)
+- Add analytics events for FormRedirect APM (#1536)
+- Add translations and accessibility for FormRedirect APM (#1535)
+- Add FormRedirect APM to Checkout Components (#1529)
+- Add analytics events for WebRedirect APM (#1543)
+- Add translations and accessibility strings for WebRedirect APM (#1539)
+- Add WebRedirect APM to Checkout Components (#1515)
+- Add idempotency key support for to CheckoutComponents (#1526)
+- ACC-6691 ACH on Checkout Components (#1520)
+- Add idempotency key support for Drop-In and Headless flows
+- ACC-6684 Klarna on Checkout Components (#1514)
+- Add Datadog logging for CheckoutComponents (#1493)
+- Add Vault functionality to Checkout Components (#1438)
+- Add Apple Pay to CheckoutComponents (#1440)
+- Add Apple Pay support for CheckoutComponents
+- Add co-badged card network selection for CheckoutComponents (#1400)
+- Implement dynamic sheet height for UIKit CheckoutComponents
+- Add comprehensive PrimerSettings integration and enhance CheckoutComponents
+- Convert CheckoutComponents showcase demos from mock to real SDK fields
+- Clean console logs in CheckoutComponents per ACC-5726
+- Simplify CheckoutComponents UI customization API for Android parity
+- Enable full UI customization for PaymentMethodSelectionScreen in CheckoutComponents
+- Add comprehensive iOS CheckoutComponents demo suite
+- Rename ColorfulThemedCardFormDemo to SingleFieldCustomisationDemo
+- Complete ViewBuilder refactoring for CheckoutComponents
+- Standardize all CheckoutComponents input fields with design tokens and PrimerModifier support
+- Complete CheckoutComponents interface consolidation with production-ready architecture
+- Enhance CheckoutComponents showcase with production-ready modal presentations and complete scope integration
+- Complete CheckoutComponents production implementation with comprehensive enhancements
+- Implement comprehensive CheckoutComponents showcase with 18 demo components
+- Implement complete SwiftUI country selector and improve billing address UX
+- Complete 3DS authentication support for CheckoutComponents
+- Implement complete Android parity error message system for CheckoutComponents
+- Complete CheckoutComponents success/error flow with proper result screen navigation
+- Remove try again functionality from failure screen
+- Implement co-badged cards support in CheckoutComponents
+- Add comprehensive CheckoutComponents code review and fix modal presentation
+- Implement SwiftUI bridge for traditional UI integration
+- Complete CheckoutComponents payment processing implementation
+- Add centralized localization and clean up empty directories
+- Complete CheckoutComponents implementation with compilation fixes
+- Integrate CheckoutComponents with UIKit entry point
+- Implement scope classes and screens
+- Add UI components and input fields
+- Add domain layer and data repositories
+- Add core infrastructure (DI, validation, design tokens)
+- Add CheckoutComponents foundation and public API
 
-### BREAKING CHANGE
+### Fix
 
-- CheckoutComponents (beta): customization now goes through the composable components above. The previous scope/closure-based customization surface has been removed — including the `scope:` parameter on `PrimerCheckout` / `presentCheckout`, custom screen closures, and per-field configuration/styling types. Migrate by embedding the composable components under `.primerCheckoutSession(_:)` and overriding their slots.
-- The payment result no longer includes the unused `metadata` field (it was never populated).
-- Payment status values are simplified to `pending`, `success`, and `failed`.
-- Removed the static delegate on `PrimerCheckoutPresenter`; use the presenter instance's delegate instead.
+- Restore Manual signing for Debug App so CI can sign
+- Inject DI container for inline composable views
+- Validate web-redirect urlScheme before tokenization
+- Stabilize CheckoutComponents inline sheet presentation and dismissal
+- Register PrimerSettings under protocol key for CheckoutComponents
+- record diagnostics IDs for boundary-surfaced errors in backend analytics [ORC-7439] (#1793)
+- record diagnostics IDs for boundary-surfaced errors in backend analytics
+- close error-analytics logging gaps (searchable diagnostics IDs + decode spam) [ESC-905] (#1792)
+- Add BDC filtering to drop in (#1773)
+- Only expose BDC packages as targets (#1740)
+- Remove duplicate ClientSession.Address init
+- Pass status to PrimerCheckoutDataPayment init
+- Fix some errors found during BDC testing (#1709)
+- Fix stale test
+- Propagate critical DI registration failures in ComposableContainer (#1705)
+- Pass correct paymentMethodType to QRCode interactor (#1693)
+- Reset DI container between CheckoutComponents tests (#1706)
+- Replace selectCountry getter side effect with lazy var (#1695)
+- Make PaymentMethodRegistry.reset() available in Release builds (#1694)
+- Hide 'choose other payment method' on error screen for single PM (#1689)
+- Hide "choose other payment method" on error screen for single PM
+- Address review findings for CheckoutComponents
+- Align analytics and logging payloads with cross-platform spec (#1646)
+- Resolve test failures in ApplePay and GiroPay tests
+- **ci**: pin CI/CD actions to commit SHAs instead of mutable refs (#1610)
+- Resolve compiler warnings across SDK and CheckoutComponents
+- Resolve resolveSync deadlock when called from @MainActor context
+- Add PaymentMethodButton accessibility and remove dead setBillingAddress
+- Clean analytics storage in setUp to prevent test pollution
+- Resolve 6 pre-existing test failures
+- Wrap @MainActor initializers in MainActor.run for DI registration
+- Add Swift 6 concurrency annotations to FontRegistration and DesignTokensManager
+- Add @unchecked Sendable to all scope and repository classes for Swift 6
+- Add @MainActor to HeadlessRepositoryImpl and PaymentCompletionHandler
+- Add Sendable conformances to DI container for Swift 6
+- Add VoiceOver error announcements for card form validation
+- Add VoiceOver screen-change announcements for ACH step transitions
+- Fix type mismatch in accessibility identifier for input fields
+- Add accessibility configuration to 5 input fields
+- Clear validation cache on checkout session cleanup
+- Strip spaces from card number before sending to payment interactor
+- Replace hardcoded English retail outlet error strings
+- Use raw string as validation cache key instead of hash
+- Use single Date instance and handle 4-digit year in expiry validation
+- Use type-safe enum comparison for AMEX CVV length check
+- Restore %d placeholder in French accessibility_error_multiple_errors
+- Replace hardcoded English accessibility label with localized string
+- Chain dismiss completion after UIKit animation finishes
+- Add @MainActor to PrimerCheckoutPresenter
+- Add @available(iOS 15.0, *) to PaymentMethodMapper protocol
+- Fix analytics event buffer, dead code, and discarded Task
+- Fix Equatable, duplicate onChange, dead code, and googlePay icon
+- Fix Task leaks, dead code, and accessibility across checkout screens
+- Fix public API annotations and scope protocol cleanup
+- Fix DI framework issues (TOCTOU race, unused container, self-capture)
+- Resume continuation on unexpected polling status
+- Make RawDataManager delegate weak and prevent wipe callbacks
+- Add OneShotContinuation and vault payment timeout in HeadlessRepository
+- Remove debug print statements that log card data in production
+- Close PCI masking gaps in logging pipeline
+- Add @MainActor to ApplePayAuthorizationCoordinator
+- Fix memory leaks and correctness issues in DefaultCardFormScope
+- Fix onDismiss race condition and navigation Task memory leak
+- Move downcast helper from protocol extension to concrete class
+- Add onBeforePaymentCreate hooks to PayPal, WebRedirect, FormRedirect, QRCode
+- Add SyncCache to prevent resolveSync deadlock on main thread
+- Remove extraneous argument label in ApplePayScreen
+- Replace hardcoded test JWTs with programmatic mock tokens (#1600)
+- Add secure memory wipe for card data after tokenization
+- Correct Mastercard card number formatting gaps (ACC-6816) (#1583)
+- Apply Turkish language rules to tr translations
+- Resolve flaky test in DefaultApplePayScopeTests
+- Enable dark mode in checkout components (#1376)
+- Ensure Cancel button dismisses checkout sheet (#1364)
+- Add 'any' keyword to PrimerCardFormScope protocol type declarations
+- Add SwiftLint disable for function body length in CheckoutComponentsPrimer
+- Add onCompletion parameter support to PrimerCheckout internal initializers
+- Complete UIKit Integration auto-dismissal for CheckoutComponents
+- Resolve dynamic surcharge display in CheckoutComponents SwiftUI examples
+- Implement reliable auto-dismiss for CheckoutComponents success and error screens
+- Complete surcharge integration for CheckoutComponents with preserved payment method settings
+- Resolve CheckoutComponents navigation and Apple Pay scope issues
+- Resolve card number validation disconnect and implement Android parity error messaging
+- Add missing client session update for CheckoutComponents surcharge payments
+- Resolve CheckoutComponents payment method spacing and surcharge handling
+- Resolve infinite loop in SwiftUIBridgeViewController and update Debug App buttons
+- Integrate CheckoutComponents with traditional Primer UI system
+- Enable pay button with proper form validation
+- Complete card number input field implementation with proper validation
+- Enable DI container and add navigation buttons
+- Implement CheckoutComponents payment methods bridge and fix selection scope
+
+### Refactor
+
+- Tidy up Package files (#1799)
+- Filter BDC methods in manual mode (#1765)
+- Tighten payment-method protocol surface [ACC-7173] (#1734)
+- Decouple checkout-level views from DefaultCheckoutScope [ACC-7172] (#1721)
+- Finish CardFormScope decoupling [ACC-7171] (#1723)
+- Remove push to bank VC for ADYEN_IDEAL (#1675)
+- Run SwiftFormat on PrimerAPIClient (#1671)
+- Decouple card form field views from DefaultCardFormScope [ACC-7135] (#1711)
+- Break down DefaultCheckoutScope into focused types (#1698)
+- Rename _paymentMethodSelection to cachedPaymentMethodSelection
+- Improve CheckoutComponents code quality and safety (#1566)
+- Consolidate Datadog logging into LoggingService (#1502)
+- Address PR review feedback for Datadog logging (#1498)
+- Reorganize TestData into domain-focused extensions
+- Implement design tokens and pixel-perfect input UI (#1393)
+- Address code review feedback for checkout components (#1378)
+- Implement dynamic sheet height for UIKit CheckoutComponents (#1374)
+- Remove dual state system from CheckoutComponents for simplified architecture
+- Complete CheckoutComponents billing address customization and cleanup
+- Remove placeholder code and clean up CheckoutComponents references
+
+### Perf
+
+- Async createScope migration for Swift 6 readiness
+- SwiftUI architecture refactors — P1, P3, P7, P8, C3
 
 ## 3.0.0-b0 (2026-03-12)
 
