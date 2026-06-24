@@ -27,6 +27,9 @@ final class ProcessWebRedirectPaymentInteractorTests: XCTestCase {
             clientSessionActionsFactory: { [unowned self] in mockClientSessionActions },
             deeplinkAbilityProvider: mockDeeplinkProvider
         )
+        // The interactor now validates urlScheme up front (before tokenize), so the success paths
+        // require a valid scheme in the resolved settings.
+        registerSettings(urlScheme: "testapp://payment")
     }
 
     override func tearDown() {
@@ -34,7 +37,15 @@ final class ProcessWebRedirectPaymentInteractorTests: XCTestCase {
         mockClientSessionActions = nil
         mockDeeplinkProvider = nil
         sut = nil
+        SDKSessionHelper.tearDown()
         super.tearDown()
+    }
+
+    private func registerSettings(urlScheme: String?) {
+        let settings = PrimerSettings(
+            paymentMethodOptions: PrimerPaymentMethodOptions(urlScheme: urlScheme)
+        )
+        DependencyContainer.register(settings as PrimerSettingsProtocol)
     }
 
     // MARK: - Success Tests
@@ -71,6 +82,21 @@ final class ProcessWebRedirectPaymentInteractorTests: XCTestCase {
             XCTFail("Expected error to be thrown")
         } catch {
             XCTAssertEqual(mockRepository.tokenizeCallCount, 1)
+            XCTAssertEqual(mockRepository.openWebAuthCallCount, 0)
+        }
+    }
+
+    func test_execute_missingUrlScheme_throwsBeforeTokenize() async {
+        // Given a missing urlScheme in the resolved settings
+        registerSettings(urlScheme: nil)
+
+        // When/Then
+        do {
+            _ = try await sut.execute(paymentMethodType: "ADYEN_SOFORT")
+            XCTFail("Expected error to be thrown for missing urlScheme")
+        } catch {
+            // Validation must fail fast — no /payment-instruments tokenize call is fired.
+            XCTAssertEqual(mockRepository.tokenizeCallCount, 0)
             XCTAssertEqual(mockRepository.openWebAuthCallCount, 0)
         }
     }

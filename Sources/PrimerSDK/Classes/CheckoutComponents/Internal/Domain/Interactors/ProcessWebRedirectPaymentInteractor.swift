@@ -48,6 +48,10 @@ final class ProcessWebRedirectPaymentInteractorImpl: ProcessWebRedirectPaymentIn
 
       try await handlePrimerWillCreatePaymentEvent(paymentMethodType: paymentMethodType)
 
+      // Fail fast on a missing/invalid urlScheme before tokenizing, so a misconfigured redirect
+      // doesn't fire a /payment-instruments call only to throw the same error afterwards.
+      _ = try PrimerSettings.current.paymentMethodOptions.validSchemeForUrlScheme()
+
       let sessionInfo = createSessionInfo(for: paymentMethodType)
 
       let (redirectUrl, statusUrl) = try await repository.tokenize(
