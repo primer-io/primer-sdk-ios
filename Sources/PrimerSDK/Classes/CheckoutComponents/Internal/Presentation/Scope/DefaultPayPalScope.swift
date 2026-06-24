@@ -43,6 +43,8 @@ final class DefaultPayPalScope: PrimerPayPalScope, ObservableObject, LogReporter
 
   @Published private var internalState = PrimerPayPalState()
 
+  private var hasStarted = false
+
   init(
     checkoutScope: DefaultCheckoutScope,
     presentationContext: PresentationContext = .fromPaymentSelection,
@@ -55,9 +57,17 @@ final class DefaultPayPalScope: PrimerPayPalScope, ObservableObject, LogReporter
     self.analyticsInteractor = analyticsInteractor
   }
 
+  // Selecting PayPal auto-launches the redirect — no intermediate "Continue to PayPal" tap (Android
+  // parity). The one-shot guard is reset by `prepareForReentry()` so re-selecting restarts cleanly.
   func start() {
-    logger.debug(message: "PayPal scope started")
-    internalState.step = .idle
+    guard !hasStarted else { return }
+    hasStarted = true
+    logger.debug(message: "PayPal scope started — auto-launching redirect")
+    submit()
+  }
+
+  func prepareForReentry() {
+    hasStarted = false
   }
 
   func submit() {

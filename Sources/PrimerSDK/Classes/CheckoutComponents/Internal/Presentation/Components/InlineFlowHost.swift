@@ -18,9 +18,10 @@ import SwiftUI
 /// the merchant content, observes the scope's navigation stream, and presents those in-tree SwiftUI
 /// screens via a `.sheet` (leaving the merchant content intact underneath).
 ///
-/// Web-redirect, PayPal, Apple Pay and 3DS open their own window-level UI (e.g.
-/// `ASWebAuthenticationSession`); the host still presents the in-tree payment-method screen that
-/// launches it.
+/// Web-redirect, PayPal and Apple Pay auto-launch their own window-level UI (e.g.
+/// `ASWebAuthenticationSession` / the PassKit sheet) the moment they're selected — there is no
+/// intermediate "Continue" screen; the host shows a processing spinner in the sheet underneath
+/// while that UI is open. (3DS challenges open similarly, but mid-processing.)
 @available(iOS 15.0, *)
 @MainActor
 struct InlineFlowHost: View, LogReporter {

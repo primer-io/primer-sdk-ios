@@ -126,19 +126,68 @@ final class DefaultWebRedirectScopeTests: XCTestCase {
         XCTAssertEqual(scope.submitButtonText, "Pay with Twint")
     }
 
-    // MARK: - start Tests
+    // MARK: - start (auto-launch) Tests
 
     @MainActor
-    func test_start_setsStatusToIdle() async throws {
+    func test_start_autoLaunchesPayment_callsInteractorExecute() async throws {
         // Given
-        let scope = createScope()
+        mockInteractor.paymentResultToReturn = PaymentResult(
+            paymentId: TestData.PaymentIds.success,
+            status: .success,
+            paymentMethodType: "ADYEN_SOFORT"
+        )
+        let scope = createScope(paymentMethodType: "ADYEN_SOFORT")
 
-        // When
+        // When — start() now auto-launches the redirect (no Continue tap), matching Android
         scope.start()
 
         // Then
-        let state = try await awaitValue(scope.state, matching: { $0.status == .idle })
-        XCTAssertEqual(state.status, .idle)
+        _ = try await awaitValue(scope.state, matching: { $0.status == .success })
+        XCTAssertEqual(mockInteractor.executeCallCount, 1)
+        XCTAssertEqual(mockInteractor.lastPaymentMethodType, "ADYEN_SOFORT")
+    }
+
+    @MainActor
+    func test_start_calledTwice_launchesPaymentOnce() async throws {
+        // Given
+        mockInteractor.paymentResultToReturn = PaymentResult(
+            paymentId: TestData.PaymentIds.success,
+            status: .success,
+            paymentMethodType: "ADYEN_SOFORT"
+        )
+        let scope = createScope()
+
+        // When — the one-shot guard prevents a duplicate launch on a repeated start()
+        scope.start()
+        scope.start()
+
+        // Then
+        _ = try await awaitValue(scope.state, matching: { $0.status == .success })
+        XCTAssertEqual(mockInteractor.executeCallCount, 1)
+    }
+
+    @MainActor
+    func test_prepareForReentry_allowsRestart() async throws {
+        // Given
+        mockInteractor.paymentResultToReturn = PaymentResult(
+            paymentId: TestData.PaymentIds.success,
+            status: .success,
+            paymentMethodType: "ADYEN_SOFORT"
+        )
+        let scope = createScope()
+        scope.start()
+        _ = try await awaitValue(scope.state, matching: { $0.status == .success })
+        XCTAssertEqual(mockInteractor.executeCallCount, 1)
+
+        // When — re-selecting the same method resets the guard and restarts the flow
+        scope.prepareForReentry()
+        scope.start()
+
+        // Then
+        try await withTimeout(2.0) { [self] in
+            while mockInteractor.executeCallCount < 2 { await Task.yield() }
+        }
+        XCTAssertEqual(mockInteractor.executeCallCount, 2)
     }
 
     // MARK: - State AsyncStream Tests

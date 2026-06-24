@@ -44,9 +44,11 @@ final class DefaultPayPalScopeTests: XCTestCase {
         // When set, execute() suspends until release() is called — lets a test observe the
         // transient `.redirecting` step deterministically instead of racing a fast return.
         var shouldHold = false
+        private(set) var executeCallCount = 0
         private var continuation: CheckedContinuation<Void, Never>?
 
         func execute() async throws -> PaymentResult {
+            executeCallCount += 1
             if shouldHold {
                 await withCheckedContinuation { continuation = $0 }
             }
@@ -59,33 +61,62 @@ final class DefaultPayPalScopeTests: XCTestCase {
         }
     }
 
-    // MARK: - Start Tests
+    // MARK: - Start (auto-launch) Tests
 
     @MainActor
-    func test_start_setsStateToIdle() async {
+    func test_start_autoLaunchesPayment_transitionsToSuccess() async throws {
         // Given
         sut = DefaultPayPalScope(
             checkoutScope: mockCheckoutScope,
             processPayPalInteractor: mockInteractor
         )
 
-        // When
+        // When — start() now auto-launches the redirect (no Continue tap), matching Android
         sut.start()
 
         // Then
-        var receivedState: PrimerPayPalState?
-        let expectation = expectation(description: "Receive state")
+        let state = try await awaitValue(sut.state, matching: { $0.step == .success })
+        XCTAssertEqual(state.step, .success)
+        XCTAssertEqual(mockInteractor.executeCallCount, 1)
+    }
 
-        Task {
-            for await state in sut.state {
-                receivedState = state
-                expectation.fulfill()
-                break
-            }
+    @MainActor
+    func test_start_calledTwice_launchesPaymentOnce() async throws {
+        // Given
+        sut = DefaultPayPalScope(
+            checkoutScope: mockCheckoutScope,
+            processPayPalInteractor: mockInteractor
+        )
+
+        // When — the one-shot guard prevents a duplicate launch on a repeated start()
+        sut.start()
+        sut.start()
+
+        // Then
+        _ = try await awaitValue(sut.state, matching: { $0.step == .success })
+        XCTAssertEqual(mockInteractor.executeCallCount, 1)
+    }
+
+    @MainActor
+    func test_prepareForReentry_allowsRestart() async throws {
+        // Given
+        sut = DefaultPayPalScope(
+            checkoutScope: mockCheckoutScope,
+            processPayPalInteractor: mockInteractor
+        )
+        sut.start()
+        _ = try await awaitValue(sut.state, matching: { $0.step == .success })
+        XCTAssertEqual(mockInteractor.executeCallCount, 1)
+
+        // When — re-selecting the same method resets the guard and restarts the flow
+        sut.prepareForReentry()
+        sut.start()
+
+        // Then
+        try await withTimeout(2.0) { [self] in
+            while mockInteractor.executeCallCount < 2 { await Task.yield() }
         }
-
-        await fulfillment(of: [expectation], timeout: 1.0)
-        XCTAssertEqual(receivedState?.step, .idle)
+        XCTAssertEqual(mockInteractor.executeCallCount, 2)
     }
 
     // MARK: - Submit Tests

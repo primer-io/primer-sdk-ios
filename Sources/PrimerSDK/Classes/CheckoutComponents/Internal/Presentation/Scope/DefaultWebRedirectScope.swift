@@ -47,6 +47,8 @@ final class DefaultWebRedirectScope: PrimerWebRedirectScope, ObservableObject, L
 
     @Published private var internalState: PrimerWebRedirectState
 
+    private var hasStarted = false
+
     init(
         paymentMethodType: String,
         checkoutScope: DefaultCheckoutScope,
@@ -72,8 +74,16 @@ final class DefaultWebRedirectScope: PrimerWebRedirectScope, ObservableObject, L
         )
     }
 
+    // Selecting a web-redirect method auto-launches the redirect — no intermediate "Continue" tap
+    // (Android parity). `prepareForReentry()` resets the one-shot guard for clean re-selection.
     func start() {
-        internalState.status = .idle
+        guard !hasStarted else { return }
+        hasStarted = true
+        submit()
+    }
+
+    func prepareForReentry() {
+        hasStarted = false
     }
 
     func submit() {

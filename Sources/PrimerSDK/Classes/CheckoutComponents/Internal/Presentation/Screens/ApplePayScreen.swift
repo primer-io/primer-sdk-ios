@@ -30,6 +30,9 @@ struct ApplePayScreen: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
     .background(CheckoutColors.background(tokens: tokens))
+    // Selecting Apple Pay auto-presents the PassKit sheet — no intermediate Apple Pay button to tap
+    // (Android parity). `submit()` self-guards on availability + in-flight state, so this fires once.
+    .task { scope.submit() }
   }
 
   private func makeNavigationBar() -> some View {
@@ -86,49 +89,11 @@ struct ApplePayScreen: View {
     }
   }
 
+  // Apple Pay auto-presents the PassKit sheet on appear (see `body.task`), so the in-tree screen
+  // only shows a processing spinner underneath it — no Apple Pay button to tap (Android parity).
   private func makeAvailableContent() -> some View {
-    VStack(spacing: PrimerSpacing.xxlarge(tokens: tokens)) {
-      Spacer()
-
-      Image(systemName: "apple.logo")
-        .font(PrimerFont.extraLargeIcon(tokens: tokens))
-        .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
-        .accessibilityHidden(true)
-
-      Text(CheckoutComponentsStrings.applePayDescription)
-        .font(PrimerFont.bodyMedium(tokens: tokens))
-        .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
-        .multilineTextAlignment(.center)
-        .padding(.horizontal, PrimerSpacing.xxlarge(tokens: tokens))
-        .accessibilityIdentifier(AccessibilityIdentifiers.ApplePay.description)
-
-      Spacer()
-
-      if scope.structuredState.isLoading {
-        makeLoadingView()
-      } else {
-        makeApplePayButton()
-      }
-
-      Spacer()
-        .frame(height: PrimerSpacing.xxlarge(tokens: tokens))
-    }
-    .padding(.horizontal, PrimerSpacing.large(tokens: tokens))
-  }
-
-  @ViewBuilder
-  private func makeApplePayButton() -> some View {
-    if let customButton = scope.applePayButton {
-      AnyView(customButton(scope.submit))
-        .frame(height: 50)
-        .padding(.horizontal, PrimerSpacing.large(tokens: tokens))
-        .accessibilityIdentifier(AccessibilityIdentifiers.ApplePay.payButton)
-    } else {
-      scope.PrimerApplePayButton(action: scope.submit)
-        .frame(height: 50)
-        .padding(.horizontal, PrimerSpacing.large(tokens: tokens))
-        .accessibilityIdentifier(AccessibilityIdentifiers.ApplePay.payButton)
-    }
+    makeLoadingView()
+      .frame(maxWidth: .infinity, maxHeight: .infinity)
   }
 
   private func makeLoadingView() -> some View {
