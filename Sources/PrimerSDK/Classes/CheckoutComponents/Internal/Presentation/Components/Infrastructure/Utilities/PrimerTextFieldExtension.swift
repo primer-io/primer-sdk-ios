@@ -143,6 +143,8 @@ extension UITextField {
       frame: CGRect(x: 0, y: 0, width: 0, height: PrimerComponentHeight.keyboardAccessory)
     )
     toolbar.barStyle = .default
+    let tint = UIColor(CheckoutColors.buttonPrimary(tokens: tokens))
+    toolbar.tintColor = tint
     toolbar.sizeToFit()
 
     let doneItem = UIBarButtonItem(
@@ -153,8 +155,8 @@ extension UITextField {
     )
     doneItem.accessibilityLabel = CheckoutComponentsStrings.doneButton
     let titleFont = PrimerFont.uiFontTitleLarge(tokens: tokens)
-    doneItem.setTitleTextAttributes([.font: titleFont], for: .normal)
-    doneItem.setTitleTextAttributes([.font: titleFont], for: .highlighted)
+    doneItem.setTitleTextAttributes([.font: titleFont, .foregroundColor: tint], for: .normal)
+    doneItem.setTitleTextAttributes([.font: titleFont, .foregroundColor: tint], for: .highlighted)
 
     toolbar.items = [.flexibleSpace(), doneItem]
     return toolbar
