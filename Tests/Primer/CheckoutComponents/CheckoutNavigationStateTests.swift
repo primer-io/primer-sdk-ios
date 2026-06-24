@@ -155,4 +155,21 @@ final class CheckoutNavigationStateTests: XCTestCase {
             .loading
         )
     }
+
+    // MARK: - presentsInlineFlowSheet (drives InlineFlowHost .sheet(item:))
+
+    func test_presentsInlineFlowSheet_flowStates_areTrue() {
+        XCTAssertTrue(CheckoutNavigationState.paymentMethod("PAYMENT_CARD").presentsInlineFlowSheet)
+        XCTAssertTrue(CheckoutNavigationState.processing.presentsInlineFlowSheet)
+        XCTAssertTrue(CheckoutNavigationState.success(makePaymentResult(paymentId: "pay_1")).presentsInlineFlowSheet)
+        XCTAssertTrue(CheckoutNavigationState.failure(makeError(message: "Error")).presentsInlineFlowSheet)
+    }
+
+    func test_presentsInlineFlowSheet_nonFlowStates_areFalse() {
+        XCTAssertFalse(CheckoutNavigationState.loading.presentsInlineFlowSheet)
+        XCTAssertFalse(CheckoutNavigationState.paymentMethodSelection.presentsInlineFlowSheet)
+        XCTAssertFalse(CheckoutNavigationState.vaultedPaymentMethods.presentsInlineFlowSheet)
+        XCTAssertFalse(CheckoutNavigationState.deleteVaultedPaymentMethodConfirmation(makeVaultedPaymentMethod(id: "v1")).presentsInlineFlowSheet)
+        XCTAssertFalse(CheckoutNavigationState.dismissed.presentsInlineFlowSheet)
+    }
 }

@@ -29,6 +29,7 @@ protocol CheckoutScopeInternal: PrimerCheckoutScope {
   var isErrorScreenEnabled: Bool { get }
 
   func updateNavigationState(_ newState: CheckoutNavigationState)
+  func cancelActivePaymentMethod(returnToSelection: Bool)
   func setSelectedVaultedPaymentMethod(_ method: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod?)
   func retryPayment()
   func reload() async

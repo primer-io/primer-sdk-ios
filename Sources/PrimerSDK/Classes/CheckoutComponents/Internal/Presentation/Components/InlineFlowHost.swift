@@ -18,15 +18,16 @@ import SwiftUI
 /// the merchant content, observes the scope's navigation stream, and presents those in-tree SwiftUI
 /// screens via a `.sheet` (leaving the merchant content intact underneath).
 ///
-/// 3DS, web-redirect, Apple Pay and PayPal already present at window level and need no host.
+/// Web-redirect, PayPal, Apple Pay and 3DS open their own window-level UI (e.g.
+/// `ASWebAuthenticationSession`); the host still presents the in-tree payment-method screen that
+/// launches it.
 @available(iOS 15.0, *)
 @MainActor
 struct InlineFlowHost: View, LogReporter {
   let scope: any CheckoutScopeInternal
 
   private let theme: PrimerCheckoutTheme
-  @State private var flowState: CheckoutNavigationState = .loading
-  @State private var isPresenting = false
+  @State private var sheetItem: FlowSheetItem?
   @Environment(\.bridgeController) private var bridgeController
   @StateObject private var designTokensManager = DesignTokensManager()
   @Environment(\.colorScheme) private var colorScheme
@@ -41,8 +42,8 @@ struct InlineFlowHost: View, LogReporter {
     // here to avoid double-presenting the same flow screens.
     if bridgeController == nil {
       Color.clear
-        .sheet(isPresented: $isPresenting, onDismiss: handleSheetDismiss) {
-          makeSheetContent()
+        .sheet(item: $sheetItem, onDismiss: handleSheetDismiss) { item in
+          makeSheetContent(for: item.navigationState)
         }
         .task {
           for await newState in scope.navigationStateStream {
@@ -59,7 +60,7 @@ struct InlineFlowHost: View, LogReporter {
     }
   }
 
-  private func makeSheetContent() -> some View {
+  private func makeSheetContent(for state: CheckoutNavigationState) -> some View {
     BackportedNavigationStack {
       FlowScreenFactory(
         scope: scope,
@@ -67,7 +68,7 @@ struct InlineFlowHost: View, LogReporter {
         onCompletion: { _ in dismissFlow() },
         isInlineFlow: true
       )
-      .view(for: flowState)
+      .view(for: state)
     }
     .environment(\.diContainer, DIContainer.currentSync)
     .environment(\.designTokens, designTokensManager.tokens)
@@ -76,31 +77,26 @@ struct InlineFlowHost: View, LogReporter {
   }
 
   /// FLOW states need a follow-up screen presented in the sheet. NON-FLOW states are owned by the
-  /// merchant's inline content, so the sheet stays dismissed.
+  /// merchant's inline content, so the sheet stays dismissed. `sheetItem` is the single source of
+  /// truth — driving `.sheet(item:)` keeps presentation and content in lockstep, so the first
+  /// selection never lands on a stale loading splash.
   private func handle(_ state: CheckoutNavigationState) {
-    switch state {
-    case .paymentMethod, .processing, .success, .failure:
-      flowState = state
-      isPresenting = true
-    case .loading,
-      .paymentMethodSelection,
-      .vaultedPaymentMethods,
-      .deleteVaultedPaymentMethodConfirmation,
-      .dismissed:
-      isPresenting = false
-    }
+    sheetItem = state.presentsInlineFlowSheet ? FlowSheetItem(navigationState: state) : nil
   }
 
   /// Programmatic dismissal once the success / failure screen finishes. The merchant `onCompletion`
   /// is already delivered via the session's state loop, so the host only closes the sheet here,
   /// leaving the merchant's inline content intact.
   private func dismissFlow() {
-    isPresenting = false
+    sheetItem = nil
   }
 
-  /// User-driven dismissal of the sheet resets navigation so the next trigger re-presents cleanly.
+  /// Any sheet dismissal (swipe, back, or programmatic) returns the scope to the merchant's embedded
+  /// list and resets the active method's one-shot start guard, so the next selection re-presents
+  /// cleanly. Modeling this as a coordinator stack-pop double-popped the stack (the screen's back
+  /// already pops), which emptied it and left "back" doing nothing.
   private func handleSheetDismiss() {
-    scope.checkoutNavigator.navigateBack()
+    scope.cancelActivePaymentMethod(returnToSelection: true)
   }
 
   private func loadDesignTokens(for colorScheme: ColorScheme) async {
@@ -112,5 +108,13 @@ struct InlineFlowHost: View, LogReporter {
     } catch {
       logger.error(message: "Failed to load design tokens: \(error)")
     }
+  }
+
+  /// Single source of truth for the inline sheet. The `id` is stable so the one presentation lives
+  /// across the in-sheet flow lifecycle (paymentMethod → processing → success / failure): content
+  /// swaps in place instead of dismissing and re-presenting on every transition.
+  private struct FlowSheetItem: Identifiable {
+    let navigationState: CheckoutNavigationState
+    let id = "inline-flow"
   }
 }

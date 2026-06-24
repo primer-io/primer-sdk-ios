@@ -150,11 +150,18 @@ struct FlowScreenFactory: LogReporter {
     }
   }
 
-  /// Inline embedding nulls the "choose other payment methods" affordance: the
-  /// merchant owns method selection, so the inline failure sheet only offers retry.
+  /// Action for the failure screen's "choose other payment method" button — also the inline flow's
+  /// way off the error screen. Inline embedding returns to the merchant's own list (closing the
+  /// sheet); the modal flow routes back to the SDK selection screen when an alternative exists.
   private var showOtherMethodsAction: (() -> Void)? {
+    if isInlineFlow {
+      return {
+        logger.info(message: "Error screen return-to-list tapped (inline)")
+        scope.cancelActivePaymentMethod(returnToSelection: true)
+      }
+    }
     // Counts total methods (the failed one is still present), so >1 means at least one alternative exists.
-    guard !isInlineFlow, scope.availablePaymentMethods.count > 1 else { return nil }
+    guard scope.availablePaymentMethods.count > 1 else { return nil }
     return {
       logger.info(message: "Error screen choose other payment method tapped")
       scope.checkoutNavigator.handleOtherPaymentMethods()

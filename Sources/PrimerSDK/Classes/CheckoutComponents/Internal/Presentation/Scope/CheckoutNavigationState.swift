@@ -20,6 +20,18 @@ enum CheckoutNavigationState: Equatable {
   case failure(PrimerError)
   case dismissed
 
+  /// Flow states are presented in the inline sheet (`InlineFlowHost`); non-flow states are owned by
+  /// the merchant's embedded content, so the sheet stays dismissed.
+  var presentsInlineFlowSheet: Bool {
+    switch self {
+    case .paymentMethod, .processing, .success, .failure:
+      true
+    case .loading, .paymentMethodSelection, .vaultedPaymentMethods,
+         .deleteVaultedPaymentMethodConfirmation, .dismissed:
+      false
+    }
+  }
+
   static func == (lhs: CheckoutNavigationState, rhs: CheckoutNavigationState) -> Bool {
     switch (lhs, rhs) {
     case (.loading, .loading),

@@ -236,6 +236,32 @@ final class DefaultCheckoutScopeBehaviorTests: XCTestCase {
         XCTAssertEqual(sut.navigationState, .paymentMethodSelection)
     }
 
+    // MARK: - cancelActivePaymentMethod (inline sheet dismissal target)
+
+    func test_cancelActivePaymentMethod_returnToSelection_resetsToSelection() {
+        // Given a method is active in the (inline) flow
+        sut = makeSut()
+        sut.updateNavigationState(.paymentMethod("PAYMENT_CARD"))
+
+        // When the inline sheet is dismissed (InlineFlowHost.handleSheetDismiss path)
+        sut.cancelActivePaymentMethod(returnToSelection: true)
+
+        // Then it resets to the inline root rather than popping into an empty/dismissed state.
+        XCTAssertEqual(sut.navigationState, .paymentMethodSelection)
+    }
+
+    func test_cancelActivePaymentMethod_noReturn_dismisses() {
+        // Given
+        sut = makeSut()
+        sut.updateNavigationState(.paymentMethod("PAYMENT_CARD"))
+
+        // When cancelling without returning to selection
+        sut.cancelActivePaymentMethod(returnToSelection: false)
+
+        // Then the checkout is dismissed.
+        XCTAssertEqual(sut.navigationState, .dismissed)
+    }
+
     func test_updateNavigationState_vaultedPaymentMethods_navigatesToVaulted() {
         // Given
         sut = makeSut()
