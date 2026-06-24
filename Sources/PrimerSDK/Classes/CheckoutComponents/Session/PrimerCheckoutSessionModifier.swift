@@ -42,6 +42,9 @@ private struct PrimerCheckoutSessionModifier: ViewModifier {
       .environment(\.primerCheckoutSession, session)
       .environment(\.primerCardFormSession, session.cardForm)
       .environment(\.primerSelectionSession, session.selection)
+      // Inline composables (PrimerCardForm, …) resolve their services — ValidationService etc. —
+      // from this container; without it each input field renders its disabled placeholder fallback.
+      .environment(\.diContainer, DIContainer.currentSync)
       .overlay {
         if session.phase == .ready, let scope = session.internalScope {
           InlineFlowHost(scope: scope, theme: session.theme)
