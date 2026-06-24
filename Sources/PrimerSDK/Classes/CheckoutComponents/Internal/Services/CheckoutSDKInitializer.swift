@@ -51,8 +51,11 @@ final class CheckoutSDKInitializer {
     setupSDKIntegration()
 
     // Bridge: Register settings in old DI for core SDK compatibility
-    // Core SDK (KlarnaHelpers, ACHHelpers, 3DS, etc.) uses PrimerSettings.current
-    DependencyContainer.register(primerSettings)
+    // Core SDK (KlarnaHelpers, ACHHelpers, 3DS, etc.) uses PrimerSettings.current.
+    // Cast to the protocol so the key matches the resolve site: PrimerSettings.current resolves
+    // PrimerSettingsProtocol, and the container keys by the static type — registering the concrete
+    // PrimerSettings keys it differently, so the settings would never be found.
+    DependencyContainer.register(primerSettings as PrimerSettingsProtocol)
 
     let composableContainer = ComposableContainer(
       settings: primerSettings
