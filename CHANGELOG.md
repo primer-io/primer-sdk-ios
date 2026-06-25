@@ -5,16 +5,25 @@ All notable changes to `primer-sdk-ios` are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## 3.0.0-beta.1 (2026-06-24)
+
+CheckoutComponents beta (iOS 15+). This is a beta release — APIs may still change before the 3.0 GA.
 
 ### Feat
 
 - CheckoutComponents: customize the checkout UI with the new composable components — `PrimerCardForm`, `PrimerPaymentMethods`, and `PrimerVaultedPaymentMethods` — each with section slots you can override, plus the `CardFormDefaults` / `PaymentMethodsDefaults` / `VaultedPaymentMethodsDefaults` building blocks for recomposing individual fields.
+- Redirect and Apple Pay payment methods now launch automatically on selection, matching Android.
+
+### Fix
+
+- Validate the web-redirect URL scheme before tokenization.
+- More reliable inline sheet presentation and dismissal in CheckoutComponents.
+- Apply `PrimerSettings` correctly in CheckoutComponents.
 
 ### BREAKING CHANGE
 
-- CheckoutComponents (beta): customization now goes through the composable components above. The previous scope/closure-based customization surface has been removed — including the `scope:` parameter on `PrimerCheckout` / `presentCheckout`, custom screen closures, and per-field configuration/styling types. Migrate by embedding the composable components under `.primerCheckoutSession(_:)` and overriding their slots.
-- The payment result no longer includes the unused `metadata` field (it was never populated).
+- CheckoutComponents customization now goes through the composable components above. The previous scope/closure-based customization surface has been removed — including the `scope:` parameter on `PrimerCheckout` / `presentCheckout`, custom screen closures, and per-field configuration/styling types. Migrate by embedding the composable components under `.primerCheckoutSession(_:)` and overriding their slots.
+- The payment result no longer includes the unused `metadata` field.
 - Payment status values are simplified to `pending`, `success`, and `failed`.
 - Removed the static delegate on `PrimerCheckoutPresenter`; use the presenter instance's delegate instead.
 

@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
     s.name         = "PrimerUI"
-    s.version      = "3.0.0-beta.0"
+    s.version      = "3.0.0-beta.1"
     s.summary      = "UI and UI extensions for Primer SDK"
     s.description  = "This library contains UI and UI extensions used by PrimerSDK."
     s.homepage     = "https://www.primer.io"
