@@ -155,7 +155,7 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
         }
 
         // Used for CVV length. Precedence: user pick → BIN metadata → local IIN.
-        var cardNetwork: CardNetwork = rawData.cardNetwork ?? CardNetwork(cardNumber: rawData.cardNumber)
+        var cardNetwork = rawData.cardNetwork ?? CardNetwork(cardNumber: rawData.cardNumber)
 
         if rawData.cardNetwork == nil, let metadata = cardNetworksMetadata {
             let detected = metadata.detectedCardNetworks
@@ -175,18 +175,17 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
         // This ensures picker appears as user types, not just when card is fully valid
         self.cardValidationService?.validateCardNetworks(withCardNumber: rawData.cardNumber)
 
-        // Allowed-list check only fires for BIN-derived metadata; matches Android `CardNumberValidator`.
+        // Enforce the allowed-network list only with BIN-or-fallback metadata (not partial local detection).
+        let detectedItems = (cardNetworksMetadata?.source != .local ? cardNetworksMetadata : nil)?
+            .detectedCardNetworks.items ?? []
+        let isUnsupportedCardType = !detectedItems.isEmpty && !detectedItems.contains(where: \.allowed)
+
         if rawData.cardNumber.isEmpty {
             errors.append(PrimerValidationError.invalidCardnumber(message: "Card number can not be blank."))
-        } else if let metadata = cardNetworksMetadata, metadata.source != .local {
-            let detected = metadata.detectedCardNetworks.items
-            if !detected.isEmpty, !detected.contains(where: \.allowed) {
-                errors.append(PrimerValidationError.invalidCardType(
-                    message: "Unsupported card type detected: \(detected.first?.displayName ?? cardNetwork.displayName)"
-                ))
-            } else if !rawData.cardNumber.isValidCardNumber {
-                errors.append(PrimerValidationError.invalidCardnumber(message: "Card number is not valid."))
-            }
+        } else if isUnsupportedCardType {
+            errors.append(PrimerValidationError.invalidCardType(
+                message: "Unsupported card type detected: \(detectedItems.first?.displayName ?? cardNetwork.displayName)"
+            ))
         } else if !rawData.cardNumber.isValidCardNumber {
             errors.append(PrimerValidationError.invalidCardnumber(message: "Card number is not valid."))
         }

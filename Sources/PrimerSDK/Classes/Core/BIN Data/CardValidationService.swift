@@ -64,14 +64,6 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
         }
     }
 
-    private func binKey(for cardNumber: String) -> String {
-        String(cardNumber.prefix(Self.maximumBinLength))
-    }
-
-    func cachedMetadata(forCardNumber cardNumber: String) -> PrimerCardNumberEntryMetadata? {
-        getCachedMetadata(for: binKey(for: cardNumber.withoutWhiteSpace))
-    }
-
     init(
         rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
         allowedCardNetworks: [CardNetwork] = [CardNetwork].allowedCardNetworks,
@@ -82,6 +74,14 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
         self.allowedCardNetworks = allowedCardNetworks
         self.apiClient = apiClient
         self.debouncer = debouncer
+    }
+
+    func cachedMetadata(forCardNumber cardNumber: String) -> PrimerCardNumberEntryMetadata? {
+        getCachedMetadata(for: binKey(for: cardNumber.withoutWhiteSpace))
+    }
+
+    private func binKey(for cardNumber: String) -> String {
+        String(cardNumber.prefix(Self.maximumBinLength))
     }
 
     // MARK: Core Validation
