@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Feat
 
+- Add Apple Pay card type and network filtering [ORC-7503] (#1817)
 - Complete PrimerUI Modularisation (#1801)
 
 ### Refactor
