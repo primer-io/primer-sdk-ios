@@ -32,19 +32,25 @@ public extension View {
 }
 
 @available(iOS 15.0, *)
-private struct PrimerCheckoutSessionModifier: ViewModifier {
+private struct PrimerCheckoutSessionModifier: ViewModifier, LogReporter {
 
   @ObservedObject var session: PrimerCheckoutSession
   let onCompletion: ((PrimerCheckoutState) -> Void)?
+  @Environment(\.colorScheme) private var colorScheme
+  @StateObject private var designTokensManager = DesignTokensManager()
 
   func body(content: Content) -> some View {
     content
       .environment(\.primerCheckoutSession, session)
       .environment(\.primerCardFormSession, session.cardForm)
       .environment(\.primerSelectionSession, session.selection)
-      // Inline composables (PrimerCardForm, …) resolve their services — ValidationService etc. —
-      // from this container; without it each input field renders its disabled placeholder fallback.
+      // Mirror the managed path's CheckoutScopeObserver so inline composables behave identically:
+      // the DI container resolves their services (without it, input fields render disabled
+      // placeholders), the design tokens apply the merchant's theme (without them, a custom theme
+      // is silently ignored inline), and the checkout scope is exposed for parity.
       .environment(\.diContainer, DIContainer.currentSync)
+      .environment(\.designTokens, designTokensManager.tokens)
+      .environment(\.primerCheckoutScope, session.internalScope)
       .overlay {
         if session.phase == .ready, let scope = session.internalScope {
           InlineFlowHost(scope: scope, theme: session.theme)
@@ -54,6 +60,21 @@ private struct PrimerCheckoutSessionModifier: ViewModifier {
         session.setCompletionHandler(onCompletion)
         await session.start()
       }
+      .task {
+        designTokensManager.applyTheme(session.theme)
+        await loadDesignTokens(for: colorScheme)
+      }
+      .onChange(of: colorScheme) { newColorScheme in
+        Task { await loadDesignTokens(for: newColorScheme) }
+      }
       .onDisappear { session.cancel() }
+  }
+
+  private func loadDesignTokens(for colorScheme: ColorScheme) async {
+    do {
+      try await designTokensManager.fetchTokens(for: colorScheme)
+    } catch {
+      logger.error(message: "Failed to load design tokens: \(error)")
+    }
   }
 }
