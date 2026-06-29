@@ -5,6 +5,17 @@ All notable changes to `primer-sdk-ios` are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 2.51.0 (2026-06-25)
+
+### Feat
+
+- Add Apple Pay card type and network filtering [ORC-7503] (#1817)
+- Complete PrimerUI Modularisation (#1801)
+
+### Refactor
+
+- Tidy up Package files (#1799)
+
 ## 2.50.0 (2026-06-11)
 
 ### Feat
