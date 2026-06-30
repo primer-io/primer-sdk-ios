@@ -6,7 +6,10 @@ let package = Package(
     name: "PrimerSDK",
     defaultLocalization: "en",
     platforms: [.iOS("13.1")],
-    products: [.library(name: "PrimerSDK", targets: ["PrimerSDK"])],
+    products: [
+        .library(name: "PrimerSDK", targets: ["PrimerSDK"]),
+        .library(name: "PrimerBDCUI", targets: ["PrimerBDCUI"]),
+    ],
     dependencies: [.package(url: "https://github.com/primer-io/primer-sdk-3ds-ios", from: "2.7.0")],
     targets: packageTargets,
     swiftLanguageVersions: [.v5]
@@ -14,17 +17,21 @@ let package = Package(
 
 private var packageTargets: [Target] {
     [
-        .target(name: "PrimerSDK", dependencies: primerSDKDependencies, path: "Sources/PrimerSDK"),
-        debugAppTarget,
-        
         target(name: "PrimerFoundation"),
-        target(name: "PrimerStepResolver", dependencies: ["PrimerFoundation"]),
-        target(name: "PrimerBDCEngine", dependencies: ["PrimerFoundation", "PrimerStepResolver"]),
-        target(name: "PrimerBDCCore", dependencies: ["PrimerBDCEngine", "PrimerFoundation", "PrimerStepResolver"]),
-        target(name: "PrimerCore", dependencies: ["PrimerFoundation"]),
-        target(name: "PrimerNetworking", dependencies: ["PrimerFoundation"]),
         target(name: "PrimerResources", resources: [.process("PrimerResources/Resources")]),
         target(name: "PrimerUI"),
+        
+        target(name: "PrimerStepResolver", dependencies: ["PrimerFoundation"]),
+        target(name: "PrimerCore", dependencies: ["PrimerFoundation"]),
+        target(name: "PrimerNetworking", dependencies: ["PrimerFoundation"]),
+    
+        target(name: "PrimerBDCUI", dependencies: ["PrimerFoundation", "PrimerStepResolver"]),
+        target(name: "PrimerBDCEngine", dependencies: ["PrimerFoundation", "PrimerStepResolver"]),
+        
+        target(name: "PrimerBDCCore", dependencies: ["PrimerBDCEngine", "PrimerFoundation", "PrimerStepResolver"]),
+        
+        .target(name: "PrimerSDK", dependencies: primerSDKDependencies, path: "Sources/PrimerSDK"),
+        debugAppTarget,
         
         sdkTestsTarget,
         debugAppTestsTarget,
