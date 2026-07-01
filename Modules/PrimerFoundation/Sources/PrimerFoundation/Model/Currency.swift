@@ -27,10 +27,6 @@ public struct Currency: Codable {
         return locale.currencySymbol
     }
 
-    public var isZeroDecimal: Bool {
-        decimalDigits == 0
-    }
-
     /// Divisor that converts a minor-unit amount into its major-unit value (`10^decimalDigits`).
     public var minorUnitDivisor: Decimal {
         pow(10, decimalDigits)
