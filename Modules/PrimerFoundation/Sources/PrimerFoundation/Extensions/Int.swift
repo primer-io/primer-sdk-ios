@@ -16,11 +16,10 @@ public extension Int {
         numberFormatter.numberStyle = .currency
         numberFormatter.locale = locale
         numberFormatter.currencySymbol = currencySymbol
-        numberFormatter.minimumFractionDigits = currency.isZeroDecimal ? 0 : 2
-        numberFormatter.maximumFractionDigits = currency.isZeroDecimal ? 0 : 2
+        numberFormatter.minimumFractionDigits = currency.decimalDigits
+        numberFormatter.maximumFractionDigits = currency.decimalDigits
 
-        // Convert amount to Decimal. If currency is zero decimal, no need to divide by 100
-        let amount = currency.isZeroDecimal ? Decimal(self) : Decimal(self) / 100
+        let amount = Decimal(self) / currency.minorUnitDivisor
 
         // Get formatted value with currency symbol
         guard let formattedValue = numberFormatter.string(from: amount as NSDecimalNumber) else {
@@ -39,24 +38,13 @@ public extension Int {
     }
 
     func formattedCurrencyAmount(currency: Currency) -> Decimal {
-        let numberFormatter = NumberFormatter()
-
-        numberFormatter.usesGroupingSeparator = true
-        numberFormatter.numberStyle = .currency
-        numberFormatter.locale = .current
-        numberFormatter.currencySymbol = currency.symbol ?? currency.code
-        numberFormatter.minimumFractionDigits = currency.isZeroDecimal ? 0 : 2
-        numberFormatter.maximumFractionDigits = currency.isZeroDecimal ? 0 : 2
-
-        // Convert amount to Decimal. If currency is zero decimal, no need to divide by 100
-        return currency.isZeroDecimal ? Decimal(self) : Decimal(self) / 100
+        Decimal(self) / currency.minorUnitDivisor
     }
 
     /// Returns an accessibility-friendly currency string for VoiceOver
     /// Uses period as decimal separator to avoid VoiceOver misreading comma as thousands separator
     func toAccessibilityCurrencyString(currency: Currency, locale: Locale = Locale.current) -> String {
-        // Convert amount to Decimal
-        let amount = currency.isZeroDecimal ? Decimal(self) : Decimal(self) / 100
+        let amount = Decimal(self) / currency.minorUnitDivisor
 
         // Get currency name in current locale (e.g., "euros", "dollars")
         let currencyFormatter = NumberFormatter()
@@ -69,8 +57,8 @@ public extension Int {
         accessibilityFormatter.numberStyle = .decimal
         accessibilityFormatter.locale = Locale(identifier: "en_US") // Force period as decimal separator
         accessibilityFormatter.usesGroupingSeparator = false // No grouping separator for clarity
-        accessibilityFormatter.minimumFractionDigits = currency.isZeroDecimal ? 0 : 2
-        accessibilityFormatter.maximumFractionDigits = currency.isZeroDecimal ? 0 : 2
+        accessibilityFormatter.minimumFractionDigits = currency.decimalDigits
+        accessibilityFormatter.maximumFractionDigits = currency.decimalDigits
 
         guard let formattedNumber = accessibilityFormatter.string(from: amount as NSDecimalNumber) else {
             return "\(self) \(currency.code)"

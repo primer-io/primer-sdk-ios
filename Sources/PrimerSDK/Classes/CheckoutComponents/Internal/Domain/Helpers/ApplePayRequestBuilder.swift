@@ -122,7 +122,7 @@ struct ApplePayRequestBuilder {
       return ShippingMethodsInfo(methods: nil, selectedItem: nil)
     }
 
-    let factor: NSDecimalNumber = AppState.current.currency?.isZeroDecimal == true ? 1 : 100
+    let factor = AppState.current.currency.map { NSDecimalNumber(decimal: $0.minorUnitDivisor) } ?? 100
 
     let pkShippingMethods = options.shippingMethods.map { method -> PKShippingMethod in
       let amount = NSDecimalNumber(value: method.amount).dividing(by: factor)
