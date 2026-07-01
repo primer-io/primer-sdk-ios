@@ -10,11 +10,17 @@ concurrency:
   group: ${{ github.ref }}-tests
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
   sdk-unit-tests:
     runs-on: macos-26-large
     timeout-minutes: 20
     name: "SDK - Unit Tests"
+    permissions:
+      contents: read
+      actions: write
     steps:
       - name: Cancel previous jobs
         uses: styfle/cancel-workflow-action@d07a454dad7609a92316b57b23c9ccfd4f59af66 # v0.13.1
@@ -24,6 +30,7 @@ jobs:
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           ref: ${{ github.ref }}
+          persist-credentials: false
       - name: Run unit tests
         uses: ./.github/actions/sdk-tests
         with:
@@ -35,11 +42,15 @@ jobs:
           fastlane-password: ${{ secrets.FASTLANE_PASSWORD }}
           match-keychain-name: ${{ secrets.MATCH_KEYCHAIN_NAME }}
           match-keychain-password: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
+          source-branch: ${{ github.head_ref || github.ref_name }}
           sdk-name: sdk
 
   optional-sdk-tests:
     name: Optional SDK Tests
     runs-on: macos-26-large
+    permissions:
+      contents: read
+      actions: write
     strategy:
       max-parallel: 3
       matrix:
@@ -57,6 +68,7 @@ jobs:
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           ref: ${{ github.ref }}
+          persist-credentials: false
       - name: Run SDK tests
         uses: ./.github/actions/sdk-tests
         with:
@@ -68,6 +80,7 @@ jobs:
           fastlane-password: ${{ secrets.FASTLANE_PASSWORD }}
           match-keychain-name: ${{ secrets.MATCH_KEYCHAIN_NAME }}
           match-keychain-password: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
+          source-branch: ${{ github.head_ref || github.ref_name }}
           sdk-name: ${{ matrix.package-swift.name }}
           package-swift: ${{  matrix.package-swift.file }}
 
@@ -81,6 +94,7 @@ jobs:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
+          persist-credentials: false
       - name: SonarCloud Scan
         uses: ./.github/actions/sonar
         with:

@@ -7,13 +7,19 @@ on:
       - edited
       - synchronize
 
-concurrency: 
+concurrency:
   group: ${{ github.ref }}-danger
   cancel-in-progress: true
+
+permissions:
+  contents: read
 
 jobs:
   changes:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
     outputs:
       swift: ${{ steps.filter.outputs.swift }}
     steps:
@@ -32,23 +38,26 @@ jobs:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           fetch-depth: 0
+          persist-credentials: false
       - name: Get changed Swift files
         id: changed-files
+        env:
+          BASE_REF: ${{ github.base_ref }}
         run: |
-          CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD | grep '\.swift$' || true)
-          echo "changed-files<<EOF" >> $GITHUB_OUTPUT
-          echo "$CHANGED_FILES" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+          git diff --name-only "origin/$BASE_REF...HEAD" | grep '\.swift$' > "$RUNNER_TEMP/changed_swift_files.txt" || true
+          if [ -s "$RUNNER_TEMP/changed_swift_files.txt" ]; then
+            echo "has-changes=true" >> "$GITHUB_OUTPUT"
+          fi
       - name: SwiftFormat
-        if: steps.changed-files.outputs.changed-files != ''
+        if: steps.changed-files.outputs.has-changes == 'true'
         run: |
           files_to_lint=()
           while IFS= read -r file; do
             if [ -n "$file" ] && [ -f "$file" ]; then
               files_to_lint+=("$file")
             fi
-          done <<< "${{ steps.changed-files.outputs.changed-files }}"
-          
+          done < "$RUNNER_TEMP/changed_swift_files.txt"
+
           if [ ${#files_to_lint[@]} -gt 0 ]; then
             swiftformat --lint "${files_to_lint[@]}" --reporter github-actions-log --config BuildTools/.swiftformat
           fi
@@ -56,8 +65,13 @@ jobs:
   danger:
     runs-on: ubuntu-latest
     name: "Run Danger"
+    permissions:
+      contents: read
+      pull-requests: write
     steps:
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v3.2.2
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          persist-credentials: false
       - name: Danger
         uses: docker://ghcr.io/danger/danger-swift@sha256:dbb8124fe768924ace43755559735df1a96318c7249f9ffac3d64a71f2a2163e
         with:

@@ -8,6 +8,9 @@ on:
   #   branches:
   #     - 'release/**'
 
+permissions:
+  contents: read
+
 jobs:
   build:
     name: "Build App"
@@ -25,6 +28,7 @@ jobs:
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           ref: ${{ github.ref }}
+          persist-credentials: false
       - name: Select Xcode Version
         uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90  # v1.7.0
         with:
@@ -46,7 +50,7 @@ jobs:
         uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e #v6.4.0
         with:
           node-version: 18.3.0
-      - run: npm install --save slack-message-builder
+      - run: npm install --save slack-message-builder # zizmor: ignore[adhoc-packages] CI-only Slack report helper; no maintained lockfile
       - name: Build and archive app via Cocoapods
         if: ${{ matrix.variant == 'cocoapods' }}
         run: |
@@ -73,8 +77,10 @@ jobs:
           SOURCE_BRANCH: ${{ github.head_ref }}
       - name: Create Slack Failure Summary Report
         if: ${{ failure() }}
+        env:
+          SOURCE_BRANCH: ${{ github.head_ref || github.ref_name }}
         run: |
-          node Report\ Scripts/multixcode-failure-report.js createMultiXcodeFailureReport ${{ github.head_ref || github.ref_name }} ${{ matrix.xcode}} ${{ matrix.variant }}
+          node Report\ Scripts/multixcode-failure-report.js createMultiXcodeFailureReport "$SOURCE_BRANCH" ${{ matrix.xcode }} ${{ matrix.variant }}
       - name: Slack Notification
         if: ${{ failure() }}
         uses: slackapi/slack-github-action@45a88b9581bfab2566dc881e2cd66d334e621e2c #v3.0.3
@@ -92,15 +98,18 @@ jobs:
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           ref: ${{ github.ref }}
+          persist-credentials: false
       - name: Setup node
         uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e #v6.4.0
         with:
           node-version: 18.3.0
-      - run: npm install --save slack-message-builder
+      - run: npm install --save slack-message-builder # zizmor: ignore[adhoc-packages] CI-only Slack report helper; no maintained lockfile
       - name: Create Slack Success Summary Report
         if: ${{ success() }}
+        env:
+          SOURCE_BRANCH: ${{ github.head_ref || github.ref_name }}
         run: |
-          node Report\ Scripts/multixcode-success-report.js createMultiXcodeSummaryReport ${{ github.head_ref || github.ref_name }} "14.3.1, 14.2, 14.1" "cocoapods, spm"
+          node Report\ Scripts/multixcode-success-report.js createMultiXcodeSummaryReport "$SOURCE_BRANCH" "14.3.1, 14.2, 14.1" "cocoapods, spm"
       - name: Slack Notification
         if: ${{ success() }}
         uses: slackapi/slack-github-action@45a88b9581bfab2566dc881e2cd66d334e621e2c #v3.0.3
@@ -109,4 +118,3 @@ jobs:
           payload-file-path: '/var/tmp/multixcode-success-summary.json'
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_REPORTER_BOT_TOKEN }}
-
