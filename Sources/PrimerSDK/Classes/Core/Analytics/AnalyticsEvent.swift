@@ -218,4 +218,73 @@ extension Analytics.Event {
         )
     }
 }
+
+extension Analytics {
+    // Preserves the `diagnosticsId` for every `PrimerErrorProtocol` error (notably `InternalError`);
+    // without this they fall through to the NSError branch and the id surfaced to the merchant has
+    // no matching backend log entry.
+    static func event(for error: Error) -> Analytics.Event {
+        if let threeDsError = error as? Primer3DSErrorContainer {
+            var event = Analytics.Event.message(
+                message: threeDsError.errorDescription,
+                messageType: .error,
+                severity: .error,
+                diagnosticsId: threeDsError.diagnosticsId,
+                context: threeDsError.analyticsContext
+            )
+            if let createdAt = (threeDsError.info?["createdAt"] as? String)?.toDate() {
+                event.createdAt = createdAt.millisecondsSince1970
+            }
+            return event
+        }
+        
+        if let primerError = error as? PrimerError {
+            var event = Analytics.Event.message(
+                message: primerError.errorDescription,
+                messageType: .error,
+                severity: determineErrorSeverity(primerError),
+                diagnosticsId: primerError.diagnosticsId,
+                context: primerError.analyticsContext
+            )
+            if let createdAt = (primerError.errorUserInfo["createdAt"] as? String)?.toDate() {
+                event.createdAt = createdAt.millisecondsSince1970
+            }
+            return event
+        }
+        
+        if let primerError = error as? (any PrimerErrorProtocol) {
+            return Analytics.Event.message(
+                message: primerError.errorDescription,
+                messageType: .error,
+                severity: .error,
+                diagnosticsId: primerError.diagnosticsId,
+                context: primerError.analyticsContext
+            )
+        }
+        
+        let nsError = error as NSError
+        var userInfo = nsError.userInfo
+        userInfo["description"] = nsError.description
+        userInfo[NSLocalizedDescriptionKey] = nil
+        
+        return Analytics.Event.message(
+            message: "\(nsError.domain) [\(nsError.code)]: \(nsError.localizedDescription)",
+            messageType: .error,
+            severity: .error,
+            diagnosticsId: nil,
+            context: userInfo
+        )
+    }
+    
+    private static func determineErrorSeverity(_ error: PrimerError) -> Analytics.Event.Property.Severity {
+        switch error {
+        case .applePayNoCardsInWallet,
+             .applePayDeviceNotSupported:
+            return .warning
+        default:
+            return .error
+        }
+    }
+}
+
 // swiftlint:enable all

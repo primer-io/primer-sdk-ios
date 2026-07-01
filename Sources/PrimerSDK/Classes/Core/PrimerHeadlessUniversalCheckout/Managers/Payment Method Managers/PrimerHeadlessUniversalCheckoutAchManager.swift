@@ -1,24 +1,25 @@
 //
 //  PrimerHeadlessUniversalCheckoutAchManager.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import UIKit
+@_spi(PrimerInternal) import PrimerFoundation
 
 extension PrimerHeadlessUniversalCheckout {
     public final class AchManager: NSObject {
         public var mandateDelegate: ACHMandateDelegate?
         // swiftlint:disable generic_type_name
         public func provide<PrimerHeadlessAchComponent>(paymentMethodType: String) throws -> PrimerHeadlessAchComponent?
-        // swiftlint:enable generic_type_name
-        where PrimerCollectableData: Any, PrimerHeadlessStep: Any {
+            // swiftlint:enable generic_type_name
+            where PrimerCollectableData: Any, PrimerHeadlessStep: Any {
             try provideStripeAchUserDetailsComponent(paymentMethodType: paymentMethodType) as? PrimerHeadlessAchComponent
         }
 
         public func provideStripeAchUserDetailsComponent(paymentMethodType: String) throws -> (any StripeAchUserDetailsComponent)? {
             guard let paymentMethod = PrimerAPIConfiguration.paymentMethodConfigs?
-                    .first(where: { $0.type == paymentMethodType })
+                .first(where: { $0.type == paymentMethodType })
             else {
                 throw handled(
                     primerError: .unsupportedPaymentMethod(

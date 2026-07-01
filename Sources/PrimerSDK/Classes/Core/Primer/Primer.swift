@@ -56,7 +56,9 @@ public final class Primer {
         _Primer
     }
 
-    fileprivate init() {}
+    fileprivate init() {
+        ErrorHandler.fire = { Analytics.Service.fire(event: Analytics.event(for: $0)) }
+    }
 
     public func application(
         _ app: UIApplication,

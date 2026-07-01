@@ -1,13 +1,10 @@
 //
-//  PrimerError.swift
+//  Handled.swift
 //
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import PrimerFoundation
-@_spi(PrimerInternal) import PrimerFoundation
-
-func handled<E: Error>(
+@_spi(PrimerInternal) public func handled<E: Error>(
     error: E,
     file: String = #file,
     line: Int = #line,
@@ -17,7 +14,7 @@ func handled<E: Error>(
     return error
 }
 
-func handled(
+@_spi(PrimerInternal) public func handled(
     primerError: PrimerError,
     file: String = #file,
     line: Int = #line,
@@ -26,7 +23,7 @@ func handled(
     handled(error: primerError, file: file, line: line, function: function)
 }
 
-func handled(
+@_spi(PrimerInternal) public func handled(
     internalError: InternalError,
     file: String = #file,
     line: Int = #line,
@@ -35,7 +32,7 @@ func handled(
     handled(error: internalError, file: file, line: line, function: function)
 }
 
-func handled(
+@_spi(PrimerInternal) public func handled(
     primerValidationError: PrimerValidationError,
     file: String = #file,
     line: Int = #line,
