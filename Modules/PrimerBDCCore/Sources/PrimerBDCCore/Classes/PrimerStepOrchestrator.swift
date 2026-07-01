@@ -12,6 +12,7 @@ import Foundation
 @MainActor
 protocol StepOrchestrating: AnyObject {
     var onURLOpen: (() -> Void)? { get set }
+    var onUIRender: (() -> Void)? { get set }
     var onCancelled: (() -> Void)? { get set }
     func start(rawSchema: String, initialState: CodableValue) async throws
 }
@@ -23,6 +24,7 @@ final class PrimerStepOrchestrator: StepOrchestrating {
         didSet { harness.onURLOpen = onURLOpen }
     }
     
+    var onUIRender: (() -> Void)?
     var onCancelled: (() -> Void)?
 
     private let logger = Logger()
@@ -58,7 +60,7 @@ final class PrimerStepOrchestrator: StepOrchestrating {
             state = response.newState
             try await handleResponse(response, rawSchema: rawSchema)
         } catch {
-            if let error = error as? StateProcessorError {
+            if error is StateProcessorError {
                 throw error
             } else {
                 throw PrimerStepOrchestratorError.decodeResultFailed(error: error)
@@ -79,8 +81,8 @@ final class PrimerStepOrchestrator: StepOrchestrating {
     }
     
     private func handleAction(_ action: WorkflowStep, rawSchema: String) async throws {
-        let resolution = try await registry.resolve(action.type, params: action.params)
-        try await applyResult(resolution, actionId: action.id, rawSchema: rawSchema)
+        let result = try await registry.resolve(action.type, params: action.params)
+        try await applyResult(result, actionId: action.id, rawSchema: rawSchema)
     }
     
     private func handleOutcome(_ outcome: TerminalOutcome) throws {

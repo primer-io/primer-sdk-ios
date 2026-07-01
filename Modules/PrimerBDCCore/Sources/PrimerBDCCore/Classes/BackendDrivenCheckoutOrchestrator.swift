@@ -21,6 +21,11 @@ public final class BackendDrivenCheckoutOrchestrator {
         set { stepOrchestrator.onCancelled = newValue }
     }
     
+    public var onUIRender: (() -> Void)? {
+        get { stepOrchestrator.onUIRender }
+        set { stepOrchestrator.onUIRender = newValue }
+    }
+    
     private let stepOrchestrator: any StepOrchestrating
 
     public init(manifestProvider: SignedManifestProvider, context: SDKContext) async throws {

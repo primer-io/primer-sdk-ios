@@ -148,6 +148,7 @@ private extension PrimerBDCEngine {
     private func setupCallback(continuation: ContinuationPath, value: String) {
         let callback: JSStringBlock = { [weak self] json in
             guard let self else { return }
+            Logger.info("[DEBUG] \(value) fired: \(json)", category: "ENGINE_LIFECYCLE")
             let continuation = self[keyPath: continuation]
             continuation?.resume(returning: json)
         }
