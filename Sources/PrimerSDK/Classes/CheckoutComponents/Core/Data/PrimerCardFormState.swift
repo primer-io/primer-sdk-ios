@@ -302,3 +302,30 @@ public struct PrimerCardFormState: Equatable {
     fieldErrors.removeAll { $0.fieldType == fieldType }
   }
 }
+
+// MARK: - PCI Redaction
+
+@available(iOS 15.0, *)
+extension PrimerCardFormState {
+  /// A copy of the state with PCI fields masked, safe to expose to merchant code.
+  ///
+  /// The card number keeps only its BIN (first 6) and last 4 digits; the CVV is cleared.
+  /// All non-PCI fields (validation, networks, billing, surcharge, etc.) are preserved.
+  func redactedForMerchant() -> PrimerCardFormState {
+    var redacted = self
+    redacted.data[.cardNumber] = Self.maskedPAN(data[.cardNumber])
+    redacted.data[.cvv] = ""
+    return redacted
+  }
+
+  /// Masks a PAN to the PCI-permitted BIN + last 4 (e.g. `424242••••••4242`).
+  /// Below 11 digits the BIN is dropped so it can never overlap the last 4.
+  static func maskedPAN(_ pan: String) -> String {
+    let digits = pan.filter(\.isNumber)
+    guard !digits.isEmpty else { return "" }
+    let last4 = String(digits.suffix(4))
+    let bin = digits.count > 10 ? String(digits.prefix(6)) : ""
+    let maskedCount = max(0, digits.count - bin.count - last4.count)
+    return bin + String(repeating: "•", count: maskedCount) + last4
+  }
+}

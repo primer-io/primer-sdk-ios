@@ -41,7 +41,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
 
     // MARK: - currentState Tests
 
-    func test_currentState_mirrorsStructuredState() async throws {
+    func test_currentState_isRedactedForMerchant() async throws {
         let container = try await createTestContainer()
 
         await DIContainer.withContainer(container) {
@@ -51,8 +51,35 @@ final class DefaultCardFormScopeTests: XCTestCase {
             scope.updateCardNumber(TestData.CardNumbers.validVisa)
             scope.updateCvv("123")
 
-            XCTAssertEqual(scope.currentState, scope.structuredState)
-            XCTAssertEqual(scope.currentState.data[.cardNumber], scope.structuredState.data[.cardNumber])
+            // currentState is the merchant-facing view: PCI fields are masked...
+            XCTAssertEqual(
+                scope.currentState.data[.cardNumber],
+                PrimerCardFormState.maskedPAN(TestData.CardNumbers.validVisa)
+            )
+            XCTAssertEqual(scope.currentState.data[.cvv], "")
+            // ...while structuredState keeps the raw values for tokenisation.
+            XCTAssertEqual(scope.structuredState.data[.cardNumber], TestData.CardNumbers.validVisa)
+            XCTAssertEqual(scope.structuredState.data[.cvv], "123")
+        }
+    }
+
+    func test_stateStream_yieldsRedactedPCIFields() async throws {
+        let container = try await createTestContainer()
+
+        try await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createCardFormScope(checkoutScope: checkoutScope)
+
+            scope.updateCardNumber(TestData.CardNumbers.validVisa)
+            scope.updateCvv("123")
+
+            // The merchant-observable AsyncStream must never carry raw PAN/CVV.
+            let state = try await awaitFirst(scope.state)
+            XCTAssertEqual(
+                state.data[.cardNumber],
+                PrimerCardFormState.maskedPAN(TestData.CardNumbers.validVisa)
+            )
+            XCTAssertEqual(state.data[.cvv], "")
         }
     }
 
@@ -73,8 +100,13 @@ final class DefaultCardFormScopeTests: XCTestCase {
 
             scope.updateCardNumber(TestData.CardNumbers.validVisa)
 
-            let cardNumber = scope.getFieldValue(.cardNumber)
-            XCTAssertEqual(cardNumber, TestData.CardNumbers.validVisa)
+            // The raw value is stored internally for tokenisation...
+            XCTAssertEqual(scope.structuredState.data[.cardNumber], TestData.CardNumbers.validVisa)
+            // ...but the merchant-facing getter returns it masked.
+            XCTAssertEqual(
+                scope.getFieldValue(.cardNumber),
+                PrimerCardFormState.maskedPAN(TestData.CardNumbers.validVisa)
+            )
         }
     }
 
@@ -93,12 +125,13 @@ final class DefaultCardFormScopeTests: XCTestCase {
             )
 
             scope.updateCvv("123")
-            let cvv3Digit = scope.getFieldValue(.cvv)
-            XCTAssertEqual(cvv3Digit, "123")
+            XCTAssertEqual(scope.structuredState.data[.cvv], "123")
+            // CVV is never surfaced through the merchant-facing getter.
+            XCTAssertEqual(scope.getFieldValue(.cvv), "")
 
             scope.updateCvv("1234")
-            let cvv4Digit = scope.getFieldValue(.cvv)
-            XCTAssertEqual(cvv4Digit, "1234")
+            XCTAssertEqual(scope.structuredState.data[.cvv], "1234")
+            XCTAssertEqual(scope.getFieldValue(.cvv), "")
         }
     }
 
@@ -858,9 +891,10 @@ final class DefaultCardFormScopeTests: XCTestCase {
             let scope = createCardFormScope(checkoutScope: checkoutScope)
 
             scope.updateCardNumber(TestData.CardNumbers.validVisa)
-            XCTAssertEqual(scope.getFieldValue(.cardNumber), TestData.CardNumbers.validVisa)
+            XCTAssertEqual(scope.structuredState.data[.cardNumber], TestData.CardNumbers.validVisa)
 
             scope.updateCardNumber("")
+            XCTAssertEqual(scope.structuredState.data[.cardNumber], "")
             XCTAssertEqual(scope.getFieldValue(.cardNumber), "")
         }
     }
@@ -1097,7 +1131,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
 
             scope.updateField(.cardNumber, value: TestData.CardNumbers.validVisa)
 
-            XCTAssertEqual(scope.getFieldValue(.cardNumber), TestData.CardNumbers.validVisa)
+            XCTAssertEqual(scope.structuredState.data[.cardNumber], TestData.CardNumbers.validVisa)
         }
     }
 
@@ -1110,7 +1144,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
 
             scope.updateField(.cvv, value: "999")
 
-            XCTAssertEqual(scope.getFieldValue(.cvv), "999")
+            XCTAssertEqual(scope.structuredState.data[.cvv], "999")
         }
     }
 

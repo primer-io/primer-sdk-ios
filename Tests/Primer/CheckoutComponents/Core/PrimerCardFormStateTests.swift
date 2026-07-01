@@ -256,4 +256,61 @@ final class PrimerCardFormStateTests: XCTestCase {
         // Then
         XCTAssertTrue(state.fieldErrors.isEmpty)
     }
+
+    // MARK: - PCI Redaction Tests
+
+    func test_maskedPAN_keepsBinAndLast4_forFullPAN() {
+        XCTAssertEqual(PrimerCardFormState.maskedPAN("4242 4242 4242 4242"), "424242••••••4242")
+    }
+
+    func test_maskedPAN_handlesAmex15Digits() {
+        XCTAssertEqual(PrimerCardFormState.maskedPAN("3782 822463 10005"), "378282•••••0005")
+    }
+
+    func test_maskedPAN_emptyInput_returnsEmpty() {
+        XCTAssertEqual(PrimerCardFormState.maskedPAN(""), "")
+    }
+
+    func test_maskedPAN_shortInput_dropsBinToProtectDigits() {
+        // Fewer than 11 digits: no BIN is shown so it can never overlap the last 4.
+        XCTAssertEqual(PrimerCardFormState.maskedPAN("411111"), "••1111")
+    }
+
+    func test_redactedForMerchant_masksPANAndClearsCVV_preservingOtherFields() {
+        // Given
+        let state = PrimerCardFormState(
+            data: FormData([
+                .cardNumber: "4242 4242 4242 4242",
+                .cvv: "123",
+                .expiryDate: "12/30",
+                .cardholderName: "Jane Doe",
+                .postalCode: "SW1A 1AA",
+            ]),
+            isValid: true,
+            selectedCountry: PrimerCountry(code: "GB", name: "United Kingdom")
+        )
+
+        // When
+        let redacted = state.redactedForMerchant()
+
+        // Then — PCI fields masked
+        XCTAssertEqual(redacted.data[.cardNumber], "424242••••••4242")
+        XCTAssertEqual(redacted.data[.cvv], "")
+        // Non-PCI fields preserved
+        XCTAssertEqual(redacted.data[.expiryDate], "12/30")
+        XCTAssertEqual(redacted.data[.cardholderName], "Jane Doe")
+        XCTAssertEqual(redacted.data[.postalCode], "SW1A 1AA")
+        XCTAssertTrue(redacted.isValid)
+        XCTAssertEqual(redacted.selectedCountry?.code, "GB")
+        // Original is left untouched (value semantics)
+        XCTAssertEqual(state.data[.cardNumber], "4242 4242 4242 4242")
+        XCTAssertEqual(state.data[.cvv], "123")
+    }
+
+    func test_redactedForMerchant_emptyForm_yieldsEmptyPCIFields() {
+        let redacted = PrimerCardFormState().redactedForMerchant()
+
+        XCTAssertEqual(redacted.data[.cardNumber], "")
+        XCTAssertEqual(redacted.data[.cvv], "")
+    }
 }
