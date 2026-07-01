@@ -24,8 +24,6 @@ public final class PrimerApplePayOptions: Codable {
     @_spi(PrimerInternal) public let billingOptions: BillingOptions?
     /// Card types the Apple Pay sheet should offer. `nil` or empty allows all types.
     @_spi(PrimerInternal) public let allowedCardTypes: [CardType]?
-    /// Card networks the Apple Pay sheet should offer, intersected with the client session's allowed networks. `nil` or empty allows all.
-    @_spi(PrimerInternal) public let allowedCardNetworks: [CardNetwork]?
 
     public init(
         merchantIdentifier: String,
@@ -42,7 +40,6 @@ public final class PrimerApplePayOptions: Codable {
         self.shippingOptions = nil
         self.billingOptions = nil
         self.allowedCardTypes = nil
-        self.allowedCardNetworks = nil
     }
 
     public init(
@@ -53,8 +50,7 @@ public final class PrimerApplePayOptions: Codable {
         checkProvidedNetworks: Bool = true,
         shippingOptions: ShippingOptions? = nil,
         billingOptions: BillingOptions? = nil,
-        allowedCardTypes: [CardType]? = nil,
-        allowedCardNetworks: [CardNetwork]? = nil
+        allowedCardTypes: [CardType]? = nil
     ) {
         self.merchantIdentifier = merchantIdentifier
         self.merchantName = merchantName
@@ -64,7 +60,6 @@ public final class PrimerApplePayOptions: Codable {
         self.shippingOptions = shippingOptions
         self.billingOptions = billingOptions
         self.allowedCardTypes = allowedCardTypes
-        self.allowedCardNetworks = allowedCardNetworks
     }
 
     public struct ShippingOptions: Codable {
