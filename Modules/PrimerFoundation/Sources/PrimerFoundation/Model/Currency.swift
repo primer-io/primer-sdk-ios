@@ -10,24 +10,25 @@ import Foundation
 public struct Currency: Codable {
     public let code: String
     public let decimalDigits: Int
-    
+
     private enum CodingKeys: String, CodingKey {
         case code = "c"
         case decimalDigits = "m"
     }
-    
+
     public init(code: String, decimalDigits: Int) {
         self.code = code
         self.decimalDigits = decimalDigits
     }
-    
+
     public var symbol: String? {
         let localeIdentifier = Locale.identifier(fromComponents: [NSLocale.Key.currencyCode.rawValue: code])
         let locale = Locale(identifier: localeIdentifier)
         return locale.currencySymbol
     }
 
-    public var isZeroDecimal: Bool {
-        decimalDigits == 0
+    /// Divisor that converts a minor-unit amount into its major-unit value (`10^decimalDigits`).
+    public var minorUnitDivisor: Decimal {
+        pow(10, decimalDigits)
     }
 }
