@@ -108,6 +108,42 @@ final class AnalyticsPayloadBuilderTests: XCTestCase {
         XCTAssertEqual(payload.threedsResponse, "authenticated")
     }
 
+    func testBuildPayload_WithVaultMetadata_IncludesAllVaultFields() {
+        // Given
+        let eventType = AnalyticsEventType.vaultMethodDeleted
+        let config = makeTestConfig()
+        let metadata: AnalyticsEventMetadata = .vault(VaultEvent(
+            vaultedMethodId: "vm-1",
+            previousVaultedMethodId: "vm-0",
+            promotedVaultedMethodId: "vm-2",
+            isActive: true,
+            vaultedMethodCount: 3,
+            exitedFromConfirmation: false,
+            network: "VISA",
+            expectedCvvLength: 4,
+            errorId: "vault-delete-failed"
+        ))
+
+        // When
+        let payload = builder.buildPayload(
+            eventType: eventType,
+            metadata: metadata,
+            config: config
+        )
+
+        // Then
+        XCTAssertEqual(payload.vaultedMethodId, "vm-1")
+        XCTAssertEqual(payload.previousVaultedMethodId, "vm-0")
+        XCTAssertEqual(payload.promotedVaultedMethodId, "vm-2")
+        XCTAssertEqual(payload.isActive, true)
+        XCTAssertEqual(payload.vaultedMethodCount, 3)
+        XCTAssertEqual(payload.exitedFromConfirmation, false)
+        XCTAssertEqual(payload.network, "VISA")
+        XCTAssertEqual(payload.expectedCvvLength, 4)
+        XCTAssertEqual(payload.errorId, "vault-delete-failed")
+        XCTAssertNil(payload.paymentMethod)
+    }
+
     func testBuildPayload_AutoFillsUserAgent() {
         // Given
         let eventType = AnalyticsEventType.sdkInitStart

@@ -30,47 +30,9 @@ actor LoggingService: LogReporter, ComponentsLoggingServiceProtocol {
       return
     }
 
-    await sendError(message: message, error: error, userInfo: userInfo)
-  }
-
-  func logInfo(message: String, event: String, userInfo: [String: Any]? = nil) async {
-    await sendInfo(message: message, event: event, userInfo: userInfo)
-  }
-
-  // MARK: - Private Methods
-
-  private func sendInfo(message: String, event: String, userInfo: [String: Any]?) async {
-    do {
-      let sessionData = await LoggingSessionContext.shared.getSessionData()
-
-      let payload = try payloadBuilder.buildInfoPayload(
-        message: message,
-        event: event,
-        userInfo: userInfo,
-        sessionData: sessionData
-      )
-
-      let endpoint = LogEnvironmentProvider.getEndpointURL(for: sessionData.environment)
-
-      try await networkClient.send(
-        payload: payload,
-        to: endpoint,
-        token: sessionData.clientSessionToken
-      )
-    } catch {
-      Self.logger.error(
-        message: "[Logging] Failed to send INFO log: \(error.localizedDescription)")
-    }
-  }
-
-  private func sendError(message: String?, error: Error, userInfo: [String: Any]?) async {
-    do {
-      let sessionData = await LoggingSessionContext.shared.getSessionData()
-
-      let datadogMessage = message ?? Self.extractDatadogMessage(from: error)
-
-      let payload = try payloadBuilder.buildErrorPayload(
-        message: datadogMessage,
+    await dispatch(label: "ERROR") { sessionData in
+      try payloadBuilder.buildErrorPayload(
+        message: message ?? Self.extractDatadogMessage(from: error),
         errorMessage: error.localizedDescription,
         diagnosticsId: Self.extractDiagnosticsId(from: error),
         stack: String(describing: error),
@@ -78,7 +40,49 @@ actor LoggingService: LogReporter, ComponentsLoggingServiceProtocol {
         userInfo: userInfo,
         sessionData: sessionData
       )
+    }
+  }
 
+  func logInfo(message: String, event: String, userInfo: [String: Any]? = nil) async {
+    await dispatch(label: "INFO") { sessionData in
+      try payloadBuilder.buildInfoPayload(
+        message: message,
+        event: event,
+        userInfo: userInfo,
+        sessionData: sessionData
+      )
+    }
+  }
+
+  func logError(
+    message: String,
+    event: String? = nil,
+    errorMessage: String? = nil,
+    stack: String? = nil,
+    userInfo: [String: Any]? = nil
+  ) async {
+    await dispatch(label: "ERROR") { sessionData in
+      try payloadBuilder.buildErrorPayload(
+        message: message,
+        errorMessage: errorMessage,
+        diagnosticsId: nil,
+        stack: stack,
+        event: event,
+        userInfo: userInfo,
+        sessionData: sessionData
+      )
+    }
+  }
+
+  // MARK: - Private Methods
+
+  private func dispatch(
+    label: String,
+    makePayload: (LoggingSessionContext.SessionData) throws -> LogPayload
+  ) async {
+    do {
+      let sessionData = await LoggingSessionContext.shared.getSessionData()
+      let payload = try makePayload(sessionData)
       let endpoint = LogEnvironmentProvider.getEndpointURL(for: sessionData.environment)
 
       try await networkClient.send(
@@ -88,7 +92,7 @@ actor LoggingService: LogReporter, ComponentsLoggingServiceProtocol {
       )
     } catch {
       Self.logger.error(
-        message: "[Logging] Failed to send ERROR log: \(error.localizedDescription)")
+        message: "[Logging] Failed to send \(label) log: \(error.localizedDescription)")
     }
   }
 
