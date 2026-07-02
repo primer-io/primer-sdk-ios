@@ -71,8 +71,7 @@ public final class ComponentsAnalyticsLoggingBridge: LogReporter {
 
     public func trackEvent(_ eventName: String, metadata: [String: String]?) async {
         guard let eventType = AnalyticsEventType(rawValue: eventName) else {
-            logger.debug(message: "[Analytics] Dropping unknown event name: \(eventName)")
-            return
+            return logger.debug(message: "[Analytics] Dropping unknown event name: \(eventName)")
         }
         await analyticsInteractor.trackEvent(eventType, metadata: Self.mapMetadata(metadata, for: eventType))
     }
