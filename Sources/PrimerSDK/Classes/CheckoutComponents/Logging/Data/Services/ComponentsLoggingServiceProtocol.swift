@@ -11,4 +11,11 @@ import Foundation
 @available(iOS 15.0, *)
 protocol ComponentsLoggingServiceProtocol: Actor {
     func logInfo(message: String, event: String, userInfo: [String: Any]?) async
+    func logError(
+        message: String,
+        event: String?,
+        errorMessage: String?,
+        stack: String?,
+        userInfo: [String: Any]?
+    ) async
 }

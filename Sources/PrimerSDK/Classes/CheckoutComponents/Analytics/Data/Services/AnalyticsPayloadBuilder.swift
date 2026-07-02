@@ -18,7 +18,8 @@ struct AnalyticsPayloadBuilder {
     config: AnalyticsSessionConfig,
     timestamp: Int? = nil
   ) -> AnalyticsPayload {
-    AnalyticsPayload(
+    let vault = metadata?.vaultEvent
+    return AnalyticsPayload(
       id: .uuid,
       timestamp: timestamp ?? Int(Date().timeIntervalSince1970),
       sdkType: Self.isReactNative ? "RN_IOS" : "IOS_NATIVE",
@@ -37,7 +38,16 @@ struct AnalyticsPayloadBuilder {
       threedsResponse: metadata?.threedsResponse,
       browser: nil,
       device: UIDevice.model.rawValue,
-      deviceType: UIDevice.deviceType
+      deviceType: UIDevice.deviceType,
+      vaultedMethodId: vault?.vaultedMethodId,
+      previousVaultedMethodId: vault?.previousVaultedMethodId,
+      promotedVaultedMethodId: vault?.promotedVaultedMethodId,
+      isActive: vault?.isActive,
+      vaultedMethodCount: vault?.vaultedMethodCount,
+      exitedFromConfirmation: vault?.exitedFromConfirmation,
+      network: vault?.network,
+      expectedCvvLength: vault?.expectedCvvLength,
+      errorId: vault?.errorId
     )
   }
 }

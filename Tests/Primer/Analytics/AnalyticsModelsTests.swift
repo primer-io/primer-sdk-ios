@@ -32,7 +32,16 @@ final class AnalyticsPayloadTests: XCTestCase {
             threedsResponse: nil,
             browser: nil,
             device: nil,
-            deviceType: nil
+            deviceType: nil,
+            vaultedMethodId: nil,
+            previousVaultedMethodId: nil,
+            promotedVaultedMethodId: nil,
+            isActive: nil,
+            vaultedMethodCount: nil,
+            exitedFromConfirmation: nil,
+            network: nil,
+            expectedCvvLength: nil,
+            errorId: nil
         )
 
         // When
@@ -75,7 +84,16 @@ final class AnalyticsPayloadTests: XCTestCase {
             threedsResponse: nil,
             browser: nil,
             device: nil,
-            deviceType: nil
+            deviceType: nil,
+            vaultedMethodId: nil,
+            previousVaultedMethodId: nil,
+            promotedVaultedMethodId: nil,
+            isActive: nil,
+            vaultedMethodCount: nil,
+            exitedFromConfirmation: nil,
+            network: nil,
+            expectedCvvLength: nil,
+            errorId: nil
         )
 
         // When
@@ -93,6 +111,15 @@ final class AnalyticsPayloadTests: XCTestCase {
         XCTAssertNil(json["browser"])
         XCTAssertNil(json["device"])
         XCTAssertNil(json["deviceType"])
+        XCTAssertNil(json["vaultedMethodId"])
+        XCTAssertNil(json["previousVaultedMethodId"])
+        XCTAssertNil(json["promotedVaultedMethodId"])
+        XCTAssertNil(json["isActive"])
+        XCTAssertNil(json["vaultedMethodCount"])
+        XCTAssertNil(json["exitedFromConfirmation"])
+        XCTAssertNil(json["network"])
+        XCTAssertNil(json["expectedCvvLength"])
+        XCTAssertNil(json["errorId"])
     }
 
     func testAnalyticsPayload_IncludesProvidedOptionalFields() throws {
@@ -116,7 +143,16 @@ final class AnalyticsPayloadTests: XCTestCase {
             threedsResponse: "05",
             browser: "Safari",
             device: "iPhone 15 Pro",
-            deviceType: "phone"
+            deviceType: "phone",
+            vaultedMethodId: nil,
+            previousVaultedMethodId: nil,
+            promotedVaultedMethodId: nil,
+            isActive: nil,
+            vaultedMethodCount: nil,
+            exitedFromConfirmation: nil,
+            network: nil,
+            expectedCvvLength: nil,
+            errorId: nil
         )
 
         // When
@@ -345,6 +381,23 @@ final class AnalyticsEventMetadataTests: XCTestCase {
         XCTAssertEqual(metadata.redirectDestinationUrl, "https://redirect.example.com")
     }
 
+    func testAnalyticsEventMetadata_VaultCase() {
+        // When
+        let metadata: AnalyticsEventMetadata = .vault(VaultEvent(
+            vaultedMethodId: "vm-1",
+            isActive: true,
+            vaultedMethodCount: 2
+        ))
+
+        // Then
+        XCTAssertEqual(metadata.locale, GeneralEvent.formattedCurrentLocale)
+        XCTAssertEqual(metadata.vaultEvent?.vaultedMethodId, "vm-1")
+        XCTAssertEqual(metadata.vaultEvent?.isActive, true)
+        XCTAssertEqual(metadata.vaultEvent?.vaultedMethodCount, 2)
+        XCTAssertNil(metadata.paymentMethod)
+        XCTAssertNil(metadata.paymentId)
+    }
+
     // MARK: - Type Safety Tests
 
     func testAnalyticsEventMetadata_TypeSafety_PreventsMixedFields() {
@@ -399,6 +452,21 @@ final class AnalyticsEventTypeTests: XCTestCase {
         XCTAssertEqual(AnalyticsEventType.paymentFailure.rawValue, "PAYMENT_FAILURE")
         XCTAssertEqual(AnalyticsEventType.paymentReattempted.rawValue, "PAYMENT_REATTEMPTED")
         XCTAssertEqual(AnalyticsEventType.paymentFlowExited.rawValue, "PAYMENT_FLOW_EXITED")
+        XCTAssertEqual(AnalyticsEventType.vaultListOpened.rawValue, "VAULT_LIST_OPENED")
+        XCTAssertEqual(AnalyticsEventType.vaultMethodSelected.rawValue, "VAULT_METHOD_SELECTED")
+        XCTAssertEqual(
+            AnalyticsEventType.vaultOtherPayMethodsRequested.rawValue, "VAULT_OTHER_PAY_METHODS_REQUESTED"
+        )
+        XCTAssertEqual(AnalyticsEventType.vaultEditModeEntered.rawValue, "VAULT_EDIT_MODE_ENTERED")
+        XCTAssertEqual(AnalyticsEventType.vaultEditModeExited.rawValue, "VAULT_EDIT_MODE_EXITED")
+        XCTAssertEqual(AnalyticsEventType.vaultDeletionRequested.rawValue, "VAULT_DELETION_REQUESTED")
+        XCTAssertEqual(AnalyticsEventType.vaultDeletionCancelled.rawValue, "VAULT_DELETION_CANCELLED")
+        XCTAssertEqual(AnalyticsEventType.vaultMethodDeleted.rawValue, "VAULT_METHOD_DELETED")
+        XCTAssertEqual(AnalyticsEventType.vaultMethodDeletionFailed.rawValue, "VAULT_METHOD_DELETION_FAILED")
+        XCTAssertEqual(AnalyticsEventType.vaultCvvRequiredRendered.rawValue, "VAULT_CVV_REQUIRED_RENDERED")
+        XCTAssertEqual(AnalyticsEventType.vaultCvvSubmitted.rawValue, "VAULT_CVV_SUBMITTED")
+        XCTAssertEqual(AnalyticsEventType.vaultCvvRequiredDismissed.rawValue, "VAULT_CVV_REQUIRED_DISMISSED")
+        XCTAssertEqual(AnalyticsEventType.vaultCvvSubmissionFailed.rawValue, "VAULT_CVV_SUBMISSION_FAILED")
     }
 
     func testAnalyticsEventType_IsEncodable() throws {
@@ -426,26 +494,10 @@ final class AnalyticsEventTypeTests: XCTestCase {
         XCTAssertEqual(eventType, .paymentSuccess)
     }
 
-    func testAnalyticsEventType_Count_Is13() {
-        // Given - all event types as per spec
-        let allEventTypes: [AnalyticsEventType] = [
-            .sdkInitStart,
-            .sdkInitEnd,
-            .checkoutFlowStarted,
-            .paymentMethodSelection,
-            .paymentDetailsEntered,
-            .paymentSubmitted,
-            .paymentProcessingStarted,
-            .paymentRedirectToThirdParty,
-            .paymentThreeds,
-            .paymentSuccess,
-            .paymentFailure,
-            .paymentReattempted,
-            .paymentFlowExited
-        ]
-
-        // Then
-        XCTAssertEqual(allEventTypes.count, 13, "Should have exactly 13 event types as per spec")
+    func testAnalyticsEventType_Count_MatchesSpec() {
+        // Then - 13 core lifecycle + 13 vault event types as per spec
+        XCTAssertEqual(AnalyticsEventType.allCases.count, 26)
+        XCTAssertEqual(AnalyticsEventType.allCases.filter(\.isVaultEvent).count, 13)
     }
 }
 

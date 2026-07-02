@@ -11,12 +11,14 @@ import Foundation
 /// Optional metadata that can be attached to analytics events.
 /// Not all events require all metadata fields - include only relevant fields per event type.
 /// Analytics event metadata using discriminated unions for type safety.
-/// Each event type carries only its relevant metadata - no optional pollution.
+/// Each metadata case carries only the fields relevant to its event family; vault events share
+/// one struct whose fields are populated per event.
 public enum AnalyticsEventMetadata: Sendable {
   case general(GeneralEvent = GeneralEvent())
   case payment(PaymentEvent)
   case threeDS(ThreeDSEvent)
   case redirect(RedirectEvent)
+  case vault(VaultEvent)
 }
 
 // MARK: - Event Types
@@ -78,6 +80,47 @@ public struct ThreeDSEvent: Sendable {
   }
 }
 
+/// Metadata for vault-management and CVV-recapture events.
+/// Ids are opaque Primer vault tokens; `expectedCvvLength` is a digit count, never a CVV value.
+/// All fields optional: one shared shape for the 13 vault events; required-ness is enforced by
+/// the upstream emitters.
+public struct VaultEvent: Sendable {
+  public let locale: String
+  public let vaultedMethodId: String?
+  public let previousVaultedMethodId: String?
+  public let promotedVaultedMethodId: String?
+  public let isActive: Bool?
+  public let vaultedMethodCount: Int?
+  public let exitedFromConfirmation: Bool?
+  public let network: String?
+  public let expectedCvvLength: Int?
+  public let errorId: String?
+
+  public init(
+    locale: String = GeneralEvent.formattedCurrentLocale,
+    vaultedMethodId: String? = nil,
+    previousVaultedMethodId: String? = nil,
+    promotedVaultedMethodId: String? = nil,
+    isActive: Bool? = nil,
+    vaultedMethodCount: Int? = nil,
+    exitedFromConfirmation: Bool? = nil,
+    network: String? = nil,
+    expectedCvvLength: Int? = nil,
+    errorId: String? = nil
+  ) {
+    self.locale = locale
+    self.vaultedMethodId = vaultedMethodId
+    self.previousVaultedMethodId = previousVaultedMethodId
+    self.promotedVaultedMethodId = promotedVaultedMethodId
+    self.isActive = isActive
+    self.vaultedMethodCount = vaultedMethodCount
+    self.exitedFromConfirmation = exitedFromConfirmation
+    self.network = network
+    self.expectedCvvLength = expectedCvvLength
+    self.errorId = errorId
+  }
+}
+
 /// Metadata for third-party redirect events
 public struct RedirectEvent: Sendable {
   public let locale: String
@@ -105,6 +148,15 @@ extension AnalyticsEventMetadata {
     case let .payment(event): event.locale
     case let .threeDS(event): event.locale
     case let .redirect(event): event.locale
+    case let .vault(event): event.locale
+    }
+  }
+
+  /// Vault context when this is a `.vault` metadata case
+  var vaultEvent: VaultEvent? {
+    switch self {
+    case let .vault(event): event
+    default: nil
     }
   }
 

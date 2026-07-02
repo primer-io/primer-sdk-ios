@@ -126,6 +126,43 @@ final class LoggingServiceTests: XCTestCase {
         XCTAssertEqual(payloads.count, 0)
     }
 
+    // MARK: - logError Tests
+
+    func test_logError_sendsErrorPayloadWithFieldsInCorrectSlots() async throws {
+        await loggingService.logError(
+            message: "Payment failed",
+            event: "failed-payment",
+            errorMessage: "Network request failed",
+            stack: "at Checkout.pay()"
+        )
+
+        let payloads = await mockNetworkClient.sentPayloads
+        XCTAssertEqual(payloads.count, 1)
+
+        let messageData = try XCTUnwrap(payloads.first?.message.data(using: .utf8))
+        let json = try XCTUnwrap(JSONSerialization.jsonObject(with: messageData) as? [String: Any])
+        XCTAssertEqual(json["message"] as? String, "Payment failed")
+        XCTAssertEqual(json["status"] as? String, "error")
+        XCTAssertEqual(json["event"] as? String, "failed-payment")
+        XCTAssertEqual(json["error_message"] as? String, "Network request failed")
+        XCTAssertEqual(json["stack"] as? String, "at Checkout.pay()")
+    }
+
+    func test_logError_withOnlyMessage_omitsOptionalErrorFields() async throws {
+        await loggingService.logError(message: "boom")
+
+        let payloads = await mockNetworkClient.sentPayloads
+        XCTAssertEqual(payloads.count, 1)
+
+        let messageData = try XCTUnwrap(payloads.first?.message.data(using: .utf8))
+        let json = try XCTUnwrap(JSONSerialization.jsonObject(with: messageData) as? [String: Any])
+        XCTAssertEqual(json["message"] as? String, "boom")
+        XCTAssertEqual(json["status"] as? String, "error")
+        XCTAssertNil(json["event"])
+        XCTAssertNil(json["error_message"])
+        XCTAssertNil(json["stack"])
+    }
+
     // MARK: - Error Handling Tests
 
     func test_logInfo_doesNotThrowOnNetworkError() async {

@@ -71,4 +71,33 @@ struct AnalyticsPayload: Codable, Sendable {
 
   /// Device category
   let deviceType: String?
+
+  // MARK: - Vault Event Fields
+
+  /// The vaulted method the event is about
+  let vaultedMethodId: String?
+
+  /// Previously selected method on selection change
+  let previousVaultedMethodId: String?
+
+  /// Method promoted after deleting the active one
+  let promotedVaultedMethodId: String?
+
+  /// Whether the targeted method was the active one
+  let isActive: Bool?
+
+  /// Vaulted methods count when entering edit mode
+  let vaultedMethodCount: Int?
+
+  /// Edit mode exited while a delete confirmation was open
+  let exitedFromConfirmation: Bool?
+
+  /// Card network of the vaulted method
+  let network: String?
+
+  /// Expected CVV length for recapture (a digit count, never a CVV value)
+  let expectedCvvLength: Int?
+
+  /// Error identifier on failure events
+  let errorId: String?
 }
