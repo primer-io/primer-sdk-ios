@@ -24,9 +24,13 @@ struct CheckoutComponentsExamplesView: View {
 
     var body: some View {
         List {
-            ForEach(DemoRegistry.allMetadata) { metadata in
-                DemoRow(metadata: metadata) {
-                    selectedDemoId = metadata.id
+            ForEach(DemoRegistry.sections, id: \.category) { section in
+                Section(section.category.rawValue) {
+                    ForEach(section.demos) { metadata in
+                        DemoRow(metadata: metadata) {
+                            selectedDemoId = metadata.id
+                        }
+                    }
                 }
             }
         }
