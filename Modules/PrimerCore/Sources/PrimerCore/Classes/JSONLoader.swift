@@ -7,9 +7,9 @@
 import Foundation
 @_spi(PrimerInternal) import PrimerResources
 
-final class JSONLoader {
+@_spi(PrimerInternal) public final class JSONLoader {
 
-    static func loadJsonData(fileName: String) -> Data? {
+    public static func loadJsonData(fileName: String) -> Data? {
 
         guard let url = Bundle.primerResources.url(forResource: fileName, withExtension: "json") else {
             return nil
@@ -19,7 +19,7 @@ final class JSONLoader {
     }
 }
 
-extension JSONDecoder {
+@_spi(PrimerInternal) public extension JSONDecoder {
 
     func withSnakeCaseParsing() -> JSONDecoder {
         self.keyDecodingStrategy = .convertFromSnakeCase

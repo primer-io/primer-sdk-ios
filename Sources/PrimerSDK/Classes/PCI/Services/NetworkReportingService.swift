@@ -8,25 +8,6 @@ import Foundation
 @_spi(PrimerInternal) import PrimerCore
 @_spi(PrimerInternal) import PrimerNetworking
 
-enum NetworkEventType {
-    case requestStart(identifier: String, endpoint: Endpoint, request: URLRequest)
-    case requestEnd(identifier: String, endpoint: Endpoint, response: ResponseMetadata, duration: TimeInterval)
-    case networkConnectivity(endpoint: Endpoint)
-
-    var endpoint: Endpoint {
-        switch self {
-        case let .requestStart(_, endpoint, _),
-             let .requestEnd(_, endpoint, _, _),
-             let .networkConnectivity(endpoint):
-            return endpoint
-        }
-    }
-}
-
-protocol NetworkReportingService: Sendable {
-    func report(eventType: NetworkEventType)
-}
-
 private let disallowedTrackingPaths: [String] = [
     "/sdk-logs",
     "/checkout/track"

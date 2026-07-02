@@ -20,7 +20,7 @@ private var packageTargets: [Target] {
         target(name: "PrimerStepResolver", dependencies: ["PrimerFoundation"]),
         target(name: "PrimerBDCEngine", dependencies: ["PrimerFoundation", "PrimerStepResolver"]),
         target(name: "PrimerBDCCore", dependencies: ["PrimerBDCEngine", "PrimerFoundation", "PrimerStepResolver"]),
-        target(name: "PrimerCore", dependencies: ["PrimerFoundation"]),
+        target(name: "PrimerCore", dependencies: ["PrimerFoundation", "PrimerResources"]),
         target(name: "PrimerNetworking", dependencies: ["PrimerFoundation"]),
         target(name: "PrimerResources", resources: [.process("PrimerResources/Resources")]),
         target(name: "PrimerUI"),
