@@ -6,29 +6,15 @@
 
 import Foundation
 @_spi(PrimerInternal) import PrimerFoundation
-@_spi(PrimerInternal) import PrimerCore
-@_spi(PrimerInternal) import PrimerNetworking
 
-protocol NetworkResponseFactory: AnyObject {
+@_spi(PrimerInternal) public protocol NetworkResponseFactory: AnyObject {
     func model<T>(for response: Data, forMetadata metadata: ResponseMetadata) throws -> T where T: Decodable
 }
 
-extension Endpoint {
-    var responseFactory: NetworkResponseFactory {
-        if let endpoint = self as? PrimerAPI {
-            switch endpoint {
-            case .redirect:
-                return SuccessResponseFactory()
-            default:
-                break
-            }
-        }
-        return JSONNetworkResponseFactory()
-    }
-}
-
-final class SuccessResponseFactory: NetworkResponseFactory {
-    func model<T>(for response: Data, forMetadata metadata: any ResponseMetadata) throws -> T where T: Decodable {
+@_spi(PrimerInternal) public final class SuccessResponseFactory: NetworkResponseFactory {
+    public init() {}
+    
+    public func model<T>(for response: Data, forMetadata metadata: any ResponseMetadata) throws -> T where T: Decodable {
         if let response = SuccessResponse() as? T {
             return response
         }
@@ -36,11 +22,13 @@ final class SuccessResponseFactory: NetworkResponseFactory {
     }
 }
 
-final class JSONNetworkResponseFactory: NetworkResponseFactory, LogReporter {
+@_spi(PrimerInternal) public final class JSONNetworkResponseFactory: NetworkResponseFactory, LogReporter {
+    
+    public init() {}
 
     let decoder = JSONDecoder()
 
-    func model<T>(for response: Data, forMetadata metadata: ResponseMetadata) throws -> T where T: Decodable {
+    public func model<T>(for response: Data, forMetadata metadata: ResponseMetadata) throws -> T where T: Decodable {
         log(data: response, metadata: metadata)
 
         switch metadata.statusCode {

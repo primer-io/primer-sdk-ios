@@ -18,7 +18,9 @@ protocol PrimerAPIClientProtocol:
     PrimerAPIClientVaultProtocol,
     PrimerAPIClientXenditProtocol,
     PrimerAPIClientAchProtocol,
-    PrimerAPIClientCreateResumePaymentProtocol {
+    PrimerAPIClientCreateResumePaymentProtocol,
+    Pollable
+{
 
     // MARK: Configuration
 

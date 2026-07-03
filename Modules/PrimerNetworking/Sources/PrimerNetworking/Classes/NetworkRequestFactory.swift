@@ -6,16 +6,16 @@
 
 import Foundation
 @_spi(PrimerInternal) import PrimerFoundation
-@_spi(PrimerInternal) import PrimerCore
-@_spi(PrimerInternal) import PrimerNetworking
 
-protocol NetworkRequestFactory: Sendable {
+@_spi(PrimerInternal) public protocol NetworkRequestFactory: Sendable {
     func request(for endpoint: Endpoint, identifier: String?) throws -> URLRequest
 }
 
-final class DefaultNetworkRequestFactory: NetworkRequestFactory, LogReporter {
+@_spi(PrimerInternal) public final class DefaultNetworkRequestFactory: NetworkRequestFactory, LogReporter {
+    
+    public init() {}
 
-    func request(for endpoint: Endpoint, identifier: String?) throws -> URLRequest {
+    public func request(for endpoint: Endpoint, identifier: String?) throws -> URLRequest {
         var request = try baseRequest(from: endpoint)
         request.httpMethod = endpoint.method.rawValue
 

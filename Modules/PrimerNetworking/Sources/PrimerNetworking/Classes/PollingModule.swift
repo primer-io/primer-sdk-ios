@@ -6,36 +6,42 @@
 
 import Foundation
 @_spi(PrimerInternal) import PrimerFoundation
-@_spi(PrimerInternal) import PrimerNetworking
 
 protocol Module {
 
     // swiftlint:disable:next type_name
     associatedtype T
 
-    static var apiClient: PrimerAPIClientProtocol? { get set }
-
-    init(url: URL)
+    init(url: URL, pollable: Pollable, token: DecodedJWTToken?)
 
     func start(retryConfig: RetryConfig?) async throws -> T
     func cancel(withError err: PrimerError)
 }
 
-final class PollingModule: Module {
+@_spi(PrimerInternal) public protocol Pollable {
+    func poll(clientToken: DecodedJWTToken?, url: String, retryConfig: RetryConfig?, completion: @escaping APICompletion<PollingResponse>)
+}
 
-    static var apiClient: PrimerAPIClientProtocol?
+@_spi(PrimerInternal) public final class PollingModule: Module {
+    
+    static var apiClient: Pollable?
+    
+    private let pollable: Pollable
 
     private(set) var cancellationError: PrimerError?
     private(set) var failureError: PrimerError?
     
     private let url: URL
+    private let token: DecodedJWTToken?
     private var retryInterval: TimeInterval = 3
 
-    init(url: URL) {
+    public init(url: URL, pollable: Pollable, token: DecodedJWTToken?) {
         self.url = url
+        self.pollable = pollable
+        self.token = token
     }
 
-    func start(retryConfig: RetryConfig? = nil) async throws -> String {
+    public func start(retryConfig: RetryConfig? = nil) async throws -> String {
         try await withCheckedThrowingContinuation { continuation in
             self.startPolling(retryConfig: retryConfig) { id, err in
                 if let err {
@@ -49,11 +55,11 @@ final class PollingModule: Module {
         }
     }
 
-    func cancel(withError err: PrimerError) {
+    public func cancel(withError err: PrimerError) {
         self.cancellationError = err
     }
 
-    func fail(withError err: PrimerError) {
+    public func fail(withError err: PrimerError) {
         self.failureError = err
     }
 
@@ -69,15 +75,15 @@ final class PollingModule: Module {
             return completion(nil, failureError)
         }
 
-        guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
+        guard let token else {
             let err = PrimerError.invalidClientToken()
             ErrorHandler.handle(error: err)
             return completion(nil, err)
         }
 
-        let apiClient: PrimerAPIClientProtocol = PollingModule.apiClient ?? PrimerAPIClient()
-
-        apiClient.poll(clientToken: decodedJWTToken, url: self.url.absoluteString, retryConfig: retryConfig) { result in
+        let pollable = Self.apiClient ?? pollable
+        
+        pollable.poll(clientToken: token, url: self.url.absoluteString, retryConfig: retryConfig) { result in
             switch result {
             case let .success(res):
                 if res.status == .pending {
