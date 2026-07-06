@@ -15,7 +15,8 @@ struct DefaultCheckoutDemo: View, CheckoutComponentsDemo {
             name: "Default Checkout",
             description: "Standard CheckoutComponents with SDK-provided UI",
             tags: ["PAYMENT_CARD", "APPLE_PAY"],
-            isCustom: false
+            isCustom: false,
+            category: .core
         )
     }
 

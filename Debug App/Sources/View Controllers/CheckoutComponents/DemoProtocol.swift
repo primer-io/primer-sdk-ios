@@ -15,12 +15,22 @@ struct DemoConfiguration {
     let clientToken: String?
 }
 
+enum DemoCategory: String, CaseIterable {
+    case core = "Core"
+    case paymentMethods = "Payment Methods"
+    case vault = "Vault"
+    case navigation = "Navigation & Flows"
+    case themes = "Themes"
+    case utility = "Utility"
+}
+
 struct DemoMetadata: Identifiable {
     let id = UUID()
     let name: String
     let description: String
     let tags: [String]
     let isCustom: Bool
+    let category: DemoCategory
 }
 
 @available(iOS 15.0, *)
