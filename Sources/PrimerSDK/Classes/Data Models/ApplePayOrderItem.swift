@@ -18,9 +18,6 @@ struct ApplePayOrderItem: Codable, Equatable {
     public var isPending: Bool = false
 
     public var applePayItem: PKPaymentSummaryItem {
-
-        var paymentSummaryItem: NSDecimalNumber!
-
         let tmpUnitAmount = unitAmount ?? 0
         let tmpQuantity = quantity
         let tmpAmount = tmpUnitAmount * tmpQuantity
@@ -28,11 +25,8 @@ struct ApplePayOrderItem: Codable, Equatable {
         let tmpTaxAmount = taxAmount ?? 0
         let tmpTotalOrderItemAmount = tmpAmount - tmpDiscountAmount + tmpTaxAmount
 
-        if AppState.current.currency?.isZeroDecimal == true {
-            paymentSummaryItem = NSDecimalNumber(value: tmpTotalOrderItemAmount)
-        } else {
-            paymentSummaryItem = NSDecimalNumber(value: tmpTotalOrderItemAmount).dividing(by: 100)
-        }
+        let divisor = AppState.current.currency.map { NSDecimalNumber(decimal: $0.minorUnitDivisor) } ?? 100
+        let paymentSummaryItem = NSDecimalNumber(value: tmpTotalOrderItemAmount).dividing(by: divisor)
 
         let item = PKPaymentSummaryItem(label: name, amount: paymentSummaryItem)
         item.type = isPending ? .pending : .final
