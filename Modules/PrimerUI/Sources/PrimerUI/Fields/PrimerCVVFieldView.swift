@@ -12,12 +12,12 @@ import UIKit
 
 public final class PrimerCVVFieldView: PrimerTextFieldView {
 
-    var cvv: String {
+    @_spi(PrimerInternal) public var cvv: String {
         textField.internalText ?? ""
     }
     public var cardNetwork: CardNetwork = .unknown
 
-    override func xibSetup() {
+    override public func xibSetup() {
         super.xibSetup()
         keyboardType = .numberPad
         isTextFieldAccessibilityElement = true

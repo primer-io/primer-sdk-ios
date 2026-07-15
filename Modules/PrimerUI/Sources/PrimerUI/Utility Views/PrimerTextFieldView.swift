@@ -11,15 +11,18 @@ import UIKit
 @_spi(PrimerInternal) import PrimerCore
 @_spi(PrimerInternal) import PrimerResources
 
-public class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
+open class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
 
-    @IBOutlet weak var textField: PrimerTextField!
-    var isValid: ((_ text: String) -> Bool?)?
+    @IBOutlet @_spi(PrimerInternal) public weak var textField: PrimerTextField!
     public internal(set) var isTextValid: Bool = false
-    var editingAnalyticsObjectId: Analytics.Event.Property.ObjectId?
-    public internal(set) var isEditingAnalyticsEnabled: Bool = false
+    @_spi(PrimerInternal) public var isEditingAnalyticsEnabled: Bool = false
     public var delegate: PrimerTextFieldViewDelegate?
-    var validation: PrimerTextField.Validation = .notAvailable {
+    
+    @_spi(PrimerInternal) public var isValid: ((_ text: String) -> Bool?)?
+    
+    @_spi(PrimerInternal) public var editingAnalyticsObjectId: Analytics.Event.Property.ObjectId?
+
+    @_spi(PrimerInternal) public var validation: PrimerTextField.Validation = .notAvailable {
         didSet {
             if isValid == nil {
                 isTextValid = true
@@ -145,7 +148,7 @@ public class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
         // swiftlint:enable force_cast
     }
 
-    override func xibSetup() {
+    override open func xibSetup() {
         super.xibSetup()
         backgroundColor = .clear
         view.backgroundColor = .clear
@@ -155,19 +158,19 @@ public class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
 
     // MARK: - TEXT FIELD DELEGATE
 
-    public func textFieldDidBeginEditing(_ textField: UITextField) {
+    open func textFieldDidBeginEditing(_ textField: UITextField) {
         delegate?.primerTextFieldViewDidBeginEditing(self)
     }
 
-    public func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
+    open func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
         delegate?.primerTextFieldViewShouldBeginEditing(self) ?? true
     }
 
-    public func textFieldShouldEndEditing(_ textField: UITextField) -> Bool {
+    open func textFieldShouldEndEditing(_ textField: UITextField) -> Bool {
         delegate?.primerTextFieldViewShouldEndEditing(self) ?? true
     }
 
-    public func textFieldDidEndEditing(_ textField: UITextField) {
+    open func textFieldDidEndEditing(_ textField: UITextField) {
 
         guard let primerTextField = textField as? PrimerTextField else { return }
 
@@ -195,7 +198,7 @@ public class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
         delegate?.primerTextFieldViewDidEndEditing(self)
     }
 
-    public func textField(
+    open func textField(
         _ textField: UITextField,
         shouldChangeCharactersIn range: NSRange,
         replacementString string: String

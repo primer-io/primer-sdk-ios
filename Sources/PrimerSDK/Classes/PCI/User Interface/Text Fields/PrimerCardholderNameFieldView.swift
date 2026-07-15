@@ -7,6 +7,7 @@
 import UIKit
 @_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerUI
 
 public final class PrimerCardholderNameFieldView: PrimerSimpleCardFormTextFieldView {
 
@@ -14,7 +15,7 @@ public final class PrimerCardholderNameFieldView: PrimerSimpleCardFormTextFieldV
         textField.internalText ?? ""
     }
 
-    override func xibSetup() {
+    override public func xibSetup() {
         super.xibSetup()
         isTextFieldAccessibilityElement = true
         textFieldaccessibilityIdentifier = "card_holder_txt_fld"
