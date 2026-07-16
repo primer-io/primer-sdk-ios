@@ -17,13 +17,16 @@ private var packageTargets: [Target] {
         .target(name: "PrimerSDK", dependencies: primerSDKDependencies, path: "Sources/PrimerSDK"),
         
         target(name: "PrimerFoundation"),
-        target(name: "PrimerStepResolver", dependencies: ["PrimerFoundation"]),
-        target(name: "PrimerBDCEngine", dependencies: ["PrimerFoundation", "PrimerStepResolver"]),
-        target(name: "PrimerBDCCore", dependencies: ["PrimerBDCEngine", "PrimerFoundation", "PrimerStepResolver"]),
-        target(name: "PrimerCore", dependencies: ["PrimerFoundation", "PrimerResources"]),
-        target(name: "PrimerNetworking", dependencies: ["PrimerFoundation"]),
         target(name: "PrimerResources", resources: [.process("PrimerResources/Resources")]),
-        target(name: "PrimerUI"),
+        
+        target(name: "PrimerNetworking", dependencies: ["PrimerFoundation"]),
+        target(name: "PrimerStepResolver", dependencies: ["PrimerFoundation"]),
+        target(name: "PrimerCore", dependencies: ["PrimerFoundation", "PrimerResources"]),
+
+        target(name: "PrimerUI", dependencies: ["PrimerFoundation", "PrimerResources", "PrimerCore"]),
+        target(name: "PrimerBDCEngine", dependencies: ["PrimerFoundation", "PrimerStepResolver"]),
+        
+        target(name: "PrimerBDCCore", dependencies: ["PrimerBDCEngine", "PrimerFoundation", "PrimerStepResolver"]),
         
         sdkTestsTarget,
         
