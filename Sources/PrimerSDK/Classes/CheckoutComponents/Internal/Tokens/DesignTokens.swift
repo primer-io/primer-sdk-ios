@@ -11,6 +11,7 @@ import SwiftUI
 
 // This class is generated automatically by Style Dictionary.
 // It represents the design tokens for the Light theme.
+@dynamicMemberLookup
 final class DesignTokens: Decodable {
   var primerColorBackground: Color? = Color(
     red: 1.000, green: 1.000, blue: 1.000, opacity: 1)
@@ -223,6 +224,16 @@ final class DesignTokens: Decodable {
     case primerSizeXxlarge
     case primerSizeXxxlarge
     case primerSizeBase
+  }
+
+  static subscript<T>(dynamicMember key: String) -> T? {
+    let mirror = Mirror(reflecting: DesignTokens())
+    for child in mirror.children {
+      if child.label == key, let value = child.value as? T {
+        return value
+      }
+    }
+    return nil
   }
 
   // Default initializer preserves default values
