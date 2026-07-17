@@ -89,6 +89,7 @@ private extension ComponentView {
             case let .text(props): makeTextView(props: props)
             case let .textField(props): makeTextFieldView(props: props)
             case .spacer: Spacer()
+            case let .custom(type, props): SDUIComponentRegistry.shared.view(for: type, props: props).map(ProviderComponentView.init)
             default: content()
             }
         }
@@ -99,7 +100,7 @@ private extension ComponentView {
             content().padding(props.padding?.string.map(resolveSpacing) ?? .zero)
         }
         .frame(maxWidth: props.width(), maxHeight: props.height())
-        .background(props.backgroundColor.map(resolveColor))
+//        .background(props.backgroundColor.map(resolveColor))
         .disabled(!props.enabled)
         .buttonStyle(.plain)
     }
@@ -110,13 +111,13 @@ private extension ComponentView {
                 maxWidth: (stretch && axis == .column) ? .infinity : nil,
                 maxHeight: (stretch && axis == .row) ? .infinity : nil
             )
-            .background(props.backgroundColor.map(resolveColor))
+//            .background(props.backgroundColor.map(resolveColor))
     }
     
     func makeContainer(props: ContainerProps) -> some View {
         VStack(content: content)
             .padding(props.padding)
-            .background(resolveColor(props.backgroundColor))
+//            .background(resolveColor(props.backgroundColor))
             .cornerRadius(props.borderRadius ?? 0)
     }
 	
@@ -185,8 +186,8 @@ private extension ComponentView {
     
     func makeTextView(props: TextProps) -> some View {
         TextView(text: props.text)
-            .font(props.textStyle.map(resolveFont))
-            .foregroundColor(props.color.map(resolveColor))
+//            .font(props.textStyle.map(resolveFont))
+//            .foregroundColor(props.color.map(resolveColor))
             .multilineTextAlignment(props.textAlign())
     }
 	
@@ -195,7 +196,7 @@ private extension ComponentView {
     }
 	
     func makeRadioButtonView(props: RadioButtonProps) -> some View {
-        RadioButtonCircle(isSelected: props.selected ?? false, color: resolveColor("primerColorTextPrimary"))
+        RadioButtonCircle(isSelected: props.selected ?? false, color: .primary) // TODO: Color
     }
 	
     func makeProgressView(props: ProgressIndicatorProps) -> some View {

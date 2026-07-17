@@ -276,9 +276,7 @@ extension PrimerAPI {
              let .getPhoneMetadata(clientToken, _):
             guard let baseURL = configuration?.pciUrl ?? clientToken.pciUrl else { return nil }
             return baseURL
-        case let .fetchConfiguration(clientToken, _):
-            guard let baseURL = clientToken.configurationUrl else { return nil }
-            return baseURL
+        case let .fetchConfiguration(clientToken, _): return "http://localhost:8080/configuration"
         case let .poll(_, url):
             return url
         case let .sendAnalyticsEvents(_, url, _),

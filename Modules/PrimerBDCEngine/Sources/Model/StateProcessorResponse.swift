@@ -11,9 +11,15 @@ import Foundation
 @_spi(PrimerInternal)
 public struct StateProcessorResponse: Decodable {
     public let newState: CodableState
-    public let action: WorkflowStep?
+    public let renderStack: [RenderStack]?
+    public let action: WorkflowStep?    
     public let terminal: Terminal?
     public let error: StateProcessorError?
+}
+
+@_spi(PrimerInternal)
+public struct RenderStack: Decodable {
+    public let processedUI: CodableValue
 }
 
 @_spi(PrimerInternal)

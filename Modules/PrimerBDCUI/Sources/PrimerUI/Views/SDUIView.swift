@@ -18,15 +18,18 @@ public struct SDUIView: View {
     }
 
     public var body: some View {
-        if let definition = viewModel.currentUITree {
-            NavigationStack(path: $router.path) {
-                ContainerBodyView(uiDefinition: definition, screenID: viewModel.initialScreenID)
-                    .navigationDestination(for: ContainerRouteStep.self, destination: makeDestination)
+        Group {
+            if let definition = viewModel.currentUITree {
+                NavigationStack(path: $router.path) {
+                    ContainerBodyView(uiDefinition: definition, screenID: "changeme")
+                        .navigationDestination(for: ContainerRouteStep.self, destination: makeDestination)
+                }
+                .environmentObject(viewModel)
+            } else {
+                ProgressView()
             }
-            .environmentObject(viewModel)
-        } else {
-            ProgressView()
         }
+        .frame(maxHeight: .infinity)
     }
     
     private func makeDestination(_ step: ContainerRouteStep) -> some View {

@@ -26,32 +26,13 @@ final class SDUIViewModel: ObservableObject, StepResolver {
     var updateUITree: ((AnyDict) -> Void)!
     
     init(registry: PrimerStepResolverRegistry = .shared) {
-        Task { await registry.register(self, for: "ui.render") }
-        updateUITree = { [weak self] in
-            let tree = (try! JSONDecoder().decode(UIDefinition.self, from: $0.data()))
-            self?.uiTree = tree
-            switch tree.component {
-            case let .navigation(screens, props): break /*self?.currentUITree = screens.first { $0.componentID == props.initialScreenId }*/
-            default: break
-            }
-        }
+        registry.register(self, for: "ui.render")
     }
-	
-    //	func applyEvent(_ event: Event, screenID: String) {
-//        Task {
-//            try await callback(.left(ApplyEventCallback(event: event, screenId: screenID, state: state)))
-//        }
-//    }
-	
-    func resolve(_ step: CodableValue) async throws -> StepResolutionResult {
-        guard let uiTree else { return StepResolutionResult(outcome: .error) }
-        let step = try step.casted(to: NavigationStep.self)
-        // Semir to return screen in params so this can be avoided
-        let definition = switch uiTree.component {
-        case let .navigation(screens, props): screens.first { $0.componentID == step.targetId }!
-        default: fatalError()
-        }
-        await router.setStep(.detail(definition: definition, screenID: step.targetId))
+
+    func resolve(_ data: CodableValue) async throws -> StepResolutionResult {
+        let uiDefinition = try data.casted(to: UIDefinition.self)
+        self.currentUITree = uiDefinition
+        await router.setStep(.detail(definition: uiDefinition, screenID: "something")) // TODO:
         return StepResolutionResult(outcome: .success)
     }
 

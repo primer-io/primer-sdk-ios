@@ -4,6 +4,8 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+@_spi(PrimerInternal) import PrimerFoundation
+
 enum Component: Decodable, Hashable {
     case box(BoxProps)
     case button(Content, ButtonProps)
@@ -21,7 +23,8 @@ enum Component: Decodable, Hashable {
     case text(TextProps)
     case textField(TextFieldProps)
     case spacer
-	
+    case custom(type: String, props: CodableValue?)
+
     enum CodingKeys: String, CodingKey {
         case type
         case props
@@ -50,7 +53,15 @@ enum Component: Decodable, Hashable {
 	
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        switch try container.decode(ComponentType.self, forKey: .type) {
+        let rawType = try container.decode(String.self, forKey: .type)
+        guard let type = ComponentType(rawValue: rawType) else {
+            self = .custom(
+                type: rawType,
+                props: try container.decodeIfPresent(CodableValue.self, forKey: .props)
+            )
+            return
+        }
+        switch type {
         case .box: self = .box(try container.decodeProps(BoxProps.self))
         case .button: self = .button(try container.decodeContent(), try container.decodeProps(ButtonProps.self))
         case .checkbox: self = .checkbox(try container.decodeProps(CheckboxProps.self))

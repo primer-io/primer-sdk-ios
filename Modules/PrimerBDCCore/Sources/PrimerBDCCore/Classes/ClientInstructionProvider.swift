@@ -6,6 +6,7 @@
 
 @_spi(PrimerInternal)
 public protocol ClientInstructionProvider {
+    func fetchSetupInstruction() async throws -> ClientInstruction
     func fetchPayInstruction() async throws -> ClientInstruction
     func fetchNextInstruction() async throws -> ClientInstruction
 }

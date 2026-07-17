@@ -11,6 +11,8 @@ import Foundation
 import PrimerBDCEngine
 @_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerNetworking
+@_spi(PrimerInternal) import PrimerBDCUI
+import SwiftUI
 import UIKit
 
 final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
@@ -45,7 +47,12 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
     ) {
         self.makeOrchestrator = makeOrchestrator
         self.makeInstructionProvider = makeInstructionProvider
-        super.init(config: config, uiManager: uiManager, tokenizationService: tokenizationService, createResumePaymentService: paymentService)
+        super.init(
+            config: config,
+            uiManager: uiManager,
+            tokenizationService: tokenizationService,
+            createResumePaymentService: paymentService
+        )
     }
     
     override func start() {
@@ -59,9 +66,13 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
                     
                     try await setupOrchestrator()
                     logBDCStarted()
-                    
+
+                    KlarnaWidgetComponent.register()
+
                     let instructionProvider = makeInstructionProvider(config)
-                    let result = try await orchestrator?.run(instructionProvider: instructionProvider)
+
+                    //TODO: Don't hardcode setup
+                    let result = try await orchestrator?.run(instructionProvider: instructionProvider, entryPoint: .setup)
                     
                     switch result {
                     case let .success(payment): await handleSuccess(payment)
@@ -89,7 +100,13 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
         
         self.orchestrator = orchestrator
         orchestrator.onCancelled = { [weak self] in self?.handleCancelled() }
-        orchestrator.onUIRender = { print("🚀 go time") }
+        orchestrator.onUIRender = {
+            let controller = UIHostingController(rootView: SDUIView())
+            let bounds = UIScreen.main.bounds
+            let size = CGSize(width: bounds.width, height: bounds.height)
+            controller.view.frame = CGRect(origin: .zero, size: size)
+            PrimerUIManager.primerRootViewController?.show(viewController: controller)
+        }
         orchestrator.onURLOpened = { [weak self] in
             guard let self else { return }
             PrimerDelegateProxy.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for: paymentMethodType)

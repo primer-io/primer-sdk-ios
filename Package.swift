@@ -5,7 +5,7 @@ import PackageDescription
 let package = Package(
     name: "PrimerSDK",
     defaultLocalization: "en",
-    platforms: [.iOS("13.1")],
+    platforms: [.iOS("16")],
     products: [
         .library(name: "PrimerSDK", targets: ["PrimerSDK"]),
         .library(name: "PrimerBDCUI", targets: ["PrimerBDCUI"]),
@@ -47,6 +47,7 @@ private var primerSDKDependencies: [Target.Dependency] {
     [
         .product(name: "Primer3DS", package: "primer-sdk-3ds-ios"),
         "PrimerBDCCore",
+        "PrimerBDCUI",
         "PrimerBDCEngine",
         "PrimerFoundation",
         "PrimerStepResolver",
