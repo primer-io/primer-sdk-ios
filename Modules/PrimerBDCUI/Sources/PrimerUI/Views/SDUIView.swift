@@ -5,16 +5,26 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import SwiftUI
+import UIKit
+@_spi(PrimerInternal) import PrimerFoundation
 
-@available(iOS 16.0, *)
+@available(iOS 16.0, *) @_spi(PrimerInternal)
 public struct SDUIView: View {
     @StateObject private var viewModel: SDUIViewModel
     @StateObject private var router: Router
-    
-    public init() {
-        let viewModel = SDUIViewModel()
+    private let onClose: (() -> Void)?
+    private let titleImage: UIImage?
+
+    public init(
+        onEvent: @escaping (CodableValue) async throws -> Void,
+        onClose: (() -> Void)? = nil,
+        titleImage: UIImage? = nil
+    ) {
+        let viewModel = SDUIViewModel(onEvent: onEvent)
         _viewModel = StateObject(wrappedValue: viewModel)
         _router = StateObject(wrappedValue: viewModel.router)
+        self.onClose = onClose
+        self.titleImage = titleImage
     }
 
     public var body: some View {
@@ -23,13 +33,43 @@ public struct SDUIView: View {
                 NavigationStack(path: $router.path) {
                     ContainerBodyView(uiDefinition: definition, screenID: "changeme")
                         .navigationDestination(for: ContainerRouteStep.self, destination: makeDestination)
+                        .toolbar(content: makeToolbar)
+                        .navigationBarTitleDisplayMode(.inline)
                 }
                 .environmentObject(viewModel)
             } else {
                 ProgressView()
             }
         }
-        .frame(maxHeight: .infinity)
+    }
+    
+    private func makeToolbar() -> some ToolbarContent {
+        Group {
+            makeCloseToolbar()
+            makeTitleToolbar()
+        }
+    }
+
+    @ToolbarContentBuilder
+    private func makeCloseToolbar() -> some ToolbarContent {
+        if let onClose {
+            ToolbarItem(placement: .topBarLeading) {
+                Button(action: onClose) {
+                    Image(systemName: "chevron.left")
+                }
+            }
+        }
+    }
+
+    @ToolbarContentBuilder
+    private func makeTitleToolbar() -> some ToolbarContent {
+        if let titleImage {
+            ToolbarItem(placement: .principal) {
+                Image(uiImage: titleImage)
+                    .resizable()
+                    .scaledToFit()
+            }
+        }
     }
     
     private func makeDestination(_ step: ContainerRouteStep) -> some View {
@@ -59,5 +99,6 @@ private struct ContainerBodyView: View {
     private func makeLayoutView(_ definition: UIDefinition) -> some View {
         LayoutView(focusedFieldID: $focusedFieldID, uiDefinition: definition, screenID: screenID)
             .padding()
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
     }
 }

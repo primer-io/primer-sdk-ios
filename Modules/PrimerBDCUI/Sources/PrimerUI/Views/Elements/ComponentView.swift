@@ -36,7 +36,7 @@ struct ComponentView<C: View>: View {
         slots: Slots?,
         content: @escaping (() -> C)
     ) {
-        self.componentArgs = UIComponentArgs(fieldID: fieldID, component: component)
+        componentArgs = UIComponentArgs(fieldID: fieldID, component: component)
         self.content = content
         self.screenID = screenID
         self.slots = slots
@@ -61,12 +61,12 @@ struct ComponentView<C: View>: View {
 private extension ComponentView {
     func updateState(with input: String) {
         guard let componentID = componentArgs.fieldID else { unrecoverableError(.unexpectedNilComponentID) }
-//        viewModel.applyEvent(.input(id: componentID, value: .string(input), type: .onChange), screenID: screenID)
+        viewModel.applyEvent(.input(id: componentID, value: .string(input), type: .onChange), screenID: screenID)
     }
     
     func applyClick() {
         guard let componentID = componentArgs.fieldID else { unrecoverableError(.unexpectedNilComponentID) }
-//        withAnimation { viewModel.applyEvent(.click(id: componentID), screenID: screenID) }
+        withAnimation { viewModel.applyEvent(.click(id: componentID), screenID: screenID) }
     }
 }
 
@@ -89,7 +89,7 @@ private extension ComponentView {
             case let .text(props): makeTextView(props: props)
             case let .textField(props): makeTextFieldView(props: props)
             case .spacer: Spacer()
-            case let .custom(type, props): SDUIComponentRegistry.shared.view(for: type, props: props).map(ProviderComponentView.init)
+            case let .custom(type, props): ProviderComponentView(type: type, props: props).id(props)
             default: content()
             }
         }
@@ -97,10 +97,13 @@ private extension ComponentView {
     
     func makeButtonView(props: ButtonProps) -> some View {
         Button(action: applyClick) {
-            content().padding(props.padding?.string.map(resolveSpacing) ?? .zero)
+            content()
+                .frame(maxWidth: props.width())
+                .padding(props.padding?.string.map(resolveSpacing) ?? .zero)
         }
         .frame(maxWidth: props.width(), maxHeight: props.height())
-//        .background(props.backgroundColor.map(resolveColor))
+        .background(props.backgroundColor.map(resolveColor))
+        .cornerRadius(props.borderRadius ?? 0)
         .disabled(!props.enabled)
         .buttonStyle(.plain)
     }
@@ -111,13 +114,13 @@ private extension ComponentView {
                 maxWidth: (stretch && axis == .column) ? .infinity : nil,
                 maxHeight: (stretch && axis == .row) ? .infinity : nil
             )
-//            .background(props.backgroundColor.map(resolveColor))
+            .background(props.backgroundColor.map(resolveColor))
     }
     
     func makeContainer(props: ContainerProps) -> some View {
         VStack(content: content)
             .padding(props.padding)
-//            .background(resolveColor(props.backgroundColor))
+            .background(resolveColor(props.backgroundColor))
             .cornerRadius(props.borderRadius ?? 0)
     }
 	
@@ -186,13 +189,13 @@ private extension ComponentView {
     
     func makeTextView(props: TextProps) -> some View {
         TextView(text: props.text)
-//            .font(props.textStyle.map(resolveFont))
-//            .foregroundColor(props.color.map(resolveColor))
+            .font(props.textStyle.map(resolveFont))
+            .foregroundColor(props.color.map(resolveColor))
             .multilineTextAlignment(props.textAlign())
     }
 	
     func makeCheckboxView(props: CheckboxProps) -> some View {
-        UISwitchRepresentable(isOn: props.selected ?? false)
+        UISwitchRepresentable(isOn: props.selected)
     }
 	
     func makeRadioButtonView(props: RadioButtonProps) -> some View {

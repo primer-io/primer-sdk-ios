@@ -14,17 +14,19 @@ struct ButtonProps: UI {
     let backgroundColor: String?
     let enabled: Bool
     let padding: CodableValue?
-	
+    let borderRadius: Double?
+
     init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.variant = (try? container.decode(ButtonVariant.self, forKey: .variant)) ?? .primary
+        variant = (try? container.decode(ButtonVariant.self, forKey: .variant)) ?? .primary
         let width = (try? container.decode(CodableValue.self, forKey: .width)) ?? .string("wrap")
         let height = (try? container.decode(CodableValue.self, forKey: .height)) ?? .string("wrap")
         self.width = Size(codableValue: width)
         self.height = Size(codableValue: height)
-        self.backgroundColor = try container.decodeIfPresent(String.self, forKey: .backgroundColor)
-        self.enabled = (try? container.decode(Bool.self, forKey: .enabled)) ?? true
-        self.padding = try container.decodeIfPresent(CodableValue.self, forKey: .padding)
+        backgroundColor = try container.decodeIfPresent(String.self, forKey: .backgroundColor)
+        enabled = (try? container.decode(Bool.self, forKey: .enabled)) ?? true
+        padding = try container.decodeIfPresent(CodableValue.self, forKey: .padding)
+        borderRadius = try container.decodeIfPresent(Double.self, forKey: .borderRadius)
     }
 }
 
