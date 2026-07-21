@@ -83,6 +83,10 @@ private extension LayoutView {
         .padding(props.padding?.string.map(resolveSpacing) ?? .zero)
         .background(props.backgroundColor.map(resolveColor))
         .cornerRadius(props.borderRadius ?? 0)
+        .overlay(
+            RoundedRectangle(cornerRadius: props.borderRadius ?? 0)
+                .strokeBorder(props.borderColor.map(resolveColor) ?? .clear, lineWidth: props.borderWidth ?? 0)
+        )
     }
     
     func makeRowStack(children: [UIDefinition], props: RowProps) -> some View {
@@ -105,6 +109,10 @@ private extension LayoutView {
         .padding(props.padding?.string.map(resolveSpacing) ?? .zero)
         .background(props.backgroundColor.map(resolveColor))
         .cornerRadius(props.borderRadius ?? 0)
+        .overlay(
+            RoundedRectangle(cornerRadius: props.borderRadius ?? 0)
+                .strokeBorder(props.borderColor.map(resolveColor) ?? .clear, lineWidth: props.borderWidth ?? 0)
+        )
     }
     
     func makeColumnStack(children: [UIDefinition], props: ColumnProps) -> some View {
@@ -148,10 +156,10 @@ private extension LayoutView {
             let selectable = uiDefinition.component.selectable else {
             fatalError()
         }
-        let newSet: CodableValue = selectable.mode == .single
-            ? .array([.string(props.value)])
+        let newValue: CodableValue = selectable.mode == .single
+            ? .string(props.value)
             : .array(Array(selectable.values.toggled(props.value).map(CodableValue.string)))
-//        viewModel.applyEvent(.input(id: id, value: newSet, type: .onChange), screenID: screenID)
+        viewModel.applyEvent(.input(id: id, value: newValue, type: .onChange), screenID: screenID)
     }
 	
     func makeLayoutView(children: [UIDefinition], index: Int) -> some View {

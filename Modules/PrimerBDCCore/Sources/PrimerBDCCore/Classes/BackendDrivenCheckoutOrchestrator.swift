@@ -42,6 +42,10 @@ public final class BackendDrivenCheckoutOrchestrator {
         case pay
         case setup
     }
+    
+    public func applyEvent(_ value: CodableValue) async throws {
+        try await stepOrchestrator.applyEvent(value)
+    }
 
     public func run(
         instructionProvider: ClientInstructionProvider,

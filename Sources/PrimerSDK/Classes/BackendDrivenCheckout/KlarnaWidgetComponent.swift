@@ -12,9 +12,11 @@ enum KlarnaWidgetComponent {
         #if canImport(PrimerKlarnaSDK)
             SDUIComponentRegistry.shared.register("klarna.widget") { props in
                 let parsed = try? props?.casted(to: KlarnaWidgetProps.self)
+                let urlScheme = (try? PrimerSettings.current.paymentMethodOptions.validUrlForUrlScheme())?.absoluteString
                 return KlarnaWidgetContainerView(
                     clientToken: parsed?.clientToken ?? "",
-                    category: parsed?.category ?? ""
+                    category: parsed?.category ?? "",
+                    urlScheme: urlScheme
                 )
             }
         #endif
@@ -30,7 +32,9 @@ enum KlarnaWidgetComponent {
         let category: String?
     }
 
-    private final class KlarnaWidgetContainerView: UIView, PrimerKlarnaProviderPaymentViewDelegate {
+    private final class KlarnaWidgetContainerView: UIView,
+        PrimerKlarnaProviderPaymentViewDelegate,
+        PrimerKlarnaProviderErrorDelegate {
         private var provider: PrimerKlarnaProviding?
         private var reportedHeight: CGFloat = 0
         private let placeholderHeight: CGFloat = 300
@@ -39,19 +43,24 @@ enum KlarnaWidgetComponent {
             CGSize(width: UIView.noIntrinsicMetric, height: reportedHeight > 0 ? reportedHeight : placeholderHeight)
         }
 
-        init(clientToken: String, category: String) {
+        init(clientToken: String, category: String, urlScheme: String?) {
             super.init(frame: .zero)
+            print("[KlarnaWidget] init — clientToken \(clientToken.isEmpty ? "EMPTY" : "present"), category '\(category)', urlScheme \(urlScheme ?? "nil")")
 
-            let provider = PrimerKlarnaProvider(clientToken: clientToken, paymentCategory: category)
+            let provider = PrimerKlarnaProvider(clientToken: clientToken, paymentCategory: category, urlScheme: urlScheme)
             provider.paymentViewDelegate = self
+            provider.errorDelegate = self
             self.provider = provider
 
             provider.createPaymentView()
             if let paymentView = provider.paymentView {
                 embed(paymentView)
+                print("[KlarnaWidget] payment view created + embedded")
+            } else {
+                print("[KlarnaWidget] createPaymentView returned nil paymentView")
             }
-            // TODO: pass the merchant's URL scheme so Klarna app-switch redirects return.
             provider.initializePaymentView()
+            print("[KlarnaWidget] initializePaymentView called")
         }
 
         @available(*, unavailable)
@@ -69,12 +78,21 @@ enum KlarnaWidgetComponent {
         }
 
         // MARK: - PrimerKlarnaProviderPaymentViewDelegate
-        func primerKlarnaWrapperInitialized() { provider?.loadPaymentView(jsonData: nil) }
-        func primerKlarnaWrapperLoaded() {}
+        func primerKlarnaWrapperInitialized() {
+            print("[KlarnaWidget] initialized → loadPaymentView")
+            provider?.loadPaymentView(jsonData: nil)
+        }
+        func primerKlarnaWrapperLoaded() { print("[KlarnaWidget] loaded") }
         func primerKlarnaWrapperResized(to newHeight: CGFloat) {
+            print("[KlarnaWidget] resized to \(newHeight)")
             reportedHeight = newHeight
             invalidateIntrinsicContentSize()
         }
         func primerKlarnaWrapperReviewLoaded() {}
+
+        // MARK: - PrimerKlarnaProviderErrorDelegate
+        func primerKlarnaWrapperFailed(with error: PrimerKlarnaError) {
+            print("[KlarnaWidget] FAILED: \(error)")
+        }
     }
 #endif

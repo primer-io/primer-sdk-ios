@@ -22,18 +22,27 @@ final class SDUIViewModel: ObservableObject, StepResolver {
     @Published private(set) var router = Router()
     
     private var uiTree: UIDefinition?
-    var initialScreenID: String!
-    var updateUITree: ((AnyDict) -> Void)!
+    var onEvent: (CodableValue) async throws -> Void
     
-    init(registry: PrimerStepResolverRegistry = .shared) {
+    init(
+        registry: PrimerStepResolverRegistry = .shared,
+        onEvent: @escaping (CodableValue) async throws -> Void
+    ) {
+        self.onEvent = onEvent
         registry.register(self, for: "ui.render")
     }
 
     func resolve(_ data: CodableValue) async throws -> StepResolutionResult {
         let uiDefinition = try data.casted(to: UIDefinition.self)
-        self.currentUITree = uiDefinition
-        await router.setStep(.detail(definition: uiDefinition, screenID: "something")) // TODO:
+        currentUITree = uiDefinition
+        #if DEBUG
+        print(uiDefinition.prettyTreeDescription())
+        #endif
         return StepResolutionResult(outcome: .success)
+    }
+
+    func applyEvent(_ event: Event, screenID: String) {
+        Task { try? await onEvent(event()) }
     }
 
     func errorMessage(for fieldID: ComponentID) -> String? {

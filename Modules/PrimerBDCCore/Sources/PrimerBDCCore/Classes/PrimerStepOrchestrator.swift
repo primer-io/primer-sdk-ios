@@ -15,6 +15,7 @@ protocol StepOrchestrating: AnyObject {
     var onUIRender: (() -> Void)? { get set }
     var onCancelled: (() -> Void)? { get set }
     func start(rawSchema: String, initialState: CodableValue) async throws
+    func applyEvent(_ value: CodableValue) async throws
 }
 
 @MainActor
@@ -31,6 +32,7 @@ final class PrimerStepOrchestrator: StepOrchestrating {
     private let engine: any BDCEngineProtocol
     private let context: SDKContext
     private let registry: PrimerStepResolverRegistry
+    private var rawSchema: String!
     private let harness = SFSafariViewControllerHarness()
     private var state: CodableState = [:]
 
@@ -45,6 +47,7 @@ final class PrimerStepOrchestrator: StepOrchestrating {
     }
 
     func start(rawSchema: String, initialState: CodableValue) async throws {
+        self.rawSchema = rawSchema
         registry.register(harness, for: "url.open")
         do {
             let result = try await engine.start(schema: rawSchema, context: context, state: initialState)
@@ -82,6 +85,16 @@ final class PrimerStepOrchestrator: StepOrchestrating {
         } else if response.renderStack == nil {
             throw PrimerStepOrchestratorError.missingActionAndOutcome
         }
+    }
+    
+    func applyEvent(_ value: CodableValue) async throws {
+        let result = try await engine.applyEvent(
+            value,
+            context: context,
+            schema: rawSchema,
+            state: state
+        )
+        try await decodeResult(result, rawSchema: rawSchema)
     }
     
     private func handleAction(_ action: WorkflowStep, rawSchema: String) async throws {

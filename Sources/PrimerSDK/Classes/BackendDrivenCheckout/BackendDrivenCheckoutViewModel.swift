@@ -24,6 +24,7 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
     private let makeInstructionProvider: InstructionProviderFactory
     private var orchestrator: BackendDrivenCheckoutOrchestrator?
     private var runTask: Task<Void, Never>?
+    private var sduiController: UIViewController?
     
     convenience init(
         config: PrimerPaymentMethod,
@@ -100,12 +101,16 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
         
         self.orchestrator = orchestrator
         orchestrator.onCancelled = { [weak self] in self?.handleCancelled() }
-        orchestrator.onUIRender = {
-            let controller = UIHostingController(rootView: SDUIView())
-            let bounds = UIScreen.main.bounds
-            let size = CGSize(width: bounds.width, height: bounds.height)
-            controller.view.frame = CGRect(origin: .zero, size: size)
-            PrimerUIManager.primerRootViewController?.show(viewController: controller)
+        orchestrator.onUIRender = { [weak self] in
+            guard let self, sduiController == nil else { return }
+            let controller = UIHostingController(rootView: SDUIView(
+                onEvent: orchestrator.applyEvent,
+                onClose: { [weak self] in self?.handleCancelled() },
+                titleImage: config.logo
+            ))
+            controller.modalPresentationStyle = .pageSheet
+            sduiController = controller
+            PrimerUIManager.primerRootViewController?.present(controller, animated: true)
         }
         orchestrator.onURLOpened = { [weak self] in
             guard let self else { return }
@@ -127,6 +132,7 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
     
     @MainActor
     private func handleSuccess(_ payment: PaymentInfo?) async {
+        sduiController?.dismiss(animated: true)
         if PrimerSettings.current.paymentHandling == .auto {
             let checkoutData = PrimerCheckoutData(payment: payment?.toPrimerPayment())
             await PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
@@ -151,6 +157,7 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
     @MainActor
     private func handleError(_ error: Swift.Error) async {
         if error is CancellationError { return }
+        sduiController?.dismiss(animated: true)
         Analytics.Service.fire(event: .message(message: "BDC Failed: \(error)", messageType: .error, severity: .error))
         let primerError: PrimerErrorProtocol = (error as? PrimerErrorProtocol) ?? PrimerError.unknown(
             message: error.localizedDescription,

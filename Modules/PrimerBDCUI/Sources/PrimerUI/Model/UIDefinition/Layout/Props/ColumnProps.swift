@@ -16,19 +16,23 @@ struct ColumnProps: Props {
     let height: Size
     let backgroundColor: String?
     let borderRadius: Double?
-	
+    let borderColor: String?
+    let borderWidth: Double?
+
     init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.alignItems = (try? container.decodeIfPresent(AlignItems.self, forKey: .alignItems)) ?? .center
-        self.padding = try container.decodeIfPresent(CodableValue.self, forKey: .padding)
-        self.spacing = try container.decodeIfPresent(CodableValue.self, forKey: .spacing)
-        self.justifyContent = (try? container.decode(JustifyContent.self, forKey: .justifyContent)) ?? .flexStart
+        alignItems = (try? container.decodeIfPresent(AlignItems.self, forKey: .alignItems)) ?? .center
+        padding = try container.decodeIfPresent(CodableValue.self, forKey: .padding)
+        spacing = try container.decodeIfPresent(CodableValue.self, forKey: .spacing)
+        justifyContent = (try? container.decode(JustifyContent.self, forKey: .justifyContent)) ?? .flexStart
         let width = (try? container.decode(CodableValue.self, forKey: .width)) ?? .string("wrap")
         let height = (try? container.decode(CodableValue.self, forKey: .height)) ?? .string("wrap")
         self.width = Size(codableValue: width)
         self.height = Size(codableValue: height)
-        self.backgroundColor = try container.decodeIfPresent(String.self, forKey: .backgroundColor)
-        self.borderRadius = try container.decodeIfPresent(Double.self, forKey: .borderRadius)
+        backgroundColor = try container.decodeIfPresent(String.self, forKey: .backgroundColor)
+        borderRadius = try container.decodeIfPresent(Double.self, forKey: .borderRadius)
+        borderColor = try container.decodeIfPresent(String.self, forKey: .borderColor)
+        borderWidth = try container.decodeIfPresent(Double.self, forKey: .borderWidth)
     }
 }
 
