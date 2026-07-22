@@ -69,6 +69,7 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
                     logBDCStarted()
 
                     KlarnaWidgetComponent.register()
+                    PayPalButtonsComponent.register()
 
                     let instructionProvider = makeInstructionProvider(config)
 
