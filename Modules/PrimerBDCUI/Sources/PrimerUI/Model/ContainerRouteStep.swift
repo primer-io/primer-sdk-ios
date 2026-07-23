@@ -1,0 +1,17 @@
+//
+//  ContainerRouteStep.swift
+//
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
+
+enum ContainerRouteStep: Routable, @unchecked Sendable {
+    case detail(definition: UIDefinition, screenID: String)
+}
+
+@available(iOS 16.0, *)
+extension Router {
+    @MainActor
+    func setStep(_ step: ContainerRouteStep) async {
+        setRoutingStep(to: step)
+    }
+}
