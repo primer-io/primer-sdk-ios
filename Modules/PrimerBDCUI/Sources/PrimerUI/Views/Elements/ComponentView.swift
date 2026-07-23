@@ -20,7 +20,6 @@ struct ComponentView<C: View>: View {
     
     private let focusedFieldID: FocusState<String?>.Binding
     private let componentArgs: UIComponentArgs
-    private let screenID: String
     private let visible: Bool
     private let slots: Slots?
     private let content: (() -> C)
@@ -30,7 +29,6 @@ struct ComponentView<C: View>: View {
     init(
         component: Component,
         fieldID: String?,
-        screenID: String,
         focusedFieldID: FocusState<String?>.Binding,
         visible: CodableValue?,
         slots: Slots?,
@@ -38,7 +36,6 @@ struct ComponentView<C: View>: View {
     ) {
         componentArgs = UIComponentArgs(fieldID: fieldID, component: component)
         self.content = content
-        self.screenID = screenID
         self.slots = slots
         self.focusedFieldID = focusedFieldID
         self.visible = switch visible {
@@ -61,12 +58,12 @@ struct ComponentView<C: View>: View {
 private extension ComponentView {
     func updateState(with input: String) {
         guard let componentID = componentArgs.fieldID else { unrecoverableError(.unexpectedNilComponentID) }
-        viewModel.applyEvent(.input(id: componentID, value: .string(input), type: .onChange), screenID: screenID)
+        viewModel.applyEvent(.input(id: componentID, value: .string(input), type: .onChange))
     }
     
     func applyClick() {
         guard let componentID = componentArgs.fieldID else { unrecoverableError(.unexpectedNilComponentID) }
-        withAnimation { viewModel.applyEvent(.click(id: componentID), screenID: screenID) }
+        withAnimation { viewModel.applyEvent(.click(id: componentID)) }
     }
 }
 
@@ -160,11 +157,7 @@ private extension ComponentView {
             }
             HStack {
                 ForEach((slots?.filter { $0.key == "prefix" }) ?? [], id: \.value) {
-                    LayoutView(
-                        focusedFieldID: focusedFieldID,
-                        uiDefinition: $0.value,
-                        screenID: screenID
-                    )
+                    LayoutView(focusedFieldID: focusedFieldID, uiDefinition: $0.value)
                 }
                 TextFieldView(
                     label: props.label,
@@ -177,11 +170,7 @@ private extension ComponentView {
                 .focused(focusedFieldID, equals: componentArgs.fieldID)
 
                 ForEach((slots?.filter { $0.key == "suffix" }) ?? [], id: \.value) {
-                    LayoutView(
-                        focusedFieldID: focusedFieldID,
-                        uiDefinition: $0.value,
-                        screenID: screenID
-                    )
+                    LayoutView(focusedFieldID: focusedFieldID, uiDefinition: $0.value)
                 }
             }
         }

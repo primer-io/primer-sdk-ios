@@ -18,9 +18,10 @@ public struct SDUIView: View {
     public init(
         onEvent: @escaping (CodableValue) async throws -> Void,
         onClose: (() -> Void)? = nil,
-        titleImage: UIImage? = nil
+        titleImage: UIImage? = nil,
+        onError: ((Error) async -> Void)? = nil
     ) {
-        let viewModel = SDUIViewModel(onEvent: onEvent)
+        let viewModel = SDUIViewModel(onEvent: onEvent, onError: onError)
         _viewModel = StateObject(wrappedValue: viewModel)
         _router = StateObject(wrappedValue: viewModel.router)
         self.onClose = onClose
@@ -31,7 +32,7 @@ public struct SDUIView: View {
         Group {
             if let definition = viewModel.currentUITree {
                 NavigationStack(path: $router.path) {
-                    ContainerBodyView(uiDefinition: definition, screenID: "changeme")
+                    ContainerBodyView(uiDefinition: definition)
                         .navigationDestination(for: ContainerRouteStep.self, destination: makeDestination)
                         .toolbar(content: makeToolbar)
                         .navigationBarTitleDisplayMode(.inline)
@@ -74,8 +75,8 @@ public struct SDUIView: View {
     
     private func makeDestination(_ step: ContainerRouteStep) -> some View {
         switch step {
-        case let .detail(definition, id):
-            ContainerBodyView(uiDefinition: definition, screenID: id)
+        case let .detail(definition):
+            ContainerBodyView(uiDefinition: definition)
                 .environmentObject(viewModel)
         }
     }
@@ -85,7 +86,6 @@ public struct SDUIView: View {
 @available(iOS 16.0, *)
 private struct ContainerBodyView: View {
     let uiDefinition: UIDefinition
-    let screenID: String
     
     @FocusState private var focusedFieldID: String?
     @EnvironmentObject private var viewModel: SDUIViewModel
@@ -97,7 +97,7 @@ private struct ContainerBodyView: View {
     }
     
     private func makeLayoutView(_ definition: UIDefinition) -> some View {
-        LayoutView(focusedFieldID: $focusedFieldID, uiDefinition: definition, screenID: screenID)
+        LayoutView(focusedFieldID: $focusedFieldID, uiDefinition: definition)
             .padding()
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
     }

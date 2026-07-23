@@ -49,6 +49,7 @@ final class PrimerStepOrchestrator: StepOrchestrating {
     func start(rawSchema: String, initialState: CodableValue) async throws {
         self.rawSchema = rawSchema
         registry.register(harness, for: "url.open")
+        registry.register(HTTPRequestResolver(), for: "http.request")
         do {
             let result = try await engine.start(schema: rawSchema, context: context, state: initialState)
             try await decodeResult(result, rawSchema: rawSchema)
@@ -113,7 +114,7 @@ final class PrimerStepOrchestrator: StepOrchestrating {
 
     private func applyResult(_ resolution: StepResolutionResult, actionId: String, rawSchema: String) async throws {
         do {
-            let data = try resolution.data?.casted(to: Data.self)
+            let data = try resolution.data?.data()
             let result = try await engine.applyResult(
                 schema: rawSchema,
                 context: context,

@@ -71,7 +71,11 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
 
                     KlarnaWidgetComponent.register()
                     PrimerStepResolverRegistry.shared.register(
-                        PrimerPayResolver(tokenizationService: tokenizationService, paymentMethodType: paymentMethodType),
+                        PrimerPayResolver(
+                            tokenizationService: tokenizationService,
+                            paymentService: createResumePaymentService,
+                            paymentMethodType: paymentMethodType
+                        ),
                         for: "primer.pay"
                     )
 
@@ -81,7 +85,7 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
                     let result = try await orchestrator?.run(instructionProvider: instructionProvider, entryPoint: .setup)
                     
                     switch result {
-                    case let .success(payment): await handleSuccess(payment)
+                    case let .success(payment): await handleErrorWith(payment)
                     case let .failure(payment): await handleFailure(payment, diagnosticsId: .uuid)
                     case .none: await handleError(PrimerError.unknown())
                     }
@@ -111,7 +115,8 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
             let controller = UIHostingController(rootView: SDUIView(
                 onEvent: orchestrator.applyEvent,
                 onClose: { [weak self] in self?.handleCancelled() },
-                titleImage: config.logo
+                titleImage: config.logo,
+                onError: { [weak self] error in await self?.handleErrorWith(nil) }
             ))
             controller.modalPresentationStyle = .pageSheet
             sduiController = controller
@@ -136,7 +141,7 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
     }
     
     @MainActor
-    private func handleSuccess(_ payment: PaymentInfo?) async {
+    private func handleErrorWith(_ payment: PaymentInfo?) async {
         sduiController?.dismiss(animated: true)
         if PrimerSettings.current.paymentHandling == .auto {
             let checkoutData = PrimerCheckoutData(payment: payment?.toPrimerPayment())

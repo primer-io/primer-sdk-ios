@@ -79,7 +79,7 @@ extension PrimerBDCEngine {
         (async () => {
             try {
                 const processor = await StateProcessor.createStateProcessor(__schema, JSON.parse(__context));
-                const result = await processor.applyResult(JSON.parse(__state), __actionId, __outcome, __data);
+                const result = await processor.applyResult(JSON.parse(__state), __actionId, __outcome, typeof __data === 'string' ? JSON.parse(__data) : __data);
                 onExecuteActionResult(JSON.stringify(result));
             } catch (e) {
                 onExecuteActionResult(JSON.stringify({ error: e.toString() }));

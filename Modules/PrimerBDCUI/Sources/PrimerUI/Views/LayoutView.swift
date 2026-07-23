@@ -11,7 +11,6 @@ import SwiftUI
 struct LayoutView: View {
     let focusedFieldID: FocusState<String?>.Binding
     let uiDefinition: UIDefinition
-    let screenID: String
 
     @EnvironmentObject private var viewModel: SDUIViewModel
     
@@ -19,7 +18,6 @@ struct LayoutView: View {
         ComponentView(
             component: uiDefinition.component,
             fieldID: uiDefinition.componentID,
-            screenID: screenID,
             focusedFieldID: focusedFieldID,
             visible: uiDefinition.visible,
             slots: uiDefinition.slots,
@@ -154,15 +152,15 @@ private extension LayoutView {
         guard
             case let .selectionOption(props) = child.component,
             let selectable = uiDefinition.component.selectable else {
-            fatalError()
+            return
         }
         let newValue: CodableValue = selectable.mode == .single
             ? .string(props.value)
             : .array(Array(selectable.values.toggled(props.value).map(CodableValue.string)))
-        viewModel.applyEvent(.input(id: id, value: newValue, type: .onChange), screenID: screenID)
+        viewModel.applyEvent(.input(id: id, value: newValue, type: .onChange))
     }
 	
     func makeLayoutView(children: [UIDefinition], index: Int) -> some View {
-        LayoutView(focusedFieldID: focusedFieldID, uiDefinition: children[index], screenID: screenID)
+        LayoutView(focusedFieldID: focusedFieldID, uiDefinition: children[index])
     }
 }

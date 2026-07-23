@@ -23,7 +23,7 @@ final class KlarnaAuthorizeResolver: NSObject, StepResolver {
         
         return await withCheckedContinuation { continuation in
             self.continuation = continuation
-            provider.authorize(autoFinalize: false, jsonData: nil)
+            provider.authorize(autoFinalize: true, jsonData: nil)
         }
     }
 }

@@ -51,6 +51,8 @@ extension Request.Body {
                 try container.encode(paymentInstrument, forKey: .paymentInstrument)
             } else if let paymentInstrument = paymentInstrument as? ACHPaymentInstrument {
                 try container.encode(paymentInstrument, forKey: .paymentInstrument)
+            } else if let paymentInstrument = paymentInstrument as? RawPaymentInstrument {
+                try container.encode(paymentInstrument, forKey: .paymentInstrument)
             } else {
                 throw handled(error: InternalError.invalidValue(key: "PaymentInstrument", value: paymentInstrument))
             }

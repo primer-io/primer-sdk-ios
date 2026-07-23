@@ -22,13 +22,16 @@ final class SDUIViewModel: ObservableObject, StepResolver {
     @Published private(set) var router = Router()
     
     private var uiTree: UIDefinition?
-    var onEvent: (CodableValue) async throws -> Void
-    
+    private var onEvent: (CodableValue) async throws -> Void
+    private var onError: ((Error) async -> Void)?
+
     init(
         registry: PrimerStepResolverRegistry = .shared,
-        onEvent: @escaping (CodableValue) async throws -> Void
+        onEvent: @escaping (CodableValue) async throws -> Void,
+        onError: ((Error) async -> Void)? = nil
     ) {
         self.onEvent = onEvent
+        self.onError = onError
         registry.register(self, for: "ui.render")
     }
 
@@ -41,8 +44,14 @@ final class SDUIViewModel: ObservableObject, StepResolver {
         return StepResolutionResult(outcome: .success)
     }
 
-    func applyEvent(_ event: Event, screenID: String) {
-        Task { try? await onEvent(event()) }
+    func applyEvent(_ event: Event) {
+        Task {
+            do {
+                try await onEvent(event())
+            } catch {
+                await onError?(error)
+            }
+        }
     }
 
     func errorMessage(for fieldID: ComponentID) -> String? {
