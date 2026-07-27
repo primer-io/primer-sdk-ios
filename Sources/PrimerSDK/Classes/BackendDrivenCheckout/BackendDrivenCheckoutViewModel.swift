@@ -11,18 +11,22 @@ import Foundation
 import PrimerBDCEngine
 @_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerNetworking
+@_spi(PrimerInternal) import PrimerStepResolver
+@_spi(PrimerInternal) import PrimerBDCUI
+import SwiftUI
 import UIKit
 
 final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
-
+    
     typealias OrchestratorFactory = (SDKContext) async throws -> BackendDrivenCheckoutOrchestrator
     typealias InstructionProviderFactory = (PrimerPaymentMethod) -> ClientInstructionProvider
-
+    
     private let makeOrchestrator: OrchestratorFactory
     private let makeInstructionProvider: InstructionProviderFactory
     private var orchestrator: BackendDrivenCheckoutOrchestrator?
     private var runTask: Task<Void, Never>?
-
+    private var sduiController: UIViewController?
+    
     convenience init(
         config: PrimerPaymentMethod,
         apiClient: PrimerAPIClientProtocol = PrimerAPIClient()
@@ -31,27 +35,17 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
             config: config,
             uiManager: PrimerUIManager.shared,
             tokenizationService: TokenizationService(apiClient: apiClient),
-            createResumePaymentService: CreateResumePaymentService(
-                paymentMethodType: config.type,
-                apiClient: apiClient
-            )
+            paymentService: CreateResumePaymentService(paymentMethodType: config.type, apiClient: apiClient)
         )
     }
-
+    
     init(
         config: PrimerPaymentMethod,
         uiManager: PrimerUIManaging,
         tokenizationService: TokenizationServiceProtocol,
-        createResumePaymentService: CreateResumePaymentServiceProtocol,
-        makeOrchestrator: @escaping OrchestratorFactory = { context in
-            try await BackendDrivenCheckoutOrchestrator(
-                manifestProvider: NetworkSignedManifestProvider(),
-                context: context
-            )
-        },
-        makeInstructionProvider: @escaping InstructionProviderFactory = { config in
-            NetworkClientInstructionProvider(paymentMethod: config)
-        }
+        paymentService: CreateResumePaymentServiceProtocol,
+        makeOrchestrator: @escaping OrchestratorFactory = BackendDrivenCheckoutOrchestrator.init,
+        makeInstructionProvider: @escaping InstructionProviderFactory = NetworkClientInstructionProvider.init
     ) {
         self.makeOrchestrator = makeOrchestrator
         self.makeInstructionProvider = makeInstructionProvider
@@ -59,10 +53,10 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
             config: config,
             uiManager: uiManager,
             tokenizationService: tokenizationService,
-            createResumePaymentService: createResumePaymentService
+            createResumePaymentService: paymentService
         )
     }
-
+    
     override func start() {
         MainActor.assumeIsolated {
             runTask = Task { @MainActor in
@@ -72,24 +66,24 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
                     
                     try await checkWillCreatePaymentDecision()
                     
-                    let context = generateContext()
-                    let orchestrator = try await makeOrchestrator(context)
-                    orchestrator.onCancelled = { [weak self] in self?.handleCancelled() }
-                    self.orchestrator = orchestrator
-                    
-                    orchestrator.onURLOpened = { [weak self] in
-                        guard let self else { return }
-                        PrimerDelegateProxy.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for: paymentMethodType)
-                    }
-                    
+                    try await setupOrchestrator()
                     logBDCStarted()
-                    
+
+                    KlarnaWidgetComponent.register()
+                    PrimerStepResolverRegistry.shared.register(
+                        PrimerPayResolver(tokenizationService: tokenizationService, paymentMethodType: paymentMethodType),
+                        for: "primer.pay"
+                    )
+
                     let instructionProvider = makeInstructionProvider(config)
-                    let result = try await orchestrator.run(instructionProvider: instructionProvider)
+
+                    //TODO: Don't hardcode setup
+                    let result = try await orchestrator?.run(instructionProvider: instructionProvider, entryPoint: .setup)
                     
                     switch result {
                     case let .success(payment): await handleSuccess(payment)
                     case let .failure(payment): await handleFailure(payment, diagnosticsId: .uuid)
+                    case .none: await handleError(PrimerError.unknown())
                     }
                     
                 } catch {
@@ -105,11 +99,35 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
         }
     }
     
+    @MainActor
+    private func setupOrchestrator() async throws {
+        let context = generateContext()
+        let orchestrator = try await makeOrchestrator(context)
+        
+        self.orchestrator = orchestrator
+        orchestrator.onCancelled = { [weak self] in self?.handleCancelled() }
+        orchestrator.onUIRender = { [weak self] in
+            guard let self, sduiController == nil else { return }
+            let controller = UIHostingController(rootView: SDUIView(
+                onEvent: orchestrator.applyEvent,
+                onClose: { [weak self] in self?.handleCancelled() },
+                titleImage: config.logo
+            ))
+            controller.modalPresentationStyle = .pageSheet
+            sduiController = controller
+            PrimerUIManager.primerRootViewController?.present(controller, animated: true)
+        }
+        orchestrator.onURLOpened = { [weak self] in
+            guard let self else { return }
+            PrimerDelegateProxy.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for: paymentMethodType)
+        }
+    }
+    
     private func checkWillCreatePaymentDecision() async throws {
         let checkoutPaymentMethodType = PrimerCheckoutPaymentMethodType(type: paymentMethodType)
-        let decision = await PrimerDelegateProxy.primerWillCreatePaymentWithData(
-            PrimerCheckoutPaymentMethodData(type: checkoutPaymentMethodType)
-        )
+        let data = PrimerCheckoutPaymentMethodData(type: checkoutPaymentMethodType)
+        let decision = await PrimerDelegateProxy.primerWillCreatePaymentWithData(data)
+        
         switch decision.type {
         case let .abort(message): throw PrimerError.merchantError(message: message ?? "")
         case .continue: return
@@ -119,6 +137,7 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
     
     @MainActor
     private func handleSuccess(_ payment: PaymentInfo?) async {
+        sduiController?.dismiss(animated: true)
         if PrimerSettings.current.paymentHandling == .auto {
             let checkoutData = PrimerCheckoutData(payment: payment?.toPrimerPayment())
             await PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
@@ -143,6 +162,7 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
     @MainActor
     private func handleError(_ error: Swift.Error) async {
         if error is CancellationError { return }
+        sduiController?.dismiss(animated: true)
         Analytics.Service.fire(event: .message(message: "BDC Failed: \(error)", messageType: .error, severity: .error))
         let primerError: PrimerErrorProtocol = (error as? PrimerErrorProtocol) ?? PrimerError.unknown(
             message: error.localizedDescription,
@@ -166,9 +186,7 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
     
     private func handleCancelled() {
         runTask?.cancel()
-        Task {
-            await handleError(PrimerError.cancelled(paymentMethodType: config.type))
-        }
+        Task { await handleError(PrimerError.cancelled(paymentMethodType: config.type)) }
     }
     
     private func generateContext() -> SDKContext {
@@ -195,8 +213,12 @@ private extension PaymentInfo {
 }
 
 private extension Error {
-    var diagnosticId: String {
-        (self as? StateProcessorError)?.diagnosticsId ?? .uuid
+    var diagnosticId: String { (self as? StateProcessorError)?.diagnosticsId ?? .uuid }
+}
+
+private extension BackendDrivenCheckoutOrchestrator {
+    convenience init(context: SDKContext) async throws {
+        try await self.init(manifestProvider: NetworkSignedManifestProvider(), context: context)
     }
 }
 

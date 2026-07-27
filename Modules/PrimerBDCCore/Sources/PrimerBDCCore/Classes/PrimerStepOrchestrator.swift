@@ -12,8 +12,10 @@ import Foundation
 @MainActor
 protocol StepOrchestrating: AnyObject {
     var onURLOpen: (() -> Void)? { get set }
+    var onUIRender: (() -> Void)? { get set }
     var onCancelled: (() -> Void)? { get set }
     func start(rawSchema: String, initialState: CodableValue) async throws
+    func applyEvent(_ value: CodableValue) async throws
 }
 
 @MainActor
@@ -23,12 +25,14 @@ final class PrimerStepOrchestrator: StepOrchestrating {
         didSet { harness.onURLOpen = onURLOpen }
     }
     
+    var onUIRender: (() -> Void)?
     var onCancelled: (() -> Void)?
 
     private let logger = Logger()
     private let engine: any BDCEngineProtocol
     private let context: SDKContext
     private let registry: PrimerStepResolverRegistry
+    private var rawSchema: String!
     private let harness = SFSafariViewControllerHarness()
     private var state: CodableState = [:]
 
@@ -43,7 +47,8 @@ final class PrimerStepOrchestrator: StepOrchestrating {
     }
 
     func start(rawSchema: String, initialState: CodableValue) async throws {
-        await registry.register(harness, for: "url.open")
+        self.rawSchema = rawSchema
+        registry.register(harness, for: "url.open")
         do {
             let result = try await engine.start(schema: rawSchema, context: context, state: initialState)
             try await decodeResult(result, rawSchema: rawSchema)
@@ -58,7 +63,7 @@ final class PrimerStepOrchestrator: StepOrchestrating {
             state = response.newState
             try await handleResponse(response, rawSchema: rawSchema)
         } catch {
-            if let error = error as? StateProcessorError {
+            if error is StateProcessorError {
                 throw error
             } else {
                 throw PrimerStepOrchestratorError.decodeResultFailed(error: error)
@@ -67,20 +72,34 @@ final class PrimerStepOrchestrator: StepOrchestrating {
     }
     
     private func handleResponse(_ response: StateProcessorResponse, rawSchema: String) async throws {
+        if let stack = response.renderStack?.first {
+            onUIRender?()
+            try await registry.resolve("ui.render", data: stack.processedUI)
+        }
         if let error = response.error {
             throw error
         } else if let action = response.action {
             try await handleAction(action, rawSchema: rawSchema)
         } else if let outcome = response.terminal?.outcome {
             try handleOutcome(outcome)
-        } else {
+        } else if response.renderStack == nil {
             throw PrimerStepOrchestratorError.missingActionAndOutcome
         }
     }
     
+    func applyEvent(_ value: CodableValue) async throws {
+        let result = try await engine.applyEvent(
+            value,
+            context: context,
+            schema: rawSchema,
+            state: state
+        )
+        try await decodeResult(result, rawSchema: rawSchema)
+    }
+    
     private func handleAction(_ action: WorkflowStep, rawSchema: String) async throws {
-        let resolution = try await registry.resolve(action.type, params: action.params)
-        try await applyResult(resolution, actionId: action.id, rawSchema: rawSchema)
+        let result = try await registry.resolve(action.type, data: action.params)
+        try await applyResult(result, actionId: action.id, rawSchema: rawSchema)
     }
     
     private func handleOutcome(_ outcome: TerminalOutcome) throws {

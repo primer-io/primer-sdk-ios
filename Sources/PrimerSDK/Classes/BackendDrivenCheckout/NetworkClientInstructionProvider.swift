@@ -11,6 +11,11 @@ import PrimerFoundation
 struct NetworkClientInstructionProvider: ClientInstructionProvider {
 
     let paymentMethod: PrimerPaymentMethod
+    
+    func fetchSetupInstruction() async throws -> ClientInstruction {
+        let response: ClientInstructionSetupResponse = try await request(.setup(paymentMethod: paymentMethod))
+        return .execute(delayMilliseconds: 0, schema: response.schema, parameters: response.parameters)
+    }
 
     func fetchPayInstruction() async throws -> ClientInstruction {
         let response: ClientSessionInstructionResponse = try await request(.pay(paymentMethod: paymentMethod))

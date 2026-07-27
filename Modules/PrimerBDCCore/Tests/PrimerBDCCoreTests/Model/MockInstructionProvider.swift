@@ -15,6 +15,7 @@ final class MockInstructionProvider: ClientInstructionProvider {
         self.instructions = instructions
     }
 
+    func fetchSetupInstruction() async throws -> ClientInstruction { try next() }
     func fetchPayInstruction() async throws -> ClientInstruction { try next() }
     func fetchNextInstruction() async throws -> ClientInstruction { try next() }
 

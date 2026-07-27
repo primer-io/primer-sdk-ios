@@ -4,6 +4,7 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+import PrimerBDCUI
 @_exported @_spi(PrimerInternal) import PrimerFoundation
 import UIKit
 @_exported @_spi(PrimerInternal) import PrimerCore
@@ -57,9 +58,25 @@ public final class Primer {
     }
 
     fileprivate init() {
+        Task { @MainActor in
+        resolveColor = { DesignTokens[dynamicMember: $0]! }
+        resolveSpacing = { DesignTokens[dynamicMember: $0]! }
         // Register custom fonts for CheckoutComponents
-        if #available(iOS 15.0, *) {
-            FontRegistration.registerFonts()
+            if #available(iOS 15.0, *) {
+                FontRegistration.registerFonts()
+                resolveFont = { font in
+                    let tokens = DesignTokensManager().tokens ?? DesignTokens() // hack
+                    return switch font {
+                    case "bodySmall": PrimerFont.bodySmall(tokens: tokens)
+                    case "bodyMedium": PrimerFont.bodyMedium(tokens: tokens)
+                    case "bodyLarge": PrimerFont.bodyLarge(tokens: tokens)
+                    case "headingLarge": PrimerFont.titleLarge(tokens: tokens)
+                    case "headingMedium": PrimerFont.bodyMedium(tokens: tokens)
+                    case "caption": .caption
+                    default: fatalError()
+                    }
+                }
+            }
         }
     }
 
