@@ -86,6 +86,8 @@ swiftlint lint --config "Debug App/.swiftlint.yml"
   Sentence-case, imperative subjects (~50 chars): `fix: Add retry logic for polling`.
 - **PRs** use `.github/pull_request_template.md` and require a Jira ticket (`CHKT-XXXX`).
 - **Access control**: prefer `public` for public API; don't spell out the default `internal`.
+  For internal API that must cross module boundaries, use `@_spi(PrimerInternal) public` and
+  consume it with `@_spi(PrimerInternal) import PrimerFoundation` (etc.) — not plain `public`.
 - Prefer the shortest, clearest code; omit unneeded keywords.
 - **Localization**: when adding a new string, add it to all supported languages and translate it.
 
