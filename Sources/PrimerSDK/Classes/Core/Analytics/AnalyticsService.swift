@@ -51,7 +51,7 @@ extension Analytics {
             self.batchSize = batchSize
             self.storage = storage
             self.apiClient = apiClient
-            Task { await PrimerStepResolverRegistry.shared.register(self, for: "platform.log") }
+            PrimerStepResolverRegistry.shared.register(self, for: "platform.log")
         }
 
         func record(events: [any AnalyticsEvent]) async throws {
