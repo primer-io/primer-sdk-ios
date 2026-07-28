@@ -27,7 +27,7 @@ enum Size: UI {
         case let .string(string): self = Int(string).map { Size.literal(CGFloat($0)) } ?? .wrap
         case let .int(int): self = .literal(CGFloat(int))
         case let .double(double): self = .literal(double)
-        default: .wrap
+        default: self = .wrap
         }
     }
 }
