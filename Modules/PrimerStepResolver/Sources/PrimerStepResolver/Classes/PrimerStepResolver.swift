@@ -9,7 +9,7 @@ import Foundation
 
 @_spi(PrimerInternal)
 public protocol StepResolver: Sendable {
-    func resolve(_ step: CodableValue) async throws -> StepResolutionResult
+    func resolve(_ data: CodableValue) async throws -> StepResolutionResult
 }
 
 @_spi(PrimerInternal)
@@ -24,9 +24,10 @@ public struct StepResolutionResult: Sendable {
 }
 
 @_spi(PrimerInternal)
-public actor PrimerStepResolverRegistry {
+public final class PrimerStepResolverRegistry {
     public static let shared = PrimerStepResolverRegistry()
 
+    private let lock = NSLock()
     private let logger = Logger()
     private var resolvers: [String: StepResolver] = [:]
 
@@ -34,15 +35,16 @@ public actor PrimerStepResolverRegistry {
 
     public func register(_ resolver: StepResolver, for type: String) {
         logger.info("Registering resolver for step type: \(type)")
-        resolvers[type] = resolver
+        lock.withLock { resolvers[type] = resolver }
     }
 
-    public func resolve(_ type: String, params: CodableValue) async throws -> StepResolutionResult {
+    @discardableResult
+    public func resolve(_ type: String, data: CodableValue) async throws -> StepResolutionResult {
         logger.info("Resolving step type: \(type)")
-        guard let resolver = resolvers[type] else {
+        guard let resolver = lock.withLock({ resolvers[type] }) else {
             logger.info("No resolver for type '\(type)' — returning unsupported")
             return StepResolutionResult(outcome: .unsupported)
         }
-        return try await resolver.resolve(params)
+        return try await resolver.resolve(data)
     }
 }

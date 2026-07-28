@@ -44,6 +44,7 @@ final class PrimerStepOrchestrator: StepOrchestrating {
 
     func start(rawSchema: String, initialState: CodableValue) async throws {
         await registry.register(harness, for: "url.open")
+        registry.register(harness, for: "url.open")
         do {
             let result = try await engine.start(schema: rawSchema, context: context, state: initialState)
             try await decodeResult(result, rawSchema: rawSchema)
@@ -79,7 +80,7 @@ final class PrimerStepOrchestrator: StepOrchestrating {
     }
     
     private func handleAction(_ action: WorkflowStep, rawSchema: String) async throws {
-        let resolution = try await registry.resolve(action.type, params: action.params)
+        let resolution = try await registry.resolve(action.type, data: action.params)
         try await applyResult(resolution, actionId: action.id, rawSchema: rawSchema)
     }
     

@@ -5,7 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 enum ContainerRouteStep: Routable, @unchecked Sendable {
-    case detail(definition: UIDefinition, screenID: String)
+    case detail(definition: UIDefinition)
 }
 
 @available(iOS 16.0, *)
