@@ -6,8 +6,15 @@
 
 enum UnrecoverableError: Error {
     case unexpectedNilComponentID
+
+    var message: String {
+        switch self {
+        case .unexpectedNilComponentID: "Component is missing an 'id' — dropping the interaction"
+        }
+    }
 }
 
-func unrecoverableError(_ error: UnrecoverableError) -> Never {
-    fatalError(String(describing: error))
+func unrecoverableError(_ error: UnrecoverableError) {
+    log(error.message, type: .error)
+    assertionFailure(error.message)
 }
