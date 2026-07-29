@@ -6,6 +6,8 @@
 
 import SwiftUI
 
+@_spi(PrimerInternal) import PrimerFoundation
+
 struct ProgressIndicatorProps: UI {
     let size: ProgressIndicatorSize
 }

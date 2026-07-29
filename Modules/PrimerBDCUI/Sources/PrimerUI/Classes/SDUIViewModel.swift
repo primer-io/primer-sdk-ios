@@ -44,7 +44,7 @@ final class SDUIViewModel: ObservableObject, StepResolver {
         return StepResolutionResult(outcome: .success)
     }
 
-    func applyEvent(_ event: Event, screenID: String) {
+    func applyEvent(_ event: Event) {
         Task {
             do {
                 try await onEvent(event())
