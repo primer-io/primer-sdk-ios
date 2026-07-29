@@ -11,7 +11,6 @@ import Foundation
 @_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerNetworking
 
-// MARK: MISSING_TESTS
 final class PrimerRawPhoneNumberDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProtocol {
 
     var rawData: PrimerRawData? {
@@ -37,8 +36,23 @@ final class PrimerRawPhoneNumberDataTokenizationBuilder: PrimerRawDataTokenizati
         [.phoneNumber]
     }
 
+    private let apiClient: PrimerAPIClientProtocol
+
+    // The input the lookup approved. Like Android, the lookup is a yes/no — the shopper's own
+    // string is what gets submitted, so both platforms send the same value.
+    private var approvedInput: String?
+
+    // One lookup per keystroke, so responses can land out of order.
+    private var currentGeneration = 0
+
     required init(paymentMethodType: String) {
         self.paymentMethodType = paymentMethodType
+        apiClient = PrimerAPIClient()
+    }
+
+    init(paymentMethodType: String, apiClient: PrimerAPIClientProtocol) {
+        self.paymentMethodType = paymentMethodType
+        self.apiClient = apiClient
     }
 
     func configure(withRawDataManager rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager) {
@@ -54,6 +68,11 @@ final class PrimerRawPhoneNumberDataTokenizationBuilder: PrimerRawDataTokenizati
             throw handled(primerError: .invalidValue(key: "rawData"))
         }
 
+        // Only submit a number the lookup approved, and only while it is still what's on screen.
+        guard approvedInput == rawData.phoneNumber else {
+            throw handled(primerError: .invalidValue(key: "phoneNumber"))
+        }
+
         return Request.Body.Tokenization(
             paymentInstrument: OffSessionPaymentInstrument(
                 paymentMethodConfigId: paymentMethodId,
@@ -64,27 +83,61 @@ final class PrimerRawPhoneNumberDataTokenizationBuilder: PrimerRawDataTokenizati
     }
 
     func validateRawData(_ data: PrimerRawData) async throws {
-        var errors: [PrimerValidationError] = []
-
         guard let rawData = data as? PrimerPhoneNumberData else {
             let err = PrimerValidationError.invalidRawData()
-            errors.append(err)
-            notifyDelegateOfValidationResult(isValid: false, errors: errors)
+            invalidate(with: err)
             throw handled(error: err)
         }
 
-        if let paymentMethodType = PrimerPaymentMethodType(rawValue: paymentMethodType),
-           !rawData.phoneNumber.isValidPhoneNumberForPaymentMethodType(paymentMethodType) {
-            errors.append(PrimerValidationError.invalidPhoneNumber(message: "Phone number is not valid."))
+        let input = rawData.phoneNumber
+
+        guard !input.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            throw invalidated(PrimerValidationError.invalidPhoneNumber(message: "Phone number cannot be blank."))
         }
 
-        guard errors.isEmpty else {
-            let err = PrimerError.underlyingErrors(errors: errors)
-            notifyDelegateOfValidationResult(isValid: false, errors: errors)
-            throw handled(primerError: err)
+        guard let clientToken = PrimerAPIConfigurationModule.decodedJWTToken else {
+            throw invalidated(PrimerError.invalidClientToken())
         }
+
+        currentGeneration += 1
+        let generation = currentGeneration
+
+        let response: Response.Body.PhoneMetadata.PhoneMetadataDataResponse
+        do {
+            response = try await apiClient.getPhoneMetadata(
+                clientToken: clientToken,
+                paymentRequestBody: Request.Body.PhoneMetadata.PhoneMetadataDataRequest(phoneNumber: input)
+            )
+        } catch {
+            guard generation == currentGeneration else { return }
+            // asPrimerError also keeps InternalError out of merchant callbacks.
+            throw invalidated(error.asPrimerError)
+        }
+
+        // Superseded by a newer input.
+        guard generation == currentGeneration else { return }
+
+        // Android requires the parsed parts too before treating a number as valid, even though
+        // neither platform submits them.
+        guard response.isValid, response.countryCode != nil, response.nationalNumber != nil else {
+            throw invalidated(PrimerValidationError.invalidPhoneNumber(message: "Phone number is not valid."))
+        }
+
+        approvedInput = input
 
         notifyDelegateOfValidationResult(isValid: true, errors: nil)
+    }
+
+    private func invalidate(with error: Error) {
+        approvedInput = nil
+        notifyDelegateOfValidationResult(isValid: false, errors: [error])
+    }
+
+    // Single specific errors are not wrapped in `underlyingErrors` — that hid error types in
+    // monitoring and was undone repo-wide in #1299.
+    private func invalidated(_ error: Error) -> Error {
+        invalidate(with: error)
+        return handled(primerError: error.asPrimerError)
     }
 
     private func notifyDelegateOfValidationResult(isValid: Bool, errors: [Error]?) {

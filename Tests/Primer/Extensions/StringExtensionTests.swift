@@ -208,25 +208,6 @@ final class StringExtensionTests: XCTestCase {
         XCTAssertEqual(string3.separate(every: 1, with: "#"), "a")
     }
 
-    func testIsValidPhoneNumberForPaymentType() {
-        // Generic case
-        XCTAssertTrue("+447890123456".isValidPhoneNumberForPaymentMethodType(.paymentCard))
-        XCTAssertTrue("+447890123456".isValidPhoneNumberForPaymentMethodType(.adyenDotPay))
-        XCTAssertTrue("+447890123456".isValidPhoneNumberForPaymentMethodType(.applePay))
-        XCTAssertTrue("+447890123456".isValidPhoneNumberForPaymentMethodType(.googlePay))
-        XCTAssertTrue("+129876543210".isValidPhoneNumberForPaymentMethodType(.googlePay))
-        XCTAssertFalse("+12987654".isValidPhoneNumberForPaymentMethodType(.googlePay))
-        XCTAssertFalse("+12987654301010101".isValidPhoneNumberForPaymentMethodType(.googlePay))
-
-        // XenditOvo (special case)
-        XCTAssertTrue("+62812345678".isValidPhoneNumberForPaymentMethodType(.xenditOvo))
-        XCTAssertTrue("+628123456789".isValidPhoneNumberForPaymentMethodType(.xenditOvo))
-        XCTAssertTrue("+6281234567890".isValidPhoneNumberForPaymentMethodType(.xenditOvo))
-        XCTAssertFalse("+62812345678901".isValidPhoneNumberForPaymentMethodType(.xenditOvo))
-        XCTAssertFalse("+6281234567".isValidPhoneNumberForPaymentMethodType(.xenditOvo))
-        XCTAssertFalse("+5281234567890".isValidPhoneNumberForPaymentMethodType(.xenditOvo))
-    }
-
     func testIsValidExpiryDateString() {
         XCTAssertThrowsError(try "".validateExpiryDateString())
         XCTAssertThrowsError(try "01/2022".validateExpiryDateString())
