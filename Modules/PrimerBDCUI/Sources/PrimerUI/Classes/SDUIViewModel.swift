@@ -17,7 +17,6 @@ struct NavigationStep: Decodable {
 @MainActor
 final class SDUIViewModel: ObservableObject, StepResolver {
     @Published var currentUITree: UIDefinition?
-    @Published var state: CodableState = [:]
     @Published var focusedFieldID: String?
     @Published private(set) var router = Router()
     
@@ -52,10 +51,6 @@ final class SDUIViewModel: ObservableObject, StepResolver {
                 await onError?(error)
             }
         }
-    }
-
-    func errorMessage(for fieldID: ComponentID) -> String? {
-        getValue(forKeys: ["errors", fieldID], in: state)?.string
     }
 }
 
