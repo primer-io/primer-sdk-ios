@@ -38,11 +38,9 @@ final class PrimerRawPhoneNumberDataTokenizationBuilder: PrimerRawDataTokenizati
 
     private let apiClient: PrimerAPIClientProtocol
 
-    // The input the lookup approved. Like Android, the lookup is a yes/no — the shopper's own
-    // string is what gets submitted, so both platforms send the same value.
+    // Android submits the shopper's own string too — the lookup is only a yes/no.
     private var approvedInput: String?
 
-    // One lookup per keystroke; the newest supersedes any still in flight.
     private var validationTask: CancellableTask<Response.Body.PhoneMetadata.PhoneMetadataDataResponse>?
 
     required init(paymentMethodType: String) {
@@ -68,7 +66,6 @@ final class PrimerRawPhoneNumberDataTokenizationBuilder: PrimerRawDataTokenizati
             throw handled(primerError: .invalidValue(key: "rawData"))
         }
 
-        // Only submit a number the lookup approved, and only while it is still what's on screen.
         guard approvedInput == rawData.phoneNumber else {
             throw handled(primerError: .invalidValue(key: "phoneNumber"))
         }
@@ -105,8 +102,7 @@ final class PrimerRawPhoneNumberDataTokenizationBuilder: PrimerRawDataTokenizati
                 paymentRequestBody: Request.Body.PhoneMetadata.PhoneMetadataDataRequest(phoneNumber: input)
             )
         }
-        // Register before cancelling: the cancelled task resumes immediately, and if it still saw
-        // itself as current it would report a verdict instead of standing down.
+        // Register before cancelling, or the cancelled task still sees itself as current.
         let superseded = validationTask
         validationTask = task
         await superseded?.cancel(with: handled(primerError: .cancelled(paymentMethodType: paymentMethodType)))
@@ -115,18 +111,15 @@ final class PrimerRawPhoneNumberDataTokenizationBuilder: PrimerRawDataTokenizati
         do {
             response = try await task.wait()
         } catch {
-            // A newer keystroke replaced us, so there is no verdict to report.
             guard validationTask === task else { return }
             validationTask = nil
-            // asPrimerError also keeps InternalError out of merchant callbacks.
             throw invalidated(error.asPrimerError)
         }
 
         guard validationTask === task else { return }
         validationTask = nil
 
-        // Android requires the parsed parts too before treating a number as valid, even though
-        // neither platform submits them.
+        // Android requires the parsed parts too, though neither platform submits them.
         guard response.isValid, response.countryCode != nil, response.nationalNumber != nil else {
             throw invalidated(PrimerValidationError.invalidPhoneNumber(message: "Phone number is not valid."))
         }
@@ -141,8 +134,7 @@ final class PrimerRawPhoneNumberDataTokenizationBuilder: PrimerRawDataTokenizati
         notifyDelegateOfValidationResult(isValid: false, errors: [error])
     }
 
-    // Generic so the concrete type survives: `asPrimerError` would turn a PrimerValidationError
-    // into PrimerError.unknown, and wrapping in `underlyingErrors` hid types in monitoring.
+    // Generic: `asPrimerError` would flatten a PrimerValidationError to PrimerError.unknown.
     private func invalidated<E: Error>(_ error: E) -> E {
         invalidate(with: error)
         return handled(error: error)

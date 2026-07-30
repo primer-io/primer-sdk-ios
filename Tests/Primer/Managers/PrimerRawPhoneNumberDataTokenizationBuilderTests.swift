@@ -10,14 +10,13 @@ import XCTest
 @_spi(PrimerInternal) @testable import PrimerCore
 @_spi(PrimerInternal) @testable import PrimerNetworking
 
-/// Holds a mocked lookup open until the test releases it, so response ordering is controlled
-/// explicitly rather than by sleeping.
+/// Holds a mocked lookup open so response ordering is explicit rather than timing-based.
 private final class Gate {
     private var continuation: CheckedContinuation<Void, Never>?
     private var isOpen = false
 
     func wait() async {
-        // open() can land first — without this the continuation is never installed and we hang.
+        // open() can land first; without this we never install the continuation and hang.
         guard !isOpen else { return }
         await withCheckedContinuation { continuation = $0 }
     }
@@ -105,7 +104,6 @@ final class PrimerRawPhoneNumberDataTokenizationBuilderTests: XCTestCase {
     }
 
     func test_validateRawData_shouldLookUpTheNumberAsTyped() async throws {
-
         try await makeBuilder().validateRawData(PrimerPhoneNumberData(phoneNumber: "+6281234567890"))
 
         XCTAssertEqual(mockApiClient.getPhoneMetadataRequestedNumbers, ["+6281234567890"])
