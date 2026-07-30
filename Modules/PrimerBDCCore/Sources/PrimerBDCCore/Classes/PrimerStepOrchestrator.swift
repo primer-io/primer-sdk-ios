@@ -85,7 +85,7 @@ final class PrimerStepOrchestrator: StepOrchestrating {
     
     private func handleOutcome(_ outcome: TerminalOutcome) throws {
         switch outcome {
-        case .cancelled: onCancelled?()
+        case .cancelled: break
         case .error: throw PrimerStepOrchestratorError.checkoutTerminalError
         case .unsupported: throw PrimerStepOrchestratorError.receivedUnexpectedTerminalOutcome(outcome: outcome)
         case .success: break

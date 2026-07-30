@@ -5,6 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import PrimerSDK
+import SwiftUI
 import UIKit
 
 var environment: Environment = .sandbox
@@ -809,35 +810,8 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     }
 
     @IBAction func primerSDKButtonTapped(_ sender: Any) {
-        customDefinedApiKey = (apiKeyTextField.text ?? "").isEmpty ? nil : apiKeyTextField.text
-
-        let settings = populateSettingsFromUI(dropIn: true)
-
-        switch renderMode {
-        case .createClientSession, .testScenario:
-            configureClientSession()
-            if case .testScenario = renderMode {
-                configureTestScenario()
-            }
-            let vc = MerchantDropInUIViewController.instantiate(
-                settings: settings, clientSession: clientSession, clientToken: nil
-            )
-            navigationController?.pushViewController(vc, animated: true)
-
-        case .clientToken:
-            let vc = MerchantDropInUIViewController.instantiate(
-                settings: settings, clientSession: nil, clientToken: clientTokenTextField.text
-            )
-            navigationController?.pushViewController(vc, animated: true)
-
-        case .deepLink:
-            if let clientToken = self.deepLinkClientToken, let settings = self.deepLinkSettings {
-                let vc = MerchantDropInUIViewController.instantiate(
-                    settings: settings, clientSession: nil, clientToken: clientToken
-                )
-                navigationController?.pushViewController(vc, animated: true)
-            }
-        }
+        let vc = UIHostingController(rootView: ContentView())
+        navigationController?.pushViewController(vc, animated: true)
     }
 
     @IBAction func primerHeadlessButtonTapped(_ sender: Any) {

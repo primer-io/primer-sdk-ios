@@ -5,7 +5,7 @@ import PackageDescription
 let package = Package(
     name: "PrimerSDK",
     defaultLocalization: "en",
-    platforms: [.iOS("13.1")],
+    platforms: [.iOS("17.0")],
     products: [.library(name: "PrimerSDK", targets: ["PrimerSDK"])],
     dependencies: [.package(url: "https://github.com/primer-io/primer-sdk-3ds-ios", from: "2.7.0")],
     targets: packageTargets,
