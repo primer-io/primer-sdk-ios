@@ -5,6 +5,21 @@ All notable changes to `primer-sdk-ios` are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 3.0.0-beta.3 (2026-07-30)
+
+### Feat
+
+- Complete BDCUI (#1846)
+- Introduce PrimerBDCUI non-ui Objects (#1838)
+
+### Fix
+
+- Validate phone numbers via lookup service (ORC-7907) (#1847)
+
+### Refactor
+
+- Update StepResolver API (#1845)
+
 ## 3.0.0-beta.2 (2026-07-02)
 
 ### Feat
