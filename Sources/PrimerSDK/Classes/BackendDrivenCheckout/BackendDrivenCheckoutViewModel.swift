@@ -11,6 +11,7 @@ import Foundation
 import PrimerBDCEngine
 @_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerNetworking
+@_spi(PrimerInternal) import PrimerStepResolver
 import UIKit
 
 final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
@@ -82,6 +83,8 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
                         PrimerDelegateProxy.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for: paymentMethodType)
                     }
                     
+                    await PrimerStepResolverRegistry.shared.register(HTTPRequestResolver(), for: "http.request")
+
                     logBDCStarted()
                     
                     let instructionProvider = makeInstructionProvider(config)

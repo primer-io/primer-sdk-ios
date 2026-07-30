@@ -38,15 +38,7 @@ extension BackendDrivenCheckoutEndpoint: Endpoint {
         }
     }
     
-    var headers: [String : String]? {
-        [
-            "Primer-Client-Token": PrimerAPIConfigurationModule.decodedJWTToken?.accessToken,
-            "Primer-SDK-Checkout-Session-ID": PrimerInternal.shared.checkoutSessionId,
-            "Primer-SDK-Client": PrimerSource.defaultSourceType,
-            "Content-Type": "application/json",
-            "Primer-SDK-Version": VersionUtils.releaseVersionNumber
-        ].compactMapValues(\.self)
-    }
+    var headers: [String : String]? { PrimerRuntimeHeaders.default }
     
     var queryParameters: [String : String]? {
         switch self {
