@@ -195,6 +195,37 @@ final class PrimerRawPhoneNumberDataTokenizationBuilderTests: XCTestCase {
         }
     }
 
+    // Rejecting locally must still supersede the in-flight lookup, or it lands afterwards and
+    // reports valid for a number the shopper has already cleared.
+    func test_clearingFieldMidLookup_shouldNotBeReValidatedByIt() async throws {
+        let gate = Gate()
+        let started = expectation(description: "lookup reached the network")
+        mockApiClient.getPhoneMetadataHandler = { _ in
+            started.fulfill()
+            await gate.wait()
+            return Self.validResponse
+        }
+        let builder = makeBuilder()
+        let typed = PrimerPhoneNumberData(phoneNumber: Self.validNumber)
+
+        let inFlight = Task { try? await builder.validateRawData(typed) }
+        await fulfillment(of: [started], timeout: 2)
+
+        try? await builder.validateRawData(PrimerPhoneNumberData(phoneNumber: ""))
+        XCTAssertFalse(builder.isDataValid)
+
+        gate.open()
+        _ = await inFlight.value
+
+        XCTAssertFalse(builder.isDataValid, "A cleared field must not be re-validated by the old lookup")
+        do {
+            _ = try await builder.makeRequestBodyWithRawData(typed)
+            XCTFail("Expected submit to be refused after the field was cleared")
+        } catch {
+            XCTAssert(error is PrimerError)
+        }
+    }
+
     // The older lookup answers last; its verdict must not win.
     func test_supersededLookupFailure_shouldNotOverwriteNewerSuccess() async throws {
         let partial = "+6281"

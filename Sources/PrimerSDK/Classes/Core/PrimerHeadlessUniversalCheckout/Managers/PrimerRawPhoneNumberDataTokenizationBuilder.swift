@@ -88,6 +88,13 @@ final class PrimerRawPhoneNumberDataTokenizationBuilder: PrimerRawDataTokenizati
 
         let input = rawData.phoneNumber
 
+        // New input supersedes any lookup still in flight, including when it is rejected below —
+        // otherwise the old lookup lands afterwards and reports valid for a number that has gone.
+        // Clearing first also means the cancelled task no longer sees itself as current.
+        let superseded = validationTask
+        validationTask = nil
+        await superseded?.cancel(with: PrimerError.cancelled(paymentMethodType: paymentMethodType))
+
         guard !input.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
             throw invalidated(PrimerValidationError.invalidPhoneNumber(message: "Phone number cannot be blank."))
         }
@@ -102,10 +109,7 @@ final class PrimerRawPhoneNumberDataTokenizationBuilder: PrimerRawDataTokenizati
                 paymentRequestBody: Request.Body.PhoneMetadata.PhoneMetadataDataRequest(phoneNumber: input)
             )
         }
-        // Register before cancelling, or the cancelled task still sees itself as current.
-        let superseded = validationTask
         validationTask = task
-        await superseded?.cancel(with: handled(primerError: .cancelled(paymentMethodType: paymentMethodType)))
 
         let response: Response.Body.PhoneMetadata.PhoneMetadataDataResponse
         do {
