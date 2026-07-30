@@ -14,12 +14,16 @@ import XCTest
 /// explicitly rather than by sleeping.
 private final class Gate {
     private var continuation: CheckedContinuation<Void, Never>?
+    private var isOpen = false
 
     func wait() async {
+        // open() can land first — without this the continuation is never installed and we hang.
+        guard !isOpen else { return }
         await withCheckedContinuation { continuation = $0 }
     }
 
     func open() {
+        isOpen = true
         continuation?.resume()
         continuation = nil
     }
