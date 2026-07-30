@@ -41,6 +41,10 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
     private var currentPollingIteration: Int = 0
     var fetchNolSdkSecretResult: (() -> Result<Response.Body.NolPay.NolPaySecretDataResponse, Error>)?
     var getPhoneMetadataResult: Result<Response.Body.PhoneMetadata.PhoneMetadataDataResponse, Error>?
+    // Per-number response and timing, for forcing lookups to answer out of order.
+    var getPhoneMetadataHandler: ((String) async throws -> Response.Body.PhoneMetadata.PhoneMetadataDataResponse)?
+    private(set) var getPhoneMetadataRequestedNumbers: [String] = []
+    var getPhoneMetadataCallCount: Int { getPhoneMetadataRequestedNumbers.count }
     var sdkCompleteUrlResult: (Response.Body.Complete?, Error?)?
     var responseHeaders: [String: String]?
 
@@ -1067,13 +1071,19 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
         clientToken: DecodedJWTToken,
         paymentRequestBody: Request.Body.PhoneMetadata.PhoneMetadataDataRequest
     ) async throws -> Response.Body.PhoneMetadata.PhoneMetadataDataResponse {
+        getPhoneMetadataRequestedNumbers.append(paymentRequestBody.phoneNumber)
+
+        try await Task.sleep(nanoseconds: UInt64(mockedNetworkDelay * 1_000_000_000))
+
+        if let getPhoneMetadataHandler {
+            return try await getPhoneMetadataHandler(paymentRequestBody.phoneNumber)
+        }
+
         guard let result = getPhoneMetadataResult else {
-            XCTAssert(false, "Set 'getPhoneMetadataResult' on your MockPrimerAPIClient")
+            XCTAssert(false, "Set 'getPhoneMetadataResult' or 'getPhoneMetadataHandler' on your MockPrimerAPIClient")
             throw NSError(domain: "MockPrimerAPIClient", code: 1, userInfo: nil)
         }
 
-        try await Task.sleep(nanoseconds: UInt64(mockedNetworkDelay * 1_000_000_000))
-        
         switch result {
         case let .success(success): return success
         case let .failure(failure): throw failure

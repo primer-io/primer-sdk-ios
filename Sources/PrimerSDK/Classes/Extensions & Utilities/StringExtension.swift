@@ -139,21 +139,6 @@ extension String {
         return String((0..<length).map { _ in letters.randomElement()! })
     }
 
-    func isValidPhoneNumberForPaymentMethodType(_ paymentMethodType: PrimerPaymentMethodType) -> Bool {
-
-        var regex = ""
-
-        switch paymentMethodType {
-        case .xenditOvo:
-            regex = "^(^\\+628|628)(\\d{8,10})"
-        default:
-            regex = "^(^\\+)(\\d){9,14}$"
-        }
-
-        let phoneNumber = NSPredicate(format: "SELF MATCHES %@", regex)
-        return phoneNumber.evaluate(with: self)
-    }
-
     /// Validates expiry date string in MM/YY or MM/YYYY format
     /// - Throws: PrimerValidationError if the date format is invalid or the date is expired
     /// - Note: This function accepts both MM/YY and MM/YYYY formats to maintain compatibility
