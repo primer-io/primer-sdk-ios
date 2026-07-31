@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
     s.name         = "PrimerBDCCore"
-    s.version      = "3.0.0-beta.2"
+    s.version      = "3.0.0-beta.3"
     s.summary      = "Backend Driven Checkout core orchestration for Primer iOS SDK"
     s.description  = "Core orchestration layer for Primer Backend Driven Checkout."
     s.homepage     = "https://www.primer.io"
