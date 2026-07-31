@@ -5,6 +5,18 @@ All notable changes to `primer-sdk-ios` are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 3.0.0-beta.4 (2026-07-31)
+
+### Feat
+
+- Add Apple Pay card type and network filtering [ORC-7503] (#1817)
+
+### Fix
+
+- Convert Apple Pay amounts by currency decimalDigits (#1816)
+- **headless**: validate cobadged cards via BIN cache (iOS↔Android parity) (#1722)
+- **apple-pay**: remove allowedCardNetworks option, rely on client session [ORC-7503] (#1822)
+
 ## 3.0.0-beta.3 (2026-07-30)
 
 ### Feat
