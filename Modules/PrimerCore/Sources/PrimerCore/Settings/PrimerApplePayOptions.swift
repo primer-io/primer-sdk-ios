@@ -4,6 +4,8 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+import PrimerFoundation
+
 public final class PrimerApplePayOptions: Codable {
 
     @_spi(PrimerInternal) public let merchantIdentifier: String
@@ -20,6 +22,8 @@ public final class PrimerApplePayOptions: Codable {
     @_spi(PrimerInternal) public let checkProvidedNetworks: Bool
     @_spi(PrimerInternal) public let shippingOptions: ShippingOptions?
     @_spi(PrimerInternal) public let billingOptions: BillingOptions?
+    /// Card types the Apple Pay sheet should offer. `nil` or empty allows all types.
+    @_spi(PrimerInternal) public let allowedCardTypes: [CardType]?
 
     public init(
         merchantIdentifier: String,
@@ -35,6 +39,7 @@ public final class PrimerApplePayOptions: Codable {
         self.checkProvidedNetworks = checkProvidedNetworks
         shippingOptions = nil
         billingOptions = nil
+        allowedCardTypes = nil
     }
 
     public init(
@@ -44,7 +49,8 @@ public final class PrimerApplePayOptions: Codable {
         showApplePayForUnsupportedDevice: Bool = true,
         checkProvidedNetworks: Bool = true,
         shippingOptions: ShippingOptions? = nil,
-        billingOptions: BillingOptions? = nil
+        billingOptions: BillingOptions? = nil,
+        allowedCardTypes: [CardType]? = nil
     ) {
         self.merchantIdentifier = merchantIdentifier
         self.merchantName = merchantName
@@ -53,6 +59,7 @@ public final class PrimerApplePayOptions: Codable {
         self.checkProvidedNetworks = checkProvidedNetworks
         self.shippingOptions = shippingOptions
         self.billingOptions = billingOptions
+        self.allowedCardTypes = allowedCardTypes
     }
 
     public struct ShippingOptions: Codable {

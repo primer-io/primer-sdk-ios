@@ -219,3 +219,17 @@ final class DefaultNetworkService: NetworkServiceProtocol, LogReporter {
         }
     }
 }
+
+private extension Endpoint {
+    var responseFactory: NetworkResponseFactory {
+        if let endpoint = self as? PrimerAPI {
+            switch endpoint {
+            case .redirect:
+                return SuccessResponseFactory()
+            default:
+                break
+            }
+        }
+        return JSONNetworkResponseFactory()
+    }
+}

@@ -402,46 +402,6 @@ extension WebRedirectPaymentMethodTokenizationViewModel: SFSafariViewControllerD
         }
     }
 }
-
-enum PollingStatus: String, Codable {
-    case pending = "PENDING"
-    case complete = "COMPLETE"
-}
-
-struct PollingResponse: Decodable {
-
-    let status: PollingStatus
-    let id: String
-    let source: String
-
-    enum CodingKeys: CodingKey {
-        case status
-        case id
-        case source
-    }
-
-    init(
-        status: PollingStatus,
-        id: String,
-        source: String
-    ) {
-        self.status = status
-        self.id = id
-        self.source = source
-    }
-
-    init(from decoder: Decoder) throws {
-        do {
-            let container = try decoder.container(keyedBy: CodingKeys.self)
-            status = try container.decode(PollingStatus.self, forKey: .status)
-            id = try container.decode(String.self, forKey: .id)
-            source = try container.decode(String.self, forKey: .source)
-        } catch {
-            throw error
-        }
-
-    }
-}
 // swiftlint:enable function_body_length
 // swiftlint:enable type_body_length
 // swiftlint:enable file_length

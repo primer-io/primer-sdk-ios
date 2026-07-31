@@ -6,6 +6,7 @@
 
 import Foundation
 import PassKit
+@_spi(PrimerInternal) import PrimerFoundation
 
 struct ApplePayOrderItem: Codable, Equatable {
 

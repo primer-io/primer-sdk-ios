@@ -7,7 +7,7 @@
 // swiftlint:disable function_body_length
 
 import Foundation
-import PrimerFoundation
+@_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerNetworking
 
 // MARK: MISSING_TESTS

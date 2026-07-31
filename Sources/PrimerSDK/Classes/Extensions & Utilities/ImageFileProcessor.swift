@@ -5,6 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+@_spi(PrimerInternal) import PrimerCore
 
 // swiftlint:disable cyclomatic_complexity
 // swiftlint:disable function_body_length
@@ -16,9 +17,11 @@ final class ImageFileProcessor {
         var imageFiles: [ImageFile] = []
 
         for paymentMethod in apiConfiguration.paymentMethods ?? [] {
-            imageFiles.append(makeImageFile(for: paymentMethod,
-                                            variant: "colored",
-                                            value: paymentMethod.displayMetadata?.button.iconUrl?.coloredUrlStr))
+            imageFiles.append(makeImageFile(
+                for: paymentMethod,
+                variant: "colored",
+                value: paymentMethod.displayMetadata?.button.iconUrl?.coloredUrlStr
+            ))
             imageFiles.append(makeImageFile(for: paymentMethod, variant: "light", value: paymentMethod.displayMetadata?.button.iconUrl?.lightUrlStr))
             imageFiles.append(makeImageFile(for: paymentMethod, variant: "dark", value: paymentMethod.displayMetadata?.button.iconUrl?.darkUrlStr))
         }
@@ -28,8 +31,10 @@ final class ImageFileProcessor {
 
         for (index, paymentMethod) in (apiConfiguration.paymentMethods ?? []).enumerated() {
             let paymentMethodImageFiles = images.filter {
-                $0.fileName.contains(paymentMethod.type.lowercased().replacingOccurrences(of: "_",
-                                                                                          with: "-"))
+                $0.fileName.contains(paymentMethod.type.lowercased().replacingOccurrences(
+                    of: "_",
+                    with: "-"
+                ))
             }
             if paymentMethodImageFiles.isEmpty { continue }
 

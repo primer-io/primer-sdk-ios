@@ -20,10 +20,6 @@ protocol ApplePayPresenting {
 
 final class ApplePayPresentationManager: ApplePayPresenting, LogReporter, Sendable {
 
-    private var supportedNetworks: [PKPaymentNetwork] {
-        ApplePayUtils.supportedPKPaymentNetworks()
-    }
-
     var isPresentable: Bool {
         ApplePayUtils.canMakeApplePayPayments()
     }
@@ -67,8 +63,8 @@ final class ApplePayPresentationManager: ApplePayPresenting, LogReporter, Sendab
         request.currencyCode = applePayRequest.currency.code
         request.countryCode = applePayRequest.countryCode.rawValue
         request.merchantIdentifier = applePayRequest.merchantIdentifier
-        request.merchantCapabilities = [.capability3DS]
-        request.supportedNetworks = supportedNetworks
+        request.merchantCapabilities = merchantCapabilities(for: applePayOptions)
+        request.supportedNetworks = ApplePayUtils.supportedPKPaymentNetworks(cardNetworks: .allowedCardNetworks)
         request.paymentSummaryItems = applePayRequest.items.compactMap(\.applePayItem)
 
         if let shippingMethods = applePayRequest.shippingMethods {
@@ -168,6 +164,23 @@ final class ApplePayPresentationManager: ApplePayPresenting, LogReporter, Sendab
         logger.error(message: "Cannot present Apple Pay")
         let err = PrimerError.unableToPresentApplePay()
         return err
+    }
+
+    private func merchantCapabilities(for options: PrimerApplePayOptions?) -> PKMerchantCapability {
+        var capabilities: PKMerchantCapability = [.capability3DS]
+
+        guard let allowedCardTypes = options?.allowedCardTypes, !allowedCardTypes.isEmpty else {
+            return capabilities
+        }
+
+        if allowedCardTypes.contains(.credit) {
+            capabilities.insert(.capabilityCredit)
+        }
+        if allowedCardTypes.contains(.debit) {
+            capabilities.insert(.capabilityDebit)
+        }
+
+        return capabilities
     }
 }
 

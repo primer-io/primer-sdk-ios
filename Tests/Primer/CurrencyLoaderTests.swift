@@ -4,6 +4,7 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+import PrimerCore
 import PrimerFoundation
 @testable import PrimerSDK
 import XCTest
@@ -11,9 +12,9 @@ import XCTest
 class CurrencyLoaderTests: XCTestCase {
 
     var storage: CurrencyStorageProtocol!
-    var networkService: MockCurrencyNetworkService!
     var currencyLoader: CurrencyLoader!
-
+    private var networkService: MockCurrencyNetworkService!
+    
     override func setUpWithError() throws {
         super.setUp()
         storage = MockCurrencyStorage()
@@ -222,5 +223,13 @@ class CurrencyLoaderTests: XCTestCase {
 
         // Then the symbol should match the expected value
         XCTAssertEqual(symbol, "US$", "Currency symbol for USD should be 'US$'")
+    }
+}
+
+private final class MockCurrencyNetworkService: CurrencyNetworkServiceProtocol {
+    var mockResponse: (Data?, URLResponse?, Error?)?
+
+    func fetchData(with request: URLRequest, completion: @escaping (Data?, URLResponse?, Error?) -> Void) {
+        completion(mockResponse?.0, mockResponse?.1, mockResponse?.2)
     }
 }

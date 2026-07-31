@@ -14,16 +14,19 @@ let package = Package(
 
 private var packageTargets: [Target] {
     [
-        primerSDKTarget,
+        .target(name: "PrimerSDK", dependencies: primerSDKDependencies, path: "Sources/PrimerSDK"),
         
         target(name: "PrimerFoundation"),
-        target(name: "PrimerStepResolver", dependencies: ["PrimerFoundation"]),
-        target(name: "PrimerBDCEngine", dependencies: ["PrimerFoundation", "PrimerStepResolver"]),
-        target(name: "PrimerBDCCore", dependencies: ["PrimerBDCEngine", "PrimerFoundation", "PrimerStepResolver"]),
-        target(name: "PrimerCore", dependencies: ["PrimerFoundation"]),
-        target(name: "PrimerNetworking", dependencies: ["PrimerFoundation"]),
         target(name: "PrimerResources", resources: [.process("PrimerResources/Resources")]),
-        target(name: "PrimerUI"),
+        
+        target(name: "PrimerNetworking", dependencies: ["PrimerFoundation"]),
+        target(name: "PrimerStepResolver", dependencies: ["PrimerFoundation"]),
+        target(name: "PrimerCore", dependencies: ["PrimerFoundation", "PrimerResources"]),
+
+        target(name: "PrimerUI", dependencies: ["PrimerFoundation", "PrimerResources", "PrimerCore"]),
+        target(name: "PrimerBDCEngine", dependencies: ["PrimerFoundation", "PrimerStepResolver"]),
+        
+        target(name: "PrimerBDCCore", dependencies: ["PrimerBDCEngine", "PrimerFoundation", "PrimerStepResolver"]),
         
         sdkTestsTarget,
         
@@ -32,15 +35,6 @@ private var packageTargets: [Target] {
         testTarget(name: "PrimerFoundation", dependencies: ["PrimerFoundation"]),
         testTarget(name: "PrimerStepResolver", dependencies: ["PrimerStepResolver"]),
     ]
-}
-
-private var primerSDKTarget: Target {
-    .target(
-        name: "PrimerSDK",
-        dependencies: primerSDKDependencies,
-        path: "Sources/PrimerSDK",
-        resources: [.process("Resources")]
-    )
 }
 
 private var primerSDKDependencies: [Target.Dependency] {

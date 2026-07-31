@@ -1079,12 +1079,6 @@
                         location = "group:PrimerCardNumberFieldView.swift">
                      </FileRef>
                      <FileRef
-                        location = "group:PrimerCVVFieldView.swift">
-                     </FileRef>
-                     <FileRef
-                        location = "group:PrimerTextField.swift">
-                     </FileRef>
-                     <FileRef
                         location = "group:PrimerExpiryDateFieldView.swift">
                      </FileRef>
                   </Group>
@@ -1100,13 +1094,6 @@
             <Group
                location = "group:Data Models"
                name = "Data Models">
-               <Group
-                  location = "group:PCI"
-                  name = "PCI">
-                  <FileRef
-                     location = "group:FormType.swift">
-                  </FileRef>
-               </Group>
                <FileRef
                   location = "group:VoucherValue.swift">
                </FileRef>
@@ -1123,19 +1110,10 @@
                   location = "group:ImageName.swift">
                </FileRef>
                <FileRef
-                  location = "group:CountryCode.swift">
-               </FileRef>
-               <FileRef
-                  location = "group:PrimerInitializationData.swift">
-               </FileRef>
-               <FileRef
                   location = "group:ClientToken.swift">
                </FileRef>
                <FileRef
                   location = "group:PaymentMethodConfigurationOptions.swift">
-               </FileRef>
-               <FileRef
-                  location = "group:PrimerVaultedPaymentMethodAdditionalData.swift">
                </FileRef>
                <FileRef
                   location = "group:PrimerPaymentMethod+DisplayMetadata.swift">
@@ -1188,12 +1166,6 @@
                   location = "group:ApplePay.swift">
                </FileRef>
                <FileRef
-                  location = "group:Notification.swift">
-               </FileRef>
-               <FileRef
-                  location = "group:PrimerIntegrationOptions.swift">
-               </FileRef>
-               <FileRef
                   location = "group:TokenizationRequestPaymentSessionInfo.swift">
                </FileRef>
                <FileRef
@@ -1214,9 +1186,6 @@
                </Group>
                <FileRef
                   location = "group:PrimerPaymentMethod.swift">
-               </FileRef>
-               <FileRef
-                  location = "group:PrimerCheckoutAdditionalInfo.swift">
                </FileRef>
                <FileRef
                   location = "group:PrimerCheckoutQRCodeInfo.swift">
@@ -1264,9 +1233,6 @@
                </FileRef>
                <FileRef
                   location = "group:PaymentMethodTypeProviding.swift">
-               </FileRef>
-               <FileRef
-                  location = "group:CardNetworkParser.swift">
                </FileRef>
                <FileRef
                   location = "group:ImageFileProcessor.swift">
@@ -1332,9 +1298,6 @@
                   name = "Constants">
                   <FileRef
                      location = "group:Strings.swift">
-                  </FileRef>
-                  <FileRef
-                     location = "group:Content.swift">
                   </FileRef>
                   <FileRef
                      location = "group:Colors.swift">
@@ -1646,13 +1609,6 @@
                   </FileRef>
                </Group>
                <Group
-                  location = "group:Keychain"
-                  name = "Keychain">
-                  <FileRef
-                     location = "group:Keychain.swift">
-                  </FileRef>
-               </Group>
-               <Group
                   location = "group:3DS"
                   name = "3DS">
                   <Group
@@ -1791,13 +1747,6 @@
                         location = "group:PrimerAPIClientPayPalProtocol.swift">
                      </FileRef>
                   </Group>
-               </Group>
-               <Group
-                  location = "group:Parser"
-                  name = "Parser">
-                  <FileRef
-                     location = "group:Parser.swift">
-                  </FileRef>
                </Group>
             </Group>
             <Group
@@ -1949,9 +1898,6 @@
                      name = "Generic">
                      <FileRef
                         location = "group:PrimerSimpleCardFormTextFieldView.swift">
-                     </FileRef>
-                     <FileRef
-                        location = "group:PrimerGenericTextFieldView.swift">
                      </FileRef>
                   </Group>
                </Group>

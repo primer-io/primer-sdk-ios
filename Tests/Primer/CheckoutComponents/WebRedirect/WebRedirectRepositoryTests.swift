@@ -6,7 +6,7 @@
 
 import AuthenticationServices
 @_spi(PrimerInternal) @testable import PrimerNetworking
-@testable import PrimerSDK
+@_spi(PrimerInternal) @testable import PrimerSDK
 import XCTest
 @_spi(PrimerInternal) @testable import PrimerFoundation
 @_spi(PrimerInternal) @testable import PrimerCore

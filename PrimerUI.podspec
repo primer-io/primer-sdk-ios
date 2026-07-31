@@ -13,4 +13,8 @@ Pod::Spec.new do |s|
 
     s.ios.source_files = "Modules/PrimerUI/Sources/**/*.{swift}"
     s.ios.frameworks   = "Foundation", "UIKit"
+
+    s.dependency "PrimerFoundation", "= #{s.version}"
+    s.dependency "PrimerResources", "= #{s.version}"
+    s.dependency "PrimerCore", "= #{s.version}"
 end

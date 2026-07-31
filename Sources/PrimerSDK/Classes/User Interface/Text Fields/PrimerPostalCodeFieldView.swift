@@ -6,6 +6,8 @@
 
 import UIKit
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerUI
 
 public final class PrimerPostalCodeFieldView: PrimerTextFieldView {
 
@@ -13,7 +15,7 @@ public final class PrimerPostalCodeFieldView: PrimerTextFieldView {
         textField.internalText
     }
 
-    override func xibSetup() {
+    override public func xibSetup() {
         super.xibSetup()
         keyboardType = .namePhonePad
         isTextFieldAccessibilityElement = true

@@ -11,63 +11,6 @@ import Foundation
 @_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerCore
 
-typealias FileName = String
-typealias FileExtension = String
-
-class File: LogReporter {
-
-    var fileName: FileName
-    var fileExtension: FileExtension?
-    var localUrl: URL? {
-        guard let documentDirectoryUrl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else { return nil }
-
-        var tmpFilename: String = fileName
-        if let fileExtension {
-            tmpFilename += "." + fileExtension
-        }
-
-        let fileLocalUrl = documentDirectoryUrl.appendingPathComponent(tmpFilename)
-        return fileLocalUrl
-    }
-    private(set) var remoteUrl: URL?
-    private var base64Data: Data?
-
-    var data: Data? {
-        guard let localUrl else { return nil }
-        return try? Data(contentsOf: localUrl)
-    }
-
-    init(
-        fileName: FileName,
-        fileExtension: FileExtension?,
-        remoteUrl: URL? = nil,
-        base64Data: Data? = nil
-    ) {
-        self.fileName = fileName
-        self.fileExtension = fileExtension
-        self.remoteUrl = remoteUrl
-        self.base64Data = base64Data
-
-        if let base64Data = self.base64Data,
-           let documentDirectoryUrl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-            do {
-                var tmpFilename: String = self.fileName
-                if let fileExtension = self.fileExtension {
-                    tmpFilename += "." + fileExtension
-                }
-
-                let fileLocalUrl = documentDirectoryUrl
-                    .appendingPathComponent("primer", isDirectory: true)
-                    .appendingPathComponent(tmpFilename)
-                try base64Data.write(to: fileLocalUrl)
-
-            } catch {
-                logger.error(message: "Write failed")
-            }
-        }
-    }
-}
-
 protocol DownloaderModule {
     func download(files: [File]) async throws -> [File]
 }

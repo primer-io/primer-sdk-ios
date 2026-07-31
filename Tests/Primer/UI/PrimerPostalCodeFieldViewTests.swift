@@ -1,11 +1,12 @@
 //
 //  PrimerPostalCodeFieldViewTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import XCTest
 @testable import PrimerSDK
+import XCTest
+@_spi(PrimerInternal) import PrimerUI
 
 final class PrimerPostalCodeFieldViewTests: XCTestCase {
 
@@ -27,7 +28,7 @@ final class PrimerPostalCodeFieldViewTests: XCTestCase {
     func testValidationValidCode() throws {
         view.text = ""
 
-        let expectation = self.expectation(description: "onIsValid is called")
+        let expectation = expectation(description: "onIsValid is called")
         delegate.onIsValid = { isValid in
             XCTAssertNotNil(isValid)
             XCTAssertTrue(isValid!)
@@ -40,9 +41,11 @@ final class PrimerPostalCodeFieldViewTests: XCTestCase {
             expectation.fulfill()
         }
 
-        _ = view.textField(view.textField,
-                           shouldChangeCharactersIn: NSRange(location: 0, length: 0),
-                           replacementString: "BS1 4DJ")
+        _ = view.textField(
+            view.textField,
+            shouldChangeCharactersIn: NSRange(location: 0, length: 0),
+            replacementString: "BS1 4DJ"
+        )
 
         waitForExpectations(timeout: 2.0)
     }
@@ -50,11 +53,11 @@ final class PrimerPostalCodeFieldViewTests: XCTestCase {
     func testValidationInvalidCode() throws {
         view.text = ""
 
-        let expectation = self.expectation(description: "onIsValid is called")
+        let expectation = expectation(description: "onIsValid is called")
         delegate.onIsValid = { isValid in
             XCTAssertNil(isValid)
             switch self.view.validation {
-            case .invalid(let error):
+            case let .invalid(error):
                 XCTAssertEqual(error?.localizedDescription, "[invalid-postal-code] Postal code is not valid.")
             default:
                 XCTFail()
@@ -62,9 +65,11 @@ final class PrimerPostalCodeFieldViewTests: XCTestCase {
             expectation.fulfill()
         }
 
-        _ = view.textField(view.textField,
-                           shouldChangeCharactersIn: NSRange(location: 0, length: 0),
-                           replacementString: "!!!!!!")
+        _ = view.textField(
+            view.textField,
+            shouldChangeCharactersIn: NSRange(location: 0, length: 0),
+            replacementString: "!!!!!!"
+        )
 
         waitForExpectations(timeout: 2.0)
     }

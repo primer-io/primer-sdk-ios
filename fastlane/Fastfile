@@ -414,8 +414,11 @@ platform :ios do
     return UI.message("⏭  #{pod} #{version} already on trunk") if on_trunk?(pod, version)
     5.times do |i|
       UI.message("⬆️  pushing #{pod} #{version} (attempt #{i + 1}/5)")
-      sh("pod trunk push #{podspec(pod)} --allow-root --allow-warnings") { } # don't raise on false errors
-      return notify_slack("✅ #{pod} #{version} pushed to trunk") if on_trunk?(pod, version)
+      output = `pod trunk push #{podspec(pod)} --allow-root --allow-warnings 2>&1`
+      puts output
+      if on_trunk?(pod, version) || output.include?("Unable to accept duplicate entry")
+        return notify_slack("✅ #{pod} #{version} pushed to trunk")
+      end
       sleep 10
     end
     UI.user_error!("❌ #{pod} #{version} failed to publish after 5 attempts")

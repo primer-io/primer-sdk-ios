@@ -1,11 +1,12 @@
 //
 //  PrimerCityFieldViewTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import XCTest
 @testable import PrimerSDK
+import XCTest
+@_spi(PrimerInternal) import PrimerUI
 
 final class PrimerCityFieldViewTests: XCTestCase {
 
@@ -27,7 +28,7 @@ final class PrimerCityFieldViewTests: XCTestCase {
     func testValidationValidCity() throws {
         view.text = ""
 
-        let expectation = self.expectation(description: "onIsValid is called")
+        let expectation = expectation(description: "onIsValid is called")
         delegate.onIsValid = { isValid in
             XCTAssertNotNil(isValid)
             XCTAssertTrue(isValid!)
@@ -40,9 +41,11 @@ final class PrimerCityFieldViewTests: XCTestCase {
             expectation.fulfill()
         }
 
-        _ = view.textField(view.textField,
-                           shouldChangeCharactersIn: NSRange(location: 0, length: 0),
-                           replacementString: "Berlin")
+        _ = view.textField(
+            view.textField,
+            shouldChangeCharactersIn: NSRange(location: 0, length: 0),
+            replacementString: "Berlin"
+        )
 
         waitForExpectations(timeout: 2.0)
     }
@@ -50,11 +53,11 @@ final class PrimerCityFieldViewTests: XCTestCase {
     func testValidationInvalidCity() throws {
         view.text = ""
 
-        let expectation = self.expectation(description: "onIsValid is called")
+        let expectation = expectation(description: "onIsValid is called")
         delegate.onIsValid = { isValid in
             XCTAssertNil(isValid)
             switch self.view.validation {
-            case .invalid(let error):
+            case let .invalid(error):
                 XCTAssertEqual(error?.localizedDescription, "[invalid-city] City is not valid.")
             default:
                 XCTFail()
@@ -62,9 +65,11 @@ final class PrimerCityFieldViewTests: XCTestCase {
             expectation.fulfill()
         }
 
-        _ = view.textField(view.textField,
-                           shouldChangeCharactersIn: NSRange(location: 0, length: 0),
-                           replacementString: "123456")
+        _ = view.textField(
+            view.textField,
+            shouldChangeCharactersIn: NSRange(location: 0, length: 0),
+            replacementString: "123456"
+        )
 
         waitForExpectations(timeout: 2.0)
     }

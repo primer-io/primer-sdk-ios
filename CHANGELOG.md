@@ -62,6 +62,24 @@ CheckoutComponents beta (iOS 15+). This is a beta release — APIs may still cha
 
 - Checkout Components
 
+## 2.51.1 (2026-07-01)
+
+### Fix
+
+- **headless**: validate cobadged cards via BIN cache (iOS↔Android parity) (#1722)
+- **apple-pay**: remove allowedCardNetworks option, rely on client session [ORC-7503] (#1822)
+
+## 2.51.0 (2026-06-25)
+
+### Feat
+
+- Add Apple Pay card type and network filtering [ORC-7503] (#1817)
+- Complete PrimerUI Modularisation (#1801)
+
+### Refactor
+
+- Tidy up Package files (#1799)
+
 ## 2.50.0 (2026-06-11)
 
 ### Feat

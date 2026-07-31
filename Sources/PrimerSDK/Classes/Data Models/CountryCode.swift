@@ -9,6 +9,7 @@
 
 import Foundation
 @_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerCore
 import UIKit
 
 // inspired by https://gist.github.com/proxpero/f7ddfd721a0d0d6159589916185d9dc9

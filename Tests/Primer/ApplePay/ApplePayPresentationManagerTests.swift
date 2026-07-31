@@ -336,4 +336,91 @@ final class ApplePayPresentationManagerTests: XCTestCase {
         XCTAssertEqual(PrimerApplePayOptions.RequiredContactField.phoneNumber.toPKContact(), .phoneNumber)
         XCTAssertEqual(PrimerApplePayOptions.RequiredContactField.postalAddress.toPKContact(), .postalAddress)
     }
+
+    // MARK: - Card type filtering (merchantCapabilities)
+
+    func testMerchantCapabilitiesDefaultsTo3DSWhenNoCardTypes() throws {
+        SDKSessionHelper.setUp()
+        defer { SDKSessionHelper.tearDown() }
+        registerApplePayOptions(allowedCardTypes: nil)
+
+        let request = try sut.createRequest(for: makeApplePayRequest())
+
+        XCTAssertEqual(request.merchantCapabilities, [.capability3DS])
+    }
+
+    func testMerchantCapabilitiesCreditAddsCreditKeeps3DS() throws {
+        SDKSessionHelper.setUp()
+        defer { SDKSessionHelper.tearDown() }
+        registerApplePayOptions(allowedCardTypes: [.credit])
+
+        let request = try sut.createRequest(for: makeApplePayRequest())
+
+        XCTAssertEqual(request.merchantCapabilities, [.capability3DS, .capabilityCredit])
+    }
+
+    func testMerchantCapabilitiesDebitAddsDebitKeeps3DS() throws {
+        SDKSessionHelper.setUp()
+        defer { SDKSessionHelper.tearDown() }
+        registerApplePayOptions(allowedCardTypes: [.debit])
+
+        let request = try sut.createRequest(for: makeApplePayRequest())
+
+        XCTAssertEqual(request.merchantCapabilities, [.capability3DS, .capabilityDebit])
+    }
+
+    func testMerchantCapabilitiesCreditAndDebitAddsBoth() throws {
+        SDKSessionHelper.setUp()
+        defer { SDKSessionHelper.tearDown() }
+        registerApplePayOptions(allowedCardTypes: [.credit, .debit])
+
+        let request = try sut.createRequest(for: makeApplePayRequest())
+
+        XCTAssertEqual(request.merchantCapabilities, [.capability3DS, .capabilityCredit, .capabilityDebit])
+    }
+
+    func testMerchantCapabilitiesEmptyStaysUnrestricted() throws {
+        SDKSessionHelper.setUp()
+        defer { SDKSessionHelper.tearDown() }
+        registerApplePayOptions(allowedCardTypes: [])
+
+        let request = try sut.createRequest(for: makeApplePayRequest())
+
+        XCTAssertEqual(request.merchantCapabilities, [.capability3DS])
+    }
+
+    func testNilApplePayOptionsUsesAccountNetworksAndDefaultCapabilities() throws {
+        SDKSessionHelper.setUp()
+        defer { SDKSessionHelper.tearDown() }
+        DependencyContainer.register(PrimerSettings(paymentMethodOptions: .init(applePayOptions: nil)) as PrimerSettingsProtocol)
+
+        let request = try sut.createRequest(for: makeApplePayRequest())
+
+        XCTAssertEqual(request.merchantCapabilities, [.capability3DS])
+        XCTAssertEqual(request.supportedNetworks, [.visa, .masterCard, .amex, .discover])
+    }
+
+    func makeApplePayRequest() -> ApplePayRequest {
+        ApplePayRequest(
+            currency: Currency(code: "GBP", decimalDigits: 2),
+            merchantIdentifier: "merchant_id",
+            countryCode: .gb,
+            items: [],
+            shippingMethods: nil
+        )
+    }
+
+    func registerApplePayOptions(allowedCardTypes: [CardType]?) {
+        let settings = PrimerSettings(
+            paymentMethodOptions: .init(
+                applePayOptions: .init(
+                    merchantIdentifier: "merchant_id",
+                    merchantName: "merchant_name",
+                    checkProvidedNetworks: true,
+                    allowedCardTypes: allowedCardTypes
+                )
+            )
+        )
+        DependencyContainer.register(settings as PrimerSettingsProtocol)
+    }
 }

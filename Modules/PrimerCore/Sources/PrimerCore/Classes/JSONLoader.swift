@@ -1,0 +1,28 @@
+//
+//  JSONLoader.swift
+//
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
+
+import Foundation
+@_spi(PrimerInternal) import PrimerResources
+
+@_spi(PrimerInternal) public final class JSONLoader {
+
+    public static func loadJsonData(fileName: String) -> Data? {
+
+        guard let url = Bundle.primerResources.url(forResource: fileName, withExtension: "json") else {
+            return nil
+        }
+
+        return try? Data(contentsOf: url)
+    }
+}
+
+@_spi(PrimerInternal) public extension JSONDecoder {
+
+    func withSnakeCaseParsing() -> JSONDecoder {
+        keyDecodingStrategy = .convertFromSnakeCase
+        return self
+    }
+}

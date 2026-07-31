@@ -12,6 +12,7 @@ import Foundation
 protocol CardValidationService {
     func validateCardNetworks(withCardNumber cardNumber: String)
     func createValidationMetadata(networks: [CardNetwork], source: PrimerCardValidationSource) -> PrimerCardNumberEntryMetadata
+    func cachedMetadata(forCardNumber cardNumber: String) -> PrimerCardNumberEntryMetadata?
 }
 
 final class DefaultCardValidationService: CardValidationService, LogReporter {
@@ -75,6 +76,14 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
         self.debouncer = debouncer
     }
 
+    func cachedMetadata(forCardNumber cardNumber: String) -> PrimerCardNumberEntryMetadata? {
+        getCachedMetadata(for: binKey(for: cardNumber.withoutWhiteSpace))
+    }
+
+    private func binKey(for cardNumber: String) -> String {
+        String(cardNumber.prefix(Self.maximumBinLength))
+    }
+
     // MARK: Core Validation
 
     func validateCardNetworks(withCardNumber cardNumber: String) {
@@ -113,7 +122,7 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
             willFetchMetadataForState: cardState
         )
 
-        let cacheKey = cardState.cardNumber
+        let cacheKey = binKey(for: cardState.cardNumber)
         if let cached = getCachedMetadata(for: cacheKey) {
             handle(cardMetadata: cached, forCardState: cardState)
             if let cachedBin = getCachedBinData(for: cacheKey) {
@@ -155,7 +164,7 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
                 handle(cardMetadata: metadata, forCardState: cardState)
 
                 let binData = buildBinData(from: enrichedNetworks, firstDigits: result.firstDigits, status: .complete)
-                setCachedBinData(binData, for: cardState.cardNumber)
+                setCachedBinData(binData, for: binKey(for: cardState.cardNumber))
                 delegate?.primerRawDataManager?(rawDataManager, didReceiveBinData: binData)
             } catch {
                 sendEvent(forError: error)
@@ -205,8 +214,7 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
     }
 
     private func handle(cardMetadata: PrimerCardNumberEntryMetadata, forCardState cardState: PrimerCardNumberEntryState) {
-        let cacheKey = cardState.cardNumber
-        setCachedMetadata(cardMetadata, for: cacheKey)
+        setCachedMetadata(cardMetadata, for: binKey(for: cardState.cardNumber))
 
         let trackable = cardMetadata.selectableCardNetworks ?? cardMetadata.detectedCardNetworks
         sendEvent(forNetworks: trackable.items, source: cardMetadata.source)

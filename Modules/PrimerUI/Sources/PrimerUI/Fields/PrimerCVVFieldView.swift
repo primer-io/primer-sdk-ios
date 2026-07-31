@@ -1,0 +1,83 @@
+//
+//  PrimerCVVFieldView.swift
+//
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
+
+// swiftlint:disable function_body_length
+
+@_spi(PrimerInternal) import PrimerFoundation
+import UIKit
+@_spi(PrimerInternal) import PrimerCore
+
+public final class PrimerCVVFieldView: PrimerTextFieldView {
+
+    @_spi(PrimerInternal) public var cvv: String {
+        textField.internalText ?? ""
+    }
+    public var cardNetwork: CardNetwork = .unknown
+
+    override public func xibSetup() {
+        super.xibSetup()
+        keyboardType = .numberPad
+        isTextFieldAccessibilityElement = true
+        textFieldaccessibilityIdentifier = "cvc_txt_fld"
+        textField.delegate = self
+        isEditingAnalyticsEnabled = true
+        editingAnalyticsObjectId = .cvc
+        isValid = { [weak self] text in
+            guard let strongSelf = self else { return false }
+            return text.isTypingValidCVV(cardNetwork: strongSelf.cardNetwork)
+        }
+    }
+
+    override public func textField(
+        _ textField: UITextField,
+        shouldChangeCharactersIn range: NSRange,
+        replacementString string: String
+    ) -> Bool {
+        guard let primerTextField = textField as? PrimerTextField else { return true }
+        let currentText = primerTextField.internalText ?? ""
+
+        // Ensure range is within bounds
+        guard range.location <= currentText.count, range.length <= currentText.count - range.location else {
+            return false
+        }
+
+        let newText = (currentText as NSString).replacingCharacters(in: range, with: string) as String
+        if !(newText.isNumeric || newText.isEmpty) { return false }
+        if string != "", newText.withoutWhiteSpace.count >= 5 { return false }
+
+        switch isValid?(newText) {
+        case true:
+            validation = .valid
+        case false:
+            validation = .invalid(
+                PrimerValidationError.invalidCvv(
+                    message: newText.isEmpty ? "CVV cannot be blank." : "CVV is not valid."
+                )
+            )
+        default:
+            validation = .notAvailable
+        }
+
+        primerTextField.internalText = newText
+        primerTextField.text = newText
+
+        let isValidCVVLength: Bool? = if let cvvLength = cardNetwork.validation?.code.length {
+            newText.count == cvvLength
+        } else {
+            nil
+        }
+
+        switch validation {
+        case .valid, .invalid:
+            delegate?.primerTextFieldView(self, isValid: isValidCVVLength)
+        default:
+            delegate?.primerTextFieldView(self, isValid: nil)
+        }
+
+        return false
+    }
+}
+// swiftlint:enable function_body_length

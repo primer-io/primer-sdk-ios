@@ -1,11 +1,12 @@
 //
 //  PrimerTextFieldViewTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import XCTest
 @testable import PrimerSDK
+import XCTest
+@_spi(PrimerInternal) import PrimerUI
 
 final class PrimerTextFieldViewTests: XCTestCase {
 
@@ -100,19 +101,19 @@ final class PrimerTextFieldViewTests: XCTestCase {
         let delegate = MockTextFieldViewDelegate()
         view.delegate = delegate
 
-        let didBeginEditingExpectation = self.expectation(description: "Did call ...DidBeginEditing")
+        let didBeginEditingExpectation = expectation(description: "Did call ...DidBeginEditing")
         delegate.onDidBeginEditing = { didBeginEditingExpectation.fulfill() }
         view.textFieldDidBeginEditing(view.textField)
 
-        let didEndEditingExpectation = self.expectation(description: "Did call ...DidBeginEditing")
+        let didEndEditingExpectation = expectation(description: "Did call ...DidBeginEditing")
         delegate.onDidEndEditing = { didEndEditingExpectation.fulfill() }
         view.textFieldDidEndEditing(view.textField)
 
-        let shouldBeginEditingExpectation = self.expectation(description: "Did call ...DidBeginEditing")
+        let shouldBeginEditingExpectation = expectation(description: "Did call ...DidBeginEditing")
         delegate.onShouldBeginEditing = { shouldBeginEditingExpectation.fulfill(); return true }
         XCTAssertTrue(view.textFieldShouldBeginEditing(view.textField))
 
-        let shouldEndEditingExpectation = self.expectation(description: "Did call ...DidBeginEditing")
+        let shouldEndEditingExpectation = expectation(description: "Did call ...DidBeginEditing")
         delegate.onShouldEndEditing = { shouldEndEditingExpectation.fulfill(); return true }
         XCTAssertTrue(view.textFieldShouldEndEditing(view.textField))
 
@@ -123,10 +124,10 @@ final class PrimerTextFieldViewTests: XCTestCase {
         let delegate = MockTextFieldViewDelegate()
         view.delegate = delegate
         view.isValid = { _ in
-            return self.view.text == "success"
+            self.view.text == "success"
         }
 
-        let validationFailureExpectation = self.expectation(description: "Did call ...DidBeginEditing")
+        let validationFailureExpectation = expectation(description: "Did call ...DidBeginEditing")
         delegate.onIsValid = { value in
             XCTAssertNotNil(value)
             XCTAssertFalse(value!)
@@ -141,12 +142,12 @@ final class PrimerTextFieldViewTests: XCTestCase {
         let delegate = MockTextFieldViewDelegate()
         view.delegate = delegate
         view.isValid = { _ in
-            return self.view.text == "success"
+            self.view.text == "success"
         }
 
         view.text = "success"
 
-        let validationFailureExpectation = self.expectation(description: "Did call ...DidBeginEditing")
+        let validationFailureExpectation = expectation(description: "Did call ...DidBeginEditing")
         delegate.onIsValid = { value in
             XCTAssertNotNil(value)
             XCTAssertTrue(value!)
@@ -158,9 +159,11 @@ final class PrimerTextFieldViewTests: XCTestCase {
     }
 
     func testShouldChangeCharactersInRange() {
-        let value = view.textField(view.textField,
-                                   shouldChangeCharactersIn: NSRange(),
-                                   replacementString: "")
+        let value = view.textField(
+            view.textField,
+            shouldChangeCharactersIn: NSRange(),
+            replacementString: ""
+        )
         XCTAssertTrue(value)
     }
 }

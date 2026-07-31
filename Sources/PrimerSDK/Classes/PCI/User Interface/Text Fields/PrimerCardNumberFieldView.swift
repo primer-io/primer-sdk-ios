@@ -10,6 +10,7 @@
 @_spi(PrimerInternal) import PrimerFoundation
 import UIKit
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerUI
 
 public final class PrimerCardNumberFieldView: PrimerTextFieldView {
 
@@ -18,7 +19,7 @@ public final class PrimerCardNumberFieldView: PrimerTextFieldView {
         (textField.internalText ?? "").replacingOccurrences(of: " ", with: "").withoutWhiteSpace
     }
 
-    override func xibSetup() {
+    override public func xibSetup() {
         super.xibSetup()
         keyboardType = .numberPad
         isTextFieldAccessibilityElement = true

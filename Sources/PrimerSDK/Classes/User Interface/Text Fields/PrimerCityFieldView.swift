@@ -6,6 +6,7 @@
 
 import UIKit
 @_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerUI
 @_spi(PrimerInternal) import PrimerCore
 
 public final class PrimerCityFieldView: PrimerSimpleCardFormTextFieldView {
@@ -14,7 +15,7 @@ public final class PrimerCityFieldView: PrimerSimpleCardFormTextFieldView {
         textField.internalText
     }
 
-    override func xibSetup() {
+    override public func xibSetup() {
         super.xibSetup()
         isTextFieldAccessibilityElement = true
         textFieldaccessibilityIdentifier = "city_txt_fld"

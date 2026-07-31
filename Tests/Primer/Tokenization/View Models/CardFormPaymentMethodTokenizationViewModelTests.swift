@@ -8,6 +8,8 @@
 @testable import PrimerSDK
 import XCTest
 @_spi(PrimerInternal) @testable import PrimerCore
+@_spi(PrimerInternal) import PrimerUI
+@_spi(PrimerInternal) import PrimerNetworking
 
 final class CardFormPaymentMethodTokenizationViewModelTests: XCTestCase, TokenizationViewModelTestCase {
     

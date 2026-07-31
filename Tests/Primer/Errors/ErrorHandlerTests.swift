@@ -4,9 +4,9 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-@_spi(PrimerInternal) @testable import PrimerCore
+@_spi(PrimerInternal) import PrimerCore
 @_spi(PrimerInternal) @testable import PrimerFoundation
-@testable import PrimerSDK
+@_spi(PrimerInternal) @testable import PrimerSDK
 import XCTest
 
 final class ErrorHandlerTests: XCTestCase {
@@ -16,6 +16,7 @@ final class ErrorHandlerTests: XCTestCase {
     override func setUp() {
         super.setUp()
         sut = ErrorHandler()
+        ErrorHandler.fire = { Analytics.Service.fire(event: Analytics.event(for: $0)) }
     }
 
     override func tearDown() {
@@ -28,7 +29,7 @@ final class ErrorHandlerTests: XCTestCase {
     func testEvent_forInternalError_preservesDiagnosticsId() {
         let error = InternalError.serverError(status: 500, diagnosticsId: "internal-diag-123")
 
-        let properties = sut.event(for: error).properties as? MessageEventProperties
+        let properties = Analytics.event(for: error).properties as? MessageEventProperties
 
         XCTAssertEqual(properties?.diagnosticsId, "internal-diag-123")
     }
@@ -36,7 +37,7 @@ final class ErrorHandlerTests: XCTestCase {
     func testEvent_forPrimerError_preservesDiagnosticsId() {
         let error = PrimerError.unknown(diagnosticsId: "primer-diag-456")
 
-        let properties = sut.event(for: error).properties as? MessageEventProperties
+        let properties = Analytics.event(for: error).properties as? MessageEventProperties
 
         XCTAssertEqual(properties?.diagnosticsId, "primer-diag-456")
     }
@@ -44,7 +45,7 @@ final class ErrorHandlerTests: XCTestCase {
     func testEvent_for3DSError_preservesDiagnosticsId() {
         let error = Primer3DSErrorContainer.missingSdkDependency()
 
-        let properties = sut.event(for: error).properties as? MessageEventProperties
+        let properties = Analytics.event(for: error).properties as? MessageEventProperties
 
         XCTAssertEqual(properties?.diagnosticsId, error.diagnosticsId)
     }
@@ -52,7 +53,7 @@ final class ErrorHandlerTests: XCTestCase {
     func testEvent_forGenericNSError_hasNilDiagnosticsId() {
         let error = NSError(domain: "TestDomain", code: 500, userInfo: ["test": "data"])
 
-        let properties = sut.event(for: error).properties as? MessageEventProperties
+        let properties = Analytics.event(for: error).properties as? MessageEventProperties
 
         XCTAssertNil(properties?.diagnosticsId)
     }

@@ -15,5 +15,6 @@ Pod::Spec.new do |s|
     s.ios.frameworks   = "Foundation", "UIKit"
 
     s.dependency "PrimerFoundation", "= #{s.version}"
+    s.dependency "PrimerResources", "= #{s.version}"
     s.dependency "Primer3DS"
 end

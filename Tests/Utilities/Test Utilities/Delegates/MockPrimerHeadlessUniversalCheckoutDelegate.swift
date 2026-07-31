@@ -6,6 +6,7 @@
 
 import PrimerSDK
 import XCTest
+@_spi(PrimerInternal) import PrimerCore
 
 class MockPrimerHeadlessUniversalCheckoutDelegate: PrimerHeadlessUniversalCheckoutDelegate {
 

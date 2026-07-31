@@ -9,13 +9,14 @@
 @_spi(PrimerInternal) import PrimerFoundation
 import UIKit
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerUI
 
 public final class PrimerExpiryDateFieldView: PrimerTextFieldView {
 
     public internal(set) var expiryMonth: String?
     public internal(set) var expiryYear: String?
 
-    override func xibSetup() {
+    override public func xibSetup() {
         super.xibSetup()
         keyboardType = .numberPad
         isTextFieldAccessibilityElement = true

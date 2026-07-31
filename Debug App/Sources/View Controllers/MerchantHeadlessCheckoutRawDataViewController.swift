@@ -17,16 +17,19 @@ class MerchantHeadlessCheckoutRawDataViewController: UIViewController {
 
     var primerRawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager?
 
-    var selectedCardIndex: Int = 0
+    var selectedCardNetwork: PrimerCardNetwork?
+    var cardBadgesInteractive = false
 
     var stackView: UIStackView!
     var paymentMethodType: String!
     var paymentId: String?
     var activityIndicator: UIActivityIndicatorView?
-    var rawCardData = PrimerCardData(cardNumber: "",
-                                     expiryDate: "",
-                                     cvv: "",
-                                     cardholderName: "")
+    var rawCardData = PrimerCardData(
+        cardNumber: "",
+        expiryDate: "",
+        cvv: "",
+        cardholderName: ""
+    )
 
     var cardnumberTextField: UITextField?
     var expiryDateTextField: UITextField?
@@ -98,25 +101,37 @@ class MerchantHeadlessCheckoutRawDataViewController: UIViewController {
             for inputElementType in inputElementTypes {
                 switch inputElementType {
                 case .cardNumber:
-                    cardnumberTextField = styledTextField(forAccessibilityId: "cardNumberTextField",
-                                                               withPlaceholderText: "4242 4242 4242 4242")
+                    cardnumberTextField = styledTextField(
+                        forAccessibilityId: "cardNumberTextField",
+                        withPlaceholderText: "4242 4242 4242 4242"
+                    )
                 case .expiryDate:
-                    expiryDateTextField = styledTextField(forAccessibilityId: "expiryDateTextField",
-                                                               withPlaceholderText: "03/2030")
+                    expiryDateTextField = styledTextField(
+                        forAccessibilityId: "expiryDateTextField",
+                        withPlaceholderText: "03/2030"
+                    )
                 case .cvv:
-                    cvvTextField = styledTextField(forAccessibilityId: "cvvTextField",
-                                                        withPlaceholderText: "123")
+                    cvvTextField = styledTextField(
+                        forAccessibilityId: "cvvTextField",
+                        withPlaceholderText: "123"
+                    )
                 case .cardholderName:
-                    cardholderNameTextField = styledTextField(forAccessibilityId: "cardholderNameTextField",
-                                                                   withPlaceholderText: "John Smith")
+                    cardholderNameTextField = styledTextField(
+                        forAccessibilityId: "cardholderNameTextField",
+                        withPlaceholderText: "John Smith"
+                    )
                 case .otp:
                     break
+
                 case .postalCode:
                     break
+
                 case .phoneNumber:
                     break
+
                 case .retailer:
                     break
+
                 case .unknown:
                     break
                 case .countryCode:
@@ -167,8 +182,10 @@ class MerchantHeadlessCheckoutRawDataViewController: UIViewController {
         }
     }
 
-    private func styledTextField(forAccessibilityId accessibilityId: String,
-                                 withPlaceholderText placeholderText: String) -> UITextField {
+    private func styledTextField(
+        forAccessibilityId accessibilityId: String,
+        withPlaceholderText placeholderText: String
+    ) -> UITextField {
         let textField = UITextField(frame: .zero)
         textField.accessibilityIdentifier = accessibilityId
         textField.borderStyle = .none
@@ -239,7 +256,8 @@ extension MerchantHeadlessCheckoutRawDataViewController: UITextFieldDelegate {
                 expiryDate: expiryDateTextField?.text ?? "",
                 cvv: cvvTextField?.text ?? "",
                 cardholderName: cardholderNameTextField?.text ?? "",
-                cardNetwork: rawCardData.cardNetwork)
+                cardNetwork: rawCardData.cardNetwork
+            )
 
         } else if textField == expiryDateTextField {
             rawCardData = PrimerCardData(
@@ -247,7 +265,8 @@ extension MerchantHeadlessCheckoutRawDataViewController: UITextFieldDelegate {
                 expiryDate: newText,
                 cvv: cvvTextField?.text ?? "",
                 cardholderName: cardholderNameTextField?.text ?? "",
-                cardNetwork: rawCardData.cardNetwork)
+                cardNetwork: rawCardData.cardNetwork
+            )
 
         } else if textField == cvvTextField {
             rawCardData = PrimerCardData(
@@ -255,7 +274,8 @@ extension MerchantHeadlessCheckoutRawDataViewController: UITextFieldDelegate {
                 expiryDate: expiryDateTextField?.text ?? "",
                 cvv: newText,
                 cardholderName: cardholderNameTextField?.text ?? "",
-                cardNetwork: rawCardData.cardNetwork)
+                cardNetwork: rawCardData.cardNetwork
+            )
 
         } else if textField == cardholderNameTextField {
             rawCardData = PrimerCardData(
@@ -263,7 +283,8 @@ extension MerchantHeadlessCheckoutRawDataViewController: UITextFieldDelegate {
                 expiryDate: expiryDateTextField?.text ?? "",
                 cvv: cvvTextField?.text ?? "",
                 cardholderName: newText.isEmpty ? nil : newText,
-                cardNetwork: rawCardData.cardNetwork)
+                cardNetwork: rawCardData.cardNetwork
+            )
         }
 
         print("self.rawCardData\ncardNumber: \(rawCardData.cardNumber)\nexpiryDate: \(rawCardData.expiryDate)\ncvv: \(rawCardData.cvv)\ncardholderName: \(rawCardData.cardholderName ?? "nil")")
@@ -275,23 +296,29 @@ extension MerchantHeadlessCheckoutRawDataViewController: UITextFieldDelegate {
 
 extension MerchantHeadlessCheckoutRawDataViewController: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate {
 
-    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
-                              dataIsValid isValid: Bool,
-                              errors: [Error]?) {
+    func primerRawDataManager(
+        _ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
+        dataIsValid isValid: Bool,
+        errors: [Error]?
+    ) {
         print("\n\nMERCHANT APP\n\(#function)\ndataIsValid: \(isValid)")
         logs.append(#function)
         payButton.backgroundColor = isValid ? .black : .lightGray
         payButton.isEnabled = isValid
     }
 
-    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
-                              metadataDidChange metadata: [String: Any]?) {
+    func primerRawDataManager(
+        _ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
+        metadataDidChange metadata: [String: Any]?
+    ) {
         print("\n\nMERCHANT APP\n\(#function)\nmetadataDidChange: \(String(describing: metadata))")
         logs.append(#function)
     }
 
-    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
-                              willFetchMetadataForState state: PrimerValidationState) {
+    func primerRawDataManager(
+        _ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
+        willFetchMetadataForState state: PrimerValidationState
+    ) {
         print("[MerchantHeadlessCheckoutRawDataViewController] willFetchCardMetadataForState")
         DispatchQueue.main.async {
             self.cardsStackView.removeAllArrangedSubviews()
@@ -300,8 +327,11 @@ extension MerchantHeadlessCheckoutRawDataViewController: PrimerHeadlessUniversal
         }
     }
 
-    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
-                              didReceiveMetadata metadata: PrimerPaymentMethodMetadata, forState state: PrimerValidationState) {
+    func primerRawDataManager(
+        _ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
+        didReceiveMetadata metadata: PrimerPaymentMethodMetadata,
+        forState state: PrimerValidationState
+    ) {
         guard let metadata = metadata as? PrimerCardNumberEntryMetadata,
               let cardState = state as? PrimerCardNumberEntryState else {
             print("[MerchantHeadlessCheckoutRawDataViewController] ERROR: Failed to cast metadata and state to card entry models")
@@ -309,54 +339,79 @@ extension MerchantHeadlessCheckoutRawDataViewController: PrimerHeadlessUniversal
         }
 
         let printableNetworks = metadata.detectedCardNetworks.items.map(\.network.rawValue).joined(separator: ", ")
-        let maskedCardNumber = "**** \(cardState.cardNumber.suffix(4))"
-        print("[MerchantHeadlessCheckoutRawDataViewController] didReceiveCardMetadata: \(printableNetworks) forCardValidationState: \(maskedCardNumber)")
+        print("[MerchantHeadlessCheckoutRawDataViewController] didReceiveCardMetadata: \(printableNetworks) forCardValidationState: \(cardState.cardNumber)")
 
-        DispatchQueue.main.async {
-            self.cardsStackView.removeAllArrangedSubviews()
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            // Preserve prior tap across metadata re-fires (e.g. submit-time re-validation).
+            let priorPick = rawCardData.cardNetwork
+            cardsStackView.removeAllArrangedSubviews()
+            selectedCardNetwork = nil
 
-            (metadata.selectableCardNetworks ?? metadata.detectedCardNetworks).items.enumerated().forEach { (index, detectedNetwork) in
-                let image = PrimerHeadlessUniversalCheckout.AssetsManager.getCardNetworkAsset(for: detectedNetwork.network)
-                let imageView = UIImageView(image: image?.cardImage)
-                imageView.isUserInteractionEnabled = true
-                imageView.translatesAutoresizingMaskIntoConstraints = false
-
-                let width: CGFloat = 112
-                let height: CGFloat = 80
-
-                imageView.heightAnchor.constraint(equalToConstant: width).isActive = true
-                imageView.widthAnchor.constraint(equalToConstant: height).isActive = true
-                imageView.widthAnchor.constraint(equalTo: imageView.heightAnchor,
-                                                 multiplier: width / height).isActive = true
-                imageView.setContentHuggingPriority(.required, for: .horizontal)
-                imageView.accessibilityIdentifier = detectedNetwork.displayName
-
-                self.cardsStackView.addArrangedSubview(imageView)
-
-                let tapGestureRecognizer = TapGestureRecognizer {
-                    self.selectedCardIndex = index
-                    if self.selectedCardIndex < metadata.detectedCardNetworks.items.count {
-                        self.rawCardData.cardNetwork = metadata.detectedCardNetworks.items[self.selectedCardIndex].network
-                    }
-                    self.updateCardImages()
+            if metadata.autoSelectedCardNetwork != nil {
+                // EFTPOS co-badge: show all detected networks at full opacity, non-interactive
+                cardBadgesInteractive = false
+                rawCardData.cardNetwork = nil
+                addCardBadges(for: metadata.detectedCardNetworks.items)
+            } else if let selectableNetworks = metadata.selectableCardNetworks,
+                      selectableNetworks.items.count > 1 {
+                let preservedSelection = priorPick.flatMap { pick in
+                    selectableNetworks.items.first { $0.network == pick }
                 }
-                imageView.addGestureRecognizer(tapGestureRecognizer)
+                cardBadgesInteractive = true
+                selectedCardNetwork = preservedSelection ?? selectableNetworks.items.first
+                rawCardData.cardNetwork = preservedSelection?.network
+                addCardBadges(for: selectableNetworks.items)
+                for (index, network) in selectableNetworks.items.enumerated() {
+                    guard let imageView = cardsStackView.arrangedSubviews[safe: index] as? UIImageView else { continue }
+                    imageView.isUserInteractionEnabled = true
+                    let tapGestureRecognizer = TapGestureRecognizer {
+                        self.selectedCardNetwork = network
+                        self.rawCardData.cardNetwork = network.network
+                        self.updateCardImages()
+                    }
+                    imageView.addGestureRecognizer(tapGestureRecognizer)
+                }
+            } else {
+                // Single network / fallback
+                cardBadgesInteractive = false
+                rawCardData.cardNetwork = nil
+                addCardBadges(for: metadata.detectedCardNetworks.items)
             }
 
             let emptyView = UIView()
             emptyView.translatesAutoresizingMaskIntoConstraints = false
             emptyView.heightAnchor.constraint(equalToConstant: 1).isActive = true
             emptyView.widthAnchor.constraint(greaterThanOrEqualToConstant: 1).isActive = true
-            self.cardsStackView.addArrangedSubview(emptyView)
+            cardsStackView.addArrangedSubview(emptyView)
 
-            self.updateCardImages()
-
-			self.rawCardData.cardNetwork = metadata.detectedCardNetworks.items[safe: self.selectedCardIndex]?.network
+            updateCardImages()
         }
     }
 
-    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
-                              didReceiveBinData binData: PrimerBinData) {
+    private func addCardBadges(for networks: [PrimerCardNetwork]) {
+        for network in networks {
+            let image = PrimerHeadlessUniversalCheckout.AssetsManager.getCardNetworkAsset(for: network.network)
+            let imageView = UIImageView(image: image?.cardImage)
+            imageView.translatesAutoresizingMaskIntoConstraints = false
+
+            let width: CGFloat = 112
+            let height: CGFloat = 80
+
+            imageView.heightAnchor.constraint(equalToConstant: width).isActive = true
+            imageView.widthAnchor.constraint(equalToConstant: height).isActive = true
+            imageView.widthAnchor.constraint(equalTo: imageView.heightAnchor, multiplier: width / height).isActive = true
+            imageView.setContentHuggingPriority(.required, for: .horizontal)
+            imageView.accessibilityIdentifier = network.displayName
+
+            cardsStackView.addArrangedSubview(imageView)
+        }
+    }
+
+    func primerRawDataManager(
+        _ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
+        didReceiveBinData binData: PrimerBinData
+    ) {
         let statusStr = binData.status == .complete ? "complete" : "partial"
         let preferredStr = binData.preferred?.displayName ?? "none"
         let alternativesStr = binData.alternatives.map(\.displayName).joined(separator: ", ")
@@ -368,9 +423,10 @@ extension MerchantHeadlessCheckoutRawDataViewController: PrimerHeadlessUniversal
     }
 
     private func updateCardImages() {
-        cardsStackView.arrangedSubviews.filter { $0 is UIImageView }.enumerated().forEach { (index, imageView) in
-            imageView.layer.opacity = (index == self.selectedCardIndex) ? 1 : 0.5
-            imageView.isUserInteractionEnabled = true
+        guard cardBadgesInteractive else { return }
+        for imageView in cardsStackView.arrangedSubviews.compactMap({ $0 as? UIImageView }) {
+            let isSelected = imageView.accessibilityIdentifier == selectedCardNetwork?.displayName
+            imageView.layer.opacity = isSelected ? 1 : 0.5
         }
     }
 }
