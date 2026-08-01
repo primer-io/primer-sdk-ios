@@ -656,6 +656,10 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
         }
 
         DispatchQueue.main.asyncAfter(deadline: .now() + mockedNetworkDelay) {
+            guard self.currentPollingIteration < pollingResults.count else {
+                XCTAssert(false, "MockPrimerAPIClient.poll called after 'pollingResults' were exhausted")
+                return completion(.failure(NSError(domain: "MockPrimerAPIClient", code: 2, userInfo: nil)))
+            }
             let pollingResult = pollingResults[self.currentPollingIteration]
             self.currentPollingIteration += 1
 
