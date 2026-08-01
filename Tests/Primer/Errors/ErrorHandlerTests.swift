@@ -21,6 +21,7 @@ final class ErrorHandlerTests: XCTestCase {
 
     override func tearDown() {
         sut = nil
+        ErrorHandler.fire = nil
         super.tearDown()
     }
 

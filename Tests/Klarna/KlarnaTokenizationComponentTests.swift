@@ -18,6 +18,10 @@
             ErrorHandler.fire = { Analytics.Service.fire(event: Analytics.event(for: $0)) }
         }
 
+        override class func tearDown() {
+            ErrorHandler.fire = nil
+        }
+
         override func setUp() {
             super.setUp()
             paymentMethod = Mocks.PaymentMethods.klarnaPaymentMethod
