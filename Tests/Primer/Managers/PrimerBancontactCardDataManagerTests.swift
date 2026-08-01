@@ -1,13 +1,191 @@
 //
 //  PrimerBancontactCardDataManagerTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import XCTest
+import PrimerFoundation
 @testable import PrimerSDK
+import XCTest
 
 class PrimerBancontactCardDataManagerTests: XCTestCase {
+
+    // MARK: - makeRequestBodyWithRawData
+
+    func test_makeRequestBody_withBancontactCardData_shouldBuildInstrument() async throws {
+        try await SDKSessionHelper.test(withPaymentMethods: [Mocks.PaymentMethods.adyenBancontactCardPaymentMethod]) {
+            // Given
+            let rawCardData = PrimerBancontactCardData(
+                cardNumber: "4242 4242 4242 4242",
+                expiryDate: "03/2030",
+                cardholderName: "John Smith"
+            )
+            let tokenizationBuilder = PrimerBancontactRawCardDataRedirectTokenizationBuilder(paymentMethodType: "ADYEN_BANCONTACT_CARD")
+
+            // When
+            let body = try await tokenizationBuilder.makeRequestBodyWithRawData(rawCardData)
+
+            // Then
+            let instrument = try XCTUnwrap(body.paymentInstrument as? CardOffSessionPaymentInstrument)
+            XCTAssertEqual(instrument.number, "4242424242424242")
+            XCTAssertEqual(instrument.expirationMonth, "03")
+            XCTAssertEqual(instrument.expirationYear, "2030")
+            XCTAssertEqual(instrument.cardholderName, "John Smith")
+            XCTAssertEqual(instrument.paymentMethodType, "ADYEN_BANCONTACT_CARD")
+        }
+    }
+
+    func test_makeRequestBody_withTwoDigitYear_shouldNormalizeToFourDigits() async throws {
+        try await SDKSessionHelper.test(withPaymentMethods: [Mocks.PaymentMethods.adyenBancontactCardPaymentMethod]) {
+            // Given - validation accepts MM/YY, so the builder must expand it rather than send "30"
+            let rawCardData = PrimerBancontactCardData(
+                cardNumber: "4242424242424242",
+                expiryDate: "03/30",
+                cardholderName: "John Smith"
+            )
+            let tokenizationBuilder = PrimerBancontactRawCardDataRedirectTokenizationBuilder(paymentMethodType: "ADYEN_BANCONTACT_CARD")
+
+            // When
+            let body = try await tokenizationBuilder.makeRequestBodyWithRawData(rawCardData)
+
+            // Then
+            let instrument = try XCTUnwrap(body.paymentInstrument as? CardOffSessionPaymentInstrument)
+            XCTAssertEqual(instrument.expirationMonth, "03")
+            XCTAssertEqual(instrument.expirationYear, "2030")
+        }
+    }
+
+    func test_makeRequestBody_withPrimerCardData_shouldThrow() async throws {
+        try await SDKSessionHelper.test(withPaymentMethods: [Mocks.PaymentMethods.adyenBancontactCardPaymentMethod]) {
+            // Given - PrimerCardData is a sibling of PrimerBancontactCardData, not an accepted input here
+            let rawCardData = PrimerCardData(
+                cardNumber: "4242424242424242",
+                expiryDate: "03/2030",
+                cvv: "123",
+                cardholderName: "John Smith"
+            )
+            let tokenizationBuilder = PrimerBancontactRawCardDataRedirectTokenizationBuilder(paymentMethodType: "ADYEN_BANCONTACT_CARD")
+
+            // When & Then
+            do {
+                _ = try await tokenizationBuilder.makeRequestBodyWithRawData(rawCardData)
+                XCTFail("Expected makeRequestBodyWithRawData to throw for PrimerCardData")
+            } catch {
+                XCTAssertEqual((error as? PrimerError)?.errorId, "invalid-value")
+            }
+        }
+    }
+
+    func test_makeRequestBody_withMixedCaseAndSpacedCardNumber_shouldSanitize() async throws {
+        try await SDKSessionHelper.test(withPaymentMethods: [Mocks.PaymentMethods.adyenBancontactCardPaymentMethod]) {
+            // Given
+            let rawCardData = PrimerBancontactCardData(
+                cardNumber: "4871 0499 9999 9910",
+                expiryDate: "12/2031",
+                cardholderName: "John Smith"
+            )
+            let tokenizationBuilder = PrimerBancontactRawCardDataRedirectTokenizationBuilder(paymentMethodType: "ADYEN_BANCONTACT_CARD")
+
+            // When
+            let body = try await tokenizationBuilder.makeRequestBodyWithRawData(rawCardData)
+
+            // Then
+            let instrument = try XCTUnwrap(body.paymentInstrument as? CardOffSessionPaymentInstrument)
+            XCTAssertEqual(instrument.number, "4871049999999910")
+            XCTAssertEqual(instrument.expirationMonth, "12")
+            XCTAssertEqual(instrument.expirationYear, "2031")
+        }
+    }
+
+    func test_makeRequestBody_withThreeDigitYear_shouldThrowInvalidExpiryDate() async throws {
+        try await SDKSessionHelper.test(withPaymentMethods: [Mocks.PaymentMethods.adyenBancontactCardPaymentMethod]) {
+            // Given - the API requires a 4-digit year, so a 3-digit one cannot be normalized
+            let rawCardData = PrimerBancontactCardData(
+                cardNumber: "4242424242424242",
+                expiryDate: "03/203",
+                cardholderName: "John Smith"
+            )
+            let tokenizationBuilder = PrimerBancontactRawCardDataRedirectTokenizationBuilder(paymentMethodType: "ADYEN_BANCONTACT_CARD")
+
+            // When & Then
+            do {
+                _ = try await tokenizationBuilder.makeRequestBodyWithRawData(rawCardData)
+                XCTFail("Expected makeRequestBodyWithRawData to throw for a 3-digit year")
+            } catch {
+                XCTAssertEqual((error as? PrimerValidationError)?.errorId, "invalid-expiry-date")
+            }
+        }
+    }
+
+    func test_makeRequestBody_withNonNumericYear_shouldThrowInvalidExpiryDate() async throws {
+        try await SDKSessionHelper.test(withPaymentMethods: [Mocks.PaymentMethods.adyenBancontactCardPaymentMethod]) {
+            // Given
+            let rawCardData = PrimerBancontactCardData(
+                cardNumber: "4242424242424242",
+                expiryDate: "03/2O30",
+                cardholderName: "John Smith"
+            )
+            let tokenizationBuilder = PrimerBancontactRawCardDataRedirectTokenizationBuilder(paymentMethodType: "ADYEN_BANCONTACT_CARD")
+
+            // When & Then
+            do {
+                _ = try await tokenizationBuilder.makeRequestBodyWithRawData(rawCardData)
+                XCTFail("Expected makeRequestBodyWithRawData to throw for a non-numeric year")
+            } catch {
+                XCTAssertEqual((error as? PrimerValidationError)?.errorId, "invalid-expiry-date")
+            }
+        }
+    }
+
+    func test_makeRequestBody_withUnconfiguredPaymentMethod_shouldThrow() async throws {
+        try await SDKSessionHelper.test(withPaymentMethods: [Mocks.PaymentMethods.paymentCardPaymentMethod]) {
+            // Given - Bancontact is absent from the client session
+            let rawCardData = PrimerBancontactCardData(
+                cardNumber: "4242424242424242",
+                expiryDate: "03/2030",
+                cardholderName: "John Smith"
+            )
+            let tokenizationBuilder = PrimerBancontactRawCardDataRedirectTokenizationBuilder(paymentMethodType: "ADYEN_BANCONTACT_CARD")
+
+            // When & Then
+            do {
+                _ = try await tokenizationBuilder.makeRequestBodyWithRawData(rawCardData)
+                XCTFail("Expected makeRequestBodyWithRawData to throw when the method is not configured")
+            } catch {
+                XCTAssertEqual((error as? PrimerError)?.errorId, "unsupported-payment-method-type")
+            }
+        }
+    }
+
+    func test_requiredInputElementTypes_shouldNotIncludeCVV() {
+        // Bancontact has no security code — 3DS is the authentication step instead.
+        let tokenizationBuilder = PrimerBancontactRawCardDataRedirectTokenizationBuilder(paymentMethodType: "ADYEN_BANCONTACT_CARD")
+
+        XCTAssertEqual(tokenizationBuilder.requiredInputElementTypes, [.cardNumber, .expiryDate, .cardholderName])
+        XCTAssertFalse(tokenizationBuilder.requiredInputElementTypes.contains(.cvv))
+    }
+
+    func test_makeRequestBody_withExpiryDateMissingSeparator_shouldThrow() async throws {
+        try await SDKSessionHelper.test(withPaymentMethods: [Mocks.PaymentMethods.adyenBancontactCardPaymentMethod]) {
+            // Given
+            let rawCardData = PrimerBancontactCardData(
+                cardNumber: "4242424242424242",
+                expiryDate: "0330",
+                cardholderName: "John Smith"
+            )
+            let tokenizationBuilder = PrimerBancontactRawCardDataRedirectTokenizationBuilder(paymentMethodType: "ADYEN_BANCONTACT_CARD")
+
+            // When & Then
+            do {
+                _ = try await tokenizationBuilder.makeRequestBodyWithRawData(rawCardData)
+                XCTFail("Expected makeRequestBodyWithRawData to throw for a separator-less expiry date")
+            } catch {
+                XCTAssertEqual((error as? PrimerError)?.errorId, "invalid-value")
+            }
+        }
+    }
+
+    // MARK: - validateRawData
 
     func test_validateRawData_withValidBancontactCardData_shouldSucceed() async throws {
         // Given

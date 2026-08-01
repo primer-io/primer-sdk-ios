@@ -81,7 +81,7 @@ final class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDat
             throw err
         }
 
-        guard let rawData = data as? PrimerCardData,
+        guard let rawData = data as? PrimerBancontactCardData,
               (rawData.expiryDate.split(separator: "/")).count == 2 else {
             let err = PrimerError.invalidValue(key: "rawData")
             ErrorHandler.handle(error: err)
@@ -89,7 +89,15 @@ final class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDat
         }
 
         let expiryMonth = String((rawData.expiryDate.split(separator: "/"))[0])
-        let expiryYear = String((rawData.expiryDate.split(separator: "/"))[1])
+        let rawExpiryYear = String((rawData.expiryDate.split(separator: "/"))[1])
+
+        // Validation accepts MM/YY, but the API requires a 4-digit year (`^\d{4}$`).
+        guard let expiryYear = rawExpiryYear.normalizedFourDigitYear() else {
+            throw handled(primerValidationError: .invalidExpiryDate(
+                message: "Expiry year '\(rawExpiryYear)' is not valid. Please provide a 2-digit (YY) or 4-digit (YYYY) year."
+            ))
+        }
+
         let sanitizedCardNumber = (PrimerInputElementType.cardNumber.clearFormatting(value: rawData.cardNumber) as? String) ?? rawData.cardNumber
 
         return Request.Body.Tokenization(
@@ -99,7 +107,7 @@ final class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDat
                 number: sanitizedCardNumber,
                 expirationMonth: expiryMonth,
                 expirationYear: expiryYear,
-                cardholderName: rawData.cardholderName ?? ""
+                cardholderName: rawData.cardholderName
             )
         )
     }
