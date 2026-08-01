@@ -18,18 +18,29 @@ public typealias FileExtension = String
 
 @_spi(PrimerInternal) open class File: LogReporter {
 
+    /// Directory holding all SDK-cached files, namespaced away from the host app's data.
+    /// Lives under Caches: the contents are re-downloadable and should not be backed up.
+    public static var cacheDirectoryUrl: URL? {
+        FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first?
+            .appendingPathComponent("primer", isDirectory: true)
+    }
+
+    public static func ensureCacheDirectoryExists() {
+        guard let url = cacheDirectoryUrl else { return }
+        try? FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
+    }
+
     public var fileName: FileName
     public var fileExtension: FileExtension?
     public var localUrl: URL? {
-        guard let documentDirectoryUrl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else { return nil }
+        guard let cacheDirectoryUrl = Self.cacheDirectoryUrl else { return nil }
 
         var tmpFilename: String = self.fileName
         if let fileExtension = self.fileExtension {
             tmpFilename += "." + fileExtension
         }
 
-        let fileLocalUrl = documentDirectoryUrl.appendingPathComponent(tmpFilename)
-        return fileLocalUrl
+        return cacheDirectoryUrl.appendingPathComponent(tmpFilename)
     }
     public private(set) var remoteUrl: URL?
     private var base64Data: Data?
@@ -51,18 +62,10 @@ public typealias FileExtension = String
         self.base64Data = base64Data
 
         if let base64Data = self.base64Data,
-           let documentDirectoryUrl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+           let localUrl {
             do {
-                var tmpFilename: String = self.fileName
-                if let fileExtension = self.fileExtension {
-                    tmpFilename += "." + fileExtension
-                }
-
-                let fileLocalUrl = documentDirectoryUrl
-                    .appendingPathComponent("primer", isDirectory: true)
-                    .appendingPathComponent(tmpFilename)
-                try base64Data.write(to: fileLocalUrl)
-
+                Self.ensureCacheDirectoryExists()
+                try base64Data.write(to: localUrl)
             } catch {
                 logger.error(message: "Write failed")
             }

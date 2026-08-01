@@ -66,6 +66,7 @@ final class Downloader: NSObject, DownloaderModule {
     }
 
     private func downloadData(from url: URL, to localUrl: URL) async throws {
+        File.ensureCacheDirectoryExists()
         let session = URLSession.shared
         session.configuration.urlCache = URLCache.shared
         let request = URLRequest(url: url, cachePolicy: .useProtocolCachePolicy, timeoutInterval: 2)
