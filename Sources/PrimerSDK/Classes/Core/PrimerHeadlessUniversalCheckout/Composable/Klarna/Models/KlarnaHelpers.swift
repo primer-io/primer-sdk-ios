@@ -25,9 +25,9 @@ struct KlarnaHelpers {
     /// - Returns the session type based on the current payment intent (vault or checkout).
     static func getSessionType() -> KlarnaSessionType {
         if PrimerInternal.shared.intent == .vault {
-            return .recurringPayment
+            .recurringPayment
         } else {
-            return .oneOffPayment
+            .oneOffPayment
         }
     }
 

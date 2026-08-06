@@ -12,22 +12,22 @@ final class PrimerStepResolverRegistryTests: XCTestCase {
     func testRegisteredResolverIsCalled() async throws {
         let registry = PrimerStepResolverRegistry()
         let resolver = MockResolver()
-        await registry.register(resolver, for: "http.request")
+        registry.register(resolver, for: "http.request")
 
-        let result = try await registry.resolve("http.request", params: .null)
+        let result = try await registry.resolve("http.request", data: .null)
         XCTAssertEqual(result.outcome, .success)
         XCTAssertEqual(resolver.callCount, 1)
     }
 
     func testUnregisteredTypeReturnsUnsupported() async throws {
-        let result = try await PrimerStepResolverRegistry().resolve("unknown.type", params: .null)
+        let result = try await PrimerStepResolverRegistry().resolve("unknown.type", data: .null)
         XCTAssertEqual(result.outcome, .unsupported)
     }
 }
 
 private final class MockResolver: StepResolver {
     var callCount = 0
-    func resolve(_ step: CodableValue) async throws -> StepResolutionResult {
+    func resolve(_ data: CodableValue) async throws -> StepResolutionResult {
         callCount += 1
         return StepResolutionResult(outcome: .success)
     }

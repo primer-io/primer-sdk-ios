@@ -29,7 +29,7 @@ final class PrimerCVVFieldViewTests: XCTestCase {
         view.text = "1234"
         view.cardNetwork = .amex
 
-        let expectation = self.expectation(description: "onIsValid is called")
+        let expectation = expectation(description: "onIsValid is called")
         delegate.onIsValid = { isValid in
             XCTAssertNotNil(isValid)
             XCTAssertTrue(isValid!)
@@ -55,7 +55,7 @@ final class PrimerCVVFieldViewTests: XCTestCase {
         view.text = "1234"
         view.cardNetwork = .visa
 
-        let expectation = self.expectation(description: "onIsValid is called")
+        let expectation = expectation(description: "onIsValid is called")
         delegate.onIsValid = { isValid in
             XCTAssertNotNil(isValid)
             XCTAssertFalse(isValid!)
@@ -84,7 +84,7 @@ final class PrimerCVVFieldViewTests: XCTestCase {
 
         view.isValid = { _ in false }
 
-        let expectation = self.expectation(description: "onIsValid is called")
+        let expectation = expectation(description: "onIsValid is called")
         delegate.onIsValid = { isValid in
             XCTAssertNotNil(isValid)
             XCTAssertFalse(isValid!)

@@ -23,7 +23,7 @@ import UIKit
         self.imageView = imageView
         self.message = message
         self.loadingIndicator = loadingIndicator
-        self.initialize()
+        initialize()
     }
     
     override init(frame: CGRect) {
@@ -50,11 +50,11 @@ import UIKit
         verticalStackView.bottomAnchor.constraint(lessThanOrEqualTo: bottomAnchor).isActive = true
         verticalStackView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
 
-        if let imageView = imageView {
+        if let imageView {
             verticalStackView.addArrangedSubview(imageView)
         }
 
-        if let message = message {
+        if let message {
             let messageLabel = UILabel()
             messageLabel.text = message
             messageLabel.accessibilityIdentifier = "Result Component View Message Label"
@@ -65,7 +65,7 @@ import UIKit
             verticalStackView.addArrangedSubview(messageLabel)
         }
 
-        if let loadingIndicator = loadingIndicator {
+        if let loadingIndicator {
             verticalStackView.addArrangedSubview(loadingIndicator)
         }
     }

@@ -6,9 +6,15 @@ on:
       - opened
       - synchronize
 
+permissions:
+  contents: read
+
 jobs:
   changes:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
     outputs:
       relevant: ${{ steps.filter.outputs.relevant }}
     steps:
@@ -25,6 +31,9 @@ jobs:
     if: ${{ github.event.pull_request.base.ref == 'master' && needs.changes.outputs.relevant == 'true' }}
     runs-on: macos-26
     name: "Pod lint"
+    permissions:
+      contents: read
+      actions: write
     strategy:
       fail-fast: false
       matrix:
@@ -36,6 +45,8 @@ jobs:
         with:
           access_token: ${{ github.token }}
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - name: Select Xcode Version
         uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90  # v1.7.0
         with:
@@ -46,8 +57,9 @@ jobs:
           bundler-cache: true
 
       - name: Lint pod
+        env:
+          POD_SWIFT_VERSION: ${{ matrix.version }}
+          COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
         run: |
           set -eo pipefail
-          pod lib lint PrimerSDK.podspec --allow-warnings --swift-version=${{ matrix.version }} --analyze --include-podspecs='*.podspec'
-        env:
-          COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
+          pod lib lint PrimerSDK.podspec --allow-warnings --swift-version="$POD_SWIFT_VERSION" --analyze --include-podspecs='*.podspec'

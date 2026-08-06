@@ -563,9 +563,9 @@ extension Strings {
 
         static var mainTitleText: String {
             if PrimerInternal.shared.intent == .vault {
-                return savedPaymentMethodsTitle
+                savedPaymentMethodsTitle
             } else {
-                return availablePaymentMethodsTitle
+                availablePaymentMethodsTitle
             }
         }
 

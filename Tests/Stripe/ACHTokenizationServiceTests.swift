@@ -186,10 +186,8 @@ extension ACHTokenizationServiceTests {
 
         DependencyContainer.register(settings as PrimerSettingsProtocol)
 
-        var clientSession: ClientSession.APIResponse?
-
-        if isClientSessionEmpty {
-            clientSession = ACHMocks.getEmptyClientSession(
+        var clientSession: ClientSession.APIResponse? = if isClientSessionEmpty {
+            ACHMocks.getEmptyClientSession(
                 emptyMerchantAmmount: emptyMerchantAmmount,
                 emptyTotalOrderAmmount: emptyTotalOrderAmmount,
                 emptyLineItems: emptyLineItems,
@@ -197,7 +195,7 @@ extension ACHTokenizationServiceTests {
                 emptyCurrencyCode: emptyCurrencyCode
             )
         } else {
-            clientSession = ACHMocks.getClientSession()
+            ACHMocks.getClientSession()
         }
 
         PrimerInternal.shared.sdkIntegrationType = .headless

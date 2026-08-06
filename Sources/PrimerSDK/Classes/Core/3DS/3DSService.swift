@@ -102,7 +102,7 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
 
         @MainActor
         private func showProgressDialog(_ progressDialog: Primer3DSProgressDialogProtocol?) {
-            guard let progressDialog = progressDialog else { return }
+            guard let progressDialog else { return }
 
             // Drop-In mode: Primer owns primerWindow, so proper z-ordering is guaranteed
             // by lowering the window level before Netcetera creates its progress dialog window.
@@ -350,12 +350,11 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
             }
 
             let rootViewController = ClearViewController()
-            let window: UIWindow
-            if let windowScene = UIApplication.shared.connectedScenes
+            let window: UIWindow = if let windowScene = UIApplication.shared.connectedScenes
                 .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene {
-                window = UIWindow(windowScene: windowScene)
+                UIWindow(windowScene: windowScene)
             } else {
-                window = UIWindow(frame: UIScreen.main.bounds)
+                UIWindow(frame: UIScreen.main.bounds)
             }
 
             window.rootViewController = rootViewController
@@ -542,8 +541,8 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
 
         private func createPrimer3DSError(from primer3DSError: Primer3DSError) -> Primer3DSErrorContainer {
             Primer3DSErrorContainer.primer3DSSdkError(
-                paymentMethodType: self.paymentMethodType,
-                initProtocolVersion: self.initProtocolVersion?.rawValue,
+                paymentMethodType: paymentMethodType,
+                initProtocolVersion: initProtocolVersion?.rawValue,
                 errorInfo: Primer3DSErrorInfo(primer3DSError)
             )
         }

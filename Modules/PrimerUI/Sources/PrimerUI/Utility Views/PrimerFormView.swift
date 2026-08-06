@@ -40,7 +40,7 @@ import UIKit
         self.formViews = formViews
         self.verticalStackSpacing = verticalStackSpacing
         self.horizontalStackSpacing = horizontalStackSpacing
-        self.initialize()
+        initialize()
     }
 
 }
@@ -81,7 +81,7 @@ extension PrimerFormView {
         formViews?.forEach {
 
             // 1 element = 1 view added as part of the vertical stack
-            if $0.count == 1, let view = $0.first, let view = view {
+            if $0.count == 1, let view = $0.first, let view {
 
                 verticalStackView.addArrangedSubview(view)
 

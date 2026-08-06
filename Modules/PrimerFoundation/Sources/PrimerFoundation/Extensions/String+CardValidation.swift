@@ -11,7 +11,7 @@ public extension String {
     /// Validates a card number using the Luhn algorithm
     var isValidLuhn: Bool {
         var sum = 0
-        let digitStrings = self.withoutWhiteSpace.reversed().map { String($0) }
+        let digitStrings = withoutWhiteSpace.reversed().map { String($0) }
 
         for tuple in digitStrings.enumerated() {
             if let digit = Int(tuple.element) {

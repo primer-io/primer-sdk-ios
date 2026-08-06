@@ -19,7 +19,7 @@
             let diagnosticsId = "diagnostics-id"
 
             var primer3DSError = Primer3DSError.missingDsRid(cardNetwork: cardNetwork)
-            var primer3DSContainerError = self.createPrimer3DSContainerError(
+            var primer3DSContainerError = createPrimer3DSContainerError(
                 from: primer3DSError,
                 diagnosticsId: diagnosticsId,
                 initProtocolVersion: initProtocolVersion
@@ -45,7 +45,7 @@
                 protocolVersion: "9.9.9",
                 details: "details"
             )
-            primer3DSContainerError = self.createPrimer3DSContainerError(
+            primer3DSContainerError = createPrimer3DSContainerError(
                 from: primer3DSError,
                 diagnosticsId: diagnosticsId,
                 initProtocolVersion: initProtocolVersion
@@ -63,7 +63,7 @@
             XCTAssert(primer3DSContainerError.threeDsSdkTranscationId == primer3DSError.threeDsSdkTranscationId, "3DS error transaction id should be \(String(describing: primer3DSError.threeDsSdkTranscationId))")
 
             primer3DSError = Primer3DSError.cancelled
-            primer3DSContainerError = self.createPrimer3DSContainerError(
+            primer3DSContainerError = createPrimer3DSContainerError(
                 from: primer3DSError,
                 diagnosticsId: diagnosticsId,
                 initProtocolVersion: initProtocolVersion
@@ -81,7 +81,7 @@
             XCTAssert(primer3DSContainerError.threeDsSdkTranscationId == primer3DSError.threeDsSdkTranscationId, "3DS error transaction id should be \(String(describing: primer3DSError.threeDsSdkTranscationId))")
 
             primer3DSError = Primer3DSError.runtimeError(description: "A runtime error occured", code: "666")
-            primer3DSContainerError = self.createPrimer3DSContainerError(
+            primer3DSContainerError = createPrimer3DSContainerError(
                 from: primer3DSError,
                 diagnosticsId: diagnosticsId,
                 initProtocolVersion: initProtocolVersion
@@ -101,7 +101,7 @@
             let nsErr = NSError(domain: "3ds-provider", code: 666, userInfo: [NSLocalizedDescriptionKey: "An error was thrown from the 3DS provider SDK"])
 
             primer3DSError = Primer3DSError.challengeFailed(error: nsErr)
-            primer3DSContainerError = self.createPrimer3DSContainerError(
+            primer3DSContainerError = createPrimer3DSContainerError(
                 from: primer3DSError,
                 paymentMethodType: "TEST_PAYMENT_METHOD",
                 diagnosticsId: diagnosticsId,
@@ -120,7 +120,7 @@
             XCTAssert(primer3DSContainerError.threeDsSdkTranscationId == primer3DSError.threeDsSdkTranscationId, "3DS error transaction id should be \(String(describing: primer3DSError.threeDsSdkTranscationId))")
 
             primer3DSError = Primer3DSError.failedToCreateTransaction(error: nsErr)
-            primer3DSContainerError = self.createPrimer3DSContainerError(
+            primer3DSContainerError = createPrimer3DSContainerError(
                 from: primer3DSError,
                 diagnosticsId: diagnosticsId,
                 initProtocolVersion: initProtocolVersion
@@ -138,7 +138,7 @@
             XCTAssert(primer3DSContainerError.threeDsSdkTranscationId == primer3DSError.threeDsSdkTranscationId, "3DS error transaction id should be \(String(describing: primer3DSError.threeDsSdkTranscationId))")
 
             primer3DSError = Primer3DSError.initializationError(error: nsErr, warnings: nil)
-            primer3DSContainerError = self.createPrimer3DSContainerError(
+            primer3DSContainerError = createPrimer3DSContainerError(
                 from: primer3DSError,
                 diagnosticsId: diagnosticsId,
                 initProtocolVersion: initProtocolVersion
@@ -156,7 +156,7 @@
             XCTAssert(primer3DSContainerError.threeDsSdkTranscationId == primer3DSError.threeDsSdkTranscationId, "3DS error transaction id should be \(String(describing: primer3DSError.threeDsSdkTranscationId))")
 
             primer3DSError = Primer3DSError.initializationError(error: nil, warnings: "I am a warning")
-            primer3DSContainerError = self.createPrimer3DSContainerError(
+            primer3DSContainerError = createPrimer3DSContainerError(
                 from: primer3DSError,
                 diagnosticsId: diagnosticsId,
                 initProtocolVersion: initProtocolVersion
@@ -177,7 +177,7 @@
 
         func test_error_includes_errorId_paymentMethodType() throws {
             let primer3DSError = Primer3DSError.initializationError(error: nil, warnings: "I am a warning")
-            let primer3DSContainerError = self.createPrimer3DSContainerError(
+            let primer3DSContainerError = createPrimer3DSContainerError(
                 from: primer3DSError,
                 paymentMethodType: "TEST_PAYMENT_METHOD",
                 diagnosticsId: "diagnosticsId",

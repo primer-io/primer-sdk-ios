@@ -56,11 +56,11 @@ protocol Module {
     }
 
     public func cancel(withError err: PrimerError) {
-        self.cancellationError = err
+        cancellationError = err
     }
 
     public func fail(withError err: PrimerError) {
-        self.failureError = err
+        failureError = err
     }
 
     private func startPolling(
@@ -83,7 +83,7 @@ protocol Module {
 
         let pollable = Self.apiClient ?? pollable
         
-        pollable.poll(clientToken: token, url: self.url.absoluteString, retryConfig: retryConfig) { result in
+        pollable.poll(clientToken: token, url: url.absoluteString, retryConfig: retryConfig) { result in
             switch result {
             case let .success(res):
                 if res.status == .pending {
@@ -95,6 +95,7 @@ protocol Module {
                 } else {
                     let err = PrimerError.unknown(message: "Received unexpected polling status for id '\(res.id)'")
                     ErrorHandler.handle(error: err)
+                    completion(nil, err)
                 }
             case let .failure(err):
                 ErrorHandler.handle(error: err)

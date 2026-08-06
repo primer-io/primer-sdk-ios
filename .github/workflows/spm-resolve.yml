@@ -6,9 +6,15 @@ on:
       - opened
       - synchronize
 
+permissions:
+  contents: read
+
 jobs:
   changes:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
     outputs:
       swift: ${{ steps.filter.outputs.swift }}
     steps:
@@ -24,6 +30,9 @@ jobs:
     if: ${{ needs.changes.outputs.swift == 'true' }}
     runs-on: macos-26
     name: "SPM resolution check"
+    permissions:
+      contents: read
+      actions: write
 
     steps:
       - name: Cancel previous jobs
@@ -32,6 +41,8 @@ jobs:
           access_token: ${{ github.token }}
 
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Select Xcode Version
         uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90 # v1.7.0
@@ -39,14 +50,18 @@ jobs:
           xcode-version: '26.2'
 
       - name: Create local branch ref
-        run: git checkout -b ${{ github.head_ref }}
+        env:
+          HEAD_REF: ${{ github.head_ref }}
+        run: git checkout -b "$HEAD_REF"
 
       - name: Create test consumer package
+        env:
+          HEAD_REF: ${{ github.head_ref }}
         run: |
           mkdir -p /tmp/spm-test/Sources/SPMTest
           echo 'import PrimerSDK' > /tmp/spm-test/Sources/SPMTest/Test.swift
           sed -e "s|__REPO_URL__|file://${{ github.workspace }}|" \
-              -e "s|__BRANCH__|${{ github.head_ref }}|" \
+              -e "s|__BRANCH__|$HEAD_REF|" \
               .github/templates/SPMResolveTest/Package.swift > /tmp/spm-test/Package.swift
 
       - name: Resolve dependencies

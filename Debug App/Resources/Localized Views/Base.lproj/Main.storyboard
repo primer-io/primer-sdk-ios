@@ -1393,58 +1393,60 @@
                                     <constraint firstItem="Yce-hH-uhX" firstAttribute="top" secondItem="fED-8r-rOM" secondAttribute="top" constant="20" id="YYf-mh-nKe"/>
                                 </constraints>
                             </scrollView>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QJ8-WE-cU8">
-                                <rect key="frame" x="20" y="710" width="374" height="45"/>
-                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <accessibility key="accessibilityConfiguration" identifier="Primer SDK Button"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="45" id="iJd-a8-l4a"/>
-                                </constraints>
-                                <state key="normal" title="Primer SDK">
-                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                </state>
-                                <buttonConfiguration key="configuration" style="plain" title="Primer SDK">
-                                    <color key="baseForegroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                </buttonConfiguration>
-                                <connections>
-                                    <action selector="primerSDKButtonTapped:" destination="jAd-Lg-hf8" eventType="touchUpInside" id="6yQ-K0-Ren"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0FS-cB-H3t">
-                                <rect key="frame" x="20" y="763" width="374" height="45"/>
-                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <accessibility key="accessibilityConfiguration" identifier="Primer Headless SDK Button"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="45" id="WWY-2r-9EB"/>
-                                </constraints>
-                                <state key="normal" title="Primer Headless">
-                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                </state>
-                                <buttonConfiguration key="configuration" style="plain" title="Primer Headless">
-                                    <color key="baseForegroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                </buttonConfiguration>
-                                <connections>
-                                    <action selector="primerHeadlessButtonTapped:" destination="jAd-Lg-hf8" eventType="touchUpInside" id="Fj9-Yh-7To"/>
-                                </connections>
-                            </button>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="hvo-lR-TEc">
+                                <rect key="frame" x="20" y="710" width="374" height="98"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QJ8-WE-cU8">
+                                        <rect key="frame" x="0.0" y="0.0" width="374" height="45"/>
+                                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <accessibility key="accessibilityConfiguration" identifier="Primer SDK Button"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="45" id="iJd-a8-l4a"/>
+                                        </constraints>
+                                        <state key="normal" title="Primer SDK">
+                                            <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        </state>
+                                        <buttonConfiguration key="configuration" style="plain" title="Primer SDK">
+                                            <color key="baseForegroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        </buttonConfiguration>
+                                        <connections>
+                                            <action selector="primerSDKButtonTapped:" destination="jAd-Lg-hf8" eventType="touchUpInside" id="6yQ-K0-Ren"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0FS-cB-H3t">
+                                        <rect key="frame" x="0.0" y="53" width="374" height="45"/>
+                                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <accessibility key="accessibilityConfiguration" identifier="Primer Headless SDK Button"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="45" id="WWY-2r-9EB"/>
+                                        </constraints>
+                                        <state key="normal" title="Primer Headless">
+                                            <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        </state>
+                                        <buttonConfiguration key="configuration" style="plain" title="Primer Headless">
+                                            <color key="baseForegroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        </buttonConfiguration>
+                                        <connections>
+                                            <action selector="primerHeadlessButtonTapped:" destination="jAd-Lg-hf8" eventType="touchUpInside" id="Fj9-Yh-7To"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                            </stackView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="Zrd-hK-BPB"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="Zrd-hK-BPB" firstAttribute="trailing" secondItem="fED-8r-rOM" secondAttribute="trailing" id="3hj-R0-nxA"/>
-                            <constraint firstItem="Zrd-hK-BPB" firstAttribute="bottom" secondItem="0FS-cB-H3t" secondAttribute="bottom" constant="20" id="4aU-Bq-QKi"/>
                             <constraint firstItem="Yce-hH-uhX" firstAttribute="width" secondItem="mBo-uS-Zxo" secondAttribute="width" constant="-40" id="6lX-9N-h8F"/>
                             <constraint firstItem="fED-8r-rOM" firstAttribute="top" secondItem="hgd-Bd-Btv" secondAttribute="bottom" constant="20" id="B4Q-01-hOc"/>
                             <constraint firstItem="fED-8r-rOM" firstAttribute="leading" secondItem="Zrd-hK-BPB" secondAttribute="leading" id="CI3-3Q-Ofs"/>
-                            <constraint firstItem="0FS-cB-H3t" firstAttribute="top" secondItem="QJ8-WE-cU8" secondAttribute="bottom" constant="8" id="Jqp-pP-fzB"/>
                             <constraint firstItem="Zrd-hK-BPB" firstAttribute="trailing" secondItem="hgd-Bd-Btv" secondAttribute="trailing" constant="20" id="Jwc-cu-e85"/>
-                            <constraint firstItem="QJ8-WE-cU8" firstAttribute="top" secondItem="fED-8r-rOM" secondAttribute="bottom" constant="20" id="OuA-PJ-gJs"/>
-                            <constraint firstItem="0FS-cB-H3t" firstAttribute="leading" secondItem="Zrd-hK-BPB" secondAttribute="leading" constant="20" id="PN6-tb-LPi"/>
+                            <constraint firstItem="Zrd-hK-BPB" firstAttribute="bottom" secondItem="hvo-lR-TEc" secondAttribute="bottom" constant="20" id="Qcd-BK-z2j"/>
                             <constraint firstItem="hgd-Bd-Btv" firstAttribute="top" secondItem="Zrd-hK-BPB" secondAttribute="top" constant="20" id="QzY-En-9eF"/>
-                            <constraint firstItem="Zrd-hK-BPB" firstAttribute="trailing" secondItem="QJ8-WE-cU8" secondAttribute="trailing" constant="20" id="R2W-5K-OkP"/>
-                            <constraint firstItem="QJ8-WE-cU8" firstAttribute="leading" secondItem="Zrd-hK-BPB" secondAttribute="leading" constant="20" id="RcB-UZ-pNx"/>
+                            <constraint firstItem="QJ8-WE-cU8" firstAttribute="top" secondItem="fED-8r-rOM" secondAttribute="bottom" constant="-14" id="c7C-kG-74I"/>
                             <constraint firstItem="hgd-Bd-Btv" firstAttribute="leading" secondItem="Zrd-hK-BPB" secondAttribute="leading" constant="20" id="eGJ-wA-ArM"/>
-                            <constraint firstItem="Zrd-hK-BPB" firstAttribute="trailing" secondItem="0FS-cB-H3t" secondAttribute="trailing" constant="20" id="z2s-e4-vto"/>
+                            <constraint firstItem="hvo-lR-TEc" firstAttribute="leading" secondItem="Zrd-hK-BPB" secondAttribute="leading" constant="20" id="nY9-wc-3kL"/>
+                            <constraint firstItem="Zrd-hK-BPB" firstAttribute="trailing" secondItem="hvo-lR-TEc" secondAttribute="trailing" constant="20" id="pQG-R3-1fn"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="ajD-hG-M6S"/>
@@ -1477,6 +1479,7 @@
                         <outlet property="billingAddressStackView" destination="bM9-q3-7b4" id="tfD-RC-unz"/>
                         <outlet property="billingAddressStateTextField" destination="9XT-5Y-iB0" id="O4F-QT-v2W"/>
                         <outlet property="billingAddressSwitch" destination="Tgl-HM-zu5" id="0zQ-d2-QoW"/>
+                        <outlet property="bottomButtonHolderStackView" destination="hvo-lR-TEc" id="MGp-lz-end"/>
                         <outlet property="clearAppLinkButton" destination="Vrb-fD-qLk" id="dR3-Lw-EKV"/>
                         <outlet property="clientTokenStackView" destination="IFG-cl-uk6" id="MaN-wY-MoO"/>
                         <outlet property="clientTokenTextField" destination="xjQ-Kj-2GL" id="5mh-UG-g6v"/>
@@ -2050,13 +2053,13 @@
             <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="placeholderTextColor">
-            <color red="0.23529411764705882" green="0.23529411764705882" blue="0.2627450980392157" alpha="0.29803921568627451" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.23529411759999999" green="0.23529411759999999" blue="0.26274509800000001" alpha="0.29803921570000003" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="systemRedColor">
-            <color red="1" green="0.23137254901960785" blue="0.18823529411764706" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="1" green="0.23137254900000001" blue="0.18823529410000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

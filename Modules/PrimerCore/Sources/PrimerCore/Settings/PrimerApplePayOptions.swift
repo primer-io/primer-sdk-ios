@@ -37,9 +37,9 @@ public final class PrimerApplePayOptions: Codable {
         self.isCaptureBillingAddressEnabled = isCaptureBillingAddressEnabled
         self.showApplePayForUnsupportedDevice = showApplePayForUnsupportedDevice
         self.checkProvidedNetworks = checkProvidedNetworks
-        self.shippingOptions = nil
-        self.billingOptions = nil
-        self.allowedCardTypes = nil
+        shippingOptions = nil
+        billingOptions = nil
+        allowedCardTypes = nil
     }
 
     public init(

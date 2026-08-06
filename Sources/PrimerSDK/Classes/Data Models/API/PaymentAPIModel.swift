@@ -70,7 +70,7 @@ extension PrimerCheckoutDataPayment {
     public let paymentMethodType: PrimerCheckoutPaymentMethodType
 
     public init(type: PrimerCheckoutPaymentMethodType) {
-        self.paymentMethodType = type
+        paymentMethodType = type
     }
 }
 

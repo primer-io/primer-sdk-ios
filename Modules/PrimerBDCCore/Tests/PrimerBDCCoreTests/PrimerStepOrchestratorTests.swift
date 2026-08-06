@@ -135,7 +135,7 @@ private extension PrimerStepOrchestratorTests {
         let resolver = MockStepResolver()
 
         let registry = PrimerStepResolverRegistry()
-        await registry.register(resolver, for: actionType)
+        registry.register(resolver, for: actionType)
 
         engine.startResult = action(type: actionType)
         engine.applyResultResult = terminal("success")

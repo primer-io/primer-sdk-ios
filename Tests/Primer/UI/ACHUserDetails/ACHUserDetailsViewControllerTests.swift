@@ -75,7 +75,7 @@ final class ACHUserDetailsViewControllerTests: XCTestCase {
     func test_achUserDetails_firstName_valid() {
         var didReceiveStepCalled = false
 
-        let expectDidReceiveStep = self.expectation(description: "expectDidReceiveStep called")
+        let expectDidReceiveStep = expectation(description: "expectDidReceiveStep called")
         sut.didReceiveStepCompletion = { step in
             switch step {
             case .retrievedUserDetails:
@@ -87,7 +87,7 @@ final class ACHUserDetailsViewControllerTests: XCTestCase {
             }
         }
 
-        let expectUpdateFirstName = self.expectation(description: "expectUpdateFirstName called")
+        let expectUpdateFirstName = expectation(description: "expectUpdateFirstName called")
         sut.didUpdateCompletion = {
             if didReceiveStepCalled {
                 XCTAssertTrue(self.sut.achUserDetailsViewModel.isFirstNameValid)
@@ -107,7 +107,7 @@ final class ACHUserDetailsViewControllerTests: XCTestCase {
     func test_achUserDetails_lastName_valid() {
         var didReceiveStepCalled = false
 
-        let expectDidReceiveStep = self.expectation(description: "expectDidReceiveStep called")
+        let expectDidReceiveStep = expectation(description: "expectDidReceiveStep called")
         sut.didReceiveStepCompletion = { step in
             switch step {
             case .retrievedUserDetails:
@@ -119,7 +119,7 @@ final class ACHUserDetailsViewControllerTests: XCTestCase {
             }
         }
 
-        let expectUpdateFirstName = self.expectation(description: "expectUpdateFirstName called")
+        let expectUpdateFirstName = expectation(description: "expectUpdateFirstName called")
         sut.didUpdateCompletion = {
             if didReceiveStepCalled {
                 XCTAssertTrue(self.sut.achUserDetailsViewModel.isLastNameValid)
@@ -139,7 +139,7 @@ final class ACHUserDetailsViewControllerTests: XCTestCase {
     func test_achUserDetails_emailAddress_valid() {
         var didReceiveStepCalled = false
 
-        let expectDidReceiveStep = self.expectation(description: "expectDidReceiveStep called")
+        let expectDidReceiveStep = expectation(description: "expectDidReceiveStep called")
         sut.didReceiveStepCompletion = { step in
             switch step {
             case .retrievedUserDetails:
@@ -151,7 +151,7 @@ final class ACHUserDetailsViewControllerTests: XCTestCase {
             }
         }
 
-        let expectUpdateFirstName = self.expectation(description: "expectUpdateFirstName called")
+        let expectUpdateFirstName = expectation(description: "expectUpdateFirstName called")
         sut.didUpdateCompletion = {
             if didReceiveStepCalled {
                 XCTAssertTrue(self.sut.achUserDetailsViewModel.isEmailAddressValid)
@@ -171,7 +171,7 @@ final class ACHUserDetailsViewControllerTests: XCTestCase {
     func test_achUserDetails_firstName_invalid() {
         var didReceiveStepCalled = false
 
-        let expectDidReceiveStep = self.expectation(description: "expectDidReceiveStep called")
+        let expectDidReceiveStep = expectation(description: "expectDidReceiveStep called")
         sut.didReceiveStepCompletion = { step in
             switch step {
             case .retrievedUserDetails:
@@ -183,7 +183,7 @@ final class ACHUserDetailsViewControllerTests: XCTestCase {
             }
         }
 
-        let expectUpdateFirstName = self.expectation(description: "expectUpdateFirstName called")
+        let expectUpdateFirstName = expectation(description: "expectUpdateFirstName called")
         sut.didUpdateCompletion = {
             if didReceiveStepCalled {
                 XCTAssertFalse(self.sut.achUserDetailsViewModel.isFirstNameValid)
@@ -203,7 +203,7 @@ final class ACHUserDetailsViewControllerTests: XCTestCase {
     func test_achUserDetails_lastName_invalid() {
         var didReceiveStepCalled = false
 
-        let expectDidReceiveStep = self.expectation(description: "expectDidReceiveStep called")
+        let expectDidReceiveStep = expectation(description: "expectDidReceiveStep called")
         sut.didReceiveStepCompletion = { step in
             switch step {
             case .retrievedUserDetails:
@@ -215,7 +215,7 @@ final class ACHUserDetailsViewControllerTests: XCTestCase {
             }
         }
 
-        let expectUpdateFirstName = self.expectation(description: "expectUpdateFirstName called")
+        let expectUpdateFirstName = expectation(description: "expectUpdateFirstName called")
         sut.didUpdateCompletion = {
             if didReceiveStepCalled {
                 XCTAssertFalse(self.sut.achUserDetailsViewModel.isLastNameValid)
@@ -235,7 +235,7 @@ final class ACHUserDetailsViewControllerTests: XCTestCase {
     func test_achUserDetails_emailAddress_invalid() {
         var didReceiveStepCalled = false
 
-        let expectDidReceiveStep = self.expectation(description: "expectDidReceiveStep called")
+        let expectDidReceiveStep = expectation(description: "expectDidReceiveStep called")
         sut.didReceiveStepCompletion = { step in
             switch step {
             case .retrievedUserDetails:
@@ -247,7 +247,7 @@ final class ACHUserDetailsViewControllerTests: XCTestCase {
             }
         }
 
-        let expectUpdateFirstName = self.expectation(description: "expectUpdateFirstName called")
+        let expectUpdateFirstName = expectation(description: "expectUpdateFirstName called")
         sut.didUpdateCompletion = {
             if didReceiveStepCalled {
                 XCTAssertFalse(self.sut.achUserDetailsViewModel.isEmailAddressValid)
@@ -269,7 +269,7 @@ final class ACHUserDetailsViewControllerTests: XCTestCase {
     }
 
     func test_retrievedUserDetails_values() {
-        let expectDidReceiveStep = self.expectation(description: "expectDidReceiveStep called")
+        let expectDidReceiveStep = expectation(description: "expectDidReceiveStep called")
 
         sut.didReceiveStepCompletion = { step in
             switch step {

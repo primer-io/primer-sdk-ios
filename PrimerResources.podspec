@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
     s.name         = "PrimerResources"
-    s.version      = "2.51.1"
+    s.version      = "3.0.0-beta.4"
     s.summary      = "Resources for Primer SDK"
     s.description  = "Contains resources (images, localisations, etc) used by PrimerSDK."
     s.homepage     = "https://www.primer.io"
@@ -17,8 +17,10 @@ Pod::Spec.new do |s|
             "Modules/PrimerResources/Sources/PrimerResources/Resources/*.xcassets",
             "Modules/PrimerResources/Sources/PrimerResources/Resources/Localizable/**/*.strings",
             "Modules/PrimerResources/Sources/PrimerResources/Resources/Localizable/**/*.stringsdict",
+            "Modules/PrimerResources/Sources/PrimerResources/Resources/CheckoutComponentsLocalizable/**/*.strings",
             "Modules/PrimerResources/Sources/PrimerResources/Resources/Nibs/*",
-            "Modules/PrimerResources/Sources/PrimerResources/Resources/JSONs/**/*.json"
+            "Modules/PrimerResources/Sources/PrimerResources/Resources/JSONs/**/*.json",
+            "Modules/PrimerResources/Sources/PrimerResources/Resources/Fonts/*.ttf"
         ]
     }
 end

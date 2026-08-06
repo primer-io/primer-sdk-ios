@@ -55,7 +55,7 @@ final class PaymentMethodsGroupView: PrimerView {
 
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
 
-        if let title = title {
+        if let title {
             titleLabel = UILabel()
             titleLabel!.text = title
 

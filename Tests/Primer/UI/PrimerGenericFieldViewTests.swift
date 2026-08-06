@@ -29,7 +29,7 @@ final class PrimerGenericFieldViewTests: XCTestCase {
         view.text = ""
         view.isValid = { _ in true }
 
-        let expectation = self.expectation(description: "onIsValid is called")
+        let expectation = expectation(description: "onIsValid is called")
         delegate.onIsValid = { isValid in
             XCTAssertNotNil(isValid)
             XCTAssertTrue(isValid!)
@@ -55,7 +55,7 @@ final class PrimerGenericFieldViewTests: XCTestCase {
         view.text = ""
         view.isValid = { _ in false }
 
-        let expectation = self.expectation(description: "onIsValid is called")
+        let expectation = expectation(description: "onIsValid is called")
         delegate.onIsValid = { isValid in
             XCTAssertNil(isValid)
             switch self.view.validation {
