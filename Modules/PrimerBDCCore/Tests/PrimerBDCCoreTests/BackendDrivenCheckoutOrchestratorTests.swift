@@ -87,17 +87,6 @@ final class BackendDrivenCheckoutOrchestratorTests: XCTestCase {
         )
     }
 
-    func testOnCancelledForwards() {
-        let mock = MockStepOrchestrator()
-        let sut = BackendDrivenCheckoutOrchestrator(stepOrchestrator: mock)
-        var called = false
-        sut.onCancelled = { called = true }
-
-        mock.onCancelled?()
-
-        XCTAssertTrue(called)
-    }
-
     func testProviderErrorPropagates() async {
         let provider = MockInstructionProvider([])
         provider.error = Error.failed

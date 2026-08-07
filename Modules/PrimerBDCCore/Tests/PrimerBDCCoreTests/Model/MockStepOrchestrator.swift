@@ -9,7 +9,6 @@
 
 final class MockStepOrchestrator: StepOrchestrating {
     var onURLOpen: (() -> Void)?
-    var onCancelled: (() -> Void)?
     var startCallCount = 0
     var startError: Swift.Error?
 
@@ -17,4 +16,7 @@ final class MockStepOrchestrator: StepOrchestrating {
         startCallCount += 1
         if let startError { throw startError }
     }
+    
+    func applyEvent(_ value: PrimerFoundation.CodableValue) async throws {}
+
 }
