@@ -37,6 +37,16 @@ class MerchantHeadlessCheckoutRawDataViewController: UIViewController {
     var cardholderNameTextField: UITextField?
     var payButton: UIButton!
 
+    /// Bancontact takes its own raw-data type (no CVV) — sending `PrimerCardData` fails validation.
+    var currentRawData: PrimerRawData {
+        guard paymentMethodType == "ADYEN_BANCONTACT_CARD" else { return rawCardData }
+        return PrimerBancontactCardData(
+            cardNumber: rawCardData.cardNumber,
+            expiryDate: rawCardData.expiryDate,
+            cardholderName: rawCardData.cardholderName ?? ""
+        )
+    }
+
     var cardsStackView: UIStackView!
 
     var logs: [String] = []
@@ -72,7 +82,7 @@ class MerchantHeadlessCheckoutRawDataViewController: UIViewController {
 
         let updateCardData = { [self] in
             rawCardData.cardNumber = cardnumberTextField!.text!.replacingOccurrences(of: " ", with: "")
-            primerRawDataManager?.rawData = rawCardData
+            primerRawDataManager?.rawData = currentRawData
         }
 
         let visaButton = UIButton(primaryAction: UIAction(title: "VISA", handler: { _ in
@@ -191,10 +201,8 @@ class MerchantHeadlessCheckoutRawDataViewController: UIViewController {
             return showErrorMessage("Please write expiry date in format MM/YY or MM/YYYY")
         }
 
-        if paymentMethodType == "PAYMENT_CARD" {
-            self.primerRawDataManager!.submit()
-            self.showLoadingOverlay()
-        }
+        self.primerRawDataManager!.submit()
+        self.showLoadingOverlay()
     }
 
     // MARK: - HELPERS
@@ -270,7 +278,7 @@ extension MerchantHeadlessCheckoutRawDataViewController: UITextFieldDelegate {
         }
 
         print("self.rawCardData\ncardNumber: \(self.rawCardData.cardNumber)\nexpiryDate: \(self.rawCardData.expiryDate)\ncvv: \(self.rawCardData.cvv)\ncardholderName: \(self.rawCardData.cardholderName ?? "nil")")
-        self.primerRawDataManager?.rawData = self.rawCardData
+        self.primerRawDataManager?.rawData = self.currentRawData
 
         return true
     }

@@ -40,41 +40,42 @@ PODS:
   - IQTextView (1.0.5):
     - IQKeyboardToolbar/Placeholderable
   - Primer3DS (2.8.0)
-  - PrimerBDCCore (2.50.0):
-    - PrimerBDCEngine (= 2.50.0)
-    - PrimerFoundation (= 2.50.0)
-    - PrimerStepResolver (= 2.50.0)
-  - PrimerBDCEngine (2.50.0):
-    - PrimerFoundation (= 2.50.0)
-    - PrimerStepResolver (= 2.50.0)
-  - PrimerCore (2.50.0):
+  - PrimerBDCCore (2.51.1):
+    - PrimerBDCEngine (= 2.51.1)
+    - PrimerFoundation (= 2.51.1)
+    - PrimerStepResolver (= 2.51.1)
+  - PrimerBDCEngine (2.51.1):
+    - PrimerFoundation (= 2.51.1)
+    - PrimerStepResolver (= 2.51.1)
+  - PrimerCore (2.51.1):
     - Primer3DS
-    - PrimerFoundation (= 2.50.0)
-  - PrimerFoundation (2.50.0)
+    - PrimerFoundation (= 2.51.1)
+    - PrimerResources (= 2.51.1)
+  - PrimerFoundation (2.51.1)
   - PrimerIPay88MYSDK (0.1.7)
   - PrimerKlarnaSDK (1.4.0)
-  - PrimerNetworking (2.50.0):
-    - PrimerFoundation (= 2.50.0)
+  - PrimerNetworking (2.51.1):
+    - PrimerFoundation (= 2.51.1)
   - PrimerNolPaySDK (1.0.1)
-  - PrimerResources (2.50.0)
-  - PrimerSDK (2.50.0):
-    - PrimerSDK/Core (= 2.50.0)
-  - PrimerSDK/Core (2.50.0):
-    - PrimerBDCCore (= 2.50.0)
-    - PrimerBDCEngine (= 2.50.0)
-    - PrimerCore (= 2.50.0)
-    - PrimerFoundation (= 2.50.0)
-    - PrimerNetworking (= 2.50.0)
-    - PrimerResources (= 2.50.0)
-    - PrimerStepResolver (= 2.50.0)
-    - PrimerUI (= 2.50.0)
-  - PrimerStepResolver (2.50.0):
-    - PrimerFoundation (= 2.50.0)
+  - PrimerResources (2.51.1)
+  - PrimerSDK (2.51.1):
+    - PrimerSDK/Core (= 2.51.1)
+  - PrimerSDK/Core (2.51.1):
+    - PrimerBDCCore (= 2.51.1)
+    - PrimerBDCEngine (= 2.51.1)
+    - PrimerCore (= 2.51.1)
+    - PrimerFoundation (= 2.51.1)
+    - PrimerNetworking (= 2.51.1)
+    - PrimerResources (= 2.51.1)
+    - PrimerStepResolver (= 2.51.1)
+    - PrimerUI (= 2.51.1)
+  - PrimerStepResolver (2.51.1):
+    - PrimerFoundation (= 2.51.1)
   - PrimerStripeSDK (1.0.1)
-  - PrimerUI (2.50.0):
-    - PrimerCore (= 2.50.0)
-    - PrimerFoundation (= 2.50.0)
-    - PrimerResources (= 2.50.0)
+  - PrimerUI (2.51.1):
+    - PrimerCore (= 2.51.1)
+    - PrimerFoundation (= 2.51.1)
+    - PrimerResources (= 2.51.1)
 
 DEPENDENCIES:
   - IQKeyboardManagerSwift
@@ -139,19 +140,19 @@ SPEC CHECKSUMS:
   IQTextInputViewNotification: 3b9fb27a16e7ee8958cc9092cfb07a1a9e1fd559
   IQTextView: ae13b4922f22e6f027f62c557d9f4f236b19d5c7
   Primer3DS: b8b583ef260f703180870358bc55069de74f8f51
-  PrimerBDCCore: a57458b4152c808373473ad5529cd991b4d23327
-  PrimerBDCEngine: 988d0d38584b4d4f95c46bd2834bff9a32ad4309
-  PrimerCore: b59b501daa7b7b9f945025a86b6e06412aff65da
-  PrimerFoundation: f76f4876e9e864ea63360891715a87224bd09d0a
+  PrimerBDCCore: 7f5344b88a2123bda018e8aad84eab97554f640a
+  PrimerBDCEngine: df493c9d3e4712aaea45bbd9c3f1e58a8232b66a
+  PrimerCore: 01568c7aa2da10f0b6f51255d2b9237c5aaa3d8e
+  PrimerFoundation: 78c4a2437577ad06caea15f5d2a619b3b113be48
   PrimerIPay88MYSDK: 436ee0be7e2c97e4e81456ccddee20175e9e3c4d
   PrimerKlarnaSDK: 871d684b3a43d1f0f7cd5c3b19a6f3a23e581d49
-  PrimerNetworking: 184ef15aa8823424b8375ac3142d45c539cdd763
+  PrimerNetworking: 8b80bcca22bea3b0781241c6e7b3f2983a3d0a7d
   PrimerNolPaySDK: 08b140ed39b378a0b33b4f8746544a402175c0cc
-  PrimerResources: e35a939934babea0368f15881f3feed122308494
-  PrimerSDK: 8b58cbb14564a013a798d55200abba107f7afe7c
-  PrimerStepResolver: 07332a18bbabd3416eb167bb694548a064a8306d
+  PrimerResources: 3588c545e393a0e6942aa5b50ff00d7dc0881403
+  PrimerSDK: ed1627c6e576fd60688394ee1da08dfce6a2798e
+  PrimerStepResolver: 27bb5225697aaaf1c0159fb7c2114f9dc1a131ba
   PrimerStripeSDK: dce5e37d10223ee724f33d1cdeaa17235a71ddbb
-  PrimerUI: b8f2771e3718d621a80138621fb3c555a409c595
+  PrimerUI: 61a2acfe539e74e1c6f017d7339749e951ff4f5f
 
 PODFILE CHECKSUM: b33ea0f762b33b7c191f41dd3256e79f47dccc09
 
