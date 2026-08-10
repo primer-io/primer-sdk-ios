@@ -15,11 +15,6 @@ public final class BackendDrivenCheckoutOrchestrator {
         get { stepOrchestrator.onURLOpen }
         set { stepOrchestrator.onURLOpen = newValue }
     }
-
-    public var onCancelled: (() -> Void)? {
-        get { stepOrchestrator.onCancelled }
-        set { stepOrchestrator.onCancelled = newValue }
-    }
     
     private let stepOrchestrator: any StepOrchestrating
 
@@ -31,6 +26,10 @@ public final class BackendDrivenCheckoutOrchestrator {
 
     init(stepOrchestrator: any StepOrchestrating) {
         self.stepOrchestrator = stepOrchestrator
+    }
+    
+    public func applyEvent(_ value: CodableValue) async throws {
+        try await stepOrchestrator.applyEvent(value)
     }
 
     public func run(instructionProvider: ClientInstructionProvider) async throws -> CheckoutResult {

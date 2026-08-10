@@ -38,6 +38,7 @@ final class RawDataManagerTests: XCTestCase {
     override func tearDownWithError() throws {
         sut = nil
         rawDataManagerDelegate = nil
+        PollingModule.apiClient = nil
 
         SDKSessionHelper.tearDown()
     }

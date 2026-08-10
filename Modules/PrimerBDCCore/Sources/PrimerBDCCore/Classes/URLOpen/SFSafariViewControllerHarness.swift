@@ -55,6 +55,7 @@ final class SFSafariViewControllerHarness: NSObject, StepResolver {
     @objc private func handleNotification(_ notification: Notification) {
         switch notification.name {
         case .receivedUrlSchemeCancellation:
+            safariViewController?.dismiss(animated: true)
             resume(with: .cancelled)
         case .receivedUrlSchemeRedirect:
             safariViewController?.dismiss(animated: true)

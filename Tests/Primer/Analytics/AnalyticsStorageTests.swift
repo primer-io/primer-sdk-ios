@@ -12,7 +12,9 @@ final class AnalyticsStorageTests: XCTestCase {
 
     var storage: Analytics.Storage!
 
-    let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("analytics")
+    // Unique temp file per test — other tests write to the production analytics file
+    let url = FileManager.default.temporaryDirectory
+        .appendingPathComponent("analytics-tests-\(UUID().uuidString)")
 
     let events: [StoredEvent] = [
         .sdk(.message(message: "Test #1", messageType: .other, severity: .info)),
@@ -26,6 +28,7 @@ final class AnalyticsStorageTests: XCTestCase {
     }
 
     override func tearDownWithError() throws {
+        storage.deleteAnalyticsFile()
         storage = nil
     }
 

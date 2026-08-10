@@ -78,20 +78,7 @@ final class BackendDrivenCheckoutViewModelTests: XCTestCase {
         provider.error = Error.providerFailed
         assertDidFail { makeSUT(makeInstructionProvider: { _ in provider })}
     }
-    
-    func testOnCancelledCallsDidFailWithCancellation() {
-        let errorToMatch: (Swift.Error) -> Bool = {
-            guard case PrimerError.cancelled = $0 else { return false }
-            return true
-        }
-        assertDidFail(matching: errorToMatch) {
-            let sut = makeSUT(instructions: [
-                .execute(delayMilliseconds: 0, schema: .object([:]), parameters: .object([:]))
-            ])
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { self.mockOrchestrator.onCancelled?() }
-            return sut
-        }
-    }
+
 }
 
 private extension BackendDrivenCheckoutViewModelTests {
@@ -113,7 +100,7 @@ private extension BackendDrivenCheckoutViewModelTests {
             config: stubConfig,
             uiManager: uiManager,
             tokenizationService: MockTokenizationService(),
-            createResumePaymentService: MockCreateResumePaymentService(),
+            paymentService: MockCreateResumePaymentService(),
             makeOrchestrator: makeOrchestrator ?? { [mockOrchestrator] _ in
                 BackendDrivenCheckoutOrchestrator(stepOrchestrator: mockOrchestrator!)
             },
@@ -162,7 +149,6 @@ private extension BackendDrivenCheckoutViewModelTests {
 @MainActor
 private final class MockBDCStepOrchestrator: StepOrchestrating {
     var onURLOpen: (() -> Void)?
-    var onCancelled: (() -> Void)?
     var startCallCount = 0
     var startError: Error?
     
@@ -170,6 +156,11 @@ private final class MockBDCStepOrchestrator: StepOrchestrating {
         startCallCount += 1
         if let startError { throw startError }
     }
+    
+    func applyEvent(_ value: PrimerFoundation.CodableValue) async throws {
+        
+    }
+    
 }
 
 private final class MockBDCInstructionProvider: ClientInstructionProvider {

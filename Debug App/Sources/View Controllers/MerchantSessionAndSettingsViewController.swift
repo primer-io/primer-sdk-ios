@@ -724,13 +724,17 @@ class MerchantSessionAndSettingsViewController: UIViewController {
         ])
 
         if let metadata = metadataTextField.text, !metadata.isEmpty, var metadataDict = clientSession.metadata {
-            metadataTextField.text?.components(separatedBy: ",").forEach {
-                let tuple = String($0).components(separatedBy: "=")
-                guard tuple.count == 2
-                else { return }
-                let key = tuple[0].trimmingCharacters(in: .whitespaces)
-                let value = tuple[1].trimmingCharacters(in: .whitespaces)
-                try? metadataDict.add(.string(value), forKey: key)
+            if case let .dictionary(json)? = Metadata(jsonObject: metadata) {
+                json.forEach { try? metadataDict.add($0.value, forKey: $0.key) }
+            } else {
+                metadata.components(separatedBy: ",").forEach {
+                    let tuple = String($0).components(separatedBy: "=")
+                    guard tuple.count == 2
+                    else { return }
+                    let key = tuple[0].trimmingCharacters(in: .whitespaces)
+                    let value = tuple[1].trimmingCharacters(in: .whitespaces)
+                    try? metadataDict.add(.string(value), forKey: key)
+                }
             }
             clientSession.metadata = metadataDict
         }

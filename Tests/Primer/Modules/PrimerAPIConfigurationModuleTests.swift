@@ -9,8 +9,20 @@ import XCTest
 @_spi(PrimerInternal) @testable import PrimerNetworking
 
 class PrimerAPIConfigurationModuleTests: XCTestCase {
+    override func setUp() {
+        super.setUp()
+        resetGlobalState()
+    }
+
     override func tearDown() {
+        resetGlobalState()
+        super.tearDown()
+    }
+
+    private func resetGlobalState() {
         ConfigurationCache.shared.clearCache()
+        PrimerAPIConfigurationModule.resetSession()
+        PrimerAPIConfigurationModule.apiClient = nil
     }
 
     /// Tests that `setupSession` succeeds when provided with a valid configuration.
@@ -433,6 +445,7 @@ extension MockPrimerAPIClient {
     convenience init(responseHeaders: [String: String]) {
         self.init()
         self.responseHeaders = responseHeaders
+        self.mockedNetworkDelay = 0
     }
 }
 

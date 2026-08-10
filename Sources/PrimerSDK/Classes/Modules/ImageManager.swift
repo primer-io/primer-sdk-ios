@@ -210,18 +210,16 @@ final class ImageManager: LogReporter {
     }
 
     static func clean() {
-        guard let documentDirectoryUrl = FileManager.default.urls(
-            for: .documentDirectory,
-            in: .userDomainMask
-        ).first
+        guard let cacheDirectoryUrl = File.cacheDirectoryUrl,
+              FileManager.default.fileExists(atPath: cacheDirectoryUrl.path)
         else { return }
-        let documentsPath = documentDirectoryUrl.path
+        let cachePath = cacheDirectoryUrl.path
 
         do {
-            let fileNames = try FileManager.default.contentsOfDirectory(atPath: "\(documentsPath)")
+            let fileNames = try FileManager.default.contentsOfDirectory(atPath: cachePath)
 
             for fileName in fileNames where fileName.hasSuffix(".png") {
-                let filePathName = "\(documentsPath)/\(fileName)"
+                let filePathName = "\(cachePath)/\(fileName)"
                 try FileManager.default.removeItem(atPath: filePathName)
             }
 

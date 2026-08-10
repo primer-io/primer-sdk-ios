@@ -137,6 +137,7 @@ class Mocks {
             static var adyenIDealPaymentMethodId = "mock_adyen_ideal_payment_method_id"
             static var klarnaPaymentMethodId = "mock_klarna_payment_method_id"
             static var paymentCardPaymentMethodId = "mock_payment_card_payment_method_id"
+            static var adyenBancontactCardPaymentMethodId = "mock_adyen_bancontact_card_payment_method_id"
             static var nolPaymentMethodId = "mock_nol_payment_method_id"
             static var paypalPaymentMethodId = "mock_paypal_method_id"
             static var xenditPaymentMethodId = "mock_xendit_method_id"
@@ -154,6 +155,7 @@ class Mocks {
             static var adyenIDealPaymentMethodName = "Mock iDeal Blik Payment Method"
             static var klarnaPaymentMethodName = "Mock Klarna Payment Method"
             static var paymentCardPaymentMethodName = "Mock Payment Card Payment Method"
+            static var adyenBancontactCardPaymentMethodName = "Mock Adyen Bancontact Card Payment Method"
             static var nolPaymentMethodName = "Mock NOL Payment Method"
             static var xenditPaymentMethodName = "Mock Xendit Payment Method"
 
@@ -181,6 +183,17 @@ class Mocks {
             implementationType: .nativeSdk,
             type: "PAYMENT_CARD", // Mocks.Static.Strings.paymentCardPaymentMethodType,
             name: Mocks.Static.Strings.paymentCardPaymentMethodName,
+            processorConfigId: Mocks.Static.Strings.processorConfigId,
+            surcharge: 0,
+            options: nil,
+            displayMetadata: nil
+        )
+
+        static var adyenBancontactCardPaymentMethod = PrimerPaymentMethod(
+            id: Mocks.Static.Strings.adyenBancontactCardPaymentMethodId,
+            implementationType: .nativeSdk,
+            type: "ADYEN_BANCONTACT_CARD",
+            name: Mocks.Static.Strings.adyenBancontactCardPaymentMethodName,
             processorConfigId: Mocks.Static.Strings.processorConfigId,
             surcharge: 0,
             options: nil,

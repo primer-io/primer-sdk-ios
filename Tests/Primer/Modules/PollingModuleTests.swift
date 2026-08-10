@@ -10,11 +10,18 @@ import PrimerFoundation
 import XCTest
 
 class PollingModuleTests: XCTestCase {
+    override func tearDown() {
+        PollingModule.apiClient = nil
+        PrimerAPIConfigurationModule.clientToken = nil
+        super.tearDown()
+    }
+
     func test_start_withValidTokenAndSuccessfulPolling_shouldSucceed() async throws {
         // Given
         PrimerAPIConfigurationModule.clientToken = MockAppState.mockClientToken
 
         let mockApiClient = MockPrimerAPIClient()
+        mockApiClient.mockedNetworkDelay = 0
         mockApiClient.pollingResults = [
             (PollingResponse(status: .pending, id: "0", source: "src"), nil),
             (PollingResponse(status: .pending, id: "0", source: "src"), nil),
@@ -38,6 +45,7 @@ class PollingModuleTests: XCTestCase {
         PrimerAPIConfigurationModule.clientToken = MockAppState.mockClientToken
 
         let mockApiClient = MockPrimerAPIClient()
+        mockApiClient.mockedNetworkDelay = 0
         mockApiClient.pollingResults = [
             (PollingResponse(status: .pending, id: "0", source: "src"), nil),
             (nil, NSError(domain: "dummy-network-error", code: 100)),
@@ -59,6 +67,7 @@ class PollingModuleTests: XCTestCase {
     func test_start_withMissingClientToken_shouldFail() async throws {
         // Given
         let mockApiClient = MockPrimerAPIClient()
+        mockApiClient.mockedNetworkDelay = 0
         mockApiClient.pollingResults = [
             (PollingResponse(status: .pending, id: "0", source: "src"), nil),
             (PollingResponse(status: .pending, id: "0", source: "src"), nil),

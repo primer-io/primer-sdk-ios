@@ -15,6 +15,7 @@ final class AnalyticsServiceTests: XCTestCase {
     var storage: MockAnalyticsStorage!
 
     override func setUp() {
+        PrimerAPIConfigurationModule.clientToken = nil
         apiClient = MockPrimerAPIAnalyticsClient()
         storage = MockAnalyticsStorage()
         sut = Analytics.Service(
@@ -220,17 +221,13 @@ final class AnalyticsServiceTests: XCTestCase {
             expectation.fulfill()
         }
 
-        let expectation2 = self.expectation(description: "Wait for all events to be sent")
-        Task {
-            do {
-                try await sendEvents(numberOfEvents: 5, eventType: .sdkEvent)
-                try await sendEvents(numberOfEvents: 5, eventType: .sdkEvent)
-                try await sendEvents(numberOfEvents: 5, eventType: .sdkEvent)
-            } catch {}
-            expectation2.fulfill()
+        // Batches stay below the auto-sync threshold; the awaited flush() makes each failure deterministic
+        for _ in 0 ..< 3 {
+            try? await sendEvents(numberOfEvents: 4, eventType: .sdkEvent)
+            try? await sut.flush()
         }
 
-        await fulfillment(of: [expectation, expectation2], timeout: 60.0)
+        await fulfillment(of: [expectation], timeout: 60.0)
 
         XCTAssertEqual(storage.loadEvents().count, 0, "Expected all events to be purged after failures.")
     }

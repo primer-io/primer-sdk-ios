@@ -12,8 +12,8 @@ import Foundation
 @MainActor
 protocol StepOrchestrating: AnyObject {
     var onURLOpen: (() -> Void)? { get set }
-    var onCancelled: (() -> Void)? { get set }
     func start(rawSchema: String, initialState: CodableValue) async throws
+    func applyEvent(_ value: CodableValue) async throws
 }
 
 @MainActor
@@ -23,12 +23,11 @@ final class PrimerStepOrchestrator: StepOrchestrating {
         didSet { harness.onURLOpen = onURLOpen }
     }
     
-    var onCancelled: (() -> Void)?
-
     private let logger = Logger()
     private let engine: any BDCEngineProtocol
     private let context: SDKContext
     private let registry: PrimerStepResolverRegistry
+    private var rawSchema: String!
     private let harness = SFSafariViewControllerHarness()
     private var state: CodableState = [:]
 
@@ -43,6 +42,7 @@ final class PrimerStepOrchestrator: StepOrchestrating {
     }
 
     func start(rawSchema: String, initialState: CodableValue) async throws {
+        self.rawSchema = rawSchema
         await registry.register(harness, for: "url.open")
         registry.register(harness, for: "url.open")
         do {
@@ -59,7 +59,7 @@ final class PrimerStepOrchestrator: StepOrchestrating {
             state = response.newState
             try await handleResponse(response, rawSchema: rawSchema)
         } catch {
-            if let error = error as? StateProcessorError {
+            if error is StateProcessorError {
                 throw error
             } else {
                 throw PrimerStepOrchestratorError.decodeResultFailed(error: error)
@@ -75,8 +75,13 @@ final class PrimerStepOrchestrator: StepOrchestrating {
         } else if let outcome = response.terminal?.outcome {
             try handleOutcome(outcome)
         } else {
-            throw PrimerStepOrchestratorError.missingActionAndOutcome
+            logger.info("Step settled without an action or terminal — waiting on the instruction loop.")
         }
+    }
+    
+    func applyEvent(_ value: CodableValue) async throws {
+        let result = try await engine.applyEvent(value, context: context, schema: rawSchema, state: state)
+        try await decodeResult(result, rawSchema: rawSchema)
     }
     
     private func handleAction(_ action: WorkflowStep, rawSchema: String) async throws {
@@ -86,16 +91,15 @@ final class PrimerStepOrchestrator: StepOrchestrating {
     
     private func handleOutcome(_ outcome: TerminalOutcome) throws {
         switch outcome {
-        case .cancelled: onCancelled?()
         case .error: throw PrimerStepOrchestratorError.checkoutTerminalError
         case .unsupported: throw PrimerStepOrchestratorError.receivedUnexpectedTerminalOutcome(outcome: outcome)
-        case .success: break
+        case .success, .cancelled: break // Allow polling to update us
         }
     }
 
     private func applyResult(_ resolution: StepResolutionResult, actionId: String, rawSchema: String) async throws {
         do {
-            let data = try resolution.data?.casted(to: Data.self)
+            let data = try resolution.data?.data()
             let result = try await engine.applyResult(
                 schema: rawSchema,
                 context: context,

@@ -37,6 +37,16 @@ class MerchantHeadlessCheckoutRawDataViewController: UIViewController {
     var cardholderNameTextField: UITextField?
     var payButton: UIButton!
 
+    /// Bancontact takes its own raw-data type (no CVV) — sending `PrimerCardData` fails validation.
+    var currentRawData: PrimerRawData {
+        guard paymentMethodType == "ADYEN_BANCONTACT_CARD" else { return rawCardData }
+        return PrimerBancontactCardData(
+            cardNumber: rawCardData.cardNumber,
+            expiryDate: rawCardData.expiryDate,
+            cardholderName: rawCardData.cardholderName ?? ""
+        )
+    }
+
     var cardsStackView: UIStackView!
 
     var logs: [String] = []
@@ -72,7 +82,7 @@ class MerchantHeadlessCheckoutRawDataViewController: UIViewController {
 
         let updateCardData = { [self] in
             rawCardData.cardNumber = cardnumberTextField!.text!.replacingOccurrences(of: " ", with: "")
-            primerRawDataManager?.rawData = rawCardData
+            primerRawDataManager?.rawData = currentRawData
         }
 
         let visaButton = UIButton(primaryAction: UIAction(title: "VISA", handler: { _ in
@@ -209,10 +219,8 @@ class MerchantHeadlessCheckoutRawDataViewController: UIViewController {
             return showErrorMessage("Please write expiry date in format MM/YY or MM/YYYY")
         }
 
-        if paymentMethodType == "PAYMENT_CARD" {
-            primerRawDataManager!.submit()
-            showLoadingOverlay()
-        }
+        primerRawDataManager!.submit()
+        showLoadingOverlay()
     }
 
     // MARK: - HELPERS
@@ -288,7 +296,7 @@ extension MerchantHeadlessCheckoutRawDataViewController: UITextFieldDelegate {
         }
 
         print("self.rawCardData\ncardNumber: \(rawCardData.cardNumber)\nexpiryDate: \(rawCardData.expiryDate)\ncvv: \(rawCardData.cvv)\ncardholderName: \(rawCardData.cardholderName ?? "nil")")
-        primerRawDataManager?.rawData = rawCardData
+        primerRawDataManager?.rawData = currentRawData
 
         return true
     }
