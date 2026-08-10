@@ -57,68 +57,71 @@ final class ImageManagerTests: XCTestCase {
     }
     
     func testGetImage_WithCachedImage() async throws {
-        var imageFile = ImageFile(
-            fileName: "test-image",
+        guard let testImage = UIImage(systemName: "star"),
+              let imageData = testImage.pngData() else {
+            return XCTFail("Could not create test image data")
+        }
+
+        // base64Data is written to localUrl on init, so getImage returns the cache without network
+        let imageFile = ImageFile(
+            fileName: "test-image-\(UUID().uuidString)",
             fileExtension: "png",
-            remoteUrl: URL(string: "https://example.com/image.png")
+            remoteUrl: URL(string: "https://example.com/image.png"),
+            base64Data: imageData
         )
-        
-        // Create with base64 data to simulate cached image
-        if let testImage = UIImage(systemName: "star"),
-           let imageData = testImage.pngData()
-        {
-            imageFile = ImageFile(
-                fileName: imageFile.fileName,
-                fileExtension: imageFile.fileExtension,
-                remoteUrl: imageFile.remoteUrl,
-                base64Data: imageData
-            )
+        defer {
+            if let localUrl = imageFile.localUrl {
+                try? FileManager.default.removeItem(at: localUrl)
+            }
         }
-        
-        do {
-            _ = try await sut.getImage(file: imageFile)
-        } catch {
-            // Expected to fail without proper mocking
-        }
+
+        XCTAssertNotNil(imageFile.cachedImage, "base64Data should be readable back as the cached image")
+
+        let result = try await sut.getImage(file: imageFile)
+        XCTAssertNotNil(result.cachedImage)
     }
     
     // MARK: - clean Tests
     
     func testClean_RemovesPNGFiles() {
-        // Create a test PNG file in documents directory
-        guard let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
-            XCTFail("Could not get documents directory")
+        guard let cacheURL = File.cacheDirectoryUrl,
+              let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+            XCTFail("Could not get cache/documents directory")
             return
         }
-        
-        let testFileName = "test-image-\(UUID().uuidString).png"
-        let testFileURL = documentsURL.appendingPathComponent(testFileName)
-        
-        // Create test file
+        File.ensureCacheDirectoryExists()
+
+        let cachedFileURL = cacheURL.appendingPathComponent("test-image-\(UUID().uuidString).png")
+        let hostAppFileURL = documentsURL.appendingPathComponent("host-image-\(UUID().uuidString).png")
+
         let testData = Data("test".utf8)
         do {
-            try testData.write(to: testFileURL)
-            XCTAssertTrue(FileManager.default.fileExists(atPath: testFileURL.path))
-            
-            // Clean
+            try testData.write(to: cachedFileURL)
+            try testData.write(to: hostAppFileURL)
+
             ImageManager.clean()
-            
-            // Verify file is removed
-            XCTAssertFalse(FileManager.default.fileExists(atPath: testFileURL.path))
+
+            // SDK cache is swept
+            XCTAssertFalse(FileManager.default.fileExists(atPath: cachedFileURL.path))
+            // The host app's own files are out of bounds
+            XCTAssertTrue(FileManager.default.fileExists(atPath: hostAppFileURL.path))
+
+            try FileManager.default.removeItem(at: hostAppFileURL)
         } catch {
             XCTFail("Failed to create test file: \(error)")
         }
     }
     
     func testClean_DoesNotRemoveNonPNGFiles() {
-        // Create a test non-PNG file in documents directory
-        guard let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
-            XCTFail("Could not get documents directory")
+        // Create a test non-PNG file in the SDK cache directory
+        guard let cacheURL = File.cacheDirectoryUrl else {
+            XCTFail("Could not get cache directory")
             return
         }
-        
+        File.ensureCacheDirectoryExists()
+
         let testFileName = "test-file-\(UUID().uuidString).txt"
-        let testFileURL = documentsURL.appendingPathComponent(testFileName)
+        let testFileURL = cacheURL.appendingPathComponent(testFileName)
         
         // Create test file
         let testData = Data("test".utf8)
