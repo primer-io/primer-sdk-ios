@@ -145,7 +145,7 @@ struct ApplePayScreen: View {
             .foregroundColor(CheckoutColors.white(tokens: tokens))
             .frame(maxWidth: .infinity)
             .frame(height: 50)
-            .background(CheckoutColors.blue(tokens: tokens))
+            .background(CheckoutColors.buttonPrimary(tokens: tokens))
             .cornerRadius(PrimerRadius.medium(tokens: tokens))
         }
         .padding(.horizontal, PrimerSpacing.large(tokens: tokens))

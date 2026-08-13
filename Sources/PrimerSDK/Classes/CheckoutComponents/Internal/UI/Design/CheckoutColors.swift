@@ -24,6 +24,10 @@ enum CheckoutColors {
     tokens?.primerColorTextNegative ?? .red
   }
 
+  static func textLink(tokens: DesignTokens?) -> Color {
+    tokens?.primerColorTextLink ?? .blue
+  }
+
   static func iconNegative(tokens: DesignTokens?) -> Color {
     tokens?.primerColorIconNegative ?? .red
   }
@@ -56,12 +60,16 @@ enum CheckoutColors {
     tokens?.primerColorGray300 ?? Color(.systemGray4)
   }
 
-  static func gray700(tokens: DesignTokens?) -> Color {
-    tokens?.primerColorGray700 ?? Color(.systemGray)
-  }
-
   static func textPlaceholder(tokens: DesignTokens?) -> Color {
     tokens?.primerColorTextPlaceholder ?? Color(.tertiaryLabel)
+  }
+
+  static func loader(tokens: DesignTokens?) -> Color {
+    tokens?.primerColorLoader ?? .blue
+  }
+
+  static func borderSelected(tokens: DesignTokens?) -> Color {
+    tokens?.primerColorBorderOutlinedSelected ?? .blue
   }
 
   static func iconPositive(tokens: DesignTokens?) -> Color {
@@ -70,19 +78,9 @@ enum CheckoutColors {
 
   static func white(tokens _: DesignTokens?) -> Color { .white }
 
-  static func gray(tokens _: DesignTokens?) -> Color { .gray }
-
   static func blue(tokens _: DesignTokens?) -> Color { .blue }
 
-  static func green(tokens _: DesignTokens?) -> Color { .green }
-
   static func orange(tokens _: DesignTokens?) -> Color { .orange }
-
-  static func primary(tokens _: DesignTokens?) -> Color { .primary }
-
-  static func secondary(tokens _: DesignTokens?) -> Color { .secondary }
-
-  static func clear(tokens _: DesignTokens?) -> Color { .clear }
 
   // MARK: - Screen & Input Colors
 

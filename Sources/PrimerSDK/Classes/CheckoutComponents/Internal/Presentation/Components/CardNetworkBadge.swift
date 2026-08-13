@@ -27,7 +27,7 @@ struct CardNetworkBadge: View, LogReporter {
     } else {
       Text(network.displayName.prefix(2).uppercased())
         .font(PrimerFont.smallBadge(tokens: tokens))
-        .foregroundColor(CheckoutColors.primary(tokens: tokens))
+        .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
         .frame(
           width: PrimerCardNetworkSelector.badgeWidth, height: PrimerCardNetworkSelector.badgeHeight
         )

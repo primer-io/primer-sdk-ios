@@ -152,7 +152,7 @@ struct KlarnaView: View, LogReporter {
         .frame(height: PrimerSpacing.xxlarge(tokens: tokens) * 2)
 
       ProgressView()
-        .progressViewStyle(CircularProgressViewStyle(tint: CheckoutColors.blue(tokens: tokens)))
+        .progressViewStyle(CircularProgressViewStyle(tint: CheckoutColors.loader(tokens: tokens)))
         .scaleEffect(PrimerScale.large)
         .frame(width: Layout.spinnerSize, height: Layout.spinnerSize)
         .accessibilityIdentifier(AccessibilityIdentifiers.Klarna.loadingIndicator)
@@ -244,7 +244,7 @@ struct KlarnaView: View, LogReporter {
           .accessibilityLabel(CheckoutComponentsStrings.a11yKlarnaPaymentView)
       } else if isSelected, scope.paymentView == nil, klarnaState.step != .viewReady {
         ProgressView()
-          .progressViewStyle(CircularProgressViewStyle(tint: CheckoutColors.blue(tokens: tokens)))
+          .progressViewStyle(CircularProgressViewStyle(tint: CheckoutColors.loader(tokens: tokens)))
           .frame(maxWidth: .infinity, minHeight: Layout.inlineLoadingMinHeight)
           .accessibilityLabel(CheckoutComponentsStrings.a11yLoading)
       }
@@ -255,7 +255,7 @@ struct KlarnaView: View, LogReporter {
       RoundedRectangle(cornerRadius: PrimerRadius.medium(tokens: tokens))
         .stroke(
           isSelected
-            ? CheckoutColors.blue(tokens: tokens) : CheckoutColors.borderDefault(tokens: tokens),
+            ? CheckoutColors.borderSelected(tokens: tokens) : CheckoutColors.borderDefault(tokens: tokens),
           lineWidth: isSelected ? Layout.selectedBorderWidth : Layout.defaultBorderWidth
         )
     )

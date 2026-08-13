@@ -29,7 +29,7 @@ struct SuccessScreen: View {
       VStack(spacing: PrimerSpacing.small(tokens: tokens)) {
         Image(systemName: "checkmark.circle.fill")
           .font(PrimerFont.extraLargeIcon(tokens: tokens))
-          .foregroundColor(CheckoutColors.green(tokens: tokens))
+          .foregroundColor(CheckoutColors.iconPositive(tokens: tokens))
           .scaleEffect(iconScale)
           .accessibilityIdentifier(AccessibilityIdentifiers.Success.icon)
           .accessibilityHidden(true)

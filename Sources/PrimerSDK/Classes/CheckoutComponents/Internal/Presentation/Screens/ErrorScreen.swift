@@ -76,7 +76,7 @@ struct ErrorScreen: View {
         .foregroundColor(.white)
         .frame(maxWidth: .infinity)
         .padding(.vertical, PrimerSpacing.medium(tokens: tokens))
-        .background(CheckoutColors.blue(tokens: tokens))
+        .background(CheckoutColors.buttonPrimary(tokens: tokens))
         .cornerRadius(PrimerRadius.medium(tokens: tokens))
     }
     .accessibility(

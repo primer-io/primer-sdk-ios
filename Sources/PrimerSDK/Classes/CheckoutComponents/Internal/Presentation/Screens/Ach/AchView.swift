@@ -139,7 +139,7 @@ struct AchView: View, LogReporter {
         .frame(height: PrimerSpacing.xxlarge(tokens: tokens) * 2)
 
       ProgressView()
-        .progressViewStyle(CircularProgressViewStyle(tint: CheckoutColors.blue(tokens: tokens)))
+        .progressViewStyle(CircularProgressViewStyle(tint: CheckoutColors.loader(tokens: tokens)))
         .scaleEffect(PrimerScale.large)
         .frame(width: Layout.spinnerSize, height: Layout.spinnerSize)
         .accessibilityIdentifier(AccessibilityIdentifiers.Ach.loadingIndicator)

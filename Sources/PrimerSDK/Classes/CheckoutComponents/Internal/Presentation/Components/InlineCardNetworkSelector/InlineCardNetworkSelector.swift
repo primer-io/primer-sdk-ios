@@ -88,7 +88,7 @@ struct InlineCardNetworkSelector: View {
   }
 
   private var selectedBorderColor: Color {
-    CheckoutColors.gray700(tokens: tokens)
+    CheckoutColors.borderSelected(tokens: tokens)
   }
 
   private var baseBorderColor: Color {
