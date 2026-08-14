@@ -91,7 +91,9 @@ public struct ColorOverrides: Equatable {
 
   // MARK: Semantic UI Colors (matching internal DesignTokens)
 
-  public let primerColorBackground: Color?
+  public let primerColorBackgroundPrimary: Color?
+  public let primerColorBackgroundOutlinedDefault: Color?
+  public let primerColorTextOutlinedDefault: Color?
   public let primerColorTextPrimary: Color?
   public let primerColorTextSecondary: Color?
   public let primerColorTextPlaceholder: Color?
@@ -148,7 +150,9 @@ public struct ColorOverrides: Equatable {
     primerColorRed900: Color? = nil,
     primerColorBlue500: Color? = nil,
     primerColorBlue900: Color? = nil,
-    primerColorBackground: Color? = nil,
+    primerColorBackgroundPrimary: Color? = nil,
+    primerColorBackgroundOutlinedDefault: Color? = nil,
+    primerColorTextOutlinedDefault: Color? = nil,
     primerColorTextPrimary: Color? = nil,
     primerColorTextSecondary: Color? = nil,
     primerColorTextPlaceholder: Color? = nil,
@@ -192,7 +196,9 @@ public struct ColorOverrides: Equatable {
     self.primerColorRed900 = primerColorRed900
     self.primerColorBlue500 = primerColorBlue500
     self.primerColorBlue900 = primerColorBlue900
-    self.primerColorBackground = primerColorBackground
+    self.primerColorBackgroundPrimary = primerColorBackgroundPrimary
+    self.primerColorBackgroundOutlinedDefault = primerColorBackgroundOutlinedDefault
+    self.primerColorTextOutlinedDefault = primerColorTextOutlinedDefault
     self.primerColorTextPrimary = primerColorTextPrimary
     self.primerColorTextSecondary = primerColorTextSecondary
     self.primerColorTextPlaceholder = primerColorTextPlaceholder

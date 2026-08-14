@@ -2,11 +2,21 @@
   "primer": {
     "color": {
       "background": {
+        "primary": {
+          "description": "",
+          "type": "color",
+          "value": "{primer.color.gray.000}"
+        },
+        "secondary": {
+          "description": "",
+          "type": "color",
+          "value": "{primer.color.gray.100}"
+        },
         "outlined": {
           "default": {
             "description": "",
             "type": "color",
-            "value": "{primer.color.background}"
+            "value": "{primer.color.background.secondary}"
           },
           "disabled": {
             "description": "",
@@ -70,10 +80,7 @@
             "type": "color",
             "value": "{primer.color.gray.100}"
           }
-        },
-        "description": "",
-        "type": "color",
-        "value": "{primer.color.gray.000}"
+        }
       },
       "text": {
         "primary": {
@@ -105,6 +112,13 @@
           "description": "",
           "type": "color",
           "value": "{primer.color.gray.600}"
+        },
+        "outlined": {
+          "default": {
+            "description": "",
+            "type": "color",
+            "value": "{primer.color.gray.900}"
+          }
         }
       },
       "border": {

@@ -12,8 +12,12 @@ import SwiftUI
 // This class is generated automatically by Style Dictionary.
 // It represents the design tokens for the Light theme.
 final class DesignTokens: Decodable {
-  var primerColorBackground: Color? = Color(
+  var primerColorBackgroundPrimary: Color? = Color(
     red: 1.000, green: 1.000, blue: 1.000, opacity: 1)
+  var primerColorBackgroundOutlinedDefault: Color? = Color(
+    red: 0.961, green: 0.961, blue: 0.961, opacity: 1)
+  var primerColorTextOutlinedDefault: Color? = Color(
+    red: 0.129, green: 0.129, blue: 0.129, opacity: 1)
   var primerColorTextPrimary: Color? = Color(
     red: 0.129, green: 0.129, blue: 0.129, opacity: 1)
   var primerColorTextPlaceholder: Color? = Color(
@@ -131,7 +135,9 @@ final class DesignTokens: Decodable {
 
   // Coding keys to map JSON keys to properties.
   enum CodingKeys: String, CodingKey {
-    case primerColorBackground
+    case primerColorBackgroundPrimary
+    case primerColorBackgroundOutlinedDefault
+    case primerColorTextOutlinedDefault
     case primerColorTextPrimary
     case primerColorTextPlaceholder
     case primerColorTextDisabled
@@ -232,7 +238,9 @@ final class DesignTokens: Decodable {
   required init(from decoder: Decoder) throws {
     let container = try decoder.container(keyedBy: CodingKeys.self)
 
-    primerColorBackground = try container.decodeColorIfPresent(forKey: .primerColorBackground) ?? primerColorBackground
+    primerColorBackgroundPrimary = try container.decodeColorIfPresent(forKey: .primerColorBackgroundPrimary) ?? primerColorBackgroundPrimary
+    primerColorBackgroundOutlinedDefault = try container.decodeColorIfPresent(forKey: .primerColorBackgroundOutlinedDefault) ?? primerColorBackgroundOutlinedDefault
+    primerColorTextOutlinedDefault = try container.decodeColorIfPresent(forKey: .primerColorTextOutlinedDefault) ?? primerColorTextOutlinedDefault
     primerColorTextPrimary = try container.decodeColorIfPresent(forKey: .primerColorTextPrimary) ?? primerColorTextPrimary
     primerColorTextPlaceholder = try container.decodeColorIfPresent(forKey: .primerColorTextPlaceholder) ?? primerColorTextPlaceholder
     primerColorTextDisabled = try container.decodeColorIfPresent(forKey: .primerColorTextDisabled) ?? primerColorTextDisabled

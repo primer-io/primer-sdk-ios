@@ -108,7 +108,9 @@ final class DesignTokensManager: ObservableObject {
     if let value = colors.primerColorRed900 { tokens.primerColorRed900 = value }
     if let value = colors.primerColorBlue500 { tokens.primerColorBlue500 = value }
     if let value = colors.primerColorBlue900 { tokens.primerColorBlue900 = value }
-    if let value = colors.primerColorBackground { tokens.primerColorBackground = value }
+    if let value = colors.primerColorBackgroundPrimary { tokens.primerColorBackgroundPrimary = value }
+    if let value = colors.primerColorBackgroundOutlinedDefault { tokens.primerColorBackgroundOutlinedDefault = value }
+    if let value = colors.primerColorTextOutlinedDefault { tokens.primerColorTextOutlinedDefault = value }
   }
 
   private func applyTextColorOverrides(to tokens: DesignTokens, from colors: ColorOverrides) {

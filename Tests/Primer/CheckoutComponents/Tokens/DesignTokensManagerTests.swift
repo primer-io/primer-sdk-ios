@@ -48,7 +48,7 @@ final class DesignTokensManagerTests: XCTestCase {
 
         // Then
         let tokens = try XCTUnwrap(sut.tokens)
-        XCTAssertNotNil(tokens.primerColorBackground)
+        XCTAssertNotNil(tokens.primerColorBackgroundPrimary)
         XCTAssertNotNil(tokens.primerColorTextPrimary)
         XCTAssertNotNil(tokens.primerRadiusMedium)
         XCTAssertNotNil(tokens.primerSpaceMedium)
@@ -77,7 +77,7 @@ final class DesignTokensManagerTests: XCTestCase {
 
         // Then
         let tokens = try XCTUnwrap(sut.tokens)
-        XCTAssertNotNil(tokens.primerColorBackground)
+        XCTAssertNotNil(tokens.primerColorBackgroundPrimary)
         XCTAssertNotNil(tokens.primerColorTextPrimary)
         XCTAssertNotNil(tokens.primerRadiusMedium)
         XCTAssertNotNil(tokens.primerSpaceMedium)
@@ -97,7 +97,7 @@ final class DesignTokensManagerTests: XCTestCase {
 
         // Then
         let tokens = try XCTUnwrap(sut.tokens)
-        XCTAssertNotNil(tokens.primerColorBackground)
+        XCTAssertNotNil(tokens.primerColorBackgroundPrimary)
         XCTAssertNotNil(tokens.primerRadiusMedium)
         XCTAssertNotNil(tokens.primerSpaceMedium)
         XCTAssertNotNil(tokens.primerSizeMedium)
@@ -168,7 +168,7 @@ final class DesignTokensManagerTests: XCTestCase {
                 primerColorRed900: customRed,
                 primerColorBlue500: customBlue,
                 primerColorBlue900: customBlue,
-                primerColorBackground: .white
+                primerColorBackgroundPrimary: .white
             )
         )
         sut.applyTheme(theme)
@@ -184,7 +184,7 @@ final class DesignTokensManagerTests: XCTestCase {
         XCTAssertEqual(tokens.primerColorRed900, customRed)
         XCTAssertEqual(tokens.primerColorBlue500, customBlue)
         XCTAssertEqual(tokens.primerColorBlue900, customBlue)
-        XCTAssertEqual(tokens.primerColorBackground, .white)
+        XCTAssertEqual(tokens.primerColorBackgroundPrimary, .white)
     }
 
     func test_applyTheme_textColorOverrides_appliedToTokens() async throws {
@@ -701,7 +701,7 @@ final class DesignTokensManagerTests: XCTestCase {
         // Then
         let tokens = try XCTUnwrap(sut.tokens)
         XCTAssertNotNil(tokens.primerColorBrand)
-        XCTAssertNotNil(tokens.primerColorBackground)
+        XCTAssertNotNil(tokens.primerColorBackgroundPrimary)
         XCTAssertNotNil(tokens.primerColorTextPrimary)
     }
 
