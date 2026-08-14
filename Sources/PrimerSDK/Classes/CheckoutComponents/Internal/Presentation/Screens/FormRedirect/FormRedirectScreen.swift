@@ -207,6 +207,7 @@ private struct FormFieldView: View {
                 set: { onValueChanged($0) }
             ))
             .font(PrimerFont.bodyLarge(tokens: tokens))
+            .foregroundColor(CheckoutColors.inputText(tokens: tokens))
             .keyboardType(field.keyboardType.uiKeyboardType)
             .textContentType(field.fieldType.textContentType)
             .focused($isFocused)
