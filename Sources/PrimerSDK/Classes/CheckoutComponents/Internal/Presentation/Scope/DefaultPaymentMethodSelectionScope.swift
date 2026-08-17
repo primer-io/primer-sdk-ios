@@ -387,10 +387,6 @@ final class DefaultPaymentMethodSelectionScope: PaymentMethodSelectionScopeInter
     checkoutScope?.setSelectedVaultedPaymentMethod(method)
   }
 
-  func navigateToDeleteConfirmation(_ method: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod) {
-    checkoutScope?.updateNavigationState(.deleteVaultedPaymentMethodConfirmation(method))
-  }
-
   // MARK: - Vault Delete
 
   /// Deletes a vaulted payment method and refreshes the list

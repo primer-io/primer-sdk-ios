@@ -30,6 +30,13 @@ public final class PrimerCheckoutSession: ObservableObject {
 
   @Published public private(set) var phase: Phase = .initializing
 
+  /// Client session backing the current checkout — amount, currency, order, line items, fees and
+  /// customer. Non-nil from `.ready` onwards, refreshed by `refresh()`, `nil` again after `cancel()`.
+  ///
+  /// This is the value the checkout initialized with. A client-session update triggered mid-checkout
+  /// (surcharge, billing address) does not refresh it.
+  @Published public private(set) var clientSession: PrimerClientSession?
+
   /// Called before a payment is created. Use the decision handler to provide an idempotency key or
   /// abort payment creation. Mutations are forwarded to the checkout scope immediately, so assigning
   /// after the session reaches `.ready` still takes effect for the next payment attempt.
@@ -101,9 +108,9 @@ public final class PrimerCheckoutSession: ObservableObject {
     }
   }
 
-  /// Wires the checkout scope and forwards its lifecycle: `.ready` flips `phase`, and the first
-  /// terminal state is delivered to the merchant exactly once. Extracted from `start()` so tests can
-  /// drive the loop with a scope whose state stream they control.
+  /// Wires the checkout scope and forwards its lifecycle: `.ready` flips `phase`, `.failure` is
+  /// forwarded per attempt, and the first session-ending state is delivered exactly once. Extracted
+  /// from `start()` so tests can drive the loop with a scope whose state stream they control.
   func observeCheckoutState(_ scope: DefaultCheckoutScope) async {
     scope.onBeforePaymentCreate = onBeforePaymentCreate
     scope.idempotencyKeyProvider = idempotencyKey
@@ -111,11 +118,24 @@ public final class PrimerCheckoutSession: ObservableObject {
 
     for await checkoutState in scope.state {
       switch checkoutState {
-      case .ready:
+      case let .ready(clientSession):
+        self.clientSession = clientSession
         phase = .ready
-      case .success, .failure, .dismissed:
-        // A terminal outcome is delivered to the merchant at most once; once latched, any further
-        // terminal state (e.g. a `.dismissed` produced by a view-lifecycle `cancel()`) is ignored.
+      case .failure:
+        // Before `.ready` this is an initialization failure. It ends the session, and one broken
+        // launch emits it from two places (`setupInteractors` then `loadPaymentMethods`), so latch
+        // and stop observing or the merchant hears the same failure twice.
+        guard case .ready = phase else {
+          complete(with: checkoutState)
+          return
+        }
+        // After `.ready` it is one payment attempt failing. The SDK's error screen offers a retry and
+        // the sub-sessions stay usable, so forward it and keep observing — latching here would leave
+        // a merchant who retries after a decline never hearing the second outcome.
+        onCompletion?(checkoutState)
+      case .success, .dismissed:
+        // Success and dismissal do end it, so they are delivered at most once; once latched, any
+        // further one (e.g. a `.dismissed` produced by a view-lifecycle `cancel()`) is ignored.
         // Breaking out of the loop also tears down the scope's state observation deterministically.
         complete(with: checkoutState)
         return
@@ -167,6 +187,7 @@ public final class PrimerCheckoutSession: ObservableObject {
     checkoutScope = nil
     initializer = nil
     hasCompleted = false
+    clientSession = nil
     phase = .initializing
   }
 
@@ -189,7 +210,8 @@ public final class PrimerCheckoutSession: ObservableObject {
     return session
   }
 
-  /// Delivers a terminal outcome to the merchant exactly once, latching against repeat delivery.
+  /// Delivers a session-ending outcome to the merchant exactly once, latching against repeat
+  /// delivery. Failures do not pass through here — they are forwarded once per attempt.
   private func complete(with state: PrimerCheckoutState) {
     guard !hasCompleted else { return }
     hasCompleted = true

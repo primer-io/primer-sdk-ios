@@ -41,11 +41,25 @@ final class CheckoutAnalyticsTrackerTests: XCTestCase {
         PrimerError.unknown(message: message, diagnosticsId: "test_diagnostics")
     }
 
+    private func makeClientSession(totalAmount: Int = 1000, currencyCode: String = "USD") -> PrimerClientSession {
+        PrimerClientSession(
+            customerId: nil,
+            orderId: nil,
+            currencyCode: currencyCode,
+            totalAmount: totalAmount,
+            lineItems: nil,
+            orderDetails: nil,
+            customer: nil,
+            paymentMethod: nil,
+            fees: nil
+        )
+    }
+
     // MARK: - trackStateChange: ready
 
     func test_trackStateChange_ready_tracksCheckoutFlowStarted() async {
         // Given
-        let state = PrimerCheckoutState.ready(totalAmount: 1000, currencyCode: "USD")
+        let state = PrimerCheckoutState.ready(clientSession: makeClientSession())
 
         // When
         await sut.trackStateChange(state)
@@ -183,7 +197,7 @@ final class CheckoutAnalyticsTrackerTests: XCTestCase {
         let tracker = CheckoutAnalyticsTracker(analyticsInteractor: nil)
 
         // When / Then — should not crash
-        await tracker.trackStateChange(.ready(totalAmount: 1000, currencyCode: "USD"))
+        await tracker.trackStateChange(.ready(clientSession: makeClientSession()))
         await tracker.trackStateChange(.success(makePaymentResult()))
         await tracker.trackStateChange(.failure(makeError(message: "Error")))
         await tracker.trackStateChange(.dismissed)

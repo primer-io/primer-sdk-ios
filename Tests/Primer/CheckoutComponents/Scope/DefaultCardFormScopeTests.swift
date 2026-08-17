@@ -1038,6 +1038,38 @@ final class DefaultCardFormScopeTests: XCTestCase {
         }
     }
 
+    // Regression: the API-driven configuration was computed into a private property that only the
+    // SDK's own renderer read, so a merchant reading `state.configuration` always got the static
+    // default and could not learn which fields this session actually requires.
+    func test_currentState_configuration_isSessionDerived_notTheStaticDefault() async throws {
+        let container = try await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let mockConfig = MockConfigurationService.withDefaultConfiguration()
+            mockConfig.billingAddressOptions = PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions(
+                firstName: true,
+                lastName: true,
+                city: true,
+                postalCode: true,
+                addressLine1: true,
+                addressLine2: true,
+                countryCode: true,
+                phoneNumber: nil,
+                state: true
+            )
+
+            let scope = createCardFormScope(
+                checkoutScope: checkoutScope,
+                configurationService: mockConfig
+            )
+
+            XCTAssertNotEqual(scope.currentState.configuration, .default)
+            XCTAssertTrue(scope.currentState.configuration.requiresBillingAddress)
+            XCTAssertTrue(scope.currentState.configuration.billingFields.contains(.postalCode))
+        }
+    }
+
     func test_getFormConfiguration_withoutBillingAddress_hasEmptyBillingFields() async throws {
         let container = try await createTestContainer()
 

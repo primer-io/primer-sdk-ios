@@ -1,7 +1,7 @@
 //
 //  PrimerClientSession.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
@@ -15,6 +15,23 @@ import Foundation
     public let lineItems: [PrimerLineItem]?
     public let orderDetails: PrimerOrder?
     public let customer: PrimerCustomer?
+    public let paymentMethod: PaymentMethod?
+    public let fees: [PrimerFee]?
+
+    /// Client-session payment-method options.
+    ///
+    /// Nested because the top-level `PrimerPaymentMethod` name is already taken by the
+    /// payment-method configuration model. The property name — the only spelling merchant code
+    /// writes — matches Android.
+    public struct PaymentMethod: Codable, Equatable {
+        /// Raw network identifiers, e.g. `["VISA", "MASTERCARD"]`. Kept as strings because the wire
+        /// type is `[String]?` and mapping to an enum would silently drop unrecognised networks.
+        public let orderedAllowedCardNetworks: [String]
+
+        public init(orderedAllowedCardNetworks: [String]) {
+            self.orderedAllowedCardNetworks = orderedAllowedCardNetworks
+        }
+    }
 
     public init(
         customerId: String?,
@@ -23,7 +40,9 @@ import Foundation
         totalAmount: Int?,
         lineItems: [PrimerLineItem]?,
         orderDetails: PrimerOrder?,
-        customer: PrimerCustomer?
+        customer: PrimerCustomer?,
+        paymentMethod: PaymentMethod?,
+        fees: [PrimerFee]?
     ) {
         self.customerId = customerId
         self.orderId = orderId
@@ -32,6 +51,31 @@ import Foundation
         self.lineItems = lineItems
         self.orderDetails = orderDetails
         self.customer = customer
+        self.paymentMethod = paymentMethod
+        self.fees = fees
+    }
+
+    /// Retained so existing Swift callers keep compiling after `paymentMethod` and `fees` were added.
+    public convenience init(
+        customerId: String?,
+        orderId: String?,
+        currencyCode: String?,
+        totalAmount: Int?,
+        lineItems: [PrimerLineItem]?,
+        orderDetails: PrimerOrder?,
+        customer: PrimerCustomer?
+    ) {
+        self.init(
+            customerId: customerId,
+            orderId: orderId,
+            currencyCode: currencyCode,
+            totalAmount: totalAmount,
+            lineItems: lineItems,
+            orderDetails: orderDetails,
+            customer: customer,
+            paymentMethod: nil,
+            fees: nil
+        )
     }
 }
 
@@ -45,7 +89,11 @@ extension PrimerClientSession {
             totalAmount: session?.order?.totalOrderAmount,
             lineItems: session?.order?.lineItems?.compactMap { PrimerLineItem(lineItem: $0, session: session) },
             orderDetails: PrimerOrder(clientSessionOrder: session?.order),
-            customer: PrimerCustomer(customer: session?.customer)
+            customer: PrimerCustomer(customer: session?.customer),
+            paymentMethod: session?.paymentMethod.map {
+                PaymentMethod(orderedAllowedCardNetworks: $0.orderedAllowedCardNetworks ?? [])
+            },
+            fees: session?.order?.fees?.map { PrimerFee(type: $0.type.rawValue, amount: $0.amount) }
         )
     }
 }

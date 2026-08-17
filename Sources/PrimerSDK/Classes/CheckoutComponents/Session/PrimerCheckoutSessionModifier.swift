@@ -23,6 +23,10 @@ public extension View {
   /// }
   /// .primerCheckoutSession(session) { state in handle(state) }
   /// ```
+  ///
+  /// - Parameter onCompletion: Receives `.failure` once per failed attempt — the checkout stays
+  ///   usable so the shopper can retry — then `.success` or `.dismissed` exactly once, after which
+  ///   nothing more is delivered.
   func primerCheckoutSession(
     _ session: PrimerCheckoutSession,
     onCompletion: ((PrimerCheckoutState) -> Void)? = nil

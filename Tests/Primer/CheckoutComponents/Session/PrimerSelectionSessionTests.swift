@@ -43,7 +43,7 @@ final class PrimerSelectionSessionTests: XCTestCase {
     private(set) var cancelCalled = false
     private(set) var showAllCalled = false
     private(set) var selectedVaulted: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod?
-    private(set) var navigatedToDeleteConfirmation: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod?
+    private(set) var deletedVaulted: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod?
 
     var stubbedVaultedPaymentMethods: [PrimerHeadlessUniversalCheckout.VaultedPaymentMethod] = []
     var stubbedCurrentState = PrimerPaymentMethodSelectionState()
@@ -75,9 +75,8 @@ final class PrimerSelectionSessionTests: XCTestCase {
     func selectVaultedPaymentMethod(_ method: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod) {
       selectedVaulted = method
     }
-    func deleteVaultedPaymentMethod(_ method: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod) async throws {}
-    func navigateToDeleteConfirmation(_ method: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod) {
-      navigatedToDeleteConfirmation = method
+    func deleteVaultedPaymentMethod(_ method: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod) async throws {
+      deletedVaulted = method
     }
   }
 
@@ -184,17 +183,19 @@ final class PrimerSelectionSessionTests: XCTestCase {
     XCTAssertEqual(scope.selectedVaulted?.id, "v1")
   }
 
-  func test_delete_forwardsToNavigateToDeleteConfirmation() {
+  // Regression: `delete(_:)` used to only route to a confirmation screen — a navigation state the
+  // inline host never presents — so nothing was ever deleted from merchant code.
+  func test_delete_deletesTheVaultedMethod() async throws {
     // Given
     let scope = TrackingSelectionScope()
     let session = PrimerSelectionSession(scope: scope)
     let method = makeVaultedPaymentMethod(id: "v2")
 
     // When
-    session.delete(method)
+    try await session.delete(method)
 
     // Then
-    XCTAssertEqual(scope.navigatedToDeleteConfirmation?.id, "v2")
+    XCTAssertEqual(scope.deletedVaulted?.id, "v2")
   }
 
   func test_showAll_forwardsToShowAllVaultedPaymentMethods() {

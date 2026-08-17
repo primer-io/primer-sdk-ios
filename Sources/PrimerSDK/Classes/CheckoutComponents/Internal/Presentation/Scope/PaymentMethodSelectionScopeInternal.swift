@@ -17,5 +17,4 @@ protocol PaymentMethodSelectionScopeInternal: PrimerPaymentMethodSelectionScope 
   func collapsePaymentMethods()
   func selectVaultedPaymentMethod(_ method: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod)
   func deleteVaultedPaymentMethod(_ method: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod) async throws
-  func navigateToDeleteConfirmation(_ method: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod)
 }

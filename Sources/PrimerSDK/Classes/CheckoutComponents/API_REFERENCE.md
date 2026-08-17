@@ -224,7 +224,7 @@ public final class PrimerSelectionSession: ObservableObject {
   public func select(_ method: CheckoutPaymentMethod)
   public func cancel()
   public func selectVaulted(_ method: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod)
-  public func delete(_ method: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod)
+  public func delete(_ method: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod) async throws
   public func showAll()
   public func updateCvvInput(_ cvv: String)
 }

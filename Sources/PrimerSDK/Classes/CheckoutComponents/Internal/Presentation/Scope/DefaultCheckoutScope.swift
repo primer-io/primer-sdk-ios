@@ -229,14 +229,12 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
 
       await preloadPaymentMethodScopes()
 
-      if availablePaymentMethods.isEmpty {
+      if availablePaymentMethods.isEmpty || configurationService?.clientSession == nil {
         let error = PrimerError.missingPrimerConfiguration()
         updateNavigationState(.failure(error))
         updateState(.failure(error))
-      } else {
-        let totalAmount = configurationService?.amount ?? 0
-        let currencyCode = configurationService?.currency?.code ?? ""
-        updateState(.ready(totalAmount: totalAmount, currencyCode: currencyCode))
+      } else if let clientSession = configurationService?.clientSession {
+        updateState(.ready(clientSession: clientSession))
 
         // Inline embedding must not auto-present a payment method on launch — the merchant's own
         // inline view renders once `.ready`, and the flow sheet appears only after the merchant

@@ -61,9 +61,12 @@ public final class PrimerSelectionSession: ObservableObject {
     internalScope?.selectVaultedPaymentMethod(method)
   }
 
-  /// Routes to the delete-confirmation screen for a vaulted method.
-  public func delete(_ method: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod) {
-    internalScope?.navigateToDeleteConfirmation(method)
+  /// Deletes a saved payment method, then refreshes ``vaultedPaymentMethods``.
+  ///
+  /// Deletion is immediate — add your own confirmation step if you want one. The SDK's own saved-methods
+  /// screen routes through its built-in confirmation before it deletes.
+  public func delete(_ method: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod) async throws {
+    try await internalScope?.deleteVaultedPaymentMethod(method)
   }
 
   /// Navigates to the full list of saved payment methods.

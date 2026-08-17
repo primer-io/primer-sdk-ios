@@ -19,6 +19,17 @@ protocol ConfigurationService {
 }
 
 @available(iOS 15.0, *)
+extension ConfigurationService {
+  /// Merchant-facing read model of the current client session.
+  ///
+  /// A protocol extension rather than a requirement, so the mapping is exercised for real in tests
+  /// instead of being stubbed out by `MockConfigurationService`.
+  var clientSession: PrimerClientSession? {
+    apiConfiguration.map(PrimerClientSession.init(from:))
+  }
+}
+
+@available(iOS 15.0, *)
 final class DefaultConfigurationService: ConfigurationService {
   var apiConfiguration: PrimerAPIConfiguration? {
     PrimerAPIConfigurationModule.apiConfiguration

@@ -56,7 +56,6 @@ final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, 
   /// and BIN stream) must not overwrite it while it remains in `availableNetworks`.
   private var userSelectedNetwork: CardNetwork?
   private var currentCardData: PrimerCardData?
-  private var formConfiguration: CardFormConfiguration = .default
 
   init(
     checkoutScope: DefaultCheckoutScope,
@@ -75,8 +74,10 @@ final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, 
     self.analyticsInteractor = analyticsInteractor
     self.configurationService = configurationService
 
+    // Lives on the state, not in a private copy: it is the same value the merchant reads from
+    // `PrimerCardFormState.configuration` to learn which fields this session requires.
     let billingFields = buildBillingAddressFields()
-    formConfiguration = CardFormConfiguration(
+    structuredState.configuration = CardFormConfiguration(
       cardFields: [.cardNumber, .expiryDate, .cvv, .cardholderName],
       billingFields: billingFields,
       requiresBillingAddress: !billingFields.isEmpty
@@ -550,7 +551,7 @@ final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, 
   }
 
   func getFormConfiguration() -> CardFormConfiguration {
-    formConfiguration
+    structuredState.configuration
   }
 
   private func buildBillingAddressFields() -> [PrimerInputElementType] {

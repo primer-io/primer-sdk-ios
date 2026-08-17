@@ -222,4 +222,24 @@ extension PrimerCheckoutDataPayment {
         self.state = state
     }
 }
+
+// MARK: Client Session Fee
+
+@objc public final class PrimerFee: NSObject, Codable {
+
+    /// Wire value of `ClientSession.Order.Fee.FeeType`, e.g. `"SURCHARGE"`. A raw string rather than an
+    /// enum so an unrecognised fee type surfaces instead of failing the decode.
+    ///
+    /// Deliberately non-optional where Android's `PrimerFee.type` is `String?`: the wire model backing
+    /// this is `let type: FeeType`, so a fee always has one and an optional would force merchants to
+    /// unwrap something that can never be nil.
+    public let type: String
+    public let amount: Int
+
+    public init(type: String, amount: Int) {
+        self.type = type
+        self.amount = amount
+    }
+}
+
 // swiftlint:enable file_length

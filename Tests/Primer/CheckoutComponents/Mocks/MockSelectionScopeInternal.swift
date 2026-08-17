@@ -26,7 +26,6 @@ final class MockSelectionScopeInternal: PaymentMethodSelectionScopeInternal {
   private(set) var paidWithVaultedAndCvv: String?
   private(set) var selectedVaulted: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod?
   private(set) var deletedVaulted: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod?
-  private(set) var navigatedToDeleteConfirmation: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod?
 
   var continuation: AsyncStream<PrimerPaymentMethodSelectionState>.Continuation?
   lazy var stateStream: AsyncStream<PrimerPaymentMethodSelectionState> =
@@ -52,8 +51,5 @@ final class MockSelectionScopeInternal: PaymentMethodSelectionScopeInternal {
   }
   func deleteVaultedPaymentMethod(_ method: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod) async throws {
     deletedVaulted = method
-  }
-  func navigateToDeleteConfirmation(_ method: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod) {
-    navigatedToDeleteConfirmation = method
   }
 }

@@ -130,8 +130,11 @@ extension PrimerCheckoutScope {
 ///     switch state {
 ///     case .initializing:
 ///         showLoadingIndicator()
-///     case .ready(let amount, let currency):
-///         showPaymentMethods(amount: amount, currency: currency)
+///     case .ready(let clientSession):
+///         showPaymentMethods(
+///             amount: clientSession.totalAmount,
+///             currency: clientSession.currencyCode
+///         )
 ///     case .success(let result):
 ///         showSuccessScreen(paymentId: result.paymentId)
 ///     case .failure(let error):
@@ -149,10 +152,13 @@ public enum PrimerCheckoutState: Equatable {
   case initializing
 
   /// Ready state with payment methods loaded and checkout available.
-  /// - Parameters:
-  ///   - totalAmount: The total payment amount in minor units (e.g., cents for USD).
-  ///   - currencyCode: The ISO 4217 currency code (e.g., "USD", "EUR", "GBP").
-  case ready(totalAmount: Int, currencyCode: String)
+  ///
+  /// The payload is a snapshot taken when the checkout initializes, and again after `refresh()`.
+  /// A client-session update triggered mid-checkout (surcharge, billing address) does not re-emit
+  /// `.ready`, so the snapshot can go stale.
+  /// - Parameter clientSession: Amount, currency, order, line items, fees and customer for the
+  ///   current session.
+  case ready(clientSession: PrimerClientSession)
 
   /// Payment completed successfully.
   /// Contains the full payment result with payment ID, status, and other details.
@@ -171,8 +177,8 @@ public enum PrimerCheckoutState: Equatable {
     case (.initializing, .initializing),
       (.dismissed, .dismissed):
       true
-    case let (.ready(lhsAmount, lhsCurrency), .ready(rhsAmount, rhsCurrency)):
-      lhsAmount == rhsAmount && lhsCurrency == rhsCurrency
+    case let (.ready(lhsSession), .ready(rhsSession)):
+      lhsSession.isValueEqual(to: rhsSession)
     case let (.success(lhsResult), .success(rhsResult)):
       lhsResult.paymentId == rhsResult.paymentId
     case let (.failure(lhsError), .failure(rhsError)):

@@ -181,20 +181,37 @@ final class PrimerCheckoutSessionTests: XCTestCase {
     }
   }
 
-  func test_observeCheckoutState_deliversFailureExactlyOnce() async throws {
+  // Regression: the loop used to latch on the first terminal state of any kind, so a merchant who
+  // retried after a decline never heard the second outcome. A failure is recoverable and must not
+  // end the session; success still ends it, so exactly two outcomes arrive, in order.
+  func test_observeCheckoutState_deliversRetryOutcomeAfterAFailure() async throws {
     let scope = try await makeSettledScope()
     let sut = PrimerCheckoutSession(clientToken: token)
     var completions: [PrimerCheckoutState] = []
-    sut.setCompletionHandler { completions.append($0) }
+    let failureDelivered = expectation(description: "first attempt failed")
+    sut.setCompletionHandler {
+      completions.append($0)
+      if case .failure = $0 { failureDelivered.fulfill() }
+    }
 
     let task = Task { await sut.observeCheckoutState(scope) }
-    await Task.yield()
+    // The loop must have consumed `.ready` before the failure is driven. A failure arriving earlier is
+    // an *initialization* failure, which correctly ends the session rather than being a retryable
+    // attempt — driving one here would test the opposite branch.
+    for _ in 0 ..< 100 where sut.phase != .ready {
+      await Task.yield()
+    }
+    XCTAssertEqual(sut.phase, .ready, "Session never reached .ready, so the retry branch is untested")
+
     scope.handlePaymentError(.unknown(message: "boom"))
+    await fulfillment(of: [failureDelivered], timeout: 2)
+
+    scope.handlePaymentSuccess(PaymentResult(paymentId: TestData.PaymentIds.success, status: .success))
     await task.value
 
-    XCTAssertEqual(completions.count, 1)
-    guard case .failure = completions.first else {
-      return XCTFail("Expected .failure, got \(String(describing: completions.first))")
+    XCTAssertEqual(completions.count, 2)
+    guard case .failure = completions.first, case .success = completions.last else {
+      return XCTFail("Expected [.failure, .success], got \(completions)")
     }
   }
 
