@@ -158,6 +158,9 @@ enum DesignTokensProcessor {
     }
   }
 
+  /// The flattened key a dotted token path collapses to, e.g. primer.color.gray.300 -> primerColorGray300.
+  static func flattenedName(for path: String) -> String { toCamelCase(path) }
+
   private static func toCamelCase(_ path: String) -> String {
     let parts = path.split(separator: ".").map(String.init)
     return parts.enumerated().map { index, part in

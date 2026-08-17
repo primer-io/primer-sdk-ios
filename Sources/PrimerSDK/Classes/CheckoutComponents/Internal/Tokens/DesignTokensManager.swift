@@ -26,22 +26,57 @@ final class DesignTokensManager: ObservableObject {
   // MARK: - Token Loading
 
   func fetchTokens(for colorScheme: ColorScheme) async throws {
-    let loadedTokens = try Self.makeTokens(for: colorScheme)
+    let loadedTokens = try Self.makeTokens(for: colorScheme, paletteOverrides: palettePairs())
 
-    // Apply merchant theme overrides on top of loaded tokens
+    // Semantic overrides are applied last so an explicit token always wins over a
+    // palette value it happens to alias.
     applyThemeOverrides(to: loadedTokens)
 
     tokens = loadedTokens
   }
 
-  /// Resolves the shipped token JSON for a colour scheme, without merchant overrides.
-  /// Previews and tests use this so they see the same values production does.
-  nonisolated static func makeTokens(for colorScheme: ColorScheme) throws -> DesignTokens {
+  /// Merchant overrides for the raw palette, keyed by flattened token name.
+  /// These are injected before references resolve so tokens that alias a palette entry
+  /// (border.outlined.default -> gray.300, and the rest) follow the override, matching Android.
+  private func palettePairs() -> [String: Color] {
+    guard let colors = themeOverrides?.colors else { return [:] }
+    let pairs: [(String, Color?)] = [
+      ("primerColorBrand", colors.primerColorBrand),
+      ("primerColorGray000", colors.primerColorGray000),
+      ("primerColorGray100", colors.primerColorGray100),
+      ("primerColorGray200", colors.primerColorGray200),
+      ("primerColorGray300", colors.primerColorGray300),
+      ("primerColorGray400", colors.primerColorGray400),
+      ("primerColorGray500", colors.primerColorGray500),
+      ("primerColorGray600", colors.primerColorGray600),
+      ("primerColorGray900", colors.primerColorGray900),
+      ("primerColorGreen500", colors.primerColorGreen500),
+      ("primerColorRed100", colors.primerColorRed100),
+      ("primerColorRed500", colors.primerColorRed500),
+      ("primerColorRed900", colors.primerColorRed900),
+      ("primerColorBlue500", colors.primerColorBlue500),
+      ("primerColorBlue900", colors.primerColorBlue900),
+    ]
+    return pairs.reduce(into: [:]) { result, pair in
+      if let value = pair.1 { result[pair.0] = value }
+    }
+  }
+
+  /// Resolves the shipped token JSON for a colour scheme.
+  /// Previews and tests call this with no overrides so they see the same values production does.
+  nonisolated static func makeTokens(
+    for colorScheme: ColorScheme,
+    paletteOverrides: [String: Color] = [:]
+  ) throws -> DesignTokens {
     let baseDict = try loadJSON(named: "base")
-    let mergedDict =
+    var mergedDict =
       colorScheme == .dark
       ? DesignTokensProcessor.mergeDictionaries(baseDict, with: try loadJSON(named: "dark"))
       : baseDict
+
+    if !paletteOverrides.isEmpty {
+      mergedDict = applyPaletteOverrides(paletteOverrides, to: mergedDict)
+    }
 
     var processedDict = DesignTokensProcessor.resolveReferences(in: mergedDict)
     processedDict = DesignTokensProcessor.convertHexColors(in: processedDict)
@@ -51,6 +86,38 @@ final class DesignTokensManager: ObservableObject {
 
     let data = try JSONSerialization.data(withJSONObject: flatDict)
     return try JSONDecoder().decode(DesignTokens.self, from: data)
+  }
+
+  /// Replaces the value of every leaf whose flattened name matches an override, in place in the
+  /// nested dictionary, so the existing reference-resolution pass picks the new value up.
+  private nonisolated static func applyPaletteOverrides(
+    _ overrides: [String: Color],
+    to dict: [String: Any],
+    prefix: String = ""
+  ) -> [String: Any] {
+    dict.reduce(into: [String: Any]()) { result, pair in
+      let (key, value) = pair
+      let path = prefix.isEmpty ? key : "\(prefix).\(key)"
+      guard var nested = value as? [String: Any] else {
+        result[key] = value
+        return
+      }
+      if nested["value"] != nil,
+         let override = overrides[DesignTokensProcessor.flattenedName(for: path)],
+         let components = colorComponents(override) {
+        nested["value"] = components
+      }
+      result[key] = applyPaletteOverrides(overrides, to: nested, prefix: path)
+    }
+  }
+
+  private nonisolated static func colorComponents(_ color: Color) -> [CGFloat]? {
+    var red: CGFloat = 0
+    var green: CGFloat = 0
+    var blue: CGFloat = 0
+    var alpha: CGFloat = 0
+    guard UIColor(color).getRed(&red, green: &green, blue: &blue, alpha: &alpha) else { return nil }
+    return [red, green, blue, alpha]
   }
 
   // MARK: - Apply Theme Overrides
