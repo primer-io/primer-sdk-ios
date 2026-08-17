@@ -106,6 +106,8 @@ public struct PrimerPaymentMethods<Header: View, Method: View, Empty: View>: Vie
 
 Three `AnyView`-erased slots: `header`, `item (method, isSelected, onSelect)`, `submitButton (isLoading, isEnabled, onSubmit)`. Defaults: `VaultedPaymentMethodsDefaults.header/item/submitButton`.
 
+Renders the **selected** method only (the first saved one until the customer picks another), not the whole vault, and renders nothing when there are no saved methods. The default header's "Show all" opens the SDK's saved-methods screen — the only place a customer can delete a method. For a full inline list, iterate `PrimerSelectionSession.vaultedPaymentMethods` yourself.
+
 ```swift
 @available(iOS 15.0, *)
 public struct PrimerVaultedPaymentMethods: View {
@@ -126,7 +128,7 @@ Pre-built slot bodies and per-field building blocks for recomposition.
 
 - **`CardFormDefaults`**: `cardDetails`, `billingAddress`, `submitButton` + 15 field building blocks: `cardNumber`, `expiryDate`, `cvv`, `cardholderName`, `cardNetwork`, `countryCode`, `firstName`, `lastName`, `addressLine1`, `addressLine2`, `city`, `state`, `postalCode`, `phoneNumber`, `email`. Each field building block self-hides unless its field is in `CardFormConfiguration.cardFields`/`billingFields`.
 - **`PaymentMethodsDefaults`**: `header`, `method`, `emptyState`.
-- **`VaultedPaymentMethodsDefaults`**: `header`, `item`, `submitButton`.
+- **`VaultedPaymentMethodsDefaults`**: `header` (section title + "Show all"), `item`, `submitButton`.
 
 ### PrimerCheckoutPresenter (UIKit)
 

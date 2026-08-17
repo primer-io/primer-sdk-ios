@@ -39,9 +39,10 @@ public enum PaymentMethodsDefaults {
 @available(iOS 15.0, *)
 public enum VaultedPaymentMethodsDefaults {
 
-  // `session` is accepted only to match the slot closure signature; the default header is static.
+  /// Section title plus a "Show all" action opening the SDK's saved-methods screen, where the customer
+  /// can pick a different method or delete one. Without it an embedded list has no route to deletion.
   public static func header(_ session: PrimerSelectionSession) -> some View {
-    VaultedHeaderContent()
+    VaultedDefaultHeader(session: session)
   }
 
   public static func item(
@@ -144,15 +145,14 @@ public struct PaymentMethodsEmptyContent: View {
   }
 }
 
+/// Reads `session.showAll` from a view body: the slot's default argument is a nonisolated closure and
+/// cannot touch the main-actor session directly.
 @available(iOS 15.0, *)
-private struct VaultedHeaderContent: View {
-  @Environment(\.designTokens) private var tokens
+private struct VaultedDefaultHeader: View {
+  let session: PrimerSelectionSession
+
   var body: some View {
-    Text(CheckoutComponentsStrings.allSavedPaymentMethods)
-      .font(PrimerFont.titleLarge(tokens: tokens))
-      .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
-      .frame(maxWidth: .infinity, alignment: .leading)
-      .accessibilityAddTraits(.isHeader)
+    VaultedSectionHeader(onShowAll: session.showAll)
   }
 }
 

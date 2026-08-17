@@ -69,11 +69,10 @@ public final class PrimerSelectionSession: ObservableObject {
     try await internalScope?.deleteVaultedPaymentMethod(method)
   }
 
-  /// Navigates to the SDK's full saved-payment-methods screen.
+  /// Presents the SDK's saved-payment-methods screen, where the customer can pick a different method
+  /// or delete one. Works both inline and in the managed ``PrimerCheckout`` modal.
   ///
-  /// Only the managed ``PrimerCheckout`` modal presents that screen. Inline it has no visible effect,
-  /// because the inline host renders only the payment-flow states — build your own list from
-  /// ``vaultedPaymentMethods`` instead, or embed ``PrimerVaultedPaymentMethods``.
+  /// ``PrimerVaultedPaymentMethods`` already wires this into its default header.
   public func showAll() {
     scope.showAllVaultedPaymentMethods()
   }

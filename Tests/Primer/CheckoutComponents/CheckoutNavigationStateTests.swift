@@ -165,11 +165,21 @@ final class CheckoutNavigationStateTests: XCTestCase {
         XCTAssertTrue(CheckoutNavigationState.failure(makeError(message: "Error")).presentsInlineFlowSheet)
     }
 
-    func test_presentsInlineFlowSheet_nonFlowStates_areFalse() {
+    // Regression: both vault states used to be excluded from the inline sheet, so `showAll()` and the
+    // delete confirmation it leads to were silently inert for every inline merchant.
+    func test_presentsInlineFlowSheet_vaultManagementStates_areTrue() {
+        XCTAssertTrue(CheckoutNavigationState.vaultedPaymentMethods.presentsInlineFlowSheet)
+        XCTAssertTrue(
+            CheckoutNavigationState
+                .deleteVaultedPaymentMethodConfirmation(makeVaultedPaymentMethod(id: "v1"))
+                .presentsInlineFlowSheet
+        )
+    }
+
+    // States the merchant's own embedded content renders; presenting them would double up.
+    func test_presentsInlineFlowSheet_merchantOwnedStates_areFalse() {
         XCTAssertFalse(CheckoutNavigationState.loading.presentsInlineFlowSheet)
         XCTAssertFalse(CheckoutNavigationState.paymentMethodSelection.presentsInlineFlowSheet)
-        XCTAssertFalse(CheckoutNavigationState.vaultedPaymentMethods.presentsInlineFlowSheet)
-        XCTAssertFalse(CheckoutNavigationState.deleteVaultedPaymentMethodConfirmation(makeVaultedPaymentMethod(id: "v1")).presentsInlineFlowSheet)
         XCTAssertFalse(CheckoutNavigationState.dismissed.presentsInlineFlowSheet)
     }
 }

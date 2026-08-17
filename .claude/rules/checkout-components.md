@@ -69,7 +69,7 @@ Via `PrimerPaymentMethodSelectionScope`:
 - `payWithVaultedPaymentMethod()` — pay with saved card
 - `payWithVaultedPaymentMethodAndCvv(_ cvv:)` — pay with CVV recapture
 - `updateCvvInput(_ cvv:)` — update CVV field
-- `showAllVaultedPaymentMethods()` — navigate to saved cards list (managed modal only; `.vaultedPaymentMethods` is excluded from `presentsInlineFlowSheet`, so inline it does nothing — verified on simulator)
+- `showAllVaultedPaymentMethods()` — navigate to the saved-cards list; works inline and in the modal (both vault states are in `presentsInlineFlowSheet`). It is the only route to deleting a saved method from the SDK's own UI, so `VaultedPaymentMethodsDefaults.header` wires it in by default
 - State: `selectedVaultedPaymentMethod`, `requiresCvvInput`, `cvvInput`, `isCvvValid`, `cvvError`, `isVaultPaymentLoading`
 
 ### Surcharging
@@ -119,7 +119,7 @@ Customize by overriding a composable view's `@ViewBuilder` section slots, compos
 
 - **`PrimerCardForm`** — three slots: `cardDetails`, `billingAddress`, `submitButton` (each `(PrimerCardFormSession) -> some View`). Defaults: `CardFormDefaults.cardDetails/billingAddress/submitButton`. Recompose with the 15 field building blocks `CardFormDefaults.cardNumber/expiryDate/cvv/cardholderName/cardNetwork/countryCode/firstName/lastName/addressLine1/addressLine2/city/state/postalCode/phoneNumber/email`.
 - **`PrimerPaymentMethods`** — three slots: `header`, `method (CheckoutPaymentMethod, onSelect)`, `emptyState`. Defaults: `PaymentMethodsDefaults.header/method/emptyState`.
-- **`PrimerVaultedPaymentMethods`** — three `AnyView`-erased slots: `header`, `item (method, isSelected, onSelect)`, `submitButton (isLoading, isEnabled, onSubmit)`. Defaults: `VaultedPaymentMethodsDefaults.header/item/submitButton`.
+- **`PrimerVaultedPaymentMethods`** — three `AnyView`-erased slots: `header`, `item (method, isSelected, onSelect)`, `submitButton (isLoading, isEnabled, onSubmit)`. Defaults: `VaultedPaymentMethodsDefaults.header/item/submitButton`. Renders the selected method only (not the whole vault) and hides itself when nothing is saved; the full list lives behind the header's "Show all".
 
 Override a single slot with a **labeled** argument (a bare trailing closure binds to the last slot, `submitButton`):
 ```swift

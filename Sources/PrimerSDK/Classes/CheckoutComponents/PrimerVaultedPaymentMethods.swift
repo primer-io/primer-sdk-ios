@@ -8,10 +8,17 @@ import SwiftUI
 @_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerCore
 
-/// The saved (vaulted) payment-methods list, composed from a header, per-item row, and submit slot.
+/// The returning-customer shortcut for saved (vaulted) payment methods, composed from a header, an
+/// item row, and a submit slot.
 ///
-/// Resolves its ``PrimerSelectionSession`` from the environment. Tapping an item selects it; the
-/// submit button pays with the currently selected vaulted method.
+/// Resolves its ``PrimerSelectionSession`` from the environment. Renders the selected method — the
+/// first saved one until the customer picks another — and pays with it on submit. The header's
+/// "Show all" opens the SDK screen listing every saved method, which is also the only place a
+/// customer can delete one. Renders nothing when the customer has no saved methods.
+///
+/// To show every method inline instead, iterate ``PrimerSelectionSession/vaultedPaymentMethods`` in
+/// your own layout and call ``PrimerSelectionSession/selectVaulted(_:)`` and
+/// ``PrimerSelectionSession/delete(_:)`` directly.
 ///
 /// Slots are type-erased (`AnyView`) rather than generic — the 3-argument item/submit builders hit
 /// Swift's generic-default inference limits, so this view trades the opaque-return ergonomics of
@@ -56,26 +63,27 @@ public struct PrimerVaultedPaymentMethods: View {
     @Environment(\.designTokens) private var tokens
 
     var body: some View {
-      VStack(spacing: PrimerSpacing.medium(tokens: tokens)) {
-        header(session)
-        ForEach(session.vaultedPaymentMethods, id: \.id) { vaulted in
-          item(vaulted, session.state.selectedVaultedPaymentMethod?.id == vaulted.id) {
-            session.selectVaulted(vaulted)
+      // Nothing saved means no section at all, not an empty frame with a submit button.
+      if let selected = session.state.selectedVaultedPaymentMethod {
+        VStack(spacing: PrimerSpacing.medium(tokens: tokens)) {
+          header(session)
+          // One row, not the whole vault: this is the returning-customer shortcut, and the header's
+          // "Show all" opens the screen that lists every saved method. Merchants who want the full
+          // list inline iterate ``PrimerSelectionSession/vaultedPaymentMethods`` themselves.
+          item(selected, true) { session.selectVaulted(selected) }
+          // SDK-handled CVV recapture (not a customizable slot).
+          VaultedPaymentMethodsDefaults.cvvInput(session)
+          submitButton(session.state.isVaultPaymentLoading, isSubmitEnabled) {
+            Task { await session.submitSelectedVaulted() }
           }
-        }
-        // SDK-handled CVV recapture (not a customizable slot).
-        VaultedPaymentMethodsDefaults.cvvInput(session)
-        submitButton(session.state.isVaultPaymentLoading, isSubmitEnabled) {
-          Task { await session.submitSelectedVaulted() }
         }
       }
     }
 
-    // Disabled until a method is selected, and — when CVV recapture is required — until a valid
-    // CVV is entered, so a tap can never submit an empty CVV.
+    // Only evaluated with a method selected; blocks submit until a valid CVV is entered when
+    // recapture is required, so a tap can never submit an empty CVV.
     private var isSubmitEnabled: Bool {
-      guard session.state.selectedVaultedPaymentMethod != nil else { return false }
-      return !session.state.requiresCvvInput || session.state.isCvvValid
+      !session.state.requiresCvvInput || session.state.isCvvValid
     }
   }
 }

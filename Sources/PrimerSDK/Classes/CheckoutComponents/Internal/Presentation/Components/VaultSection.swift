@@ -22,36 +22,8 @@ struct VaultSection: View {
 
   var body: some View {
     VStack(alignment: .leading, spacing: PrimerSpacing.medium(tokens: tokens)) {
-      makeHeader()
+      VaultedSectionHeader(onShowAll: scope.showAllVaultedPaymentMethods)
       makeContent()
-    }
-  }
-
-  // MARK: - Header
-
-  private func makeHeader() -> some View {
-    HStack {
-      Text(CheckoutComponentsStrings.savedPaymentMethods)
-        .font(PrimerFont.titleLarge(tokens: tokens))
-        .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
-
-      Spacer()
-
-      Button(action: scope.showAllVaultedPaymentMethods) {
-        HStack(spacing: PrimerSpacing.xsmall(tokens: tokens)) {
-          Text(CheckoutComponentsStrings.showAll)
-            .font(PrimerFont.titleLarge(tokens: tokens))
-          Image(systemName: "chevron.down")
-            .font(PrimerFont.caption(tokens: tokens))
-        }
-        .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
-      }
-      .accessibility(
-        config: AccessibilityConfiguration(
-          identifier: AccessibilityIdentifiers.PaymentSelection.showAllButton,
-          label: CheckoutComponentsStrings.a11yShowAll,
-          traits: [.isButton]
-        ))
     }
   }
 

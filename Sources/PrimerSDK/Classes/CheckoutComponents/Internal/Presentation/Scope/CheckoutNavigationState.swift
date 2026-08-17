@@ -20,14 +20,21 @@ enum CheckoutNavigationState: Equatable {
   case failure(PrimerError)
   case dismissed
 
-  /// Flow states are presented in the inline sheet (`InlineFlowHost`); non-flow states are owned by
-  /// the merchant's embedded content, so the sheet stays dismissed.
+  /// States the inline sheet (`InlineFlowHost`) presents: the payment flow, plus the SDK-owned
+  /// vault-management screens.
+  ///
+  /// Vault management belongs here even though `PrimerVaultedPaymentMethods` is embedded by the
+  /// merchant — that component shows only the selected method, so "Show all" has nowhere to go unless
+  /// the host presents the full list, and deleting from that list needs its confirmation screen too.
+  ///
+  /// `loading`, `paymentMethodSelection` and `dismissed` stay out: those are rendered by the
+  /// merchant's own embedded content.
   var presentsInlineFlowSheet: Bool {
     switch self {
-    case .paymentMethod, .processing, .success, .failure:
+    case .paymentMethod, .processing, .success, .failure,
+         .vaultedPaymentMethods, .deleteVaultedPaymentMethodConfirmation:
       true
-    case .loading, .paymentMethodSelection, .vaultedPaymentMethods,
-         .deleteVaultedPaymentMethodConfirmation, .dismissed:
+    case .loading, .paymentMethodSelection, .dismissed:
       false
     }
   }
