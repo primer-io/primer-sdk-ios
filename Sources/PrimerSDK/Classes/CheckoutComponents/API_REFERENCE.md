@@ -126,7 +126,7 @@ public struct PrimerVaultedPaymentMethods: View {
 
 Pre-built slot bodies and per-field building blocks for recomposition.
 
-- **`CardFormDefaults`**: `cardDetails`, `billingAddress`, `submitButton` + 15 field building blocks: `cardNumber`, `expiryDate`, `cvv`, `cardholderName`, `cardNetwork`, `countryCode`, `firstName`, `lastName`, `addressLine1`, `addressLine2`, `city`, `state`, `postalCode`, `phoneNumber`, `email`. Each field building block self-hides unless its field is in `CardFormConfiguration.cardFields`/`billingFields`.
+- **`CardFormDefaults`**: `cardDetails`, `billingAddress`, `submitButton` + 14 field building blocks: `cardNumber`, `expiryDate`, `cvv`, `cardholderName`, `cardNetwork`, `countryCode`, `firstName`, `lastName`, `addressLine1`, `addressLine2`, `city`, `state`, `postalCode`, `phoneNumber`. Each field building block self-hides unless its field is in `CardFormConfiguration.cardFields`/`billingFields`.
 - **`PaymentMethodsDefaults`**: `header`, `method`, `emptyState`.
 - **`VaultedPaymentMethodsDefaults`**: `header` (section title + "Show all"), `item`, `submitButton`.
 

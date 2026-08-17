@@ -98,7 +98,6 @@ struct EmailInputField: View, LogReporter {
       ),
       combinesChildren: false
     )
-    .programmaticValue(.email, from: scope, text: $email, isFocused: $isFocused)
     .onAppear {
       setupValidationService()
       if !initialValue.isEmpty, email.isEmpty {
