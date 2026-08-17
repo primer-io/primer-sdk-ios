@@ -147,7 +147,15 @@ extension Analytics {
 
             let remainingEvents = storage.loadEvents()
             logger.debug(message: "📚 Analytics: \(syncType.capitalized) completed. \(remainingEvents.count) events remain")
-            if remainingEvents.count >= batchSize { try? await sync(events: remainingEvents) }
+            // Only recurse when this pass actually drained something: a send can report
+            // success without deleting (events needing a client token when none is set),
+            // and recursing on an unchanged store would never terminate.
+            if remainingEvents.count >= batchSize, remainingEvents.count < events.count {
+                // Release the flag we took, or the recursive call trips its own guard
+                // and no-ops. A flush never took it, so it must not clear it either.
+                if !isFlush { isSyncing = false }
+                try? await sync(events: remainingEvents)
+            }
         }
 
         func clear() {

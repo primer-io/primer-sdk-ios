@@ -371,9 +371,9 @@ platform :ios do
   end
 
   def pod_release_waves
-    [%w[PrimerFoundation PrimerResources PrimerUI],
+    [%w[PrimerFoundation PrimerResources],
      %w[PrimerNetworking PrimerCore PrimerStepResolver],
-     %w[PrimerBDCEngine], %w[PrimerBDCCore], %w[PrimerSDK]]
+     %w[PrimerBDCEngine PrimerUI], %w[PrimerBDCCore], %w[PrimerSDK]]
   end
 
   def podspec(pod)

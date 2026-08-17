@@ -83,6 +83,7 @@ final class BanksTokenizationComponentTests: XCTestCase {
     }
 
     override func tearDownWithError() throws {
+        PollingModule.apiClient = nil
         PrimerHeadlessUniversalCheckout.current.delegate = nil
         delegate = nil
         validationDelegate = nil

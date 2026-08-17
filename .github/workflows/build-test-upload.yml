@@ -17,7 +17,7 @@ jobs:
     if: ${{ !startsWith(github.head_ref, 'dependabot/') && needs.check-optional-tests.outputs.should-run-swift == 'true' }}
     steps:
       - name: Git - Checkout
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.ref }}
       - name: Run SDK and Debug App tests
@@ -44,10 +44,10 @@ jobs:
       should-run-any: ${{ steps.changes.outputs.any }}
       should-run-swift: ${{ steps.changes.outputs.swift }}
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
-      - uses: dorny/paths-filter@7b450fff21473bca461d4b92ce414b9d0420d706 # v4.0.2
+      - uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
         id: changes
         with:
           filters: |
@@ -105,7 +105,7 @@ jobs:
     steps:
       - name: Git - Checkout
         if: ${{ !matrix.skip }}
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.ref }}
       - name: Run SDK tests
@@ -130,7 +130,7 @@ jobs:
     name: "Build app with SPM Integration"
     steps:
       - name: Git - Checkout
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.ref }}
       - name: Select Xcode Version
@@ -146,7 +146,7 @@ jobs:
       - uses: webfactory/ssh-agent@e83874834305fe9a4a2997156cb26c5de65a8555 # v0.10.0
         with:
           ssh-private-key: ${{ secrets.SSH_KEY }}
-      - uses: ruby/setup-ruby@003a5c4d8d6321bd302e38f6f0ec593f77f06600  # v1.319.0
+      - uses: ruby/setup-ruby@95ef2b042f9d7a56d8268cba8559e2842e2ad01b  # v1.321.0
         with:
           ruby-version: "3.2"
           bundler-cache: true
@@ -171,7 +171,7 @@ jobs:
     runs-on: macos-26
     if: always() && !cancelled() && needs.unit-tests-sdk-and-debug-app.result == 'success' && (needs.check-optional-tests.outputs.should-run-any != 'true' || needs.optional-sdk-tests.result == 'success')
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
       - name: Determine coverage files
@@ -216,7 +216,7 @@ jobs:
     name: "Build and upload app to Appetize"
     steps:
       - name: Git - Checkout
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.ref }}
       - name: Upload preview to Appetize

@@ -16,6 +16,9 @@ final class MockBDCEngine: BDCEngineProtocol {
     var applyResultCallCount = 0
     var lastApplyOutcome: String?
 
+    var applyEventResult: [String: Any] = ["newState": [:]]
+    var lastEventState: String?
+
     func start(
         schema: String,
         context: SDKContext,
@@ -36,5 +39,15 @@ final class MockBDCEngine: BDCEngineProtocol {
         applyResultCallCount += 1
         lastApplyOutcome = outcome
         return applyResultResult
+    }
+    
+    func applyEvent<State>(
+        _ event: PrimerFoundation.CodableValue,
+        context: PrimerFoundation.SDKContext,
+        schema: String,
+        state: State
+    ) async throws -> [String: Any] where State: Encodable {
+        lastEventState = (try? JSONEncoder().encode(state)).flatMap { String(data: $0, encoding: .utf8) }
+        return applyEventResult
     }
 }

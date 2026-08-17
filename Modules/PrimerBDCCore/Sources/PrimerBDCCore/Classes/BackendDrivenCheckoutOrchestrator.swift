@@ -15,22 +15,21 @@ public final class BackendDrivenCheckoutOrchestrator {
         get { stepOrchestrator.onURLOpen }
         set { stepOrchestrator.onURLOpen = newValue }
     }
-
-    public var onCancelled: (() -> Void)? {
-        get { stepOrchestrator.onCancelled }
-        set { stepOrchestrator.onCancelled = newValue }
-    }
     
     private let stepOrchestrator: any StepOrchestrating
 
     public init(manifestProvider: SignedManifestProvider, context: SDKContext) async throws {
         let manifest = try await ManifestRepository(provider: manifestProvider).fetchManifest()
         let engine = try await PrimerBDCEngine(manifest: manifest)
-        self.stepOrchestrator = PrimerStepOrchestrator(engine: engine, context: context)
+        stepOrchestrator = PrimerStepOrchestrator(engine: engine, context: context)
     }
 
     init(stepOrchestrator: any StepOrchestrating) {
         self.stepOrchestrator = stepOrchestrator
+    }
+    
+    public func applyEvent(_ value: CodableValue) async throws {
+        try await stepOrchestrator.applyEvent(value)
     }
 
     public func run(instructionProvider: ClientInstructionProvider) async throws -> CheckoutResult {

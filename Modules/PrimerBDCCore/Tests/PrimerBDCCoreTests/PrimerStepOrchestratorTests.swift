@@ -17,15 +17,6 @@ final class PrimerStepOrchestratorTests: XCTestCase {
         try await startWith(terminal: "success")
     }
 
-    func testTerminalCancelledCallsOnCancelled() async throws {
-        let sut = makeSUT(startResult: terminal("cancelled"))
-        let cancelled = expectation(description: "cancelled")
-        sut.onCancelled = cancelled.fulfill
-        
-        try await sut.start(rawSchema: "{}", initialState: .object([:]))
-        await fulfillment(of: [cancelled], timeout: 1)
-    }
-
     func testTerminalErrorThrows() async {
         await assertStartThrows(terminal: "error")
     }
@@ -70,6 +61,51 @@ final class PrimerStepOrchestratorTests: XCTestCase {
         let sut = PrimerStepOrchestrator(engine: engine, context: stubContext)
         await XCTAssertThrowsErrorAsync { try await sut.start(rawSchema: "{}", initialState: .object([:])) }
     }
+
+    // MARK: - applyEvent
+
+    func testApplyEventThreadsStateBetweenCalls() async throws {
+        let engine = MockBDCEngine()
+        let sut = try await startedSUT(engine: engine)
+        engine.applyEventResult = ["newState": ["order": "o-1"]]
+
+        try await sut.applyEvent(.object([:]))
+        try await sut.applyEvent(.object([:]))
+
+        XCTAssertEqual(engine.lastEventState, #"{"order":"o-1"}"#)
+    }
+
+    func testApplyEventDispatchesReturnedAction() async throws {
+        let engine = MockBDCEngine()
+        let resolver = MockStepResolver()
+        let registry = PrimerStepResolverRegistry()
+        await registry.register(resolver, for: "http.request")
+
+        let sut = try await startedSUT(engine: engine, registry: registry)
+        engine.applyEventResult = action(type: "http.request")
+        engine.applyResultResult = terminal("success")
+
+        try await sut.applyEvent(.object([:]))
+
+        XCTAssertEqual(resolver.resolveCallCount, 1)
+        XCTAssertEqual(engine.applyResultCallCount, 1)
+    }
+
+    func testApplyEventSettlesWhenOutcomeUnmapped() async throws {
+        let engine = MockBDCEngine()
+        let sut = try await startedSUT(engine: engine)
+        engine.applyEventResult = ["newState": [:]]
+
+        try await sut.applyEvent(.object([:]))
+    }
+
+    func testApplyEventTerminalErrorThrows() async throws {
+        let engine = MockBDCEngine()
+        let sut = try await startedSUT(engine: engine)
+        engine.applyEventResult = terminal("error")
+
+        await XCTAssertThrowsErrorAsync { try await sut.applyEvent(.object([:])) }
+    }
 }
 
 private extension PrimerStepOrchestratorTests {
@@ -106,6 +142,17 @@ private extension PrimerStepOrchestratorTests {
             "newState": [:],
             "action": ["id": id, "type": type, "params": params]
         ]
+    }
+
+    func startedSUT(
+        engine: MockBDCEngine,
+        rawSchema: String = "{}",
+        registry: PrimerStepResolverRegistry = PrimerStepResolverRegistry()
+    ) async throws -> PrimerStepOrchestrator {
+        engine.startResult = terminal("success")
+        let sut = PrimerStepOrchestrator(engine: engine, context: stubContext, registry: registry)
+        try await sut.start(rawSchema: rawSchema, initialState: .object([:]))
+        return sut
     }
 
     func makeSUT(startResult: [String: Any]) -> PrimerStepOrchestrator {
