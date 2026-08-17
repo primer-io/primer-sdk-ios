@@ -24,11 +24,12 @@ import Foundation
     /// payment-method configuration model. The property name — the only spelling merchant code
     /// writes — matches Android.
     public struct PaymentMethod: Codable, Equatable {
-        /// Raw network identifiers, e.g. `["VISA", "MASTERCARD"]`. Kept as strings because the wire
-        /// type is `[String]?` and mapping to an enum would silently drop unrecognised networks.
-        public let orderedAllowedCardNetworks: [String]
+        /// Card networks the merchant allows, in the configured order. A network the SDK does not
+        /// recognise becomes `.unknown`, which is the same `"OTHER"` wire value Android's
+        /// `CardNetwork.Type.OTHER` fallback produces, so nothing is dropped.
+        public let orderedAllowedCardNetworks: [CardNetwork]
 
-        public init(orderedAllowedCardNetworks: [String]) {
+        public init(orderedAllowedCardNetworks: [CardNetwork]) {
             self.orderedAllowedCardNetworks = orderedAllowedCardNetworks
         }
     }
@@ -90,8 +91,11 @@ extension PrimerClientSession {
             lineItems: session?.order?.lineItems?.compactMap { PrimerLineItem(lineItem: $0, session: session) },
             orderDetails: PrimerOrder(clientSessionOrder: session?.order),
             customer: PrimerCustomer(customer: session?.customer),
-            paymentMethod: session?.paymentMethod.map {
-                PaymentMethod(orderedAllowedCardNetworks: $0.orderedAllowedCardNetworks ?? [])
+            paymentMethod: session?.paymentMethod.map { method in
+                PaymentMethod(
+                    orderedAllowedCardNetworks: (method.orderedAllowedCardNetworks ?? [])
+                        .map { CardNetwork(rawValue: $0) ?? .unknown }
+                )
             },
             fees: session?.order?.fees?.map { PrimerFee(type: $0.type.rawValue, amount: $0.amount) }
         )
