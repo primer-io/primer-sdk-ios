@@ -69,7 +69,7 @@ Via `PrimerPaymentMethodSelectionScope`:
 - `payWithVaultedPaymentMethod()` — pay with saved card
 - `payWithVaultedPaymentMethodAndCvv(_ cvv:)` — pay with CVV recapture
 - `updateCvvInput(_ cvv:)` — update CVV field
-- `showAllVaultedPaymentMethods()` — navigate to saved cards list
+- `showAllVaultedPaymentMethods()` — navigate to saved cards list (managed modal only; `.vaultedPaymentMethods` is excluded from `presentsInlineFlowSheet`, so inline it does nothing — verified on simulator)
 - State: `selectedVaultedPaymentMethod`, `requiresCvvInput`, `cvvInput`, `isCvvValid`, `cvvError`, `isVaultPaymentLoading`
 
 ### Surcharging

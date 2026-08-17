@@ -88,7 +88,7 @@ extension PrimerClientSession {
             orderId: session?.order?.id,
             currencyCode: session?.order?.currencyCode?.code,
             totalAmount: session?.order?.totalOrderAmount,
-            lineItems: session?.order?.lineItems?.compactMap { PrimerLineItem(lineItem: $0, session: session) },
+            lineItems: session?.order?.lineItems?.map(PrimerLineItem.init(lineItem:)),
             orderDetails: PrimerOrder(clientSessionOrder: session?.order),
             customer: PrimerCustomer(customer: session?.customer),
             paymentMethod: session?.paymentMethod.map { method in
@@ -103,15 +103,15 @@ extension PrimerClientSession {
 }
 
 private extension PrimerLineItem {
-    convenience init(lineItem: ClientSession.Order.LineItem, session: ClientSession.APIResponse?) {
+    convenience init(lineItem: ClientSession.Order.LineItem) {
         self.init(
             itemId: lineItem.itemId,
             itemDescription: lineItem.description,
             amount: lineItem.amount,
             discountAmount: lineItem.discountAmount,
             quantity: lineItem.quantity,
-            taxCode: session?.customer?.taxId,
-            taxAmount: session?.order?.totalTaxAmount
+            taxCode: lineItem.taxCode,
+            taxAmount: lineItem.taxAmount
         )
     }
 }

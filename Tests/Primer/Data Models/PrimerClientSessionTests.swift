@@ -17,7 +17,10 @@ final class PrimerClientSessionTests: XCTestCase {
         orderedAllowedCardNetworks: [String]? = nil,
         fees: [ClientSession.Order.Fee]? = nil,
         totalOrderAmount: Int? = 1000,
-        currencyCode: String? = "GBP"
+        currencyCode: String? = "GBP",
+        lineItems: [ClientSession.Order.LineItem]? = nil,
+        totalTaxAmount: Int? = nil,
+        customer: ClientSession.Customer? = nil
     ) -> PrimerAPIConfiguration {
         let session = ClientSession.APIResponse(
             clientSessionId: "client_session_id",
@@ -31,13 +34,13 @@ final class PrimerClientSessionTests: XCTestCase {
                 id: "order_id",
                 merchantAmount: nil,
                 totalOrderAmount: totalOrderAmount,
-                totalTaxAmount: nil,
+                totalTaxAmount: totalTaxAmount,
                 countryCode: .gb,
                 currencyCode: currencyCode.flatMap { CurrencyLoader().getCurrency($0) },
                 fees: fees,
-                lineItems: nil
+                lineItems: lineItems
             ),
-            customer: nil,
+            customer: customer,
             testId: nil
         )
         return PrimerAPIConfiguration(
@@ -108,6 +111,65 @@ final class PrimerClientSessionTests: XCTestCase {
 
     func test_init_from_mapsMissingFeesToNil() {
         XCTAssertNil(PrimerClientSession(from: makeConfiguration(fees: nil)).fees)
+    }
+
+    // MARK: - Line item tax
+
+    private func makeLineItem(
+        itemId: String,
+        amount: Int,
+        taxAmount: Int?,
+        taxCode: String?
+    ) -> ClientSession.Order.LineItem {
+        ClientSession.Order.LineItem(
+            itemId: itemId,
+            quantity: 1,
+            amount: amount,
+            discountAmount: nil,
+            name: itemId,
+            description: itemId,
+            taxAmount: taxAmount,
+            taxCode: taxCode,
+            productType: nil
+        )
+    }
+
+    // Regression: the mapper used to fill every line item's `taxAmount` with the order's
+    // `totalTaxAmount` and its `taxCode` with the customer's `taxId`, so a three-item order reported
+    // the whole order's tax three times and a tax code that was really a customer registration ID.
+    func test_init_from_mapsLineItemTaxFromTheLineItemNotTheOrderOrCustomer() {
+        // Given — per-item tax that differs from both decoys
+        let configuration = makeConfiguration(
+            lineItems: [
+                makeLineItem(itemId: "item_1", amount: 600, taxAmount: 60, taxCode: "VAT_20"),
+                makeLineItem(itemId: "item_2", amount: 400, taxAmount: 20, taxCode: "VAT_5")
+            ],
+            totalTaxAmount: 80,
+            customer: ClientSession.Customer(id: "customer_id", taxId: "CUSTOMER_TAX_ID")
+        )
+
+        // When
+        let sut = PrimerClientSession(from: configuration)
+
+        // Then
+        XCTAssertEqual(sut.lineItems?.map(\.taxAmount), [60, 20])
+        XCTAssertEqual(sut.lineItems?.map(\.taxCode), ["VAT_20", "VAT_5"])
+    }
+
+    func test_init_from_mapsAbsentLineItemTaxToNil_notTheOrderTotal() {
+        // Given — the line item carries no tax, but the order and customer do
+        let configuration = makeConfiguration(
+            lineItems: [makeLineItem(itemId: "item_1", amount: 1000, taxAmount: nil, taxCode: nil)],
+            totalTaxAmount: 200,
+            customer: ClientSession.Customer(id: "customer_id", taxId: "CUSTOMER_TAX_ID")
+        )
+
+        // When
+        let sut = PrimerClientSession(from: configuration)
+
+        // Then — absent means absent; it must not be back-filled from the order
+        XCTAssertNil(sut.lineItems?.first?.taxAmount)
+        XCTAssertNil(sut.lineItems?.first?.taxCode)
     }
 
     // MARK: - Amount and currency
