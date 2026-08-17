@@ -39,6 +39,7 @@ enum DemoRegistry {
         (InlineCardFormDemo.metadata, { AnyView(InlineCardFormDemo(configuration: $0)) }),
         (CardFormSheetDemo.metadata, { AnyView(CardFormSheetDemo(configuration: $0)) }),
         (CustomCardFormDemo.metadata, { AnyView(CustomCardFormDemo(configuration: $0)) }),
+        (PrefillCardholderNameDemo.metadata, { AnyView(PrefillCardholderNameDemo(configuration: $0)) }),
         (BeforePaymentGateDemo.metadata, { AnyView(BeforePaymentGateDemo(configuration: $0)) }),
         // Payment method lists
         (PaymentMethodListOnlyDemo.metadata, { AnyView(PaymentMethodListOnlyDemo(configuration: $0)) }),

@@ -102,6 +102,7 @@ struct NameInputField: View, LogReporter {
       ),
       combinesChildren: false
     )
+    .programmaticValue(inputType, from: scope, text: $name, isFocused: $isFocused)
     .onAppear {
       setupValidationService()
       if !initialValue.isEmpty, name.isEmpty {

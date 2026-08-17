@@ -74,6 +74,7 @@ struct CardholderNameInputField: View, LogReporter {
         traits: []
       )
     )
+    .programmaticValue(.cardholderName, from: scope, text: $cardholderName, isFocused: $isFocused)
     .onAppear {
       setupValidationService()
     }

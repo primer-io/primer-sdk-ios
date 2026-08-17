@@ -104,6 +104,7 @@ struct AddressLineInputField: View, LogReporter {
       ),
       combinesChildren: false
     )
+    .programmaticValue(inputType, from: scope, text: $addressLine, isFocused: $isFocused)
     .onAppear {
       setupValidationService()
     }

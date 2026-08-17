@@ -89,6 +89,7 @@ struct PostalCodeInputField: View, LogReporter {
         traits: []
       )
     )
+    .programmaticValue(.postalCode, from: scope, text: $postalCode, isFocused: $isFocused)
     .onAppear {
       setupValidationService()
     }

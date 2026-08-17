@@ -73,6 +73,7 @@ struct CityInputField: View, LogReporter {
         traits: []
       )
     )
+    .programmaticValue(.city, from: scope, text: $city, isFocused: $isFocused)
     .onAppear {
       setupValidationService()
     }

@@ -72,6 +72,7 @@ struct StateInputField: View, LogReporter {
       ),
       combinesChildren: false
     )
+    .programmaticValue(.state, from: scope, text: $state, isFocused: $isFocused)
     .onAppear {
       setupValidationService()
     }
