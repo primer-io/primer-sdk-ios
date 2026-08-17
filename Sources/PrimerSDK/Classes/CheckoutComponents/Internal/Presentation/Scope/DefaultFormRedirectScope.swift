@@ -213,7 +213,6 @@ final class DefaultFormRedirectScope: PrimerFormRedirectScope, ObservableObject,
     logger.debug(message: "Starting form redirect payment for \(paymentMethodType)")
 
     internalState.status = .submitting
-    checkoutScope?.startProcessing()
 
     await analyticsInteractor?.trackEvent(
       .paymentSubmitted,
@@ -221,9 +220,13 @@ final class DefaultFormRedirectScope: PrimerFormRedirectScope, ObservableObject,
     )
 
     do {
+      // The merchant gate runs before any navigation: `startProcessing()` presents the processing
+      // screen, and UIKit drops merchant UI raised from the callback while that transition is live.
       try await checkoutScope?.invokeBeforePaymentCreate(
         paymentMethodType: paymentMethodType
       )
+
+      checkoutScope?.startProcessing()
 
       let sessionInfo = try buildSessionInfo()
 

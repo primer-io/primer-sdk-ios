@@ -38,7 +38,7 @@ struct BeforePaymentGateDemo: View, CheckoutComponentsDemo {
 @available(iOS 15.0, *)
 private struct BeforePaymentGateContent: View {
     @StateObject private var session: PrimerCheckoutSession
-    @StateObject private var gate = PaymentGate()
+    @State private var gate = PaymentGate()
 
     init(clientToken: String, settings: PrimerSettings) {
         _session = StateObject(wrappedValue: PrimerCheckoutSession(clientToken: clientToken, settings: settings))
@@ -68,33 +68,73 @@ private struct BeforePaymentGateContent: View {
         .demoCheckout(session)
         .onAppear {
             session.onBeforePaymentCreate = { _, decision in
-                // The SDK may call this off the main actor; hop back before touching UI state.
-                DispatchQueue.main.async { gate.pending = decision }
+                // The SDK may call this off the main actor; hop back before touching UI.
+                Task { @MainActor in gate.request(decision) }
             }
-        }
-        .alert("Confirm payment", isPresented: gate.isPresented) {
-            Button("Cancel", role: .cancel) {
-                gate.resolve(.abortPaymentCreation(withErrorMessage: "Terms not accepted"))
-            }
-            Button("Accept & Pay") {
-                gate.resolve(.continuePaymentCreation(withIdempotencyKey: UUID().uuidString))
-            }
-        } message: {
-            Text("Accept the terms to continue with your payment.")
         }
     }
 }
 
-/// Holds the pending payment-creation decision so a SwiftUI alert can resolve it.
+/// Confirms the payment before the SDK creates it.
+///
+/// Auto-launching methods (Apple Pay, PayPal, web redirects) put the SDK's own sheet on screen the
+/// moment they are selected, so a SwiftUI `.alert` attached to the merchant's inline content is
+/// either covered by that sheet or dropped by UIKit mid-transition — leaving the decision handler
+/// unresolved and the SDK suspended. Presenting from the top-most controller, and only once no
+/// transition is in flight, keeps the gate reachable from every flow.
 @available(iOS 15.0, *)
-private final class PaymentGate: ObservableObject {
-    @Published var pending: ((PrimerPaymentCreationDecision) -> Void)?
+@MainActor
+private final class PaymentGate {
+    private static let retryDelay: TimeInterval = 0.1
 
-    var isPresented: Binding<Bool> {
-        Binding(get: { self.pending != nil }, set: { if !$0 { self.pending = nil } })
+    private var pending: ((PrimerPaymentCreationDecision) -> Void)?
+    private var isPresenting = false
+
+    private var topViewController: UIViewController? {
+        var top = UIApplication.shared.connectedScenes
+            .compactMap { ($0 as? UIWindowScene)?.keyWindow }
+            .first?.rootViewController
+        while let presented = top?.presentedViewController { top = presented }
+        return top
     }
 
-    func resolve(_ decision: PrimerPaymentCreationDecision) {
+    func request(_ decision: @escaping (PrimerPaymentCreationDecision) -> Void) {
+        // A still-pending handler means the previous attempt was abandoned (shopper backed out).
+        // Resolving it is mandatory: dropping it leaks the SDK's continuation and leaves that
+        // payment task suspended forever.
+        pending?(.abortPaymentCreation(withErrorMessage: "Payment attempt abandoned"))
+        pending = decision
+        presentConfirmation()
+    }
+
+    private func presentConfirmation() {
+        // A retry may be queued from an earlier request — one alert resolves whatever is pending.
+        guard !isPresenting else { return }
+
+        guard let top = topViewController, top.transitionCoordinator == nil else {
+            DispatchQueue.main.asyncAfter(deadline: .now() + Self.retryDelay) { [self] in
+                presentConfirmation()
+            }
+            return
+        }
+
+        let alert = UIAlertController(
+            title: "Confirm payment",
+            message: "Accept the terms to continue with your payment.",
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel) { [self] _ in
+            resolve(.abortPaymentCreation(withErrorMessage: "Terms not accepted"))
+        })
+        alert.addAction(UIAlertAction(title: "Accept & Pay", style: .default) { [self] _ in
+            resolve(.continuePaymentCreation(withIdempotencyKey: UUID().uuidString))
+        })
+        isPresenting = true
+        top.present(alert, animated: true)
+    }
+
+    private func resolve(_ decision: PrimerPaymentCreationDecision) {
+        isPresenting = false
         pending?(decision)
         pending = nil
     }

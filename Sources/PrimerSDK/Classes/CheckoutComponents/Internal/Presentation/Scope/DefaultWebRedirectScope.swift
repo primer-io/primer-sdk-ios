@@ -111,7 +111,6 @@ final class DefaultWebRedirectScope: PrimerWebRedirectScope, ObservableObject, L
         guard let checkoutScope else { return }
 
         internalState.status = .loading
-        checkoutScope.startProcessing()
 
         accessibilityService?.announceStateChange(CheckoutComponentsStrings.a11yWebRedirectLoading)
 
@@ -121,9 +120,13 @@ final class DefaultWebRedirectScope: PrimerWebRedirectScope, ObservableObject, L
         )
 
         do {
+            // The merchant gate runs before any navigation: `startProcessing()` presents the processing
+            // screen, and UIKit drops merchant UI raised from the callback while that transition is live.
             try await checkoutScope.invokeBeforePaymentCreate(
                 paymentMethodType: paymentMethodType
             )
+
+            checkoutScope.startProcessing()
 
             await analyticsInteractor?.trackEvent(
                 .paymentProcessingStarted,

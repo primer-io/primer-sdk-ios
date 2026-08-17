@@ -153,7 +153,6 @@ final class DefaultAdyenKlarnaScope: PrimerAdyenKlarnaScope, ObservableObject, L
         guard let selectedOption = internalState.selectedOption else { return }
 
         internalState.status = .submitting
-        checkoutScope.startProcessing()
 
         await analyticsInteractor?.trackEvent(
             .paymentSubmitted,
@@ -161,9 +160,13 @@ final class DefaultAdyenKlarnaScope: PrimerAdyenKlarnaScope, ObservableObject, L
         )
 
         do {
+            // The merchant gate runs before any navigation: `startProcessing()` presents the processing
+            // screen, and UIKit drops merchant UI raised from the callback while that transition is live.
             try await checkoutScope.invokeBeforePaymentCreate(
                 paymentMethodType: paymentMethodType
             )
+
+            checkoutScope.startProcessing()
 
             await analyticsInteractor?.trackEvent(
                 .paymentProcessingStarted,

@@ -207,7 +207,6 @@ final class DefaultBillingAddressRedirectScope: PrimerBillingAddressRedirectScop
     guard let checkoutScope else { return }
 
     internalState.status = .submitting
-    checkoutScope.startProcessing()
 
     await analyticsInteractor?.trackEvent(
       .paymentSubmitted,
@@ -215,9 +214,13 @@ final class DefaultBillingAddressRedirectScope: PrimerBillingAddressRedirectScop
     )
 
     do {
+      // The merchant gate runs before any navigation: `startProcessing()` presents the processing
+      // screen, and UIKit drops merchant UI raised from the callback while that transition is live.
       try await checkoutScope.invokeBeforePaymentCreate(
         paymentMethodType: paymentMethodType
       )
+
+      checkoutScope.startProcessing()
 
       // Send billing address to backend before redirect
       let billingAddress = createBillingAddress()

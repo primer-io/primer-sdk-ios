@@ -400,16 +400,20 @@ final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, 
 
   func performSubmit() async {
     structuredState.isLoading = true
-    checkoutScope?.startProcessing()
 
     await analyticsInteractor?.trackEvent(
       .paymentSubmitted,
       metadata: .payment(PaymentEvent(paymentMethod: PrimerPaymentMethodType.paymentCard.rawValue)))
 
     do {
+      // The merchant gate runs before any navigation: `startProcessing()` presents the processing
+      // screen, and UIKit drops merchant UI raised from the callback while that transition is live.
       try await checkoutScope?.invokeBeforePaymentCreate(
         paymentMethodType: PrimerPaymentMethodType.paymentCard.rawValue
       )
+
+      checkoutScope?.startProcessing()
+
       try await sendBillingAddressIfNeeded()
       let cardData = try await prepareCardPaymentData()
 

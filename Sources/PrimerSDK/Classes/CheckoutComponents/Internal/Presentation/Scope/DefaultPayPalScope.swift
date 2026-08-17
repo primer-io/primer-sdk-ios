@@ -89,7 +89,6 @@ final class DefaultPayPalScope: PrimerPayPalScope, ObservableObject, LogReporter
 
   private func performPayment() async {
     internalState.step = .loading
-    checkoutScope?.startProcessing()
 
     await analyticsInteractor?.trackEvent(
       .paymentSubmitted,
@@ -97,9 +96,13 @@ final class DefaultPayPalScope: PrimerPayPalScope, ObservableObject, LogReporter
     )
 
     do {
+      // The merchant gate runs before any navigation: `startProcessing()` presents the processing
+      // screen, and UIKit drops merchant UI raised from the callback while that transition is live.
       try await checkoutScope?.invokeBeforePaymentCreate(
         paymentMethodType: PrimerPaymentMethodType.payPal.rawValue
       )
+
+      checkoutScope?.startProcessing()
 
       internalState.step = .redirecting
 
