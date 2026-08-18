@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
     s.name         = "PrimerNetworking"
-    s.version      = "2.51.1"
+    s.version      = "3.0.0-beta.4"
     s.summary      = "Networking objects + utilities for Primer SDK"
     s.description  = "Networking objects and utilities used by PrimerSDK."
     s.homepage     = "https://www.primer.io"

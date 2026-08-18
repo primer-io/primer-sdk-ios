@@ -12,7 +12,7 @@ final class PrimerCardholderNameField: PrimerCardFormFieldProtocol {
     private static let theme: PrimerThemeProtocol = DependencyContainer.resolve()
 
     static func cardholderNameContainerViewFieldView(_ view: PrimerTextFieldView?) -> PrimerCustomFieldView? {
-        guard let view = view else {
+        guard let view else {
             return nil
         }
         let cardholderNameContainerView = PrimerCustomFieldView()

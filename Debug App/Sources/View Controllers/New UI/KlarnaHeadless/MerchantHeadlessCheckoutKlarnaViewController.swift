@@ -65,7 +65,7 @@ class MerchantHeadlessCheckoutKlarnaViewController: UIViewController {
 
     private func addKlarnaView() {
         klarnaInitializationView = MerchantHeadlessKlarnaInitializationView(viewModel: klarnaInitializationViewModel, sharedWrapper: sharedWrapper) { paymentCategory in
-            guard let paymentCategory = paymentCategory else { return }
+            guard let paymentCategory else { return }
             let klarnaCollectableData = KlarnaCollectableData.paymentCategory(paymentCategory, clientToken: self.clientToken)
             self.klarnaComponent?.updateCollectedData(collectableData: klarnaCollectableData)
         } onContinuePressed: {

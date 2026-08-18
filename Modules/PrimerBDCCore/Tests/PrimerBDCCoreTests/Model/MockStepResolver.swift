@@ -16,7 +16,7 @@
 final class MockStepResolver: StepResolver {
     nonisolated(unsafe) var resolveCallCount = 0
 
-    func resolve(_ step: CodableValue) async throws -> StepResolutionResult {
+    func resolve(_ data: CodableValue) async throws -> StepResolutionResult {
         resolveCallCount += 1
         return StepResolutionResult(outcome: .success)
     }

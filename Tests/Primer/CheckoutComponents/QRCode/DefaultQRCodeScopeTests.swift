@@ -1,0 +1,195 @@
+//
+//  DefaultQRCodeScopeTests.swift
+//
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
+
+@testable import PrimerSDK
+import XCTest
+@_spi(PrimerInternal) @testable import PrimerFoundation
+@_spi(PrimerInternal) @testable import PrimerCore
+
+@available(iOS 15.0, *)
+@MainActor
+final class DefaultQRCodeScopeTests: XCTestCase {
+
+    private var mockInteractor: MockProcessQRCodePaymentInteractor!
+
+    override func setUp() async throws {
+        try await super.setUp()
+        await ContainerTestHelpers.resetSharedContainer()
+        mockInteractor = MockProcessQRCodePaymentInteractor()
+    }
+
+    override func tearDown() async throws {
+        mockInteractor = nil
+        await ContainerTestHelpers.resetSharedContainer()
+        try await super.tearDown()
+    }
+
+    // MARK: - Full Success Flow
+
+    func test_start_fullFlow_transitionsLoadingToDisplayingToSuccess() async throws {
+        mockInteractor.startPaymentResult = .success(QRCodeTestData.defaultPaymentData)
+        mockInteractor.pollAndCompleteResult = .success(QRCodeTestData.successPaymentResult)
+        let sut = createScope()
+
+        sut.start()
+
+        let successState = try await awaitValue(sut.state, matching: { $0.status == .success })
+        XCTAssertEqual(successState.status, .success)
+        XCTAssertEqual(mockInteractor.startPaymentCallCount, 1)
+        XCTAssertEqual(mockInteractor.pollAndCompleteCallCount, 1)
+        XCTAssertEqual(mockInteractor.lastPollStatusUrl, QRCodeTestData.Constants.statusUrl)
+        XCTAssertEqual(mockInteractor.lastPollPaymentId, QRCodeTestData.Constants.paymentId)
+    }
+
+    // MARK: - Displaying State
+
+    func test_start_afterStartPayment_transitionsToDisplayingWithQRImage() async throws {
+        mockInteractor.startPaymentResult = .success(QRCodeTestData.defaultPaymentData)
+        mockInteractor.onPollAndComplete = {
+            // why: keep polling in-flight so the scope settles on .displaying; the test
+            // awaits that state deterministically and never reaches this success result.
+            try await Task.sleep(nanoseconds: 5_000_000_000)
+            return QRCodeTestData.successPaymentResult
+        }
+        let sut = createScope()
+
+        sut.start()
+
+        let displayingState = try await awaitValue(sut.state, matching: { $0.status == .displaying })
+        XCTAssertEqual(displayingState.status, .displaying)
+        XCTAssertNotNil(displayingState.qrCodeImageData)
+    }
+
+    // MARK: - Error Handling
+
+    func test_start_startPaymentError_transitionsToFailure() async throws {
+        mockInteractor.startPaymentResult = .failure(
+            PrimerError.invalidValue(key: "test", value: nil, reason: "Tokenization failed")
+        )
+        let sut = createScope()
+
+        sut.start()
+
+        let failureState = try await awaitValue(sut.state, matching: {
+            if case .failure = $0.status { return true }
+            return false
+        })
+        if case let .failure(message) = failureState.status {
+            XCTAssertFalse(message.isEmpty)
+        } else {
+            XCTFail("Expected failure status")
+        }
+        XCTAssertEqual(mockInteractor.pollAndCompleteCallCount, 0)
+    }
+
+    func test_start_pollingError_transitionsToFailure() async throws {
+        mockInteractor.startPaymentResult = .success(QRCodeTestData.defaultPaymentData)
+        mockInteractor.pollAndCompleteResult = .failure(
+            PrimerError.invalidValue(key: "test", value: nil, reason: "Polling failed")
+        )
+        let sut = createScope()
+
+        sut.start()
+
+        let failureState = try await awaitValue(sut.state, matching: {
+            if case .failure = $0.status { return true }
+            return false
+        })
+        if case .failure = failureState.status {
+            XCTAssertEqual(mockInteractor.startPaymentCallCount, 1)
+            XCTAssertEqual(mockInteractor.pollAndCompleteCallCount, 1)
+        } else {
+            XCTFail("Expected failure status")
+        }
+    }
+
+    func test_start_pollingCancelled_doesNotTransitionToFailure() async throws {
+        mockInteractor.startPaymentResult = .success(QRCodeTestData.defaultPaymentData)
+        mockInteractor.pollAndCompleteResult = .failure(
+            PrimerError.cancelled(paymentMethodType: QRCodeTestData.Constants.paymentMethodType)
+        )
+        let sut = createScope()
+
+        sut.start()
+
+        // Polling must run, but user cancellation must not surface as a payment failure.
+        _ = try await awaitValue(sut.state, matching: { $0.status == .displaying })
+
+        do {
+            _ = try await awaitValue(sut.state, matching: {
+                if case .failure = $0.status { return true }
+                return false
+            }, timeout: 0.5)
+            XCTFail("Cancellation should not transition to failure")
+        } catch {
+            XCTAssertEqual(mockInteractor.pollAndCompleteCallCount, 1)
+        }
+    }
+
+    // MARK: - Cancellation
+
+    func test_cancel_cancelsPollingOnInteractor() {
+        let sut = createScope()
+
+        sut.cancel()
+
+        XCTAssertEqual(mockInteractor.cancelPollingCallCount, 1)
+    }
+
+    func test_onBack_cancelsPolling() {
+        let sut = createScope(presentationContext: .fromPaymentSelection)
+
+        sut.onBack()
+
+        XCTAssertEqual(mockInteractor.cancelPollingCallCount, 1)
+    }
+
+    // MARK: - Re-entry after return-to-selection
+
+    func test_prepareForReentry_restartsFlowAfterReturnToSelection() async throws {
+        // Regression: the one-shot `start()` guard was never reset, so re-selecting a cancelled
+        // payment method showed a stale screen and never restarted polling.
+        mockInteractor.startPaymentResult = .success(QRCodeTestData.defaultPaymentData)
+        mockInteractor.pollAndCompleteResult = .success(QRCodeTestData.successPaymentResult)
+        let interactor = mockInteractor!
+        let sut = createScope()
+
+        sut.start()
+        _ = try await awaitValue(sut.state, matching: { $0.status == .success })
+        XCTAssertEqual(interactor.startPaymentCallCount, 1)
+
+        // The guard blocks a redundant restart while still active.
+        sut.start()
+        XCTAssertEqual(interactor.startPaymentCallCount, 1)
+
+        // Returning to selection resets the guard, so re-selecting restarts the payment.
+        sut.prepareForReentry()
+        sut.start()
+        try await withTimeout(2.0) {
+            while interactor.startPaymentCallCount < 2 { await Task.yield() }
+        }
+        XCTAssertEqual(interactor.startPaymentCallCount, 2)
+    }
+
+    // MARK: - Helpers
+
+    private func createScope(
+        presentationContext: PresentationContext = .fromPaymentSelection
+    ) -> DefaultQRCodeScope {
+        let checkoutScope = DefaultCheckoutScope(
+            clientToken: QRCodeTestData.Constants.mockToken,
+            settings: PrimerSettings(),
+            navigator: CheckoutNavigator()
+        )
+
+        return DefaultQRCodeScope(
+            checkoutScope: checkoutScope,
+            presentationContext: presentationContext,
+            interactor: mockInteractor,
+            paymentMethodType: "XENDIT_OVO"
+        )
+    }
+}

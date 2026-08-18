@@ -19,13 +19,13 @@ extension PKPaymentMethodType {
     var primerValue: String? {
         switch self {
         case .credit:
-            return "credit"
+            "credit"
         case .debit:
-            return "debit"
+            "debit"
         case .prepaid:
-            return "prepaid"
+            "prepaid"
         default:
-            return nil
+            nil
         }
     }
 }
@@ -89,7 +89,7 @@ final class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
             action: .click,
             context: Analytics.Event.Property.Context(
                 issuerId: nil,
-                paymentMethodType: self.config.type,
+                paymentMethodType: config.type,
                 url: nil
             ),
             extra: nil,
@@ -395,13 +395,13 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationControllerDelegat
     }
 
     func paymentAuthorizationControllerDidFinish(_ controller: PKPaymentAuthorizationController) {
-        if self.isCancelled {
+        if isCancelled {
             controller.dismiss(completion: nil)
             let error: PrimerError = .cancelled(paymentMethodType: PrimerPaymentMethodType.applePay.rawValue)
             applePayReceiveDataCompletion?(.failure(handled(primerError: error)))
             applePayReceiveDataCompletion = nil
 
-        } else if self.didTimeout {
+        } else if didTimeout {
             controller.dismiss(completion: nil)
             applePayReceiveDataCompletion?(.failure(handled(primerError: .applePayTimedOut())))
             applePayReceiveDataCompletion = nil
@@ -438,18 +438,17 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationControllerDelegat
             //        }
         #endif
 
-        self.isCancelled = false
-        self.didTimeout = true
+        isCancelled = false
+        didTimeout = true
 
-        self.applePayControllerCompletion = { obj in
+        applePayControllerCompletion = { obj in
             self.didTimeout = false
             completion(obj)
         }
 
         do {
-            let tokenPaymentData: ApplePayPaymentResponseTokenPaymentData
-            if isMockedBE {
-                tokenPaymentData = ApplePayPaymentResponseTokenPaymentData(
+            let tokenPaymentData: ApplePayPaymentResponseTokenPaymentData = if isMockedBE {
+                ApplePayPaymentResponseTokenPaymentData(
                     data: "apple-pay-payment-response-mock-data",
                     signature: "apple-pay-mock-signature",
                     version: "apple-pay-mock-version",
@@ -460,7 +459,7 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationControllerDelegat
                     )
                 )
             } else {
-                tokenPaymentData = try JSONDecoder().decode(
+                try JSONDecoder().decode(
                     ApplePayPaymentResponseTokenPaymentData.self,
                     from: payment.token.paymentData
                 )
@@ -487,7 +486,7 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationControllerDelegat
                 emailAddress: emailAddress
             )
 
-            self.didTimeout = false
+            didTimeout = false
             completion(PKPaymentAuthorizationResult(status: .success, errors: nil))
             controller.dismiss(completion: nil)
             applePayReceiveDataCompletion?(.success(applePayPaymentResponse))
@@ -519,9 +518,9 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationControllerDelegat
                 throw PrimerError.invalidValue(key: "ClientSession")
             }
 
-            let orderItems = try self.createOrderItemsFromClientSession(
+            let orderItems = try createOrderItemsFromClientSession(
                 clientSession,
-                applePayOptions: self.getApplePayOptions(),
+                applePayOptions: getApplePayOptions(),
                 selectedShippingItem: shippingMethodsInfo.selectedShippingMethodOrderItem
             )
 
@@ -542,7 +541,7 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationControllerDelegat
                 throw handled(primerError: .invalidValue(key: "Currency"))
             }
 
-            try self.getApplePayOptions()?.updatePKPaymentRequestUpdate(
+            try getApplePayOptions()?.updatePKPaymentRequestUpdate(
                 shippingContactUpdate,
                 orderAmount: AppState.current.amount,
                 currency: currency,
@@ -586,7 +585,7 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationControllerDelegat
                 throw err
             }
 
-            try self.getApplePayOptions()?.updatePKPaymentRequestUpdate(
+            try getApplePayOptions()?.updatePKPaymentRequestUpdate(
                 update,
                 orderAmount: AppState.current.amount,
                 currency: currency,

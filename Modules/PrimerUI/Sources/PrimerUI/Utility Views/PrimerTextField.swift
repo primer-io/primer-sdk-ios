@@ -14,13 +14,13 @@ import UIKit
         public static func == (lhs: Validation, rhs: Validation) -> Bool {
             switch (lhs, rhs) {
             case (.valid, .valid):
-                return lhs == rhs
+                lhs == rhs
             case (.invalid, .invalid):
-                return lhs == rhs
+                lhs == rhs
             case (.notAvailable, .notAvailable):
-                return lhs == rhs
+                lhs == rhs
             default:
-                return false
+                false
             }
         }
     }
@@ -36,7 +36,18 @@ import UIKit
         }
     }
 
-    public var internalText: String?
+    // Sensitive entry (card number, CVV, …) is held as a mutable byte buffer rather than a
+    // `String` so it can be zeroed in place on `wipe()`. A `String`'s backing storage cannot be
+    // reliably overwritten — reassigning only releases it, leaving the secret in freed memory.
+    private var secureStorage: [UInt8]?
+
+    public var internalText: String? {
+        get { secureStorage.flatMap { String(bytes: $0, encoding: .utf8) } }
+        set {
+            zeroSecureStorage()
+            secureStorage = newValue.map { Array($0.utf8) }
+        }
+    }
 
     override public var text: String? {
         get {
@@ -52,4 +63,19 @@ import UIKit
         (internalText ?? "").isEmpty
     }
 
+    public func wipe() {
+        zeroSecureStorage()
+        secureStorage = nil
+        super.text = nil
+    }
+
+    // Overwrites the live secret buffer in place before release. `memset_s` is guaranteed not to
+    // be optimised away, unlike a plain loop or a reassignment.
+    private func zeroSecureStorage() {
+        guard secureStorage?.isEmpty == false else { return }
+        secureStorage?.withUnsafeMutableBytes { raw in
+            guard let base = raw.baseAddress else { return }
+            memset_s(base, raw.count, 0, raw.count)
+        }
+    }
 }

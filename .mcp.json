@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "ios-simulator": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "ios-simulator-mcp"
+      ],
+      "env": {}
+    }
+  }
+}

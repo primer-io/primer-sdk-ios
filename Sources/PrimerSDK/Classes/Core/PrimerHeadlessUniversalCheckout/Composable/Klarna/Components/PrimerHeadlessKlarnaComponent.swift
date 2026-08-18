@@ -85,7 +85,7 @@
             validationDelegate?.didUpdate(validationStatus: .validating, for: data)
             switch data {
             case let .paymentCategory(_: category, clientToken: clientToken):
-                guard let clientToken = clientToken else {
+                guard let clientToken else {
                     let error = handled(error: KlarnaHelpers.getInvalidTokenError())
                     validationDelegate?.didUpdate(validationStatus: .error(error: error), for: data)
                     return

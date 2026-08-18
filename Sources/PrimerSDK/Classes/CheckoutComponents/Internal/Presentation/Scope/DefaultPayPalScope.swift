@@ -1,0 +1,135 @@
+//
+//  DefaultPayPalScope.swift
+//
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
+
+import SwiftUI
+@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerCore
+
+@available(iOS 15.0, *)
+@MainActor
+final class DefaultPayPalScope: PrimerPayPalScope, ObservableObject, LogReporter {
+
+  private(set) var presentationContext: PresentationContext
+
+  var dismissalMechanism: [DismissalMechanism] {
+    checkoutScope?.dismissalMechanism ?? []
+  }
+
+  var state: AsyncStream<PrimerPayPalState> {
+    AsyncStream { continuation in
+      let task = Task { @MainActor in
+        for await _ in $internalState.values {
+          continuation.yield(internalState)
+        }
+        continuation.finish()
+      }
+
+      continuation.onTermination = { _ in
+        task.cancel()
+      }
+    }
+  }
+
+  var screen: PayPalScreenComponent?
+  var payButton: PayPalButtonComponent?
+  var submitButtonText: String?
+
+  private weak var checkoutScope: DefaultCheckoutScope?
+  private let processPayPalInteractor: ProcessPayPalPaymentInteractor
+  private let analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol?
+
+  @Published private var internalState = PrimerPayPalState()
+
+  private var hasStarted = false
+
+  init(
+    checkoutScope: DefaultCheckoutScope,
+    presentationContext: PresentationContext = .fromPaymentSelection,
+    processPayPalInteractor: ProcessPayPalPaymentInteractor,
+    analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol? = nil
+  ) {
+    self.checkoutScope = checkoutScope
+    self.presentationContext = presentationContext
+    self.processPayPalInteractor = processPayPalInteractor
+    self.analyticsInteractor = analyticsInteractor
+  }
+
+  // Selecting PayPal auto-launches the redirect — no intermediate "Continue to PayPal" tap (Android
+  // parity). The one-shot guard is reset by `prepareForReentry()` so re-selecting restarts cleanly.
+  func start() {
+    guard !hasStarted else { return }
+    hasStarted = true
+    logger.debug(message: "PayPal scope started — auto-launching redirect")
+    submit()
+  }
+
+  func prepareForReentry() {
+    hasStarted = false
+  }
+
+  func submit() {
+    Task {
+      await performPayment()
+    }
+  }
+
+  func cancel() {
+    logger.debug(message: "PayPal payment cancelled")
+    checkoutScope?.cancelActivePaymentMethod(returnToSelection: presentationContext.shouldShowBackButton)
+  }
+
+  func onBack() {
+    if presentationContext.shouldShowBackButton {
+      checkoutScope?.checkoutNavigator.navigateBack()
+    }
+  }
+
+  private func performPayment() async {
+    internalState.step = .loading
+
+    await analyticsInteractor?.trackEvent(
+      .paymentSubmitted,
+      metadata: .payment(PaymentEvent(paymentMethod: PrimerPaymentMethodType.payPal.rawValue))
+    )
+
+    do {
+      // The merchant gate runs before any navigation: `startProcessing()` presents the processing
+      // screen, and UIKit drops merchant UI raised from the callback while that transition is live.
+      try await checkoutScope?.invokeBeforePaymentCreate(
+        paymentMethodType: PrimerPaymentMethodType.payPal.rawValue
+      )
+
+      checkoutScope?.startProcessing()
+
+      internalState.step = .redirecting
+
+      await analyticsInteractor?.trackEvent(
+        .paymentProcessingStarted,
+        metadata: .payment(PaymentEvent(paymentMethod: PrimerPaymentMethodType.payPal.rawValue))
+      )
+
+      let result = try await processPayPalInteractor.execute()
+
+      internalState.step = .success
+      checkoutScope?.handlePaymentSuccess(result)
+    } catch {
+      let primerError =
+        error as? PrimerError ?? PrimerError.unknown(message: error.localizedDescription)
+
+      // Dismissing the PayPal browser sheet is a cancellation, not a failure. The system sheet
+      // does not invoke cancel(), so the catch drives the return-to-list / dismiss itself.
+      if case .cancelled = primerError {
+        logger.debug(message: "PayPal payment cancelled by user")
+        checkoutScope?.cancelActivePaymentMethod(returnToSelection: presentationContext.shouldShowBackButton)
+        return
+      }
+
+      logger.error(message: "PayPal payment failed: \(error.localizedDescription)")
+      internalState.step = .failure(error.localizedDescription)
+      checkoutScope?.handlePaymentError(primerError)
+    }
+  }
+}

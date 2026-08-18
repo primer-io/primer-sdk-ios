@@ -30,7 +30,7 @@ final class PrimerCardNumberFieldViewTests: XCTestCase {
         let delegate = MockTextFieldViewDelegate()
         view.delegate = delegate
 
-        let expectation = self.expectation(description: "onIsValid is called")
+        let expectation = expectation(description: "onIsValid is called")
         delegate.onIsValid = { isValid in
             XCTAssertNotNil(isValid)
             XCTAssertTrue(isValid!)
@@ -55,7 +55,7 @@ final class PrimerCardNumberFieldViewTests: XCTestCase {
     func testValidationInvalidCardNumber() throws {
         view.text = ""
 
-        let expectation = self.expectation(description: "onIsValid is called")
+        let expectation = expectation(description: "onIsValid is called")
         delegate.onIsValid = { isValid in
             XCTAssertNotNil(isValid)
             XCTAssertFalse(isValid!)
@@ -80,7 +80,7 @@ final class PrimerCardNumberFieldViewTests: XCTestCase {
     func testValidationInvalidCardNumber_Empty() throws {
         view.text = "4111"
 
-        let expectation = self.expectation(description: "onIsValid is called")
+        let expectation = expectation(description: "onIsValid is called")
         delegate.onIsValid = { isValid in
             XCTAssertNil(isValid)
             switch self.view.validation {
@@ -104,7 +104,7 @@ final class PrimerCardNumberFieldViewTests: XCTestCase {
     func testValidationInvalidCardNumber_Partial() throws {
         view.text = ""
 
-        let expectation = self.expectation(description: "onIsValid is called")
+        let expectation = expectation(description: "onIsValid is called")
         delegate.onIsValid = { isValid in
             XCTAssertNil(isValid)
             switch self.view.validation {

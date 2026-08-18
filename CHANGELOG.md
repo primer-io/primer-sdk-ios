@@ -5,6 +5,75 @@ All notable changes to `primer-sdk-ios` are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 3.0.0-beta.4 (2026-07-31)
+
+### Feat
+
+- Add Apple Pay card type and network filtering [ORC-7503] (#1817)
+
+### Fix
+
+- Convert Apple Pay amounts by currency decimalDigits (#1816)
+- **headless**: validate cobadged cards via BIN cache (iOS↔Android parity) (#1722)
+- **apple-pay**: remove allowedCardNetworks option, rely on client session [ORC-7503] (#1822)
+
+## 3.0.0-beta.3 (2026-07-30)
+
+### Feat
+
+- Complete BDCUI (#1846)
+- Introduce PrimerBDCUI non-ui Objects (#1838)
+
+### Fix
+
+- Validate phone numbers via lookup service (ORC-7907) (#1847)
+
+### Refactor
+
+- Update StepResolver API (#1845)
+
+## 3.0.0-beta.2 (2026-07-02)
+
+### Feat
+
+- Add vault analytics events and error logging (CheckoutComponents) (#1825)
+
+### Fix
+
+- Convert Apple Pay amounts by currency decimalDigits (CheckoutComponents) (#1821)
+- Prevent script injection in CI workflows (VULN-158) (#1809)
+- Redact PCI fields in CheckoutComponents scope API (VULN-156) (#1810)
+- Apply merchant theme to inline CheckoutComponents [ORC-7505] (#1820)
+- Apply merchant theme to inline CheckoutComponents
+
+## 3.0.0-beta.1 (2026-06-24)
+
+CheckoutComponents beta (iOS 15+). This is a beta release — APIs may still change before the 3.0 GA.
+
+### Feat
+
+- CheckoutComponents: customize the checkout UI with the new composable components — `PrimerCardForm`, `PrimerPaymentMethods`, and `PrimerVaultedPaymentMethods` — each with section slots you can override, plus the `CardFormDefaults` / `PaymentMethodsDefaults` / `VaultedPaymentMethodsDefaults` building blocks for recomposing individual fields.
+- Redirect and Apple Pay payment methods now launch automatically on selection, matching Android.
+
+### Fix
+
+- Validate the web-redirect URL scheme before tokenization.
+- More reliable inline sheet presentation and dismissal in CheckoutComponents.
+- Apply `PrimerSettings` correctly in CheckoutComponents.
+
+### BREAKING CHANGE
+
+- CheckoutComponents customization now goes through the composable components above. The previous scope/closure-based customization surface has been removed — including the `scope:` parameter on `PrimerCheckout` / `presentCheckout`, custom screen closures, and per-field configuration/styling types. Migrate by embedding the composable components under `.primerCheckoutSession(_:)` and overriding their slots.
+- The payment result no longer includes the unused `metadata` field.
+- Payment status values are simplified to `pending`, `success`, and `failed`.
+- Removed the static delegate on `PrimerCheckoutPresenter`; use the presenter instance's delegate instead.
+
+## 3.0.0-b0 (2026-03-12)
+
+### Feat
+
+- Checkout Components
+
 ## 2.51.1 (2026-07-01)
 
 ### Fix

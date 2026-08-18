@@ -50,7 +50,7 @@ final class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
     var inputTextFieldsStackViews: [UIStackView] {
         var stackViews: [UIStackView] = []
 
-        for input in self.inputs {
+        for input in inputs {
 
             let stackView = UIStackView()
             stackView.spacing = 2
@@ -90,7 +90,7 @@ final class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
                 inputStackView.addArrangedSubview(lbl)
             }
 
-            if self.config.type == PrimerPaymentMethodType.adyenMBWay.rawValue {
+            if config.type == PrimerPaymentMethodType.adyenMBWay.rawValue {
                 let phoneNumberLabelStackView = UIStackView()
                 phoneNumberLabelStackView.spacing = 2
                 phoneNumberLabelStackView.axis = .vertical
@@ -449,6 +449,7 @@ final class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
 
     /// Input completion block callback
     var userInputCompletion: (() -> Void)?
+    private var userInputContinuation: CheckedContinuation<Void, Error>?
 
     // MARK: - Payment Flow
 
@@ -578,7 +579,7 @@ final class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
         )
 
         let pollingModule = PollingModule(url: statusUrl)
-        self.didCancel = {
+        didCancel = {
             let err = handled(primerError: .cancelled(paymentMethodType: self.config.type))
             pollingModule.cancel(withError: err)
         }
@@ -625,7 +626,7 @@ final class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
     private func evaluatePaymentMethodNeedingFurtherUserActions() async throws {
         guard let paymentMethodType = PrimerPaymentMethodType(rawValue: config.type),
               inputPaymentMethodTypes.contains(paymentMethodType) ||
-              voucherPaymentMethodTypes.contains(paymentMethodType)
+                voucherPaymentMethodTypes.contains(paymentMethodType)
         else {
             return
         }
@@ -636,7 +637,7 @@ final class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
     override func presentPaymentMethodUserInterface() async throws {
         guard let paymentMethodType = PrimerPaymentMethodType(rawValue: config.type),
               inputPaymentMethodTypes.contains(paymentMethodType) ||
-              voucherPaymentMethodTypes.contains(paymentMethodType)
+                voucherPaymentMethodTypes.contains(paymentMethodType)
         else {
             return
         }
@@ -646,7 +647,10 @@ final class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
 
     override func awaitUserInput() async throws {
         try await withCheckedThrowingContinuation { continuation in
-            self.userInputCompletion = {
+            self.userInputContinuation = continuation
+            self.userInputCompletion = { [weak self] in
+                guard let continuation = self?.userInputContinuation else { return }
+                self?.userInputContinuation = nil
                 continuation.resume()
             }
 
@@ -657,10 +661,10 @@ final class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
     }
 
     fileprivate func enableSubmitButton(_ flag: Bool) {
-        self.uiModule.submitButton?.isEnabled = flag
+        uiModule.submitButton?.isEnabled = flag
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         let colorState: ColorState = flag ? .enabled : .disabled
-        self.uiModule.submitButton?.backgroundColor = theme.mainButton.color(for: colorState)
+        uiModule.submitButton?.backgroundColor = theme.mainButton.color(for: colorState)
     }
 
     override func submitButtonTapped() {
@@ -669,7 +673,7 @@ final class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
             action: .click,
             context: Analytics.Event.Property.Context(
                 issuerId: nil,
-                paymentMethodType: self.config.type,
+                paymentMethodType: config.type,
                 url: nil
             ),
             extra: nil,
@@ -684,9 +688,9 @@ final class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
         case PrimerPaymentMethodType.adyenBlik.rawValue,
              PrimerPaymentMethodType.adyenMBWay.rawValue,
              PrimerPaymentMethodType.adyenMultibanco.rawValue:
-            self.uiModule.submitButton?.startAnimating()
-            self.userInputCompletion?()
-            self.userInputCompletion = nil
+            uiModule.submitButton?.startAnimating()
+            userInputCompletion?()
+            userInputCompletion = nil
 
         default:
             fatalError("Must be overridden")
@@ -774,7 +778,7 @@ final class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
 
     @MainActor
     override func handleSuccessfulFlow() {
-        guard let paymentMethodType = PrimerPaymentMethodType(rawValue: self.config.type) else {
+        guard let paymentMethodType = PrimerPaymentMethodType(rawValue: config.type) else {
             return
         }
 
@@ -793,10 +797,15 @@ final class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
     }
 
     override func cancel() {
+        if let continuation = userInputContinuation {
+            userInputContinuation = nil
+            userInputCompletion = nil
+            continuation.resume(throwing: handled(primerError: .cancelled(paymentMethodType: config.type)))
+        }
         didCancel?()
         inputs = []
 
-        let err = PrimerError.cancelled(paymentMethodType: self.config.type)
+        let err = PrimerError.cancelled(paymentMethodType: config.type)
         ErrorHandler.handle(error: err)
     }
 
@@ -852,12 +861,12 @@ extension FormPaymentMethodTokenizationViewModel: UITableViewDataSource, UITable
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let country = self.countriesDataSource[indexPath.row]
+        let country = countriesDataSource[indexPath.row]
         countryFieldView.textField.text = "\(country.flag) \(country.country)"
         countryFieldView.countryCode = country
         countryFieldView.validation = .valid
         countryFieldView.textFieldDidEndEditing(countryFieldView.textField)
-        self.uiManager.primerRootViewController?.popViewController()
+        uiManager.primerRootViewController?.popViewController()
     }
 }
 
@@ -875,12 +884,10 @@ extension FormPaymentMethodTokenizationViewModel: UITextFieldDelegate {
             return false
         }
 
-        var query: String
-
-        if string.isEmpty {
-            query = String((textField.text ?? "").dropLast())
+        let query: String = if string.isEmpty {
+            String((textField.text ?? "").dropLast())
         } else {
-            query = (textField.text ?? "") + string
+            (textField.text ?? "") + string
         }
 
         if query.isEmpty {

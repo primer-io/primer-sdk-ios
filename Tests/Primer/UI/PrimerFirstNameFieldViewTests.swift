@@ -28,7 +28,7 @@ final class PrimerFirstNameFieldViewTests: XCTestCase {
     func testValidationValidFirstName() throws {
         view.text = ""
 
-        let expectation = self.expectation(description: "onIsValid is called")
+        let expectation = expectation(description: "onIsValid is called")
         delegate.onIsValid = { isValid in
             XCTAssertNotNil(isValid)
             XCTAssertTrue(isValid!)

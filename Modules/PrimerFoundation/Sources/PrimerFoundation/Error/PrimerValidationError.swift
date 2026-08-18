@@ -148,6 +148,8 @@ public enum PrimerValidationError: PrimerErrorProtocol, Encodable {
         return context
     }
 
+    public var isReportable: Bool { false }
+
     private var paymentMethodType: String? {
         switch self {
         case let .vaultedPaymentDataMismatch(paymentMethodType, _, _): paymentMethodType

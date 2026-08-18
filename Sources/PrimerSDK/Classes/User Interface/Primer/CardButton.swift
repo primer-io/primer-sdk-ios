@@ -17,7 +17,7 @@ final class CardButton: PrimerButton {
     private var border = PrimerView()
 
     func render(model: CardButtonViewModel?) {
-        guard let model = model else { return }
+        guard let model else { return }
         accessibilityIdentifier = "saved_payment_method_button"
 
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()

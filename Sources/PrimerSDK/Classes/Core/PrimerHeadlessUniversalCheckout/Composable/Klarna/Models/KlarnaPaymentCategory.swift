@@ -14,10 +14,10 @@ public struct KlarnaPaymentCategory: Codable {
     public let standardAssetUrl: String
     // MARK: - Init
     init(response: Response.Body.Klarna.SessionCategory) {
-        self.id = response.identifier
-        self.name = response.name
-        self.descriptiveAssetUrl = response.descriptiveAssetUrl
-        self.standardAssetUrl = response.standardAssetUrl
+        id = response.identifier
+        name = response.name
+        descriptiveAssetUrl = response.descriptiveAssetUrl
+        standardAssetUrl = response.standardAssetUrl
     }
 }
 

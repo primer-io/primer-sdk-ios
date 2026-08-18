@@ -5,7 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 @_spi(PrimerInternal) @testable import PrimerSDK
-@_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) @testable import PrimerCore
 import XCTest
 
 final class AnalyticsStorageTests: XCTestCase {
@@ -24,6 +24,7 @@ final class AnalyticsStorageTests: XCTestCase {
 
     override func setUpWithError() throws {
         storage = Analytics.DefaultStorage(fileURL: url)
+        storage.deleteAnalyticsFile()
     }
 
     override func tearDownWithError() throws {
