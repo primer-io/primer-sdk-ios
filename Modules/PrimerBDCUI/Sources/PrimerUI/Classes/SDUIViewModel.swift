@@ -31,7 +31,7 @@ final class SDUIViewModel: ObservableObject, StepResolver {
     ) {
         self.onEvent = onEvent
         self.onError = onError
-        registry.register(self, for: "ui.render")
+        registry.register(weak: self, for: "ui.render")
     }
 
     func resolve(_ data: CodableValue) async throws -> StepResolutionResult {
