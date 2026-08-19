@@ -106,6 +106,47 @@ final class PrimerStepOrchestratorTests: XCTestCase {
 
         await XCTAssertThrowsErrorAsync { try await sut.applyEvent(.object([:])) }
     }
+
+    func testDelayedActionDispatchesAfterDelay() async throws {
+        let (sut, engine, resolver) = try await delayedActionSUT(delayMs: 20)
+        let start = DispatchTime.now()
+
+        try await sut.start(rawSchema: "{}", initialState: .object([:]))
+
+        let elapsedMs = Double(DispatchTime.now().uptimeNanoseconds - start.uptimeNanoseconds) / 1_000_000
+        XCTAssertGreaterThanOrEqual(elapsedMs, 20)
+        XCTAssertEqual(resolver.resolveCallCount, 1)
+        XCTAssertEqual(engine.applyResultCallCount, 1)
+    }
+
+    func testInvalidDelaysAreIgnored() async throws {
+        let invalidDelays: [Double] = [-1, 0, 1e30, Double(UInt64.max)]
+        for delayMs in invalidDelays {
+            let (sut, engine, resolver) = try await delayedActionSUT(delayMs: delayMs)
+
+            try await sut.start(rawSchema: "{}", initialState: .object([:]))
+
+            XCTAssertEqual(resolver.resolveCallCount, 1, "delayMs: \(delayMs)")
+            XCTAssertEqual(engine.applyResultCallCount, 1, "delayMs: \(delayMs)")
+        }
+    }
+
+    func testCancellingDuringDelayThrowsCancellationErrorWithoutResolving() async throws {
+        let (sut, engine, resolver) = try await delayedActionSUT(delayMs: 60_000)
+
+        let task = Task { try await sut.start(rawSchema: "{}", initialState: .object([:])) }
+        try await Task.sleep(nanoseconds: 20_000_000)
+        task.cancel()
+
+        do {
+            try await task.value
+            XCTFail("Expected the delay to be cancelled")
+        } catch {
+            XCTAssertTrue(error is CancellationError, "Expected CancellationError, got \(error)")
+        }
+        XCTAssertEqual(resolver.resolveCallCount, 0)
+        XCTAssertEqual(engine.applyResultCallCount, 0)
+    }
 }
 
 private extension PrimerStepOrchestratorTests {
@@ -137,11 +178,28 @@ private extension PrimerStepOrchestratorTests {
         ]
     }
 
-    func action(id: String = "a1", type: String, params: [String: Any] = [:]) -> [String: Any] {
-        [
+    func action(id: String = "a1", type: String, params: [String: Any] = [:], delayMs: Double? = nil) -> [String: Any] {
+        var action: [String: Any] = ["id": id, "type": type, "params": params]
+        action["delayMs"] = delayMs
+        return [
             "newState": [:],
-            "action": ["id": id, "type": type, "params": params]
+            "action": action
         ]
+    }
+
+    func delayedActionSUT(
+        delayMs: Double
+    ) async throws -> (PrimerStepOrchestrator, MockBDCEngine, MockStepResolver) {
+        let engine = MockBDCEngine()
+        let resolver = MockStepResolver()
+        let registry = PrimerStepResolverRegistry()
+        await registry.register(resolver, for: "http.request")
+
+        engine.startResult = action(type: "http.request", delayMs: delayMs)
+        engine.applyResultResult = terminal("success")
+
+        let sut = PrimerStepOrchestrator(engine: engine, context: stubContext, registry: registry)
+        return (sut, engine, resolver)
     }
 
     func startedSUT(

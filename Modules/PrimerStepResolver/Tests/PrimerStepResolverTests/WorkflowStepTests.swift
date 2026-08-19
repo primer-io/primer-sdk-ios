@@ -40,6 +40,16 @@ final class WorkflowStepTests: XCTestCase {
     func testDecodeMissingParamsThrows() {
         XCTAssertThrowsError(try decode(#"{"id": "step-x", "type": "http.request"}"#))
     }
+
+    func testDecodeDelayMs() throws {
+        let step = try decode(#"{"id": "step-4", "type": "http.request", "params": {}, "delayMs": 250}"#)
+        XCTAssertEqual(step.delayMs, 250)
+    }
+
+    func testDecodeMissingDelayMsIsNil() throws {
+        let step = try decode(#"{"id": "step-5", "type": "http.request", "params": {}}"#)
+        XCTAssertNil(step.delayMs)
+    }
 }
 
 private extension WorkflowStepTests {
