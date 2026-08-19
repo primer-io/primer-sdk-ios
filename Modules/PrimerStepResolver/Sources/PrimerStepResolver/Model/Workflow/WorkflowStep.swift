@@ -12,4 +12,5 @@ public struct WorkflowStep: Decodable {
     public let id: String
     public let type: String
     public let params: CodableValue
+    public let delayMs: Double?
 }

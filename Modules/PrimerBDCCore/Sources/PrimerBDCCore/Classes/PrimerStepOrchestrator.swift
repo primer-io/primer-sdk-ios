@@ -47,23 +47,22 @@ final class PrimerStepOrchestrator: StepOrchestrating {
         do {
             let result = try await engine.start(schema: rawSchema, context: context, state: initialState)
             try await decodeResult(result, rawSchema: rawSchema)
+        } catch is CancellationError {
+            throw CancellationError()
         } catch {
             throw PrimerStepOrchestratorError.startFailed(error: error)
         }
     }
 
     private func decodeResult(_ result: AnyDict, rawSchema: String) async throws {
+        let response: StateProcessorResponse
         do {
-            let response = try JSONDecoder().decode(StateProcessorResponse.self, from: try result.data())
-            state = response.newState
-            try await handleResponse(response, rawSchema: rawSchema)
+            response = try JSONDecoder().decode(StateProcessorResponse.self, from: try result.data())
         } catch {
-            if error is StateProcessorError {
-                throw error
-            } else {
-                throw PrimerStepOrchestratorError.decodeResultFailed(error: error)
-            }
+            throw PrimerStepOrchestratorError.decodeResultFailed(error: error)
         }
+        state = response.newState
+        try await handleResponse(response, rawSchema: rawSchema)
     }
     
     private func handleResponse(_ response: StateProcessorResponse, rawSchema: String) async throws {
@@ -84,8 +83,16 @@ final class PrimerStepOrchestrator: StepOrchestrating {
     }
     
     private func handleAction(_ action: WorkflowStep, rawSchema: String) async throws {
+        try await sleep(forMilliseconds: action.delayMs)
         let result = try await registry.resolve(action.type, params: action.params)
         try await applyResult(result, actionId: action.id, rawSchema: rawSchema)
+    }   
+
+    private func sleep(forMilliseconds delayMs: Double?) async throws {
+        guard let delayMs, delayMs.isFinite, delayMs > 0 else { return }
+        let nanoseconds = delayMs * 1_000_000
+        guard nanoseconds < Double(UInt64.max) else { return }
+        try await Task.sleep(nanoseconds: UInt64(nanoseconds))
     }
     
     private func handleOutcome(_ outcome: TerminalOutcome) throws {
@@ -108,6 +115,8 @@ final class PrimerStepOrchestrator: StepOrchestrating {
                 data: data
             )
             try await decodeResult(result, rawSchema: rawSchema)
+        } catch is CancellationError {
+            throw CancellationError()
         } catch {
             throw PrimerStepOrchestratorError.applyWorkflowStepResponseFailed(error: error)
         }
