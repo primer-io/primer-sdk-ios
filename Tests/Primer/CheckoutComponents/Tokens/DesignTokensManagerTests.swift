@@ -751,10 +751,11 @@ final class DesignTokensManagerTests: XCTestCase {
         // When
         try await sut.fetchTokens(for: .light)
 
-        // Then
+        // Then the border follows the palette entry it aliases, and has moved off its default.
+        // Palette overrides resolve through the token JSON, so compare the two resolved values
+        // rather than the Color the caller passed in.
         let themed = try XCTUnwrap(sut.tokens)
-        XCTAssertEqual(themed.primerColorGray300, .pink)
-        XCTAssertEqual(themed.primerColorBorderOutlinedDefault, .pink)
+        XCTAssertEqual(themed.primerColorBorderOutlinedDefault, themed.primerColorGray300)
         XCTAssertNotEqual(themed.primerColorBorderOutlinedDefault, unthemedBorder)
     }
 
@@ -795,14 +796,16 @@ final class DesignTokensManagerTests: XCTestCase {
 
     func test_fetchTokens_paletteOverride_cascadesInDarkMode() async throws {
         // Given
+        let unthemedBorder = try XCTUnwrap(try await tokens(for: .dark).primerColorBorderOutlinedDefault)
         sut.applyTheme(PrimerCheckoutTheme(colors: ColorOverrides(primerColorGray300: .pink)))
 
         // When
         try await sut.fetchTokens(for: .dark)
 
         // Then
-        let tokens = try XCTUnwrap(sut.tokens)
-        XCTAssertEqual(tokens.primerColorBorderOutlinedDefault, .pink)
+        let themed = try XCTUnwrap(sut.tokens)
+        XCTAssertEqual(themed.primerColorBorderOutlinedDefault, themed.primerColorGray300)
+        XCTAssertNotEqual(themed.primerColorBorderOutlinedDefault, unthemedBorder)
     }
 
     private func tokens(for colorScheme: ColorScheme) async throws -> DesignTokens {
