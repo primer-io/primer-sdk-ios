@@ -4,7 +4,7 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-@testable import PrimerBDCCore
+@testable @_spi(PrimerInternal) import PrimerBDCCore
 import PrimerBDCEngine
 @_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerStepResolver
@@ -15,6 +15,19 @@ final class PrimerStepOrchestratorTests: XCTestCase {
 
     func testTerminalSuccess() async throws {
         try await startWith(terminal: "success")
+    }
+    
+    func testTerminalCancelledThrowsCancellation() async {
+        let sut = makeSUT(startResult: terminal("cancelled"))
+
+        do {
+            try await sut.start(rawSchema: "{}", initialState: .object([:]))
+            XCTFail("Expected BackendDrivenCheckoutCancellation")
+        } catch is BackendDrivenCheckoutCancellation {
+            // Expected.
+        } catch {
+            XCTFail("Expected BackendDrivenCheckoutCancellation, got \(error)")
+        }
     }
 
     func testTerminalErrorThrows() async {
