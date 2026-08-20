@@ -94,12 +94,12 @@ struct VaultedCardCVVInput: View {
       .focused($isFocused)
       .multilineTextAlignment(.leading)
       .font(PrimerFont.bodyLarge(tokens: tokens))
-      .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
+      .foregroundColor(CheckoutColors.inputText(tokens: tokens))
       .padding(.horizontal, PrimerSpacing.medium(tokens: tokens))
       .frame(width: PrimerComponentWidth.cvvFieldMax, height: PrimerSize.xxlarge(tokens: tokens))
       .background(
         RoundedRectangle(cornerRadius: PrimerRadius.small(tokens: tokens))
-          .fill(CheckoutColors.background(tokens: tokens))
+          .fill(CheckoutColors.inputBackground(tokens: tokens))
       )
       .overlay(
         RoundedRectangle(cornerRadius: PrimerRadius.small(tokens: tokens))

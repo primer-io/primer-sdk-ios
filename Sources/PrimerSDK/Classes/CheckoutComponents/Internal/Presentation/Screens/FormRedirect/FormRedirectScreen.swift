@@ -184,7 +184,7 @@ private struct FormFieldView: View {
             if let errorMessage = field.errorMessage {
                 Text(errorMessage)
                     .font(PrimerFont.caption(tokens: tokens))
-                    .foregroundColor(CheckoutColors.error(tokens: tokens))
+                    .foregroundColor(CheckoutColors.textNegative(tokens: tokens))
             } else if let helperText = field.helperText {
                 Text(helperText)
                     .font(PrimerFont.caption(tokens: tokens))
@@ -198,7 +198,7 @@ private struct FormFieldView: View {
             if let prefix = field.countryCodePrefix, field.fieldType == .phoneNumber {
                 Text(prefix)
                     .font(PrimerFont.bodyLarge(tokens: tokens))
-                    .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
+                    .foregroundColor(CheckoutColors.inputText(tokens: tokens))
                     .accessibilityIdentifier(AccessibilityIdentifiers.FormRedirect.phonePrefix)
             }
 
@@ -207,6 +207,7 @@ private struct FormFieldView: View {
                 set: { onValueChanged($0) }
             ))
             .font(PrimerFont.bodyLarge(tokens: tokens))
+            .foregroundColor(CheckoutColors.inputText(tokens: tokens))
             .keyboardType(field.keyboardType.uiKeyboardType)
             .textContentType(field.fieldType.textContentType)
             .focused($isFocused)

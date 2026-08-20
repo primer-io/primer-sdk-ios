@@ -26,22 +26,53 @@ final class DesignTokensManager: ObservableObject {
   // MARK: - Token Loading
 
   func fetchTokens(for colorScheme: ColorScheme) async throws {
-    let loadedTokens = try Self.makeTokens(for: colorScheme)
+    let loadedTokens = try Self.makeTokens(for: colorScheme, paletteOverrides: palettePairs())
 
-    // Apply merchant theme overrides on top of loaded tokens
+    // applied last so an explicit token wins over a palette value it aliases
     applyThemeOverrides(to: loadedTokens)
 
     tokens = loadedTokens
   }
 
-  /// Resolves the shipped token JSON for a colour scheme, without merchant overrides.
-  /// Previews and tests use this so they see the same values production does.
-  nonisolated static func makeTokens(for colorScheme: ColorScheme) throws -> DesignTokens {
+  /// Injected before references resolve, so tokens aliasing a palette entry follow the override.
+  private func palettePairs() -> [String: Color] {
+    guard let colors = themeOverrides?.colors else { return [:] }
+    let pairs: [(String, Color?)] = [
+      ("primerColorBrand", colors.primerColorBrand),
+      ("primerColorGray000", colors.primerColorGray000),
+      ("primerColorGray100", colors.primerColorGray100),
+      ("primerColorGray200", colors.primerColorGray200),
+      ("primerColorGray300", colors.primerColorGray300),
+      ("primerColorGray400", colors.primerColorGray400),
+      ("primerColorGray500", colors.primerColorGray500),
+      ("primerColorGray600", colors.primerColorGray600),
+      ("primerColorGray900", colors.primerColorGray900),
+      ("primerColorGreen500", colors.primerColorGreen500),
+      ("primerColorRed100", colors.primerColorRed100),
+      ("primerColorRed500", colors.primerColorRed500),
+      ("primerColorRed900", colors.primerColorRed900),
+      ("primerColorBlue500", colors.primerColorBlue500),
+      ("primerColorBlue900", colors.primerColorBlue900),
+    ]
+    return pairs.reduce(into: [:]) { result, pair in
+      if let value = pair.1 { result[pair.0] = value }
+    }
+  }
+
+  /// Previews and tests call this with no overrides so they resolve what production resolves.
+  nonisolated static func makeTokens(
+    for colorScheme: ColorScheme,
+    paletteOverrides: [String: Color] = [:]
+  ) throws -> DesignTokens {
     let baseDict = try loadJSON(named: "base")
-    let mergedDict =
+    var mergedDict =
       colorScheme == .dark
       ? DesignTokensProcessor.mergeDictionaries(baseDict, with: try loadJSON(named: "dark"))
       : baseDict
+
+    if !paletteOverrides.isEmpty {
+      mergedDict = applyPaletteOverrides(paletteOverrides, to: mergedDict)
+    }
 
     var processedDict = DesignTokensProcessor.resolveReferences(in: mergedDict)
     processedDict = DesignTokensProcessor.convertHexColors(in: processedDict)
@@ -51,6 +82,37 @@ final class DesignTokensManager: ObservableObject {
 
     let data = try JSONSerialization.data(withJSONObject: flatDict)
     return try JSONDecoder().decode(DesignTokens.self, from: data)
+  }
+
+  /// Replaces matching leaves in place so the existing reference pass picks the new value up.
+  private nonisolated static func applyPaletteOverrides(
+    _ overrides: [String: Color],
+    to dict: [String: Any],
+    prefix: String = ""
+  ) -> [String: Any] {
+    dict.reduce(into: [String: Any]()) { result, pair in
+      let (key, value) = pair
+      let path = prefix.isEmpty ? key : "\(prefix).\(key)"
+      guard var nested = value as? [String: Any] else {
+        result[key] = value
+        return
+      }
+      if nested["value"] != nil,
+         let override = overrides[DesignTokensProcessor.flattenedName(for: path)],
+         let components = colorComponents(override) {
+        nested["value"] = components
+      }
+      result[key] = applyPaletteOverrides(overrides, to: nested, prefix: path)
+    }
+  }
+
+  private nonisolated static func colorComponents(_ color: Color) -> [CGFloat]? {
+    var red: CGFloat = 0
+    var green: CGFloat = 0
+    var blue: CGFloat = 0
+    var alpha: CGFloat = 0
+    guard UIColor(color).getRed(&red, green: &green, blue: &blue, alpha: &alpha) else { return nil }
+    return [red, green, blue, alpha]
   }
 
   // MARK: - Apply Theme Overrides
@@ -108,11 +170,37 @@ final class DesignTokensManager: ObservableObject {
     if let value = colors.primerColorRed900 { tokens.primerColorRed900 = value }
     if let value = colors.primerColorBlue500 { tokens.primerColorBlue500 = value }
     if let value = colors.primerColorBlue900 { tokens.primerColorBlue900 = value }
-    if let value = colors.primerColorBackground { tokens.primerColorBackground = value }
+    if let value = colors.primerColorBackgroundPrimary {
+      tokens.primerColorBackgroundPrimary = value
+      // the input fill aliases the sheet, so it follows unless the merchant names it too
+      if colors.primerColorBackgroundOutlinedDefault == nil {
+        tokens.primerColorBackgroundOutlinedDefault = value
+      }
+    }
+    if let value = colors.primerColorBackgroundOutlinedDefault { tokens.primerColorBackgroundOutlinedDefault = value }
+    if let value = colors.primerColorTextOutlinedDefault { tokens.primerColorTextOutlinedDefault = value }
+    if let value = colors.primerColorBackgroundSecondary { tokens.primerColorBackgroundSecondary = value }
+    if let value = colors.primerColorBackgroundOutlinedHover { tokens.primerColorBackgroundOutlinedHover = value }
+    if let value = colors.primerColorBackgroundOutlinedActive { tokens.primerColorBackgroundOutlinedActive = value }
+    if let value = colors.primerColorBackgroundOutlinedDisabled { tokens.primerColorBackgroundOutlinedDisabled = value }
+    if let value = colors.primerColorBackgroundOutlinedLoading { tokens.primerColorBackgroundOutlinedLoading = value }
+    if let value = colors.primerColorBackgroundOutlinedSelected { tokens.primerColorBackgroundOutlinedSelected = value }
+    if let value = colors.primerColorBackgroundOutlinedError { tokens.primerColorBackgroundOutlinedError = value }
+    if let value = colors.primerColorBackgroundTransparentDefault { tokens.primerColorBackgroundTransparentDefault = value }
+    if let value = colors.primerColorBackgroundTransparentHover { tokens.primerColorBackgroundTransparentHover = value }
+    if let value = colors.primerColorBackgroundTransparentActive { tokens.primerColorBackgroundTransparentActive = value }
+    if let value = colors.primerColorBackgroundTransparentDisabled { tokens.primerColorBackgroundTransparentDisabled = value }
+    if let value = colors.primerColorBackgroundTransparentLoading { tokens.primerColorBackgroundTransparentLoading = value }
+    if let value = colors.primerColorBackgroundTransparentSelected { tokens.primerColorBackgroundTransparentSelected = value }
   }
 
   private func applyTextColorOverrides(to tokens: DesignTokens, from colors: ColorOverrides) {
-    if let value = colors.primerColorTextPrimary { tokens.primerColorTextPrimary = value }
+    if let value = colors.primerColorTextPrimary {
+      tokens.primerColorTextPrimary = value
+      if colors.primerColorTextOutlinedDefault == nil {
+        tokens.primerColorTextOutlinedDefault = value
+      }
+    }
     if let value = colors.primerColorTextSecondary { tokens.primerColorTextSecondary = value }
     if let value = colors.primerColorTextPlaceholder { tokens.primerColorTextPlaceholder = value }
     if let value = colors.primerColorTextDisabled { tokens.primerColorTextDisabled = value }

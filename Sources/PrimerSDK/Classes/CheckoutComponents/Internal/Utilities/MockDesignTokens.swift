@@ -19,10 +19,9 @@
 
     // MARK: - Static Instances
 
-    /// Light theme design tokens with default Primer values
+    /// Resolved through the production pipeline so previews can't drift from real light values.
     static let light: DesignTokens = {
-      // Create instance with default values
-      DesignTokens()
+      (try? DesignTokensManager.makeTokens(for: .light)) ?? DesignTokens()
     }()
 
     /// Resolved through the production pipeline so previews can't drift from real dark values.

@@ -45,7 +45,11 @@ enum CheckoutColors {
   }
 
   static func background(tokens: DesignTokens?) -> Color {
-    tokens?.primerColorBackground ?? .white
+    tokens?.primerColorBackgroundPrimary ?? .white
+  }
+
+  static func backgroundSecondary(tokens: DesignTokens?) -> Color {
+    tokens?.primerColorBackgroundSecondary ?? Color(red: 0.961, green: 0.961, blue: 0.961)
   }
 
   static func gray100(tokens: DesignTokens?) -> Color {
@@ -85,11 +89,15 @@ enum CheckoutColors {
   // MARK: - Screen & Input Colors
 
   static func screenBackground(tokens: DesignTokens?) -> Color {
-    tokens?.primerColorBackground ?? Color(.systemBackground)
+    tokens?.primerColorBackgroundPrimary ?? Color(.systemBackground)
   }
 
   static func inputBackground(tokens: DesignTokens?) -> Color {
-    tokens?.primerColorGray100 ?? Color(.systemGray6)
+    tokens?.primerColorBackgroundOutlinedDefault ?? Color(.systemGray6)
+  }
+
+  static func inputText(tokens: DesignTokens?) -> Color {
+    tokens?.primerColorTextOutlinedDefault ?? .primary
   }
 
   static func inputBorder(tokens: DesignTokens?) -> Color {
@@ -98,10 +106,6 @@ enum CheckoutColors {
 
   static func inputBorderFocused(tokens: DesignTokens?) -> Color {
     tokens?.primerColorBorderOutlinedFocus ?? .blue
-  }
-
-  static func error(tokens: DesignTokens?) -> Color {
-    tokens?.primerColorTextNegative ?? .red
   }
 
   // MARK: - Button Colors
