@@ -25,36 +25,9 @@
       DesignTokens()
     }()
 
-    /// Dark theme design tokens with default Primer dark mode values
+    /// Resolved through the production pipeline so previews can't drift from real dark values.
     static let dark: DesignTokens = {
-      // Create light tokens with defaults
-      let lightTokens = DesignTokens()
-
-      // Create dark tokens from empty JSON to override colors
-      let emptyJSON = "{}"
-      let data = Data(emptyJSON.utf8)
-      let decoder = JSONDecoder()
-      let darkTokens = try! decoder.decode(DesignTokensDark.self, from: data)
-
-      // Merge dark theme colors into light theme structure
-      // Dark theme only overrides colors, everything else stays the same
-      lightTokens.primerColorGray100 = darkTokens.primerColorGray100
-      lightTokens.primerColorGray200 = darkTokens.primerColorGray200
-      lightTokens.primerColorGray300 = darkTokens.primerColorGray300
-      lightTokens.primerColorGray400 = darkTokens.primerColorGray400
-      lightTokens.primerColorGray500 = darkTokens.primerColorGray500
-      lightTokens.primerColorGray600 = darkTokens.primerColorGray600
-      lightTokens.primerColorGray900 = darkTokens.primerColorGray900
-      lightTokens.primerColorGray000 = darkTokens.primerColorGray000
-      lightTokens.primerColorGreen500 = darkTokens.primerColorGreen500
-      lightTokens.primerColorBrand = darkTokens.primerColorBrand
-      lightTokens.primerColorRed100 = darkTokens.primerColorRed100
-      lightTokens.primerColorRed500 = darkTokens.primerColorRed500
-      lightTokens.primerColorRed900 = darkTokens.primerColorRed900
-      lightTokens.primerColorBlue500 = darkTokens.primerColorBlue500
-      lightTokens.primerColorBlue900 = darkTokens.primerColorBlue900
-
-      return lightTokens
+      (try? DesignTokensManager.makeTokens(for: .dark)) ?? DesignTokens()
     }()
 
     // MARK: - Custom Token Creation

@@ -44,7 +44,7 @@ struct SelectCountryScreen: View, LogReporter {
         Button(CheckoutComponentsStrings.cancelButton) {
           onDismiss?()
         }
-        .foregroundColor(CheckoutColors.blue(tokens: tokens))
+        .foregroundColor(CheckoutColors.textLink(tokens: tokens))
         .accessibilityLabel(CheckoutComponentsStrings.a11yCancel)
       }
     }

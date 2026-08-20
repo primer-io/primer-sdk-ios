@@ -26,28 +26,31 @@ final class DesignTokensManager: ObservableObject {
   // MARK: - Token Loading
 
   func fetchTokens(for colorScheme: ColorScheme) async throws {
-    // Load and merge tokens
+    let loadedTokens = try Self.makeTokens(for: colorScheme)
+
+    // Apply merchant theme overrides on top of loaded tokens
+    applyThemeOverrides(to: loadedTokens)
+
+    tokens = loadedTokens
+  }
+
+  /// Resolves the shipped token JSON for a colour scheme, without merchant overrides.
+  /// Previews and tests use this so they see the same values production does.
+  nonisolated static func makeTokens(for colorScheme: ColorScheme) throws -> DesignTokens {
     let baseDict = try loadJSON(named: "base")
     let mergedDict =
       colorScheme == .dark
       ? DesignTokensProcessor.mergeDictionaries(baseDict, with: try loadJSON(named: "dark"))
       : baseDict
 
-    // Process tokens through transformation pipeline
     var processedDict = DesignTokensProcessor.resolveReferences(in: mergedDict)
     processedDict = DesignTokensProcessor.convertHexColors(in: processedDict)
     var flatDict = DesignTokensProcessor.flattenTokenDictionary(processedDict)
     flatDict = DesignTokensProcessor.resolveFlattenedReferences(in: flatDict, source: processedDict)
     flatDict = DesignTokensProcessor.evaluateMath(in: flatDict)
 
-    // Decode tokens from JSON
     let data = try JSONSerialization.data(withJSONObject: flatDict)
-    let loadedTokens = try JSONDecoder().decode(DesignTokens.self, from: data)
-
-    // Apply merchant theme overrides on top of loaded tokens
-    applyThemeOverrides(to: loadedTokens)
-
-    tokens = loadedTokens
+    return try JSONDecoder().decode(DesignTokens.self, from: data)
   }
 
   // MARK: - Apply Theme Overrides
@@ -316,7 +319,7 @@ final class DesignTokensManager: ObservableObject {
 
   // MARK: - JSON Loading
 
-  private func loadJSON(named fileName: String) throws -> [String: Any] {
+  private nonisolated static func loadJSON(named fileName: String) throws -> [String: Any] {
     guard let url = Bundle.primerResources.url(forResource: fileName, withExtension: "json"),
       let data = try? Data(contentsOf: url),
       let dictionary = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
