@@ -102,7 +102,7 @@ struct QRCodeView: View, LogReporter {
       case .loading:
         Spacer()
         ProgressView()
-          .progressViewStyle(CircularProgressViewStyle())
+          .progressViewStyle(CircularProgressViewStyle(tint: CheckoutColors.loader(tokens: tokens)))
           .scaleEffect(PrimerScale.large)
           .accessibilityIdentifier(AccessibilityIdentifiers.QRCode.loadingIndicator)
           .accessibilityLabel(CheckoutComponentsStrings.a11yLoading)

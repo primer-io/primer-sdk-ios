@@ -235,7 +235,7 @@ private struct FormFieldView: View {
 
     private var borderColor: Color {
         if field.errorMessage != nil {
-            CheckoutColors.error(tokens: tokens)
+            CheckoutColors.borderError(tokens: tokens)
         } else if isFocused {
             CheckoutColors.inputBorderFocused(tokens: tokens)
         } else {

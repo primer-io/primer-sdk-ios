@@ -25,9 +25,7 @@
       DesignTokens()
     }()
 
-    /// Dark theme design tokens, resolved through the same JSON pipeline production uses.
-    /// Hand-copying primitives here previously left every semantic token at its light value,
-    /// so dark-mode previews showed light colours and hid real regressions.
+    /// Resolved through the production pipeline so previews can't drift from real dark values.
     static let dark: DesignTokens = {
       (try? DesignTokensManager.makeTokens(for: .dark)) ?? DesignTokens()
     }()
