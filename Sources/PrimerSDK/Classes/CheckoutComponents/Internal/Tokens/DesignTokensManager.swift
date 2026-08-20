@@ -170,7 +170,13 @@ final class DesignTokensManager: ObservableObject {
     if let value = colors.primerColorRed900 { tokens.primerColorRed900 = value }
     if let value = colors.primerColorBlue500 { tokens.primerColorBlue500 = value }
     if let value = colors.primerColorBlue900 { tokens.primerColorBlue900 = value }
-    if let value = colors.primerColorBackgroundPrimary { tokens.primerColorBackgroundPrimary = value }
+    if let value = colors.primerColorBackgroundPrimary {
+      tokens.primerColorBackgroundPrimary = value
+      // the input fill aliases the sheet, so it follows unless the merchant names it too
+      if colors.primerColorBackgroundOutlinedDefault == nil {
+        tokens.primerColorBackgroundOutlinedDefault = value
+      }
+    }
     if let value = colors.primerColorBackgroundOutlinedDefault { tokens.primerColorBackgroundOutlinedDefault = value }
     if let value = colors.primerColorTextOutlinedDefault { tokens.primerColorTextOutlinedDefault = value }
     if let value = colors.primerColorBackgroundSecondary { tokens.primerColorBackgroundSecondary = value }
@@ -189,7 +195,12 @@ final class DesignTokensManager: ObservableObject {
   }
 
   private func applyTextColorOverrides(to tokens: DesignTokens, from colors: ColorOverrides) {
-    if let value = colors.primerColorTextPrimary { tokens.primerColorTextPrimary = value }
+    if let value = colors.primerColorTextPrimary {
+      tokens.primerColorTextPrimary = value
+      if colors.primerColorTextOutlinedDefault == nil {
+        tokens.primerColorTextOutlinedDefault = value
+      }
+    }
     if let value = colors.primerColorTextSecondary { tokens.primerColorTextSecondary = value }
     if let value = colors.primerColorTextPlaceholder { tokens.primerColorTextPlaceholder = value }
     if let value = colors.primerColorTextDisabled { tokens.primerColorTextDisabled = value }

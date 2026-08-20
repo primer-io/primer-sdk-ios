@@ -814,6 +814,53 @@ final class DesignTokensManagerTests: XCTestCase {
         return try XCTUnwrap(manager.tokens)
     }
 
+    // MARK: - Input Token Inheritance
+
+    func test_applyTheme_backgroundOverrideAlone_carriesIntoTheInputFill() async throws {
+        // Given only the sheet colour is overridden
+        sut.applyTheme(PrimerCheckoutTheme(colors: ColorOverrides(primerColorBackgroundPrimary: .pink)))
+
+        // When
+        try await sut.fetchTokens(for: .light)
+
+        // Then the input fill follows it, as it did before the tokens were split
+        let tokens = try XCTUnwrap(sut.tokens)
+        XCTAssertEqual(tokens.primerColorBackgroundPrimary, .pink)
+        XCTAssertEqual(tokens.primerColorBackgroundOutlinedDefault, .pink)
+    }
+
+    func test_applyTheme_textOverrideAlone_carriesIntoTheInputText() async throws {
+        // Given
+        sut.applyTheme(PrimerCheckoutTheme(colors: ColorOverrides(primerColorTextPrimary: .pink)))
+
+        // When
+        try await sut.fetchTokens(for: .light)
+
+        // Then
+        let tokens = try XCTUnwrap(sut.tokens)
+        XCTAssertEqual(tokens.primerColorTextOutlinedDefault, .pink)
+    }
+
+    func test_applyTheme_explicitInputColour_winsOverTheInheritedOne() async throws {
+        // Given both are named
+        sut.applyTheme(
+            PrimerCheckoutTheme(
+                colors: ColorOverrides(
+                    primerColorBackgroundPrimary: .pink,
+                    primerColorBackgroundOutlinedDefault: .green
+                )
+            )
+        )
+
+        // When
+        try await sut.fetchTokens(for: .light)
+
+        // Then
+        let tokens = try XCTUnwrap(sut.tokens)
+        XCTAssertEqual(tokens.primerColorBackgroundPrimary, .pink)
+        XCTAssertEqual(tokens.primerColorBackgroundOutlinedDefault, .green)
+    }
+
     // MARK: - ObservableObject Conformance
 
     func test_tokensProperty_isPublished() async throws {
