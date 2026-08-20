@@ -68,7 +68,7 @@ final class BackendDrivenCheckoutOrchestratorTests: XCTestCase {
         let result = try await run(
             mock: mock,
             instructions: [
-                .execute(delayMilliseconds: 0, schema: .object([:]), parameters: .object([:])),
+                .execute(delayMilliseconds: 0, schema: .object([:]), parameters: .object([:]), currentAttempt: nil),
                 .end(outcome: .complete, payment: nil),
             ]
         )
@@ -82,9 +82,20 @@ final class BackendDrivenCheckoutOrchestratorTests: XCTestCase {
         mock.startError = Error.failed
 
         await assertRunThrows(
-            [.execute(delayMilliseconds: 0, schema: .object([:]), parameters: .object([:]))],
+            [.execute(delayMilliseconds: 0, schema: .object([:]), parameters: .object([:]), currentAttempt: nil)],
             mock: mock
         )
+    }
+    
+    func testOnCancelledForwards() {
+        let mock = MockStepOrchestrator()
+        let sut = BackendDrivenCheckoutOrchestrator(stepOrchestrator: mock)
+        var called = false
+        sut.onCancelled = { called = true }
+
+        mock.onCancelled?()
+
+        XCTAssertTrue(called)
     }
 
     func testProviderErrorPropagates() async {
@@ -92,7 +103,7 @@ final class BackendDrivenCheckoutOrchestratorTests: XCTestCase {
         provider.error = Error.failed
 
         let sut = BackendDrivenCheckoutOrchestrator(stepOrchestrator: MockStepOrchestrator())
-        await XCTAssertThrowsErrorAsync { try await sut.run(instructionProvider: provider) }
+        await XCTAssertThrowsErrorAsync { try await sut.run(pciUrl: "", coreUrl: "", instructionProvider: provider) }
     }
 }
 
@@ -122,7 +133,7 @@ private extension BackendDrivenCheckoutOrchestratorTests {
     @discardableResult
     func run(mock: MockStepOrchestrator, instructions: [ClientInstruction]) async throws -> CheckoutResult {
         let sut = BackendDrivenCheckoutOrchestrator(stepOrchestrator: mock)
-        return try await sut.run(instructionProvider: MockInstructionProvider(instructions))
+        return try await sut.run(pciUrl: nil, coreUrl: nil, instructionProvider: MockInstructionProvider(instructions))
     }
 
     func XCTAssertThrowsErrorAsync(

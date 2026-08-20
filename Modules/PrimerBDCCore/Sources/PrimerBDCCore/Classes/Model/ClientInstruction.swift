@@ -9,8 +9,15 @@
 @_spi(PrimerInternal)
 public enum ClientInstruction {
     case wait(delayMilliseconds: Int)
-    case execute(delayMilliseconds: Int, schema: CodableValue, parameters: CodableValue)
+    case execute(delayMilliseconds: Int, schema: CodableValue, parameters: CodableValue, currentAttempt: CurrentAttemptDataResponse?)
     case end(outcome: CheckoutOutcome?, payment: PaymentInfo?)
+}
+
+public struct CurrentAttemptDataResponse: Codable {
+    let id: String
+    let paymentInstrumentTokenId: String?
+    let paymentId: String?
+    let approvalStatus: String?
 }
 
 public enum CheckoutOutcome {

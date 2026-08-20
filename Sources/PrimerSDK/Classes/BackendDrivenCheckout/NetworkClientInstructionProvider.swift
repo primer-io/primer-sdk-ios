@@ -9,17 +9,17 @@ import PrimerFoundation
 @_spi(PrimerInternal) import PrimerNetworking
 
 struct NetworkClientInstructionProvider: ClientInstructionProvider {
-
+    
     let paymentMethod: PrimerPaymentMethod
-
+    
     func fetchPayInstruction() async throws -> ClientInstruction {
         let response: ClientSessionInstructionResponse = try await request(.pay(paymentMethod: paymentMethod))
-        return response.clientInstruction.toClientInstruction()
+        return response.clientInstruction.toClientInstruction(response: response)
     }
-
+    
     func fetchNextInstruction() async throws -> ClientInstruction {
         let response: ClientSessionInstructionResponse = try await request(.expandClientSession)
-        return response.clientInstruction.toClientInstruction()
+        return response.clientInstruction.toClientInstruction(response: response)
     }
     
     private func request<T: Decodable>(_ endpoint: BackendDrivenCheckoutEndpoint) async throws -> T {
@@ -28,20 +28,21 @@ struct NetworkClientInstructionProvider: ClientInstructionProvider {
 }
 
 private extension ClientInstructionDataResponse {
-    func toClientInstruction() -> ClientInstruction {
-        switch type {
-        case let .wait(response):
-            return .wait(delayMilliseconds: response.pollDelayMilliseconds ?? 0)
-        case let .execute(response):
+    func toClientInstruction(response: ClientSessionInstructionResponse) -> ClientInstruction {
+        switch response.clientInstruction.type {
+        case let .wait(waitResponse):
+            return .wait(delayMilliseconds: waitResponse.pollDelayMilliseconds ?? 0)
+        case let .execute(executeResponse):
             return .execute(
-                delayMilliseconds: response.pollDelayMilliseconds ?? 0,
-                schema: response.schema,
-                parameters: response.parameters
+                delayMilliseconds: executeResponse.pollDelayMilliseconds ?? 0,
+                schema: executeResponse.schema,
+                parameters: executeResponse.parameters,
+                currentAttempt: response.currentAttempt
             )
-        case let .end(response):
+        case let .end(endResponse):
             return .end(
-                outcome: response.payload.checkoutOutcome?.toCheckoutOutcome(),
-                payment: response.payload.payment?.toPaymentInfo()
+                outcome: endResponse.payload.checkoutOutcome?.toCheckoutOutcome(),
+                payment: endResponse.payload.payment?.toPaymentInfo()
             )
         }
     }

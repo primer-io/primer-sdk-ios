@@ -12,6 +12,7 @@ import Foundation
 @MainActor
 protocol StepOrchestrating: AnyObject {
     var onURLOpen: (() -> Void)? { get set }
+    var onCancelled: (() -> Void)? { get set }
     func start(rawSchema: String, initialState: CodableValue) async throws
     func applyEvent(_ value: CodableValue) async throws
 }
@@ -23,6 +24,8 @@ final class PrimerStepOrchestrator: StepOrchestrating {
         didSet { harness.onURLOpen = onURLOpen }
     }
     
+    var onCancelled: (() -> Void)?
+
     private let logger = Logger()
     private let engine: any BDCEngineProtocol
     private let context: SDKContext
@@ -97,9 +100,10 @@ final class PrimerStepOrchestrator: StepOrchestrating {
     
     private func handleOutcome(_ outcome: TerminalOutcome) throws {
         switch outcome {
+        case .cancelled: onCancelled?()
         case .error: throw PrimerStepOrchestratorError.checkoutTerminalError
         case .unsupported: throw PrimerStepOrchestratorError.receivedUnexpectedTerminalOutcome(outcome: outcome)
-        case .success, .cancelled: break // Allow polling to update us
+        case .success: break
         }
     }
 

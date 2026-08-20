@@ -15,6 +15,11 @@ public final class BackendDrivenCheckoutOrchestrator {
         get { stepOrchestrator.onURLOpen }
         set { stepOrchestrator.onURLOpen = newValue }
     }
+
+    public var onCancelled: (() -> Void)? {
+        get { stepOrchestrator.onCancelled }
+        set { stepOrchestrator.onCancelled = newValue }
+    }
     
     private let stepOrchestrator: any StepOrchestrating
 
@@ -32,7 +37,11 @@ public final class BackendDrivenCheckoutOrchestrator {
         try await stepOrchestrator.applyEvent(value)
     }
 
-    public func run(instructionProvider: ClientInstructionProvider) async throws -> CheckoutResult {
+    public func run(
+        pciUrl: String?,
+        coreUrl: String?,
+        instructionProvider: ClientInstructionProvider
+    ) async throws -> CheckoutResult {
         var instruction = try await instructionProvider.fetchPayInstruction()
         while true {
             try Task.checkCancellation()
@@ -40,9 +49,12 @@ public final class BackendDrivenCheckoutOrchestrator {
             case let .wait(delay):
                 try await Task.sleep(nanoseconds: UInt64(max(0, delay)) * 1_000_000)
                 instruction = try await instructionProvider.fetchNextInstruction()
-            case let .execute(delay, schema, parameters):
+            case let .execute(delay, schema, parameters, currentAttempt):
                 try await Task.sleep(nanoseconds: UInt64(max(0, delay)) * 1_000_000)
-                try await stepOrchestrator.start(rawSchema: schema.jsonString, initialState: parameters)
+                let sdk = SDKUrls(pciUrl: pciUrl, coreUrl: coreUrl)
+                let object = InitialState(params: parameters, sdk: sdk, currentAttempt: currentAttempt)
+                let initialState = try object.casted(to: CodableValue.self)
+                try await stepOrchestrator.start(rawSchema: schema.jsonString, initialState: initialState)
                 instruction = try await instructionProvider.fetchNextInstruction()
             case let .end(outcome, payment):
                 return try resolveOutcome(outcome, payment: payment)
@@ -65,4 +77,15 @@ private extension BackendDrivenCheckoutOrchestrator {
         case missingCheckoutOutcome
         case unexpectedOutcome
     }
+}
+
+private struct InitialState: Encodable {
+    let params: CodableValue
+    let sdk: SDKUrls
+    let currentAttempt: CurrentAttemptDataResponse?
+}
+
+private struct SDKUrls: Encodable {
+    let pciUrl: String?
+    let coreUrl: String?
 }
