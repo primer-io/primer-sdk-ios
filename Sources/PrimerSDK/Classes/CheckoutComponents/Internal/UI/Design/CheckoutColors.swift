@@ -48,6 +48,10 @@ enum CheckoutColors {
     tokens?.primerColorBackgroundPrimary ?? .white
   }
 
+  static func backgroundSecondary(tokens: DesignTokens?) -> Color {
+    tokens?.primerColorBackgroundSecondary ?? Color(red: 0.961, green: 0.961, blue: 0.961)
+  }
+
   static func gray100(tokens: DesignTokens?) -> Color {
     tokens?.primerColorGray100 ?? Color(.systemGray6)
   }

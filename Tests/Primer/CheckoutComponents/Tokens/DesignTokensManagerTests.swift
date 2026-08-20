@@ -739,6 +739,78 @@ final class DesignTokensManagerTests: XCTestCase {
         XCTAssertEqual(tokens.primerColorBrand, customColor)
     }
 
+    // MARK: - Palette Override Cascade
+
+    func test_fetchTokens_paletteOverride_cascadesIntoTokensThatAliasIt() async throws {
+        // Given border.outlined.default aliases gray.300 in the token JSON
+        let baseline = try await tokens(for: .light)
+        let unthemedBorder = try XCTUnwrap(baseline.primerColorBorderOutlinedDefault)
+
+        sut.applyTheme(PrimerCheckoutTheme(colors: ColorOverrides(primerColorGray300: .pink)))
+
+        // When
+        try await sut.fetchTokens(for: .light)
+
+        // Then
+        let themed = try XCTUnwrap(sut.tokens)
+        XCTAssertEqual(themed.primerColorGray300, .pink)
+        XCTAssertEqual(themed.primerColorBorderOutlinedDefault, .pink)
+        XCTAssertNotEqual(themed.primerColorBorderOutlinedDefault, unthemedBorder)
+    }
+
+    func test_fetchTokens_semanticOverride_winsOverPaletteOverride() async throws {
+        // Given both the palette entry and the token that aliases it are overridden
+        sut.applyTheme(
+            PrimerCheckoutTheme(
+                colors: ColorOverrides(
+                    primerColorGray300: .pink,
+                    primerColorBorderOutlinedDefault: .green
+                )
+            )
+        )
+
+        // When
+        try await sut.fetchTokens(for: .light)
+
+        // Then
+        let tokens = try XCTUnwrap(sut.tokens)
+        XCTAssertEqual(tokens.primerColorBorderOutlinedDefault, .green)
+        XCTAssertEqual(tokens.primerColorGray300, .pink)
+    }
+
+    func test_fetchTokens_noOverrides_paletteInjectionIsANoOp() async throws {
+        // Given
+        let withoutTheme = try await tokens(for: .light)
+
+        // When
+        sut.applyTheme(PrimerCheckoutTheme())
+        try await sut.fetchTokens(for: .light)
+
+        // Then
+        let withEmptyTheme = try XCTUnwrap(sut.tokens)
+        XCTAssertEqual(withEmptyTheme.primerColorBorderOutlinedDefault, withoutTheme.primerColorBorderOutlinedDefault)
+        XCTAssertEqual(withEmptyTheme.primerColorBackgroundPrimary, withoutTheme.primerColorBackgroundPrimary)
+        XCTAssertEqual(withEmptyTheme.primerColorGray300, withoutTheme.primerColorGray300)
+    }
+
+    func test_fetchTokens_paletteOverride_cascadesInDarkMode() async throws {
+        // Given
+        sut.applyTheme(PrimerCheckoutTheme(colors: ColorOverrides(primerColorGray300: .pink)))
+
+        // When
+        try await sut.fetchTokens(for: .dark)
+
+        // Then
+        let tokens = try XCTUnwrap(sut.tokens)
+        XCTAssertEqual(tokens.primerColorBorderOutlinedDefault, .pink)
+    }
+
+    private func tokens(for colorScheme: ColorScheme) async throws -> DesignTokens {
+        let manager = DesignTokensManager()
+        try await manager.fetchTokens(for: colorScheme)
+        return try XCTUnwrap(manager.tokens)
+    }
+
     // MARK: - ObservableObject Conformance
 
     func test_tokensProperty_isPublished() async throws {

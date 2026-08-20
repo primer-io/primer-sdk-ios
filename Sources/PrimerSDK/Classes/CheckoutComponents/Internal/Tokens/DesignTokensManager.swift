@@ -28,16 +28,13 @@ final class DesignTokensManager: ObservableObject {
   func fetchTokens(for colorScheme: ColorScheme) async throws {
     let loadedTokens = try Self.makeTokens(for: colorScheme, paletteOverrides: palettePairs())
 
-    // Semantic overrides are applied last so an explicit token always wins over a
-    // palette value it happens to alias.
+    // applied last so an explicit token wins over a palette value it aliases
     applyThemeOverrides(to: loadedTokens)
 
     tokens = loadedTokens
   }
 
-  /// Merchant overrides for the raw palette, keyed by flattened token name.
-  /// These are injected before references resolve so tokens that alias a palette entry
-  /// (border.outlined.default -> gray.300, and the rest) follow the override, matching Android.
+  /// Injected before references resolve, so tokens aliasing a palette entry follow the override.
   private func palettePairs() -> [String: Color] {
     guard let colors = themeOverrides?.colors else { return [:] }
     let pairs: [(String, Color?)] = [
@@ -62,8 +59,7 @@ final class DesignTokensManager: ObservableObject {
     }
   }
 
-  /// Resolves the shipped token JSON for a colour scheme.
-  /// Previews and tests call this with no overrides so they see the same values production does.
+  /// Previews and tests call this with no overrides so they resolve what production resolves.
   nonisolated static func makeTokens(
     for colorScheme: ColorScheme,
     paletteOverrides: [String: Color] = [:]
@@ -88,8 +84,7 @@ final class DesignTokensManager: ObservableObject {
     return try JSONDecoder().decode(DesignTokens.self, from: data)
   }
 
-  /// Replaces the value of every leaf whose flattened name matches an override, in place in the
-  /// nested dictionary, so the existing reference-resolution pass picks the new value up.
+  /// Replaces matching leaves in place so the existing reference pass picks the new value up.
   private nonisolated static func applyPaletteOverrides(
     _ overrides: [String: Color],
     to dict: [String: Any],

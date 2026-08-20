@@ -15,7 +15,7 @@ final class DesignTokens: Decodable {
   var primerColorBackgroundPrimary: Color? = Color(
     red: 1.000, green: 1.000, blue: 1.000, opacity: 1)
   var primerColorBackgroundOutlinedDefault: Color? = Color(
-    red: 0.961, green: 0.961, blue: 0.961, opacity: 1)
+    red: 1.000, green: 1.000, blue: 1.000, opacity: 1)
   var primerColorTextOutlinedDefault: Color? = Color(
     red: 0.129, green: 0.129, blue: 0.129, opacity: 1)
   var primerColorBackgroundSecondary: Color? = Color(red: 0.961, green: 0.961, blue: 0.961, opacity: 1)

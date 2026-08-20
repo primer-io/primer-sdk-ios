@@ -91,7 +91,7 @@ struct SelectCountryScreen: View, LogReporter {
     }
     .padding(.horizontal, PrimerSpacing.medium(tokens: tokens))
     .padding(.vertical, PrimerSpacing.small(tokens: tokens))
-    .background(CheckoutColors.inputBackground(tokens: tokens))
+    .background(CheckoutColors.backgroundSecondary(tokens: tokens))
     .cornerRadius(PrimerRadius.small(tokens: tokens))
     .padding(PrimerSpacing.large(tokens: tokens))
   }
