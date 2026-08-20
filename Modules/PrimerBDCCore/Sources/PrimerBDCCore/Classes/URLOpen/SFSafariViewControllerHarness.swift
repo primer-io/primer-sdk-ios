@@ -32,8 +32,9 @@ final class SFSafariViewControllerHarness: NSObject, StepResolver {
         return await withCheckedContinuation { continuation = $0 }
     }
 
-    private func resume(with outcome: TerminalOutcome) {
-        continuation?.resume(returning: StepResolutionResult(outcome: outcome))
+    private func resume(with outcome: TerminalOutcome, closeReason: CloseReason) {
+        let result = StepResolutionResult(outcome: outcome, data: .object(["closeReason": .string(closeReason.rawValue)]))
+        continuation?.resume(returning: result)
         continuation = nil
     }
 
@@ -56,10 +57,10 @@ final class SFSafariViewControllerHarness: NSObject, StepResolver {
         switch notification.name {
         case .receivedUrlSchemeCancellation:
             safariViewController?.dismiss(animated: true)
-            resume(with: .cancelled)
+            resume(with: .cancelled, closeReason: .auto)
         case .receivedUrlSchemeRedirect:
             safariViewController?.dismiss(animated: true)
-            resume(with: .success)
+            resume(with: .success, closeReason: .auto)
         default: break
         }
     }
@@ -88,8 +89,13 @@ final class SFSafariViewControllerHarness: NSObject, StepResolver {
 
 extension SFSafariViewControllerHarness: @preconcurrency SFSafariViewControllerDelegate {
     func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
-        resume(with: .cancelled)
+        resume(with: .cancelled, closeReason: .user)
     }
+}
+
+private enum CloseReason: String {
+    case user
+    case auto
 }
 
 private struct URLOpenParams: Decodable {
