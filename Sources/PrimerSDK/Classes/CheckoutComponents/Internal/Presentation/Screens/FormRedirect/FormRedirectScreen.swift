@@ -184,7 +184,7 @@ private struct FormFieldView: View {
             if let errorMessage = field.errorMessage {
                 Text(errorMessage)
                     .font(PrimerFont.caption(tokens: tokens))
-                    .foregroundColor(CheckoutColors.error(tokens: tokens))
+                    .foregroundColor(CheckoutColors.textNegative(tokens: tokens))
             } else if let helperText = field.helperText {
                 Text(helperText)
                     .font(PrimerFont.caption(tokens: tokens))

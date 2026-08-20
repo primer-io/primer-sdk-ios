@@ -108,10 +108,6 @@ enum CheckoutColors {
     tokens?.primerColorBorderOutlinedFocus ?? .blue
   }
 
-  static func error(tokens: DesignTokens?) -> Color {
-    tokens?.primerColorTextNegative ?? .red
-  }
-
   // MARK: - Button Colors
 
   static func buttonPrimary(tokens: DesignTokens?) -> Color {

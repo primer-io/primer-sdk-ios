@@ -226,7 +226,7 @@ struct BillingAddressRedirectScreen: View {
 
   private func fieldBorderColor(for fieldType: PrimerInputElementType) -> Color {
     billingState.errors[fieldType] != nil
-      ? CheckoutColors.textNegative(tokens: tokens)
+      ? CheckoutColors.borderError(tokens: tokens)
       : CheckoutColors.borderDefault(tokens: tokens)
   }
 
