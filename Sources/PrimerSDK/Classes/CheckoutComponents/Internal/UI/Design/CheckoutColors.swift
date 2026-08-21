@@ -89,8 +89,6 @@ enum CheckoutColors {
   /// Label/spinner colour on a brand-filled surface. Brand is a fixed blue in both modes.
   static func onBrand(tokens _: DesignTokens?) -> Color { .white }
 
-  static func blue(tokens _: DesignTokens?) -> Color { .blue }
-
   static func orange(tokens _: DesignTokens?) -> Color { .orange }
 
   // MARK: - Screen & Input Colors
