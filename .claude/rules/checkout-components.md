@@ -111,7 +111,7 @@ Per-payment-method and per-card-network surcharge amounts:
 | Typography | `TypographyOverrides` | titleXlarge, titleLarge, bodyLarge, bodyMedium, bodySmall — each with font, weight, size, letterSpacing, lineHeight |
 | Border Width | `BorderWidthOverrides` | thin(1), medium(2), thick(3) |
 
-Internal sources: `DesignTokens` (light), `DesignTokensDark` (dark), managed by `DesignTokensManager`.
+Internal source: `DesignTokens`, decoded from `base.json` (light) or `base.json` + `dark.json` merged (dark) by `DesignTokensManager`.
 
 ## Customization (slot-based)
 

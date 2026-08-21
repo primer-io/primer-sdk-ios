@@ -12,8 +12,7 @@ import SwiftUI
 
 /// Theme configuration providing optional overrides for internal design tokens.
 ///
-/// Internal `DesignTokens` and `DesignTokensDark` classes (auto-generated from JSON)
-/// remain the source of truth. `PrimerCheckoutTheme` allows merchants to override specific
+/// The internal `DesignTokens` class (auto-generated from JSON) remains the source of truth. `PrimerCheckoutTheme` allows merchants to override specific
 /// token values without replacing the entire token system.
 ///
 /// When a merchant provides an override, `DesignTokensManager` merges it with
