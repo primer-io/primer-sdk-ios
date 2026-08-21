@@ -223,7 +223,7 @@ struct KlarnaView: View, LogReporter {
           // Checkmark for selected
           if isSelected {
             Image(systemName: "checkmark")
-              .foregroundColor(CheckoutColors.blue(tokens: tokens))
+              .foregroundColor(CheckoutColors.borderSelected(tokens: tokens))
               .font(PrimerFont.bodyMedium(tokens: tokens))
           }
         }
