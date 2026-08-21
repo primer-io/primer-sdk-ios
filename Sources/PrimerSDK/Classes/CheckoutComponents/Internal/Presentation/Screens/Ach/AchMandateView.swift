@@ -55,7 +55,7 @@ struct AchMandateView: View, LogReporter {
     Button(action: scope.acceptMandate) {
       Text(CheckoutComponentsStrings.achMandateAcceptButton)
         .font(PrimerFont.body(tokens: tokens))
-        .foregroundColor(CheckoutColors.white(tokens: tokens))
+        .foregroundColor(CheckoutColors.onPrimary(tokens: tokens))
         .frame(maxWidth: .infinity)
         .padding(.vertical, PrimerSpacing.large(tokens: tokens))
         .background(CheckoutColors.textPrimary(tokens: tokens))
