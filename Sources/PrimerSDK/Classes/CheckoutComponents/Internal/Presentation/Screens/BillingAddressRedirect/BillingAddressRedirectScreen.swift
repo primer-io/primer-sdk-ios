@@ -250,14 +250,14 @@ struct BillingAddressRedirectScreen: View {
     return HStack {
       if isLoading {
         ProgressView()
-          .progressViewStyle(CircularProgressViewStyle(tint: CheckoutColors.white(tokens: tokens)))
+          .progressViewStyle(CircularProgressViewStyle(tint: CheckoutColors.onPrimary(tokens: tokens)))
           .scaleEffect(PrimerScale.small)
       } else {
         Text(submitButtonText)
       }
     }
     .font(PrimerFont.body(tokens: tokens))
-    .foregroundColor(CheckoutColors.white(tokens: tokens))
+    .foregroundColor(CheckoutColors.onPrimary(tokens: tokens))
     .frame(maxWidth: .infinity)
     .padding(.vertical, PrimerSpacing.large(tokens: tokens))
     .background(submitButtonBackground)

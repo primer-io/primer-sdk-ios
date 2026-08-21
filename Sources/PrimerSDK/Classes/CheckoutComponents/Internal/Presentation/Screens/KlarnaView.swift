@@ -288,7 +288,7 @@ struct KlarnaView: View, LogReporter {
     Button(action: action) {
       Text(title)
         .font(PrimerFont.body(tokens: tokens))
-        .foregroundColor(CheckoutColors.white(tokens: tokens))
+        .foregroundColor(CheckoutColors.onPrimary(tokens: tokens))
         .frame(maxWidth: .infinity)
         .padding(.vertical, PrimerSpacing.large(tokens: tokens))
         .background(CheckoutColors.textPrimary(tokens: tokens))

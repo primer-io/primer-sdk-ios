@@ -143,7 +143,7 @@ struct ApplePayScreen: View {
           Text(CheckoutComponentsStrings.applePayChooseOther)
             .font(PrimerFont.bodyMedium(tokens: tokens))
             .fontWeight(.medium)
-            .foregroundColor(CheckoutColors.white(tokens: tokens))
+            .foregroundColor(CheckoutColors.onBrand(tokens: tokens))
             .frame(maxWidth: .infinity)
             .frame(height: 50)
             .background(CheckoutColors.buttonPrimary(tokens: tokens))

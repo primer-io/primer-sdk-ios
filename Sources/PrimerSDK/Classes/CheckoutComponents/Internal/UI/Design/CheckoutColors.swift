@@ -80,7 +80,14 @@ enum CheckoutColors {
     tokens?.primerColorIconPositive ?? Color(.systemGreen)
   }
 
-  static func white(tokens _: DesignTokens?) -> Color { .white }
+  /// Label/spinner colour on the primary button, which fills with `textPrimary` — so this has to
+  /// invert with it or the label disappears in dark mode.
+  static func onPrimary(tokens: DesignTokens?) -> Color {
+    tokens?.primerColorBackgroundPrimary ?? .white
+  }
+
+  /// Label/spinner colour on a brand-filled surface. Brand is a fixed blue in both modes.
+  static func onBrand(tokens _: DesignTokens?) -> Color { .white }
 
   static func blue(tokens _: DesignTokens?) -> Color { .blue }
 
@@ -116,9 +123,5 @@ enum CheckoutColors {
 
   static func buttonDisabled(tokens: DesignTokens?) -> Color {
     tokens?.primerColorGray300 ?? Color(.systemGray4)
-  }
-
-  static func buttonTextPrimary(tokens _: DesignTokens?) -> Color {
-    .white
   }
 }
