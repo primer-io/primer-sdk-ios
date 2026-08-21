@@ -95,8 +95,6 @@ enum CheckoutColors {
     isEnabled ? .white : (tokens?.primerColorTextDisabled ?? Color(.tertiaryLabel))
   }
 
-  static func blue(tokens _: DesignTokens?) -> Color { .blue }
-
   static func orange(tokens _: DesignTokens?) -> Color { .orange }
 
   // MARK: - Screen & Input Colors
