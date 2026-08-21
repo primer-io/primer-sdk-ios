@@ -16,6 +16,15 @@ final class PrimerStepOrchestratorTests: XCTestCase {
     func testTerminalSuccess() async throws {
         try await startWith(terminal: "success")
     }
+    
+    func testTerminalCancelledCallsOnCancelled() async throws {
+        let sut = makeSUT(startResult: terminal("cancelled"))
+        let cancelled = expectation(description: "cancelled")
+        sut.onCancelled = cancelled.fulfill
+        
+        try await sut.start(rawSchema: "{}", initialState: .object([:]))
+        await fulfillment(of: [cancelled], timeout: 1)
+    }
 
     func testTerminalErrorThrows() async {
         await assertStartThrows(terminal: "error")

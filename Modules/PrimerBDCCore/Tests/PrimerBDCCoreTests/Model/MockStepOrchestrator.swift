@@ -9,6 +9,7 @@
 
 final class MockStepOrchestrator: StepOrchestrating {
     var onURLOpen: (() -> Void)?
+    var onCancelled: (() -> Void)?
     var startCallCount = 0
     var startError: Swift.Error?
 
