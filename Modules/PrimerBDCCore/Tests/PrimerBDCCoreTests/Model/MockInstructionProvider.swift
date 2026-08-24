@@ -8,6 +8,7 @@
 
 final class MockInstructionProvider: ClientInstructionProvider {
     var error: Error?
+    private(set) var fetchCount = 0
     private var instructions: [ClientInstruction]
     private var index = 0
 
@@ -19,6 +20,7 @@ final class MockInstructionProvider: ClientInstructionProvider {
     func fetchNextInstruction() async throws -> ClientInstruction { try next() }
 
     private func next() throws -> ClientInstruction {
+        fetchCount += 1
         if let error { throw error }
         guard index < instructions.count else { return .wait(delayMilliseconds: 0) }
         defer { index += 1 }

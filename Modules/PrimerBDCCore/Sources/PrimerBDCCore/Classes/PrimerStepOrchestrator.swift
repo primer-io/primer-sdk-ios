@@ -49,6 +49,8 @@ final class PrimerStepOrchestrator: StepOrchestrating {
             try await decodeResult(result, rawSchema: rawSchema)
         } catch is CancellationError {
             throw CancellationError()
+        } catch is BackendDrivenCheckoutCancellation {
+            throw BackendDrivenCheckoutCancellation()
         } catch {
             throw PrimerStepOrchestratorError.startFailed(error: error)
         }
@@ -97,9 +99,10 @@ final class PrimerStepOrchestrator: StepOrchestrating {
     
     private func handleOutcome(_ outcome: TerminalOutcome) throws {
         switch outcome {
+        case .cancelled: throw BackendDrivenCheckoutCancellation()
         case .error: throw PrimerStepOrchestratorError.checkoutTerminalError
         case .unsupported: throw PrimerStepOrchestratorError.receivedUnexpectedTerminalOutcome(outcome: outcome)
-        case .success, .cancelled: break // Allow polling to update us
+        case .success: break // Allow polling to update us
         }
     }
 
@@ -117,6 +120,8 @@ final class PrimerStepOrchestrator: StepOrchestrating {
             try await decodeResult(result, rawSchema: rawSchema)
         } catch is CancellationError {
             throw CancellationError()
+        } catch is BackendDrivenCheckoutCancellation {
+            throw BackendDrivenCheckoutCancellation()
         } catch {
             throw PrimerStepOrchestratorError.applyWorkflowStepResponseFailed(error: error)
         }

@@ -68,7 +68,7 @@ final class BackendDrivenCheckoutOrchestratorTests: XCTestCase {
         let result = try await run(
             mock: mock,
             instructions: [
-                .execute(delayMilliseconds: 0, schema: .object([:]), parameters: .object([:])),
+                .execute(delayMilliseconds: 0, schema: .object([:]), parameters: .object([:]), currentAttempt: nil),
                 .end(outcome: .complete, payment: nil),
             ]
         )
@@ -82,9 +82,30 @@ final class BackendDrivenCheckoutOrchestratorTests: XCTestCase {
         mock.startError = Error.failed
 
         await assertRunThrows(
-            [.execute(delayMilliseconds: 0, schema: .object([:]), parameters: .object([:]))],
+            [.execute(delayMilliseconds: 0, schema: .object([:]), parameters: .object([:]), currentAttempt: nil)],
             mock: mock
         )
+    }
+    
+    func testCancellationPropagatesAndStopsPolling() async {
+        let mock = MockStepOrchestrator()
+        mock.startError = BackendDrivenCheckoutCancellation()
+        let provider = MockInstructionProvider([
+            .execute(delayMilliseconds: 0, schema: .object([:]), parameters: .object([:]), currentAttempt: nil),
+            .end(outcome: .complete, payment: nil),
+        ])
+
+        let sut = BackendDrivenCheckoutOrchestrator(stepOrchestrator: mock)
+
+        do {
+            _ = try await sut.run(pciUrl: nil, coreUrl: nil, instructionProvider: provider)
+            XCTFail("Expected BackendDrivenCheckoutCancellation")
+        } catch is BackendDrivenCheckoutCancellation {
+            XCTAssertEqual(mock.startCallCount, 1)
+            XCTAssertEqual(provider.fetchCount, 1)
+        } catch {
+            XCTFail("Expected BackendDrivenCheckoutCancellation, got \(error)")
+        }
     }
 
     func testProviderErrorPropagates() async {
@@ -92,7 +113,7 @@ final class BackendDrivenCheckoutOrchestratorTests: XCTestCase {
         provider.error = Error.failed
 
         let sut = BackendDrivenCheckoutOrchestrator(stepOrchestrator: MockStepOrchestrator())
-        await XCTAssertThrowsErrorAsync { try await sut.run(instructionProvider: provider) }
+        await XCTAssertThrowsErrorAsync { try await sut.run(pciUrl: "", coreUrl: "", instructionProvider: provider) }
     }
 }
 
@@ -122,7 +143,7 @@ private extension BackendDrivenCheckoutOrchestratorTests {
     @discardableResult
     func run(mock: MockStepOrchestrator, instructions: [ClientInstruction]) async throws -> CheckoutResult {
         let sut = BackendDrivenCheckoutOrchestrator(stepOrchestrator: mock)
-        return try await sut.run(instructionProvider: MockInstructionProvider(instructions))
+        return try await sut.run(pciUrl: nil, coreUrl: nil, instructionProvider: MockInstructionProvider(instructions))
     }
 
     func XCTAssertThrowsErrorAsync(

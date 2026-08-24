@@ -67,7 +67,11 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
                 let instructionProvider = makeInstructionProvider(config)
                 await PrimerStepResolverRegistry.shared.register(HTTPRequestResolver(), for: "http.request")
                 
-                let result = try await orchestrator?.run(instructionProvider: instructionProvider)
+                let result = try await orchestrator?.run(
+                    pciUrl: PrimerAPIConfigurationModule.apiConfiguration?.pciUrl,
+                    coreUrl: PrimerAPIConfigurationModule.apiConfiguration?.coreUrl,
+                    instructionProvider: instructionProvider
+                )
                 
                 switch result {
                 case let .success(payment): await handleSuccess(payment)
@@ -91,7 +95,6 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
     private func setupOrchestrator() async throws {
         let context = generateContext()
         let orchestrator = try await makeOrchestrator(context)
-        
         self.orchestrator = orchestrator
         orchestrator.onURLOpened = { [weak self] in
             guard let self else { return }
@@ -136,7 +139,9 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
     
     @MainActor
     private func handleError(_ error: Swift.Error) async {
-        if error is CancellationError { return }
+        if error is BackendDrivenCheckoutCancellation {
+            return await handleError(PrimerError.cancelled(paymentMethodType: config.type))
+        }
         Analytics.Service.fire(event: .message(message: "BDC Failed: \(error)", messageType: .error, severity: .error))
         let primerError: PrimerErrorProtocol = (error as? PrimerErrorProtocol) ?? PrimerError.unknown(
             message: error.localizedDescription,
