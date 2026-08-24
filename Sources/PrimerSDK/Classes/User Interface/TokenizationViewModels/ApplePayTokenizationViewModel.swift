@@ -109,7 +109,6 @@ final class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
 
         let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
         try await clientSessionActionsModule.selectPaymentMethodIfNeeded(config.type, cardNetwork: nil)
-        try await handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: config.type))
         try await presentPaymentMethodUserInterface()
         try await awaitUserInput()
 
@@ -120,6 +119,9 @@ final class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
             mobileNumber: applePayPaymentResponse.mobileNumber,
             emailAddress: applePayPaymentResponse.emailAddress
         )
+
+        // Must run after the client session address updates so merchants can act on them (Android parity)
+        try await handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: config.type))
     }
 
     override func performTokenizationStep() async throws {

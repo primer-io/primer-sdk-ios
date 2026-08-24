@@ -154,7 +154,42 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
         uiManager = nil
         createResumePaymentService = nil
         tokenizationService = nil
+        PrimerAPIConfigurationModule.apiClient = nil
         SDKSessionHelper.tearDown()
+    }
+
+    // MARK: - Helpers
+
+    /// Mocks the API client so the client session updates the flow performs after Apple Pay
+    /// authorization resolve locally instead of hitting the network.
+    @discardableResult
+    private func setUpMockedClientSessionUpdates() throws -> MockPrimerAPIClient {
+        let config = try XCTUnwrap(PrimerAPIConfiguration.current, "Unable to generate configuration")
+        let apiClient = MockPrimerAPIClient()
+        apiClient.fetchConfigurationWithActionsResult = (config, nil)
+        PrimerAPIConfigurationModule.apiClient = apiClient
+        return apiClient
+    }
+
+    private func makeApplePayPresentationManager(
+        authorizationDelay: TimeInterval = 0.1,
+        onPresented: (() -> Void)? = nil
+    ) -> MockApplePayPresentationManager {
+        let manager = MockApplePayPresentationManager()
+        manager.onPresent = { _, delegate in
+            DispatchQueue.main.asyncAfter(deadline: .now() + authorizationDelay) {
+                let dummyController = PKPaymentAuthorizationController()
+                delegate.paymentAuthorizationController?(
+                    dummyController,
+                    didAuthorizePayment: MockPKPayment(),
+                    handler: { _ in }
+                )
+                delegate.paymentAuthorizationControllerDidFinish(dummyController)
+            }
+            onPresented?()
+            return .success(())
+        }
+        return manager
     }
 
     // MARK: - Validation Tests
@@ -205,11 +240,14 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
         let delegate = MockPrimerHeadlessUniversalCheckoutDelegate()
         PrimerHeadlessUniversalCheckout.current.delegate = delegate
 
+        try setUpMockedClientSessionUpdates()
+        sut.applePayPresentationManager = makeApplePayPresentationManager()
+
         let expectWillCreatePaymentWithData = expectation(description: "Will create payment with data")
         delegate.onWillCreatePaymentWithData = { data, decision in
             XCTAssertEqual(data.paymentMethodType.type, Mocks.Static.Strings.webRedirectPaymentMethodType)
-            decision(.abortPaymentCreation())
             expectWillCreatePaymentWithData.fulfill()
+            decision(.abortPaymentCreation())
         }
 
         let expectDidFail = expectation(description: "Payment flow fails")
@@ -228,7 +266,40 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
         wait(for: [
             expectWillCreatePaymentWithData,
             expectDidFail,
-        ], timeout: 2.0, enforceOrder: true)
+        ], timeout: 5.0, enforceOrder: true)
+    }
+
+    func test_startFlow_shouldUpdateClientSessionBeforeWillCreatePayment() throws {
+        SDKSessionHelper.setUp(order: order)
+        let delegate = MockPrimerHeadlessUniversalCheckoutDelegate()
+        PrimerHeadlessUniversalCheckout.current.delegate = delegate
+
+        try setUpMockedClientSessionUpdates()
+        sut.applePayPresentationManager = makeApplePayPresentationManager()
+
+        let expectDidUpdateClientSession = expectation(description: "Client session updates with the Apple Pay address")
+        delegate.onDidUpdateClientSession = { _ in
+            expectDidUpdateClientSession.fulfill()
+        }
+
+        let expectWillCreatePaymentWithData = expectation(description: "Will create payment with data")
+        delegate.onWillCreatePaymentWithData = { _, decision in
+            expectWillCreatePaymentWithData.fulfill()
+            decision(.abortPaymentCreation())
+        }
+
+        let expectDidFail = expectation(description: "Payment flow fails")
+        delegate.onDidFail = { _ in
+            expectDidFail.fulfill()
+        }
+
+        sut.start()
+
+        wait(for: [
+            expectDidUpdateClientSession,
+            expectWillCreatePaymentWithData,
+            expectDidFail,
+        ], timeout: 5.0, enforceOrder: true)
     }
 
     func test_startFlow_withShippingModules_shouldCompleteSuccessfully() throws {
@@ -255,9 +326,6 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
         PrimerAPIConfigurationModule.apiClient = apiClient
         apiClient.fetchConfigurationWithActionsResult = (config, nil)
 
-        let applePayPresentationManager = MockApplePayPresentationManager()
-        sut.applePayPresentationManager = applePayPresentationManager
-
         let expectWillCreatePaymentWithData = expectation(description: "Will create payment with data")
         delegate.onWillCreatePaymentWithData = { data, decision in
             XCTAssertEqual(data.paymentMethodType.type, Mocks.Static.Strings.webRedirectPaymentMethodType)
@@ -266,18 +334,8 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
         }
 
         let expectDidPresentApplePay = expectation(description: "Apple Pay UI presents")
-        applePayPresentationManager.onPresent = { _, delegate in
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                let dummyController = PKPaymentAuthorizationController()
-                delegate.paymentAuthorizationController?(
-                    dummyController,
-                    didAuthorizePayment: MockPKPayment(),
-                    handler: { _ in }
-                )
-                delegate.paymentAuthorizationControllerDidFinish(dummyController)
-            }
+        sut.applePayPresentationManager = makeApplePayPresentationManager(authorizationDelay: 1.5) {
             expectDidPresentApplePay.fulfill()
-            return .success(())
         }
 
         let expectDidTokenize = expectation(description: "Payment method tokenizes")
@@ -306,8 +364,8 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
         sut.start()
 
         wait(for: [
-            expectWillCreatePaymentWithData,
             expectDidPresentApplePay,
+            expectWillCreatePaymentWithData,
             expectDidTokenize,
             expectDidCreatePayment,
             expectDidCompleteCheckout,
