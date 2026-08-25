@@ -120,7 +120,6 @@ final class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
             emailAddress: applePayPaymentResponse.emailAddress
         )
 
-        // Must run after the client session address updates so merchants can act on them (Android parity)
         try await handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: config.type))
     }
 
