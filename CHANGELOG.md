@@ -5,6 +5,21 @@ All notable changes to `primer-sdk-ios` are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 2.52.0 (2026-08-25)
+
+### Feat
+
+- Handle cancelled BDC flows via applyEvent (#1854)
+- Implement `http.request` step resolver (#1848)
+
+### Fix
+
+- Move SDK file cache into Library/Caches/primer (#1852)
+- Resolve flaky unit tests and their root causes (#1851)
+- Bancontact raw-data tokenization (ORC-7697) (#1853)
+- Allow metadata textfield to accept raw json (#1856)
+- Convert Apple Pay amounts by currency decimalDigits (#1816)
+
 ## 2.51.1 (2026-07-01)
 
 ### Fix

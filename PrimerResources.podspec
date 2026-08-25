@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
     s.name         = "PrimerResources"
-    s.version      = "2.51.1"
+    s.version      = "2.52.0"
     s.summary      = "Resources for Primer SDK"
     s.description  = "Contains resources (images, localisations, etc) used by PrimerSDK."
     s.homepage     = "https://www.primer.io"
