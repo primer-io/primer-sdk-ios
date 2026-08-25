@@ -109,7 +109,6 @@ final class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
 
         let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
         try await clientSessionActionsModule.selectPaymentMethodIfNeeded(config.type, cardNetwork: nil)
-        try await handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: config.type))
         try await presentPaymentMethodUserInterface()
         try await awaitUserInput()
 
@@ -120,6 +119,8 @@ final class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
             mobileNumber: applePayPaymentResponse.mobileNumber,
             emailAddress: applePayPaymentResponse.emailAddress
         )
+
+        try await handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: config.type))
     }
 
     override func performTokenizationStep() async throws {
