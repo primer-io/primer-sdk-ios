@@ -92,9 +92,8 @@ public struct ColorOverrides: Equatable {
   // MARK: Semantic UI Colors (matching internal DesignTokens)
 
   public let primerColorBackgroundPrimary: Color?
-  public let primerColorBackgroundOutlinedDefault: Color?
-  public let primerColorTextOutlinedDefault: Color?
   public let primerColorBackgroundSecondary: Color?
+  public let primerColorBackgroundOutlinedDefault: Color?
   public let primerColorBackgroundOutlinedHover: Color?
   public let primerColorBackgroundOutlinedActive: Color?
   public let primerColorBackgroundOutlinedDisabled: Color?
@@ -113,6 +112,7 @@ public struct ColorOverrides: Equatable {
   public let primerColorTextDisabled: Color?
   public let primerColorTextNegative: Color?
   public let primerColorTextLink: Color?
+  public let primerColorTextOutlinedDefault: Color?
 
   // MARK: Border Colors (matching internal DesignTokens)
 
@@ -164,9 +164,8 @@ public struct ColorOverrides: Equatable {
     primerColorBlue500: Color? = nil,
     primerColorBlue900: Color? = nil,
     primerColorBackgroundPrimary: Color? = nil,
-    primerColorBackgroundOutlinedDefault: Color? = nil,
-    primerColorTextOutlinedDefault: Color? = nil,
     primerColorBackgroundSecondary: Color? = nil,
+    primerColorBackgroundOutlinedDefault: Color? = nil,
     primerColorBackgroundOutlinedHover: Color? = nil,
     primerColorBackgroundOutlinedActive: Color? = nil,
     primerColorBackgroundOutlinedDisabled: Color? = nil,
@@ -185,6 +184,7 @@ public struct ColorOverrides: Equatable {
     primerColorTextDisabled: Color? = nil,
     primerColorTextNegative: Color? = nil,
     primerColorTextLink: Color? = nil,
+    primerColorTextOutlinedDefault: Color? = nil,
     primerColorBorderOutlinedDefault: Color? = nil,
     primerColorBorderOutlinedHover: Color? = nil,
     primerColorBorderOutlinedActive: Color? = nil,
@@ -223,9 +223,8 @@ public struct ColorOverrides: Equatable {
     self.primerColorBlue500 = primerColorBlue500
     self.primerColorBlue900 = primerColorBlue900
     self.primerColorBackgroundPrimary = primerColorBackgroundPrimary
-    self.primerColorBackgroundOutlinedDefault = primerColorBackgroundOutlinedDefault
-    self.primerColorTextOutlinedDefault = primerColorTextOutlinedDefault
     self.primerColorBackgroundSecondary = primerColorBackgroundSecondary
+    self.primerColorBackgroundOutlinedDefault = primerColorBackgroundOutlinedDefault
     self.primerColorBackgroundOutlinedHover = primerColorBackgroundOutlinedHover
     self.primerColorBackgroundOutlinedActive = primerColorBackgroundOutlinedActive
     self.primerColorBackgroundOutlinedDisabled = primerColorBackgroundOutlinedDisabled
@@ -244,6 +243,7 @@ public struct ColorOverrides: Equatable {
     self.primerColorTextDisabled = primerColorTextDisabled
     self.primerColorTextNegative = primerColorTextNegative
     self.primerColorTextLink = primerColorTextLink
+    self.primerColorTextOutlinedDefault = primerColorTextOutlinedDefault
     self.primerColorBorderOutlinedDefault = primerColorBorderOutlinedDefault
     self.primerColorBorderOutlinedHover = primerColorBorderOutlinedHover
     self.primerColorBorderOutlinedActive = primerColorBorderOutlinedActive

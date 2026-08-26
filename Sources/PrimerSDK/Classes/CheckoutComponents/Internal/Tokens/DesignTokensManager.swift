@@ -74,8 +74,7 @@ final class DesignTokensManager: ObservableObject {
       mergedDict = applyPaletteOverrides(paletteOverrides, to: mergedDict)
     }
 
-    var processedDict = DesignTokensProcessor.resolveReferences(in: mergedDict)
-    processedDict = DesignTokensProcessor.convertHexColors(in: processedDict)
+    let processedDict = DesignTokensProcessor.convertHexColors(in: mergedDict)
     var flatDict = DesignTokensProcessor.flattenTokenDictionary(processedDict)
     flatDict = DesignTokensProcessor.resolveFlattenedReferences(in: flatDict, source: processedDict)
     flatDict = DesignTokensProcessor.evaluateMath(in: flatDict)
@@ -111,7 +110,11 @@ final class DesignTokensManager: ObservableObject {
     var green: CGFloat = 0
     var blue: CGFloat = 0
     var alpha: CGFloat = 0
-    guard UIColor(color).getRed(&red, green: &green, blue: &blue, alpha: &alpha) else { return nil }
+    guard UIColor(color).getRed(&red, green: &green, blue: &blue, alpha: &alpha) else {
+      PrimerLogging.shared.logger.error(
+        message: "[DesignTokens] Palette override ignored: colour has no readable RGB components.")
+      return nil
+    }
     return [red, green, blue, alpha]
   }
 
@@ -407,7 +410,7 @@ final class DesignTokensManager: ObservableObject {
 
   // MARK: - JSON Loading
 
-  private nonisolated static func loadJSON(named fileName: String) throws -> [String: Any] {
+  nonisolated static func loadJSON(named fileName: String) throws -> [String: Any] {
     guard let url = Bundle.primerResources.url(forResource: fileName, withExtension: "json"),
       let data = try? Data(contentsOf: url),
       let dictionary = try? JSONSerialization.jsonObject(with: data) as? [String: Any]

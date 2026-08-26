@@ -93,7 +93,7 @@ enum CheckoutColors {
   }
 
   static func inputBackground(tokens: DesignTokens?) -> Color {
-    tokens?.primerColorBackgroundOutlinedDefault ?? Color(.systemGray6)
+    tokens?.primerColorBackgroundOutlinedDefault ?? .white
   }
 
   static func inputText(tokens: DesignTokens?) -> Color {

@@ -746,16 +746,19 @@ final class DesignTokensManagerTests: XCTestCase {
         let baseline = try await tokens(for: .light)
         let unthemedBorder = try XCTUnwrap(baseline.primerColorBorderOutlinedDefault)
 
-        sut.applyTheme(PrimerCheckoutTheme(colors: ColorOverrides(primerColorGray300: .pink)))
+        // Components chosen to survive the getRed round-trip exactly.
+        let override = Color(red: 0.25, green: 0.5, blue: 0.75)
+        sut.applyTheme(PrimerCheckoutTheme(colors: ColorOverrides(primerColorGray300: override)))
 
         // When
         try await sut.fetchTokens(for: .light)
 
-        // Then the border has moved, because it aliases the overridden palette entry.
-        // It is not compared against the passed-in Color: palette overrides resolve through the
-        // token JSON, so the border holds a hex-derived Color while gray300 keeps the raw one.
+        // Then the border holds the overridden value, not merely a different one.
         let themed = try XCTUnwrap(sut.tokens)
         XCTAssertNotEqual(themed.primerColorBorderOutlinedDefault, unthemedBorder)
+        XCTAssertEqual(
+            themed.primerColorBorderOutlinedDefault,
+            Color(red: 0.25, green: 0.5, blue: 0.75, opacity: 1))
     }
 
     func test_fetchTokens_semanticOverride_winsOverPaletteOverride() async throws {
@@ -798,7 +801,8 @@ final class DesignTokensManagerTests: XCTestCase {
         let baseline = try await tokens(for: .dark)
         let unthemedBorder = try XCTUnwrap(baseline.primerColorBorderOutlinedDefault)
 
-        sut.applyTheme(PrimerCheckoutTheme(colors: ColorOverrides(primerColorGray300: .pink)))
+        let override = Color(red: 0.25, green: 0.5, blue: 0.75)
+        sut.applyTheme(PrimerCheckoutTheme(colors: ColorOverrides(primerColorGray300: override)))
 
         // When
         try await sut.fetchTokens(for: .dark)
@@ -806,6 +810,25 @@ final class DesignTokensManagerTests: XCTestCase {
         // Then
         let themed = try XCTUnwrap(sut.tokens)
         XCTAssertNotEqual(themed.primerColorBorderOutlinedDefault, unthemedBorder)
+        XCTAssertEqual(
+            themed.primerColorBorderOutlinedDefault,
+            Color(red: 0.25, green: 0.5, blue: 0.75, opacity: 1))
+    }
+
+    // MARK: - Token file coverage
+
+    func test_baseTokenFile_everyColourLeafHasAMatchingTokenProperty() throws {
+        // Given the shipped light token file, loaded the way production loads it
+        let dict = try DesignTokensManager.loadJSON(named: "base")
+
+        // When it is flattened the way production does
+        let flat = DesignTokensProcessor.flattenTokenDictionary(
+            DesignTokensProcessor.convertHexColors(in: dict))
+
+        // Then every colour leaf has somewhere to land, so none is silently dropped
+        let declared = Set(Mirror(reflecting: DesignTokens()).children.compactMap(\.label))
+        let missing = flat.keys.filter { $0.hasPrefix("primerColor") && !declared.contains($0) }.sorted()
+        XCTAssertTrue(missing.isEmpty, "base.json colour tokens with no DesignTokens property: \(missing)")
     }
 
     private func tokens(for colorScheme: ColorScheme) async throws -> DesignTokens {

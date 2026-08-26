@@ -148,61 +148,6 @@ final class DesignTokensProcessorTests: XCTestCase {
         XCTAssertEqual(result["d"] as? Int, 4)
     }
 
-    // MARK: - resolveReferences
-
-    func test_resolveReferences_missingReference_leftUntouched() {
-        // Given
-        let dict: [String: Any] = [
-            "color": "{nonexistent.path}"
-        ]
-
-        // When
-        let result = DesignTokensProcessor.resolveReferences(in: dict)
-
-        // Then
-        XCTAssertEqual(result["color"] as? String, "{nonexistent.path}")
-    }
-
-    func test_resolveReferences_nonReferenceStrings_leftUntouched() {
-        // Given
-        let dict: [String: Any] = [
-            "label": "Hello World",
-            "count": 42
-        ]
-
-        // When
-        let result = DesignTokensProcessor.resolveReferences(in: dict)
-
-        // Then
-        XCTAssertEqual(result["label"] as? String, "Hello World")
-        XCTAssertEqual(result["count"] as? Int, 42)
-    }
-
-    func test_resolveReferences_circularReference_doesNotCrash() {
-        // Given
-        let dict: [String: Any] = [
-            "a": "{b}",
-            "b": "{a}"
-        ]
-
-        // When
-        let result = DesignTokensProcessor.resolveReferences(in: dict)
-
-        // Then - should not crash, references remain unresolved
-        XCTAssertNotNil(result)
-        // Both remain as reference strings since they can never resolve
-        XCTAssertEqual(result["a"] as? String, "{b}")
-        XCTAssertEqual(result["b"] as? String, "{a}")
-    }
-
-    func test_resolveReferences_emptyDict_returnsEmpty() {
-        // When
-        let result = DesignTokensProcessor.resolveReferences(in: [:])
-
-        // Then
-        XCTAssertTrue(result.isEmpty)
-    }
-
     // MARK: - convertHexColors
 
     func test_convertHexColors_6CharHex_convertsToRGBAArray() {
@@ -533,6 +478,29 @@ final class DesignTokensProcessorTests: XCTestCase {
 
         // Then
         XCTAssertTrue(result.isEmpty)
+    }
+
+    func test_resolveFlattenedReferences_missingReference_leftUntouched() {
+        // Given
+        let flatDict: [String: Any] = ["color": "{nonexistent.path}"]
+
+        // When
+        let result = DesignTokensProcessor.resolveFlattenedReferences(in: flatDict, source: [:])
+
+        // Then
+        XCTAssertEqual(result["color"] as? String, "{nonexistent.path}")
+    }
+
+    func test_resolveFlattenedReferences_circularReference_doesNotCrash() {
+        // Given
+        let flatDict: [String: Any] = ["a": "{b}", "b": "{a}"]
+
+        // When
+        let result = DesignTokensProcessor.resolveFlattenedReferences(in: flatDict, source: [:])
+
+        // Then references that can never resolve are left as-is
+        XCTAssertEqual(result["a"] as? String, "{b}")
+        XCTAssertEqual(result["b"] as? String, "{a}")
     }
 
     func test_resolveFlattenedReferences_chainedReferences_resolvedIteratively() {

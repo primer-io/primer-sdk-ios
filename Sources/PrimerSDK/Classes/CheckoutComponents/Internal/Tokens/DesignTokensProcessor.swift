@@ -32,35 +32,6 @@ enum DesignTokensProcessor {
 
   // MARK: - Token Reference Resolution
 
-  static func resolveReferences(in dict: [String: Any]) -> [String: Any] {
-    (0..<10).reduce(dict) { current, _ in
-      var hasUnresolved = false
-      let resolved = resolvePass(current, root: current, hasUnresolved: &hasUnresolved)
-      return hasUnresolved ? resolved : current
-    }
-  }
-
-  private static func resolvePass(
-    _ dict: [String: Any], root: [String: Any], hasUnresolved: inout Bool
-  ) -> [String: Any] {
-    dict.reduce(into: [String: Any]()) { result, pair in
-      let (key, value) = pair
-      if let nested = value as? [String: Any] {
-        result[key] = resolvePass(nested, root: root, hasUnresolved: &hasUnresolved)
-      } else if let ref = value as? String, ref.hasPrefix("{"), ref.hasSuffix("}") {
-        let reference = String(ref.dropFirst().dropLast())
-        if let resolved = resolveReference(reference, in: root) {
-          result[key] = resolved
-        } else {
-          result[key] = value
-          hasUnresolved = true
-        }
-      } else {
-        result[key] = value
-      }
-    }
-  }
-
   private static func resolveReference(_ reference: String, in root: [String: Any]) -> Any? {
     let parts = reference.split(separator: ".").map(String.init)
     var current: Any = root
