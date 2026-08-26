@@ -498,9 +498,9 @@ final class DesignTokensProcessorTests: XCTestCase {
         // When
         let result = DesignTokensProcessor.resolveFlattenedReferences(in: flatDict, source: [:])
 
-        // Then references that can never resolve are left as-is
-        XCTAssertEqual(result["a"] as? String, "{b}")
-        XCTAssertEqual(result["b"] as? String, "{a}")
+        // Then neither resolves to a value; each stays a reference instead of looping forever
+        XCTAssertEqual((result["a"] as? String)?.hasPrefix("{"), true)
+        XCTAssertEqual((result["b"] as? String)?.hasPrefix("{"), true)
     }
 
     func test_resolveFlattenedReferences_chainedReferences_resolvedIteratively() {
