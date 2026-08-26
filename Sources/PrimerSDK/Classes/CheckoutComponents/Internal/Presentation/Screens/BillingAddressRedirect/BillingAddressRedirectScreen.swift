@@ -173,7 +173,8 @@ struct BillingAddressRedirectScreen: View {
         .background(CheckoutColors.inputBackground(tokens: tokens))
         .overlay(
           RoundedRectangle(cornerRadius: PrimerRadius.small(tokens: tokens))
-            .stroke(fieldBorderColor(for: .countryCode), lineWidth: PrimerBorderWidth.standard(tokens: tokens))
+            .stroke(
+              fieldBorderColor(for: .countryCode), lineWidth: fieldBorderWidth(for: .countryCode))
         )
       }
       .accessibilityIdentifier(AccessibilityIdentifiers.BillingAddressRedirect.countryCodeField)
@@ -207,7 +208,7 @@ struct BillingAddressRedirectScreen: View {
         .background(CheckoutColors.inputBackground(tokens: tokens))
         .overlay(
           RoundedRectangle(cornerRadius: PrimerRadius.small(tokens: tokens))
-            .stroke(fieldBorderColor(for: fieldType), lineWidth: PrimerBorderWidth.standard(tokens: tokens))
+            .stroke(fieldBorderColor(for: fieldType), lineWidth: fieldBorderWidth(for: fieldType))
         )
         .autocapitalization(.words)
         .disableAutocorrection(true)
@@ -230,6 +231,12 @@ struct BillingAddressRedirectScreen: View {
       : CheckoutColors.borderDefault(tokens: tokens)
   }
 
+  private func fieldBorderWidth(for fieldType: PrimerInputElementType) -> CGFloat {
+    billingState.errors[fieldType] != nil
+      ? PrimerBorderWidth.selected(tokens: tokens)
+      : PrimerBorderWidth.standard(tokens: tokens)
+  }
+
   // MARK: - Submit Button
 
   @ViewBuilder
@@ -250,14 +257,15 @@ struct BillingAddressRedirectScreen: View {
     return HStack {
       if isLoading {
         ProgressView()
-          .progressViewStyle(CircularProgressViewStyle(tint: CheckoutColors.onPrimary(tokens: tokens)))
+          .progressViewStyle(
+            CircularProgressViewStyle(tint: CheckoutColors.onPrimary(tokens: tokens, isEnabled: !isButtonDisabled)))
           .scaleEffect(PrimerScale.small)
       } else {
         Text(submitButtonText)
       }
     }
     .font(PrimerFont.body(tokens: tokens))
-    .foregroundColor(CheckoutColors.onPrimary(tokens: tokens))
+    .foregroundColor(CheckoutColors.onPrimary(tokens: tokens, isEnabled: !isButtonDisabled))
     .frame(maxWidth: .infinity)
     .padding(.vertical, PrimerSpacing.large(tokens: tokens))
     .background(submitButtonBackground)
@@ -275,7 +283,7 @@ struct BillingAddressRedirectScreen: View {
 
   private var submitButtonBackground: Color {
     isButtonDisabled
-      ? CheckoutColors.gray300(tokens: tokens)
+      ? CheckoutColors.buttonDisabled(tokens: tokens)
       : CheckoutColors.textPrimary(tokens: tokens)
   }
 

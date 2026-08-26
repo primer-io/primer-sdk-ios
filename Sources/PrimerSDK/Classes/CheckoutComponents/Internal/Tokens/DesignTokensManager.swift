@@ -162,7 +162,6 @@ final class DesignTokensManager: ObservableObject {
     if let value = colors.primerColorGray400 { tokens.primerColorGray400 = value }
     if let value = colors.primerColorGray500 { tokens.primerColorGray500 = value }
     if let value = colors.primerColorGray600 { tokens.primerColorGray600 = value }
-    if let value = colors.primerColorGray700 { tokens.primerColorGray700 = value }
     if let value = colors.primerColorGray900 { tokens.primerColorGray900 = value }
   }
 

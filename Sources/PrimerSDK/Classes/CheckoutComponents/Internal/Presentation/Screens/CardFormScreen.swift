@@ -114,14 +114,15 @@ struct CardFormScreen: View, LogReporter {
     return HStack {
       if cardFormState.isLoading {
         ProgressView()
-          .progressViewStyle(CircularProgressViewStyle(tint: CheckoutColors.onPrimary(tokens: tokens)))
+          .progressViewStyle(
+            CircularProgressViewStyle(tint: CheckoutColors.onPrimary(tokens: tokens, isEnabled: isEnabled)))
           .scaleEffect(PrimerScale.small)
       } else {
         Text(payTitle(accessible: false))
       }
     }
     .font(PrimerFont.body(tokens: tokens))
-    .foregroundColor(CheckoutColors.onPrimary(tokens: tokens))
+    .foregroundColor(CheckoutColors.onPrimary(tokens: tokens, isEnabled: isEnabled))
     .frame(maxWidth: .infinity)
     .padding(.vertical, PrimerSpacing.large(tokens: tokens))
     .background(submitButtonBackground)
@@ -174,7 +175,7 @@ struct CardFormScreen: View, LogReporter {
   private var submitButtonBackground: Color {
     cardFormState.isValid && !cardFormState.isLoading
       ? CheckoutColors.textPrimary(tokens: tokens)
-      : CheckoutColors.gray300(tokens: tokens)
+      : CheckoutColors.buttonDisabled(tokens: tokens)
   }
 
   private func submitAction() {

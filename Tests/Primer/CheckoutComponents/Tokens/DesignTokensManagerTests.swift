@@ -133,7 +133,6 @@ final class DesignTokensManagerTests: XCTestCase {
                 primerColorGray400: customGray,
                 primerColorGray500: customGray,
                 primerColorGray600: customGray,
-                primerColorGray700: customGray,
                 primerColorGray900: customGray
             )
         )
@@ -151,7 +150,6 @@ final class DesignTokensManagerTests: XCTestCase {
         XCTAssertEqual(tokens.primerColorGray400, customGray)
         XCTAssertEqual(tokens.primerColorGray500, customGray)
         XCTAssertEqual(tokens.primerColorGray600, customGray)
-        XCTAssertEqual(tokens.primerColorGray700, customGray)
         XCTAssertEqual(tokens.primerColorGray900, customGray)
     }
 

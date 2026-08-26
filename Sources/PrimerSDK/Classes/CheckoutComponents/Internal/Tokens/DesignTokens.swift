@@ -86,7 +86,6 @@ final class DesignTokens: Decodable {
   var primerColorGray400: Color? = Color(red: 0.741, green: 0.741, blue: 0.741, opacity: 1)
   var primerColorGray500: Color? = Color(red: 0.620, green: 0.620, blue: 0.620, opacity: 1)
   var primerColorGray600: Color? = Color(red: 0.459, green: 0.459, blue: 0.459, opacity: 1)
-  var primerColorGray700: Color? = Color(red: 0.294, green: 0.294, blue: 0.294, opacity: 1)
   var primerColorGray900: Color? = Color(red: 0.129, green: 0.129, blue: 0.129, opacity: 1)
   var primerColorGray000: Color? = Color(red: 1.000, green: 1.000, blue: 1.000, opacity: 1)
   var primerColorGreen500: Color? = Color(red: 0.243, green: 0.714, blue: 0.561, opacity: 1)
@@ -196,7 +195,6 @@ final class DesignTokens: Decodable {
     case primerColorGray400
     case primerColorGray500
     case primerColorGray600
-    case primerColorGray700
     case primerColorGray900
     case primerColorGray000
     case primerColorGreen500
@@ -312,7 +310,6 @@ final class DesignTokens: Decodable {
     primerColorGray400 = try container.decodeColorIfPresent(forKey: .primerColorGray400) ?? primerColorGray400
     primerColorGray500 = try container.decodeColorIfPresent(forKey: .primerColorGray500) ?? primerColorGray500
     primerColorGray600 = try container.decodeColorIfPresent(forKey: .primerColorGray600) ?? primerColorGray600
-    primerColorGray700 = try container.decodeColorIfPresent(forKey: .primerColorGray700) ?? primerColorGray700
     primerColorGray900 = try container.decodeColorIfPresent(forKey: .primerColorGray900) ?? primerColorGray900
     primerColorGray000 = try container.decodeColorIfPresent(forKey: .primerColorGray000) ?? primerColorGray000
     primerColorGreen500 = try container.decodeColorIfPresent(forKey: .primerColorGreen500) ?? primerColorGreen500

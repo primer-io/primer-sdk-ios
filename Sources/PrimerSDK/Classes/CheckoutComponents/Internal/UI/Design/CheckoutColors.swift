@@ -80,14 +80,20 @@ enum CheckoutColors {
     tokens?.primerColorIconPositive ?? Color(.systemGreen)
   }
 
-  /// Label/spinner colour on the primary button, which fills with `textPrimary` — so this has to
-  /// invert with it or the label disappears in dark mode.
-  static func onPrimary(tokens: DesignTokens?) -> Color {
-    tokens?.primerColorBackgroundPrimary ?? .white
+  /// Label/spinner colour on the primary button. The enabled fill is `textPrimary`, so the label
+  /// inverts with it; the disabled fill is light, so the label follows web and Android onto
+  /// `textDisabled`.
+  static func onPrimary(tokens: DesignTokens?, isEnabled: Bool = true) -> Color {
+    isEnabled
+      ? (tokens?.primerColorBackgroundPrimary ?? .white)
+      : (tokens?.primerColorTextDisabled ?? Color(.tertiaryLabel))
   }
 
-  /// Label/spinner colour on a brand-filled surface. Brand is a fixed blue in both modes.
-  static func onBrand(tokens _: DesignTokens?) -> Color { .white }
+  /// Label/spinner colour on a brand-filled surface. Brand is a fixed blue in both modes, so the
+  /// enabled label is fixed too; a disabled button loses the brand fill and takes `textDisabled`.
+  static func onBrand(tokens: DesignTokens?, isEnabled: Bool = true) -> Color {
+    isEnabled ? .white : (tokens?.primerColorTextDisabled ?? Color(.tertiaryLabel))
+  }
 
   static func blue(tokens _: DesignTokens?) -> Color { .blue }
 
@@ -122,6 +128,6 @@ enum CheckoutColors {
   }
 
   static func buttonDisabled(tokens: DesignTokens?) -> Color {
-    tokens?.primerColorGray300 ?? Color(.systemGray4)
+    tokens?.primerColorBackgroundOutlinedDisabled ?? Color(.systemGray6)
   }
 }

@@ -214,19 +214,21 @@ private struct VaultedSubmitContent: View {
       Group {
         if isLoading {
           ProgressView()
-            .progressViewStyle(CircularProgressViewStyle(tint: CheckoutColors.onPrimary(tokens: tokens)))
+            .progressViewStyle(
+              CircularProgressViewStyle(
+                tint: CheckoutColors.onPrimary(tokens: tokens, isEnabled: isEnabled && !isLoading)))
         } else {
           Text(CheckoutComponentsStrings.payButton)
         }
       }
       .font(PrimerFont.body(tokens: tokens))
-      .foregroundColor(CheckoutColors.onPrimary(tokens: tokens))
+      .foregroundColor(CheckoutColors.onPrimary(tokens: tokens, isEnabled: isEnabled && !isLoading))
       .frame(maxWidth: .infinity)
       .padding(.vertical, PrimerSpacing.large(tokens: tokens))
       .background(
         isEnabled && !isLoading
           ? CheckoutColors.textPrimary(tokens: tokens)
-          : CheckoutColors.gray300(tokens: tokens)
+          : CheckoutColors.buttonDisabled(tokens: tokens)
       )
       .cornerRadius(PrimerRadius.small(tokens: tokens))
     }

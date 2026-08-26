@@ -73,7 +73,6 @@ public struct ColorOverrides: Equatable {
   public let primerColorGray400: Color?
   public let primerColorGray500: Color?
   public let primerColorGray600: Color?
-  public let primerColorGray700: Color?
   public let primerColorGray900: Color?
 
   // MARK: Semantic Colors (matching internal DesignTokens)
@@ -154,7 +153,6 @@ public struct ColorOverrides: Equatable {
     primerColorGray400: Color? = nil,
     primerColorGray500: Color? = nil,
     primerColorGray600: Color? = nil,
-    primerColorGray700: Color? = nil,
     primerColorGray900: Color? = nil,
     primerColorGreen500: Color? = nil,
     primerColorRed100: Color? = nil,
@@ -213,7 +211,6 @@ public struct ColorOverrides: Equatable {
     self.primerColorGray400 = primerColorGray400
     self.primerColorGray500 = primerColorGray500
     self.primerColorGray600 = primerColorGray600
-    self.primerColorGray700 = primerColorGray700
     self.primerColorGray900 = primerColorGray900
     self.primerColorGreen500 = primerColorGreen500
     self.primerColorRed100 = primerColorRed100

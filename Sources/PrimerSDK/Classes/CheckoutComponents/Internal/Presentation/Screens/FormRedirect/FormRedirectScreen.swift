@@ -141,7 +141,9 @@ struct FormRedirectScreen: View {
             }
             .frame(maxWidth: .infinity)
             .frame(height: PrimerComponentHeight.button)
-            .foregroundColor(CheckoutColors.onBrand(tokens: tokens))
+            .foregroundColor(CheckoutColors.onBrand(
+                tokens: tokens,
+                isEnabled: currentState.isSubmitEnabled && !currentState.isLoading))
             .background(
                 RoundedRectangle(cornerRadius: PrimerRadius.medium(tokens: tokens))
                     .fill(currentState.isSubmitEnabled && !currentState.isLoading
@@ -226,12 +228,18 @@ private struct FormFieldView: View {
         .padding(.vertical, PrimerSpacing.medium(tokens: tokens))
         .background(
             RoundedRectangle(cornerRadius: PrimerRadius.small(tokens: tokens))
-                .stroke(borderColor, lineWidth: PrimerBorderWidth.standard(tokens: tokens))
+                .stroke(borderColor, lineWidth: borderWidth)
                 .background(
                     RoundedRectangle(cornerRadius: PrimerRadius.small(tokens: tokens))
                         .fill(CheckoutColors.inputBackground(tokens: tokens))
                 )
         )
+    }
+
+    private var borderWidth: CGFloat {
+        field.errorMessage != nil || isFocused
+            ? PrimerBorderWidth.selected(tokens: tokens)
+            : PrimerBorderWidth.standard(tokens: tokens)
     }
 
     private var borderColor: Color {
