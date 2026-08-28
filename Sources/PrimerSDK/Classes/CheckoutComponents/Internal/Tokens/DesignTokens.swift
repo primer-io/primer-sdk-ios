@@ -98,6 +98,7 @@ final class DesignTokens: Decodable {
   var primerWidthDefault: CGFloat? = 1
   var primerWidthFocus: CGFloat? = 2
   var primerWidthError: CGFloat? = 2
+  var primerWidthSelected: CGFloat? = 2
   var primerRadiusMedium: CGFloat? = 8
   var primerRadiusSmall: CGFloat? = 4
   var primerRadiusLarge: CGFloat? = 12
@@ -212,6 +213,7 @@ final class DesignTokens: Decodable {
     case primerWidthDefault
     case primerWidthFocus
     case primerWidthError
+    case primerWidthSelected
     case primerRadiusMedium
     case primerRadiusSmall
     case primerRadiusLarge
@@ -332,6 +334,7 @@ final class DesignTokens: Decodable {
     primerWidthDefault = try container.decodeIfPresent(CGFloat.self, forKey: .primerWidthDefault) ?? primerWidthDefault
     primerWidthFocus = try container.decodeIfPresent(CGFloat.self, forKey: .primerWidthFocus) ?? primerWidthFocus
     primerWidthError = try container.decodeIfPresent(CGFloat.self, forKey: .primerWidthError) ?? primerWidthError
+    primerWidthSelected = try container.decodeIfPresent(CGFloat.self, forKey: .primerWidthSelected) ?? primerWidthSelected
     primerRadiusMedium = try container.decodeIfPresent(
       CGFloat.self, forKey: .primerRadiusMedium) ?? primerRadiusMedium
     primerRadiusSmall = try container.decodeIfPresent(CGFloat.self, forKey: .primerRadiusSmall) ?? primerRadiusSmall

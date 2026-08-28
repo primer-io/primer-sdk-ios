@@ -51,7 +51,7 @@ extension PrimerInputFieldContainer {
   var textFieldContainerBackgroundLineWidth: CGFloat {
     if hasError { return PrimerBorderWidth.error(tokens: tokens) }
     return isFocused
-      ? PrimerBorderWidth.selected(tokens: tokens)
+      ? PrimerBorderWidth.focused(tokens: tokens)
       : PrimerBorderWidth.standard(tokens: tokens)
   }
   var errorMessageMinHeight: CGFloat { hasError ? PrimerComponentHeight.errorMessage : 0 }

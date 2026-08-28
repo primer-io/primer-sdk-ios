@@ -311,6 +311,7 @@ final class DesignTokensManager: ObservableObject {
     if let value = width.primerWidthDefault { tokens.primerWidthDefault = value }
     if let value = width.primerWidthFocus { tokens.primerWidthFocus = value }
     if let value = width.primerWidthError { tokens.primerWidthError = value }
+    if let value = width.primerWidthSelected { tokens.primerWidthSelected = value }
   }
 
   private func applyTypographyOverrides(

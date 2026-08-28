@@ -468,14 +468,19 @@ public struct WidthOverrides: Equatable {
   /// Internal: primerWidthError (default: 2)
   public let primerWidthError: CGFloat?
 
+  /// Internal: primerWidthSelected (default: 2)
+  public let primerWidthSelected: CGFloat?
+
   /// Creates width overrides with all optional properties.
   public init(
     primerWidthDefault: CGFloat? = nil,
     primerWidthFocus: CGFloat? = nil,
-    primerWidthError: CGFloat? = nil
+    primerWidthError: CGFloat? = nil,
+    primerWidthSelected: CGFloat? = nil
   ) {
     self.primerWidthDefault = primerWidthDefault
     self.primerWidthFocus = primerWidthFocus
     self.primerWidthError = primerWidthError
+    self.primerWidthSelected = primerWidthSelected
   }
 }

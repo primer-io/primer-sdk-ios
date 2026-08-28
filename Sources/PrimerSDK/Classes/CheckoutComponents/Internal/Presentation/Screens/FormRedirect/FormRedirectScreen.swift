@@ -239,7 +239,7 @@ private struct FormFieldView: View {
     private var borderWidth: CGFloat {
         if field.errorMessage != nil { return PrimerBorderWidth.error(tokens: tokens) }
         return isFocused
-            ? PrimerBorderWidth.selected(tokens: tokens)
+            ? PrimerBorderWidth.focused(tokens: tokens)
             : PrimerBorderWidth.standard(tokens: tokens)
     }
 

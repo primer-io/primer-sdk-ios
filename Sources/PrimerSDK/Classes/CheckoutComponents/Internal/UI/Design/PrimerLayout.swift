@@ -131,9 +131,14 @@ enum PrimerBorderWidth {
     tokens?.primerWidthDefault ?? standard
   }
 
-  /// Emphasised border for the focused and selected states. Maps to the `focus` width token (default 2).
-  static func selected(tokens: DesignTokens?) -> CGFloat {
+  /// Emphasised border for a focused field. Maps to the `focus` width token (default 2).
+  static func focused(tokens: DesignTokens?) -> CGFloat {
     tokens?.primerWidthFocus ?? selected
+  }
+
+  /// Emphasised border for a chosen item, such as a saved card. Maps to the `selected` token.
+  static func selected(tokens: DesignTokens?) -> CGFloat {
+    tokens?.primerWidthSelected ?? selected
   }
 
   /// Emphasised border for a field in error. Maps to the `error` width token (default 2).

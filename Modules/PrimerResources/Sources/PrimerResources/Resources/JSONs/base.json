@@ -555,6 +555,10 @@
         "type": "dimension",
         "value": 2
       },
+      "selected": {
+        "type": "dimension",
+        "value": 2
+      },
       "error": {
         "type": "dimension",
         "value": 2

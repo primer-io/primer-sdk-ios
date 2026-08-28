@@ -106,7 +106,7 @@ struct VaultedCardCVVInput: View {
           .stroke(
             cvvBorderColor,
             lineWidth: isFocused
-              ? PrimerBorderWidth.selected(tokens: tokens) : PrimerBorderWidth.standard(tokens: tokens))
+              ? PrimerBorderWidth.focused(tokens: tokens) : PrimerBorderWidth.standard(tokens: tokens))
       )
       .accessibility(
         config: AccessibilityConfiguration(
