@@ -843,6 +843,7 @@ final class DesignTokensManagerTests: XCTestCase {
         // Then the values match the design tokens: 1 at rest, 2 for focus and error
         XCTAssertEqual(tokens.primerWidthDefault, 1)
         XCTAssertEqual(tokens.primerWidthFocus, 2)
+        XCTAssertEqual(tokens.primerWidthSelected, 2)
         XCTAssertEqual(tokens.primerWidthError, 2)
     }
 
@@ -850,7 +851,11 @@ final class DesignTokensManagerTests: XCTestCase {
         // Given each width token is overridden with a distinct value
         sut.applyTheme(
             PrimerCheckoutTheme(
-                width: WidthOverrides(primerWidthDefault: 3, primerWidthFocus: 5, primerWidthError: 7)))
+                width: WidthOverrides(
+                    primerWidthDefault: 3,
+                    primerWidthFocus: 5,
+                    primerWidthError: 7,
+                    primerWidthSelected: 9)))
 
         // When
         try await sut.fetchTokens(for: .light)
@@ -858,8 +863,9 @@ final class DesignTokensManagerTests: XCTestCase {
         // Then the helper each renderer calls resolves to its own token
         let tokens = try XCTUnwrap(sut.tokens)
         XCTAssertEqual(PrimerBorderWidth.standard(tokens: tokens), 3)
-        XCTAssertEqual(PrimerBorderWidth.selected(tokens: tokens), 5)
+        XCTAssertEqual(PrimerBorderWidth.focused(tokens: tokens), 5)
         XCTAssertEqual(PrimerBorderWidth.error(tokens: tokens), 7)
+        XCTAssertEqual(PrimerBorderWidth.selected(tokens: tokens), 9)
     }
 
     // MARK: - Error typography
