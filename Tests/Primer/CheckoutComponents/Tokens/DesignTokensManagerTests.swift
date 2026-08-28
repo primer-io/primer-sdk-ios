@@ -813,6 +813,82 @@ final class DesignTokensManagerTests: XCTestCase {
             Color(red: 0.25, green: 0.5, blue: 0.75, opacity: 1))
     }
 
+    // MARK: - Width overrides
+
+    func test_applyTheme_widthOverrides_appliedToTokens() async throws {
+        // Given
+        let theme = PrimerCheckoutTheme(
+            width: WidthOverrides(
+                primerWidthDefault: 3,
+                primerWidthFocus: 5,
+                primerWidthError: 7
+            )
+        )
+        sut.applyTheme(theme)
+
+        // When
+        try await sut.fetchTokens(for: .light)
+
+        // Then
+        let tokens = try XCTUnwrap(sut.tokens)
+        XCTAssertEqual(tokens.primerWidthDefault, 3)
+        XCTAssertEqual(tokens.primerWidthFocus, 5)
+        XCTAssertEqual(tokens.primerWidthError, 7)
+    }
+
+    func test_widthTokens_defaultToDesignValues() async throws {
+        // When no override is applied
+        let tokens = try await tokens(for: .light)
+
+        // Then the values match the design tokens: 1 at rest, 2 for focus and error
+        XCTAssertEqual(tokens.primerWidthDefault, 1)
+        XCTAssertEqual(tokens.primerWidthFocus, 2)
+        XCTAssertEqual(tokens.primerWidthError, 2)
+    }
+
+    func test_borderWidthHelper_readsTheMatchingToken() async throws {
+        // Given each width token is overridden with a distinct value
+        sut.applyTheme(
+            PrimerCheckoutTheme(
+                width: WidthOverrides(primerWidthDefault: 3, primerWidthFocus: 5, primerWidthError: 7)))
+
+        // When
+        try await sut.fetchTokens(for: .light)
+
+        // Then the helper each renderer calls resolves to its own token
+        let tokens = try XCTUnwrap(sut.tokens)
+        XCTAssertEqual(PrimerBorderWidth.standard(tokens: tokens), 3)
+        XCTAssertEqual(PrimerBorderWidth.selected(tokens: tokens), 5)
+        XCTAssertEqual(PrimerBorderWidth.error(tokens: tokens), 7)
+    }
+
+    // MARK: - Error typography
+
+    func test_applyTheme_errorTypographyOverride_doesNotMoveBodySmall() async throws {
+        // Given only the error style is overridden
+        sut.applyTheme(
+            PrimerCheckoutTheme(
+                typography: TypographyOverrides(error: .init(size: 20))))
+
+        // When
+        try await sut.fetchTokens(for: .light)
+
+        // Then error moves and the body-small label it used to share stays put
+        let tokens = try XCTUnwrap(sut.tokens)
+        XCTAssertEqual(tokens.primerTypographyErrorSize, 20)
+        XCTAssertEqual(tokens.primerTypographyBodySmallSize, 12)
+    }
+
+    func test_errorTypography_defaultsToBodySmall() async throws {
+        // When nothing is overridden
+        let tokens = try await tokens(for: .light)
+
+        // Then error carries the body-small values, so nothing looks different out of the box
+        XCTAssertEqual(tokens.primerTypographyErrorSize, tokens.primerTypographyBodySmallSize)
+        XCTAssertEqual(tokens.primerTypographyErrorWeight, tokens.primerTypographyBodySmallWeight)
+        XCTAssertEqual(tokens.primerTypographyErrorLineHeight, tokens.primerTypographyBodySmallLineHeight)
+    }
+
     // MARK: - Token file coverage
 
     func test_baseTokenFile_everyColourLeafHasAMatchingTokenProperty() throws {

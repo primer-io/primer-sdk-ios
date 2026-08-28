@@ -121,7 +121,7 @@ struct VaultedCardCVVInput: View {
 
   private func makeErrorLabel(_ message: String) -> some View {
     Text(message)
-      .font(PrimerFont.bodySmall(tokens: tokens))
+      .font(PrimerFont.error(tokens: tokens))
       .foregroundColor(CheckoutColors.textNegative(tokens: tokens))
   }
 

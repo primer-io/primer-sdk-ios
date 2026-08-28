@@ -25,7 +25,7 @@ public struct PrimerCheckoutTheme: Equatable {
   public let spacing: SpacingOverrides?
   public let sizes: SizeOverrides?
   public let typography: TypographyOverrides?
-  public let borderWidth: BorderWidthOverrides?
+  public let width: WidthOverrides?
 
   /// Creates a new theme configuration with optional overrides.
   /// - Parameters:
@@ -34,21 +34,21 @@ public struct PrimerCheckoutTheme: Equatable {
   ///   - spacing: Spacing token overrides. Default: nil (uses internal defaults)
   ///   - sizes: Size token overrides. Default: nil (uses internal defaults)
   ///   - typography: Typography token overrides. Default: nil (uses internal defaults)
-  ///   - borderWidth: Border width token overrides. Default: nil (uses internal defaults)
+  ///   - width: Border width token overrides. Default: nil (uses internal defaults)
   public init(
     colors: ColorOverrides? = nil,
     radius: RadiusOverrides? = nil,
     spacing: SpacingOverrides? = nil,
     sizes: SizeOverrides? = nil,
     typography: TypographyOverrides? = nil,
-    borderWidth: BorderWidthOverrides? = nil
+    width: WidthOverrides? = nil
   ) {
     self.colors = colors
     self.radius = radius
     self.spacing = spacing
     self.sizes = sizes
     self.typography = typography
-    self.borderWidth = borderWidth
+    self.width = width
   }
 }
 
@@ -433,44 +433,49 @@ public struct TypographyOverrides: Equatable {
   /// Body small: Inter, 0 letter spacing, weight 400, size 12, line height 16
   public let bodySmall: TypographyStyle?
 
+  /// Field error text. Defaults to the body small values, so it can be styled on its own.
+  public let error: TypographyStyle?
+
   /// Creates typography overrides with all optional properties.
   public init(
     titleXlarge: TypographyStyle? = nil,
     titleLarge: TypographyStyle? = nil,
     bodyLarge: TypographyStyle? = nil,
     bodyMedium: TypographyStyle? = nil,
-    bodySmall: TypographyStyle? = nil
+    bodySmall: TypographyStyle? = nil,
+    error: TypographyStyle? = nil
   ) {
     self.titleXlarge = titleXlarge
     self.titleLarge = titleLarge
     self.bodyLarge = bodyLarge
     self.bodyMedium = bodyMedium
     self.bodySmall = bodySmall
+    self.error = error
   }
 }
 
-// MARK: - BorderWidthOverrides
+// MARK: - WidthOverrides
 
-/// Optional border width token overrides.
+/// Optional border width token overrides. Named for the field state they apply to, matching design.
 @available(iOS 15.0, *)
-public struct BorderWidthOverrides: Equatable {
-  /// Internal: primerBorderWidthThin (default: 1)
-  public let primerBorderWidthThin: CGFloat?
+public struct WidthOverrides: Equatable {
+  /// Internal: primerWidthDefault (default: 1)
+  public let primerWidthDefault: CGFloat?
 
-  /// Internal: primerBorderWidthMedium (default: 2)
-  public let primerBorderWidthMedium: CGFloat?
+  /// Internal: primerWidthFocus (default: 2)
+  public let primerWidthFocus: CGFloat?
 
-  /// Internal: primerBorderWidthThick (default: 3)
-  public let primerBorderWidthThick: CGFloat?
+  /// Internal: primerWidthError (default: 2)
+  public let primerWidthError: CGFloat?
 
-  /// Creates border width overrides with all optional properties.
+  /// Creates width overrides with all optional properties.
   public init(
-    primerBorderWidthThin: CGFloat? = nil,
-    primerBorderWidthMedium: CGFloat? = nil,
-    primerBorderWidthThick: CGFloat? = nil
+    primerWidthDefault: CGFloat? = nil,
+    primerWidthFocus: CGFloat? = nil,
+    primerWidthError: CGFloat? = nil
   ) {
-    self.primerBorderWidthThin = primerBorderWidthThin
-    self.primerBorderWidthMedium = primerBorderWidthMedium
-    self.primerBorderWidthThick = primerBorderWidthThick
+    self.primerWidthDefault = primerWidthDefault
+    self.primerWidthFocus = primerWidthFocus
+    self.primerWidthError = primerWidthError
   }
 }

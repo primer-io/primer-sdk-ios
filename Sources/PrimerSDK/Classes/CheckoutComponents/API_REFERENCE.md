@@ -310,12 +310,12 @@ public struct PrimerCheckoutTheme: Equatable {
     spacing: SpacingOverrides? = nil,
     sizes: SizeOverrides? = nil,
     typography: TypographyOverrides? = nil,
-    borderWidth: BorderWidthOverrides? = nil
+    width: WidthOverrides? = nil
   )
 }
 ```
 
-**Override types**: `ColorOverrides`, `RadiusOverrides`, `SpacingOverrides`, `SizeOverrides`, `TypographyOverrides`, `BorderWidthOverrides`. See `Scope/PrimerCheckoutTheme.swift` for all token names.
+**Override types**: `ColorOverrides`, `RadiusOverrides`, `SpacingOverrides`, `SizeOverrides`, `TypographyOverrides`, `WidthOverrides`. See `Scope/PrimerCheckoutTheme.swift` for all token names.
 
 ---
 

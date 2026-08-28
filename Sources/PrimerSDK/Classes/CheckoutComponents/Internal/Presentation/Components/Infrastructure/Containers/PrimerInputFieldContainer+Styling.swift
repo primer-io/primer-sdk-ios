@@ -41,16 +41,16 @@ extension PrimerInputFieldContainer {
 
 @available(iOS 15.0, *)
 extension PrimerInputFieldContainer {
-  var errorMessageFont: Font { PrimerFont.bodySmall(tokens: tokens) }
+  var errorMessageFont: Font { PrimerFont.error(tokens: tokens) }
   var labelFont: Font { PrimerFont.bodySmall(tokens: tokens) }
 }
 
 @available(iOS 15.0, *)
 extension PrimerInputFieldContainer {
   var fieldCornerRadius: CGFloat { PrimerRadius.small(tokens: tokens) }
-  // Design specifies a 2pt stroke for the focus and error states, 1pt otherwise.
   var textFieldContainerBackgroundLineWidth: CGFloat {
-    hasError || isFocused
+    if hasError { return PrimerBorderWidth.error(tokens: tokens) }
+    return isFocused
       ? PrimerBorderWidth.selected(tokens: tokens)
       : PrimerBorderWidth.standard(tokens: tokens)
   }

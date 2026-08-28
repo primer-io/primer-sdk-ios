@@ -181,7 +181,7 @@ struct BillingAddressRedirectScreen: View {
 
       if let error = billingState.errors[.countryCode] {
         Text(error.message)
-          .font(PrimerFont.bodySmall(tokens: tokens))
+          .font(PrimerFont.error(tokens: tokens))
           .foregroundColor(CheckoutColors.textNegative(tokens: tokens))
       }
     }
@@ -219,7 +219,7 @@ struct BillingAddressRedirectScreen: View {
 
       if let error = billingState.errors[fieldType] {
         Text(error.message)
-          .font(PrimerFont.bodySmall(tokens: tokens))
+          .font(PrimerFont.error(tokens: tokens))
           .foregroundColor(CheckoutColors.textNegative(tokens: tokens))
       }
     }
@@ -233,7 +233,7 @@ struct BillingAddressRedirectScreen: View {
 
   private func fieldBorderWidth(for fieldType: PrimerInputElementType) -> CGFloat {
     billingState.errors[fieldType] != nil
-      ? PrimerBorderWidth.selected(tokens: tokens)
+      ? PrimerBorderWidth.error(tokens: tokens)
       : PrimerBorderWidth.standard(tokens: tokens)
   }
 

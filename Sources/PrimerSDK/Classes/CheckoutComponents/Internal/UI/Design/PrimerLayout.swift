@@ -126,19 +126,19 @@ enum PrimerBorderWidth {
   static let standard: CGFloat = 1
   static let selected: CGFloat = 2
 
-  /// Standard field/component border. Maps to the `thin` border-width token (default 1).
+  /// Resting field/component border. Maps to the `default` width token (default 1).
   static func standard(tokens: DesignTokens?) -> CGFloat {
-    tokens?.primerBorderWidthThin ?? standard
+    tokens?.primerWidthDefault ?? standard
   }
 
-  /// Emphasised border for focused/selected state. Maps to the `medium` border-width token (default 2).
+  /// Emphasised border for the focused and selected states. Maps to the `focus` width token (default 2).
   static func selected(tokens: DesignTokens?) -> CGFloat {
-    tokens?.primerBorderWidthMedium ?? selected
+    tokens?.primerWidthFocus ?? selected
   }
 
-  /// Heaviest border-width token (default 3).
-  static func thick(tokens: DesignTokens?) -> CGFloat {
-    tokens?.primerBorderWidthThick ?? 3
+  /// Emphasised border for a field in error. Maps to the `error` width token (default 2).
+  static func error(tokens: DesignTokens?) -> CGFloat {
+    tokens?.primerWidthError ?? selected
   }
 }
 

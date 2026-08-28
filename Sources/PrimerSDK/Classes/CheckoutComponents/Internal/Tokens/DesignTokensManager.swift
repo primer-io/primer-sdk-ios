@@ -140,8 +140,8 @@ final class DesignTokensManager: ObservableObject {
     if let typography = theme.typography {
       applyTypographyOverrides(to: tokens, from: typography)
     }
-    if let borderWidth = theme.borderWidth {
-      applyBorderWidthOverrides(to: tokens, from: borderWidth)
+    if let width = theme.width {
+      applyWidthOverrides(to: tokens, from: width)
     }
   }
 
@@ -305,12 +305,12 @@ final class DesignTokensManager: ObservableObject {
     if let value = sizes.primerSizeBase { tokens.primerSizeBase = value }
   }
 
-  private func applyBorderWidthOverrides(
-    to tokens: DesignTokens, from borderWidth: BorderWidthOverrides
+  private func applyWidthOverrides(
+    to tokens: DesignTokens, from width: WidthOverrides
   ) {
-    if let value = borderWidth.primerBorderWidthThin { tokens.primerBorderWidthThin = value }
-    if let value = borderWidth.primerBorderWidthMedium { tokens.primerBorderWidthMedium = value }
-    if let value = borderWidth.primerBorderWidthThick { tokens.primerBorderWidthThick = value }
+    if let value = width.primerWidthDefault { tokens.primerWidthDefault = value }
+    if let value = width.primerWidthFocus { tokens.primerWidthFocus = value }
+    if let value = width.primerWidthError { tokens.primerWidthError = value }
   }
 
   private func applyTypographyOverrides(
@@ -388,6 +388,21 @@ final class DesignTokensManager: ObservableObject {
       }
       if let lineHeight = style.lineHeight {
         tokens.primerTypographyBodySmallLineHeight = lineHeight
+      }
+    }
+
+    // Error
+    if let style = typography.error {
+      if let font = style.font { tokens.primerTypographyErrorFont = font }
+      if let size = style.size { tokens.primerTypographyErrorSize = size }
+      if let weight = style.weight {
+        tokens.primerTypographyErrorWeight = fontWeightToCGFloat(weight)
+      }
+      if let letterSpacing = style.letterSpacing {
+        tokens.primerTypographyErrorLetterSpacing = letterSpacing
+      }
+      if let lineHeight = style.lineHeight {
+        tokens.primerTypographyErrorLineHeight = lineHeight
       }
     }
   }

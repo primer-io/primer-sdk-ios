@@ -95,9 +95,9 @@ final class DesignTokens: Decodable {
   var primerColorRed900: Color? = Color(red: 0.706, green: 0.196, blue: 0.294, opacity: 1)
   var primerColorBlue500: Color? = Color(red: 0.224, green: 0.616, blue: 1.000, opacity: 1)
   var primerColorBlue900: Color? = Color(red: 0.133, green: 0.439, blue: 0.957, opacity: 1)
-  var primerBorderWidthThin: CGFloat? = 1
-  var primerBorderWidthMedium: CGFloat? = 2
-  var primerBorderWidthThick: CGFloat? = 3
+  var primerWidthDefault: CGFloat? = 1
+  var primerWidthFocus: CGFloat? = 2
+  var primerWidthError: CGFloat? = 2
   var primerRadiusMedium: CGFloat? = 8
   var primerRadiusSmall: CGFloat? = 4
   var primerRadiusLarge: CGFloat? = 12
@@ -129,6 +129,11 @@ final class DesignTokens: Decodable {
   var primerTypographyBodySmallWeight: CGFloat? = 400
   var primerTypographyBodySmallSize: CGFloat? = 12
   var primerTypographyBodySmallLineHeight: CGFloat? = 16
+  var primerTypographyErrorFont: String? = "Inter"
+  var primerTypographyErrorLetterSpacing: CGFloat? = 0
+  var primerTypographyErrorWeight: CGFloat? = 400
+  var primerTypographyErrorSize: CGFloat? = 12
+  var primerTypographyErrorLineHeight: CGFloat? = 16
   var primerSpaceXxsmall: CGFloat? = 2
   var primerSpaceXsmall: CGFloat? = 4
   var primerSpaceSmall: CGFloat? = 8
@@ -204,9 +209,9 @@ final class DesignTokens: Decodable {
     case primerColorRed900
     case primerColorBlue500
     case primerColorBlue900
-    case primerBorderWidthThin
-    case primerBorderWidthMedium
-    case primerBorderWidthThick
+    case primerWidthDefault
+    case primerWidthFocus
+    case primerWidthError
     case primerRadiusMedium
     case primerRadiusSmall
     case primerRadiusLarge
@@ -238,6 +243,11 @@ final class DesignTokens: Decodable {
     case primerTypographyBodySmallWeight
     case primerTypographyBodySmallSize
     case primerTypographyBodySmallLineHeight
+    case primerTypographyErrorFont
+    case primerTypographyErrorLetterSpacing
+    case primerTypographyErrorWeight
+    case primerTypographyErrorSize
+    case primerTypographyErrorLineHeight
     case primerSpaceXxsmall
     case primerSpaceXsmall
     case primerSpaceSmall
@@ -319,9 +329,9 @@ final class DesignTokens: Decodable {
     primerColorRed900 = try container.decodeColorIfPresent(forKey: .primerColorRed900) ?? primerColorRed900
     primerColorBlue500 = try container.decodeColorIfPresent(forKey: .primerColorBlue500) ?? primerColorBlue500
     primerColorBlue900 = try container.decodeColorIfPresent(forKey: .primerColorBlue900) ?? primerColorBlue900
-    primerBorderWidthThin = try container.decodeIfPresent(CGFloat.self, forKey: .primerBorderWidthThin) ?? primerBorderWidthThin
-    primerBorderWidthMedium = try container.decodeIfPresent(CGFloat.self, forKey: .primerBorderWidthMedium) ?? primerBorderWidthMedium
-    primerBorderWidthThick = try container.decodeIfPresent(CGFloat.self, forKey: .primerBorderWidthThick) ?? primerBorderWidthThick
+    primerWidthDefault = try container.decodeIfPresent(CGFloat.self, forKey: .primerWidthDefault) ?? primerWidthDefault
+    primerWidthFocus = try container.decodeIfPresent(CGFloat.self, forKey: .primerWidthFocus) ?? primerWidthFocus
+    primerWidthError = try container.decodeIfPresent(CGFloat.self, forKey: .primerWidthError) ?? primerWidthError
     primerRadiusMedium = try container.decodeIfPresent(
       CGFloat.self, forKey: .primerRadiusMedium) ?? primerRadiusMedium
     primerRadiusSmall = try container.decodeIfPresent(CGFloat.self, forKey: .primerRadiusSmall) ?? primerRadiusSmall
@@ -381,6 +391,11 @@ final class DesignTokens: Decodable {
       CGFloat.self, forKey: .primerTypographyBodySmallSize) ?? primerTypographyBodySmallSize
     primerTypographyBodySmallLineHeight = try container.decodeIfPresent(
       CGFloat.self, forKey: .primerTypographyBodySmallLineHeight) ?? primerTypographyBodySmallLineHeight
+    primerTypographyErrorFont = try container.decodeIfPresent(String.self, forKey: .primerTypographyErrorFont) ?? primerTypographyErrorFont
+    primerTypographyErrorLetterSpacing = try container.decodeIfPresent(CGFloat.self, forKey: .primerTypographyErrorLetterSpacing) ?? primerTypographyErrorLetterSpacing
+    primerTypographyErrorWeight = try container.decodeIfPresent(CGFloat.self, forKey: .primerTypographyErrorWeight) ?? primerTypographyErrorWeight
+    primerTypographyErrorSize = try container.decodeIfPresent(CGFloat.self, forKey: .primerTypographyErrorSize) ?? primerTypographyErrorSize
+    primerTypographyErrorLineHeight = try container.decodeIfPresent(CGFloat.self, forKey: .primerTypographyErrorLineHeight) ?? primerTypographyErrorLineHeight
     primerSpaceXxsmall = try container.decodeIfPresent(
       CGFloat.self, forKey: .primerSpaceXxsmall) ?? primerSpaceXxsmall
     primerSpaceXsmall = try container.decodeIfPresent(CGFloat.self, forKey: .primerSpaceXsmall) ?? primerSpaceXsmall

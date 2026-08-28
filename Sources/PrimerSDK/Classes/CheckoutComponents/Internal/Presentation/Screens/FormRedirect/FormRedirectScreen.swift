@@ -185,7 +185,7 @@ private struct FormFieldView: View {
 
             if let errorMessage = field.errorMessage {
                 Text(errorMessage)
-                    .font(PrimerFont.caption(tokens: tokens))
+                    .font(PrimerFont.error(tokens: tokens))
                     .foregroundColor(CheckoutColors.textNegative(tokens: tokens))
             } else if let helperText = field.helperText {
                 Text(helperText)
@@ -237,7 +237,8 @@ private struct FormFieldView: View {
     }
 
     private var borderWidth: CGFloat {
-        field.errorMessage != nil || isFocused
+        if field.errorMessage != nil { return PrimerBorderWidth.error(tokens: tokens) }
+        return isFocused
             ? PrimerBorderWidth.selected(tokens: tokens)
             : PrimerBorderWidth.standard(tokens: tokens)
     }

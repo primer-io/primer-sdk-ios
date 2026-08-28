@@ -336,7 +336,6 @@
       }
     },
     "typography": {
-      "display": null,
       "brand": {
         "type": "string",
         "value": "Inter"
@@ -459,6 +458,28 @@
             "value": 16
           }
         }
+      },
+      "error": {
+        "font": {
+          "type": "color",
+          "value": "{primer.typography.body.small.font}"
+        },
+        "weight": {
+          "type": "dimension",
+          "value": "{primer.typography.body.small.weight}"
+        },
+        "size": {
+          "type": "dimension",
+          "value": "{primer.typography.body.small.size}"
+        },
+        "lineHeight": {
+          "type": "dimension",
+          "value": "{primer.typography.body.small.lineHeight}"
+        },
+        "letterSpacing": {
+          "type": "dimension",
+          "value": "{primer.typography.body.small.letterSpacing}"
+        }
       }
     },
     "space": {
@@ -523,6 +544,20 @@
       "base": {
         "type": "dimension",
         "value": 4
+      }
+    },
+    "width": {
+      "default": {
+        "type": "dimension",
+        "value": 1
+      },
+      "focus": {
+        "type": "dimension",
+        "value": 2
+      },
+      "error": {
+        "type": "dimension",
+        "value": 2
       }
     }
   }
