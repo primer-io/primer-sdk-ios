@@ -60,7 +60,7 @@ enum PrimerSize {
   }
 
   static func xxlarge(tokens: DesignTokens?) -> CGFloat {
-    tokens?.primerSizeXxlarge ?? 44
+    tokens?.primerSizeXxlarge ?? 40
   }
 
   static func xxxlarge(tokens: DesignTokens?) -> CGFloat {

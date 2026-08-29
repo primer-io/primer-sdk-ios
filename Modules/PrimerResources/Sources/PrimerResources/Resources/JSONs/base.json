@@ -535,7 +535,7 @@
       },
       "xxlarge": {
         "type": "dimension",
-        "value": "{primer.size.base} * 11.00"
+        "value": "{primer.size.base} * 10.00"
       },
       "xxxlarge": {
         "type": "dimension",

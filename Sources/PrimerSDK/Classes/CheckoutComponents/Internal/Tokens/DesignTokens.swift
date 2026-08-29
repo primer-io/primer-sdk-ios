@@ -147,7 +147,7 @@ final class DesignTokens: Decodable {
   var primerSizeMedium: CGFloat? = 20
   var primerSizeLarge: CGFloat? = 24
   var primerSizeXlarge: CGFloat? = 32
-  var primerSizeXxlarge: CGFloat? = 44
+  var primerSizeXxlarge: CGFloat? = 40
   var primerSizeXxxlarge: CGFloat? = 56
   var primerSizeBase: CGFloat? = 4
 
