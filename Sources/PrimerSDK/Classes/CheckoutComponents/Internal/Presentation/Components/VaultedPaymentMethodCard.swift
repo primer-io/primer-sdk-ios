@@ -196,7 +196,7 @@ struct VaultedPaymentMethodCard: View {
   private func makeCheckmark() -> some View {
     Image(systemName: "checkmark")
       .font(PrimerFont.body(tokens: tokens))
-      .foregroundColor(CheckoutColors.borderFocus(tokens: tokens))
+      .foregroundColor(CheckoutColors.borderSelected(tokens: tokens))
   }
 
   // MARK: - Card Background
@@ -212,7 +212,7 @@ struct VaultedPaymentMethodCard: View {
     RoundedRectangle(cornerRadius: PrimerRadius.medium(tokens: tokens))
       .stroke(
         isSelected
-          ? CheckoutColors.borderFocus(tokens: tokens)
+          ? CheckoutColors.borderSelected(tokens: tokens)
           : CheckoutColors.borderDefault(tokens: tokens),
         lineWidth: isSelected
           ? PrimerBorderWidth.selected(tokens: tokens) : PrimerBorderWidth.standard(tokens: tokens)

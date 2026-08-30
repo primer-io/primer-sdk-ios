@@ -132,7 +132,7 @@ struct DeleteVaultedPaymentMethodConfirmationScreen: View, LogReporter {
       .padding(PrimerSpacing.medium(tokens: tokens))
       .background(
         RoundedRectangle(cornerRadius: PrimerRadius.medium(tokens: tokens))
-          .fill(CheckoutColors.borderFocus(tokens: tokens))
+          .fill(CheckoutColors.buttonPrimary(tokens: tokens))
       )
     }
     .buttonStyle(PlainButtonStyle())
