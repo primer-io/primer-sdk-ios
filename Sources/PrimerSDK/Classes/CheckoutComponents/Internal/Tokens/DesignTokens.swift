@@ -18,42 +18,42 @@ final class DesignTokens: Decodable {
     red: 1.000, green: 1.000, blue: 1.000, opacity: 1)
   var primerColorTextOutlinedDefault: Color? = Color(
     red: 0.129, green: 0.129, blue: 0.129, opacity: 1)
-  var primerColorBackgroundSecondary: Color? = Color(red: 0.961, green: 0.961, blue: 0.961, opacity: 1)
+  var primerColorBackgroundSecondary: Color? = Color(red: 0.129, green: 0.129, blue: 0.129, opacity: 0.039)
   var primerColorBackgroundOutlinedHover: Color? = Color(red: 1.000, green: 1.000, blue: 1.000, opacity: 1)
   var primerColorBackgroundOutlinedActive: Color? = Color(red: 1.000, green: 1.000, blue: 1.000, opacity: 1)
-  var primerColorBackgroundOutlinedDisabled: Color? = Color(red: 0.961, green: 0.961, blue: 0.961, opacity: 1)
-  var primerColorBackgroundOutlinedLoading: Color? = Color(red: 0.961, green: 0.961, blue: 0.961, opacity: 1)
+  var primerColorBackgroundOutlinedDisabled: Color? = Color(red: 0.129, green: 0.129, blue: 0.129, opacity: 0.039)
+  var primerColorBackgroundOutlinedLoading: Color? = Color(red: 0.129, green: 0.129, blue: 0.129, opacity: 0.039)
   var primerColorBackgroundOutlinedSelected: Color? = Color(red: 1.000, green: 1.000, blue: 1.000, opacity: 1)
   var primerColorBackgroundOutlinedError: Color? = Color(red: 1.000, green: 1.000, blue: 1.000, opacity: 1)
   var primerColorBackgroundTransparentDefault: Color? = Color(red: 1.000, green: 1.000, blue: 1.000, opacity: 0)
-  var primerColorBackgroundTransparentHover: Color? = Color(red: 0.961, green: 0.961, blue: 0.961, opacity: 1)
-  var primerColorBackgroundTransparentActive: Color? = Color(red: 0.933, green: 0.933, blue: 0.933, opacity: 1)
-  var primerColorBackgroundTransparentDisabled: Color? = Color(red: 0.961, green: 0.961, blue: 0.961, opacity: 1)
-  var primerColorBackgroundTransparentLoading: Color? = Color(red: 0.961, green: 0.961, blue: 0.961, opacity: 1)
-  var primerColorBackgroundTransparentSelected: Color? = Color(red: 0.961, green: 0.961, blue: 0.961, opacity: 1)
+  var primerColorBackgroundTransparentHover: Color? = Color(red: 0.129, green: 0.129, blue: 0.129, opacity: 0.039)
+  var primerColorBackgroundTransparentActive: Color? = Color(red: 0.129, green: 0.129, blue: 0.129, opacity: 0.071)
+  var primerColorBackgroundTransparentDisabled: Color? = Color(red: 0.129, green: 0.129, blue: 0.129, opacity: 0.039)
+  var primerColorBackgroundTransparentLoading: Color? = Color(red: 0.129, green: 0.129, blue: 0.129, opacity: 0.039)
+  var primerColorBackgroundTransparentSelected: Color? = Color(red: 0.129, green: 0.129, blue: 0.129, opacity: 0.039)
   var primerColorTextPrimary: Color? = Color(
     red: 0.129, green: 0.129, blue: 0.129, opacity: 1)
   var primerColorTextPlaceholder: Color? = Color(
-    red: 0.620, green: 0.620, blue: 0.620, opacity: 1)
+    red: 0.129, green: 0.129, blue: 0.129, opacity: 0.439)
   var primerColorTextDisabled: Color? = Color(
-    red: 0.741, green: 0.741, blue: 0.741, opacity: 1)
+    red: 0.129, green: 0.129, blue: 0.129, opacity: 0.302)
   var primerColorTextNegative: Color? = Color(
     red: 0.706, green: 0.196, blue: 0.294, opacity: 1)
   var primerColorTextLink: Color? = Color(red: 0.133, green: 0.439, blue: 0.957, opacity: 1)
   var primerColorTextSecondary: Color? = Color(
-    red: 0.459, green: 0.459, blue: 0.459, opacity: 1)
+    red: 0.129, green: 0.129, blue: 0.129, opacity: 0.620)
   var primerColorBorderOutlinedDefault: Color? = Color(
-    red: 0.878, green: 0.878, blue: 0.878, opacity: 1)
+    red: 0.129, green: 0.129, blue: 0.129, opacity: 0.141)
   var primerColorBorderOutlinedHover: Color? = Color(
-    red: 0.741, green: 0.741, blue: 0.741, opacity: 1)
+    red: 0.129, green: 0.129, blue: 0.129, opacity: 0.302)
   var primerColorBorderOutlinedActive: Color? = Color(
-    red: 0.620, green: 0.620, blue: 0.620, opacity: 1)
+    red: 0.129, green: 0.129, blue: 0.129, opacity: 0.439)
   var primerColorBorderOutlinedFocus: Color? = Color(
     red: 0.184, green: 0.596, blue: 1.000, opacity: 1)
   var primerColorBorderOutlinedDisabled: Color? = Color(
-    red: 0.933, green: 0.933, blue: 0.933, opacity: 1)
+    red: 0.129, green: 0.129, blue: 0.129, opacity: 0.071)
   var primerColorBorderOutlinedLoading: Color? = Color(
-    red: 0.933, green: 0.933, blue: 0.933, opacity: 1)
+    red: 0.129, green: 0.129, blue: 0.129, opacity: 0.071)
   var primerColorBorderOutlinedSelected: Color? = Color(
     red: 0.184, green: 0.596, blue: 1.000, opacity: 1)
   var primerColorBorderOutlinedError: Color? = Color(
@@ -73,19 +73,19 @@ final class DesignTokens: Decodable {
   var primerColorIconPrimary: Color? = Color(
     red: 0.129, green: 0.129, blue: 0.129, opacity: 1)
   var primerColorIconDisabled: Color? = Color(
-    red: 0.741, green: 0.741, blue: 0.741, opacity: 1)
+    red: 0.129, green: 0.129, blue: 0.129, opacity: 0.302)
   var primerColorIconNegative: Color? = Color(
     red: 1.000, green: 0.447, blue: 0.475, opacity: 1)
   var primerColorIconPositive: Color? = Color(
     red: 0.243, green: 0.714, blue: 0.561, opacity: 1)
   var primerColorFocus: Color? = Color(red: 0.184, green: 0.596, blue: 1.000, opacity: 1)
   var primerColorLoader: Color? = Color(red: 0.184, green: 0.596, blue: 1.000, opacity: 1)
-  var primerColorGray100: Color? = Color(red: 0.961, green: 0.961, blue: 0.961, opacity: 1)
-  var primerColorGray200: Color? = Color(red: 0.933, green: 0.933, blue: 0.933, opacity: 1)
-  var primerColorGray300: Color? = Color(red: 0.878, green: 0.878, blue: 0.878, opacity: 1)
-  var primerColorGray400: Color? = Color(red: 0.741, green: 0.741, blue: 0.741, opacity: 1)
-  var primerColorGray500: Color? = Color(red: 0.620, green: 0.620, blue: 0.620, opacity: 1)
-  var primerColorGray600: Color? = Color(red: 0.459, green: 0.459, blue: 0.459, opacity: 1)
+  var primerColorGray100: Color? = Color(red: 0.129, green: 0.129, blue: 0.129, opacity: 0.039)
+  var primerColorGray200: Color? = Color(red: 0.129, green: 0.129, blue: 0.129, opacity: 0.071)
+  var primerColorGray300: Color? = Color(red: 0.129, green: 0.129, blue: 0.129, opacity: 0.141)
+  var primerColorGray400: Color? = Color(red: 0.129, green: 0.129, blue: 0.129, opacity: 0.302)
+  var primerColorGray500: Color? = Color(red: 0.129, green: 0.129, blue: 0.129, opacity: 0.439)
+  var primerColorGray600: Color? = Color(red: 0.129, green: 0.129, blue: 0.129, opacity: 0.620)
   var primerColorGray900: Color? = Color(red: 0.129, green: 0.129, blue: 0.129, opacity: 1)
   var primerColorGray000: Color? = Color(red: 1.000, green: 1.000, blue: 1.000, opacity: 1)
   var primerColorGreen500: Color? = Color(red: 0.243, green: 0.714, blue: 0.561, opacity: 1)
