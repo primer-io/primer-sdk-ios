@@ -92,14 +92,12 @@ public struct ColorOverrides: Equatable {
   public let primerColorBackgroundPrimary: Color?
   public let primerColorBackgroundSecondary: Color?
   public let primerColorBackgroundOutlinedDefault: Color?
-  public let primerColorBackgroundOutlinedHover: Color?
   public let primerColorBackgroundOutlinedActive: Color?
   public let primerColorBackgroundOutlinedDisabled: Color?
   public let primerColorBackgroundOutlinedLoading: Color?
   public let primerColorBackgroundOutlinedSelected: Color?
   public let primerColorBackgroundOutlinedError: Color?
   public let primerColorBackgroundTransparentDefault: Color?
-  public let primerColorBackgroundTransparentHover: Color?
   public let primerColorBackgroundTransparentActive: Color?
   public let primerColorBackgroundTransparentDisabled: Color?
   public let primerColorBackgroundTransparentLoading: Color?
@@ -115,7 +113,6 @@ public struct ColorOverrides: Equatable {
   // MARK: Border Colors (matching internal DesignTokens)
 
   public let primerColorBorderOutlinedDefault: Color?
-  public let primerColorBorderOutlinedHover: Color?
   public let primerColorBorderOutlinedActive: Color?
   public let primerColorBorderOutlinedFocus: Color?
   public let primerColorBorderOutlinedDisabled: Color?
@@ -126,7 +123,6 @@ public struct ColorOverrides: Equatable {
   // MARK: Border Transparent Colors
 
   public let primerColorBorderTransparentDefault: Color?
-  public let primerColorBorderTransparentHover: Color?
   public let primerColorBorderTransparentActive: Color?
   public let primerColorBorderTransparentFocus: Color?
   public let primerColorBorderTransparentDisabled: Color?
@@ -163,14 +159,12 @@ public struct ColorOverrides: Equatable {
     primerColorBackgroundPrimary: Color? = nil,
     primerColorBackgroundSecondary: Color? = nil,
     primerColorBackgroundOutlinedDefault: Color? = nil,
-    primerColorBackgroundOutlinedHover: Color? = nil,
     primerColorBackgroundOutlinedActive: Color? = nil,
     primerColorBackgroundOutlinedDisabled: Color? = nil,
     primerColorBackgroundOutlinedLoading: Color? = nil,
     primerColorBackgroundOutlinedSelected: Color? = nil,
     primerColorBackgroundOutlinedError: Color? = nil,
     primerColorBackgroundTransparentDefault: Color? = nil,
-    primerColorBackgroundTransparentHover: Color? = nil,
     primerColorBackgroundTransparentActive: Color? = nil,
     primerColorBackgroundTransparentDisabled: Color? = nil,
     primerColorBackgroundTransparentLoading: Color? = nil,
@@ -183,7 +177,6 @@ public struct ColorOverrides: Equatable {
     primerColorTextLink: Color? = nil,
     primerColorTextOutlinedDefault: Color? = nil,
     primerColorBorderOutlinedDefault: Color? = nil,
-    primerColorBorderOutlinedHover: Color? = nil,
     primerColorBorderOutlinedActive: Color? = nil,
     primerColorBorderOutlinedFocus: Color? = nil,
     primerColorBorderOutlinedDisabled: Color? = nil,
@@ -191,7 +184,6 @@ public struct ColorOverrides: Equatable {
     primerColorBorderOutlinedSelected: Color? = nil,
     primerColorBorderOutlinedLoading: Color? = nil,
     primerColorBorderTransparentDefault: Color? = nil,
-    primerColorBorderTransparentHover: Color? = nil,
     primerColorBorderTransparentActive: Color? = nil,
     primerColorBorderTransparentFocus: Color? = nil,
     primerColorBorderTransparentDisabled: Color? = nil,
@@ -221,14 +213,12 @@ public struct ColorOverrides: Equatable {
     self.primerColorBackgroundPrimary = primerColorBackgroundPrimary
     self.primerColorBackgroundSecondary = primerColorBackgroundSecondary
     self.primerColorBackgroundOutlinedDefault = primerColorBackgroundOutlinedDefault
-    self.primerColorBackgroundOutlinedHover = primerColorBackgroundOutlinedHover
     self.primerColorBackgroundOutlinedActive = primerColorBackgroundOutlinedActive
     self.primerColorBackgroundOutlinedDisabled = primerColorBackgroundOutlinedDisabled
     self.primerColorBackgroundOutlinedLoading = primerColorBackgroundOutlinedLoading
     self.primerColorBackgroundOutlinedSelected = primerColorBackgroundOutlinedSelected
     self.primerColorBackgroundOutlinedError = primerColorBackgroundOutlinedError
     self.primerColorBackgroundTransparentDefault = primerColorBackgroundTransparentDefault
-    self.primerColorBackgroundTransparentHover = primerColorBackgroundTransparentHover
     self.primerColorBackgroundTransparentActive = primerColorBackgroundTransparentActive
     self.primerColorBackgroundTransparentDisabled = primerColorBackgroundTransparentDisabled
     self.primerColorBackgroundTransparentLoading = primerColorBackgroundTransparentLoading
@@ -241,7 +231,6 @@ public struct ColorOverrides: Equatable {
     self.primerColorTextLink = primerColorTextLink
     self.primerColorTextOutlinedDefault = primerColorTextOutlinedDefault
     self.primerColorBorderOutlinedDefault = primerColorBorderOutlinedDefault
-    self.primerColorBorderOutlinedHover = primerColorBorderOutlinedHover
     self.primerColorBorderOutlinedActive = primerColorBorderOutlinedActive
     self.primerColorBorderOutlinedFocus = primerColorBorderOutlinedFocus
     self.primerColorBorderOutlinedDisabled = primerColorBorderOutlinedDisabled
@@ -249,7 +238,6 @@ public struct ColorOverrides: Equatable {
     self.primerColorBorderOutlinedSelected = primerColorBorderOutlinedSelected
     self.primerColorBorderOutlinedLoading = primerColorBorderOutlinedLoading
     self.primerColorBorderTransparentDefault = primerColorBorderTransparentDefault
-    self.primerColorBorderTransparentHover = primerColorBorderTransparentHover
     self.primerColorBorderTransparentActive = primerColorBorderTransparentActive
     self.primerColorBorderTransparentFocus = primerColorBorderTransparentFocus
     self.primerColorBorderTransparentDisabled = primerColorBorderTransparentDisabled

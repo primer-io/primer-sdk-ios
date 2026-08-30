@@ -19,14 +19,12 @@ final class DesignTokens: Decodable {
   var primerColorTextOutlinedDefault: Color? = Color(
     red: 0.129, green: 0.129, blue: 0.129, opacity: 1)
   var primerColorBackgroundSecondary: Color? = Color(red: 0.129, green: 0.129, blue: 0.129, opacity: 0.039)
-  var primerColorBackgroundOutlinedHover: Color? = Color(red: 1.000, green: 1.000, blue: 1.000, opacity: 1)
   var primerColorBackgroundOutlinedActive: Color? = Color(red: 1.000, green: 1.000, blue: 1.000, opacity: 1)
   var primerColorBackgroundOutlinedDisabled: Color? = Color(red: 0.129, green: 0.129, blue: 0.129, opacity: 0.039)
   var primerColorBackgroundOutlinedLoading: Color? = Color(red: 0.129, green: 0.129, blue: 0.129, opacity: 0.039)
   var primerColorBackgroundOutlinedSelected: Color? = Color(red: 1.000, green: 1.000, blue: 1.000, opacity: 1)
   var primerColorBackgroundOutlinedError: Color? = Color(red: 1.000, green: 1.000, blue: 1.000, opacity: 1)
   var primerColorBackgroundTransparentDefault: Color? = Color(red: 1.000, green: 1.000, blue: 1.000, opacity: 0)
-  var primerColorBackgroundTransparentHover: Color? = Color(red: 0.129, green: 0.129, blue: 0.129, opacity: 0.039)
   var primerColorBackgroundTransparentActive: Color? = Color(red: 0.129, green: 0.129, blue: 0.129, opacity: 0.071)
   var primerColorBackgroundTransparentDisabled: Color? = Color(red: 0.129, green: 0.129, blue: 0.129, opacity: 0.039)
   var primerColorBackgroundTransparentLoading: Color? = Color(red: 0.129, green: 0.129, blue: 0.129, opacity: 0.039)
@@ -44,8 +42,6 @@ final class DesignTokens: Decodable {
     red: 0.129, green: 0.129, blue: 0.129, opacity: 0.620)
   var primerColorBorderOutlinedDefault: Color? = Color(
     red: 0.129, green: 0.129, blue: 0.129, opacity: 0.141)
-  var primerColorBorderOutlinedHover: Color? = Color(
-    red: 0.129, green: 0.129, blue: 0.129, opacity: 0.302)
   var primerColorBorderOutlinedActive: Color? = Color(
     red: 0.129, green: 0.129, blue: 0.129, opacity: 0.439)
   var primerColorBorderOutlinedFocus: Color? = Color(
@@ -59,8 +55,6 @@ final class DesignTokens: Decodable {
   var primerColorBorderOutlinedError: Color? = Color(
     red: 1.000, green: 0.447, blue: 0.475, opacity: 1)
   var primerColorBorderTransparentDefault: Color? = Color(
-    red: 1.000, green: 1.000, blue: 1.000, opacity: 0)
-  var primerColorBorderTransparentHover: Color? = Color(
     red: 1.000, green: 1.000, blue: 1.000, opacity: 0)
   var primerColorBorderTransparentActive: Color? = Color(
     red: 1.000, green: 1.000, blue: 1.000, opacity: 0)
@@ -157,14 +151,12 @@ final class DesignTokens: Decodable {
     case primerColorBackgroundOutlinedDefault
     case primerColorTextOutlinedDefault
     case primerColorBackgroundSecondary
-    case primerColorBackgroundOutlinedHover
     case primerColorBackgroundOutlinedActive
     case primerColorBackgroundOutlinedDisabled
     case primerColorBackgroundOutlinedLoading
     case primerColorBackgroundOutlinedSelected
     case primerColorBackgroundOutlinedError
     case primerColorBackgroundTransparentDefault
-    case primerColorBackgroundTransparentHover
     case primerColorBackgroundTransparentActive
     case primerColorBackgroundTransparentDisabled
     case primerColorBackgroundTransparentLoading
@@ -176,7 +168,6 @@ final class DesignTokens: Decodable {
     case primerColorTextLink
     case primerColorTextSecondary
     case primerColorBorderOutlinedDefault
-    case primerColorBorderOutlinedHover
     case primerColorBorderOutlinedActive
     case primerColorBorderOutlinedFocus
     case primerColorBorderOutlinedDisabled
@@ -184,7 +175,6 @@ final class DesignTokens: Decodable {
     case primerColorBorderOutlinedSelected
     case primerColorBorderOutlinedError
     case primerColorBorderTransparentDefault
-    case primerColorBorderTransparentHover
     case primerColorBorderTransparentActive
     case primerColorBorderTransparentFocus
     case primerColorBorderTransparentDisabled
@@ -278,14 +268,12 @@ final class DesignTokens: Decodable {
     primerColorBackgroundOutlinedDefault = try container.decodeColorIfPresent(forKey: .primerColorBackgroundOutlinedDefault) ?? primerColorBackgroundOutlinedDefault
     primerColorTextOutlinedDefault = try container.decodeColorIfPresent(forKey: .primerColorTextOutlinedDefault) ?? primerColorTextOutlinedDefault
     primerColorBackgroundSecondary = try container.decodeColorIfPresent(forKey: .primerColorBackgroundSecondary) ?? primerColorBackgroundSecondary
-    primerColorBackgroundOutlinedHover = try container.decodeColorIfPresent(forKey: .primerColorBackgroundOutlinedHover) ?? primerColorBackgroundOutlinedHover
     primerColorBackgroundOutlinedActive = try container.decodeColorIfPresent(forKey: .primerColorBackgroundOutlinedActive) ?? primerColorBackgroundOutlinedActive
     primerColorBackgroundOutlinedDisabled = try container.decodeColorIfPresent(forKey: .primerColorBackgroundOutlinedDisabled) ?? primerColorBackgroundOutlinedDisabled
     primerColorBackgroundOutlinedLoading = try container.decodeColorIfPresent(forKey: .primerColorBackgroundOutlinedLoading) ?? primerColorBackgroundOutlinedLoading
     primerColorBackgroundOutlinedSelected = try container.decodeColorIfPresent(forKey: .primerColorBackgroundOutlinedSelected) ?? primerColorBackgroundOutlinedSelected
     primerColorBackgroundOutlinedError = try container.decodeColorIfPresent(forKey: .primerColorBackgroundOutlinedError) ?? primerColorBackgroundOutlinedError
     primerColorBackgroundTransparentDefault = try container.decodeColorIfPresent(forKey: .primerColorBackgroundTransparentDefault) ?? primerColorBackgroundTransparentDefault
-    primerColorBackgroundTransparentHover = try container.decodeColorIfPresent(forKey: .primerColorBackgroundTransparentHover) ?? primerColorBackgroundTransparentHover
     primerColorBackgroundTransparentActive = try container.decodeColorIfPresent(forKey: .primerColorBackgroundTransparentActive) ?? primerColorBackgroundTransparentActive
     primerColorBackgroundTransparentDisabled = try container.decodeColorIfPresent(forKey: .primerColorBackgroundTransparentDisabled) ?? primerColorBackgroundTransparentDisabled
     primerColorBackgroundTransparentLoading = try container.decodeColorIfPresent(forKey: .primerColorBackgroundTransparentLoading) ?? primerColorBackgroundTransparentLoading
@@ -297,7 +285,6 @@ final class DesignTokens: Decodable {
     primerColorTextLink = try container.decodeColorIfPresent(forKey: .primerColorTextLink) ?? primerColorTextLink
     primerColorTextSecondary = try container.decodeColorIfPresent(forKey: .primerColorTextSecondary) ?? primerColorTextSecondary
     primerColorBorderOutlinedDefault = try container.decodeColorIfPresent(forKey: .primerColorBorderOutlinedDefault) ?? primerColorBorderOutlinedDefault
-    primerColorBorderOutlinedHover = try container.decodeColorIfPresent(forKey: .primerColorBorderOutlinedHover) ?? primerColorBorderOutlinedHover
     primerColorBorderOutlinedActive = try container.decodeColorIfPresent(forKey: .primerColorBorderOutlinedActive) ?? primerColorBorderOutlinedActive
     primerColorBorderOutlinedFocus = try container.decodeColorIfPresent(forKey: .primerColorBorderOutlinedFocus) ?? primerColorBorderOutlinedFocus
     primerColorBorderOutlinedDisabled = try container.decodeColorIfPresent(forKey: .primerColorBorderOutlinedDisabled) ?? primerColorBorderOutlinedDisabled
@@ -305,7 +292,6 @@ final class DesignTokens: Decodable {
     primerColorBorderOutlinedSelected = try container.decodeColorIfPresent(forKey: .primerColorBorderOutlinedSelected) ?? primerColorBorderOutlinedSelected
     primerColorBorderOutlinedError = try container.decodeColorIfPresent(forKey: .primerColorBorderOutlinedError) ?? primerColorBorderOutlinedError
     primerColorBorderTransparentDefault = try container.decodeColorIfPresent(forKey: .primerColorBorderTransparentDefault) ?? primerColorBorderTransparentDefault
-    primerColorBorderTransparentHover = try container.decodeColorIfPresent(forKey: .primerColorBorderTransparentHover) ?? primerColorBorderTransparentHover
     primerColorBorderTransparentActive = try container.decodeColorIfPresent(forKey: .primerColorBorderTransparentActive) ?? primerColorBorderTransparentActive
     primerColorBorderTransparentFocus = try container.decodeColorIfPresent(forKey: .primerColorBorderTransparentFocus) ?? primerColorBorderTransparentFocus
     primerColorBorderTransparentDisabled = try container.decodeColorIfPresent(forKey: .primerColorBorderTransparentDisabled) ?? primerColorBorderTransparentDisabled

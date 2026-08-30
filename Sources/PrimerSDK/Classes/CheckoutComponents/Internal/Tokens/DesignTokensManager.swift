@@ -182,14 +182,12 @@ final class DesignTokensManager: ObservableObject {
     if let value = colors.primerColorBackgroundOutlinedDefault { tokens.primerColorBackgroundOutlinedDefault = value }
     if let value = colors.primerColorTextOutlinedDefault { tokens.primerColorTextOutlinedDefault = value }
     if let value = colors.primerColorBackgroundSecondary { tokens.primerColorBackgroundSecondary = value }
-    if let value = colors.primerColorBackgroundOutlinedHover { tokens.primerColorBackgroundOutlinedHover = value }
     if let value = colors.primerColorBackgroundOutlinedActive { tokens.primerColorBackgroundOutlinedActive = value }
     if let value = colors.primerColorBackgroundOutlinedDisabled { tokens.primerColorBackgroundOutlinedDisabled = value }
     if let value = colors.primerColorBackgroundOutlinedLoading { tokens.primerColorBackgroundOutlinedLoading = value }
     if let value = colors.primerColorBackgroundOutlinedSelected { tokens.primerColorBackgroundOutlinedSelected = value }
     if let value = colors.primerColorBackgroundOutlinedError { tokens.primerColorBackgroundOutlinedError = value }
     if let value = colors.primerColorBackgroundTransparentDefault { tokens.primerColorBackgroundTransparentDefault = value }
-    if let value = colors.primerColorBackgroundTransparentHover { tokens.primerColorBackgroundTransparentHover = value }
     if let value = colors.primerColorBackgroundTransparentActive { tokens.primerColorBackgroundTransparentActive = value }
     if let value = colors.primerColorBackgroundTransparentDisabled { tokens.primerColorBackgroundTransparentDisabled = value }
     if let value = colors.primerColorBackgroundTransparentLoading { tokens.primerColorBackgroundTransparentLoading = value }
@@ -221,9 +219,6 @@ final class DesignTokensManager: ObservableObject {
     if let value = colors.primerColorBorderOutlinedDefault {
       tokens.primerColorBorderOutlinedDefault = value
     }
-    if let value = colors.primerColorBorderOutlinedHover {
-      tokens.primerColorBorderOutlinedHover = value
-    }
     if let value = colors.primerColorBorderOutlinedActive {
       tokens.primerColorBorderOutlinedActive = value
     }
@@ -249,9 +244,6 @@ final class DesignTokensManager: ObservableObject {
   ) {
     if let value = colors.primerColorBorderTransparentDefault {
       tokens.primerColorBorderTransparentDefault = value
-    }
-    if let value = colors.primerColorBorderTransparentHover {
-      tokens.primerColorBorderTransparentHover = value
     }
     if let value = colors.primerColorBorderTransparentActive {
       tokens.primerColorBorderTransparentActive = value

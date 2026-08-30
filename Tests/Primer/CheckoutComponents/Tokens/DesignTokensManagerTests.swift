@@ -219,7 +219,6 @@ final class DesignTokensManagerTests: XCTestCase {
         let theme = PrimerCheckoutTheme(
             colors: ColorOverrides(
                 primerColorBorderOutlinedDefault: customColor,
-                primerColorBorderOutlinedHover: customColor,
                 primerColorBorderOutlinedActive: customColor,
                 primerColorBorderOutlinedFocus: customColor,
                 primerColorBorderOutlinedDisabled: customColor,
@@ -236,7 +235,6 @@ final class DesignTokensManagerTests: XCTestCase {
         // Then
         let tokens = try XCTUnwrap(sut.tokens)
         XCTAssertEqual(tokens.primerColorBorderOutlinedDefault, customColor)
-        XCTAssertEqual(tokens.primerColorBorderOutlinedHover, customColor)
         XCTAssertEqual(tokens.primerColorBorderOutlinedActive, customColor)
         XCTAssertEqual(tokens.primerColorBorderOutlinedFocus, customColor)
         XCTAssertEqual(tokens.primerColorBorderOutlinedDisabled, customColor)
@@ -251,7 +249,6 @@ final class DesignTokensManagerTests: XCTestCase {
         let theme = PrimerCheckoutTheme(
             colors: ColorOverrides(
                 primerColorBorderTransparentDefault: customColor,
-                primerColorBorderTransparentHover: customColor,
                 primerColorBorderTransparentActive: customColor,
                 primerColorBorderTransparentFocus: customColor,
                 primerColorBorderTransparentDisabled: customColor,
@@ -266,7 +263,6 @@ final class DesignTokensManagerTests: XCTestCase {
         // Then
         let tokens = try XCTUnwrap(sut.tokens)
         XCTAssertEqual(tokens.primerColorBorderTransparentDefault, customColor)
-        XCTAssertEqual(tokens.primerColorBorderTransparentHover, customColor)
         XCTAssertEqual(tokens.primerColorBorderTransparentActive, customColor)
         XCTAssertEqual(tokens.primerColorBorderTransparentFocus, customColor)
         XCTAssertEqual(tokens.primerColorBorderTransparentDisabled, customColor)

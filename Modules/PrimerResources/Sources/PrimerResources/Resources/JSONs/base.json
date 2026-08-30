@@ -33,11 +33,6 @@
             "type": "color",
             "value": "{primer.color.background.outlined.default}"
           },
-          "hover": {
-            "description": "",
-            "type": "color",
-            "value": "{primer.color.background.outlined.default}"
-          },
           "selected": {
             "description": "",
             "type": "color",
@@ -54,11 +49,6 @@
             "type": "color",
             "value": "#ffffff00",
             "blendMode": "normal"
-          },
-          "hover": {
-            "description": "",
-            "type": "color",
-            "value": "{primer.color.gray.100}"
           },
           "active": {
             "description": "",
@@ -128,11 +118,6 @@
             "type": "color",
             "value": "{primer.color.gray.300}"
           },
-          "hover": {
-            "description": "",
-            "type": "color",
-            "value": "{primer.color.gray.400}"
-          },
           "active": {
             "description": "",
             "type": "color",
@@ -169,11 +154,6 @@
             "type": "color",
             "value": "#ffffff00",
             "blendMode": "normal"
-          },
-          "hover": {
-            "description": "",
-            "type": "color",
-            "value": "{primer.color.border.transparent.default}"
           },
           "active": {
             "description": "",
