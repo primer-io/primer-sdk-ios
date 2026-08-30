@@ -38,6 +38,8 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
   }
 
   func updateUIView(_ textField: SecureTextField, context: Context) {
+    textField.applyPrimerAppearance(placeholder: placeholder, tokens: tokens)
+
     let formatted = CardNumberFormatter.format(cardNumber, for: cardNetwork)
     if textField.internalText != formatted {
       textField.internalText = formatted
