@@ -27,8 +27,7 @@ struct InlineCardNetworkSelector: View {
       ForEach(Array(availableNetworks.enumerated()), id: \.element.rawValue) { index, network in
         InlineCardNetworkButton(
           network: network,
-          isSelected: selectedNetwork == network,
-          tokens: tokens
+          isSelected: selectedNetwork == network
         ) {
           selectedNetwork = network
           onNetworkSelected?(network)
