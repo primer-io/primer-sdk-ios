@@ -96,21 +96,23 @@ struct VaultSection: View {
         if isLoading {
           ProgressView()
             .progressViewStyle(
-              CircularProgressViewStyle(tint: CheckoutColors.background(tokens: tokens)))
+              CircularProgressViewStyle(
+                tint: CheckoutColors.onBrand(tokens: tokens, isEnabled: isPayButtonActive)))
             .accessibilityLabel(CheckoutComponentsStrings.a11yLoading)
         } else {
           Text(CheckoutComponentsStrings.payButton)
         }
       }
       .font(PrimerFont.titleLarge(tokens: tokens))
-      .foregroundColor(CheckoutColors.background(tokens: tokens))
+      .foregroundColor(CheckoutColors.onBrand(tokens: tokens, isEnabled: isPayButtonActive))
       .frame(maxWidth: .infinity)
       .padding(PrimerSpacing.medium(tokens: tokens))
       .background(
         RoundedRectangle(cornerRadius: PrimerRadius.medium(tokens: tokens))
           .fill(
-            isPayButtonEnabled
-              ? CheckoutColors.borderFocus(tokens: tokens) : CheckoutColors.gray300(tokens: tokens))
+            isPayButtonActive
+              ? CheckoutColors.buttonPrimary(tokens: tokens)
+              : CheckoutColors.buttonDisabled(tokens: tokens))
       )
     }
     .disabled(!isPayButtonEnabled)
@@ -123,6 +125,11 @@ struct VaultSection: View {
   }
 
   // MARK: - Helpers
+
+  /// The button keeps its brand fill while paying; only an invalid CVV greys it out.
+  private var isPayButtonActive: Bool {
+    isPayButtonEnabled || isLoading
+  }
 
   private var isPayButtonEnabled: Bool {
     if isLoading {
