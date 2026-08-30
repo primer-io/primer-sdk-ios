@@ -100,7 +100,9 @@ struct ErrorScreen: View {
         .background(Color.clear)
         .overlay(
           RoundedRectangle(cornerRadius: PrimerRadius.medium(tokens: tokens))
-            .stroke(CheckoutColors.borderDefault(tokens: tokens), lineWidth: 1)
+            .stroke(
+              CheckoutColors.borderDefault(tokens: tokens),
+              lineWidth: PrimerBorderWidth.standard(tokens: tokens))
         )
     }
     .accessibility(

@@ -75,7 +75,9 @@ struct AchMandateView: View, LogReporter {
         .padding(.vertical, PrimerSpacing.large(tokens: tokens))
         .background(
           RoundedRectangle(cornerRadius: PrimerRadius.small(tokens: tokens))
-            .stroke(CheckoutColors.borderDefault(tokens: tokens), lineWidth: 1)
+            .stroke(
+              CheckoutColors.borderDefault(tokens: tokens),
+              lineWidth: PrimerBorderWidth.standard(tokens: tokens))
         )
     }
     .accessibilityIdentifier(AccessibilityIdentifiers.Ach.mandateDeclineButton)

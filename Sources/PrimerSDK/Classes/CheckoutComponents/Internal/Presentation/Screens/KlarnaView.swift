@@ -26,8 +26,6 @@ struct KlarnaView: View, LogReporter {
     static let badgeHeight: CGFloat = 40
     static let paymentViewMinHeight: CGFloat = 200
     static let inlineLoadingMinHeight: CGFloat = 100
-    static let selectedBorderWidth: CGFloat = 2
-    static let defaultBorderWidth: CGFloat = 1
     static let badgeCornerRadius: CGFloat = 2
     static let placeholderOpacity: Double = 0.8
   }
@@ -256,7 +254,8 @@ struct KlarnaView: View, LogReporter {
         .stroke(
           isSelected
             ? CheckoutColors.borderSelected(tokens: tokens) : CheckoutColors.borderDefault(tokens: tokens),
-          lineWidth: isSelected ? Layout.selectedBorderWidth : Layout.defaultBorderWidth
+          lineWidth: isSelected
+            ? PrimerBorderWidth.selected(tokens: tokens) : PrimerBorderWidth.standard(tokens: tokens)
         )
     )
     .clipShape(RoundedRectangle(cornerRadius: PrimerRadius.medium(tokens: tokens)))

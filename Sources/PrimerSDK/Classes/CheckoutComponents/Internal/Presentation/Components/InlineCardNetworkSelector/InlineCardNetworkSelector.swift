@@ -39,16 +39,17 @@ struct InlineCardNetworkSelector: View {
           Rectangle()
             .fill(baseBorderColor)
             .frame(
-              width: PrimerBorderWidth.standard, height: PrimerCardNetworkSelector.buttonFrameHeight
+              width: PrimerBorderWidth.standard(tokens: tokens),
+              height: PrimerCardNetworkSelector.buttonFrameHeight
             )
         }
       }
     }
 
-    .padding(PrimerBorderWidth.standard)
+    .padding(PrimerBorderWidth.standard(tokens: tokens))
     .overlay(
       RoundedRectangle(cornerRadius: PrimerRadius.small(tokens: tokens))
-        .strokeBorder(baseBorderColor, lineWidth: PrimerBorderWidth.standard)
+        .strokeBorder(baseBorderColor, lineWidth: PrimerBorderWidth.standard(tokens: tokens))
     )
     .accessibilityIdentifier(AccessibilityIdentifiers.CardForm.inlineNetworkSelectorContainer)
     .overlay(
@@ -64,7 +65,7 @@ struct InlineCardNetworkSelector: View {
             bottomRight: selectedIndex == availableNetworks.count - 1
               ? PrimerRadius.small(tokens: tokens) : 0
           )
-          .strokeBorder(selectedBorderColor, lineWidth: PrimerBorderWidth.standard)
+          .strokeBorder(selectedBorderColor, lineWidth: PrimerBorderWidth.standard(tokens: tokens))
           .frame(width: buttonWidth, height: PrimerCardNetworkSelector.selectedBorderHeight)
           .offset(x: xOffset)
         }
@@ -80,7 +81,7 @@ struct InlineCardNetworkSelector: View {
   }
 
   private var borderWidth: CGFloat {
-    PrimerBorderWidth.standard
+    PrimerBorderWidth.standard(tokens: tokens)
   }
 
   private var buttonWidth: CGFloat {

@@ -178,7 +178,9 @@ struct QRCodeView: View, LogReporter {
           .padding(Layout.qrCodePadding)
           .overlay(
             RoundedRectangle(cornerRadius: PrimerRadius.small(tokens: tokens))
-              .stroke(CheckoutColors.borderDefault(tokens: tokens), lineWidth: PrimerBorderWidth.standard)
+              .stroke(
+                CheckoutColors.borderDefault(tokens: tokens),
+                lineWidth: PrimerBorderWidth.standard(tokens: tokens))
           )
           .frame(maxWidth: .infinity)
           .accessibilityIdentifier(AccessibilityIdentifiers.QRCode.qrCodeImage)
