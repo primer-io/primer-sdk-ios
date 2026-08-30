@@ -115,14 +115,15 @@ struct CardFormScreen: View, LogReporter {
       if cardFormState.isLoading {
         ProgressView()
           .progressViewStyle(
-            CircularProgressViewStyle(tint: CheckoutColors.onPrimary(tokens: tokens, isEnabled: isEnabled)))
+            CircularProgressViewStyle(
+              tint: CheckoutColors.onBrand(tokens: tokens, isEnabled: isSubmitButtonActive)))
           .scaleEffect(PrimerScale.small)
       } else {
         Text(payTitle(accessible: false))
       }
     }
     .font(PrimerFont.body(tokens: tokens))
-    .foregroundColor(CheckoutColors.onPrimary(tokens: tokens, isEnabled: isEnabled))
+    .foregroundColor(CheckoutColors.onBrand(tokens: tokens, isEnabled: isSubmitButtonActive))
     .frame(maxWidth: .infinity)
     .padding(.vertical, PrimerSpacing.large(tokens: tokens))
     .background(submitButtonBackground)
@@ -173,9 +174,14 @@ struct CardFormScreen: View, LogReporter {
   }
 
   private var submitButtonBackground: Color {
-    cardFormState.isValid && !cardFormState.isLoading
-      ? CheckoutColors.textPrimary(tokens: tokens)
+    isSubmitButtonActive
+      ? CheckoutColors.buttonPrimary(tokens: tokens)
       : CheckoutColors.buttonDisabled(tokens: tokens)
+  }
+
+  /// The button keeps its brand fill while submitting; only an invalid form greys it out.
+  private var isSubmitButtonActive: Bool {
+    cardFormState.isValid || cardFormState.isLoading
   }
 
   private func submitAction() {

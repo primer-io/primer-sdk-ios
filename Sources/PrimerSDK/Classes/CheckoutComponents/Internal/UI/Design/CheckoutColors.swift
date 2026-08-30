@@ -80,17 +80,18 @@ enum CheckoutColors {
     tokens?.primerColorIconPositive ?? Color(.systemGreen)
   }
 
-  /// Label/spinner colour on the primary button. The enabled fill is `textPrimary`, so the label
-  /// inverts with it; the disabled fill is light, so the label follows web and Android onto
-  /// `textDisabled`.
+  /// Label/spinner colour on a surface filled with `textPrimary`, which the label inverts with; a
+  /// disabled surface is light, so the label follows web and Android onto `textDisabled`.
+  /// Primary buttons are brand-filled and use `onBrand` instead.
   static func onPrimary(tokens: DesignTokens?, isEnabled: Bool = true) -> Color {
     isEnabled
       ? (tokens?.primerColorBackgroundPrimary ?? .white)
       : (tokens?.primerColorTextDisabled ?? Color(.tertiaryLabel))
   }
 
-  /// Label/spinner colour on a brand-filled surface. Brand is a fixed blue in both modes, so the
-  /// enabled label is fixed too; a disabled button loses the brand fill and takes `textDisabled`.
+  /// Label/spinner colour on a brand-filled surface, which is every primary button. Brand is a fixed
+  /// blue in both modes, so the enabled label is fixed white too; a disabled button loses the brand
+  /// fill and takes `textDisabled`. A loading button is still brand-filled, so pass `isEnabled: true`.
   static func onBrand(tokens: DesignTokens?, isEnabled: Bool = true) -> Color {
     isEnabled ? .white : (tokens?.primerColorTextDisabled ?? Color(.tertiaryLabel))
   }

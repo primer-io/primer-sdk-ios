@@ -252,20 +252,18 @@ struct BillingAddressRedirectScreen: View {
   }
 
   private func makeSubmitButtonContent() -> some View {
-    let isLoading = [.submitting, .redirecting, .polling].contains(billingState.status)
-
-    return HStack {
-      if isLoading {
+    HStack {
+      if isSubmitInFlight {
         ProgressView()
           .progressViewStyle(
-            CircularProgressViewStyle(tint: CheckoutColors.onPrimary(tokens: tokens, isEnabled: !isButtonDisabled)))
+            CircularProgressViewStyle(tint: CheckoutColors.onBrand(tokens: tokens, isEnabled: isButtonActive)))
           .scaleEffect(PrimerScale.small)
       } else {
         Text(submitButtonText)
       }
     }
     .font(PrimerFont.body(tokens: tokens))
-    .foregroundColor(CheckoutColors.onPrimary(tokens: tokens, isEnabled: !isButtonDisabled))
+    .foregroundColor(CheckoutColors.onBrand(tokens: tokens, isEnabled: isButtonActive))
     .frame(maxWidth: .infinity)
     .padding(.vertical, PrimerSpacing.large(tokens: tokens))
     .background(submitButtonBackground)
@@ -282,13 +280,22 @@ struct BillingAddressRedirectScreen: View {
   }
 
   private var submitButtonBackground: Color {
-    isButtonDisabled
-      ? CheckoutColors.buttonDisabled(tokens: tokens)
-      : CheckoutColors.textPrimary(tokens: tokens)
+    isButtonActive
+      ? CheckoutColors.buttonPrimary(tokens: tokens)
+      : CheckoutColors.buttonDisabled(tokens: tokens)
+  }
+
+  /// The button keeps its brand fill while the payment is in flight; only an invalid form greys it out.
+  private var isButtonActive: Bool {
+    billingState.isFormValid || isSubmitInFlight
+  }
+
+  private var isSubmitInFlight: Bool {
+    [.submitting, .redirecting, .polling].contains(billingState.status)
   }
 
   private var isButtonDisabled: Bool {
-    !billingState.isFormValid || [.submitting, .redirecting, .polling].contains(billingState.status)
+    !billingState.isFormValid || isSubmitInFlight
   }
 
   private var paymentMethodDisplayName: String {
