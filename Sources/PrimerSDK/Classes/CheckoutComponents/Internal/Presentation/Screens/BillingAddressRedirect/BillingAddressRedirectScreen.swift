@@ -37,7 +37,7 @@ struct BillingAddressRedirectScreen: View {
     }
     .frame(maxWidth: .infinity)
     .navigationBarHidden(true)
-    .background(CheckoutColors.background(tokens: tokens))
+    .background(CheckoutColors.inputBackground(tokens: tokens))
     .accessibilityIdentifier(AccessibilityIdentifiers.BillingAddressRedirect.screen)
     .task {
       for await newState in scope.state {
@@ -58,7 +58,7 @@ struct BillingAddressRedirectScreen: View {
                 .font(PrimerFont.bodyMedium(tokens: tokens))
               Text(CheckoutComponentsStrings.backButton)
             }
-            .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
+            .foregroundColor(CheckoutColors.inputText(tokens: tokens))
           }
           .accessibility(config: AccessibilityConfiguration(
             identifier: AccessibilityIdentifiers.BillingAddressRedirect.backButton,
@@ -77,7 +77,7 @@ struct BillingAddressRedirectScreen: View {
 
       Text(paymentMethodDisplayName)
         .font(PrimerFont.titleXLarge(tokens: tokens))
-        .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
+        .foregroundColor(CheckoutColors.inputText(tokens: tokens))
         .frame(maxWidth: .infinity, alignment: .leading)
         .accessibilityAddTraits(.isHeader)
 
@@ -158,7 +158,7 @@ struct BillingAddressRedirectScreen: View {
         HStack {
           if let selected = CountryCode(rawValue: countryCode) {
             Text("\(selected.flag ?? "") \(selected.country)")
-              .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
+              .foregroundColor(CheckoutColors.inputText(tokens: tokens))
           } else {
             Text(CheckoutComponentsStrings.countrySelectorPlaceholder)
               .foregroundColor(CheckoutColors.textPlaceholder(tokens: tokens))
@@ -170,7 +170,7 @@ struct BillingAddressRedirectScreen: View {
         .font(PrimerFont.bodyLarge(tokens: tokens))
         .padding(.vertical, PrimerSpacing.medium(tokens: tokens))
         .padding(.horizontal, PrimerSpacing.medium(tokens: tokens))
-        .background(CheckoutColors.background(tokens: tokens))
+        .background(CheckoutColors.inputBackground(tokens: tokens))
         .overlay(
           RoundedRectangle(cornerRadius: PrimerRadius.small(tokens: tokens))
             .stroke(fieldBorderColor(for: .countryCode), lineWidth: PrimerBorderWidth.standard(tokens: tokens))
@@ -201,10 +201,10 @@ struct BillingAddressRedirectScreen: View {
 
       TextField(placeholder, text: text)
         .font(PrimerFont.bodyLarge(tokens: tokens))
-        .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
+        .foregroundColor(CheckoutColors.inputText(tokens: tokens))
         .padding(.vertical, PrimerSpacing.medium(tokens: tokens))
         .padding(.horizontal, PrimerSpacing.medium(tokens: tokens))
-        .background(CheckoutColors.background(tokens: tokens))
+        .background(CheckoutColors.inputBackground(tokens: tokens))
         .overlay(
           RoundedRectangle(cornerRadius: PrimerRadius.small(tokens: tokens))
             .stroke(fieldBorderColor(for: fieldType), lineWidth: PrimerBorderWidth.standard(tokens: tokens))

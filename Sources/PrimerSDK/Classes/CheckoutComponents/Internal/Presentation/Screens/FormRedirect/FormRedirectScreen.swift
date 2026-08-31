@@ -198,7 +198,7 @@ private struct FormFieldView: View {
             if let prefix = field.countryCodePrefix, field.fieldType == .phoneNumber {
                 Text(prefix)
                     .font(PrimerFont.bodyLarge(tokens: tokens))
-                    .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
+                    .foregroundColor(CheckoutColors.inputText(tokens: tokens))
                     .accessibilityIdentifier(AccessibilityIdentifiers.FormRedirect.phonePrefix)
             }
 
