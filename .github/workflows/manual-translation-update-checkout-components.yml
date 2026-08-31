@@ -28,17 +28,28 @@ jobs:
         with:
           version: '2.35.5'
 
-      - name: Prepend Phrase configuration
+      - name: Write Phrase configuration
         run: |
-          {
-            echo "phrase:"
-            echo "  access_token: ${PHRASE_ACCESS_KEY}"
-            echo "  project_id: ${PHRASE_PROJECT_ID_CHECKOUT_COMPONENTS}"
-            cat phrase_config_checkout_components.yml
-          } > .phrase.yml
+          # phrase_config_checkout_components.yml declares its own `phrase:` root, so
+          # prepending a second one produced a duplicate YAML mapping key. The later block
+          # won, the injected secrets were discarded, and the CLI authenticated with the
+          # literal string "${PHRASE_ACCESS_TOKEN}". Substitute into the file instead.
+          # Check the secrets are set first. An unset secret expands to an empty string,
+          # which substitutes cleanly and leaves no placeholder to detect afterwards.
+          : "${PHRASE_ACCESS_TOKEN:?secret PHRASE_ACCESS_KEY is empty or unset}"
+          : "${PHRASE_PROJECT_ID:?secret PHRASE_PROJECT_ID_CHECKOUT_COMPONENTS is empty or unset}"
+
+          sed -e "s|\${PHRASE_ACCESS_TOKEN}|${PHRASE_ACCESS_TOKEN}|" \
+              -e "s|\${PHRASE_PROJECT_ID}|${PHRASE_PROJECT_ID}|" \
+              phrase_config_checkout_components.yml > .phrase.yml
+
+          if grep -q '\${PHRASE_' .phrase.yml; then
+            echo "::error::A placeholder was left unsubstituted in .phrase.yml."
+            exit 1
+          fi
         env:
-          PHRASE_ACCESS_KEY: ${{ secrets.PHRASE_ACCESS_KEY }}
-          PHRASE_PROJECT_ID_CHECKOUT_COMPONENTS: ${{ secrets.PHRASE_PROJECT_ID_CHECKOUT_COMPONENTS }}
+          PHRASE_ACCESS_TOKEN: ${{ secrets.PHRASE_ACCESS_KEY }}
+          PHRASE_PROJECT_ID: ${{ secrets.PHRASE_PROJECT_ID_CHECKOUT_COMPONENTS }}
 
       - name: Download Translations from Phrase
         run: phrase pull

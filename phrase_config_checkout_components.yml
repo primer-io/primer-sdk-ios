@@ -1,10 +1,20 @@
 # Phrase configuration for CheckoutComponents localization
 # Project ID: 4ef09e68b0f08039c865e202d878b3e9
+#
+# The two placeholders below are filled in by Manual Translation Update -
+# CheckoutComponents. This file already declares its own `phrase:` root, so that workflow
+# substitutes into it rather than prepending a second one.
 
 phrase:
   access_token: ${PHRASE_ACCESS_TOKEN}
-  project_id: 4ef09e68b0f08039c865e202d878b3e9
+  project_id: ${PHRASE_PROJECT_ID}
   file_format: strings
+  # Do NOT run `phrase push` against this project. It is shared with the Android SDK, whose
+  # source strings use Android format specifiers (%s) where this repo uses %@. An upload
+  # would rewrite those specifiers and break Android formatting at runtime, create the keys
+  # that exist only in this repo, and overwrite translator edits that were never pulled.
+  # The <locale_code> placeholder below also globs every .lproj on disk, so there is no such
+  # thing as a one-locale push here. Correct CheckoutComponents strings in the Phrase editor.
   push:
     sources:
       - file: Modules/PrimerResources/Sources/PrimerResources/Resources/CheckoutComponentsLocalizable/<locale_code>.lproj/CheckoutComponentsStrings.strings
