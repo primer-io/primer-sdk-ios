@@ -113,7 +113,7 @@ struct SelectCountryScreen: View, LogReporter {
       Spacer()
       ProgressView()
         .progressViewStyle(
-          CircularProgressViewStyle(tint: CheckoutColors.borderFocus(tokens: tokens))
+          CircularProgressViewStyle(tint: CheckoutColors.loader(tokens: tokens))
         )
         .scaleEffect(PrimerScale.small)
         .accessibility(

@@ -53,15 +53,23 @@ enum CheckoutColors {
   }
 
   static func gray100(tokens: DesignTokens?) -> Color {
-    tokens?.primerColorBackgroundOutlinedDefault ?? .white
+    tokens?.primerColorGray100 ?? Color(.systemGray6)
   }
 
   static func gray200(tokens: DesignTokens?) -> Color {
     tokens?.primerColorGray200 ?? Color(.systemGray5)
   }
 
+  static func gray300(tokens: DesignTokens?) -> Color {
+    tokens?.primerColorGray300 ?? Color(.systemGray4)
+  }
+
   static func textPlaceholder(tokens: DesignTokens?) -> Color {
     tokens?.primerColorTextPlaceholder ?? Color(.tertiaryLabel)
+  }
+
+  static func loader(tokens: DesignTokens?) -> Color {
+    tokens?.primerColorLoader ?? .blue
   }
 
   static func borderSelected(tokens: DesignTokens?) -> Color {
@@ -70,52 +78,6 @@ enum CheckoutColors {
 
   static func iconPositive(tokens: DesignTokens?) -> Color {
     tokens?.primerColorIconPositive ?? Color(.systemGreen)
-  }
-
-  static func orange(tokens _: DesignTokens?) -> Color { .orange }
-
-  // MARK: - Screen & Input Colors
-
-  static func screenBackground(tokens: DesignTokens?) -> Color {
-    tokens?.primerColorBackgroundPrimary ?? Color(.systemBackground)
-  }
-
-  static func inputBackground(tokens: DesignTokens?) -> Color {
-    tokens?.primerColorBackgroundOutlinedDefault ?? .white
-  }
-
-  static func inputBorder(tokens: DesignTokens?) -> Color {
-    tokens?.primerColorBorderOutlinedDefault ?? Color(.systemGray4)
-  }
-
-  static func inputBorderFocused(tokens: DesignTokens?) -> Color {
-    tokens?.primerColorBorderOutlinedFocus ?? .blue
-  }
-
-  // MARK: - Button Colors
-
-  static func buttonPrimary(tokens: DesignTokens?) -> Color {
-    tokens?.primerColorBrand ?? .blue
-  }
-
-  static func gray300(tokens: DesignTokens?) -> Color {
-    tokens?.primerColorGray300 ?? Color(.systemGray4)
-  }
-
-  static func buttonDisabled(tokens: DesignTokens?) -> Color {
-    tokens?.primerColorBackgroundOutlinedDisabled ?? Color(.systemGray6)
-  }
-
-  static func blue(tokens _: DesignTokens?) -> Color { .blue }
-
-  static func green(tokens _: DesignTokens?) -> Color { .green }
-
-  static func error(tokens: DesignTokens?) -> Color {
-    tokens?.primerColorTextNegative ?? .red
-  }
-
-  static func inputText(tokens: DesignTokens?) -> Color {
-    tokens?.primerColorTextOutlinedDefault ?? .primary
   }
 
   /// Label/spinner colour on a surface filled with `textPrimary`, which the label inverts with; a
@@ -132,5 +94,39 @@ enum CheckoutColors {
   /// fill and takes `textDisabled`. A loading button is still brand-filled, so pass `isEnabled: true`.
   static func onBrand(tokens: DesignTokens?, isEnabled: Bool = true) -> Color {
     isEnabled ? .white : (tokens?.primerColorTextDisabled ?? Color(.tertiaryLabel))
+  }
+
+  static func orange(tokens _: DesignTokens?) -> Color { .orange }
+
+  // MARK: - Screen & Input Colors
+
+  static func screenBackground(tokens: DesignTokens?) -> Color {
+    tokens?.primerColorBackgroundPrimary ?? Color(.systemBackground)
+  }
+
+  static func inputBackground(tokens: DesignTokens?) -> Color {
+    tokens?.primerColorBackgroundOutlinedDefault ?? .white
+  }
+
+  static func inputText(tokens: DesignTokens?) -> Color {
+    tokens?.primerColorTextOutlinedDefault ?? .primary
+  }
+
+  static func inputBorder(tokens: DesignTokens?) -> Color {
+    tokens?.primerColorBorderOutlinedDefault ?? Color(.systemGray4)
+  }
+
+  static func inputBorderFocused(tokens: DesignTokens?) -> Color {
+    tokens?.primerColorBorderOutlinedFocus ?? .blue
+  }
+
+  // MARK: - Button Colors
+
+  static func buttonPrimary(tokens: DesignTokens?) -> Color {
+    tokens?.primerColorBrand ?? .blue
+  }
+
+  static func buttonDisabled(tokens: DesignTokens?) -> Color {
+    tokens?.primerColorBackgroundOutlinedDisabled ?? Color(.systemGray6)
   }
 }
