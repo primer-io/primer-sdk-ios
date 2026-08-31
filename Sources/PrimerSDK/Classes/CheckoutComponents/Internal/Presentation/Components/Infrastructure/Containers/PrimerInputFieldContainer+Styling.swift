@@ -41,7 +41,7 @@ extension PrimerInputFieldContainer {
 
 @available(iOS 15.0, *)
 extension PrimerInputFieldContainer {
-  var errorMessageFont: Font { PrimerFont.bodySmall(tokens: tokens) }
+  var errorMessageFont: Font { PrimerFont.error(tokens: tokens) }
   var labelFont: Font { PrimerFont.bodySmall(tokens: tokens) }
 }
 

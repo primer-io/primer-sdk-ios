@@ -124,6 +124,11 @@ final class DesignTokens: Decodable {
   var primerTypographyBodySmallWeight: CGFloat? = 400
   var primerTypographyBodySmallSize: CGFloat? = 12
   var primerTypographyBodySmallLineHeight: CGFloat? = 16
+  var primerTypographyErrorFont: String? = "Inter"
+  var primerTypographyErrorLetterSpacing: CGFloat? = 0
+  var primerTypographyErrorWeight: CGFloat? = 400
+  var primerTypographyErrorSize: CGFloat? = 12
+  var primerTypographyErrorLineHeight: CGFloat? = 16
   var primerSpaceXxsmall: CGFloat? = 2
   var primerSpaceXsmall: CGFloat? = 4
   var primerSpaceSmall: CGFloat? = 8
@@ -230,6 +235,11 @@ final class DesignTokens: Decodable {
     case primerTypographyBodySmallWeight
     case primerTypographyBodySmallSize
     case primerTypographyBodySmallLineHeight
+    case primerTypographyErrorFont
+    case primerTypographyErrorLetterSpacing
+    case primerTypographyErrorWeight
+    case primerTypographyErrorSize
+    case primerTypographyErrorLineHeight
     case primerSpaceXxsmall
     case primerSpaceXsmall
     case primerSpaceSmall
@@ -370,6 +380,11 @@ final class DesignTokens: Decodable {
       CGFloat.self, forKey: .primerTypographyBodySmallSize) ?? primerTypographyBodySmallSize
     primerTypographyBodySmallLineHeight = try container.decodeIfPresent(
       CGFloat.self, forKey: .primerTypographyBodySmallLineHeight) ?? primerTypographyBodySmallLineHeight
+    primerTypographyErrorFont = try container.decodeIfPresent(String.self, forKey: .primerTypographyErrorFont) ?? primerTypographyErrorFont
+    primerTypographyErrorLetterSpacing = try container.decodeIfPresent(CGFloat.self, forKey: .primerTypographyErrorLetterSpacing) ?? primerTypographyErrorLetterSpacing
+    primerTypographyErrorWeight = try container.decodeIfPresent(CGFloat.self, forKey: .primerTypographyErrorWeight) ?? primerTypographyErrorWeight
+    primerTypographyErrorSize = try container.decodeIfPresent(CGFloat.self, forKey: .primerTypographyErrorSize) ?? primerTypographyErrorSize
+    primerTypographyErrorLineHeight = try container.decodeIfPresent(CGFloat.self, forKey: .primerTypographyErrorLineHeight) ?? primerTypographyErrorLineHeight
     primerSpaceXxsmall = try container.decodeIfPresent(
       CGFloat.self, forKey: .primerSpaceXxsmall) ?? primerSpaceXxsmall
     primerSpaceXsmall = try container.decodeIfPresent(CGFloat.self, forKey: .primerSpaceXsmall) ?? primerSpaceXsmall

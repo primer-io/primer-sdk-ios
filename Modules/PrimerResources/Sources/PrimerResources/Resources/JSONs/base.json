@@ -438,6 +438,28 @@
             "value": 16
           }
         }
+      },
+      "error": {
+        "font": {
+          "type": "color",
+          "value": "{primer.typography.body.small.font}"
+        },
+        "weight": {
+          "type": "dimension",
+          "value": "{primer.typography.body.small.weight}"
+        },
+        "size": {
+          "type": "dimension",
+          "value": "{primer.typography.body.small.size}"
+        },
+        "lineHeight": {
+          "type": "dimension",
+          "value": "{primer.typography.body.small.lineHeight}"
+        },
+        "letterSpacing": {
+          "type": "dimension",
+          "value": "{primer.typography.body.small.letterSpacing}"
+        }
       }
     },
     "space": {

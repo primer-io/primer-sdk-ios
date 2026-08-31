@@ -386,6 +386,20 @@ final class DesignTokensManager: ObservableObject {
       }
     }
 
+    // Error
+    if let style = typography.error {
+      if let font = style.font { tokens.primerTypographyErrorFont = font }
+      if let size = style.size { tokens.primerTypographyErrorSize = size }
+      if let weight = style.weight {
+        tokens.primerTypographyErrorWeight = fontWeightToCGFloat(weight)
+      }
+      if let letterSpacing = style.letterSpacing {
+        tokens.primerTypographyErrorLetterSpacing = letterSpacing
+      }
+      if let lineHeight = style.lineHeight {
+        tokens.primerTypographyErrorLineHeight = lineHeight
+      }
+    }
   }
 
   private func fontWeightToCGFloat(_ weight: Font.Weight) -> CGFloat {
