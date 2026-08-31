@@ -250,14 +250,14 @@ struct BillingAddressRedirectScreen: View {
     return HStack {
       if isLoading {
         ProgressView()
-          .progressViewStyle(CircularProgressViewStyle(tint: CheckoutColors.onBrand(tokens: tokens)))
+          .progressViewStyle(CircularProgressViewStyle(tint: CheckoutColors.onBrand(tokens: tokens, isEnabled: isButtonActive)))
           .scaleEffect(PrimerScale.small)
       } else {
         Text(submitButtonText)
       }
     }
     .font(PrimerFont.body(tokens: tokens))
-    .foregroundColor(CheckoutColors.onBrand(tokens: tokens))
+    .foregroundColor(CheckoutColors.onBrand(tokens: tokens, isEnabled: isButtonActive))
     .frame(maxWidth: .infinity)
     .padding(.vertical, PrimerSpacing.large(tokens: tokens))
     .background(submitButtonBackground)
@@ -274,9 +274,18 @@ struct BillingAddressRedirectScreen: View {
   }
 
   private var submitButtonBackground: Color {
-    isButtonDisabled
-      ? CheckoutColors.gray300(tokens: tokens)
-      : CheckoutColors.textPrimary(tokens: tokens)
+    isButtonActive
+      ? CheckoutColors.buttonPrimary(tokens: tokens)
+      : CheckoutColors.buttonDisabled(tokens: tokens)
+  }
+
+  /// The button keeps its brand fill while submitting; only an invalid form greys it out.
+  private var isButtonActive: Bool {
+    billingState.isFormValid || isSubmitInFlight
+  }
+
+  private var isSubmitInFlight: Bool {
+    [.submitting, .redirecting, .polling].contains(billingState.status)
   }
 
   private var isButtonDisabled: Bool {
