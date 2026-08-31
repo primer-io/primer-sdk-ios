@@ -15,8 +15,8 @@
 "accessibility_card_form_card_number_error_invalid" = "Nieprawidłowy numer karty. Proszę sprawdzić i spróbować ponownie.";
 "accessibility_card_form_card_number_hint" = "Wprowadź numer karty";
 "accessibility_card_form_card_number_label" = "Numer karty, wymagane";
-"accessibility_card_form_cardholder_name_hint" = "Wprowadź nazwisko widniejące na karcie";
-"accessibility_card_form_cardholder_name_label" = "Nazwisko posiadacza karty";
+"accessibility_card_form_cardholder_name_hint" = "Wprowadź imię i nazwisko widniejące na karcie";
+"accessibility_card_form_cardholder_name_label" = "Imię i nazwisko posiadacza karty";
 "accessibility_card_form_cvc_error_invalid" = "Nieprawidłowy kod zabezpieczający.";
 "accessibility_card_form_cvc_hint" = "Kod bezpieczeństwa, 3 lub 4 cyfry";
 "accessibility_card_form_cvc_label" = "Kod zabezpieczający, wymagane";
@@ -95,14 +95,14 @@
 "primer_card_form_error_first_name_required" = "Imię jest wymagane";
 "primer_card_form_error_last_name_invalid" = "Nieprawidłowe nazwisko";
 "primer_card_form_error_last_name_required" = "Nazwisko jest wymagane";
-"primer_card_form_error_name_invalid" = "Nieprawidłowe nazwisko posiadacza karty";
-"primer_card_form_error_name_length" = "Nazwisko musi zawierać od 2 do 45 znaków";
+"primer_card_form_error_name_invalid" = "Nieprawidłowe imię i nazwisko posiadacza karty";
+"primer_card_form_error_name_length" = "Wpisz od 2 do 45 znaków";
 "primer_card_form_error_number_invalid" = "Nieprawidłowy numer karty";
 "primer_card_form_error_phone_invalid" = "Wprowadź prawidłowy numer telefonu";
 "primer_card_form_error_postal_invalid" = "Nieprawidłowy kod pocztowy";
 "primer_card_form_error_postal_required" = "Kod pocztowy jest wymagany";
 "primer_card_form_error_state_invalid" = "Nieprawidłowe województwo, region lub powiat";
-"primer_card_form_error_state_required" = "Województwo, region lub powiat jest wymagane";
+"primer_card_form_error_state_required" = "Województwo, region lub powiat jest wymagany";
 "primer_card_form_label_address1" = "Pierwsza linia adresu";
 "primer_card_form_label_address2" = "Druga linia adresu";
 "primer_card_form_label_city" = "Miasto";
@@ -114,7 +114,7 @@
 "primer_card_form_label_field" = "Pole";
 "primer_card_form_label_first_name" = "Imię";
 "primer_card_form_label_last_name" = "Nazwisko";
-"primer_card_form_label_name" = "Nazwisko na karcie";
+"primer_card_form_label_name" = "Imię i nazwisko na karcie";
 "primer_card_form_label_number" = "Numer karty";
 "primer_card_form_label_otp" = "Kod OTP";
 "primer_card_form_label_phone" = "Numer telefonu";
@@ -133,7 +133,7 @@
 "primer_card_form_placeholder_expiry_alt" = "12/25";
 "primer_card_form_placeholder_first_name" = "Jan";
 "primer_card_form_placeholder_last_name" = "Kowalski";
-"primer_card_form_placeholder_name" = "Pełne nazwisko";
+"primer_card_form_placeholder_name" = "Imię i nazwisko";
 "primer_card_form_placeholder_number" = "1234 1234 1234 1234";
 "primer_card_form_placeholder_otp" = "123456";
 "primer_card_form_placeholder_phone" = "+48 22 123 45 67";
@@ -219,7 +219,7 @@
 "primer_ach_mandate_title" = "Autoryzacja";
 "primer_ach_mandate_button_accept" = "Zgadzam się";
 "primer_ach_mandate_button_decline" = "Anuluj";
-"primer_ach_mandate_template" = "Klikając \"Zgadzam się\", upoważniasz %1$@ do obciążania wskazanego powyżej konta bankowego dowolną kwotą należną za opłaty wynikające z korzystania z usług %1$@ i/lub zakupu produktów od %1$@, zgodnie ze stroną internetową i warunkami %1$@, do czasu odwołania tego upoważnienia. Możesz zmienić lub anulować to upoważnienie w dowolnym momencie, powiadamiając %1$@ z 30 (trzydziesto) dniowym wyprzedzeniem.";
+"primer_ach_mandate_template" = "Klikając \"Zgadzam się\", upoważniasz %1$@ do obciążania wskazanego powyżej konta bankowego dowolną kwotą należną za opłaty wynikające z korzystania z usług %1$@ i/lub zakupu produktów od %1$@, zgodnie ze stroną internetową i warunkami %1$@, do czasu odwołania tego upoważnienia. Możesz zmienić lub anulować to upoważnienie w dowolnym momencie, powiadamiając %1$@ z wyprzedzeniem 30 (trzydziestu) dni.";
 "accessibility_ach_continue_hint" = "Przejdź do wyboru konta bankowego";
 "accessibility_ach_mandate_accept_hint" = "Zaakceptuj autoryzację i zakończ płatność";
 "accessibility_ach_mandate_decline_hint" = "Odrzuć i anuluj płatność";
@@ -245,7 +245,7 @@
 "primer_form_redirect_blik_otp_helper" = "Otwórz aplikację bankową i wygeneruj kod BLIK.";
 "primer_form_redirect_blik_otp_label" = "6-cyfrowy kod";
 "primer_form_redirect_blik_otp_placeholder" = "000000";
-"primer_form_redirect_blik_pending_message" = "Dokończ płatność w aplikacji Blik";
+"primer_form_redirect_blik_pending_message" = "Dokończ płatność w aplikacji BLIK";
 "primer_form_redirect_blik_submit_button" = "Zapłać przez BLIK";
 "primer_form_redirect_mbway_pending_message" = "Dokończ płatność w aplikacji MB WAY";
 "primer_form_redirect_mbway_submit_button" = "Zapłać przez MB WAY";
@@ -264,7 +264,7 @@
 "primer_apple_pay_title" = "Apple Pay";
 "primer_apple_pay_description" = "Zapłać bezpiecznie przez Apple Pay";
 "primer_apple_pay_processing" = "Przetwarzanie...";
-"primer_apple_pay_unavailable" = "Apple Pay niedostępne";
+"primer_apple_pay_unavailable" = "Apple Pay niedostępny";
 "primer_apple_pay_choose_other" = "Wybierz inną metodę płatności";
 
 /* Retail Outlet */
