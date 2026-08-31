@@ -74,7 +74,7 @@ struct PaymentMethodButton: View {
       return width
     }
     guard !hasVisibleBackground else { return 0 }
-    return PrimerBorderWidth.standard
+    return PrimerBorderWidth.standard(tokens: tokens)
   }
 
   @ViewBuilder
