@@ -26,21 +26,24 @@ final class DesignTokensManager: ObservableObject {
   // MARK: - Token Loading
 
   func fetchTokens(for colorScheme: ColorScheme) async throws {
-    let loadedTokens = try Self.makeTokens(for: colorScheme, valueOverrides: tokenValueOverrides())
+    // the only place the colour scheme picks a set, so everything below works off one resolved set
+    let colors = themeOverrides?.resolvedColors(for: colorScheme)
+    let loadedTokens = try Self.makeTokens(
+      for: colorScheme, valueOverrides: tokenValueOverrides(colors: colors))
 
     // applied last so an explicit token wins over a palette value it aliases
-    applyThemeOverrides(to: loadedTokens)
+    applyThemeOverrides(to: loadedTokens, colors: colors)
 
     tokens = loadedTokens
   }
 
   /// Injected before references resolve, so tokens aliasing a palette entry or the brand font follow the override.
-  private func tokenValueOverrides() -> [String: Any] {
+  private func tokenValueOverrides(colors: ColorOverrides?) -> [String: Any] {
     var overrides: [String: Any] = [:]
     if let brandFont = themeOverrides?.typography?.brand {
       overrides["primerTypographyBrand"] = brandFont
     }
-    guard let colors = themeOverrides?.colors else { return overrides }
+    guard let colors else { return overrides }
     let pairs: [(String, Color?)] = [
       ("primerColorBrand", colors.primerColorBrand),
       ("primerColorGray000", colors.primerColorGray000),
@@ -125,10 +128,10 @@ final class DesignTokensManager: ObservableObject {
 
   /// Applies merchant theme overrides to the loaded design tokens.
   /// This ensures that CheckoutColors and other direct token accessors respect theme customizations.
-  private func applyThemeOverrides(to tokens: DesignTokens) {
+  private func applyThemeOverrides(to tokens: DesignTokens, colors: ColorOverrides?) {
     guard let theme = themeOverrides else { return }
 
-    if let colors = theme.colors {
+    if let colors {
       applyColorOverrides(to: tokens, from: colors)
     }
     if let radius = theme.radius {
