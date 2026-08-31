@@ -32,35 +32,6 @@ enum DesignTokensProcessor {
 
   // MARK: - Token Reference Resolution
 
-  static func resolveReferences(in dict: [String: Any]) -> [String: Any] {
-    (0..<10).reduce(dict) { current, _ in
-      var hasUnresolved = false
-      let resolved = resolvePass(current, root: current, hasUnresolved: &hasUnresolved)
-      return hasUnresolved ? resolved : current
-    }
-  }
-
-  private static func resolvePass(
-    _ dict: [String: Any], root: [String: Any], hasUnresolved: inout Bool
-  ) -> [String: Any] {
-    dict.reduce(into: [String: Any]()) { result, pair in
-      let (key, value) = pair
-      if let nested = value as? [String: Any] {
-        result[key] = resolvePass(nested, root: root, hasUnresolved: &hasUnresolved)
-      } else if let ref = value as? String, ref.hasPrefix("{"), ref.hasSuffix("}") {
-        let reference = String(ref.dropFirst().dropLast())
-        if let resolved = resolveReference(reference, in: root) {
-          result[key] = resolved
-        } else {
-          result[key] = value
-          hasUnresolved = true
-        }
-      } else {
-        result[key] = value
-      }
-    }
-  }
-
   private static func resolveReference(_ reference: String, in root: [String: Any]) -> Any? {
     let parts = reference.split(separator: ".").map(String.init)
     var current: Any = root
@@ -82,7 +53,8 @@ enum DesignTokensProcessor {
       return current
     }
 
-    if let hex = value as? String, hex.hasPrefix("#"), let colorArray = hexToColorArray(hex) {
+    if dict["type"] as? String == "color", let hex = value as? String, hex.hasPrefix("#"),
+      let colorArray = hexToColorArray(hex) {
       return colorArray
     }
 
@@ -91,12 +63,15 @@ enum DesignTokensProcessor {
 
   // MARK: - Hex Color Conversion
 
+  /// Expands `#RRGGBB[AA]` values, but only on a leaf declared `"type": "color"`, so a string token
+  /// whose value merely looks like a hex keeps its type.
   static func convertHexColors(in dict: [String: Any]) -> [String: Any] {
-    dict.reduce(into: [String: Any]()) { result, pair in
+    let isColorLeaf = dict["value"] != nil && dict["type"] as? String == "color"
+    return dict.reduce(into: [String: Any]()) { result, pair in
       let (key, value) = pair
       if let nested = value as? [String: Any] {
         result[key] = convertHexColors(in: nested)
-      } else if let hex = value as? String, hex.hasPrefix("#"),
+      } else if isColorLeaf, key == "value", let hex = value as? String, hex.hasPrefix("#"),
         let colorArray = hexToColorArray(hex) {
         result[key] = colorArray
       } else {
@@ -157,6 +132,9 @@ enum DesignTokensProcessor {
       }
     }
   }
+
+  /// The flattened key a dotted token path collapses to, e.g. primer.color.gray.300 -> primerColorGray300.
+  static func flattenedName(for path: String) -> String { toCamelCase(path) }
 
   private static func toCamelCase(_ path: String) -> String {
     let parts = path.split(separator: ".").map(String.init)
@@ -256,4 +234,7 @@ enum DesignTokensProcessor {
 
     return nil
   }
+
+  // MARK: - Merchant Value Validation
+
 }

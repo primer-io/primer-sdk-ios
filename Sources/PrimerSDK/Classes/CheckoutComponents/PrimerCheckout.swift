@@ -197,7 +197,7 @@ struct InternalCheckout: View, LogReporter {
   /// This ensures the background color is correct from the first render.
   private var backgroundColor: Color {
     // Priority 1: Theme override (available immediately)
-    if let themeBackground = theme.colors?.primerColorBackground {
+    if let themeBackground = theme.colors?.primerColorBackgroundPrimary {
       return themeBackground
     }
     // Priority 2: Loaded design tokens (available after async load)

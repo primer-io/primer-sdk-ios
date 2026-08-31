@@ -223,7 +223,7 @@ struct KlarnaView: View, LogReporter {
           // Checkmark for selected
           if isSelected {
             Image(systemName: "checkmark")
-              .foregroundColor(CheckoutColors.blue(tokens: tokens))
+              .foregroundColor(CheckoutColors.borderSelected(tokens: tokens))
               .font(PrimerFont.bodyMedium(tokens: tokens))
           }
         }
@@ -255,7 +255,7 @@ struct KlarnaView: View, LogReporter {
       RoundedRectangle(cornerRadius: PrimerRadius.medium(tokens: tokens))
         .stroke(
           isSelected
-            ? CheckoutColors.blue(tokens: tokens) : CheckoutColors.borderDefault(tokens: tokens),
+            ? CheckoutColors.borderSelected(tokens: tokens) : CheckoutColors.borderDefault(tokens: tokens),
           lineWidth: isSelected ? Layout.selectedBorderWidth : Layout.defaultBorderWidth
         )
     )

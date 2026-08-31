@@ -36,7 +36,7 @@ struct InlineCardNetworkButton: View {
 
   private var backgroundColor: Color {
     isSelected
-      ? CheckoutColors.gray100(tokens: tokens)
+      ? CheckoutColors.backgroundSecondary(tokens: tokens)
       : CheckoutColors.background(tokens: tokens)
   }
 }

@@ -2,11 +2,21 @@
   "primer": {
     "color": {
       "background": {
+        "primary": {
+          "description": "",
+          "type": "color",
+          "value": "{primer.color.gray.000}"
+        },
+        "secondary": {
+          "description": "",
+          "type": "color",
+          "value": "{primer.color.gray.100}"
+        },
         "outlined": {
           "default": {
             "description": "",
             "type": "color",
-            "value": "{primer.color.background}"
+            "value": "{primer.color.background.primary}"
           },
           "disabled": {
             "description": "",
@@ -19,11 +29,6 @@
             "value": "{primer.color.background.outlined.disabled}"
           },
           "active": {
-            "description": "",
-            "type": "color",
-            "value": "{primer.color.background.outlined.default}"
-          },
-          "hover": {
             "description": "",
             "type": "color",
             "value": "{primer.color.background.outlined.default}"
@@ -45,11 +50,6 @@
             "value": "#ffffff00",
             "blendMode": "normal"
           },
-          "hover": {
-            "description": "",
-            "type": "color",
-            "value": "{primer.color.gray.100}"
-          },
           "active": {
             "description": "",
             "type": "color",
@@ -70,10 +70,7 @@
             "type": "color",
             "value": "{primer.color.gray.100}"
           }
-        },
-        "description": "",
-        "type": "color",
-        "value": "{primer.color.gray.000}"
+        }
       },
       "text": {
         "primary": {
@@ -105,6 +102,13 @@
           "description": "",
           "type": "color",
           "value": "{primer.color.gray.600}"
+        },
+        "outlined": {
+          "default": {
+            "description": "",
+            "type": "color",
+            "value": "{primer.color.text.primary}"
+          }
         }
       },
       "border": {
@@ -113,11 +117,6 @@
             "description": "",
             "type": "color",
             "value": "{primer.color.gray.300}"
-          },
-          "hover": {
-            "description": "",
-            "type": "color",
-            "value": "{primer.color.gray.400}"
           },
           "active": {
             "description": "",
@@ -155,11 +154,6 @@
             "type": "color",
             "value": "#ffffff00",
             "blendMode": "normal"
-          },
-          "hover": {
-            "description": "",
-            "type": "color",
-            "value": "{primer.color.border.transparent.default}"
           },
           "active": {
             "description": "",
@@ -299,18 +293,22 @@
         }
       }
     },
-    "borderWidth": {
-      "thin": {
+    "width": {
+      "default": {
         "type": "dimension",
         "value": 1
       },
-      "medium": {
+      "focus": {
         "type": "dimension",
         "value": 2
       },
-      "thick": {
+      "selected": {
         "type": "dimension",
-        "value": 3
+        "value": 2
+      },
+      "error": {
+        "type": "dimension",
+        "value": 2
       }
     },
     "radius": {
@@ -336,7 +334,6 @@
       }
     },
     "typography": {
-      "display": null,
       "brand": {
         "type": "string",
         "value": "Inter"

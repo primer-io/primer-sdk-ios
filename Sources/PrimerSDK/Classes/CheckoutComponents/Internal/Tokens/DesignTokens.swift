@@ -12,38 +12,49 @@ import SwiftUI
 // This class is generated automatically by Style Dictionary.
 // It represents the design tokens for the Light theme.
 final class DesignTokens: Decodable {
-  var primerColorBackground: Color? = Color(
+  var primerColorBackgroundPrimary: Color? = Color(
     red: 1.000, green: 1.000, blue: 1.000, opacity: 1)
+  var primerColorBackgroundOutlinedDefault: Color? = Color(
+    red: 1.000, green: 1.000, blue: 1.000, opacity: 1)
+  var primerColorTextOutlinedDefault: Color? = Color(
+    red: 0.129, green: 0.129, blue: 0.129, opacity: 1)
+  var primerColorBackgroundSecondary: Color? = Color(red: 0.129, green: 0.129, blue: 0.129, opacity: 0.039)
+  var primerColorBackgroundOutlinedActive: Color? = Color(red: 1.000, green: 1.000, blue: 1.000, opacity: 1)
+  var primerColorBackgroundOutlinedDisabled: Color? = Color(red: 0.129, green: 0.129, blue: 0.129, opacity: 0.039)
+  var primerColorBackgroundOutlinedLoading: Color? = Color(red: 0.129, green: 0.129, blue: 0.129, opacity: 0.039)
+  var primerColorBackgroundOutlinedSelected: Color? = Color(red: 1.000, green: 1.000, blue: 1.000, opacity: 1)
+  var primerColorBackgroundOutlinedError: Color? = Color(red: 1.000, green: 1.000, blue: 1.000, opacity: 1)
+  var primerColorBackgroundTransparentDefault: Color? = Color(red: 1.000, green: 1.000, blue: 1.000, opacity: 0)
+  var primerColorBackgroundTransparentActive: Color? = Color(red: 0.129, green: 0.129, blue: 0.129, opacity: 0.071)
+  var primerColorBackgroundTransparentDisabled: Color? = Color(red: 0.129, green: 0.129, blue: 0.129, opacity: 0.039)
+  var primerColorBackgroundTransparentLoading: Color? = Color(red: 0.129, green: 0.129, blue: 0.129, opacity: 0.039)
+  var primerColorBackgroundTransparentSelected: Color? = Color(red: 0.129, green: 0.129, blue: 0.129, opacity: 0.039)
   var primerColorTextPrimary: Color? = Color(
     red: 0.129, green: 0.129, blue: 0.129, opacity: 1)
   var primerColorTextPlaceholder: Color? = Color(
-    red: 0.620, green: 0.620, blue: 0.620, opacity: 1)
+    red: 0.129, green: 0.129, blue: 0.129, opacity: 0.439)
   var primerColorTextDisabled: Color? = Color(
-    red: 0.741, green: 0.741, blue: 0.741, opacity: 1)
+    red: 0.129, green: 0.129, blue: 0.129, opacity: 0.302)
   var primerColorTextNegative: Color? = Color(
     red: 0.706, green: 0.196, blue: 0.294, opacity: 1)
   var primerColorTextLink: Color? = Color(red: 0.133, green: 0.439, blue: 0.957, opacity: 1)
   var primerColorTextSecondary: Color? = Color(
-    red: 0.459, green: 0.459, blue: 0.459, opacity: 1)
+    red: 0.129, green: 0.129, blue: 0.129, opacity: 0.620)
   var primerColorBorderOutlinedDefault: Color? = Color(
-    red: 0.878, green: 0.878, blue: 0.878, opacity: 1)
-  var primerColorBorderOutlinedHover: Color? = Color(
-    red: 0.741, green: 0.741, blue: 0.741, opacity: 1)
+    red: 0.129, green: 0.129, blue: 0.129, opacity: 0.141)
   var primerColorBorderOutlinedActive: Color? = Color(
-    red: 0.620, green: 0.620, blue: 0.620, opacity: 1)
+    red: 0.129, green: 0.129, blue: 0.129, opacity: 0.439)
   var primerColorBorderOutlinedFocus: Color? = Color(
     red: 0.184, green: 0.596, blue: 1.000, opacity: 1)
   var primerColorBorderOutlinedDisabled: Color? = Color(
-    red: 0.933, green: 0.933, blue: 0.933, opacity: 1)
+    red: 0.129, green: 0.129, blue: 0.129, opacity: 0.071)
   var primerColorBorderOutlinedLoading: Color? = Color(
-    red: 0.933, green: 0.933, blue: 0.933, opacity: 1)
+    red: 0.129, green: 0.129, blue: 0.129, opacity: 0.071)
   var primerColorBorderOutlinedSelected: Color? = Color(
     red: 0.184, green: 0.596, blue: 1.000, opacity: 1)
   var primerColorBorderOutlinedError: Color? = Color(
     red: 1.000, green: 0.447, blue: 0.475, opacity: 1)
   var primerColorBorderTransparentDefault: Color? = Color(
-    red: 1.000, green: 1.000, blue: 1.000, opacity: 0)
-  var primerColorBorderTransparentHover: Color? = Color(
     red: 1.000, green: 1.000, blue: 1.000, opacity: 0)
   var primerColorBorderTransparentActive: Color? = Color(
     red: 1.000, green: 1.000, blue: 1.000, opacity: 0)
@@ -56,20 +67,19 @@ final class DesignTokens: Decodable {
   var primerColorIconPrimary: Color? = Color(
     red: 0.129, green: 0.129, blue: 0.129, opacity: 1)
   var primerColorIconDisabled: Color? = Color(
-    red: 0.741, green: 0.741, blue: 0.741, opacity: 1)
+    red: 0.129, green: 0.129, blue: 0.129, opacity: 0.302)
   var primerColorIconNegative: Color? = Color(
     red: 1.000, green: 0.447, blue: 0.475, opacity: 1)
   var primerColorIconPositive: Color? = Color(
     red: 0.243, green: 0.714, blue: 0.561, opacity: 1)
   var primerColorFocus: Color? = Color(red: 0.184, green: 0.596, blue: 1.000, opacity: 1)
   var primerColorLoader: Color? = Color(red: 0.184, green: 0.596, blue: 1.000, opacity: 1)
-  var primerColorGray100: Color? = Color(red: 0.961, green: 0.961, blue: 0.961, opacity: 1)
-  var primerColorGray200: Color? = Color(red: 0.933, green: 0.933, blue: 0.933, opacity: 1)
-  var primerColorGray300: Color? = Color(red: 0.878, green: 0.878, blue: 0.878, opacity: 1)
-  var primerColorGray400: Color? = Color(red: 0.741, green: 0.741, blue: 0.741, opacity: 1)
-  var primerColorGray500: Color? = Color(red: 0.620, green: 0.620, blue: 0.620, opacity: 1)
-  var primerColorGray600: Color? = Color(red: 0.459, green: 0.459, blue: 0.459, opacity: 1)
-  var primerColorGray700: Color? = Color(red: 0.294, green: 0.294, blue: 0.294, opacity: 1)
+  var primerColorGray100: Color? = Color(red: 0.129, green: 0.129, blue: 0.129, opacity: 0.039)
+  var primerColorGray200: Color? = Color(red: 0.129, green: 0.129, blue: 0.129, opacity: 0.071)
+  var primerColorGray300: Color? = Color(red: 0.129, green: 0.129, blue: 0.129, opacity: 0.141)
+  var primerColorGray400: Color? = Color(red: 0.129, green: 0.129, blue: 0.129, opacity: 0.302)
+  var primerColorGray500: Color? = Color(red: 0.129, green: 0.129, blue: 0.129, opacity: 0.439)
+  var primerColorGray600: Color? = Color(red: 0.129, green: 0.129, blue: 0.129, opacity: 0.620)
   var primerColorGray900: Color? = Color(red: 0.129, green: 0.129, blue: 0.129, opacity: 1)
   var primerColorGray000: Color? = Color(red: 1.000, green: 1.000, blue: 1.000, opacity: 1)
   var primerColorGreen500: Color? = Color(red: 0.243, green: 0.714, blue: 0.561, opacity: 1)
@@ -79,9 +89,10 @@ final class DesignTokens: Decodable {
   var primerColorRed900: Color? = Color(red: 0.706, green: 0.196, blue: 0.294, opacity: 1)
   var primerColorBlue500: Color? = Color(red: 0.224, green: 0.616, blue: 1.000, opacity: 1)
   var primerColorBlue900: Color? = Color(red: 0.133, green: 0.439, blue: 0.957, opacity: 1)
-  var primerBorderWidthThin: CGFloat? = 1
-  var primerBorderWidthMedium: CGFloat? = 2
-  var primerBorderWidthThick: CGFloat? = 3
+  var primerWidthDefault: CGFloat? = 1
+  var primerWidthFocus: CGFloat? = 2
+  var primerWidthError: CGFloat? = 2
+  var primerWidthSelected: CGFloat? = 2
   var primerRadiusMedium: CGFloat? = 8
   var primerRadiusSmall: CGFloat? = 4
   var primerRadiusLarge: CGFloat? = 12
@@ -131,7 +142,20 @@ final class DesignTokens: Decodable {
 
   // Coding keys to map JSON keys to properties.
   enum CodingKeys: String, CodingKey {
-    case primerColorBackground
+    case primerColorBackgroundPrimary
+    case primerColorBackgroundOutlinedDefault
+    case primerColorTextOutlinedDefault
+    case primerColorBackgroundSecondary
+    case primerColorBackgroundOutlinedActive
+    case primerColorBackgroundOutlinedDisabled
+    case primerColorBackgroundOutlinedLoading
+    case primerColorBackgroundOutlinedSelected
+    case primerColorBackgroundOutlinedError
+    case primerColorBackgroundTransparentDefault
+    case primerColorBackgroundTransparentActive
+    case primerColorBackgroundTransparentDisabled
+    case primerColorBackgroundTransparentLoading
+    case primerColorBackgroundTransparentSelected
     case primerColorTextPrimary
     case primerColorTextPlaceholder
     case primerColorTextDisabled
@@ -139,7 +163,6 @@ final class DesignTokens: Decodable {
     case primerColorTextLink
     case primerColorTextSecondary
     case primerColorBorderOutlinedDefault
-    case primerColorBorderOutlinedHover
     case primerColorBorderOutlinedActive
     case primerColorBorderOutlinedFocus
     case primerColorBorderOutlinedDisabled
@@ -147,7 +170,6 @@ final class DesignTokens: Decodable {
     case primerColorBorderOutlinedSelected
     case primerColorBorderOutlinedError
     case primerColorBorderTransparentDefault
-    case primerColorBorderTransparentHover
     case primerColorBorderTransparentActive
     case primerColorBorderTransparentFocus
     case primerColorBorderTransparentDisabled
@@ -164,7 +186,6 @@ final class DesignTokens: Decodable {
     case primerColorGray400
     case primerColorGray500
     case primerColorGray600
-    case primerColorGray700
     case primerColorGray900
     case primerColorGray000
     case primerColorGreen500
@@ -174,9 +195,10 @@ final class DesignTokens: Decodable {
     case primerColorRed900
     case primerColorBlue500
     case primerColorBlue900
-    case primerBorderWidthThin
-    case primerBorderWidthMedium
-    case primerBorderWidthThick
+    case primerWidthDefault
+    case primerWidthFocus
+    case primerWidthError
+    case primerWidthSelected
     case primerRadiusMedium
     case primerRadiusSmall
     case primerRadiusLarge
@@ -232,7 +254,20 @@ final class DesignTokens: Decodable {
   required init(from decoder: Decoder) throws {
     let container = try decoder.container(keyedBy: CodingKeys.self)
 
-    primerColorBackground = try container.decodeColorIfPresent(forKey: .primerColorBackground) ?? primerColorBackground
+    primerColorBackgroundPrimary = try container.decodeColorIfPresent(forKey: .primerColorBackgroundPrimary) ?? primerColorBackgroundPrimary
+    primerColorBackgroundOutlinedDefault = try container.decodeColorIfPresent(forKey: .primerColorBackgroundOutlinedDefault) ?? primerColorBackgroundOutlinedDefault
+    primerColorTextOutlinedDefault = try container.decodeColorIfPresent(forKey: .primerColorTextOutlinedDefault) ?? primerColorTextOutlinedDefault
+    primerColorBackgroundSecondary = try container.decodeColorIfPresent(forKey: .primerColorBackgroundSecondary) ?? primerColorBackgroundSecondary
+    primerColorBackgroundOutlinedActive = try container.decodeColorIfPresent(forKey: .primerColorBackgroundOutlinedActive) ?? primerColorBackgroundOutlinedActive
+    primerColorBackgroundOutlinedDisabled = try container.decodeColorIfPresent(forKey: .primerColorBackgroundOutlinedDisabled) ?? primerColorBackgroundOutlinedDisabled
+    primerColorBackgroundOutlinedLoading = try container.decodeColorIfPresent(forKey: .primerColorBackgroundOutlinedLoading) ?? primerColorBackgroundOutlinedLoading
+    primerColorBackgroundOutlinedSelected = try container.decodeColorIfPresent(forKey: .primerColorBackgroundOutlinedSelected) ?? primerColorBackgroundOutlinedSelected
+    primerColorBackgroundOutlinedError = try container.decodeColorIfPresent(forKey: .primerColorBackgroundOutlinedError) ?? primerColorBackgroundOutlinedError
+    primerColorBackgroundTransparentDefault = try container.decodeColorIfPresent(forKey: .primerColorBackgroundTransparentDefault) ?? primerColorBackgroundTransparentDefault
+    primerColorBackgroundTransparentActive = try container.decodeColorIfPresent(forKey: .primerColorBackgroundTransparentActive) ?? primerColorBackgroundTransparentActive
+    primerColorBackgroundTransparentDisabled = try container.decodeColorIfPresent(forKey: .primerColorBackgroundTransparentDisabled) ?? primerColorBackgroundTransparentDisabled
+    primerColorBackgroundTransparentLoading = try container.decodeColorIfPresent(forKey: .primerColorBackgroundTransparentLoading) ?? primerColorBackgroundTransparentLoading
+    primerColorBackgroundTransparentSelected = try container.decodeColorIfPresent(forKey: .primerColorBackgroundTransparentSelected) ?? primerColorBackgroundTransparentSelected
     primerColorTextPrimary = try container.decodeColorIfPresent(forKey: .primerColorTextPrimary) ?? primerColorTextPrimary
     primerColorTextPlaceholder = try container.decodeColorIfPresent(forKey: .primerColorTextPlaceholder) ?? primerColorTextPlaceholder
     primerColorTextDisabled = try container.decodeColorIfPresent(forKey: .primerColorTextDisabled) ?? primerColorTextDisabled
@@ -240,7 +275,6 @@ final class DesignTokens: Decodable {
     primerColorTextLink = try container.decodeColorIfPresent(forKey: .primerColorTextLink) ?? primerColorTextLink
     primerColorTextSecondary = try container.decodeColorIfPresent(forKey: .primerColorTextSecondary) ?? primerColorTextSecondary
     primerColorBorderOutlinedDefault = try container.decodeColorIfPresent(forKey: .primerColorBorderOutlinedDefault) ?? primerColorBorderOutlinedDefault
-    primerColorBorderOutlinedHover = try container.decodeColorIfPresent(forKey: .primerColorBorderOutlinedHover) ?? primerColorBorderOutlinedHover
     primerColorBorderOutlinedActive = try container.decodeColorIfPresent(forKey: .primerColorBorderOutlinedActive) ?? primerColorBorderOutlinedActive
     primerColorBorderOutlinedFocus = try container.decodeColorIfPresent(forKey: .primerColorBorderOutlinedFocus) ?? primerColorBorderOutlinedFocus
     primerColorBorderOutlinedDisabled = try container.decodeColorIfPresent(forKey: .primerColorBorderOutlinedDisabled) ?? primerColorBorderOutlinedDisabled
@@ -248,7 +282,6 @@ final class DesignTokens: Decodable {
     primerColorBorderOutlinedSelected = try container.decodeColorIfPresent(forKey: .primerColorBorderOutlinedSelected) ?? primerColorBorderOutlinedSelected
     primerColorBorderOutlinedError = try container.decodeColorIfPresent(forKey: .primerColorBorderOutlinedError) ?? primerColorBorderOutlinedError
     primerColorBorderTransparentDefault = try container.decodeColorIfPresent(forKey: .primerColorBorderTransparentDefault) ?? primerColorBorderTransparentDefault
-    primerColorBorderTransparentHover = try container.decodeColorIfPresent(forKey: .primerColorBorderTransparentHover) ?? primerColorBorderTransparentHover
     primerColorBorderTransparentActive = try container.decodeColorIfPresent(forKey: .primerColorBorderTransparentActive) ?? primerColorBorderTransparentActive
     primerColorBorderTransparentFocus = try container.decodeColorIfPresent(forKey: .primerColorBorderTransparentFocus) ?? primerColorBorderTransparentFocus
     primerColorBorderTransparentDisabled = try container.decodeColorIfPresent(forKey: .primerColorBorderTransparentDisabled) ?? primerColorBorderTransparentDisabled
@@ -265,7 +298,6 @@ final class DesignTokens: Decodable {
     primerColorGray400 = try container.decodeColorIfPresent(forKey: .primerColorGray400) ?? primerColorGray400
     primerColorGray500 = try container.decodeColorIfPresent(forKey: .primerColorGray500) ?? primerColorGray500
     primerColorGray600 = try container.decodeColorIfPresent(forKey: .primerColorGray600) ?? primerColorGray600
-    primerColorGray700 = try container.decodeColorIfPresent(forKey: .primerColorGray700) ?? primerColorGray700
     primerColorGray900 = try container.decodeColorIfPresent(forKey: .primerColorGray900) ?? primerColorGray900
     primerColorGray000 = try container.decodeColorIfPresent(forKey: .primerColorGray000) ?? primerColorGray000
     primerColorGreen500 = try container.decodeColorIfPresent(forKey: .primerColorGreen500) ?? primerColorGreen500
@@ -275,9 +307,10 @@ final class DesignTokens: Decodable {
     primerColorRed900 = try container.decodeColorIfPresent(forKey: .primerColorRed900) ?? primerColorRed900
     primerColorBlue500 = try container.decodeColorIfPresent(forKey: .primerColorBlue500) ?? primerColorBlue500
     primerColorBlue900 = try container.decodeColorIfPresent(forKey: .primerColorBlue900) ?? primerColorBlue900
-    primerBorderWidthThin = try container.decodeIfPresent(CGFloat.self, forKey: .primerBorderWidthThin) ?? primerBorderWidthThin
-    primerBorderWidthMedium = try container.decodeIfPresent(CGFloat.self, forKey: .primerBorderWidthMedium) ?? primerBorderWidthMedium
-    primerBorderWidthThick = try container.decodeIfPresent(CGFloat.self, forKey: .primerBorderWidthThick) ?? primerBorderWidthThick
+    primerWidthDefault = try container.decodeIfPresent(CGFloat.self, forKey: .primerWidthDefault) ?? primerWidthDefault
+    primerWidthFocus = try container.decodeIfPresent(CGFloat.self, forKey: .primerWidthFocus) ?? primerWidthFocus
+    primerWidthError = try container.decodeIfPresent(CGFloat.self, forKey: .primerWidthError) ?? primerWidthError
+    primerWidthSelected = try container.decodeIfPresent(CGFloat.self, forKey: .primerWidthSelected) ?? primerWidthSelected
     primerRadiusMedium = try container.decodeIfPresent(
       CGFloat.self, forKey: .primerRadiusMedium) ?? primerRadiusMedium
     primerRadiusSmall = try container.decodeIfPresent(CGFloat.self, forKey: .primerRadiusSmall) ?? primerRadiusSmall
