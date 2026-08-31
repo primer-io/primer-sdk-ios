@@ -44,7 +44,7 @@ struct SelectCountryScreen: View, LogReporter {
         Button(CheckoutComponentsStrings.cancelButton) {
           onDismiss?()
         }
-        .foregroundColor(CheckoutColors.blue(tokens: tokens))
+        .foregroundColor(CheckoutColors.textLink(tokens: tokens))
         .accessibilityLabel(CheckoutComponentsStrings.a11yCancel)
       }
     }
@@ -159,9 +159,11 @@ struct SelectCountryScreen: View, LogReporter {
             )
           }
         }
+        .listRowBackground(Color.clear)
       }
     }
     .listStyle(PlainListStyle())
+    .primerClearListBackground()
   }
 
   private func selectCountry(_ country: PrimerCountry) {
@@ -211,7 +213,7 @@ private struct CountryItemView: View {
         // Selection indicator
         if isSelected {
           Image(systemName: "checkmark")
-            .foregroundColor(CheckoutColors.blue(tokens: tokens))
+            .foregroundColor(CheckoutColors.borderSelected(tokens: tokens))
         }
       }
       .padding(.vertical, PrimerSpacing.small(tokens: tokens))
@@ -219,5 +221,19 @@ private struct CountryItemView: View {
       .contentShape(Rectangle())
     }
     .buttonStyle(PlainButtonStyle())
+  }
+}
+
+@available(iOS 15.0, *)
+extension View {
+  /// `List` paints its own background on top of the sheet colour. Only iOS 16 can turn that off;
+  /// on 15 the clear row backgrounds still remove most of it.
+  @ViewBuilder
+  func primerClearListBackground() -> some View {
+    if #available(iOS 16.0, *) {
+      scrollContentBackground(.hidden)
+    } else {
+      self
+    }
   }
 }

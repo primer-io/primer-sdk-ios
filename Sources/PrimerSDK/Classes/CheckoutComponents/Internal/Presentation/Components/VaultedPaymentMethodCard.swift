@@ -164,7 +164,7 @@ struct VaultedPaymentMethodCard: View {
             width: PrimerCardNetworkSelector.badgeWidth,
             height: PrimerCardNetworkSelector.badgeHeight
           )
-          .background(CheckoutColors.backgroundSecondary(tokens: tokens))
+          .background(CheckoutColors.gray100(tokens: tokens))
           .cornerRadius(PrimerRadius.xsmall(tokens: tokens))
       }
     }
