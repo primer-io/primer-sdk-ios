@@ -60,10 +60,6 @@ enum CheckoutColors {
     tokens?.primerColorGray200 ?? Color(.systemGray5)
   }
 
-  static func gray300(tokens: DesignTokens?) -> Color {
-    tokens?.primerColorGray300 ?? Color(.systemGray4)
-  }
-
   static func textPlaceholder(tokens: DesignTokens?) -> Color {
     tokens?.primerColorTextPlaceholder ?? Color(.tertiaryLabel)
   }
@@ -102,8 +98,12 @@ enum CheckoutColors {
     tokens?.primerColorBrand ?? .blue
   }
 
-  static func buttonDisabled(tokens: DesignTokens?) -> Color {
+  static func gray300(tokens: DesignTokens?) -> Color {
     tokens?.primerColorGray300 ?? Color(.systemGray4)
+  }
+
+  static func buttonDisabled(tokens: DesignTokens?) -> Color {
+    tokens?.primerColorBackgroundOutlinedDisabled ?? Color(.systemGray6)
   }
 
   static func blue(tokens _: DesignTokens?) -> Color { .blue }

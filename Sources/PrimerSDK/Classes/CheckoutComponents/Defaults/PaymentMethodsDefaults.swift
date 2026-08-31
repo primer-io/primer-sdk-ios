@@ -185,7 +185,7 @@ private struct VaultedMethodRowContent: View {
         Spacer()
         if isSelected {
           Image(systemName: "checkmark.circle.fill")
-            .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
+            .foregroundColor(CheckoutColors.borderSelected(tokens: tokens))
         }
       }
       .padding(PrimerSpacing.medium(tokens: tokens))
@@ -210,23 +210,28 @@ private struct VaultedSubmitContent: View {
   @Environment(\.designTokens) private var tokens
 
   var body: some View {
-    Button(action: onSubmit) {
+    // The button keeps its brand fill while submitting; only a disabled button greys out.
+    let isActive = isEnabled || isLoading
+
+    return Button(action: onSubmit) {
       Group {
         if isLoading {
           ProgressView()
-            .progressViewStyle(CircularProgressViewStyle(tint: CheckoutColors.onBrand(tokens: tokens)))
+            .progressViewStyle(
+              CircularProgressViewStyle(
+                tint: CheckoutColors.onBrand(tokens: tokens, isEnabled: isActive)))
         } else {
           Text(CheckoutComponentsStrings.payButton)
         }
       }
       .font(PrimerFont.body(tokens: tokens))
-      .foregroundColor(CheckoutColors.onBrand(tokens: tokens))
+      .foregroundColor(CheckoutColors.onBrand(tokens: tokens, isEnabled: isActive))
       .frame(maxWidth: .infinity)
       .padding(.vertical, PrimerSpacing.large(tokens: tokens))
       .background(
-        isEnabled && !isLoading
-          ? CheckoutColors.textPrimary(tokens: tokens)
-          : CheckoutColors.gray300(tokens: tokens)
+        isActive
+          ? CheckoutColors.buttonPrimary(tokens: tokens)
+          : CheckoutColors.buttonDisabled(tokens: tokens)
       )
       .cornerRadius(PrimerRadius.small(tokens: tokens))
     }

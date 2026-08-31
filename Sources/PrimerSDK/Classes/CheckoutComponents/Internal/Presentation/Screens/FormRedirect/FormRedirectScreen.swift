@@ -128,6 +128,11 @@ struct FormRedirectScreen: View {
         }
     }
 
+    /// The button keeps its brand fill while submitting; only an invalid form greys it out.
+    private var isButtonActive: Bool {
+        currentState.isSubmitEnabled || currentState.isLoading
+    }
+
     private func makeDefaultSubmitButton() -> some View {
         Button(action: scope.submit) {
             HStack(spacing: PrimerSpacing.small(tokens: tokens)) {
@@ -141,10 +146,12 @@ struct FormRedirectScreen: View {
             }
             .frame(maxWidth: .infinity)
             .frame(height: PrimerComponentHeight.button)
-            .foregroundColor(CheckoutColors.onBrand(tokens: tokens))
+            .foregroundColor(CheckoutColors.onBrand(
+                tokens: tokens,
+                isEnabled: isButtonActive))
             .background(
                 RoundedRectangle(cornerRadius: PrimerRadius.medium(tokens: tokens))
-                    .fill(currentState.isSubmitEnabled && !currentState.isLoading
+                    .fill(isButtonActive
                           ? CheckoutColors.buttonPrimary(tokens: tokens)
                           : CheckoutColors.buttonDisabled(tokens: tokens))
             )
