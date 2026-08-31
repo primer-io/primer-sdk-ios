@@ -47,25 +47,19 @@ enum PrimerFont {
     let fontSize = size ?? 14
     let fontWeight = weight ?? 400
 
-    let baseFont: UIFont = if fontFamily == "Inter" {
-      if let customUIFont = variableInterFont(weight: fontWeight, size: fontSize) {
-        customUIFont
-      } else {
-        // Fallback to system font
-        .systemFont(ofSize: fontSize, weight: uiFontWeightFromNumber(fontWeight))
-      }
-    } else {
-      // Attempt to load custom font family
-      if let customFont = UIFont(name: fontFamily, size: fontSize) {
-        customFont
-      } else {
-        // Fallback to system font if custom font is not available
-        .systemFont(ofSize: fontSize, weight: uiFontWeightFromNumber(fontWeight))
-      }
+    let namedFont: UIFont? =
+      fontFamily == "Inter"
+      ? variableInterFont(weight: fontWeight, size: fontSize)
+      : UIFont(name: fontFamily, size: fontSize)
+
+    if namedFont == nil {
+      PrimerLogging.shared.logger.warn(
+        message: "[Typography] Font '\(fontFamily)' is not registered in the app, using the system font instead.")
     }
 
     // Apply Dynamic Type scaling
-    return UIFontMetrics.default.scaledFont(for: baseFont)
+    return UIFontMetrics.default.scaledFont(
+      for: namedFont ?? .systemFont(ofSize: fontSize, weight: uiFontWeightFromNumber(fontWeight)))
   }
 
   // MARK: - UIKit Typography Helpers

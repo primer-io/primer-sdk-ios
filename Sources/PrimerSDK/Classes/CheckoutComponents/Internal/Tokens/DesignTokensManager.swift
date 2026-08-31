@@ -26,7 +26,7 @@ final class DesignTokensManager: ObservableObject {
   // MARK: - Token Loading
 
   func fetchTokens(for colorScheme: ColorScheme) async throws {
-    let loadedTokens = try Self.makeTokens(for: colorScheme, paletteOverrides: palettePairs())
+    let loadedTokens = try Self.makeTokens(for: colorScheme, valueOverrides: tokenValueOverrides())
 
     // applied last so an explicit token wins over a palette value it aliases
     applyThemeOverrides(to: loadedTokens)
@@ -34,9 +34,13 @@ final class DesignTokensManager: ObservableObject {
     tokens = loadedTokens
   }
 
-  /// Injected before references resolve, so tokens aliasing a palette entry follow the override.
-  private func palettePairs() -> [String: Color] {
-    guard let colors = themeOverrides?.colors else { return [:] }
+  /// Injected before references resolve, so tokens aliasing a palette entry or the brand font follow the override.
+  private func tokenValueOverrides() -> [String: Any] {
+    var overrides: [String: Any] = [:]
+    if let brandFont = themeOverrides?.typography?.brand {
+      overrides["primerTypographyBrand"] = brandFont
+    }
+    guard let colors = themeOverrides?.colors else { return overrides }
     let pairs: [(String, Color?)] = [
       ("primerColorBrand", colors.primerColorBrand),
       ("primerColorGray000", colors.primerColorGray000),
@@ -54,15 +58,15 @@ final class DesignTokensManager: ObservableObject {
       ("primerColorBlue500", colors.primerColorBlue500),
       ("primerColorBlue900", colors.primerColorBlue900),
     ]
-    return pairs.reduce(into: [:]) { result, pair in
-      if let value = pair.1 { result[pair.0] = value }
+    return pairs.reduce(into: overrides) { result, pair in
+      if let color = pair.1, let components = Self.colorComponents(color) { result[pair.0] = components }
     }
   }
 
   /// Previews and tests call this with no overrides so they resolve what production resolves.
   nonisolated static func makeTokens(
     for colorScheme: ColorScheme,
-    paletteOverrides: [String: Color] = [:]
+    valueOverrides: [String: Any] = [:]
   ) throws -> DesignTokens {
     let baseDict = try loadJSON(named: "base")
     var mergedDict =
@@ -70,8 +74,8 @@ final class DesignTokensManager: ObservableObject {
       ? DesignTokensProcessor.mergeDictionaries(baseDict, with: try loadJSON(named: "dark"))
       : baseDict
 
-    if !paletteOverrides.isEmpty {
-      mergedDict = applyPaletteOverrides(paletteOverrides, to: mergedDict)
+    if !valueOverrides.isEmpty {
+      mergedDict = applyValueOverrides(valueOverrides, to: mergedDict)
     }
 
     let processedDict = DesignTokensProcessor.convertHexColors(in: mergedDict)
@@ -84,8 +88,8 @@ final class DesignTokensManager: ObservableObject {
   }
 
   /// Replaces matching leaves in place so the existing reference pass picks the new value up.
-  private nonisolated static func applyPaletteOverrides(
-    _ overrides: [String: Color],
+  private nonisolated static func applyValueOverrides(
+    _ overrides: [String: Any],
     to dict: [String: Any],
     prefix: String = ""
   ) -> [String: Any] {
@@ -97,11 +101,10 @@ final class DesignTokensManager: ObservableObject {
         return
       }
       if nested["value"] != nil,
-         let override = overrides[DesignTokensProcessor.flattenedName(for: path)],
-         let components = colorComponents(override) {
-        nested["value"] = components
+         let override = overrides[DesignTokensProcessor.flattenedName(for: path)] {
+        nested["value"] = override
       }
-      result[key] = applyPaletteOverrides(overrides, to: nested, prefix: path)
+      result[key] = applyValueOverrides(overrides, to: nested, prefix: path)
     }
   }
 

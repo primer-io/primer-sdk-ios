@@ -601,6 +601,56 @@ final class DesignTokensManagerTests: XCTestCase {
         }
     }
 
+    // MARK: - Brand Font
+
+    func test_applyTheme_brandFont_appliedToEveryTextStyle() async throws {
+        // Given
+        sut.applyTheme(PrimerCheckoutTheme(typography: TypographyOverrides(brand: "Georgia")))
+
+        // When
+        try await sut.fetchTokens(for: .light)
+
+        // Then
+        let tokens = try XCTUnwrap(sut.tokens)
+        XCTAssertEqual(tokens.primerTypographyBrand, "Georgia")
+        XCTAssertEqual(tokens.primerTypographyTitleXlargeFont, "Georgia")
+        XCTAssertEqual(tokens.primerTypographyTitleLargeFont, "Georgia")
+        XCTAssertEqual(tokens.primerTypographyBodyLargeFont, "Georgia")
+        XCTAssertEqual(tokens.primerTypographyBodyMediumFont, "Georgia")
+        XCTAssertEqual(tokens.primerTypographyBodySmallFont, "Georgia")
+        XCTAssertEqual(tokens.primerTypographyErrorFont, "Georgia")
+    }
+
+    func test_applyTheme_perStyleFont_winsOverBrandFont() async throws {
+        // Given
+        sut.applyTheme(PrimerCheckoutTheme(
+            typography: TypographyOverrides(brand: "Georgia", bodyMedium: .init(font: "Menlo"))
+        ))
+
+        // When
+        try await sut.fetchTokens(for: .light)
+
+        // Then
+        let tokens = try XCTUnwrap(sut.tokens)
+        XCTAssertEqual(tokens.primerTypographyBodyMediumFont, "Menlo")
+        XCTAssertEqual(tokens.primerTypographyBodyLargeFont, "Georgia")
+    }
+
+    func test_fetchTokens_noTypographyOverride_everyTextStyleStaysInter() async throws {
+        // When
+        try await sut.fetchTokens(for: .light)
+
+        // Then
+        let tokens = try XCTUnwrap(sut.tokens)
+        XCTAssertEqual(tokens.primerTypographyBrand, "Inter")
+        XCTAssertEqual(tokens.primerTypographyTitleXlargeFont, "Inter")
+        XCTAssertEqual(tokens.primerTypographyTitleLargeFont, "Inter")
+        XCTAssertEqual(tokens.primerTypographyBodyLargeFont, "Inter")
+        XCTAssertEqual(tokens.primerTypographyBodyMediumFont, "Inter")
+        XCTAssertEqual(tokens.primerTypographyBodySmallFont, "Inter")
+        XCTAssertEqual(tokens.primerTypographyErrorFont, "Inter")
+    }
+
     // MARK: - Combined Overrides
 
     func test_applyTheme_allOverrideCategories_appliedTogether() async throws {

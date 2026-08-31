@@ -406,6 +406,10 @@ public struct TypographyOverrides: Equatable {
 
   // MARK: - Token Properties
 
+  /// Font family every style below falls back to, so one typeface covers the whole sheet.
+  /// A style naming its own `font` wins over this. Default: nil (Inter).
+  public let brand: String?
+
   /// Title extra large: Inter, -0.6 letter spacing, weight 550, size 24, line height 32
   public let titleXlarge: TypographyStyle?
 
@@ -426,6 +430,7 @@ public struct TypographyOverrides: Equatable {
 
   /// Creates typography overrides with all optional properties.
   public init(
+    brand: String? = nil,
     titleXlarge: TypographyStyle? = nil,
     titleLarge: TypographyStyle? = nil,
     bodyLarge: TypographyStyle? = nil,
@@ -433,6 +438,7 @@ public struct TypographyOverrides: Equatable {
     bodySmall: TypographyStyle? = nil,
     error: TypographyStyle? = nil
   ) {
+    self.brand = brand
     self.titleXlarge = titleXlarge
     self.titleLarge = titleLarge
     self.bodyLarge = bodyLarge
