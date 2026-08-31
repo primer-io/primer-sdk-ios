@@ -102,6 +102,8 @@ extension UITextField {
     doneButtonAction: Selector
   ) {
     self.placeholder = placeholder
+    borderStyle = .none
+    backgroundColor = .clear
 
     // Apply keyboard configuration
     keyboardType = configuration.keyboardType
@@ -110,21 +112,6 @@ extension UITextField {
     textContentType = configuration.textContentType
     returnKeyType = configuration.returnKeyType
     isSecureTextEntry = configuration.isSecureTextEntry
-
-    inputAccessoryView = Self.makeDoneAccessory(
-      tokens: tokens,
-      target: doneButtonTarget,
-      action: doneButtonAction
-    )
-
-    applyPrimerAppearance(placeholder: placeholder, tokens: tokens)
-  }
-
-  /// Every token-derived appearance property, reapplied from `updateUIView` as well as at creation
-  /// so a colour-scheme change repaints the bridged field. Sets no user state.
-  func applyPrimerAppearance(placeholder: String, tokens: DesignTokens?) {
-    borderStyle = .none
-    backgroundColor = .clear
 
     // Text styling with design tokens
     let textFont = PrimerFont.uiFontBodyLarge(tokens: tokens)
@@ -139,9 +126,11 @@ extension UITextField {
       attributes: [.foregroundColor: placeholderColor, .font: textFont]
     )
 
-    if let toolbar = inputAccessoryView as? UIToolbar {
-      Self.applyDoneAccessoryStyle(to: toolbar, tokens: tokens)
-    }
+    inputAccessoryView = Self.makeDoneAccessory(
+      tokens: tokens,
+      target: doneButtonTarget,
+      action: doneButtonAction
+    )
   }
 
   /// Auto-sizing keyboard toolbar with a trailing "Done" button.
@@ -154,6 +143,8 @@ extension UITextField {
       frame: CGRect(x: 0, y: 0, width: 0, height: PrimerComponentHeight.keyboardAccessory)
     )
     toolbar.barStyle = .default
+    let tint = UIColor(CheckoutColors.buttonPrimary(tokens: tokens))
+    toolbar.tintColor = tint
     toolbar.sizeToFit()
 
     let doneItem = UIBarButtonItem(
@@ -163,20 +154,11 @@ extension UITextField {
       action: action
     )
     doneItem.accessibilityLabel = CheckoutComponentsStrings.doneButton
+    let titleFont = PrimerFont.uiFontTitleLarge(tokens: tokens)
+    doneItem.setTitleTextAttributes([.font: titleFont, .foregroundColor: tint], for: .normal)
+    doneItem.setTitleTextAttributes([.font: titleFont, .foregroundColor: tint], for: .highlighted)
 
     toolbar.items = [.flexibleSpace(), doneItem]
-    applyDoneAccessoryStyle(to: toolbar, tokens: tokens)
     return toolbar
-  }
-
-  /// Restyled in place rather than rebuilt, so reapplying it cannot reload the live keyboard.
-  private static func applyDoneAccessoryStyle(to toolbar: UIToolbar, tokens: DesignTokens?) {
-    let tint = UIColor(CheckoutColors.buttonPrimary(tokens: tokens))
-    toolbar.tintColor = tint
-    let titleFont = PrimerFont.uiFontTitleLarge(tokens: tokens)
-    toolbar.items?.forEach {
-      $0.setTitleTextAttributes([.font: titleFont, .foregroundColor: tint], for: .normal)
-      $0.setTitleTextAttributes([.font: titleFont, .foregroundColor: tint], for: .highlighted)
-    }
   }
 }

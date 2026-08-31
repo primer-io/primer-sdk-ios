@@ -38,8 +38,6 @@ struct CardholderNameTextField: UIViewRepresentable, LogReporter {
   }
 
   func updateUIView(_ textField: UITextField, context: Context) {
-    textField.applyPrimerAppearance(placeholder: placeholder, tokens: tokens)
-
     if textField.text != cardholderName {
       textField.text = cardholderName
     }

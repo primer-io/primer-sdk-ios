@@ -39,8 +39,6 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
   }
 
   func updateUIView(_ textField: UITextField, context: Context) {
-    textField.applyPrimerAppearance(placeholder: placeholder, tokens: tokens)
-
     if textField.text != expiryDate {
       textField.text = expiryDate
     }

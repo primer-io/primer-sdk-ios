@@ -38,8 +38,6 @@ struct CVVTextField: UIViewRepresentable, LogReporter {
   }
 
   func updateUIView(_ textField: SecureTextField, context: Context) {
-    textField.applyPrimerAppearance(placeholder: placeholder, tokens: tokens)
-
     if textField.internalText != cvv {
       textField.internalText = cvv
     }

@@ -39,8 +39,6 @@ struct EmailTextField: UIViewRepresentable, LogReporter {
   }
 
   func updateUIView(_ textField: UITextField, context: Context) {
-    textField.applyPrimerAppearance(placeholder: placeholder, tokens: tokens)
-
     if textField.text != email {
       textField.text = email
     }
