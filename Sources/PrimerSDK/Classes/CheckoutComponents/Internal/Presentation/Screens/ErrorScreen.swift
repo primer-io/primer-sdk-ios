@@ -73,7 +73,7 @@ struct ErrorScreen: View {
       Text(CheckoutComponentsStrings.retryButton)
         .font(PrimerFont.bodyMedium(tokens: tokens))
         .fontWeight(.semibold)
-        .foregroundColor(CheckoutColors.white(tokens: tokens))
+        .foregroundColor(CheckoutColors.onBrand(tokens: tokens))
         .frame(maxWidth: .infinity)
         .padding(.vertical, PrimerSpacing.medium(tokens: tokens))
         .background(CheckoutColors.buttonPrimary(tokens: tokens))

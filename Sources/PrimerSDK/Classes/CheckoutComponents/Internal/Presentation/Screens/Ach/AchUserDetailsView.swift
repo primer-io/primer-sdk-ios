@@ -89,7 +89,7 @@ struct AchUserDetailsView: View, LogReporter {
       Button(action: scope.submitUserDetails) {
         Text(CheckoutComponentsStrings.achContinueButton)
           .font(PrimerFont.body(tokens: tokens))
-          .foregroundColor(CheckoutColors.white(tokens: tokens))
+          .foregroundColor(CheckoutColors.onBrand(tokens: tokens))
           .frame(maxWidth: .infinity)
           .padding(.vertical, PrimerSpacing.large(tokens: tokens))
           .background(

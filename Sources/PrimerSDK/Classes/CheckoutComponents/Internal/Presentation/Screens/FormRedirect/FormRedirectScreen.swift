@@ -141,7 +141,7 @@ struct FormRedirectScreen: View {
             }
             .frame(maxWidth: .infinity)
             .frame(height: PrimerComponentHeight.button)
-            .foregroundColor(CheckoutColors.buttonTextPrimary(tokens: tokens))
+            .foregroundColor(CheckoutColors.onBrand(tokens: tokens))
             .background(
                 RoundedRectangle(cornerRadius: PrimerRadius.medium(tokens: tokens))
                     .fill(currentState.isSubmitEnabled && !currentState.isLoading
