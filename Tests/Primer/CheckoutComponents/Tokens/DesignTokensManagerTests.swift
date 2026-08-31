@@ -651,6 +651,29 @@ final class DesignTokensManagerTests: XCTestCase {
         XCTAssertEqual(tokens.primerTypographyErrorFont, "Inter")
     }
 
+    func test_applyTheme_brandFontUsingTokenSyntax_isIgnoredAndEveryOtherOverrideStillApplies() async throws {
+        // A hex, a reference and an arithmetic expression are the three shapes the token passes rewrite.
+        for badValue in ["#ff0000", "{primer.size.base}", "8-2"] {
+            // Given
+            let manager = DesignTokensManager()
+            manager.applyTheme(PrimerCheckoutTheme(
+                colors: ColorOverrides(primerColorBrand: .purple),
+                radius: RadiusOverrides(primerRadiusMedium: 30),
+                typography: TypographyOverrides(brand: badValue)
+            ))
+
+            // When
+            try await manager.fetchTokens(for: .light)
+
+            // Then
+            let tokens = try XCTUnwrap(manager.tokens, "'\(badValue)' discarded the whole token set")
+            XCTAssertEqual(tokens.primerColorBrand, .purple, "'\(badValue)' discarded the colour override")
+            XCTAssertEqual(tokens.primerRadiusMedium, 30, "'\(badValue)' discarded the radius override")
+            XCTAssertEqual(tokens.primerTypographyBrand, "Inter")
+            XCTAssertEqual(tokens.primerTypographyBodyMediumFont, "Inter")
+        }
+    }
+
     // MARK: - Combined Overrides
 
     func test_applyTheme_allOverrideCategories_appliedTogether() async throws {

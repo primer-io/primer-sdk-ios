@@ -50,7 +50,7 @@ enum PrimerFont {
     let namedFont: UIFont? =
       fontFamily == "Inter"
       ? variableInterFont(weight: fontWeight, size: fontSize)
-      : UIFont(name: fontFamily, size: fontSize)
+      : customFont(family: fontFamily, weight: fontWeight, size: fontSize)
 
     if namedFont == nil {
       PrimerLogging.shared.logger.warn(
@@ -259,6 +259,29 @@ enum PrimerFont {
     }
 
     return nil
+  }
+
+  /// Resolves a merchant brand font at the requested weight.
+  ///
+  /// `UIFont(name:size:)` carries no weight, so on its own every text style resolves to the same face.
+  /// A family lookup carrying a weight trait keeps each style's weight; a PostScript face name
+  /// (e.g. "Georgia-Bold") matches no family, so it is normalised to its own family first and only
+  /// falls back to that single face when the family cannot be re-resolved.
+  private static func customFont(family: String, weight: CGFloat, size: CGFloat) -> UIFont? {
+    if let font = weightedFont(family: family, weight: weight, size: size) { return font }
+    guard let namedFace = UIFont(name: family, size: size) else { return nil }
+    return weightedFont(family: namedFace.familyName, weight: weight, size: size) ?? namedFace
+  }
+
+  /// A font from `family` at `weight`, or nil when that family is not installed. Descriptor matching
+  /// substitutes Helvetica for an unknown family, so the resolved family is compared back.
+  private static func weightedFont(family: String, weight: CGFloat, size: CGFloat) -> UIFont? {
+    let descriptor = UIFontDescriptor(fontAttributes: [
+      .family: family,
+      .traits: [UIFontDescriptor.TraitKey.weight: uiFontWeightFromNumber(weight).rawValue]
+    ])
+    let font = UIFont(descriptor: descriptor, size: size)
+    return font.familyName.caseInsensitiveCompare(family) == .orderedSame ? font : nil
   }
 
   /// Converts numeric font weight to UIFont.Weight enum.

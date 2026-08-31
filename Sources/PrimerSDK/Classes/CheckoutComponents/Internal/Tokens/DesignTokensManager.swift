@@ -41,7 +41,13 @@ final class DesignTokensManager: ObservableObject {
   private func tokenValueOverrides(colors: ColorOverrides?) -> [String: Any] {
     var overrides: [String: Any] = [:]
     if let brandFont = themeOverrides?.typography?.brand {
-      overrides["primerTypographyBrand"] = brandFont
+      // rejected here rather than downstream: a value the passes rewrite fails the whole decode
+      if DesignTokensProcessor.isTokenAuthoringSyntax(brandFont) {
+        PrimerLogging.shared.logger.error(
+          message: "[DesignTokens] Brand font override ignored: '\(brandFont)' is not a font family name.")
+      } else {
+        overrides["primerTypographyBrand"] = brandFont
+      }
     }
     guard let colors else { return overrides }
     let pairs: [(String, Color?)] = [

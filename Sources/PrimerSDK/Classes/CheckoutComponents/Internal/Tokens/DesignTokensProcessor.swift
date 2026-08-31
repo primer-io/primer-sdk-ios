@@ -53,7 +53,8 @@ enum DesignTokensProcessor {
       return current
     }
 
-    if let hex = value as? String, hex.hasPrefix("#"), let colorArray = hexToColorArray(hex) {
+    if dict["type"] as? String == "color", let hex = value as? String, hex.hasPrefix("#"),
+      let colorArray = hexToColorArray(hex) {
       return colorArray
     }
 
@@ -62,12 +63,15 @@ enum DesignTokensProcessor {
 
   // MARK: - Hex Color Conversion
 
+  /// Expands `#RRGGBB[AA]` values, but only on a leaf declared `"type": "color"`, so a string token
+  /// whose value merely looks like a hex keeps its type.
   static func convertHexColors(in dict: [String: Any]) -> [String: Any] {
-    dict.reduce(into: [String: Any]()) { result, pair in
+    let isColorLeaf = dict["value"] != nil && dict["type"] as? String == "color"
+    return dict.reduce(into: [String: Any]()) { result, pair in
       let (key, value) = pair
       if let nested = value as? [String: Any] {
         result[key] = convertHexColors(in: nested)
-      } else if let hex = value as? String, hex.hasPrefix("#"),
+      } else if isColorLeaf, key == "value", let hex = value as? String, hex.hasPrefix("#"),
         let colorArray = hexToColorArray(hex) {
         result[key] = colorArray
       } else {
@@ -229,5 +233,14 @@ enum DesignTokensProcessor {
     }
 
     return nil
+  }
+
+  // MARK: - Merchant Value Validation
+
+  /// True when a string carries token authoring syntax that the passes expand into another type: a
+  /// `#RRGGBB[AA]` literal, a `{token.reference}`, or a single arithmetic expression.
+  static func isTokenAuthoringSyntax(_ value: String) -> Bool {
+    value.hasPrefix("#") || value.contains("{") || value.contains("}")
+      || evaluateExpression(value) != nil
   }
 }
