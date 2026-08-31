@@ -167,7 +167,7 @@ struct CardFormFieldsView: View {
     case .cardholderName:
       CardholderNameInputField(
         label: CheckoutComponentsStrings.cardholderNameLabel,
-        placeholder: CheckoutComponentsStrings.fullNamePlaceholder,
+        placeholder: CheckoutComponentsStrings.cardholderNamePlaceholder,
         scope: scope
       )
       .focused($focusedField, equals: .cardholderName)

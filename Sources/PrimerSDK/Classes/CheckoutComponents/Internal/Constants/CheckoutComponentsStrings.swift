@@ -623,14 +623,6 @@ enum CheckoutComponentsStrings {
     comment: "CVV input placeholder for standard cards"
   )
 
-  static let fullNamePlaceholder = NSLocalizedString(
-    "primer_card_form_placeholder_full_name",
-    tableName: tableName,
-    bundle: .primerResources,
-    value: "Full name",
-    comment: "Full name input placeholder"
-  )
-
   static let emailLabel = NSLocalizedString(
     "primer_card_form_label_email",
     tableName: tableName,
