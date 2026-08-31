@@ -347,7 +347,7 @@ public struct SizeOverrides: Equatable {
   public let primerSizeLarge: CGFloat?
   /// Internal: primerSizeXlarge (default: 32)
   public let primerSizeXlarge: CGFloat?
-  /// Internal: primerSizeXxlarge (default: 44)
+  /// Internal: primerSizeXxlarge (default: 40)
   public let primerSizeXxlarge: CGFloat?
   /// Internal: primerSizeXxxlarge (default: 56)
   public let primerSizeXxxlarge: CGFloat?

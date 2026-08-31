@@ -185,7 +185,7 @@ private struct VaultedMethodRowContent: View {
         Spacer()
         if isSelected {
           Image(systemName: "checkmark.circle.fill")
-            .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
+            .foregroundColor(CheckoutColors.borderSelected(tokens: tokens))
         }
       }
       .padding(PrimerSpacing.medium(tokens: tokens))
