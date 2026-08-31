@@ -5,6 +5,7 @@
 "primer_common_button_pay_amount" = "%1$@ to'lash";
 "primer_common_button_cancel" = "Bekor qilish";
 "primer_common_button_retry" = "Qayta urinish";
+"primer_common_display_name_pay_amount" = "%1$@ bilan toʻlash";
 "primer_common_back" = "Orqaga";
 "primer_common_error_generic" = "Noma'lum xatolik yuz berdi.";
 "primer_common_error_unexpected" = "Kutilmagan xatolik yuz berdi.";
@@ -52,6 +53,7 @@
 "primer_card_form_placeholder_expiry_alt" = "12/25";
 "primer_card_form_placeholder_cvv" = "123";
 "primer_card_form_placeholder_cvv_amex" = "1234";
+"primer_card_form_placeholder_cvv_standard" = "123";
 "primer_card_form_placeholder_country_code" = "Mamlakatni tanlang";
 "primer_card_form_placeholder_postal" = "100000";
 "primer_card_form_placeholder_city" = "Toshkent";

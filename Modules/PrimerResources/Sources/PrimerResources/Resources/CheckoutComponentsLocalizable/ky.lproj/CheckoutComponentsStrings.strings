@@ -5,6 +5,7 @@
 "primer_common_button_pay_amount" = "%1$@ төлөө";
 "primer_common_button_cancel" = "Жокко чыгаруу";
 "primer_common_button_retry" = "Кайра аракет кылуу";
+"primer_common_display_name_pay_amount" = "%1$@ менен төлөө";
 "primer_common_back" = "Артка";
 "primer_common_error_generic" = "Белгисиз ката кетти.";
 "primer_common_error_unexpected" = "Күтүлбөгөн ката кетти.";
@@ -52,6 +53,7 @@
 "primer_card_form_placeholder_expiry_alt" = "12/25";
 "primer_card_form_placeholder_cvv" = "123";
 "primer_card_form_placeholder_cvv_amex" = "1234";
+"primer_card_form_placeholder_cvv_standard" = "123";
 "primer_card_form_placeholder_country_code" = "Өлкөнү тандаңыз";
 "primer_card_form_placeholder_postal" = "720000";
 "primer_card_form_placeholder_city" = "Бишкек";

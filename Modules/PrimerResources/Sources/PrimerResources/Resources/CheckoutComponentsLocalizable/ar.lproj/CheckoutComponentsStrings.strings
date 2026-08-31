@@ -128,6 +128,7 @@
 "primer_card_form_placeholder_country_code" = "اختر الدولة";
 "primer_card_form_placeholder_cvv" = "123";
 "primer_card_form_placeholder_cvv_amex" = "1234";
+"primer_card_form_placeholder_cvv_standard" = "123";
 "primer_card_form_placeholder_email" = "mohammed.ahmed@example.com";
 "primer_card_form_placeholder_expiry" = "شهر/سنة";
 "primer_card_form_placeholder_expiry_alt" = "12/25";
@@ -161,6 +162,7 @@
 "primer_common_button_pay" = "دفع";
 "primer_common_button_pay_amount" = "دفع %1$@";
 "primer_common_button_retry" = "إعادة المحاولة";
+"primer_common_display_name_pay_amount" = "الدفع عبر %1$@";
 "primer_common_error_generic" = "حدث خطأ غير معروف.";
 "primer_common_error_unexpected" = "حدث خطأ غير متوقع.";
 "primer_country_no_results" = "لم يتم العثور على دول";

@@ -5,6 +5,7 @@
 "primer_common_button_pay_amount" = "Magbayad ng %1$@";
 "primer_common_button_cancel" = "Kanselahin";
 "primer_common_button_retry" = "Subukan muli";
+"primer_common_display_name_pay_amount" = "Magbayad gamit ang %1$@";
 "primer_common_back" = "Bumalik";
 "primer_common_error_generic" = "May naganap na hindi kilalang error.";
 "primer_common_error_unexpected" = "May naganap na hindi inaasahang error.";
@@ -52,6 +53,7 @@
 "primer_card_form_placeholder_expiry_alt" = "12/25";
 "primer_card_form_placeholder_cvv" = "123";
 "primer_card_form_placeholder_cvv_amex" = "1234";
+"primer_card_form_placeholder_cvv_standard" = "123";
 "primer_card_form_placeholder_country_code" = "Pumili ng bansa";
 "primer_card_form_placeholder_postal" = "1000";
 "primer_card_form_placeholder_city" = "Maynila";

@@ -128,6 +128,7 @@
 "primer_card_form_placeholder_country_code" = "Välj land";
 "primer_card_form_placeholder_cvv" = "123";
 "primer_card_form_placeholder_cvv_amex" = "1234";
+"primer_card_form_placeholder_cvv_standard" = "123";
 "primer_card_form_placeholder_email" = "erik.johansson@exempel.se";
 "primer_card_form_placeholder_expiry" = "MM/ÅÅ";
 "primer_card_form_placeholder_expiry_alt" = "12/25";
@@ -161,6 +162,7 @@
 "primer_common_button_pay" = "Betala";
 "primer_common_button_pay_amount" = "Betala %1$@";
 "primer_common_button_retry" = "Försök igen";
+"primer_common_display_name_pay_amount" = "Betala med %1$@";
 "primer_common_error_generic" = "Ett okänt fel uppstod.";
 "primer_common_error_unexpected" = "Ett oväntat fel uppstod.";
 "primer_country_no_results" = "Inga länder hittades";

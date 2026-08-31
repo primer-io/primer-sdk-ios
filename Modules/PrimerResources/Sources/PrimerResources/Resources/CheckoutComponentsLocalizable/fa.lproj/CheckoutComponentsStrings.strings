@@ -5,6 +5,7 @@
 "primer_common_button_pay_amount" = "پرداخت %1$@";
 "primer_common_button_cancel" = "انصراف";
 "primer_common_button_retry" = "تلاش مجدد";
+"primer_common_display_name_pay_amount" = "پرداخت با %1$@";
 "primer_common_back" = "بازگشت";
 "primer_common_error_generic" = "خطای ناشناخته‌ای رخ داده است.";
 "primer_common_error_unexpected" = "خطای غیرمنتظره‌ای رخ داده است.";
@@ -52,6 +53,7 @@
 "primer_card_form_placeholder_expiry_alt" = "۱۲/۲۵";
 "primer_card_form_placeholder_cvv" = "۱۲۳";
 "primer_card_form_placeholder_cvv_amex" = "۱۲۳۴";
+"primer_card_form_placeholder_cvv_standard" = "123";
 "primer_card_form_placeholder_country_code" = "انتخاب کشور";
 "primer_card_form_placeholder_postal" = "۱۲۳۴۵";
 "primer_card_form_placeholder_city" = "تهران";

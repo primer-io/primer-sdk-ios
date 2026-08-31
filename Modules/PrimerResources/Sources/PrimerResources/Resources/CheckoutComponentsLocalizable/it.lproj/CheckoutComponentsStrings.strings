@@ -128,6 +128,7 @@
 "primer_card_form_placeholder_country_code" = "Seleziona paese";
 "primer_card_form_placeholder_cvv" = "123";
 "primer_card_form_placeholder_cvv_amex" = "1234";
+"primer_card_form_placeholder_cvv_standard" = "123";
 "primer_card_form_placeholder_email" = "mario.rossi@esempio.com";
 "primer_card_form_placeholder_expiry" = "MM/AA";
 "primer_card_form_placeholder_expiry_alt" = "12/25";
@@ -161,6 +162,7 @@
 "primer_common_button_pay" = "Paga";
 "primer_common_button_pay_amount" = "Paga %1$@";
 "primer_common_button_retry" = "Riprova";
+"primer_common_display_name_pay_amount" = "Paga con %1$@";
 "primer_common_error_generic" = "Si è verificato un errore sconosciuto.";
 "primer_common_error_unexpected" = "Si è verificato un errore imprevisto.";
 "primer_country_no_results" = "Nessun paese trovato";

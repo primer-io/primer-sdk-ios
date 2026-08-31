@@ -5,6 +5,7 @@
 "primer_common_button_pay_amount" = "Bide %1$@";
 "primer_common_button_cancel" = "Betal bike";
 "primer_common_button_retry" = "Dîsa biceribîne";
+"primer_common_display_name_pay_amount" = "Bi %1$@ bide";
 "primer_common_back" = "Vegere";
 "primer_common_error_generic" = "Xeletîyek nenas çêbû.";
 "primer_common_error_unexpected" = "Xeletîyek nêwendî çêbû.";
@@ -52,6 +53,7 @@
 "primer_card_form_placeholder_expiry_alt" = "12/25";
 "primer_card_form_placeholder_cvv" = "123";
 "primer_card_form_placeholder_cvv_amex" = "1234";
+"primer_card_form_placeholder_cvv_standard" = "123";
 "primer_card_form_placeholder_country_code" = "Welatê hilbijêre";
 "primer_card_form_placeholder_postal" = "12345";
 "primer_card_form_placeholder_city" = "Hewlêr";

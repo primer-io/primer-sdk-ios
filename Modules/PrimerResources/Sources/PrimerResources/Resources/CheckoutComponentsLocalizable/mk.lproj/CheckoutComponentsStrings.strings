@@ -5,6 +5,7 @@
 "primer_common_button_pay_amount" = "Плати %1$@";
 "primer_common_button_cancel" = "Откажи";
 "primer_common_button_retry" = "Обиди се повторно";
+"primer_common_display_name_pay_amount" = "Плати со %1$@";
 "primer_common_back" = "Назад";
 "primer_common_error_generic" = "Се случи непозната грешка.";
 "primer_common_error_unexpected" = "Се случи неочекувана грешка.";
@@ -52,6 +53,7 @@
 "primer_card_form_placeholder_expiry_alt" = "12/25";
 "primer_card_form_placeholder_cvv" = "123";
 "primer_card_form_placeholder_cvv_amex" = "1234";
+"primer_card_form_placeholder_cvv_standard" = "123";
 "primer_card_form_placeholder_country_code" = "Избери држава";
 "primer_card_form_placeholder_postal" = "1000";
 "primer_card_form_placeholder_city" = "Скопје";

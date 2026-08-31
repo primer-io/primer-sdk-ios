@@ -128,6 +128,7 @@
 "primer_card_form_placeholder_country_code" = "Vybrat zemi";
 "primer_card_form_placeholder_cvv" = "123";
 "primer_card_form_placeholder_cvv_amex" = "1234";
+"primer_card_form_placeholder_cvv_standard" = "123";
 "primer_card_form_placeholder_email" = "jan.novak@priklad.cz";
 "primer_card_form_placeholder_expiry" = "MM/RR";
 "primer_card_form_placeholder_expiry_alt" = "12/25";
@@ -161,6 +162,7 @@
 "primer_common_button_pay" = "Zaplatit";
 "primer_common_button_pay_amount" = "Zaplatit %1$@";
 "primer_common_button_retry" = "Zkusit znovu";
+"primer_common_display_name_pay_amount" = "Zaplatit přes %1$@";
 "primer_common_error_generic" = "Došlo k neznámé chybě.";
 "primer_common_error_unexpected" = "Došlo k neočekávané chybě.";
 "primer_country_no_results" = "Nenalezeny žádné země";

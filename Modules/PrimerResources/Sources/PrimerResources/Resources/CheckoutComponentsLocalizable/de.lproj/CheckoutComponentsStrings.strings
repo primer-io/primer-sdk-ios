@@ -128,6 +128,7 @@
 "primer_card_form_placeholder_country_code" = "Land auswählen";
 "primer_card_form_placeholder_cvv" = "123";
 "primer_card_form_placeholder_cvv_amex" = "1234";
+"primer_card_form_placeholder_cvv_standard" = "123";
 "primer_card_form_placeholder_email" = "max.mustermann@beispiel.de";
 "primer_card_form_placeholder_expiry" = "MM/JJ";
 "primer_card_form_placeholder_expiry_alt" = "12/25";
@@ -161,6 +162,7 @@
 "primer_common_button_pay" = "Bezahlen";
 "primer_common_button_pay_amount" = "%1$@ bezahlen";
 "primer_common_button_retry" = "Erneut versuchen";
+"primer_common_display_name_pay_amount" = "Mit %1$@ bezahlen";
 "primer_common_error_generic" = "Ein unbekannter Fehler ist aufgetreten.";
 "primer_common_error_unexpected" = "Ein unerwarteter Fehler ist aufgetreten.";
 "primer_country_no_results" = "Keine Länder gefunden";

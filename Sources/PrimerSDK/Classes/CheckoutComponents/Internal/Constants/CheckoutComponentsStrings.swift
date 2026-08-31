@@ -671,14 +671,6 @@ enum CheckoutComponentsStrings {
     comment: "Retail outlet input placeholder"
   )
 
-  static let otpCodePlaceholder = NSLocalizedString(
-    "primer_card_form_placeholder_otp_code",
-    tableName: tableName,
-    bundle: .primerResources,
-    value: "OTP Code",
-    comment: "OTP code input placeholder"
-  )
-
   static let otpCodeNumericPlaceholder = NSLocalizedString(
     "primer_card_form_placeholder_otp",
     tableName: tableName,

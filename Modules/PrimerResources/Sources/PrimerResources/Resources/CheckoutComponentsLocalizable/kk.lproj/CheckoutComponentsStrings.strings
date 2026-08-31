@@ -5,6 +5,7 @@
 "primer_common_button_pay_amount" = "Төлеу %1$@";
 "primer_common_button_cancel" = "Болдырмау";
 "primer_common_button_retry" = "Қайталау";
+"primer_common_display_name_pay_amount" = "%1$@ арқылы төлеу";
 "primer_common_back" = "Артқа";
 "primer_common_error_generic" = "Белгісіз қате орын алды.";
 "primer_common_error_unexpected" = "Күтпеген қате орын алды.";
@@ -52,6 +53,7 @@
 "primer_card_form_placeholder_expiry_alt" = "12/25";
 "primer_card_form_placeholder_cvv" = "123";
 "primer_card_form_placeholder_cvv_amex" = "1234";
+"primer_card_form_placeholder_cvv_standard" = "123";
 "primer_card_form_placeholder_country_code" = "Мемлекетті таңдау";
 "primer_card_form_placeholder_postal" = "050000";
 "primer_card_form_placeholder_city" = "Алматы";
