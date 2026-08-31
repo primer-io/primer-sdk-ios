@@ -21,6 +21,7 @@ import SwiftUI
 public struct PrimerCheckoutTheme: Equatable {
 
   public let colors: ColorOverrides?
+  public let darkColors: ColorOverrides?
   public let radius: RadiusOverrides?
   public let spacing: SpacingOverrides?
   public let sizes: SizeOverrides?
@@ -30,8 +31,17 @@ public struct PrimerCheckoutTheme: Equatable {
   /// Creates a new theme configuration with optional overrides.
   /// - Parameters:
   ///   - colors: Color token overrides, applied in both light and dark mode. Default: nil (uses internal defaults)
+  ///   - darkColors: Color token overrides applied in dark mode only. Each value left nil here falls back to the
+  ///     matching `colors` value, so only the colours that differ in the dark need naming. Default: nil (`colors`
+  ///     applies in both modes)
+  ///   - radius: Radius token overrides. Default: nil (uses internal defaults)
+  ///   - spacing: Spacing token overrides. Default: nil (uses internal defaults)
+  ///   - sizes: Size token overrides. Default: nil (uses internal defaults)
+  ///   - typography: Typography token overrides. Default: nil (uses internal defaults)
+  ///   - width: Border width token overrides. Default: nil (uses internal defaults)
   public init(
     colors: ColorOverrides? = nil,
+    darkColors: ColorOverrides? = nil,
     radius: RadiusOverrides? = nil,
     spacing: SpacingOverrides? = nil,
     sizes: SizeOverrides? = nil,
@@ -39,6 +49,7 @@ public struct PrimerCheckoutTheme: Equatable {
     width: WidthOverrides? = nil
   ) {
     self.colors = colors
+    self.darkColors = darkColors
     self.radius = radius
     self.spacing = spacing
     self.sizes = sizes
@@ -401,6 +412,10 @@ public struct TypographyOverrides: Equatable {
 
   // MARK: - Token Properties
 
+  /// Font family every style below falls back to, so one typeface covers the whole sheet.
+  /// A style naming its own `font` wins over this. Default: nil (Inter).
+  public let brand: String?
+
   /// Title extra large: Inter, -0.6 letter spacing, weight 550, size 24, line height 32
   public let titleXlarge: TypographyStyle?
 
@@ -421,6 +436,7 @@ public struct TypographyOverrides: Equatable {
 
   /// Creates typography overrides with all optional properties.
   public init(
+    brand: String? = nil,
     titleXlarge: TypographyStyle? = nil,
     titleLarge: TypographyStyle? = nil,
     bodyLarge: TypographyStyle? = nil,
@@ -428,6 +444,7 @@ public struct TypographyOverrides: Equatable {
     bodySmall: TypographyStyle? = nil,
     error: TypographyStyle? = nil
   ) {
+    self.brand = brand
     self.titleXlarge = titleXlarge
     self.titleLarge = titleLarge
     self.bodyLarge = bodyLarge
@@ -465,5 +482,82 @@ public struct WidthOverrides: Equatable {
     self.primerWidthFocus = primerWidthFocus
     self.primerWidthError = primerWidthError
     self.primerWidthSelected = primerWidthSelected
+  }
+}
+
+// MARK: - Color Scheme Resolution
+
+@available(iOS 15.0, *)
+extension PrimerCheckoutTheme {
+  /// The colour overrides that apply in one colour scheme.
+  ///
+  /// `darkColors` only participates in dark mode, and only for the properties it names, so a theme
+  /// carrying just `colors` resolves to that same set in both modes.
+  func resolvedColors(for colorScheme: ColorScheme) -> ColorOverrides? {
+    guard colorScheme == .dark, let darkColors else { return colors }
+    return darkColors.merging(over: colors)
+  }
+}
+
+@available(iOS 15.0, *)
+extension ColorOverrides {
+  /// Keeps every colour this set names and takes the rest from `base`.
+  func merging(over base: ColorOverrides?) -> ColorOverrides {
+    guard let base else { return self }
+    return ColorOverrides(
+      primerColorBrand: primerColorBrand ?? base.primerColorBrand,
+      primerColorGray000: primerColorGray000 ?? base.primerColorGray000,
+      primerColorGray100: primerColorGray100 ?? base.primerColorGray100,
+      primerColorGray200: primerColorGray200 ?? base.primerColorGray200,
+      primerColorGray300: primerColorGray300 ?? base.primerColorGray300,
+      primerColorGray400: primerColorGray400 ?? base.primerColorGray400,
+      primerColorGray500: primerColorGray500 ?? base.primerColorGray500,
+      primerColorGray600: primerColorGray600 ?? base.primerColorGray600,
+      primerColorGray900: primerColorGray900 ?? base.primerColorGray900,
+      primerColorGreen500: primerColorGreen500 ?? base.primerColorGreen500,
+      primerColorRed100: primerColorRed100 ?? base.primerColorRed100,
+      primerColorRed500: primerColorRed500 ?? base.primerColorRed500,
+      primerColorRed900: primerColorRed900 ?? base.primerColorRed900,
+      primerColorBlue500: primerColorBlue500 ?? base.primerColorBlue500,
+      primerColorBlue900: primerColorBlue900 ?? base.primerColorBlue900,
+      primerColorBackgroundPrimary: primerColorBackgroundPrimary ?? base.primerColorBackgroundPrimary,
+      primerColorBackgroundSecondary: primerColorBackgroundSecondary ?? base.primerColorBackgroundSecondary,
+      primerColorBackgroundOutlinedDefault: primerColorBackgroundOutlinedDefault ?? base.primerColorBackgroundOutlinedDefault,
+      primerColorBackgroundOutlinedActive: primerColorBackgroundOutlinedActive ?? base.primerColorBackgroundOutlinedActive,
+      primerColorBackgroundOutlinedDisabled: primerColorBackgroundOutlinedDisabled ?? base.primerColorBackgroundOutlinedDisabled,
+      primerColorBackgroundOutlinedLoading: primerColorBackgroundOutlinedLoading ?? base.primerColorBackgroundOutlinedLoading,
+      primerColorBackgroundOutlinedSelected: primerColorBackgroundOutlinedSelected ?? base.primerColorBackgroundOutlinedSelected,
+      primerColorBackgroundOutlinedError: primerColorBackgroundOutlinedError ?? base.primerColorBackgroundOutlinedError,
+      primerColorBackgroundTransparentDefault: primerColorBackgroundTransparentDefault ?? base.primerColorBackgroundTransparentDefault,
+      primerColorBackgroundTransparentActive: primerColorBackgroundTransparentActive ?? base.primerColorBackgroundTransparentActive,
+      primerColorBackgroundTransparentDisabled: primerColorBackgroundTransparentDisabled ?? base.primerColorBackgroundTransparentDisabled,
+      primerColorBackgroundTransparentLoading: primerColorBackgroundTransparentLoading ?? base.primerColorBackgroundTransparentLoading,
+      primerColorBackgroundTransparentSelected: primerColorBackgroundTransparentSelected ?? base.primerColorBackgroundTransparentSelected,
+      primerColorTextPrimary: primerColorTextPrimary ?? base.primerColorTextPrimary,
+      primerColorTextSecondary: primerColorTextSecondary ?? base.primerColorTextSecondary,
+      primerColorTextPlaceholder: primerColorTextPlaceholder ?? base.primerColorTextPlaceholder,
+      primerColorTextDisabled: primerColorTextDisabled ?? base.primerColorTextDisabled,
+      primerColorTextNegative: primerColorTextNegative ?? base.primerColorTextNegative,
+      primerColorTextLink: primerColorTextLink ?? base.primerColorTextLink,
+      primerColorTextOutlinedDefault: primerColorTextOutlinedDefault ?? base.primerColorTextOutlinedDefault,
+      primerColorBorderOutlinedDefault: primerColorBorderOutlinedDefault ?? base.primerColorBorderOutlinedDefault,
+      primerColorBorderOutlinedActive: primerColorBorderOutlinedActive ?? base.primerColorBorderOutlinedActive,
+      primerColorBorderOutlinedFocus: primerColorBorderOutlinedFocus ?? base.primerColorBorderOutlinedFocus,
+      primerColorBorderOutlinedDisabled: primerColorBorderOutlinedDisabled ?? base.primerColorBorderOutlinedDisabled,
+      primerColorBorderOutlinedError: primerColorBorderOutlinedError ?? base.primerColorBorderOutlinedError,
+      primerColorBorderOutlinedSelected: primerColorBorderOutlinedSelected ?? base.primerColorBorderOutlinedSelected,
+      primerColorBorderOutlinedLoading: primerColorBorderOutlinedLoading ?? base.primerColorBorderOutlinedLoading,
+      primerColorBorderTransparentDefault: primerColorBorderTransparentDefault ?? base.primerColorBorderTransparentDefault,
+      primerColorBorderTransparentActive: primerColorBorderTransparentActive ?? base.primerColorBorderTransparentActive,
+      primerColorBorderTransparentFocus: primerColorBorderTransparentFocus ?? base.primerColorBorderTransparentFocus,
+      primerColorBorderTransparentDisabled: primerColorBorderTransparentDisabled ?? base.primerColorBorderTransparentDisabled,
+      primerColorBorderTransparentSelected: primerColorBorderTransparentSelected ?? base.primerColorBorderTransparentSelected,
+      primerColorIconPrimary: primerColorIconPrimary ?? base.primerColorIconPrimary,
+      primerColorIconDisabled: primerColorIconDisabled ?? base.primerColorIconDisabled,
+      primerColorIconNegative: primerColorIconNegative ?? base.primerColorIconNegative,
+      primerColorIconPositive: primerColorIconPositive ?? base.primerColorIconPositive,
+      primerColorFocus: primerColorFocus ?? base.primerColorFocus,
+      primerColorLoader: primerColorLoader ?? base.primerColorLoader
+    )
   }
 }

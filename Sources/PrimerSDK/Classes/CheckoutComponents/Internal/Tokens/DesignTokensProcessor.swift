@@ -237,4 +237,10 @@ enum DesignTokensProcessor {
 
   // MARK: - Merchant Value Validation
 
+  /// True when a string carries token authoring syntax that the passes expand into another type: a
+  /// `#RRGGBB[AA]` literal, a `{token.reference}`, or a single arithmetic expression.
+  static func isTokenAuthoringSyntax(_ value: String) -> Bool {
+    value.hasPrefix("#") || value.contains("{") || value.contains("}")
+      || evaluateExpression(value) != nil
+  }
 }
