@@ -65,7 +65,7 @@ xcodebuild -workspace PrimerSDK.xcworkspace \
 
 ## UI Verification
 
-The `ios-simulator` MCP server (configured in `.mcp.json`) provides simulator tools. For UI changes, build the Debug App, then use MCP tools to boot the simulator, launch the Debug App (bundle ID: `com.primerapi.PrimerSDKExample`), navigate to the affected screen, and take screenshots to verify visually.
+For UI changes, build the Debug App, boot a simulator (`xcrun simctl boot`), install and launch the app (bundle ID: `com.primerapi.PrimerSDKExample`), navigate to the affected screen, and take screenshots (`xcrun simctl io booted screenshot`) to verify visually.
 
 ## Commit & PR Conventions
 
