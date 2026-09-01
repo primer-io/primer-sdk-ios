@@ -98,7 +98,8 @@ struct AddressLineInputField: View, LogReporter {
     }
     .accessibility(
       config: AccessibilityConfiguration(
-        identifier: AccessibilityIdentifiers.CardForm.billingAddressField(identifierSegment),
+        identifier: AccessibilityIdentifiers.CardForm.billingAddressField(
+          AddressLineTextField.identifierSegment(for: inputType)),
         label: label ?? placeholder,
         hint: CheckoutComponentsStrings.a11yBillingAddressHint
       ),
@@ -107,16 +108,6 @@ struct AddressLineInputField: View, LogReporter {
     .programmaticValue(inputType, from: scope, text: $addressLine, isFocused: $isFocused)
     .onAppear {
       setupValidationService()
-    }
-  }
-
-  // The identifier segment is spelled out per field: string interpolation of the enum case
-  // produces camelCase and silently changes the id when a case is renamed.
-  private var identifierSegment: String {
-    switch inputType {
-    case .addressLine1: "address_line1"
-    case .addressLine2: "address_line2"
-    default: "address_line"
     }
   }
 

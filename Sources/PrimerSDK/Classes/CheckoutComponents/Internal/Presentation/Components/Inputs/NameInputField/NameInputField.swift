@@ -96,7 +96,8 @@ struct NameInputField: View, LogReporter {
     }
     .accessibility(
       config: AccessibilityConfiguration(
-        identifier: AccessibilityIdentifiers.CardForm.billingAddressField(identifierSegment),
+        identifier: AccessibilityIdentifiers.CardForm.billingAddressField(
+          NameTextField.identifierSegment(for: inputType)),
         label: label ?? placeholder,
         hint: CheckoutComponentsStrings.a11yNameFieldHint
       ),
@@ -109,17 +110,6 @@ struct NameInputField: View, LogReporter {
         name = initialValue
         onNameChange?(initialValue)
       }
-    }
-  }
-
-  // The identifier segment is spelled out per field: string interpolation of the enum case
-  // produces camelCase and silently changes the id when a case is renamed.
-  private var identifierSegment: String {
-    switch inputType {
-    case .firstName: "first_name"
-    case .lastName: "last_name"
-    case .phoneNumber: "phone_number"
-    default: "name"
     }
   }
 

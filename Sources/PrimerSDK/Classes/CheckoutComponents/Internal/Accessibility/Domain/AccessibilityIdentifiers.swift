@@ -9,6 +9,13 @@
 
 enum AccessibilityIdentifiers {
 
+  /// UIKit-level identifier for the editable control wrapped inside an identified field container.
+  /// The container's combined element hides its children from assistive tech but not from UI tests,
+  /// so the child needs its own stable name.
+  static func inputField(within containerIdentifier: String) -> String {
+    "\(containerIdentifier)_input"
+  }
+
   enum CardForm {
     static let cardNumberField = "checkout_components_card_form_card_number_field"
     static let expiryField = "checkout_components_card_form_expiry_field"
