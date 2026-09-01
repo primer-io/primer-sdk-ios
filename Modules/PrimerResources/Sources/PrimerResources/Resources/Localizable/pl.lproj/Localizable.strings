@@ -8,7 +8,7 @@
 "addressLine1Label" = "Adres (linia 1)";
 
 /* Form Text Field Placeholder (Address line 1) */
-"addressLine1Placeholder" = "Pierwsza linia adresu";
+"addressLine1Placeholder" = "Adres (linia 1)";
 
 /* An error message displayed when the Address line 2 is not correct */
 "addressLine2ErrorInvalid" = "Nieprawidłowy adres (linia 2)";
@@ -20,7 +20,7 @@
 "addressLine2Label" = "Adres (linia 2)";
 
 /* Form Text Field Placeholder (Address line 2) */
-"addressLine2Placeholder" = "Druga linia adresu";
+"addressLine2Placeholder" = "Adres (linia 2)";
 
 "card_expiry_date" = "MM/RR";
 
@@ -293,7 +293,7 @@
 "stateErrorInvalid" = "Nieprawidłowy region";
 
 /* State, Region or County is required - Form Validation */
-"stateErrorRequired" = "Stan, region lub województwo jest wymagane";
+"stateErrorRequired" = "Region jest wymagany";
 
 /* The billing address state container view label */
 "stateLabel" = "Stan / Region / Województwo";
