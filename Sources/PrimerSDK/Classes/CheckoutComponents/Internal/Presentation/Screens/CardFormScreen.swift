@@ -128,7 +128,7 @@ struct CardFormScreen: View, LogReporter {
     .cornerRadius(PrimerRadius.small(tokens: tokens))
     .accessibility(
       config: AccessibilityConfiguration(
-        identifier: AccessibilityIdentifiers.Common.submitButton,
+        identifier: AccessibilityIdentifiers.CardForm.submitButton,
         label: cardFormState.isLoading
           ? CheckoutComponentsStrings.a11ySubmitButtonLoading : payTitle(accessible: true),
         hint: cardFormState.isLoading
