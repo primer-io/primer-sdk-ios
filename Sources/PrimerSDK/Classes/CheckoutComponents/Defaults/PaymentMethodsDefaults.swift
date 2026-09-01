@@ -116,6 +116,7 @@ public struct PaymentMethodsHeaderContent: View {
       .font(PrimerFont.titleLarge(tokens: tokens))
       .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
       .frame(maxWidth: .infinity, alignment: .leading)
+      .accessibilityIdentifier(AccessibilityIdentifiers.PaymentSelection.header)
       .accessibilityAddTraits(.isHeader)
   }
 }
@@ -198,6 +199,8 @@ private struct VaultedMethodRowContent: View {
     }
     .buttonStyle(PlainButtonStyle())
     .accessibilityElement(children: .ignore)
+    .accessibilityIdentifier(
+      AccessibilityIdentifiers.PaymentSelection.vaultedPaymentMethodItem(method.id))
     .accessibilityLabel(method.displayData.accessibilityLabel)
   }
 }
@@ -231,5 +234,11 @@ private struct VaultedSubmitContent: View {
       .cornerRadius(PrimerRadius.small(tokens: tokens))
     }
     .disabled(!isEnabled || isLoading)
+    .accessibility(
+      config: AccessibilityConfiguration(
+        identifier: AccessibilityIdentifiers.Vault.payButton,
+        label: CheckoutComponentsStrings.payButton,
+        traits: [.isButton]
+      ))
   }
 }
