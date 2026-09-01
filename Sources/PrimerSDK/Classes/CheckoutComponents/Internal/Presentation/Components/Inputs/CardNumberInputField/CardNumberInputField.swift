@@ -130,6 +130,7 @@ struct CardNumberInputField: View, LogReporter {
       ),
       combinesChildren: false
     )
+    .programmaticValue(.cardNumber, from: scope, text: $cardNumber, isFocused: $isFocused)
     .onAppear {
       setupValidationService()
       localSelectedNetwork = displayNetwork

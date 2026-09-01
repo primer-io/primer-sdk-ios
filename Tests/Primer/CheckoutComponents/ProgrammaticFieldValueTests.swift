@@ -85,9 +85,9 @@ final class ProgrammaticFieldValueTests: XCTestCase {
         }
     }
 
-    /// The PCI fields are the one place this must not happen: the scope hands back a masked PAN and an
-    /// empty CVV, so mirroring would wipe what the customer typed the moment the field lost focus.
-    func test_pciFields_areNeverMirrored() async throws {
+    /// A PAN write shows in the field — formatted the way typing it would be — and validates, while the
+    /// merchant-facing read stays masked. Writes mirror; reads redact.
+    func test_cardNumberWrite_showsFormattedInTheField_whileMerchantReadStaysMasked() async throws {
         let container = try await makeContainer()
 
         await DIContainer.withContainer(container) {
@@ -103,10 +103,67 @@ final class ProgrammaticFieldValueTests: XCTestCase {
             defer { host.dismantle() }
             await host.settle()
 
-            scope.updateCardNumber(TestData.CardNumbers.validVisa)
+            // Grouping spaces are tolerated on input; the scope stores digits.
+            scope.updateCardNumber("4242 4242 4242 4242")
             await host.settle()
 
-            XCTAssertEqual(host.secureText, "")
+            XCTAssertEqual(host.secureText, "4242 4242 4242 4242")
+            XCTAssertTrue(scope.fieldValidationStates.cardNumber)
+
+            // The raw PAN never reaches merchant-facing surfaces.
+            XCTAssertFalse(scope.getFieldValue(.cardNumber).contains("4242 4242"))
+            XCTAssertFalse(scope.currentState.data[.cardNumber].contains("4242 4242"))
+        }
+    }
+
+    func test_cvvWrite_showsInTheField_whileMerchantReadStaysEmpty() async throws {
+        let container = try await makeContainer()
+
+        await DIContainer.withContainer(container) {
+            let scope = await makeCardFormScope()
+            let host = FieldHost(
+                CVVInputField(
+                    label: "CVV",
+                    placeholder: "123",
+                    scope: scope,
+                    cardNetwork: .visa
+                )
+                .environment(\.diContainer, container)
+            )
+            defer { host.dismantle() }
+            await host.settle()
+
+            scope.updateCvv("123")
+            await host.settle()
+
+            XCTAssertEqual(host.secureText, "123")
+            XCTAssertTrue(scope.fieldValidationStates.cvv)
+            XCTAssertEqual(scope.getFieldValue(.cvv), "")
+            XCTAssertEqual(scope.currentState.data[.cvv], "")
+        }
+    }
+
+    func test_expiryDateWrite_showsInTheField() async throws {
+        let container = try await makeContainer()
+
+        await DIContainer.withContainer(container) {
+            let scope = await makeCardFormScope()
+            let host = FieldHost(
+                ExpiryDateInputField(
+                    label: "Expiry date",
+                    placeholder: "MM/YY",
+                    scope: scope
+                )
+                .environment(\.diContainer, container)
+            )
+            defer { host.dismantle() }
+            await host.settle()
+
+            scope.updateExpiryDate("12/30")
+            await host.settle()
+
+            XCTAssertEqual(host.text, "12/30")
+            XCTAssertTrue(scope.fieldValidationStates.expiry)
         }
     }
 

@@ -78,6 +78,7 @@ struct ExpiryDateInputField: View, LogReporter {
       ),
       combinesChildren: false
     )
+    .programmaticValue(.expiryDate, from: scope, text: $expiryDate, isFocused: $isFocused)
     .onAppear {
       setupValidationService()
     }

@@ -38,6 +38,12 @@ protocol CardFormFieldScopeInternal: PrimerCardFormScope {
   func updateValidationStateIfNeeded(for field: PrimerInputElementType, isValid: Bool)
   func performSubmit() async
 
+  /// Raw value of `fieldType` for the SDK's own input views to display. Unlike `getFieldValue(_:)`,
+  /// which masks the PAN and blanks the CVV before anything reaches merchant code, this accessor is
+  /// internal-only: the value lands in an SDK-rendered text field on the cardholder's screen and
+  /// never crosses the SDK boundary. Never route it into merchant-facing state.
+  func fieldDisplayValue(_ fieldType: PrimerInputElementType) -> String
+
   /// Auto-detected network from the card number (keystroke/BIN prefix); ignored while the user has
   /// pinned a still-available co-badge network.
   func autoSelectDetectedNetwork(_ network: String)

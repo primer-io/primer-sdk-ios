@@ -238,6 +238,11 @@
       return ""
     }
 
+    public func fieldDisplayValue(_ fieldType: PrimerInputElementType) -> String {
+      log("fieldDisplayValue(\(fieldType))")
+      return ""
+    }
+
     public func setFieldError(
       _ fieldType: PrimerInputElementType, message: String, errorCode: String?
     ) {

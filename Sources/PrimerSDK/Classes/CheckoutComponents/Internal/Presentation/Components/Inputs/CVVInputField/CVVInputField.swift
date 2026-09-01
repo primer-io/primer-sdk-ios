@@ -78,6 +78,7 @@ struct CVVInputField: View, LogReporter {
       ),
       combinesChildren: false
     )
+    .programmaticValue(.cvv, from: scope, text: $cvv, isFocused: $isFocused)
     .onAppear {
       setupValidationService()
     }

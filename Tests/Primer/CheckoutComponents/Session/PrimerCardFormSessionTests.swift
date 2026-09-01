@@ -114,6 +114,7 @@ final class PrimerCardFormSessionTests: XCTestCase {
     func updateValidationState(_ keyPath: WritableKeyPath<FieldValidationStates, Bool>, isValid: Bool) {}
     func updateValidationStateIfNeeded(for field: PrimerInputElementType, isValid: Bool) {}
     func performSubmit() async {}
+    func fieldDisplayValue(_ fieldType: PrimerInputElementType) -> String { "" }
   }
 
   // MARK: - Tests

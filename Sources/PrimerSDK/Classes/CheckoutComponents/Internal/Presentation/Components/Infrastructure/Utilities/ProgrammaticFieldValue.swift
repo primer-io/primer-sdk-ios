@@ -17,8 +17,10 @@ import SwiftUI
 /// The adopted value is re-validated too, otherwise a prefilled field would leave the submit button
 /// disabled until the customer focused and left it.
 ///
-/// Not applicable to `.cardNumber` and `.cvv`: the scope deliberately hands back a masked PAN and an
-/// empty CVV, so there is no value to mirror.
+/// The merchant-facing stream serves only as the change signal — its PAN is masked and its CVV blank.
+/// The mirrored value comes from the internal `fieldDisplayValue(_:)` accessor instead, so every
+/// setter, `.cardNumber` and `.cvv` included, drives the field the customer reads while merchant
+/// reads stay redacted.
 @available(iOS 15.0, *)
 struct ProgrammaticFieldValue: ViewModifier {
   let field: PrimerInputElementType
@@ -40,16 +42,14 @@ struct ProgrammaticFieldValue: ViewModifier {
   }
 
   private func observeScopeValue() {
-    // `.cardNumber` and `.cvv` are deliberately unreadable from the scope, so mirroring them would put
-    // a masked PAN or an empty string where the customer's own input was.
-    guard let scope, field != .cardNumber, field != .cvv else { return }
+    guard let scope else { return }
 
     observationTask?.cancel()
     observationTask = Task { @MainActor in
       // The stream replays the current state on subscription, so a write that landed before the field
       // appeared arrives with the first element rather than needing separate seeding.
       for await _ in scope.state {
-        let value = scope.getFieldValue(field)
+        let value = scope.fieldDisplayValue(field)
         // Never fight the keyboard: while the field holds focus, its own text is the source of truth.
         guard !isFocused, value != text else { continue }
         text = value
@@ -65,10 +65,14 @@ struct ProgrammaticFieldValue: ViewModifier {
       let validationService = try? container.resolveSync(ValidationService.self)
     else { return }
 
-    scope.updateValidationStateIfNeeded(
-      for: field,
-      isValid: validationService.validateField(type: field, value: value).isValid
-    )
+    // The generic path assumes a 3-digit CVV, so an Amex prefill needs the network-aware rule.
+    let isValid = field == .cvv
+      ? validationService.validateCVV(
+        value, cardNetwork: scope.currentState.selectedNetwork?.network ?? .unknown
+      ).isValid
+      : validationService.validateField(type: field, value: value).isValid
+
+    scope.updateValidationStateIfNeeded(for: field, isValid: isValid)
   }
 }
 

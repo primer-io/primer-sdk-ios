@@ -187,11 +187,14 @@ final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, 
   }
 
   func updateCardNumber(_ cardNumber: String) {
-    structuredState.data[.cardNumber] = cardNumber
+    // Keystrokes arrive digits-only, but a programmatic write may carry grouping spaces. Store
+    // digits so masking, network detection and the field formatter all see one shape.
+    let digits = cardNumber.filter(\.isWholeNumber)
+    structuredState.data[.cardNumber] = digits
     updateCardData()
 
     Task {
-      await triggerNetworkDetection(for: cardNumber)
+      await triggerNetworkDetection(for: digits)
     }
   }
 
@@ -201,7 +204,7 @@ final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, 
   }
 
   func updateCvv(_ cvv: String) {
-    structuredState.data[.cvv] = cvv
+    structuredState.data[.cvv] = cvv.filter(\.isWholeNumber)
     updateCardData()
   }
 
@@ -537,6 +540,10 @@ final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, 
     case .cvv: ""
     default: structuredState.data[fieldType]
     }
+  }
+
+  func fieldDisplayValue(_ fieldType: PrimerInputElementType) -> String {
+    structuredState.data[fieldType]
   }
 
   func setFieldError(

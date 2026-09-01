@@ -112,7 +112,10 @@ struct CountryInputField: View, LogReporter {
       updateFromExternalState()
     }
     .task {
-      var previousCountry: PrimerCountry? = scope.currentState.selectedCountry
+      // The dedup starts from nil, not from the scope's current value: the stream replays the
+      // current state on subscription, and a write landing between `onAppear` and this task's start
+      // would otherwise equal the seed and be swallowed.
+      var previousCountry: PrimerCountry?
       for await state in scope.state {
         guard state.selectedCountry != previousCountry else { continue }
         previousCountry = state.selectedCountry
