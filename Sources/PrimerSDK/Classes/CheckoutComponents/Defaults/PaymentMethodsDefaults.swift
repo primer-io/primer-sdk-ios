@@ -237,7 +237,9 @@ private struct VaultedSubmitContent: View {
     .accessibility(
       config: AccessibilityConfiguration(
         identifier: AccessibilityIdentifiers.Vault.payButton,
-        label: CheckoutComponentsStrings.payButton,
+        // The combined element hides the spinner, so the label must carry the loading state.
+        label: isLoading
+          ? CheckoutComponentsStrings.a11ySubmitButtonLoading : CheckoutComponentsStrings.payButton,
         traits: [.isButton]
       ))
   }

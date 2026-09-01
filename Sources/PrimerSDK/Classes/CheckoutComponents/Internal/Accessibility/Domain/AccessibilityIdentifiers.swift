@@ -9,9 +9,9 @@
 
 enum AccessibilityIdentifiers {
 
-  /// UIKit-level identifier for the editable control wrapped inside an identified field container.
-  /// The container's combined element hides its children from assistive tech but not from UI tests,
-  /// so the child needs its own stable name.
+  /// UIKit-level identifier for the editable control wrapped inside an identified field container,
+  /// so UI tests can address the text field directly instead of the container element that carries
+  /// the label and value.
   static func inputField(within containerIdentifier: String) -> String {
     "\(containerIdentifier)_input"
   }
@@ -26,6 +26,13 @@ enum AccessibilityIdentifiers {
     static func billingAddressField(_ field: String) -> String {
       "checkout_components_card_form_billing_\(field)_field"
     }
+
+    // Fixed billing fields get constants so the container view and its UIKit wrapper cannot
+    // drift apart; the fields with several input types keep the builder above.
+    static let billingCityField = "checkout_components_card_form_billing_city_field"
+    static let billingPostalCodeField = "checkout_components_card_form_billing_postal_code_field"
+    static let billingStateField = "checkout_components_card_form_billing_state_field"
+    static let billingEmailField = "checkout_components_card_form_billing_email_field"
 
     static let inlineNetworkSelectorContainer =
       "checkout_components_card_form_inline_network_selector"

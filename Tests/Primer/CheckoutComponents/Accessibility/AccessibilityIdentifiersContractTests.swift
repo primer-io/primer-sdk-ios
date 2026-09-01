@@ -23,6 +23,10 @@ final class AccessibilityIdentifiersContractTests: XCTestCase {
         (Ids.CardForm.cvcField, "checkout_components_card_form_cvc_field"),
         (Ids.CardForm.cardholderNameField, "checkout_components_card_form_cardholder_name_field"),
         (Ids.CardForm.submitButton, "checkout_components_card_form_submit_button"),
+        (Ids.CardForm.billingCityField, "checkout_components_card_form_billing_city_field"),
+        (Ids.CardForm.billingPostalCodeField, "checkout_components_card_form_billing_postal_code_field"),
+        (Ids.CardForm.billingStateField, "checkout_components_card_form_billing_state_field"),
+        (Ids.CardForm.billingEmailField, "checkout_components_card_form_billing_email_field"),
         (Ids.CardForm.inlineNetworkSelectorContainer, "checkout_components_card_form_inline_network_selector"),
         (Ids.CardForm.dropdownNetworkSelectorButton, "checkout_components_card_form_dropdown_network_selector_button"),
         // PaymentSelection

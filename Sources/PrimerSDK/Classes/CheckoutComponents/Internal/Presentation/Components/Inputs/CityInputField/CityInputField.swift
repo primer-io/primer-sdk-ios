@@ -66,7 +66,7 @@ struct CityInputField: View, LogReporter {
     }
     .accessibility(
       config: AccessibilityConfiguration(
-        identifier: AccessibilityIdentifiers.CardForm.billingAddressField("city"),
+        identifier: AccessibilityIdentifiers.CardForm.billingCityField,
         label: label ?? placeholder,
         hint: CheckoutComponentsStrings.a11yBillingAddressCityHint,
         value: errorMessage,

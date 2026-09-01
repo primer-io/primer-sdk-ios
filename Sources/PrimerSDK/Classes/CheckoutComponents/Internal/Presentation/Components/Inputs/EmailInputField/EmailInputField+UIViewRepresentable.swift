@@ -26,7 +26,7 @@ struct EmailTextField: UIViewRepresentable, LogReporter {
   func makeUIView(context: Context) -> UITextField {
     let textField = UITextField()
     textField.delegate = context.coordinator
-    textField.accessibilityIdentifier = AccessibilityIdentifiers.inputField(within: AccessibilityIdentifiers.CardForm.billingAddressField("email"))
+    textField.accessibilityIdentifier = AccessibilityIdentifiers.inputField(within: AccessibilityIdentifiers.CardForm.billingEmailField)
 
     textField.configurePrimerStyle(
       placeholder: placeholder,
