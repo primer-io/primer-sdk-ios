@@ -1,31 +1,31 @@
 /* An error message displayed when the Address line 1 is not correct */
-"addressLine1ErrorInvalid" = "Nieprawidłowa pierwsza linia adresu";
+"addressLine1ErrorInvalid" = "Nieprawidłowy adres (linia 1)";
 
-/* State, Region or County is required - Form Validation */
-"addressLine1ErrorRequired" = "Pierwsza linia adresu jest wymagana";
+/* Address line 1 is required - Form Validation */
+"addressLine1ErrorRequired" = "Adres (linia 1) jest wymagany";
 
 /* The billing address Address line 1 container view label */
-"addressLine1Label" = "Pierwsza linia adresu";
+"addressLine1Label" = "Adres (linia 1)";
 
 /* Form Text Field Placeholder (Address line 1) */
 "addressLine1Placeholder" = "Pierwsza linia adresu";
 
 /* An error message displayed when the Address line 2 is not correct */
-"addressLine2ErrorInvalid" = "Nieprawidłowa druga linia adresu";
+"addressLine2ErrorInvalid" = "Nieprawidłowy adres (linia 2)";
 
-/* State, Region or County is required - Form Validation */
-"addressLine2ErrorRequired" = "Druga linia adresu jest wymagana";
+/* Address line 2 is required - Form Validation */
+"addressLine2ErrorRequired" = "Adres (linia 2) jest wymagany";
 
 /* The billing address Address line 2 container view label */
-"addressLine2Label" = "Druga linia adresu";
+"addressLine2Label" = "Adres (linia 2)";
 
 /* Form Text Field Placeholder (Address line 2) */
 "addressLine2Placeholder" = "Druga linia adresu";
 
 "card_expiry_date" = "MM/RR";
 
-/* An error message displayed when the city field is not correct */
-"cardholderErrorInvalid" = "Nieprawidłowe imię i nazwisko posiadacza karty";
+/* An error message displayed when the Cardholder name is not correct */
+"cardholderErrorInvalid" = "Nieprawidłowe imię i nazwisko na karcie";
 
 /* Choose your bank - Choose your bank title label */
 "choose-your-bank-title-label" = "Wybierz bank";
@@ -83,7 +83,7 @@
 "form_error_card_type_not_supported" = "Nieobsługiwany typ karty";
 
 /* Get the code from your banking app - Blik descriptor */
-"input_description_otp" = "Otrzymaj kod z aplikacji bankowej";
+"input_description_otp" = "Wpisz kod z aplikacji bankowej";
 
 /* 6 digit code - Text field top placeholder */
 "input_hint_form_blik_otp" = "6-cyfrowy kod";
@@ -287,7 +287,7 @@
 "shipping" = "Wysyłka";
 
 /* An error message displayed when the State, Region or County field is not correct */
-"stateErrorInvalid" = "Nieprawidłowy stan, region lub województwo";
+"stateErrorInvalid" = "Nieprawidłowy region";
 
 /* State, Region or County is required - Form Validation */
 "stateErrorRequired" = "Stan, region lub województwo jest wymagane";
