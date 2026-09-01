@@ -45,6 +45,7 @@ struct SelectCountryScreen: View, LogReporter {
           onDismiss?()
         }
         .foregroundColor(CheckoutColors.blue(tokens: tokens))
+        .accessibilityIdentifier(AccessibilityIdentifiers.SelectCountry.cancelButton)
         .accessibilityLabel(CheckoutComponentsStrings.a11yCancel)
       }
     }
@@ -77,6 +78,7 @@ struct SelectCountryScreen: View, LogReporter {
         )
       )
       .textFieldStyle(PlainTextFieldStyle())
+      .accessibilityIdentifier(AccessibilityIdentifiers.SelectCountry.searchField)
 
       if !countryState.searchQuery.isEmpty {
         Button(
@@ -219,5 +221,6 @@ private struct CountryItemView: View {
       .contentShape(Rectangle())
     }
     .buttonStyle(PlainButtonStyle())
+    .accessibilityIdentifier(AccessibilityIdentifiers.SelectCountry.countryItem(country.code))
   }
 }
