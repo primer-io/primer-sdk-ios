@@ -43,7 +43,7 @@ final class PrimerStepOrchestrator: StepOrchestrating {
 
     func start(rawSchema: String, initialState: CodableValue) async throws {
         self.rawSchema = rawSchema
-        await registry.register(harness, for: "url.open")
+        await registry.register(harness, for: .urlOpen)
         do {
             let result = try await engine.start(schema: rawSchema, context: context, state: initialState)
             try await decodeResult(result, rawSchema: rawSchema)
