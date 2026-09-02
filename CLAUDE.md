@@ -83,6 +83,6 @@ For UI changes, build the Debug App, boot a simulator (`xcrun simctl boot`), ins
 
 ## Localization
 
-CheckoutComponents localization files: `Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/{LANG}.lproj/CheckoutComponentsStrings.strings`
+CheckoutComponents localization files: `Modules/PrimerResources/Sources/PrimerResources/Resources/CheckoutComponentsLocalizable/{LANG}.lproj/CheckoutComponentsStrings.strings` (57 languages)
 
 When compacting a conversation, always preserve the list of modified files, test commands, and current task context.
