@@ -1343,7 +1343,7 @@
                                                             </label>
                                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="trailing" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Vrb-fD-qLk">
                                                                 <rect key="frame" x="184" y="0.0" width="190" height="45"/>
-                                                                <accessibility key="accessibilityConfiguration" identifier="Primer SDK Button"/>
+                                                                <accessibility key="accessibilityConfiguration" identifier="deep_link_clear_button"/>
                                                                 <constraints>
                                                                     <constraint firstAttribute="height" constant="45" id="gno-zc-SKb"/>
                                                                 </constraints>

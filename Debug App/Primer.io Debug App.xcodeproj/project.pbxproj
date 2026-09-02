@@ -31,6 +31,7 @@
 		4397441889288D805E68A32F /* DemoCheckout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DC8194131061281FE50D115 /* DemoCheckout.swift */; };
 		4818DEC07017CBBB6B4CCB35 /* InlineCheckoutDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04C909229BE1C054E0945B10 /* InlineCheckoutDemo.swift */; };
 		4B7A4EE11037A10647B01A8C /* ManagedCheckoutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCB3519F6711694A79B66BDF /* ManagedCheckoutView.swift */; };
+		532C3860EDE96818F7C7B2B5 /* MerchantSessionAndSettingsViewController+DeepLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = F409E51FA4AABD80A69A6D86 /* MerchantSessionAndSettingsViewController+DeepLink.swift */; };
 		53E3182FFC4E5F05D866CFAE /* Networking.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8DE1E4FB055B60582977315 /* Networking.swift */; };
 		5638450F6F483C36005769B8 /* VaultModeInlineDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5ADFE02C37750D49E97575 /* VaultModeInlineDemo.swift */; };
 		57ED5E41DB6664A6BA04DF9C /* CustomNavigationDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F6D657944A33EEC8F9575D0 /* CustomNavigationDemo.swift */; };
@@ -56,6 +57,7 @@
 		87FC1ACD2BE51DCA00C9F474 /* MerchantHeadlessCheckoutStripeAchViewController+StripeAch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87FC1ACC2BE51DCA00C9F474 /* MerchantHeadlessCheckoutStripeAchViewController+StripeAch.swift */; };
 		89BBA18318F00021250E10BE /* Color+DemoHex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E47D44F2F427BD319AD4540 /* Color+DemoHex.swift */; };
 		89E44F5F6D3AE162E6541FAD /* PaymentMethodListOnlyDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = B54E47699C896E3008B15C62 /* PaymentMethodListOnlyDemo.swift */; };
+		8F4B864E0F6414094E575E63 /* DemoKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D19BD96472712111AC65E58 /* DemoKey.swift */; };
 		9396BD9456361876C2DD64DE /* VaultedPaymentMethodsDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = D378D99C790B8A0666028BFF /* VaultedPaymentMethodsDemo.swift */; };
 		949864026D1CDE6F5C62C66E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CE259612A00F85709107B872 /* Main.storyboard */; };
 		9B75385C69FE02C251AC1536 /* MerchantNavigationDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = F666249B7C8DF8E573426AB1 /* MerchantNavigationDemo.swift */; };
@@ -199,6 +201,7 @@
 		87FC1ACA2BE5194100C9F474 /* MerchantHeadlessStripeAchFieldsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchantHeadlessStripeAchFieldsViewModel.swift; sourceTree = "<group>"; };
 		87FC1ACC2BE51DCA00C9F474 /* MerchantHeadlessCheckoutStripeAchViewController+StripeAch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MerchantHeadlessCheckoutStripeAchViewController+StripeAch.swift"; sourceTree = "<group>"; };
 		8A3FDC6FE0EB5AB5828D4D80 /* el */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = el; path = el.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
+		8D19BD96472712111AC65E58 /* DemoKey.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DemoKey.swift; sourceTree = "<group>"; };
 		8F6D657944A33EEC8F9575D0 /* CustomNavigationDemo.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CustomNavigationDemo.swift; sourceTree = "<group>"; };
 		9128566126AA7F571FFECA3A /* Range+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Range+Extensions.swift"; sourceTree = "<group>"; };
 		92BE0A1A904DCEA405A11CC1 /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/Main.strings; sourceTree = "<group>"; };
@@ -305,6 +308,7 @@
 		F08F63D92B9B5BC5006EF9A9 /* AppLinkConfigProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLinkConfigProvider.swift; sourceTree = "<group>"; };
 		F09978812D00B7620058E4B5 /* Metadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Metadata.swift; sourceTree = "<group>"; };
 		F0CD61552DACEFB600582D59 /* TestSettings+PrimerSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TestSettings+PrimerSettings.swift"; sourceTree = "<group>"; };
+		F409E51FA4AABD80A69A6D86 /* MerchantSessionAndSettingsViewController+DeepLink.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "MerchantSessionAndSettingsViewController+DeepLink.swift"; sourceTree = "<group>"; };
 		F666249B7C8DF8E573426AB1 /* MerchantNavigationDemo.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MerchantNavigationDemo.swift; sourceTree = "<group>"; };
 		F816A2444633C4336A7CB071 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Main.strings; sourceTree = "<group>"; };
 		F9023841AFCE8E3205CB713A /* String+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Extensions.swift"; sourceTree = "<group>"; };
@@ -400,6 +404,7 @@
 				049A055D2B4BF057002CEEBA /* MerchantHeadlessVaultManagerViewController.swift */,
 				00E3C8FE62D22147335F2455 /* MerchantResultViewController.swift */,
 				C18C9664115CFDEB59FED19A /* MerchantSessionAndSettingsViewController.swift */,
+				F409E51FA4AABD80A69A6D86 /* MerchantSessionAndSettingsViewController+DeepLink.swift */,
 			);
 			path = "View Controllers";
 			sourceTree = "<group>";
@@ -563,6 +568,7 @@
 				A79D981D2EE6DCE70024B330 /* CheckoutComponentsMenuViewController.swift */,
 				A79D981F2EE6DCE70024B330 /* DemoProtocol.swift */,
 				A79D98202EE6DCE70024B330 /* DemoRegistry.swift */,
+				8D19BD96472712111AC65E58 /* DemoKey.swift */,
 			);
 			path = CheckoutComponents;
 			sourceTree = "<group>";
@@ -937,6 +943,8 @@
 				D06E314F3D6FAF3E291A3EAF /* ThemeDemos.swift in Sources */,
 				A1214B38136DBC3D181786F4 /* RefreshClientSessionDemo.swift in Sources */,
 				15569B2278CC8663753C5A8B /* PrefillCardholderNameDemo.swift in Sources */,
+				8F4B864E0F6414094E575E63 /* DemoKey.swift in Sources */,
+				532C3860EDE96818F7C7B2B5 /* MerchantSessionAndSettingsViewController+DeepLink.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
