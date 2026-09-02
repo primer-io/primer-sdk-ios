@@ -264,9 +264,7 @@ extension PrimerCheckoutPresenterDelegate {
     /// decline still on screen is a failure, a finished payment is a success, anything else a dismiss.
     func handleInteractiveDismiss() {
         let route = activeNavigator?.checkoutCoordinator.currentRoute
-        activeCheckoutController = nil
-        activeNavigator = nil
-        dismissalObserver = nil
+        clearActiveCheckout()
         isPresentingCheckout = false
 
         switch route {
@@ -362,17 +360,22 @@ extension PrimerCheckoutPresenterDelegate {
     // MARK: - Direct Dismissal
 
     func dismissDirectly(completion: (() -> Void)? = nil) {
-        if let controller = activeCheckoutController {
-            controller.dismiss(animated: true) { [weak self] in
-                self?.activeCheckoutController = nil
-                self?.activeNavigator = nil
-                self?.dismissalObserver = nil
-                completion?()
-            }
-        } else {
-            // No controller to dismiss, call completion immediately
+        guard let controller = activeCheckoutController else {
+            // The controller is held weakly and may already be gone; drop what it left behind.
+            clearActiveCheckout()
+            completion?()
+            return
+        }
+        controller.dismiss(animated: true) { [weak self] in
+            self?.clearActiveCheckout()
             completion?()
         }
+    }
+
+    private func clearActiveCheckout() {
+        activeCheckoutController = nil
+        activeNavigator = nil
+        dismissalObserver = nil
     }
 
     private func dismiss(animated: Bool, completion: (() -> Void)?) {
