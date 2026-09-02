@@ -1,37 +1,37 @@
 /* An error message displayed when the Address line 1 is not correct */
-"addressLine1ErrorInvalid" = "Invalid Address Line 1";
+"addressLine1ErrorInvalid" = "Nieprawidłowy adres (linia 1)";
 
-/* State, Region or County is required - Form Validation */
-"addressLine1ErrorRequired" = "Wymagana jest 1. linia adresowa";
+/* Address line 1 is required - Form Validation */
+"addressLine1ErrorRequired" = "Adres (linia 1) jest wymagany";
 
 /* The billing address Address line 1 container view label */
-"addressLine1Label" = "Address line 1";
+"addressLine1Label" = "Adres (linia 1)";
 
 /* Form Text Field Placeholder (Address line 1) */
-"addressLine1Placeholder" = "Pierwsza linia adresu";
+"addressLine1Placeholder" = "Adres (linia 1)";
 
 /* An error message displayed when the Address line 2 is not correct */
-"addressLine2ErrorInvalid" = "Invalid Address Line 2";
+"addressLine2ErrorInvalid" = "Nieprawidłowy adres (linia 2)";
 
-/* State, Region or County is required - Form Validation */
-"addressLine2ErrorRequired" = "Wymagana jest 2. linia adresowa";
+/* Address line 2 is required - Form Validation */
+"addressLine2ErrorRequired" = "Adres (linia 2) jest wymagany";
 
 /* The billing address Address line 2 container view label */
-"addressLine2Label" = "Address line 2";
+"addressLine2Label" = "Adres (linia 2)";
 
 /* Form Text Field Placeholder (Address line 2) */
-"addressLine2Placeholder" = "Druga linia adresu";
+"addressLine2Placeholder" = "Adres (linia 2)";
 
 "card_expiry_date" = "MM/RR";
 
-/* An error message displayed when the city field is not correct */
-"cardholderErrorInvalid" = "Invalid Cardholder name";
+/* An error message displayed when the Cardholder name is not correct */
+"cardholderErrorInvalid" = "Nieprawidłowe imię i nazwisko na karcie";
 
 /* Choose your bank - Choose your bank title label */
 "choose-your-bank-title-label" = "Wybierz bank";
 
 /* An error message displayed when the city field is not correct */
-"cityErrorInvalid" = "Invalid city";
+"cityErrorInvalid" = "Nieprawidłowe miasto";
 
 /* City is required - Form Validation */
 "cityErrorRequired" = "Wymagane jest miasto";
@@ -49,7 +49,7 @@
 "continue" = "Kontynuuj";
 
 /* An error message displayed when the Country is not correct */
-"countryCodeErrorInvalid" = "Invalid Country";
+"countryCodeErrorInvalid" = "Nieprawidłowy kraj";
 
 /* Country is required - Form Validation */
 "countryCodeErrorRequired" = "Kraj jest wymagany";
@@ -67,7 +67,7 @@
 "dueAt" = "Termin:";
 
 /* An error message displayed when the First Name is not correct */
-"firstNameErrorInvalid" = "Invalid First Name";
+"firstNameErrorInvalid" = "Nieprawidłowe imię";
 
 /* First name is required - Form Validation */
 "firstNameErrorRequired" = "Imię jest wymagane";
@@ -78,18 +78,18 @@
 /* Form Text Field Placeholder (First name) */
 "firstNamePlaceholder" = "Imię";
 
-"form_error_card_holder_name_length" = "Nazwa musi zawierać od 2 do 45 znaków";
+"form_error_card_holder_name_length" = "Wpisz od 2 do 45 znaków";
 
-"form_error_card_type_not_supported" = "Nieobsługiwane typy kart";
+"form_error_card_type_not_supported" = "Nieobsługiwany typ karty";
 
 /* Get the code from your banking app - Blik descriptor */
-"input_description_otp" = "Otrymaj kod z aplikacji bankowej";
+"input_description_otp" = "Wpisz kod z aplikacji bankowej";
 
 /* 6 digit code - Text field top placeholder */
 "input_hint_form_blik_otp" = "6-cyfrowy kod";
 
 /* An error message displayed when the Last Name is not correct */
-"lastNameErrorInvalid" = "Invalid Last Name";
+"lastNameErrorInvalid" = "Nieprawidłowe nazwisko";
 
 /* Last name is required - Form Validation */
 "lastNameErrorRequired" = "Nazwisko jest wymagane";
@@ -104,7 +104,7 @@
 "no_additional_fee" = "Żadnych dodatkowych opłat";
 
 /* Enter your one time password - Text field placeholder */
-"payment_method_blik_loading_placeholder" = "Dokończ płatność w aplikacji Blik";
+"payment_method_blik_loading_placeholder" = "Dokończ płatność w aplikacji BLIK";
 
 /* Pay with card - Payment Method Type (Card Not Vaulted */
 "payment-method-type-card-not-vaulted" = "Zapłać kartą";
@@ -113,7 +113,7 @@
 "pleaseTransferFunds" = "Przelej środki na podane konto DBS z Twojego konta bankowego w Singapurze, wybierając metodę FAST (zalecana), MEPS lub GIRO.";
 
 /* An error message displayed when the postal code field is not correct */
-"postalCodeErrorInvalid" = "Invalid postal code";
+"postalCodeErrorInvalid" = "Nieprawidłowy kod pocztowy";
 
 /* Postal code is required - Form Validation */
 "postalCodeErrorRequired" = "Wymagany jest kod pocztowy";
@@ -203,7 +203,7 @@
 "primer-form-text-field-title-card-number" = "Numer karty";
 
 /* Expiry date - Form Text Field Title (Expiry date) */
-"primer-form-text-field-title-expiry-date" = "Data wygaśnięcia";
+"primer-form-text-field-title-expiry-date" = "Data ważności";
 
 /* Enter your card details - Form Type Main Title (Card) */
 "primer-form-type-main-title-card-form" = "Wpisz dane karty";
@@ -287,10 +287,10 @@
 "shipping" = "Wysyłka";
 
 /* An error message displayed when the State, Region or County field is not correct */
-"stateErrorInvalid" = "Nieprawidłowy stan, region lub hrabstwo";
+"stateErrorInvalid" = "Nieprawidłowy region";
 
 /* State, Region or County is required - Form Validation */
-"stateErrorRequired" = "Stan, region lub województwo jest wymagane";
+"stateErrorRequired" = "Region jest wymagany";
 
 /* The billing address state container view label */
 "stateLabel" = "Stan / Region / Województwo";
