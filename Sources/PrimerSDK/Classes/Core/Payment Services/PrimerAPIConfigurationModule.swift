@@ -6,6 +6,7 @@
 
 import Foundation
 @_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerBDCCore
 @_spi(PrimerInternal) import PrimerCore
 @_spi(PrimerInternal) import PrimerNetworking
 
@@ -89,6 +90,7 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
     static func resetSession() {
         AppState.current.clientToken = nil
         AppState.current.apiConfiguration = nil
+        Task { @MainActor in BDCEngineProvider.shared.reset() }
     }
 
     func setupSession(

@@ -18,9 +18,7 @@ public final class BackendDrivenCheckoutOrchestrator {
     
     private let stepOrchestrator: any StepOrchestrating
 
-    public init(manifestProvider: SignedManifestProvider, context: SDKContext) async throws {
-        let manifest = try await ManifestRepository(provider: manifestProvider).fetchManifest()
-        let engine = try await PrimerBDCEngine(manifest: manifest)
+    public init(engine: any BDCEngineProtocol, context: SDKContext) {
         stepOrchestrator = PrimerStepOrchestrator(engine: engine, context: context)
     }
 

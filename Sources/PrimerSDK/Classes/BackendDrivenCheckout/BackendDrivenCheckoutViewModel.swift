@@ -8,7 +8,7 @@ import CryptoKit
 import Foundation
 @_spi(PrimerInternal) import PrimerCore
 @_spi(PrimerInternal) import PrimerBDCCore
-import PrimerBDCEngine
+@_spi(PrimerInternal) import PrimerBDCEngine
 @_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerNetworking
 @_spi(PrimerInternal) import PrimerStepResolver
@@ -192,7 +192,8 @@ private extension Error {
 
 private extension BackendDrivenCheckoutOrchestrator {
     convenience init(context: SDKContext) async throws {
-        try await self.init(manifestProvider: NetworkSignedManifestProvider(), context: context)
+        let engine = try await BDCEngineProvider.shared.engine(manifestProvider: NetworkSignedManifestProvider())
+        self.init(engine: engine, context: context)
     }
 }
 
