@@ -44,6 +44,7 @@ final class DefaultCheckoutScopePaymentHandlingTests: XCTestCase {
 
         let state = await settledState(of: sut)
 
+        XCTAssertNotEqual(state, .initializing)
         if case let .failure(error) = state {
             XCTAssertNotEqual(error.errorId, "invalid-value")
         }
@@ -60,14 +61,21 @@ final class DefaultCheckoutScopePaymentHandlingTests: XCTestCase {
         )
     }
 
-    /// Drains the state stream until the scope leaves `.initializing`, bounded so a broken init
-    /// cannot hang the suite.
+    /// Drains the state stream until the scope leaves `.initializing`. A stream that never emits
+    /// would suspend forever, so the drain races a five second timer and the loser is cancelled.
     private func settledState(of scope: DefaultCheckoutScope) async -> PrimerCheckoutState {
-        let deadline = Date().addingTimeInterval(5)
-        for await state in scope.state {
-            if case .initializing = state, Date() < deadline { continue }
-            return state
+        await withTaskGroup(of: PrimerCheckoutState.self) { group in
+            group.addTask { @MainActor in
+                for await state in scope.state where state != .initializing { return state }
+                return scope.currentState
+            }
+            group.addTask { @MainActor in
+                try? await Task.sleep(nanoseconds: 5_000_000_000)
+                return scope.currentState
+            }
+            let first = await group.next() ?? scope.currentState
+            group.cancelAll()
+            return first
         }
-        return scope.currentState
     }
 }
