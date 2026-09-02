@@ -82,6 +82,18 @@ extension PrimerCheckoutPresenterDelegate {
     /// Flag to prevent multiple simultaneous presentations
     private var isPresentingCheckout = false
 
+    /// Navigator of the active checkout. Read on interactive dismissal to learn which screen the shopper
+    /// left, so the delegate hears about a decline the SDK error screen was still showing.
+    var activeNavigator: CheckoutNavigator?
+
+    /// Receives `presentationControllerDidDismiss` for the active sheet without exposing the presenter
+    /// itself as a `UIAdaptivePresentationControllerDelegate`.
+    private var dismissalObserver: SheetDismissalObserver?
+
+    /// Set once a terminal result reached the delegate for the active presentation. A swipe on the
+    /// result screen and the screen's own auto-dismiss must not both report the same outcome.
+    var hasDeliveredResult = false
+
     private let logger = PrimerLogging.shared.logger
 
     public weak var delegate: PrimerCheckoutPresenterDelegate?
@@ -229,11 +241,7 @@ extension PrimerCheckoutPresenterDelegate {
         logger.info(message: "Payment completed: \(result.paymentId)")
 
         dismissDirectly { [weak self] in
-            if let delegate = self?.delegate {
-                delegate.primerCheckoutPresenterDidCompleteWithSuccess(result)
-            } else {
-                self?.logger.error(message: "No delegate set for payment success")
-            }
+            self?.deliverSuccess(result)
         }
     }
 
@@ -241,16 +249,54 @@ extension PrimerCheckoutPresenterDelegate {
         logger.error(message: "Payment failed: \(error)")
 
         dismissDirectly { [weak self] in
-            if let delegate = self?.delegate {
-                delegate.primerCheckoutPresenterDidFailWithError(error)
-            } else {
-                self?.logger.error(message: "No delegate set for payment failure")
-            }
+            self?.deliverFailure(error)
         }
     }
 
     func handleCheckoutDismiss() {
         delegate?.primerCheckoutPresenterDidDismiss()
+    }
+
+    /// The shopper swiped the sheet away. UIKit reports this only for interactive dismissal, so the
+    /// programmatic paths above never race it. The current route decides what the merchant hears: a
+    /// decline still on screen is a failure, a finished payment is a success, anything else a dismiss.
+    func handleInteractiveDismiss() {
+        let route = activeNavigator?.checkoutCoordinator.currentRoute
+        activeCheckoutController = nil
+        activeNavigator = nil
+        dismissalObserver = nil
+        isPresentingCheckout = false
+
+        switch route {
+        case let .failure(error):
+            logger.info(message: "Checkout dismissed on the error screen, reporting the failure")
+            deliverFailure(error)
+        case let .success(result):
+            logger.info(message: "Checkout dismissed on the success screen, reporting the success")
+            deliverSuccess(result)
+        default:
+            handleCheckoutDismiss()
+        }
+    }
+
+    private func deliverSuccess(_ result: PaymentResult) {
+        guard !hasDeliveredResult else { return }
+        hasDeliveredResult = true
+        guard let delegate else {
+            logger.error(message: "No delegate set for payment success")
+            return
+        }
+        delegate.primerCheckoutPresenterDidCompleteWithSuccess(result)
+    }
+
+    private func deliverFailure(_ error: PrimerError) {
+        guard !hasDeliveredResult else { return }
+        hasDeliveredResult = true
+        guard let delegate else {
+            logger.error(message: "No delegate set for payment failure")
+            return
+        }
+        delegate.primerCheckoutPresenterDidFailWithError(error)
     }
 
     private func presentCheckout(
@@ -267,14 +313,18 @@ extension PrimerCheckoutPresenterDelegate {
         }
 
         isPresentingCheckout = true
+        hasDeliveredResult = false
 
         Task { @MainActor in
+            let navigator = CheckoutNavigator()
+            activeNavigator = navigator
+
             // SDK initialization is now handled automatically by PrimerCheckout
             let bridgeController = PrimerSwiftUIBridgeViewController.createForCheckoutComponents(
                 clientToken: clientToken,
                 settings: primerSettings,
                 theme: primerTheme,
-                navigator: CheckoutNavigator(),
+                navigator: navigator,
                 presentationContext: .direct,
                 integrationType: .uiKit,
                 onCompletion: { [weak self] state in
@@ -294,6 +344,12 @@ extension PrimerCheckoutPresenterDelegate {
 
             configureSheetPresentation(for: bridgeController, settings: primerSettings)
 
+            let observer = SheetDismissalObserver { [weak self] in
+                self?.handleInteractiveDismiss()
+            }
+            dismissalObserver = observer
+            bridgeController.presentationController?.delegate = observer
+
             viewController.present(bridgeController, animated: true) { [weak self] in
                 self?.isPresentingCheckout = false
                 completion?()
@@ -307,6 +363,8 @@ extension PrimerCheckoutPresenterDelegate {
         if let controller = activeCheckoutController {
             controller.dismiss(animated: true) { [weak self] in
                 self?.activeCheckoutController = nil
+                self?.activeNavigator = nil
+                self?.dismissalObserver = nil
                 completion?()
             }
         } else {
@@ -425,5 +483,24 @@ extension PrimerCheckoutPresenter {
         }
 
         return viewController
+    }
+}
+
+// MARK: - Sheet Dismissal Observer
+
+/// Forwards interactive sheet dismissal to the presenter. UIKit calls
+/// `presentationControllerDidDismiss` only when the shopper dismisses the sheet, never for
+/// programmatic `dismiss(animated:)`.
+@available(iOS 15.0, *)
+@MainActor
+private final class SheetDismissalObserver: NSObject, UIAdaptivePresentationControllerDelegate {
+    private let onDismiss: () -> Void
+
+    init(onDismiss: @escaping () -> Void) {
+        self.onDismiss = onDismiss
+    }
+
+    func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
+        onDismiss()
     }
 }

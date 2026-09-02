@@ -19,6 +19,8 @@ final class PrimerCheckoutPresenterTests: XCTestCase {
     override func setUp() {
         super.setUp()
         sut = PrimerCheckoutPresenter.shared
+        sut.activeNavigator = nil
+        sut.hasDeliveredResult = false
         mockDelegate = MockPrimerCheckoutPresenterDelegate()
         sut.delegate = mockDelegate
     }
@@ -141,4 +143,92 @@ final class PrimerCheckoutPresenterTests: XCTestCase {
         wait(for: [expectation], timeout: 1.0)
     }
 
+    // MARK: - handleInteractiveDismiss
+
+    private func makeNavigator(showing route: CheckoutRoute) -> CheckoutNavigator {
+        let coordinator = CheckoutCoordinator()
+        coordinator.navigate(to: route)
+        return CheckoutNavigator(coordinator: coordinator)
+    }
+
+    private func makeError() -> PrimerError {
+        PrimerError.invalidValue(
+            key: TestData.ErrorKeys.test,
+            value: nil,
+            reason: nil,
+            diagnosticsId: TestData.DiagnosticsIds.test
+        )
+    }
+
+    func test_handleInteractiveDismiss_onFailureRoute_callsDidFailWithError() {
+        // Given
+        sut.activeNavigator = makeNavigator(showing: .failure(makeError()))
+
+        // When
+        sut.handleInteractiveDismiss()
+
+        // Then
+        XCTAssertEqual(mockDelegate.didFailWithErrorCallCount, 1)
+        XCTAssertEqual(mockDelegate.capturedError?.diagnosticsId, TestData.DiagnosticsIds.test)
+        XCTAssertEqual(mockDelegate.didDismissCallCount, 0)
+    }
+
+    func test_handleInteractiveDismiss_onSuccessRoute_callsDidCompleteWithSuccess() {
+        // Given
+        let result = PaymentResult(paymentId: TestData.PaymentIds.success, status: .success)
+        sut.activeNavigator = makeNavigator(showing: .success(result))
+
+        // When
+        sut.handleInteractiveDismiss()
+
+        // Then
+        XCTAssertEqual(mockDelegate.didCompleteWithSuccessCallCount, 1)
+        XCTAssertEqual(mockDelegate.capturedSuccessResult?.paymentId, TestData.PaymentIds.success)
+        XCTAssertEqual(mockDelegate.didDismissCallCount, 0)
+    }
+
+    func test_handleInteractiveDismiss_onSelectionRoute_callsDidDismiss() {
+        // Given
+        sut.activeNavigator = makeNavigator(showing: .paymentMethodSelection)
+
+        // When
+        sut.handleInteractiveDismiss()
+
+        // Then
+        XCTAssertEqual(mockDelegate.didDismissCallCount, 1)
+        XCTAssertEqual(mockDelegate.didFailWithErrorCallCount, 0)
+        XCTAssertEqual(mockDelegate.didCompleteWithSuccessCallCount, 0)
+    }
+
+    func test_handleInteractiveDismiss_withoutNavigator_callsDidDismiss() {
+        // Given / When
+        sut.handleInteractiveDismiss()
+
+        // Then
+        XCTAssertEqual(mockDelegate.didDismissCallCount, 1)
+    }
+
+    func test_handleInteractiveDismiss_thenPaymentFailure_reportsFailureOnce() {
+        // Given
+        let error = makeError()
+        sut.activeNavigator = makeNavigator(showing: .failure(error))
+
+        // When - the shopper swipes, then the SDK's own completion path fires for the same outcome
+        sut.handleInteractiveDismiss()
+        sut.handlePaymentFailure(error)
+
+        // Then
+        XCTAssertEqual(mockDelegate.didFailWithErrorCallCount, 1)
+    }
+
+    func test_handleInteractiveDismiss_clearsActiveNavigator() {
+        // Given
+        sut.activeNavigator = makeNavigator(showing: .paymentMethodSelection)
+
+        // When
+        sut.handleInteractiveDismiss()
+
+        // Then
+        XCTAssertNil(sut.activeNavigator)
+    }
 }
