@@ -231,4 +231,26 @@ final class PrimerCheckoutPresenterTests: XCTestCase {
         // Then
         XCTAssertNil(sut.activeNavigator)
     }
+
+    func test_handleCheckoutDismiss_afterFailureDelivered_doesNotCallDidDismiss() {
+        // Given
+        sut.activeNavigator = makeNavigator(showing: .failure(makeError()))
+        sut.handleInteractiveDismiss()
+
+        // When - a late dismissal path fires after the outcome already reached the merchant
+        sut.handleCheckoutDismiss()
+
+        // Then
+        XCTAssertEqual(mockDelegate.didFailWithErrorCallCount, 1)
+        XCTAssertEqual(mockDelegate.didDismissCallCount, 0)
+    }
+
+    func test_handleCheckoutDismiss_twice_callsDidDismissOnce() {
+        // When
+        sut.handleCheckoutDismiss()
+        sut.handleCheckoutDismiss()
+
+        // Then
+        XCTAssertEqual(mockDelegate.didDismissCallCount, 1)
+    }
 }

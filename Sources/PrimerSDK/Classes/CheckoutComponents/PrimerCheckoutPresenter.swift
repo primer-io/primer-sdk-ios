@@ -254,6 +254,8 @@ extension PrimerCheckoutPresenterDelegate {
     }
 
     func handleCheckoutDismiss() {
+        guard !hasDeliveredResult else { return }
+        hasDeliveredResult = true
         delegate?.primerCheckoutPresenterDidDismiss()
     }
 
