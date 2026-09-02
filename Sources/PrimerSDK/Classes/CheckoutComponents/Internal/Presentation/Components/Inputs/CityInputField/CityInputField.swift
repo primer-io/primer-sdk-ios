@@ -66,12 +66,13 @@ struct CityInputField: View, LogReporter {
     }
     .accessibility(
       config: AccessibilityConfiguration(
-        identifier: AccessibilityIdentifiers.CardForm.billingAddressField("city"),
-        label: label ?? "City",
+        identifier: AccessibilityIdentifiers.CardForm.billingCityField,
+        label: label ?? placeholder,
         hint: CheckoutComponentsStrings.a11yBillingAddressCityHint,
         value: errorMessage,
         traits: []
-      )
+      ),
+      combinesChildren: false
     )
     .programmaticValue(.city, from: scope, text: $city, isFocused: $isFocused)
     .onAppear {

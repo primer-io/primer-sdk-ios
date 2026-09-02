@@ -20,6 +20,7 @@ struct PaymentMethodsSection: View {
       Text(CheckoutComponentsStrings.choosePaymentMethod)
         .font(PrimerFont.titleLarge(tokens: tokens))
         .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
+        .accessibilityIdentifier(AccessibilityIdentifiers.PaymentSelection.header)
         .accessibilityAddTraits(.isHeader)
 
       if state.isLoading {

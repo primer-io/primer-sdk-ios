@@ -211,7 +211,6 @@ private struct FormFieldView: View {
             .textContentType(field.fieldType.textContentType)
             .focused($isFocused)
             .onSubmit { onSubmit() }
-            .accessibilityIdentifier(accessibilityIdentifier)
             .accessibility(
                 config: AccessibilityConfiguration(
                     identifier: accessibilityIdentifier,

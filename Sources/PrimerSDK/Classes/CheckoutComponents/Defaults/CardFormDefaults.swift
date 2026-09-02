@@ -227,5 +227,11 @@ public struct CardSubmitButton: View {
         .padding(PrimerSpacing.medium(tokens: tokens))
     }
     .disabled(!session.state.isValid || session.state.isLoading)
+    .accessibility(
+      config: AccessibilityConfiguration(
+        identifier: AccessibilityIdentifiers.CardForm.submitButton,
+        label: CheckoutComponentsStrings.payButton,
+        traits: [.isButton]
+      ))
   }
 }

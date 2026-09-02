@@ -82,12 +82,13 @@ struct PostalCodeInputField: View, LogReporter {
     }
     .accessibility(
       config: AccessibilityConfiguration(
-        identifier: AccessibilityIdentifiers.CardForm.billingAddressField("postal_code"),
-        label: label ?? "Postal code",
+        identifier: AccessibilityIdentifiers.CardForm.billingPostalCodeField,
+        label: label ?? placeholder,
         hint: CheckoutComponentsStrings.a11yBillingAddressPostalCodeHint,
         value: errorMessage,
         traits: []
-      )
+      ),
+      combinesChildren: false
     )
     .programmaticValue(.postalCode, from: scope, text: $postalCode, isFocused: $isFocused)
     .onAppear {

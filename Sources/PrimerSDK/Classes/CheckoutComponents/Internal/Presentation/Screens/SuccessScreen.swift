@@ -52,6 +52,8 @@ struct SuccessScreen: View {
         }
       }
       .padding(.horizontal, PrimerSpacing.xxlarge(tokens: tokens))
+      // Without a container element the identifier propagates to every child and hides theirs.
+      .accessibilityElement(children: .contain)
       .accessibilityIdentifier(AccessibilityIdentifiers.Success.container)
     }
     .task {

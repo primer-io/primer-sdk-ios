@@ -24,9 +24,23 @@ struct NameTextField: UIViewRepresentable, LogReporter {
   let onValidationChange: ((Bool) -> Void)?
   let tokens: DesignTokens?
 
+  // The identifier segment is spelled out per field: string interpolation of the enum case
+  // produces camelCase and silently changes the id when a case is renamed.
+  static func identifierSegment(for inputType: PrimerInputElementType) -> String {
+    switch inputType {
+    case .firstName: "first_name"
+    case .lastName: "last_name"
+    case .phoneNumber: "phone_number"
+    default: "name"
+    }
+  }
+
   func makeUIView(context: Context) -> UITextField {
     let textField = UITextField()
     textField.delegate = context.coordinator
+    textField.accessibilityIdentifier = AccessibilityIdentifiers.inputField(
+      within: AccessibilityIdentifiers.CardForm.billingAddressField(
+        Self.identifierSegment(for: inputType)))
 
     textField.configurePrimerStyle(
       placeholder: placeholder,

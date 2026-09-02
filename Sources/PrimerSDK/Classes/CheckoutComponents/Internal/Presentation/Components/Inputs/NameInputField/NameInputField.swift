@@ -96,8 +96,9 @@ struct NameInputField: View, LogReporter {
     }
     .accessibility(
       config: AccessibilityConfiguration(
-        identifier: AccessibilityIdentifiers.CardForm.billingAddressField("\(inputType)"),
-        label: label ?? "Name",
+        identifier: AccessibilityIdentifiers.CardForm.billingAddressField(
+          NameTextField.identifierSegment(for: inputType)),
+        label: label ?? placeholder,
         hint: CheckoutComponentsStrings.a11yNameFieldHint
       ),
       combinesChildren: false

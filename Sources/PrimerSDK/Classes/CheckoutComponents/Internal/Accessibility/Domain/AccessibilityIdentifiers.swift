@@ -9,21 +9,30 @@
 
 enum AccessibilityIdentifiers {
 
+  /// UIKit-level identifier for the editable control wrapped inside an identified field container,
+  /// so UI tests can address the text field directly instead of the container element that carries
+  /// the label and value.
+  static func inputField(within containerIdentifier: String) -> String {
+    "\(containerIdentifier)_input"
+  }
+
   enum CardForm {
-    static let container = "checkout_components_card_form_container"
     static let cardNumberField = "checkout_components_card_form_card_number_field"
     static let expiryField = "checkout_components_card_form_expiry_field"
     static let cvcField = "checkout_components_card_form_cvc_field"
     static let cardholderNameField = "checkout_components_card_form_cardholder_name_field"
-    static let saveButton = "checkout_components_card_form_save_button"
+    static let submitButton = "checkout_components_card_form_submit_button"
 
     static func billingAddressField(_ field: String) -> String {
       "checkout_components_card_form_billing_\(field)_field"
     }
 
-    static func cardNetworkBadge(_ network: String) -> String {
-      "checkout_components_card_form_\(network.lowercased())_badge"
-    }
+    // Fixed billing fields get constants so the container view and its UIKit wrapper cannot
+    // drift apart; the fields with several input types keep the builder above.
+    static let billingCityField = "checkout_components_card_form_billing_city_field"
+    static let billingPostalCodeField = "checkout_components_card_form_billing_postal_code_field"
+    static let billingStateField = "checkout_components_card_form_billing_state_field"
+    static let billingEmailField = "checkout_components_card_form_billing_email_field"
 
     static let inlineNetworkSelectorContainer =
       "checkout_components_card_form_inline_network_selector"
@@ -41,15 +50,8 @@ enum AccessibilityIdentifiers {
     static let showAllButton = "checkout_components_payment_selection_show_all_button"
     static let showOtherWaysButton = "checkout_components_payment_selection_show_other_ways_button"
 
-    static func cardItem(_ lastFour: String) -> String {
-      "checkout_components_payment_selection_card_\(lastFour)_item"
-    }
-
-    static func paymentMethodItem(_ type: String, uniqueId: String?) -> String {
-      if let uniqueId {
-        return "checkout_components_payment_selection_\(type)_\(uniqueId)_item"
-      }
-      return "checkout_components_payment_selection_\(type)_item"
+    static func paymentMethodItem(_ type: String) -> String {
+      "checkout_components_payment_selection_\(type)_item"
     }
 
     static func vaultedPaymentMethodItem(_ id: String) -> String {
@@ -68,7 +70,6 @@ enum AccessibilityIdentifiers {
   }
 
   enum Common {
-    static let submitButton = "checkout_components_submit_button"
     static let closeButton = "checkout_components_close_button"
     static let backButton = "checkout_components_back_button"
     static let editButton = "checkout_components_edit_button"
@@ -79,8 +80,6 @@ enum AccessibilityIdentifiers {
   }
 
   enum Error {
-    static let messageContainer = "checkout_components_error_message_container"
-    static let dismissButton = "checkout_components_error_dismiss_button"
     static let icon = "checkout_components_error_icon"
     static let title = "checkout_components_error_title"
     static let description = "checkout_components_error_description"
@@ -95,18 +94,11 @@ enum AccessibilityIdentifiers {
     static let description = "checkout_components_success_description"
   }
 
-  enum PayPal {
-    static let container = "checkout_components_paypal_container"
-    static let logo = "checkout_components_paypal_logo"
-    static let submitButton = "checkout_components_paypal_submit_button"
-  }
-
   enum AdyenKlarna {
     static let container = "checkout_components_adyen_klarna_container"
     static let logo = "checkout_components_adyen_klarna_logo"
     static let title = "checkout_components_adyen_klarna_title"
     static let optionList = "checkout_components_adyen_klarna_option_list"
-    static let submitButton = "checkout_components_adyen_klarna_submit_button"
     static let backButton = "checkout_components_adyen_klarna_back_button"
     static let cancelButton = "checkout_components_adyen_klarna_cancel_button"
 
@@ -158,15 +150,13 @@ enum AccessibilityIdentifiers {
     static let mandateDeclineButton = "checkout_components_ach_mandate_decline_button"
   }
 
-  enum WebRedirect {
-    static let container = "checkout_components_web_redirect_container"
-    static let logo = "checkout_components_web_redirect_logo"
-    static let title = "checkout_components_web_redirect_title"
-    static let description = "checkout_components_web_redirect_description"
-    static let surcharge = "checkout_components_web_redirect_surcharge"
-    static let submitButton = "checkout_components_web_redirect_submit_button"
-    static let backButton = "checkout_components_web_redirect_back_button"
-    static let cancelButton = "checkout_components_web_redirect_cancel_button"
+  enum SelectCountry {
+    static let cancelButton = "checkout_components_select_country_cancel_button"
+    static let searchField = "checkout_components_select_country_search_field"
+
+    static func countryItem(_ code: String) -> String {
+      "checkout_components_select_country_\(code.lowercased())_item"
+    }
   }
 
   enum BillingAddressRedirect {
@@ -196,8 +186,6 @@ enum AccessibilityIdentifiers {
 
   enum ApplePay {
     static let title = "checkout_components_apple_pay_title"
-    static let description = "checkout_components_apple_pay_description"
-    static let payButton = "checkout_components_apple_pay_pay_button"
     static let processingIndicator = "checkout_components_apple_pay_processing_indicator"
     static let processingLabel = "checkout_components_apple_pay_processing_label"
     static let unavailableIcon = "checkout_components_apple_pay_unavailable_icon"

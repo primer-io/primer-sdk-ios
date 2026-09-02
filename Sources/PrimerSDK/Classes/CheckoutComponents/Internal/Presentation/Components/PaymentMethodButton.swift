@@ -43,8 +43,7 @@ struct PaymentMethodButton: View {
     }
     .buttonStyle(PaymentMethodButtonStyle())
     .accessibility(config: AccessibilityConfiguration(
-      identifier: AccessibilityIdentifiers.PaymentSelection.paymentMethodItem(
-        method.type, uniqueId: method.id),
+      identifier: AccessibilityIdentifiers.PaymentSelection.paymentMethodItem(method.type),
       label: CheckoutComponentsStrings.a11yPaymentMethodButton(method.buttonText ?? method.name),
       traits: [.isButton]
     ))

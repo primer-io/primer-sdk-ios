@@ -24,6 +24,7 @@ struct CityTextField: UIViewRepresentable, LogReporter {
   func makeUIView(context: Context) -> UITextField {
     let textField = UITextField()
     textField.delegate = context.coordinator
+    textField.accessibilityIdentifier = AccessibilityIdentifiers.inputField(within: AccessibilityIdentifiers.CardForm.billingCityField)
 
     textField.configurePrimerStyle(
       placeholder: placeholder,

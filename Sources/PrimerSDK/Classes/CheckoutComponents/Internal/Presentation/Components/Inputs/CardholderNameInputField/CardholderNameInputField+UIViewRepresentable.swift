@@ -23,6 +23,7 @@ struct CardholderNameTextField: UIViewRepresentable, LogReporter {
   func makeUIView(context: Context) -> UITextField {
     let textField = UITextField()
     textField.delegate = context.coordinator
+    textField.accessibilityIdentifier = AccessibilityIdentifiers.inputField(within: AccessibilityIdentifiers.CardForm.cardholderNameField)
 
     textField.configurePrimerStyle(
       placeholder: placeholder,
