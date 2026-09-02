@@ -12,6 +12,7 @@ struct DefaultCheckoutDemo: View, CheckoutComponentsDemo {
 
     static var metadata: DemoMetadata {
         DemoMetadata(
+            key: .defaultCheckout,
             name: "Default Checkout",
             description: "Standard CheckoutComponents with SDK-provided UI",
             tags: ["PAYMENT_CARD", "APPLE_PAY"],

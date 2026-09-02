@@ -13,6 +13,7 @@ import SwiftUI
 struct InlineCardFormDemo: View, CheckoutComponentsDemo {
     static var metadata: DemoMetadata {
         DemoMetadata(
+            key: .inlineCardForm,
             name: "Inline Card Form",
             description: "Embedded card form via PrimerCheckoutSession",
             tags: ["PAYMENT_CARD"],

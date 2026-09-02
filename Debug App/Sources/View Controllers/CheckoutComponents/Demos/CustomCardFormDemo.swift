@@ -14,6 +14,7 @@ import SwiftUI
 struct CustomCardFormDemo: View, CheckoutComponentsDemo {
     static var metadata: DemoMetadata {
         DemoMetadata(
+            key: .customCardForm,
             name: "Fully Custom Card Form",
             description: "Build your own form with PrimerCardFormSession",
             tags: ["PAYMENT_CARD"],
