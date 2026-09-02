@@ -18,10 +18,16 @@ final class DefaultCheckoutScopePaymentHandlingTests: XCTestCase {
     override func setUp() async throws {
         try await super.setUp()
         await ContainerTestHelpers.resetSharedContainer()
-        await DIContainer.setContainer(try await ContainerTestHelpers.createTestContainer())
+        // A configuration with one payment method lets the auto path reach `.ready`.
+        SDKSessionHelper.setUp()
+        let container = try await ContainerTestHelpers.createTestContainer(
+            apiConfiguration: PrimerAPIConfigurationModule.apiConfiguration
+        )
+        await DIContainer.setContainer(container)
     }
 
     override func tearDown() async throws {
+        SDKSessionHelper.tearDown()
         await ContainerTestHelpers.resetSharedContainer()
         try await super.tearDown()
     }
@@ -39,14 +45,13 @@ final class DefaultCheckoutScopePaymentHandlingTests: XCTestCase {
         XCTAssertEqual(sut.navigationState, .failure(error))
     }
 
-    func test_init_autoPaymentHandling_doesNotRejectSettings() async throws {
+    func test_init_autoPaymentHandling_reachesReady() async throws {
         let sut = makeSut(paymentHandling: .auto)
 
         let state = await settledState(of: sut)
 
-        XCTAssertNotEqual(state, .initializing)
-        if case let .failure(error) = state {
-            XCTAssertNotEqual(error.errorId, "invalid-value")
+        guard case .ready = state else {
+            return XCTFail("Expected .ready, got \(state)")
         }
     }
 
