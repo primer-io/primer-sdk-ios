@@ -35,7 +35,7 @@ final class FlowScreenFactoryCompletionTests: XCTestCase {
   // MARK: - Error screen
 
   func test_failureState_errorScreenDisabled_callsCompletionOnceWithFailure() async {
-    let recorder = render(.failure(PrimerError.unknown()), successScreen: true, errorScreen: false)
+    let recorder = await render(.failure(PrimerError.unknown()), successScreen: true, errorScreen: false)
 
     XCTAssertEqual(recorder.states.count, 1)
     guard case .failure = recorder.states.first else {
@@ -44,7 +44,7 @@ final class FlowScreenFactoryCompletionTests: XCTestCase {
   }
 
   func test_failureState_errorScreenEnabled_doesNotCallCompletion() async {
-    let recorder = render(.failure(PrimerError.unknown()), successScreen: true, errorScreen: true)
+    let recorder = await render(.failure(PrimerError.unknown()), successScreen: true, errorScreen: true)
 
     XCTAssertTrue(recorder.states.isEmpty)
   }
@@ -53,7 +53,7 @@ final class FlowScreenFactoryCompletionTests: XCTestCase {
 
   func test_successState_successScreenDisabled_callsCompletionOnceWithSuccess() async {
     let result = PaymentResult(paymentId: TestData.PaymentIds.success, status: .success, paymentMethodType: nil)
-    let recorder = render(.success(result), successScreen: false, errorScreen: true)
+    let recorder = await render(.success(result), successScreen: false, errorScreen: true)
 
     XCTAssertEqual(recorder.states.count, 1)
     guard case let .success(received) = recorder.states.first else {
@@ -85,14 +85,15 @@ final class FlowScreenFactoryCompletionTests: XCTestCase {
 
   // MARK: - Helpers
 
-  /// Hosts the factory's view for `state` in a key window and spins the run loop until the
-  /// completion fires or the timeout passes, so appearance callbacks have a chance to run.
+  /// Hosts the factory's view for `state` in a key window and suspends until the completion fires
+  /// or the timeout passes. Suspending (rather than spinning the run loop) lets both the appearance
+  /// callback and the main-actor hop it schedules run.
   private func render(
     _ state: CheckoutNavigationState,
     successScreen: Bool,
     errorScreen: Bool,
     timeout: TimeInterval = 1
-  ) -> Recorder {
+  ) async -> Recorder {
     let settings = PrimerSettings(
       uiOptions: PrimerUIOptions(isSuccessScreenEnabled: successScreen, isErrorScreenEnabled: errorScreen)
     )
@@ -117,10 +118,10 @@ final class FlowScreenFactoryCompletionTests: XCTestCase {
 
     let deadline = Date().addingTimeInterval(timeout)
     while recorder.states.isEmpty, Date() < deadline {
-      RunLoop.current.run(until: Date().addingTimeInterval(0.02))
+      try? await Task.sleep(nanoseconds: 20_000_000)
     }
     // One extra tick so a second, unexpected delivery would be caught by the count assertions.
-    RunLoop.current.run(until: Date().addingTimeInterval(0.05))
+    try? await Task.sleep(nanoseconds: 50_000_000)
 
     window.isHidden = true
     window.rootViewController = nil

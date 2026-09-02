@@ -124,7 +124,7 @@ struct FlowScreenFactory: LogReporter {
       // required for the completion to fire when the merchant disables the SDK screen.
       Color.clear.onAppear {
         logger.debug(message: "[CheckoutComponents] Success screen disabled - auto-dismissing")
-        onCompletion?(.success(result))
+        Task { @MainActor in onCompletion?(.success(result)) }
       }
     }
   }
@@ -143,7 +143,7 @@ struct FlowScreenFactory: LogReporter {
     } else {
       Color.clear.onAppear {
         logger.debug(message: "[CheckoutComponents] Error screen disabled - auto-dismissing")
-        onCompletion?(.failure(error))
+        Task { @MainActor in onCompletion?(.failure(error)) }
       }
     }
   }
