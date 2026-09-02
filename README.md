@@ -296,3 +296,5 @@ Once cloned, please ensure you run `make hook` in the root of the repo to format
 ## Using the Debug App
 
 The Debug App provides you with tools to test your Primer configuration and interact with different payment methods and Universal Checkout features
+
+See [Debug App/README.md](Debug%20App/README.md) for the deep link that pre-loads a session and opens a CheckoutComponents demo directly.

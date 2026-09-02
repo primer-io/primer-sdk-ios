@@ -28,6 +28,7 @@
 		33086A5888B7380A1ED6592F /* RadioSelectionDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56DC4D15CE6ABC94F13AAB1A /* RadioSelectionDemo.swift */; };
 		34CDCA7B403C001E4C55D26D /* MerchantSessionAndSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18C9664115CFDEB59FED19A /* MerchantSessionAndSettingsViewController.swift */; };
 		3F5471E1992506698BD8DF47 /* ThemedManagedDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = BABEE840922AE6C131F8DBA4 /* ThemedManagedDemo.swift */; };
+		41B590C9057770A38E5E9400 /* DemoKeyContractTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8B8271CB74DB53E3920D956 /* DemoKeyContractTests.swift */; };
 		4397441889288D805E68A32F /* DemoCheckout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DC8194131061281FE50D115 /* DemoCheckout.swift */; };
 		4818DEC07017CBBB6B4CCB35 /* InlineCheckoutDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04C909229BE1C054E0945B10 /* InlineCheckoutDemo.swift */; };
 		4B7A4EE11037A10647B01A8C /* ManagedCheckoutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCB3519F6711694A79B66BDF /* ManagedCheckoutView.swift */; };
@@ -289,6 +290,7 @@
 		D378D99C790B8A0666028BFF /* VaultedPaymentMethodsDemo.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VaultedPaymentMethodsDemo.swift; sourceTree = "<group>"; };
 		D4139D8F153BB399DA67F2EE /* ViewController+PrimerUIHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ViewController+PrimerUIHelpers.swift"; sourceTree = "<group>"; };
 		D5C1B1F65A9382606A25CE77 /* el */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = el; path = el.lproj/Main.strings; sourceTree = "<group>"; };
+		D8B8271CB74DB53E3920D956 /* DemoKeyContractTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DemoKeyContractTests.swift; sourceTree = "<group>"; };
 		DAC5687FF32E8661F1A00CE5 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		DBC8EA85D1CBC1EC4AB3EB8C /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		DC45C031EF64BAD93DBA05ED /* CardFormSheetDemo.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CardFormSheetDemo.swift; sourceTree = "<group>"; };
@@ -375,6 +377,7 @@
 				044DE11E2CC0023200AAE28A /* SecretsManagerTests.swift */,
 				F046FCBB2DACEADA00B2A4E7 /* RNPrimerSettingsTests.swift */,
 				F04DFC682DAE42390006AEDC /* AppLinkConfigProviderTests.swift */,
+				D8B8271CB74DB53E3920D956 /* DemoKeyContractTests.swift */,
 			);
 			path = Tests;
 			sourceTree = "<group>";
@@ -855,6 +858,7 @@
 				F04DFC692DAE42390006AEDC /* AppLinkConfigProviderTests.swift in Sources */,
 				F046FCBC2DACEADA00B2A4E7 /* RNPrimerSettingsTests.swift in Sources */,
 				044DE11F2CC0023200AAE28A /* SecretsManagerTests.swift in Sources */,
+				41B590C9057770A38E5E9400 /* DemoKeyContractTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
