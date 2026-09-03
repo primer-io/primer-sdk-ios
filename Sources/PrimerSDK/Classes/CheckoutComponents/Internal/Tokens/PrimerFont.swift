@@ -147,9 +147,10 @@ enum PrimerFont {
     return uiFont(family: "Inter", weight: 400, size: size)
   }
 
-  /// Small badge font (10pt, weight 500) - for compact badge text
-  static func uiFontSmallBadge(tokens _: DesignTokens?) -> UIFont {
-    uiFont(family: "Inter", weight: 500, size: 10)
+  /// Small badge font (10pt, weight 500) - for compact badge text.
+  /// No typography token defines a 10pt style, so only the family follows the theme.
+  static func uiFontSmallBadge(tokens: DesignTokens?) -> UIFont {
+    uiFont(family: tokens?.primerTypographyBrand ?? "Inter", weight: 500, size: 10)
   }
 
   // MARK: - SwiftUI Typography Helpers

@@ -51,7 +51,8 @@ final class PrimerFontTests: XCTestCase {
             PrimerFont.uiFontBodyLarge(tokens: tokens),
             PrimerFont.uiFontBodyMedium(tokens: tokens),
             PrimerFont.uiFontBodySmall(tokens: tokens),
-            PrimerFont.uiFontError(tokens: tokens)
+            PrimerFont.uiFontError(tokens: tokens),
+            PrimerFont.uiFontSmallBadge(tokens: tokens)
         ]
 
         // Then
@@ -85,10 +86,12 @@ final class PrimerFontTests: XCTestCase {
         // When
         let title = PrimerFont.uiFontTitleXLarge(tokens: tokens)
         let body = PrimerFont.uiFontBodyMedium(tokens: tokens)
+        let badge = PrimerFont.uiFontSmallBadge(tokens: tokens)
 
         // Then
         XCTAssertTrue(title.familyName.contains("Inter"), "got \(title.familyName)")
         XCTAssertTrue(body.familyName.contains("Inter"), "got \(body.familyName)")
+        XCTAssertTrue(badge.familyName.contains("Inter"), "got \(badge.familyName)")
     }
 
     // MARK: - Helpers
