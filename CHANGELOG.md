@@ -5,6 +5,56 @@ All notable changes to `primer-sdk-ios` are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 3.0.0-beta.5 (2026-09-03)
+
+### Feat
+
+- **components**: add a brand font and separate dark colours (ORC-8268) (#1883)
+- **components**: colour input fields separately from the sheet (ORC-8118) (#1877)
+- **components**: give error text its own typography token (ORC-8264) (#1876)
+- Handle cancelled BDC flows via applyEvent (#1854)
+- Implement `http.request` step resolver (#1848)
+
+### Fix
+
+- **components**: let the card network badge follow the brand font (ORC-8277) (#1885)
+- **components**: repaint bridged fields on a colour-scheme change (ORC-8178) (#1884)
+- **components**: let the co-badge chips inherit the field (ORC-8267) (#1882)
+- **components**: paint spinners from the loader colour (ORC-8266) (#1881)
+- **components**: draw borders at the width the state calls for (ORC-8178) (#1880)
+- **components**: keep the pay button brand-filled while paying (ORC-8265)
+- **components**: drop the duplicate inputText colour helper
+- **components**: give brand-filled buttons an on-brand label (ORC-8179) (#1878)
+- **components**: take the grey ramp and xxlarge size from the design file (ORC-8263) (#1875)
+- **components**: paint the remaining colours from the theme (ORC-8114) (#1874)
+- Reject manual payment handling before the checkout starts (ORC-8313) (#1892)
+- Deliver checkout completion when the SDK result screen is disabled (ORC-8312) (#1891)
+- Report interactive sheet dismissal to the UIKit presenter delegate (#1889)
+- Mirror every card-form setter into its visible field (ORC-7506)
+- Align the strings left over from the Polish review
+- Apply Polish review feedback (ESC-1105)
+- Localize the payment method headline and CVV placeholder
+- Localize the card form's full name placeholder
+- Repair the CheckoutComponents translation workflow
+- Correct Polish CheckoutComponents copy (ESC-1105)
+- Correct Polish BLIK typo and drop-in copy (ESC-1105)
+- Fix potential memory leak of SDUIViewModel (#1860)
+- Show programmatic card-field writes in the field
+- Present vault management inline (ORC-7506)
+- Map line-item tax from the line item (ORC-7506)
+- Invoke payment gate before navigation (ORC-7506)
+- Type allowed card networks as CardNetwork (ORC-7506)
+- Close CheckoutComponents parity gaps (ORC-7506)
+- Move SDK file cache into Library/Caches/primer (#1852)
+- Resolve flaky unit tests and their root causes (#1851)
+- Bancontact raw-data tokenization (ORC-7697) (#1853)
+- Allow metadata textfield to accept raw json (#1856)
+
+### Refactor
+
+- **components**: rename the theme tokens to the shared vocabulary (ORC-8229) (#1873)
+- Drop the card form's email building block
+
 ## 3.0.0-beta.4 (2026-07-31)
 
 ### Feat
