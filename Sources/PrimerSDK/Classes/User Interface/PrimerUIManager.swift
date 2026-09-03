@@ -8,6 +8,7 @@
 // swiftlint:disable type_body_length
 // swiftlint:disable file_length
 
+@_spi(PrimerInternal) import PrimerBDCCore
 @_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerUI
 import UIKit
@@ -54,6 +55,8 @@ final class PrimerUIManager: PrimerUIManaging {
             requestClientTokenValidation: false,
             requestVaultedPaymentMethods: !isHeadlessCheckoutDelegateImplemented
         )
+
+        await BDCEngineProvider.warmUpIfNeeded()
 
         try PrimerUIManager.validatePaymentUIPresentation()
     }
