@@ -32,7 +32,7 @@ struct AchMandateView: View, LogReporter {
           .frame(maxWidth: .infinity, alignment: .leading)
           .background(
             RoundedRectangle(cornerRadius: PrimerRadius.small(tokens: tokens))
-              .fill(CheckoutColors.backgroundSecondary(tokens: tokens))
+              .fill(CheckoutColors.gray100(tokens: tokens))
           )
       }
       .frame(maxHeight: Layout.mandateTextMaxHeight)
@@ -58,7 +58,7 @@ struct AchMandateView: View, LogReporter {
         .foregroundColor(CheckoutColors.onBrand(tokens: tokens))
         .frame(maxWidth: .infinity)
         .padding(.vertical, PrimerSpacing.large(tokens: tokens))
-        .background(CheckoutColors.textPrimary(tokens: tokens))
+        .background(CheckoutColors.buttonPrimary(tokens: tokens))
         .cornerRadius(PrimerRadius.small(tokens: tokens))
     }
     .accessibilityIdentifier(AccessibilityIdentifiers.Ach.mandateAcceptButton)
@@ -75,7 +75,9 @@ struct AchMandateView: View, LogReporter {
         .padding(.vertical, PrimerSpacing.large(tokens: tokens))
         .background(
           RoundedRectangle(cornerRadius: PrimerRadius.small(tokens: tokens))
-            .stroke(CheckoutColors.borderDefault(tokens: tokens), lineWidth: 1)
+            .stroke(
+              CheckoutColors.borderDefault(tokens: tokens),
+              lineWidth: PrimerBorderWidth.standard(tokens: tokens))
         )
     }
     .accessibilityIdentifier(AccessibilityIdentifiers.Ach.mandateDeclineButton)

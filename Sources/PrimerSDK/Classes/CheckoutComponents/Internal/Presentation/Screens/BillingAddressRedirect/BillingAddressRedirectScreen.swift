@@ -37,7 +37,7 @@ struct BillingAddressRedirectScreen: View {
     }
     .frame(maxWidth: .infinity)
     .navigationBarHidden(true)
-    .background(CheckoutColors.inputBackground(tokens: tokens))
+    .background(CheckoutColors.background(tokens: tokens))
     .accessibilityIdentifier(AccessibilityIdentifiers.BillingAddressRedirect.screen)
     .task {
       for await newState in scope.state {
@@ -58,7 +58,7 @@ struct BillingAddressRedirectScreen: View {
                 .font(PrimerFont.bodyMedium(tokens: tokens))
               Text(CheckoutComponentsStrings.backButton)
             }
-            .foregroundColor(CheckoutColors.inputText(tokens: tokens))
+            .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
           }
           .accessibility(config: AccessibilityConfiguration(
             identifier: AccessibilityIdentifiers.BillingAddressRedirect.backButton,
@@ -77,13 +77,13 @@ struct BillingAddressRedirectScreen: View {
 
       Text(paymentMethodDisplayName)
         .font(PrimerFont.titleXLarge(tokens: tokens))
-        .foregroundColor(CheckoutColors.inputText(tokens: tokens))
+        .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
         .frame(maxWidth: .infinity, alignment: .leading)
         .accessibilityAddTraits(.isHeader)
 
       if let surcharge = billingState.surchargeAmount {
         Text(surcharge)
-          .font(PrimerFont.error(tokens: tokens))
+          .font(PrimerFont.bodySmall(tokens: tokens))
           .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
       }
     }
@@ -142,7 +142,7 @@ struct BillingAddressRedirectScreen: View {
   private func makeCountryField() -> some View {
     VStack(alignment: .leading, spacing: PrimerSpacing.xsmall(tokens: tokens)) {
       Text(CheckoutComponentsStrings.countryLabel)
-        .font(PrimerFont.error(tokens: tokens))
+        .font(PrimerFont.bodySmall(tokens: tokens))
         .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
 
       Menu {
@@ -173,7 +173,8 @@ struct BillingAddressRedirectScreen: View {
         .background(CheckoutColors.inputBackground(tokens: tokens))
         .overlay(
           RoundedRectangle(cornerRadius: PrimerRadius.small(tokens: tokens))
-            .stroke(fieldBorderColor(for: .countryCode), lineWidth: PrimerBorderWidth.standard(tokens: tokens))
+            .stroke(
+              fieldBorderColor(for: .countryCode), lineWidth: fieldBorderWidth(for: .countryCode))
         )
       }
       .accessibilityIdentifier(AccessibilityIdentifiers.BillingAddressRedirect.countryCodeField)
@@ -196,7 +197,7 @@ struct BillingAddressRedirectScreen: View {
   ) -> some View {
     VStack(alignment: .leading, spacing: PrimerSpacing.xsmall(tokens: tokens)) {
       Text(label)
-        .font(PrimerFont.error(tokens: tokens))
+        .font(PrimerFont.bodySmall(tokens: tokens))
         .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
 
       TextField(placeholder, text: text)
@@ -207,7 +208,7 @@ struct BillingAddressRedirectScreen: View {
         .background(CheckoutColors.inputBackground(tokens: tokens))
         .overlay(
           RoundedRectangle(cornerRadius: PrimerRadius.small(tokens: tokens))
-            .stroke(fieldBorderColor(for: fieldType), lineWidth: PrimerBorderWidth.standard(tokens: tokens))
+            .stroke(fieldBorderColor(for: fieldType), lineWidth: fieldBorderWidth(for: fieldType))
         )
         .autocapitalization(.words)
         .disableAutocorrection(true)
@@ -230,6 +231,12 @@ struct BillingAddressRedirectScreen: View {
       : CheckoutColors.borderDefault(tokens: tokens)
   }
 
+  private func fieldBorderWidth(for fieldType: PrimerInputElementType) -> CGFloat {
+    billingState.errors[fieldType] != nil
+      ? PrimerBorderWidth.error(tokens: tokens)
+      : PrimerBorderWidth.standard(tokens: tokens)
+  }
+
   // MARK: - Submit Button
 
   @ViewBuilder
@@ -245,12 +252,11 @@ struct BillingAddressRedirectScreen: View {
   }
 
   private func makeSubmitButtonContent() -> some View {
-    let isLoading = [.submitting, .redirecting, .polling].contains(billingState.status)
-
-    return HStack {
-      if isLoading {
+    HStack {
+      if isSubmitInFlight {
         ProgressView()
-          .progressViewStyle(CircularProgressViewStyle(tint: CheckoutColors.onBrand(tokens: tokens, isEnabled: isButtonActive)))
+          .progressViewStyle(
+            CircularProgressViewStyle(tint: CheckoutColors.onBrand(tokens: tokens, isEnabled: isButtonActive)))
           .scaleEffect(PrimerScale.small)
       } else {
         Text(submitButtonText)
@@ -279,7 +285,7 @@ struct BillingAddressRedirectScreen: View {
       : CheckoutColors.buttonDisabled(tokens: tokens)
   }
 
-  /// The button keeps its brand fill while submitting; only an invalid form greys it out.
+  /// The button keeps its brand fill while the payment is in flight; only an invalid form greys it out.
   private var isButtonActive: Bool {
     billingState.isFormValid || isSubmitInFlight
   }
@@ -289,7 +295,7 @@ struct BillingAddressRedirectScreen: View {
   }
 
   private var isButtonDisabled: Bool {
-    !billingState.isFormValid || [.submitting, .redirecting, .polling].contains(billingState.status)
+    !billingState.isFormValid || isSubmitInFlight
   }
 
   private var paymentMethodDisplayName: String {

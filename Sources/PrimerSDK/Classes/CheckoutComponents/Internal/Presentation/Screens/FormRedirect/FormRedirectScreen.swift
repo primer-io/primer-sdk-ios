@@ -214,6 +214,7 @@ private struct FormFieldView: View {
                 set: { onValueChanged($0) }
             ))
             .font(PrimerFont.bodyLarge(tokens: tokens))
+            .foregroundColor(CheckoutColors.inputText(tokens: tokens))
             .keyboardType(field.keyboardType.uiKeyboardType)
             .textContentType(field.fieldType.textContentType)
             .focused($isFocused)
@@ -232,12 +233,19 @@ private struct FormFieldView: View {
         .padding(.vertical, PrimerSpacing.medium(tokens: tokens))
         .background(
             RoundedRectangle(cornerRadius: PrimerRadius.small(tokens: tokens))
-                .stroke(borderColor, lineWidth: PrimerBorderWidth.standard(tokens: tokens))
+                .stroke(borderColor, lineWidth: borderWidth)
                 .background(
                     RoundedRectangle(cornerRadius: PrimerRadius.small(tokens: tokens))
                         .fill(CheckoutColors.inputBackground(tokens: tokens))
                 )
         )
+    }
+
+    private var borderWidth: CGFloat {
+        if field.errorMessage != nil { return PrimerBorderWidth.error(tokens: tokens) }
+        return isFocused
+            ? PrimerBorderWidth.focused(tokens: tokens)
+            : PrimerBorderWidth.standard(tokens: tokens)
     }
 
     private var borderColor: Color {
