@@ -75,6 +75,14 @@ extension PrimerCheckoutPresenterDelegate {
 
     // MARK: - Properties
 
+    /// Navigator of the active checkout. Read on interactive dismissal to learn which screen the shopper
+    /// left, so the delegate hears about a decline the SDK error screen was still showing.
+    var activeNavigator: CheckoutNavigator?
+
+    /// Set once a terminal result reached the delegate for the active presentation. A swipe on the
+    /// result screen and the screen's own auto-dismiss must not both report the same outcome.
+    var hasDeliveredResult = false
+
     /// The currently active UIViewController hosting the SwiftUI checkout view
     /// This will always be a PrimerSwiftUIBridgeViewController that wraps the PrimerCheckout SwiftUI view
     private weak var activeCheckoutController: UIViewController?
@@ -82,17 +90,9 @@ extension PrimerCheckoutPresenterDelegate {
     /// Flag to prevent multiple simultaneous presentations
     private var isPresentingCheckout = false
 
-    /// Navigator of the active checkout. Read on interactive dismissal to learn which screen the shopper
-    /// left, so the delegate hears about a decline the SDK error screen was still showing.
-    var activeNavigator: CheckoutNavigator?
-
     /// Receives `presentationControllerDidDismiss` for the active sheet without exposing the presenter
     /// itself as a `UIAdaptivePresentationControllerDelegate`.
     private var dismissalObserver: SheetDismissalObserver?
-
-    /// Set once a terminal result reached the delegate for the active presentation. A swipe on the
-    /// result screen and the screen's own auto-dismiss must not both report the same outcome.
-    var hasDeliveredResult = false
 
     private let logger = PrimerLogging.shared.logger
 
@@ -282,20 +282,14 @@ extension PrimerCheckoutPresenterDelegate {
     private func deliverSuccess(_ result: PaymentResult) {
         guard !hasDeliveredResult else { return }
         hasDeliveredResult = true
-        guard let delegate else {
-            logger.error(message: "No delegate set for payment success")
-            return
-        }
+        guard let delegate else { return logger.error(message: "No delegate set for payment success") }
         delegate.primerCheckoutPresenterDidCompleteWithSuccess(result)
     }
 
     private func deliverFailure(_ error: PrimerError) {
         guard !hasDeliveredResult else { return }
         hasDeliveredResult = true
-        guard let delegate else {
-            logger.error(message: "No delegate set for payment failure")
-            return
-        }
+        guard let delegate else { return logger.error(message: "No delegate set for payment failure") }
         delegate.primerCheckoutPresenterDidFailWithError(error)
     }
 
