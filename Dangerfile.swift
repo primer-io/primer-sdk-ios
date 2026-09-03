@@ -1,11 +1,12 @@
 //
 //  Dangerfile.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Danger
 import Foundation
+
 // import DangerSwiftCoverage
 
 let danger = Danger()
@@ -68,7 +69,7 @@ if pr.title.contains("WIP") || pr.draft == true {
 
 // Always ensure we assign someone
 
-if pr.assignees?.count == 0 {
+if pr.assignees?.isEmpty == true {
     warn("Please assign someone aside from CODEOWNERS (@checkout-pci-reviewers) to review this PR.")
 }
 
@@ -84,11 +85,37 @@ SwiftLint.lint(.files(filesToLint), inline: true, configFile: "Debug App/.swiftl
 // Coverage.xcodeBuildCoverage(.derivedDataFolder("Build"),
 //                            minimumCoverage: 30)
 
+// MARK: - CheckoutComponents demo keys
+
+// Every DemoKey case must back exactly one registered demo: the keys are the deep link's `demo` values,
+// shared with Android and the E2E suite, and the CI unit tests cannot see the registry.
+let demosRoot = "Debug App/Sources/View Controllers/CheckoutComponents"
+let demoFilesChanged = (allCreatedAndModifiedFiles + danger.git.deletedFiles).contains { $0.hasPrefix(demosRoot) }
+if demoFilesChanged {
+    let keySource = danger.utils.readFile("\(demosRoot)/DemoKey.swift")
+    let caseNames = keySource.split(separator: "\n").compactMap { line -> String? in
+        let parts = line.split(separator: " ", omittingEmptySubsequences: true)
+        guard parts.count >= 2, parts[0] == "case" else { return nil }
+        return String(parts[1])
+    }
+    let demoSources = danger.utils.exec("find", arguments: ["\(demosRoot)/Demos", "-name", "*.swift"])
+        .split(separator: "\n")
+        .map { danger.utils.readFile(String($0)) }
+        .joined(separator: "\n")
+    for caseName in caseNames {
+        let uses = demoSources.components(separatedBy: "key: .\(caseName),").count - 1
+            + demoSources.components(separatedBy: "meta(.\(caseName),").count - 1
+        if uses != 1 {
+            fail("`DemoKey.\(caseName)` is used by \(uses) demos; every key must back exactly one registered demo.")
+        }
+    }
+}
+
 // MARK: - Conventional Commit Title
 let validPrefixes = ["fix", "feat", "chore", "ci", "refactor", "docs",
                      "perf", "test", "build", "revert", "style", "BREAKING CHANGE"]
 let isConventionalCommitTitle = validPrefixes.contains { pr.title.hasPrefix($0) }
 
-if !pr.head.ref.hasPrefix("release") && !isConventionalCommitTitle {
+if !pr.head.ref.hasPrefix("release"), !isConventionalCommitTitle {
     fail("Please use a conventional commit title for this PR. See [Conventional Commits and SemVer](https://www.notion.so/primerio/Automating-Version-Bumping-and-Changelog-Creation-c13e32fea11447069dea76f966f4b0fb?pvs=4#c55764aa2f2748eb988d581a456e61e7)")
 }

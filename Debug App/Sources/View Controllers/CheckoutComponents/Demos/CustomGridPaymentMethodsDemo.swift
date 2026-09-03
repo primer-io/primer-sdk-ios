@@ -13,6 +13,7 @@ import SwiftUI
 struct CustomGridPaymentMethodsDemo: View, CheckoutComponentsDemo {
     static var metadata: DemoMetadata {
         DemoMetadata(
+            key: .customGridPaymentMethods,
             name: "Custom Grid",
             description: "Two-column grid of payment methods",
             tags: ["PAYMENT_CARD", "APM"],

@@ -13,6 +13,7 @@ import SwiftUI
 struct VaultManagementDemo: View, CheckoutComponentsDemo {
     static var metadata: DemoMetadata {
         DemoMetadata(
+            key: .vaultManagement,
             name: "Vault Management",
             description: "Display and manage saved payment methods",
             tags: ["VAULT", "PAYMENT_CARD"],

@@ -16,6 +16,7 @@ import SwiftUI
 struct PrefillCardholderNameDemo: View, CheckoutComponentsDemo {
     static var metadata: DemoMetadata {
         DemoMetadata(
+            key: .prefillCardholderName,
             name: "Prefill Cardholder Name",
             description: "Prefill the card form from the client session's customer",
             tags: ["PAYMENT_CARD"],

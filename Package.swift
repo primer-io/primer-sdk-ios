@@ -61,6 +61,7 @@ private var debugAppTarget: Target {
         sources: [
             "Utilities/SecretsManager.swift",
             "Utilities/AppLinkConfigProvider.swift",
+            "View Controllers/CheckoutComponents/DemoKey.swift",
             "Model/TestSettings.swift",
             "Model/TestSettings+PrimerSettings.swift"
         ]

@@ -13,6 +13,7 @@ import SwiftUI
 struct VaultedPaymentMethodsDemo: View, CheckoutComponentsDemo {
     static var metadata: DemoMetadata {
         DemoMetadata(
+            key: .vaultedPaymentMethods,
             name: "Vaulted Methods (Custom)",
             description: "Custom vaulted-card rows",
             tags: ["VAULT", "PAYMENT_CARD"],
