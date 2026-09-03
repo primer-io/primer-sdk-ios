@@ -416,19 +416,24 @@ public struct TypographyOverrides: Equatable {
   /// Body small: Inter, 0 letter spacing, weight 400, size 12, line height 16
   public let bodySmall: TypographyStyle?
 
+  /// Field error text. Defaults to the body small values, so it can be styled on its own.
+  public let error: TypographyStyle?
+
   /// Creates typography overrides with all optional properties.
   public init(
     titleXlarge: TypographyStyle? = nil,
     titleLarge: TypographyStyle? = nil,
     bodyLarge: TypographyStyle? = nil,
     bodyMedium: TypographyStyle? = nil,
-    bodySmall: TypographyStyle? = nil
+    bodySmall: TypographyStyle? = nil,
+    error: TypographyStyle? = nil
   ) {
     self.titleXlarge = titleXlarge
     self.titleLarge = titleLarge
     self.bodyLarge = bodyLarge
     self.bodyMedium = bodyMedium
     self.bodySmall = bodySmall
+    self.error = error
   }
 }
 

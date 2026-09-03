@@ -83,7 +83,7 @@ struct BillingAddressRedirectScreen: View {
 
       if let surcharge = billingState.surchargeAmount {
         Text(surcharge)
-          .font(PrimerFont.bodySmall(tokens: tokens))
+          .font(PrimerFont.error(tokens: tokens))
           .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
       }
     }
@@ -142,7 +142,7 @@ struct BillingAddressRedirectScreen: View {
   private func makeCountryField() -> some View {
     VStack(alignment: .leading, spacing: PrimerSpacing.xsmall(tokens: tokens)) {
       Text(CheckoutComponentsStrings.countryLabel)
-        .font(PrimerFont.bodySmall(tokens: tokens))
+        .font(PrimerFont.error(tokens: tokens))
         .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
 
       Menu {
@@ -180,7 +180,7 @@ struct BillingAddressRedirectScreen: View {
 
       if let error = billingState.errors[.countryCode] {
         Text(error.message)
-          .font(PrimerFont.bodySmall(tokens: tokens))
+          .font(PrimerFont.error(tokens: tokens))
           .foregroundColor(CheckoutColors.textNegative(tokens: tokens))
       }
     }
@@ -196,7 +196,7 @@ struct BillingAddressRedirectScreen: View {
   ) -> some View {
     VStack(alignment: .leading, spacing: PrimerSpacing.xsmall(tokens: tokens)) {
       Text(label)
-        .font(PrimerFont.bodySmall(tokens: tokens))
+        .font(PrimerFont.error(tokens: tokens))
         .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
 
       TextField(placeholder, text: text)
@@ -218,7 +218,7 @@ struct BillingAddressRedirectScreen: View {
 
       if let error = billingState.errors[fieldType] {
         Text(error.message)
-          .font(PrimerFont.bodySmall(tokens: tokens))
+          .font(PrimerFont.error(tokens: tokens))
           .foregroundColor(CheckoutColors.textNegative(tokens: tokens))
       }
     }

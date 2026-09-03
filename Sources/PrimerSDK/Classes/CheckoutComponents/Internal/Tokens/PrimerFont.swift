@@ -130,6 +130,18 @@ enum PrimerFont {
     )
   }
 
+  /// Field error text (12pt, weight 400) - defaults to the body small values
+  static func uiFontError(tokens: DesignTokens?) -> UIFont {
+    guard let tokens else {
+      return uiFont(family: "Inter", weight: 400, size: 12)
+    }
+    return uiFont(
+      family: tokens.primerTypographyErrorFont,
+      weight: tokens.primerTypographyErrorWeight,
+      size: tokens.primerTypographyErrorSize
+    )
+  }
+
   /// Large icon font (48pt, weight 400) - for large icon displays
   static func uiFontLargeIcon(tokens _: DesignTokens?) -> UIFont {
     uiFont(family: "Inter", weight: 400, size: 48)
@@ -174,6 +186,11 @@ enum PrimerFont {
   /// Body small (12pt, weight 400) - for small body text and captions
   static func bodySmall(tokens: DesignTokens?) -> Font {
     Font(uiFontBodySmall(tokens: tokens))
+  }
+
+  /// Field error text. Styled on its own so it does not move with every body-small label.
+  static func error(tokens: DesignTokens?) -> Font {
+    Font(uiFontError(tokens: tokens))
   }
 
   /// Large icon font (48pt, weight 400) - for large icon displays
