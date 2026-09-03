@@ -1,0 +1,124 @@
+name: 'Manual Translation Push'
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to read the .strings files from'
+        required: true
+        default: 'master'
+      locale:
+        description: 'Phrase locale name to push, e.g. Polish. One locale per run.'
+        required: true
+      dry_run:
+        description: 'Report what would change without uploading'
+        required: true
+        type: boolean
+        default: true
+
+# Phrase is the source of truth for the .strings files, and Manual Translation Update
+# overwrites the repo from it. This workflow is the other direction: it sends one
+# locale's corrected values back, so a repo-side fix is not undone by the next pull.
+#
+# Scope is deliberately narrow. It pushes ONE locale of the drop-in project per run.
+# The repo's phrase_config.yml push block covers every locale at once and is not reused.
+#
+# CheckoutComponents is intentionally NOT supported here. That Phrase project is shared
+# with the Android SDK and its source strings use Android format specifiers (%s), while
+# this repo uses %@. Uploading the iOS files would rewrite those specifiers and break
+# Android formatting at runtime. Correct CheckoutComponents strings in the Phrase editor.
+
+jobs:
+  push-translations:
+    name: "Push one locale's translations to Phrase.com"
+    runs-on: ubuntu-latest
+
+    env:
+      PHRASE_ACCESS_KEY: ${{ secrets.PHRASE_ACCESS_KEY }}
+      PROJECT_ID: ${{ secrets.PHRASE_PROJECT_ID }}
+      LOCALE: ${{ inputs.locale }}
+      TAGS: ios-sdk
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.branch }}
+
+      - name: Install Phrase CLI
+        uses: phrase/setup-cli@884b5c75c4f61b8888a3ff30d34eb7111d20fa86
+        with:
+          version: '2.35.5'
+
+      - name: Write Phrase configuration
+        run: |
+          # The locale is resolved to a directory name so the source path names exactly
+          # one file. A <locale_code> placeholder would glob every .lproj on disk.
+          code=$(phrase locales list \
+            --access_token "$PHRASE_ACCESS_KEY" \
+            --project_id "$PROJECT_ID" \
+            --per_page 100 -B \
+            | jq -r --arg n "$LOCALE" '.[] | select(.name == $n) | .code')
+
+          if [ -z "$code" ]; then
+            echo "::error::No locale named '$LOCALE' in this Phrase project."
+            exit 1
+          fi
+          echo "Resolved locale '$LOCALE' to code '$code'"
+
+          path="Modules/PrimerResources/Sources/PrimerResources/Resources/Localizable/$code.lproj/Localizable.strings"
+          if [ ! -f "$path" ]; then
+            echo "::error::$path does not exist on ${{ inputs.branch }}."
+            exit 1
+          fi
+          echo "SOURCE_PATH=$path" >> "$GITHUB_ENV"
+
+          # update_translations is the only flag that makes existing translations change;
+          # it is off by default, which is why a plain `phrase push` cannot fix a typo.
+          # The rest are pinned rather than left to their defaults: update_translation_keys
+          # and update_custom_metadata both default to true.
+          {
+            echo "phrase:"
+            echo "  access_token: $PHRASE_ACCESS_KEY"
+            echo "  project_id: $PROJECT_ID"
+            echo "  file_format: strings"
+            echo "  push:"
+            echo "    sources:"
+            echo "      - file: $path"
+            echo "        params:"
+            echo "          file_format: strings"
+            echo "          locale_id: $LOCALE"
+            echo "          tags: $TAGS"
+            echo "          update_translations: true"
+            echo "          update_translation_keys: false"
+            echo "          update_descriptions: false"
+            echo "          update_custom_metadata: false"
+            echo "          tag_only_affected_keys: true"
+            echo "          autotranslate: false"
+            echo "          mark_reviewed: false"
+          } > .phrase.yml
+
+      - name: Show what would change
+        run: |
+          # The repo is checked out at inputs.branch, so the script is read from there
+          # rather than from the branch this workflow file lives on.
+          if [ ! -f .github/scripts/diff_phrase_locale.py ]; then
+            echo "::error::.github/scripts/diff_phrase_locale.py is missing on ${{ inputs.branch }}. Land it there first."
+            exit 1
+          fi
+
+          phrase locales download \
+            --access_token "$PHRASE_ACCESS_KEY" \
+            --project_id "$PROJECT_ID" \
+            --id "$LOCALE" \
+            --file_format strings \
+            --tags "$TAGS" > phrase_current.strings
+
+          python3 .github/scripts/diff_phrase_locale.py phrase_current.strings "$SOURCE_PATH"
+
+      - name: Push to Phrase
+        if: ${{ !inputs.dry_run }}
+        run: phrase push --wait
+
+      - name: Remove generated files
+        if: always()
+        run: rm -f .phrase.yml phrase_current.strings
