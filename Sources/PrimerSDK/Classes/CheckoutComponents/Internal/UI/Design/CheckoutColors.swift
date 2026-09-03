@@ -133,8 +133,4 @@ enum CheckoutColors {
   static func onBrand(tokens: DesignTokens?, isEnabled: Bool = true) -> Color {
     isEnabled ? .white : (tokens?.primerColorTextDisabled ?? Color(.tertiaryLabel))
   }
-
-  static func inputText(tokens: DesignTokens?) -> Color {
-    tokens?.primerColorTextOutlinedDefault ?? .primary
-  }
 }
