@@ -184,7 +184,7 @@ private struct FormFieldView: View {
             if let errorMessage = field.errorMessage {
                 Text(errorMessage)
                     .font(PrimerFont.caption(tokens: tokens))
-                    .foregroundColor(CheckoutColors.error(tokens: tokens))
+                    .foregroundColor(CheckoutColors.borderError(tokens: tokens))
             } else if let helperText = field.helperText {
                 Text(helperText)
                     .font(PrimerFont.caption(tokens: tokens))
@@ -235,7 +235,7 @@ private struct FormFieldView: View {
 
     private var borderColor: Color {
         if field.errorMessage != nil {
-            CheckoutColors.error(tokens: tokens)
+            CheckoutColors.borderError(tokens: tokens)
         } else if isFocused {
             CheckoutColors.inputBorderFocused(tokens: tokens)
         } else {
