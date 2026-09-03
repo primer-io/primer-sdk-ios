@@ -53,7 +53,7 @@ enum CheckoutColors {
   }
 
   static func gray100(tokens: DesignTokens?) -> Color {
-    tokens?.primerColorGray100 ?? Color(.systemGray6)
+    tokens?.primerColorBackgroundOutlinedDefault ?? .white
   }
 
   static func gray200(tokens: DesignTokens?) -> Color {
@@ -85,7 +85,7 @@ enum CheckoutColors {
   }
 
   static func inputBackground(tokens: DesignTokens?) -> Color {
-    tokens?.primerColorGray100 ?? Color(.systemGray6)
+    tokens?.primerColorBackgroundOutlinedDefault ?? .white
   }
 
   static func inputBorder(tokens: DesignTokens?) -> Color {
@@ -118,5 +118,9 @@ enum CheckoutColors {
 
   static func buttonTextPrimary(tokens _: DesignTokens?) -> Color {
     .white
+  }
+
+  static func inputText(tokens: DesignTokens?) -> Color {
+    tokens?.primerColorTextOutlinedDefault ?? .primary
   }
 }

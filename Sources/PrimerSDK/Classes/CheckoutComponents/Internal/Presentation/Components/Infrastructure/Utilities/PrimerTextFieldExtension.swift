@@ -117,7 +117,7 @@ extension UITextField {
     let textFont = PrimerFont.uiFontBodyLarge(tokens: tokens)
     font = textFont
     adjustsFontForContentSizeCategory = true
-    textColor = UIColor(CheckoutColors.textPrimary(tokens: tokens))
+    textColor = UIColor(CheckoutColors.inputText(tokens: tokens))
 
     // Placeholder styling with design tokens
     let placeholderColor = UIColor(CheckoutColors.textPlaceholder(tokens: tokens))
