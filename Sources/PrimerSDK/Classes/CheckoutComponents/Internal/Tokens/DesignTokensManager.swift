@@ -26,7 +26,8 @@ final class DesignTokensManager: ObservableObject {
   // MARK: - Token Loading
 
   func fetchTokens(for colorScheme: ColorScheme) async throws {
-    let colors = themeOverrides?.colors
+    // the only place the colour scheme picks a set, so everything below works off one resolved set
+    let colors = themeOverrides?.resolvedColors(for: colorScheme)
     let loadedTokens = try Self.makeTokens(
       for: colorScheme, valueOverrides: tokenValueOverrides(colors: colors))
 
@@ -36,9 +37,18 @@ final class DesignTokensManager: ObservableObject {
     tokens = loadedTokens
   }
 
-  /// Injected before references resolve, so tokens aliasing a palette entry follow the override.
+  /// Injected before references resolve, so tokens aliasing a palette entry or the brand font follow the override.
   private func tokenValueOverrides(colors: ColorOverrides?) -> [String: Any] {
     var overrides: [String: Any] = [:]
+    if let brandFont = themeOverrides?.typography?.brand {
+      // rejected here rather than downstream: a value the passes rewrite fails the whole decode
+      if DesignTokensProcessor.isTokenAuthoringSyntax(brandFont) {
+        PrimerLogging.shared.logger.error(
+          message: "[DesignTokens] Brand font override ignored: '\(brandFont)' is not a font family name.")
+      } else {
+        overrides["primerTypographyBrand"] = brandFont
+      }
+    }
     guard let colors else { return overrides }
     let pairs: [(String, Color?)] = [
       ("primerColorBrand", colors.primerColorBrand),
