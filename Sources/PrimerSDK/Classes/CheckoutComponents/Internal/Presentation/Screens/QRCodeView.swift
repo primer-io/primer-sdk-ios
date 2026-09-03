@@ -102,7 +102,7 @@ struct QRCodeView: View, LogReporter {
       case .loading:
         Spacer()
         ProgressView()
-          .progressViewStyle(CircularProgressViewStyle())
+          .progressViewStyle(CircularProgressViewStyle(tint: CheckoutColors.loader(tokens: tokens)))
           .scaleEffect(PrimerScale.large)
           .accessibilityIdentifier(AccessibilityIdentifiers.QRCode.loadingIndicator)
           .accessibilityLabel(CheckoutComponentsStrings.a11yLoading)
@@ -178,7 +178,9 @@ struct QRCodeView: View, LogReporter {
           .padding(Layout.qrCodePadding)
           .overlay(
             RoundedRectangle(cornerRadius: PrimerRadius.small(tokens: tokens))
-              .stroke(Color.gray.opacity(0.5), lineWidth: PrimerBorderWidth.standard)
+              .stroke(
+                CheckoutColors.borderDefault(tokens: tokens),
+                lineWidth: PrimerBorderWidth.standard(tokens: tokens))
           )
           .frame(maxWidth: .infinity)
           .accessibilityIdentifier(AccessibilityIdentifiers.QRCode.qrCodeImage)
