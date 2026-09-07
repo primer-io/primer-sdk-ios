@@ -74,6 +74,7 @@ enum AccessibilityIdentifiers {
     static let backButton = "checkout_components_back_button"
     static let editButton = "checkout_components_edit_button"
     static let doneButton = "checkout_components_done_button"
+    static let keyboardDoneButton = "checkout_components_keyboard_done_button"
     static let deleteButton = "checkout_components_delete_button"
     static let cancelButton = "checkout_components_cancel_button"
     static let loadingIndicator = "checkout_components_loading_indicator"
