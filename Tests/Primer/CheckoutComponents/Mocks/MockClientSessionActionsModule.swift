@@ -12,16 +12,29 @@ import Foundation
 @available(iOS 15.0, *)
 final class MockClientSessionActionsModule: ClientSessionActionsProtocol {
 
-    var selectPaymentMethodError: Error?
-    var unselectPaymentMethodError: Error?
-    var dispatchActionsError: Error?
-
-    // Production callers fire these methods from concurrent tasks, so the recorded calls are
-    // guarded; an unguarded array here corrupts the heap and crashes the test runner.
+    // Production code calls this from concurrent tasks; unguarded state here corrupts the heap and crashes the runner.
     private let lock = NSLock()
+    private var _selectPaymentMethodError: Error?
+    private var _unselectPaymentMethodError: Error?
+    private var _dispatchActionsError: Error?
     private var _selectPaymentMethodCalls: [(type: String, network: String?)] = []
     private var _unselectPaymentMethodCallCount = 0
     private var _dispatchActionsCalls: [[ClientSession.Action]] = []
+
+    var selectPaymentMethodError: Error? {
+        get { synchronized { _selectPaymentMethodError } }
+        set { synchronized { _selectPaymentMethodError = newValue } }
+    }
+
+    var unselectPaymentMethodError: Error? {
+        get { synchronized { _unselectPaymentMethodError } }
+        set { synchronized { _unselectPaymentMethodError = newValue } }
+    }
+
+    var dispatchActionsError: Error? {
+        get { synchronized { _dispatchActionsError } }
+        set { synchronized { _dispatchActionsError = newValue } }
+    }
 
     var selectPaymentMethodCalls: [(type: String, network: String?)] {
         synchronized { _selectPaymentMethodCalls }
@@ -48,10 +61,10 @@ final class MockClientSessionActionsModule: ClientSessionActionsProtocol {
             _selectPaymentMethodCalls = []
             _unselectPaymentMethodCallCount = 0
             _dispatchActionsCalls = []
+            _selectPaymentMethodError = nil
+            _unselectPaymentMethodError = nil
+            _dispatchActionsError = nil
         }
-        selectPaymentMethodError = nil
-        unselectPaymentMethodError = nil
-        dispatchActionsError = nil
     }
 
     func selectPaymentMethodIfNeeded(_ paymentMethodType: String, cardNetwork: String?) async throws {

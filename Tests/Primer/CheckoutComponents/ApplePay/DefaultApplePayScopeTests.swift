@@ -463,15 +463,19 @@ final class DefaultApplePayScopeFactoryTests: XCTestCase {
 
     func test_performPayment_whenApplePayRequestFactoryThrows_resetsLoading() async throws {
         // Given
-        let sut = createScope(applePayRequestFactory: {
+        var sut: DefaultApplePayScope!
+        var wasLoadingWhenFactoryRan = false
+        sut = createScope(applePayRequestFactory: {
+            wasLoadingWhenFactoryRan = sut.structuredState.isLoading
             throw PrimerError.invalidClientSessionValue(name: "order.countryCode")
         })
 
         // When
         sut.submit()
 
-        // Then — the payment Task resets loading before it finishes
+        // Then — loading is set while the Task runs and reset before it finishes
         try await XCTUnwrap(sut.paymentTask).value
+        XCTAssertTrue(wasLoadingWhenFactoryRan)
         XCTAssertFalse(sut.structuredState.isLoading)
     }
 
@@ -489,8 +493,9 @@ final class DefaultApplePayScopeFactoryTests: XCTestCase {
         // When
         sut.submit()
 
-        // Then — the payment Task resets loading before it finishes
+        // Then — the Task ran (it reached the client-session step) and reset loading before it finished
         try await XCTUnwrap(sut.paymentTask).value
+        XCTAssertEqual(mockClientSessionActions.selectPaymentMethodCalls.count, 1)
         XCTAssertFalse(sut.structuredState.isLoading)
     }
 
@@ -528,8 +533,9 @@ final class DefaultApplePayScopeFactoryTests: XCTestCase {
         // When
         sut.submit()
 
-        // Then — the payment Task resets loading before it finishes
+        // Then — the Task ran (it reached the client-session step) and reset loading before it finished
         try await XCTUnwrap(sut.paymentTask).value
+        XCTAssertEqual(mockClientSessionActions.selectPaymentMethodCalls.count, 1)
         XCTAssertFalse(sut.structuredState.isLoading)
     }
 
@@ -545,8 +551,9 @@ final class DefaultApplePayScopeFactoryTests: XCTestCase {
         // When
         sut.submit()
 
-        // Then — the payment Task resets loading before it finishes
+        // Then — the Task ran (it reached the client-session step) and reset loading before it finished
         try await XCTUnwrap(sut.paymentTask).value
+        XCTAssertEqual(mockClientSessionActions.selectPaymentMethodCalls.count, 1)
         XCTAssertFalse(sut.structuredState.isLoading)
     }
 
@@ -581,7 +588,10 @@ final class DefaultApplePayScopeFactoryTests: XCTestCase {
             presentWasCalled = true
             return .success(())
         }
-        let sut = createScope(applePayRequestFactory: {
+        var sut: DefaultApplePayScope!
+        var wasLoadingWhenFactoryRan = false
+        sut = createScope(applePayRequestFactory: {
+            wasLoadingWhenFactoryRan = sut.structuredState.isLoading
             throw TestError.unknown
         })
 
@@ -590,6 +600,7 @@ final class DefaultApplePayScopeFactoryTests: XCTestCase {
 
         // Then — the factory throws before presentation, so present is never reached
         try await XCTUnwrap(sut.paymentTask).value
+        XCTAssertTrue(wasLoadingWhenFactoryRan)
         XCTAssertFalse(presentWasCalled)
         XCTAssertFalse(sut.structuredState.isLoading)
     }
