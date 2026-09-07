@@ -30,6 +30,7 @@ final class PrimerPaymentMethod: Codable, LogReporter {
     let options: PaymentMethodOptions?
     var displayMetadata: PrimerPaymentMethod.DisplayMetadata?
     var baseLogoImage: PrimerTheme.BaseImage?
+    let entry: Entry
     
     private let capabilities: [Capability]?
 
@@ -269,7 +270,8 @@ final class PrimerPaymentMethod: Codable, LogReporter {
              processorConfigId,
              surcharge,
              options,
-             displayMetadata
+             displayMetadata,
+             entry
     }
 
     init(
@@ -287,6 +289,7 @@ final class PrimerPaymentMethod: Codable, LogReporter {
         self.type = type
         self.name = name
         self.capabilities = []
+        self.entry = .pay
         self.processorConfigId = processorConfigId
         self.surcharge = surcharge
         self.options = options
@@ -310,6 +313,7 @@ final class PrimerPaymentMethod: Codable, LogReporter {
             forKey: .displayMetadata
         )) ?? nil
         capabilities = (try? container.decode([Capability].self, forKey: .capabilities))
+        entry = (try? container.decode(Entry.self, forKey: .entry)) ?? .pay
 
         switch type {
         case "PAYMENT_CARD":
@@ -352,6 +356,21 @@ extension PrimerPaymentMethod {
 
         var isEnabled: Bool {
             true
+        }
+    }
+}
+
+extension PrimerPaymentMethod {
+    enum Entry: String, Codable, CaseIterable, Equatable {
+        case pay
+        case onSelect
+        case eager
+
+        var requiresSetup: Bool {
+            switch self {
+            case .pay: false
+            case .onSelect, .eager: true
+            }
         }
     }
 }

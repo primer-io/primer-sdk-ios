@@ -67,6 +67,14 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
                 let instructionProvider = makeInstructionProvider(config)
                 await PrimerStepResolverRegistry.shared.register(HTTPRequestResolver(), for: .httpRequest)
                 
+                if config.entry.requiresSetup {
+                    return try await orchestrator?.runSetup(
+                        pciUrl: PrimerAPIConfigurationModule.apiConfiguration?.pciUrl,
+                        coreUrl: PrimerAPIConfigurationModule.apiConfiguration?.coreUrl,
+                        instructionProvider: instructionProvider
+                    )
+                }
+
                 let result = try await orchestrator?.run(
                     pciUrl: PrimerAPIConfigurationModule.apiConfiguration?.pciUrl,
                     coreUrl: PrimerAPIConfigurationModule.apiConfiguration?.coreUrl,
