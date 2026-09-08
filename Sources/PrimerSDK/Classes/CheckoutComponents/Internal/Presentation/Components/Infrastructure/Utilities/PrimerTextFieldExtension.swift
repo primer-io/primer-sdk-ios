@@ -154,7 +154,6 @@ extension UITextField {
       action: action
     )
     doneItem.accessibilityLabel = CheckoutComponentsStrings.doneButton
-    doneItem.accessibilityIdentifier = AccessibilityIdentifiers.Common.keyboardDoneButton
     let titleFont = PrimerFont.uiFontTitleLarge(tokens: tokens)
     doneItem.setTitleTextAttributes([.font: titleFont, .foregroundColor: tint], for: .normal)
     doneItem.setTitleTextAttributes([.font: titleFont, .foregroundColor: tint], for: .highlighted)

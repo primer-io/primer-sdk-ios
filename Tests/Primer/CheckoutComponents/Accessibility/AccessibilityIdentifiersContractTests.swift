@@ -42,7 +42,6 @@ final class AccessibilityIdentifiersContractTests: XCTestCase {
         (Ids.Common.backButton, "checkout_components_back_button"),
         (Ids.Common.editButton, "checkout_components_edit_button"),
         (Ids.Common.doneButton, "checkout_components_done_button"),
-        (Ids.Common.keyboardDoneButton, "checkout_components_keyboard_done_button"),
         (Ids.Common.deleteButton, "checkout_components_delete_button"),
         (Ids.Common.cancelButton, "checkout_components_cancel_button"),
         (Ids.Common.loadingIndicator, "checkout_components_loading_indicator"),
