@@ -14,6 +14,9 @@ struct PaymentMethodButton: View {
   let onSelect: () -> Void
 
   @Environment(\.designTokens) private var tokens
+  @Environment(\.colorScheme) private var colorScheme
+
+  private var isDark: Bool { colorScheme == .dark }
 
   var body: some View {
     let radius = method.cornerRadius ?? PrimerRadius.medium(tokens: tokens)
@@ -55,7 +58,9 @@ struct PaymentMethodButton: View {
     var green: CGFloat = 0
     var blue: CGFloat = 0
     var alpha: CGFloat = 0
-    bg.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
+    // a dynamic colour resolves against UITraitCollection.current here, not this view's scheme
+    bg.resolvedColor(with: UITraitCollection(userInterfaceStyle: isDark ? .dark : .light))
+      .getRed(&red, green: &green, blue: &blue, alpha: &alpha)
     let luminance = 0.299 * red + 0.587 * green + 0.114 * blue
     return alpha > 0.1 && luminance < 0.95
   }
@@ -69,7 +74,7 @@ struct PaymentMethodButton: View {
   }
 
   private func borderWidth(for method: CheckoutPaymentMethod) -> CGFloat {
-    if let width = method.borderWidth, width > 0 {
+    if let width = method.borderWidthVariants?.resolvedValue(isDark: isDark) ?? method.borderWidth, width > 0 {
       return width
     }
     guard !hasVisibleBackground else { return 0 }
@@ -79,7 +84,8 @@ struct PaymentMethodButton: View {
   @ViewBuilder
   private var icon: some View {
     let image =
-      method.icon ?? PrimerPaymentMethodType(rawValue: method.type)?.defaultImageName.image
+      method.logoVariants?.image(isDark: isDark) ?? method.icon
+      ?? PrimerPaymentMethodType(rawValue: method.type)?.defaultImageName.image
     if let image {
       Image(uiImage: image)
         .resizable()
