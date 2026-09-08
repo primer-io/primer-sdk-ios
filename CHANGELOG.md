@@ -124,6 +124,22 @@ CheckoutComponents beta (iOS 15+). This is a beta release — APIs may still cha
 
 - Checkout Components
 
+## 2.52.0 (2026-08-25)
+
+### Feat
+
+- Handle cancelled BDC flows via applyEvent (#1854)
+- Implement `http.request` step resolver (#1848)
+
+### Fix
+
+- Fire willCreatePayment after Apple Pay authorization (ORC-8210) (#1866)
+- Move SDK file cache into Library/Caches/primer (#1852)
+- Resolve flaky unit tests and their root causes (#1851)
+- Bancontact raw-data tokenization (ORC-7697) (#1853)
+- Allow metadata textfield to accept raw json (#1856)
+- Convert Apple Pay amounts by currency decimalDigits (#1816)
+
 ## 2.51.1 (2026-07-01)
 
 ### Fix
