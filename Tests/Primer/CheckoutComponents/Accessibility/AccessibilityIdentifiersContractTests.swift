@@ -175,11 +175,24 @@ final class AccessibilityIdentifiersContractTests: XCTestCase {
     }
 
     func test_billingAddressSegments_matchTheSiblingSpellings() {
-        XCTAssertEqual(NameTextField.identifierSegment(for: .firstName), "first_name")
-        XCTAssertEqual(NameTextField.identifierSegment(for: .lastName), "last_name")
-        XCTAssertEqual(NameTextField.identifierSegment(for: .phoneNumber), "phone_number")
-        XCTAssertEqual(AddressLineTextField.identifierSegment(for: .addressLine1), "address_line1")
-        XCTAssertEqual(AddressLineTextField.identifierSegment(for: .addressLine2), "address_line2")
+        let cases: [(PrimerInputElementType, String)] = [
+            (.firstName, "first_name"),
+            (.lastName, "last_name"),
+            (.phoneNumber, "phone_number"),
+            (.addressLine1, "address_line1"),
+            (.addressLine2, "address_line2")
+        ]
+        for (inputType, segment) in cases {
+            XCTAssertEqual(
+                Ids.CardForm.billingAddressInput(for: inputType, fallback: "unused"),
+                "checkout_components_card_form_billing_\(segment)_field_input"
+            )
+        }
+        // An input type the wrapper does not name falls back to the wrapper's own segment.
+        XCTAssertEqual(
+            Ids.CardForm.billingAddressInput(for: .cardNumber, fallback: "name"),
+            "checkout_components_card_form_billing_name_field_input"
+        )
     }
 
     /// The naming contract: prefix plus lowercase snake_case. Dynamic segments may carry

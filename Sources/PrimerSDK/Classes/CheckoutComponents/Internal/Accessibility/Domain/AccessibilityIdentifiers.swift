@@ -27,6 +27,27 @@ enum AccessibilityIdentifiers {
       "checkout_components_card_form_billing_\(field)_field"
     }
 
+    // The billing fields that carry several input types read their segment here, so the
+    // container view and its UIKit wrapper cannot drift apart. The segment is spelled out per
+    // input type: string interpolation of the enum case produces camelCase and silently
+    // changes the id when a case is renamed. `fallback` keeps each field's own default for an
+    // input type it does not name.
+    static func billingAddressField(for inputType: PrimerInputElementType, fallback: String) -> String {
+      let segment = switch inputType {
+      case .addressLine1: "address_line1"
+      case .addressLine2: "address_line2"
+      case .firstName: "first_name"
+      case .lastName: "last_name"
+      case .phoneNumber: "phone_number"
+      default: fallback
+      }
+      return billingAddressField(segment)
+    }
+
+    static func billingAddressInput(for inputType: PrimerInputElementType, fallback: String) -> String {
+      AccessibilityIdentifiers.inputField(within: billingAddressField(for: inputType, fallback: fallback))
+    }
+
     // Fixed billing fields get constants so the container view and its UIKit wrapper cannot
     // drift apart; the fields with several input types keep the builder above.
     static let billingCityField = "checkout_components_card_form_billing_city_field"
