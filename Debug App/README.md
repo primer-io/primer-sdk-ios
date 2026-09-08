@@ -35,7 +35,7 @@ The `demo` values are `DemoKey` raw values (`Sources/View Controllers/CheckoutCo
 
 | Key | Demo | Terminal state |
 |---|---|---|
-| `default_checkout` | Default Checkout (managed `PrimerCheckout`) | SDK success/error screens (`checkout_components_success_title`…); the sheet dismisses ~3 s after success |
+| `default_checkout` | Default Checkout (managed `PrimerCheckout`) | SDK success/error screens (`primer_checkout_components_success_title`…); the sheet dismisses ~3 s after success |
 | `inline_checkout` | Inline Checkout | Debug App alert |
 | `inline_card_form` | Inline Card Form | Debug App alert |
 | `card_form_sheet` | Card Form Sheet | Debug App alert |
