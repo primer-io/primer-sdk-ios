@@ -1,7 +1,7 @@
 //
 //  PrimerStepOrchestrator.swift
 //
-//  Copyright © 2026 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved.
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
@@ -18,11 +18,11 @@ protocol StepOrchestrating: AnyObject {
 
 @MainActor
 final class PrimerStepOrchestrator: StepOrchestrating {
-    
+
     var onURLOpen: (() -> Void)? {
         didSet { harness.onURLOpen = onURLOpen }
     }
-    
+
     private let logger = Logger()
     private let engine: any BDCEngineProtocol
     private let context: SDKContext
@@ -43,30 +43,30 @@ final class PrimerStepOrchestrator: StepOrchestrating {
 
     func start(rawSchema: String, initialState: CodableValue) async throws {
         self.rawSchema = rawSchema
-        await registry.register(harness, for: "url.open")
-        registry.register(harness, for: "url.open")
+        registry.register(harness, for: .urlOpen)
         do {
             let result = try await engine.start(schema: rawSchema, context: context, state: initialState)
             try await decodeResult(result, rawSchema: rawSchema)
+        } catch is CancellationError {
+            throw CancellationError()
+        } catch is BackendDrivenCheckoutCancellation {
+            throw BackendDrivenCheckoutCancellation()
         } catch {
             throw PrimerStepOrchestratorError.startFailed(error: error)
         }
     }
 
     private func decodeResult(_ result: AnyDict, rawSchema: String) async throws {
+        let response: StateProcessorResponse
         do {
-            let response = try JSONDecoder().decode(StateProcessorResponse.self, from: try result.data())
-            state = response.newState
-            try await handleResponse(response, rawSchema: rawSchema)
+            response = try JSONDecoder().decode(StateProcessorResponse.self, from: try result.data())
         } catch {
-            if error is StateProcessorError {
-                throw error
-            } else {
-                throw PrimerStepOrchestratorError.decodeResultFailed(error: error)
-            }
+            throw PrimerStepOrchestratorError.decodeResultFailed(error: error)
         }
+        state = response.newState
+        try await handleResponse(response, rawSchema: rawSchema)
     }
-    
+
     private func handleResponse(_ response: StateProcessorResponse, rawSchema: String) async throws {
         if let error = response.error {
             throw error
@@ -78,22 +78,31 @@ final class PrimerStepOrchestrator: StepOrchestrating {
             logger.info("Step settled without an action or terminal — waiting on the instruction loop.")
         }
     }
-    
+
     func applyEvent(_ value: CodableValue) async throws {
         let result = try await engine.applyEvent(value, context: context, schema: rawSchema, state: state)
         try await decodeResult(result, rawSchema: rawSchema)
     }
-    
+
     private func handleAction(_ action: WorkflowStep, rawSchema: String) async throws {
+        try await sleep(forMilliseconds: action.delayMs)
         let resolution = try await registry.resolve(action.type, data: action.params)
         try await applyResult(resolution, actionId: action.id, rawSchema: rawSchema)
     }
-    
+
+    private func sleep(forMilliseconds delayMs: Double?) async throws {
+        guard let delayMs, delayMs.isFinite, delayMs > 0 else { return }
+        let nanoseconds = delayMs * 1_000_000
+        guard nanoseconds < Double(UInt64.max) else { return }
+        try await Task.sleep(nanoseconds: UInt64(nanoseconds))
+    }
+
     private func handleOutcome(_ outcome: TerminalOutcome) throws {
         switch outcome {
+        case .cancelled: throw BackendDrivenCheckoutCancellation()
         case .error: throw PrimerStepOrchestratorError.checkoutTerminalError
         case .unsupported: throw PrimerStepOrchestratorError.receivedUnexpectedTerminalOutcome(outcome: outcome)
-        case .success, .cancelled: break // Allow polling to update us
+        case .success: break // Allow polling to update us
         }
     }
 
@@ -109,6 +118,10 @@ final class PrimerStepOrchestrator: StepOrchestrating {
                 data: data
             )
             try await decodeResult(result, rawSchema: rawSchema)
+        } catch is CancellationError {
+            throw CancellationError()
+        } catch is BackendDrivenCheckoutCancellation {
+            throw BackendDrivenCheckoutCancellation()
         } catch {
             throw PrimerStepOrchestratorError.applyWorkflowStepResponseFailed(error: error)
         }

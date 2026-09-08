@@ -8,7 +8,7 @@ import CryptoKit
 import Foundation
 @_spi(PrimerInternal) import PrimerCore
 @_spi(PrimerInternal) import PrimerBDCCore
-import PrimerBDCEngine
+@_spi(PrimerInternal) import PrimerBDCEngine
 @_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerNetworking
 @_spi(PrimerInternal) import PrimerStepResolver
@@ -65,9 +65,13 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
                 logBDCStarted()
 
                 let instructionProvider = makeInstructionProvider(config)
-                await PrimerStepResolverRegistry.shared.register(HTTPRequestResolver(), for: "http.request")
+                await PrimerStepResolverRegistry.shared.register(HTTPRequestResolver(), for: .httpRequest)
                 
-                let result = try await orchestrator?.run(instructionProvider: instructionProvider)
+                let result = try await orchestrator?.run(
+                    pciUrl: PrimerAPIConfigurationModule.apiConfiguration?.pciUrl,
+                    coreUrl: PrimerAPIConfigurationModule.apiConfiguration?.coreUrl,
+                    instructionProvider: instructionProvider
+                )
                 
                 switch result {
                 case let .success(payment): await handleSuccess(payment)
@@ -91,7 +95,6 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
     private func setupOrchestrator() async throws {
         let context = generateContext()
         let orchestrator = try await makeOrchestrator(context)
-        
         self.orchestrator = orchestrator
         orchestrator.onURLOpened = { [weak self] in
             guard let self else { return }
@@ -136,7 +139,9 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
     
     @MainActor
     private func handleError(_ error: Swift.Error) async {
-        if error is CancellationError { return }
+        if error is BackendDrivenCheckoutCancellation {
+            return await handleError(PrimerError.cancelled(paymentMethodType: config.type))
+        }
         Analytics.Service.fire(event: .message(message: "BDC Failed: \(error)", messageType: .error, severity: .error))
         let primerError: PrimerErrorProtocol = (error as? PrimerErrorProtocol) ?? PrimerError.unknown(
             message: error.localizedDescription,
@@ -187,7 +192,8 @@ private extension Error {
 
 private extension BackendDrivenCheckoutOrchestrator {
     convenience init(context: SDKContext) async throws {
-        try await self.init(manifestProvider: NetworkSignedManifestProvider(), context: context)
+        let engine = try await BDCEngineProvider.shared.engine(manifestProvider: NetworkSignedManifestProvider())
+        self.init(engine: engine, context: context)
     }
 }
 

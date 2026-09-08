@@ -49,7 +49,7 @@ final class BackendDrivenCheckoutViewModelTests: XCTestCase {
     func testExecuteThenEndCompletes() {
         assertComplete {
             makeSUT(instructions: [
-                .execute(delayMilliseconds: 0, schema: .object([:]), parameters: .object([:])),
+                .execute(delayMilliseconds: 0, schema: .object([:]), parameters: .object([:]), currentAttempt: nil),
                 .end(outcome: .complete, payment: nil)
             ])
         }
@@ -77,6 +77,40 @@ final class BackendDrivenCheckoutViewModelTests: XCTestCase {
         let provider = MockBDCInstructionProvider([])
         provider.error = Error.providerFailed
         assertDidFail { makeSUT(makeInstructionProvider: { _ in provider })}
+    }
+    
+    func testCancelledReportsCancelledExactlyOnce() {
+        mockOrchestrator.startError = BackendDrivenCheckoutCancellation()
+
+        let errors = collectFailures {
+            makeSUT(instructions: [
+                .execute(delayMilliseconds: 0, schema: .object([:]), parameters: .object([:]), currentAttempt: nil)
+            ])
+        }
+
+        XCTAssertEqual(errors.count, 1, "Cancellation must report one error, got \(errors)")
+        guard case PrimerError.cancelled = errors[0] else {
+            return XCTFail("Expected PrimerError.cancelled, got \(errors[0])")
+        }
+    }
+
+    func testCancelledStopsLoopBeforeNextFetch() {
+        mockOrchestrator.startError = BackendDrivenCheckoutCancellation()
+
+        let provider = MockBDCInstructionProvider([
+            .execute(delayMilliseconds: 0, schema: .object([:]), parameters: .object([:]), currentAttempt: nil)
+        ])
+        provider.errorAfterFirstFetch = URLError(.cancelled)
+
+        let errors = collectFailures {
+            makeSUT(makeInstructionProvider: { _ in provider })
+        }
+
+        XCTAssertEqual(errors.count, 1, "Expected one error, got \(errors)")
+        guard case PrimerError.cancelled = errors[0] else {
+            return XCTFail("Expected PrimerError.cancelled, got \(errors[0])")
+        }
+        XCTAssertEqual(provider.fetchCount, 1)
     }
 
 }
@@ -121,6 +155,26 @@ private extension BackendDrivenCheckoutViewModelTests {
         wait(for: [exp], timeout: timeout)
     }
     
+    func collectFailures(
+        timeout: TimeInterval = 3.0,
+        settle: TimeInterval = 0.5,
+        _ makeSUT: () -> BackendDrivenCheckoutViewModel
+    ) -> [Swift.Error] {
+        var errors: [Swift.Error] = []
+        let failed = expectation(description: "fail")
+        delegate.onDidFail = { error in
+            errors.append(error)
+            if errors.count == 1 { failed.fulfill() }
+        }
+        makeSUT().start()
+        wait(for: [failed], timeout: timeout)
+
+        let settled = expectation(description: "settle")
+        DispatchQueue.main.asyncAfter(deadline: .now() + settle) { settled.fulfill() }
+        wait(for: [settled], timeout: settle + 2.0)
+        return errors
+    }
+
     func assertDidFail(
         matching predicate: ((Swift.Error) -> Bool)? = nil,
         timeout: TimeInterval = 3.0,
@@ -165,6 +219,8 @@ private final class MockBDCStepOrchestrator: StepOrchestrating {
 
 private final class MockBDCInstructionProvider: ClientInstructionProvider {
     var error: Error?
+    var errorAfterFirstFetch: Swift.Error?
+    private(set) var fetchCount = 0
     private var instructions: [ClientInstruction]
     private var index = 0
     
@@ -174,7 +230,9 @@ private final class MockBDCInstructionProvider: ClientInstructionProvider {
     func fetchNextInstruction() async throws -> ClientInstruction { try next() }
     
     private func next() throws -> ClientInstruction {
+        fetchCount += 1
         if let error { throw error }
+        if fetchCount > 1, let errorAfterFirstFetch { throw errorAfterFirstFetch }
         guard index < instructions.count else { return .wait(delayMilliseconds: 0) }
         defer { index += 1 }
         return instructions[index]
