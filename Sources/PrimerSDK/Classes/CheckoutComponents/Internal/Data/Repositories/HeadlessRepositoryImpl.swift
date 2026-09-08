@@ -18,9 +18,6 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
 
   private var paymentMethods: [InternalPaymentMethod] = []
 
-  // MARK: - Settings Integration
-
-  private var settings: PrimerSettings?
   private var configurationService: ConfigurationService?
 
   // MARK: - Co-Badged Cards Support
@@ -87,20 +84,6 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
     self.vaultManagerFactory = vaultManagerFactory
   }
 
-  private func injectSettings() async {
-    guard settings == nil else { return }
-
-    do {
-      guard let container = await DIContainer.current else {
-        return
-      }
-
-      settings = try await container.resolve(PrimerSettings.self)
-    } catch {
-      logger.error(message: "Failed to resolve dependency: \(error)")
-    }
-  }
-
   private func injectConfigurationService() async {
     guard configurationService == nil else { return }
 
@@ -148,7 +131,9 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
         textColor: displayButton?.textColor?.uiColor,
         borderColor: displayButton?.borderColor?.uiColor,
         borderWidth: displayButton?.borderWidth?.resolvedValue,
-        cornerRadius: displayButton?.cornerRadius.map(CGFloat.init)
+        cornerRadius: displayButton?.cornerRadius.map(CGFloat.init),
+        logoVariants: primerMethod.baseLogoImage,
+        borderWidthVariants: displayButton?.borderWidth
       )
     }
 
@@ -289,9 +274,8 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
           return
         }
 
-        Task {
-          await self.submitPaymentWithHandlingMode(rawDataManager: rawDataManager)
-        }
+        // Triggers async payment processing and the delegate callbacks.
+        Task { @MainActor in rawDataManager.submit() }
       }
     } else {
       timeoutTask.cancel()
@@ -301,19 +285,6 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
         validationErrors: validationErrors
       )
     }
-  }
-
-  @MainActor
-  private func submitPaymentWithHandlingMode(rawDataManager: RawDataManagerProtocol) async {
-    await injectSettings()
-    let paymentHandlingMode = settings?.paymentHandling ?? .auto
-
-    if paymentHandlingMode == .manual {
-      logger.warn(message: "[Card] Manual payment handling not yet supported in CheckoutComponents - proceeding with auto mode")
-    }
-
-    // This will trigger async payment processing and delegate callbacks
-    rawDataManager.submit()
   }
 
   private func handleValidationFailure(

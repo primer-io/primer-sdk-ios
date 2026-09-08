@@ -72,14 +72,14 @@ extension PrimerBDCEngine {
         setObject(context, forKey: "__context")
         setObject(state, forKey: "__state")
         setObject(outcome, forKey: "__outcome")
-        setObject(data as Any, forKey: "__data")
+        setObject(data ?? "{}", forKey: "__data")
         setObject(actionId, forKey: "__actionId")
         
         return """
         (async () => {
             try {
                 const processor = await StateProcessor.createStateProcessor(__schema, JSON.parse(__context));
-                const result = await processor.applyResult(JSON.parse(__state), __actionId, __outcome, __data);
+                const result = await processor.applyResult(JSON.parse(__state), __actionId, __outcome, JSON.parse(__data));
                 onExecuteActionResult(JSON.stringify(result));
             } catch (e) {
                 onExecuteActionResult(JSON.stringify({ error: e.toString() }));

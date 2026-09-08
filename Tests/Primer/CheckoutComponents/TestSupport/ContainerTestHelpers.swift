@@ -50,7 +50,7 @@ enum ContainerTestHelpers {
     static func createMockCheckoutScope() async -> DefaultCheckoutScope {
         let navigator = CheckoutNavigator(coordinator: CheckoutCoordinator())
         let settings = PrimerSettings(
-            paymentHandling: .manual,
+            paymentHandling: .auto,
             paymentMethodOptions: PrimerPaymentMethodOptions()
         )
         return DefaultCheckoutScope(
@@ -73,7 +73,7 @@ enum ContainerTestHelpers {
 
         let navigator = CheckoutNavigator(coordinator: CheckoutCoordinator())
         let settings = PrimerSettings(
-            paymentHandling: .manual,
+            paymentHandling: .auto,
             paymentMethodOptions: PrimerPaymentMethodOptions(),
             uiOptions: PrimerUIOptions(isInitScreenEnabled: false)
         )
@@ -111,7 +111,7 @@ enum ContainerTestHelpers {
 
         let navigator = CheckoutNavigator(coordinator: CheckoutCoordinator())
         let settings = PrimerSettings(
-            paymentHandling: .manual,
+            paymentHandling: .auto,
             paymentMethodOptions: PrimerPaymentMethodOptions(),
             uiOptions: PrimerUIOptions(isInitScreenEnabled: false)
         )

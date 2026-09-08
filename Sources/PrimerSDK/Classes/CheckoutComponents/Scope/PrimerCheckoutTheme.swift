@@ -12,8 +12,7 @@ import SwiftUI
 
 /// Theme configuration providing optional overrides for internal design tokens.
 ///
-/// Internal `DesignTokens` and `DesignTokensDark` classes (auto-generated from JSON)
-/// remain the source of truth. `PrimerCheckoutTheme` allows merchants to override specific
+/// The internal `DesignTokens` class (auto-generated from JSON) remains the source of truth. `PrimerCheckoutTheme` allows merchants to override specific
 /// token values without replacing the entire token system.
 ///
 /// When a merchant provides an override, `DesignTokensManager` merges it with
@@ -22,34 +21,40 @@ import SwiftUI
 public struct PrimerCheckoutTheme: Equatable {
 
   public let colors: ColorOverrides?
+  public let darkColors: ColorOverrides?
   public let radius: RadiusOverrides?
   public let spacing: SpacingOverrides?
   public let sizes: SizeOverrides?
   public let typography: TypographyOverrides?
-  public let borderWidth: BorderWidthOverrides?
+  public let width: WidthOverrides?
 
   /// Creates a new theme configuration with optional overrides.
   /// - Parameters:
-  ///   - colors: Color token overrides. Default: nil (uses internal defaults)
+  ///   - colors: Color token overrides, applied in both light and dark mode. Default: nil (uses internal defaults)
+  ///   - darkColors: Color token overrides applied in dark mode only. Each value left nil here falls back to the
+  ///     matching `colors` value, so only the colours that differ in the dark need naming. Default: nil (`colors`
+  ///     applies in both modes)
   ///   - radius: Radius token overrides. Default: nil (uses internal defaults)
   ///   - spacing: Spacing token overrides. Default: nil (uses internal defaults)
   ///   - sizes: Size token overrides. Default: nil (uses internal defaults)
   ///   - typography: Typography token overrides. Default: nil (uses internal defaults)
-  ///   - borderWidth: Border width token overrides. Default: nil (uses internal defaults)
+  ///   - width: Border width token overrides. Default: nil (uses internal defaults)
   public init(
     colors: ColorOverrides? = nil,
+    darkColors: ColorOverrides? = nil,
     radius: RadiusOverrides? = nil,
     spacing: SpacingOverrides? = nil,
     sizes: SizeOverrides? = nil,
     typography: TypographyOverrides? = nil,
-    borderWidth: BorderWidthOverrides? = nil
+    width: WidthOverrides? = nil
   ) {
     self.colors = colors
+    self.darkColors = darkColors
     self.radius = radius
     self.spacing = spacing
     self.sizes = sizes
     self.typography = typography
-    self.borderWidth = borderWidth
+    self.width = width
   }
 }
 
@@ -74,7 +79,6 @@ public struct ColorOverrides: Equatable {
   public let primerColorGray400: Color?
   public let primerColorGray500: Color?
   public let primerColorGray600: Color?
-  public let primerColorGray700: Color?
   public let primerColorGray900: Color?
 
   // MARK: Semantic Colors (matching internal DesignTokens)
@@ -91,18 +95,30 @@ public struct ColorOverrides: Equatable {
 
   // MARK: Semantic UI Colors (matching internal DesignTokens)
 
-  public let primerColorBackground: Color?
+  public let primerColorBackgroundPrimary: Color?
+  public let primerColorBackgroundSecondary: Color?
+  public let primerColorBackgroundOutlinedDefault: Color?
+  public let primerColorBackgroundOutlinedActive: Color?
+  public let primerColorBackgroundOutlinedDisabled: Color?
+  public let primerColorBackgroundOutlinedLoading: Color?
+  public let primerColorBackgroundOutlinedSelected: Color?
+  public let primerColorBackgroundOutlinedError: Color?
+  public let primerColorBackgroundTransparentDefault: Color?
+  public let primerColorBackgroundTransparentActive: Color?
+  public let primerColorBackgroundTransparentDisabled: Color?
+  public let primerColorBackgroundTransparentLoading: Color?
+  public let primerColorBackgroundTransparentSelected: Color?
   public let primerColorTextPrimary: Color?
   public let primerColorTextSecondary: Color?
   public let primerColorTextPlaceholder: Color?
   public let primerColorTextDisabled: Color?
   public let primerColorTextNegative: Color?
   public let primerColorTextLink: Color?
+  public let primerColorTextOutlinedDefault: Color?
 
   // MARK: Border Colors (matching internal DesignTokens)
 
   public let primerColorBorderOutlinedDefault: Color?
-  public let primerColorBorderOutlinedHover: Color?
   public let primerColorBorderOutlinedActive: Color?
   public let primerColorBorderOutlinedFocus: Color?
   public let primerColorBorderOutlinedDisabled: Color?
@@ -113,7 +129,6 @@ public struct ColorOverrides: Equatable {
   // MARK: Border Transparent Colors
 
   public let primerColorBorderTransparentDefault: Color?
-  public let primerColorBorderTransparentHover: Color?
   public let primerColorBorderTransparentActive: Color?
   public let primerColorBorderTransparentFocus: Color?
   public let primerColorBorderTransparentDisabled: Color?
@@ -140,7 +155,6 @@ public struct ColorOverrides: Equatable {
     primerColorGray400: Color? = nil,
     primerColorGray500: Color? = nil,
     primerColorGray600: Color? = nil,
-    primerColorGray700: Color? = nil,
     primerColorGray900: Color? = nil,
     primerColorGreen500: Color? = nil,
     primerColorRed100: Color? = nil,
@@ -148,15 +162,27 @@ public struct ColorOverrides: Equatable {
     primerColorRed900: Color? = nil,
     primerColorBlue500: Color? = nil,
     primerColorBlue900: Color? = nil,
-    primerColorBackground: Color? = nil,
+    primerColorBackgroundPrimary: Color? = nil,
+    primerColorBackgroundSecondary: Color? = nil,
+    primerColorBackgroundOutlinedDefault: Color? = nil,
+    primerColorBackgroundOutlinedActive: Color? = nil,
+    primerColorBackgroundOutlinedDisabled: Color? = nil,
+    primerColorBackgroundOutlinedLoading: Color? = nil,
+    primerColorBackgroundOutlinedSelected: Color? = nil,
+    primerColorBackgroundOutlinedError: Color? = nil,
+    primerColorBackgroundTransparentDefault: Color? = nil,
+    primerColorBackgroundTransparentActive: Color? = nil,
+    primerColorBackgroundTransparentDisabled: Color? = nil,
+    primerColorBackgroundTransparentLoading: Color? = nil,
+    primerColorBackgroundTransparentSelected: Color? = nil,
     primerColorTextPrimary: Color? = nil,
     primerColorTextSecondary: Color? = nil,
     primerColorTextPlaceholder: Color? = nil,
     primerColorTextDisabled: Color? = nil,
     primerColorTextNegative: Color? = nil,
     primerColorTextLink: Color? = nil,
+    primerColorTextOutlinedDefault: Color? = nil,
     primerColorBorderOutlinedDefault: Color? = nil,
-    primerColorBorderOutlinedHover: Color? = nil,
     primerColorBorderOutlinedActive: Color? = nil,
     primerColorBorderOutlinedFocus: Color? = nil,
     primerColorBorderOutlinedDisabled: Color? = nil,
@@ -164,7 +190,6 @@ public struct ColorOverrides: Equatable {
     primerColorBorderOutlinedSelected: Color? = nil,
     primerColorBorderOutlinedLoading: Color? = nil,
     primerColorBorderTransparentDefault: Color? = nil,
-    primerColorBorderTransparentHover: Color? = nil,
     primerColorBorderTransparentActive: Color? = nil,
     primerColorBorderTransparentFocus: Color? = nil,
     primerColorBorderTransparentDisabled: Color? = nil,
@@ -184,7 +209,6 @@ public struct ColorOverrides: Equatable {
     self.primerColorGray400 = primerColorGray400
     self.primerColorGray500 = primerColorGray500
     self.primerColorGray600 = primerColorGray600
-    self.primerColorGray700 = primerColorGray700
     self.primerColorGray900 = primerColorGray900
     self.primerColorGreen500 = primerColorGreen500
     self.primerColorRed100 = primerColorRed100
@@ -192,15 +216,27 @@ public struct ColorOverrides: Equatable {
     self.primerColorRed900 = primerColorRed900
     self.primerColorBlue500 = primerColorBlue500
     self.primerColorBlue900 = primerColorBlue900
-    self.primerColorBackground = primerColorBackground
+    self.primerColorBackgroundPrimary = primerColorBackgroundPrimary
+    self.primerColorBackgroundSecondary = primerColorBackgroundSecondary
+    self.primerColorBackgroundOutlinedDefault = primerColorBackgroundOutlinedDefault
+    self.primerColorBackgroundOutlinedActive = primerColorBackgroundOutlinedActive
+    self.primerColorBackgroundOutlinedDisabled = primerColorBackgroundOutlinedDisabled
+    self.primerColorBackgroundOutlinedLoading = primerColorBackgroundOutlinedLoading
+    self.primerColorBackgroundOutlinedSelected = primerColorBackgroundOutlinedSelected
+    self.primerColorBackgroundOutlinedError = primerColorBackgroundOutlinedError
+    self.primerColorBackgroundTransparentDefault = primerColorBackgroundTransparentDefault
+    self.primerColorBackgroundTransparentActive = primerColorBackgroundTransparentActive
+    self.primerColorBackgroundTransparentDisabled = primerColorBackgroundTransparentDisabled
+    self.primerColorBackgroundTransparentLoading = primerColorBackgroundTransparentLoading
+    self.primerColorBackgroundTransparentSelected = primerColorBackgroundTransparentSelected
     self.primerColorTextPrimary = primerColorTextPrimary
     self.primerColorTextSecondary = primerColorTextSecondary
     self.primerColorTextPlaceholder = primerColorTextPlaceholder
     self.primerColorTextDisabled = primerColorTextDisabled
     self.primerColorTextNegative = primerColorTextNegative
     self.primerColorTextLink = primerColorTextLink
+    self.primerColorTextOutlinedDefault = primerColorTextOutlinedDefault
     self.primerColorBorderOutlinedDefault = primerColorBorderOutlinedDefault
-    self.primerColorBorderOutlinedHover = primerColorBorderOutlinedHover
     self.primerColorBorderOutlinedActive = primerColorBorderOutlinedActive
     self.primerColorBorderOutlinedFocus = primerColorBorderOutlinedFocus
     self.primerColorBorderOutlinedDisabled = primerColorBorderOutlinedDisabled
@@ -208,7 +244,6 @@ public struct ColorOverrides: Equatable {
     self.primerColorBorderOutlinedSelected = primerColorBorderOutlinedSelected
     self.primerColorBorderOutlinedLoading = primerColorBorderOutlinedLoading
     self.primerColorBorderTransparentDefault = primerColorBorderTransparentDefault
-    self.primerColorBorderTransparentHover = primerColorBorderTransparentHover
     self.primerColorBorderTransparentActive = primerColorBorderTransparentActive
     self.primerColorBorderTransparentFocus = primerColorBorderTransparentFocus
     self.primerColorBorderTransparentDisabled = primerColorBorderTransparentDisabled
@@ -312,7 +347,7 @@ public struct SizeOverrides: Equatable {
   public let primerSizeLarge: CGFloat?
   /// Internal: primerSizeXlarge (default: 32)
   public let primerSizeXlarge: CGFloat?
-  /// Internal: primerSizeXxlarge (default: 44)
+  /// Internal: primerSizeXxlarge (default: 40)
   public let primerSizeXxlarge: CGFloat?
   /// Internal: primerSizeXxxlarge (default: 56)
   public let primerSizeXxxlarge: CGFloat?
@@ -377,6 +412,10 @@ public struct TypographyOverrides: Equatable {
 
   // MARK: - Token Properties
 
+  /// Font family every style below falls back to, so one typeface covers the whole sheet.
+  /// A style naming its own `font` wins over this. Default: nil (Inter).
+  public let brand: String?
+
   /// Title extra large: Inter, -0.6 letter spacing, weight 550, size 24, line height 32
   public let titleXlarge: TypographyStyle?
 
@@ -392,44 +431,133 @@ public struct TypographyOverrides: Equatable {
   /// Body small: Inter, 0 letter spacing, weight 400, size 12, line height 16
   public let bodySmall: TypographyStyle?
 
+  /// Field error text. Defaults to the body small values, so it can be styled on its own.
+  public let error: TypographyStyle?
+
   /// Creates typography overrides with all optional properties.
   public init(
+    brand: String? = nil,
     titleXlarge: TypographyStyle? = nil,
     titleLarge: TypographyStyle? = nil,
     bodyLarge: TypographyStyle? = nil,
     bodyMedium: TypographyStyle? = nil,
-    bodySmall: TypographyStyle? = nil
+    bodySmall: TypographyStyle? = nil,
+    error: TypographyStyle? = nil
   ) {
+    self.brand = brand
     self.titleXlarge = titleXlarge
     self.titleLarge = titleLarge
     self.bodyLarge = bodyLarge
     self.bodyMedium = bodyMedium
     self.bodySmall = bodySmall
+    self.error = error
   }
 }
 
-// MARK: - BorderWidthOverrides
+// MARK: - WidthOverrides
 
-/// Optional border width token overrides.
+/// Optional border width token overrides. Named for the field state they apply to, matching design.
 @available(iOS 15.0, *)
-public struct BorderWidthOverrides: Equatable {
-  /// Internal: primerBorderWidthThin (default: 1)
-  public let primerBorderWidthThin: CGFloat?
+public struct WidthOverrides: Equatable {
+  /// Internal: primerWidthDefault (default: 1)
+  public let primerWidthDefault: CGFloat?
 
-  /// Internal: primerBorderWidthMedium (default: 2)
-  public let primerBorderWidthMedium: CGFloat?
+  /// Internal: primerWidthFocus (default: 2)
+  public let primerWidthFocus: CGFloat?
 
-  /// Internal: primerBorderWidthThick (default: 3)
-  public let primerBorderWidthThick: CGFloat?
+  /// Internal: primerWidthError (default: 2)
+  public let primerWidthError: CGFloat?
 
-  /// Creates border width overrides with all optional properties.
+  /// Internal: primerWidthSelected (default: 2)
+  public let primerWidthSelected: CGFloat?
+
+  /// Creates width overrides with all optional properties.
   public init(
-    primerBorderWidthThin: CGFloat? = nil,
-    primerBorderWidthMedium: CGFloat? = nil,
-    primerBorderWidthThick: CGFloat? = nil
+    primerWidthDefault: CGFloat? = nil,
+    primerWidthFocus: CGFloat? = nil,
+    primerWidthError: CGFloat? = nil,
+    primerWidthSelected: CGFloat? = nil
   ) {
-    self.primerBorderWidthThin = primerBorderWidthThin
-    self.primerBorderWidthMedium = primerBorderWidthMedium
-    self.primerBorderWidthThick = primerBorderWidthThick
+    self.primerWidthDefault = primerWidthDefault
+    self.primerWidthFocus = primerWidthFocus
+    self.primerWidthError = primerWidthError
+    self.primerWidthSelected = primerWidthSelected
+  }
+}
+
+// MARK: - Color Scheme Resolution
+
+@available(iOS 15.0, *)
+extension PrimerCheckoutTheme {
+  /// The colour overrides that apply in one colour scheme.
+  ///
+  /// `darkColors` only participates in dark mode, and only for the properties it names, so a theme
+  /// carrying just `colors` resolves to that same set in both modes.
+  func resolvedColors(for colorScheme: ColorScheme) -> ColorOverrides? {
+    guard colorScheme == .dark, let darkColors else { return colors }
+    return darkColors.merging(over: colors)
+  }
+}
+
+@available(iOS 15.0, *)
+extension ColorOverrides {
+  /// Keeps every colour this set names and takes the rest from `base`.
+  func merging(over base: ColorOverrides?) -> ColorOverrides {
+    guard let base else { return self }
+    return ColorOverrides(
+      primerColorBrand: primerColorBrand ?? base.primerColorBrand,
+      primerColorGray000: primerColorGray000 ?? base.primerColorGray000,
+      primerColorGray100: primerColorGray100 ?? base.primerColorGray100,
+      primerColorGray200: primerColorGray200 ?? base.primerColorGray200,
+      primerColorGray300: primerColorGray300 ?? base.primerColorGray300,
+      primerColorGray400: primerColorGray400 ?? base.primerColorGray400,
+      primerColorGray500: primerColorGray500 ?? base.primerColorGray500,
+      primerColorGray600: primerColorGray600 ?? base.primerColorGray600,
+      primerColorGray900: primerColorGray900 ?? base.primerColorGray900,
+      primerColorGreen500: primerColorGreen500 ?? base.primerColorGreen500,
+      primerColorRed100: primerColorRed100 ?? base.primerColorRed100,
+      primerColorRed500: primerColorRed500 ?? base.primerColorRed500,
+      primerColorRed900: primerColorRed900 ?? base.primerColorRed900,
+      primerColorBlue500: primerColorBlue500 ?? base.primerColorBlue500,
+      primerColorBlue900: primerColorBlue900 ?? base.primerColorBlue900,
+      primerColorBackgroundPrimary: primerColorBackgroundPrimary ?? base.primerColorBackgroundPrimary,
+      primerColorBackgroundSecondary: primerColorBackgroundSecondary ?? base.primerColorBackgroundSecondary,
+      primerColorBackgroundOutlinedDefault: primerColorBackgroundOutlinedDefault ?? base.primerColorBackgroundOutlinedDefault,
+      primerColorBackgroundOutlinedActive: primerColorBackgroundOutlinedActive ?? base.primerColorBackgroundOutlinedActive,
+      primerColorBackgroundOutlinedDisabled: primerColorBackgroundOutlinedDisabled ?? base.primerColorBackgroundOutlinedDisabled,
+      primerColorBackgroundOutlinedLoading: primerColorBackgroundOutlinedLoading ?? base.primerColorBackgroundOutlinedLoading,
+      primerColorBackgroundOutlinedSelected: primerColorBackgroundOutlinedSelected ?? base.primerColorBackgroundOutlinedSelected,
+      primerColorBackgroundOutlinedError: primerColorBackgroundOutlinedError ?? base.primerColorBackgroundOutlinedError,
+      primerColorBackgroundTransparentDefault: primerColorBackgroundTransparentDefault ?? base.primerColorBackgroundTransparentDefault,
+      primerColorBackgroundTransparentActive: primerColorBackgroundTransparentActive ?? base.primerColorBackgroundTransparentActive,
+      primerColorBackgroundTransparentDisabled: primerColorBackgroundTransparentDisabled ?? base.primerColorBackgroundTransparentDisabled,
+      primerColorBackgroundTransparentLoading: primerColorBackgroundTransparentLoading ?? base.primerColorBackgroundTransparentLoading,
+      primerColorBackgroundTransparentSelected: primerColorBackgroundTransparentSelected ?? base.primerColorBackgroundTransparentSelected,
+      primerColorTextPrimary: primerColorTextPrimary ?? base.primerColorTextPrimary,
+      primerColorTextSecondary: primerColorTextSecondary ?? base.primerColorTextSecondary,
+      primerColorTextPlaceholder: primerColorTextPlaceholder ?? base.primerColorTextPlaceholder,
+      primerColorTextDisabled: primerColorTextDisabled ?? base.primerColorTextDisabled,
+      primerColorTextNegative: primerColorTextNegative ?? base.primerColorTextNegative,
+      primerColorTextLink: primerColorTextLink ?? base.primerColorTextLink,
+      primerColorTextOutlinedDefault: primerColorTextOutlinedDefault ?? base.primerColorTextOutlinedDefault,
+      primerColorBorderOutlinedDefault: primerColorBorderOutlinedDefault ?? base.primerColorBorderOutlinedDefault,
+      primerColorBorderOutlinedActive: primerColorBorderOutlinedActive ?? base.primerColorBorderOutlinedActive,
+      primerColorBorderOutlinedFocus: primerColorBorderOutlinedFocus ?? base.primerColorBorderOutlinedFocus,
+      primerColorBorderOutlinedDisabled: primerColorBorderOutlinedDisabled ?? base.primerColorBorderOutlinedDisabled,
+      primerColorBorderOutlinedError: primerColorBorderOutlinedError ?? base.primerColorBorderOutlinedError,
+      primerColorBorderOutlinedSelected: primerColorBorderOutlinedSelected ?? base.primerColorBorderOutlinedSelected,
+      primerColorBorderOutlinedLoading: primerColorBorderOutlinedLoading ?? base.primerColorBorderOutlinedLoading,
+      primerColorBorderTransparentDefault: primerColorBorderTransparentDefault ?? base.primerColorBorderTransparentDefault,
+      primerColorBorderTransparentActive: primerColorBorderTransparentActive ?? base.primerColorBorderTransparentActive,
+      primerColorBorderTransparentFocus: primerColorBorderTransparentFocus ?? base.primerColorBorderTransparentFocus,
+      primerColorBorderTransparentDisabled: primerColorBorderTransparentDisabled ?? base.primerColorBorderTransparentDisabled,
+      primerColorBorderTransparentSelected: primerColorBorderTransparentSelected ?? base.primerColorBorderTransparentSelected,
+      primerColorIconPrimary: primerColorIconPrimary ?? base.primerColorIconPrimary,
+      primerColorIconDisabled: primerColorIconDisabled ?? base.primerColorIconDisabled,
+      primerColorIconNegative: primerColorIconNegative ?? base.primerColorIconNegative,
+      primerColorIconPositive: primerColorIconPositive ?? base.primerColorIconPositive,
+      primerColorFocus: primerColorFocus ?? base.primerColorFocus,
+      primerColorLoader: primerColorLoader ?? base.primerColorLoader
+    )
   }
 }

@@ -242,7 +242,7 @@ final class KlarnaPaymentMethodTests: XCTestCase {
 
         let navigator = CheckoutNavigator(coordinator: CheckoutCoordinator())
         let settings = PrimerSettings(
-            paymentHandling: .manual,
+            paymentHandling: .auto,
             paymentMethodOptions: PrimerPaymentMethodOptions()
         )
         let checkoutScope = DefaultCheckoutScope(

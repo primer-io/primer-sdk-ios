@@ -43,7 +43,7 @@ struct PaymentMethodsSection: View {
   private func makeLoadingView() -> some View {
     ProgressView()
       .progressViewStyle(
-        CircularProgressViewStyle(tint: CheckoutColors.borderFocus(tokens: tokens))
+        CircularProgressViewStyle(tint: CheckoutColors.loader(tokens: tokens))
       )
       .scaleEffect(PrimerScale.large)
       .frame(maxWidth: .infinity, minHeight: PrimerComponentHeight.emptyStateMinHeight)

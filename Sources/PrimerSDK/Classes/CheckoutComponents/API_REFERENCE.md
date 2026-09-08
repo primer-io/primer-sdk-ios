@@ -308,16 +308,26 @@ Design token overrides for the entire checkout UI.
 public struct PrimerCheckoutTheme: Equatable {
   public init(
     colors: ColorOverrides? = nil,
+    darkColors: ColorOverrides? = nil,
     radius: RadiusOverrides? = nil,
     spacing: SpacingOverrides? = nil,
     sizes: SizeOverrides? = nil,
     typography: TypographyOverrides? = nil,
-    borderWidth: BorderWidthOverrides? = nil
+    width: WidthOverrides? = nil
   )
 }
 ```
 
-**Override types**: `ColorOverrides`, `RadiusOverrides`, `SpacingOverrides`, `SizeOverrides`, `TypographyOverrides`, `BorderWidthOverrides`. See `Scope/PrimerCheckoutTheme.swift` for all token names.
+**Override types**: `ColorOverrides`, `RadiusOverrides`, `SpacingOverrides`, `SizeOverrides`, `TypographyOverrides`, `WidthOverrides`. See `Scope/PrimerCheckoutTheme.swift` for all token names.
+
+**Light and dark colours**: `colors` applies in both colour schemes. Add `darkColors` to give dark mode its own values — each one left nil there falls back to the matching `colors` value, so only the colours that differ need naming. `radius`, `spacing`, `sizes`, `typography` and `width` are colour-scheme independent and have no dark counterpart.
+
+```swift
+PrimerCheckoutTheme(
+    colors: ColorOverrides(primerColorBrand: Color(red: 0.10, green: 0.14, blue: 0.49)),
+    darkColors: ColorOverrides(primerColorBrand: Color(red: 0.55, green: 0.62, blue: 1.00))
+)
+```
 
 ---
 

@@ -34,7 +34,7 @@ struct CountryInputField: View, LogReporter {
     guard !countryName.isEmpty else {
       return CheckoutColors.textPlaceholder(tokens: tokens)
     }
-    return CheckoutColors.textPrimary(tokens: tokens)
+    return CheckoutColors.inputText(tokens: tokens)
   }
 
   private var selectedCountryFromScope: PrimerCountry? {

@@ -16,7 +16,7 @@ struct DefaultLoadingScreen: View {
     VStack(spacing: PrimerSpacing.small(tokens: tokens)) {
       ProgressView()
         .progressViewStyle(
-          CircularProgressViewStyle(tint: CheckoutColors.borderFocus(tokens: tokens))
+          CircularProgressViewStyle(tint: CheckoutColors.loader(tokens: tokens))
         )
         .scaleEffect(PrimerScale.large)
         .accessibility(

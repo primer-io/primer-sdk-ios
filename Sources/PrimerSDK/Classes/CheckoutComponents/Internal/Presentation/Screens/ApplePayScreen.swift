@@ -56,6 +56,7 @@ struct ApplePayScreen: View {
 
       Text(CheckoutComponentsStrings.applePayTitle)
         .font(PrimerFont.titleLarge(tokens: tokens))
+        .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
         .accessibilityIdentifier(AccessibilityIdentifiers.ApplePay.title)
         .accessibilityAddTraits(.isHeader)
 
@@ -99,7 +100,7 @@ struct ApplePayScreen: View {
   private func makeLoadingView() -> some View {
     HStack(spacing: PrimerSpacing.medium(tokens: tokens)) {
       ProgressView()
-        .progressViewStyle(CircularProgressViewStyle())
+        .progressViewStyle(CircularProgressViewStyle(tint: CheckoutColors.loader(tokens: tokens)))
         .accessibilityIdentifier(AccessibilityIdentifiers.ApplePay.processingIndicator)
 
       Text(CheckoutComponentsStrings.applePayProcessing)
@@ -142,10 +143,10 @@ struct ApplePayScreen: View {
           Text(CheckoutComponentsStrings.applePayChooseOther)
             .font(PrimerFont.bodyMedium(tokens: tokens))
             .fontWeight(.medium)
-            .foregroundColor(CheckoutColors.white(tokens: tokens))
+            .foregroundColor(CheckoutColors.onBrand(tokens: tokens))
             .frame(maxWidth: .infinity)
             .frame(height: 50)
-            .background(CheckoutColors.blue(tokens: tokens))
+            .background(CheckoutColors.buttonPrimary(tokens: tokens))
             .cornerRadius(PrimerRadius.medium(tokens: tokens))
         }
         .padding(.horizontal, PrimerSpacing.large(tokens: tokens))

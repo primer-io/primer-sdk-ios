@@ -37,6 +37,8 @@ final class InternalPaymentMethodTests: XCTestCase {
         XCTAssertNil(method.borderColor)
         XCTAssertNil(method.borderWidth)
         XCTAssertNil(method.cornerRadius)
+        XCTAssertNil(method.logoVariants)
+        XCTAssertNil(method.borderWidthVariants)
     }
 
     func test_init_withAllParams_setsAllProperties() {
@@ -135,6 +137,39 @@ final class InternalPaymentMethodTests: XCTestCase {
         let method2 = InternalPaymentMethod(id: "pm-1", type: "CARD", name: "Card", networkSurcharges: ["VISA": 50])
 
         XCTAssertNotEqual(method1, method2)
+    }
+
+    func test_equality_differentLogoVariants_areNotEqual() {
+        let method1 = InternalPaymentMethod(
+            id: "pm-1", type: "CARD", name: "Card",
+            logoVariants: PrimerTheme.BaseImage(colored: UIImage(), light: nil, dark: nil))
+        let method2 = InternalPaymentMethod(
+            id: "pm-1", type: "CARD", name: "Card",
+            logoVariants: PrimerTheme.BaseImage(colored: UIImage(), light: nil, dark: nil))
+
+        XCTAssertNotEqual(method1, method2)
+    }
+
+    func test_equality_differentBorderWidthVariants_areNotEqual() {
+        let method1 = InternalPaymentMethod(
+            id: "pm-1", type: "CARD", name: "Card",
+            borderWidthVariants: PrimerTheme.BaseBorderWidth(colored: 1, light: 1, dark: 2))
+        let method2 = InternalPaymentMethod(
+            id: "pm-1", type: "CARD", name: "Card",
+            borderWidthVariants: PrimerTheme.BaseBorderWidth(colored: 1, light: 1, dark: 2))
+
+        XCTAssertNotEqual(method1, method2)
+    }
+
+    func test_equality_sameVariantObjects_areEqual() {
+        let logo = PrimerTheme.BaseImage(colored: UIImage(), light: nil, dark: nil)
+        let width = PrimerTheme.BaseBorderWidth(colored: 1, light: 1, dark: 2)
+        let method1 = InternalPaymentMethod(
+            id: "pm-1", type: "CARD", name: "Card", logoVariants: logo, borderWidthVariants: width)
+        let method2 = InternalPaymentMethod(
+            id: "pm-1", type: "CARD", name: "Card", logoVariants: logo, borderWidthVariants: width)
+
+        XCTAssertEqual(method1, method2)
     }
 
     func test_equality_differentStyling_areNotEqual() {

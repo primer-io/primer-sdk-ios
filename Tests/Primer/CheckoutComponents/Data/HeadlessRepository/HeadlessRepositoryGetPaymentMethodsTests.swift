@@ -5,6 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 @testable import PrimerSDK
+import UIKit
 import XCTest
 @_spi(PrimerInternal) @testable import PrimerFoundation
 @_spi(PrimerInternal) @testable import PrimerCore
@@ -73,6 +74,41 @@ final class GetPaymentMethodsTests: XCTestCase {
         XCTAssertEqual(methods.first?.name, "Card")
         XCTAssertEqual(methods.first?.configId, "config-123")
         XCTAssertEqual(methods.first?.surcharge, 100)
+    }
+
+    func testGetPaymentMethods_CarriesLogoAndBorderWidthVariants() async throws {
+        let logo = PrimerTheme.BaseImage(colored: UIImage(), light: nil, dark: UIImage())
+        let width = PrimerTheme.BaseBorderWidth(colored: 1, light: 1, dark: 2)
+        let paymentMethod = PrimerPaymentMethod(
+            id: "payment-card-id",
+            implementationType: .nativeSdk,
+            type: "PAYMENT_CARD",
+            name: "Card",
+            processorConfigId: "config-123",
+            surcharge: nil,
+            options: nil,
+            displayMetadata: PrimerPaymentMethod.DisplayMetadata(
+                button: .init(
+                    iconUrl: nil, backgroundColor: nil, cornerRadius: nil,
+                    borderWidth: width, borderColor: nil, text: nil, textColor: nil))
+        )
+        paymentMethod.baseLogoImage = logo
+        mockConfigurationService.apiConfiguration = PrimerAPIConfiguration(
+            coreUrl: "https://api.primer.io",
+            pciUrl: "https://pci.primer.io",
+            binDataUrl: "https://bin.primer.io",
+            assetsUrl: "https://assets.primer.io",
+            clientSession: nil,
+            paymentMethods: [paymentMethod],
+            primerAccountId: "account-123",
+            keys: nil,
+            checkoutModules: nil
+        )
+
+        let methods = try await repository.getPaymentMethods()
+
+        XCTAssertTrue(methods.first?.logoVariants === logo)
+        XCTAssertTrue(methods.first?.borderWidthVariants === width)
     }
 
     func testGetPaymentMethods_WithMultiplePaymentMethods_ReturnsAll() async throws {
