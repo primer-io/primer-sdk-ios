@@ -273,7 +273,7 @@ struct CardFormFieldsView: View {
     case .retailer:
       Text(CheckoutComponentsStrings.retailOutletNotImplemented)
         .font(PrimerFont.caption(tokens: tokens))
-        .foregroundColor(CheckoutColors.gray(tokens: tokens))
+        .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
         .padding(PrimerSpacing.large(tokens: tokens))
 
     case .otp:

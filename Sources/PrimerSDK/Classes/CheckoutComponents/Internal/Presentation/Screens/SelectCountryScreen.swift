@@ -44,7 +44,7 @@ struct SelectCountryScreen: View, LogReporter {
         Button(CheckoutComponentsStrings.cancelButton) {
           onDismiss?()
         }
-        .foregroundColor(CheckoutColors.blue(tokens: tokens))
+        .foregroundColor(CheckoutColors.textLink(tokens: tokens))
         .accessibilityIdentifier(AccessibilityIdentifiers.SelectCountry.cancelButton)
         .accessibilityLabel(CheckoutComponentsStrings.a11yCancel)
       }
@@ -93,7 +93,7 @@ struct SelectCountryScreen: View, LogReporter {
     }
     .padding(.horizontal, PrimerSpacing.medium(tokens: tokens))
     .padding(.vertical, PrimerSpacing.small(tokens: tokens))
-    .background(CheckoutColors.gray100(tokens: tokens))
+    .background(CheckoutColors.backgroundSecondary(tokens: tokens))
     .cornerRadius(PrimerRadius.small(tokens: tokens))
     .padding(PrimerSpacing.large(tokens: tokens))
   }
@@ -115,7 +115,7 @@ struct SelectCountryScreen: View, LogReporter {
       Spacer()
       ProgressView()
         .progressViewStyle(
-          CircularProgressViewStyle(tint: CheckoutColors.borderFocus(tokens: tokens))
+          CircularProgressViewStyle(tint: CheckoutColors.loader(tokens: tokens))
         )
         .scaleEffect(PrimerScale.small)
         .accessibility(
@@ -161,9 +161,11 @@ struct SelectCountryScreen: View, LogReporter {
             )
           }
         }
+        .listRowBackground(Color.clear)
       }
     }
     .listStyle(PlainListStyle())
+    .primerClearListBackground()
   }
 
   private func selectCountry(_ country: PrimerCountry) {
@@ -213,7 +215,7 @@ private struct CountryItemView: View {
         // Selection indicator
         if isSelected {
           Image(systemName: "checkmark")
-            .foregroundColor(CheckoutColors.blue(tokens: tokens))
+            .foregroundColor(CheckoutColors.borderSelected(tokens: tokens))
         }
       }
       .padding(.vertical, PrimerSpacing.small(tokens: tokens))
@@ -222,5 +224,19 @@ private struct CountryItemView: View {
     }
     .buttonStyle(PlainButtonStyle())
     .accessibilityIdentifier(AccessibilityIdentifiers.SelectCountry.countryItem(country.code))
+  }
+}
+
+@available(iOS 15.0, *)
+extension View {
+  /// `List` paints its own background on top of the sheet colour. Only iOS 16 can turn that off;
+  /// on 15 the clear row backgrounds still remove most of it.
+  @ViewBuilder
+  func primerClearListBackground() -> some View {
+    if #available(iOS 16.0, *) {
+      scrollContentBackground(.hidden)
+    } else {
+      self
+    }
   }
 }

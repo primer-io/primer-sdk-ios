@@ -214,6 +214,16 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
     }
 
     do {
+      // The shared core answers the manual-mode decision on the merchant's behalf, so a manual
+      // session would tokenize and then wait on a payment nobody creates. Reject it up front.
+      guard settings.paymentHandling != .manual else {
+        throw PrimerError.invalidValue(
+          key: "paymentHandling",
+          value: settings.paymentHandling.rawValue,
+          reason: "Checkout Components supports automatic payment handling only"
+        )
+      }
+
       if isInitScreenEnabled {
         try await Task.sleep(nanoseconds: 500_000_000)
       }

@@ -46,10 +46,14 @@ struct PostalCodeTextField: UIViewRepresentable, LogReporter {
       doneButtonAction: #selector(Coordinator.doneButtonTapped)
     )
 
+    context.coordinator.repainter.markApplied(tokens)
+
     return textField
   }
 
   func updateUIView(_ textField: UITextField, context: Context) {
+    context.coordinator.repainter.repaintIfNeeded(textField, placeholder: placeholder, tokens: tokens)
+
     if textField.text != postalCode {
       textField.text = postalCode
     }
@@ -68,6 +72,7 @@ struct PostalCodeTextField: UIViewRepresentable, LogReporter {
   }
 
   final class Coordinator: NSObject, UITextFieldDelegate, LogReporter {
+    let repainter = PrimerFieldRepainter()
     private let validationService: ValidationService
     @Binding private var postalCode: String
     @Binding private var isValid: Bool

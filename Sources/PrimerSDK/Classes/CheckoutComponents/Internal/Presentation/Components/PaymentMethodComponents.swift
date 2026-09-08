@@ -52,10 +52,11 @@ struct PaymentMethodPlaceholder: View {
 
         Text(CheckoutComponentsStrings.paymentMethodDisplayName(displayName))
           .font(PrimerFont.headline(tokens: tokens))
+          .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
 
         Text(CheckoutComponentsStrings.implementationComingSoon)
           .font(PrimerFont.subheadline(tokens: tokens))
-          .foregroundColor(CheckoutColors.secondary(tokens: tokens))
+          .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
 
         Spacer()
       }

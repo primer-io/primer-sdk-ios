@@ -128,6 +128,11 @@ struct FormRedirectScreen: View {
         }
     }
 
+    /// The button keeps its brand fill while submitting; only an invalid form greys it out.
+    private var isButtonActive: Bool {
+        currentState.isSubmitEnabled || currentState.isLoading
+    }
+
     private func makeDefaultSubmitButton() -> some View {
         Button(action: scope.submit) {
             HStack(spacing: PrimerSpacing.small(tokens: tokens)) {
@@ -141,10 +146,12 @@ struct FormRedirectScreen: View {
             }
             .frame(maxWidth: .infinity)
             .frame(height: PrimerComponentHeight.button)
-            .foregroundColor(CheckoutColors.buttonTextPrimary(tokens: tokens))
+            .foregroundColor(CheckoutColors.onBrand(
+                tokens: tokens,
+                isEnabled: isButtonActive))
             .background(
                 RoundedRectangle(cornerRadius: PrimerRadius.medium(tokens: tokens))
-                    .fill(currentState.isSubmitEnabled && !currentState.isLoading
+                    .fill(isButtonActive
                           ? CheckoutColors.buttonPrimary(tokens: tokens)
                           : CheckoutColors.buttonDisabled(tokens: tokens))
             )
@@ -183,8 +190,8 @@ private struct FormFieldView: View {
 
             if let errorMessage = field.errorMessage {
                 Text(errorMessage)
-                    .font(PrimerFont.caption(tokens: tokens))
-                    .foregroundColor(CheckoutColors.error(tokens: tokens))
+                    .font(PrimerFont.error(tokens: tokens))
+                    .foregroundColor(CheckoutColors.textNegative(tokens: tokens))
             } else if let helperText = field.helperText {
                 Text(helperText)
                     .font(PrimerFont.caption(tokens: tokens))
@@ -198,7 +205,7 @@ private struct FormFieldView: View {
             if let prefix = field.countryCodePrefix, field.fieldType == .phoneNumber {
                 Text(prefix)
                     .font(PrimerFont.bodyLarge(tokens: tokens))
-                    .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
+                    .foregroundColor(CheckoutColors.inputText(tokens: tokens))
                     .accessibilityIdentifier(AccessibilityIdentifiers.FormRedirect.phonePrefix)
             }
 
@@ -207,6 +214,7 @@ private struct FormFieldView: View {
                 set: { onValueChanged($0) }
             ))
             .font(PrimerFont.bodyLarge(tokens: tokens))
+            .foregroundColor(CheckoutColors.inputText(tokens: tokens))
             .keyboardType(field.keyboardType.uiKeyboardType)
             .textContentType(field.fieldType.textContentType)
             .focused($isFocused)
@@ -224,7 +232,7 @@ private struct FormFieldView: View {
         .padding(.vertical, PrimerSpacing.medium(tokens: tokens))
         .background(
             RoundedRectangle(cornerRadius: PrimerRadius.small(tokens: tokens))
-                .stroke(borderColor, lineWidth: PrimerBorderWidth.standard(tokens: tokens))
+                .stroke(borderColor, lineWidth: borderWidth)
                 .background(
                     RoundedRectangle(cornerRadius: PrimerRadius.small(tokens: tokens))
                         .fill(CheckoutColors.inputBackground(tokens: tokens))
@@ -232,9 +240,16 @@ private struct FormFieldView: View {
         )
     }
 
+    private var borderWidth: CGFloat {
+        if field.errorMessage != nil { return PrimerBorderWidth.error(tokens: tokens) }
+        return isFocused
+            ? PrimerBorderWidth.focused(tokens: tokens)
+            : PrimerBorderWidth.standard(tokens: tokens)
+    }
+
     private var borderColor: Color {
         if field.errorMessage != nil {
-            CheckoutColors.error(tokens: tokens)
+            CheckoutColors.borderError(tokens: tokens)
         } else if isFocused {
             CheckoutColors.inputBorderFocused(tokens: tokens)
         } else {

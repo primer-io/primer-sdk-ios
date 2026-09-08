@@ -120,11 +120,11 @@ struct FlowScreenFactory: LogReporter {
         }
       }
     } else {
-      EmptyView().onAppear {
+      // `EmptyView` never enters the hierarchy, so its `onAppear` never runs. A rendered view is
+      // required for the completion to fire when the merchant disables the SDK screen.
+      Color.clear.onAppear {
         logger.debug(message: "[CheckoutComponents] Success screen disabled - auto-dismissing")
-        Task { @MainActor in
-          onCompletion?(scope.currentState)
-        }
+        Task { @MainActor in onCompletion?(.success(result)) }
       }
     }
   }
@@ -141,11 +141,9 @@ struct FlowScreenFactory: LogReporter {
         onChooseOtherPaymentMethods: showOtherMethodsAction
       )
     } else {
-      EmptyView().onAppear {
+      Color.clear.onAppear {
         logger.debug(message: "[CheckoutComponents] Error screen disabled - auto-dismissing")
-        Task { @MainActor in
-          onCompletion?(scope.currentState)
-        }
+        Task { @MainActor in onCompletion?(.failure(error)) }
       }
     }
   }

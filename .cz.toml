@@ -1,6 +1,6 @@
 [tool.commitizen]
 version_scheme = "semver2"
-version = "3.0.0-beta.4"
+version = "3.0.0-beta.5"
 prerelease_offset = 1
 version_files = [
   "Sources/PrimerSDK/Classes/version.swift:let PrimerSDKVersion",

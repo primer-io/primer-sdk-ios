@@ -10,6 +10,7 @@
 
 @_spi(PrimerInternal) import PrimerFoundation
 import UIKit
+@_spi(PrimerInternal) import PrimerBDCCore
 @_spi(PrimerInternal) import PrimerCore
 @_spi(PrimerInternal) import PrimerNetworking
 
@@ -136,6 +137,8 @@ public final class PrimerHeadlessUniversalCheckout: LogReporter {
             requestClientTokenValidation: false,
             requestVaultedPaymentMethods: false
         )
+
+        await BDCEngineProvider.warmUpIfNeeded()
 
         let currencyLoader = CurrencyLoader(storage: DefaultCurrencyStorage(), networkService: CurrencyNetworkService())
         currencyLoader.updateCurrenciesFromAPI()

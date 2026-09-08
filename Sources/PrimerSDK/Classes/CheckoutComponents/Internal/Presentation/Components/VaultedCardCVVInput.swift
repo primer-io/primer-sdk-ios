@@ -94,19 +94,19 @@ struct VaultedCardCVVInput: View {
       .focused($isFocused)
       .multilineTextAlignment(.leading)
       .font(PrimerFont.bodyLarge(tokens: tokens))
-      .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
+      .foregroundColor(CheckoutColors.inputText(tokens: tokens))
       .padding(.horizontal, PrimerSpacing.medium(tokens: tokens))
       .frame(width: PrimerComponentWidth.cvvFieldMax, height: PrimerSize.xxlarge(tokens: tokens))
       .background(
         RoundedRectangle(cornerRadius: PrimerRadius.small(tokens: tokens))
-          .fill(CheckoutColors.background(tokens: tokens))
+          .fill(CheckoutColors.inputBackground(tokens: tokens))
       )
       .overlay(
         RoundedRectangle(cornerRadius: PrimerRadius.small(tokens: tokens))
           .stroke(
             cvvBorderColor,
             lineWidth: isFocused
-              ? PrimerBorderWidth.selected(tokens: tokens) : PrimerBorderWidth.standard(tokens: tokens))
+              ? PrimerBorderWidth.focused(tokens: tokens) : PrimerBorderWidth.standard(tokens: tokens))
       )
       .accessibility(
         config: AccessibilityConfiguration(
@@ -121,7 +121,7 @@ struct VaultedCardCVVInput: View {
 
   private func makeErrorLabel(_ message: String) -> some View {
     Text(message)
-      .font(PrimerFont.bodySmall(tokens: tokens))
+      .font(PrimerFont.error(tokens: tokens))
       .foregroundColor(CheckoutColors.textNegative(tokens: tokens))
   }
 
