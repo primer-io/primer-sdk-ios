@@ -98,15 +98,25 @@ if demoFilesChanged {
         guard parts.count >= 2, parts[0] == "case" else { return nil }
         return String(parts[1])
     }
-    let demoSources = danger.utils.exec("find", arguments: ["\(demosRoot)/Demos", "-name", "*.swift"])
-        .split(separator: "\n")
-        .map { danger.utils.readFile(String($0)) }
+    // Read the demo files through FileManager rather than a `find` call: danger's exec
+    // goes through a shell, which expands `*.swift` against the repo root before find
+    // ever sees it, and a find that errors reports every key as unused.
+    let demosDirectory = "\(demosRoot)/Demos"
+    let demoSources = ((try? FileManager.default.subpathsOfDirectory(atPath: demosDirectory)) ?? [])
+        .filter { $0.hasSuffix(".swift") }
+        .map { danger.utils.readFile("\(demosDirectory)/\($0)") }
         .joined(separator: "\n")
-    for caseName in caseNames {
-        let uses = demoSources.components(separatedBy: "key: .\(caseName),").count - 1
-            + demoSources.components(separatedBy: "meta(.\(caseName),").count - 1
-        if uses != 1 {
-            fail("`DemoKey.\(caseName)` is used by \(uses) demos; every key must back exactly one registered demo.")
+    if demoSources.isEmpty {
+        // One clear failure beats one per key: an unreadable directory is a broken check,
+        // not thirty dead keys.
+        fail("No demo sources found under `\(demosDirectory)`; the DemoKey check cannot run.")
+    } else {
+        for caseName in caseNames {
+            let uses = demoSources.components(separatedBy: "key: .\(caseName),").count - 1
+                + demoSources.components(separatedBy: "meta(.\(caseName),").count - 1
+            if uses != 1 {
+                fail("`DemoKey.\(caseName)` is used by \(uses) demos; every key must back exactly one registered demo.")
+            }
         }
     }
 }
