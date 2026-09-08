@@ -17,14 +17,14 @@ enum AccessibilityIdentifiers {
   }
 
   enum CardForm {
-    static let cardNumberField = "checkout_components_card_form_card_number_field"
-    static let expiryField = "checkout_components_card_form_expiry_field"
-    static let cvcField = "checkout_components_card_form_cvc_field"
-    static let cardholderNameField = "checkout_components_card_form_cardholder_name_field"
-    static let submitButton = "checkout_components_card_form_submit_button"
+    static let cardNumberField = "primer_checkout_components_card_form_card_number_field"
+    static let expiryField = "primer_checkout_components_card_form_expiry_field"
+    static let cvcField = "primer_checkout_components_card_form_cvc_field"
+    static let cardholderNameField = "primer_checkout_components_card_form_cardholder_name_field"
+    static let submitButton = "primer_checkout_components_card_form_submit_button"
 
     static func billingAddressField(_ field: String) -> String {
-      "checkout_components_card_form_billing_\(field)_field"
+      "primer_checkout_components_card_form_billing_\(field)_field"
     }
 
     // The billing fields that carry several input types read their segment here, so the
@@ -50,168 +50,168 @@ enum AccessibilityIdentifiers {
 
     // Fixed billing fields get constants so the container view and its UIKit wrapper cannot
     // drift apart; the fields with several input types keep the builder above.
-    static let billingCityField = "checkout_components_card_form_billing_city_field"
-    static let billingPostalCodeField = "checkout_components_card_form_billing_postal_code_field"
-    static let billingStateField = "checkout_components_card_form_billing_state_field"
-    static let billingEmailField = "checkout_components_card_form_billing_email_field"
+    static let billingCityField = "primer_checkout_components_card_form_billing_city_field"
+    static let billingPostalCodeField = "primer_checkout_components_card_form_billing_postal_code_field"
+    static let billingStateField = "primer_checkout_components_card_form_billing_state_field"
+    static let billingEmailField = "primer_checkout_components_card_form_billing_email_field"
 
     static let inlineNetworkSelectorContainer =
-      "checkout_components_card_form_inline_network_selector"
+      "primer_checkout_components_card_form_inline_network_selector"
 
     static func inlineNetworkSelectorButton(forNetwork network: String) -> String {
-      "checkout_components_card_form_inline_network_selector_\(network.lowercased())_button"
+      "primer_checkout_components_card_form_inline_network_selector_\(network.lowercased())_button"
     }
 
     static let dropdownNetworkSelectorButton =
-      "checkout_components_card_form_dropdown_network_selector_button"
+      "primer_checkout_components_card_form_dropdown_network_selector_button"
   }
 
   enum PaymentSelection {
-    static let header = "checkout_components_payment_selection_header"
-    static let showAllButton = "checkout_components_payment_selection_show_all_button"
-    static let showOtherWaysButton = "checkout_components_payment_selection_show_other_ways_button"
+    static let header = "primer_checkout_components_payment_selection_header"
+    static let showAllButton = "primer_checkout_components_payment_selection_show_all_button"
+    static let showOtherWaysButton = "primer_checkout_components_payment_selection_show_other_ways_button"
 
     static func paymentMethodItem(_ type: String) -> String {
-      "checkout_components_payment_selection_\(type)_item"
+      "primer_checkout_components_payment_selection_\(type)_item"
     }
 
     static func vaultedPaymentMethodItem(_ id: String) -> String {
-      "checkout_components_vaulted_payment_method_\(id)_item"
+      "primer_checkout_components_vaulted_payment_method_\(id)_item"
     }
 
     static func deletePaymentMethodButton(_ id: String) -> String {
-      "checkout_components_vaulted_payment_method_\(id)_delete_button"
+      "primer_checkout_components_vaulted_payment_method_\(id)_delete_button"
     }
   }
 
   enum Vault {
-    static let cvvField = "checkout_components_vault_cvv_field"
-    static let cvvSecurityLabel = "checkout_components_vault_cvv_security_label"
-    static let payButton = "checkout_components_vault_pay_button"
+    static let cvvField = "primer_checkout_components_vault_cvv_field"
+    static let cvvSecurityLabel = "primer_checkout_components_vault_cvv_security_label"
+    static let payButton = "primer_checkout_components_vault_pay_button"
   }
 
   enum Common {
-    static let closeButton = "checkout_components_close_button"
-    static let backButton = "checkout_components_back_button"
-    static let editButton = "checkout_components_edit_button"
-    static let doneButton = "checkout_components_done_button"
-    static let deleteButton = "checkout_components_delete_button"
-    static let cancelButton = "checkout_components_cancel_button"
-    static let loadingIndicator = "checkout_components_loading_indicator"
+    static let closeButton = "primer_checkout_components_close_button"
+    static let backButton = "primer_checkout_components_back_button"
+    static let editButton = "primer_checkout_components_edit_button"
+    static let doneButton = "primer_checkout_components_done_button"
+    static let deleteButton = "primer_checkout_components_delete_button"
+    static let cancelButton = "primer_checkout_components_cancel_button"
+    static let loadingIndicator = "primer_checkout_components_loading_indicator"
   }
 
   enum Error {
-    static let icon = "checkout_components_error_icon"
-    static let title = "checkout_components_error_title"
-    static let description = "checkout_components_error_description"
-    static let retryButton = "checkout_components_error_retry_button"
-    static let otherPaymentMethodButton = "checkout_components_error_other_payment_method_button"
+    static let icon = "primer_checkout_components_error_icon"
+    static let title = "primer_checkout_components_error_title"
+    static let description = "primer_checkout_components_error_description"
+    static let retryButton = "primer_checkout_components_error_retry_button"
+    static let otherPaymentMethodButton = "primer_checkout_components_error_other_payment_method_button"
   }
 
   enum Success {
-    static let container = "checkout_components_success_container"
-    static let icon = "checkout_components_success_icon"
-    static let title = "checkout_components_success_title"
-    static let description = "checkout_components_success_description"
+    static let container = "primer_checkout_components_success_container"
+    static let icon = "primer_checkout_components_success_icon"
+    static let title = "primer_checkout_components_success_title"
+    static let description = "primer_checkout_components_success_description"
   }
 
   enum AdyenKlarna {
-    static let container = "checkout_components_adyen_klarna_container"
-    static let logo = "checkout_components_adyen_klarna_logo"
-    static let title = "checkout_components_adyen_klarna_title"
-    static let optionList = "checkout_components_adyen_klarna_option_list"
-    static let backButton = "checkout_components_adyen_klarna_back_button"
-    static let cancelButton = "checkout_components_adyen_klarna_cancel_button"
+    static let container = "primer_checkout_components_adyen_klarna_container"
+    static let logo = "primer_checkout_components_adyen_klarna_logo"
+    static let title = "primer_checkout_components_adyen_klarna_title"
+    static let optionList = "primer_checkout_components_adyen_klarna_option_list"
+    static let backButton = "primer_checkout_components_adyen_klarna_back_button"
+    static let cancelButton = "primer_checkout_components_adyen_klarna_cancel_button"
 
     static func optionButton(_ optionId: String) -> String {
-      "checkout_components_adyen_klarna_option_\(optionId.lowercased())_button"
+      "primer_checkout_components_adyen_klarna_option_\(optionId.lowercased())_button"
     }
   }
 
   enum Klarna {
-    static let container = "checkout_components_klarna_container"
-    static let logo = "checkout_components_klarna_logo"
-    static let authorizeButton = "checkout_components_klarna_authorize_button"
-    static let finalizeButton = "checkout_components_klarna_finalize_button"
-    static let paymentViewContainer = "checkout_components_klarna_payment_view_container"
-    static let categoriesContainer = "checkout_components_klarna_categories_container"
-    static let loadingIndicator = "checkout_components_klarna_loading_indicator"
+    static let container = "primer_checkout_components_klarna_container"
+    static let logo = "primer_checkout_components_klarna_logo"
+    static let authorizeButton = "primer_checkout_components_klarna_authorize_button"
+    static let finalizeButton = "primer_checkout_components_klarna_finalize_button"
+    static let paymentViewContainer = "primer_checkout_components_klarna_payment_view_container"
+    static let categoriesContainer = "primer_checkout_components_klarna_categories_container"
+    static let loadingIndicator = "primer_checkout_components_klarna_loading_indicator"
 
     static func categoryButton(_ categoryId: String) -> String {
-      "checkout_components_klarna_category_\(categoryId.lowercased())_button"
+      "primer_checkout_components_klarna_category_\(categoryId.lowercased())_button"
     }
   }
 
   enum QRCode {
-    static let container = "checkout_components_qr_code_container"
-    static let amountLabel = "checkout_components_qr_code_amount_label"
-    static let instructionTitle = "checkout_components_qr_code_instruction_title"
-    static let instructionSubtitle = "checkout_components_qr_code_instruction_subtitle"
-    static let qrCodeImage = "checkout_components_qr_code_image"
-    static let successIcon = "checkout_components_qr_code_success_icon"
-    static let failureIcon = "checkout_components_qr_code_failure_icon"
-    static let loadingIndicator = "checkout_components_qr_code_loading_indicator"
+    static let container = "primer_checkout_components_qr_code_container"
+    static let amountLabel = "primer_checkout_components_qr_code_amount_label"
+    static let instructionTitle = "primer_checkout_components_qr_code_instruction_title"
+    static let instructionSubtitle = "primer_checkout_components_qr_code_instruction_subtitle"
+    static let qrCodeImage = "primer_checkout_components_qr_code_image"
+    static let successIcon = "primer_checkout_components_qr_code_success_icon"
+    static let failureIcon = "primer_checkout_components_qr_code_failure_icon"
+    static let loadingIndicator = "primer_checkout_components_qr_code_loading_indicator"
   }
 
   enum Ach {
-    static let container = "checkout_components_ach_container"
-    static let loadingIndicator = "checkout_components_ach_loading_indicator"
-    static let userDetailsContainer = "checkout_components_ach_user_details_container"
-    static let userDetailsTitle = "checkout_components_ach_user_details_title"
-    static let firstNameField = "checkout_components_ach_user_details_first_name_field"
-    static let lastNameField = "checkout_components_ach_user_details_last_name_field"
-    static let emailField = "checkout_components_ach_user_details_email_field"
-    static let emailDisclaimer = "checkout_components_ach_user_details_email_disclaimer"
-    static let submitButton = "checkout_components_ach_submit_button"
-    static let bankCollectorContainer = "checkout_components_ach_bank_collector_container"
-    static let mandateContainer = "checkout_components_ach_mandate_container"
-    static let mandateTitle = "checkout_components_ach_mandate_title"
-    static let mandateTextContainer = "checkout_components_ach_mandate_text_container"
-    static let mandateAcceptButton = "checkout_components_ach_mandate_accept_button"
-    static let mandateDeclineButton = "checkout_components_ach_mandate_decline_button"
+    static let container = "primer_checkout_components_ach_container"
+    static let loadingIndicator = "primer_checkout_components_ach_loading_indicator"
+    static let userDetailsContainer = "primer_checkout_components_ach_user_details_container"
+    static let userDetailsTitle = "primer_checkout_components_ach_user_details_title"
+    static let firstNameField = "primer_checkout_components_ach_user_details_first_name_field"
+    static let lastNameField = "primer_checkout_components_ach_user_details_last_name_field"
+    static let emailField = "primer_checkout_components_ach_user_details_email_field"
+    static let emailDisclaimer = "primer_checkout_components_ach_user_details_email_disclaimer"
+    static let submitButton = "primer_checkout_components_ach_submit_button"
+    static let bankCollectorContainer = "primer_checkout_components_ach_bank_collector_container"
+    static let mandateContainer = "primer_checkout_components_ach_mandate_container"
+    static let mandateTitle = "primer_checkout_components_ach_mandate_title"
+    static let mandateTextContainer = "primer_checkout_components_ach_mandate_text_container"
+    static let mandateAcceptButton = "primer_checkout_components_ach_mandate_accept_button"
+    static let mandateDeclineButton = "primer_checkout_components_ach_mandate_decline_button"
   }
 
   enum SelectCountry {
-    static let cancelButton = "checkout_components_select_country_cancel_button"
-    static let searchField = "checkout_components_select_country_search_field"
+    static let cancelButton = "primer_checkout_components_select_country_cancel_button"
+    static let searchField = "primer_checkout_components_select_country_search_field"
 
     static func countryItem(_ code: String) -> String {
-      "checkout_components_select_country_\(code.lowercased())_item"
+      "primer_checkout_components_select_country_\(code.lowercased())_item"
     }
   }
 
   enum BillingAddressRedirect {
-    static let screen = "checkout_components_billing_address_redirect_screen"
-    static let countryCodeField = "checkout_components_billing_address_redirect_country_code_field"
-    static let addressLine1Field = "checkout_components_billing_address_redirect_address_line1_field"
-    static let addressLine2Field = "checkout_components_billing_address_redirect_address_line2_field"
-    static let postalCodeField = "checkout_components_billing_address_redirect_postal_code_field"
-    static let cityField = "checkout_components_billing_address_redirect_city_field"
-    static let stateField = "checkout_components_billing_address_redirect_state_field"
-    static let submitButton = "checkout_components_billing_address_redirect_submit_button"
-    static let backButton = "checkout_components_billing_address_redirect_back_button"
+    static let screen = "primer_checkout_components_billing_address_redirect_screen"
+    static let countryCodeField = "primer_checkout_components_billing_address_redirect_country_code_field"
+    static let addressLine1Field = "primer_checkout_components_billing_address_redirect_address_line1_field"
+    static let addressLine2Field = "primer_checkout_components_billing_address_redirect_address_line2_field"
+    static let postalCodeField = "primer_checkout_components_billing_address_redirect_postal_code_field"
+    static let cityField = "primer_checkout_components_billing_address_redirect_city_field"
+    static let stateField = "primer_checkout_components_billing_address_redirect_state_field"
+    static let submitButton = "primer_checkout_components_billing_address_redirect_submit_button"
+    static let backButton = "primer_checkout_components_billing_address_redirect_back_button"
   }
 
   enum FormRedirect {
-    static let screen = "checkout_components_form_redirect_screen"
-    static let otpField = "checkout_components_form_redirect_otp_field"
-    static let phoneField = "checkout_components_form_redirect_phone_field"
-    static let phonePrefix = "checkout_components_form_redirect_phone_prefix"
-    static let submitButton = "checkout_components_form_redirect_submit_button"
+    static let screen = "primer_checkout_components_form_redirect_screen"
+    static let otpField = "primer_checkout_components_form_redirect_otp_field"
+    static let phoneField = "primer_checkout_components_form_redirect_phone_field"
+    static let phonePrefix = "primer_checkout_components_form_redirect_phone_prefix"
+    static let submitButton = "primer_checkout_components_form_redirect_submit_button"
 
-    static let cancelButton = "checkout_components_form_redirect_cancel_button"
-    static let pendingScreen = "checkout_components_form_redirect_pending_screen"
-    static let pendingMessage = "checkout_components_form_redirect_pending_message"
-    static let loadingIndicator = "checkout_components_form_redirect_loading_indicator"
+    static let cancelButton = "primer_checkout_components_form_redirect_cancel_button"
+    static let pendingScreen = "primer_checkout_components_form_redirect_pending_screen"
+    static let pendingMessage = "primer_checkout_components_form_redirect_pending_message"
+    static let loadingIndicator = "primer_checkout_components_form_redirect_loading_indicator"
   }
 
   enum ApplePay {
-    static let title = "checkout_components_apple_pay_title"
-    static let processingIndicator = "checkout_components_apple_pay_processing_indicator"
-    static let processingLabel = "checkout_components_apple_pay_processing_label"
-    static let unavailableIcon = "checkout_components_apple_pay_unavailable_icon"
-    static let unavailableTitle = "checkout_components_apple_pay_unavailable_title"
-    static let unavailableDescription = "checkout_components_apple_pay_unavailable_description"
-    static let chooseOtherButton = "checkout_components_apple_pay_choose_other_button"
+    static let title = "primer_checkout_components_apple_pay_title"
+    static let processingIndicator = "primer_checkout_components_apple_pay_processing_indicator"
+    static let processingLabel = "primer_checkout_components_apple_pay_processing_label"
+    static let unavailableIcon = "primer_checkout_components_apple_pay_unavailable_icon"
+    static let unavailableTitle = "primer_checkout_components_apple_pay_unavailable_title"
+    static let unavailableDescription = "primer_checkout_components_apple_pay_unavailable_description"
+    static let chooseOtherButton = "primer_checkout_components_apple_pay_choose_other_button"
   }
 }
