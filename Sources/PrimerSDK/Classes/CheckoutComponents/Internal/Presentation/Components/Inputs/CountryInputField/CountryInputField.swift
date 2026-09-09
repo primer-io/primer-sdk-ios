@@ -105,7 +105,8 @@ struct CountryInputField: View, LogReporter {
         hint: CheckoutComponentsStrings.a11yBillingAddressCountryHint,
         value: errorMessage,
         traits: []
-      )
+      ),
+      combinesChildren: false
     )
     .onAppear {
       setupValidationService()

@@ -66,8 +66,8 @@ struct StateInputField: View, LogReporter {
     }
     .accessibility(
       config: AccessibilityConfiguration(
-        identifier: AccessibilityIdentifiers.CardForm.billingAddressField("state"),
-        label: label ?? "State",
+        identifier: AccessibilityIdentifiers.CardForm.billingStateField,
+        label: label ?? placeholder,
         hint: CheckoutComponentsStrings.a11yBillingAddressStateHint
       ),
       combinesChildren: false

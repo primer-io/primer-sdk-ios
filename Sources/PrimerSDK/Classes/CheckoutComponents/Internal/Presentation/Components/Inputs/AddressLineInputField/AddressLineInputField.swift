@@ -98,8 +98,8 @@ struct AddressLineInputField: View, LogReporter {
     }
     .accessibility(
       config: AccessibilityConfiguration(
-        identifier: AccessibilityIdentifiers.CardForm.billingAddressField("\(inputType)"),
-        label: label ?? "Address",
+        identifier: AccessibilityIdentifiers.CardForm.billingAddressField(for: inputType, fallback: "address_line"),
+        label: label ?? placeholder,
         hint: CheckoutComponentsStrings.a11yBillingAddressHint
       ),
       combinesChildren: false
