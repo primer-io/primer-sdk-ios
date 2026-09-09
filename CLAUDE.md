@@ -134,8 +134,7 @@ is the full guide.
 
 ## Localization
 
-CheckoutComponents localization files:
-`Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/{LANG}.lproj/CheckoutComponentsStrings.strings`
+CheckoutComponents localization files: `Modules/PrimerResources/Sources/PrimerResources/Resources/CheckoutComponentsLocalizable/{LANG}.lproj/CheckoutComponentsStrings.strings` (57 languages)
 
 ## Where to find more
 

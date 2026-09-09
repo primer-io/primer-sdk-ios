@@ -25,6 +25,7 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
   func makeUIView(context: Context) -> SecureTextField {
     let textField = SecureTextField()
     textField.delegate = context.coordinator
+    textField.accessibilityIdentifier = AccessibilityIdentifiers.inputField(within: AccessibilityIdentifiers.CardForm.cardNumberField)
 
     textField.configurePrimerStyle(
       placeholder: placeholder,

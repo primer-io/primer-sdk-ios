@@ -72,7 +72,8 @@ struct CardholderNameInputField: View, LogReporter {
         hint: CheckoutComponentsStrings.a11yCardholderNameHint,
         value: errorMessage,
         traits: []
-      )
+      ),
+      combinesChildren: false
     )
     .programmaticValue(.cardholderName, from: scope, text: $cardholderName, isFocused: $isFocused)
     .onAppear {
