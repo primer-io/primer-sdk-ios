@@ -21,7 +21,7 @@ final class PrimerTestPaymentMethodViewController: PrimerFormViewController {
     init(viewModel: PrimerTestPaymentMethodTokenizationViewModel) {
         self.viewModel = viewModel
         super.init()
-        self.titleImage = viewModel.uiModule.invertedLogo
+        titleImage = viewModel.uiModule.invertedLogo
     }
 
     override func viewDidLoad() {

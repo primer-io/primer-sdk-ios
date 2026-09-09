@@ -38,17 +38,11 @@ final class PrimerPaymentMethod: Codable, LogReporter {
     }()
 
     var logo: UIImage? {
-        guard let baseLogoImage = baseLogoImage else { return nil }
-        let isDarkModeEnabled = UIScreen.isDarkModeEnabled
-        return (
-            (isDarkModeEnabled ? baseLogoImage.dark : baseLogoImage.colored) ??
-                (isDarkModeEnabled ? baseLogoImage.colored : baseLogoImage.light) ??
-                (isDarkModeEnabled ? baseLogoImage.light : baseLogoImage.dark)
-        )
+        baseLogoImage?.image(isDark: UIScreen.isDarkModeEnabled)
     }
 
     var invertedLogo: UIImage? {
-        guard let baseLogoImage = baseLogoImage else { return nil }
+        guard let baseLogoImage else { return nil }
 
         if UIScreen.isDarkModeEnabled {
             if let lightImage = baseLogoImage.light {
@@ -84,7 +78,7 @@ final class PrimerPaymentMethod: Codable, LogReporter {
             return IPay88TokenizationViewModel(config: self, apiClient: apiClient)
         } else if implementationType == .backendDriven {
             return BackendDrivenCheckoutViewModel(config: self, apiClient: apiClient)
-        } else if let internalPaymentMethodType = internalPaymentMethodType {
+        } else if let internalPaymentMethodType {
             switch internalPaymentMethodType {
             case PrimerPaymentMethodType.adyenBlik,
                  PrimerPaymentMethodType.rapydFast,
@@ -137,23 +131,23 @@ final class PrimerPaymentMethod: Codable, LogReporter {
     lazy var tokenizationModel: PaymentMethodTokenizationModelProtocol? = {
         switch internalPaymentMethodType {
         case .adyenIDeal:
-            return BanksTokenizationComponent(
+            BanksTokenizationComponent(
                 config: self,
                 uiManager: PrimerUIManager.shared,
                 tokenizationService: TokenizationService(),
                 createResumePaymentService: CreateResumePaymentService(paymentMethodType: self.type),
                 apiClient: PrimerAPIClient()
             )
-        default: return nil
+        default: nil
         }
     }()
 
     var isCheckoutEnabled: Bool {
-        guard self.baseLogoImage != nil else {
+        guard baseLogoImage != nil else {
             return false
         }
 
-        guard let internalPaymentMethodType = internalPaymentMethodType else {
+        guard let internalPaymentMethodType else {
             return true
         }
 
@@ -167,15 +161,15 @@ final class PrimerPaymentMethod: Codable, LogReporter {
     }
 
     var isVaultingEnabled: Bool {
-        guard self.baseLogoImage != nil else {
+        guard baseLogoImage != nil else {
             return false
         }
 
-        if self.implementationType == .webRedirect || self.implementationType == .iPay88Sdk {
+        if implementationType == .webRedirect || implementationType == .iPay88Sdk {
             return false
         }
 
-        switch self.type {
+        switch type {
         case PrimerPaymentMethodType.applePay.rawValue,
              PrimerPaymentMethodType.goCardless.rawValue,
              PrimerPaymentMethodType.googlePay.rawValue,
@@ -286,7 +280,7 @@ final class PrimerPaymentMethod: Codable, LogReporter {
         self.implementationType = implementationType
         self.type = type
         self.name = name
-        self.capabilities = []
+        capabilities = []
         self.processorConfigId = processorConfigId
         self.surcharge = surcharge
         self.options = options
@@ -334,7 +328,7 @@ final class PrimerPaymentMethod: Codable, LogReporter {
         try container.encode(surcharge, forKey: .surcharge)
         try container.encode(displayMetadata, forKey: .displayMetadata)
 
-        if let options = options {
+        if let options {
             try container.encode(options, forKey: .options)
         }
     }

@@ -12,7 +12,7 @@ import Foundation
 extension String {
 
     var isValidCardNumber: Bool {
-        let clearedCardNumber = self.withoutNonNumericCharacters
+        let clearedCardNumber = withoutNonNumericCharacters
 
         let cardNetwork = CardNetwork(cardNumber: clearedCardNumber)
         if let cardNumberValidation = cardNetwork.validation {
@@ -37,7 +37,7 @@ extension String {
 
     var isValidExpiryDate: Bool {
         // swiftlint:disable identifier_name
-        let _self = self.replacingOccurrences(of: "/", with: "")
+        let _self = replacingOccurrences(of: "/", with: "")
         // swiftlint:enable identifier_name
         if _self.count != 4 {
             return false
@@ -63,7 +63,7 @@ extension String {
     }
 
     func isValidCVV(cardNetwork: CardNetwork?) -> Bool {
-        if !self.isNumeric {
+        if !isNumeric {
             return false
         }
 
@@ -88,11 +88,11 @@ extension String {
     var isValidPostalCode: Bool {
         if count < 1 { return false }
         let set = CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLKMNOPQRSTUVWXYZ '`~.-1234567890")
-        return !(self.rangeOfCharacter(from: set.inverted) != nil)
+        return !(rangeOfCharacter(from: set.inverted) != nil)
     }
 
     var decodedJWTToken: DecodedJWTToken? {
-        let components = self.split(separator: ".")
+        let components = split(separator: ".")
         if components.count < 2 { return nil }
         let segment = String(components[1]).base64IOSFormat
         guard !segment.isEmpty, let data = Data(
@@ -104,7 +104,7 @@ extension String {
     }
 
     private var base64IOSFormat: Self {
-        let str = self.replacingOccurrences(of: "-", with: "+")
+        let str = replacingOccurrences(of: "-", with: "+")
             .replacingOccurrences(of: "_", with: "/")
         let offset = str.count % 4
         guard offset != 0 else { return str }
@@ -131,27 +131,12 @@ extension String {
         return String((0..<length).map { _ in letters.randomElement()! })
     }
 
-    func isValidPhoneNumberForPaymentMethodType(_ paymentMethodType: PrimerPaymentMethodType) -> Bool {
-
-        var regex = ""
-
-        switch paymentMethodType {
-        case .xenditOvo:
-            regex = "^(^\\+628|628)(\\d{8,10})"
-        default:
-            regex = "^(^\\+)(\\d){9,14}$"
-        }
-
-        let phoneNumber = NSPredicate(format: "SELF MATCHES %@", regex)
-        return phoneNumber.evaluate(with: self)
-    }
-
     /// Validates expiry date string in MM/YY or MM/YYYY format
     /// - Throws: PrimerValidationError if the date format is invalid or the date is expired
     /// - Note: This function accepts both MM/YY and MM/YYYY formats to maintain compatibility
     ///         between Drop-in UI (MM/YY) and Headless/RawDataManager (MM/YYYY) implementations
     func validateExpiryDateString() throws {
-        if self.isEmpty {
+        if isEmpty {
             throw PrimerValidationError.invalidExpiryDate(message: "Expiry date cannot be blank.")
 
         } else {
@@ -186,4 +171,39 @@ extension String {
         }
     }
 
+    // MARK: - NSRange Text Processing Utilities
+
+    /// Safely converts NSRange to Range<String.Index>
+    /// - Parameter nsRange: The NSRange to convert
+    /// - Returns: The corresponding Range<String.Index>, or nil if conversion fails
+    func range(from nsRange: NSRange) -> Range<String.Index>? {
+        Range(nsRange, in: self)
+    }
+
+    /// Replaces characters in the given NSRange with a replacement string
+    /// - Parameters:
+    ///   - nsRange: The range of characters to replace
+    ///   - replacement: The string to insert in place of the characters
+    /// - Returns: A new string with the replacement applied, or the original string if the range is invalid
+    func replacingCharacters(in nsRange: NSRange, with replacement: String) -> String {
+        guard let range = range(from: nsRange) else { return self }
+        return replacingCharacters(in: range, with: replacement)
+    }
+
+    /// Calculates the unformatted position from a formatted text position
+    /// Useful for mapping cursor positions when text contains separator characters
+    /// - Parameters:
+    ///   - formattedIndex: The index in the formatted text (including separators)
+    ///   - separator: The separator character used in formatting (e.g., " " for card numbers, "/" for expiry dates)
+    /// - Returns: The corresponding index in the unformatted text (excluding separators)
+    func unformattedPosition(from formattedIndex: Int, separator: Character) -> Int {
+        var unformattedPos = 0
+        for i in 0..<min(formattedIndex, count) {
+            let charIndex = index(startIndex, offsetBy: i)
+            if self[charIndex] != separator {
+                unformattedPos += 1
+            }
+        }
+        return unformattedPos
+    }
 }

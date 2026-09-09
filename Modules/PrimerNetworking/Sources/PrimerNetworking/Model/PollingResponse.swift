@@ -34,9 +34,9 @@ enum PollingStatus: String, Codable {
     public init(from decoder: Decoder) throws {
         do {
             let container = try decoder.container(keyedBy: CodingKeys.self)
-            self.status = try container.decode(PollingStatus.self, forKey: .status)
-            self.id = try container.decode(String.self, forKey: .id)
-            self.source = try container.decode(String.self, forKey: .source)
+            status = try container.decode(PollingStatus.self, forKey: .status)
+            id = try container.decode(String.self, forKey: .id)
+            source = try container.decode(String.self, forKey: .source)
         } catch {
             throw error
         }

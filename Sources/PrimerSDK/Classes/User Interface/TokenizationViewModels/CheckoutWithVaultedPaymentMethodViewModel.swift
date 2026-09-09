@@ -46,7 +46,7 @@ final class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
         tokenizationService: TokenizationServiceProtocol = TokenizationService(),
         createResumePaymentService: CreateResumePaymentServiceProtocol
     ) {
-        self.config = configuration
+        config = configuration
         self.selectedPaymentMethodTokenData = selectedPaymentMethodTokenData
         self.additionalData = additionalData
 
@@ -89,7 +89,7 @@ final class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
             throw handled(primerError: .invalidValue(key: "paymentMethodTokenId"))
         }
 
-        self.paymentMethodTokenData = try await tokenizationService.exchangePaymentMethodToken(
+        paymentMethodTokenData = try await tokenizationService.exchangePaymentMethodToken(
             paymentMethodTokenId,
             vaultedPaymentMethodAdditionalData: additionalData
         )
@@ -132,7 +132,7 @@ final class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
         let task = Task { @MainActor [weak self] in
             try? await Task.sleep(nanoseconds: 5_000_000_000)
             guard let self else { return }
-            self.logger.warn(
+            logger.warn(
                 message:
                 """
                 The 'decisionHandler' of 'primerHeadlessUniversalCheckoutWillCreatePaymentWithData' hasn't been called.
@@ -182,7 +182,7 @@ final class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
         if let resumeDecisionType = resumeDecision.type as? PrimerResumeDecision.DecisionType {
             switch resumeDecisionType {
             case let .fail(message):
-                if let message = message {
+                if let message {
                     throw PrimerError.merchantError(message: message)
                 } else {
                     throw NSError.emptyDescriptionError
@@ -242,7 +242,7 @@ final class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
                 }
                 return decodedJWTToken
             case let .fail(message):
-                if let message = message {
+                if let message {
                     throw PrimerError.merchantError(message: message)
                 } else {
                     throw NSError.emptyDescriptionError
@@ -274,8 +274,8 @@ final class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
         }
 
         let paymentResponse = try await handleCreatePaymentEvent(token)
-        self.paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse))
-        self.resumePaymentId = paymentResponse.id
+        paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse))
+        resumePaymentId = paymentResponse.id
 
         guard let requiredAction = paymentResponse.requiredAction else {
             return nil
@@ -355,7 +355,7 @@ final class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
     }
 
     private var paymentMethodType: String {
-        self.paymentMethodTokenData?.paymentInstrumentData?.paymentMethodType ?? "UNKNOWN"
+        paymentMethodTokenData?.paymentInstrumentData?.paymentMethodType ?? "UNKNOWN"
     }
 }
 // swiftlint:enable type_name

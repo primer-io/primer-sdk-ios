@@ -1,0 +1,21 @@
+//
+//  ComponentsLoggingServiceProtocol.swift
+//
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
+
+import Foundation
+@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerCore
+
+@available(iOS 15.0, *)
+protocol ComponentsLoggingServiceProtocol: Actor {
+    func logInfo(message: String, event: String, userInfo: [String: Any]?) async
+    func logError(
+        message: String,
+        event: String?,
+        errorMessage: String?,
+        stack: String?,
+        userInfo: [String: Any]?
+    ) async
+}

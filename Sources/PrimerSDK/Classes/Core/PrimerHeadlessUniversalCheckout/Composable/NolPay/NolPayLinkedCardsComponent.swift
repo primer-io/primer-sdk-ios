@@ -148,7 +148,7 @@ public final class NolPayLinkedCardsComponent {
                     guard let mobileNumber, let countryCode else {
                         let key = mobileNumber == nil ? "mobileNumber" : "countryCode"
                         let error = handled(primerError: .invalidValue(key: key))
-                        self.errorDelegate?.didReceiveError(error: error)
+                        errorDelegate?.didReceiveError(error: error)
                         return completion(.failure(error))
                     }
 
@@ -166,13 +166,13 @@ public final class NolPayLinkedCardsComponent {
                     #endif
 
                 case let .invalid(errors: validationErrors):
-                    self.validationDelegate?.didUpdate(validationStatus: .invalid(errors: validationErrors), for: nil)
+                    validationDelegate?.didUpdate(validationStatus: .invalid(errors: validationErrors), for: nil)
                     completion(.failure(PrimerError.underlyingErrors(errors: validationErrors)))
 
                 default: break
                 }
             case let .failure(error):
-                self.errorDelegate?.didReceiveError(error: error)
+                errorDelegate?.didReceiveError(error: error)
                 completion(.failure(error))
             }
         }

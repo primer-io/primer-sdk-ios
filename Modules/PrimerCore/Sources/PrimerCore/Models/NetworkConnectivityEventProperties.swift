@@ -23,8 +23,8 @@
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.networkType = try container.decode(String.self, forKey: .networkType)
-        self.params = try container.decodeIfPresent([String: AnyCodable].self, forKey: .params)
+        networkType = try container.decode(String.self, forKey: .networkType)
+        params = try container.decodeIfPresent([String: AnyCodable].self, forKey: .params)
     }
 
     public func encode(to encoder: Encoder) throws {

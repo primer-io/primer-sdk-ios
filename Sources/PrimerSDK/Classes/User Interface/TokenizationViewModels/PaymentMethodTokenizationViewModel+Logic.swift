@@ -31,8 +31,8 @@ extension PaymentMethodTokenizationViewModel {
                    PrimerInternal.shared.sdkIntegrationType == .dropIn,
                    PrimerInternal.shared.selectedPaymentMethodType == nil,
                    self.config.type == PrimerPaymentMethodType.applePay.rawValue ||
-                   self.config.type == PrimerPaymentMethodType.adyenIDeal.rawValue ||
-                   self.config.type == PrimerPaymentMethodType.payPal.rawValue {
+                    self.config.type == PrimerPaymentMethodType.adyenIDeal.rawValue ||
+                    self.config.type == PrimerPaymentMethodType.payPal.rawValue {
                     do {
                         try await clientSessionActionsModule.unselectPaymentMethodIfNeeded()
                         await PrimerUIManager.primerRootViewController?.popToMainScreen(completion: nil)
@@ -60,7 +60,7 @@ extension PaymentMethodTokenizationViewModel {
 
     @MainActor
     func processVaultPaymentMethodTokenData() {
-        PrimerDelegateProxy.primerDidTokenizePaymentMethod(self.paymentMethodTokenData!) { _ in }
+        PrimerDelegateProxy.primerDidTokenizePaymentMethod(paymentMethodTokenData!) { _ in }
         handleSuccessfulFlow()
     }
 
@@ -110,10 +110,10 @@ extension PaymentMethodTokenizationViewModel {
                case .cancelled = primerErr,
                PrimerInternal.shared.sdkIntegrationType == .dropIn,
                PrimerInternal.shared.selectedPaymentMethodType == nil,
-               self.config.implementationType == .webRedirect ||
-               self.config.type == PrimerPaymentMethodType.applePay.rawValue ||
-               self.config.type == PrimerPaymentMethodType.adyenIDeal.rawValue ||
-               self.config.type == PrimerPaymentMethodType.payPal.rawValue {
+               config.implementationType == .webRedirect ||
+                config.type == PrimerPaymentMethodType.applePay.rawValue ||
+                config.type == PrimerPaymentMethodType.adyenIDeal.rawValue ||
+                config.type == PrimerPaymentMethodType.payPal.rawValue {
                 await PrimerUIManager.primerRootViewController?.popToMainScreen(completion: nil)
             } else {
                 let primerErr = handled(primerError: error.asPrimerError)
@@ -204,11 +204,10 @@ extension PaymentMethodTokenizationViewModel {
                 return decodedJWTToken
 
             case let .fail(message):
-                let merchantErr: Error
-                if let message {
-                    merchantErr = PrimerError.merchantError(message: message)
+                let merchantErr: Error = if let message {
+                    PrimerError.merchantError(message: message)
                 } else {
-                    merchantErr = NSError.emptyDescriptionError
+                    NSError.emptyDescriptionError
                 }
                 throw merchantErr
             }
@@ -275,11 +274,10 @@ extension PaymentMethodTokenizationViewModel {
         if let resumeDecisionType = resumeDecision.type as? PrimerResumeDecision.DecisionType {
             switch resumeDecisionType {
             case let .fail(message):
-                let merchantErr: Error
-                if let message {
-                    merchantErr = PrimerError.merchantError(message: message)
+                let merchantErr: Error = if let message {
+                    PrimerError.merchantError(message: message)
                 } else {
-                    merchantErr = NSError.emptyDescriptionError
+                    NSError.emptyDescriptionError
                 }
                 throw merchantErr
 
@@ -378,13 +376,13 @@ extension PaymentMethodTokenizationViewModel {
     }
 
     func nullifyEventCallbacks() {
-        self.didStartPayment = nil
-        self.didFinishPayment = nil
+        didStartPayment = nil
+        didFinishPayment = nil
     }
 
     func setCheckoutDataFromError(_ error: PrimerError) {
         if let checkoutData = error.checkoutData {
-            self.paymentCheckoutData = checkoutData
+            paymentCheckoutData = checkoutData
         }
     }
 }
@@ -393,7 +391,7 @@ extension PrimerError {
     var checkoutData: PrimerCheckoutData? {
         switch self {
         case let .paymentFailed(_, paymentId, orderId, status, _):
-            return PrimerCheckoutData(
+            PrimerCheckoutData(
                 payment: PrimerCheckoutDataPayment(
                     id: paymentId,
                     orderId: orderId,
@@ -402,7 +400,7 @@ extension PrimerError {
                 )
             )
         default:
-            return nil
+            nil
         }
     }
 }

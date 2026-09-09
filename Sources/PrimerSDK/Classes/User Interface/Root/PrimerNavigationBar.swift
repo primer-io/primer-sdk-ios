@@ -30,7 +30,7 @@ final class PrimerNavigationBar: PrimerView {
                 view.removeFromSuperview()
             }
 
-            if let rightBarButton = rightBarButton {
+            if let rightBarButton {
                 rightView.addSubview(rightBarButton)
                 rightBarButton.translatesAutoresizingMaskIntoConstraints = false
                 NSLayoutConstraint.activate([
@@ -53,7 +53,7 @@ final class PrimerNavigationBar: PrimerView {
                 view.removeFromSuperview()
             }
 
-            if let leftBarButton = leftBarButton {
+            if let leftBarButton {
                 leftView.addSubview(leftBarButton)
                 leftBarButton.translatesAutoresizingMaskIntoConstraints = false
                 NSLayoutConstraint.activate([
@@ -192,7 +192,7 @@ extension PrimerNavigationBar {
 
     private func renderImageViewIfNeeded() {
 
-        guard let titleImage = titleImage else {
+        guard let titleImage else {
             return
         }
 
@@ -206,7 +206,7 @@ extension PrimerNavigationBar {
 
     private func renderTitleLabelIfNeeded() {
 
-        guard let title = title else {
+        guard let title else {
             return
         }
 

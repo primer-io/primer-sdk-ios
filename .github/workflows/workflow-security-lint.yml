@@ -1,0 +1,38 @@
+name: Workflow Security Lint
+
+# Static analysis of the repo's own GitHub Actions workflows and composite
+# actions. actionlint catches structural/expression mistakes; zizmor catches
+# security smells such as template injection, credential persistence, and
+# overly broad GITHUB_TOKEN permissions.
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/**'
+      - '.github/actions/**'
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: actionlint + zizmor
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          persist-credentials: false
+
+      - name: Install and run actionlint
+        env:
+          # shellcheck "info"/"style" nits (e.g. SC2086 on $GITHUB_ENV) are not
+          # security relevant; enforce warning severity and above.
+          SHELLCHECK_OPTS: --severity=warning
+        run: |
+          go install github.com/rhysd/actionlint/cmd/actionlint@v1.7.12
+          "$(go env GOPATH)/bin/actionlint" -color
+
+      - name: Install and run zizmor
+        run: |
+          pipx install zizmor==1.26.1
+          zizmor --offline .github/workflows .github/actions

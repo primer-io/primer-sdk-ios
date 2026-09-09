@@ -4,8 +4,8 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-@_spi(PrimerInternal) import PrimerCore
-@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) @testable import PrimerCore
+@_spi(PrimerInternal) @testable import PrimerFoundation
 @testable import PrimerSDK
 @_spi(PrimerInternal) @testable import PrimerSDK
 @_spi(PrimerInternal) @testable import PrimerNetworking
@@ -32,6 +32,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
     var continue3DSAuthResult: (ThreeDS.PostAuthResponse?, Error?)?
     var listAdyenBanksResult: (BanksListSessionResponse?, Error?)?
     var listRetailOutletsResult: (RetailOutletsList?, Error?)?
+    var listAdyenKlarnaPaymentTypesResult: (AdyenKlarnaPaymentOptionsResponse?, Error?)?
     var paymentResult: (Response.Body.Payment?, Error?)?
     var sendAnalyticsEventsResult: (Analytics.Service.Response?, Error?)?
     var resumePaymentResult: (Response.Body.Payment?, Error?)?
@@ -40,6 +41,10 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
     private var currentPollingIteration: Int = 0
     var fetchNolSdkSecretResult: (() -> Result<Response.Body.NolPay.NolPaySecretDataResponse, Error>)?
     var getPhoneMetadataResult: Result<Response.Body.PhoneMetadata.PhoneMetadataDataResponse, Error>?
+    // Per-number response and timing, for forcing lookups to answer out of order.
+    var getPhoneMetadataHandler: ((String) async throws -> Response.Body.PhoneMetadata.PhoneMetadataDataResponse)?
+    private(set) var getPhoneMetadataRequestedNumbers: [String] = []
+    var getPhoneMetadataCallCount: Int { getPhoneMetadataRequestedNumbers.count }
     var sdkCompleteUrlResult: (Response.Body.Complete?, Error?)?
     var responseHeaders: [String: String]?
 
@@ -642,13 +647,30 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
         throw NSError(domain: "MockPrimerAPIClient", code: 1, userInfo: nil)
     }
 
+    func listAdyenKlarnaPaymentTypes(
+        clientToken: PrimerSDK.DecodedJWTToken,
+        paymentMethodConfigId: String
+    ) async throws -> PrimerSDK.AdyenKlarnaPaymentOptionsResponse {
+        guard let result = listAdyenKlarnaPaymentTypesResult else {
+            XCTAssert(false, "Set 'listAdyenKlarnaPaymentTypesResult' on your MockPrimerAPIClient")
+            throw NSError(domain: "MockPrimerAPIClient", code: 1, userInfo: nil)
+        }
+
+        try await Task.sleep(nanoseconds: UInt64(mockedNetworkDelay * 1_000_000_000))
+
+        if let errorResult = result.1 { throw errorResult }
+        if let successResult = result.0 { return successResult }
+        XCTAssert(false, "Set 'listAdyenKlarnaPaymentTypesResult' on your MockPrimerAPIClient")
+        throw NSError(domain: "MockPrimerAPIClient", code: 1, userInfo: nil)
+    }
+
     func poll(
         clientToken: DecodedJWTToken?,
         url: String,
         retryConfig: RetryConfig? = nil,
         completion: @escaping PrimerSDK.APICompletion<PrimerSDK.PollingResponse>
     ) {
-        guard let pollingResults = pollingResults,
+        guard let pollingResults,
               !pollingResults.isEmpty
         else {
             XCTAssert(false, "Set 'pollingResults' on your MockPrimerAPIClient")
@@ -656,11 +678,9 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
         }
 
         DispatchQueue.main.asyncAfter(deadline: .now() + mockedNetworkDelay) {
-            guard self.currentPollingIteration < pollingResults.count else {
-                XCTAssert(false, "MockPrimerAPIClient.poll called after 'pollingResults' were exhausted")
-                return completion(.failure(NSError(domain: "MockPrimerAPIClient", code: 2, userInfo: nil)))
-            }
-            let pollingResult = pollingResults[self.currentPollingIteration]
+            // Clamp once exhausted so an over-running poll keeps returning the final response
+            // instead of crashing with an index-out-of-range (see the async variant below).
+            let pollingResult = pollingResults[min(self.currentPollingIteration, pollingResults.count - 1)]
             self.currentPollingIteration += 1
 
             if pollingResult.0 == nil, pollingResult.1 == nil {
@@ -687,7 +707,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
         clientToken: DecodedJWTToken?,
         url: String
     ) async throws -> PollingResponse {
-        guard let pollingResults = pollingResults,
+        guard let pollingResults,
               !pollingResults.isEmpty
         else {
             XCTAssert(false, "Set 'pollingResults' on your MockPrimerAPIClient")
@@ -696,7 +716,10 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
 
         try await Task.sleep(nanoseconds: UInt64(mockedNetworkDelay * 1_000_000_000))
 
-        let pollingResult = pollingResults[currentPollingIteration]
+        // Clamp to the last configured result once the sequence is exhausted, so a poll that runs
+        // more cycles than expected (e.g. while a test waits for cancellation to surface) keeps
+        // returning the final response instead of crashing with an index-out-of-range.
+        let pollingResult = pollingResults[min(currentPollingIteration, pollingResults.count - 1)]
         currentPollingIteration += 1
 
         if pollingResult.0 == nil, pollingResult.1 == nil {
@@ -1048,13 +1071,19 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
         clientToken: DecodedJWTToken,
         paymentRequestBody: Request.Body.PhoneMetadata.PhoneMetadataDataRequest
     ) async throws -> Response.Body.PhoneMetadata.PhoneMetadataDataResponse {
+        getPhoneMetadataRequestedNumbers.append(paymentRequestBody.phoneNumber)
+
+        try await Task.sleep(nanoseconds: UInt64(mockedNetworkDelay * 1_000_000_000))
+
+        if let getPhoneMetadataHandler {
+            return try await getPhoneMetadataHandler(paymentRequestBody.phoneNumber)
+        }
+
         guard let result = getPhoneMetadataResult else {
-            XCTAssert(false, "Set 'getPhoneMetadataResult' on your MockPrimerAPIClient")
+            XCTAssert(false, "Set 'getPhoneMetadataResult' or 'getPhoneMetadataHandler' on your MockPrimerAPIClient")
             throw NSError(domain: "MockPrimerAPIClient", code: 1, userInfo: nil)
         }
 
-        try await Task.sleep(nanoseconds: UInt64(mockedNetworkDelay * 1_000_000_000))
-        
         switch result {
         case let .success(success): return success
         case let .failure(failure): throw failure

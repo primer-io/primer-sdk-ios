@@ -115,9 +115,9 @@ final class Downloader: NSObject, DownloaderModule {
 
     private func executeDownloadTask(for request: URLRequest, on session: URLSession) async throws -> (URL, URLResponse) {
         if #available(iOS 15.0, *) {
-            return try await session.download(for: request)
+            try await session.download(for: request)
         } else {
-            return try await withCheckedThrowingContinuation { continuation in
+            try await withCheckedThrowingContinuation { continuation in
                 let task = session.downloadTask(with: request) { tempLocalUrl, response, error in
                     if let error {
                         continuation.resume(throwing: error)
@@ -138,9 +138,9 @@ final class Downloader: NSObject, DownloaderModule {
 
     private func fileExists(at url: URL) -> Bool {
         if #available(iOS 16.0, *) {
-            return FileManager.default.fileExists(atPath: url.path())
+            FileManager.default.fileExists(atPath: url.path())
         } else {
-            return FileManager.default.fileExists(atPath: url.path)
+            FileManager.default.fileExists(atPath: url.path)
         }
     }
 }

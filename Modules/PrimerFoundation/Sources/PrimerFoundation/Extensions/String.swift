@@ -26,7 +26,7 @@ public extension String {
     func unsafeData() -> Data { data(using: .utf8)! }
     
     var withoutWhiteSpace: String {
-        self.replacingOccurrences(of: " ", with: "").trimmingCharacters(in: .whitespacesAndNewlines)
+        replacingOccurrences(of: " ", with: "").trimmingCharacters(in: .whitespacesAndNewlines)
     }
     
     var isHttpOrHttpsURL: Bool {
@@ -36,7 +36,7 @@ public extension String {
     }
 
     var isNumeric: Bool {
-        guard !self.isEmpty else { return false }
+        guard !isEmpty else { return false }
         let nums: Set<Character> = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
         return Set(self).isSubset(of: nums)
     }
@@ -51,7 +51,7 @@ public extension String {
     }
 
     var base64RFC4648Format: Self {
-        self.replacingOccurrences(of: "+", with: "-")
+        replacingOccurrences(of: "+", with: "-")
             .replacingOccurrences(of: "/", with: "_")
             .replacingOccurrences(of: "=", with: "")
     }
@@ -81,13 +81,13 @@ public extension String {
     func compareWithVersion(_ otherVersion: String) -> ComparisonResult {
         let versionDelimiter = "."
 
-        var versionComponents = self.components(separatedBy: versionDelimiter)
+        var versionComponents = components(separatedBy: versionDelimiter)
         var otherVersionComponents = otherVersion.components(separatedBy: versionDelimiter)
 
         let zeroDiff = versionComponents.count - otherVersionComponents.count
 
         if zeroDiff == 0 {
-            return self.compare(otherVersion, options: .numeric)
+            return compare(otherVersion, options: .numeric)
         } else {
             let zeros = Array(repeating: "0", count: abs(zeroDiff))
             if zeroDiff > 0 {
@@ -103,7 +103,7 @@ public extension String {
     var isValidOTP: Bool {
         let pattern = "^\\d{6}$"
         let regex = try? NSRegularExpression(pattern: pattern, options: [])
-        let matches = regex?.matches(in: self, options: [], range: NSRange(location: 0, length: self.count))
+        let matches = regex?.matches(in: self, options: [], range: NSRange(location: 0, length: count))
         return matches?.count ?? 0 > 0
     }
 
@@ -113,9 +113,9 @@ public extension String {
     ///         4-digit years (e.g., "2030") are returned as-is
     ///         Invalid inputs return nil
     func normalizedFourDigitYear() -> String? {
-        guard self.allSatisfy(\.isNumber) else { return nil }
+        guard allSatisfy(\.isNumber) else { return nil }
 
-        switch self.count {
+        switch count {
         case 4:
             return self
         case 2:

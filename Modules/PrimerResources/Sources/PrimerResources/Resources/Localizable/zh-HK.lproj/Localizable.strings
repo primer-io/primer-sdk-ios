@@ -83,7 +83,7 @@
 "form_error_card_type_not_supported" = "不支援此卡類型";
 
 /* Get the code from your banking app - Blik descriptor */
-"input_description_otp" = "從你的銀行流動應用程式，獲取六位數號碼";
+"input_description_otp" = "從你的銀行流動應用程式,獲取六位數號碼";
 
 /* 6 digit code - Text field top placeholder */
 "input_hint_form_blik_otp" = "六位數號碼";
@@ -110,7 +110,7 @@
 "payment-method-type-card-not-vaulted" = "換成刷卡支付";
 
 /* The message copy that tells the user how to transfer funds given a displayed account code */
-"pleaseTransferFunds" = "請使用您在新加坡的銀行賬戶通過FAST（首選）、MEPS或GIRO將資金轉入提供的星展銀行帳戶。";
+"pleaseTransferFunds" = "請使用您在新加坡的銀行賬戶通過FAST(首選)、MEPS或GIRO將資金轉入提供的星展銀行帳戶。";
 
 /* An error message displayed when the postal code field is not correct */
 "postalCodeErrorInvalid" = "郵遞區號無效";
@@ -145,6 +145,9 @@
 /* Cardholder name */
 "primer-card-form-name" = "姓名";
 
+/* Billing address section title - Card Form */
+"primer-card-form-billing-address" = "Billing address";
+
 /* Pay - Card Form (Checkout submit button text) */
 "primer-card-form-pay" = "支付";
 
@@ -164,7 +167,7 @@
 "primer-confirm-mandate-confirm-sepa-direct-debit" = "確定SEPA 扣帳卡";
 
 /* CVV- CVV recapture explanation label */
-"primer-cvv-recapture-explanation" = "輸入信用卡上的 %d 位數安全碼，進行安全付款。";
+"primer-cvv-recapture-explanation" = "輸入信用卡上的 %d 位數安全碼,進行安全付款。";
 
 /* CVV - CVV recapture screen title */
 "primer-cvv-recapture-title" = "輸入 CVV 安全碼";
@@ -194,7 +197,7 @@
 "primer-error-is-required-suffix" = "必須";
 
 /* Something went wrong, please try again. - Error Screen Message */
-"primer-error-screen" = "錯誤，請重試";
+"primer-error-screen" = "錯誤,請重試";
 
 /* e.g. John Doe - Form Text Field Placeholder (Cardholder name) */
 "primer-form-text-field-placeholder-cardholder" = "e.g. John Doe";
@@ -239,7 +242,7 @@
 "primer-scanner-view-scan-front-card" = "掃瞄卡片正面";
 
 /* The title of the header for the flow decision view */
-"primer-test-header-description" = "這是測試環境，可以於此模擬流程。你可以選擇列表中的結果來測試";
+"primer-test-header-description" = "這是測試環境,可以於此模擬流程。你可以選擇列表中的結果來測試";
 
 /* The title of the mocked declined flow for a Test Payment Method */
 "primer-test-payment-method-decline-flow-title" = "拒絕";
@@ -303,4 +306,6 @@
 
 /* Upload the screenshot in your banking app. - QR code screen subtitle label */
 "uploadScreenshot" = "上傳截圖到你的銀行流動應用程式";
+
+
 

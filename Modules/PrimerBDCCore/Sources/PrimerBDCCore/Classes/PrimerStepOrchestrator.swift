@@ -1,7 +1,7 @@
 //
 //  PrimerStepOrchestrator.swift
 //
-//  Copyright © 2026 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved.
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
@@ -18,11 +18,11 @@ protocol StepOrchestrating: AnyObject {
 
 @MainActor
 final class PrimerStepOrchestrator: StepOrchestrating {
-    
+
     var onURLOpen: (() -> Void)? {
         didSet { harness.onURLOpen = onURLOpen }
     }
-    
+
     private let logger = Logger()
     private let engine: any BDCEngineProtocol
     private let context: SDKContext
@@ -43,7 +43,7 @@ final class PrimerStepOrchestrator: StepOrchestrating {
 
     func start(rawSchema: String, initialState: CodableValue) async throws {
         self.rawSchema = rawSchema
-        await registry.register(harness, for: .urlOpen)
+        registry.register(harness, for: .urlOpen)
         do {
             let result = try await engine.start(schema: rawSchema, context: context, state: initialState)
             try await decodeResult(result, rawSchema: rawSchema)
@@ -66,7 +66,7 @@ final class PrimerStepOrchestrator: StepOrchestrating {
         state = response.newState
         try await handleResponse(response, rawSchema: rawSchema)
     }
-    
+
     private func handleResponse(_ response: StateProcessorResponse, rawSchema: String) async throws {
         if let error = response.error {
             throw error
@@ -78,17 +78,17 @@ final class PrimerStepOrchestrator: StepOrchestrating {
             logger.info("Step settled without an action or terminal — waiting on the instruction loop.")
         }
     }
-    
+
     func applyEvent(_ value: CodableValue) async throws {
         let result = try await engine.applyEvent(value, context: context, schema: rawSchema, state: state)
         try await decodeResult(result, rawSchema: rawSchema)
     }
-    
+
     private func handleAction(_ action: WorkflowStep, rawSchema: String) async throws {
         try await sleep(forMilliseconds: action.delayMs)
-        let result = try await registry.resolve(action.type, params: action.params)
-        try await applyResult(result, actionId: action.id, rawSchema: rawSchema)
-    }   
+        let resolution = try await registry.resolve(action.type, data: action.params)
+        try await applyResult(resolution, actionId: action.id, rawSchema: rawSchema)
+    }
 
     private func sleep(forMilliseconds delayMs: Double?) async throws {
         guard let delayMs, delayMs.isFinite, delayMs > 0 else { return }
@@ -96,7 +96,7 @@ final class PrimerStepOrchestrator: StepOrchestrating {
         guard nanoseconds < Double(UInt64.max) else { return }
         try await Task.sleep(nanoseconds: UInt64(nanoseconds))
     }
-    
+
     private func handleOutcome(_ outcome: TerminalOutcome) throws {
         switch outcome {
         case .cancelled: throw BackendDrivenCheckoutCancellation()

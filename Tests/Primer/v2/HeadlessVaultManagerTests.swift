@@ -5,6 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import PrimerFoundation
+@_spi(PrimerInternal) @testable import PrimerNetworking
 @testable import PrimerSDK
 import XCTest
 
@@ -354,10 +355,10 @@ final class HeadlessVaultManagerTests: XCTestCase {
             vaultManager.vaultService = VaultService(apiClient: mockApiClient)
             try! vaultManager.configure()
             vaultManager.fetchVaultedPaymentMethods { vaultedPaymentMethods, err in
-                if let err = err {
+                if let err {
                     XCTAssert(true, "Failed with error \(err.localizedDescription)")
 
-                } else if let vaultedPaymentMethods = vaultedPaymentMethods {
+                } else if let vaultedPaymentMethods {
                     if let testVaultedPaymentMethod = vaultedPaymentMethods.first(where: { $0.id == "test" }) {
                         mockApiClient = MockPrimerAPIClient()
                         mockApiClient.deleteVaultedPaymentMethodResult = ((), nil)
@@ -371,10 +372,10 @@ final class HeadlessVaultManagerTests: XCTestCase {
                                 mockApiClient.fetchVaultedPaymentMethodsResult = (Response.Body.VaultedPaymentMethods(data: []), nil)
                                 vaultManager.vaultService = VaultService(apiClient: mockApiClient)
                                 vaultManager.fetchVaultedPaymentMethods { updatedVaultedPaymentMethods, err in
-                                    if let err = err {
+                                    if let err {
                                         XCTAssert(true, "Failed with error \(err.localizedDescription)")
 
-                                    } else if let updatedVaultedPaymentMethods = updatedVaultedPaymentMethods {
+                                    } else if let updatedVaultedPaymentMethods {
                                         XCTAssert(updatedVaultedPaymentMethods.isEmpty, "Failed to delete vaulted payment method")
                                         exp.fulfill()
                                     } else {

@@ -30,7 +30,7 @@ import SafariServices
             url: url,
             callbackURLScheme: scheme,
             completionHandler: { (url, error) in
-                if let url = url {
+                if let url {
                     completion(.success(url))
                 } else if error != nil {
                     completion(.failure(PrimerError.cancelled(paymentMethodType: paymentMethodType)))
@@ -59,7 +59,14 @@ import SafariServices
                     if let url {
                         continuation.resume(returning: url)
                     } else if let error {
-                        continuation.resume(throwing: error)
+                        // Normalize a user cancel to `PrimerError.cancelled` here so every caller
+                        // (PayPal, AdyenKlarna, WebRedirect) routes cancellation to return-to-list
+                        // instead of the failure path. Matches the completion-based overload above.
+                        if let authError = error as? ASWebAuthenticationSessionError, authError.code == .canceledLogin {
+                            continuation.resume(throwing: PrimerError.cancelled(paymentMethodType: paymentMethodType))
+                        } else {
+                            continuation.resume(throwing: error)
+                        }
                     } else {
                         continuation.resume(throwing: PrimerError.unknown(message: "Failed to create web authentication session"))
                     }
@@ -68,8 +75,10 @@ import SafariServices
 
             self.session = webAuthSession
 
-            webAuthSession.presentationContextProvider = self
-            webAuthSession.start()
+            DispatchQueue.main.async {
+                webAuthSession.presentationContextProvider = self
+                webAuthSession.start()
+            }
         }
     }
 }
@@ -83,7 +92,7 @@ extension DefaultWebAuthenticationService: ASWebAuthenticationPresentationContex
 
 extension UIApplication {
     var windows: [UIWindow] {
-        let windowScene = self.connectedScenes.compactMap { $0 as? UIWindowScene }.first
+        let windowScene = connectedScenes.compactMap { $0 as? UIWindowScene }.first
         guard let windows = windowScene?.windows else {
             return []
         }

@@ -1,0 +1,174 @@
+//
+//  PrimerLayout.swift
+//
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
+
+import CoreGraphics
+@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerCore
+
+// MARK: - Primer Spacing
+
+enum PrimerSpacing {
+  static func xxsmall(tokens: DesignTokens?) -> CGFloat {
+    tokens?.primerSpaceXxsmall ?? 2
+  }
+
+  static func xsmall(tokens: DesignTokens?) -> CGFloat {
+    tokens?.primerSpaceXsmall ?? 4
+  }
+
+  static func small(tokens: DesignTokens?) -> CGFloat {
+    tokens?.primerSpaceSmall ?? 8
+  }
+
+  static func medium(tokens: DesignTokens?) -> CGFloat {
+    tokens?.primerSpaceMedium ?? 12
+  }
+
+  static func large(tokens: DesignTokens?) -> CGFloat {
+    tokens?.primerSpaceLarge ?? 16
+  }
+
+  static func xlarge(tokens: DesignTokens?) -> CGFloat {
+    tokens?.primerSpaceXlarge ?? 20
+  }
+
+  static func xxlarge(tokens: DesignTokens?) -> CGFloat {
+    tokens?.primerSpaceXxlarge ?? 24
+  }
+}
+
+// MARK: - Primer Size
+
+enum PrimerSize {
+  static func small(tokens: DesignTokens?) -> CGFloat {
+    tokens?.primerSizeSmall ?? 16
+  }
+
+  static func medium(tokens: DesignTokens?) -> CGFloat {
+    tokens?.primerSizeMedium ?? 20
+  }
+
+  static func large(tokens: DesignTokens?) -> CGFloat {
+    tokens?.primerSizeLarge ?? 24
+  }
+
+  static func xlarge(tokens: DesignTokens?) -> CGFloat {
+    tokens?.primerSizeXlarge ?? 32
+  }
+
+  static func xxlarge(tokens: DesignTokens?) -> CGFloat {
+    tokens?.primerSizeXxlarge ?? 40
+  }
+
+  static func xxxlarge(tokens: DesignTokens?) -> CGFloat {
+    tokens?.primerSizeXxxlarge ?? 56
+  }
+}
+
+// MARK: - Primer Radius
+
+enum PrimerRadius {
+  static func xsmall(tokens: DesignTokens?) -> CGFloat {
+    tokens?.primerRadiusXsmall ?? 2
+  }
+
+  static func small(tokens: DesignTokens?) -> CGFloat {
+    tokens?.primerRadiusSmall ?? 4
+  }
+
+  static func medium(tokens: DesignTokens?) -> CGFloat {
+    tokens?.primerRadiusMedium ?? 8
+  }
+
+  static func large(tokens: DesignTokens?) -> CGFloat {
+    tokens?.primerRadiusLarge ?? 12
+  }
+}
+
+// MARK: - Primer Component Heights
+
+enum PrimerComponentHeight {
+  static let label: CGFloat = 16
+  static let errorMessage: CGFloat = 16
+  static let keyboardAccessory: CGFloat = 44
+  static let paymentMethodCard: CGFloat = 44
+  static let vaultedPaymentMethodCard: CGFloat = 64
+  static let vaultedPaymentMethodCardContentRow: CGFloat = 40
+  static let progressIndicator: CGFloat = 56
+  static let emptyStateMinHeight: CGFloat = 200
+  static let emptyStateTopPadding: CGFloat = 100
+  static let button: CGFloat = 50
+}
+
+// MARK: - Primer Component Widths
+
+enum PrimerComponentWidth {
+  static let paymentMethodIcon: CGFloat = 32
+  static let cvvFieldMax: CGFloat = 120
+}
+
+// MARK: - Primer Icon Sizes
+
+enum PrimerIconSize {
+  static let paymentMethodWidth: CGFloat = 60
+  static let paymentMethodHeight: CGFloat = 40
+  static let paymentMethodLargeWidth: CGFloat = 80
+  static let paymentMethodLargeHeight: CGFloat = 50
+}
+
+// MARK: - Primer Border Widths
+
+enum PrimerBorderWidth {
+  static let thin: CGFloat = 0.5
+  static let standard: CGFloat = 1
+  static let selected: CGFloat = 2
+
+  /// Resting field/component border. Maps to the `default` width token (default 1).
+  static func standard(tokens: DesignTokens?) -> CGFloat {
+    tokens?.primerWidthDefault ?? standard
+  }
+
+  /// Emphasised border for a focused field. Maps to the `focus` width token (default 2).
+  static func focused(tokens: DesignTokens?) -> CGFloat {
+    tokens?.primerWidthFocus ?? selected
+  }
+
+  /// Emphasised border for a chosen item, such as a saved card. Maps to the `selected` token.
+  static func selected(tokens: DesignTokens?) -> CGFloat {
+    tokens?.primerWidthSelected ?? selected
+  }
+
+  /// Emphasised border for a field in error. Maps to the `error` width token (default 2).
+  static func error(tokens: DesignTokens?) -> CGFloat {
+    tokens?.primerWidthError ?? selected
+  }
+}
+
+// MARK: - Primer Scale Factors
+
+enum PrimerScale {
+  static let large: CGFloat = 2.0
+  static let small: CGFloat = 0.8
+}
+
+// MARK: - Primer Card Network Selector
+
+enum PrimerCardNetworkSelector {
+  static let badgeWidth: CGFloat = 28
+  static let badgeHeight: CGFloat = 20
+  static let buttonFrameWidth: CGFloat = 34
+  static let buttonFrameHeight: CGFloat = 26
+  static let buttonTotalWidth: CGFloat = 36
+  static let selectedBorderHeight: CGFloat = 28
+  static let chevronSize: CGFloat = 20
+  static let chevronFontSize: CGFloat = 10
+}
+
+// MARK: - Primer Animation Durations
+
+enum PrimerAnimationDuration {
+  static let focusDelay: Double = 0.3
+}

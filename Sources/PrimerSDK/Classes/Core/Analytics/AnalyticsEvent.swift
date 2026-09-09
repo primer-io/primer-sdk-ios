@@ -280,9 +280,9 @@ extension Analytics {
         switch error {
         case .applePayNoCardsInWallet,
              .applePayDeviceNotSupported:
-            return .warning
+            .warning
         default:
-            return .error
+            .error
         }
     }
 }

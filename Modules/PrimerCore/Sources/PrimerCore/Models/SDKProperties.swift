@@ -8,7 +8,6 @@
 
 @_spi(PrimerInternal) public struct SDKProperties: Codable {
 
-    public let clientToken: String?
     public let integrationType: String?
     public let paymentMethodType: String?
     public let sdkIntegrationType: PrimerSDKIntegrationType?
@@ -21,7 +20,6 @@
     public let context: [String: AnyCodable]?
     
     public init(
-        clientToken: String?,
         integrationType: String?,
         paymentMethodType: String?,
         sdkIntegrationType: PrimerSDKIntegrationType?,
@@ -33,7 +31,6 @@
         sdkVersion: String?,
         context: [String: AnyCodable]?
     ) {
-        self.clientToken = clientToken
         self.integrationType = integrationType
         self.paymentMethodType = paymentMethodType
         self.sdkIntegrationType = sdkIntegrationType
@@ -47,7 +44,6 @@
     }
     
     private enum CodingKeys: String, CodingKey {
-        case clientToken
         case integrationType
         case paymentMethodType
         case sdkIntegrationType
@@ -62,28 +58,26 @@
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.clientToken = try container.decodeIfPresent(String.self, forKey: .clientToken)
-        self.integrationType = try container.decodeIfPresent(String.self, forKey: .integrationType)
-        self.paymentMethodType = try container.decodeIfPresent(String.self, forKey: .paymentMethodType)
-        self.sdkIntegrationType = try container.decodeIfPresent(PrimerSDKIntegrationType.self, forKey: .sdkIntegrationType)
-        self.sdkIntent = try container.decodeIfPresent(PrimerSessionIntent.self, forKey: .sdkIntent)
-        self.sdkPaymentHandling = try container.decodeIfPresent(PrimerPaymentHandling.self, forKey: .sdkPaymentHandling)
-        self.sdkSessionId = try container.decodeIfPresent(String.self, forKey: .sdkSessionId)
-        self.sdkSettings = try container.decodeIfPresent([String: AnyCodable].self, forKey: .sdkSettings)
-        self.sdkType = try container.decodeIfPresent(String.self, forKey: .sdkType)
-        self.sdkVersion = try container.decodeIfPresent(String.self, forKey: .sdkVersion)
-        self.context = try container.decodeIfPresent([String: AnyCodable].self, forKey: .context)
+        integrationType = try container.decodeIfPresent(String.self, forKey: .integrationType)
+        paymentMethodType = try container.decodeIfPresent(String.self, forKey: .paymentMethodType)
+        sdkIntegrationType = try container.decodeIfPresent(PrimerSDKIntegrationType.self, forKey: .sdkIntegrationType)
+        sdkIntent = try container.decodeIfPresent(PrimerSessionIntent.self, forKey: .sdkIntent)
+        sdkPaymentHandling = try container.decodeIfPresent(PrimerPaymentHandling.self, forKey: .sdkPaymentHandling)
+        sdkSessionId = try container.decodeIfPresent(String.self, forKey: .sdkSessionId)
+        sdkSettings = try container.decodeIfPresent([String: AnyCodable].self, forKey: .sdkSettings)
+        sdkType = try container.decodeIfPresent(String.self, forKey: .sdkType)
+        sdkVersion = try container.decodeIfPresent(String.self, forKey: .sdkVersion)
+        context = try container.decodeIfPresent([String: AnyCodable].self, forKey: .context)
 
     }
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encodeIfPresent(clientToken, forKey: .clientToken)
         try container.encodeIfPresent(integrationType, forKey: .integrationType)
         try container.encodeIfPresent(paymentMethodType, forKey: .paymentMethodType)
+        try container.encodeIfPresent(sdkIntegrationType, forKey: .sdkIntegrationType)
         try container.encodeIfPresent(sdkIntent, forKey: .sdkIntent)
         try container.encodeIfPresent(sdkPaymentHandling, forKey: .sdkPaymentHandling)
-        try container.encodeIfPresent(sdkSettings, forKey: .sdkSettings)
         try container.encodeIfPresent(sdkSessionId, forKey: .sdkSessionId)
         try container.encodeIfPresent(sdkSettings, forKey: .sdkSettings)
         try container.encodeIfPresent(sdkType, forKey: .sdkType)

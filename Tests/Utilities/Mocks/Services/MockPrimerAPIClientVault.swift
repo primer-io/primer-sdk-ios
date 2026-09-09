@@ -6,7 +6,7 @@
 
 import PrimerFoundation
 @testable import PrimerSDK
-@_spi(PrimerInternal) import PrimerNetworking
+@_spi(PrimerInternal) @testable import PrimerNetworking
 
 final class MockPrimerAPIClientVault: PrimerAPIClientVaultProtocol {
 
@@ -30,7 +30,7 @@ final class MockPrimerAPIClientVault: PrimerAPIClientVaultProtocol {
     }
 
     func deleteVaultedPaymentMethod(clientToken: DecodedJWTToken, id: String, completion: @escaping APICompletion<Void>) {
-        if let onDeleteVaultedPaymentMethods = onDeleteVaultedPaymentMethods {
+        if let onDeleteVaultedPaymentMethods {
             onDeleteVaultedPaymentMethods(clientToken, id)
             completion(.success(()))
         } else {
@@ -39,7 +39,7 @@ final class MockPrimerAPIClientVault: PrimerAPIClientVaultProtocol {
     }
 
     func deleteVaultedPaymentMethod(clientToken: DecodedJWTToken, id: String) async throws {
-        if let onDeleteVaultedPaymentMethods = onDeleteVaultedPaymentMethods {
+        if let onDeleteVaultedPaymentMethods {
             onDeleteVaultedPaymentMethods(clientToken, id)
         } else {
             throw PrimerError.unknown()

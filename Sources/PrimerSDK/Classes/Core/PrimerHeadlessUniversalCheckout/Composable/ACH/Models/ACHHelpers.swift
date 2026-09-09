@@ -15,12 +15,12 @@ struct ACHHelpers {
     static func constructLocaleData(paymentMethod: PrimerPaymentMethod) -> Request.Body.StripeAch.SessionData {
         switch paymentMethod.internalPaymentMethodType {
         case .stripeAch:
-            return Request.Body.StripeAch.SessionData(
+            Request.Body.StripeAch.SessionData(
                 locale: PrimerSettings.current.localeData.localeCode,
                 platform: "IOS"
             )
         default:
-            return Request.Body.StripeAch.SessionData(locale: nil, platform: nil)
+            Request.Body.StripeAch.SessionData(locale: nil, platform: nil)
         }
 
     }

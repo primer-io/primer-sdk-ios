@@ -101,7 +101,7 @@ final class ClientSession {
             var container = encoder.container(keyedBy: CodingKeys.self)
             try container.encode(type.rawValue, forKey: .type)
 
-            if let params = params,
+            if let params,
                let paramsData = try? JSONSerialization.data(withJSONObject: params, options: .fragmentsAllowed),
                let paramsCodable = try? JSONDecoder().decode([String: AnyCodable]?.self, from: paramsData) {
                 try container.encode(paramsCodable, forKey: .params)
@@ -149,14 +149,14 @@ final class ClientSession {
 
         init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
-            self.id = (try? container.decode(String?.self, forKey: .id)) ?? nil
-            self.firstName = (try? container.decode(String?.self, forKey: .firstName)) ?? nil
-            self.lastName = (try? container.decode(String?.self, forKey: .lastName)) ?? nil
-            self.emailAddress = (try? container.decode(String?.self, forKey: .emailAddress)) ?? nil
-            self.mobileNumber = (try? container.decode(String?.self, forKey: .mobileNumber)) ?? nil
-            self.billingAddress = (try? container.decode(ClientSession.Address?.self, forKey: .billingAddress)) ?? nil
-            self.shippingAddress = (try? container.decode(ClientSession.Address?.self, forKey: .shippingAddress)) ?? nil
-            self.taxId = (try? container.decode(String?.self, forKey: .taxId)) ?? nil
+            id = (try? container.decode(String?.self, forKey: .id)) ?? nil
+            firstName = (try? container.decode(String?.self, forKey: .firstName)) ?? nil
+            lastName = (try? container.decode(String?.self, forKey: .lastName)) ?? nil
+            emailAddress = (try? container.decode(String?.self, forKey: .emailAddress)) ?? nil
+            mobileNumber = (try? container.decode(String?.self, forKey: .mobileNumber)) ?? nil
+            billingAddress = (try? container.decode(ClientSession.Address?.self, forKey: .billingAddress)) ?? nil
+            shippingAddress = (try? container.decode(ClientSession.Address?.self, forKey: .shippingAddress)) ?? nil
+            taxId = (try? container.decode(String?.self, forKey: .taxId)) ?? nil
         }
 
         init(
@@ -279,13 +279,13 @@ final class ClientSession {
 
             func toOrderItem() throws -> ApplePayOrderItem {
                 let applePayOptions = PrimerSettings.current.paymentMethodOptions.applePayOptions
-                let name = (self.description ?? applePayOptions?.merchantName)
+                let name = (description ?? applePayOptions?.merchantName)
                 return try ApplePayOrderItem(
                     name: name ?? "Item",
-                    unitAmount: self.amount,
-                    quantity: self.quantity,
-                    discountAmount: self.discountAmount,
-                    taxAmount: self.taxAmount,
+                    unitAmount: amount,
+                    quantity: quantity,
+                    discountAmount: discountAmount,
+                    taxAmount: taxAmount,
                     isPending: false
                 )
             }
@@ -356,9 +356,9 @@ final class ClientSession {
 
         required init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
-            self.vaultOnSuccess = (try? container.decode(Bool.self, forKey: .vaultOnSuccess)) ?? false
-            self.orderedAllowedCardNetworks = try? container.decode([String].self, forKey: .orderedAllowedCardNetworks)
-            self.descriptor = try? container.decode(String.self, forKey: .descriptor)
+            vaultOnSuccess = (try? container.decode(Bool.self, forKey: .vaultOnSuccess)) ?? false
+            orderedAllowedCardNetworks = try? container.decode([String].self, forKey: .orderedAllowedCardNetworks)
+            descriptor = try? container.decode(String.self, forKey: .descriptor)
 
             if let tmpOptions = (try? container.decode([[String: AnyCodable]]?.self, forKey: .options)),
                let optionsData = try? JSONEncoder().encode(tmpOptions),
@@ -366,9 +366,9 @@ final class ClientSession {
                    with: optionsData,
                    options: .allowFragments
                )) as? [[String: Any]] {
-                self.options = optionsJson
+                options = optionsJson
             } else {
-                self.options = nil
+                options = nil
             }
         }
 
@@ -377,7 +377,7 @@ final class ClientSession {
             try container.encode(vaultOnSuccess, forKey: .vaultOnSuccess)
             try container.encode(orderedAllowedCardNetworks, forKey: .orderedAllowedCardNetworks)
 
-            if let options = options,
+            if let options,
                let optionsData = try? JSONSerialization.data(withJSONObject: options, options: .fragmentsAllowed),
                let optionsCodable = try? JSONDecoder().decode([String: AnyCodable]?.self, from: optionsData) {
                 try container.encode(optionsCodable, forKey: .options)
@@ -414,14 +414,14 @@ final class ClientSession {
 
         required init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
-            self.clientSessionId = (try? container.decode(String?.self, forKey: .clientSessionId)) ?? nil
-            self.paymentMethod = (try? container.decode(
+            clientSessionId = (try? container.decode(String?.self, forKey: .clientSessionId)) ?? nil
+            paymentMethod = (try? container.decode(
                 ClientSession.PaymentMethod?.self,
                 forKey: .paymentMethod
             )) ?? nil
-            self.order = (try? container.decode(ClientSession.Order?.self, forKey: .order)) ?? nil
-            self.customer = (try? container.decode(ClientSession.Customer?.self, forKey: .customer)) ?? nil
-            self.testId = (try? container.decode(String?.self, forKey: .testId)) ?? nil
+            order = (try? container.decode(ClientSession.Order?.self, forKey: .order)) ?? nil
+            customer = (try? container.decode(ClientSession.Customer?.self, forKey: .customer)) ?? nil
+            testId = (try? container.decode(String?.self, forKey: .testId)) ?? nil
         }
 
         func encode(to encoder: Encoder) throws {

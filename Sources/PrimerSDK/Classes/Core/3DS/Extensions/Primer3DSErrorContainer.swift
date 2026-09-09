@@ -31,7 +31,7 @@ extension Primer3DSErrorContainer: @retroactive PrimerErrorProtocol {
             context[K.threeDsSdkTranscationId] = errorInfo.threeDsSdkTranscationId
             context[K.protocolVersion] = errorInfo.threeDsSErrorVersion
             context[K.errorId] = errorInfo.errorId
-            if let paymentMethodType = paymentMethodType {
+            if let paymentMethodType {
                 context[K.paymentMethodType] = paymentMethodType
             }
         default:
@@ -44,4 +44,6 @@ extension Primer3DSErrorContainer: @retroactive PrimerErrorProtocol {
     var continueInfo: ThreeDS.ContinueInfo {
         ThreeDS.ContinueInfo(initProtocolVersion: initProtocolVersion, error: self)
     }
+
+    public var isReportable: Bool { true }
 }

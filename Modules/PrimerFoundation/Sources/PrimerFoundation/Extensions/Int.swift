@@ -40,4 +40,33 @@ public extension Int {
     func formattedCurrencyAmount(currency: Currency) -> Decimal {
         Decimal(self) / currency.minorUnitDivisor
     }
+
+    /// Returns an accessibility-friendly currency string for VoiceOver
+    /// Uses period as decimal separator to avoid VoiceOver misreading comma as thousands separator
+    func toAccessibilityCurrencyString(currency: Currency, locale: Locale = Locale.current) -> String {
+        let amount = Decimal(self) / currency.minorUnitDivisor
+
+        // Get currency name in current locale (e.g., "euros", "dollars")
+        let currencyFormatter = NumberFormatter()
+        currencyFormatter.numberStyle = .currency
+        currencyFormatter.locale = locale
+        currencyFormatter.currencyCode = currency.code
+
+        // Format with period as decimal separator for VoiceOver clarity
+        let accessibilityFormatter = NumberFormatter()
+        accessibilityFormatter.numberStyle = .decimal
+        accessibilityFormatter.locale = Locale(identifier: "en_US") // Force period as decimal separator
+        accessibilityFormatter.usesGroupingSeparator = false // No grouping separator for clarity
+        accessibilityFormatter.minimumFractionDigits = currency.decimalDigits
+        accessibilityFormatter.maximumFractionDigits = currency.decimalDigits
+
+        guard let formattedNumber = accessibilityFormatter.string(from: amount as NSDecimalNumber) else {
+            return "\(self) \(currency.code)"
+        }
+
+        // Get currency name from locale (e.g., "euro", "US dollar")
+        let currencyName = locale.localizedString(forCurrencyCode: currency.code) ?? currency.code
+
+        return "\(formattedNumber) \(currencyName)"
+    }
 }

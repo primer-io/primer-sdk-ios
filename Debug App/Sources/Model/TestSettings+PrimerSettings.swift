@@ -75,15 +75,13 @@ struct RNPrimerSettingsMapper {
 
     static func mapStripeOptions(_ options: RNPrimerStripeOptions?) -> PrimerStripeOptions? {
         guard let key = options?.publishableKey else { return nil }
-        var mandate: PrimerStripeOptions.MandateData?
-
-        switch options?.mandateData {
+        var mandate: PrimerStripeOptions.MandateData? = switch options?.mandateData {
         case let .template(data):
-            mandate = .templateMandate(merchantName: data.merchantName)
+            .templateMandate(merchantName: data.merchantName)
         case let .full(data):
-            mandate = .fullMandate(text: data.fullMandateText)
+            .fullMandate(text: data.fullMandateText)
         case .none:
-            mandate = nil
+            nil
         }
 
         return PrimerStripeOptions(publishableKey: key, mandateData: mandate)
@@ -103,9 +101,9 @@ struct RNPrimerSettingsMapper {
         mechanisms?.compactMap {
             switch $0 {
             case .gestures:
-                return .gestures
+                .gestures
             case .closeButton:
-                return .closeButton
+                .closeButton
             }
         }
     }

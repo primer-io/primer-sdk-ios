@@ -5,6 +5,125 @@ All notable changes to `primer-sdk-ios` are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 3.0.0-beta.5 (2026-09-03)
+
+### Feat
+
+- **components**: add a brand font and separate dark colours (ORC-8268) (#1883)
+- **components**: colour input fields separately from the sheet (ORC-8118) (#1877)
+- **components**: give error text its own typography token (ORC-8264) (#1876)
+- Handle cancelled BDC flows via applyEvent (#1854)
+- Implement `http.request` step resolver (#1848)
+
+### Fix
+
+- **components**: let the card network badge follow the brand font (ORC-8277) (#1885)
+- **components**: repaint bridged fields on a colour-scheme change (ORC-8178) (#1884)
+- **components**: let the co-badge chips inherit the field (ORC-8267) (#1882)
+- **components**: paint spinners from the loader colour (ORC-8266) (#1881)
+- **components**: draw borders at the width the state calls for (ORC-8178) (#1880)
+- **components**: keep the pay button brand-filled while paying (ORC-8265)
+- **components**: drop the duplicate inputText colour helper
+- **components**: give brand-filled buttons an on-brand label (ORC-8179) (#1878)
+- **components**: take the grey ramp and xxlarge size from the design file (ORC-8263) (#1875)
+- **components**: paint the remaining colours from the theme (ORC-8114) (#1874)
+- Reject manual payment handling before the checkout starts (ORC-8313) (#1892)
+- Deliver checkout completion when the SDK result screen is disabled (ORC-8312) (#1891)
+- Report interactive sheet dismissal to the UIKit presenter delegate (#1889)
+- Mirror every card-form setter into its visible field (ORC-7506)
+- Align the strings left over from the Polish review
+- Apply Polish review feedback (ESC-1105)
+- Localize the payment method headline and CVV placeholder
+- Localize the card form's full name placeholder
+- Repair the CheckoutComponents translation workflow
+- Correct Polish CheckoutComponents copy (ESC-1105)
+- Correct Polish BLIK typo and drop-in copy (ESC-1105)
+- Fix potential memory leak of SDUIViewModel (#1860)
+- Show programmatic card-field writes in the field
+- Present vault management inline (ORC-7506)
+- Map line-item tax from the line item (ORC-7506)
+- Invoke payment gate before navigation (ORC-7506)
+- Type allowed card networks as CardNetwork (ORC-7506)
+- Close CheckoutComponents parity gaps (ORC-7506)
+- Move SDK file cache into Library/Caches/primer (#1852)
+- Resolve flaky unit tests and their root causes (#1851)
+- Bancontact raw-data tokenization (ORC-7697) (#1853)
+- Allow metadata textfield to accept raw json (#1856)
+
+### Refactor
+
+- **components**: rename the theme tokens to the shared vocabulary (ORC-8229) (#1873)
+- Drop the card form's email building block
+
+## 3.0.0-beta.4 (2026-07-31)
+
+### Feat
+
+- Add Apple Pay card type and network filtering [ORC-7503] (#1817)
+
+### Fix
+
+- Convert Apple Pay amounts by currency decimalDigits (#1816)
+- **headless**: validate cobadged cards via BIN cache (iOS↔Android parity) (#1722)
+- **apple-pay**: remove allowedCardNetworks option, rely on client session [ORC-7503] (#1822)
+
+## 3.0.0-beta.3 (2026-07-30)
+
+### Feat
+
+- Complete BDCUI (#1846)
+- Introduce PrimerBDCUI non-ui Objects (#1838)
+
+### Fix
+
+- Validate phone numbers via lookup service (ORC-7907) (#1847)
+
+### Refactor
+
+- Update StepResolver API (#1845)
+
+## 3.0.0-beta.2 (2026-07-02)
+
+### Feat
+
+- Add vault analytics events and error logging (CheckoutComponents) (#1825)
+
+### Fix
+
+- Convert Apple Pay amounts by currency decimalDigits (CheckoutComponents) (#1821)
+- Prevent script injection in CI workflows (VULN-158) (#1809)
+- Redact PCI fields in CheckoutComponents scope API (VULN-156) (#1810)
+- Apply merchant theme to inline CheckoutComponents [ORC-7505] (#1820)
+- Apply merchant theme to inline CheckoutComponents
+
+## 3.0.0-beta.1 (2026-06-24)
+
+CheckoutComponents beta (iOS 15+). This is a beta release — APIs may still change before the 3.0 GA.
+
+### Feat
+
+- CheckoutComponents: customize the checkout UI with the new composable components — `PrimerCardForm`, `PrimerPaymentMethods`, and `PrimerVaultedPaymentMethods` — each with section slots you can override, plus the `CardFormDefaults` / `PaymentMethodsDefaults` / `VaultedPaymentMethodsDefaults` building blocks for recomposing individual fields.
+- Redirect and Apple Pay payment methods now launch automatically on selection, matching Android.
+
+### Fix
+
+- Validate the web-redirect URL scheme before tokenization.
+- More reliable inline sheet presentation and dismissal in CheckoutComponents.
+- Apply `PrimerSettings` correctly in CheckoutComponents.
+
+### BREAKING CHANGE
+
+- CheckoutComponents customization now goes through the composable components above. The previous scope/closure-based customization surface has been removed — including the `scope:` parameter on `PrimerCheckout` / `presentCheckout`, custom screen closures, and per-field configuration/styling types. Migrate by embedding the composable components under `.primerCheckoutSession(_:)` and overriding their slots.
+- The payment result no longer includes the unused `metadata` field.
+- Payment status values are simplified to `pending`, `success`, and `failed`.
+- Removed the static delegate on `PrimerCheckoutPresenter`; use the presenter instance's delegate instead.
+
+## 3.0.0-b0 (2026-03-12)
+
+### Feat
+
+- Checkout Components
+
 ## 2.52.0 (2026-08-25)
 
 ### Feat

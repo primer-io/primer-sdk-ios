@@ -44,8 +44,8 @@ extension CountryCode {
 
         init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
-            self.locale = try container.decode(String.self, forKey: .locale)
-            self.countries = [:]
+            locale = try container.decode(String.self, forKey: .locale)
+            countries = [:]
 
             if let countriesWithMultipleOptionNames = try container.decodeIfPresent(
                 [CountryCode.RawValue: AnyCodable].self,
@@ -59,7 +59,7 @@ extension CountryCode {
                         updatedCountries[$0.key] = countryName
                     }
                 }
-                self.countries = updatedCountries
+                countries = updatedCountries
             }
         }
     }
@@ -83,7 +83,7 @@ extension CountryCode {
 
 extension CountryCode {
 
-    struct PhoneNumberCountryCode: Codable {
+    struct PhoneNumberCountryCode: Codable, Equatable {
         let name: String
         let dialCode: String
         let code: String

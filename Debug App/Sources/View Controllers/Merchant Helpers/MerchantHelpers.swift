@@ -1,11 +1,11 @@
 //
 //  MerchantHelpers.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import UIKit
 import PrimerSDK
+import UIKit
 
 struct MerchantMockDataManager {
 
@@ -27,7 +27,7 @@ struct MerchantMockDataManager {
     }
 
     static func getClientSession(sessionType: SessionType) -> ClientSessionRequestBody {
-        return ClientSessionRequestBody(
+        ClientSessionRequestBody(
             customerId: customerId,
             orderId: "ios-order-\(String.randomString(length: 8))",
             currencyCode: CurrencyLoader().getCurrency("EUR")?.code,
@@ -68,12 +68,12 @@ struct MerchantMockDataManager {
                         discountAmount: nil,
                         taxAmount: nil)
                 ]),
-            paymentMethod: sessionType == .generic ? genericPaymentMethod : klarnaPaymentMethod,
+            paymentMethod: getPaymentMethod(sessionType: sessionType),
             testParams: nil)
     }
 
     static func getPaymentMethod(sessionType: SessionType) -> ClientSessionRequestBody.PaymentMethod {
-        return sessionType == .generic ? genericPaymentMethod : klarnaPaymentMethod
+        sessionType == .generic ? genericPaymentMethod : klarnaPaymentMethod
     }
 
     static var genericPaymentMethod = ClientSessionRequestBody.PaymentMethod(

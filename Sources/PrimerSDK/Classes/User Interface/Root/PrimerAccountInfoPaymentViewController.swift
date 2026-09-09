@@ -14,7 +14,7 @@ final class PrimerAccountInfoPaymentViewController: PrimerFormViewController {
     init(navigationBarLogo: UIImage?, formPaymentMethodTokenizationViewModel: FormPaymentMethodTokenizationViewModel) {
         self.formPaymentMethodTokenizationViewModel = formPaymentMethodTokenizationViewModel
         super.init()
-        self.titleImage = navigationBarLogo
+        titleImage = navigationBarLogo
     }
 
     required init?(coder: NSCoder) {
@@ -26,11 +26,11 @@ final class PrimerAccountInfoPaymentViewController: PrimerFormViewController {
 
         verticalStackView.spacing = 16
 
-        if let infoView = self.formPaymentMethodTokenizationViewModel.infoView {
+        if let infoView = formPaymentMethodTokenizationViewModel.infoView {
             verticalStackView.addArrangedSubview(infoView)
         }
 
-        if let submitButton = self.formPaymentMethodTokenizationViewModel.uiModule.submitButton {
+        if let submitButton = formPaymentMethodTokenizationViewModel.uiModule.submitButton {
             verticalStackView.addArrangedSubview(submitButton)
         }
     }

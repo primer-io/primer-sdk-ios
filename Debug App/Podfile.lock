@@ -40,42 +40,42 @@ PODS:
   - IQTextView (1.0.5):
     - IQKeyboardToolbar/Placeholderable
   - Primer3DS (2.8.0)
-  - PrimerBDCCore (2.51.1):
-    - PrimerBDCEngine (= 2.51.1)
-    - PrimerFoundation (= 2.51.1)
-    - PrimerStepResolver (= 2.51.1)
-  - PrimerBDCEngine (2.51.1):
-    - PrimerFoundation (= 2.51.1)
-    - PrimerStepResolver (= 2.51.1)
-  - PrimerCore (2.51.1):
+  - PrimerBDCCore (3.0.0-beta.4):
+    - PrimerBDCEngine (= 3.0.0-beta.4)
+    - PrimerFoundation (= 3.0.0-beta.4)
+    - PrimerStepResolver (= 3.0.0-beta.4)
+  - PrimerBDCEngine (3.0.0-beta.4):
+    - PrimerFoundation (= 3.0.0-beta.4)
+    - PrimerStepResolver (= 3.0.0-beta.4)
+  - PrimerCore (3.0.0-beta.4):
     - Primer3DS
-    - PrimerFoundation (= 2.51.1)
-    - PrimerResources (= 2.51.1)
-  - PrimerFoundation (2.51.1)
+    - PrimerFoundation (= 3.0.0-beta.4)
+    - PrimerResources (= 3.0.0-beta.4)
+  - PrimerFoundation (3.0.0-beta.4)
   - PrimerIPay88MYSDK (0.1.7)
   - PrimerKlarnaSDK (1.4.0)
-  - PrimerNetworking (2.51.1):
-    - PrimerFoundation (= 2.51.1)
+  - PrimerNetworking (3.0.0-beta.4):
+    - PrimerFoundation (= 3.0.0-beta.4)
   - PrimerNolPaySDK (1.0.1)
-  - PrimerResources (2.51.1)
-  - PrimerSDK (2.51.1):
-    - PrimerSDK/Core (= 2.51.1)
-  - PrimerSDK/Core (2.51.1):
-    - PrimerBDCCore (= 2.51.1)
-    - PrimerBDCEngine (= 2.51.1)
-    - PrimerCore (= 2.51.1)
-    - PrimerFoundation (= 2.51.1)
-    - PrimerNetworking (= 2.51.1)
-    - PrimerResources (= 2.51.1)
-    - PrimerStepResolver (= 2.51.1)
-    - PrimerUI (= 2.51.1)
-  - PrimerStepResolver (2.51.1):
-    - PrimerFoundation (= 2.51.1)
+  - PrimerResources (3.0.0-beta.4)
+  - PrimerSDK (3.0.0-beta.4):
+    - PrimerSDK/Core (= 3.0.0-beta.4)
+  - PrimerSDK/Core (3.0.0-beta.4):
+    - PrimerBDCCore (= 3.0.0-beta.4)
+    - PrimerBDCEngine (= 3.0.0-beta.4)
+    - PrimerCore (= 3.0.0-beta.4)
+    - PrimerFoundation (= 3.0.0-beta.4)
+    - PrimerNetworking (= 3.0.0-beta.4)
+    - PrimerResources (= 3.0.0-beta.4)
+    - PrimerStepResolver (= 3.0.0-beta.4)
+    - PrimerUI (= 3.0.0-beta.4)
+  - PrimerStepResolver (3.0.0-beta.4):
+    - PrimerFoundation (= 3.0.0-beta.4)
   - PrimerStripeSDK (1.0.1)
-  - PrimerUI (2.51.1):
-    - PrimerCore (= 2.51.1)
-    - PrimerFoundation (= 2.51.1)
-    - PrimerResources (= 2.51.1)
+  - PrimerUI (3.0.0-beta.4):
+    - PrimerCore (= 3.0.0-beta.4)
+    - PrimerFoundation (= 3.0.0-beta.4)
+    - PrimerResources (= 3.0.0-beta.4)
 
 DEPENDENCIES:
   - IQKeyboardManagerSwift
@@ -140,20 +140,20 @@ SPEC CHECKSUMS:
   IQTextInputViewNotification: 3b9fb27a16e7ee8958cc9092cfb07a1a9e1fd559
   IQTextView: ae13b4922f22e6f027f62c557d9f4f236b19d5c7
   Primer3DS: b8b583ef260f703180870358bc55069de74f8f51
-  PrimerBDCCore: 7f5344b88a2123bda018e8aad84eab97554f640a
-  PrimerBDCEngine: df493c9d3e4712aaea45bbd9c3f1e58a8232b66a
-  PrimerCore: 01568c7aa2da10f0b6f51255d2b9237c5aaa3d8e
-  PrimerFoundation: 78c4a2437577ad06caea15f5d2a619b3b113be48
+  PrimerBDCCore: d88c196ef886a7cde923d4230bf3b25ba62c7533
+  PrimerBDCEngine: 341bae74df17252f595d66519faf2b64d587a8fd
+  PrimerCore: eeb4a145a58c4e2ddac6c2662887347a2839c328
+  PrimerFoundation: 5fa356189ee98d54cc326abc8310bd7e8b05ebdf
   PrimerIPay88MYSDK: 436ee0be7e2c97e4e81456ccddee20175e9e3c4d
   PrimerKlarnaSDK: 871d684b3a43d1f0f7cd5c3b19a6f3a23e581d49
-  PrimerNetworking: 8b80bcca22bea3b0781241c6e7b3f2983a3d0a7d
+  PrimerNetworking: f30c1024c92d5c10ea44fbb0a773566fd686cc08
   PrimerNolPaySDK: 08b140ed39b378a0b33b4f8746544a402175c0cc
-  PrimerResources: 3588c545e393a0e6942aa5b50ff00d7dc0881403
-  PrimerSDK: ed1627c6e576fd60688394ee1da08dfce6a2798e
-  PrimerStepResolver: 27bb5225697aaaf1c0159fb7c2114f9dc1a131ba
+  PrimerResources: 8d42007e62a21c8af28a7f80d1d2cc5ba80a4f03
+  PrimerSDK: 69acab817983b6d4b219ee0a1a3dd26ff7b3e5b3
+  PrimerStepResolver: 2ce1edf9eea3b37819ad25390f16b47eb61835d8
   PrimerStripeSDK: dce5e37d10223ee724f33d1cdeaa17235a71ddbb
-  PrimerUI: 61a2acfe539e74e1c6f017d7339749e951ff4f5f
+  PrimerUI: f36fd8c559f507e904cd7ecbaa13e2c342042705
 
-PODFILE CHECKSUM: b33ea0f762b33b7c191f41dd3256e79f47dccc09
+PODFILE CHECKSUM: 98d1048cba1fd1f0cc031e88ea8b9ab9519b2ae8
 
 COCOAPODS: 1.16.2

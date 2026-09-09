@@ -25,7 +25,7 @@ final class QRCodeViewController: PrimerFormViewController {
     init(viewModel: QRCodeTokenizationViewModel) {
         self.viewModel = viewModel
         super.init()
-        self.titleImage = viewModel.uiModule.logo
+        titleImage = viewModel.uiModule.logo
     }
 
     override func viewDidLoad() {
