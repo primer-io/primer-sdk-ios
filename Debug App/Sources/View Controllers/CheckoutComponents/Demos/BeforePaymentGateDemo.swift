@@ -14,6 +14,7 @@ import SwiftUI
 struct BeforePaymentGateDemo: View, CheckoutComponentsDemo {
     static var metadata: DemoMetadata {
         DemoMetadata(
+            key: .beforePaymentGate,
             name: "Before Payment Gate",
             description: "Confirm terms / set idempotency key before payment",
             tags: ["PAYMENT_CARD"],

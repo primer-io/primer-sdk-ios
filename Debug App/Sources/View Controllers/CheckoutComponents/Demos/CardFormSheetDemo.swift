@@ -13,6 +13,7 @@ import SwiftUI
 struct CardFormSheetDemo: View, CheckoutComponentsDemo {
     static var metadata: DemoMetadata {
         DemoMetadata(
+            key: .cardFormSheet,
             name: "Card Form Sheet",
             description: "Card form embedded beneath a custom heading",
             tags: ["PAYMENT_CARD"],

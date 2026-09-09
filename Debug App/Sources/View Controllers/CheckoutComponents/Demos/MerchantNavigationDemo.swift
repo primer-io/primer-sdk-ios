@@ -13,6 +13,7 @@ import SwiftUI
 struct MerchantNavigationDemo: View, CheckoutComponentsDemo {
     static var metadata: DemoMetadata {
         DemoMetadata(
+            key: .merchantNavigation,
             name: "Merchant Navigation",
             description: "Tabbed checkout + profile navigation",
             tags: ["PAYMENT_CARD", "VAULT"],

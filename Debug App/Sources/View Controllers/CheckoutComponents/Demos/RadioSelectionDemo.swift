@@ -14,6 +14,7 @@ import SwiftUI
 struct RadioSelectionDemo: View, CheckoutComponentsDemo {
     static var metadata: DemoMetadata {
         DemoMetadata(
+            key: .radioSelection,
             name: "Radio Selection",
             description: "Radio group with a floating Pay button",
             tags: ["PAYMENT_CARD", "APM"],

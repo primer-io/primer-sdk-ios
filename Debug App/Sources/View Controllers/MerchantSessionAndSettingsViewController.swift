@@ -181,8 +181,11 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     var applePayShippingAdditionalContactFields: [PrimerApplePayOptions.RequiredContactField]? = []
     var applePayCheckProvidedNetworks = false
 
-    private var deepLinkSettings: PrimerSettings?
-    private var deepLinkClientToken: String?
+    var deepLinkSettings: PrimerSettings?
+    var deepLinkClientToken: String?
+    /// Raw `demo` value of the last deep link, held until the view is on screen and can present it.
+    var pendingDeepLinkDemo: String?
+    let deepLinkErrorLabel = UILabel()
 
     func setAccessibilityIds() {
         view.accessibilityIdentifier = "Background View"
@@ -236,6 +239,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
         handleAppetizeIfNeeded(AppLinkConfigProvider())
 
         setupCheckoutComponentsButtons()
+        setupDeepLinkErrorLabel()
         fixLayoutConstraints()
 
         render()
@@ -244,11 +248,19 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             self, selector: #selector(handleAppetizeConfig), name: NSNotification.Name.appetizeURLHandled,
             object: nil
         )
+        // A link that launched the app was parsed before this observer existed.
+        handleAppetizeConfig()
     }
 
-    @objc func handleAppetizeConfig(_ notification: NSNotification) {
-        if let payloadProvider = notification.object as? DeeplinkConfigProvider {
-            handleAppetizeIfNeeded(AppLinkConfigProvider(payloadProvider: payloadProvider))
+    @objc func handleAppetizeConfig() {
+        guard let payload = SDKDemoUrlHandler.consumePendingPayload() else { return }
+        clearDeepLinkFailure()
+        let configProvider = AppLinkConfigProvider(payloadProvider: payload)
+        handleAppetizeIfNeeded(configProvider)
+        if configProvider.fetchClientToken() == nil {
+            reportDeepLinkFailure("clientToken missing")
+        } else if let failure = configProvider.settingsFailure {
+            reportDeepLinkFailure(failure)
         }
     }
 
@@ -264,6 +276,15 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             testingModeSegmentedControl.selectedSegmentIndex = RenderMode.deepLink.rawValue
             setRenderMode(.deepLink)
         }
+        if let demo = configProvider.demo {
+            pendingDeepLinkDemo = demo
+            presentPendingDeepLinkDemoIfPossible()
+        }
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        presentPendingDeepLinkDemoIfPossible()
     }
 
     // Function to pretty print
@@ -356,8 +377,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
              surchargeGroupStackView,
              klarnaEMDStackView].forEach { $0.isHidden = true }
             deepLinkStackView.isHidden = false
-            // Hide CheckoutComponents button in deepLink mode
-            checkoutComponentsButton?.isHidden = true
+            checkoutComponentsButton?.isHidden = false
         }
 
         gesturesDismissalSwitch.isOn = true  // Default value
@@ -1044,8 +1064,14 @@ class MerchantSessionAndSettingsViewController: UIViewController {
         
         // Set up API key and settings to pass to the menu
         customDefinedApiKey = (apiKeyTextField.text ?? "").isEmpty ? nil : apiKeyTextField.text
-        let settings = populateSettingsFromUI(dropIn: false)
-        
+        let settings: PrimerSettings
+        if renderMode == .deepLink {
+            guard let deepLinkSettings else { return reportDeepLinkFailure("settings missing or invalid") }
+            settings = deepLinkSettings
+        } else {
+            settings = populateSettingsFromUI(dropIn: false)
+        }
+
         // Configure Primer with settings
         Primer.shared.configure(settings: settings, delegate: nil)
         
@@ -1060,7 +1086,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
         let menuViewController = CheckoutComponentsMenuViewController()
         menuViewController.settings = settings
         menuViewController.clientSession = clientSession
-        menuViewController.apiVersion = apiVersion
+        menuViewController.apiVersion = renderMode == .deepLink ? settings.apiVersion : apiVersion
         menuViewController.renderMode = renderMode
         
         // Pass client token if available

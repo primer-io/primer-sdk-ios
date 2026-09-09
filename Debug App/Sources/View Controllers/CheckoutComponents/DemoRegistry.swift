@@ -25,11 +25,8 @@ enum DemoRegistry {
         }
     }
 
-    static func createDemo(id: UUID, configuration: DemoConfiguration) -> AnyView? {
-        guard let demo = allDemos.first(where: { $0.metadata.id == id }) else {
-            return nil
-        }
-        return demo.factory(configuration)
+    static func createDemo(key: DemoKey, configuration: DemoConfiguration) -> AnyView? {
+        allDemos.first { $0.metadata.key == key }?.factory(configuration)
     }
 
     private static let flowDemos: [DemoEntry] = [

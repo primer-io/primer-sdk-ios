@@ -14,6 +14,7 @@ import SwiftUI
 struct DynamicVaultDemo: View, CheckoutComponentsDemo {
     static var metadata: DemoMetadata {
         DemoMetadata(
+            key: .dynamicVault,
             name: "Dynamic Vault",
             description: "Custom single-page checkout layout",
             tags: ["VAULT", "PAYMENT_CARD"],

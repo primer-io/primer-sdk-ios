@@ -13,6 +13,7 @@ import SwiftUI
 struct RefreshClientSessionDemo: View, CheckoutComponentsDemo {
     static var metadata: DemoMetadata {
         DemoMetadata(
+            key: .refreshClientSession,
             name: "Refresh Client Session",
             description: "Verify refresh() updates state, methods, vault",
             tags: ["PAYMENT_CARD", "VAULT"],

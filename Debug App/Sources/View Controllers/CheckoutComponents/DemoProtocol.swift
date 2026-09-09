@@ -25,12 +25,14 @@ enum DemoCategory: String, CaseIterable {
 }
 
 struct DemoMetadata: Identifiable {
-    let id = UUID()
+    let key: DemoKey
     let name: String
     let description: String
     let tags: [String]
     let isCustom: Bool
     let category: DemoCategory
+
+    var id: DemoKey { key }
 }
 
 @available(iOS 15.0, *)

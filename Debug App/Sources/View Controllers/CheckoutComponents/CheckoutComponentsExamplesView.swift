@@ -11,7 +11,7 @@ import SwiftUI
 struct CheckoutComponentsExamplesView: View {
     private let configuration: DemoConfiguration
 
-    @State private var selectedDemoId: UUID?
+    @State private var selectedDemo: DemoMetadata?
 
     init(settings: PrimerSettings, apiVersion: PrimerApiVersion, clientSession: ClientSessionRequestBody? = nil, clientToken: String? = nil) {
         configuration = DemoConfiguration(
@@ -28,7 +28,7 @@ struct CheckoutComponentsExamplesView: View {
                 Section(section.category.rawValue) {
                     ForEach(section.demos) { metadata in
                         DemoRow(metadata: metadata) {
-                            selectedDemoId = metadata.id
+                            selectedDemo = metadata
                         }
                     }
                 }
@@ -36,14 +36,8 @@ struct CheckoutComponentsExamplesView: View {
         }
         .navigationTitle("Examples")
         .navigationBarTitleDisplayMode(.inline)
-        .sheet(item: $selectedDemoId) { demoId in
-            if let demoView = DemoRegistry.createDemo(id: demoId, configuration: configuration) {
-                demoView
-            }
+        .sheet(item: $selectedDemo) { demo in
+            DemoRegistry.createDemo(key: demo.key, configuration: configuration)
         }
     }
-}
-
-extension UUID: @retroactive Identifiable {
-    public var id: UUID { self }
 }

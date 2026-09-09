@@ -14,6 +14,7 @@ import SwiftUI
 struct InlineCheckoutDemo: View, CheckoutComponentsDemo {
     static var metadata: DemoMetadata {
         DemoMetadata(
+            key: .inlineCheckout,
             name: "Inline Checkout",
             description: "Embedded card form with other payment methods",
             tags: ["PAYMENT_CARD"],

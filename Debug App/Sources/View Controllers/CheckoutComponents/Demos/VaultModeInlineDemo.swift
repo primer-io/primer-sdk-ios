@@ -13,6 +13,7 @@ import SwiftUI
 struct VaultModeInlineDemo: View, CheckoutComponentsDemo {
     static var metadata: DemoMetadata {
         DemoMetadata(
+            key: .vaultModeInline,
             name: "Vault Mode Inline",
             description: "Select card → enter details → token shown",
             tags: ["VAULT", "PAYMENT_CARD"],

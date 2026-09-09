@@ -85,6 +85,42 @@ SwiftLint.lint(.files(filesToLint), inline: true, configFile: "Debug App/.swiftl
 // Coverage.xcodeBuildCoverage(.derivedDataFolder("Build"),
 //                            minimumCoverage: 30)
 
+// MARK: - CheckoutComponents demo keys
+
+// Every DemoKey case must back exactly one registered demo: the keys are the deep link's `demo` values,
+// shared with Android and the E2E suite, and the CI unit tests cannot see the registry.
+let demosRoot = "Debug App/Sources/View Controllers/CheckoutComponents"
+let demoFilesChanged = (allCreatedAndModifiedFiles + danger.git.deletedFiles).contains { $0.hasPrefix(demosRoot) }
+if demoFilesChanged {
+    let keySource = danger.utils.readFile("\(demosRoot)/DemoKey.swift")
+    let caseNames = keySource.split(separator: "\n").compactMap { line -> String? in
+        let parts = line.split(separator: " ", omittingEmptySubsequences: true)
+        guard parts.count >= 2, parts[0] == "case" else { return nil }
+        return String(parts[1])
+    }
+    // Read the demo files through FileManager rather than a `find` call: danger's exec
+    // goes through a shell, which expands `*.swift` against the repo root before find
+    // ever sees it, and a find that errors reports every key as unused.
+    let demosDirectory = "\(demosRoot)/Demos"
+    let demoSources = ((try? FileManager.default.subpathsOfDirectory(atPath: demosDirectory)) ?? [])
+        .filter { $0.hasSuffix(".swift") }
+        .map { danger.utils.readFile("\(demosDirectory)/\($0)") }
+        .joined(separator: "\n")
+    if demoSources.isEmpty {
+        // One clear failure beats one per key: an unreadable directory is a broken check,
+        // not thirty dead keys.
+        fail("No demo sources found under `\(demosDirectory)`; the DemoKey check cannot run.")
+    } else {
+        for caseName in caseNames {
+            let uses = demoSources.components(separatedBy: "key: .\(caseName),").count - 1
+                + demoSources.components(separatedBy: "meta(.\(caseName),").count - 1
+            if uses != 1 {
+                fail("`DemoKey.\(caseName)` is used by \(uses) demos; every key must back exactly one registered demo.")
+            }
+        }
+    }
+}
+
 // MARK: - CC accessibility-identifier liveness
 
 // Every member of the CC identifier registry must have a call site: a declared identifier that

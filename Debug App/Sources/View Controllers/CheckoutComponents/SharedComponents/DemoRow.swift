@@ -53,5 +53,6 @@ struct DemoRow: View {
             .padding(.vertical, 4)
         }
         .buttonStyle(.plain)
+        .accessibilityIdentifier("demo_row_\(metadata.key.rawValue)")
     }
 }

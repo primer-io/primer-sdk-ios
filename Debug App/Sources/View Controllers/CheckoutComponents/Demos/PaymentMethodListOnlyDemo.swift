@@ -13,6 +13,7 @@ import SwiftUI
 struct PaymentMethodListOnlyDemo: View, CheckoutComponentsDemo {
     static var metadata: DemoMetadata {
         DemoMetadata(
+            key: .paymentMethodListOnly,
             name: "Payment Methods Only",
             description: "Inline list — card form opens automatically",
             tags: ["PAYMENT_CARD", "APM"],

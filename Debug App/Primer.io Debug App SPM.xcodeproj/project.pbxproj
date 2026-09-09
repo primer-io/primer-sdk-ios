@@ -30,6 +30,7 @@
 		492F03383585193E7C26B8C9 /* MerchantNavigationDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6ADAAF587DB3A5098521A6D2 /* MerchantNavigationDemo.swift */; };
 		59DDEF30FEF44FB730F5877E /* DemoScaffold.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6A629098F4542CD7AAF48C8 /* DemoScaffold.swift */; };
 		5C18A7B1F844095EF2751618 /* RadioSelectionDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D31F79AE7582BAD0F31DE55 /* RadioSelectionDemo.swift */; };
+		600496940124B93B69B6548B /* MerchantSessionAndSettingsViewController+DeepLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD8BEF7F252E30833060006C /* MerchantSessionAndSettingsViewController+DeepLink.swift */; };
 		61101AC32721631C84240C2F /* DemoCheckout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93B0425B4E015B55C98BFCDA /* DemoCheckout.swift */; };
 		7A1DB74AD9E3A1F1816B7422 /* DynamicVaultDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51D2375B4BB8E65866F369C /* DynamicVaultDemo.swift */; };
 		7C23B3964A940BE52131C8A0 /* ThemeDemos.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5566004D482036A73B361C23 /* ThemeDemos.swift */; };
@@ -60,6 +61,7 @@
 		E11F475D2B06C5A40091C31F /* BanksListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F47592B06C5A40091C31F /* BanksListView.swift */; };
 		E11F475E2B06C5A40091C31F /* BanksListModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F475A2B06C5A40091C31F /* BanksListModel.swift */; };
 		E11F475F2B06C5A40091C31F /* ImageViewWithUrl.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F475B2B06C5A40091C31F /* ImageViewWithUrl.swift */; };
+		E7A7BAF6738EF9E4E3FCAD8F /* DemoKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9738210504256BA5E8E2C546 /* DemoKey.swift */; };
 		E85DCDB9E38FAA6FB5C35600 /* VaultModeInlineDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7677B39B4E8B5FFB1D2AC97D /* VaultModeInlineDemo.swift */; };
 		EF4FD717F52E7D5A1F8B3365 /* PrefillCardholderNameDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5436109D0323B5CC65FAD84A /* PrefillCardholderNameDemo.swift */; };
 		F00C65F82ACC67FA00187028 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAC5687FF32E8661F1A00CE5 /* AppDelegate.swift */; };
@@ -173,6 +175,7 @@
 		93B0425B4E015B55C98BFCDA /* DemoCheckout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DemoCheckout.swift; sourceTree = "<group>"; };
 		93F15C1E46C70C3D73B50F31 /* UIStackViewExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIStackViewExtensions.swift; sourceTree = "<group>"; };
 		942332BD921CBCAFBC77BD6D /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/Main.strings; sourceTree = "<group>"; };
+		9738210504256BA5E8E2C546 /* DemoKey.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DemoKey.swift; sourceTree = "<group>"; };
 		98079137F3DE1FE6221DA7EC /* nb */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nb; path = nb.lproj/Main.strings; sourceTree = "<group>"; };
 		9874F439DA3EA5854A454687 /* MerchantDropInUIViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchantDropInUIViewController.swift; sourceTree = "<group>"; };
 		9C5BF93F1B6021407241AFEF /* ThemedManagedDemo.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ThemedManagedDemo.swift; sourceTree = "<group>"; };
@@ -230,6 +233,7 @@
 		F9023841AFCE8E3205CB713A /* String+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Extensions.swift"; sourceTree = "<group>"; };
 		FB1F71737862EF5D0F4FE5AB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		FC8A21D574BAEF7E0ED9E9CD /* pt-PT */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-PT"; path = "pt-PT.lproj/Main.strings"; sourceTree = "<group>"; };
+		FD8BEF7F252E30833060006C /* MerchantSessionAndSettingsViewController+DeepLink.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "MerchantSessionAndSettingsViewController+DeepLink.swift"; sourceTree = "<group>"; };
 		FEEF675F553A6AD99750CB0F /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		FF4B1BBF378E48EBDBDCEE2A /* ka */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ka; path = ka.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -300,6 +304,7 @@
 				049A055B2B4BF044002CEEBA /* MerchantHeadlessVaultManagerViewController.swift */,
 				00E3C8FE62D22147335F2455 /* MerchantResultViewController.swift */,
 				C18C9664115CFDEB59FED19A /* MerchantSessionAndSettingsViewController.swift */,
+				FD8BEF7F252E30833060006C /* MerchantSessionAndSettingsViewController+DeepLink.swift */,
 			);
 			path = "View Controllers";
 			sourceTree = "<group>";
@@ -455,6 +460,7 @@
 				A79D983C2EE700350024B330 /* CheckoutComponentsMenuViewController.swift */,
 				A79D983E2EE700350024B330 /* DemoProtocol.swift */,
 				A79D983F2EE700350024B330 /* DemoRegistry.swift */,
+				9738210504256BA5E8E2C546 /* DemoKey.swift */,
 			);
 			path = CheckoutComponents;
 			sourceTree = "<group>";
@@ -696,6 +702,8 @@
 				7C23B3964A940BE52131C8A0 /* ThemeDemos.swift in Sources */,
 				36F13502C5B5108B38DFC63D /* RefreshClientSessionDemo.swift in Sources */,
 				EF4FD717F52E7D5A1F8B3365 /* PrefillCardholderNameDemo.swift in Sources */,
+				E7A7BAF6738EF9E4E3FCAD8F /* DemoKey.swift in Sources */,
+				600496940124B93B69B6548B /* MerchantSessionAndSettingsViewController+DeepLink.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -13,6 +13,7 @@ import SwiftUI
 struct CustomNavigationDemo: View, CheckoutComponentsDemo {
     static var metadata: DemoMetadata {
         DemoMetadata(
+            key: .customNavigation,
             name: "Custom Navigation",
             description: "Success screen navigates to order details",
             tags: ["PAYMENT_CARD"],

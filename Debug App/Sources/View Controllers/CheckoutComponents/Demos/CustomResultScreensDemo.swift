@@ -14,6 +14,7 @@ import SwiftUI
 struct CustomResultScreensDemo: View, CheckoutComponentsDemo {
     static var metadata: DemoMetadata {
         DemoMetadata(
+            key: .customResultScreens,
             name: "Custom Result Screens",
             description: "Custom loading, success, and error screens",
             tags: ["PAYMENT_CARD"],

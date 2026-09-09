@@ -13,6 +13,7 @@ import SwiftUI
 struct CustomPaymentMethodsDemo: View, CheckoutComponentsDemo {
     static var metadata: DemoMetadata {
         DemoMetadata(
+            key: .customPaymentMethods,
             name: "Custom Payment Methods",
             description: "Custom row via the method slot",
             tags: ["PAYMENT_CARD", "APM"],

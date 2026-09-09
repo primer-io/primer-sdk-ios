@@ -12,21 +12,21 @@ import SwiftUI
 @available(iOS 15.0, *)
 enum ThemeDemos {
     static let entries: [(metadata: DemoMetadata, theme: PrimerCheckoutTheme)] = [
-        (meta("Custom Theme", "Purple brand, rounded corners, custom type"), customTheme),
-        (meta("Red Theme", "Brand color override"), brandTheme(0xE53E3E)),
-        (meta("Green Theme", "Brand color override"), brandTheme(0x38A169)),
-        (meta("Purple Theme", "Brand color override"), brandTheme(0x805AD5)),
-        (meta("No Radius", "Sharp rectangular design via radius tokens"), noRadiusTheme),
-        (meta("Small Sizes", "Compact components via size tokens"), smallSizesTheme),
-        (meta("Large Sizes", "Bold components via size tokens"), largeSizesTheme),
-        (meta("Light Typography", "Weight-300 typography"), typographyTheme(.init(weight: .light))),
-        (meta("Bold Typography", "Weight-700 typography"), typographyTheme(.init(weight: .bold))),
-        (meta("Large Typography", "32-point typography for accessibility"), typographyTheme(.init(size: 32))),
-        (meta("Custom Font", "Custom font via typography tokens"), typographyTheme(.init(font: "Marker Felt")))
+        (meta(.customTheme, "Custom Theme", "Purple brand, rounded corners, custom type"), customTheme),
+        (meta(.redTheme, "Red Theme", "Brand color override"), brandTheme(0xE53E3E)),
+        (meta(.greenTheme, "Green Theme", "Brand color override"), brandTheme(0x38A169)),
+        (meta(.purpleTheme, "Purple Theme", "Brand color override"), brandTheme(0x805AD5)),
+        (meta(.noRadiusTheme, "No Radius", "Sharp rectangular design via radius tokens"), noRadiusTheme),
+        (meta(.smallSizesTheme, "Small Sizes", "Compact components via size tokens"), smallSizesTheme),
+        (meta(.largeSizesTheme, "Large Sizes", "Bold components via size tokens"), largeSizesTheme),
+        (meta(.lightTypographyTheme, "Light Typography", "Weight-300 typography"), typographyTheme(.init(weight: .light))),
+        (meta(.boldTypographyTheme, "Bold Typography", "Weight-700 typography"), typographyTheme(.init(weight: .bold))),
+        (meta(.largeTypographyTheme, "Large Typography", "32-point typography for accessibility"), typographyTheme(.init(size: 32))),
+        (meta(.customFontTheme, "Custom Font", "Custom font via typography tokens"), typographyTheme(.init(font: "Marker Felt")))
     ]
 
-    private static func meta(_ name: String, _ description: String) -> DemoMetadata {
-        DemoMetadata(name: name, description: description, tags: ["THEME"], isCustom: false, category: .themes)
+    private static func meta(_ key: DemoKey, _ name: String, _ description: String) -> DemoMetadata {
+        DemoMetadata(key: key, name: name, description: description, tags: ["THEME"], isCustom: false, category: .themes)
     }
 
     private static func brandTheme(_ hex: UInt32) -> PrimerCheckoutTheme {
