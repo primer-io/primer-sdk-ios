@@ -38,6 +38,30 @@ final class ClientInstructionDecodingTests: XCTestCase {
     }
 }
 
+final class ClientInstructionSetupResponseDecodingTests: XCTestCase {
+
+    func testDecodesBareSchemaAndParameters() throws {
+        let json = #"{"schema": { "steps": [] }, "parameters": { "key": "value" } }"#
+        let result = try decode(json)
+        XCTAssertEqual(result.schema, .object(["steps": .array([])]))
+        XCTAssertEqual(result.parameters, .object(["key": .string("value")]))
+    }
+
+    func testDoesNotDecodeAnInstructionEnvelope() {
+        XCTAssertThrowsError(try decode(#"{"clientInstruction": {"type": "WAIT"} }"#))
+    }
+
+    func testThrowsWhenParametersMissing() {
+        XCTAssertThrowsError(try decode(#"{"schema": { "steps": [] } }"#))
+    }
+}
+
+private extension ClientInstructionSetupResponseDecodingTests {
+    func decode(_ json: String) throws -> ClientInstructionSetupResponse {
+        try JSONDecoder().decode(ClientInstructionSetupResponse.self, from: Data(json.utf8))
+    }
+}
+
 private extension ClientInstructionDecodingTests {
     func decode(_ json: String, file: StaticString = #file, line: UInt = #line) throws -> ClientInstructionDataResponse {
         try JSONDecoder().decode(ClientInstructionDataResponse.self, from: Data(json.utf8))

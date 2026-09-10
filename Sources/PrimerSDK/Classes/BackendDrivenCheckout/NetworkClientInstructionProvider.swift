@@ -16,6 +16,11 @@ struct NetworkClientInstructionProvider: ClientInstructionProvider {
         let response: ClientSessionInstructionResponse = try await request(.pay(paymentMethod: paymentMethod))
         return response.clientInstruction.toClientInstruction(response: response)
     }
+
+    func fetchSetupFlow() async throws -> SetupFlow {
+        let response: ClientInstructionSetupResponse = try await request(.setup(paymentMethod: paymentMethod))
+        return SetupFlow(schema: response.schema, parameters: response.parameters)
+    }
     
     func fetchNextInstruction() async throws -> ClientInstruction {
         let response: ClientSessionInstructionResponse = try await request(.expandClientSession)

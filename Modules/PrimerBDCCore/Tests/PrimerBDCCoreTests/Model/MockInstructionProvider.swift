@@ -5,6 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 @_spi(PrimerInternal) import PrimerBDCCore
+@_spi(PrimerInternal) import PrimerFoundation
 
 final class MockInstructionProvider: ClientInstructionProvider {
     var error: Error?
@@ -16,7 +17,15 @@ final class MockInstructionProvider: ClientInstructionProvider {
         self.instructions = instructions
     }
 
+    var setupFlow = SetupFlow(schema: .object([:]), parameters: .object([:]))
+
     func fetchPayInstruction() async throws -> ClientInstruction { try next() }
+
+    func fetchSetupFlow() async throws -> SetupFlow {
+        fetchCount += 1
+        if let error { throw error }
+        return setupFlow
+    }
     func fetchNextInstruction() async throws -> ClientInstruction { try next() }
 
     private func next() throws -> ClientInstruction {

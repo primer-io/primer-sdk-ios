@@ -21,6 +21,17 @@ public struct CurrentAttemptDataResponse: Codable {
     let approvalStatus: String?
 }
 
+@_spi(PrimerInternal)
+public struct SetupFlow {
+    public let schema: CodableValue
+    public let parameters: CodableValue
+
+    public init(schema: CodableValue, parameters: CodableValue) {
+        self.schema = schema
+        self.parameters = parameters
+    }
+}
+
 public enum CheckoutOutcome {
     case complete
     case failure

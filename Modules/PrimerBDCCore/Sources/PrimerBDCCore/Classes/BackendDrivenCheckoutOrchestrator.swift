@@ -55,6 +55,18 @@ public final class BackendDrivenCheckoutOrchestrator {
         }
     }
 
+    public func runSetup(
+        pciUrl: String?,
+        coreUrl: String?,
+        instructionProvider: ClientInstructionProvider
+    ) async throws {
+        let flow = try await instructionProvider.fetchSetupFlow()
+        let sdk = SDKUrls(pciUrl: pciUrl, coreUrl: coreUrl)
+        let object = InitialState(params: flow.parameters, sdk: sdk, currentAttempt: nil)
+        let initialState = try object.casted(to: CodableValue.self)
+        try await stepOrchestrator.start(rawSchema: flow.schema.jsonString, initialState: initialState)
+    }
+
     private func resolveOutcome(_ outcome: CheckoutOutcome?, payment: PaymentInfo?) throws -> CheckoutResult {
         switch outcome {
         case .complete: return .success(payment: payment)
