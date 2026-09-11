@@ -5,6 +5,19 @@ All notable changes to `primer-sdk-ios` are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 3.0.0-beta.6 (2026-09-11)
+
+### Feat
+
+- Open a CheckoutComponents demo straight from a deep link (ORC-7710) (#1890)
+- Stable accessibility identifiers for CC surfaces (ORC-7709) (#1886)
+
+### Fix
+
+- **components**: repaint payment method tiles on a colour-scheme change (ORC-8363) (#1896)
+- Correct Polish BLIK typo and drop-in copy (ESC-1105) (#1871)
+- Fire willCreatePayment after Apple Pay authorization (ORC-8210) (#1866)
+
 ## 3.0.0-beta.5 (2026-09-03)
 
 ### Feat
