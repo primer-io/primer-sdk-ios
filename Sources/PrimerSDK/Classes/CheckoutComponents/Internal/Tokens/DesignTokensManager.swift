@@ -37,7 +37,7 @@ final class DesignTokensManager: ObservableObject {
     tokens = loadedTokens
   }
 
-  /// Injected before references resolve, so tokens aliasing a palette entry or the brand font follow the override.
+  /// Injected before references resolve, so tokens aliasing the brand colour or the brand font follow the override.
   private func tokenValueOverrides(colors: ColorOverrides?) -> [String: Any] {
     var overrides: [String: Any] = [:]
     if let brandFont = themeOverrides?.typography?.brand {
@@ -49,27 +49,11 @@ final class DesignTokensManager: ObservableObject {
         overrides["primerTypographyBrand"] = brandFont
       }
     }
-    guard let colors else { return overrides }
-    let pairs: [(String, Color?)] = [
-      ("primerColorBrand", colors.primerColorBrand),
-      ("primerColorGray000", colors.primerColorGray000),
-      ("primerColorGray100", colors.primerColorGray100),
-      ("primerColorGray200", colors.primerColorGray200),
-      ("primerColorGray300", colors.primerColorGray300),
-      ("primerColorGray400", colors.primerColorGray400),
-      ("primerColorGray500", colors.primerColorGray500),
-      ("primerColorGray600", colors.primerColorGray600),
-      ("primerColorGray900", colors.primerColorGray900),
-      ("primerColorGreen500", colors.primerColorGreen500),
-      ("primerColorRed100", colors.primerColorRed100),
-      ("primerColorRed500", colors.primerColorRed500),
-      ("primerColorRed900", colors.primerColorRed900),
-      ("primerColorBlue500", colors.primerColorBlue500),
-      ("primerColorBlue900", colors.primerColorBlue900),
-    ]
-    return pairs.reduce(into: overrides) { result, pair in
-      if let color = pair.1, let components = Self.colorComponents(color) { result[pair.0] = components }
+    guard let brand = colors?.primerColorBrand, let components = Self.colorComponents(brand) else {
+      return overrides
     }
+    overrides["primerColorBrand"] = components
+    return overrides
   }
 
   /// Previews and tests call this with no overrides so they resolve what production resolves.
@@ -158,32 +142,14 @@ final class DesignTokensManager: ObservableObject {
   }
 
   private func applyColorOverrides(to tokens: DesignTokens, from colors: ColorOverrides) {
-    applyBrandAndGrayColorOverrides(to: tokens, from: colors)
+    if let value = colors.primerColorBrand { tokens.primerColorBrand = value }
     applySemanticColorOverrides(to: tokens, from: colors)
     applyTextColorOverrides(to: tokens, from: colors)
     applyBorderColorOverrides(to: tokens, from: colors)
     applyIconAndOtherColorOverrides(to: tokens, from: colors)
   }
 
-  private func applyBrandAndGrayColorOverrides(to tokens: DesignTokens, from colors: ColorOverrides) {
-    if let value = colors.primerColorBrand { tokens.primerColorBrand = value }
-    if let value = colors.primerColorGray000 { tokens.primerColorGray000 = value }
-    if let value = colors.primerColorGray100 { tokens.primerColorGray100 = value }
-    if let value = colors.primerColorGray200 { tokens.primerColorGray200 = value }
-    if let value = colors.primerColorGray300 { tokens.primerColorGray300 = value }
-    if let value = colors.primerColorGray400 { tokens.primerColorGray400 = value }
-    if let value = colors.primerColorGray500 { tokens.primerColorGray500 = value }
-    if let value = colors.primerColorGray600 { tokens.primerColorGray600 = value }
-    if let value = colors.primerColorGray900 { tokens.primerColorGray900 = value }
-  }
-
   private func applySemanticColorOverrides(to tokens: DesignTokens, from colors: ColorOverrides) {
-    if let value = colors.primerColorGreen500 { tokens.primerColorGreen500 = value }
-    if let value = colors.primerColorRed100 { tokens.primerColorRed100 = value }
-    if let value = colors.primerColorRed500 { tokens.primerColorRed500 = value }
-    if let value = colors.primerColorRed900 { tokens.primerColorRed900 = value }
-    if let value = colors.primerColorBlue500 { tokens.primerColorBlue500 = value }
-    if let value = colors.primerColorBlue900 { tokens.primerColorBlue900 = value }
     if let value = colors.primerColorBackgroundPrimary {
       tokens.primerColorBackgroundPrimary = value
       // the input fill aliases the sheet, so it follows unless the merchant names it too
