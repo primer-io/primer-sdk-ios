@@ -46,7 +46,7 @@ extension PrimerInputFieldContainer {
 
   func makeTextFieldContainerBackgroundBackground() -> some View {
     RoundedRectangle(cornerRadius: fieldCornerRadius)
-      .fill(CheckoutColors.inputBackground(tokens: tokens))
+      .fill(fieldBackgroundColor)
   }
 
   func makeTextFieldContainerWarning() -> some View {
