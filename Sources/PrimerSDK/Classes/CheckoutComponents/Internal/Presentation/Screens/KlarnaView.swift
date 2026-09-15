@@ -113,7 +113,7 @@ struct KlarnaView: View, LogReporter {
           .frame(width: Layout.logoWidth, height: Layout.logoHeight)
       } else {
         Text(CheckoutComponentsStrings.klarnaBrandName)
-          .font(PrimerFont.titleLarge(tokens: tokens))
+          .primerTypography(.titleLarge, tokens: tokens)
           .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
       }
     }
@@ -159,11 +159,11 @@ struct KlarnaView: View, LogReporter {
         .frame(height: PrimerSpacing.small(tokens: tokens))
 
       Text(CheckoutComponentsStrings.klarnaLoadingTitle)
-        .font(PrimerFont.bodyLarge(tokens: tokens))
+        .primerTypography(.bodyLarge, tokens: tokens)
         .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
 
       Text(CheckoutComponentsStrings.klarnaLoadingSubtitle)
-        .font(PrimerFont.bodyMedium(tokens: tokens))
+        .primerTypography(.bodyMedium, tokens: tokens)
         .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
 
       Spacer()
@@ -213,7 +213,7 @@ struct KlarnaView: View, LogReporter {
 
           // Category name
           Text(category.name)
-            .font(PrimerFont.bodyLarge(tokens: tokens))
+            .primerTypography(.bodyLarge, tokens: tokens)
             .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
 
           Spacer()
@@ -272,7 +272,7 @@ struct KlarnaView: View, LogReporter {
         .fill(CheckoutColors.gray300(tokens: tokens).opacity(Layout.placeholderOpacity))
         .overlay(
           Text("K")
-            .font(PrimerFont.bodyLarge(tokens: tokens))
+            .primerTypography(.bodyLarge, tokens: tokens)
             .foregroundColor(.white)
         )
     }
@@ -308,7 +308,7 @@ struct KlarnaView: View, LogReporter {
   private func makeFinalizationContent() -> some View {
     VStack(spacing: PrimerSpacing.xlarge(tokens: tokens)) {
       Text(CheckoutComponentsStrings.klarnaSelectCategoryDescription)
-        .font(PrimerFont.bodyMedium(tokens: tokens))
+        .primerTypography(.bodyMedium, tokens: tokens)
         .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
         .multilineTextAlignment(.center)
 

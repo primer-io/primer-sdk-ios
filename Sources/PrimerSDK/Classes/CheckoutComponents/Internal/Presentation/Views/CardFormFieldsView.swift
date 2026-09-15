@@ -99,7 +99,7 @@ struct CardFormFieldsView: View {
     if !formConfiguration.billingFields.isEmpty {
       VStack(alignment: .leading, spacing: PrimerSpacing.small(tokens: tokens)) {
         Text(CheckoutComponentsStrings.billingAddressTitle)
-          .font(PrimerFont.headline(tokens: tokens))
+          .primerTypography(.headline, tokens: tokens)
           .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
 
         VStack(spacing: 0) {
@@ -272,7 +272,7 @@ struct CardFormFieldsView: View {
 
     case .retailer:
       Text(CheckoutComponentsStrings.retailOutletNotImplemented)
-        .font(PrimerFont.caption(tokens: tokens))
+        .primerTypography(.caption, tokens: tokens)
         .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
         .padding(PrimerSpacing.large(tokens: tokens))
 

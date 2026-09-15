@@ -18,14 +18,14 @@ struct AchMandateView: View, LogReporter {
   var body: some View {
     VStack(spacing: PrimerSpacing.large(tokens: tokens)) {
       Text(CheckoutComponentsStrings.achMandateTitle)
-        .font(PrimerFont.titleLarge(tokens: tokens))
+        .primerTypography(.titleLarge, tokens: tokens)
         .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
         .multilineTextAlignment(.center)
         .accessibilityIdentifier(AccessibilityIdentifiers.Ach.mandateTitle)
 
       ScrollView {
         Text(achState.mandateText ?? "")
-          .font(PrimerFont.bodyMedium(tokens: tokens))
+          .primerTypography(.bodyMedium, tokens: tokens)
           .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
           .multilineTextAlignment(.leading)
           .padding(PrimerSpacing.medium(tokens: tokens))
@@ -67,7 +67,7 @@ struct AchMandateView: View, LogReporter {
   private func makeDeclineButton() -> some View {
     Button(action: scope.declineMandate) {
       Text(CheckoutComponentsStrings.achMandateDeclineButton)
-        .font(PrimerFont.body(tokens: tokens))
+        .primerTypography(.body, tokens: tokens)
         .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
         .frame(maxWidth: .infinity)
         .padding(.vertical, PrimerSpacing.large(tokens: tokens))

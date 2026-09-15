@@ -40,7 +40,7 @@ struct VaultedPaymentMethodsListScreen: View {
   private func makeTitle() -> some View {
     HStack {
       Text(CheckoutComponentsStrings.allSavedPaymentMethods)
-        .font(PrimerFont.titleXLarge(tokens: tokens))
+        .primerTypography(.titleXLarge, tokens: tokens)
         .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
 
       Spacer()

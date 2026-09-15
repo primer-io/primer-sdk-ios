@@ -19,7 +19,7 @@ struct AchUserDetailsView: View, LogReporter {
   var body: some View {
     VStack(spacing: PrimerSpacing.large(tokens: tokens)) {
       Text(CheckoutComponentsStrings.achPersonalDetailsSubtitle)
-        .font(PrimerFont.bodyLarge(tokens: tokens))
+        .primerTypography(.bodyLarge, tokens: tokens)
         .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
         .multilineTextAlignment(.center)
         .accessibilityIdentifier(AccessibilityIdentifiers.Ach.userDetailsTitle)
@@ -76,7 +76,7 @@ struct AchUserDetailsView: View, LogReporter {
       .accessibilityIdentifier(AccessibilityIdentifiers.Ach.emailField)
 
       Text(CheckoutComponentsStrings.achEmailDisclaimer)
-        .font(PrimerFont.bodySmall(tokens: tokens))
+        .primerTypography(.bodySmall, tokens: tokens)
         .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
         .accessibilityIdentifier(AccessibilityIdentifiers.Ach.emailDisclaimer)
     }

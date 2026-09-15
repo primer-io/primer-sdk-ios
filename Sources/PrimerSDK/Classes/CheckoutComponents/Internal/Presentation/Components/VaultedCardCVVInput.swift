@@ -68,7 +68,7 @@ struct VaultedCardCVVInput: View {
           .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
 
         Text(CheckoutComponentsStrings.cvvRecaptureInstruction)
-          .font(PrimerFont.bodySmall(tokens: tokens))
+          .primerTypography(.bodySmall, tokens: tokens)
           .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
           .lineLimit(2)
           .fixedSize(horizontal: false, vertical: true)
@@ -93,7 +93,7 @@ struct VaultedCardCVVInput: View {
       .keyboardType(.numberPad)
       .focused($isFocused)
       .multilineTextAlignment(.leading)
-      .font(PrimerFont.bodyLarge(tokens: tokens))
+      .primerFieldTypography(.bodyLarge, tokens: tokens)
       .foregroundColor(CheckoutColors.inputText(tokens: tokens))
       .padding(.horizontal, PrimerSpacing.medium(tokens: tokens))
       .frame(width: PrimerComponentWidth.cvvFieldMax, height: PrimerSize.xxlarge(tokens: tokens))
@@ -121,7 +121,7 @@ struct VaultedCardCVVInput: View {
 
   private func makeErrorLabel(_ message: String) -> some View {
     Text(message)
-      .font(PrimerFont.error(tokens: tokens))
+      .primerTypography(.error, tokens: tokens)
       .foregroundColor(CheckoutColors.textNegative(tokens: tokens))
   }
 

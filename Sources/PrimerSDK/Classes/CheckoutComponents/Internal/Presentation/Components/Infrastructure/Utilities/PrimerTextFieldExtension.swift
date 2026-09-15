@@ -118,12 +118,15 @@ extension UITextField {
     font = textFont
     adjustsFontForContentSizeCategory = true
     textColor = UIColor(CheckoutColors.inputText(tokens: tokens))
+    // A UITextField kerns typed text from its default attributes, not from `font`.
+    if let letterSpacing = PrimerTextStyle.bodyLarge.letterSpacing(tokens: tokens) {
+      defaultTextAttributes[.kern] = letterSpacing
+    }
 
     // Placeholder styling with design tokens
-    let placeholderColor = UIColor(CheckoutColors.textPlaceholder(tokens: tokens))
     attributedPlaceholder = NSAttributedString(
       string: placeholder,
-      attributes: [.foregroundColor: placeholderColor, .font: textFont]
+      attributes: Self.primerPlaceholderAttributes(font: textFont, tokens: tokens)
     )
 
     inputAccessoryView = Self.makeDoneAccessory(
@@ -142,11 +145,25 @@ extension UITextField {
     textColor = UIColor(CheckoutColors.inputText(tokens: tokens))
     attributedPlaceholder = NSAttributedString(
       string: placeholder,
-      attributes: [
-        .foregroundColor: UIColor(CheckoutColors.textPlaceholder(tokens: tokens)),
-        .font: font ?? PrimerFont.uiFontBodyLarge(tokens: tokens)
-      ]
+      attributes: Self.primerPlaceholderAttributes(
+        font: font ?? PrimerFont.uiFontBodyLarge(tokens: tokens),
+        tokens: tokens
+      )
     )
+  }
+
+  private static func primerPlaceholderAttributes(
+    font: UIFont,
+    tokens: DesignTokens?
+  ) -> [NSAttributedString.Key: Any] {
+    var attributes: [NSAttributedString.Key: Any] = [
+      .foregroundColor: UIColor(CheckoutColors.textPlaceholder(tokens: tokens)),
+      .font: font
+    ]
+    if let letterSpacing = PrimerTextStyle.bodyLarge.letterSpacing(tokens: tokens) {
+      attributes[.kern] = letterSpacing
+    }
+    return attributes
   }
 
   /// Auto-sizing keyboard toolbar with a trailing "Done" button.

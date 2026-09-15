@@ -143,7 +143,7 @@ struct QRCodeView: View, LogReporter {
       if let amount = configurationService?.amount,
         let currency = configurationService?.currency {
         Text(amount.toCurrencyString(currency: currency))
-          .font(PrimerFont.titleXLarge(tokens: tokens))
+          .primerTypography(.titleXLarge, tokens: tokens)
           .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
           .frame(maxWidth: .infinity, alignment: .leading)
           .accessibilityIdentifier(AccessibilityIdentifiers.QRCode.amountLabel)
@@ -154,13 +154,13 @@ struct QRCodeView: View, LogReporter {
   private func makeTitleSection() -> some View {
     VStack(alignment: .leading, spacing: PrimerSpacing.small(tokens: tokens)) {
       Text(CheckoutComponentsStrings.qrCodeScanInstruction)
-        .font(PrimerFont.titleLarge(tokens: tokens))
+        .primerTypography(.titleLarge, tokens: tokens)
         .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
         .frame(maxWidth: .infinity, alignment: .leading)
         .accessibilityIdentifier(AccessibilityIdentifiers.QRCode.instructionTitle)
 
       Text(CheckoutComponentsStrings.qrCodeUploadInstruction)
-        .font(PrimerFont.bodyMedium(tokens: tokens))
+        .primerTypography(.bodyMedium, tokens: tokens)
         .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
         .frame(maxWidth: .infinity, alignment: .leading)
         .accessibilityIdentifier(AccessibilityIdentifiers.QRCode.instructionSubtitle)

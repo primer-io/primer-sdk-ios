@@ -53,7 +53,7 @@ struct DeleteVaultedPaymentMethodConfirmationScreen: View, LogReporter {
       // Title
       HStack {
         Text(CheckoutComponentsStrings.allSavedPaymentMethods)
-          .font(PrimerFont.titleXLarge(tokens: tokens))
+          .primerTypography(.titleXLarge, tokens: tokens)
           .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
         Spacer()
       }
@@ -72,7 +72,7 @@ struct DeleteVaultedPaymentMethodConfirmationScreen: View, LogReporter {
   private func makeConfirmationSection() -> some View {
     VStack(alignment: .leading, spacing: PrimerSpacing.small(tokens: tokens)) {
       Text(CheckoutComponentsStrings.deletePaymentMethodConfirmation)
-        .font(PrimerFont.bodySmall(tokens: tokens))
+        .primerTypography(.bodySmall, tokens: tokens)
         .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
 
       HStack(spacing: PrimerSpacing.small(tokens: tokens)) {
@@ -88,7 +88,7 @@ struct DeleteVaultedPaymentMethodConfirmationScreen: View, LogReporter {
   private func makeCancelButton() -> some View {
     Button(action: { navigator.navigateBack() }) {
       Text(CheckoutComponentsStrings.cancelButton)
-        .font(PrimerFont.titleLarge(tokens: tokens))
+        .primerTypography(.titleLarge, tokens: tokens)
         .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
         .frame(maxWidth: .infinity)
         .padding(PrimerSpacing.medium(tokens: tokens))
