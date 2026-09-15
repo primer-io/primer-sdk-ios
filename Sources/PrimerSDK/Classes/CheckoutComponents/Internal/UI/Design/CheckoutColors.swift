@@ -48,6 +48,11 @@ enum CheckoutColors {
     tokens?.primerColorBorderOutlinedFocus ?? .blue
   }
 
+  /// A locked field's fill, the same token Android and React Native use for it.
+  static func backgroundOutlinedDisabled(tokens: DesignTokens?) -> Color {
+    tokens?.primerColorBackgroundOutlinedDisabled ?? Color(.systemGray6)
+  }
+
   static func borderDisabled(tokens: DesignTokens?) -> Color {
     tokens?.primerColorBorderOutlinedDisabled ?? Color(.systemGray4)
   }
