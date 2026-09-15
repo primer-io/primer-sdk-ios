@@ -620,7 +620,7 @@ final class DesignTokensManagerTests: XCTestCase {
 
             // Then
             let tokens = try XCTUnwrap(manager.tokens, "'\(badValue)' discarded the whole token set")
-            XCTAssertEqual(tokens.primerColorBrand, .purple, "'\(badValue)' discarded the colour override")
+            XCTAssertEqual(tokens.primerColorBrand, .purple, "'\(badValue)' discarded the color override")
             XCTAssertEqual(tokens.primerRadiusMedium, 30, "'\(badValue)' discarded the radius override")
             XCTAssertEqual(tokens.primerTypographyBrand, "Inter")
             XCTAssertEqual(tokens.primerTypographyBodyMediumFont, "Inter")
@@ -771,13 +771,13 @@ final class DesignTokensManagerTests: XCTestCase {
         try await sut.fetchTokens(for: .dark)
         let dark = try XCTUnwrap(sut.tokens?.primerColorBrand)
 
-        // Then the one colour applies in both, exactly as it did before darkColors existed
+        // Then the one color applies in both, exactly as it did before darkColors existed
         XCTAssertEqual(light, .pink)
         XCTAssertEqual(dark, .pink)
     }
 
     func test_applyTheme_darkColours_winInDarkModeAndFallBackPerProperty() async throws {
-        // Given a dark set that names the brand and leaves the text colour to the light set
+        // Given a dark set that names the brand and leaves the text color to the light set
         sut.applyTheme(
             PrimerCheckoutTheme(
                 colors: ColorOverrides(primerColorBrand: .pink, primerColorTextPrimary: .green),
@@ -808,7 +808,7 @@ final class DesignTokensManagerTests: XCTestCase {
         let loaded = try XCTUnwrap(sut.tokens)
         let unthemed = try DesignTokensManager.makeTokens(for: .dark)
 
-        // Then every colour token equals an unthemed dark load, so the resolution costs nothing
+        // Then every color token equals an unthemed dark load, so the resolution costs nothing
         let themed = colorTokens(of: loaded)
         XCTAssertFalse(themed.isEmpty)
         XCTAssertEqual(themed, colorTokens(of: unthemed))
@@ -825,7 +825,7 @@ final class DesignTokensManagerTests: XCTestCase {
         try await sut.fetchTokens(for: .dark)
         let dark = try XCTUnwrap(sut.tokens?.primerColorBrand)
 
-        // Then light keeps the shipped colour and only dark moves
+        // Then light keeps the shipped color and only dark moves
         XCTAssertEqual(light, shippedBrand)
         XCTAssertEqual(dark, .blue)
     }
@@ -861,7 +861,7 @@ final class DesignTokensManagerTests: XCTestCase {
     }
 
     func test_fetchTokens_aliasOverride_winsOverBrandOverride() async throws {
-        // Given both the brand colour and the token that aliases it are overridden
+        // Given both the brand color and the token that aliases it are overridden
         sut.applyTheme(
             PrimerCheckoutTheme(
                 colors: ColorOverrides(
@@ -1006,10 +1006,10 @@ final class DesignTokensManagerTests: XCTestCase {
         let flat = DesignTokensProcessor.flattenTokenDictionary(
             DesignTokensProcessor.convertHexColors(in: dict))
 
-        // Then every colour leaf has somewhere to land, so none is silently dropped
+        // Then every color leaf has somewhere to land, so none is silently dropped
         let declared = Set(Mirror(reflecting: DesignTokens()).children.compactMap(\.label))
         let missing = flat.keys.filter { $0.hasPrefix("primerColor") && !declared.contains($0) }.sorted()
-        XCTAssertTrue(missing.isEmpty, "base.json colour tokens with no DesignTokens property: \(missing)")
+        XCTAssertTrue(missing.isEmpty, "base.json color tokens with no DesignTokens property: \(missing)")
     }
 
     private func tokens(for colorScheme: ColorScheme) async throws -> DesignTokens {
@@ -1021,7 +1021,7 @@ final class DesignTokensManagerTests: XCTestCase {
     // MARK: - Input Token Inheritance
 
     func test_applyTheme_backgroundOverrideAlone_carriesIntoTheInputFill() async throws {
-        // Given only the sheet colour is overridden
+        // Given only the sheet color is overridden
         sut.applyTheme(PrimerCheckoutTheme(colors: ColorOverrides(primerColorBackgroundPrimary: .pink)))
 
         // When

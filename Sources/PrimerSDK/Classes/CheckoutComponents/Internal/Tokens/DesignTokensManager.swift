@@ -26,7 +26,7 @@ final class DesignTokensManager: ObservableObject {
   // MARK: - Token Loading
 
   func fetchTokens(for colorScheme: ColorScheme) async throws {
-    // the only place the colour scheme picks a set, so everything below works off one resolved set
+    // the only place the color scheme picks a set, so everything below works off one resolved set
     let colors = themeOverrides?.resolvedColors(for: colorScheme)
     let loadedTokens = try Self.makeTokens(
       for: colorScheme, valueOverrides: tokenValueOverrides(colors: colors))
@@ -37,7 +37,7 @@ final class DesignTokensManager: ObservableObject {
     tokens = loadedTokens
   }
 
-  /// Injected before references resolve, so tokens aliasing the brand colour or the brand font follow the override.
+  /// Injected before references resolve, so tokens aliasing the brand color or the brand font follow the override.
   private func tokenValueOverrides(colors: ColorOverrides?) -> [String: Any] {
     var overrides: [String: Any] = [:]
     if let brandFont = themeOverrides?.typography?.brand {
@@ -108,7 +108,7 @@ final class DesignTokensManager: ObservableObject {
     var alpha: CGFloat = 0
     guard UIColor(color).getRed(&red, green: &green, blue: &blue, alpha: &alpha) else {
       PrimerLogging.shared.logger.error(
-        message: "[DesignTokens] Palette override ignored: colour has no readable RGB components.")
+        message: "[DesignTokens] Palette override ignored: color has no readable RGB components.")
       return nil
     }
     return [red, green, blue, alpha]
