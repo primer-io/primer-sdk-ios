@@ -104,7 +104,7 @@ struct CardFormScreen: View, LogReporter {
   private var submitButtonSection: some View {
     let isEnabled = cardFormState.isValid && !cardFormState.isLoading
 
-    return PrimerButton(
+    return PrimerCheckoutButton(
       payTitle(accessible: false),
       isEnabled: isEnabled,
       isLoading: cardFormState.isLoading,

@@ -52,7 +52,7 @@ struct AchMandateView: View, LogReporter {
   }
 
   private func makeAcceptButton() -> some View {
-    PrimerButton(
+    PrimerCheckoutButton(
       CheckoutComponentsStrings.achMandateAcceptButton,
       accessibilityConfiguration: AccessibilityConfiguration(
         identifier: AccessibilityIdentifiers.Ach.mandateAcceptButton,

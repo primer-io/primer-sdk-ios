@@ -86,7 +86,7 @@ struct AchUserDetailsView: View, LogReporter {
     if let customButton = scope.submitButton {
       AnyView(customButton(scope))
     } else {
-      PrimerButton(
+      PrimerCheckoutButton(
         CheckoutComponentsStrings.achContinueButton,
         isEnabled: achState.isSubmitEnabled,
         accessibilityConfiguration: AccessibilityConfiguration(

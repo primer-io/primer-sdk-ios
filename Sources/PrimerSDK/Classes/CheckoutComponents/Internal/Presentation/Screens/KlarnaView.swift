@@ -284,7 +284,7 @@ struct KlarnaView: View, LogReporter {
 
   @MainActor
   private func makePrimaryButton(title: String, action: @escaping () -> Void) -> some View {
-    PrimerButton(title, action: action)
+    PrimerCheckoutButton(title, action: action)
   }
 
   // MARK: - Authorize Button

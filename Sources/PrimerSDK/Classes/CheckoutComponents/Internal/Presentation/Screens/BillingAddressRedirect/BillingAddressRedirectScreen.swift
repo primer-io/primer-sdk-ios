@@ -244,7 +244,7 @@ struct BillingAddressRedirectScreen: View {
     if let customButton = scope.submitButton {
       AnyView(customButton(scope))
     } else {
-      PrimerButton(
+      PrimerCheckoutButton(
         submitButtonText,
         isEnabled: billingState.isFormValid,
         isLoading: isSubmitInFlight,

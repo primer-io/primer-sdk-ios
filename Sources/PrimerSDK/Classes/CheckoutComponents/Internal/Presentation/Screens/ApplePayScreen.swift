@@ -139,7 +139,7 @@ struct ApplePayScreen: View {
       Spacer()
 
       if presentationContext.shouldShowBackButton {
-        PrimerButton(
+        PrimerCheckoutButton(
           CheckoutComponentsStrings.applePayChooseOther,
           accessibilityConfiguration: AccessibilityConfiguration(
             identifier: AccessibilityIdentifiers.ApplePay.chooseOtherButton,

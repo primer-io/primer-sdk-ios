@@ -1,5 +1,5 @@
 //
-//  PrimerButton.swift
+//  PrimerCheckoutButton.swift
 //
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
@@ -14,7 +14,7 @@ import SwiftUI
 /// Disabled means grey. Loading keeps the button's own resting look and adds a spinner, so a shopper
 /// never sees the disabled colour on a button that is taking their money.
 @available(iOS 15.0, *)
-struct PrimerButton<Label: View>: View {
+struct PrimerCheckoutButton<Label: View>: View {
 
   /// Filled is the pay button. Outlined is the same shape with a border and no fill.
   enum Style {
@@ -111,7 +111,7 @@ struct PrimerButton<Label: View>: View {
 }
 
 @available(iOS 15.0, *)
-extension PrimerButton where Label == Text {
+extension PrimerCheckoutButton where Label == Text {
   /// The common case: a button whose label is a single string.
   init(
     _ title: String,

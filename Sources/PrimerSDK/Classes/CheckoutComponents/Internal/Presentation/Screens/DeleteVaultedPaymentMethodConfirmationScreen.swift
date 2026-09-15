@@ -116,7 +116,7 @@ struct DeleteVaultedPaymentMethodConfirmationScreen: View, LogReporter {
   // MARK: - Delete Button
 
   private func makeDeleteButton() -> some View {
-    PrimerButton(
+    PrimerCheckoutButton(
       CheckoutComponentsStrings.deleteButton,
       isLoading: isDeleting,
       accessibilityConfiguration: AccessibilityConfiguration(

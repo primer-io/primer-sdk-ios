@@ -129,7 +129,7 @@ struct FormRedirectScreen: View {
     }
 
     private func makeDefaultSubmitButton() -> some View {
-        PrimerButton(
+        PrimerCheckoutButton(
             scope.submitButtonText ?? defaultSubmitButtonText,
             isEnabled: currentState.isSubmitEnabled,
             isLoading: currentState.isLoading,

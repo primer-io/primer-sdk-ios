@@ -59,7 +59,7 @@ struct VaultSection: View {
   // MARK: - Pay Button
 
   private func makePayButton() -> some View {
-    PrimerButton(
+    PrimerCheckoutButton(
       CheckoutComponentsStrings.payButton,
       isEnabled: isPayButtonEnabled,
       isLoading: isLoading,

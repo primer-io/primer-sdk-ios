@@ -67,7 +67,7 @@ struct ErrorScreen: View {
   }
 
   private func makeRetryButton() -> some View {
-    PrimerButton(
+    PrimerCheckoutButton(
       CheckoutComponentsStrings.retryButton,
       accessibilityConfiguration: AccessibilityConfiguration(
         identifier: AccessibilityIdentifiers.Error.retryButton,

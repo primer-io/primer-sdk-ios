@@ -212,7 +212,7 @@ private struct VaultedSubmitContent: View {
   let onSubmit: () -> Void
 
   var body: some View {
-    PrimerButton(
+    PrimerCheckoutButton(
       CheckoutComponentsStrings.payButton,
       isEnabled: isEnabled,
       isLoading: isLoading,
