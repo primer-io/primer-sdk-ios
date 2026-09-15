@@ -55,7 +55,7 @@ struct ApplePayScreen: View {
       Spacer()
 
       Text(CheckoutComponentsStrings.applePayTitle)
-        .font(PrimerFont.titleLarge(tokens: tokens))
+        .primerTypography(.titleLarge, tokens: tokens)
         .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
         .accessibilityIdentifier(AccessibilityIdentifiers.ApplePay.title)
         .accessibilityAddTraits(.isHeader)
@@ -104,7 +104,7 @@ struct ApplePayScreen: View {
         .accessibilityIdentifier(AccessibilityIdentifiers.ApplePay.processingIndicator)
 
       Text(CheckoutComponentsStrings.applePayProcessing)
-        .font(PrimerFont.bodyMedium(tokens: tokens))
+        .primerTypography(.bodyMedium, tokens: tokens)
         .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
         .accessibilityIdentifier(AccessibilityIdentifiers.ApplePay.processingLabel)
     }
@@ -122,14 +122,14 @@ struct ApplePayScreen: View {
         .accessibilityHidden(true)
 
       Text(CheckoutComponentsStrings.applePayUnavailable)
-        .font(PrimerFont.titleLarge(tokens: tokens))
+        .primerTypography(.titleLarge, tokens: tokens)
         .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
         .accessibilityIdentifier(AccessibilityIdentifiers.ApplePay.unavailableTitle)
         .accessibilityAddTraits(.isHeader)
 
       if let error = scope.structuredState.availabilityError {
         Text(error)
-          .font(PrimerFont.bodyMedium(tokens: tokens))
+          .primerTypography(.bodyMedium, tokens: tokens)
           .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
           .multilineTextAlignment(.center)
           .padding(.horizontal, PrimerSpacing.xxlarge(tokens: tokens))

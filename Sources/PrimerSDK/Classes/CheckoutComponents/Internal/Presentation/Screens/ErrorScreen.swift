@@ -37,13 +37,13 @@ struct ErrorScreen: View {
         .accessibilityHidden(true)
 
       Text(CheckoutComponentsStrings.paymentFailed)
-        .font(PrimerFont.titleLarge(tokens: tokens))
+        .primerTypography(.titleLarge, tokens: tokens)
         .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
         .accessibilityIdentifier(AccessibilityIdentifiers.Error.title)
         .accessibilityAddTraits(.isHeader)
 
       Text(error.errorDescription ?? CheckoutComponentsStrings.unexpectedError)
-        .font(PrimerFont.bodyMedium(tokens: tokens))
+        .primerTypography(.bodyMedium, tokens: tokens)
         .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
         .multilineTextAlignment(.center)
         .padding(.horizontal, PrimerSpacing.xxlarge(tokens: tokens))
@@ -83,8 +83,7 @@ struct ErrorScreen: View {
       onChooseOtherPaymentMethods?()
     } label: {
       Text(CheckoutComponentsStrings.chooseOtherPaymentMethod)
-        .font(PrimerFont.bodyMedium(tokens: tokens))
-        .fontWeight(.semibold)
+        .primerTypography(.bodyMedium, tokens: tokens)
         .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
         .frame(maxWidth: .infinity)
         .padding(.vertical, PrimerSpacing.medium(tokens: tokens))

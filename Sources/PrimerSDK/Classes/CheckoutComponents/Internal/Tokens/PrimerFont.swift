@@ -140,20 +140,20 @@ enum PrimerFont {
   }
 
   /// Large icon font (48pt, weight 400) - for large icon displays
-  static func uiFontLargeIcon(tokens _: DesignTokens?) -> UIFont {
-    uiFont(family: "Inter", weight: 400, size: 48)
+  static func uiFontLargeIcon(tokens: DesignTokens?) -> UIFont {
+    uiFont(family: tokens?.primerTypographyBrand, weight: 400, size: 48)
   }
 
   /// Extra large icon font (56pt, weight 400) - for extra large icon displays
   static func uiFontExtraLargeIcon(tokens: DesignTokens?) -> UIFont {
-    let size = tokens?.primerSizeXxxlarge ?? 56
-    return uiFont(family: "Inter", weight: 400, size: size)
+    uiFont(family: tokens?.primerTypographyBrand, weight: 400, size: tokens?.primerSizeXxxlarge ?? 56)
   }
 
-  /// Small badge font (10pt, weight 500) - for compact badge text.
-  /// No typography token defines a 10pt style, so only the family follows the theme.
+  /// Small badge font (10pt) - for compact badge text.
+  /// No typography token defines a 10pt style, so the size stays fixed and the rest follows
+  /// body small.
   static func uiFontSmallBadge(tokens: DesignTokens?) -> UIFont {
-    uiFont(family: tokens?.primerTypographyBrand ?? "Inter", weight: 500, size: 10)
+    uiFont(family: tokens?.primerTypographyBodySmallFont, weight: tokens?.primerTypographyBodySmallWeight, size: 10)
   }
 
   // MARK: - SwiftUI Typography Helpers

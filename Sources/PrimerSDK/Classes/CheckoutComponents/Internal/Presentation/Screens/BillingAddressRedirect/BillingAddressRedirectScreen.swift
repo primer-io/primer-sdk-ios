@@ -76,14 +76,14 @@ struct BillingAddressRedirectScreen: View {
       }
 
       Text(paymentMethodDisplayName)
-        .font(PrimerFont.titleXLarge(tokens: tokens))
+        .primerTypography(.titleXLarge, tokens: tokens)
         .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
         .frame(maxWidth: .infinity, alignment: .leading)
         .accessibilityAddTraits(.isHeader)
 
       if let surcharge = billingState.surchargeAmount {
         Text(surcharge)
-          .font(PrimerFont.bodySmall(tokens: tokens))
+          .primerTypography(.bodySmall, tokens: tokens)
           .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
       }
     }
@@ -142,7 +142,7 @@ struct BillingAddressRedirectScreen: View {
   private func makeCountryField() -> some View {
     VStack(alignment: .leading, spacing: PrimerSpacing.xsmall(tokens: tokens)) {
       Text(CheckoutComponentsStrings.countryLabel)
-        .font(PrimerFont.bodySmall(tokens: tokens))
+        .primerTypography(.bodySmall, tokens: tokens)
         .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
 
       Menu {
@@ -181,7 +181,7 @@ struct BillingAddressRedirectScreen: View {
 
       if let error = billingState.errors[.countryCode] {
         Text(error.message)
-          .font(PrimerFont.error(tokens: tokens))
+          .primerTypography(.error, tokens: tokens)
           .foregroundColor(CheckoutColors.textNegative(tokens: tokens))
       }
     }
@@ -197,11 +197,11 @@ struct BillingAddressRedirectScreen: View {
   ) -> some View {
     VStack(alignment: .leading, spacing: PrimerSpacing.xsmall(tokens: tokens)) {
       Text(label)
-        .font(PrimerFont.bodySmall(tokens: tokens))
+        .primerTypography(.bodySmall, tokens: tokens)
         .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
 
       TextField(placeholder, text: text)
-        .font(PrimerFont.bodyLarge(tokens: tokens))
+        .primerFieldTypography(.bodyLarge, tokens: tokens)
         .foregroundColor(CheckoutColors.inputText(tokens: tokens))
         .padding(.vertical, PrimerSpacing.medium(tokens: tokens))
         .padding(.horizontal, PrimerSpacing.medium(tokens: tokens))
@@ -219,7 +219,7 @@ struct BillingAddressRedirectScreen: View {
 
       if let error = billingState.errors[fieldType] {
         Text(error.message)
-          .font(PrimerFont.error(tokens: tokens))
+          .primerTypography(.error, tokens: tokens)
           .foregroundColor(CheckoutColors.textNegative(tokens: tokens))
       }
     }

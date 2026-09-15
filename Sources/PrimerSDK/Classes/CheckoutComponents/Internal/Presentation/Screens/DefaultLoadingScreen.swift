@@ -26,7 +26,7 @@ struct DefaultLoadingScreen: View {
           ))
 
       Text(CheckoutComponentsStrings.loading)
-        .font(PrimerFont.bodyMedium(tokens: tokens))
+        .primerTypography(.bodyMedium, tokens: tokens)
         .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
     }
     .frame(height: 300)

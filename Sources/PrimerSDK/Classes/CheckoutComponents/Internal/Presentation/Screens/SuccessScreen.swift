@@ -37,7 +37,7 @@ struct SuccessScreen: View {
         VStack(spacing: PrimerSpacing.xsmall(tokens: tokens)) {
           // Primary success message
           Text(CheckoutComponentsStrings.paymentSuccessful)
-            .font(PrimerFont.bodyLarge(tokens: tokens))
+            .primerTypography(.bodyLarge, tokens: tokens)
             .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
             .multilineTextAlignment(.center)
             .accessibilityIdentifier(AccessibilityIdentifiers.Success.title)
@@ -45,7 +45,7 @@ struct SuccessScreen: View {
 
           // Secondary redirect message
           Text(CheckoutComponentsStrings.redirectConfirmationMessage)
-            .font(PrimerFont.bodyMedium(tokens: tokens))
+            .primerTypography(.bodyMedium, tokens: tokens)
             .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
             .multilineTextAlignment(.center)
             .accessibilityIdentifier(AccessibilityIdentifiers.Success.description)

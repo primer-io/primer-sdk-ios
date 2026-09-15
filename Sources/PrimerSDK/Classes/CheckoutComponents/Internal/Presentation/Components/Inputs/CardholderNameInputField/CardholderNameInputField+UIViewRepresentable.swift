@@ -33,8 +33,6 @@ struct CardholderNameTextField: UIViewRepresentable, LogReporter {
       doneButtonAction: #selector(Coordinator.doneButtonTapped)
     )
 
-    textField.font = PrimerFont.uiFontBodyLarge(tokens: tokens)
-
     context.coordinator.repainter.markApplied(tokens)
 
     return textField

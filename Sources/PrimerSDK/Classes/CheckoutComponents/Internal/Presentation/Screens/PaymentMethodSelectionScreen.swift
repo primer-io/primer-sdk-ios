@@ -43,7 +43,7 @@ struct PaymentMethodSelectionScreen: View, LogReporter {
     HStack {
       if let formattedAmount {
         Text(CheckoutComponentsStrings.paymentAmountTitle(formattedAmount))
-          .font(PrimerFont.titleXLarge(tokens: tokens))
+          .primerTypography(.titleXLarge, tokens: tokens)
           .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
           .accessibilityAddTraits(.isHeader)
       }
@@ -100,7 +100,7 @@ struct PaymentMethodSelectionScreen: View, LogReporter {
   private func makeShowOtherWaysToPayButton() -> some View {
     Button(action: scope.showOtherWaysToPay) {
       Text(CheckoutComponentsStrings.showOtherWaysToPay)
-        .font(PrimerFont.titleLarge(tokens: tokens))
+        .primerTypography(.titleLarge, tokens: tokens)
         .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
         .frame(maxWidth: .infinity)
         .padding(PrimerSpacing.medium(tokens: tokens))

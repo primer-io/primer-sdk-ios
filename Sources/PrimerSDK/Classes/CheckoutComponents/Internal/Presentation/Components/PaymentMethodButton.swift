@@ -24,7 +24,7 @@ struct PaymentMethodButton: View {
       HStack(spacing: PrimerSpacing.large(tokens: tokens)) {
         icon
         Text(method.buttonText ?? method.name)
-          .font(PrimerFont.bodyLarge(tokens: tokens))
+          .primerTypography(.bodyLarge, tokens: tokens)
           .foregroundColor(
             method.textColor.map(Color.init) ?? CheckoutColors.textPrimary(tokens: tokens))
       }
