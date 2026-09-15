@@ -70,29 +70,6 @@ public struct ColorOverrides: Equatable {
 
   public let primerColorBrand: Color?
 
-  // MARK: Grays (matching internal DesignTokens)
-
-  public let primerColorGray000: Color?
-  public let primerColorGray100: Color?
-  public let primerColorGray200: Color?
-  public let primerColorGray300: Color?
-  public let primerColorGray400: Color?
-  public let primerColorGray500: Color?
-  public let primerColorGray600: Color?
-  public let primerColorGray900: Color?
-
-  // MARK: Semantic Colors (matching internal DesignTokens)
-
-  /// Success color (internal: primerColorGreen500)
-  public let primerColorGreen500: Color?
-  /// Error colors (internal: primerColorRed100, primerColorRed500, primerColorRed900)
-  public let primerColorRed100: Color?
-  public let primerColorRed500: Color?
-  public let primerColorRed900: Color?
-  /// Info/link colors (internal: primerColorBlue500, primerColorBlue900)
-  public let primerColorBlue500: Color?
-  public let primerColorBlue900: Color?
-
   // MARK: Semantic UI Colors (matching internal DesignTokens)
 
   public let primerColorBackgroundPrimary: Color?
@@ -148,20 +125,6 @@ public struct ColorOverrides: Equatable {
 
   public init(
     primerColorBrand: Color? = nil,
-    primerColorGray000: Color? = nil,
-    primerColorGray100: Color? = nil,
-    primerColorGray200: Color? = nil,
-    primerColorGray300: Color? = nil,
-    primerColorGray400: Color? = nil,
-    primerColorGray500: Color? = nil,
-    primerColorGray600: Color? = nil,
-    primerColorGray900: Color? = nil,
-    primerColorGreen500: Color? = nil,
-    primerColorRed100: Color? = nil,
-    primerColorRed500: Color? = nil,
-    primerColorRed900: Color? = nil,
-    primerColorBlue500: Color? = nil,
-    primerColorBlue900: Color? = nil,
     primerColorBackgroundPrimary: Color? = nil,
     primerColorBackgroundSecondary: Color? = nil,
     primerColorBackgroundOutlinedDefault: Color? = nil,
@@ -202,20 +165,6 @@ public struct ColorOverrides: Equatable {
     primerColorLoader: Color? = nil
   ) {
     self.primerColorBrand = primerColorBrand
-    self.primerColorGray000 = primerColorGray000
-    self.primerColorGray100 = primerColorGray100
-    self.primerColorGray200 = primerColorGray200
-    self.primerColorGray300 = primerColorGray300
-    self.primerColorGray400 = primerColorGray400
-    self.primerColorGray500 = primerColorGray500
-    self.primerColorGray600 = primerColorGray600
-    self.primerColorGray900 = primerColorGray900
-    self.primerColorGreen500 = primerColorGreen500
-    self.primerColorRed100 = primerColorRed100
-    self.primerColorRed500 = primerColorRed500
-    self.primerColorRed900 = primerColorRed900
-    self.primerColorBlue500 = primerColorBlue500
-    self.primerColorBlue900 = primerColorBlue900
     self.primerColorBackgroundPrimary = primerColorBackgroundPrimary
     self.primerColorBackgroundSecondary = primerColorBackgroundSecondary
     self.primerColorBackgroundOutlinedDefault = primerColorBackgroundOutlinedDefault
@@ -506,20 +455,6 @@ extension ColorOverrides {
     guard let base else { return self }
     return ColorOverrides(
       primerColorBrand: primerColorBrand ?? base.primerColorBrand,
-      primerColorGray000: primerColorGray000 ?? base.primerColorGray000,
-      primerColorGray100: primerColorGray100 ?? base.primerColorGray100,
-      primerColorGray200: primerColorGray200 ?? base.primerColorGray200,
-      primerColorGray300: primerColorGray300 ?? base.primerColorGray300,
-      primerColorGray400: primerColorGray400 ?? base.primerColorGray400,
-      primerColorGray500: primerColorGray500 ?? base.primerColorGray500,
-      primerColorGray600: primerColorGray600 ?? base.primerColorGray600,
-      primerColorGray900: primerColorGray900 ?? base.primerColorGray900,
-      primerColorGreen500: primerColorGreen500 ?? base.primerColorGreen500,
-      primerColorRed100: primerColorRed100 ?? base.primerColorRed100,
-      primerColorRed500: primerColorRed500 ?? base.primerColorRed500,
-      primerColorRed900: primerColorRed900 ?? base.primerColorRed900,
-      primerColorBlue500: primerColorBlue500 ?? base.primerColorBlue500,
-      primerColorBlue900: primerColorBlue900 ?? base.primerColorBlue900,
       primerColorBackgroundPrimary: primerColorBackgroundPrimary ?? base.primerColorBackgroundPrimary,
       primerColorBackgroundSecondary: primerColorBackgroundSecondary ?? base.primerColorBackgroundSecondary,
       primerColorBackgroundOutlinedDefault: primerColorBackgroundOutlinedDefault ?? base.primerColorBackgroundOutlinedDefault,
