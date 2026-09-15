@@ -996,6 +996,53 @@ final class DesignTokensManagerTests: XCTestCase {
         XCTAssertEqual(tokens.primerTypographyErrorLineHeight, tokens.primerTypographyBodySmallLineHeight)
     }
 
+    func test_applyTheme_bodySmallOverride_carriesOntoErrorText() async throws {
+        // Given only body small is overridden
+        sut.applyTheme(
+            PrimerCheckoutTheme(
+                typography: TypographyOverrides(bodySmall: .init(size: 14, lineHeight: 18))))
+
+        // When
+        try await sut.fetchTokens(for: .light)
+
+        // Then the error line under the field grows with the label above it
+        let tokens = try XCTUnwrap(sut.tokens)
+        XCTAssertEqual(tokens.primerTypographyBodySmallSize, 14)
+        XCTAssertEqual(tokens.primerTypographyErrorSize, 14)
+        XCTAssertEqual(tokens.primerTypographyErrorLineHeight, 18)
+    }
+
+    func test_applyTheme_errorOverride_winsOverTheBodySmallItInherits() async throws {
+        // Given both are overridden
+        sut.applyTheme(
+            PrimerCheckoutTheme(
+                typography: TypographyOverrides(
+                    bodySmall: .init(size: 14, lineHeight: 18),
+                    error: .init(size: 10))))
+
+        // When
+        try await sut.fetchTokens(for: .light)
+
+        // Then error takes what it names and inherits the rest, so the link is one way
+        let tokens = try XCTUnwrap(sut.tokens)
+        XCTAssertEqual(tokens.primerTypographyErrorSize, 10)
+        XCTAssertEqual(tokens.primerTypographyErrorLineHeight, 18)
+    }
+
+    func test_applyTheme_bodySmallFontOverride_carriesOntoErrorText() async throws {
+        // Given body small names its own typeface
+        sut.applyTheme(
+            PrimerCheckoutTheme(typography: TypographyOverrides(bodySmall: .init(font: "Georgia"))))
+
+        // When
+        try await sut.fetchTokens(for: .light)
+
+        // Then the error text follows it
+        let tokens = try XCTUnwrap(sut.tokens)
+        XCTAssertEqual(tokens.primerTypographyBodySmallFont, "Georgia")
+        XCTAssertEqual(tokens.primerTypographyErrorFont, "Georgia")
+    }
+
     // MARK: - Token file coverage
 
     func test_baseTokenFile_everyColourLeafHasAMatchingTokenProperty() throws {
