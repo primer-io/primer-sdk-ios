@@ -41,12 +41,12 @@ struct SelectCountryScreen: View, LogReporter {
     .navigationBarTitleDisplayMode(.inline)
     .toolbar {
       ToolbarItem(placement: .navigationBarTrailing) {
-        Button(CheckoutComponentsStrings.cancelButton) {
-          onDismiss?()
-        }
-        .foregroundColor(CheckoutColors.textLink(tokens: tokens))
-        .accessibilityIdentifier(AccessibilityIdentifiers.SelectCountry.cancelButton)
-        .accessibilityLabel(CheckoutComponentsStrings.a11yCancel)
+        CheckoutHeaderButton(
+          config: .closeButton(
+            identifier: AccessibilityIdentifiers.SelectCountry.cancelButton,
+            action: { onDismiss?() }
+          )
+        )
       }
     }
   }

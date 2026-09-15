@@ -86,31 +86,17 @@ struct DeleteVaultedPaymentMethodConfirmationScreen: View, LogReporter {
   // MARK: - Cancel Button
 
   private func makeCancelButton() -> some View {
-    Button(action: { navigator.navigateBack() }) {
-      Text(CheckoutComponentsStrings.cancelButton)
-        .font(PrimerFont.titleLarge(tokens: tokens))
-        .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
-        .frame(maxWidth: .infinity)
-        .padding(PrimerSpacing.medium(tokens: tokens))
-        .background(
-          RoundedRectangle(cornerRadius: PrimerRadius.medium(tokens: tokens))
-            .fill(CheckoutColors.background(tokens: tokens))
-        )
-        .overlay(
-          RoundedRectangle(cornerRadius: PrimerRadius.medium(tokens: tokens))
-            .stroke(
-              CheckoutColors.borderDefault(tokens: tokens),
-              lineWidth: PrimerBorderWidth.standard(tokens: tokens)
-            )
-        )
-    }
-    .buttonStyle(PlainButtonStyle())
-    .accessibility(
-      config: AccessibilityConfiguration(
+    PrimerCheckoutButton(
+      style: .outlined,
+      accessibilityConfiguration: AccessibilityConfiguration(
         identifier: AccessibilityIdentifiers.Common.cancelButton,
         label: CheckoutComponentsStrings.a11yCancel,
         traits: [.isButton]
-      ))
+      ),
+      action: navigator.navigateBack
+    ) {
+      Text(CheckoutComponentsStrings.cancelButton)
+    }
   }
 
   // MARK: - Delete Button

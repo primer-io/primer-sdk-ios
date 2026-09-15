@@ -154,26 +154,39 @@ private struct FormFieldView: View {
     let onSubmit: () -> Void
 
     @Environment(\.designTokens) private var tokens
-    @FocusState private var isFocused: Bool
+    @FocusState private var hasKeyboardFocus: Bool
+    @State private var isFocused = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: PrimerSpacing.small(tokens: tokens)) {
-            Text(field.label)
-                .font(PrimerFont.caption(tokens: tokens))
-                .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
+            PrimerInputFieldContainer(
+                label: field.label,
+                text: valueBinding,
+                isValid: .constant(field.errorMessage == nil),
+                errorMessage: .constant(field.errorMessage),
+                isFocused: $isFocused,
+                textFieldBuilder: makeInputField
+            )
+            .accessibility(
+                config: AccessibilityConfiguration(
+                    identifier: accessibilityIdentifier,
+                    label: accessibilityLabel,
+                    hint: accessibilityHint,
+                    traits: []
+                ),
+                combinesChildren: false
+            )
 
-            makeInputField()
-
-            if let errorMessage = field.errorMessage {
-                Text(errorMessage)
-                    .font(PrimerFont.error(tokens: tokens))
-                    .foregroundColor(CheckoutColors.textNegative(tokens: tokens))
-            } else if let helperText = field.helperText {
+            if field.errorMessage == nil, let helperText = field.helperText {
                 Text(helperText)
                     .font(PrimerFont.caption(tokens: tokens))
                     .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
             }
         }
+    }
+
+    private var valueBinding: Binding<String> {
+        Binding(get: { field.value }, set: onValueChanged)
     }
 
     private func makeInputField() -> some View {
@@ -185,51 +198,14 @@ private struct FormFieldView: View {
                     .accessibilityIdentifier(AccessibilityIdentifiers.FormRedirect.phonePrefix)
             }
 
-            TextField(field.placeholder, text: Binding(
-                get: { field.value },
-                set: { onValueChanged($0) }
-            ))
-            .font(PrimerFont.bodyLarge(tokens: tokens))
-            .foregroundColor(CheckoutColors.inputText(tokens: tokens))
-            .keyboardType(field.keyboardType.uiKeyboardType)
-            .textContentType(field.fieldType.textContentType)
-            .focused($isFocused)
-            .onSubmit { onSubmit() }
-            .accessibility(
-                config: AccessibilityConfiguration(
-                    identifier: accessibilityIdentifier,
-                    label: accessibilityLabel,
-                    hint: accessibilityHint,
-                    traits: []
-                )
-            )
-        }
-        .padding(.horizontal, PrimerSpacing.medium(tokens: tokens))
-        .padding(.vertical, PrimerSpacing.medium(tokens: tokens))
-        .background(
-            RoundedRectangle(cornerRadius: PrimerRadius.small(tokens: tokens))
-                .stroke(borderColor, lineWidth: borderWidth)
-                .background(
-                    RoundedRectangle(cornerRadius: PrimerRadius.small(tokens: tokens))
-                        .fill(CheckoutColors.inputBackground(tokens: tokens))
-                )
-        )
-    }
-
-    private var borderWidth: CGFloat {
-        if field.errorMessage != nil { return PrimerBorderWidth.error(tokens: tokens) }
-        return isFocused
-            ? PrimerBorderWidth.focused(tokens: tokens)
-            : PrimerBorderWidth.standard(tokens: tokens)
-    }
-
-    private var borderColor: Color {
-        if field.errorMessage != nil {
-            CheckoutColors.borderError(tokens: tokens)
-        } else if isFocused {
-            CheckoutColors.inputBorderFocused(tokens: tokens)
-        } else {
-            CheckoutColors.inputBorder(tokens: tokens)
+            TextField(field.placeholder, text: valueBinding)
+                .font(PrimerFont.bodyLarge(tokens: tokens))
+                .foregroundColor(CheckoutColors.inputText(tokens: tokens))
+                .keyboardType(field.keyboardType.uiKeyboardType)
+                .textContentType(field.fieldType.textContentType)
+                .focused($hasKeyboardFocus)
+                .onSubmit(onSubmit)
+                .onChange(of: hasKeyboardFocus) { isFocused = $0 }
         }
     }
 

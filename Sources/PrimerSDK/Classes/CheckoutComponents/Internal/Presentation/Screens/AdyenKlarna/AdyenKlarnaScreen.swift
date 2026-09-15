@@ -69,13 +69,12 @@ struct AdyenKlarnaScreen: View {
                 Spacer()
 
                 if scope.dismissalMechanism.contains(.closeButton) {
-                    Button(CheckoutComponentsStrings.cancelButton, action: scope.cancel)
-                        .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
-                        .accessibility(config: AccessibilityConfiguration(
+                    CheckoutHeaderButton(
+                        config: .closeButton(
                             identifier: AccessibilityIdentifiers.AdyenKlarna.cancelButton,
-                            label: CheckoutComponentsStrings.a11yCancel,
-                            traits: [.isButton]
-                        ))
+                            action: scope.cancel
+                        )
+                    )
                 }
             }
 
