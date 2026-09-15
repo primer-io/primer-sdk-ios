@@ -744,10 +744,10 @@ final class DesignTokensManagerTests: XCTestCase {
     // MARK: - Dark Mode with Overrides
 
     func test_applyTheme_darkModeWithOverrides_overridesAppliedOnDarkBase() async throws {
-        // Given
+        // Given a dark set, which is the only thing dark mode reads
         let customColor = Color.pink
         let theme = PrimerCheckoutTheme(
-            colors: ColorOverrides(primerColorBrand: customColor)
+            darkColors: ColorOverrides(primerColorBrand: customColor)
         )
         sut.applyTheme(theme)
 
@@ -762,7 +762,7 @@ final class DesignTokensManagerTests: XCTestCase {
     // MARK: - Light and Dark Colour Sets
 
     func test_applyTheme_lightColoursOnly_doNotReachDarkMode() async throws {
-        // Given the single colours parameter every existing integration passes
+        // Given the single colors parameter every existing integration passes
         let shippedDarkBrand = try await tokens(for: .dark).primerColorBrand
         sut.applyTheme(PrimerCheckoutTheme(colors: ColorOverrides(primerColorBrand: .pink)))
 
@@ -838,7 +838,7 @@ final class DesignTokensManagerTests: XCTestCase {
     }
 
     func test_applyTheme_noColourOverrides_matchesAnUnthemedLoad() async throws {
-        // Given a theme that names no colours at all
+        // Given a theme that names no colors at all
         sut.applyTheme(PrimerCheckoutTheme())
 
         // When
@@ -934,12 +934,12 @@ final class DesignTokensManagerTests: XCTestCase {
     }
 
     func test_fetchTokens_brandOverride_cascadesInDarkMode() async throws {
-        // Given
+        // Given a dark set, since dark mode no longer borrows from the light one
         let baseline = try await tokens(for: .dark)
         let unthemedBorder = try XCTUnwrap(baseline.primerColorBorderOutlinedSelected)
 
         let override = Color(red: 0.25, green: 0.5, blue: 0.75)
-        sut.applyTheme(PrimerCheckoutTheme(colors: ColorOverrides(primerColorBrand: override)))
+        sut.applyTheme(PrimerCheckoutTheme(darkColors: ColorOverrides(primerColorBrand: override)))
 
         // When
         try await sut.fetchTokens(for: .dark)
