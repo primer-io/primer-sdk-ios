@@ -50,12 +50,7 @@ extension PrimerInputFieldContainer {
   }
 
   func makeTextFieldContainerWarning() -> some View {
-    let iconSize = PrimerSize.medium(tokens: tokens)
-    return Image(systemName: "exclamationmark.triangle.fill")
-      .resizable()
-      .aspectRatio(contentMode: .fit)
-      .frame(width: iconSize, height: iconSize)
-      .foregroundColor(CheckoutColors.iconNegative(tokens: tokens))
+    PrimerFieldErrorIcon()
   }
 }
 

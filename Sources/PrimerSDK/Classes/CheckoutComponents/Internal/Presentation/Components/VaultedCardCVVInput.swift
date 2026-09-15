@@ -89,26 +89,27 @@ struct VaultedCardCVVInput: View {
   // MARK: - CVV Text Field
 
   private func makeCvvTextField() -> some View {
-    SecureField(cvvPlaceholder, text: filteredCvvBinding)
-      .keyboardType(.numberPad)
-      .focused($isFocused)
-      .multilineTextAlignment(.leading)
-      .primerFieldTypography(.bodyLarge, tokens: tokens)
-      .foregroundColor(CheckoutColors.inputText(tokens: tokens))
-      .padding(.horizontal, PrimerSpacing.medium(tokens: tokens))
-      .frame(width: PrimerComponentWidth.cvvFieldMax, height: PrimerSize.xxlarge(tokens: tokens))
-      .background(
-        RoundedRectangle(cornerRadius: PrimerRadius.small(tokens: tokens))
-          .fill(CheckoutColors.inputBackground(tokens: tokens))
-      )
-      .overlay(
-        RoundedRectangle(cornerRadius: PrimerRadius.small(tokens: tokens))
-          .stroke(
-            cvvBorderColor,
-            lineWidth: isFocused
-              ? PrimerBorderWidth.focused(tokens: tokens) : PrimerBorderWidth.standard(tokens: tokens))
-      )
-      .accessibility(
+    HStack(spacing: PrimerSpacing.xsmall(tokens: tokens)) {
+      SecureField(cvvPlaceholder, text: filteredCvvBinding)
+        .keyboardType(.numberPad)
+        .focused($isFocused)
+        .multilineTextAlignment(.leading)
+        .primerFieldTypography(.bodyLarge, tokens: tokens)
+        .foregroundColor(CheckoutColors.inputText(tokens: tokens))
+
+      if errorMessage != nil { PrimerFieldErrorIcon() }
+    }
+    .padding(.horizontal, PrimerSpacing.medium(tokens: tokens))
+    .frame(width: PrimerComponentWidth.cvvFieldMax, height: PrimerSize.xxlarge(tokens: tokens))
+    .background(
+      RoundedRectangle(cornerRadius: PrimerRadius.small(tokens: tokens))
+        .fill(CheckoutColors.inputBackground(tokens: tokens))
+    )
+    .overlay(
+      RoundedRectangle(cornerRadius: PrimerRadius.small(tokens: tokens))
+        .stroke(cvvBorderColor, lineWidth: cvvBorderWidth)
+    )
+    .accessibility(
         config: AccessibilityConfiguration(
           identifier: AccessibilityIdentifiers.Vault.cvvField,
           label: CheckoutComponentsStrings.a11yVaultCVVLabel,
@@ -126,6 +127,16 @@ struct VaultedCardCVVInput: View {
   }
 
   // MARK: - Helpers
+
+  private var cvvBorderWidth: CGFloat {
+    if errorMessage != nil {
+      PrimerBorderWidth.error(tokens: tokens)
+    } else if isFocused {
+      PrimerBorderWidth.focused(tokens: tokens)
+    } else {
+      PrimerBorderWidth.standard(tokens: tokens)
+    }
+  }
 
   private var cvvBorderColor: Color {
     if errorMessage != nil {

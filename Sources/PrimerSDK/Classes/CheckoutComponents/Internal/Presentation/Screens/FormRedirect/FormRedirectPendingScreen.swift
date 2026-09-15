@@ -78,17 +78,10 @@ struct FormRedirectPendingScreen: View {
             Spacer()
 
             if scope.dismissalMechanism.contains(.closeButton) {
-                Button(action: scope.cancel) {
-                    Text(CheckoutComponentsStrings.cancelButton)
-                        .primerTypography(.titleLarge, tokens: tokens)
-                        .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
-                }
-                .accessibilityIdentifier(AccessibilityIdentifiers.FormRedirect.cancelButton)
-                .accessibility(
-                    config: AccessibilityConfiguration(
+                CheckoutHeaderButton(
+                    config: .closeButton(
                         identifier: AccessibilityIdentifiers.FormRedirect.cancelButton,
-                        label: CheckoutComponentsStrings.a11yCancel,
-                        traits: [.isButton]
+                        action: scope.cancel
                     )
                 )
             }
