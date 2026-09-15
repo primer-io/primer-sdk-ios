@@ -23,12 +23,15 @@ struct CheckoutHeaderView: View {
     let accessibilityIdentifier: String
     let accessibilityLabel: String
 
-    static func closeButton(action: @escaping () -> Void) -> RightButtonConfig {
+    static func closeButton(
+      identifier: String = AccessibilityIdentifiers.Common.closeButton,
+      action: @escaping () -> Void
+    ) -> RightButtonConfig {
       RightButtonConfig(
         title: CheckoutComponentsStrings.cancelButton,
         icon: nil,
         action: action,
-        accessibilityIdentifier: AccessibilityIdentifiers.Common.closeButton,
+        accessibilityIdentifier: identifier,
         accessibilityLabel: CheckoutComponentsStrings.a11yCancel
       )
     }
@@ -73,7 +76,7 @@ struct CheckoutHeaderView: View {
       Spacer()
 
       if let rightButton {
-        makeRightButtonView(config: rightButton)
+        CheckoutHeaderButton(config: rightButton)
       }
     }
     .padding(.horizontal, PrimerSpacing.large(tokens: tokens))
@@ -93,26 +96,6 @@ struct CheckoutHeaderView: View {
       config: AccessibilityConfiguration(
         identifier: AccessibilityIdentifiers.Common.backButton,
         label: CheckoutComponentsStrings.a11yBack,
-        traits: [.isButton]
-      ))
-  }
-
-  private func makeRightButtonView(config: RightButtonConfig) -> some View {
-    Button(action: config.action) {
-      HStack(spacing: PrimerSpacing.xsmall(tokens: tokens)) {
-        if let icon = config.icon {
-          Image(systemName: icon)
-            .font(PrimerFont.caption(tokens: tokens))
-        }
-        Text(config.title)
-          .font(PrimerFont.titleLarge(tokens: tokens))
-      }
-      .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
-    }
-    .accessibility(
-      config: AccessibilityConfiguration(
-        identifier: config.accessibilityIdentifier,
-        label: config.accessibilityLabel,
         traits: [.isButton]
       ))
   }
