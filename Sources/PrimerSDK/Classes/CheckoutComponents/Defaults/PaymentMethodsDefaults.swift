@@ -210,42 +210,20 @@ private struct VaultedSubmitContent: View {
   let isLoading: Bool
   let isEnabled: Bool
   let onSubmit: () -> Void
-  @Environment(\.designTokens) private var tokens
 
   var body: some View {
-    // The button keeps its brand fill while submitting; only a disabled button greys out.
-    let isActive = isEnabled || isLoading
-
-    return Button(action: onSubmit) {
-      Group {
-        if isLoading {
-          ProgressView()
-            .progressViewStyle(
-              CircularProgressViewStyle(
-                tint: CheckoutColors.onBrand(tokens: tokens, isEnabled: isActive)))
-        } else {
-          Text(CheckoutComponentsStrings.payButton)
-        }
-      }
-      .font(PrimerFont.body(tokens: tokens))
-      .foregroundColor(CheckoutColors.onBrand(tokens: tokens, isEnabled: isActive))
-      .frame(maxWidth: .infinity)
-      .padding(.vertical, PrimerSpacing.large(tokens: tokens))
-      .background(
-        isActive
-          ? CheckoutColors.buttonPrimary(tokens: tokens)
-          : CheckoutColors.buttonDisabled(tokens: tokens)
-      )
-      .cornerRadius(PrimerRadius.small(tokens: tokens))
-    }
-    .disabled(!isEnabled || isLoading)
-    .accessibility(
-      config: AccessibilityConfiguration(
+    PrimerButton(
+      CheckoutComponentsStrings.payButton,
+      isEnabled: isEnabled,
+      isLoading: isLoading,
+      accessibilityConfiguration: AccessibilityConfiguration(
         identifier: AccessibilityIdentifiers.Vault.payButton,
         // The combined element hides the spinner, so the label must carry the loading state.
         label: isLoading
           ? CheckoutComponentsStrings.a11ySubmitButtonLoading : CheckoutComponentsStrings.payButton,
         traits: [.isButton]
-      ))
+      ),
+      action: onSubmit
+    )
   }
 }

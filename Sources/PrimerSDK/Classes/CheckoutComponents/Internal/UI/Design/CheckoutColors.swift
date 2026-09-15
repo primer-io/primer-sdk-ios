@@ -24,6 +24,10 @@ enum CheckoutColors {
     tokens?.primerColorTextNegative ?? .red
   }
 
+  static func textDisabled(tokens: DesignTokens?) -> Color {
+    tokens?.primerColorTextDisabled ?? Color(.tertiaryLabel)
+  }
+
   static func textLink(tokens: DesignTokens?) -> Color {
     tokens?.primerColorTextLink ?? .blue
   }
@@ -42,6 +46,10 @@ enum CheckoutColors {
 
   static func borderFocus(tokens: DesignTokens?) -> Color {
     tokens?.primerColorBorderOutlinedFocus ?? .blue
+  }
+
+  static func borderDisabled(tokens: DesignTokens?) -> Color {
+    tokens?.primerColorBorderOutlinedDisabled ?? Color(.systemGray4)
   }
 
   static func background(tokens: DesignTokens?) -> Color {
