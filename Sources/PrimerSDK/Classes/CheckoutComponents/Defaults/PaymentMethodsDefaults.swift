@@ -113,7 +113,7 @@ public struct PaymentMethodsHeaderContent: View {
   @Environment(\.designTokens) private var tokens
   public var body: some View {
     Text(CheckoutComponentsStrings.choosePaymentMethod)
-      .font(PrimerFont.titleLarge(tokens: tokens))
+      .primerTypography(.titleLarge, tokens: tokens)
       .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
       .frame(maxWidth: .infinity, alignment: .leading)
       .accessibilityIdentifier(AccessibilityIdentifiers.PaymentSelection.header)
@@ -139,7 +139,7 @@ public struct PaymentMethodsEmptyContent: View {
         .font(PrimerFont.largeIcon(tokens: tokens))
         .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
       Text(CheckoutComponentsStrings.noPaymentMethodsAvailable)
-        .font(PrimerFont.body(tokens: tokens))
+        .primerTypography(.body, tokens: tokens)
         .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
     }
     .frame(maxWidth: .infinity)
@@ -181,7 +181,7 @@ private struct VaultedMethodRowContent: View {
             .frame(width: PrimerSize.large(tokens: tokens), height: PrimerSize.large(tokens: tokens))
         }
         Text(label)
-          .font(PrimerFont.bodyLarge(tokens: tokens))
+          .primerTypography(.bodyLarge, tokens: tokens)
           .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
         Spacer()
         if isSelected {

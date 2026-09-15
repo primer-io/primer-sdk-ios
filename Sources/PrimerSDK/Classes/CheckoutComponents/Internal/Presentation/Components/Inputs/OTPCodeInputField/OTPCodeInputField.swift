@@ -27,6 +27,8 @@ struct OTPCodeInputField: View, LogReporter {
   @State private var isFocused: Bool = false
   @Environment(\.designTokens) private var tokens
 
+  /// `prompt` takes a `Text`, which a view modifier cannot produce, so the placeholder keeps a
+  /// plain `Font` and inherits the field's letter spacing.
   private var fieldFont: Font { PrimerFont.bodyLarge(tokens: tokens) }
 
   // MARK: - Initialization
@@ -76,7 +78,7 @@ struct OTPCodeInputField: View, LogReporter {
           .font(fieldFont)
           .foregroundColor(CheckoutColors.textPlaceholder(tokens: tokens))
       )
-      .font(fieldFont)
+      .primerFieldTypography(.bodyLarge, tokens: tokens)
       .foregroundColor(CheckoutColors.inputText(tokens: tokens))
       .keyboardType(.numberPad)
       .textContentType(.oneTimeCode)

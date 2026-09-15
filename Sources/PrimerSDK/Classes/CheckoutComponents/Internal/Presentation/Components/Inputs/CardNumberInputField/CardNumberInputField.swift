@@ -82,7 +82,7 @@ struct CardNumberInputField: View, LogReporter {
         HStack(spacing: PrimerSpacing.xsmall(tokens: tokens)) {
           if let surchargeAmount {
             Text(surchargeAmount)
-              .font(PrimerFont.caption(tokens: tokens))
+              .primerTypography(.caption, tokens: tokens)
               .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
               .padding(.horizontal, PrimerSpacing.xsmall(tokens: tokens))
               .padding(.vertical, 2)

@@ -105,7 +105,7 @@ struct CheckoutHeaderView: View {
             .font(PrimerFont.caption(tokens: tokens))
         }
         Text(config.title)
-          .font(PrimerFont.titleLarge(tokens: tokens))
+          .primerTypography(.titleLarge, tokens: tokens)
       }
       .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
     }

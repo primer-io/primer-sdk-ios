@@ -18,7 +18,7 @@ struct PaymentMethodsSection: View {
   var body: some View {
     VStack(alignment: .leading, spacing: PrimerSpacing.medium(tokens: tokens)) {
       Text(CheckoutComponentsStrings.choosePaymentMethod)
-        .font(PrimerFont.titleLarge(tokens: tokens))
+        .primerTypography(.titleLarge, tokens: tokens)
         .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
         .accessibilityIdentifier(AccessibilityIdentifiers.PaymentSelection.header)
         .accessibilityAddTraits(.isHeader)
@@ -33,7 +33,7 @@ struct PaymentMethodsSection: View {
 
       if let error = state.error {
         Text(error)
-          .font(PrimerFont.caption(tokens: tokens))
+          .primerTypography(.caption, tokens: tokens)
           .foregroundColor(CheckoutColors.borderError(tokens: tokens))
       }
     }
@@ -60,7 +60,7 @@ struct PaymentMethodsSection: View {
         .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
         .accessibilityHidden(true)
       Text(CheckoutComponentsStrings.noPaymentMethodsAvailable)
-        .font(PrimerFont.body(tokens: tokens))
+        .primerTypography(.body, tokens: tokens)
         .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
     }
     .frame(maxWidth: .infinity)
