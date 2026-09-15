@@ -128,42 +128,18 @@ struct FormRedirectScreen: View {
         }
     }
 
-    /// The button keeps its brand fill while submitting; only an invalid form greys it out.
-    private var isButtonActive: Bool {
-        currentState.isSubmitEnabled || currentState.isLoading
-    }
-
     private func makeDefaultSubmitButton() -> some View {
-        Button(action: scope.submit) {
-            HStack(spacing: PrimerSpacing.small(tokens: tokens)) {
-                if currentState.isLoading {
-                    ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                }
-
-                Text(scope.submitButtonText ?? defaultSubmitButtonText)
-                    .font(PrimerFont.bodyMedium(tokens: tokens))
-            }
-            .frame(maxWidth: .infinity)
-            .frame(height: PrimerComponentHeight.button)
-            .foregroundColor(CheckoutColors.onBrand(
-                tokens: tokens,
-                isEnabled: isButtonActive))
-            .background(
-                RoundedRectangle(cornerRadius: PrimerRadius.medium(tokens: tokens))
-                    .fill(isButtonActive
-                          ? CheckoutColors.buttonPrimary(tokens: tokens)
-                          : CheckoutColors.buttonDisabled(tokens: tokens))
-            )
-        }
-        .disabled(!currentState.isSubmitEnabled || currentState.isLoading)
-        .accessibility(
-            config: AccessibilityConfiguration(
+        PrimerButton(
+            scope.submitButtonText ?? defaultSubmitButtonText,
+            isEnabled: currentState.isSubmitEnabled,
+            isLoading: currentState.isLoading,
+            accessibilityConfiguration: AccessibilityConfiguration(
                 identifier: AccessibilityIdentifiers.FormRedirect.submitButton,
                 label: CheckoutComponentsStrings.a11ySubmitButtonLabel,
                 hint: currentState.isSubmitEnabled ? nil : CheckoutComponentsStrings.a11ySubmitButtonHint,
                 traits: [.isButton]
-            )
+            ),
+            action: scope.submit
         )
     }
 }

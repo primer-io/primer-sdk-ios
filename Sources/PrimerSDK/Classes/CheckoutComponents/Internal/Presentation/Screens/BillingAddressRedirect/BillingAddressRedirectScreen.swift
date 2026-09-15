@@ -244,58 +244,27 @@ struct BillingAddressRedirectScreen: View {
     if let customButton = scope.submitButton {
       AnyView(customButton(scope))
     } else {
-      Button(action: scope.submit) {
-        makeSubmitButtonContent()
-      }
-      .disabled(isButtonDisabled)
+      PrimerButton(
+        submitButtonText,
+        isEnabled: billingState.isFormValid,
+        isLoading: isSubmitInFlight,
+        accessibilityConfiguration: AccessibilityConfiguration(
+          identifier: AccessibilityIdentifiers.BillingAddressRedirect.submitButton,
+          label: submitButtonText,
+          traits: [.isButton]
+        ),
+        action: scope.submit
+      )
     }
-  }
-
-  private func makeSubmitButtonContent() -> some View {
-    HStack {
-      if isSubmitInFlight {
-        ProgressView()
-          .progressViewStyle(
-            CircularProgressViewStyle(tint: CheckoutColors.onBrand(tokens: tokens, isEnabled: isButtonActive)))
-          .scaleEffect(PrimerScale.small)
-      } else {
-        Text(submitButtonText)
-      }
-    }
-    .font(PrimerFont.body(tokens: tokens))
-    .foregroundColor(CheckoutColors.onBrand(tokens: tokens, isEnabled: isButtonActive))
-    .frame(maxWidth: .infinity)
-    .padding(.vertical, PrimerSpacing.large(tokens: tokens))
-    .background(submitButtonBackground)
-    .cornerRadius(PrimerRadius.small(tokens: tokens))
-    .accessibility(config: AccessibilityConfiguration(
-      identifier: AccessibilityIdentifiers.BillingAddressRedirect.submitButton,
-      label: submitButtonText,
-      traits: [.isButton]
-    ))
   }
 
   private var submitButtonText: String {
     scope.submitButtonText ?? CheckoutComponentsStrings.webRedirectButtonContinue(paymentMethodDisplayName)
   }
 
-  private var submitButtonBackground: Color {
-    isButtonActive
-      ? CheckoutColors.buttonPrimary(tokens: tokens)
-      : CheckoutColors.buttonDisabled(tokens: tokens)
-  }
-
   /// The button keeps its brand fill while the payment is in flight; only an invalid form greys it out.
-  private var isButtonActive: Bool {
-    billingState.isFormValid || isSubmitInFlight
-  }
-
   private var isSubmitInFlight: Bool {
     [.submitting, .redirecting, .polling].contains(billingState.status)
-  }
-
-  private var isButtonDisabled: Bool {
-    !billingState.isFormValid || isSubmitInFlight
   }
 
   private var paymentMethodDisplayName: String {

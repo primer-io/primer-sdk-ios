@@ -139,23 +139,16 @@ struct ApplePayScreen: View {
       Spacer()
 
       if presentationContext.shouldShowBackButton {
-        Button(action: scope.onBack) {
-          Text(CheckoutComponentsStrings.applePayChooseOther)
-            .font(PrimerFont.bodyMedium(tokens: tokens))
-            .fontWeight(.medium)
-            .foregroundColor(CheckoutColors.onBrand(tokens: tokens))
-            .frame(maxWidth: .infinity)
-            .frame(height: 50)
-            .background(CheckoutColors.buttonPrimary(tokens: tokens))
-            .cornerRadius(PrimerRadius.medium(tokens: tokens))
-        }
-        .padding(.horizontal, PrimerSpacing.large(tokens: tokens))
-        .accessibility(
-          config: AccessibilityConfiguration(
+        PrimerButton(
+          CheckoutComponentsStrings.applePayChooseOther,
+          accessibilityConfiguration: AccessibilityConfiguration(
             identifier: AccessibilityIdentifiers.ApplePay.chooseOtherButton,
             label: CheckoutComponentsStrings.applePayChooseOther,
             traits: [.isButton]
-          ))
+          ),
+          action: scope.onBack
+        )
+        .padding(.horizontal, PrimerSpacing.large(tokens: tokens))
       }
 
       Spacer()
