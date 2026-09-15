@@ -29,7 +29,7 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
 
     textField.configurePrimerStyle(
       placeholder: placeholder,
-      configuration: .numberPad,
+      configuration: .numberPad.offering(.creditCardNumber),
       tokens: tokens,
       doneButtonTarget: context.coordinator,
       doneButtonAction: #selector(Coordinator.doneButtonTapped)

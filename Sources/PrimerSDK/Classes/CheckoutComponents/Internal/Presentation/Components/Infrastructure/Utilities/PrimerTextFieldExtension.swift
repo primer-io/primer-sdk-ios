@@ -18,6 +18,19 @@ struct PrimerTextFieldConfiguration {
   let returnKeyType: UIReturnKeyType
   let isSecureTextEntry: Bool
 
+  /// The same configuration carrying a content type, so one preset covers several fields that
+  /// differ only in what the OS should offer to fill.
+  func offering(_ contentType: UITextContentType?) -> PrimerTextFieldConfiguration {
+    PrimerTextFieldConfiguration(
+      keyboardType: keyboardType,
+      autocapitalizationType: autocapitalizationType,
+      autocorrectionType: autocorrectionType,
+      textContentType: contentType,
+      returnKeyType: returnKeyType,
+      isSecureTextEntry: isSecureTextEntry
+    )
+  }
+
   static let standard = PrimerTextFieldConfiguration(
     keyboardType: .default,
     autocapitalizationType: .words,
@@ -61,6 +74,16 @@ struct PrimerTextFieldConfiguration {
     autocapitalizationType: .allCharacters,
     autocorrectionType: .no,
     textContentType: nil,
+    returnKeyType: .done,
+    isSecureTextEntry: false
+  )
+
+  /// Phone entry. The billing phone was on an alphabetic keyboard with word capitalisation.
+  static let phoneNumber = PrimerTextFieldConfiguration(
+    keyboardType: .phonePad,
+    autocapitalizationType: .none,
+    autocorrectionType: .no,
+    textContentType: .telephoneNumber,
     returnKeyType: .done,
     isSecureTextEntry: false
   )
@@ -197,5 +220,23 @@ final class PrimerFieldRepainter {
     guard appliedTokens !== tokens else { return }
     appliedTokens = tokens
     textField.repaintPrimerColors(placeholder: placeholder, tokens: tokens)
+  }
+}
+
+// MARK: - Per-field configuration
+
+@available(iOS 15.0, *)
+extension PrimerInputElementType {
+  /// What the OS should offer to fill, and the keyboard to go with it. Without a content type iOS
+  /// shows no saved card, no camera scan and no saved address, which is what the card form had.
+  var fieldConfiguration: PrimerTextFieldConfiguration {
+    switch self {
+    case .phoneNumber: .phoneNumber
+    case .firstName: .standard.offering(.givenName)
+    case .lastName: .standard.offering(.familyName)
+    case .addressLine1: .standard.offering(.streetAddressLine1)
+    case .addressLine2: .standard.offering(.streetAddressLine2)
+    default: .standard
+    }
   }
 }
