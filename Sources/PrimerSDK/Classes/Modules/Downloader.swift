@@ -18,6 +18,13 @@ protocol DownloaderModule {
 // MARK: MISSING_TESTS
 final class Downloader: NSObject, DownloaderModule {
 
+    // Never `FileManager.default`: a delegate on the shared instance traps on iOS 27.
+    private lazy var fileManager: FileManager = {
+        let manager = FileManager()
+        manager.delegate = self
+        return manager
+    }()
+
     private var documentDirectoryUrl: URL? {
         FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
     }
@@ -80,7 +87,6 @@ final class Downloader: NSObject, DownloaderModule {
             if let httpUrlResponse = cachedResponse.response as? HTTPURLResponse,
                validStatusCodesRange.contains(httpUrlResponse.statusCode) {
                 do {
-                    FileManager.default.delegate = self
                     try cachedResponse.data.write(to: localUrl)
                     return
                 } catch {
@@ -101,8 +107,7 @@ final class Downloader: NSObject, DownloaderModule {
                 throw handled(internalError: .serverError(status: statusCode))
             }
 
-            FileManager.default.delegate = self
-            try FileManager.default.copyItem(at: tempLocalUrl, to: localUrl)
+            try fileManager.copyItem(at: tempLocalUrl, to: localUrl)
 
             if cache?.cachedResponse(for: request) == nil, let data = try? Data(contentsOf: tempLocalUrl) {
                 cache?.storeCachedResponse(CachedURLResponse(response: response, data: data), for: request)
@@ -115,9 +120,9 @@ final class Downloader: NSObject, DownloaderModule {
 
     private func executeDownloadTask(for request: URLRequest, on session: URLSession) async throws -> (URL, URLResponse) {
         if #available(iOS 15.0, *) {
-            return try await session.download(for: request)
+            try await session.download(for: request)
         } else {
-            return try await withCheckedThrowingContinuation { continuation in
+            try await withCheckedThrowingContinuation { continuation in
                 let task = session.downloadTask(with: request) { tempLocalUrl, response, error in
                     if let error {
                         continuation.resume(throwing: error)
@@ -138,9 +143,9 @@ final class Downloader: NSObject, DownloaderModule {
 
     private func fileExists(at url: URL) -> Bool {
         if #available(iOS 16.0, *) {
-            return FileManager.default.fileExists(atPath: url.path())
+            FileManager.default.fileExists(atPath: url.path())
         } else {
-            return FileManager.default.fileExists(atPath: url.path)
+            FileManager.default.fileExists(atPath: url.path)
         }
     }
 }
