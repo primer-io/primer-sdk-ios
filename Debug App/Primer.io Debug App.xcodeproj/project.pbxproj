@@ -51,6 +51,7 @@
 		C75A11E6AEEFC2B7A29BBC04 /* TestScenario.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6AEF11B151368BF993C3EA9 /* TestScenario.swift */; };
 		CE5E673A96BB5B96AE5EFC56 /* Range+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9128566126AA7F571FFECA3A /* Range+Extensions.swift */; };
 		D886D8E47D883304B505CE11 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAC5687FF32E8661F1A00CE5 /* AppDelegate.swift */; };
+		A7C561372EF2F07100689089 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7C561352EF2F07100689089 /* SceneDelegate.swift */; };
 		DE53DA2D0AD108306C92E198 /* UIViewController+API.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1FD8065D40A2D691F643F3B /* UIViewController+API.swift */; };
 		E11F47542B06C5030091C31F /* BanksListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F47502B06C5030091C31F /* BanksListView.swift */; };
 		E11F47562B06C5030091C31F /* ImageViewWithUrl.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F47522B06C5030091C31F /* ImageViewWithUrl.swift */; };
@@ -220,6 +221,7 @@
 		D4139D8F153BB399DA67F2EE /* ViewController+PrimerUIHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ViewController+PrimerUIHelpers.swift"; sourceTree = "<group>"; };
 		D5C1B1F65A9382606A25CE77 /* el */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = el; path = el.lproj/Main.strings; sourceTree = "<group>"; };
 		DAC5687FF32E8661F1A00CE5 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		A7C561352EF2F07100689089 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		DBC8EA85D1CBC1EC4AB3EB8C /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		DECCDC4079DC6471CEDDEA84 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		E11F47502B06C5030091C31F /* BanksListView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BanksListView.swift; sourceTree = "<group>"; };
@@ -377,6 +379,7 @@
 				F214F09DF97D2A83FC7D0BE0 /* View */,
 				0E5CB4D963647832FF985B29 /* View Controllers */,
 				DAC5687FF32E8661F1A00CE5 /* AppDelegate.swift */,
+				A7C561352EF2F07100689089 /* SceneDelegate.swift */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -718,6 +721,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D886D8E47D883304B505CE11 /* AppDelegate.swift in Sources */,
+				A7C561372EF2F07100689089 /* SceneDelegate.swift in Sources */,
 				CE5E673A96BB5B96AE5EFC56 /* Range+Extensions.swift in Sources */,
 				85605C241F1CD45BA676D4A7 /* String+Extensions.swift in Sources */,
 				04F323662BD40A2300F5927C /* MerchantNewLineItemViewController.swift in Sources */,
@@ -1016,7 +1020,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				VALIDATE_PRODUCT = YES;
@@ -1103,7 +1107,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
