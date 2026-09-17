@@ -27,7 +27,8 @@ struct InlineCardNetworkSelector: View {
       ForEach(Array(availableNetworks.enumerated()), id: \.element.rawValue) { index, network in
         InlineCardNetworkButton(
           network: network,
-          isSelected: selectedNetwork == network
+          isSelected: selectedNetwork == network,
+          tokens: tokens
         ) {
           selectedNetwork = network
           onNetworkSelected?(network)
@@ -38,17 +39,16 @@ struct InlineCardNetworkSelector: View {
           Rectangle()
             .fill(baseBorderColor)
             .frame(
-              width: PrimerBorderWidth.standard(tokens: tokens),
-              height: PrimerCardNetworkSelector.buttonFrameHeight
+              width: PrimerBorderWidth.standard, height: PrimerCardNetworkSelector.buttonFrameHeight
             )
         }
       }
     }
 
-    .padding(PrimerBorderWidth.standard(tokens: tokens))
+    .padding(PrimerBorderWidth.standard)
     .overlay(
       RoundedRectangle(cornerRadius: PrimerRadius.small(tokens: tokens))
-        .strokeBorder(baseBorderColor, lineWidth: PrimerBorderWidth.standard(tokens: tokens))
+        .strokeBorder(baseBorderColor, lineWidth: PrimerBorderWidth.standard)
     )
     .accessibilityIdentifier(AccessibilityIdentifiers.CardForm.inlineNetworkSelectorContainer)
     .overlay(
@@ -64,7 +64,7 @@ struct InlineCardNetworkSelector: View {
             bottomRight: selectedIndex == availableNetworks.count - 1
               ? PrimerRadius.small(tokens: tokens) : 0
           )
-          .strokeBorder(selectedBorderColor, lineWidth: PrimerBorderWidth.standard(tokens: tokens))
+          .strokeBorder(selectedBorderColor, lineWidth: PrimerBorderWidth.standard)
           .frame(width: buttonWidth, height: PrimerCardNetworkSelector.selectedBorderHeight)
           .offset(x: xOffset)
         }
@@ -80,7 +80,7 @@ struct InlineCardNetworkSelector: View {
   }
 
   private var borderWidth: CGFloat {
-    PrimerBorderWidth.standard(tokens: tokens)
+    PrimerBorderWidth.standard
   }
 
   private var buttonWidth: CGFloat {
@@ -88,7 +88,7 @@ struct InlineCardNetworkSelector: View {
   }
 
   private var selectedBorderColor: Color {
-    CheckoutColors.borderSelected(tokens: tokens)
+    CheckoutColors.gray700(tokens: tokens)
   }
 
   private var baseBorderColor: Color {

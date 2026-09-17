@@ -51,7 +51,7 @@ struct FormRedirectPendingScreen: View {
 
                 ProgressView()
                     .progressViewStyle(
-                        CircularProgressViewStyle(tint: CheckoutColors.loader(tokens: tokens))
+                        CircularProgressViewStyle(tint: CheckoutColors.borderFocus(tokens: tokens))
                     )
                     .scaleEffect(PrimerScale.large)
                     .accessibilityIdentifier(AccessibilityIdentifiers.FormRedirect.loadingIndicator)

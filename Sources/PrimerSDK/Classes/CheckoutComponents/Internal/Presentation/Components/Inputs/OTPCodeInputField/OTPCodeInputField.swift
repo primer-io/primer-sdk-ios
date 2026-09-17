@@ -77,7 +77,7 @@ struct OTPCodeInputField: View, LogReporter {
           .foregroundColor(CheckoutColors.textPlaceholder(tokens: tokens))
       )
       .font(fieldFont)
-      .foregroundColor(CheckoutColors.inputText(tokens: tokens))
+      .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
       .keyboardType(.numberPad)
       .textContentType(.oneTimeCode)
       .frame(height: PrimerSize.xxlarge(tokens: tokens))

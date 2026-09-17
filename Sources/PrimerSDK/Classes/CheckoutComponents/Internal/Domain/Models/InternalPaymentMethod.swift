@@ -26,8 +26,6 @@ struct InternalPaymentMethod: Equatable {
   let borderColor: UIColor?
   let borderWidth: CGFloat?
   let cornerRadius: CGFloat?
-  let logoVariants: PrimerTheme.BaseImage?
-  let borderWidthVariants: PrimerTheme.BaseBorderWidth?
 
   init(
     id: String,
@@ -46,9 +44,7 @@ struct InternalPaymentMethod: Equatable {
     textColor: UIColor? = nil,
     borderColor: UIColor? = nil,
     borderWidth: CGFloat? = nil,
-    cornerRadius: CGFloat? = nil,
-    logoVariants: PrimerTheme.BaseImage? = nil,
-    borderWidthVariants: PrimerTheme.BaseBorderWidth? = nil
+    cornerRadius: CGFloat? = nil
   ) {
     self.id = id
     self.type = type
@@ -67,8 +63,6 @@ struct InternalPaymentMethod: Equatable {
     self.borderColor = borderColor
     self.borderWidth = borderWidth
     self.cornerRadius = cornerRadius
-    self.logoVariants = logoVariants
-    self.borderWidthVariants = borderWidthVariants
   }
 
   // Manual conformance: `UIImage`/`UIColor` fields block automatic synthesis. All
@@ -84,7 +78,5 @@ struct InternalPaymentMethod: Equatable {
       && lhs.buttonText == rhs.buttonText && lhs.textColor == rhs.textColor
       && lhs.borderColor == rhs.borderColor && lhs.borderWidth == rhs.borderWidth
       && lhs.cornerRadius == rhs.cornerRadius
-      && lhs.logoVariants === rhs.logoVariants
-      && lhs.borderWidthVariants === rhs.borderWidthVariants
   }
 }

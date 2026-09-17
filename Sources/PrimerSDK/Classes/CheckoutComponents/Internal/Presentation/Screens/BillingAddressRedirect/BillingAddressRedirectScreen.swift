@@ -158,7 +158,7 @@ struct BillingAddressRedirectScreen: View {
         HStack {
           if let selected = CountryCode(rawValue: countryCode) {
             Text("\(selected.flag ?? "") \(selected.country)")
-              .foregroundColor(CheckoutColors.inputText(tokens: tokens))
+              .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
           } else {
             Text(CheckoutComponentsStrings.countrySelectorPlaceholder)
               .foregroundColor(CheckoutColors.textPlaceholder(tokens: tokens))
@@ -170,18 +170,17 @@ struct BillingAddressRedirectScreen: View {
         .font(PrimerFont.bodyLarge(tokens: tokens))
         .padding(.vertical, PrimerSpacing.medium(tokens: tokens))
         .padding(.horizontal, PrimerSpacing.medium(tokens: tokens))
-        .background(CheckoutColors.inputBackground(tokens: tokens))
+        .background(CheckoutColors.background(tokens: tokens))
         .overlay(
           RoundedRectangle(cornerRadius: PrimerRadius.small(tokens: tokens))
-            .stroke(
-              fieldBorderColor(for: .countryCode), lineWidth: fieldBorderWidth(for: .countryCode))
+            .stroke(fieldBorderColor(for: .countryCode), lineWidth: PrimerBorderWidth.standard(tokens: tokens))
         )
       }
       .accessibilityIdentifier(AccessibilityIdentifiers.BillingAddressRedirect.countryCodeField)
 
       if let error = billingState.errors[.countryCode] {
         Text(error.message)
-          .font(PrimerFont.error(tokens: tokens))
+          .font(PrimerFont.bodySmall(tokens: tokens))
           .foregroundColor(CheckoutColors.textNegative(tokens: tokens))
       }
     }
@@ -202,13 +201,13 @@ struct BillingAddressRedirectScreen: View {
 
       TextField(placeholder, text: text)
         .font(PrimerFont.bodyLarge(tokens: tokens))
-        .foregroundColor(CheckoutColors.inputText(tokens: tokens))
+        .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
         .padding(.vertical, PrimerSpacing.medium(tokens: tokens))
         .padding(.horizontal, PrimerSpacing.medium(tokens: tokens))
-        .background(CheckoutColors.inputBackground(tokens: tokens))
+        .background(CheckoutColors.background(tokens: tokens))
         .overlay(
           RoundedRectangle(cornerRadius: PrimerRadius.small(tokens: tokens))
-            .stroke(fieldBorderColor(for: fieldType), lineWidth: fieldBorderWidth(for: fieldType))
+            .stroke(fieldBorderColor(for: fieldType), lineWidth: PrimerBorderWidth.standard(tokens: tokens))
         )
         .autocapitalization(.words)
         .disableAutocorrection(true)
@@ -219,7 +218,7 @@ struct BillingAddressRedirectScreen: View {
 
       if let error = billingState.errors[fieldType] {
         Text(error.message)
-          .font(PrimerFont.error(tokens: tokens))
+          .font(PrimerFont.bodySmall(tokens: tokens))
           .foregroundColor(CheckoutColors.textNegative(tokens: tokens))
       }
     }
@@ -227,14 +226,8 @@ struct BillingAddressRedirectScreen: View {
 
   private func fieldBorderColor(for fieldType: PrimerInputElementType) -> Color {
     billingState.errors[fieldType] != nil
-      ? CheckoutColors.borderError(tokens: tokens)
+      ? CheckoutColors.textNegative(tokens: tokens)
       : CheckoutColors.borderDefault(tokens: tokens)
-  }
-
-  private func fieldBorderWidth(for fieldType: PrimerInputElementType) -> CGFloat {
-    billingState.errors[fieldType] != nil
-      ? PrimerBorderWidth.error(tokens: tokens)
-      : PrimerBorderWidth.standard(tokens: tokens)
   }
 
   // MARK: - Submit Button
@@ -252,18 +245,19 @@ struct BillingAddressRedirectScreen: View {
   }
 
   private func makeSubmitButtonContent() -> some View {
-    HStack {
-      if isSubmitInFlight {
+    let isLoading = [.submitting, .redirecting, .polling].contains(billingState.status)
+
+    return HStack {
+      if isLoading {
         ProgressView()
-          .progressViewStyle(
-            CircularProgressViewStyle(tint: CheckoutColors.onBrand(tokens: tokens, isEnabled: isButtonActive)))
+          .progressViewStyle(CircularProgressViewStyle(tint: CheckoutColors.white(tokens: tokens)))
           .scaleEffect(PrimerScale.small)
       } else {
         Text(submitButtonText)
       }
     }
     .font(PrimerFont.body(tokens: tokens))
-    .foregroundColor(CheckoutColors.onBrand(tokens: tokens, isEnabled: isButtonActive))
+    .foregroundColor(CheckoutColors.white(tokens: tokens))
     .frame(maxWidth: .infinity)
     .padding(.vertical, PrimerSpacing.large(tokens: tokens))
     .background(submitButtonBackground)
@@ -280,22 +274,13 @@ struct BillingAddressRedirectScreen: View {
   }
 
   private var submitButtonBackground: Color {
-    isButtonActive
-      ? CheckoutColors.buttonPrimary(tokens: tokens)
-      : CheckoutColors.buttonDisabled(tokens: tokens)
-  }
-
-  /// The button keeps its brand fill while the payment is in flight; only an invalid form greys it out.
-  private var isButtonActive: Bool {
-    billingState.isFormValid || isSubmitInFlight
-  }
-
-  private var isSubmitInFlight: Bool {
-    [.submitting, .redirecting, .polling].contains(billingState.status)
+    isButtonDisabled
+      ? CheckoutColors.gray300(tokens: tokens)
+      : CheckoutColors.textPrimary(tokens: tokens)
   }
 
   private var isButtonDisabled: Bool {
-    !billingState.isFormValid || isSubmitInFlight
+    !billingState.isFormValid || [.submitting, .redirecting, .polling].contains(billingState.status)
   }
 
   private var paymentMethodDisplayName: String {

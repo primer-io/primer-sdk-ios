@@ -121,18 +121,18 @@ struct DeleteVaultedPaymentMethodConfirmationScreen: View, LogReporter {
         if isDeleting {
           ProgressView()
             .progressViewStyle(
-              CircularProgressViewStyle(tint: CheckoutColors.onBrand(tokens: tokens)))
+              CircularProgressViewStyle(tint: CheckoutColors.background(tokens: tokens)))
         } else {
           Text(CheckoutComponentsStrings.deleteButton)
             .font(PrimerFont.titleLarge(tokens: tokens))
         }
       }
-      .foregroundColor(CheckoutColors.onBrand(tokens: tokens))
+      .foregroundColor(CheckoutColors.background(tokens: tokens))
       .frame(maxWidth: .infinity)
       .padding(PrimerSpacing.medium(tokens: tokens))
       .background(
         RoundedRectangle(cornerRadius: PrimerRadius.medium(tokens: tokens))
-          .fill(CheckoutColors.buttonPrimary(tokens: tokens))
+          .fill(CheckoutColors.borderFocus(tokens: tokens))
       )
     }
     .buttonStyle(PlainButtonStyle())
