@@ -113,7 +113,7 @@ Android API parity, targeting **iOS 15+**. `Sources/PrimerSDK/Classes/CheckoutCo
 is the full guide.
 
 - **Entry points**: `PrimerCheckout` (managed SwiftUI modal), `PrimerCheckoutSession` +
-  `.primerCheckoutSession(_:onCompletion:)` (composable/inline), `PrimerCheckoutPresenter` (UIKit).
+  `.primerCheckoutSession(_:theme:onCompletion:)` (composable/inline), `PrimerCheckoutPresenter` (UIKit).
 - **Composable views**: `PrimerCardForm`, `PrimerPaymentMethods`, `PrimerVaultedPaymentMethods` —
   each exposes `@ViewBuilder` slots and resolves its session from the environment.
 - **Observable sessions** (`PrimerCardFormSession`, `PrimerSelectionSession`) bridge internal
