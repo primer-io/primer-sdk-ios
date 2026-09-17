@@ -387,6 +387,25 @@ final class DefaultPaymentMethodSelectionScope: PaymentMethodSelectionScopeInter
     checkoutScope?.vaultedPaymentMethods ?? []
   }
 
+  var vaultedPaymentMethodsStream: AsyncStream<[PrimerHeadlessUniversalCheckout.VaultedPaymentMethod]> {
+    AsyncStream { continuation in
+      guard let vaultManager = checkoutScope?.vaultManager else {
+        continuation.finish()
+        return
+      }
+      let task = Task { @MainActor in
+        for await methods in vaultManager.$methods.values {
+          continuation.yield(methods)
+        }
+        continuation.finish()
+      }
+
+      continuation.onTermination = { _ in
+        task.cancel()
+      }
+    }
+  }
+
   func selectVaultedPaymentMethod(_ method: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod) {
     checkoutScope?.setSelectedVaultedPaymentMethod(method)
   }

@@ -37,6 +37,13 @@ final class MockSelectionScopeInternal: PaymentMethodSelectionScopeInternal {
   var currentState: PrimerPaymentMethodSelectionState { stubbedCurrentState }
   var vaultedPaymentMethods: [PrimerHeadlessUniversalCheckout.VaultedPaymentMethod] { stubbedVaultedPaymentMethods }
 
+  var vaultContinuation: AsyncStream<[PrimerHeadlessUniversalCheckout.VaultedPaymentMethod]>.Continuation?
+  lazy var vaultStream: AsyncStream<[PrimerHeadlessUniversalCheckout.VaultedPaymentMethod]> =
+    AsyncStream { self.vaultContinuation = $0 }
+  var vaultedPaymentMethodsStream: AsyncStream<[PrimerHeadlessUniversalCheckout.VaultedPaymentMethod]> {
+    vaultStream
+  }
+
   func onPaymentMethodSelected(paymentMethod: CheckoutPaymentMethod) { selectedPaymentMethod = paymentMethod }
   func cancel() { cancelCalled = true }
   func payWithVaultedPaymentMethod() async { paidWithVaulted = true }

@@ -19,30 +19,41 @@ public final class PrimerSelectionSession: ObservableObject {
   /// The latest selection state, bridged from `scope.state`.
   @Published public private(set) var state: PrimerPaymentMethodSelectionState
 
+  /// The customer's saved (vaulted) payment methods.
+  ///
+  /// Published, so a list you build yourself re-renders when the set changes — after ``delete(_:)``,
+  /// or when the SDK's own saved-methods screen deletes one.
+  @Published public private(set) var vaultedPaymentMethods:
+    [PrimerHeadlessUniversalCheckout.VaultedPaymentMethod]
+
   /// The selection behavior surface (method selection, vaulted actions, navigation).
   let scope: PrimerPaymentMethodSelectionScope
 
   private let internalScope: (any PaymentMethodSelectionScopeInternal)?
   private var observationTask: Task<Void, Never>?
+  private var vaultObservationTask: Task<Void, Never>?
 
   init(scope: PrimerPaymentMethodSelectionScope) {
     self.scope = scope
     internalScope = scope as? any PaymentMethodSelectionScopeInternal
     state = internalScope?.currentState ?? PrimerPaymentMethodSelectionState()
+    vaultedPaymentMethods = internalScope?.vaultedPaymentMethods ?? []
     observationTask = Task { @MainActor [weak self] in
       for await newState in scope.state {
         self?.state = newState
+      }
+    }
+    vaultObservationTask = Task { @MainActor [weak self, internalScope] in
+      guard let stream = internalScope?.vaultedPaymentMethodsStream else { return }
+      for await methods in stream {
+        self?.vaultedPaymentMethods = methods
       }
     }
   }
 
   deinit {
     observationTask?.cancel()
-  }
-
-  /// Saved (vaulted) payment methods, loaded once during checkout initialization.
-  public var vaultedPaymentMethods: [PrimerHeadlessUniversalCheckout.VaultedPaymentMethod] {
-    internalScope?.vaultedPaymentMethods ?? []
+    vaultObservationTask?.cancel()
   }
 
   // MARK: - Selection
