@@ -67,8 +67,22 @@ public final class PrimerSelectionSession: ObservableObject {
 
   // MARK: - Vaulted
 
-  /// Marks a vaulted method as selected so a subsequent submit targets it.
+  /// Pays with a saved payment method.
+  ///
+  /// This is the pay verb, so call it from your pay button rather than from a row tap. A card that
+  /// needs CVV recapture raises the SDK's CVV screen first, and that screen finishes the payment.
+  /// The outcome arrives through `.primerCheckoutSession(_:theme:onCompletion:)`.
+  ///
+  /// Keep which row looks selected in your own view state. Returns immediately; the payment runs on.
   public func selectVaulted(_ method: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod) {
+    internalScope?.selectVaultedPaymentMethod(method)
+    Task { await scope.payWithVaultedPaymentMethod() }
+  }
+
+  /// Marks a saved method as the one the SDK's own screens act on, without paying. Internal, because
+  /// a merchant tracks their own highlight — this exists so ``PrimerVaultedPaymentMethods`` can keep
+  /// the SDK's selection in step with the row it shows.
+  func setSelectedVaulted(_ method: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod) {
     internalScope?.selectVaultedPaymentMethod(method)
   }
 
@@ -88,9 +102,4 @@ public final class PrimerSelectionSession: ObservableObject {
     scope.showAllVaultedPaymentMethods()
   }
 
-  /// Pays with the currently selected vaulted method. Used by the SDK's own vaulted submit button.
-  /// A card that needs CVV recapture raises the SDK's CVV screen, which finishes the payment.
-  func submitSelectedVaulted() async {
-    await scope.payWithVaultedPaymentMethod()
-  }
 }
