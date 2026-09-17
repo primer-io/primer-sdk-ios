@@ -51,7 +51,8 @@ struct InlineFlowHost: View, LogReporter {
             handle(newState)
           }
         }
-        .task {
+        // Keyed on the theme so the sheet follows a theme change made after the host first appeared.
+        .task(id: theme) {
           designTokensManager.applyTheme(theme)
           await loadDesignTokens(for: colorScheme)
         }
