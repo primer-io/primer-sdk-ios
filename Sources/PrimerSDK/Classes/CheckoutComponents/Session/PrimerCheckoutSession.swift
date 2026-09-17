@@ -210,6 +210,28 @@ public final class PrimerCheckoutSession: ObservableObject {
     return session
   }
 
+  /// Formats an amount in minor units the way the SDK's own screens do.
+  ///
+  /// Uses the client session's currency, whose decimal digits come from the backend and cannot be
+  /// worked out from ``PrimerClientSession/currencyCode`` alone — some currencies have none, some
+  /// have three. The locale is the one in `PrimerSettings.localeData`, which defaults to the device.
+  ///
+  /// ```swift
+  /// if let total = session.clientSession?.totalAmount, let formatted = session.formatAmount(total) {
+  ///   Text("Pay \(formatted)")
+  /// }
+  /// ```
+  ///
+  /// - Returns: `nil` before the session reaches `.ready`, when no currency is known yet.
+  public func formatAmount(_ amountInMinorUnits: Int) -> String? {
+    guard case .ready = phase,
+          let container = DIContainer.currentSync,
+          let currency = try? container.resolveSync(ConfigurationService.self).currency
+    else { return nil }
+
+    return amountInMinorUnits.toCurrencyString(currency: currency, locale: settings.localeData.locale)
+  }
+
   /// Delivers a session-ending outcome to the merchant exactly once, latching against repeat
   /// delivery. Failures do not pass through here — they are forwarded once per attempt.
   private func complete(with state: PrimerCheckoutState) {
