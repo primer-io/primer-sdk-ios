@@ -8,7 +8,7 @@ import PrimerSDK
 import SwiftUI
 
 // Brand chrome and result dialogs for AccountFundingDemo. None of it touches Primer: it is the
-// merchant's own UI, kept next to the demo so the flow file stays about the SDK.
+// fictional merchant's UI, kept next to the demo so the flow file stays about the SDK.
 
 // MARK: - Result dialogs
 
@@ -149,7 +149,7 @@ struct FundingCtaButton: View {
     }
 }
 
-/// The pay bar: label on the left, amount on the right, exactly as the merchant's own app draws it.
+/// The pay bar: label on the left, amount on the right, the shape a wallet app usually gives it.
 @available(iOS 15.0, *)
 struct FundingPayButton: View {
     let amount: String
@@ -194,8 +194,8 @@ struct FundingSkeleton: View {
 
 // MARK: - Helpers
 
-/// Sampled from the merchant's own app, so the demo reads as their product rather than ours. Fixed
-/// values on purpose: this brand has one appearance in both colour schemes.
+/// A made-up brand, so the demo reads as somebody's product rather than ours. Fixed values on
+/// purpose: this brand has one appearance in both colour schemes.
 enum FundingPalette {
     static let bar = Color(hex: 0x041E17)
     static let page = Color(hex: 0xE8F0F5)

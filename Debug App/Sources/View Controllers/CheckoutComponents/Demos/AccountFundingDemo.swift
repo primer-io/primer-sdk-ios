@@ -7,7 +7,7 @@
 import PrimerSDK
 import SwiftUI
 
-/// Account Funding — a wallet top-up rebuilt on the inline SwiftUI integration, in a merchant's own
+/// Account Funding — a wallet top-up built on the inline SwiftUI integration, in a made-up merchant
 /// brand rather than ours. The merchant owns the amount screen, the saved-card list, the add-a-card
 /// panel and both result dialogs; Primer supplies the vault, the card fields and the payment.
 ///
