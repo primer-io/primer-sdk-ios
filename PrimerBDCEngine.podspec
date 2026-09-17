@@ -9,7 +9,7 @@ Pod::Spec.new do |s|
     s.source       = { :git => "https://github.com/primer-io/primer-sdk-ios.git", :tag => "#{s.version}" }
 
     s.swift_version = '5'
-    s.ios.deployment_target = '13.0'
+    s.ios.deployment_target = '15.0'
 
     s.ios.source_files = "Modules/PrimerBDCEngine/Sources/**/*.{swift}"
     s.ios.frameworks   = "JavaScriptCore", "CryptoKit"
