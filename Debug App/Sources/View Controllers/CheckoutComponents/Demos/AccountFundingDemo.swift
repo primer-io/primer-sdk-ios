@@ -8,8 +8,13 @@ import PrimerSDK
 import SwiftUI
 
 /// Account Funding — a wallet top-up built on the inline SwiftUI integration, in a made-up merchant
-/// brand rather than ours. The merchant owns the amount screen, the saved-card list, the add-a-card
-/// panel and both result dialogs; Primer supplies the vault, the card fields and the payment.
+/// brand rather than ours.
+///
+/// It follows the order a real integration follows: the merchant's own screen decides how much is
+/// being paid, the merchant's backend then creates a client session for that amount, and only then
+/// does a ``PrimerCheckoutSession`` exist. From there the merchant still owns the saved-card list,
+/// the add-a-card panel, the pay bar and both result dialogs; Primer supplies the vault, the card
+/// fields and the payment.
 ///
 /// Two limits surface while running it. Paying with a saved card is reachable only through
 /// ``PrimerVaultedPaymentMethods``'s submit slot, which is why the pay bar mounts that component
@@ -35,64 +40,141 @@ struct AccountFundingDemo: View, CheckoutComponentsDemo {
     }
 
     var body: some View {
-        DemoScaffold(configuration: configuration, title: Self.metadata.name) { clientToken in
-            AccountFundingContent(clientToken: clientToken, settings: configuration.settings)
-        }
+        AccountFundingFlow(configuration: configuration)
     }
 }
 
 // MARK: - Flow
 
 @available(iOS 15.0, *)
-private struct AccountFundingContent: View {
+private struct AccountFundingFlow: View {
+    let configuration: DemoConfiguration
+
     @SwiftUI.Environment(\.dismiss) private var dismiss
-    @StateObject private var session: PrimerCheckoutSession
     @State private var step: Step = .amount
-    @State private var preset = 2500
-    @State private var isAddingCard = false
-    @State private var status: FundingStatus?
+    @State private var basket = FundingBasket()
+    @State private var isCreatingSession = false
+    @State private var error: String?
 
-    init(clientToken: String, settings: PrimerSettings) {
-        _session = StateObject(
-            wrappedValue: PrimerCheckoutSession(clientToken: clientToken, settings: settings.withMerchantResultScreens)
-        )
+    /// A stand-in for the balance the merchant's own backend would return.
+    private static let demoBalance = 18_360
+
+    private enum Step: Equatable {
+        case amount
+        case payments(clientToken: String)
     }
-
-    private enum Step { case amount, payments }
 
     var body: some View {
         ZStack {
             FundingPalette.page.ignoresSafeArea()
             VStack(spacing: 0) {
-                FundingBar(
-                    title: step == .amount ? "Fund Account" : "Payments",
-                    onBack: step == .payments ? { step = .amount } : nil,
-                    onClose: { dismiss() }
-                )
-                switch step {
-                case .amount:
-                    FundAmountScreen(preset: $preset, amount: amount, currencyCode: currencyCode) {
-                        step = .payments
-                    }
-                case .payments:
-                    PaymentsScreen(
-                        session: session,
-                        amount: amount,
-                        onAddCard: { isAddingCard = true },
-                        onPaying: { status = .processing }
-                    )
-                }
+                FundingBar(title: isOnAmountStep ? "Fund Account" : "Payments", onBack: goBack)
+                content
             }
+        }
+        // The merchant's own bar carries the title and the back arrow, so the demo host's navigation
+        // bar would only sit on top of it.
+        .navigationBarHidden(true)
+    }
+
+    @ViewBuilder private var content: some View {
+        switch step {
+        case .amount:
+            FundingAmountScreen(
+                basket: $basket,
+                currencyCode: configuration.clientSession?.currencyCode,
+                balance: Self.demoBalance,
+                isBusy: isCreatingSession,
+                // A deep link hands us a ready-made session; its amount is fixed and ours to display,
+                // not to change.
+                isAmountEditable: configuration.clientSession != nil,
+                error: error,
+                onProceed: proceed
+            )
+        case let .payments(clientToken):
+            AccountFundingCheckout(clientToken: clientToken, settings: configuration.settings, onFinish: reset)
+                .id(clientToken)
+        }
+    }
+
+    private var isOnAmountStep: Bool { step == .amount }
+
+    private func goBack() {
+        if isOnAmountStep { dismiss() } else { step = .amount }
+    }
+
+    private func reset() {
+        step = .amount
+    }
+
+    /// The merchant's own "create the session" step. A deep-linked demo already carries a token and
+    /// no session body, so it skips straight through with the amount that token was minted for.
+    private func proceed() {
+        guard var body = configuration.clientSession else {
+            if let token = configuration.clientToken, !token.isEmpty {
+                step = .payments(clientToken: token)
+            } else {
+                error = "No session configuration provided - configure a session in the main settings screen"
+            }
+            return
+        }
+
+        body.order = ClientSessionRequestBody.Order(
+            countryCode: body.order?.countryCode,
+            lineItems: [
+                .init(itemId: "account-deposit", description: "Account deposit", amount: basket.totalDue, quantity: 1)
+            ]
+        )
+
+        isCreatingSession = true
+        error = nil
+        Task {
+            do {
+                let token = try await NetworkingUtils.requestClientSession(
+                    body: body,
+                    apiVersion: configuration.apiVersion
+                )
+                step = .payments(clientToken: token)
+            } catch {
+                self.error = error.localizedDescription
+            }
+            isCreatingSession = false
+        }
+    }
+}
+
+// MARK: - Checkout
+
+@available(iOS 15.0, *)
+private struct AccountFundingCheckout: View {
+    @StateObject private var session: PrimerCheckoutSession
+    @State private var isAddingCard = false
+    @State private var status: FundingStatus?
+
+    let onFinish: () -> Void
+
+    init(clientToken: String, settings: PrimerSettings, onFinish: @escaping () -> Void) {
+        _session = StateObject(
+            wrappedValue: PrimerCheckoutSession(clientToken: clientToken, settings: settings.withMerchantResultScreens)
+        )
+        self.onFinish = onFinish
+    }
+
+    var body: some View {
+        ZStack {
+            PaymentsScreen(
+                session: session,
+                amount: amount,
+                onAddCard: { isAddingCard = true },
+                onPaying: { status = .processing }
+            )
             if isAddingCard {
                 AddCardPanel(onCancel: { isAddingCard = false }, onConfirm: startCardPayment)
             }
             if let status {
-                FundingStatusDialog(status: status, onDismiss: reset)
+                FundingStatusDialog(status: status, onDismiss: finish)
             }
         }
-        // The merchant's own bar carries the title and the close button, so the demo host's
-        // navigation bar would only sit on top of it.
-        .navigationBarHidden(true)
         .primerCheckoutSession(session) { state in
             switch state {
             case .success: status = .funded
@@ -109,79 +191,15 @@ private struct AccountFundingContent: View {
         status = .processing
     }
 
-    private func reset() {
+    private func finish() {
         status = nil
-        step = .amount
+        onFinish()
     }
 
-    /// The amount the SDK will charge, not the chip the shopper tapped: one client session carries
-    /// one amount, and this demo never creates a second one.
+    /// What the SDK will charge, read back from the session the merchant just created.
     private var amount: String {
         guard let clientSession = session.clientSession, let total = clientSession.totalAmount else { return "" }
         return FundingAmount.format(total, currencyCode: clientSession.currencyCode)
-    }
-
-    private var currencyCode: String? { session.clientSession?.currencyCode }
-}
-
-// MARK: - Merchant screens
-
-@available(iOS 15.0, *)
-private struct FundAmountScreen: View {
-    @Binding var preset: Int
-    let amount: String
-    let currencyCode: String?
-    let onProceed: () -> Void
-
-    private let presets = [2500, 5000, 10_000]
-
-    var body: some View {
-        VStack(spacing: 0) {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 12) {
-                    Text("Fund amount").font(.headline)
-                    chips
-                    Text("The client session fixes the amount charged, so the chips only steer this screen.")
-                        .font(.caption).foregroundColor(.secondary)
-                    Text("Funding summary").font(.headline).padding(.top, 8)
-                    summary
-                }
-                .padding(16)
-            }
-            FundingBottomBar {
-                FundingCtaButton(title: "Proceed to payments", isEnabled: !amount.isEmpty, action: onProceed)
-            }
-        }
-    }
-
-    private var chips: some View {
-        HStack(spacing: 10) {
-            ForEach(presets, id: \.self) { value in
-                let isOn = value == preset
-                Button { preset = value } label: {
-                    Text(FundingAmount.format(value, currencyCode: currencyCode))
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundColor(isOn ? .white : FundingPalette.ink)
-                        .frame(maxWidth: .infinity, minHeight: 44)
-                        .background(isOn ? FundingPalette.accent : FundingPalette.surface)
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 8)
-                                .stroke(FundingPalette.accent, lineWidth: isOn ? 0 : 1)
-                        )
-                }
-            }
-        }
-    }
-
-    private var summary: some View {
-        VStack(spacing: 0) {
-            FundingSummaryRow(label: "Deposit amount", value: amount)
-            Divider().padding(.horizontal, 16)
-            FundingSummaryRow(label: "Total due", value: amount, isBold: true)
-        }
-        .background(FundingPalette.surface)
-        .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 }
 
@@ -199,7 +217,11 @@ private struct PaymentsScreen: View {
     var body: some View {
         VStack(spacing: 0) {
             content
-            FundingBottomBar { fundButton }
+            if let selection = session.selection {
+                FundingBottomBar {
+                    FundBar(selection: selection, amount: amount, onPaying: onPaying)
+                }
+            }
         }
     }
 
@@ -220,12 +242,21 @@ private struct PaymentsScreen: View {
         }
     }
 
+}
+
+@available(iOS 15.0, *)
+private struct FundBar: View {
+    /// Observed, not just read: the pay button's enabled state follows the vault selection, and the
+    /// checkout session does not republish when that changes.
+    @ObservedObject var selection: PrimerSelectionSession
+    let amount: String
+    let onPaying: () -> Void
+
     /// `PrimerSelectionSession.submitSelectedVaulted()` is internal, so a merchant-owned pay button
     /// has to be handed to ``PrimerVaultedPaymentMethods``'s submit slot. Header and item render
-    /// nothing because the list above is the merchant's own, and the component draws nothing at all
-    /// without a selected method — hence the disabled stand-in.
-    @ViewBuilder private var fundButton: some View {
-        if session.selection?.state.selectedVaultedPaymentMethod != nil {
+    /// nothing because the list above is the merchant's own.
+    var body: some View {
+        if selection.state.selectedVaultedPaymentMethod != nil {
             PrimerVaultedPaymentMethods(
                 header: { _ in AnyView(EmptyView()) },
                 item: { _, _, _ in AnyView(EmptyView()) },
@@ -239,6 +270,7 @@ private struct PaymentsScreen: View {
                 }
             )
         } else {
+            // Nothing saved yet, so there is nothing for the component to submit.
             FundingPayButton(amount: amount, isLoading: false, isEnabled: false, action: {})
         }
     }
@@ -256,24 +288,25 @@ private struct SavedCards: View {
                 Text("Saved payment methods").font(.headline).foregroundColor(FundingPalette.ink)
                 VStack(spacing: 0) {
                     ForEach(Array(visible(of: methods).enumerated()), id: \.element.id) { index, method in
-                        if index > 0 { Divider().padding(.leading, 60) }
+                        if index > 0 { Divider().padding(.horizontal, 16) }
                         SavedCardRow(method: method, isSelected: method.id == selected?.id) {
                             selection.selectVaulted(method)
                         }
                     }
                 }
-                .background(FundingPalette.surface)
-                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .fundingCard()
 
+                // One saved card renders the same collapsed or expanded, so the toggle would do
+                // nothing visible.
                 if methods.count > 1 {
                     Button { withAnimation { isExpanded.toggle() } } label: {
                         Text(isExpanded ? "Collapse" : "View all")
                             .font(.body.weight(.semibold))
                             .foregroundColor(FundingPalette.ink)
-                            .frame(maxWidth: .infinity, minHeight: 48)
+                            .frame(maxWidth: .infinity, minHeight: 56)
                             .background(FundingPalette.surface)
-                            .clipShape(RoundedRectangle(cornerRadius: 8))
-                            .overlay(RoundedRectangle(cornerRadius: 8).stroke(FundingPalette.outline, lineWidth: 1.5))
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                            .overlay(RoundedRectangle(cornerRadius: 10).stroke(FundingPalette.outline, lineWidth: 2))
                     }
                 }
             }
@@ -284,12 +317,13 @@ private struct SavedCards: View {
         selection.state.selectedVaultedPaymentMethod
     }
 
-    /// Collapsed shows the selected card alone, which is what the shopper is about to pay with.
+    /// Collapsed shows the selected card alone, which is what the shopper is about to pay with. With
+    /// nothing selected yet, fall back to the first card rather than silently rendering expanded.
     private func visible(
         of methods: [PrimerVaultedPaymentMethods.VaultedMethod]
     ) -> [PrimerVaultedPaymentMethods.VaultedMethod] {
-        guard !isExpanded, let selected else { return methods }
-        return [selected]
+        guard !isExpanded else { return methods }
+        return [selected ?? methods[0]]
     }
 }
 
@@ -302,20 +336,27 @@ private struct SavedCardRow: View {
     var body: some View {
         Button(action: onSelect) {
             HStack(spacing: 12) {
+                // The SDK exposes no artwork for a vaulted card's network, so the merchant draws its
+                // own mark from `paymentInstrumentData.network`.
                 Text(network.prefix(4).uppercased())
                     .font(.system(size: 9, weight: .heavy))
                     .foregroundColor(.white)
-                    .frame(width: 32, height: 20)
+                    .frame(width: 34, height: 22)
                     .background(FundingPalette.accent)
                     .clipShape(RoundedRectangle(cornerRadius: 4))
                 Text("\(network.capitalized) **** \(method.paymentInstrumentData.last4Digits ?? "••••")")
                     .foregroundColor(FundingPalette.ink)
                 Spacer()
                 if isSelected {
-                    Image(systemName: "checkmark.circle.fill").foregroundColor(FundingPalette.selected)
+                    Image(systemName: "checkmark")
+                        .font(.system(size: 11, weight: .bold))
+                        .foregroundColor(.white)
+                        .frame(width: 22, height: 22)
+                        .background(Circle().fill(FundingPalette.success))
                 }
             }
-            .padding(16)
+            .padding(.horizontal, 16)
+            .frame(height: 64)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
@@ -360,16 +401,16 @@ private struct BrandButton: View {
                     Image(systemName: "creditcard")
                     Text("Debit Card")
                 } else if let icon = method.icon {
-                    Image(uiImage: icon).resizable().scaledToFit().frame(maxHeight: 22)
+                    Image(uiImage: icon).resizable().scaledToFit().frame(maxHeight: 24)
                 } else {
                     Text(method.buttonText ?? method.name)
                 }
             }
             .font(.body.weight(.semibold))
             .foregroundColor(isCard ? .white : Color(method.textColor ?? .black))
-            .frame(maxWidth: .infinity, minHeight: 52)
+            .frame(maxWidth: .infinity, minHeight: 60)
             .background(isCard ? FundingPalette.card : Color(method.backgroundColor ?? .systemGray5))
-            .clipShape(RoundedRectangle(cornerRadius: 8))
+            .clipShape(RoundedRectangle(cornerRadius: 10))
         }
         .padding(.bottom, 8)
     }
@@ -385,7 +426,7 @@ private struct AddCardPanel: View {
     var body: some View {
         ZStack(alignment: .bottom) {
             Color.black.opacity(0.45).ignoresSafeArea().onTapGesture(perform: onCancel)
-            VStack(spacing: 16) {
+            VStack(spacing: 20) {
                 Text("Enter Card Details").font(.headline).foregroundColor(FundingPalette.ink)
                 PrimerCardForm(
                     cardDetails: { form in
@@ -398,13 +439,20 @@ private struct AddCardPanel: View {
                             }
                         }
                     },
-                    billingAddress: { CardFormDefaults.postalCode($0) },
+                    // Half width, matching the expiry field above it, as the merchant's sheet has it.
+                    billingAddress: { form in
+                        HStack(spacing: 12) {
+                            CardFormDefaults.postalCode(form)
+                            Color.clear
+                        }
+                    },
                     submitButton: { buttons(for: $0) }
                 )
             }
             .padding(20)
             .background(FundingPalette.surface)
-            .clipShape(RoundedRectangle(cornerRadius: 20))
+            .clipShape(FundingSheetShape())
+            .ignoresSafeArea(edges: .bottom)
         }
     }
 
@@ -412,8 +460,8 @@ private struct AddCardPanel: View {
         HStack(spacing: 12) {
             Button(action: onCancel) {
                 Text("Cancel").fontWeight(.semibold).foregroundColor(FundingPalette.ink)
-                    .frame(maxWidth: .infinity, minHeight: 52)
-                    .overlay(RoundedRectangle(cornerRadius: 8).stroke(FundingPalette.outline, lineWidth: 1.5))
+                    .frame(maxWidth: .infinity, minHeight: 60)
+                    .overlay(RoundedRectangle(cornerRadius: 10).stroke(FundingPalette.outline, lineWidth: 2))
             }
             // Submit first: confirming tears this panel down, and the payment must already be under way.
             Button {
@@ -421,9 +469,9 @@ private struct AddCardPanel: View {
                 onConfirm()
             } label: {
                 Text("Confirm").fontWeight(.semibold).foregroundColor(FundingPalette.ink)
-                    .frame(maxWidth: .infinity, minHeight: 52)
+                    .frame(maxWidth: .infinity, minHeight: 60)
                     .background(FundingPalette.cta.opacity(form.state.isValid ? 1 : 0.4))
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
             }
             .disabled(!form.state.isValid || form.state.isLoading)
         }

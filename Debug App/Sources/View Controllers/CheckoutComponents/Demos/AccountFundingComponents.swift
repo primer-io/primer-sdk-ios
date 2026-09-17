@@ -7,8 +7,37 @@
 import PrimerSDK
 import SwiftUI
 
-// Brand chrome and result dialogs for AccountFundingDemo. None of it touches Primer: it is the
-// fictional merchant's UI, kept next to the demo so the flow file stays about the SDK.
+// Brand chrome, the funding basket and the result dialogs for AccountFundingDemo. None of it touches
+// Primer: it is the fictional merchant's own UI, kept beside the demo so the flow file stays about
+// the SDK.
+
+// MARK: - Basket
+
+/// What the shopper is depositing and what they end up paying. `totalDue` is the number the client
+/// session is created with, so the summary on screen and the amount charged cannot drift apart.
+struct FundingBasket: Equatable {
+    var deposit = 2500
+    var isPromotionApplied = false
+    var giftCardCode: String?
+
+    static let availablePromotions = 1
+    static let promotionName = "Deposit bonus"
+    static let promotionDetail = "10% off any deposit"
+    static let giftCardCredit = 500
+    private static let minimumCharge = 100
+
+    var promotionDiscount: Int { isPromotionApplied ? deposit / 10 : 0 }
+
+    var giftCardDiscount: Int {
+        guard giftCardCode?.isEmpty == false else { return 0 }
+        return min(Self.giftCardCredit, max(0, deposit - promotionDiscount - Self.minimumCharge))
+    }
+
+    /// Never below the minimum: a client session for nothing is not a payment.
+    var totalDue: Int { max(Self.minimumCharge, deposit - promotionDiscount - giftCardDiscount) }
+
+    var hasDiscount: Bool { totalDue != deposit }
+}
 
 // MARK: - Result dialogs
 
@@ -43,66 +72,105 @@ struct FundingStatusDialog: View {
     }
 
     private var processing: some View {
-        VStack(spacing: 14) {
-            ProgressView().controlSize(.large).tint(FundingPalette.ink)
-            Text("One moment please.").font(.subheadline)
-            Text("Don't close app, adding funds in progress…")
-                .font(.subheadline).multilineTextAlignment(.center)
+        VStack(spacing: 16) {
+            ProgressView().controlSize(.large).tint(FundingPalette.success)
+            Text("One moment please.")
+            Text("Don't close app, adding funds in progress...")
+                .multilineTextAlignment(.center)
         }
-        .foregroundColor(FundingPalette.ink)
-        .padding(24)
-        .frame(width: 280)
-        .background(FundingPalette.surface)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .font(.subheadline)
+        .foregroundColor(FundingPalette.mutedInk)
+        .padding(28)
+        .frame(maxWidth: .infinity)
+        .fundingCard(radius: 16)
+        .padding(.horizontal, 36)
     }
 
     private func result(title: String, headline: String, detail: String, isSuccess: Bool) -> some View {
-        VStack(spacing: 18) {
-            Text(title).font(.title.weight(.bold)).multilineTextAlignment(.center)
+        VStack(spacing: 22) {
+            Text(title).font(.largeTitle.weight(.bold)).multilineTextAlignment(.center)
             Image(systemName: isSuccess ? "checkmark" : "xmark")
-                .font(.system(size: 44, weight: .bold)).foregroundColor(.white)
-                .frame(width: 104, height: 104)
+                .font(.system(size: 62, weight: .bold)).foregroundColor(.white)
+                .frame(width: 150, height: 150)
                 .background(Circle().fill(isSuccess ? FundingPalette.success : Color.red))
-            Text(headline).font(.title3.weight(.bold))
-            Text(detail).font(.subheadline).foregroundColor(.secondary).multilineTextAlignment(.center)
-            FundingCtaButton(title: "All done", action: onDismiss)
+                .padding(.vertical, 8)
+            Text(headline).font(.title2.weight(.bold))
+            Text(detail).font(.body).foregroundColor(FundingPalette.mutedInk).multilineTextAlignment(.center)
+            FundingCtaButton(title: "All done", action: onDismiss).padding(.top, 8)
         }
         .foregroundColor(FundingPalette.ink)
         .padding(24)
         .frame(maxWidth: .infinity)
         .background(FundingPalette.surface)
-        .clipShape(RoundedRectangle(cornerRadius: 20))
+        .clipShape(FundingSheetShape())
+        .ignoresSafeArea(edges: .bottom)
     }
 }
 
 // MARK: - Chrome
 
+/// The merchant's own navigation bar. One back arrow, no close button, dark band running up into the
+/// status area — the shape the recording shows on every screen.
 @available(iOS 15.0, *)
 struct FundingBar: View {
     let title: String
-    let onBack: (() -> Void)?
-    let onClose: () -> Void
+    let onBack: () -> Void
 
     var body: some View {
         ZStack {
             Text(title).font(.headline)
             HStack {
-                if let onBack {
-                    Button(action: onBack) { Image(systemName: "arrow.left") }
+                Button(action: onBack) {
+                    Image(systemName: "arrow.left").font(.body.weight(.semibold))
                 }
                 Spacer()
-                Button(action: onClose) { Image(systemName: "xmark") }
             }
-            .font(.body.weight(.semibold))
         }
         .foregroundColor(.white)
         .padding(.horizontal, 16)
         .frame(height: 52)
         .frame(maxWidth: .infinity)
-        .background(FundingPalette.bar)
+        .background(FundingPalette.bar.ignoresSafeArea(edges: .top))
     }
 }
 
+@available(iOS 15.0, *)
+struct FundingBalanceHeader: View {
+    let balance: Int
+    let currencyCode: String?
+
+    private let networks = ["VISA", "MC", "DISC", "PP"]
+
+    var body: some View {
+        HStack(alignment: .top) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(FundingAmount.format(balance, currencyCode: currencyCode))
+                    .font(.title.weight(.bold))
+                Text("Current balance").font(.subheadline).foregroundColor(FundingPalette.mutedInk)
+            }
+            Spacer()
+            // The merchant's accepted-network strip. Their app shows licensed brand marks; a demo in
+            // a public repo shows the names instead.
+            HStack(spacing: 4) {
+                ForEach(networks, id: \.self) { network in
+                    Text(network)
+                        .font(.system(size: 8, weight: .heavy))
+                        .foregroundColor(FundingPalette.mutedInk)
+                        .frame(width: 30, height: 20)
+                        .background(FundingPalette.page)
+                        .clipShape(RoundedRectangle(cornerRadius: 4))
+                }
+            }
+            .padding(.top, 4)
+        }
+        .foregroundColor(FundingPalette.ink)
+        .padding(16)
+        .frame(maxWidth: .infinity)
+        .background(FundingPalette.surface)
+    }
+}
+
+/// The pinned bar at the foot of every merchant screen: rounded top corners, lifted off the page.
 @available(iOS 15.0, *)
 struct FundingBottomBar<Content: View>: View {
     @ViewBuilder let content: () -> Content
@@ -112,6 +180,8 @@ struct FundingBottomBar<Content: View>: View {
             .padding(16)
             .frame(maxWidth: .infinity)
             .background(FundingPalette.surface)
+            .clipShape(FundingSheetShape())
+            .shadow(color: .black.opacity(0.08), radius: 10, y: -2)
     }
 }
 
@@ -141,9 +211,9 @@ struct FundingCtaButton: View {
     var body: some View {
         Button(action: action) {
             Text(title).font(.body.weight(.semibold)).foregroundColor(FundingPalette.ink)
-                .frame(maxWidth: .infinity, minHeight: 56)
+                .frame(maxWidth: .infinity, minHeight: 60)
                 .background(FundingPalette.cta.opacity(isEnabled ? 1 : 0.4))
-                .clipShape(RoundedRectangle(cornerRadius: 10))
+                .clipShape(RoundedRectangle(cornerRadius: 12))
         }
         .disabled(!isEnabled)
     }
@@ -164,35 +234,73 @@ struct FundingPayButton: View {
                     ProgressView().tint(FundingPalette.ink)
                 } else {
                     Text("Fund account").font(.body.weight(.semibold))
-                    Rectangle().fill(FundingPalette.ink.opacity(0.35)).frame(width: 1, height: 20)
+                    Rectangle().fill(FundingPalette.ink.opacity(0.5)).frame(width: 2, height: 22)
                     Text(amount)
                 }
             }
             .foregroundColor(FundingPalette.ink)
-            .frame(maxWidth: .infinity, minHeight: 56)
+            .frame(maxWidth: .infinity, minHeight: 60)
             .background(FundingPalette.cta.opacity(isEnabled && !isLoading ? 1 : 0.4))
-            .clipShape(RoundedRectangle(cornerRadius: 10))
+            .clipShape(RoundedRectangle(cornerRadius: 12))
         }
         .disabled(!isEnabled || isLoading)
     }
 }
 
+/// Two labelled groups of placeholder blocks, matching the shape of the list that replaces them.
 @available(iOS 15.0, *)
 struct FundingSkeleton: View {
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            ForEach([120, 56, 56, 56], id: \.self) { height in
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(Color.black.opacity(0.06))
-                    .frame(height: CGFloat(height))
-            }
+        VStack(alignment: .leading, spacing: 10) {
+            group(rows: 1)
+            group(rows: 3).padding(.top, 14)
             Spacer()
         }
         .padding(16)
     }
+
+    private func group(rows: Int) -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            block(width: 180, height: 20)
+            ForEach(0 ..< rows, id: \.self) { _ in block(width: nil, height: 56) }
+        }
+    }
+
+    private func block(width: CGFloat?, height: CGFloat) -> some View {
+        RoundedRectangle(cornerRadius: 10)
+            .fill(Color.black.opacity(0.06))
+            .frame(width: width, height: height)
+            .frame(maxWidth: width == nil ? .infinity : width, alignment: .leading)
+    }
 }
 
 // MARK: - Helpers
+
+/// A sheet-style shape: rounded top corners, square bottom, so a panel can sit flush on the screen
+/// edge. `RoundedRectangle` alone rounds all four.
+struct FundingSheetShape: Shape {
+    var radius: CGFloat = 20
+
+    func path(in rect: CGRect) -> Path {
+        Path(
+            UIBezierPath(
+                roundedRect: rect,
+                byRoundingCorners: [.topLeft, .topRight],
+                cornerRadii: CGSize(width: radius, height: radius)
+            ).cgPath
+        )
+    }
+}
+
+extension View {
+    /// The merchant's card surface: white, rounded, softly lifted off the pale page.
+    @available(iOS 15.0, *)
+    func fundingCard(radius: CGFloat = 12) -> some View {
+        background(FundingPalette.surface)
+            .clipShape(RoundedRectangle(cornerRadius: radius))
+            .shadow(color: .black.opacity(0.06), radius: 6, y: 2)
+    }
+}
 
 /// A made-up brand, so the demo reads as somebody's product rather than ours. Fixed values on
 /// purpose: this brand has one appearance in both colour schemes.
@@ -201,6 +309,7 @@ enum FundingPalette {
     static let page = Color(hex: 0xE8F0F5)
     static let surface = Color.white
     static let ink = Color(hex: 0x0B1B14)
+    static let mutedInk = Color(hex: 0x6B7B75)
     static let cta = Color(hex: 0x62E273)
     static let outline = Color(hex: 0x65DA76)
     static let selected = Color(hex: 0x30AD4F)
@@ -212,10 +321,27 @@ enum FundingPalette {
 enum FundingAmount {
     /// Minor units to a display string. A `nil` currency falls back to the device locale.
     static func format(_ minorUnits: Int, currencyCode: String?) -> String {
+        formatter(for: currencyCode, fractionDigits: 2)
+            .string(from: NSNumber(value: Double(minorUnits) / 100)) ?? "\(minorUnits)"
+    }
+
+    /// Same, with the cents dropped — how the merchant labels its preset amounts.
+    static func formatWhole(_ minorUnits: Int, currencyCode: String?) -> String {
+        formatter(for: currencyCode, fractionDigits: 0)
+            .string(from: NSNumber(value: Double(minorUnits) / 100)) ?? "\(minorUnits / 100)"
+    }
+
+    static func symbol(for currencyCode: String?) -> String {
+        formatter(for: currencyCode, fractionDigits: 0).currencySymbol ?? ""
+    }
+
+    private static func formatter(for currencyCode: String?, fractionDigits: Int) -> NumberFormatter {
         let formatter = NumberFormatter()
         formatter.numberStyle = .currency
+        formatter.minimumFractionDigits = fractionDigits
+        formatter.maximumFractionDigits = fractionDigits
         if let currencyCode { formatter.currencyCode = currencyCode }
-        return formatter.string(from: NSNumber(value: Double(minorUnits) / 100)) ?? "\(minorUnits)"
+        return formatter
     }
 }
 
