@@ -925,6 +925,22 @@ enum CheckoutComponentsStrings {
 
   // MARK: - Vaulted Card CVV Recapture
 
+  static let vaultCvvTitle = NSLocalizedString(
+    "primer_vault_cvv_title",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Enter CVV",
+    comment: "Title of the CVV recapture screen"
+  )
+
+  static let vaultCvvGenericError = NSLocalizedString(
+    "primer_vault_cvv_error_generic",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Something went wrong. Try again.",
+    comment: "Error shown on the CVV recapture screen when the payment could not be started"
+  )
+
   static let cvvPlaceholderDigit = NSLocalizedString(
     "primer_vault_cvv_placeholder_digit",
     tableName: tableName,

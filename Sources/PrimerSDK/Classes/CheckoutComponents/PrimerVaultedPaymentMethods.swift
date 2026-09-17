@@ -71,19 +71,13 @@ public struct PrimerVaultedPaymentMethods: View {
           // "Show all" opens the screen that lists every saved method. Merchants who want the full
           // list inline iterate ``PrimerSelectionSession/vaultedPaymentMethods`` themselves.
           item(selected, true) { session.selectVaulted(selected) }
-          // SDK-handled CVV recapture (not a customizable slot).
-          VaultedPaymentMethodsDefaults.cvvInput(session)
-          submitButton(session.state.isVaultPaymentLoading, isSubmitEnabled) {
+          // A card needing CVV recapture gets the SDK's own screen on submit, so there is no field
+          // to render here and nothing to hold the button back.
+          submitButton(session.state.isVaultPaymentLoading, true) {
             Task { await session.submitSelectedVaulted() }
           }
         }
       }
-    }
-
-    // Only evaluated with a method selected; blocks submit until a valid CVV is entered when
-    // recapture is required, so a tap can never submit an empty CVV.
-    private var isSubmitEnabled: Bool {
-      !session.state.requiresCvvInput || session.state.isCvvValid
     }
   }
 }

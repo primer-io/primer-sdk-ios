@@ -74,11 +74,7 @@ struct PaymentMethodSelectionScreen: View, LogReporter {
           VaultSection(
             vaultedPaymentMethod: vaultedPaymentMethod,
             scope: scope,
-            isLoading: selectionState.isVaultPaymentLoading,
-            requiresCvvInput: selectionState.requiresCvvInput,
-            cvvInput: $selectionState.cvvInput,
-            isCvvValid: $selectionState.isCvvValid,
-            cvvError: $selectionState.cvvError
+            isLoading: selectionState.isVaultPaymentLoading
           )
         }
 

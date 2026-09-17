@@ -88,15 +88,8 @@ public final class PrimerSelectionSession: ObservableObject {
     scope.showAllVaultedPaymentMethods()
   }
 
-  /// Updates and validates the CVV for the selected vaulted card during CVV recapture.
-  /// Drives `state.cvvInput` / `state.isCvvValid` / `state.cvvError`.
-  public func updateCvvInput(_ cvv: String) {
-    scope.updateCvvInput(cvv)
-  }
-
   /// Pays with the currently selected vaulted method. Used by the SDK's own vaulted submit button.
-  /// When the card requires CVV recapture, the first call reveals the CVV field; the next call
-  /// (once `state.isCvvValid`) submits with the captured CVV.
+  /// A card that needs CVV recapture raises the SDK's CVV screen, which finishes the payment.
   func submitSelectedVaulted() async {
     await scope.payWithVaultedPaymentMethod()
   }

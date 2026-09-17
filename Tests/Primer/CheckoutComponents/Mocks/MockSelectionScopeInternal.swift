@@ -21,7 +21,6 @@ final class MockSelectionScopeInternal: PaymentMethodSelectionScopeInternal {
   private(set) var cancelCalled = false
   private(set) var showAllCalled = false
   private(set) var showOtherWaysCalled = false
-  private(set) var updatedCvv: String?
   private(set) var paidWithVaulted = false
   private(set) var paidWithVaultedAndCvv: String?
   private(set) var selectedVaulted: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod?
@@ -48,7 +47,12 @@ final class MockSelectionScopeInternal: PaymentMethodSelectionScopeInternal {
   func cancel() { cancelCalled = true }
   func payWithVaultedPaymentMethod() async { paidWithVaulted = true }
   func payWithVaultedPaymentMethodAndCvv(_ cvv: String) async { paidWithVaultedAndCvv = cvv }
-  func updateCvvInput(_ cvv: String) { updatedCvv = cvv }
+  var stubbedCvvValidation: (isValid: Bool, errorMessage: String?) = (false, nil)
+  private(set) var validatedCvv: String?
+  func validateCvv(_ cvv: String) -> (isValid: Bool, errorMessage: String?) {
+    validatedCvv = cvv
+    return stubbedCvvValidation
+  }
   func showAllVaultedPaymentMethods() { showAllCalled = true }
   func showOtherWaysToPay() { showOtherWaysCalled = true }
   func syncSelectedVaultedPaymentMethod() {}
