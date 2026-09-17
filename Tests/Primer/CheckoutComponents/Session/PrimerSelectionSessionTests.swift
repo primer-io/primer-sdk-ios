@@ -60,6 +60,13 @@ final class PrimerSelectionSessionTests: XCTestCase {
       stubbedVaultedPaymentMethods
     }
 
+    var vaultContinuation: AsyncStream<[PrimerHeadlessUniversalCheckout.VaultedPaymentMethod]>.Continuation?
+    lazy var vaultStream: AsyncStream<[PrimerHeadlessUniversalCheckout.VaultedPaymentMethod]> =
+      AsyncStream { self.vaultContinuation = $0 }
+    var vaultedPaymentMethodsStream: AsyncStream<[PrimerHeadlessUniversalCheckout.VaultedPaymentMethod]> {
+      vaultStream
+    }
+
     func onPaymentMethodSelected(paymentMethod: CheckoutPaymentMethod) {
       selectedPaymentMethod = paymentMethod
     }
@@ -140,6 +147,39 @@ final class PrimerSelectionSessionTests: XCTestCase {
     // A non-`PaymentMethodSelectionScopeInternal` scope yields no vaulted methods.
     let session = PrimerSelectionSession(scope: StubSelectionScope())
     XCTAssertTrue(session.vaultedPaymentMethods.isEmpty)
+  }
+
+  func test_vaultedPaymentMethods_seededFromScopeAtInit() {
+    // Given
+    let scope = TrackingSelectionScope()
+    scope.stubbedVaultedPaymentMethods = [makeVaultedPaymentMethod(id: "v1")]
+
+    // When
+    let session = PrimerSelectionSession(scope: scope)
+
+    // Then
+    XCTAssertEqual(session.vaultedPaymentMethods.map(\.id), ["v1"])
+  }
+
+  // Regression: the list used to be a plain computed getter, so a merchant's own inline list never
+  // re-rendered after a delete — nothing published when the set changed.
+  func test_vaultedPaymentMethodsStream_updatesPublishedList() async throws {
+    // Given
+    let scope = TrackingSelectionScope()
+    let session = PrimerSelectionSession(scope: scope)
+
+    try await withTimeout(2.0) { [scope] in
+      while scope.vaultContinuation == nil { await Task.yield() }
+    }
+
+    // When
+    scope.vaultContinuation?.yield([makeVaultedPaymentMethod(id: "v9")])
+
+    // Then
+    try await withTimeout(2.0) { [session] in
+      while session.vaultedPaymentMethods.isEmpty { await Task.yield() }
+    }
+    XCTAssertEqual(session.vaultedPaymentMethods.map(\.id), ["v9"])
   }
 
   // MARK: - Selection forwarding
