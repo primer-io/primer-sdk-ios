@@ -35,14 +35,10 @@ struct CVVTextField: UIViewRepresentable, LogReporter {
       doneButtonAction: #selector(Coordinator.doneButtonTapped)
     )
 
-    context.coordinator.repainter.markApplied(tokens)
-
     return textField
   }
 
   func updateUIView(_ textField: SecureTextField, context: Context) {
-    context.coordinator.repainter.repaintIfNeeded(textField, placeholder: placeholder, tokens: tokens)
-
     if textField.internalText != cvv {
       textField.internalText = cvv
     }
@@ -61,7 +57,6 @@ struct CVVTextField: UIViewRepresentable, LogReporter {
   }
 
   final class Coordinator: NSObject, UITextFieldDelegate, LogReporter {
-    let repainter = PrimerFieldRepainter()
     private let validationService: ValidationService
     private let cardNetwork: CardNetwork
     @Binding private var cvv: String

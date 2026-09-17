@@ -26,6 +26,8 @@ struct KlarnaView: View, LogReporter {
     static let badgeHeight: CGFloat = 40
     static let paymentViewMinHeight: CGFloat = 200
     static let inlineLoadingMinHeight: CGFloat = 100
+    static let selectedBorderWidth: CGFloat = 2
+    static let defaultBorderWidth: CGFloat = 1
     static let badgeCornerRadius: CGFloat = 2
     static let placeholderOpacity: Double = 0.8
   }
@@ -150,7 +152,7 @@ struct KlarnaView: View, LogReporter {
         .frame(height: PrimerSpacing.xxlarge(tokens: tokens) * 2)
 
       ProgressView()
-        .progressViewStyle(CircularProgressViewStyle(tint: CheckoutColors.loader(tokens: tokens)))
+        .progressViewStyle(CircularProgressViewStyle(tint: CheckoutColors.blue(tokens: tokens)))
         .scaleEffect(PrimerScale.large)
         .frame(width: Layout.spinnerSize, height: Layout.spinnerSize)
         .accessibilityIdentifier(AccessibilityIdentifiers.Klarna.loadingIndicator)
@@ -221,7 +223,7 @@ struct KlarnaView: View, LogReporter {
           // Checkmark for selected
           if isSelected {
             Image(systemName: "checkmark")
-              .foregroundColor(CheckoutColors.borderSelected(tokens: tokens))
+              .foregroundColor(CheckoutColors.blue(tokens: tokens))
               .font(PrimerFont.bodyMedium(tokens: tokens))
           }
         }
@@ -242,7 +244,7 @@ struct KlarnaView: View, LogReporter {
           .accessibilityLabel(CheckoutComponentsStrings.a11yKlarnaPaymentView)
       } else if isSelected, scope.paymentView == nil, klarnaState.step != .viewReady {
         ProgressView()
-          .progressViewStyle(CircularProgressViewStyle(tint: CheckoutColors.loader(tokens: tokens)))
+          .progressViewStyle(CircularProgressViewStyle(tint: CheckoutColors.blue(tokens: tokens)))
           .frame(maxWidth: .infinity, minHeight: Layout.inlineLoadingMinHeight)
           .accessibilityLabel(CheckoutComponentsStrings.a11yLoading)
       }
@@ -253,9 +255,8 @@ struct KlarnaView: View, LogReporter {
       RoundedRectangle(cornerRadius: PrimerRadius.medium(tokens: tokens))
         .stroke(
           isSelected
-            ? CheckoutColors.borderSelected(tokens: tokens) : CheckoutColors.borderDefault(tokens: tokens),
-          lineWidth: isSelected
-            ? PrimerBorderWidth.selected(tokens: tokens) : PrimerBorderWidth.standard(tokens: tokens)
+            ? CheckoutColors.blue(tokens: tokens) : CheckoutColors.borderDefault(tokens: tokens),
+          lineWidth: isSelected ? Layout.selectedBorderWidth : Layout.defaultBorderWidth
         )
     )
     .clipShape(RoundedRectangle(cornerRadius: PrimerRadius.medium(tokens: tokens)))
@@ -287,10 +288,10 @@ struct KlarnaView: View, LogReporter {
     Button(action: action) {
       Text(title)
         .font(PrimerFont.body(tokens: tokens))
-        .foregroundColor(CheckoutColors.onBrand(tokens: tokens))
+        .foregroundColor(CheckoutColors.white(tokens: tokens))
         .frame(maxWidth: .infinity)
         .padding(.vertical, PrimerSpacing.large(tokens: tokens))
-        .background(CheckoutColors.buttonPrimary(tokens: tokens))
+        .background(CheckoutColors.textPrimary(tokens: tokens))
         .cornerRadius(PrimerRadius.small(tokens: tokens))
     }
   }

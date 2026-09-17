@@ -73,10 +73,10 @@ struct ErrorScreen: View {
       Text(CheckoutComponentsStrings.retryButton)
         .font(PrimerFont.bodyMedium(tokens: tokens))
         .fontWeight(.semibold)
-        .foregroundColor(CheckoutColors.onBrand(tokens: tokens))
+        .foregroundColor(.white)
         .frame(maxWidth: .infinity)
         .padding(.vertical, PrimerSpacing.medium(tokens: tokens))
-        .background(CheckoutColors.buttonPrimary(tokens: tokens))
+        .background(CheckoutColors.blue(tokens: tokens))
         .cornerRadius(PrimerRadius.medium(tokens: tokens))
     }
     .accessibility(
@@ -100,9 +100,7 @@ struct ErrorScreen: View {
         .background(Color.clear)
         .overlay(
           RoundedRectangle(cornerRadius: PrimerRadius.medium(tokens: tokens))
-            .stroke(
-              CheckoutColors.borderDefault(tokens: tokens),
-              lineWidth: PrimerBorderWidth.standard(tokens: tokens))
+            .stroke(CheckoutColors.borderDefault(tokens: tokens), lineWidth: 1)
         )
     }
     .accessibility(

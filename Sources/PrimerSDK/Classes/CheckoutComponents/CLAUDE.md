@@ -216,7 +216,7 @@ Use the composable view's slot arguments:
 
 CheckoutComponents uses a design token system (Internal/Tokens/):
 - **DesignTokens**: Light mode tokens
-- Dark mode: `base.json` + `dark.json` merged at runtime into the same `DesignTokens` type
+- **DesignTokensDark**: Dark mode tokens
 - **DesignTokensManager**: Manages token access and theme switching
 - **PrimerFont**: Custom font support with fallbacks
 

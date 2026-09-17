@@ -34,14 +34,10 @@ struct StateTextField: UIViewRepresentable, LogReporter {
       doneButtonAction: #selector(Coordinator.doneButtonTapped)
     )
 
-    context.coordinator.repainter.markApplied(tokens)
-
     return textField
   }
 
   func updateUIView(_ textField: UITextField, context: Context) {
-    context.coordinator.repainter.repaintIfNeeded(textField, placeholder: placeholder, tokens: tokens)
-
     if textField.text != state {
       textField.text = state
     }
@@ -59,7 +55,6 @@ struct StateTextField: UIViewRepresentable, LogReporter {
   }
 
   final class Coordinator: NSObject, UITextFieldDelegate, LogReporter {
-    let repainter = PrimerFieldRepainter()
     private let validationService: ValidationService
     @Binding private var state: String
     @Binding private var isValid: Bool

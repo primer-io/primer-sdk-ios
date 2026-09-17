@@ -20,7 +20,7 @@ struct SplashScreen: View {
       VStack(spacing: PrimerSpacing.large(tokens: tokens)) {
         ProgressView()
           .progressViewStyle(
-            CircularProgressViewStyle(tint: CheckoutColors.loader(tokens: tokens))
+            CircularProgressViewStyle(tint: CheckoutColors.borderFocus(tokens: tokens))
           )
           .scaleEffect(PrimerScale.large)
           .frame(

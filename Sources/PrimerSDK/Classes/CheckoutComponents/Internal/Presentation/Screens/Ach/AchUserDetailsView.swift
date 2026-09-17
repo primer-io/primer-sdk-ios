@@ -89,13 +89,13 @@ struct AchUserDetailsView: View, LogReporter {
       Button(action: scope.submitUserDetails) {
         Text(CheckoutComponentsStrings.achContinueButton)
           .font(PrimerFont.body(tokens: tokens))
-          .foregroundColor(CheckoutColors.onBrand(tokens: tokens, isEnabled: achState.isSubmitEnabled))
+          .foregroundColor(CheckoutColors.white(tokens: tokens))
           .frame(maxWidth: .infinity)
           .padding(.vertical, PrimerSpacing.large(tokens: tokens))
           .background(
             achState.isSubmitEnabled
-              ? CheckoutColors.buttonPrimary(tokens: tokens)
-              : CheckoutColors.buttonDisabled(tokens: tokens)
+              ? CheckoutColors.textPrimary(tokens: tokens)
+              : CheckoutColors.textSecondary(tokens: tokens)
           )
           .cornerRadius(PrimerRadius.small(tokens: tokens))
       }
