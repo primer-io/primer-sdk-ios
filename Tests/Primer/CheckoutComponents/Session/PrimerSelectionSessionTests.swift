@@ -30,7 +30,7 @@ final class PrimerSelectionSessionTests: XCTestCase {
     func cancel() {}
     func payWithVaultedPaymentMethod() async {}
     func payWithVaultedPaymentMethodAndCvv(_ cvv: String) async {}
-    func updateCvvInput(_ cvv: String) {}
+    func validateCvv(_ cvv: String) -> (isValid: Bool, errorMessage: String?) { (false, nil) }
     func showAllVaultedPaymentMethods() {}
     func showOtherWaysToPay() {}
   }
@@ -73,7 +73,7 @@ final class PrimerSelectionSessionTests: XCTestCase {
     func cancel() { cancelCalled = true }
     func payWithVaultedPaymentMethod() async {}
     func payWithVaultedPaymentMethodAndCvv(_ cvv: String) async {}
-    func updateCvvInput(_ cvv: String) {}
+    func validateCvv(_ cvv: String) -> (isValid: Bool, errorMessage: String?) { (false, nil) }
     func showAllVaultedPaymentMethods() { showAllCalled = true }
     func showOtherWaysToPay() {}
 

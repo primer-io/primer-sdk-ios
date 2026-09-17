@@ -59,6 +59,10 @@ final class CheckoutNavigator: ObservableObject, LogReporter {
     coordinator.navigate(to: .deleteVaultedPaymentMethodConfirmation(method))
   }
 
+  func navigateToCvvRecapture() {
+    coordinator.navigate(to: .cvvRecapture)
+  }
+
   func navigateToPaymentMethod(
     _ paymentMethodType: String, context: PresentationContext = .fromPaymentSelection
   ) {

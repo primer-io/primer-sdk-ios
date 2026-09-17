@@ -202,84 +202,81 @@ final class DefaultPaymentMethodSelectionScopeTests: XCTestCase {
         XCTAssertEqual(mockCheckoutScope.navigationState, .vaultedPaymentMethods)
     }
 
-    // MARK: - updateCvvInput Tests
+    // MARK: - validateCvv Tests
 
-    func test_updateCvvInput_emptyString_notValidNoError() async throws {
+    // The CVV never lands in the selection state any more — the recapture screen owns the text and
+    // asks the scope whether it is valid. These cover the rules that answer drives.
+
+    func test_validateCvv_emptyString_notValidNoError() {
         // Given
         sut = makeSut()
 
         // When
-        sut.updateCvvInput("")
+        let result = sut.validateCvv("")
 
         // Then
-        let state = try await awaitValue(sut.state) { $0.cvvInput == "" }
-        XCTAssertFalse(state.isCvvValid)
-        XCTAssertNil(state.cvvError)
+        XCTAssertFalse(result.isValid)
+        XCTAssertNil(result.errorMessage)
     }
 
-    func test_updateCvvInput_validThreeDigits_isValid() async throws {
+    func test_validateCvv_validThreeDigits_isValid() {
         // Given
         sut = makeSut()
 
         // When
-        sut.updateCvvInput("123")
+        let result = sut.validateCvv("123")
 
         // Then
-        let state = try await awaitValue(sut.state) { $0.cvvInput == "123" }
-        XCTAssertTrue(state.isCvvValid)
-        XCTAssertNil(state.cvvError)
+        XCTAssertTrue(result.isValid)
+        XCTAssertNil(result.errorMessage)
     }
 
-    func test_updateCvvInput_nonNumeric_showsError() async throws {
+    func test_validateCvv_nonNumeric_showsError() {
         // Given
         sut = makeSut()
 
         // When
-        sut.updateCvvInput("abc")
+        let result = sut.validateCvv("abc")
 
         // Then
-        let state = try await awaitValue(sut.state) { $0.cvvInput == "abc" }
-        XCTAssertFalse(state.isCvvValid)
-        XCTAssertNotNil(state.cvvError)
+        XCTAssertFalse(result.isValid)
+        XCTAssertNotNil(result.errorMessage)
     }
 
-    func test_updateCvvInput_tooManyDigits_showsError() async throws {
+    func test_validateCvv_tooManyDigits_showsError() {
         // Given
         sut = makeSut()
 
         // When
-        sut.updateCvvInput("12345")
+        let result = sut.validateCvv("12345")
 
         // Then
-        let state = try await awaitValue(sut.state) { $0.cvvInput == "12345" }
-        XCTAssertFalse(state.isCvvValid)
-        XCTAssertNotNil(state.cvvError)
+        XCTAssertFalse(result.isValid)
+        XCTAssertNotNil(result.errorMessage)
     }
 
-    func test_updateCvvInput_partialInput_notValidNoError() async throws {
+    func test_validateCvv_partialInput_notValidNoError() {
         // Given
         sut = makeSut()
 
         // When
-        sut.updateCvvInput("12")
+        let result = sut.validateCvv("12")
 
         // Then
-        let state = try await awaitValue(sut.state) { $0.cvvInput == "12" }
-        XCTAssertFalse(state.isCvvValid)
-        XCTAssertNil(state.cvvError)
+        XCTAssertFalse(result.isValid)
+        XCTAssertNil(result.errorMessage)
     }
 
-    func test_updateCvvInput_specialCharacters_showsError() async throws {
+    func test_validateCvv_specialCharacters_showsError() {
         // Given
         sut = makeSut()
 
         // When
-        sut.updateCvvInput("1!2")
+        let result = sut.validateCvv("1!2")
 
         // Then
-        let state = try await awaitValue(sut.state) { $0.cvvInput == "1!2" }
-        XCTAssertFalse(state.isCvvValid)
-        XCTAssertNotNil(state.cvvError)
+        XCTAssertFalse(result.isValid)
+        XCTAssertNotNil(result.errorMessage)
     }
 
     // MARK: - payWithVaultedPaymentMethod Tests
@@ -294,83 +291,66 @@ final class DefaultPaymentMethodSelectionScopeTests: XCTestCase {
         // Then — state should remain unchanged
         let state = try await awaitFirst(sut.state)
         XCTAssertFalse(state.isVaultPaymentLoading)
-        XCTAssertFalse(state.requiresCvvInput)
     }
 
-    // MARK: - payWithVaultedPaymentMethodAndCvv Tests
+    // MARK: - CVV recapture routing
 
-    func test_payWithVaultedPaymentMethodAndCvv_noMethodSelected_returnsEarly() async throws {
-        // Given
-        sut = makeSut()
-
-        // When
-        await sut.payWithVaultedPaymentMethodAndCvv("123")
-
-        // Then
-        let state = try await awaitFirst(sut.state)
-        XCTAssertFalse(state.isVaultPaymentLoading)
+    /// Turns on the client-session flag the CVV gate reads.
+    private func enableCvvRecapture() throws {
+        let container = try XCTUnwrap(DIContainer.currentSync)
+        let config = try XCTUnwrap(
+            container.resolveSync(ConfigurationService.self) as? MockConfigurationService)
+        config.captureVaultedCardCvv = true
     }
 
-    // MARK: - syncSelectedVaultedPaymentMethod Tests
-
-    func test_syncSelectedVaultedPaymentMethod_updatesFromCheckoutScope() async throws {
+    func test_payWithVaultedPaymentMethod_cvvRequired_navigatesToTheCvvScreen() async throws {
         // Given
         sut = makeSut()
-        let vaultedMethod = makeVaultedPaymentMethod()
-        mockCheckoutScope.setVaultedPaymentMethods([vaultedMethod])
-        mockCheckoutScope.setSelectedVaultedPaymentMethod(vaultedMethod)
-
-        // When
-        sut.syncSelectedVaultedPaymentMethod()
-
-        // Then
-        let state = try await awaitValue(sut.state) { $0.selectedVaultedPaymentMethod != nil }
-        XCTAssertEqual(state.selectedVaultedPaymentMethod?.id, "vault_1")
-    }
-
-    func test_syncSelectedVaultedPaymentMethod_differentMethod_resetsCvvState() async throws {
-        // Given
-        sut = makeSut()
-        let method1 = makeVaultedPaymentMethod(id: "vault_1")
-        let method2 = makeVaultedPaymentMethod(id: "vault_2")
-
-        mockCheckoutScope.setVaultedPaymentMethods([method1, method2])
-        mockCheckoutScope.setSelectedVaultedPaymentMethod(method1)
-        sut.syncSelectedVaultedPaymentMethod()
-
-        // Simulate CVV entry
-        sut.updateCvvInput("123")
-
-        // When — switch to different method
-        mockCheckoutScope.setSelectedVaultedPaymentMethod(method2)
-        sut.syncSelectedVaultedPaymentMethod()
-
-        // Then — CVV should be reset
-        let state = try await awaitValue(sut.state) { $0.selectedVaultedPaymentMethod?.id == "vault_2" }
-        XCTAssertEqual(state.cvvInput, "")
-        XCTAssertFalse(state.isCvvValid)
-        XCTAssertFalse(state.requiresCvvInput)
-        XCTAssertNil(state.cvvError)
-    }
-
-    func test_syncSelectedVaultedPaymentMethod_sameMethod_preservesCvvState() async throws {
-        // Given
-        sut = makeSut()
-        let method = makeVaultedPaymentMethod(id: "vault_1")
-
+        try enableCvvRecapture()
+        let method = makeVaultedPaymentMethod()
         mockCheckoutScope.setVaultedPaymentMethods([method])
         mockCheckoutScope.setSelectedVaultedPaymentMethod(method)
         sut.syncSelectedVaultedPaymentMethod()
 
-        sut.updateCvvInput("123")
+        // When
+        await sut.payWithVaultedPaymentMethod()
 
-        // When — sync same method again
+        // Then — the field has no inline home any more, so the SDK raises its own screen
+        XCTAssertEqual(mockCheckoutScope.navigationState, .cvvRecapture)
+    }
+
+    func test_payWithVaultedPaymentMethod_cvvRequired_doesNotStartThePayment() async throws {
+        // Given
+        sut = makeSut()
+        try enableCvvRecapture()
+        let method = makeVaultedPaymentMethod()
+        mockCheckoutScope.setVaultedPaymentMethods([method])
+        mockCheckoutScope.setSelectedVaultedPaymentMethod(method)
         sut.syncSelectedVaultedPaymentMethod()
 
-        // Then — CVV should remain
-        let state = try await awaitValue(sut.state) { $0.cvvInput == "123" }
-        XCTAssertEqual(state.cvvInput, "123")
+        // When
+        await sut.payWithVaultedPaymentMethod()
+
+        // Then — nothing is charged until the CVV screen submits
+        XCTAssertFalse(sut.currentState.isVaultPaymentLoading)
     }
+
+    func test_payWithVaultedPaymentMethod_cvvNotRequired_skipsTheCvvScreen() async throws {
+        // Given
+        sut = makeSut()
+        let method = makeVaultedPaymentMethod()
+        mockCheckoutScope.setVaultedPaymentMethods([method])
+        mockCheckoutScope.setSelectedVaultedPaymentMethod(method)
+        sut.syncSelectedVaultedPaymentMethod()
+
+        // When
+        await sut.payWithVaultedPaymentMethod()
+
+        // Then
+        XCTAssertNotEqual(mockCheckoutScope.navigationState, .cvvRecapture)
+    }
+
+    // MARK: - payWithVaultedPaymentMethodAndCvv Tests
 
     func test_syncSelectedVaultedPaymentMethod_nilSelection_clearsState() async throws {
         // Given
@@ -658,26 +638,8 @@ final class DefaultPaymentMethodSelectionScopeAdditionalTests: XCTestCase {
         // When — payWithVaultedPaymentMethod should not prompt for CVV for non-card methods
         await sut.payWithVaultedPaymentMethod()
 
-        // Then — should not set requiresCvvInput
-        let state = try await awaitFirst(sut.state)
-        XCTAssertFalse(state.requiresCvvInput)
-    }
-
-    // MARK: - Multiple CVV input updates
-
-    func test_updateCvvInput_sequentialUpdates_keepsLatest() async throws {
-        // Given
-        sut = makeSut()
-
-        // When
-        sut.updateCvvInput("1")
-        sut.updateCvvInput("12")
-        sut.updateCvvInput("123")
-
-        // Then
-        let state = try await awaitValue(sut.state) { $0.cvvInput == "123" }
-        XCTAssertTrue(state.isCvvValid)
-        XCTAssertNil(state.cvvError)
+        // Then — no CVV screen, the payment goes straight out
+        XCTAssertNotEqual(mockCheckoutScope.navigationState, .cvvRecapture)
     }
 
     // MARK: - syncSelectedVaultedPaymentMethod with no checkout scope
@@ -967,25 +929,6 @@ final class DefaultPaymentMethodSelectionScopeVaultTests: XCTestCase {
         XCTAssertTrue(hasTracked)
     }
 
-    // MARK: - syncSelectedVaultedPaymentMethod: same method preserves CVV
-
-    func test_syncSelectedVaultedPaymentMethod_sameMethod_doesNotResetCvv() async throws {
-        // Given
-        sut = makeSut()
-        let method = makeVaultedPaymentMethod(id: "vault_same")
-        mockCheckoutScope.setVaultedPaymentMethods([method])
-        mockCheckoutScope.setSelectedVaultedPaymentMethod(method)
-        sut.syncSelectedVaultedPaymentMethod()
-
-        sut.updateCvvInput("999")
-
-        // When — re-sync with same method
-        sut.syncSelectedVaultedPaymentMethod()
-
-        // Then — CVV preserved
-        let state = try await awaitValue(sut.state) { $0.cvvInput == "999" }
-        XCTAssertEqual(state.cvvInput, "999")
-    }
 }
 
 // MARK: - Payment Method Selection State Tests
@@ -1004,10 +947,6 @@ final class PaymentMethodSelectionStateTests: XCTestCase {
         XCTAssertNil(state.selectedVaultedPaymentMethod)
         XCTAssertTrue(state.searchQuery.isEmpty)
         XCTAssertNil(state.error)
-        XCTAssertFalse(state.requiresCvvInput)
-        XCTAssertTrue(state.cvvInput.isEmpty)
-        XCTAssertFalse(state.isCvvValid)
-        XCTAssertNil(state.cvvError)
         XCTAssertFalse(state.isVaultPaymentLoading)
         XCTAssertTrue(state.isPaymentMethodsExpanded)
     }
@@ -1035,27 +974,17 @@ final class PaymentMethodSelectionStateTests: XCTestCase {
 
     func test_state_equality_sameValues() {
         // Given
-        let state1 = PrimerPaymentMethodSelectionState(
-            isLoading: true,
-            searchQuery: "test",
-            requiresCvvInput: true,
-            cvvInput: "123"
-        )
-        let state2 = PrimerPaymentMethodSelectionState(
-            isLoading: true,
-            searchQuery: "test",
-            requiresCvvInput: true,
-            cvvInput: "123"
-        )
+        let state1 = PrimerPaymentMethodSelectionState(isLoading: true, searchQuery: "test")
+        let state2 = PrimerPaymentMethodSelectionState(isLoading: true, searchQuery: "test")
 
         // Then
         XCTAssertEqual(state1, state2)
     }
 
-    func test_state_equality_differentCvvInput() {
+    func test_state_equality_differentVaultLoading() {
         XCTAssertNotEqual(
-            PrimerPaymentMethodSelectionState(cvvInput: "123"),
-            PrimerPaymentMethodSelectionState(cvvInput: "456")
+            PrimerPaymentMethodSelectionState(isVaultPaymentLoading: true),
+            PrimerPaymentMethodSelectionState(isVaultPaymentLoading: false)
         )
     }
 

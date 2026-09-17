@@ -319,6 +319,8 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
         navigator.navigateToVaultedPaymentMethods()
       case let .deleteVaultedPaymentMethodConfirmation(method):
         navigator.navigateToDeleteVaultedPaymentMethodConfirmation(method)
+      case .cvvRecapture:
+        navigator.navigateToCvvRecapture()
       case let .paymentMethod(paymentMethodType):
         navigator.navigateToPaymentMethod(paymentMethodType, context: presentationContext)
       case .processing:
@@ -350,44 +352,41 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
   }
 
   private func announceScreenChange(for state: CheckoutNavigationState) {
-    guard let service = accessibilityAnnouncementService else { return }
+    guard let service = accessibilityAnnouncementService, let message = announcement(for: state)
+    else { return }
 
-    let message: String?
+    service.announceScreenChange(message)
+    logger.debug(message: "[A11Y] Screen change announcement: \(message)")
+  }
+
+  private func announcement(for state: CheckoutNavigationState) -> String? {
     switch state {
     case .loading:
-      message = CheckoutComponentsStrings.a11yScreenLoadingPaymentMethods
+      CheckoutComponentsStrings.a11yScreenLoadingPaymentMethods
     case .paymentMethodSelection:
-      message = CheckoutComponentsStrings.choosePaymentMethod
+      CheckoutComponentsStrings.choosePaymentMethod
     case .vaultedPaymentMethods:
-      message = CheckoutComponentsStrings.allSavedPaymentMethods
+      CheckoutComponentsStrings.allSavedPaymentMethods
     case .deleteVaultedPaymentMethodConfirmation:
-      message = CheckoutComponentsStrings.deletePaymentMethodConfirmation
+      CheckoutComponentsStrings.deletePaymentMethodConfirmation
+    case .cvvRecapture:
+      CheckoutComponentsStrings.vaultCvvTitle
     case let .paymentMethod(type):
-      if let name = selectedPaymentMethodName {
-        message = CheckoutComponentsStrings.a11yScreenPaymentMethod(name)
-      } else {
-        // Fallback: Format raw payment method type for display
-        // This should rarely be used as API always provides display names
-        let displayName =
-          type
-          .replacingOccurrences(of: "_", with: " ")
-          .capitalized
-        message = CheckoutComponentsStrings.a11yScreenPaymentMethod(displayName)
-      }
+      CheckoutComponentsStrings.a11yScreenPaymentMethod(paymentMethodDisplayName(for: type))
     case .processing:
-      message = CheckoutComponentsStrings.a11yScreenProcessingPayment
+      CheckoutComponentsStrings.a11yScreenProcessingPayment
     case .success:
-      message = CheckoutComponentsStrings.a11yScreenSuccess
+      CheckoutComponentsStrings.a11yScreenSuccess
     case .failure:
-      message = CheckoutComponentsStrings.a11yScreenError
+      CheckoutComponentsStrings.a11yScreenError
     case .dismissed:
-      message = nil
+      nil
     }
+  }
 
-    if let message {
-      service.announceScreenChange(message)
-      logger.debug(message: "[A11Y] Screen change announcement: \(message)")
-    }
+  /// The API almost always supplies a display name; the raw type is only tidied up as a fallback.
+  private func paymentMethodDisplayName(for type: String) -> String {
+    selectedPaymentMethodName ?? type.replacingOccurrences(of: "_", with: " ").capitalized
   }
 
   private func observeNavigationEvents() {
@@ -404,6 +403,8 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
           newNavigationState = .vaultedPaymentMethods
         case let .deleteVaultedPaymentMethodConfirmation(method):
           newNavigationState = .deleteVaultedPaymentMethodConfirmation(method)
+        case .cvvRecapture:
+          newNavigationState = .cvvRecapture
         case let .paymentMethod(paymentMethodType, _):
           newNavigationState = .paymentMethod(paymentMethodType)
         case .processing:
