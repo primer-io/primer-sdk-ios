@@ -260,6 +260,10 @@ final class DefaultPaymentMethodSelectionScope: PaymentMethodSelectionScopeInter
     logger.info(message: "[Vault] Starting payment with vaulted method: \(vaultedMethod.id)")
 
     internalState.isVaultPaymentLoading = true
+    // Adding a card raises the processing screen, so paying with a saved one must too. Without this
+    // the whole payment runs behind the merchant's own list, with nothing to show it started. Both
+    // outcomes navigate on from here, so the state is left standing rather than wound back.
+    checkoutScope?.startProcessing()
 
     await analyticsInteractor?.trackEvent(
       .paymentSubmitted,
