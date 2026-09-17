@@ -18,8 +18,8 @@ import SwiftUI
 ///
 /// Two limits surface while running it. Paying with a saved card is reachable only through
 /// ``PrimerVaultedPaymentMethods``'s submit slot, which is why the pay bar mounts that component
-/// with empty header and item slots. And the processing screen has no off switch, so the inline host
-/// presents the SDK's own one in a sheet over the merchant dialog.
+/// with empty header and item slots. And the processing screen is ours to own: adding a card raises
+/// it over the merchant dialog, while paying with a saved card raises none at all.
 @available(iOS 15.0, *)
 struct AccountFundingDemo: View, CheckoutComponentsDemo {
     static var metadata: DemoMetadata {
@@ -177,7 +177,7 @@ private struct AccountFundingCheckout: View {
         }
         .primerCheckoutSession(session) { state in
             switch state {
-            case .success: status = .funded
+            case let .success(result): status = .funded(reference: result.paymentId)
             case let .failure(error): status = .failed(error.localizedDescription)
             default: break
             }
@@ -185,7 +185,8 @@ private struct AccountFundingCheckout: View {
     }
 
     /// The card form lives in the merchant's panel, so closing it and raising the merchant's own
-    /// processing dialog is the merchant's job — the SDK only learns about the submit.
+    /// processing dialog is the merchant's job. The SDK only learns about the submit, and its own
+    /// processing screen then covers this one.
     private func startCardPayment() {
         isAddingCard = false
         status = .processing

@@ -43,7 +43,7 @@ struct FundingBasket: Equatable {
 
 enum FundingStatus: Equatable {
     case processing
-    case funded
+    case funded(reference: String)
     case failed(String)
 }
 
@@ -58,11 +58,12 @@ struct FundingStatusDialog: View {
             switch status {
             case .processing:
                 processing
-            case .funded:
+            case let .funded(reference):
                 result(
                     title: "Deposit successful!",
                     headline: "Good luck!",
                     detail: "Your account has been funded.",
+                    reference: reference,
                     isSuccess: true
                 )
             case let .failed(message):
@@ -86,7 +87,13 @@ struct FundingStatusDialog: View {
         .padding(.horizontal, 36)
     }
 
-    private func result(title: String, headline: String, detail: String, isSuccess: Bool) -> some View {
+    private func result(
+        title: String,
+        headline: String,
+        detail: String,
+        reference: String? = nil,
+        isSuccess: Bool
+    ) -> some View {
         VStack(spacing: 22) {
             Text(title).font(.largeTitle.weight(.bold)).multilineTextAlignment(.center)
             Image(systemName: isSuccess ? "checkmark" : "xmark")
@@ -96,6 +103,11 @@ struct FundingStatusDialog: View {
                 .padding(.vertical, 8)
             Text(headline).font(.title2.weight(.bold))
             Text(detail).font(.body).foregroundColor(FundingPalette.mutedInk).multilineTextAlignment(.center)
+            // The payment id Primer returns. A merchant prints it on the receipt; here it is also the
+            // proof that a payment really was created, rather than the demo drawing a success.
+            if let reference {
+                Text("Payment \(reference)").font(.caption).foregroundColor(FundingPalette.mutedInk)
+            }
             FundingCtaButton(title: "All done", action: onDismiss).padding(.top, 8)
         }
         .foregroundColor(FundingPalette.ink)
@@ -347,7 +359,7 @@ enum FundingAmount {
 
 extension PrimerSettings {
     /// The merchant draws its own success and failure dialogs, so the SDK screens are switched off.
-    /// There is no matching switch for the processing screen.
+    /// The processing screen has no matching switch and is not meant to get one.
     var withMerchantResultScreens: PrimerSettings {
         PrimerSettings(
             paymentHandling: paymentHandling,
