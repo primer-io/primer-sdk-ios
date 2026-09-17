@@ -17,8 +17,9 @@ import SwiftUI
 /// customer can delete one. Renders nothing when the customer has no saved methods.
 ///
 /// To show every method inline instead, iterate ``PrimerSelectionSession/vaultedPaymentMethods`` in
-/// your own layout and call ``PrimerSelectionSession/selectVaulted(_:)`` and
-/// ``PrimerSelectionSession/delete(_:)`` directly.
+/// your own layout, keep the highlight in your own view state, and call
+/// ``PrimerSelectionSession/selectVaulted(_:)`` from your pay button and
+/// ``PrimerSelectionSession/delete(_:)`` to remove one.
 ///
 /// Slots are type-erased (`AnyView`) rather than generic — the 3-argument item/submit builders hit
 /// Swift's generic-default inference limits, so this view trades the opaque-return ergonomics of
@@ -70,11 +71,13 @@ public struct PrimerVaultedPaymentMethods: View {
           // One row, not the whole vault: this is the returning-customer shortcut, and the header's
           // "Show all" opens the screen that lists every saved method. Merchants who want the full
           // list inline iterate ``PrimerSelectionSession/vaultedPaymentMethods`` themselves.
-          item(selected, true) { session.selectVaulted(selected) }
+          // Marks rather than pays: the row is a choice, the submit slot is the pay verb. Tapping it
+          // keeps the SDK's own screens pointed at the same card.
+          item(selected, true) { session.setSelectedVaulted(selected) }
           // A card needing CVV recapture gets the SDK's own screen on submit, so there is no field
           // to render here and nothing to hold the button back.
-          submitButton(session.state.isVaultPaymentLoading, true) {
-            Task { await session.submitSelectedVaulted() }
+          submitButton(session.state.isVaultPaymentLoading, !session.state.isVaultPaymentLoading) {
+            session.selectVaulted(selected)
           }
         }
       }

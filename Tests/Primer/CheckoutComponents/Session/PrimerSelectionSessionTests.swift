@@ -44,6 +44,7 @@ final class PrimerSelectionSessionTests: XCTestCase {
     private(set) var showAllCalled = false
     private(set) var selectedVaulted: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod?
     private(set) var deletedVaulted: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod?
+    private(set) var paidWithVaulted = false
 
     var stubbedVaultedPaymentMethods: [PrimerHeadlessUniversalCheckout.VaultedPaymentMethod] = []
     var stubbedCurrentState = PrimerPaymentMethodSelectionState()
@@ -71,7 +72,7 @@ final class PrimerSelectionSessionTests: XCTestCase {
       selectedPaymentMethod = paymentMethod
     }
     func cancel() { cancelCalled = true }
-    func payWithVaultedPaymentMethod() async {}
+    func payWithVaultedPaymentMethod() async { paidWithVaulted = true }
     func payWithVaultedPaymentMethodAndCvv(_ cvv: String) async {}
     func validateCvv(_ cvv: String) -> (isValid: Bool, errorMessage: String?) { (false, nil) }
     func showAllVaultedPaymentMethods() { showAllCalled = true }
@@ -210,7 +211,9 @@ final class PrimerSelectionSessionTests: XCTestCase {
 
   // MARK: - Vaulted forwarding
 
-  func test_selectVaulted_forwardsToSelectVaultedPaymentMethod() {
+  // `selectVaulted` is the pay verb, matching Android's `controller.select(method)`. It marks first
+  // so the SDK's own screens act on the same card, then charges it.
+  func test_selectVaulted_marksTheMethod() {
     // Given
     let scope = TrackingSelectionScope()
     let session = PrimerSelectionSession(scope: scope)
@@ -221,6 +224,35 @@ final class PrimerSelectionSessionTests: XCTestCase {
 
     // Then
     XCTAssertEqual(scope.selectedVaulted?.id, "v1")
+  }
+
+  func test_selectVaulted_paysWithTheMethod() async throws {
+    // Given
+    let scope = TrackingSelectionScope()
+    let session = PrimerSelectionSession(scope: scope)
+
+    // When
+    session.selectVaulted(makeVaultedPaymentMethod(id: "v1"))
+
+    // Then — the pay call is wrapped in a Task so the method itself stays synchronous
+    try await withTimeout(2.0) { [scope] in
+      while !scope.paidWithVaulted { await Task.yield() }
+    }
+    XCTAssertTrue(scope.paidWithVaulted)
+  }
+
+  func test_setSelectedVaulted_marksWithoutPaying() async throws {
+    // Given
+    let scope = TrackingSelectionScope()
+    let session = PrimerSelectionSession(scope: scope)
+
+    // When
+    session.setSelectedVaulted(makeVaultedPaymentMethod(id: "v1"))
+    await Task.yield()
+
+    // Then
+    XCTAssertEqual(scope.selectedVaulted?.id, "v1")
+    XCTAssertFalse(scope.paidWithVaulted)
   }
 
   // Regression: `delete(_:)` used to only route to a confirmation screen — a navigation state the

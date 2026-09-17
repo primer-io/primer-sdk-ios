@@ -16,10 +16,10 @@ import SwiftUI
 /// the add-a-card panel, the pay bar and both result dialogs; Primer supplies the vault, the card
 /// fields and the payment.
 ///
-/// Two limits surface while running it. Paying with a saved card is reachable only through
-/// ``PrimerVaultedPaymentMethods``'s submit slot, which is why the pay bar mounts that component
-/// with empty header and item slots. And the processing screen is ours to own: adding a card raises
-/// it over the merchant dialog, while paying with a saved card raises none at all.
+/// The two paths hand off differently, and the demo shows both. Adding a card is the merchant's
+/// panel, so the merchant closes it and raises their own processing dialog; the SDK's own processing
+/// screen then covers it. Paying with a saved card is the SDK's from the tap onwards — it may need a
+/// security code first — so the demo raises nothing and lets the SDK's screens run.
 @available(iOS 15.0, *)
 struct AccountFundingDemo: View, CheckoutComponentsDemo {
     static var metadata: DemoMetadata {
@@ -165,8 +165,7 @@ private struct AccountFundingCheckout: View {
             PaymentsScreen(
                 session: session,
                 amount: amount,
-                onAddCard: { isAddingCard = true },
-                onPaying: { status = .processing }
+                onAddCard: { isAddingCard = true }
             )
             if isAddingCard {
                 AddCardPanel(onCancel: { isAddingCard = false }, onConfirm: startCardPayment)
@@ -211,16 +210,17 @@ private struct PaymentsScreen: View {
     @ObservedObject var session: PrimerCheckoutSession
     let amount: String
     let onAddCard: () -> Void
-    let onPaying: () -> Void
 
     @State private var isExpanded = false
+    /// Which saved card is highlighted. The merchant owns this, the same way they own the list.
+    @State private var selectedCardId: String?
 
     var body: some View {
         VStack(spacing: 0) {
             content
             if let selection = session.selection {
                 FundingBottomBar {
-                    FundBar(selection: selection, amount: amount, onPaying: onPaying)
+                    FundBar(selection: selection, amount: amount, card: card(in: selection))
                 }
             }
         }
@@ -234,7 +234,11 @@ private struct PaymentsScreen: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
                     if let selection = session.selection {
-                        SavedCards(selection: selection, isExpanded: $isExpanded)
+                        SavedCards(
+                            selection: selection,
+                            isExpanded: $isExpanded,
+                            selectedCardId: $selectedCardId
+                        )
                     }
                     AddMethods(onAddCard: onAddCard)
                 }
@@ -243,36 +247,27 @@ private struct PaymentsScreen: View {
         }
     }
 
+    /// The highlighted card, falling back to the first one so the pay bar works before any tap.
+    private func card(in selection: PrimerSelectionSession) -> PrimerVaultedPaymentMethods.VaultedMethod? {
+        let methods = selection.vaultedPaymentMethods
+        return methods.first { $0.id == selectedCardId } ?? methods.first
+    }
 }
 
 @available(iOS 15.0, *)
 private struct FundBar: View {
-    /// Observed, not just read: the pay button's enabled state follows the vault selection, and the
-    /// checkout session does not republish when that changes.
+    /// Observed, not just read: the button shows a spinner while the payment runs.
     @ObservedObject var selection: PrimerSelectionSession
     let amount: String
-    let onPaying: () -> Void
+    let card: PrimerVaultedPaymentMethods.VaultedMethod?
 
-    /// `PrimerSelectionSession.submitSelectedVaulted()` is internal, so a merchant-owned pay button
-    /// has to be handed to ``PrimerVaultedPaymentMethods``'s submit slot. Header and item render
-    /// nothing because the list above is the merchant's own.
+    /// The merchant's own button pays directly. No SDK component is mounted here, and nothing is
+    /// raised over the SDK: `selectVaulted` may need a security code first, and its own screens
+    /// carry the payment from here to the result.
     var body: some View {
-        if selection.state.selectedVaultedPaymentMethod != nil {
-            PrimerVaultedPaymentMethods(
-                header: { _ in AnyView(EmptyView()) },
-                item: { _, _, _ in AnyView(EmptyView()) },
-                submitButton: { isLoading, isEnabled, onSubmit in
-                    AnyView(
-                        FundingPayButton(amount: amount, isLoading: isLoading, isEnabled: isEnabled) {
-                            onSubmit()
-                            onPaying()
-                        }
-                    )
-                }
-            )
-        } else {
-            // Nothing saved yet, so there is nothing for the component to submit.
-            FundingPayButton(amount: amount, isLoading: false, isEnabled: false, action: {})
+        let isLoading = selection.state.isVaultPaymentLoading
+        FundingPayButton(amount: amount, isLoading: isLoading, isEnabled: card != nil && !isLoading) {
+            if let card { selection.selectVaulted(card) }
         }
     }
 }
@@ -281,6 +276,7 @@ private struct FundBar: View {
 private struct SavedCards: View {
     @ObservedObject var selection: PrimerSelectionSession
     @Binding var isExpanded: Bool
+    @Binding var selectedCardId: String?
 
     var body: some View {
         let methods = selection.vaultedPaymentMethods
@@ -290,8 +286,10 @@ private struct SavedCards: View {
                 VStack(spacing: 0) {
                     ForEach(Array(visible(of: methods).enumerated()), id: \.element.id) { index, method in
                         if index > 0 { Divider().padding(.horizontal, 16) }
-                        SavedCardRow(method: method, isSelected: method.id == selected?.id) {
-                            selection.selectVaulted(method)
+                        // Highlights only. `selectVaulted` is the pay verb, so it belongs on the
+                        // pay bar, not on a row tap.
+                        SavedCardRow(method: method, isSelected: method.id == selected(in: methods)?.id) {
+                            selectedCardId = method.id
                         }
                     }
                 }
@@ -314,17 +312,18 @@ private struct SavedCards: View {
         }
     }
 
-    private var selected: PrimerVaultedPaymentMethods.VaultedMethod? {
-        selection.state.selectedVaultedPaymentMethod
+    private func selected(
+        in methods: [PrimerVaultedPaymentMethods.VaultedMethod]
+    ) -> PrimerVaultedPaymentMethods.VaultedMethod? {
+        methods.first { $0.id == selectedCardId } ?? methods.first
     }
 
-    /// Collapsed shows the selected card alone, which is what the shopper is about to pay with. With
-    /// nothing selected yet, fall back to the first card rather than silently rendering expanded.
+    /// Collapsed shows the highlighted card alone, which is what the shopper is about to pay with.
     private func visible(
         of methods: [PrimerVaultedPaymentMethods.VaultedMethod]
     ) -> [PrimerVaultedPaymentMethods.VaultedMethod] {
         guard !isExpanded else { return methods }
-        return [selected ?? methods[0]]
+        return [selected(in: methods) ?? methods[0]]
     }
 }
 
