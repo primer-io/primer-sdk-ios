@@ -278,11 +278,13 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
                    let url = URL(string: urlStr) {
                     threeDsAppRequestorUrl = url
                 } else {
+                    // The example belongs outside the quotes: read the other way round it looks like
+                    // the merchant configured "https://applink", which is never a value anyone set.
                     let message =
                         """
-                        threeDsAppRequestorUrl is not in a valid format (\"https://applink\"). \
-                        In case you want to support redirecting back during the OOB flows, \
-                        please set correct threeDsAppRequestorUrl in PrimerThreeDsOptions during SDK initialization.
+                        No usable threeDsAppRequestorUrl is set, so an out-of-band 3DS challenge \
+                        cannot redirect back to the app. Set one starting with https in \
+                        PrimerThreeDsOptions during SDK initialization, for example https://applink.
                         """
                     logger.warn(message: message)
                 }
