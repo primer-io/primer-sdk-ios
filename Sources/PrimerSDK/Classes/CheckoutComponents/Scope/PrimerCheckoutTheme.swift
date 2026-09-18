@@ -22,6 +22,7 @@ public struct PrimerCheckoutTheme: Equatable {
 
   public let colors: ColorOverrides?
   public let darkColors: ColorOverrides?
+  public let usesLightColorsInDark: Bool
   public let radius: RadiusOverrides?
   public let spacing: SpacingOverrides?
   public let sizes: SizeOverrides?
@@ -30,10 +31,12 @@ public struct PrimerCheckoutTheme: Equatable {
 
   /// Creates a new theme configuration with optional overrides.
   /// - Parameters:
-  ///   - colors: Color token overrides, applied in both light and dark mode. Default: nil (uses internal defaults)
-  ///   - darkColors: Color token overrides applied in dark mode only. Each value left nil here falls back to the
-  ///     matching `colors` value, so only the colours that differ in the dark need naming. Default: nil (`colors`
-  ///     applies in both modes)
+  ///   - colors: Color token overrides, applied in light mode. Default: nil (uses internal defaults)
+  ///   - darkColors: Color token overrides applied in dark mode only. Anything left nil here uses Primer's dark
+  ///     default rather than the matching `colors` value, because a colour chosen against white is a guess on a
+  ///     dark background. Default: nil (Primer's dark defaults apply)
+  ///   - usesLightColorsInDark: Set true to have `colors` fill in whatever `darkColors` leaves unset, instead of
+  ///     Primer's dark defaults. For a palette that genuinely works in both modes. Default: false
   ///   - radius: Radius token overrides. Default: nil (uses internal defaults)
   ///   - spacing: Spacing token overrides. Default: nil (uses internal defaults)
   ///   - sizes: Size token overrides. Default: nil (uses internal defaults)
@@ -42,6 +45,7 @@ public struct PrimerCheckoutTheme: Equatable {
   public init(
     colors: ColorOverrides? = nil,
     darkColors: ColorOverrides? = nil,
+    usesLightColorsInDark: Bool = false,
     radius: RadiusOverrides? = nil,
     spacing: SpacingOverrides? = nil,
     sizes: SizeOverrides? = nil,
@@ -50,6 +54,7 @@ public struct PrimerCheckoutTheme: Equatable {
   ) {
     self.colors = colors
     self.darkColors = darkColors
+    self.usesLightColorsInDark = usesLightColorsInDark
     self.radius = radius
     self.spacing = spacing
     self.sizes = sizes
@@ -440,10 +445,15 @@ public struct WidthOverrides: Equatable {
 extension PrimerCheckoutTheme {
   /// The colour overrides that apply in one colour scheme.
   ///
-  /// `darkColors` only participates in dark mode, and only for the properties it names, so a theme
-  /// carrying just `colors` resolves to that same set in both modes.
+  /// Dark mode reads `darkColors` alone. Whatever it leaves unset uses Primer's dark default, not the
+  /// matching `colors` value: a colour picked against white is a guess on a dark background, and a white
+  /// sheet colour carried into dark would remove dark mode entirely.
+  ///
+  /// `usesLightColorsInDark` opts back into the carry over for a palette that works in both modes.
   func resolvedColors(for colorScheme: ColorScheme) -> ColorOverrides? {
-    guard colorScheme == .dark, let darkColors else { return colors }
+    guard colorScheme == .dark else { return colors }
+    guard usesLightColorsInDark else { return darkColors }
+    guard let darkColors else { return colors }
     return darkColors.merging(over: colors)
   }
 }

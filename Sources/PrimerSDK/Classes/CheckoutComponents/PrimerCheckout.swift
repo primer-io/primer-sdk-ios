@@ -204,8 +204,8 @@ struct InternalCheckout: View, LogReporter {
     if let tokens = designTokensManager.tokens {
       return CheckoutColors.background(tokens: tokens)
     }
-    // Priority 3: System default based on color scheme
-    return colorScheme == .dark ? Color(white: 0.11) : .white
+    // Priority 3: the shipped background token, before the async load lands
+    return colorScheme == .dark ? Color(red: 0.090, green: 0.086, blue: 0.098) : .white
   }
 
   private func setupDesignTokens() async {
