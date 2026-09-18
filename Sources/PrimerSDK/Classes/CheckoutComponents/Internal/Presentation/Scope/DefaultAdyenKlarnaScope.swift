@@ -166,7 +166,7 @@ final class DefaultAdyenKlarnaScope: PrimerAdyenKlarnaScope, ObservableObject, L
                 paymentMethodType: paymentMethodType
             )
 
-            checkoutScope.startProcessing()
+            checkoutScope.startProcessing(payingWith: self)
 
             await analyticsInteractor?.trackEvent(
                 .paymentProcessingStarted,
@@ -177,7 +177,7 @@ final class DefaultAdyenKlarnaScope: PrimerAdyenKlarnaScope, ObservableObject, L
 
             let result = try await interactor.execute(selectedOption: selectedOption)
 
-            checkoutScope.startProcessing()
+            checkoutScope.startProcessing(payingWith: self)
 
             internalState.status = .polling
 
@@ -197,7 +197,7 @@ final class DefaultAdyenKlarnaScope: PrimerAdyenKlarnaScope, ObservableObject, L
                 return
             }
 
-            checkoutScope.startProcessing()
+            checkoutScope.startProcessing(payingWith: self)
             internalState.status = .failure(extractUserFriendlyErrorMessage(from: error))
             checkoutScope.handlePaymentError(primerError)
         }
