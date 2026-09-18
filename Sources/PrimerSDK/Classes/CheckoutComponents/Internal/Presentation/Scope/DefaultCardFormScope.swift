@@ -502,7 +502,8 @@ final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, 
       return
     }
 
-    let formattedSurcharge = "+ \(surcharge.toCurrencyString(currency: currency))"
+    let formattedSurcharge =
+      "+ \(surcharge.toCurrencyString(currency: currency, locale: configurationService.locale))"
     structuredState.surchargeAmountRaw = surcharge
     structuredState.surchargeAmount = formattedSurcharge
   }
