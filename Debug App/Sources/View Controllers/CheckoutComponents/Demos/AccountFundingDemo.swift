@@ -220,7 +220,7 @@ private struct PaymentsScreen: View {
             content
             if let selection = session.selection {
                 FundingBottomBar {
-                    FundBar(selection: selection, amount: amount, card: card(in: selection))
+                    FundBar(selection: selection, amount: amount, selectedCardId: selectedCardId)
                 }
             }
         }
@@ -247,24 +247,32 @@ private struct PaymentsScreen: View {
         }
     }
 
-    /// The highlighted card, falling back to the first one so the pay bar works before any tap.
-    private func card(in selection: PrimerSelectionSession) -> PrimerVaultedPaymentMethods.VaultedMethod? {
-        let methods = selection.vaultedPaymentMethods
-        return methods.first { $0.id == selectedCardId } ?? methods.first
-    }
+}
+
+/// The highlighted card, falling back to the first so the pay bar works before any tap.
+@available(iOS 15.0, *)
+private func highlightedCard(
+    from methods: [PrimerVaultedPaymentMethods.VaultedMethod],
+    selectedId: String?
+) -> PrimerVaultedPaymentMethods.VaultedMethod? {
+    methods.first { $0.id == selectedId } ?? methods.first
 }
 
 @available(iOS 15.0, *)
 private struct FundBar: View {
-    /// Observed, not just read: the button shows a spinner while the payment runs.
+    /// Observed, not just read. The saved-method list arrives after this view first renders, and the
+    /// button has to come alive when it does. Resolving the card here rather than taking it from the
+    /// parent is the whole point: the parent observes the checkout session, which never republishes
+    /// when the vault loads, so a card passed down would stay nil and the button dead forever.
     @ObservedObject var selection: PrimerSelectionSession
     let amount: String
-    let card: PrimerVaultedPaymentMethods.VaultedMethod?
+    let selectedCardId: String?
 
     /// The merchant's own button pays directly. No SDK component is mounted here, and nothing is
     /// raised over the SDK: `selectVaulted` may need a security code first, and its own screens
     /// carry the payment from here to the result.
     var body: some View {
+        let card = highlightedCard(from: selection.vaultedPaymentMethods, selectedId: selectedCardId)
         let isLoading = selection.state.isVaultPaymentLoading
         FundingPayButton(amount: amount, isLoading: isLoading, isEnabled: card != nil && !isLoading) {
             if let card { selection.selectVaulted(card) }
@@ -315,7 +323,7 @@ private struct SavedCards: View {
     private func selected(
         in methods: [PrimerVaultedPaymentMethods.VaultedMethod]
     ) -> PrimerVaultedPaymentMethods.VaultedMethod? {
-        methods.first { $0.id == selectedCardId } ?? methods.first
+        highlightedCard(from: methods, selectedId: selectedCardId)
     }
 
     /// Collapsed shows the highlighted card alone, which is what the shopper is about to pay with.
