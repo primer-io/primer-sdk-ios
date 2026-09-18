@@ -27,7 +27,7 @@ struct CardholderNameTextField: UIViewRepresentable, LogReporter {
 
     textField.configurePrimerStyle(
       placeholder: placeholder,
-      configuration: .standard,
+      configuration: .standard.offering(.name),
       tokens: tokens,
       doneButtonTarget: context.coordinator,
       doneButtonAction: #selector(Coordinator.doneButtonTapped)
