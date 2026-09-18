@@ -24,10 +24,11 @@ struct SDKInitializationErrorView: View {
 
       Text(CheckoutComponentsStrings.paymentSystemError)
         .font(PrimerFont.headline(tokens: tokens))
+        .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
 
       Text(error.localizedDescription)
         .font(PrimerFont.subheadline(tokens: tokens))
-        .foregroundColor(CheckoutColors.secondary(tokens: tokens))
+        .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
         .multilineTextAlignment(.center)
         .padding(.horizontal, PrimerSpacing.large(tokens: tokens))
 

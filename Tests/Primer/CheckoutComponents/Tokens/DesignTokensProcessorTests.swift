@@ -148,72 +148,17 @@ final class DesignTokensProcessorTests: XCTestCase {
         XCTAssertEqual(result["d"] as? Int, 4)
     }
 
-    // MARK: - resolveReferences
-
-    func test_resolveReferences_missingReference_leftUntouched() {
-        // Given
-        let dict: [String: Any] = [
-            "color": "{nonexistent.path}"
-        ]
-
-        // When
-        let result = DesignTokensProcessor.resolveReferences(in: dict)
-
-        // Then
-        XCTAssertEqual(result["color"] as? String, "{nonexistent.path}")
-    }
-
-    func test_resolveReferences_nonReferenceStrings_leftUntouched() {
-        // Given
-        let dict: [String: Any] = [
-            "label": "Hello World",
-            "count": 42
-        ]
-
-        // When
-        let result = DesignTokensProcessor.resolveReferences(in: dict)
-
-        // Then
-        XCTAssertEqual(result["label"] as? String, "Hello World")
-        XCTAssertEqual(result["count"] as? Int, 42)
-    }
-
-    func test_resolveReferences_circularReference_doesNotCrash() {
-        // Given
-        let dict: [String: Any] = [
-            "a": "{b}",
-            "b": "{a}"
-        ]
-
-        // When
-        let result = DesignTokensProcessor.resolveReferences(in: dict)
-
-        // Then - should not crash, references remain unresolved
-        XCTAssertNotNil(result)
-        // Both remain as reference strings since they can never resolve
-        XCTAssertEqual(result["a"] as? String, "{b}")
-        XCTAssertEqual(result["b"] as? String, "{a}")
-    }
-
-    func test_resolveReferences_emptyDict_returnsEmpty() {
-        // When
-        let result = DesignTokensProcessor.resolveReferences(in: [:])
-
-        // Then
-        XCTAssertTrue(result.isEmpty)
-    }
-
     // MARK: - convertHexColors
 
     func test_convertHexColors_6CharHex_convertsToRGBAArray() {
         // Given
-        let dict: [String: Any] = ["color": "#FF0000"]
+        let dict: [String: Any] = ["value": "#FF0000", "type": "color"]
 
         // When
         let result = DesignTokensProcessor.convertHexColors(in: dict)
 
         // Then
-        let colorArray = result["color"] as? [CGFloat]
+        let colorArray = result["value"] as? [CGFloat]
         XCTAssertNotNil(colorArray)
         XCTAssertEqual(colorArray?.count, 4)
         XCTAssertEqual(Double(colorArray?[0] ?? -1), 1.0, accuracy: 0.001) // red
@@ -224,13 +169,13 @@ final class DesignTokensProcessorTests: XCTestCase {
 
     func test_convertHexColors_8CharHex_convertsWithAlpha() {
         // Given
-        let dict: [String: Any] = ["color": "#FF000080"]
+        let dict: [String: Any] = ["value": "#FF000080", "type": "color"]
 
         // When
         let result = DesignTokensProcessor.convertHexColors(in: dict)
 
         // Then
-        let colorArray = result["color"] as? [CGFloat]
+        let colorArray = result["value"] as? [CGFloat]
         XCTAssertNotNil(colorArray)
         XCTAssertEqual(Double(colorArray?[0] ?? -1), 1.0, accuracy: 0.001) // red
         XCTAssertEqual(Double(colorArray?[1] ?? -1), 0.0, accuracy: 0.001) // green
@@ -240,13 +185,13 @@ final class DesignTokensProcessorTests: XCTestCase {
 
     func test_convertHexColors_white_convertsCorrectly() {
         // Given
-        let dict: [String: Any] = ["color": "#FFFFFF"]
+        let dict: [String: Any] = ["value": "#FFFFFF", "type": "color"]
 
         // When
         let result = DesignTokensProcessor.convertHexColors(in: dict)
 
         // Then
-        let colorArray = result["color"] as? [CGFloat]
+        let colorArray = result["value"] as? [CGFloat]
         XCTAssertEqual(Double(colorArray?[0] ?? -1), 1.0, accuracy: 0.001)
         XCTAssertEqual(Double(colorArray?[1] ?? -1), 1.0, accuracy: 0.001)
         XCTAssertEqual(Double(colorArray?[2] ?? -1), 1.0, accuracy: 0.001)
@@ -255,13 +200,13 @@ final class DesignTokensProcessorTests: XCTestCase {
 
     func test_convertHexColors_black_convertsCorrectly() {
         // Given
-        let dict: [String: Any] = ["color": "#000000"]
+        let dict: [String: Any] = ["value": "#000000", "type": "color"]
 
         // When
         let result = DesignTokensProcessor.convertHexColors(in: dict)
 
         // Then
-        let colorArray = result["color"] as? [CGFloat]
+        let colorArray = result["value"] as? [CGFloat]
         XCTAssertEqual(Double(colorArray?[0] ?? -1), 0.0, accuracy: 0.001)
         XCTAssertEqual(Double(colorArray?[1] ?? -1), 0.0, accuracy: 0.001)
         XCTAssertEqual(Double(colorArray?[2] ?? -1), 0.0, accuracy: 0.001)
@@ -322,8 +267,8 @@ final class DesignTokensProcessorTests: XCTestCase {
         // Given
         let dict: [String: Any] = [
             "theme": [
-                "primary": "#00FF00",
-                "label": "text"
+                "primary": ["value": "#00FF00", "type": "color"],
+                "label": ["value": "text", "type": "string"]
             ]
         ]
 
@@ -332,10 +277,22 @@ final class DesignTokensProcessorTests: XCTestCase {
 
         // Then
         let theme = result["theme"] as? [String: Any]
-        let colorArray = theme?["primary"] as? [CGFloat]
+        let primary = theme?["primary"] as? [String: Any]
+        let colorArray = primary?["value"] as? [CGFloat]
         XCTAssertNotNil(colorArray)
         XCTAssertEqual(Double(colorArray?[1] ?? -1), 1.0, accuracy: 0.001) // green
-        XCTAssertEqual(theme?["label"] as? String, "text")
+        XCTAssertEqual((theme?["label"] as? [String: Any])?["value"] as? String, "text")
+    }
+
+    func test_convertHexColors_stringTokenThatLooksLikeAHex_keepsItsType() {
+        // Given a non-colour leaf whose value happens to start with #
+        let dict: [String: Any] = ["value": "#FF0000", "type": "string"]
+
+        // When
+        let result = DesignTokensProcessor.convertHexColors(in: dict)
+
+        // Then
+        XCTAssertEqual(result["value"] as? String, "#FF0000")
     }
 
     func test_convertHexColors_emptyDict_returnsEmpty() {
@@ -348,26 +305,26 @@ final class DesignTokensProcessorTests: XCTestCase {
 
     func test_convertHexColors_lowercaseHex_convertsCorrectly() {
         // Given
-        let dict: [String: Any] = ["color": "#ff0000"]
+        let dict: [String: Any] = ["value": "#ff0000", "type": "color"]
 
         // When
         let result = DesignTokensProcessor.convertHexColors(in: dict)
 
         // Then
-        let colorArray = result["color"] as? [CGFloat]
+        let colorArray = result["value"] as? [CGFloat]
         XCTAssertNotNil(colorArray)
         XCTAssertEqual(Double(colorArray?[0] ?? -1), 1.0, accuracy: 0.001)
     }
 
     func test_convertHexColors_8CharFullyTransparent_convertsCorrectly() {
         // Given
-        let dict: [String: Any] = ["color": "#FF000000"]
+        let dict: [String: Any] = ["value": "#FF000000", "type": "color"]
 
         // When
         let result = DesignTokensProcessor.convertHexColors(in: dict)
 
         // Then
-        let colorArray = result["color"] as? [CGFloat]
+        let colorArray = result["value"] as? [CGFloat]
         XCTAssertNotNil(colorArray)
         XCTAssertEqual(Double(colorArray?[0] ?? -1), 1.0, accuracy: 0.001) // red
         XCTAssertEqual(Double(colorArray?[3] ?? -1), 0.0, accuracy: 0.001) // alpha = 0
@@ -533,6 +490,29 @@ final class DesignTokensProcessorTests: XCTestCase {
 
         // Then
         XCTAssertTrue(result.isEmpty)
+    }
+
+    func test_resolveFlattenedReferences_missingReference_leftUntouched() {
+        // Given
+        let flatDict: [String: Any] = ["color": "{nonexistent.path}"]
+
+        // When
+        let result = DesignTokensProcessor.resolveFlattenedReferences(in: flatDict, source: [:])
+
+        // Then
+        XCTAssertEqual(result["color"] as? String, "{nonexistent.path}")
+    }
+
+    func test_resolveFlattenedReferences_circularReference_doesNotCrash() {
+        // Given
+        let flatDict: [String: Any] = ["a": "{b}", "b": "{a}"]
+
+        // When
+        let result = DesignTokensProcessor.resolveFlattenedReferences(in: flatDict, source: [:])
+
+        // Then neither resolves to a value; each stays a reference instead of looping forever
+        XCTAssertEqual((result["a"] as? String)?.hasPrefix("{"), true)
+        XCTAssertEqual((result["b"] as? String)?.hasPrefix("{"), true)
     }
 
     func test_resolveFlattenedReferences_chainedReferences_resolvedIteratively() {

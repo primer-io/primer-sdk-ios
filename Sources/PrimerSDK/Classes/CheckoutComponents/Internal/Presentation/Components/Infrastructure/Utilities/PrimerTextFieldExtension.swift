@@ -117,7 +117,7 @@ extension UITextField {
     let textFont = PrimerFont.uiFontBodyLarge(tokens: tokens)
     font = textFont
     adjustsFontForContentSizeCategory = true
-    textColor = UIColor(CheckoutColors.textPrimary(tokens: tokens))
+    textColor = UIColor(CheckoutColors.inputText(tokens: tokens))
 
     // Placeholder styling with design tokens
     let placeholderColor = UIColor(CheckoutColors.textPlaceholder(tokens: tokens))
@@ -130,6 +130,22 @@ extension UITextField {
       tokens: tokens,
       target: doneButtonTarget,
       action: doneButtonAction
+    )
+  }
+
+  /// The two token-derived colours a bridged field paints, reapplied after a colour-scheme change.
+  ///
+  /// Deliberately narrow. It does not touch the font, border, fill or `inputAccessoryView`: none of
+  /// those change with the scheme, and writing them on a live field is what broke the two earlier
+  /// attempts at this fix.
+  func repaintPrimerColors(placeholder: String, tokens: DesignTokens?) {
+    textColor = UIColor(CheckoutColors.inputText(tokens: tokens))
+    attributedPlaceholder = NSAttributedString(
+      string: placeholder,
+      attributes: [
+        .foregroundColor: UIColor(CheckoutColors.textPlaceholder(tokens: tokens)),
+        .font: font ?? PrimerFont.uiFontBodyLarge(tokens: tokens)
+      ]
     )
   }
 
@@ -160,5 +176,26 @@ extension UITextField {
 
     toolbar.items = [.flexibleSpace(), doneItem]
     return toolbar
+  }
+}
+
+/// Holds the token set a bridged field was last painted with, so `updateUIView` repaints on a
+/// colour-scheme change and does nothing on the keystrokes that make up almost every other call.
+///
+/// Identity, not equality: `DesignTokensManager` decodes a fresh `DesignTokens` per scheme, and the
+/// `UIColor`s built from it never compare equal, so a value check would repaint every time.
+@available(iOS 15.0, *)
+final class PrimerFieldRepainter {
+  private var appliedTokens: DesignTokens?
+
+  /// Seeded from `makeUIView`, which has already painted the field.
+  func markApplied(_ tokens: DesignTokens?) {
+    appliedTokens = tokens
+  }
+
+  func repaintIfNeeded(_ textField: UITextField, placeholder: String, tokens: DesignTokens?) {
+    guard appliedTokens !== tokens else { return }
+    appliedTokens = tokens
+    textField.repaintPrimerColors(placeholder: placeholder, tokens: tokens)
   }
 }

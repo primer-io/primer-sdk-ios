@@ -185,6 +185,10 @@ public struct CheckoutPaymentMethod: Equatable, Identifiable {
   /// Custom corner radius for the payment method button.
   public let cornerRadius: CGFloat?
 
+  // Not public: the prebuilt tile picks the scheme variant at render time, while `icon` and `borderWidth` stay the public snapshot.
+  var logoVariants: PrimerTheme.BaseImage?
+  var borderWidthVariants: PrimerTheme.BaseBorderWidth?
+
   public init(
     id: String,
     type: String,

@@ -36,10 +36,14 @@ struct EmailTextField: UIViewRepresentable, LogReporter {
       doneButtonAction: #selector(Coordinator.doneButtonTapped)
     )
 
+    context.coordinator.repainter.markApplied(tokens)
+
     return textField
   }
 
   func updateUIView(_ textField: UITextField, context: Context) {
+    context.coordinator.repainter.repaintIfNeeded(textField, placeholder: placeholder, tokens: tokens)
+
     if textField.text != email {
       textField.text = email
     }
@@ -59,6 +63,7 @@ struct EmailTextField: UIViewRepresentable, LogReporter {
   }
 
   final class Coordinator: NSObject, UITextFieldDelegate, LogReporter {
+    let repainter = PrimerFieldRepainter()
     private let validationService: ValidationService
     @Binding private var email: String
     @Binding private var isValid: Bool

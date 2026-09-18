@@ -5,6 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 @testable import PrimerSDK
+import UIKit
 import XCTest
 @_spi(PrimerInternal) @testable import PrimerFoundation
 @_spi(PrimerInternal) @testable import PrimerCore
@@ -15,10 +16,14 @@ final class CheckoutComponentsPaymentMethodsBridgeTests: XCTestCase {
     private var mockConfigurationService: MockConfigurationService!
     private var sut: CheckoutComponentsPaymentMethodsBridge!
 
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
+        try await super.setUp()
         mockConfigurationService = MockConfigurationService()
         sut = CheckoutComponentsPaymentMethodsBridge(configurationService: mockConfigurationService)
+        // the bridge drops unregistered types, so the class must not depend on which tests ran before it
+        await CardPaymentMethod.register()
+        await PayPalPaymentMethod.register()
+        await ApplePayPaymentMethod.register()
     }
 
     override func tearDown() {
@@ -117,6 +122,26 @@ final class CheckoutComponentsPaymentMethodsBridgeTests: XCTestCase {
         XCTAssertEqual(paypal.id, "PAYPAL")
         XCTAssertEqual(paypal.type, "PAYPAL")
         XCTAssertEqual(paypal.name, "PayPal")
+    }
+
+    func test_execute_carriesLogoAndBorderWidthVariants() async throws {
+        // Given
+        let logo = PrimerTheme.BaseImage(colored: UIImage(), light: nil, dark: UIImage())
+        let width = PrimerTheme.BaseBorderWidth(colored: 1, light: 1, dark: 2)
+        let method = createPaymentMethod(type: "PAYMENT_CARD", name: "Card")
+        method.baseLogoImage = logo
+        method.displayMetadata = PrimerPaymentMethod.DisplayMetadata(
+            button: .init(
+                iconUrl: nil, backgroundColor: nil, cornerRadius: nil,
+                borderWidth: width, borderColor: nil, text: nil, textColor: nil))
+        mockConfigurationService.apiConfiguration = createConfiguration(paymentMethods: [method])
+
+        // When
+        let result = try await sut.execute()
+
+        // Then
+        XCTAssertTrue(result.first?.logoVariants === logo)
+        XCTAssertTrue(result.first?.borderWidthVariants === width)
     }
 
     // MARK: - Required Input Elements

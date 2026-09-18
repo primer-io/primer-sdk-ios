@@ -55,10 +55,10 @@ struct AchMandateView: View, LogReporter {
     Button(action: scope.acceptMandate) {
       Text(CheckoutComponentsStrings.achMandateAcceptButton)
         .font(PrimerFont.body(tokens: tokens))
-        .foregroundColor(CheckoutColors.white(tokens: tokens))
+        .foregroundColor(CheckoutColors.onBrand(tokens: tokens))
         .frame(maxWidth: .infinity)
         .padding(.vertical, PrimerSpacing.large(tokens: tokens))
-        .background(CheckoutColors.textPrimary(tokens: tokens))
+        .background(CheckoutColors.buttonPrimary(tokens: tokens))
         .cornerRadius(PrimerRadius.small(tokens: tokens))
     }
     .accessibilityIdentifier(AccessibilityIdentifiers.Ach.mandateAcceptButton)
@@ -75,7 +75,9 @@ struct AchMandateView: View, LogReporter {
         .padding(.vertical, PrimerSpacing.large(tokens: tokens))
         .background(
           RoundedRectangle(cornerRadius: PrimerRadius.small(tokens: tokens))
-            .stroke(CheckoutColors.borderDefault(tokens: tokens), lineWidth: 1)
+            .stroke(
+              CheckoutColors.borderDefault(tokens: tokens),
+              lineWidth: PrimerBorderWidth.standard(tokens: tokens))
         )
     }
     .accessibilityIdentifier(AccessibilityIdentifiers.Ach.mandateDeclineButton)

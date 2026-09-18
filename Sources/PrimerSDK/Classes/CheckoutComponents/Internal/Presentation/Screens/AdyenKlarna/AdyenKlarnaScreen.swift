@@ -140,7 +140,9 @@ struct AdyenKlarnaScreen: View {
             .background(CheckoutColors.background(tokens: tokens))
             .overlay(
                 RoundedRectangle(cornerRadius: PrimerRadius.medium(tokens: tokens))
-                    .stroke(CheckoutColors.borderDefault(tokens: tokens), lineWidth: 1)
+                    .stroke(
+                        CheckoutColors.borderDefault(tokens: tokens),
+                        lineWidth: PrimerBorderWidth.standard(tokens: tokens))
             )
             .clipShape(RoundedRectangle(cornerRadius: PrimerRadius.medium(tokens: tokens)))
         }
@@ -175,7 +177,7 @@ struct AdyenKlarnaScreen: View {
             Spacer()
             makePaymentMethodLogo()
             ProgressView()
-                .progressViewStyle(CircularProgressViewStyle(tint: CheckoutColors.textSecondary(tokens: tokens)))
+                .progressViewStyle(CircularProgressViewStyle(tint: CheckoutColors.loader(tokens: tokens)))
                 .scaleEffect(PrimerScale.small)
             Spacer()
         }
