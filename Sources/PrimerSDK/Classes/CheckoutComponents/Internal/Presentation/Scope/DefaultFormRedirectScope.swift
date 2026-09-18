@@ -226,7 +226,7 @@ final class DefaultFormRedirectScope: PrimerFormRedirectScope, ObservableObject,
         paymentMethodType: paymentMethodType
       )
 
-      checkoutScope?.startProcessing()
+      checkoutScope?.startProcessing(payingWith: self)
 
       let sessionInfo = try buildSessionInfo()
 

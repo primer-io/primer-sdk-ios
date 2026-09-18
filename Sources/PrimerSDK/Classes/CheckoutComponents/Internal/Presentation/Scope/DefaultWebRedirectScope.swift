@@ -126,7 +126,7 @@ final class DefaultWebRedirectScope: PrimerWebRedirectScope, ObservableObject, L
                 paymentMethodType: paymentMethodType
             )
 
-            checkoutScope.startProcessing()
+            checkoutScope.startProcessing(payingWith: self)
 
             await analyticsInteractor?.trackEvent(
                 .paymentProcessingStarted,
@@ -139,7 +139,7 @@ final class DefaultWebRedirectScope: PrimerWebRedirectScope, ObservableObject, L
             let result = try await processWebRedirectInteractor.execute(paymentMethodType: paymentMethodType)
 
             // Show checkout processing screen to avoid WebRedirectScreen flash when returning from Safari
-            checkoutScope.startProcessing()
+            checkoutScope.startProcessing(payingWith: self)
 
             internalState.status = .polling
             accessibilityService?.announceStateChange(CheckoutComponentsStrings.a11yWebRedirectPolling)
@@ -166,7 +166,7 @@ final class DefaultWebRedirectScope: PrimerWebRedirectScope, ObservableObject, L
             }
 
             // Show checkout processing screen to avoid WebRedirectScreen flash when returning from Safari
-            checkoutScope.startProcessing()
+            checkoutScope.startProcessing(payingWith: self)
 
             let errorMessage = extractUserFriendlyErrorMessage(from: error)
             internalState.status = .failure(errorMessage)

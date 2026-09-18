@@ -85,7 +85,7 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
 
   let presentationContext: PresentationContext
 
-  private var cachedPaymentMethodSelection: (any PaymentMethodSelectionScopeInternal)?
+  var cachedPaymentMethodSelection: (any PaymentMethodSelectionScopeInternal)?
 
   var paymentMethodSelection: PrimerPaymentMethodSelectionScope { paymentMethodSelectionInternal }
 
@@ -106,7 +106,7 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
   /// retry taken from it would submit a form the customer had already walked away from, and with a
   /// filled form that charges a different card than the one being retried.
   private enum PaymentAttempt {
-    case paymentMethod(String)
+    case paymentMethod(any PrimerPaymentMethodScope)
     case vaulted
   }
 
@@ -599,12 +599,11 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
     updateNavigationState(.failure(error))
   }
 
-  func startProcessing() {
-    // Recorded here because this is the one call every payment passes through, and because the screen
-    // the customer is on at this moment is what distinguishes the two kinds of payment. A saved card
-    // is paid for from the selection screen or from CVV recapture, never from a payment-method screen.
-    lastPaymentAttempt =
-      if case let .paymentMethod(type) = navigationState { .paymentMethod(type) } else { .vaulted }
+  /// - Parameter scope: the payment method being paid with, or `nil` for a saved one. Recorded here
+  ///   because this is the one call every payment passes through, and taken from the caller rather
+  ///   than from the navigation state, which stays on selection for the whole of an inline flow.
+  func startProcessing(payingWith scope: (any PrimerPaymentMethodScope)?) {
+    lastPaymentAttempt = scope.map { .paymentMethod($0) } ?? .vaulted
     updateNavigationState(.processing)
   }
 
@@ -625,8 +624,8 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
     }
 
     switch attempt {
-    case let .paymentMethod(type):
-      paymentMethodScopeCache[type]?.submit()
+    case let .paymentMethod(scope):
+      scope.submit()
     case .vaulted:
       // Through the full entry point, not the submit helper, so a card that needs its CVV asks for it
       // again. The code is never held over from the attempt that failed.

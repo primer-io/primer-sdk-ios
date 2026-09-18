@@ -415,7 +415,7 @@ final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, 
         paymentMethodType: PrimerPaymentMethodType.paymentCard.rawValue
       )
 
-      checkoutScope?.startProcessing()
+      checkoutScope?.startProcessing(payingWith: self)
 
       try await sendBillingAddressIfNeeded()
       let cardData = try await prepareCardPaymentData()
