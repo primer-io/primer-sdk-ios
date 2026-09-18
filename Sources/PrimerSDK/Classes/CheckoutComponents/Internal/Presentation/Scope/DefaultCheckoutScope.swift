@@ -165,6 +165,7 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
 
     cachedPaymentMethodSelection = nil
     currentPaymentMethodScope = nil
+    lastPaymentAttempt = nil
     paymentMethodScopeCache.removeAll()
     availablePaymentMethods = []
 
@@ -533,6 +534,7 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
 
     cachedPaymentMethodSelection = nil
     currentPaymentMethodScope = nil
+    lastPaymentAttempt = nil
     paymentMethodScopeCache.removeAll()
 
     navigationObservationTask?.cancel()
