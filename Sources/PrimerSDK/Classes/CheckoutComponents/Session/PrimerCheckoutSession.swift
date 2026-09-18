@@ -226,10 +226,11 @@ public final class PrimerCheckoutSession: ObservableObject {
   public func formatAmount(_ amountInMinorUnits: Int) -> String? {
     guard case .ready = phase,
           let container = DIContainer.currentSync,
-          let currency = try? container.resolveSync(ConfigurationService.self).currency
+          let configuration = try? container.resolveSync(ConfigurationService.self),
+          let currency = configuration.currency
     else { return nil }
 
-    return amountInMinorUnits.toCurrencyString(currency: currency, locale: settings.localeData.locale)
+    return amountInMinorUnits.toCurrencyString(currency: currency, locale: configuration.locale)
   }
 
   /// Delivers a session-ending outcome to the merchant exactly once, latching against repeat

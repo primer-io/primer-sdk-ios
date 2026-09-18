@@ -18,7 +18,6 @@ struct PaymentMethodSelectionScreen: View, LogReporter {
   @Environment(\.diContainer) private var container
   @State private var selectionState: PrimerPaymentMethodSelectionState = .init()
   @State private var configurationService: ConfigurationService?
-  @State private var settings: PrimerSettings = .current
   @State private var observationTask: Task<Void, Never>?
 
   var body: some View {
@@ -119,20 +118,18 @@ struct PaymentMethodSelectionScreen: View, LogReporter {
   // MARK: - Helpers
 
   private var formattedAmount: String? {
-    guard let amount = configurationService?.amount,
-      let currency = configurationService?.currency
+    guard let configurationService,
+      let amount = configurationService.amount,
+      let currency = configurationService.currency
     else {
       return nil
     }
-    // Same currency and same locale as `PrimerCheckoutSession.formatAmount`, so the merchant's own
-    // total and the SDK's header never disagree.
-    return amount.toCurrencyString(currency: currency, locale: settings.localeData.locale)
+    return amount.toCurrencyString(currency: currency, locale: configurationService.locale)
   }
 
   private func resolveConfigurationService() {
     guard let container else { return }
     configurationService = try? container.resolveSync(ConfigurationService.self)
-    settings = (try? container.resolveSync(PrimerSettings.self)) ?? PrimerSettings.current
   }
 
   private func observeState() {
