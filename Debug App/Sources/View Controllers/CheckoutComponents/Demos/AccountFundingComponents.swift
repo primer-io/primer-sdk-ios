@@ -108,7 +108,7 @@ struct FundingStatusDialog: View {
             if let reference {
                 Text("Payment \(reference)").font(.caption).foregroundColor(FundingPalette.mutedInk)
             }
-            FundingCtaButton(title: "All done", action: onDismiss).padding(.top, 8)
+            FundingCtaButton(title: isSuccess ? "All done" : "Close", action: onDismiss).padding(.top, 8)
         }
         .foregroundColor(FundingPalette.ink)
         .padding(24)

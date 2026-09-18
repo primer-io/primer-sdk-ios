@@ -92,8 +92,15 @@ private struct AccountFundingFlow: View {
                 onProceed: proceed
             )
         case let .payments(clientToken):
-            AccountFundingCheckout(clientToken: clientToken, settings: configuration.settings, onFinish: reset)
-                .id(clientToken)
+            // Closing the result dialog ends the demo, the way the rest of them end. Returning to
+            // the amount screen would show an unchanged balance with the amount still typed in,
+            // which reads as though the payment never happened.
+            AccountFundingCheckout(
+                clientToken: clientToken,
+                settings: configuration.settings,
+                onFinish: { dismiss() }
+            )
+            .id(clientToken)
         }
     }
 
@@ -101,10 +108,6 @@ private struct AccountFundingFlow: View {
 
     private func goBack() {
         if isOnAmountStep { dismiss() } else { step = .amount }
-    }
-
-    private func reset() {
-        step = .amount
     }
 
     /// The merchant's own "create the session" step. A deep-linked demo already carries a token and
