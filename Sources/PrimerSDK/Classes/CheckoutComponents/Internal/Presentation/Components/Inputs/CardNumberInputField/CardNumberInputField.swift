@@ -86,7 +86,7 @@ struct CardNumberInputField: View, LogReporter {
               .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
               .padding(.horizontal, PrimerSpacing.xsmall(tokens: tokens))
               .padding(.vertical, 2)
-              .background(CheckoutColors.gray200(tokens: tokens))
+              .background(CheckoutColors.backgroundSecondary(tokens: tokens))
               .cornerRadius(PrimerRadius.xsmall(tokens: tokens))
               .frame(height: PrimerSize.small(tokens: tokens))
           }
