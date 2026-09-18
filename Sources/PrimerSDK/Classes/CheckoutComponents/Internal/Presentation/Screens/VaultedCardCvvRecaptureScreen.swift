@@ -96,7 +96,7 @@ struct VaultedCardCvvRecaptureScreen: View, LogReporter {
     .disabled(!isValid || isSubmitting)
     .accessibility(
       config: AccessibilityConfiguration(
-        identifier: AccessibilityIdentifiers.Vault.payButton,
+        identifier: AccessibilityIdentifiers.Vault.cvvPayButton,
         label: isSubmitting
           ? CheckoutComponentsStrings.a11ySubmitButtonLoading : CheckoutComponentsStrings.payButton,
         traits: [.isButton]
