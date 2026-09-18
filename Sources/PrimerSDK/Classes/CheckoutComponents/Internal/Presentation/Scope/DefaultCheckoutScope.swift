@@ -100,6 +100,17 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
   }
 
   private var currentPaymentMethodScope: (any PrimerPaymentMethodScope)?
+
+  /// What a retry re-runs, recorded where a payment starts rather than derived from
+  /// ``currentPaymentMethodScope``. That pointer survives a back-out to the selection screen, so a
+  /// retry taken from it would submit a form the customer had already walked away from, and with a
+  /// filled form that charges a different card than the one being retried.
+  private enum PaymentAttempt {
+    case paymentMethod(String)
+    case vaulted
+  }
+
+  private var lastPaymentAttempt: PaymentAttempt?
   private var navigationObservationTask: Task<Void, Never>?
   private var isReloading = false
   private let navigator: CheckoutNavigator
@@ -344,7 +355,11 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
     switch state {
     case let .paymentMethod(type):
       currentPaymentMethodScope = paymentMethodScopeCache[type]
-    case .success, .failure, .dismissed:
+    case .success, .dismissed:
+      selectedPaymentMethodName = nil
+      lastPaymentAttempt = nil
+    case .failure:
+      // The attempt is what retry re-runs, so it outlives the failure that offers the retry.
       selectedPaymentMethodName = nil
     default:
       break
@@ -585,6 +600,11 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
   }
 
   func startProcessing() {
+    // Recorded here because this is the one call every payment passes through, and because the screen
+    // the customer is on at this moment is what distinguishes the two kinds of payment. A saved card
+    // is paid for from the selection screen or from CVV recapture, never from a payment-method screen.
+    lastPaymentAttempt =
+      if case let .paymentMethod(type) = navigationState { .paymentMethod(type) } else { .vaulted }
     updateNavigationState(.processing)
   }
 
@@ -594,12 +614,24 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
   }
 
   func retryPayment() {
+    guard let attempt = lastPaymentAttempt else {
+      logger.warn(message: "Retry tapped with no recorded payment attempt, ignoring")
+      return
+    }
+
     Task { @MainActor [weak self] in
       guard let self else { return }
       await analyticsTracker?.trackRetry(navigationState: navigationState)
     }
 
-    currentPaymentMethodScope?.submit()
+    switch attempt {
+    case let .paymentMethod(type):
+      paymentMethodScopeCache[type]?.submit()
+    case .vaulted:
+      // Through the full entry point, not the submit helper, so a card that needs its CVV asks for it
+      // again. The code is never held over from the attempt that failed.
+      Task { await paymentMethodSelectionInternal.payWithVaultedPaymentMethod() }
+    }
   }
 
   func setVaultedPaymentMethods(_ methods: [PrimerHeadlessUniversalCheckout.VaultedPaymentMethod]) {
