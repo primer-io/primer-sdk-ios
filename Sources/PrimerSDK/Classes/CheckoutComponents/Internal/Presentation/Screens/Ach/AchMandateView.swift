@@ -52,18 +52,16 @@ struct AchMandateView: View, LogReporter {
   }
 
   private func makeAcceptButton() -> some View {
-    Button(action: scope.acceptMandate) {
-      Text(CheckoutComponentsStrings.achMandateAcceptButton)
-        .font(PrimerFont.body(tokens: tokens))
-        .foregroundColor(CheckoutColors.onBrand(tokens: tokens))
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, PrimerSpacing.large(tokens: tokens))
-        .background(CheckoutColors.buttonPrimary(tokens: tokens))
-        .cornerRadius(PrimerRadius.small(tokens: tokens))
-    }
-    .accessibilityIdentifier(AccessibilityIdentifiers.Ach.mandateAcceptButton)
-    .accessibilityLabel(CheckoutComponentsStrings.achMandateAcceptButton)
-    .accessibilityHint(CheckoutComponentsStrings.a11yAchMandateAcceptHint)
+    PrimerCheckoutButton(
+      CheckoutComponentsStrings.achMandateAcceptButton,
+      accessibilityConfiguration: AccessibilityConfiguration(
+        identifier: AccessibilityIdentifiers.Ach.mandateAcceptButton,
+        label: CheckoutComponentsStrings.achMandateAcceptButton,
+        hint: CheckoutComponentsStrings.a11yAchMandateAcceptHint,
+        traits: [.isButton]
+      ),
+      action: scope.acceptMandate
+    )
   }
 
   private func makeDeclineButton() -> some View {

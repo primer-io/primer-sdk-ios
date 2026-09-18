@@ -59,49 +59,24 @@ struct VaultSection: View {
   // MARK: - Pay Button
 
   private func makePayButton() -> some View {
-    Button(action: {
-      Task {
-        await scope.payWithVaultedPaymentMethod()
-      }
-    }) {
-      HStack {
-        if isLoading {
-          ProgressView()
-            .progressViewStyle(
-              CircularProgressViewStyle(
-                tint: CheckoutColors.onBrand(tokens: tokens, isEnabled: isPayButtonActive)))
-            .accessibilityLabel(CheckoutComponentsStrings.a11yLoading)
-        } else {
-          Text(CheckoutComponentsStrings.payButton)
-        }
-      }
-      .font(PrimerFont.titleLarge(tokens: tokens))
-      .foregroundColor(CheckoutColors.onBrand(tokens: tokens, isEnabled: isPayButtonActive))
-      .frame(maxWidth: .infinity)
-      .padding(PrimerSpacing.medium(tokens: tokens))
-      .background(
-        RoundedRectangle(cornerRadius: PrimerRadius.medium(tokens: tokens))
-          .fill(
-            isPayButtonActive
-              ? CheckoutColors.buttonPrimary(tokens: tokens)
-              : CheckoutColors.buttonDisabled(tokens: tokens))
-      )
-    }
-    .disabled(!isPayButtonEnabled)
-    .accessibility(
-      config: AccessibilityConfiguration(
+    PrimerCheckoutButton(
+      CheckoutComponentsStrings.payButton,
+      isEnabled: isPayButtonEnabled,
+      isLoading: isLoading,
+      accessibilityConfiguration: AccessibilityConfiguration(
         identifier: AccessibilityIdentifiers.Vault.payButton,
         label: CheckoutComponentsStrings.payButton,
         traits: [.isButton]
-      ))
+      ),
+      action: {
+        Task {
+          await scope.payWithVaultedPaymentMethod()
+        }
+      }
+    )
   }
 
   // MARK: - Helpers
-
-  /// The button keeps its brand fill while paying; only an invalid CVV greys it out.
-  private var isPayButtonActive: Bool {
-    isPayButtonEnabled || isLoading
-  }
 
   private var isPayButtonEnabled: Bool {
     if isLoading {

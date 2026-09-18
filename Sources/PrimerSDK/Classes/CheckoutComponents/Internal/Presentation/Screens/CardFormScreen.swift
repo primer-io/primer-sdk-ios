@@ -102,34 +102,13 @@ struct CardFormScreen: View, LogReporter {
 
   @MainActor
   private var submitButtonSection: some View {
-    Button(action: submitAction) {
-      submitButtonContent
-    }
-    .disabled(!cardFormState.isValid || cardFormState.isLoading)
-  }
-
-  private var submitButtonContent: some View {
     let isEnabled = cardFormState.isValid && !cardFormState.isLoading
 
-    return HStack {
-      if cardFormState.isLoading {
-        ProgressView()
-          .progressViewStyle(
-            CircularProgressViewStyle(
-              tint: CheckoutColors.onBrand(tokens: tokens, isEnabled: isSubmitButtonActive)))
-          .scaleEffect(PrimerScale.small)
-      } else {
-        Text(payTitle(accessible: false))
-      }
-    }
-    .font(PrimerFont.body(tokens: tokens))
-    .foregroundColor(CheckoutColors.onBrand(tokens: tokens, isEnabled: isSubmitButtonActive))
-    .frame(maxWidth: .infinity)
-    .padding(.vertical, PrimerSpacing.large(tokens: tokens))
-    .background(submitButtonBackground)
-    .cornerRadius(PrimerRadius.small(tokens: tokens))
-    .accessibility(
-      config: AccessibilityConfiguration(
+    return PrimerCheckoutButton(
+      payTitle(accessible: false),
+      isEnabled: isEnabled,
+      isLoading: cardFormState.isLoading,
+      accessibilityConfiguration: AccessibilityConfiguration(
         identifier: AccessibilityIdentifiers.CardForm.submitButton,
         label: cardFormState.isLoading
           ? CheckoutComponentsStrings.a11ySubmitButtonLoading : payTitle(accessible: true),
@@ -139,7 +118,9 @@ struct CardFormScreen: View, LogReporter {
             ? CheckoutComponentsStrings.a11ySubmitButtonHint
             : CheckoutComponentsStrings.a11ySubmitButtonDisabled),
         traits: [.isButton]
-      ))
+      ),
+      action: submitAction
+    )
   }
 
   /// Computes the submit-button title, formatting the amount with the accessibility-friendly
@@ -171,17 +152,6 @@ struct CardFormScreen: View, LogReporter {
       ? rawAmount.toAccessibilityCurrencyString(currency: currency)
       : rawAmount.toCurrencyString(currency: currency)
     return CheckoutComponentsStrings.paymentAmountTitle(formatted)
-  }
-
-  private var submitButtonBackground: Color {
-    isSubmitButtonActive
-      ? CheckoutColors.buttonPrimary(tokens: tokens)
-      : CheckoutColors.buttonDisabled(tokens: tokens)
-  }
-
-  /// The button keeps its brand fill while submitting; only an invalid form greys it out.
-  private var isSubmitButtonActive: Bool {
-    cardFormState.isValid || cardFormState.isLoading
   }
 
   private func submitAction() {
