@@ -13,6 +13,11 @@ import Foundation
 protocol PaymentMethodSelectionScopeInternal: PrimerPaymentMethodSelectionScope {
   var currentState: PrimerPaymentMethodSelectionState { get }
   var vaultedPaymentMethods: [PrimerHeadlessUniversalCheckout.VaultedPaymentMethod] { get }
+
+  /// Emits the saved-method list whenever it changes, so an embedded list re-renders after a delete.
+  /// The list lives outside ``PrimerPaymentMethodSelectionState``, so the state stream never carries it.
+  var vaultedPaymentMethodsStream: AsyncStream<[PrimerHeadlessUniversalCheckout.VaultedPaymentMethod]> { get }
+
   func syncSelectedVaultedPaymentMethod()
   func collapsePaymentMethods()
   func selectVaultedPaymentMethod(_ method: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod)

@@ -18,6 +18,7 @@ final class MockConfigurationService: ConfigurationService {
     var currency: Currency?
     var amount: Int?
     var captureVaultedCardCvv: Bool = false
+    var locale: Locale = .current
 
     init(
         apiConfiguration: PrimerAPIConfiguration? = nil,
@@ -25,7 +26,8 @@ final class MockConfigurationService: ConfigurationService {
         billingAddressOptions: PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions? = nil,
         currency: Currency? = nil,
         amount: Int? = nil,
-        captureVaultedCardCvv: Bool = false
+        captureVaultedCardCvv: Bool = false,
+        locale: Locale = .current
     ) {
         self.apiConfiguration = apiConfiguration
         self.checkoutModules = checkoutModules
@@ -33,6 +35,7 @@ final class MockConfigurationService: ConfigurationService {
         self.currency = currency
         self.amount = amount
         self.captureVaultedCardCvv = captureVaultedCardCvv
+        self.locale = locale
     }
 
     func reset() {
@@ -42,6 +45,7 @@ final class MockConfigurationService: ConfigurationService {
         currency = nil
         amount = nil
         captureVaultedCardCvv = false
+        locale = .current
     }
 
     static func withDefaultConfiguration() -> MockConfigurationService {

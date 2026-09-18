@@ -184,16 +184,11 @@ final class DefaultPaymentMethodSelectionScope: PaymentMethodSelectionScopeInter
       return
     }
 
-    if shouldRequireCvvInput(for: vaultedMethod), !internalState.requiresCvvInput {
-      logger.info(message: "[Vault] CVV required for vaulted card payment, showing CVV input")
-      internalState.requiresCvvInput = true
-      // Collapse payment methods section to focus on CVV entry
-      internalState.isPaymentMethodsExpanded = false
-      return
-    }
-
-    if internalState.requiresCvvInput {
-      await payWithVaultedPaymentMethodAndCvv(internalState.cvvInput)
+    // The field has no home when the merchant owns the list and the pay button, so recapture gets a
+    // screen of its own. That screen submits through `payWithVaultedPaymentMethodAndCvv`.
+    if shouldRequireCvvInput(for: vaultedMethod) {
+      logger.info(message: "[Vault] CVV required for vaulted card payment, showing CVV screen")
+      checkoutScope?.updateNavigationState(.cvvRecapture)
       return
     }
 
@@ -213,19 +208,12 @@ final class DefaultPaymentMethodSelectionScope: PaymentMethodSelectionScopeInter
     await executeVaultPayment(vaultedMethod: vaultedMethod, additionalData: additionalData)
   }
 
-  func updateCvvInput(_ cvv: String) {
-    internalState.cvvInput = cvv
-    let validationResult = validateCvv(cvv)
-    internalState.isCvvValid = validationResult.isValid
-    internalState.cvvError = validationResult.errorMessage
-  }
-
   /// Validates CVV input and returns validation state with optional error message.
   /// - Parameter cvv: The CVV string to validate
   /// - Returns: Tuple with `isValid` flag and optional `errorMessage`
-  private func validateCvv(_ cvv: String) -> (isValid: Bool, errorMessage: String?) {
-    let cardNetwork = getCardNetworkFromSelectedVaultedMethod()
-    let expectedLength = cardNetwork.validation?.code.length ?? 3
+  func validateCvv(_ cvv: String) -> (isValid: Bool, errorMessage: String?) {
+    let expectedLength =
+      internalState.selectedVaultedPaymentMethod?.cardNetwork.validation?.code.length ?? 3
 
     // Empty input: not valid yet, but no error (user hasn't started typing)
     guard !cvv.isEmpty else {
@@ -257,9 +245,20 @@ final class DefaultPaymentMethodSelectionScope: PaymentMethodSelectionScopeInter
     vaultedMethod: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod,
     additionalData: PrimerVaultedPaymentMethodAdditionalData?
   ) async {
+    // A merchant's own pay button has no disabled-while-loading state unless they build one, so the
+    // second tap of a double tap would otherwise start a second payment.
+    guard !internalState.isVaultPaymentLoading else {
+      logger.warn(message: "[Vault] A payment is already in flight, ignoring the repeat submit")
+      return
+    }
+
     logger.info(message: "[Vault] Starting payment with vaulted method: \(vaultedMethod.id)")
 
     internalState.isVaultPaymentLoading = true
+    // Adding a card raises the processing screen, so paying with a saved one must too. Without this
+    // the whole payment runs behind the merchant's own list, with nothing to show it started. Both
+    // outcomes navigate on from here, so the state is left standing rather than wound back.
+    checkoutScope?.startProcessing(payingWith: nil)
 
     await analyticsInteractor?.trackEvent(
       .paymentSubmitted,
@@ -279,14 +278,10 @@ final class DefaultPaymentMethodSelectionScope: PaymentMethodSelectionScopeInter
       )
 
       internalState.isVaultPaymentLoading = false
-      resetCvvState()
       checkoutScope?.handlePaymentSuccess(result)
 
     } catch {
       internalState.isVaultPaymentLoading = false
-      // Clear CVV on error but keep CVV mode active for retry
-      internalState.cvvInput = ""
-      internalState.isCvvValid = false
       logger.error(message: "[Vault] Payment failed: \(error.localizedDescription)")
 
       let primerError =
@@ -315,22 +310,6 @@ final class DefaultPaymentMethodSelectionScope: PaymentMethodSelectionScopeInter
         message: "[Vault] Failed to resolve ConfigurationService: \(error.localizedDescription)")
       return false
     }
-  }
-
-  private func getCardNetworkFromSelectedVaultedMethod() -> CardNetwork {
-    guard let vaultedMethod = internalState.selectedVaultedPaymentMethod else { return .unknown }
-
-    let network =
-      vaultedMethod.paymentInstrumentData.network ?? vaultedMethod.paymentInstrumentData.binData?
-      .network ?? "Card"
-    return CardNetwork(rawValue: network.uppercased()) ?? .unknown
-  }
-
-  private func resetCvvState() {
-    internalState.requiresCvvInput = false
-    internalState.cvvInput = ""
-    internalState.isCvvValid = false
-    internalState.cvvError = nil
   }
 
   func showAllVaultedPaymentMethods() {
@@ -368,19 +347,30 @@ final class DefaultPaymentMethodSelectionScope: PaymentMethodSelectionScopeInter
   /// Called by DefaultCheckoutScope when selection changes.
   /// Source of truth is always `checkoutScope.selectedVaultedPaymentMethod`.
   func syncSelectedVaultedPaymentMethod() {
-    let previousMethodId = internalState.selectedVaultedPaymentMethod?.id
-    let newMethodId = checkoutScope?.selectedVaultedPaymentMethod?.id
-
     internalState.selectedVaultedPaymentMethod = checkoutScope?.selectedVaultedPaymentMethod
-
-    // When switching to a different vaulted method, reset CVV state
-    if previousMethodId != newMethodId {
-      resetCvvState()
-    }
   }
 
   var vaultedPaymentMethods: [PrimerHeadlessUniversalCheckout.VaultedPaymentMethod] {
     checkoutScope?.vaultedPaymentMethods ?? []
+  }
+
+  var vaultedPaymentMethodsStream: AsyncStream<[PrimerHeadlessUniversalCheckout.VaultedPaymentMethod]> {
+    AsyncStream { continuation in
+      guard let vaultManager = checkoutScope?.vaultManager else {
+        continuation.finish()
+        return
+      }
+      let task = Task { @MainActor in
+        for await methods in vaultManager.$methods.values {
+          continuation.yield(methods)
+        }
+        continuation.finish()
+      }
+
+      continuation.onTermination = { _ in
+        task.cancel()
+      }
+    }
   }
 
   func selectVaultedPaymentMethod(_ method: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod) {

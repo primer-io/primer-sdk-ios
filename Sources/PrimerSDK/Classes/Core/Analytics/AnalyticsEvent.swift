@@ -31,7 +31,7 @@ extension Analytics.Event {
             sdkSessionId: PrimerInternal.shared.sdkSessionId,
             sdkType: Primer.shared.integrationOptions?.reactNativeVersion == nil ? "IOS_NATIVE" : "RN_IOS",
             sdkVersion: VersionUtils.releaseVersionNumber,
-            sdkIntegrationType: PrimerInternal.shared.sdkIntegrationType,
+            sdkIntegrationType: PrimerInternal.shared.reportedIntegrationType,
             sdkPaymentHandling: PrimerSettings.current.paymentHandling,
             integrationType: {
                 #if COCOAPODS

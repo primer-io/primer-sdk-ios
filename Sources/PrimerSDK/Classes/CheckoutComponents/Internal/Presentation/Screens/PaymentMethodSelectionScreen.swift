@@ -74,11 +74,7 @@ struct PaymentMethodSelectionScreen: View, LogReporter {
           VaultSection(
             vaultedPaymentMethod: vaultedPaymentMethod,
             scope: scope,
-            isLoading: selectionState.isVaultPaymentLoading,
-            requiresCvvInput: selectionState.requiresCvvInput,
-            cvvInput: $selectionState.cvvInput,
-            isCvvValid: $selectionState.isCvvValid,
-            cvvError: $selectionState.cvvError
+            isLoading: selectionState.isVaultPaymentLoading
           )
         }
 
@@ -122,12 +118,13 @@ struct PaymentMethodSelectionScreen: View, LogReporter {
   // MARK: - Helpers
 
   private var formattedAmount: String? {
-    guard let amount = configurationService?.amount,
-      let currency = configurationService?.currency
+    guard let configurationService,
+      let amount = configurationService.amount,
+      let currency = configurationService.currency
     else {
       return nil
     }
-    return amount.toCurrencyString(currency: currency)
+    return amount.toCurrencyString(currency: currency, locale: configurationService.locale)
   }
 
   private func resolveConfigurationService() {

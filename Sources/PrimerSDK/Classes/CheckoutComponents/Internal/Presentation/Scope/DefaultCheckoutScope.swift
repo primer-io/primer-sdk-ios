@@ -85,7 +85,7 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
 
   let presentationContext: PresentationContext
 
-  private var cachedPaymentMethodSelection: (any PaymentMethodSelectionScopeInternal)?
+  var cachedPaymentMethodSelection: (any PaymentMethodSelectionScopeInternal)?
 
   var paymentMethodSelection: PrimerPaymentMethodSelectionScope { paymentMethodSelectionInternal }
 
@@ -100,6 +100,17 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
   }
 
   private var currentPaymentMethodScope: (any PrimerPaymentMethodScope)?
+
+  /// What a retry re-runs, recorded where a payment starts rather than derived from
+  /// ``currentPaymentMethodScope``. That pointer survives a back-out to the selection screen, so a
+  /// retry taken from it would submit a form the customer had already walked away from, and with a
+  /// filled form that charges a different card than the one being retried.
+  private enum PaymentAttempt {
+    case paymentMethod(any PrimerPaymentMethodScope)
+    case vaulted
+  }
+
+  private var lastPaymentAttempt: PaymentAttempt?
   private var navigationObservationTask: Task<Void, Never>?
   private var isReloading = false
   private let navigator: CheckoutNavigator
@@ -154,6 +165,7 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
 
     cachedPaymentMethodSelection = nil
     currentPaymentMethodScope = nil
+    lastPaymentAttempt = nil
     paymentMethodScopeCache.removeAll()
     availablePaymentMethods = []
 
@@ -319,6 +331,8 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
         navigator.navigateToVaultedPaymentMethods()
       case let .deleteVaultedPaymentMethodConfirmation(method):
         navigator.navigateToDeleteVaultedPaymentMethodConfirmation(method)
+      case .cvvRecapture:
+        navigator.navigateToCvvRecapture()
       case let .paymentMethod(paymentMethodType):
         navigator.navigateToPaymentMethod(paymentMethodType, context: presentationContext)
       case .processing:
@@ -342,7 +356,11 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
     switch state {
     case let .paymentMethod(type):
       currentPaymentMethodScope = paymentMethodScopeCache[type]
-    case .success, .failure, .dismissed:
+    case .success, .dismissed:
+      selectedPaymentMethodName = nil
+      lastPaymentAttempt = nil
+    case .failure:
+      // The attempt is what retry re-runs, so it outlives the failure that offers the retry.
       selectedPaymentMethodName = nil
     default:
       break
@@ -350,44 +368,41 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
   }
 
   private func announceScreenChange(for state: CheckoutNavigationState) {
-    guard let service = accessibilityAnnouncementService else { return }
+    guard let service = accessibilityAnnouncementService, let message = announcement(for: state)
+    else { return }
 
-    let message: String?
+    service.announceScreenChange(message)
+    logger.debug(message: "[A11Y] Screen change announcement: \(message)")
+  }
+
+  private func announcement(for state: CheckoutNavigationState) -> String? {
     switch state {
     case .loading:
-      message = CheckoutComponentsStrings.a11yScreenLoadingPaymentMethods
+      CheckoutComponentsStrings.a11yScreenLoadingPaymentMethods
     case .paymentMethodSelection:
-      message = CheckoutComponentsStrings.choosePaymentMethod
+      CheckoutComponentsStrings.choosePaymentMethod
     case .vaultedPaymentMethods:
-      message = CheckoutComponentsStrings.allSavedPaymentMethods
+      CheckoutComponentsStrings.allSavedPaymentMethods
     case .deleteVaultedPaymentMethodConfirmation:
-      message = CheckoutComponentsStrings.deletePaymentMethodConfirmation
+      CheckoutComponentsStrings.deletePaymentMethodConfirmation
+    case .cvvRecapture:
+      CheckoutComponentsStrings.vaultCvvTitle
     case let .paymentMethod(type):
-      if let name = selectedPaymentMethodName {
-        message = CheckoutComponentsStrings.a11yScreenPaymentMethod(name)
-      } else {
-        // Fallback: Format raw payment method type for display
-        // This should rarely be used as API always provides display names
-        let displayName =
-          type
-          .replacingOccurrences(of: "_", with: " ")
-          .capitalized
-        message = CheckoutComponentsStrings.a11yScreenPaymentMethod(displayName)
-      }
+      CheckoutComponentsStrings.a11yScreenPaymentMethod(paymentMethodDisplayName(for: type))
     case .processing:
-      message = CheckoutComponentsStrings.a11yScreenProcessingPayment
+      CheckoutComponentsStrings.a11yScreenProcessingPayment
     case .success:
-      message = CheckoutComponentsStrings.a11yScreenSuccess
+      CheckoutComponentsStrings.a11yScreenSuccess
     case .failure:
-      message = CheckoutComponentsStrings.a11yScreenError
+      CheckoutComponentsStrings.a11yScreenError
     case .dismissed:
-      message = nil
+      nil
     }
+  }
 
-    if let message {
-      service.announceScreenChange(message)
-      logger.debug(message: "[A11Y] Screen change announcement: \(message)")
-    }
+  /// The API almost always supplies a display name; the raw type is only tidied up as a fallback.
+  private func paymentMethodDisplayName(for type: String) -> String {
+    selectedPaymentMethodName ?? type.replacingOccurrences(of: "_", with: " ").capitalized
   }
 
   private func observeNavigationEvents() {
@@ -404,6 +419,8 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
           newNavigationState = .vaultedPaymentMethods
         case let .deleteVaultedPaymentMethodConfirmation(method):
           newNavigationState = .deleteVaultedPaymentMethodConfirmation(method)
+        case .cvvRecapture:
+          newNavigationState = .cvvRecapture
         case let .paymentMethod(paymentMethodType, _):
           newNavigationState = .paymentMethod(paymentMethodType)
         case .processing:
@@ -517,6 +534,7 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
 
     cachedPaymentMethodSelection = nil
     currentPaymentMethodScope = nil
+    lastPaymentAttempt = nil
     paymentMethodScopeCache.removeAll()
 
     navigationObservationTask?.cancel()
@@ -583,7 +601,11 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
     updateNavigationState(.failure(error))
   }
 
-  func startProcessing() {
+  /// - Parameter scope: the payment method being paid with, or `nil` for a saved one. Recorded here
+  ///   because this is the one call every payment passes through, and taken from the caller rather
+  ///   than from the navigation state, which stays on selection for the whole of an inline flow.
+  func startProcessing(payingWith scope: (any PrimerPaymentMethodScope)?) {
+    lastPaymentAttempt = scope.map { .paymentMethod($0) } ?? .vaulted
     updateNavigationState(.processing)
   }
 
@@ -593,12 +615,24 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
   }
 
   func retryPayment() {
+    guard let attempt = lastPaymentAttempt else {
+      logger.warn(message: "Retry tapped with no recorded payment attempt, ignoring")
+      return
+    }
+
     Task { @MainActor [weak self] in
       guard let self else { return }
       await analyticsTracker?.trackRetry(navigationState: navigationState)
     }
 
-    currentPaymentMethodScope?.submit()
+    switch attempt {
+    case let .paymentMethod(scope):
+      scope.submit()
+    case .vaulted:
+      // Through the full entry point, not the submit helper, so a card that needs its CVV asks for it
+      // again. The code is never held over from the attempt that failed.
+      Task { await paymentMethodSelectionInternal.payWithVaultedPaymentMethod() }
+    }
   }
 
   func setVaultedPaymentMethods(_ methods: [PrimerHeadlessUniversalCheckout.VaultedPaymentMethod]) {

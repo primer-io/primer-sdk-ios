@@ -148,13 +148,14 @@ struct CardFormScreen: View, LogReporter {
     }
 
     guard PrimerInternal.shared.intent == .checkout,
-      let currency = configurationService?.currency
+      let configurationService,
+      let currency = configurationService.currency
     else {
       return CheckoutComponentsStrings.payButton
     }
 
-    let amount = configurationService?.amount ?? 0
-    let merchantAmount = configurationService?.apiConfiguration?.clientSession?.order?
+    let amount = configurationService.amount ?? 0
+    let merchantAmount = configurationService.apiConfiguration?.clientSession?.order?
       .merchantAmount
 
     let rawAmount: Int = if let merchantAmount,
@@ -165,9 +166,10 @@ struct CardFormScreen: View, LogReporter {
       amount
     }
 
+    let locale = configurationService.locale
     let formatted = accessible
-      ? rawAmount.toAccessibilityCurrencyString(currency: currency)
-      : rawAmount.toCurrencyString(currency: currency)
+      ? rawAmount.toAccessibilityCurrencyString(currency: currency, locale: locale)
+      : rawAmount.toCurrencyString(currency: currency, locale: locale)
     return CheckoutComponentsStrings.paymentAmountTitle(formatted)
   }
 

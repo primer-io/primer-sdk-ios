@@ -122,6 +122,7 @@ public final class Primer {
         completion: ((Error?) -> Void)? = nil
     ) {
         PrimerInternal.shared.sdkIntegrationType = .dropIn
+        PrimerInternal.shared.sdkIntegrationProduct = .dropIn
         PrimerInternal.shared.showPaymentMethod(
             paymentMethodType,
             withIntent: intent,
