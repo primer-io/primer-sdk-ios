@@ -49,6 +49,28 @@ final class DesignTokensManager: ObservableObject {
         overrides["primerTypographyBrand"] = brandFont
       }
     }
+    // Error references bodySmall, and references resolve before the override pass.
+    if let bodySmall = themeOverrides?.typography?.bodySmall {
+      if let font = bodySmall.font {
+        if DesignTokensProcessor.isTokenAuthoringSyntax(font) {
+          PrimerLogging.shared.logger.error(
+            message: "[DesignTokens] Body small font override ignored: '\(font)' is not a font family name.")
+        } else {
+          overrides["primerTypographyBodySmallFont"] = font
+        }
+      }
+      if let size = bodySmall.size { overrides["primerTypographyBodySmallSize"] = size }
+      if let lineHeight = bodySmall.lineHeight {
+        overrides["primerTypographyBodySmallLineHeight"] = lineHeight
+      }
+      if let letterSpacing = bodySmall.letterSpacing {
+        overrides["primerTypographyBodySmallLetterSpacing"] = letterSpacing
+      }
+      if let weight = bodySmall.weight {
+        overrides["primerTypographyBodySmallWeight"] = fontWeightToCGFloat(weight)
+      }
+    }
+
     guard let brand = colors?.primerColorBrand, let components = Self.colorComponents(brand) else {
       return overrides
     }
