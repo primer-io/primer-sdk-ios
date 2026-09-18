@@ -37,6 +37,7 @@ final class AccessibilityIdentifiersContractTests: XCTestCase {
         (Ids.Vault.cvvField, "primer_checkout_components_vault_cvv_field"),
         (Ids.Vault.cvvSecurityLabel, "primer_checkout_components_vault_cvv_security_label"),
         (Ids.Vault.payButton, "primer_checkout_components_vault_pay_button"),
+        (Ids.Vault.cvvPayButton, "primer_checkout_components_vault_cvv_pay_button"),
         // Common
         (Ids.Common.closeButton, "primer_checkout_components_close_button"),
         (Ids.Common.backButton, "primer_checkout_components_back_button"),
