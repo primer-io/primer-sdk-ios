@@ -9,12 +9,22 @@
 import XCTest
 
 /// What analytics reports as the merchant's integration, as distinct from the surface that routes it.
+@available(iOS 15.0, *)
+@MainActor
 final class ReportedIntegrationTypeTests: XCTestCase {
 
-    override func tearDown() {
+    // Building a real `RawDataManager` below touches SDK-wide state, so the shared container is reset
+    // on both sides alongside the two globals this class writes.
+    override func setUp() async throws {
+        try await super.setUp()
+        await ContainerTestHelpers.resetSharedContainer()
+    }
+
+    override func tearDown() async throws {
         PrimerInternal.shared.sdkIntegrationType = nil
         PrimerInternal.shared.sdkIntegrationProduct = nil
-        super.tearDown()
+        await ContainerTestHelpers.resetSharedContainer()
+        try await super.tearDown()
     }
 
     func test_reportedIntegrationType_withoutAProduct_fallsBackToTheRoutingValue() {
