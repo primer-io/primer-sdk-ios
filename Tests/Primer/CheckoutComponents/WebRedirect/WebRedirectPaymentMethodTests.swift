@@ -301,6 +301,7 @@ private final class MockNonDefaultCheckoutScopeForWebRedirect: PrimerCheckoutSco
     }
 
     var onBeforePaymentCreate: BeforePaymentCreateHandler?
+    var shippingCallbacks: PrimerShippingCallbacks?
     var paymentMethodSelection: PrimerPaymentMethodSelectionScope {
         fatalError("Not implemented for mock")
     }

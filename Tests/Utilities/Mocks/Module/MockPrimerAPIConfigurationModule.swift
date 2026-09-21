@@ -60,6 +60,17 @@ final class MockPrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoc
         PrimerAPIConfigurationModule.apiConfiguration = mockedAPIConfiguration
     }
 
+    func refreshSession() async throws {
+        guard let mockedAPIConfiguration else {
+            XCTAssert(false, "Set 'mockedAPIConfiguration' on your MockPrimerAPIConfigurationModule")
+            return
+        }
+
+        try await Task.sleep(nanoseconds: UInt64(mockedNetworkDelay * 1_000_000_000))
+
+        PrimerAPIConfigurationModule.apiConfiguration = mockedAPIConfiguration
+    }
+
     func storeRequiredActionClientToken(_ newClientToken: String) async throws {
         try await Task.sleep(nanoseconds: UInt64(mockedNetworkDelay * 1_000_000_000))
 

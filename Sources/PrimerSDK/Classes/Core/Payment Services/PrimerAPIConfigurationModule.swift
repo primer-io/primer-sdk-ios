@@ -29,6 +29,7 @@ protocol PrimerAPIConfigurationModuleProtocol {
         requestVaultedPaymentMethods: Bool
     ) async throws
     func updateSession(withActions actionsRequest: ClientSessionUpdateRequest) async throws
+    func refreshSession() async throws
     func storeRequiredActionClientToken(_ newClientToken: String) async throws
 }
 
@@ -137,6 +138,21 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
         PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules = configuration.checkoutModules
         let cachedData = ConfigurationCachedData(config: configuration, headers: responseHeaders)
         ConfigurationCache.shared.setData(cachedData, forKey: cacheKey)
+    }
+
+    /// Re-reads the configuration from the network and swaps in the fresh client session and checkout
+    /// modules, leaving everything else (payment methods, display metadata) in place.
+    ///
+    /// A pure read, unlike `updateSession(withActions:)`: Express Checkout shipping needs the amount
+    /// Primer recomputed after the *merchant's* `PATCH`, and firing our own action alongside it would
+    /// race two writers on one client session inside the wallet sheet's window. The cache is cleared
+    /// first because a cached read would hand back the pre-`PATCH` amount, which is exactly the stale
+    /// total the authorization gate exists to prevent.
+    func refreshSession() async throws {
+        ConfigurationCache.shared.clearCache()
+        let configuration = try await fetchConfiguration(requestDisplayMetadata: false)
+        PrimerAPIConfigurationModule.apiConfiguration?.clientSession = configuration.clientSession
+        PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules = configuration.checkoutModules
     }
 
     func storeRequiredActionClientToken(_ newClientToken: String) async throws {

@@ -202,6 +202,7 @@ private final class MockInvalidCheckoutScope: PrimerCheckoutScope {
     }
 
     var onBeforePaymentCreate: BeforePaymentCreateHandler?
+    var shippingCallbacks: PrimerShippingCallbacks?
     var paymentMethodSelection: PrimerPaymentMethodSelectionScope {
         fatalError("Not implemented")
     }

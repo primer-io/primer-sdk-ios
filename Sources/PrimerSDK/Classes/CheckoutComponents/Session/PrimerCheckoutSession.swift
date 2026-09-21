@@ -44,6 +44,13 @@ public final class PrimerCheckoutSession: ObservableObject {
     didSet { checkoutScope?.onBeforePaymentCreate = onBeforePaymentCreate }
   }
 
+  /// Express Checkout shipping hooks for Apple Pay. Supply shipping options for the shopper's address
+  /// and commit their selection through your backend while the wallet sheet is open. Mutations are
+  /// forwarded to the checkout scope immediately, so post-`.ready` assignment still applies.
+  public var shippingCallbacks: PrimerShippingCallbacks? {
+    didSet { checkoutScope?.shippingCallbacks = shippingCallbacks }
+  }
+
   /// Declarative idempotency-key provider, invoked once per payment attempt just before the SDK
   /// creates the payment; return nil (default) to opt out. Ignored when `onBeforePaymentCreate` is set.
   /// Mutations are forwarded to the checkout scope immediately, so post-`.ready` assignment still applies.
@@ -67,11 +74,13 @@ public final class PrimerCheckoutSession: ObservableObject {
     clientToken: String,
     settings: PrimerSettings = PrimerSettings(),
     theme: PrimerCheckoutTheme = PrimerCheckoutTheme(),
+    shippingCallbacks: PrimerShippingCallbacks? = nil,
     idempotencyKey: @escaping @Sendable () -> String? = { nil }
   ) {
     self.clientToken = clientToken
     self.settings = settings
     self.theme = theme
+    self.shippingCallbacks = shippingCallbacks
     self.idempotencyKey = idempotencyKey
   }
 
@@ -113,6 +122,7 @@ public final class PrimerCheckoutSession: ObservableObject {
   /// from `start()` so tests can drive the loop with a scope whose state stream they control.
   func observeCheckoutState(_ scope: DefaultCheckoutScope) async {
     scope.onBeforePaymentCreate = onBeforePaymentCreate
+    scope.shippingCallbacks = shippingCallbacks
     scope.idempotencyKeyProvider = idempotencyKey
     checkoutScope = scope
 
