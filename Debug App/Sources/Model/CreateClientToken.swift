@@ -79,6 +79,16 @@ struct ClientSessionRequestBody: Encodable {
     struct Order: Codable {
         var countryCode: CountryCode?
         var lineItems: [LineItem]?
+        var shipping: Shipping?
+
+        /// Express Checkout's shipping commit. Primer recomputes the order total from the line items
+        /// plus this, so the PATCH that carries it must not also send a top-level `amount`.
+        struct Shipping: Codable {
+            var methodId: String?
+            var methodName: String?
+            var methodDescription: String?
+            var amount: Int?
+        }
 
         struct LineItem: Codable {
 
