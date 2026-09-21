@@ -4,8 +4,8 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-@testable import PrimerSDK
 @_spi(PrimerInternal) @testable import PrimerCore
+@_spi(PrimerInternal) @testable import PrimerSDK
 import XCTest
 
 /// What analytics reports as the merchant's integration, as distinct from the surface that routes it.
@@ -48,6 +48,25 @@ final class ReportedIntegrationTypeTests: XCTestCase {
         PrimerInternal.shared.sdkIntegrationType = nil
 
         XCTAssertNil(PrimerInternal.shared.reportedIntegrationType)
+    }
+
+    // The two places that actually report it. Both read `reportedIntegrationType`, so a merchant on
+    // CheckoutComponents stops appearing as Headless in analytics.
+
+    func test_sdkEvent_carriesTheProduct_notTheRoutingValue() {
+        PrimerInternal.shared.sdkIntegrationProduct = .checkoutComponents
+        PrimerInternal.shared.sdkIntegrationType = .headless
+
+        let event = Analytics.Event.sdk(name: "test", params: nil)
+
+        XCTAssertEqual(event.sdkIntegrationType, .checkoutComponents)
+    }
+
+    func test_sdkEvent_withoutAProduct_fallsBackToTheRoutingValue() {
+        PrimerInternal.shared.sdkIntegrationProduct = nil
+        PrimerInternal.shared.sdkIntegrationType = .dropIn
+
+        XCTAssertEqual(Analytics.Event.sdk(name: "test", params: nil).sdkIntegrationType, .dropIn)
     }
 
     // Building a RawDataManager is what rewrites the routing value inside a CheckoutComponents flow.
