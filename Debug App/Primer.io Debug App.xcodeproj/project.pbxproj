@@ -39,6 +39,7 @@
 		57ED5E41DB6664A6BA04DF9C /* CustomNavigationDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F6D657944A33EEC8F9575D0 /* CustomNavigationDemo.swift */; };
 		592E00D98C8835CBCDAA26D9 /* MerchantDropInUIViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9874F439DA3EA5854A454687 /* MerchantDropInUIViewController.swift */; };
 		5B05A35525456BF720FC8E29 /* CardFormSheetDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC45C031EF64BAD93DBA05ED /* CardFormSheetDemo.swift */; };
+		5E0C814A879A6C7005405FE7 /* ExpressCheckoutShippingDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BDAFB7BE70BEE47FC59B6D7 /* ExpressCheckoutShippingDemo.swift */; };
 		5E24CD5B3084FE3E8A3E85EC /* CheckoutTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72845A3010F10A88F2EC7849 /* CheckoutTheme.swift */; };
 		60F6C3AFA11A7EDB0687856A /* ViewController+PrimerUIHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4139D8F153BB399DA67F2EE /* ViewController+PrimerUIHelpers.swift */; };
 		65192773BC12A325FCC64A45 /* CustomPaymentMethodsDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE574B8EE9C6DA41B33F14F8 /* CustomPaymentMethodsDemo.swift */; };
@@ -186,6 +187,7 @@
 		65D5BE730AB25FA05274B204 /* AccountFundingComponents.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AccountFundingComponents.swift; sourceTree = "<group>"; };
 		65FBFDFAC16FA7D24033441F /* BeforePaymentGateDemo.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BeforePaymentGateDemo.swift; sourceTree = "<group>"; };
 		68E2722188A5A2948DB31144 /* Debug App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Debug App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		6BDAFB7BE70BEE47FC59B6D7 /* ExpressCheckoutShippingDemo.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ExpressCheckoutShippingDemo.swift; sourceTree = "<group>"; };
 		6D2261DDEE5DC5D2ED518037 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		6D665EEA8106E51925C3CF2B /* da */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = da; path = da.lproj/Main.strings; sourceTree = "<group>"; };
 		6DC8194131061281FE50D115 /* DemoCheckout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DemoCheckout.swift; sourceTree = "<group>"; };
@@ -543,6 +545,7 @@
 				BDDFFCC6D5DEBAE07EEA733D /* AccountFundingDemo.swift */,
 				65D5BE730AB25FA05274B204 /* AccountFundingComponents.swift */,
 				5E065909BA2A6B57812AE380 /* AccountFundingAmountScreen.swift */,
+				6BDAFB7BE70BEE47FC59B6D7 /* ExpressCheckoutShippingDemo.swift */,
 			);
 			path = Demos;
 			sourceTree = "<group>";
@@ -961,6 +964,7 @@
 				083003072FB6B30EDBAB67D8 /* AccountFundingDemo.swift in Sources */,
 				CC337D02E26B9CDDBBEA6328 /* AccountFundingComponents.swift in Sources */,
 				C24964EF6F0104C1F3E9C37A /* AccountFundingAmountScreen.swift in Sources */,
+				5E0C814A879A6C7005405FE7 /* ExpressCheckoutShippingDemo.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

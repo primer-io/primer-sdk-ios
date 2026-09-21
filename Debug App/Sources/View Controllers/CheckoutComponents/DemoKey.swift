@@ -39,4 +39,5 @@ enum DemoKey: String, CaseIterable {
     case largeTypographyTheme = "large_typography_theme"
     case customFontTheme = "custom_font_theme"
     case refreshClientSession = "refresh_client_session"
+    case expressCheckoutShipping = "express_checkout_shipping"
 }
