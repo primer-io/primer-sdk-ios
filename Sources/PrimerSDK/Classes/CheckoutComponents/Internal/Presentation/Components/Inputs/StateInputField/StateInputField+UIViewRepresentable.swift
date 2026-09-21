@@ -28,7 +28,7 @@ struct StateTextField: UIViewRepresentable, LogReporter {
 
     textField.configurePrimerStyle(
       placeholder: placeholder,
-      configuration: .standard,
+      configuration: .standard.offering(.addressState),
       tokens: tokens,
       doneButtonTarget: context.coordinator,
       doneButtonAction: #selector(Coordinator.doneButtonTapped)

@@ -33,7 +33,7 @@ struct PostalCodeTextField: UIViewRepresentable, LogReporter {
       keyboardType: keyboardType,
       autocapitalizationType: .allCharacters,
       autocorrectionType: .no,
-      textContentType: nil,
+      textContentType: .postalCode,
       returnKeyType: .done,
       isSecureTextEntry: false
     )
