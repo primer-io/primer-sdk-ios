@@ -95,7 +95,7 @@ struct PrimerCheckoutButton<Label: View>: View {
         label()
       }
     }
-    .font(PrimerFont.titleLarge(tokens: tokens))
+    .primerTypography(.titleLarge, tokens: tokens)
     .foregroundColor(foregroundColor)
     .frame(maxWidth: .infinity)
     .frame(minHeight: PrimerComponentHeight.interactive)

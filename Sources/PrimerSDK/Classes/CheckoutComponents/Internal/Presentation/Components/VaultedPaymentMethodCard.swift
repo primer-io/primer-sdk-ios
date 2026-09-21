@@ -125,7 +125,7 @@ struct VaultedPaymentMethodCard: View {
       // Name row (hidden if nil)
       if let name = displayData.name {
         Text(name)
-          .font(PrimerFont.bodyLarge(tokens: tokens))
+          .primerTypography(.bodyLarge, tokens: tokens)
           .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
           .lineLimit(1)
       }
@@ -134,7 +134,7 @@ struct VaultedPaymentMethodCard: View {
       HStack(spacing: PrimerSpacing.xsmall(tokens: tokens)) {
         makeBrandBadge()
         Text(displayData.brandName)
-          .font(PrimerFont.bodySmall(tokens: tokens))
+          .primerTypography(.bodySmall, tokens: tokens)
           .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
           .lineLimit(1)
       }
@@ -177,14 +177,14 @@ struct VaultedPaymentMethodCard: View {
     VStack(alignment: .trailing, spacing: PrimerSpacing.xsmall(tokens: tokens)) {
       if let primaryValue = displayData.primaryValue {
         Text(primaryValue)
-          .font(PrimerFont.bodyMedium(tokens: tokens))
+          .primerTypography(.bodyMedium, tokens: tokens)
           .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
           .lineLimit(1)
       }
 
       if let secondaryValue = displayData.secondaryValue {
         Text(secondaryValue)
-          .font(PrimerFont.bodySmall(tokens: tokens))
+          .primerTypography(.bodySmall, tokens: tokens)
           .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
           .lineLimit(1)
       }

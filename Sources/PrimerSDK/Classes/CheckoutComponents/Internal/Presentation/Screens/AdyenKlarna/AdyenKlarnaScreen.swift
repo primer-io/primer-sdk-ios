@@ -80,7 +80,7 @@ struct AdyenKlarnaScreen: View {
             }
 
             Text(CheckoutComponentsStrings.adyenKlarnaTitle)
-                .font(PrimerFont.titleXLarge(tokens: tokens))
+                .primerTypography(.titleXLarge, tokens: tokens)
                 .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .accessibilityAddTraits(.isHeader)
@@ -107,7 +107,7 @@ struct AdyenKlarnaScreen: View {
     private func makeOptionSelectionContent() -> some View {
         VStack(spacing: PrimerSpacing.medium(tokens: tokens)) {
             Text(CheckoutComponentsStrings.adyenKlarnaSelectOption)
-                .font(PrimerFont.body(tokens: tokens))
+                .primerTypography(.body, tokens: tokens)
                 .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
                 .frame(maxWidth: .infinity, alignment: .leading)
 
@@ -130,7 +130,7 @@ struct AdyenKlarnaScreen: View {
                 makeKlarnaLogoBadge()
 
                 Text(CheckoutComponentsStrings.adyenKlarnaOptionDisplayName(for: option.name))
-                    .font(PrimerFont.bodyLarge(tokens: tokens))
+                    .primerTypography(.bodyLarge, tokens: tokens)
                     .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
 
                 Spacer()

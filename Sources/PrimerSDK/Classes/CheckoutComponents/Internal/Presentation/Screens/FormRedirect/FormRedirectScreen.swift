@@ -159,18 +159,18 @@ private struct FormFieldView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: PrimerSpacing.small(tokens: tokens)) {
             Text(field.label)
-                .font(PrimerFont.caption(tokens: tokens))
+                .primerTypography(.caption, tokens: tokens)
                 .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
 
             makeInputField()
 
             if let errorMessage = field.errorMessage {
                 Text(errorMessage)
-                    .font(PrimerFont.error(tokens: tokens))
+                    .primerTypography(.error, tokens: tokens)
                     .foregroundColor(CheckoutColors.textNegative(tokens: tokens))
             } else if let helperText = field.helperText {
                 Text(helperText)
-                    .font(PrimerFont.caption(tokens: tokens))
+                    .primerTypography(.caption, tokens: tokens)
                     .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
             }
         }
@@ -180,7 +180,7 @@ private struct FormFieldView: View {
         HStack(spacing: PrimerSpacing.small(tokens: tokens)) {
             if let prefix = field.countryCodePrefix, field.fieldType == .phoneNumber {
                 Text(prefix)
-                    .font(PrimerFont.bodyLarge(tokens: tokens))
+                    .primerTypography(.bodyLarge, tokens: tokens)
                     .foregroundColor(CheckoutColors.inputText(tokens: tokens))
                     .accessibilityIdentifier(AccessibilityIdentifiers.FormRedirect.phonePrefix)
             }
@@ -189,7 +189,7 @@ private struct FormFieldView: View {
                 get: { field.value },
                 set: { onValueChanged($0) }
             ))
-            .font(PrimerFont.bodyLarge(tokens: tokens))
+            .primerFieldTypography(.bodyLarge, tokens: tokens)
             .foregroundColor(CheckoutColors.inputText(tokens: tokens))
             .keyboardType(field.keyboardType.uiKeyboardType)
             .textContentType(field.fieldType.textContentType)

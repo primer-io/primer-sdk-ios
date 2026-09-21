@@ -12,7 +12,7 @@ import SwiftUI
 extension PrimerInputFieldContainer {
   func makeLabel(_ label: String) -> some View {
     Text(label)
-      .font(labelFont)
+      .primerTypography(.bodySmall, tokens: tokens)
       .foregroundColor(labelForegroundColor)
       .frame(minHeight: PrimerComponentHeight.label)
   }
@@ -66,7 +66,7 @@ extension PrimerInputFieldContainer {
     // error into one element, so the error must fold into that element rather than compete
     // as a separate node. announceError below handles the transient VoiceOver notification.
     Text(errorMessage)
-      .font(errorMessageFont)
+      .primerTypography(.error, tokens: tokens)
       .foregroundColor(errorMessageForegroundColor)
       .fixedSize(horizontal: false, vertical: true)
       .frame(minHeight: errorMessageMinHeight)

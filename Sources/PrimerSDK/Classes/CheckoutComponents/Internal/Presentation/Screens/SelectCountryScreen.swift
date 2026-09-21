@@ -136,7 +136,7 @@ struct SelectCountryScreen: View, LogReporter {
         .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
 
       Text(CheckoutComponentsStrings.noCountriesFound)
-        .font(PrimerFont.body(tokens: tokens))
+        .primerTypography(.body, tokens: tokens)
         .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -190,22 +190,22 @@ private struct CountryItemView: View {
         // Flag
         if let flag = country.flag {
           Text(flag)
-            .font(PrimerFont.title2(tokens: tokens))
+            .primerTypography(.title2, tokens: tokens)
         }
 
         // Country name
         VStack(alignment: .leading, spacing: PrimerSpacing.xxsmall(tokens: tokens)) {
           Text(country.name)
-            .font(PrimerFont.body(tokens: tokens))
+            .primerTypography(.body, tokens: tokens)
             .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
 
           if let dialCode = country.dialCode {
             Text("\(country.code) • \(dialCode)")
-              .font(PrimerFont.caption(tokens: tokens))
+              .primerTypography(.caption, tokens: tokens)
               .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
           } else {
             Text(country.code)
-              .font(PrimerFont.caption(tokens: tokens))
+              .primerTypography(.caption, tokens: tokens)
               .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
           }
         }

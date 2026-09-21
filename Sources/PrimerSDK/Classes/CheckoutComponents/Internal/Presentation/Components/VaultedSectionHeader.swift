@@ -23,7 +23,7 @@ struct VaultedSectionHeader: View {
   var body: some View {
     HStack {
       Text(CheckoutComponentsStrings.savedPaymentMethods)
-        .font(PrimerFont.titleLarge(tokens: tokens))
+        .primerTypography(.titleLarge, tokens: tokens)
         .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
         .accessibilityAddTraits(.isHeader)
 
@@ -33,7 +33,7 @@ struct VaultedSectionHeader: View {
         Button(action: onShowAll) {
           HStack(spacing: PrimerSpacing.xsmall(tokens: tokens)) {
             Text(CheckoutComponentsStrings.showAll)
-              .font(PrimerFont.titleLarge(tokens: tokens))
+              .primerTypography(.titleLarge, tokens: tokens)
             Image(systemName: "chevron.down")
               .font(PrimerFont.caption(tokens: tokens))
           }

@@ -51,11 +51,11 @@ struct PaymentMethodPlaceholder: View {
         paymentMethodLogo
 
         Text(CheckoutComponentsStrings.paymentMethodDisplayName(displayName))
-          .font(PrimerFont.headline(tokens: tokens))
+          .primerTypography(.headline, tokens: tokens)
           .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
 
         Text(CheckoutComponentsStrings.implementationComingSoon)
-          .font(PrimerFont.subheadline(tokens: tokens))
+          .primerTypography(.subheadline, tokens: tokens)
           .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
 
         Spacer()

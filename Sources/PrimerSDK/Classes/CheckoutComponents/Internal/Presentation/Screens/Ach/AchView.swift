@@ -89,7 +89,7 @@ struct AchView: View, LogReporter {
       Spacer()
 
       Text(CheckoutComponentsStrings.achPayWithTitle)
-        .font(PrimerFont.titleLarge(tokens: tokens))
+        .primerTypography(.titleLarge, tokens: tokens)
         .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
 
       Spacer()
@@ -148,7 +148,7 @@ struct AchView: View, LogReporter {
         .frame(height: PrimerSpacing.small(tokens: tokens))
 
       Text(CheckoutComponentsStrings.loading)
-        .font(PrimerFont.bodyLarge(tokens: tokens))
+        .primerTypography(.bodyLarge, tokens: tokens)
         .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
 
       Spacer()

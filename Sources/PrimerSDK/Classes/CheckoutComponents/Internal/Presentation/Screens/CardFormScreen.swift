@@ -94,7 +94,7 @@ struct CardFormScreen: View, LogReporter {
 
   private var titleSection: some View {
     Text(CheckoutComponentsStrings.cardPaymentTitle)
-      .font(PrimerFont.titleXLarge(tokens: tokens))
+      .primerTypography(.titleXLarge, tokens: tokens)
       .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
       .frame(maxWidth: .infinity, alignment: .leading)
       .accessibilityAddTraits(.isHeader)

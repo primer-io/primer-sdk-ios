@@ -36,13 +36,13 @@ struct SplashScreen: View {
         VStack(spacing: PrimerSpacing.xsmall(tokens: tokens)) {
           // Primary loading message
           Text(CheckoutComponentsStrings.loadingSecureCheckout)
-            .font(PrimerFont.bodyLarge(tokens: tokens))
+            .primerTypography(.bodyLarge, tokens: tokens)
             .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
             .multilineTextAlignment(.center)
 
           // Secondary loading message
           Text(CheckoutComponentsStrings.loadingWontTakeLong)
-            .font(PrimerFont.bodyMedium(tokens: tokens))
+            .primerTypography(.bodyMedium, tokens: tokens)
             .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
             .multilineTextAlignment(.center)
         }
