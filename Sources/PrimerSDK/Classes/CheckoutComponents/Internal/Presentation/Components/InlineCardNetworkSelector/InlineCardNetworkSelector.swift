@@ -92,7 +92,7 @@ struct InlineCardNetworkSelector: View {
   }
 
   private var baseBorderColor: Color {
-    CheckoutColors.gray300(tokens: tokens)
+    CheckoutColors.borderDefault(tokens: tokens)
   }
 }
 
