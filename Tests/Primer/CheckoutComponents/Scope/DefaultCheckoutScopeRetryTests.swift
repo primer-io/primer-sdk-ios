@@ -11,6 +11,7 @@ import XCTest
 
 /// What the error screen's retry re-runs.
 @available(iOS 15.0, *)
+@MainActor
 final class DefaultCheckoutScopeRetryTests: XCTestCase {
 
     private var sut: DefaultCheckoutScope!
@@ -18,10 +19,13 @@ final class DefaultCheckoutScopeRetryTests: XCTestCase {
     private var cardScope: MockPaymentMethodScope!
     private var selection: MockSelectionScopeInternal!
 
-    @MainActor
-    override func setUp() {
-        super.setUp()
-        navigator = CheckoutNavigator()
+    // `DefaultCheckoutScope` writes into `DIContainer.shared`, so this class resets it on both sides.
+    // Without that, its scopes' async init races whichever class clears the container next, and the
+    // failure surfaces in an unrelated test.
+    override func setUp() async throws {
+        try await super.setUp()
+        await ContainerTestHelpers.resetSharedContainer()
+        navigator = CheckoutNavigator(coordinator: CheckoutCoordinator())
         cardScope = MockPaymentMethodScope()
         selection = MockSelectionScopeInternal()
         sut = DefaultCheckoutScope(
@@ -32,16 +36,15 @@ final class DefaultCheckoutScopeRetryTests: XCTestCase {
         sut.cachedPaymentMethodSelection = selection
     }
 
-    @MainActor
-    override func tearDown() {
+    override func tearDown() async throws {
         sut = nil
         navigator = nil
         cardScope = nil
         selection = nil
-        super.tearDown()
+        await ContainerTestHelpers.resetSharedContainer()
+        try await super.tearDown()
     }
 
-    @MainActor
     func test_retryPayment_withNothingAttempted_doesNothing() {
         sut.retryPayment()
 
@@ -49,7 +52,6 @@ final class DefaultCheckoutScopeRetryTests: XCTestCase {
         XCTAssertFalse(selection.paidWithVaulted)
     }
 
-    @MainActor
     func test_retryPayment_afterACardPayment_resubmitsThatScope() {
         sut.updateNavigationState(.paymentMethod(TestData.PaymentMethodTypes.card))
         sut.startProcessing(payingWith: cardScope)
@@ -62,7 +64,6 @@ final class DefaultCheckoutScopeRetryTests: XCTestCase {
 
     // The inline flow never leaves `.paymentMethodSelection`, because the merchant renders the card
     // form on their own screen. Reading the attempt off the navigation state would call the vault.
-    @MainActor
     func test_retryPayment_afterAnInlineCardPayment_resubmitsThatScope() {
         sut.updateNavigationState(.paymentMethodSelection)
         sut.startProcessing(payingWith: cardScope)
@@ -73,7 +74,6 @@ final class DefaultCheckoutScopeRetryTests: XCTestCase {
         XCTAssertFalse(selection.paidWithVaulted)
     }
 
-    @MainActor
     func test_retryPayment_afterASavedCardPayment_paysWithTheSavedCardAgain() async {
         sut.startProcessing(payingWith: nil)
 
@@ -87,7 +87,6 @@ final class DefaultCheckoutScopeRetryTests: XCTestCase {
     // Regression: the retry target used to be read from the scope of the last payment-method screen
     // opened, which is never cleared on the way back to selection. A saved-card payment that failed
     // then re-submitted the card form, and with a filled form charged a different card.
-    @MainActor
     func test_retryPayment_afterBrowsingTheCardFormThenPayingWithASavedCard_doesNotResubmitTheForm() async {
         sut.updateNavigationState(.paymentMethod(TestData.PaymentMethodTypes.card))
         sut.updateNavigationState(.paymentMethodSelection)
@@ -102,7 +101,6 @@ final class DefaultCheckoutScopeRetryTests: XCTestCase {
 
     // The CVV screen pays through the same vault entry point, so a retry asks for the code again
     // rather than reusing one the SDK would have had to keep.
-    @MainActor
     func test_retryPayment_afterCvvRecapture_paysWithTheSavedCardAgain() async {
         sut.updateNavigationState(.cvvRecapture)
         sut.startProcessing(payingWith: nil)
@@ -113,7 +111,6 @@ final class DefaultCheckoutScopeRetryTests: XCTestCase {
         XCTAssertTrue(selection.paidWithVaulted)
     }
 
-    @MainActor
     func test_retryPayment_afterSuccess_doesNothing() {
         sut.startProcessing(payingWith: cardScope)
         sut.updateNavigationState(.success(PaymentResult(paymentId: TestData.PaymentIds.success, status: .success)))
@@ -123,7 +120,6 @@ final class DefaultCheckoutScopeRetryTests: XCTestCase {
         XCTAssertEqual(cardScope.submitCallCount, 0)
     }
 
-    @MainActor
     func test_retryPayment_afterFailure_stillTargetsTheFailedAttempt() {
         sut.startProcessing(payingWith: cardScope)
         sut.updateNavigationState(.failure(PrimerError.unknown(message: "declined")))
