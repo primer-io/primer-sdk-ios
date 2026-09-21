@@ -95,6 +95,8 @@ enum PrimerComponentHeight {
   static let errorMessage: CGFloat = 16
   static let keyboardAccessory: CGFloat = 44
   static let paymentMethodCard: CGFloat = 44
+  /// The design's minimum tappable height, shared by every button.
+  static let interactive: CGFloat = 44
   static let vaultedPaymentMethodCard: CGFloat = 64
   static let vaultedPaymentMethodCardContentRow: CGFloat = 40
   static let progressIndicator: CGFloat = 56

@@ -284,15 +284,7 @@ struct KlarnaView: View, LogReporter {
 
   @MainActor
   private func makePrimaryButton(title: String, action: @escaping () -> Void) -> some View {
-    Button(action: action) {
-      Text(title)
-        .font(PrimerFont.body(tokens: tokens))
-        .foregroundColor(CheckoutColors.onBrand(tokens: tokens))
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, PrimerSpacing.large(tokens: tokens))
-        .background(CheckoutColors.buttonPrimary(tokens: tokens))
-        .cornerRadius(PrimerRadius.small(tokens: tokens))
-    }
+    PrimerCheckoutButton(title, action: action)
   }
 
   // MARK: - Authorize Button

@@ -67,24 +67,15 @@ struct ErrorScreen: View {
   }
 
   private func makeRetryButton() -> some View {
-    Button {
-      onRetry?()
-    } label: {
-      Text(CheckoutComponentsStrings.retryButton)
-        .font(PrimerFont.bodyMedium(tokens: tokens))
-        .fontWeight(.semibold)
-        .foregroundColor(CheckoutColors.onBrand(tokens: tokens))
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, PrimerSpacing.medium(tokens: tokens))
-        .background(CheckoutColors.buttonPrimary(tokens: tokens))
-        .cornerRadius(PrimerRadius.medium(tokens: tokens))
-    }
-    .accessibility(
-      config: AccessibilityConfiguration(
+    PrimerCheckoutButton(
+      CheckoutComponentsStrings.retryButton,
+      accessibilityConfiguration: AccessibilityConfiguration(
         identifier: AccessibilityIdentifiers.Error.retryButton,
         label: CheckoutComponentsStrings.retryButton,
         traits: [.isButton]
-      ))
+      ),
+      action: { onRetry?() }
+    )
   }
 
   private func makeOtherPaymentButton() -> some View {

@@ -116,33 +116,16 @@ struct DeleteVaultedPaymentMethodConfirmationScreen: View, LogReporter {
   // MARK: - Delete Button
 
   private func makeDeleteButton() -> some View {
-    Button(action: handleDelete) {
-      Group {
-        if isDeleting {
-          ProgressView()
-            .progressViewStyle(
-              CircularProgressViewStyle(tint: CheckoutColors.onBrand(tokens: tokens)))
-        } else {
-          Text(CheckoutComponentsStrings.deleteButton)
-            .font(PrimerFont.titleLarge(tokens: tokens))
-        }
-      }
-      .foregroundColor(CheckoutColors.onBrand(tokens: tokens))
-      .frame(maxWidth: .infinity)
-      .padding(PrimerSpacing.medium(tokens: tokens))
-      .background(
-        RoundedRectangle(cornerRadius: PrimerRadius.medium(tokens: tokens))
-          .fill(CheckoutColors.buttonPrimary(tokens: tokens))
-      )
-    }
-    .buttonStyle(PlainButtonStyle())
-    .disabled(isDeleting)
-    .accessibility(
-      config: AccessibilityConfiguration(
+    PrimerCheckoutButton(
+      CheckoutComponentsStrings.deleteButton,
+      isLoading: isDeleting,
+      accessibilityConfiguration: AccessibilityConfiguration(
         identifier: AccessibilityIdentifiers.Common.deleteButton,
         label: CheckoutComponentsStrings.deleteButton,
         traits: [.isButton]
-      ))
+      ),
+      action: handleDelete
+    )
   }
 
   // MARK: - Actions
