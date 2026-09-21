@@ -312,6 +312,8 @@ private final class MockInvalidCheckoutScope: PrimerCheckoutScope {
     var onBeforePaymentCreate: ((_ data: PrimerCheckoutPaymentMethodData,
                                  _ decisionHandler: @escaping (PrimerPaymentCreationDecision) -> Void) -> Void)?
 
+    var shippingCallbacks: PrimerShippingCallbacks?
+
     var state: AsyncStream<PrimerCheckoutState> {
         AsyncStream { _ in }
     }
