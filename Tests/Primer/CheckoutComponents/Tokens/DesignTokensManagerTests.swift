@@ -744,10 +744,10 @@ final class DesignTokensManagerTests: XCTestCase {
     // MARK: - Dark Mode with Overrides
 
     func test_applyTheme_darkModeWithOverrides_overridesAppliedOnDarkBase() async throws {
-        // Given
+        // Given a dark set, which is the only thing dark mode reads
         let customColor = Color.pink
         let theme = PrimerCheckoutTheme(
-            colors: ColorOverrides(primerColorBrand: customColor)
+            darkColors: ColorOverrides(primerColorBrand: customColor)
         )
         sut.applyTheme(theme)
 
@@ -761,8 +761,9 @@ final class DesignTokensManagerTests: XCTestCase {
 
     // MARK: - Light and Dark Colour Sets
 
-    func test_applyTheme_lightColoursOnly_areUsedInBothColourSchemes() async throws {
-        // Given the single colours parameter every existing integration passes
+    func test_applyTheme_lightColoursOnly_doNotReachDarkMode() async throws {
+        // Given the single colors parameter every existing integration passes
+        let shippedDarkBrand = try await tokens(for: .dark).primerColorBrand
         sut.applyTheme(PrimerCheckoutTheme(colors: ColorOverrides(primerColorBrand: .pink)))
 
         // When both schemes are loaded
@@ -771,13 +772,31 @@ final class DesignTokensManagerTests: XCTestCase {
         try await sut.fetchTokens(for: .dark)
         let dark = try XCTUnwrap(sut.tokens?.primerColorBrand)
 
-        // Then the one color applies in both, exactly as it did before darkColors existed
+        // Then light takes the color and dark keeps Primer's designed default
+        XCTAssertEqual(light, .pink)
+        XCTAssertEqual(dark, shippedDarkBrand)
+    }
+
+    func test_applyTheme_usesLightColorsInDark_carriesTheLightSetOver() async throws {
+        // Given the opt-in, for a palette that works in both modes
+        sut.applyTheme(
+            PrimerCheckoutTheme(colors: ColorOverrides(primerColorBrand: .pink), usesLightColorsInDark: true)
+        )
+
+        // When both schemes are loaded
+        try await sut.fetchTokens(for: .light)
+        let light = try XCTUnwrap(sut.tokens?.primerColorBrand)
+        try await sut.fetchTokens(for: .dark)
+        let dark = try XCTUnwrap(sut.tokens?.primerColorBrand)
+
+        // Then the one color applies in both
         XCTAssertEqual(light, .pink)
         XCTAssertEqual(dark, .pink)
     }
 
-    func test_applyTheme_darkColours_winInDarkModeAndFallBackPerProperty() async throws {
-        // Given a dark set that names the brand and leaves the text color to the light set
+    func test_applyTheme_darkColours_winInDarkModeAndDoNotBorrowFromLight() async throws {
+        // Given a dark set that names the brand and says nothing about the text color
+        let shippedDarkText = try await tokens(for: .dark).primerColorTextPrimary
         sut.applyTheme(
             PrimerCheckoutTheme(
                 colors: ColorOverrides(primerColorBrand: .pink, primerColorTextPrimary: .green),
@@ -792,15 +811,34 @@ final class DesignTokensManagerTests: XCTestCase {
         try await sut.fetchTokens(for: .dark)
         let dark = try XCTUnwrap(sut.tokens)
 
-        // Then light ignores the dark set, and dark takes what it names plus the light rest
+        // Then light ignores the dark set, and dark takes what it names plus Primer's dark defaults
         XCTAssertEqual(lightBrand, .pink)
         XCTAssertEqual(lightText, .green)
+        XCTAssertEqual(dark.primerColorBrand, .blue)
+        XCTAssertEqual(dark.primerColorTextPrimary, shippedDarkText)
+    }
+
+    func test_applyTheme_usesLightColorsInDark_fillsTheGapsInTheDarkSet() async throws {
+        // Given the same two sets, with the opt-in
+        sut.applyTheme(
+            PrimerCheckoutTheme(
+                colors: ColorOverrides(primerColorBrand: .pink, primerColorTextPrimary: .green),
+                darkColors: ColorOverrides(primerColorBrand: .blue),
+                usesLightColorsInDark: true
+            )
+        )
+
+        // When dark is loaded
+        try await sut.fetchTokens(for: .dark)
+        let dark = try XCTUnwrap(sut.tokens)
+
+        // Then dark takes what it names plus the light rest
         XCTAssertEqual(dark.primerColorBrand, .blue)
         XCTAssertEqual(dark.primerColorTextPrimary, .green)
     }
 
     func test_applyTheme_noColourOverrides_matchesAnUnthemedLoad() async throws {
-        // Given a theme that names no colours at all
+        // Given a theme that names no colors at all
         sut.applyTheme(PrimerCheckoutTheme())
 
         // When
@@ -896,12 +934,12 @@ final class DesignTokensManagerTests: XCTestCase {
     }
 
     func test_fetchTokens_brandOverride_cascadesInDarkMode() async throws {
-        // Given
+        // Given a dark set, since dark mode no longer borrows from the light one
         let baseline = try await tokens(for: .dark)
         let unthemedBorder = try XCTUnwrap(baseline.primerColorBorderOutlinedSelected)
 
         let override = Color(red: 0.25, green: 0.5, blue: 0.75)
-        sut.applyTheme(PrimerCheckoutTheme(colors: ColorOverrides(primerColorBrand: override)))
+        sut.applyTheme(PrimerCheckoutTheme(darkColors: ColorOverrides(primerColorBrand: override)))
 
         // When
         try await sut.fetchTokens(for: .dark)
