@@ -20,6 +20,9 @@ final class ApplePayAuthorizationCoordinator: NSObject, PKPaymentAuthorizationCo
   private var isCancelled = true
   private var didTimeout = false
   private let shippingSession: ApplePayShippingSession?
+  /// The options the sheet opened with. A contact update that omits them clears the sheet's shipping
+  /// list, so the legacy path has to resend them on every address change.
+  private var requestShippingMethods: [PKShippingMethod] = []
 
   init(shippingSession: ApplePayShippingSession? = nil) {
     self.shippingSession = shippingSession
@@ -29,7 +32,9 @@ final class ApplePayAuthorizationCoordinator: NSObject, PKPaymentAuthorizationCo
     with request: ApplePayRequest,
     presentationManager: ApplePayPresenting
   ) async throws -> PKPayment {
-    try await withCheckedThrowingContinuation { continuation in
+    requestShippingMethods = request.shippingMethods ?? []
+
+    return try await withCheckedThrowingContinuation { continuation in
       self.authorizationContinuation = continuation
       self.isCancelled = true
       self.didTimeout = false
@@ -100,7 +105,11 @@ final class ApplePayAuthorizationCoordinator: NSObject, PKPaymentAuthorizationCo
     didSelectShippingContact contact: PKContact
   ) async -> PKPaymentRequestShippingContactUpdate {
     guard let shippingSession, shippingSession.mode == .callbacks else {
-      return PKPaymentRequestShippingContactUpdate(paymentSummaryItems: currentSummaryItems())
+      return PKPaymentRequestShippingContactUpdate(
+        errors: nil,
+        paymentSummaryItems: currentSummaryItems(),
+        shippingMethods: requestShippingMethods
+      )
     }
 
     do {

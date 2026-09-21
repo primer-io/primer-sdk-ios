@@ -331,7 +331,9 @@ final class Networking {
 
         do {
             let encoder = JSONEncoder()
-            bodyData = try encoder.encode(requestBody)
+            // The body with the client token, not the caller's copy. Without it the backend has no
+            // session to patch, which is why this path never worked.
+            bodyData = try encoder.encode(tmpRequestBody)
         } catch {
             completion(nil, NetworkError.missingParams)
             return
