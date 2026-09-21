@@ -83,6 +83,10 @@ protocol PrimerCheckoutScope: AnyObject {
   /// or abort payment creation. If not set, payments proceed without an idempotency key.
   var onBeforePaymentCreate: BeforePaymentCreateHandler? { get set }
 
+  /// Express Checkout shipping hooks, used while the Apple Pay sheet is open. If not set, the sheet
+  /// falls back to the shipping options baked into the client session.
+  var shippingCallbacks: PrimerShippingCallbacks? { get set }
+
   // MARK: - Payment Settings
 
   /// Payment handling mode (auto vs manual).
