@@ -118,10 +118,13 @@ final class ApplePayShippingSession: LogReporter {
     guard mode == .callbacks, requireShippingMethod else { return }
     if let verifiedCommit, verifiedCommit.id == selectedOptionId { return }
 
-    let option = options.first { $0.id == selectedOptionId } ?? options.first
+    // Apple reports the option the shopper is paying for. Committing a different one would authorize
+    // a total the shopper never saw, so an id the session does not know blocks the payment.
+    let option = selectedOptionId.map { id in options.first { $0.id == id } } ?? options.first
     guard let option else {
       throw handled(primerError: .merchantError(
-        message: "Apple Pay authorization was blocked: no shipping option was committed for the order."
+        message: "Apple Pay authorization was blocked: no shipping option was committed for the "
+          + "option the sheet reported (\(selectedOptionId ?? "none"))."
       ))
     }
     try await commit(option)

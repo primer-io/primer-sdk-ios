@@ -47,7 +47,3 @@ public struct PrimerShippingCallbacks: Sendable {
     self.onShippingOptionChange = onShippingOptionChange
   }
 }
-
-/// `PrimerAddress` is a final class whose stored properties are all immutable and `Sendable`; the
-/// `NSObject` base is what prevents the compiler inferring the conformance.
-extension PrimerAddress: @unchecked Sendable {}

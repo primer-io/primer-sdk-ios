@@ -264,7 +264,7 @@ final class ApplePayShippingSessionTests: XCTestCase {
         XCTAssertEqual(commits.value, 1)
     }
 
-    func test_authorizeCommit_optionApplePayReportsButTheSessionNeverVerified_commitsHere() async throws {
+    func test_authorizeCommit_optionApplePayReportsIsNotInTheList_blocksAuthorization() async throws {
         let commits = Box(0)
         let sut = makeSession(
             callbacks: PrimerShippingCallbacks(
@@ -276,7 +276,28 @@ final class ApplePayShippingSessionTests: XCTestCase {
         try await sut.handleShippingAddressChange(address)
         commits.value = 0
 
-        try await sut.authorizeCommit(selectedOptionId: "express")
+        do {
+            try await sut.authorizeCommit(selectedOptionId: "express")
+            XCTFail("Expected authorization to be blocked")
+        } catch {
+            XCTAssertEqual(commits.value, 0, "Committing a different option would charge an unseen total")
+            XCTAssertTrue("\(error)".contains("express"))
+        }
+    }
+
+    func test_authorizeCommit_noOptionReported_commitsTheDefault() async throws {
+        let commits = Box(0)
+        let sut = makeSession(
+            callbacks: PrimerShippingCallbacks(
+                onShippingAddressChange: { _ in [Self.standard] },
+                onShippingOptionChange: { _ in commits.value += 1 }
+            ),
+            shipping: shipping(methodId: "standard", amount: 500)
+        )
+        try await sut.handleShippingAddressChange(address)
+        commits.value = 0
+
+        try await sut.authorizeCommit(selectedOptionId: nil)
 
         XCTAssertEqual(commits.value, 1)
         XCTAssertEqual(sut.verifiedCommit?.id, "standard")

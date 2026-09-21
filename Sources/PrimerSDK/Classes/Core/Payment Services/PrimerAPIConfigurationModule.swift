@@ -150,7 +150,10 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
     /// total the authorization gate exists to prevent.
     func refreshSession() async throws {
         ConfigurationCache.shared.clearCache()
-        let configuration = try await fetchConfiguration(requestDisplayMetadata: false)
+        // Display metadata is requested even though this refresh does not use it: the response is
+        // cached, and a later `setupSession` reading a metadata-free entry would rebuild the UI
+        // without it.
+        let configuration = try await fetchConfiguration(requestDisplayMetadata: true)
         PrimerAPIConfigurationModule.apiConfiguration?.clientSession = configuration.clientSession
         PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules = configuration.checkoutModules
     }
