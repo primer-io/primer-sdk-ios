@@ -56,6 +56,9 @@ enum NetworkingUtils {
         }
     }
 
+    /// `Networking.patchClientSession` reports a response without a `clientToken` with this code.
+    private static let missingTokenErrorCode = 10
+
     // MARK: - Shipping Commit
 
     /// Commits an Express Checkout shipping option onto the live client session.
@@ -84,7 +87,11 @@ enum NetworkingUtils {
 
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             Networking.patchClientSession(clientToken: clientToken, requestBody: body) { _, error in
-                if let error {
+                // The demo backend answers a PATCH with the client session and no `clientToken`, which
+                // `patchClientSession` reports as an error. Nothing here needs that token: the SDK
+                // re-reads the session itself and fails the commit when `order.shipping` does not
+                // match, so that check is the real gate.
+                if let error, (error as NSError).code != Self.missingTokenErrorCode {
                     continuation.resume(throwing: error)
                 } else {
                     continuation.resume()
