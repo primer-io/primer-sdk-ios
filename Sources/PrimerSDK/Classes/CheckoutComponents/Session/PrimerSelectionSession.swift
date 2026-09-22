@@ -21,8 +21,8 @@ public final class PrimerSelectionSession: ObservableObject {
 
   /// The customer's saved (vaulted) payment methods.
   ///
-  /// Published, so a list you build yourself re-renders when the set changes — after ``delete(_:)``,
-  /// or when the SDK's own saved-methods screen deletes one.
+  /// Published, so a list you build yourself re-renders when the set changes. That covers
+  /// ``delete(_:)`` and a delete made on the SDK's own saved-methods screen.
   @Published public private(set) var vaultedPaymentMethods:
     [PrimerHeadlessUniversalCheckout.VaultedPaymentMethod]
 
@@ -73,15 +73,14 @@ public final class PrimerSelectionSession: ObservableObject {
   /// needs CVV recapture raises the SDK's CVV screen first, and that screen finishes the payment.
   /// The outcome arrives through `.primerCheckoutSession(_:theme:onCompletion:)`.
   ///
-  /// Keep which row looks selected in your own view state. Returns immediately; the payment runs on.
+  /// Keep which row looks selected in your own view state. It returns at once and the payment runs on.
   public func selectVaulted(_ method: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod) {
     internalScope?.selectVaultedPaymentMethod(method)
     Task { await scope.payWithVaultedPaymentMethod() }
   }
 
-  /// Marks a saved method as the one the SDK's own screens act on, without paying. Internal, because
-  /// a merchant tracks their own highlight — this exists so ``PrimerVaultedPaymentMethods`` can keep
-  /// the SDK's selection in step with the row it shows.
+  /// Marks a saved method as the one the SDK's own screens act on, without paying.
+  /// Used by ``PrimerVaultedPaymentMethods`` to keep that selection in step with the row it shows.
   func setSelectedVaulted(_ method: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod) {
     internalScope?.selectVaultedPaymentMethod(method)
   }

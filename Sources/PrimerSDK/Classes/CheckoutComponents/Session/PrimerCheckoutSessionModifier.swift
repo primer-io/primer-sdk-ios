@@ -25,7 +25,7 @@ public extension View {
   /// ```
   ///
   /// - Parameter theme: Overrides the theme the session was built with, and re-themes on every
-  ///   change — pass a value that follows your own app state to switch appearance without rebuilding
+  ///   change. Pass a value that follows your own app state to switch appearance without rebuilding
   ///   the session. Leave it out to keep the session's own theme.
   /// - Parameter onCompletion: Receives `.failure` once per failed attempt — the checkout stays
   ///   usable so the shopper can retry — then `.success` or `.dismissed` exactly once, after which
@@ -72,8 +72,7 @@ private struct PrimerCheckoutSessionModifier: ViewModifier, LogReporter {
         session.setCompletionHandler(onCompletion)
         await session.start()
       }
-      // Keyed on the theme so a new one re-resolves the tokens. A plain `.task` runs once, which
-      // would leave the first theme on screen for the life of the view.
+      // Keyed on the theme so a new one re-resolves the tokens. A plain `.task` runs once.
       .task(id: theme) {
         designTokensManager.applyTheme(theme)
         await loadDesignTokens(for: colorScheme)

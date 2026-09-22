@@ -101,10 +101,7 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
 
   private var currentPaymentMethodScope: (any PrimerPaymentMethodScope)?
 
-  /// What a retry re-runs, recorded where a payment starts rather than derived from
-  /// ``currentPaymentMethodScope``. That pointer survives a back-out to the selection screen, so a
-  /// retry taken from it would submit a form the customer had already walked away from, and with a
-  /// filled form that charges a different card than the one being retried.
+  /// What a retry re-runs.
   private enum PaymentAttempt {
     case paymentMethod(any PrimerPaymentMethodScope)
     case vaulted
@@ -349,9 +346,7 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
     }
   }
 
-  /// Tracks navigation-driven lifecycle side effects: the active payment scope (so retryPayment
-  /// targets the screen the merchant is on, independent of incidental getPaymentMethodScope lookups)
-  /// and clearing the selected name on terminal states.
+  /// Keeps the active scope, the selected name and the retry target in step with navigation.
   private func trackLifecycle(for state: CheckoutNavigationState) {
     switch state {
     case let .paymentMethod(type):
@@ -360,7 +355,6 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
       selectedPaymentMethodName = nil
       lastPaymentAttempt = nil
     case .failure:
-      // The attempt is what retry re-runs, so it outlives the failure that offers the retry.
       selectedPaymentMethodName = nil
     default:
       break
@@ -400,7 +394,7 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
     }
   }
 
-  /// The API almost always supplies a display name; the raw type is only tidied up as a fallback.
+  /// The raw type is only tidied up when the API supplies no display name.
   private func paymentMethodDisplayName(for type: String) -> String {
     selectedPaymentMethodName ?? type.replacingOccurrences(of: "_", with: " ").capitalized
   }
@@ -601,11 +595,9 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
     updateNavigationState(.failure(error))
   }
 
-  /// - Parameter scope: the payment method being paid with, or `nil` for a saved one. Recorded here
-  ///   because this is the one call every payment passes through, and taken from the caller rather
-  ///   than from the navigation state, which stays on selection for the whole of an inline flow.
+  /// - Parameter scope: the payment method being paid with, or `nil` for a saved one.
   func startProcessing(payingWith scope: (any PrimerPaymentMethodScope)?) {
-    lastPaymentAttempt = scope.map { .paymentMethod($0) } ?? .vaulted
+    lastPaymentAttempt = scope.map(PaymentAttempt.paymentMethod) ?? .vaulted
     updateNavigationState(.processing)
   }
 
@@ -616,8 +608,7 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
 
   func retryPayment() {
     guard let attempt = lastPaymentAttempt else {
-      logger.warn(message: "Retry tapped with no recorded payment attempt, ignoring")
-      return
+      return logger.warn(message: "Retry tapped with no recorded payment attempt, ignoring")
     }
 
     Task { @MainActor [weak self] in
@@ -629,8 +620,7 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
     case let .paymentMethod(scope):
       scope.submit()
     case .vaulted:
-      // Through the full entry point, not the submit helper, so a card that needs its CVV asks for it
-      // again. The code is never held over from the attempt that failed.
+      // Goes through the full entry point, so a card that needs its CVV asks for it again.
       Task { await paymentMethodSelectionInternal.payWithVaultedPaymentMethod() }
     }
   }

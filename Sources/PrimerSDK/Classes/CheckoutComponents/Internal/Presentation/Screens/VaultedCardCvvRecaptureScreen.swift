@@ -10,13 +10,7 @@ import SwiftUI
 
 /// Collects the security code for a saved card whose client session asks for it, then pays.
 ///
-/// The field used to appear inline inside ``PrimerVaultedPaymentMethods``, which left a merchant
-/// building their own saved-card list and their own pay button with nowhere for it to go. Owning the
-/// screen means the SDK can always ask, whatever the surrounding layout is. Drop-In and Android
-/// already work this way.
-///
-/// The code lives in this view for as long as the screen does. It never reaches the selection state,
-/// so nothing outside can read it and it cannot outlive the payment.
+/// The code stays in this view. It never reaches the selection state and cannot outlive the payment.
 @available(iOS 15.0, *)
 struct VaultedCardCvvRecaptureScreen: View, LogReporter {
   let scope: any PaymentMethodSelectionScopeInternal
@@ -55,8 +49,7 @@ struct VaultedCardCvvRecaptureScreen: View, LogReporter {
 
         makePayButton()
       } else {
-        // The selection was cleared underneath us — deleted, or the vault reloaded empty. There is
-        // nothing to charge, so say so rather than leaving a field that can never submit.
+        // The selection was cleared underneath us, so there is nothing left to charge.
         Text(CheckoutComponentsStrings.vaultCvvGenericError)
           .font(PrimerFont.body(tokens: tokens))
           .foregroundColor(CheckoutColors.textNegative(tokens: tokens))
@@ -118,8 +111,7 @@ struct VaultedCardCvvRecaptureScreen: View, LogReporter {
 
     Task {
       await scope.payWithVaultedPaymentMethodAndCvv(cvv)
-      // The payment navigates on to processing and then to its outcome, so this only matters when
-      // the submit never started — the button has to come back rather than spin forever.
+      // This only matters when the submit never started, so the button comes back rather than spins.
       isSubmitting = false
     }
   }

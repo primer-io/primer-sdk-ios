@@ -212,9 +212,9 @@ public final class PrimerCheckoutSession: ObservableObject {
 
   /// Formats an amount in minor units the way the SDK's own screens do.
   ///
-  /// Uses the client session's currency, whose decimal digits come from the backend and cannot be
-  /// worked out from ``PrimerClientSession/currencyCode`` alone — some currencies have none, some
-  /// have three. The locale is the one in `PrimerSettings.localeData`, which defaults to the device.
+  /// Uses the client session's currency, whose decimal digits come from the backend. Some currencies
+  /// have none and some have three, so ``PrimerClientSession/currencyCode`` alone is not enough. The
+  /// locale is the one in `PrimerSettings.localeData`, which defaults to the device.
   ///
   /// ```swift
   /// if let total = session.clientSession?.totalAmount, let formatted = session.formatAmount(total) {

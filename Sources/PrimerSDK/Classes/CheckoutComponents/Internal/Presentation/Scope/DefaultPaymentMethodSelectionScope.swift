@@ -184,8 +184,7 @@ final class DefaultPaymentMethodSelectionScope: PaymentMethodSelectionScopeInter
       return
     }
 
-    // The field has no home when the merchant owns the list and the pay button, so recapture gets a
-    // screen of its own. That screen submits through `payWithVaultedPaymentMethodAndCvv`.
+    // The CVV screen submits through `payWithVaultedPaymentMethodAndCvv`.
     if shouldRequireCvvInput(for: vaultedMethod) {
       logger.info(message: "[Vault] CVV required for vaulted card payment, showing CVV screen")
       checkoutScope?.updateNavigationState(.cvvRecapture)
@@ -245,8 +244,7 @@ final class DefaultPaymentMethodSelectionScope: PaymentMethodSelectionScopeInter
     vaultedMethod: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod,
     additionalData: PrimerVaultedPaymentMethodAdditionalData?
   ) async {
-    // A merchant's own pay button has no disabled-while-loading state unless they build one, so the
-    // second tap of a double tap would otherwise start a second payment.
+    // A merchant's own pay button need not disable itself, so guard against a double tap here.
     guard !internalState.isVaultPaymentLoading else {
       logger.warn(message: "[Vault] A payment is already in flight, ignoring the repeat submit")
       return
@@ -255,9 +253,7 @@ final class DefaultPaymentMethodSelectionScope: PaymentMethodSelectionScopeInter
     logger.info(message: "[Vault] Starting payment with vaulted method: \(vaultedMethod.id)")
 
     internalState.isVaultPaymentLoading = true
-    // Adding a card raises the processing screen, so paying with a saved one must too. Without this
-    // the whole payment runs behind the merchant's own list, with nothing to show it started. Both
-    // outcomes navigate on from here, so the state is left standing rather than wound back.
+    // Without this the payment runs behind the merchant's own list, with nothing to show it started.
     checkoutScope?.startProcessing(payingWith: nil)
 
     await analyticsInteractor?.trackEvent(
