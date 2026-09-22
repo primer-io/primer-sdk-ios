@@ -13,8 +13,7 @@ import XCTest
 @MainActor
 final class ReportedIntegrationTypeTests: XCTestCase {
 
-    // Building a real `RawDataManager` below touches SDK-wide state, so the shared container is reset
-    // on both sides alongside the two globals this class writes.
+    // Building a real `RawDataManager` below touches SDK-wide state, so the container is reset too.
     override func setUp() async throws {
         try await super.setUp()
         await ContainerTestHelpers.resetSharedContainer()
@@ -34,8 +33,6 @@ final class ReportedIntegrationTypeTests: XCTestCase {
         XCTAssertEqual(PrimerInternal.shared.reportedIntegrationType, .headless)
     }
 
-    // CheckoutComponents runs on the headless surface, so internal managers legitimately rewrite the
-    // routing value to `.headless` as they are built. Reporting must still name the product.
     func test_reportedIntegrationType_survivesTheRoutingValueBeingRewritten() {
         PrimerInternal.shared.sdkIntegrationProduct = .checkoutComponents
         PrimerInternal.shared.sdkIntegrationType = .headless
@@ -49,9 +46,6 @@ final class ReportedIntegrationTypeTests: XCTestCase {
 
         XCTAssertNil(PrimerInternal.shared.reportedIntegrationType)
     }
-
-    // The two places that actually report it. Both read `reportedIntegrationType`, so a merchant on
-    // CheckoutComponents stops appearing as Headless in analytics.
 
     func test_sdkEvent_carriesTheProduct_notTheRoutingValue() {
         PrimerInternal.shared.sdkIntegrationProduct = .checkoutComponents
@@ -69,7 +63,6 @@ final class ReportedIntegrationTypeTests: XCTestCase {
         XCTAssertEqual(Analytics.Event.sdk(name: "test", params: nil).sdkIntegrationType, .dropIn)
     }
 
-    // Building a RawDataManager is what rewrites the routing value inside a CheckoutComponents flow.
     func test_buildingARawDataManager_doesNotChangeTheReportedProduct() throws {
         PrimerInternal.shared.sdkIntegrationProduct = .checkoutComponents
 

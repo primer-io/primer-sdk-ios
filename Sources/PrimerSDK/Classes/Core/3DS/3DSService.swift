@@ -278,8 +278,6 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
                    let url = URL(string: urlStr) {
                     threeDsAppRequestorUrl = url
                 } else {
-                    // The example belongs outside the quotes: read the other way round it looks like
-                    // the merchant configured "https://applink", which is never a value anyone set.
                     let message =
                         """
                         No usable threeDsAppRequestorUrl is set, so an out-of-band 3DS challenge \

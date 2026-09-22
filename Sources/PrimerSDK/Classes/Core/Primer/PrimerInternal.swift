@@ -29,14 +29,11 @@ final class PrimerInternal: LogReporter {
     let sdkSessionId = UUID().uuidString
     var checkoutSessionId: String?
     var timingEventId: String?
-    /// Which internal surface is currently routing callbacks. Internal managers rewrite this as they
-    /// are constructed, so it answers "which code path runs", not "which product the merchant chose".
+    /// Which internal surface routes callbacks. Internal managers rewrite it as they are built.
     var sdkIntegrationType: PrimerSDKIntegrationType?
 
-    /// Which product the merchant actually integrated, recorded once where a checkout starts and
-    /// never rewritten by an internal manager. CheckoutComponents runs on the headless surface, so
-    /// `sdkIntegrationType` legitimately reads `.headless` for it, and analytics must not report that
-    /// as the merchant's integration. Reporting reads this and falls back to the routing value.
+    /// The product the merchant integrated. `sdkIntegrationType` reads `.headless` for
+    /// CheckoutComponents, so analytics cannot take the merchant's integration from it.
     var sdkIntegrationProduct: PrimerSDKIntegrationType?
 
     /// The value analytics reports as the merchant's integration.
