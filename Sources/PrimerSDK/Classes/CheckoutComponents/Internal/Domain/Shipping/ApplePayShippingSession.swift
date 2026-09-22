@@ -69,8 +69,14 @@ final class ApplePayShippingSession: LogReporter {
   /// a legacy SHIPPING module always wins, and dynamic mode needs shipping to be collected at all.
   static func resolveMode(
     checkoutModules: [Response.Body.Configuration.CheckoutModule]?,
-    applePayOptions: PrimerApplePayOptions?
+    applePayOptions: PrimerApplePayOptions?,
+    hasAddressChangeHandler: Bool
   ) -> Mode {
+    // Without a handler there is nothing to ask, and taking the dynamic path would leave the sheet
+    // with no options and block authorization on a commit that can never happen. Merchants who set
+    // requireShippingMethod and register nothing keep the behaviour they have today.
+    guard hasAddressChangeHandler else { return .legacy }
+
     let hasLegacyShippingModule = checkoutModules?.contains { module in
       guard module.type == "SHIPPING" else { return false }
       let options = module.options as? Response.Body.Configuration.CheckoutModule.ShippingMethodOptions
