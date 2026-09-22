@@ -11,7 +11,9 @@ import SwiftUI
 @available(iOS 15.0, *)
 extension PrimerInputFieldContainer {
   var borderColor: Color {
-    if errorMessage?.isEmpty == false {
+    if !isInputEnabled {
+      CheckoutColors.borderDisabled(tokens: tokens)
+    } else if errorMessage?.isEmpty == false {
       errorBorderColor
     } else {
       isFocused ? focusedBorderColor : defaultBorderColor
@@ -19,7 +21,16 @@ extension PrimerInputFieldContainer {
   }
 
   var labelForegroundColor: Color {
-    CheckoutColors.textPrimary(tokens: tokens)
+    isInputEnabled
+      ? CheckoutColors.textPrimary(tokens: tokens)
+      : CheckoutColors.textDisabled(tokens: tokens)
+  }
+
+  /// A locked field takes the disabled fill, the same token Android and React Native use for it.
+  var fieldBackgroundColor: Color {
+    isInputEnabled
+      ? CheckoutColors.inputBackground(tokens: tokens)
+      : CheckoutColors.backgroundOutlinedDisabled(tokens: tokens)
   }
 
   var errorMessageForegroundColor: Color {

@@ -46,16 +46,11 @@ extension PrimerInputFieldContainer {
 
   func makeTextFieldContainerBackgroundBackground() -> some View {
     RoundedRectangle(cornerRadius: fieldCornerRadius)
-      .fill(CheckoutColors.inputBackground(tokens: tokens))
+      .fill(fieldBackgroundColor)
   }
 
   func makeTextFieldContainerWarning() -> some View {
-    let iconSize = PrimerSize.medium(tokens: tokens)
-    return Image(systemName: "exclamationmark.triangle.fill")
-      .resizable()
-      .aspectRatio(contentMode: .fit)
-      .frame(width: iconSize, height: iconSize)
-      .foregroundColor(CheckoutColors.iconNegative(tokens: tokens))
+    PrimerFieldErrorIcon()
   }
 }
 

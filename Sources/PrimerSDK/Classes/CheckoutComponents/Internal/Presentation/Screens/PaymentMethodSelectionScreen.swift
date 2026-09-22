@@ -51,14 +51,7 @@ struct PaymentMethodSelectionScreen: View, LogReporter {
       Spacer()
 
       if scope.dismissalMechanism.contains(.closeButton) {
-        Button(CheckoutComponentsStrings.cancelButton, action: scope.cancel)
-          .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
-          .accessibility(
-            config: AccessibilityConfiguration(
-              identifier: AccessibilityIdentifiers.Common.closeButton,
-              label: CheckoutComponentsStrings.a11yCancel,
-              traits: [.isButton]
-            ))
+        CheckoutHeaderButton(config: .closeButton(action: scope.cancel))
       }
     }
     .padding(.horizontal, PrimerSpacing.large(tokens: tokens))
