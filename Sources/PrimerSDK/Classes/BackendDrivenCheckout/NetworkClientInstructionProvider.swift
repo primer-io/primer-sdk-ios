@@ -19,9 +19,19 @@ struct NetworkClientInstructionProvider: ClientInstructionProvider {
 
     func fetchSetupFlow() async throws -> SetupFlow {
         let response: ClientInstructionSetupResponse = try await request(.setup(paymentMethod: paymentMethod))
-        return SetupFlow(schema: response.schema, parameters: response.parameters)
+        return SetupFlow(
+            schema: response.schema,
+            parameters: response.parameters,
+            setupId: response.paymentMethodSetupId,
+            nextPoll: response.nextPoll
+        )
     }
     
+    func fetchSetupState(setupId: String) async throws -> SetupState {
+        let response: ClientInstructionSetupStateResponse = try await request(.pollSetup(setupId: setupId))
+        return SetupState(instruction: try response.toSetupInstruction(), nextPoll: response.nextPoll)
+    }
+
     func fetchNextInstruction() async throws -> ClientInstruction {
         let response: ClientSessionInstructionResponse = try await request(.expandClientSession)
         return response.clientInstruction.toClientInstruction(response: response)
@@ -67,4 +77,24 @@ private extension PrimerCheckoutDataPayment {
     func toPaymentInfo() -> PaymentInfo {
         PaymentInfo(id: id, orderId: orderId, status: status)
     }
+}
+
+private extension ClientInstructionSetupStateResponse {
+    func toSetupInstruction() throws -> SetupInstruction {
+        switch instruction {
+        case .wait:
+            return .wait
+        case .execute:
+            guard let screen else { throw SetupStateError.missingScreen }
+            return .execute(screen: screen)
+        case .setupComplete:
+            guard let token else { throw SetupStateError.missingToken }
+            return .setupComplete(token: token)
+        }
+    }
+}
+
+private enum SetupStateError: Error {
+    case missingScreen
+    case missingToken
 }

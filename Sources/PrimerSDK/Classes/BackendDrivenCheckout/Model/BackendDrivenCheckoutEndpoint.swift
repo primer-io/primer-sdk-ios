@@ -12,13 +12,14 @@ enum BackendDrivenCheckoutEndpoint {
     case manifest
     case pay(paymentMethod: PrimerPaymentMethod)
     case setup(paymentMethod: PrimerPaymentMethod)
+    case pollSetup(setupId: String)
     case expandClientSession
 }
 
 extension BackendDrivenCheckoutEndpoint: Endpoint {
     var baseURL: String? {
         switch self {
-        case .expandClientSession, .pay, .setup: PrimerAPIConfiguration.current?.pciUrl
+        case .expandClientSession, .pay, .setup, .pollSetup: PrimerAPIConfiguration.current?.pciUrl
         case .manifest: "https://sdk.primer.io/"
         }
     }
@@ -28,7 +29,9 @@ extension BackendDrivenCheckoutEndpoint: Endpoint {
         return switch self {
         case .manifest: "state-processor/v0/manifests/\(json).json"
         case .pay: "client-session/\(PrimerAPIConfigurationModule.clientSessionId):pay"
-        case .setup: "client-session/\(PrimerAPIConfigurationModule.clientSessionId):setup"
+        case .setup: "client-session/\(PrimerAPIConfigurationModule.clientSessionId)/payment-method-setups"
+        case let .pollSetup(setupId):
+            "client-session/\(PrimerAPIConfigurationModule.clientSessionId)/payment-method-setups/\(setupId)"
         case .expandClientSession: "client-session/\(PrimerAPIConfigurationModule.clientSessionId)"
         }
     }
@@ -36,7 +39,7 @@ extension BackendDrivenCheckoutEndpoint: Endpoint {
     var method: HTTPMethod {
         switch self {
         case .pay, .setup: .post
-        case .expandClientSession, .manifest: .get
+        case .expandClientSession, .manifest, .pollSetup: .get
         }
     }
     
@@ -44,14 +47,14 @@ extension BackendDrivenCheckoutEndpoint: Endpoint {
     
     var queryParameters: [String : String]? {
         switch self {
-        case .manifest, .pay, .setup: nil
+        case .manifest, .pay, .setup, .pollSetup: nil
         case .expandClientSession: ["expand" : "clientInstruction"]
         }
     }
     
     var body: Data? {
         switch self {
-        case .manifest, .expandClientSession: return nil
+        case .manifest, .expandClientSession, .pollSetup: return nil
         case .pay, .setup:
             guard let paymentMethod, let options = paymentMethod.merchantOptions else { return nil }
             let body = PayBody(
@@ -65,7 +68,7 @@ extension BackendDrivenCheckoutEndpoint: Endpoint {
     
     var paymentMethod: PrimerPaymentMethod? {
         switch self {
-        case .manifest, .expandClientSession: nil
+        case .manifest, .expandClientSession, .pollSetup: nil
         case let .pay(paymentMethod), let .setup(paymentMethod):
             PrimerAPIConfigurationModule.paymentMethods?.first(where: { $0.type == paymentMethod.type })
         }
