@@ -80,17 +80,17 @@ private struct ExpressCheckoutShippingContent: View {
         .demoCheckout(session)
         .onAppear {
             let (log, clientToken) = (log, clientToken)
-            session.shippingCallbacks = PrimerShippingCallbacks(
-                onShippingAddressChange: { address in
-                    await log.record("address → \(address.countryCode ?? "??") \(address.postalCode ?? "")")
-                    return MerchantShippingBackend.options(for: address)
-                },
-                onShippingOptionChange: { option in
-                    await log.record("commit → \(option.id) @ \(option.amount)")
-                    try await MerchantShippingBackend.commit(option, clientToken: clientToken)
-                    await log.record("commit ok → \(option.id)")
-                }
-            )
+            session.onShippingAddressChange = { change in
+                let address = change.shippingAddress
+                await log.record("address → \(address.countryCode ?? "??") \(address.postalCode ?? "")")
+                return MerchantShippingBackend.options(for: address)
+            }
+            session.onShippingOptionChange = { change in
+                let option = change.selectedShippingOption
+                await log.record("commit → \(option.id) @ \(option.amount)")
+                try await MerchantShippingBackend.commit(option, clientToken: clientToken)
+                await log.record("commit ok → \(option.id)")
+            }
         }
     }
 }

@@ -36,7 +36,8 @@ final class ApplePayShippingSession: LogReporter {
   private(set) var options: [PrimerShippingOption] = []
   private(set) var verifiedCommit: PrimerShippingOption?
 
-  private let callbacksProvider: () -> PrimerShippingCallbacks?
+  private let addressChangeProvider: () -> ShippingAddressChangeHandler?
+  private let optionChangeProvider: () -> ShippingOptionChangeHandler?
   private let requireShippingMethod: Bool
   private let refreshConfiguration: () async throws -> Void
   private let currentShipping: () -> ClientSession.Order.ShippingMethod?
@@ -45,7 +46,8 @@ final class ApplePayShippingSession: LogReporter {
   init(
     mode: Mode,
     requireShippingMethod: Bool,
-    callbacksProvider: @escaping () -> PrimerShippingCallbacks?,
+    addressChangeProvider: @escaping () -> ShippingAddressChangeHandler?,
+    optionChangeProvider: @escaping () -> ShippingOptionChangeHandler?,
     refreshConfiguration: @escaping () async throws -> Void = {
       try await PrimerAPIConfigurationModule().refreshSession()
     },
@@ -56,7 +58,8 @@ final class ApplePayShippingSession: LogReporter {
   ) {
     self.mode = mode
     self.requireShippingMethod = requireShippingMethod
-    self.callbacksProvider = callbacksProvider
+    self.addressChangeProvider = addressChangeProvider
+    self.optionChangeProvider = optionChangeProvider
     self.refreshConfiguration = refreshConfiguration
     self.currentShipping = currentShipping
     self.timeout = timeout
@@ -138,7 +141,7 @@ final class ApplePayShippingSession: LogReporter {
   // MARK: - Internals
 
   private func requestOptions(for address: PrimerAddress) async throws -> [PrimerShippingOption] {
-    guard let handler = callbacksProvider()?.onShippingAddressChange else {
+    guard let handler = addressChangeProvider() else {
       logger.warn(
         message: "Shipping address changed for APPLE_PAY but no onShippingAddressChange handler is "
           + "registered — no shipping options will be shown."
@@ -147,7 +150,10 @@ final class ApplePayShippingSession: LogReporter {
     }
 
     return try await withCallbackTimeout(named: "onShippingAddressChange") {
-      try await handler(address)
+      try await handler(PrimerShippingAddressChange(
+        paymentMethodType: PrimerPaymentMethodType.applePay.rawValue,
+        shippingAddress: address
+      ))
     }
   }
 
@@ -156,9 +162,12 @@ final class ApplePayShippingSession: LogReporter {
     // session holds describes the amount Apple would charge.
     verifiedCommit = nil
 
-    if let handler = callbacksProvider()?.onShippingOptionChange {
+    if let handler = optionChangeProvider() {
       try await withCallbackTimeout(named: "onShippingOptionChange") {
-        try await handler(option)
+        try await handler(PrimerShippingOptionChange(
+          paymentMethodType: PrimerPaymentMethodType.applePay.rawValue,
+          selectedShippingOption: option
+        ))
       }
     } else {
       logger.warn(

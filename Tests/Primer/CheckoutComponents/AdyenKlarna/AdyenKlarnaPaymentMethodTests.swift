@@ -226,7 +226,8 @@ private final class MockNonDefaultCheckoutScopeForAdyenKlarna: PrimerCheckoutSco
     }
 
     var onBeforePaymentCreate: BeforePaymentCreateHandler?
-    var shippingCallbacks: PrimerShippingCallbacks?
+    var onShippingAddressChange: ShippingAddressChangeHandler?
+    var onShippingOptionChange: ShippingOptionChangeHandler?
     var paymentMethodSelection: PrimerPaymentMethodSelectionScope {
         fatalError("Not implemented for mock")
     }

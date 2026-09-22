@@ -233,7 +233,8 @@ extension PrimerSwiftUIBridgeViewController {
     navigator: CheckoutNavigator,
     presentationContext: PresentationContext = .direct,
     integrationType: CheckoutComponentsIntegrationType = .uiKit,
-    shippingCallbacks: PrimerShippingCallbacks? = nil,
+    onShippingAddressChange: ShippingAddressChangeHandler? = nil,
+    onShippingOptionChange: ShippingOptionChangeHandler? = nil,
     onCompletion: ((PrimerCheckoutState) -> Void)? = nil
   ) -> PrimerSwiftUIBridgeViewController {
 
@@ -248,7 +249,8 @@ extension PrimerSwiftUIBridgeViewController {
       navigator: navigator,
       presentationContext: presentationContext,
       integrationType: integrationType,
-      shippingCallbacks: shippingCallbacks,
+      onShippingAddressChange: onShippingAddressChange,
+      onShippingOptionChange: onShippingOptionChange,
       onCompletion: onCompletion
     )
 

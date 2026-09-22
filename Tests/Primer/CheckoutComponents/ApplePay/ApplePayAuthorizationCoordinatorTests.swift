@@ -218,12 +218,8 @@ final class ApplePayAuthorizationCoordinatorTests: XCTestCase {
         return ApplePayShippingSession(
             mode: mode,
             requireShippingMethod: true,
-            callbacksProvider: {
-                PrimerShippingCallbacks(
-                    onShippingAddressChange: { _ in options },
-                    onShippingOptionChange: { _ in }
-                )
-            },
+            addressChangeProvider: { { _ in options } },
+            optionChangeProvider: { { _ in } },
             refreshConfiguration: {},
             currentShipping: {
                 committed.map {
