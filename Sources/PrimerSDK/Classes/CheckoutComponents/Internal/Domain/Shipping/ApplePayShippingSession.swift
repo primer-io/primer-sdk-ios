@@ -217,6 +217,11 @@ final class ApplePayShippingSession: LogReporter {
     _ operation: @escaping @Sendable () async throws -> T
   ) async throws -> T {
     try await withThrowingTaskGroup(of: T.self) { group in
+      // The timer is cancelled on every exit path, not just the happy one. A merchant handler that
+      // throws is ordinary here, and leaving a 20 second sleep running behind it would keep the
+      // cooperative pool busy long after the attempt is over.
+      defer { group.cancelAll() }
+
       group.addTask { try await operation() }
       group.addTask { [timeout] in
         try await Task.sleep(nanoseconds: UInt64(timeout * 1_000_000_000))
@@ -228,7 +233,6 @@ final class ApplePayShippingSession: LogReporter {
       guard let result = try await group.next() else {
         throw PrimerError.merchantError(message: "The \(name) handler produced no result.")
       }
-      group.cancelAll()
       return result
     }
   }
