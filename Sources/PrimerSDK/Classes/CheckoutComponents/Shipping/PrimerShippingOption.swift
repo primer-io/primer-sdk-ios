@@ -10,7 +10,7 @@ import Foundation
 ///
 /// - Parameters:
 ///   - id: Your identifier for the option. It is echoed back in
-///     ``PrimerShippingCallbacks/onShippingOptionChange`` and must match the `order.shipping.methodId`
+///     ``ShippingOptionChangeHandler`` and must match the `order.shipping.methodId`
 ///     your backend writes to the client session.
 ///   - name: Shown as the option's title in the wallet sheet.
 ///   - description: Shown under the title, for example "3-5 business days".

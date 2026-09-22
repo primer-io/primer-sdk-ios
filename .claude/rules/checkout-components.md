@@ -11,9 +11,9 @@ Payment checkout framework with SwiftUI, async/await, and UI customization throu
 
 ## Entry Points
 
-- **SwiftUI (managed modal)**: `PrimerCheckout(clientToken:primerSettings:primerTheme:shippingCallbacks:onCompletion:)` — renders the SDK's default screens, no customization slots
+- **SwiftUI (managed modal)**: `PrimerCheckout(clientToken:primerSettings:primerTheme:onShippingAddressChange:onShippingOptionChange:onCompletion:)` — renders the SDK's default screens, no customization slots
 - **SwiftUI (composable/inline)**: a `PrimerCheckoutSession` (held as `@StateObject`) wired in with the `.primerCheckoutSession(_:theme:onCompletion:)` modifier, plus the composable views `PrimerCardForm`, `PrimerPaymentMethods`, `PrimerVaultedPaymentMethods`
-- **UIKit**: `PrimerCheckoutPresenter.presentCheckout(clientToken:from:primerSettings:primerTheme:shippingCallbacks:completion:)` (+ convenience overloads)
+- **UIKit**: `PrimerCheckoutPresenter.presentCheckout(clientToken:from:primerSettings:primerTheme:onShippingAddressChange:onShippingOptionChange:completion:)` (+ convenience overloads)
 - **UIKit Delegate**: `PrimerCheckoutPresenterDelegate` — success, failure, dismiss, optional 3DS callbacks
 
 ## Public Surface
@@ -164,6 +164,6 @@ Internal scope/state used by the SDK's own renderers (reached via `PrimerCheckou
 - Scope access: `checkoutScope.getPaymentMethodScope(PrimerCardFormScope.self)`
 - Payment handling: `.auto` (default) or `.manual` via `PrimerCheckoutScope.paymentHandling`
 - Before-payment hook: `checkoutScope.onBeforePaymentCreate` — provides `PrimerCheckoutPaymentMethodData` and decision handler
-- Express Checkout shipping (Apple Pay): `shippingCallbacks` on all three entry points — `PrimerShippingCallbacks(onShippingAddressChange:onShippingOptionChange:)` returning / taking `PrimerShippingOption(id, name, description, amount)`. 20s budget per callback, the merchant's backend PATCHes `order.shipping`, and the SDK verifies the commit before it lets Apple Pay authorize. A SHIPPING module without `callbackMode` always wins. Mirrors Android's `PrimerShippingCallbacks`
+- Express Checkout shipping (Apple Pay): `onShippingAddressChange` / `onShippingOptionChange` on all three entry points, taking `PrimerShippingAddressChange` / `PrimerShippingOptionChange` and returning `[PrimerShippingOption]` / nothing. 20s budget per handler, the merchant's backend PATCHes `order.shipping`, and the SDK verifies the commit before it lets Apple Pay authorize. A SHIPPING module without `callbackMode` always wins. Mirrors Android's `PrimerCheckoutController.onShippingAddressChange` / `onShippingOptionChange`
 - Presentation context: `.direct` (cancel button) vs `.fromPaymentSelection` (back button)
 - Dismissal: `[DismissalMechanism]` — `.gestures`, `.closeButton`
