@@ -246,8 +246,7 @@ final class DefaultPaymentMethodSelectionScope: PaymentMethodSelectionScopeInter
   ) async {
     // A merchant's own pay button need not disable itself, so guard against a double tap here.
     guard !internalState.isVaultPaymentLoading else {
-      logger.warn(message: "[Vault] A payment is already in flight, ignoring the repeat submit")
-      return
+      return logger.warn(message: "[Vault] A payment is already in flight, ignoring the repeat submit")
     }
 
     logger.info(message: "[Vault] Starting payment with vaulted method: \(vaultedMethod.id)")

@@ -72,7 +72,7 @@ private struct PrimerCheckoutSessionModifier: ViewModifier, LogReporter {
         session.setCompletionHandler(onCompletion)
         await session.start()
       }
-      // Keyed on the theme so a new one re-resolves the tokens. A plain `.task` runs once.
+      // Keyed on the theme so a new one re-resolves the tokens.
       .task(id: theme) {
         designTokensManager.applyTheme(theme)
         await loadDesignTokens(for: colorScheme)

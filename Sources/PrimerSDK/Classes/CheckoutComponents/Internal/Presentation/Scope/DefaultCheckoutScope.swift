@@ -607,7 +607,7 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
   }
 
   func retryPayment() {
-    guard let attempt = lastPaymentAttempt else {
+    guard let lastPaymentAttempt else {
       return logger.warn(message: "Retry tapped with no recorded payment attempt, ignoring")
     }
 
@@ -616,7 +616,7 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
       await analyticsTracker?.trackRetry(navigationState: navigationState)
     }
 
-    switch attempt {
+    switch lastPaymentAttempt {
     case let .paymentMethod(scope):
       scope.submit()
     case .vaulted:
