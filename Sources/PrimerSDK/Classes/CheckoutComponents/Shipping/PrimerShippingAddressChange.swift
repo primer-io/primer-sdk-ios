@@ -19,16 +19,3 @@ public struct PrimerShippingAddressChange: Sendable {
     self.shippingAddress = shippingAddress
   }
 }
-
-/// The shopper selected ``selectedShippingOption``, or the default option is being committed.
-@available(iOS 15.0, *)
-public struct PrimerShippingOptionChange: Sendable {
-
-  public let paymentMethodType: String
-  public let selectedShippingOption: PrimerShippingOption
-
-  public init(paymentMethodType: String, selectedShippingOption: PrimerShippingOption) {
-    self.paymentMethodType = paymentMethodType
-    self.selectedShippingOption = selectedShippingOption
-  }
-}
