@@ -7,14 +7,11 @@
 import PrimerSDK
 import SwiftUI
 
-// Brand chrome, the funding basket and the result dialogs for AccountFundingDemo. None of it touches
-// Primer: it is the fictional merchant's own UI, kept beside the demo so the flow file stays about
-// the SDK.
+// The fictional merchant's own UI for AccountFundingDemo. None of it touches Primer.
 
 // MARK: - Basket
 
-/// What the shopper is depositing and what they end up paying. `totalDue` is the number the client
-/// session is created with, so the summary on screen and the amount charged cannot drift apart.
+/// What the shopper deposits and what they pay. `totalDue` is what the client session is created with.
 struct FundingBasket: Equatable {
     var deposit = 2500
     var isPromotionApplied = false
@@ -33,7 +30,7 @@ struct FundingBasket: Equatable {
         return min(Self.giftCardCredit, max(0, deposit - promotionDiscount - Self.minimumCharge))
     }
 
-    /// Never below the minimum: a client session for nothing is not a payment.
+    /// Never below the minimum, because a client session for nothing is not a payment.
     var totalDue: Int { max(Self.minimumCharge, deposit - promotionDiscount - giftCardDiscount) }
 
     var hasDiscount: Bool { totalDue != deposit }
@@ -103,8 +100,7 @@ struct FundingStatusDialog: View {
                 .padding(.vertical, 8)
             Text(headline).font(.title2.weight(.bold))
             Text(detail).font(.body).foregroundColor(FundingPalette.mutedInk).multilineTextAlignment(.center)
-            // The payment id Primer returns. A merchant prints it on the receipt; here it is also the
-            // proof that a payment really was created, rather than the demo drawing a success.
+            // The payment id Primer returns, so the dialog proves a real payment was created.
             if let reference {
                 Text("Payment \(reference)").font(.caption).foregroundColor(FundingPalette.mutedInk)
             }
@@ -121,8 +117,7 @@ struct FundingStatusDialog: View {
 
 // MARK: - Chrome
 
-/// The merchant's own navigation bar. One back arrow, no close button, dark band running up into the
-/// status area — the shape the recording shows on every screen.
+/// The merchant's own navigation bar.
 @available(iOS 15.0, *)
 struct FundingBar: View {
     let title: String
@@ -161,8 +156,7 @@ struct FundingBalanceHeader: View {
                 Text("Current balance").font(.subheadline).foregroundColor(FundingPalette.mutedInk)
             }
             Spacer()
-            // The merchant's accepted-network strip. Their app shows licensed brand marks; a demo in
-            // a public repo shows the names instead.
+            // Names rather than brand marks, because the marks are licensed.
             HStack(spacing: 4) {
                 ForEach(networks, id: \.self) { network in
                     Text(network)
@@ -182,7 +176,7 @@ struct FundingBalanceHeader: View {
     }
 }
 
-/// The pinned bar at the foot of every merchant screen: rounded top corners, lifted off the page.
+/// The pinned bar at the foot of every merchant screen.
 @available(iOS 15.0, *)
 struct FundingBottomBar<Content: View>: View {
     @ViewBuilder let content: () -> Content
@@ -231,7 +225,7 @@ struct FundingCtaButton: View {
     }
 }
 
-/// The pay bar: label on the left, amount on the right, the shape a wallet app usually gives it.
+/// The pay bar, with the label on the left and the amount on the right.
 @available(iOS 15.0, *)
 struct FundingPayButton: View {
     let amount: String
@@ -288,8 +282,7 @@ struct FundingSkeleton: View {
 
 // MARK: - Helpers
 
-/// A sheet-style shape: rounded top corners, square bottom, so a panel can sit flush on the screen
-/// edge. `RoundedRectangle` alone rounds all four.
+/// Rounded top corners with a square bottom, which `RoundedRectangle` alone cannot do.
 struct FundingSheetShape: Shape {
     var radius: CGFloat = 20
 
@@ -305,7 +298,7 @@ struct FundingSheetShape: Shape {
 }
 
 extension View {
-    /// The merchant's card surface: white, rounded, softly lifted off the pale page.
+    /// The merchant's card surface.
     @available(iOS 15.0, *)
     func fundingCard(radius: CGFloat = 12) -> some View {
         background(FundingPalette.surface)
@@ -314,8 +307,7 @@ extension View {
     }
 }
 
-/// A made-up brand, so the demo reads as somebody's product rather than ours. Fixed values on
-/// purpose: this brand has one appearance in both colour schemes.
+/// A made-up brand. Fixed values on purpose, so it looks the same in both colour schemes.
 enum FundingPalette {
     static let bar = Color(hex: 0x041E17)
     static let page = Color(hex: 0xE8F0F5)
@@ -337,7 +329,7 @@ enum FundingAmount {
             .string(from: NSNumber(value: Double(minorUnits) / 100)) ?? "\(minorUnits)"
     }
 
-    /// Same, with the cents dropped — how the merchant labels its preset amounts.
+    /// Same, with the cents dropped, for the preset amounts.
     static func formatWhole(_ minorUnits: Int, currencyCode: String?) -> String {
         formatter(for: currencyCode, fractionDigits: 0)
             .string(from: NSNumber(value: Double(minorUnits) / 100)) ?? "\(minorUnits / 100)"
@@ -358,8 +350,7 @@ enum FundingAmount {
 }
 
 extension PrimerSettings {
-    /// The merchant draws its own success and failure dialogs, so the SDK screens are switched off.
-    /// The processing screen has no matching switch and is not meant to get one.
+    /// The merchant draws its own result dialogs, so the SDK screens are switched off.
     var withMerchantResultScreens: PrimerSettings {
         PrimerSettings(
             paymentHandling: paymentHandling,

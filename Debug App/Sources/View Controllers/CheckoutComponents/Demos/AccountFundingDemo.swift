@@ -7,19 +7,12 @@
 import PrimerSDK
 import SwiftUI
 
-/// Account Funding — a wallet top-up built on the inline SwiftUI integration, in a made-up merchant
-/// brand rather than ours.
+/// A wallet top-up built on the inline SwiftUI integration, under a made-up merchant brand.
 ///
-/// It follows the order a real integration follows: the merchant's own screen decides how much is
-/// being paid, the merchant's backend then creates a client session for that amount, and only then
-/// does a ``PrimerCheckoutSession`` exist. From there the merchant still owns the saved-card list,
-/// the add-a-card panel, the pay bar and both result dialogs; Primer supplies the vault, the card
-/// fields and the payment.
-///
-/// The two paths hand off differently, and the demo shows both. Adding a card is the merchant's
-/// panel, so the merchant closes it and raises their own processing dialog; the SDK's own processing
-/// screen then covers it. Paying with a saved card is the SDK's from the tap onwards — it may need a
-/// security code first — so the demo raises nothing and lets the SDK's screens run.
+/// It follows the order a real integration follows. The merchant's own screen decides the amount,
+/// the merchant's backend creates a client session for it, and only then does a
+/// ``PrimerCheckoutSession`` exist. The merchant keeps the saved-card list, the add-a-card panel,
+/// the pay bar and both result dialogs. Primer supplies the vault, the card fields and the payment.
 @available(iOS 15.0, *)
 struct AccountFundingDemo: View, CheckoutComponentsDemo {
     static var metadata: DemoMetadata {
@@ -72,8 +65,7 @@ private struct AccountFundingFlow: View {
                 content
             }
         }
-        // The merchant's own bar carries the title and the back arrow, so the demo host's navigation
-        // bar would only sit on top of it.
+        // The merchant's own bar already carries the title and the back arrow.
         .navigationBarHidden(true)
     }
 
@@ -85,16 +77,13 @@ private struct AccountFundingFlow: View {
                 currencyCode: configuration.clientSession?.currencyCode,
                 balance: Self.demoBalance,
                 isBusy: isCreatingSession,
-                // A deep link hands us a ready-made session; its amount is fixed and ours to display,
-                // not to change.
+                // A deep link hands us a ready-made session, so its amount is fixed.
                 isAmountEditable: configuration.clientSession != nil,
                 error: error,
                 onProceed: proceed
             )
         case let .payments(clientToken):
-            // Closing the result dialog ends the demo, the way the rest of them end. Returning to
-            // the amount screen would show an unchanged balance with the amount still typed in,
-            // which reads as though the payment never happened.
+            // Closing the result dialog ends the demo, the way the rest of them end.
             AccountFundingCheckout(
                 clientToken: clientToken,
                 settings: configuration.settings,
@@ -110,8 +99,7 @@ private struct AccountFundingFlow: View {
         if isOnAmountStep { dismiss() } else { step = .amount }
     }
 
-    /// The merchant's own "create the session" step. A deep-linked demo already carries a token and
-    /// no session body, so it skips straight through with the amount that token was minted for.
+    /// The merchant's own "create the session" step. A deep-linked demo already carries a token.
     private func proceed() {
         guard var body = configuration.clientSession else {
             if let token = configuration.clientToken, !token.isEmpty {
@@ -186,9 +174,7 @@ private struct AccountFundingCheckout: View {
         }
     }
 
-    /// The card form lives in the merchant's panel, so closing it and raising the merchant's own
-    /// processing dialog is the merchant's job. The SDK only learns about the submit, and its own
-    /// processing screen then covers this one.
+    /// The card form lives in the merchant's panel, so closing it is the merchant's job.
     private func startCardPayment() {
         isAddingCard = false
         status = .processing
@@ -263,17 +249,12 @@ private func highlightedCard(
 
 @available(iOS 15.0, *)
 private struct FundBar: View {
-    /// Observed, not just read. The saved-method list arrives after this view first renders, and the
-    /// button has to come alive when it does. Resolving the card here rather than taking it from the
-    /// parent is the whole point: the parent observes the checkout session, which never republishes
-    /// when the vault loads, so a card passed down would stay nil and the button dead forever.
+    /// Observed here, because the parent never republishes when the saved-method list arrives.
     @ObservedObject var selection: PrimerSelectionSession
     let amount: String
     let selectedCardId: String?
 
-    /// The merchant's own button pays directly. No SDK component is mounted here, and nothing is
-    /// raised over the SDK: `selectVaulted` may need a security code first, and its own screens
-    /// carry the payment from here to the result.
+    /// The merchant's own button pays directly, with no SDK component mounted here.
     var body: some View {
         let card = highlightedCard(from: selection.vaultedPaymentMethods, selectedId: selectedCardId)
         let isLoading = selection.state.isVaultPaymentLoading
@@ -297,8 +278,7 @@ private struct SavedCards: View {
                 VStack(spacing: 0) {
                     ForEach(Array(visible(of: methods).enumerated()), id: \.element.id) { index, method in
                         if index > 0 { Divider().padding(.horizontal, 16) }
-                        // Highlights only. `selectVaulted` is the pay verb, so it belongs on the
-                        // pay bar, not on a row tap.
+                        // The row highlights only. `selectVaulted` is the pay verb, so it sits on the pay bar.
                         SavedCardRow(method: method, isSelected: method.id == selected(in: methods)?.id) {
                             selectedCardId = method.id
                         }
@@ -306,8 +286,7 @@ private struct SavedCards: View {
                 }
                 .fundingCard()
 
-                // One saved card renders the same collapsed or expanded, so the toggle would do
-                // nothing visible.
+                // One saved card renders the same either way, so the toggle would do nothing.
                 if methods.count > 1 {
                     Button { withAnimation { isExpanded.toggle() } } label: {
                         Text(isExpanded ? "Collapse" : "View all")
@@ -347,8 +326,7 @@ private struct SavedCardRow: View {
     var body: some View {
         Button(action: onSelect) {
             HStack(spacing: 12) {
-                // The SDK exposes no artwork for a vaulted card's network, so the merchant draws its
-                // own mark from `paymentInstrumentData.network`.
+                // The SDK exposes no artwork for a vaulted card's network, so the merchant draws one.
                 Text(network.prefix(4).uppercased())
                     .font(.system(size: 9, weight: .heavy))
                     .foregroundColor(.white)
@@ -385,8 +363,7 @@ private struct AddMethods: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             Text("Add new payment method").font(.headline).foregroundColor(FundingPalette.ink)
-            // The card row opens the merchant's own panel instead of the SDK flow; everything else
-            // hands straight back to `onSelect`.
+            // The card row opens the merchant's own panel instead of the SDK flow.
             PrimerPaymentMethods(
                 header: { _ in EmptyView() },
                 method: { method, onSelect in
@@ -450,7 +427,7 @@ private struct AddCardPanel: View {
                             }
                         }
                     },
-                    // Half width, matching the expiry field above it, as the merchant's sheet has it.
+                    // Half width, to match the expiry field above it.
                     billingAddress: { form in
                         HStack(spacing: 12) {
                             CardFormDefaults.postalCode(form)
@@ -474,7 +451,7 @@ private struct AddCardPanel: View {
                     .frame(maxWidth: .infinity, minHeight: 60)
                     .overlay(RoundedRectangle(cornerRadius: 10).stroke(FundingPalette.outline, lineWidth: 2))
             }
-            // Submit first: confirming tears this panel down, and the payment must already be under way.
+            // Submit first, because confirming tears this panel down.
             Button {
                 form.submit()
                 onConfirm()

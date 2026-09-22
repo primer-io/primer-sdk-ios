@@ -6,8 +6,7 @@
 
 import SwiftUI
 
-/// The merchant's own deposit screen, ahead of any Primer code. It decides how much the shopper is
-/// paying; only then does the flow create the client session for that amount and start checkout.
+/// The merchant's own deposit screen, ahead of any Primer code. It decides the amount.
 @available(iOS 15.0, *)
 struct FundingAmountScreen: View {
     @Binding var basket: FundingBasket
@@ -93,8 +92,7 @@ struct FundingAmountScreen: View {
                     isAmountFocused = false
                 }
             }
-            // The recording never shows what "Other" opens. A free-entry field is already on screen,
-            // so the demo reads it as "type your own" and hands focus to that field.
+            // "Other" hands focus to the free-entry field that is already on screen.
             chip(label: "Other", isOn: isAmountFocused) {
                 amountText = ""
                 isAmountFocused = true
@@ -210,8 +208,7 @@ struct FundingAmountScreen: View {
         }
     }
 
-    // The recording never opens either of these, so the contents are invented. What matters for the
-    // demo is that they change `totalDue`, which is the number the client session is created with.
+    // Both panels exist to change `totalDue`, which is what the client session is created with.
     private var promotionsPanel: some View {
         panelBody(title: "Promotions") {
             Toggle(isOn: $basket.isPromotionApplied) {
