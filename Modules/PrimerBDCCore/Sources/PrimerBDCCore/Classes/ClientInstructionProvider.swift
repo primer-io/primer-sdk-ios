@@ -8,5 +8,6 @@
 public protocol ClientInstructionProvider {
     func fetchPayInstruction() async throws -> ClientInstruction
     func fetchSetupFlow() async throws -> SetupFlow
+    func fetchSetupState(setupId: String) async throws -> SetupState
     func fetchNextInstruction() async throws -> ClientInstruction
 }
