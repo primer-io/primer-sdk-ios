@@ -777,23 +777,6 @@ final class DesignTokensManagerTests: XCTestCase {
         XCTAssertEqual(dark, shippedDarkBrand)
     }
 
-    func test_applyTheme_usesLightColorsInDark_carriesTheLightSetOver() async throws {
-        // Given the opt-in, for a palette that works in both modes
-        sut.applyTheme(
-            PrimerCheckoutTheme(colors: ColorOverrides(primerColorBrand: .pink), usesLightColorsInDark: true)
-        )
-
-        // When both schemes are loaded
-        try await sut.fetchTokens(for: .light)
-        let light = try XCTUnwrap(sut.tokens?.primerColorBrand)
-        try await sut.fetchTokens(for: .dark)
-        let dark = try XCTUnwrap(sut.tokens?.primerColorBrand)
-
-        // Then the one color applies in both
-        XCTAssertEqual(light, .pink)
-        XCTAssertEqual(dark, .pink)
-    }
-
     func test_applyTheme_darkColours_winInDarkModeAndDoNotBorrowFromLight() async throws {
         // Given a dark set that names the brand and says nothing about the text color
         let shippedDarkText = try await tokens(for: .dark).primerColorTextPrimary
@@ -816,25 +799,6 @@ final class DesignTokensManagerTests: XCTestCase {
         XCTAssertEqual(lightText, .green)
         XCTAssertEqual(dark.primerColorBrand, .blue)
         XCTAssertEqual(dark.primerColorTextPrimary, shippedDarkText)
-    }
-
-    func test_applyTheme_usesLightColorsInDark_fillsTheGapsInTheDarkSet() async throws {
-        // Given the same two sets, with the opt-in
-        sut.applyTheme(
-            PrimerCheckoutTheme(
-                colors: ColorOverrides(primerColorBrand: .pink, primerColorTextPrimary: .green),
-                darkColors: ColorOverrides(primerColorBrand: .blue),
-                usesLightColorsInDark: true
-            )
-        )
-
-        // When dark is loaded
-        try await sut.fetchTokens(for: .dark)
-        let dark = try XCTUnwrap(sut.tokens)
-
-        // Then dark takes what it names plus the light rest
-        XCTAssertEqual(dark.primerColorBrand, .blue)
-        XCTAssertEqual(dark.primerColorTextPrimary, .green)
     }
 
     func test_applyTheme_noColourOverrides_matchesAnUnthemedLoad() async throws {
