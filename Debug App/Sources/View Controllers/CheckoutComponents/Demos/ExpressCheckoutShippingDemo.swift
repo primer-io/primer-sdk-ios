@@ -15,6 +15,10 @@ import SwiftUI
 ///
 /// Turn on "Capture shipping details" and "Require shipping method" in the app's Apple Pay settings
 /// first — Apple only sends a shipping contact when the sheet asks for one.
+///
+/// Sandbox picks the workflow from the client session's metadata. The QA scenario for the legacy
+/// Express Checkout path is `scenario=APPLE_PAY_EC`; put that in the Metadata field on the session
+/// screen. Callback mode needs a merchant whose SHIPPING module has `callbackMode` on.
 @available(iOS 15.0, *)
 struct ExpressCheckoutShippingDemo: View, CheckoutComponentsDemo {
     static var metadata: DemoMetadata {
