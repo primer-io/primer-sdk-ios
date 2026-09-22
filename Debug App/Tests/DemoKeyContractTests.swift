@@ -19,7 +19,7 @@ final class DemoKeyContractTests: XCTestCase {
         "account_funding",
         "custom_theme", "red_theme", "green_theme", "purple_theme", "no_radius_theme", "small_sizes_theme",
         "large_sizes_theme", "light_typography_theme", "bold_typography_theme", "large_typography_theme",
-        "custom_font_theme", "refresh_client_session"
+        "custom_font_theme", "refresh_client_session", "express_checkout_shipping"
     ]
 
     func testKeys_MatchTheCrossPlatformContract() {
