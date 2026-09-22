@@ -37,7 +37,8 @@ public struct PrimerCheckout: View {
   private let settings: PrimerSettings
   private let theme: PrimerCheckoutTheme
   private let onCompletion: ((PrimerCheckoutState) -> Void)?
-  private let shippingCallbacks: PrimerShippingCallbacks?
+  private let onShippingAddressChange: ShippingAddressChangeHandler?
+  private let onShippingOptionChange: ShippingOptionChangeHandler?
   @StateObject private var navigator: CheckoutNavigator
   private let presentationContext: PresentationContext
   private let integrationType: CheckoutComponentsIntegrationType
@@ -47,20 +48,23 @@ public struct PrimerCheckout: View {
   ///   - clientToken: The client token obtained from your backend.
   ///   - primerSettings: Configuration settings including payment options and UI preferences. Default: `PrimerSettings()`
   ///   - primerTheme: Theme configuration for design tokens. Default: `PrimerCheckoutTheme()`
-  ///   - shippingCallbacks: Express Checkout shipping hooks for Apple Pay. Default: `nil`
+  ///   - onShippingAddressChange: Express Checkout shipping options for the shopper's address. Default: `nil`
+  ///   - onShippingOptionChange: Express Checkout commit of the selected option. Default: `nil`
   ///   - onCompletion: Receives `.failure` once per failed attempt, including a failed initialization,
   ///     while the checkout stays open for a retry. Then `.success` or `.dismissed` exactly once.
   public init(
     clientToken: String,
     primerSettings: PrimerSettings = PrimerSettings(),
     primerTheme: PrimerCheckoutTheme = PrimerCheckoutTheme(),
-    shippingCallbacks: PrimerShippingCallbacks? = nil,
+    onShippingAddressChange: ShippingAddressChangeHandler? = nil,
+    onShippingOptionChange: ShippingOptionChangeHandler? = nil,
     onCompletion: ((PrimerCheckoutState) -> Void)? = nil
   ) {
     self.clientToken = clientToken
     settings = primerSettings
     theme = primerTheme
-    self.shippingCallbacks = shippingCallbacks
+    self.onShippingAddressChange = onShippingAddressChange
+    self.onShippingOptionChange = onShippingOptionChange
     self.onCompletion = onCompletion
     _navigator = StateObject(wrappedValue: CheckoutNavigator())
     presentationContext = .fromPaymentSelection
@@ -74,13 +78,15 @@ public struct PrimerCheckout: View {
     navigator: CheckoutNavigator,
     presentationContext: PresentationContext,
     integrationType: CheckoutComponentsIntegrationType,
-    shippingCallbacks: PrimerShippingCallbacks? = nil,
+    onShippingAddressChange: ShippingAddressChangeHandler? = nil,
+    onShippingOptionChange: ShippingOptionChangeHandler? = nil,
     onCompletion: ((PrimerCheckoutState) -> Void)? = nil
   ) {
     self.clientToken = clientToken
     settings = primerSettings
     theme = primerTheme
-    self.shippingCallbacks = shippingCallbacks
+    self.onShippingAddressChange = onShippingAddressChange
+    self.onShippingOptionChange = onShippingOptionChange
     self.onCompletion = onCompletion
     _navigator = StateObject(wrappedValue: navigator)
     self.presentationContext = presentationContext
@@ -95,7 +101,8 @@ public struct PrimerCheckout: View {
       navigator: navigator,
       presentationContext: presentationContext,
       integrationType: integrationType,
-      shippingCallbacks: shippingCallbacks,
+      onShippingAddressChange: onShippingAddressChange,
+      onShippingOptionChange: onShippingOptionChange,
       onCompletion: onCompletion
     )
   }
@@ -112,7 +119,8 @@ struct InternalCheckout: View, LogReporter {
   private let navigator: CheckoutNavigator
   private let presentationContext: PresentationContext
   private let integrationType: CheckoutComponentsIntegrationType
-  private let shippingCallbacks: PrimerShippingCallbacks?
+  private let onShippingAddressChange: ShippingAddressChangeHandler?
+  private let onShippingOptionChange: ShippingOptionChangeHandler?
   private let onCompletion: ((PrimerCheckoutState) -> Void)?
 
   @State private var checkoutScope: DefaultCheckoutScope?
@@ -140,7 +148,8 @@ struct InternalCheckout: View, LogReporter {
     navigator: CheckoutNavigator,
     presentationContext: PresentationContext,
     integrationType: CheckoutComponentsIntegrationType,
-    shippingCallbacks: PrimerShippingCallbacks?,
+    onShippingAddressChange: ShippingAddressChangeHandler?,
+    onShippingOptionChange: ShippingOptionChangeHandler?,
     onCompletion: ((PrimerCheckoutState) -> Void)?
   ) {
     self.clientToken = clientToken
@@ -149,7 +158,8 @@ struct InternalCheckout: View, LogReporter {
     self.navigator = navigator
     self.presentationContext = presentationContext
     self.integrationType = integrationType
-    self.shippingCallbacks = shippingCallbacks
+    self.onShippingAddressChange = onShippingAddressChange
+    self.onShippingOptionChange = onShippingOptionChange
     self.onCompletion = onCompletion
 
     sdkInitializer = CheckoutSDKInitializer(
@@ -275,7 +285,8 @@ struct InternalCheckout: View, LogReporter {
 
     do {
       let result = try await sdkInitializer.initialize()
-      result.checkoutScope.shippingCallbacks = shippingCallbacks
+      result.checkoutScope.onShippingAddressChange = onShippingAddressChange
+      result.checkoutScope.onShippingOptionChange = onShippingOptionChange
       checkoutScope = result.checkoutScope
 
       initializationState = .initialized

@@ -16,7 +16,8 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
   @Published var navigationState = CheckoutNavigationState.loading
 
   var onBeforePaymentCreate: BeforePaymentCreateHandler?
-  var shippingCallbacks: PrimerShippingCallbacks?
+  var onShippingAddressChange: ShippingAddressChangeHandler?
+  var onShippingOptionChange: ShippingOptionChangeHandler?
   var idempotencyKeyProvider: (@Sendable () -> String?)?
 
   var paymentHandling: PrimerPaymentHandling {

@@ -84,10 +84,8 @@ final class ApplePayShippingSessionTests: XCTestCase {
     func test_addressChange_storesOptionsAndCommitsTheDefault() async throws {
         let committed = Box([PrimerShippingOption]())
         let sut = makeSession(
-            callbacks: PrimerShippingCallbacks(
-                onShippingAddressChange: { _ in [Self.standard, Self.express] },
-                onShippingOptionChange: { committed.value.append($0) }
-            ),
+            onAddressChange: { _ in [Self.standard, Self.express] },
+            onOptionChange: { committed.value.append($0.selectedShippingOption) },
             shipping: shipping(methodId: "standard", amount: 500)
         )
 
@@ -100,10 +98,8 @@ final class ApplePayShippingSessionTests: XCTestCase {
 
     func test_addressChange_movesTheCommittedOptionToTheFront() async throws {
         let sut = makeSession(
-            callbacks: PrimerShippingCallbacks(
-                onShippingAddressChange: { _ in [Self.standard, Self.express] },
-                onShippingOptionChange: { _ in }
-            ),
+            onAddressChange: { _ in [Self.standard, Self.express] },
+            onOptionChange: { _ in },
             shipping: shipping(methodId: "express", amount: 1500)
         )
 
@@ -115,7 +111,7 @@ final class ApplePayShippingSessionTests: XCTestCase {
 
     func test_addressChange_emptyList_marksTheAddressUnserviceable() async throws {
         let sut = makeSession(
-            callbacks: PrimerShippingCallbacks(onShippingAddressChange: { _ in [] })
+            onAddressChange: { _ in [] }
         )
 
         try await sut.handleShippingAddressChange(address)
@@ -126,7 +122,7 @@ final class ApplePayShippingSessionTests: XCTestCase {
     }
 
     func test_addressChange_withoutHandler_showsNoOptionsAndDoesNotThrow() async throws {
-        let sut = makeSession(callbacks: PrimerShippingCallbacks())
+        let sut = makeSession()
 
         try await sut.handleShippingAddressChange(address)
 
@@ -137,10 +133,10 @@ final class ApplePayShippingSessionTests: XCTestCase {
         let asked = Box(false)
         let sut = makeSession(
             mode: .legacy,
-            callbacks: PrimerShippingCallbacks(onShippingAddressChange: { _ in
+            onAddressChange: { _ in
                 asked.value = true
                 return [Self.standard]
-            })
+            }
         )
 
         try await sut.handleShippingAddressChange(address)
@@ -152,10 +148,8 @@ final class ApplePayShippingSessionTests: XCTestCase {
     func test_addressChange_staleCommitIsDropped() async throws {
         let committed = Box(shipping(methodId: "standard", amount: 500)())
         let sut = makeSession(
-            callbacks: PrimerShippingCallbacks(
-                onShippingAddressChange: { _ in [Self.standard] },
-                onShippingOptionChange: { _ in }
-            ),
+            onAddressChange: { _ in [Self.standard] },
+            onOptionChange: { _ in },
             shipping: { committed.value }
         )
 
@@ -177,10 +171,8 @@ final class ApplePayShippingSessionTests: XCTestCase {
     func test_optionChange_commitsTheSelectedOptionAndMovesItToTheFront() async throws {
         let committed = Box([String]())
         let sut = makeSession(
-            callbacks: PrimerShippingCallbacks(
-                onShippingAddressChange: { _ in [Self.standard, Self.express] },
-                onShippingOptionChange: { committed.value.append($0.id) }
-            ),
+            onAddressChange: { _ in [Self.standard, Self.express] },
+            onOptionChange: { committed.value.append($0.selectedShippingOption.id) },
             shipping: shipping(methodId: "express", amount: 1500)
         )
         try await sut.handleShippingAddressChange(address)
@@ -194,10 +186,8 @@ final class ApplePayShippingSessionTests: XCTestCase {
 
     func test_optionChange_mismatchedCommit_throwsAndLeavesNothingVerified() async throws {
         let sut = makeSession(
-            callbacks: PrimerShippingCallbacks(
-                onShippingAddressChange: { _ in [Self.standard, Self.express] },
-                onShippingOptionChange: { _ in }
-            ),
+            onAddressChange: { _ in [Self.standard, Self.express] },
+            onOptionChange: { _ in },
             // The merchant PATCHes the wrong option.
             shipping: shipping(methodId: "standard", amount: 500)
         )
@@ -214,10 +204,8 @@ final class ApplePayShippingSessionTests: XCTestCase {
 
     func test_optionChange_mismatchedAmount_throws() async throws {
         let sut = makeSession(
-            callbacks: PrimerShippingCallbacks(
-                onShippingAddressChange: { _ in [Self.standard] },
-                onShippingOptionChange: { _ in }
-            ),
+            onAddressChange: { _ in [Self.standard] },
+            onOptionChange: { _ in },
             // Right option, wrong price.
             shipping: shipping(methodId: "standard", amount: 100)
         )
@@ -233,10 +221,8 @@ final class ApplePayShippingSessionTests: XCTestCase {
     func test_optionChange_unknownOption_isIgnored() async throws {
         let commits = Box(0)
         let sut = makeSession(
-            callbacks: PrimerShippingCallbacks(
-                onShippingAddressChange: { _ in [Self.standard] },
-                onShippingOptionChange: { _ in commits.value += 1 }
-            ),
+            onAddressChange: { _ in [Self.standard] },
+            onOptionChange: { _ in commits.value += 1 },
             shipping: shipping(methodId: "standard", amount: 500)
         )
         try await sut.handleShippingAddressChange(address)
@@ -251,10 +237,8 @@ final class ApplePayShippingSessionTests: XCTestCase {
     func test_authorizeCommit_verifiedOption_passesWithoutAskingAgain() async throws {
         let commits = Box(0)
         let sut = makeSession(
-            callbacks: PrimerShippingCallbacks(
-                onShippingAddressChange: { _ in [Self.standard] },
-                onShippingOptionChange: { _ in commits.value += 1 }
-            ),
+            onAddressChange: { _ in [Self.standard] },
+            onOptionChange: { _ in commits.value += 1 },
             shipping: shipping(methodId: "standard", amount: 500)
         )
         try await sut.handleShippingAddressChange(address)
@@ -267,10 +251,8 @@ final class ApplePayShippingSessionTests: XCTestCase {
     func test_authorizeCommit_optionApplePayReportsIsNotInTheList_blocksAuthorization() async throws {
         let commits = Box(0)
         let sut = makeSession(
-            callbacks: PrimerShippingCallbacks(
-                onShippingAddressChange: { _ in [Self.standard] },
-                onShippingOptionChange: { _ in commits.value += 1 }
-            ),
+            onAddressChange: { _ in [Self.standard] },
+            onOptionChange: { _ in commits.value += 1 },
             shipping: shipping(methodId: "standard", amount: 500)
         )
         try await sut.handleShippingAddressChange(address)
@@ -288,10 +270,8 @@ final class ApplePayShippingSessionTests: XCTestCase {
     func test_authorizeCommit_noOptionReported_commitsTheDefault() async throws {
         let commits = Box(0)
         let sut = makeSession(
-            callbacks: PrimerShippingCallbacks(
-                onShippingAddressChange: { _ in [Self.standard] },
-                onShippingOptionChange: { _ in commits.value += 1 }
-            ),
+            onAddressChange: { _ in [Self.standard] },
+            onOptionChange: { _ in commits.value += 1 },
             shipping: shipping(methodId: "standard", amount: 500)
         )
         try await sut.handleShippingAddressChange(address)
@@ -304,7 +284,7 @@ final class ApplePayShippingSessionTests: XCTestCase {
     }
 
     func test_authorizeCommit_noOptionsAtAll_blocksAuthorization() async {
-        let sut = makeSession(callbacks: PrimerShippingCallbacks(onShippingAddressChange: { _ in [] }))
+        let sut = makeSession(onAddressChange: { _ in [] })
 
         do {
             try await sut.authorizeCommit(selectedOptionId: nil)
@@ -315,13 +295,13 @@ final class ApplePayShippingSessionTests: XCTestCase {
     }
 
     func test_authorizeCommit_legacyMode_isNotGated() async throws {
-        let sut = makeSession(mode: .legacy, callbacks: nil)
+        let sut = makeSession(mode: .legacy)
 
         try await sut.authorizeCommit(selectedOptionId: nil)
     }
 
     func test_authorizeCommit_shippingMethodNotRequired_isNotGated() async throws {
-        let sut = makeSession(requireShippingMethod: false, callbacks: nil)
+        let sut = makeSession(requireShippingMethod: false)
 
         try await sut.authorizeCommit(selectedOptionId: nil)
     }
@@ -330,10 +310,10 @@ final class ApplePayShippingSessionTests: XCTestCase {
 
     func test_addressChange_handlerThatNeverReturns_failsTheAttempt() async {
         let sut = makeSession(
-            callbacks: PrimerShippingCallbacks(onShippingAddressChange: { _ in
+            onAddressChange: { _ in
                 try await Task.sleep(nanoseconds: 5_000_000_000)
                 return []
-            }),
+            },
             timeout: 0.2
         )
 
@@ -347,10 +327,8 @@ final class ApplePayShippingSessionTests: XCTestCase {
 
     func test_optionChange_handlerThatNeverReturns_failsTheAttempt() async {
         let sut = makeSession(
-            callbacks: PrimerShippingCallbacks(
-                onShippingAddressChange: { _ in [Self.standard] },
-                onShippingOptionChange: { _ in try await Task.sleep(nanoseconds: 5_000_000_000) }
-            ),
+            onAddressChange: { _ in [Self.standard] },
+            onOptionChange: { _ in try await Task.sleep(nanoseconds: 5_000_000_000) },
             timeout: 0.2
         )
 
@@ -375,14 +353,16 @@ final class ApplePayShippingSessionTests: XCTestCase {
     private func makeSession(
         mode: ApplePayShippingSession.Mode = .callbacks,
         requireShippingMethod: Bool = true,
-        callbacks: PrimerShippingCallbacks?,
+        onAddressChange: ShippingAddressChangeHandler? = nil,
+        onOptionChange: ShippingOptionChangeHandler? = nil,
         shipping: @escaping () -> ClientSession.Order.ShippingMethod? = { nil },
         timeout: TimeInterval = ApplePayShippingSession.callbackTimeout
     ) -> ApplePayShippingSession {
         ApplePayShippingSession(
             mode: mode,
             requireShippingMethod: requireShippingMethod,
-            callbacksProvider: { callbacks },
+            addressChangeProvider: { onAddressChange },
+            optionChangeProvider: { onOptionChange },
             refreshConfiguration: {},
             currentShipping: shipping,
             timeout: timeout
