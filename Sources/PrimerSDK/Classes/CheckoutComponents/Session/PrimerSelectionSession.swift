@@ -80,7 +80,6 @@ public final class PrimerSelectionSession: ObservableObject {
   }
 
   /// Marks a saved method as the one the SDK's own screens act on, without paying.
-  /// Used by ``PrimerVaultedPaymentMethods`` to keep that selection in step with the row it shows.
   func setSelectedVaulted(_ method: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod) {
     internalScope?.selectVaultedPaymentMethod(method)
   }
