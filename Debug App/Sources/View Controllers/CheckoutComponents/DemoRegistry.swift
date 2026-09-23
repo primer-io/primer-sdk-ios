@@ -51,7 +51,8 @@ enum DemoRegistry {
         // Navigation & flows
         (MerchantNavigationDemo.metadata, { AnyView(MerchantNavigationDemo(configuration: $0)) }),
         (CustomResultScreensDemo.metadata, { AnyView(CustomResultScreensDemo(configuration: $0)) }),
-        (CustomNavigationDemo.metadata, { AnyView(CustomNavigationDemo(configuration: $0)) })
+        (CustomNavigationDemo.metadata, { AnyView(CustomNavigationDemo(configuration: $0)) }),
+        (AccountFundingDemo.metadata, { AnyView(AccountFundingDemo(configuration: $0)) })
     ]
 
     private static let themeDemos: [DemoEntry] = ThemeDemos.entries.map { entry in
