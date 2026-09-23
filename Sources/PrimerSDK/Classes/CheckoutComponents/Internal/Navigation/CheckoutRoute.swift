@@ -32,6 +32,7 @@ enum CheckoutRoute: Hashable, Identifiable {
   case paymentMethodSelection
   case vaultedPaymentMethods
   case deleteVaultedPaymentMethodConfirmation(PrimerHeadlessUniversalCheckout.VaultedPaymentMethod)
+  case cvvRecapture
   case processing
   case success(PaymentResult)
   case failure(PrimerError)
@@ -45,6 +46,7 @@ enum CheckoutRoute: Hashable, Identifiable {
     case .vaultedPaymentMethods: "vaulted-payment-methods"
     case let .deleteVaultedPaymentMethodConfirmation(method):
       "delete-vaulted-payment-method-confirmation-\(method.id)"
+    case .cvvRecapture: "cvv-recapture"
     case .processing: "processing"
     case let .paymentMethod(type, context):
       "payment-method-\(type)-\(context == .direct ? "direct" : "selection")"
@@ -68,6 +70,7 @@ enum CheckoutRoute: Hashable, Identifiable {
     case .paymentMethodSelection: .reset
     case .vaultedPaymentMethods: .push
     case .deleteVaultedPaymentMethodConfirmation: .push
+    case .cvvRecapture: .push
     case .paymentMethod: .push
     case .processing: .replace
     case .success, .failure: .replace

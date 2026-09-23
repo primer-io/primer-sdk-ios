@@ -37,6 +37,12 @@ extension PrimerHeadlessUniversalCheckout.VaultedPaymentMethod {
     }
   }
 
+  /// The card scheme, which sizes and validates the CVV.
+  var cardNetwork: CardNetwork {
+    let network = paymentInstrumentData.network ?? paymentInstrumentData.binData?.network ?? "Card"
+    return CardNetwork(rawValue: network.uppercased()) ?? .unknown
+  }
+
   // MARK: - Card Display Data
 
   private func cardDisplayData(from data: Response.Body.Tokenization.PaymentInstrumentData)

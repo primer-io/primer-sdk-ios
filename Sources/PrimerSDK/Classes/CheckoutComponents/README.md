@@ -69,7 +69,7 @@ struct ContentView: View {
 
 ### SwiftUI Integration — Composable/Inline
 
-Embed the composable views in your own layout and wire them with `.primerCheckoutSession(_:onCompletion:)`:
+Embed the composable views in your own layout and wire them with `.primerCheckoutSession(_:theme:onCompletion:)`:
 
 ```swift
 import SwiftUI
@@ -124,6 +124,11 @@ CheckoutComponents uses composable views with `@ViewBuilder` section slots. Each
 - **`PrimerCardForm`**: three slots — `cardDetails`, `billingAddress`, `submitButton`, each `(PrimerCardFormSession) -> some View`
 - **`PrimerPaymentMethods`**: three slots — `header`, `method (CheckoutPaymentMethod, onSelect)`, `emptyState`
 - **`PrimerVaultedPaymentMethods`**: three `AnyView`-erased slots — `header`, `item (method, isSelected, onSelect)`, `submitButton (isLoading, isEnabled, onSubmit)`
+
+The vaulted view's item slot marks and its submit slot pays. `PrimerSelectionSession.selectVaulted(_:)`
+is the pay verb, so call it from a pay button, never from a row tap, and keep the highlight in your
+own view state. A saved card whose client session asks for CVV recapture raises the SDK's own CVV
+screen on submit, so no slot has to make room for that field.
 
 Visual styling is theme-driven via `PrimerCheckoutTheme` (design tokens), not per-field styling structs.
 

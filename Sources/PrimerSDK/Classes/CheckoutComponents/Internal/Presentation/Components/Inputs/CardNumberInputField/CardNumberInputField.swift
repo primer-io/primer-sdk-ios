@@ -182,7 +182,8 @@ struct CardNumberInputField: View, LogReporter {
       surchargeAmount = nil
       return
     }
-    surchargeAmount = "+ \(surcharge.toCurrencyString(currency: currency))"
+    surchargeAmount =
+      "+ \(surcharge.toCurrencyString(currency: currency, locale: configurationService.locale))"
   }
 }
 

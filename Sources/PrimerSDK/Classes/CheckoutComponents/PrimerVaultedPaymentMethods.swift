@@ -17,8 +17,9 @@ import SwiftUI
 /// customer can delete one. Renders nothing when the customer has no saved methods.
 ///
 /// To show every method inline instead, iterate ``PrimerSelectionSession/vaultedPaymentMethods`` in
-/// your own layout and call ``PrimerSelectionSession/selectVaulted(_:)`` and
-/// ``PrimerSelectionSession/delete(_:)`` directly.
+/// your own layout, keep the highlight in your own view state, and call
+/// ``PrimerSelectionSession/selectVaulted(_:)`` from your pay button and
+/// ``PrimerSelectionSession/delete(_:)`` to remove one.
 ///
 /// Slots are type-erased (`AnyView`) rather than generic — the 3-argument item/submit builders hit
 /// Swift's generic-default inference limits, so this view trades the opaque-return ergonomics of
@@ -70,20 +71,14 @@ public struct PrimerVaultedPaymentMethods: View {
           // One row, not the whole vault: this is the returning-customer shortcut, and the header's
           // "Show all" opens the screen that lists every saved method. Merchants who want the full
           // list inline iterate ``PrimerSelectionSession/vaultedPaymentMethods`` themselves.
-          item(selected, true) { session.selectVaulted(selected) }
-          // SDK-handled CVV recapture (not a customizable slot).
-          VaultedPaymentMethodsDefaults.cvvInput(session)
-          submitButton(session.state.isVaultPaymentLoading, isSubmitEnabled) {
-            Task { await session.submitSelectedVaulted() }
+          // The row marks rather than pays. The submit slot is the pay verb.
+          item(selected, true) { session.setSelectedVaulted(selected) }
+          // A card needing CVV recapture gets the SDK's own screen on submit.
+          submitButton(session.state.isVaultPaymentLoading, !session.state.isVaultPaymentLoading) {
+            session.selectVaulted(selected)
           }
         }
       }
-    }
-
-    // Only evaluated with a method selected; blocks submit until a valid CVV is entered when
-    // recapture is required, so a tap can never submit an empty CVV.
-    private var isSubmitEnabled: Bool {
-      !session.state.requiresCvvInput || session.state.isCvvValid
     }
   }
 }

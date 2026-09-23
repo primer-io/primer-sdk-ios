@@ -13,10 +13,6 @@ struct VaultSection: View {
   let vaultedPaymentMethod: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod
   let scope: PrimerPaymentMethodSelectionScope
   let isLoading: Bool
-  let requiresCvvInput: Bool
-  @Binding var cvvInput: String
-  @Binding var isCvvValid: Bool
-  @Binding var cvvError: String?
 
   @Environment(\.designTokens) private var tokens
 
@@ -31,21 +27,7 @@ struct VaultSection: View {
 
   private func makeContent() -> some View {
     VStack(spacing: PrimerSpacing.small(tokens: tokens)) {
-      VaultedPaymentMethodCard(
-        vaultedPaymentMethod: vaultedPaymentMethod,
-        isSelected: true,
-        cvvInputContent: requiresCvvInput
-          ? {
-            AnyView(
-              VaultedCardCVVInput(
-                cvv: $cvvInput,
-                isValid: $isCvvValid,
-                errorMessage: $cvvError,
-                cardNetwork: cardNetwork,
-                onCvvChange: scope.updateCvvInput
-              ))
-          } : nil
-      )
+      VaultedPaymentMethodCard(vaultedPaymentMethod: vaultedPaymentMethod, isSelected: true)
 
       makePayButton()
     }
@@ -80,12 +62,10 @@ struct VaultSection: View {
       .padding(PrimerSpacing.medium(tokens: tokens))
       .background(
         RoundedRectangle(cornerRadius: PrimerRadius.medium(tokens: tokens))
-          .fill(
-            isPayButtonEnabled
-              ? CheckoutColors.borderFocus(tokens: tokens) : CheckoutColors.gray300(tokens: tokens))
+          .fill(CheckoutColors.borderFocus(tokens: tokens))
       )
     }
-    .disabled(!isPayButtonEnabled)
+    .disabled(isLoading)
     .accessibility(
       config: AccessibilityConfiguration(
         identifier: AccessibilityIdentifiers.Vault.payButton,
@@ -94,22 +74,4 @@ struct VaultSection: View {
       ))
   }
 
-  // MARK: - Helpers
-
-  private var isPayButtonEnabled: Bool {
-    if isLoading {
-      return false
-    }
-    if requiresCvvInput {
-      return isCvvValid
-    }
-    return true
-  }
-
-  private var cardNetwork: CardNetwork {
-    let network =
-      vaultedPaymentMethod.paymentInstrumentData.network ?? vaultedPaymentMethod
-      .paymentInstrumentData.binData?.network ?? "Card"
-    return CardNetwork(rawValue: network.uppercased()) ?? .unknown
-  }
 }

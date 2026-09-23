@@ -61,48 +61,8 @@ public enum VaultedPaymentMethodsDefaults {
     VaultedSubmitContent(isLoading: isLoading, isEnabled: isEnabled, onSubmit: onSubmit)
   }
 
-  /// CVV recapture field, shown only when the selected vaulted card requires CVV. Empty otherwise.
-  @MainActor
-  @ViewBuilder
-  public static func cvvInput(_ session: PrimerSelectionSession) -> some View {
-    if session.state.requiresCvvInput {
-      VaultedCVVContent(session: session)
-    }
-  }
-
   public static func unavailable() -> some View {
     PaymentMethodsDefaults.unavailable()
-  }
-}
-
-@available(iOS 15.0, *)
-private struct VaultedCVVContent: View {
-  @ObservedObject var session: PrimerSelectionSession
-  // Local mirror of the field text so typing renders immediately instead of waiting on the
-  // scope's async state round-trip; validation/error are read back from the session state.
-  @State private var cvv: String = ""
-
-  var body: some View {
-    VaultedCardCVVInput(
-      cvv: $cvv,
-      isValid: Binding(get: { session.state.isCvvValid }, set: { _ in }),
-      errorMessage: Binding(get: { session.state.cvvError }, set: { _ in }),
-      cardNetwork: cardNetwork,
-      onCvvChange: session.updateCvvInput
-    )
-    // The scope clears `cvvInput` on payment error / success / cancel; mirror that reset into the
-    // local field so stale digits don't linger after a failed vaulted payment.
-    .onChange(of: session.state.cvvInput) { newValue in
-      if newValue.isEmpty { cvv = "" }
-    }
-  }
-
-  private var cardNetwork: CardNetwork {
-    guard let method = session.state.selectedVaultedPaymentMethod else { return .unknown }
-    let network =
-      method.paymentInstrumentData.network
-      ?? method.paymentInstrumentData.binData?.network ?? "Card"
-    return CardNetwork(rawValue: network.uppercased()) ?? .unknown
   }
 }
 

@@ -153,7 +153,7 @@ final class DefaultCheckoutScopeBehaviorTests: XCTestCase {
         sut = makeSut()
 
         // When
-        sut.startProcessing()
+        sut.startProcessing(payingWith: nil)
 
         // Then
         XCTAssertEqual(sut.navigationState, .processing)

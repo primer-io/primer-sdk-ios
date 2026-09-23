@@ -12,7 +12,7 @@ CheckoutComponents is a modern, slot-based payment checkout framework for iOS 15
 
 The public API is composed of:
 
-- **Entry points**: `PrimerCheckout` (managed SwiftUI modal) or `PrimerCheckoutSession` + `.primerCheckoutSession(_:onCompletion:)` modifier (composable/inline); `PrimerCheckoutPresenter` for UIKit
+- **Entry points**: `PrimerCheckout` (managed SwiftUI modal) or `PrimerCheckoutSession` + `.primerCheckoutSession(_:theme:onCompletion:)` modifier (composable/inline); `PrimerCheckoutPresenter` for UIKit
 - **Composable views**: `PrimerCardForm`, `PrimerPaymentMethods`, `PrimerVaultedPaymentMethods` — each exposes `@ViewBuilder` section slots and resolves its session from the environment
 - **Observable sessions**: `PrimerCardFormSession`, `PrimerSelectionSession` — bridge internal scope `AsyncStream<State>` into `@Published state` and expose the mutation surface
 - **Defaults namespaces**: `CardFormDefaults`, `PaymentMethodsDefaults`, `VaultedPaymentMethodsDefaults` — default slot bodies and per-field building blocks for recomposition
@@ -67,7 +67,9 @@ Dynamic payment method registration system:
 
 ### SwiftUI Integration
 **PrimerCheckout**: Managed modal — renders SDK defaults with no customization slots.
-**PrimerCheckoutSession** + `.primerCheckoutSession(_:onCompletion:)`: Composable/inline — embed `PrimerCardForm`, `PrimerPaymentMethods`, `PrimerVaultedPaymentMethods` in your own layout.
+**PrimerCheckoutSession** + `.primerCheckoutSession(_:theme:onCompletion:)`: Composable/inline — embed `PrimerCardForm`, `PrimerPaymentMethods`, `PrimerVaultedPaymentMethods` in your own layout. The modifier's `theme` is optional and overrides the session's own on every change. `formatAmount(_:)` prints an amount the way the SDK's own screens do.
+
+Paying with a saved method is `PrimerSelectionSession.selectVaulted(_:)`, which marks then charges, matching Android's `PrimerVaultedPaymentMethodsController.select(method)`. It is the pay verb, so it belongs on a pay button rather than a row tap, and merchants keep their own highlight. CVV recapture is the SDK's own screen (`CheckoutNavigationState.cvvRecapture`), never an inline field.
 
 ### Delegation, works only with UIKit Integration
 **PrimerCheckoutPresenterDelegate** protocol (PrimerCheckoutPresenter.swift:11):
