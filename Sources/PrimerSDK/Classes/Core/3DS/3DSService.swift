@@ -280,9 +280,9 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
                 } else {
                     let message =
                         """
-                        threeDsAppRequestorUrl is not in a valid format (\"https://applink\"). \
-                        In case you want to support redirecting back during the OOB flows, \
-                        please set correct threeDsAppRequestorUrl in PrimerThreeDsOptions during SDK initialization.
+                        No usable threeDsAppRequestorUrl is set, so an out-of-band 3DS challenge \
+                        cannot redirect back to the app. Set one starting with https in \
+                        PrimerThreeDsOptions during SDK initialization, for example https://applink.
                         """
                     logger.warn(message: message)
                 }
