@@ -88,9 +88,7 @@ enum AccessibilityIdentifiers {
     static let cvvField = "primer_checkout_components_vault_cvv_field"
     static let cvvSecurityLabel = "primer_checkout_components_vault_cvv_security_label"
     static let payButton = "primer_checkout_components_vault_pay_button"
-    /// The CVV recapture screen's own submit button. Distinct from ``payButton``, which stays on the
-    /// selection screen's vault section, because one identifier live on two screens at once makes an
-    /// automation selector ambiguous.
+    /// The CVV recapture screen's own submit button, kept apart from ``payButton``.
     static let cvvPayButton = "primer_checkout_components_vault_cvv_pay_button"
   }
 

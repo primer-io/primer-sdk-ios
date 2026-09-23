@@ -15,8 +15,6 @@ enum CheckoutNavigationState: Equatable {
   case deleteVaultedPaymentMethodConfirmation(
     PrimerHeadlessUniversalCheckout.VaultedPaymentMethod)
   case paymentMethod(String)
-  /// CVV recapture for the selected saved card. Carries nothing: the card is read from the selection
-  /// state, which is the same shape as Android's `Screen.CvvRecapture`.
   case cvvRecapture
   case processing
   case success(PaymentResult)
@@ -29,8 +27,7 @@ enum CheckoutNavigationState: Equatable {
   /// Vault management belongs here even though `PrimerVaultedPaymentMethods` is embedded by the
   /// merchant — that component shows only the selected method, so "Show all" has nowhere to go unless
   /// the host presents the full list, and deleting from that list needs its confirmation screen too.
-  /// CVV recapture is here for the same reason: a merchant-owned pay button has nowhere to put the
-  /// field, so the SDK has to raise it.
+  /// CVV recapture is here too: a merchant-owned pay button has nowhere to put the field.
   ///
   /// `loading`, `paymentMethodSelection` and `dismissed` stay out: those are rendered by the
   /// merchant's own embedded content.

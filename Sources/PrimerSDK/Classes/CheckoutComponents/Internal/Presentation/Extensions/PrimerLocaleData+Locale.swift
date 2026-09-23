@@ -8,14 +8,7 @@ import Foundation
 @_spi(PrimerInternal) import PrimerCore
 
 extension PrimerLocaleData {
-  /// The locale money is formatted in. Reached through `ConfigurationService.locale`, which is where
-  /// every amount the SDK prints takes both its currency and its locale, so the two cannot disagree.
-  ///
-  /// Yields the device locale untouched when the configured code already describes the device.
-  /// `localeCode` carries only a language and a region, so rebuilding from it would drop the script
-  /// subtag and the number format a customer chose in Settings. A device on `sr-Latn-RS` would start
-  /// printing as `sr-RS`, and `PrimerLocaleData()` seeds itself from the device, so that would hit
-  /// every merchant who never set one.
+  /// The locale money is formatted in.
   var locale: Locale {
     let device = Locale.current
     let deviceLanguage = device.languageCode ?? "en"

@@ -246,8 +246,8 @@ Bridges the payment-method selection scope into an observable object consumed by
 public final class PrimerSelectionSession: ObservableObject {
   @Published public private(set) var state: PrimerPaymentMethodSelectionState
 
-  /// Published, so a list you build yourself re-renders when the set changes — after `delete(_:)`,
-  /// or when the SDK's saved-methods screen deletes one.
+  /// Published, so a list you build yourself re-renders when the set changes. That covers
+  /// `delete(_:)` and a delete made on the SDK's saved-methods screen.
   @Published public private(set) var vaultedPaymentMethods: [PrimerHeadlessUniversalCheckout.VaultedPaymentMethod]
 
   public func select(_ method: CheckoutPaymentMethod)
@@ -262,7 +262,7 @@ public final class PrimerSelectionSession: ObservableObject {
 ```
 
 `selectVaulted(_:)` is the pay verb, matching Android's `PrimerVaultedPaymentMethodsController.select(method)`.
-It returns immediately and the payment runs on; the outcome arrives through the modifier's
+It returns at once and the payment runs on. The outcome arrives through the modifier's
 `onCompletion`. Keep which row looks selected in your own view state. A card that needs CVV
 recapture raises the SDK's CVV screen first, and that screen finishes the payment.
 

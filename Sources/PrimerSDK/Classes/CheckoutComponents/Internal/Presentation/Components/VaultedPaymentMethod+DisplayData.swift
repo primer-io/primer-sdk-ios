@@ -37,8 +37,7 @@ extension PrimerHeadlessUniversalCheckout.VaultedPaymentMethod {
     }
   }
 
-  /// The card scheme, which sizes and validates the CVV. `.unknown` for anything that is not a card,
-  /// and that falls back to a three-digit code.
+  /// The card scheme, which sizes and validates the CVV.
   var cardNetwork: CardNetwork {
     let network = paymentInstrumentData.network ?? paymentInstrumentData.binData?.network ?? "Card"
     return CardNetwork(rawValue: network.uppercased()) ?? .unknown

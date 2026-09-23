@@ -65,7 +65,6 @@ struct VaultSection: View {
           .fill(CheckoutColors.borderFocus(tokens: tokens))
       )
     }
-    // The button keeps its brand fill while paying, it only stops accepting taps.
     .disabled(isLoading)
     .accessibility(
       config: AccessibilityConfiguration(

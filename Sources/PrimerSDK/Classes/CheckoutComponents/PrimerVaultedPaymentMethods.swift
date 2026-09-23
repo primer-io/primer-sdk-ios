@@ -71,11 +71,9 @@ public struct PrimerVaultedPaymentMethods: View {
           // One row, not the whole vault: this is the returning-customer shortcut, and the header's
           // "Show all" opens the screen that lists every saved method. Merchants who want the full
           // list inline iterate ``PrimerSelectionSession/vaultedPaymentMethods`` themselves.
-          // Marks rather than pays: the row is a choice, the submit slot is the pay verb. Tapping it
-          // keeps the SDK's own screens pointed at the same card.
+          // The row marks rather than pays. The submit slot is the pay verb.
           item(selected, true) { session.setSelectedVaulted(selected) }
-          // A card needing CVV recapture gets the SDK's own screen on submit, so there is no field
-          // to render here and nothing to hold the button back.
+          // A card needing CVV recapture gets the SDK's own screen on submit.
           submitButton(session.state.isVaultPaymentLoading, !session.state.isVaultPaymentLoading) {
             session.selectVaulted(selected)
           }

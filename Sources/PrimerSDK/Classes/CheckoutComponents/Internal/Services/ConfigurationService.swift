@@ -16,8 +16,7 @@ protocol ConfigurationService {
   var currency: Currency? { get }
   var amount: Int? { get }
   var captureVaultedCardCvv: Bool { get }
-  /// The locale every printed amount is formatted in, alongside the currency it is formatted with.
-  /// One source for both, so the merchant's total and the SDK's own screens cannot disagree.
+  /// The locale every printed amount is formatted in.
   var locale: Locale { get }
 }
 
