@@ -61,6 +61,9 @@ final class ApplePayAuthorizationCoordinatorTests: XCTestCase {
         mockPresentationManager.presentResult = .success(())
         mockPresentationManager.shouldSimulateAuthorization = true
 
+        let presented = expectation(description: "present called")
+        mockPresentationManager.presentCalledExpectation = presented
+
         // When
         let task = Task { [self] in
             try await coordinator.authorize(
@@ -69,12 +72,7 @@ final class ApplePayAuthorizationCoordinatorTests: XCTestCase {
             )
         }
 
-        // Wait until the presentation manager has actually been invoked
-        try await withTimeout(2.0) { [self] in
-            while !mockPresentationManager.presentWasCalled {
-                await Task.yield()
-            }
-        }
+        await fulfillment(of: [presented], timeout: 5.0)
         task.cancel()
 
         // Then
@@ -284,6 +282,10 @@ private final class CoordinatorTestMockApplePayPresentationManager: ApplePayPres
     var presentResult: Result<Void, Error> = .success(())
     var presentWasCalled = false
     var lastRequest: ApplePayRequest?
+    /// Fulfilled the moment `present` is entered, so tests wait on a signal instead of spinning on
+    /// `presentWasCalled`. A spin starves the very task it is waiting for when the cooperative pool
+    /// is busy, which is how this flaked on CI while passing locally.
+    var presentCalledExpectation: XCTestExpectation?
     var shouldSimulateAuthorization = false
     var shouldSimulateCancellation = false
 
@@ -293,6 +295,7 @@ private final class CoordinatorTestMockApplePayPresentationManager: ApplePayPres
     ) async throws {
         presentWasCalled = true
         lastRequest = request
+        presentCalledExpectation?.fulfill()
 
         switch presentResult {
         case .success:
