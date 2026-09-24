@@ -200,7 +200,8 @@ private extension Error {
 
 private extension BackendDrivenCheckoutOrchestrator {
     convenience init(context: SDKContext) async throws {
-        let engine = try await BDCEngineProvider.shared.engine(manifestProvider: NetworkSignedManifestProvider())
+        let provider = NetworkSignedManifestProvider(token: PrimerAPIConfigurationModule.decodedJWTToken)
+        let engine = try await BDCEngineProvider.shared.engine(manifestProvider: provider)
         self.init(engine: engine, context: context)
     }
 }
