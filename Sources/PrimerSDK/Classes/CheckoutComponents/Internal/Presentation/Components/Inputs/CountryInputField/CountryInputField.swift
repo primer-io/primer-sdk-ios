@@ -92,7 +92,7 @@ struct CountryInputField: View, LogReporter {
         .buttonStyle(PlainButtonStyle())
       },
       rightComponent: {
-        Image(systemName: "chevron.down")
+        Image(systemName: RTLIcon.forwardChevron)
           .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
       }
     )

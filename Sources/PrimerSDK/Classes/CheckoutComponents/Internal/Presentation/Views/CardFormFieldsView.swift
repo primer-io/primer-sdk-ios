@@ -41,6 +41,12 @@ struct CardFormFieldsView: View {
   @State private var observationTask: Task<Void, Never>?
   @FocusState private var focusedField: PrimerInputElementType?
 
+  /// Billing fields drawn side by side, as in the design.
+  private static let billingFieldPairs: [PrimerInputElementType: PrimerInputElementType] = [
+    .firstName: .lastName,
+    .postalCode: .city
+  ]
+
   var body: some View {
     VStack(spacing: 0) {
       if case let .single(type) = section {
@@ -105,27 +111,36 @@ struct CardFormFieldsView: View {
           .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
 
         VStack(spacing: 0) {
-          ForEach(0..<formConfiguration.billingFields.count, id: \.self) { index in
-            let fieldType = formConfiguration.billingFields[index]
-
-            if fieldType == .firstName,
-              index + 1 < formConfiguration.billingFields.count,
-              formConfiguration.billingFields[index + 1] == .lastName {
+          ForEach(Self.billingRows(formConfiguration.billingFields), id: \.self) { row in
+            if row.count > 1 {
               HStack(alignment: .top, spacing: PrimerSpacing.medium(tokens: tokens)) {
-                renderField(.firstName)
-                renderField(.lastName)
+                ForEach(row, id: \.self) { renderField($0) }
               }
-            } else if index > 0,
-              formConfiguration.billingFields[index - 1] == .firstName,
-              fieldType == .lastName {
-              EmptyView()
             } else {
-              renderField(fieldType)
+              renderField(row[0])
             }
           }
         }
       }
     }
+  }
+
+  /// A pair from `billingFieldPairs` shares a row when the second directly follows the first; every other
+  /// field gets a row of its own.
+  static func billingRows(_ fields: [PrimerInputElementType]) -> [[PrimerInputElementType]] {
+    var rows: [[PrimerInputElementType]] = []
+    var index = 0
+    while index < fields.count {
+      let field = fields[index]
+      if let partner = billingFieldPairs[field], index + 1 < fields.count, fields[index + 1] == partner {
+        rows.append([field, partner])
+        index += 2
+      } else {
+        rows.append([field])
+        index += 1
+      }
+    }
+    return rows
   }
 
   // MARK: - Dynamic Field Rendering
