@@ -14,9 +14,14 @@ struct CardNetworkBadge: View, LogReporter {
 
   @Environment(\.designTokens) private var tokens
 
+  /// The network's logo, or the design's grey card while the number has no network yet.
+  static func image(for network: CardNetwork) -> UIImage? {
+    network == .unknown ? UIImage(primerResource: "card-placeholder") : network.icon
+  }
+
   @ViewBuilder
   var body: some View {
-    if let icon = network.icon {
+    if let icon = Self.image(for: network) {
       Image(uiImage: icon)
         .resizable()
         .aspectRatio(contentMode: .fill)

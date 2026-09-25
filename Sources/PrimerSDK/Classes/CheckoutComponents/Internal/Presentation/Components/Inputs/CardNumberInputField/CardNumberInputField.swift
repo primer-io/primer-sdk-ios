@@ -114,7 +114,7 @@ struct CardNumberInputField: View, LogReporter {
                 )
               }
             }
-          } else if displayNetwork != .unknown {
+          } else {
             CardNetworkBadge(network: displayNetwork)
           }
         }
