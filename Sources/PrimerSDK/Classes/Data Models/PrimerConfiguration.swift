@@ -368,14 +368,46 @@ extension Response.Body.Configuration {
 
         // swiftlint:disable nesting
         struct ShippingMethodOptions: CheckoutModuleOptions {
+            /// Options baked into the client session. Empty in callback mode, where the merchant app
+            /// supplies them per address and Primer stores no list.
             let shippingMethods: [ShippingMethod]
-            let selectedShippingMethod: String
+            let selectedShippingMethod: String?
+            /// The module defers shipping to a merchant callback: it fetches nothing itself and only
+            /// the merchant's own `PATCH` sets `order.shipping`.
+            let callbackMode: Bool
 
             struct ShippingMethod: Codable {
                 let name: String
                 let description: String
                 let amount: Int
                 let id: String
+            }
+
+            private enum CodingKeys: String, CodingKey {
+                case shippingMethods, selectedShippingMethod, callbackMode
+            }
+
+            init(
+                shippingMethods: [ShippingMethod] = [],
+                selectedShippingMethod: String? = nil,
+                callbackMode: Bool = false
+            ) {
+                self.shippingMethods = shippingMethods
+                self.selectedShippingMethod = selectedShippingMethod
+                self.callbackMode = callbackMode
+            }
+
+            init(from decoder: Decoder) throws {
+                let container = try decoder.container(keyedBy: CodingKeys.self)
+                shippingMethods = (try? container.decode([ShippingMethod].self, forKey: .shippingMethods)) ?? []
+                selectedShippingMethod = (try? container.decode(String?.self, forKey: .selectedShippingMethod)) ?? nil
+                callbackMode = (try? container.decode(Bool?.self, forKey: .callbackMode)) ?? false
+
+                // Signals "not this module type" to the polymorphic decode in CheckoutModule.init(from:),
+                // where it is caught by `try?`. It is expected control flow, so it must not be logged.
+                if shippingMethods.isEmpty, selectedShippingMethod == nil, !callbackMode {
+                    throw InternalError.failedToDecode(message: "All fields are nil")
+                }
             }
         }
 

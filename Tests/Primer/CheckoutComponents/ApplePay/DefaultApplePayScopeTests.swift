@@ -617,7 +617,7 @@ final class DefaultApplePayScopeFactoryTests: XCTestCase {
             navigator: CheckoutNavigator()
         )
 
-        let defaultRequestFactory: () throws -> ApplePayRequest = applePayRequestFactory ?? {
+        let requestFactory: () throws -> ApplePayRequest = applePayRequestFactory ?? {
             ApplePayRequest(
                 currency: Currency(code: "GBP", decimalDigits: 2),
                 merchantIdentifier: TestData.PaymentMethodOptions.exampleMerchantId,
@@ -631,7 +631,7 @@ final class DefaultApplePayScopeFactoryTests: XCTestCase {
             presentationContext: presentationContext,
             applePayPresentationManager: mockPresentationManager,
             clientSessionActionsFactory: { [unowned self] in mockClientSessionActions },
-            applePayRequestFactory: defaultRequestFactory
+            applePayRequestFactory: { _ in try requestFactory() }
         )
         createdScopes.append(scope)
         return scope

@@ -38,6 +38,7 @@ enum DemoRegistry {
         (CustomCardFormDemo.metadata, { AnyView(CustomCardFormDemo(configuration: $0)) }),
         (PrefillCardholderNameDemo.metadata, { AnyView(PrefillCardholderNameDemo(configuration: $0)) }),
         (BeforePaymentGateDemo.metadata, { AnyView(BeforePaymentGateDemo(configuration: $0)) }),
+        (ExpressCheckoutShippingDemo.metadata, { AnyView(ExpressCheckoutShippingDemo(configuration: $0)) }),
         // Payment method lists
         (PaymentMethodListOnlyDemo.metadata, { AnyView(PaymentMethodListOnlyDemo(configuration: $0)) }),
         (CustomPaymentMethodsDemo.metadata, { AnyView(CustomPaymentMethodsDemo(configuration: $0)) }),

@@ -223,6 +223,11 @@ extension PrimerCheckoutDataPayment {
     }
 }
 
+/// All stored properties are immutable and `Sendable`. The `NSObject` base is what stops the compiler
+/// inferring the conformance, which merchant shipping callbacks need to carry the address across
+/// actors.
+extension PrimerAddress: @unchecked Sendable {}
+
 // MARK: Client Session Fee
 
 @objc public final class PrimerFee: NSObject, Codable {

@@ -4,6 +4,7 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+import Contacts
 import PassKit
 @testable import PrimerSDK
 import XCTest
@@ -60,6 +61,9 @@ final class ApplePayAuthorizationCoordinatorTests: XCTestCase {
         mockPresentationManager.presentResult = .success(())
         mockPresentationManager.shouldSimulateAuthorization = true
 
+        let presented = expectation(description: "present called")
+        mockPresentationManager.presentCalledExpectation = presented
+
         // When
         let task = Task { [self] in
             try await coordinator.authorize(
@@ -68,12 +72,7 @@ final class ApplePayAuthorizationCoordinatorTests: XCTestCase {
             )
         }
 
-        // Wait until the presentation manager has actually been invoked
-        try await withTimeout(2.0) { [self] in
-            while !mockPresentationManager.presentWasCalled {
-                await Task.yield()
-            }
-        }
+        await fulfillment(of: [presented], timeout: 5.0)
         task.cancel()
 
         // Then
@@ -121,9 +120,131 @@ final class ApplePayAuthorizationCoordinatorTests: XCTestCase {
         XCTAssertNotNil(result)
     }
 
+    // MARK: - Shipping Delegates
+
+    /// Before the coordinator implemented this delegate, PassKit kept the request's own list across
+    /// address edits. An update that omits them clears the sheet, so legacy merchants must get
+    /// their baked-in options back.
+    func test_didSelectShippingContact_legacyMode_resendsTheRequestsShippingMethods() async throws {
+        let method = PKShippingMethod(label: "Standard", amount: 5)
+        method.identifier = "standard"
+        let request = createMockRequest(shippingMethods: [method])
+        let coordinator = ApplePayAuthorizationCoordinator(shippingSession: makeSession(mode: .legacy))
+        try await present(coordinator, with: request)
+
+        let update = await coordinator.paymentAuthorizationController(
+            PKPaymentAuthorizationController(),
+            didSelectShippingContact: contact(countryCode: "GB")
+        )
+
+        XCTAssertEqual(update.shippingMethods.map(\.identifier), ["standard"])
+    }
+
+    func test_didSelectShippingContact_callbacksMode_showsTheMerchantsOptions() async throws {
+        let coordinator = ApplePayAuthorizationCoordinator(
+            shippingSession: makeSession(
+                mode: .callbacks,
+                options: [
+                    PrimerShippingOption(id: "standard", name: "Standard", description: "3-5 days", amount: 500),
+                    PrimerShippingOption(id: "express", name: "Express", description: "Next day", amount: 1500)
+                ]
+            )
+        )
+        try await present(coordinator, with: createMockRequest())
+
+        let update = await coordinator.paymentAuthorizationController(
+            PKPaymentAuthorizationController(),
+            didSelectShippingContact: contact(countryCode: "GB")
+        )
+
+        XCTAssertEqual(update.shippingMethods.map(\.identifier), ["standard", "express"])
+        XCTAssertEqual(update.shippingMethods.first?.label, "Standard")
+        XCTAssertEqual(update.shippingMethods.first?.detail, "3-5 days")
+        XCTAssertTrue(update.errors.isEmpty)
+    }
+
+    func test_didSelectShippingContact_emptyList_showsTheUnserviceableAddressError() async throws {
+        let coordinator = ApplePayAuthorizationCoordinator(
+            shippingSession: makeSession(mode: .callbacks, options: [])
+        )
+        try await present(coordinator, with: createMockRequest())
+
+        let update = await coordinator.paymentAuthorizationController(
+            PKPaymentAuthorizationController(),
+            didSelectShippingContact: contact(countryCode: "GB")
+        )
+
+        XCTAssertTrue(update.shippingMethods.isEmpty)
+        XCTAssertEqual((update.errors.first as? NSError)?.code, PKPaymentError.shippingAddressUnserviceableError.rawValue)
+    }
+
+    func test_address_splitsTheStreetIntoTwoLines() {
+        let address = ApplePayAuthorizationCoordinator.address(from: contact(countryCode: "GB", street: "1 High Street\nFlat 2"))
+
+        XCTAssertEqual(address.addressLine1, "1 High Street")
+        XCTAssertEqual(address.addressLine2, "Flat 2")
+        XCTAssertEqual(address.city, "London")
+        XCTAssertEqual(address.postalCode, "SW1A 1AA")
+        XCTAssertEqual(address.countryCode, "GB")
+    }
+
+    func test_address_withoutAPostalAddress_isEmpty() {
+        let address = ApplePayAuthorizationCoordinator.address(from: PKContact())
+
+        XCTAssertNil(address.addressLine1)
+        XCTAssertNil(address.countryCode)
+    }
+
     // MARK: - Helper
 
-    private func createMockRequest() -> ApplePayRequest {
+    /// Drives the coordinator to the point where it has recorded the request, without waiting for the
+    /// authorization it never receives here.
+    private func present(_ coordinator: ApplePayAuthorizationCoordinator, with request: ApplePayRequest) async throws {
+        let manager = CoordinatorTestMockApplePayPresentationManager()
+        manager.presentResult = .success(())
+        Task { _ = try? await coordinator.authorize(with: request, presentationManager: manager) }
+        try await Task.sleep(nanoseconds: 100_000_000)
+    }
+
+    private func makeSession(
+        mode: ApplePayShippingSession.Mode,
+        options: [PrimerShippingOption] = []
+    ) -> ApplePayShippingSession {
+        // The merchant's backend is stubbed as already holding the default option, so the eager commit
+        // that follows an address change verifies and the delegate takes its success path.
+        let committed = options.first
+        return ApplePayShippingSession(
+            mode: mode,
+            requireShippingMethod: true,
+            addressChangeProvider: { { _ in options } },
+            optionChangeProvider: { { _ in } },
+            refreshConfiguration: {},
+            currentShipping: {
+                committed.map {
+                    ClientSession.Order.ShippingMethod(
+                        amount: $0.amount,
+                        methodId: $0.id,
+                        methodName: $0.name,
+                        methodDescription: $0.description
+                    )
+                }
+            }
+        )
+    }
+
+    private func contact(countryCode: String, street: String = "1 High Street") -> PKContact {
+        let postalAddress = CNMutablePostalAddress()
+        postalAddress.street = street
+        postalAddress.city = "London"
+        postalAddress.postalCode = "SW1A 1AA"
+        postalAddress.isoCountryCode = countryCode
+
+        let contact = PKContact()
+        contact.postalAddress = postalAddress
+        return contact
+    }
+
+    private func createMockRequest(shippingMethods: [PKShippingMethod]? = nil) -> ApplePayRequest {
         let items = [
             // swiftlint:disable:next force_try
             try! ApplePayOrderItem(
@@ -140,7 +261,8 @@ final class ApplePayAuthorizationCoordinatorTests: XCTestCase {
             currency: Currency(code: "GBP", decimalDigits: 2),
             merchantIdentifier: "merchant.test",
             countryCode: .gb,
-            items: items
+            items: items,
+            shippingMethods: shippingMethods
         )
     }
 }
@@ -160,6 +282,10 @@ private final class CoordinatorTestMockApplePayPresentationManager: ApplePayPres
     var presentResult: Result<Void, Error> = .success(())
     var presentWasCalled = false
     var lastRequest: ApplePayRequest?
+    /// Fulfilled the moment `present` is entered, so tests wait on a signal instead of spinning on
+    /// `presentWasCalled`. A spin starves the very task it is waiting for when the cooperative pool
+    /// is busy, which is how this flaked on CI while passing locally.
+    var presentCalledExpectation: XCTestExpectation?
     var shouldSimulateAuthorization = false
     var shouldSimulateCancellation = false
 
@@ -169,6 +295,7 @@ private final class CoordinatorTestMockApplePayPresentationManager: ApplePayPres
     ) async throws {
         presentWasCalled = true
         lastRequest = request
+        presentCalledExpectation?.fulfill()
 
         switch presentResult {
         case .success:

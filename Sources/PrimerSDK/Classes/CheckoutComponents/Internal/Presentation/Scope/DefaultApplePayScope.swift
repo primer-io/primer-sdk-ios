@@ -48,16 +48,20 @@ final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
   private(set) var paymentTask: Task<Void, Never>?
 
   private let clientSessionActionsFactory: () -> ClientSessionActionsProtocol
-  private let applePayRequestFactory: () throws -> ApplePayRequest
-  private let authorizationCoordinatorFactory: @MainActor () -> ApplePayAuthorizationCoordinator
+  private let applePayRequestFactory: (ApplePayShippingSession.Mode) throws -> ApplePayRequest
+  private let authorizationCoordinatorFactory: @MainActor (ApplePayShippingSession) -> ApplePayAuthorizationCoordinator
 
   init(
     checkoutScope: DefaultCheckoutScope,
     presentationContext: PresentationContext = .fromPaymentSelection,
     applePayPresentationManager: ApplePayPresenting = ApplePayPresentationManager(),
     clientSessionActionsFactory: @escaping () -> ClientSessionActionsProtocol = { ClientSessionActionsModule() },
-    applePayRequestFactory: @escaping () throws -> ApplePayRequest = { try ApplePayRequestBuilder.build() },
-    authorizationCoordinatorFactory: @MainActor @escaping () -> ApplePayAuthorizationCoordinator = { ApplePayAuthorizationCoordinator() }
+    applePayRequestFactory: @escaping (ApplePayShippingSession.Mode) throws -> ApplePayRequest = {
+      try ApplePayRequestBuilder.build(mode: $0)
+    },
+    authorizationCoordinatorFactory: @MainActor @escaping (ApplePayShippingSession) -> ApplePayAuthorizationCoordinator = {
+      ApplePayAuthorizationCoordinator(shippingSession: $0)
+    }
   ) {
     self.checkoutScope = checkoutScope
     self.presentationContext = presentationContext
@@ -141,9 +145,11 @@ final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
         cardNetwork: nil
       )
 
-      let applePayRequest = try applePayRequestFactory()
+      // Built per attempt: the option list, the commit and the gate must not survive a retry.
+      let shippingSession = makeShippingSession()
+      let applePayRequest = try applePayRequestFactory(shippingSession.mode)
 
-      let coordinator = authorizationCoordinatorFactory()
+      let coordinator = authorizationCoordinatorFactory(shippingSession)
       authorizationCoordinator = coordinator
 
       let payment = try await coordinator.authorize(
@@ -182,6 +188,20 @@ final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
     }
   }
 
+  private func makeShippingSession() -> ApplePayShippingSession {
+    let applePayOptions = PrimerSettings.current.paymentMethodOptions.applePayOptions
+    return ApplePayShippingSession(
+      mode: ApplePayShippingSession.resolveMode(
+        checkoutModules: PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules,
+        applePayOptions: applePayOptions,
+        hasAddressChangeHandler: checkoutScope?.onShippingAddressChange != nil
+      ),
+      requireShippingMethod: applePayOptions?.shippingOptions?.requireShippingMethod == true,
+      addressChangeProvider: { [weak checkoutScope] in checkoutScope?.onShippingAddressChange },
+      optionChangeProvider: { [weak checkoutScope] in checkoutScope?.onShippingOptionChange }
+    )
+  }
+
   private func handlePaymentSuccess(_ result: PaymentResult) async {
     structuredState.isLoading = false
 
@@ -213,74 +233,4 @@ final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
   }
 
   // swiftlint:enable identifier_name
-}
-
-// MARK: - Apple Pay Authorization Coordinator
-
-/// Coordinator that handles PKPaymentAuthorizationControllerDelegate callbacks.
-/// Bridges PassKit delegate pattern to async/await.
-@available(iOS 15.0, *)
-@MainActor
-final class ApplePayAuthorizationCoordinator: NSObject, PKPaymentAuthorizationControllerDelegate {
-
-  private var authorizationContinuation: CheckedContinuation<PKPayment, Error>?
-  private var completionHandler: ((PKPaymentAuthorizationResult) -> Void)?
-  private var isCancelled = true
-  private var didTimeout = false
-
-  func authorize(
-    with request: ApplePayRequest,
-    presentationManager: ApplePayPresenting
-  ) async throws -> PKPayment {
-    try await withCheckedThrowingContinuation { continuation in
-      self.authorizationContinuation = continuation
-      self.isCancelled = true
-      self.didTimeout = false
-
-      Task { @MainActor in
-        do {
-          try await presentationManager.present(withRequest: request, delegate: self)
-        } catch {
-          self.authorizationContinuation?.resume(throwing: error)
-          self.authorizationContinuation = nil
-        }
-      }
-    }
-  }
-
-  // MARK: - PKPaymentAuthorizationControllerDelegate
-
-  func paymentAuthorizationControllerDidFinish(_ controller: PKPaymentAuthorizationController) {
-    controller.dismiss(completion: nil)
-
-    if isCancelled {
-      let error = PrimerError.cancelled(
-        paymentMethodType: PrimerPaymentMethodType.applePay.rawValue)
-      authorizationContinuation?.resume(throwing: error)
-      authorizationContinuation = nil
-    } else if didTimeout {
-      let error = PrimerError.applePayTimedOut()
-      authorizationContinuation?.resume(throwing: error)
-      authorizationContinuation = nil
-    }
-  }
-
-  func paymentAuthorizationController(
-    _ controller: PKPaymentAuthorizationController,
-    didAuthorizePayment payment: PKPayment,
-    handler completion: @escaping (PKPaymentAuthorizationResult) -> Void
-  ) {
-    isCancelled = false
-    didTimeout = false
-
-    // Complete the authorization with success
-    completion(PKPaymentAuthorizationResult(status: .success, errors: nil))
-
-    // Capture and clear continuation before dismiss to avoid @MainActor access in @Sendable closure
-    let continuation = authorizationContinuation
-    authorizationContinuation = nil
-    controller.dismiss {
-      continuation?.resume(returning: payment)
-    }
-  }
 }

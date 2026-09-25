@@ -44,6 +44,18 @@ public final class PrimerCheckoutSession: ObservableObject {
     didSet { checkoutScope?.onBeforePaymentCreate = onBeforePaymentCreate }
   }
 
+  /// Express Checkout: supplies the shipping options while the Apple Pay sheet is open. Mutations are
+  /// forwarded to the checkout scope immediately, so post-`.ready` assignment still applies.
+  public var onShippingAddressChange: ShippingAddressChangeHandler? {
+    didSet { checkoutScope?.onShippingAddressChange = onShippingAddressChange }
+  }
+
+  /// Express Checkout: commits the option the shopper picked, through your backend. Mutations are
+  /// forwarded to the checkout scope immediately, so post-`.ready` assignment still applies.
+  public var onShippingOptionChange: ShippingOptionChangeHandler? {
+    didSet { checkoutScope?.onShippingOptionChange = onShippingOptionChange }
+  }
+
   /// Declarative idempotency-key provider, invoked once per payment attempt just before the SDK
   /// creates the payment; return nil (default) to opt out. Ignored when `onBeforePaymentCreate` is set.
   /// Mutations are forwarded to the checkout scope immediately, so post-`.ready` assignment still applies.
@@ -67,11 +79,15 @@ public final class PrimerCheckoutSession: ObservableObject {
     clientToken: String,
     settings: PrimerSettings = PrimerSettings(),
     theme: PrimerCheckoutTheme = PrimerCheckoutTheme(),
+    onShippingAddressChange: ShippingAddressChangeHandler? = nil,
+    onShippingOptionChange: ShippingOptionChangeHandler? = nil,
     idempotencyKey: @escaping @Sendable () -> String? = { nil }
   ) {
     self.clientToken = clientToken
     self.settings = settings
     self.theme = theme
+    self.onShippingAddressChange = onShippingAddressChange
+    self.onShippingOptionChange = onShippingOptionChange
     self.idempotencyKey = idempotencyKey
   }
 
@@ -113,6 +129,8 @@ public final class PrimerCheckoutSession: ObservableObject {
   /// from `start()` so tests can drive the loop with a scope whose state stream they control.
   func observeCheckoutState(_ scope: DefaultCheckoutScope) async {
     scope.onBeforePaymentCreate = onBeforePaymentCreate
+    scope.onShippingAddressChange = onShippingAddressChange
+    scope.onShippingOptionChange = onShippingOptionChange
     scope.idempotencyKeyProvider = idempotencyKey
     checkoutScope = scope
 

@@ -129,12 +129,16 @@ extension PrimerCheckoutPresenterDelegate {
     ///   - clientToken: The client token for the session
     ///   - viewController: The view controller to present from
     ///   - primerSettings: Configuration settings to apply for this checkout session
+    ///   - onShippingAddressChange: Express Checkout shipping options for the shopper's address
+    ///   - onShippingOptionChange: Express Checkout commit of the selected option
     ///   - completion: Optional completion handler
     /// - Note: This method is not @objc compatible due to PrimerSettings parameter. For Objective-C, use the overload without settings parameter.
     public static func presentCheckout(
         clientToken: String,
         from viewController: UIViewController,
         primerSettings: PrimerSettings,
+        onShippingAddressChange: ShippingAddressChangeHandler? = nil,
+        onShippingOptionChange: ShippingOptionChangeHandler? = nil,
         completion: (() -> Void)? = nil
     ) {
         shared.presentCheckout(
@@ -142,6 +146,8 @@ extension PrimerCheckoutPresenterDelegate {
             from: viewController,
             primerSettings: primerSettings,
             primerTheme: PrimerCheckoutTheme(),
+            onShippingAddressChange: onShippingAddressChange,
+            onShippingOptionChange: onShippingOptionChange,
             completion: completion
         )
     }
@@ -152,12 +158,16 @@ extension PrimerCheckoutPresenterDelegate {
     ///   - viewController: The view controller to present from
     ///   - primerSettings: Configuration settings to apply for this checkout session
     ///   - primerTheme: Theme configuration for design tokens
+    ///   - onShippingAddressChange: Express Checkout shipping options for the shopper's address
+    ///   - onShippingOptionChange: Express Checkout commit of the selected option
     ///   - completion: Optional completion handler
     public static func presentCheckout(
         clientToken: String,
         from viewController: UIViewController,
         primerSettings: PrimerSettings,
         primerTheme: PrimerCheckoutTheme,
+        onShippingAddressChange: ShippingAddressChangeHandler? = nil,
+        onShippingOptionChange: ShippingOptionChangeHandler? = nil,
         completion: (() -> Void)? = nil
     ) {
         shared.presentCheckout(
@@ -165,6 +175,8 @@ extension PrimerCheckoutPresenterDelegate {
             from: viewController,
             primerSettings: primerSettings,
             primerTheme: primerTheme,
+            onShippingAddressChange: onShippingAddressChange,
+            onShippingOptionChange: onShippingOptionChange,
             completion: completion
         )
     }
@@ -298,6 +310,8 @@ extension PrimerCheckoutPresenterDelegate {
         from viewController: UIViewController,
         primerSettings: PrimerSettings,
         primerTheme: PrimerCheckoutTheme,
+        onShippingAddressChange: ShippingAddressChangeHandler?,
+        onShippingOptionChange: ShippingOptionChangeHandler?,
         completion: (() -> Void)?
     ) {
         guard !isPresentingCheckout else {
@@ -321,6 +335,8 @@ extension PrimerCheckoutPresenterDelegate {
                 navigator: navigator,
                 presentationContext: .direct,
                 integrationType: .uiKit,
+                onShippingAddressChange: onShippingAddressChange,
+            onShippingOptionChange: onShippingOptionChange,
                 onCompletion: { [weak self] state in
                     switch state {
                     case let .success(paymentResult):
@@ -418,6 +434,8 @@ extension PrimerCheckoutPresenter {
     public static func presentCheckout(
         clientToken: String,
         primerSettings: PrimerSettings,
+        onShippingAddressChange: ShippingAddressChangeHandler? = nil,
+        onShippingOptionChange: ShippingOptionChangeHandler? = nil,
         completion: (() -> Void)? = nil
     ) {
         guard let viewController = shared.findPresentingViewController() else {
@@ -434,6 +452,8 @@ extension PrimerCheckoutPresenter {
             clientToken: clientToken,
             from: viewController,
             primerSettings: primerSettings,
+            onShippingAddressChange: onShippingAddressChange,
+            onShippingOptionChange: onShippingOptionChange,
             completion: completion
         )
     }

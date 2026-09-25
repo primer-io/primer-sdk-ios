@@ -17,6 +17,8 @@ public struct PrimerCheckout: View {
     clientToken: String,
     primerSettings: PrimerSettings = PrimerSettings(),
     primerTheme: PrimerCheckoutTheme = PrimerCheckoutTheme(),
+    onShippingAddressChange: ShippingAddressChangeHandler? = nil,
+    onShippingOptionChange: ShippingOptionChangeHandler? = nil,
     onCompletion: ((PrimerCheckoutState) -> Void)? = nil
   )
 }
@@ -35,12 +37,16 @@ public final class PrimerCheckoutSession: ObservableObject {
   @Published public private(set) var clientSession: PrimerClientSession?
 
   public var onBeforePaymentCreate: BeforePaymentCreateHandler?
+  public var onShippingAddressChange: ShippingAddressChangeHandler?
+  public var onShippingOptionChange: ShippingOptionChangeHandler?
   public var idempotencyKey: @Sendable () -> String?
 
   public init(
     clientToken: String,
     settings: PrimerSettings = PrimerSettings(),
     theme: PrimerCheckoutTheme = PrimerCheckoutTheme(),
+    onShippingAddressChange: ShippingAddressChangeHandler? = nil,
+    onShippingOptionChange: ShippingOptionChangeHandler? = nil,
     idempotencyKey: @escaping @Sendable () -> String? = { nil }
   )
 
@@ -170,13 +176,15 @@ Pre-built slot bodies and per-field building blocks for recomposition.
     from viewController: UIViewController,
     primerSettings: PrimerSettings,
     primerTheme: PrimerCheckoutTheme,
+    onShippingAddressChange: ShippingAddressChangeHandler? = nil,
+    onShippingOptionChange: ShippingOptionChangeHandler? = nil,
     completion: (() -> Void)? = nil
   )
 
   // Convenience overloads
   public static func presentCheckout(clientToken: String, from: UIViewController, completion: (() -> Void)? = nil)
-  public static func presentCheckout(clientToken: String, from: UIViewController, primerSettings: PrimerSettings, completion: (() -> Void)? = nil)
-  public static func presentCheckout(clientToken: String, from: UIViewController, primerSettings: PrimerSettings, primerTheme: PrimerCheckoutTheme, completion: (() -> Void)? = nil)
+  public static func presentCheckout(clientToken: String, from: UIViewController, primerSettings: PrimerSettings, onShippingAddressChange: ShippingAddressChangeHandler? = nil, onShippingOptionChange: ShippingOptionChangeHandler? = nil, completion: (() -> Void)? = nil)
+  public static func presentCheckout(clientToken: String, primerSettings: PrimerSettings, onShippingAddressChange: ShippingAddressChangeHandler? = nil, onShippingOptionChange: ShippingOptionChangeHandler? = nil, completion: (() -> Void)? = nil)
 
   // Dismiss
   public static func dismiss(animated: Bool = true, completion: (() -> Void)? = nil)
@@ -453,3 +461,51 @@ public enum PaymentStatus: Sendable {
 }
 ```
 
+
+---
+
+## Express Checkout Shipping (Apple Pay)
+
+Supply shipping options for the shopper's address while the Apple Pay sheet is open, and commit the
+selection so Primer recomputes the authoritative total. Same handler names and payload shapes as
+Android's `PrimerCheckoutController.onShippingAddressChange` / `onShippingOptionChange`.
+
+```swift
+@available(iOS 15.0, *)
+public typealias ShippingAddressChangeHandler =
+  @Sendable (_ change: PrimerShippingAddressChange) async throws -> [PrimerShippingOption]
+
+@available(iOS 15.0, *)
+public typealias ShippingOptionChangeHandler =
+  @Sendable (_ change: PrimerShippingOptionChange) async throws -> Void
+
+@available(iOS 15.0, *)
+public struct PrimerShippingAddressChange: Sendable {
+  public let paymentMethodType: String
+  public let shippingAddress: PrimerAddress
+}
+
+@available(iOS 15.0, *)
+public struct PrimerShippingOptionChange: Sendable {
+  public let paymentMethodType: String
+  public let selectedShippingOption: PrimerShippingOption
+}
+
+@available(iOS 15.0, *)
+public struct PrimerShippingOption: Equatable, Sendable {
+  public let id: String
+  public let name: String
+  public let description: String
+  public let amount: Int    // minor units
+
+  public init(id: String, name: String, description: String, amount: Int)
+}
+```
+
+Rules:
+
+- Both handlers must return within 20 seconds. A slower response fails the attempt and nothing is charged.
+- `onShippingAddressChange` returning an empty list shows Apple Pay's "cannot deliver to this address" error in the sheet.
+- `onShippingOptionChange` must `PATCH` `order.shipping.methodId` and `order.shipping.amount` on the client session from your backend. The SDK re-reads the session, checks the values match, and only then allows authorization.
+- A SHIPPING checkout module without `callbackMode` always wins. The handlers are ignored in that case.
+- Enable shipping in the sheet through `PrimerApplePayOptions.ShippingOptions`.
