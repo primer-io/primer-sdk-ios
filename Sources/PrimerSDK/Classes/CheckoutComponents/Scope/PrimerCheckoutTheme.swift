@@ -69,6 +69,9 @@ public struct ColorOverrides: Equatable {
   // MARK: Brand & Primary Colors
 
   public let primerColorBrand: Color?
+  /// Text and icons on brand-filled buttons: the pay button label and its spinner. Nil follows
+  /// `primerColorBackgroundPrimary`.
+  public let primerColorOnBrand: Color?
 
   // MARK: Semantic UI Colors (matching internal DesignTokens)
 
@@ -125,6 +128,7 @@ public struct ColorOverrides: Equatable {
 
   public init(
     primerColorBrand: Color? = nil,
+    primerColorOnBrand: Color? = nil,
     primerColorBackgroundPrimary: Color? = nil,
     primerColorBackgroundSecondary: Color? = nil,
     primerColorBackgroundOutlinedDefault: Color? = nil,
@@ -165,6 +169,7 @@ public struct ColorOverrides: Equatable {
     primerColorLoader: Color? = nil
   ) {
     self.primerColorBrand = primerColorBrand
+    self.primerColorOnBrand = primerColorOnBrand
     self.primerColorBackgroundPrimary = primerColorBackgroundPrimary
     self.primerColorBackgroundSecondary = primerColorBackgroundSecondary
     self.primerColorBackgroundOutlinedDefault = primerColorBackgroundOutlinedDefault

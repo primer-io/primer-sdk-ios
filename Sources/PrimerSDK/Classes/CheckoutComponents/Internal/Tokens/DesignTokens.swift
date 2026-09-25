@@ -84,6 +84,8 @@ final class DesignTokens: Decodable {
   var primerColorGray000: Color? = Color(red: 1.000, green: 1.000, blue: 1.000, opacity: 1)
   var primerColorGreen500: Color? = Color(red: 0.243, green: 0.714, blue: 0.561, opacity: 1)
   var primerColorBrand: Color? = Color(red: 0.184, green: 0.596, blue: 1.000, opacity: 1)
+  /// Set only by a merchant; unset, a brand-filled label follows the sheet colour (`CheckoutColors.onBrand`).
+  var primerColorOnBrand: Color?
   var primerColorRed100: Color? = Color(red: 1.000, green: 0.925, blue: 0.925, opacity: 1)
   var primerColorRed500: Color? = Color(red: 1.000, green: 0.447, blue: 0.475, opacity: 1)
   var primerColorRed900: Color? = Color(red: 0.706, green: 0.196, blue: 0.294, opacity: 1)
@@ -195,6 +197,7 @@ final class DesignTokens: Decodable {
     case primerColorGray000
     case primerColorGreen500
     case primerColorBrand
+    case primerColorOnBrand
     case primerColorRed100
     case primerColorRed500
     case primerColorRed900
@@ -312,6 +315,7 @@ final class DesignTokens: Decodable {
     primerColorGray000 = try container.decodeColorIfPresent(forKey: .primerColorGray000) ?? primerColorGray000
     primerColorGreen500 = try container.decodeColorIfPresent(forKey: .primerColorGreen500) ?? primerColorGreen500
     primerColorBrand = try container.decodeColorIfPresent(forKey: .primerColorBrand) ?? primerColorBrand
+    primerColorOnBrand = try container.decodeColorIfPresent(forKey: .primerColorOnBrand)
     primerColorRed100 = try container.decodeColorIfPresent(forKey: .primerColorRed100) ?? primerColorRed100
     primerColorRed500 = try container.decodeColorIfPresent(forKey: .primerColorRed500) ?? primerColorRed500
     primerColorRed900 = try container.decodeColorIfPresent(forKey: .primerColorRed900) ?? primerColorRed900

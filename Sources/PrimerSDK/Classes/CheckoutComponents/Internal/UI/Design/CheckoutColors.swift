@@ -102,11 +102,13 @@ enum CheckoutColors {
       : (tokens?.primerColorTextDisabled ?? Color(.tertiaryLabel))
   }
 
-  /// Label/spinner colour on a brand-filled surface, which is every primary button. Brand is a fixed
-  /// blue in both modes, so the enabled label is fixed white too; a disabled button loses the brand
+  /// Label/spinner colour on a brand-filled surface, which is every primary button: the merchant's
+  /// `onBrand`, else the sheet colour, as on the other platforms. A disabled button loses the brand
   /// fill and takes `textDisabled`. A loading button is still brand-filled, so pass `isEnabled: true`.
   static func onBrand(tokens: DesignTokens?, isEnabled: Bool = true) -> Color {
-    isEnabled ? .white : (tokens?.primerColorTextDisabled ?? Color(.tertiaryLabel))
+    isEnabled
+      ? (tokens?.primerColorOnBrand ?? tokens?.primerColorBackgroundPrimary ?? .white)
+      : (tokens?.primerColorTextDisabled ?? Color(.tertiaryLabel))
   }
 
   static func orange(tokens _: DesignTokens?) -> Color { .orange }

@@ -1114,6 +1114,68 @@ final class DesignTokensManagerTests: XCTestCase {
         XCTAssertEqual(tokens.primerColorBackgroundOutlinedDefault, .green)
     }
 
+    // MARK: - On-brand label
+
+    func test_onBrand_unset_followsTheSheetColourPerMode() async throws {
+        // Given no theme
+        let light = try await tokens(for: .light)
+        let dark = try await tokens(for: .dark)
+
+        // Then the label on a brand-filled button takes the sheet colour of each mode
+        XCTAssertEqual(CheckoutColors.onBrand(tokens: light), light.primerColorBackgroundPrimary)
+        XCTAssertEqual(CheckoutColors.onBrand(tokens: dark), dark.primerColorBackgroundPrimary)
+    }
+
+    func test_onBrand_backgroundOverrideAlone_movesTheLabel() async throws {
+        // Given only the sheet color is overridden
+        sut.applyTheme(PrimerCheckoutTheme(colors: ColorOverrides(primerColorBackgroundPrimary: .pink)))
+
+        // When
+        try await sut.fetchTokens(for: .light)
+
+        // Then the label follows it
+        let tokens = try XCTUnwrap(sut.tokens)
+        XCTAssertEqual(CheckoutColors.onBrand(tokens: tokens), .pink)
+    }
+
+    func test_onBrand_explicitOverride_winsOverTheSheetColour() async throws {
+        // Given both are named
+        sut.applyTheme(
+            PrimerCheckoutTheme(colors: ColorOverrides(primerColorOnBrand: .black, primerColorBackgroundPrimary: .pink)))
+
+        // When
+        try await sut.fetchTokens(for: .light)
+
+        // Then
+        let tokens = try XCTUnwrap(sut.tokens)
+        XCTAssertEqual(tokens.primerColorOnBrand, .black)
+        XCTAssertEqual(CheckoutColors.onBrand(tokens: tokens), .black)
+    }
+
+    func test_onBrand_lightOverride_leavesDarkOnItsOwnSheetColour() async throws {
+        // Given a light-only on-brand color
+        sut.applyTheme(PrimerCheckoutTheme(colors: ColorOverrides(primerColorOnBrand: .black)))
+
+        // When
+        try await sut.fetchTokens(for: .dark)
+
+        // Then dark keeps its own sheet color
+        let tokens = try XCTUnwrap(sut.tokens)
+        XCTAssertEqual(CheckoutColors.onBrand(tokens: tokens), tokens.primerColorBackgroundPrimary)
+    }
+
+    func test_onBrand_disabled_takesTextDisabled() async throws {
+        // Given an on-brand color
+        sut.applyTheme(PrimerCheckoutTheme(colors: ColorOverrides(primerColorOnBrand: .black)))
+
+        // When
+        try await sut.fetchTokens(for: .light)
+
+        // Then a disabled button, which loses the brand fill, still takes the disabled text color
+        let tokens = try XCTUnwrap(sut.tokens)
+        XCTAssertEqual(CheckoutColors.onBrand(tokens: tokens, isEnabled: false), tokens.primerColorTextDisabled)
+    }
+
     // MARK: - ObservableObject Conformance
 
     func test_tokensProperty_isPublished() async throws {

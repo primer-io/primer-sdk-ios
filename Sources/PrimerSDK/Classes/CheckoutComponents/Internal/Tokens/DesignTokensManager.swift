@@ -165,6 +165,7 @@ final class DesignTokensManager: ObservableObject {
 
   private func applyColorOverrides(to tokens: DesignTokens, from colors: ColorOverrides) {
     if let value = colors.primerColorBrand { tokens.primerColorBrand = value }
+    if let value = colors.primerColorOnBrand { tokens.primerColorOnBrand = value }
     applySemanticColorOverrides(to: tokens, from: colors)
     applyTextColorOverrides(to: tokens, from: colors)
     applyBorderColorOverrides(to: tokens, from: colors)
