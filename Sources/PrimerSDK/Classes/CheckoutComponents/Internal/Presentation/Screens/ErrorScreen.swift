@@ -32,7 +32,7 @@ struct ErrorScreen: View {
 
       Image(systemName: "exclamationmark.triangle.fill")
         .font(PrimerFont.largeIcon(tokens: tokens))
-        .foregroundColor(CheckoutColors.borderError(tokens: tokens))
+        .foregroundColor(CheckoutColors.iconNegative(tokens: tokens))
         .accessibilityIdentifier(AccessibilityIdentifiers.Error.icon)
         .accessibilityHidden(true)
 
