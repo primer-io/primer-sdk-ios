@@ -79,6 +79,31 @@ final class PrimerFieldRepainterTests: XCTestCase {
         XCTAssertEqual(field.textColor, .magenta, "a keystroke must not trigger a repaint")
     }
 
+    func test_repaint_locked_paintsTheTypedTextDisabledAndKeepsThePlaceholder() throws {
+        let light = try DesignTokensManager.makeTokens(for: .light)
+        let field = makeField(tokens: light)
+
+        field.repaintPrimerColors(placeholder: "Card number", tokens: light, isEnabled: false)
+
+        XCTAssertEqual(field.textColor, UIColor(CheckoutColors.textDisabled(tokens: light)))
+        let placeholderColour = field.attributedPlaceholder?
+            .attribute(.foregroundColor, at: 0, effectiveRange: nil) as? UIColor
+        XCTAssertEqual(placeholderColour, UIColor(CheckoutColors.textPlaceholder(tokens: light)))
+    }
+
+    func test_repaintIfNeeded_lockChange_repaintsWithTheSameTokens() throws {
+        let light = try DesignTokensManager.makeTokens(for: .light)
+        let field = makeField(tokens: light)
+        let repainter = PrimerFieldRepainter()
+        repainter.markApplied(light)
+
+        repainter.repaintIfNeeded(field, placeholder: "Card number", tokens: light, isEnabled: false)
+        XCTAssertEqual(field.textColor, UIColor(CheckoutColors.textDisabled(tokens: light)))
+
+        repainter.repaintIfNeeded(field, placeholder: "Card number", tokens: light, isEnabled: true)
+        XCTAssertEqual(field.textColor, UIColor(CheckoutColors.inputText(tokens: light)))
+    }
+
     func test_repaintIfNeeded_newTokens_repaintsOnceAndThenStops() throws {
         let light = try DesignTokensManager.makeTokens(for: .light)
         let dark = try DesignTokensManager.makeTokens(for: .dark)

@@ -41,7 +41,12 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
   }
 
   func updateUIView(_ textField: SecureTextField, context: Context) {
-    context.coordinator.repainter.repaintIfNeeded(textField, placeholder: placeholder, tokens: tokens)
+    context.coordinator.repainter.repaintIfNeeded(
+      textField,
+      placeholder: placeholder,
+      tokens: tokens,
+      isEnabled: context.environment.isInputEnabled
+    )
 
     let formatted = CardNumberFormatter.format(cardNumber, for: cardNetwork)
     if textField.internalText != formatted {

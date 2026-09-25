@@ -41,7 +41,12 @@ struct CVVTextField: UIViewRepresentable, LogReporter {
   }
 
   func updateUIView(_ textField: SecureTextField, context: Context) {
-    context.coordinator.repainter.repaintIfNeeded(textField, placeholder: placeholder, tokens: tokens)
+    context.coordinator.repainter.repaintIfNeeded(
+      textField,
+      placeholder: placeholder,
+      tokens: tokens,
+      isEnabled: context.environment.isInputEnabled
+    )
 
     if textField.internalText != cvv {
       textField.internalText = cvv

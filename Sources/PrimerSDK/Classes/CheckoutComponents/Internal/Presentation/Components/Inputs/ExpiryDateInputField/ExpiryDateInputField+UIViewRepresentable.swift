@@ -42,7 +42,12 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
   }
 
   func updateUIView(_ textField: UITextField, context: Context) {
-    context.coordinator.repainter.repaintIfNeeded(textField, placeholder: placeholder, tokens: tokens)
+    context.coordinator.repainter.repaintIfNeeded(
+      textField,
+      placeholder: placeholder,
+      tokens: tokens,
+      isEnabled: context.environment.isInputEnabled
+    )
 
     if textField.text != expiryDate {
       textField.text = expiryDate
