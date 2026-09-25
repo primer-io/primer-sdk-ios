@@ -43,7 +43,7 @@ struct DropdownCardNetworkSelector: View {
             height: PrimerCardNetworkSelector.chevronSize,
             alignment: .center
           )
-          .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
+          .foregroundColor(CheckoutColors.iconPrimary(tokens: tokens))
       }
       .contentShape(Rectangle())
     }

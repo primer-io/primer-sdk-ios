@@ -96,7 +96,7 @@ struct VaultedPaymentMethodCard: View {
         Spacer()
         Image(systemName: "xmark")
           .font(PrimerFont.smallBadge(tokens: tokens))
-          .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
+          .foregroundColor(CheckoutColors.iconPrimary(tokens: tokens))
           .frame(width: PrimerSize.medium(tokens: tokens), height: PrimerSize.medium(tokens: tokens))
       }
       .frame(width: PrimerSize.xxlarge(tokens: tokens), height: PrimerSize.xxlarge(tokens: tokens))

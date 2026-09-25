@@ -32,6 +32,10 @@ enum CheckoutColors {
     tokens?.primerColorTextLink ?? .blue
   }
 
+  static func iconPrimary(tokens: DesignTokens?) -> Color {
+    tokens?.primerColorIconPrimary ?? .primary
+  }
+
   static func iconNegative(tokens: DesignTokens?) -> Color {
     tokens?.primerColorIconNegative ?? .red
   }

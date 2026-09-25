@@ -24,6 +24,7 @@ struct CheckoutHeaderButton: View {
         if let icon = config.icon {
           Image(systemName: icon)
             .font(PrimerFont.caption(tokens: tokens))
+            .foregroundColor(CheckoutColors.iconPrimary(tokens: tokens))
         }
         Text(config.title)
           .primerTypography(.titleLarge, tokens: tokens)

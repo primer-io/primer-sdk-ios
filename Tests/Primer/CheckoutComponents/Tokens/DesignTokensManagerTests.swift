@@ -1176,6 +1176,26 @@ final class DesignTokensManagerTests: XCTestCase {
         XCTAssertEqual(CheckoutColors.onBrand(tokens: tokens, isEnabled: false), tokens.primerColorTextDisabled)
     }
 
+    // MARK: - Icon color
+
+    func test_iconPrimary_followsTheIconToken_notTheTextToken() async throws {
+        // Given icon and text colors that differ
+        sut.applyTheme(
+            PrimerCheckoutTheme(colors: ColorOverrides(primerColorTextPrimary: .purple, primerColorIconPrimary: .blue)))
+
+        // When
+        try await sut.fetchTokens(for: .light)
+
+        // Then an icon next to a text takes the icon color
+        let tokens = try XCTUnwrap(sut.tokens)
+        XCTAssertEqual(CheckoutColors.iconPrimary(tokens: tokens), .blue)
+        XCTAssertEqual(CheckoutColors.textPrimary(tokens: tokens), .purple)
+    }
+
+    func test_iconPrimary_withoutTokens_fallsBackToPrimary() {
+        XCTAssertEqual(CheckoutColors.iconPrimary(tokens: nil), .primary)
+    }
+
     // MARK: - ObservableObject Conformance
 
     func test_tokensProperty_isPublished() async throws {

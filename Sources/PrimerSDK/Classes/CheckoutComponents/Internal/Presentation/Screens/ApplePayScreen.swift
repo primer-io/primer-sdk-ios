@@ -41,7 +41,7 @@ struct ApplePayScreen: View {
         Button(action: scope.onBack) {
           Image(systemName: RTLIcon.backChevron)
             .font(PrimerFont.bodyMedium(tokens: tokens))
-            .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
+            .foregroundColor(CheckoutColors.iconPrimary(tokens: tokens))
         }
         .padding(.leading, PrimerSpacing.large(tokens: tokens))
         .accessibility(

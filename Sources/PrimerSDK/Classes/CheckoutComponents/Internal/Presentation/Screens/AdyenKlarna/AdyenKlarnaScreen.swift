@@ -55,6 +55,7 @@ struct AdyenKlarnaScreen: View {
                         HStack(spacing: PrimerSpacing.xsmall(tokens: tokens)) {
                             Image(systemName: RTLIcon.backChevron)
                                 .font(PrimerFont.bodyMedium(tokens: tokens))
+                                .foregroundColor(CheckoutColors.iconPrimary(tokens: tokens))
                             Text(CheckoutComponentsStrings.backButton)
                         }
                         .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))

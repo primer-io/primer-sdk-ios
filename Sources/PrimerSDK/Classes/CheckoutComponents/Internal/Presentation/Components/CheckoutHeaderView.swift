@@ -87,6 +87,7 @@ struct CheckoutHeaderView: View {
     Button(action: onBack) {
       HStack(spacing: PrimerSpacing.xsmall(tokens: tokens)) {
         Image(systemName: RTLIcon.backChevron)
+          .foregroundColor(CheckoutColors.iconPrimary(tokens: tokens))
         Text(CheckoutComponentsStrings.backButton)
       }
       .font(PrimerFont.bodyMedium(tokens: tokens))

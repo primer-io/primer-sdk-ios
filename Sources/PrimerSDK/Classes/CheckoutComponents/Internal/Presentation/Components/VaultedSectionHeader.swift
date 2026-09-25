@@ -36,6 +36,7 @@ struct VaultedSectionHeader: View {
               .primerTypography(.titleLarge, tokens: tokens)
             Image(systemName: "chevron.down")
               .font(PrimerFont.caption(tokens: tokens))
+              .foregroundColor(CheckoutColors.iconPrimary(tokens: tokens))
           }
           .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
         }
