@@ -9,7 +9,7 @@ import Foundation
 @_spi(PrimerInternal) import PrimerNetworking
 
 enum BackendDrivenCheckoutEndpoint {
-    case manifest
+    case manifest(env: String)
     case pay(paymentMethod: PrimerPaymentMethod)
     case setup(paymentMethod: PrimerPaymentMethod)
     case expandClientSession
@@ -24,9 +24,8 @@ extension BackendDrivenCheckoutEndpoint: Endpoint {
     }
     
     var path: String {
-        let json = PrimerAPIConfiguration.current?.env?.rawValue.lowercased() ?? "dev"
-        return switch self {
-        case .manifest: "state-processor/v0/manifests/\(json).json"
+        switch self {
+        case let .manifest(env): "state-processor/v0/manifests/\(env.lowercased()).json"
         case .pay: "client-session/\(PrimerAPIConfigurationModule.clientSessionId):pay"
         case .setup: "client-session/\(PrimerAPIConfigurationModule.clientSessionId):setup"
         case .expandClientSession: "client-session/\(PrimerAPIConfigurationModule.clientSessionId)"

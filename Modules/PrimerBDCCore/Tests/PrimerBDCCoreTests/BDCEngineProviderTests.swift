@@ -65,6 +65,18 @@ final class BDCEngineProviderTests: XCTestCase {
         _ = try await sut.engine(manifestProvider: StubManifestProvider())
         XCTAssertEqual(builder.callCount, 2)
     }
+
+    func testFailedWarmUpDoesNotFailTheNextCaller() async throws {
+        let builder = EngineBuilderSpy()
+        builder.errors = [Failure.buildFailed]
+        let sut = BDCEngineProvider(build: builder.build)
+
+        sut.warmUp(manifestProvider: StubManifestProvider())
+        try await Task.sleep(nanoseconds: 20_000_000)
+
+        _ = try await sut.engine(manifestProvider: StubManifestProvider())
+        XCTAssertEqual(builder.callCount, 2)
+    }
 }
 
 private extension BDCEngineProviderTests {

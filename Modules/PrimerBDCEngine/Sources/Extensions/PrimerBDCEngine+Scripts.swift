@@ -87,7 +87,29 @@ extension PrimerBDCEngine {
         })();
         """
     }
-    
+
+    func checkClientRequirementsScript(items: String, client: String) -> String {
+        setObject(items, forKey: "__items")
+        setObject(client, forKey: "__client")
+        return Self.checkClientRequirementsSource
+    }
+
+    // Every item in one call: the engine keeps one continuation per callback.
+    static let checkClientRequirementsSource = """
+    (async () => {
+        try {
+            const client = JSON.parse(__client);
+            const result = {};
+            for (const item of JSON.parse(__items)) {
+                result[item.id] = await StateProcessor.checkClientRequirements(item.clientRequirements, client);
+            }
+            onCheckClientRequirementsResult(JSON.stringify({ result }));
+        } catch (e) {
+            onCheckClientRequirementsResult(JSON.stringify({ error: e.toString() }));
+        }
+    })();
+    """
+
     private func setObject(_ value: Any, forKey key: String) {
         context.setObject(value, forKeyedSubscript: key as NSString)
     }

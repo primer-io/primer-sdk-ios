@@ -17,15 +17,8 @@ extension PrimerHeadlessUniversalCheckout {
     public final class PaymentMethod: NSObject {
 
         static var availablePaymentMethods: [PrimerHeadlessUniversalCheckout.PaymentMethod] {
-            let isManual = PrimerSettings.current.paymentHandling == .manual
-            let configs = PrimerAPIConfiguration.paymentMethodConfigs ?? []
-            
-            for config in configs where isManual && config.isBackendDriven {
-                PrimerLogging.shared.logger.info(message: "\(config.type) is not supported in manual mode")
-            }
-            
-            var availablePaymentMethods = configs
-                .filter { !(isManual && $0.isBackendDriven) }
+            var availablePaymentMethods = (PrimerAPIConfiguration.paymentMethodConfigs ?? [])
+                .filter(BackendDrivenAvailability.isAvailable)
                 .compactMap(\.type)
                 .compactMap({ PrimerHeadlessUniversalCheckout.PaymentMethod(paymentMethodType: $0) })
 

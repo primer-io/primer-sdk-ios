@@ -4,23 +4,29 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+import Foundation
+
 @_spi(PrimerInternal)
 public struct SDKContext: Encodable {
     let sdk: SDK
     let device: SDKDevice
     let app: SDKApp
     let session: SDKSession
-    let payment: SDKPayment
+    /// Absent while checking client requirements.
+    let payment: SDKPayment?
     let merchant: SDKMerchant
+    /// Absent without a return URL.
+    let redirect: SDKRedirect?
     let analytics: SDKAnalytics
-    
+
     public init(
         sdk: SDK,
         device: SDKDevice,
         app: SDKApp,
         session: SDKSession,
-        payment: SDKPayment,
+        payment: SDKPayment?,
         merchant: SDKMerchant,
+        redirect: SDKRedirect? = nil,
         analytics: SDKAnalytics
     ) {
         self.sdk = sdk
@@ -29,6 +35,7 @@ public struct SDKContext: Encodable {
         self.session = session
         self.payment = payment
         self.merchant = merchant
+        self.redirect = redirect
         self.analytics = analytics
     }
 }
@@ -50,6 +57,7 @@ public struct SDK: Encodable {
 
 @_spi(PrimerInternal)
 public struct SDKDevice: Encodable {
+    let platform: String
     let type: String?
     let make: String
     let model: String
@@ -57,8 +65,9 @@ public struct SDKDevice: Encodable {
     let platformVersion: String
     let uniqueDeviceIdentifier: String
     let locale: String?
-    
+
     public init(
+        platform: String,
         type: String?,
         make: String,
         model: String,
@@ -67,6 +76,7 @@ public struct SDKDevice: Encodable {
         uniqueDeviceIdentifier: String,
         locale: String?
     ) {
+        self.platform = platform
         self.type = type
         self.make = make
         self.model = model
@@ -109,6 +119,22 @@ public struct SDKPayment: Encodable {
     
     public init(paymentMethodType: String) {
         self.paymentMethodType = paymentMethodType
+    }
+}
+
+/// Where a redirect brings the buyer back to.
+@_spi(PrimerInternal)
+public struct SDKRedirect: Encodable, Equatable {
+    let returnUrl: String
+
+    public init(returnUrl: String) {
+        self.returnUrl = returnUrl
+    }
+
+    /// The merchant's URL scheme; nil without a valid one.
+    public init?(urlScheme: String?) {
+        guard let urlScheme, let url = URL(string: urlScheme), url.scheme != nil else { return nil }
+        self.init(returnUrl: url.absoluteString)
     }
 }
 

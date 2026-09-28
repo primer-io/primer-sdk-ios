@@ -34,7 +34,7 @@ public final class BDCEngineProvider {
         do {
             return try await task.value
         } catch {
-            self.task = nil
+            if self.task == task { self.task = nil }
             throw error
         }
     }
@@ -47,6 +47,10 @@ public final class BDCEngineProvider {
     private func makeTask(manifestProvider: SignedManifestProvider) -> Task<any BDCEngineProtocol, Error> {
         let task = Task { try await build(manifestProvider) }
         self.task = task
+        // Dropped as soon as it fails, so a failed warm-up doesn't fail the next caller.
+        Task { [weak self] in
+            if case .failure = await task.result, self?.task == task { self?.task = nil }
+        }
         return task
     }
 

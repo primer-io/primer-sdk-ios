@@ -7,6 +7,7 @@
 @_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerStepResolver
 
+// No UI components or dependencies yet.
 extension SDKCapabilities {
-    static let current = SDKCapabilities(steps: StepCapability.declaredVersions)
+    static let current = SDKCapabilities(stepTypes: StepCapability.declaredVersions)
 }

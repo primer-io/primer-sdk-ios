@@ -90,6 +90,7 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
     static func resetSession() {
         AppState.current.clientToken = nil
         AppState.current.apiConfiguration = nil
+        BackendDrivenAvailability.reset()
         Task { @MainActor in BDCEngineProvider.shared.reset() }
     }
 
@@ -104,6 +105,8 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
                 clientToken,
                 requestRemoteClientTokenValidation: requestClientTokenValidation
             )
+            // Alongside the configuration request.
+            await BDCEngineProvider.warmUp(env: clientToken.decodedJWTToken?.env)
             let apiConfiguration = try await fetchConfigurationAndVaultedPaymentMethodsIfNeeded(
                 requestDisplayMetadata: requestDisplayMetadata,
                 requestVaultedPaymentMethods: requestVaultedPaymentMethods

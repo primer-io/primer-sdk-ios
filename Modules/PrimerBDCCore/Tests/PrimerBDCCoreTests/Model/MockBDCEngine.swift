@@ -50,4 +50,17 @@ final class MockBDCEngine: BDCEngineProtocol {
         lastEventState = (try? JSONEncoder().encode(state)).flatMap { String(data: $0, encoding: .utf8) }
         return applyEventResult
     }
+
+    var verdicts: ClientRequirementsVerdicts = [:]
+    var checkError: Error?
+    private(set) var checkedItems: [ClientRequirementsItem] = []
+
+    func checkClientRequirements(
+        items: [ClientRequirementsItem],
+        client: BDCClient
+    ) async throws -> ClientRequirementsVerdicts {
+        checkedItems = items
+        if let checkError { throw checkError }
+        return verdicts
+    }
 }

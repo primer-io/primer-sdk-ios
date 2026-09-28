@@ -166,25 +166,16 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
             message: "BDC flow started.",
             messageType: .backendDrivenCheckoutStarted,
             severity: .info,
-            context: ["trustedKeyFingerprints": ManifestValidator.trustedPublicKeys.map(\.fingerprint)]
+            context: [
+                "trustedKeyFingerprints": ManifestValidator.trustedPublicKeys.map(\.fingerprint),
+                "paymentMethodType": config.type
+            ]
         )
         Analytics.Service.fire(event: event)
     }
-    
+
     private func generateContext() -> SDKContext {
-        let apiConfiguration = PrimerAPIConfigurationModule.apiConfiguration
-        let analyticsUrl = PrimerAPIConfigurationModule.decodedJWTToken?.analyticsUrlV2
-        let checkoutSessionId = PrimerInternal.shared.checkoutSessionId
-        
-        return SDKContext(
-            sdk: SDK(),
-            device: SDKDevice(),
-            app: SDKApp(identifier: Bundle.primerFrameworkIdentifier),
-            session: SDKSession(configuration: apiConfiguration, sessionId: checkoutSessionId),
-            payment: SDKPayment(paymentMethodType: config.type),
-            merchant: SDKMerchant(primerAccountId: apiConfiguration?.primerAccountId),
-            analytics: SDKAnalytics(url: analyticsUrl)
-        )
+        .checkout(payment: SDKPayment(paymentMethodType: config.type))
     }
 }
 
@@ -200,7 +191,8 @@ private extension Error {
 
 private extension BackendDrivenCheckoutOrchestrator {
     convenience init(context: SDKContext) async throws {
-        let engine = try await BDCEngineProvider.shared.engine(manifestProvider: NetworkSignedManifestProvider())
+        guard let manifestProvider = NetworkSignedManifestProvider.current else { throw PrimerError.invalidClientToken() }
+        let engine = try await BDCEngineProvider.shared.engine(manifestProvider: manifestProvider)
         self.init(engine: engine, context: context)
     }
 }
