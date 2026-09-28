@@ -72,32 +72,26 @@ final class ApplePayAuthorizationCoordinator: NSObject, PKPaymentAuthorizationCo
     didAuthorizePayment payment: PKPayment,
     handler completion: @escaping (PKPaymentAuthorizationResult) -> Void
   ) {
-    // The gate has to run before the sheet is completed: tokenization happens after dismissal, so a
-    // shipping amount that was never committed and verified must fail here, where nothing is charged.
-    Task { @MainActor in
-      do {
-        try await shippingSession?.authorizeCommit(
-          selectedOptionId: payment.shippingMethod?.identifier
-        )
-      } catch {
-        logger.error(message: "Apple Pay authorization blocked: \(error.localizedDescription)")
-        completion(PKPaymentAuthorizationResult(status: .failure, errors: [error]))
-        isCancelled = false
-        let continuation = authorizationContinuation
-        authorizationContinuation = nil
-        controller.dismiss { continuation?.resume(throwing: error) }
-        return
-      }
-
-      isCancelled = false
-      didTimeout = false
-      completion(PKPaymentAuthorizationResult(status: .success, errors: nil))
-
-      // Capture and clear continuation before dismiss to avoid @MainActor access in @Sendable closure
+    isCancelled = false
+    // Tokenization runs after dismissal, so an unverified shipping commit has to fail the sheet here.
+    do {
+      try shippingSession?.requireVerifiedCommit(selectedOptionId: payment.shippingMethod?.identifier)
+    } catch {
+      logger.error(message: "Apple Pay authorization blocked: \(error.localizedDescription)")
+      completion(PKPaymentAuthorizationResult(status: .failure, errors: [error]))
       let continuation = authorizationContinuation
       authorizationContinuation = nil
-      controller.dismiss { continuation?.resume(returning: payment) }
+      controller.dismiss { continuation?.resume(throwing: error) }
+      return
     }
+
+    didTimeout = false
+    completion(PKPaymentAuthorizationResult(status: .success, errors: nil))
+
+    // Capture and clear continuation before dismiss to avoid @MainActor access in @Sendable closure
+    let continuation = authorizationContinuation
+    authorizationContinuation = nil
+    controller.dismiss { continuation?.resume(returning: payment) }
   }
 
   func paymentAuthorizationController(

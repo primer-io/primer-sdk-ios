@@ -249,7 +249,7 @@ final class ApplePayShippingSessionTests: XCTestCase {
 
     // MARK: - Authorization gate
 
-    func test_authorizeCommit_verifiedOption_passesWithoutAskingAgain() async throws {
+    func test_requireVerifiedCommit_verifiedOption_passesWithoutAskingAgain() async throws {
         let commits = Box(0)
         let sut = makeSession(
             onAddressChange: { _ in [Self.standard] },
@@ -258,67 +258,65 @@ final class ApplePayShippingSessionTests: XCTestCase {
         )
         try await sut.handleShippingAddressChange(address)
 
-        try await sut.authorizeCommit(selectedOptionId: "standard")
+        try sut.requireVerifiedCommit(selectedOptionId: "standard")
 
         XCTAssertEqual(commits.value, 1)
     }
 
-    func test_authorizeCommit_optionApplePayReportsIsNotInTheList_blocksAuthorization() async throws {
+    func test_requireVerifiedCommit_failedInSheetCommit_blocksWithoutRetrying() async throws {
         let commits = Box(0)
         let sut = makeSession(
-            onAddressChange: { _ in [Self.standard] },
+            onAddressChange: { _ in [Self.standard, Self.express] },
             onOptionChange: { _ in commits.value += 1 },
             shipping: shipping(methodId: "standard", amount: 500)
         )
         try await sut.handleShippingAddressChange(address)
+        // The merchant never records Express, so the in-sheet commit fails verification.
+        try? await sut.handleShippingOptionChange(optionId: "express")
         commits.value = 0
 
-        do {
-            try await sut.authorizeCommit(selectedOptionId: "express")
-            XCTFail("Expected authorization to be blocked")
-        } catch {
-            XCTAssertEqual(commits.value, 0, "Committing a different option would charge an unseen total")
+        XCTAssertThrowsError(try sut.requireVerifiedCommit(selectedOptionId: "express")) { error in
             XCTAssertTrue("\(error)".contains("express"))
         }
+        XCTAssertEqual(commits.value, 0, "A retry would charge a total the sheet never showed")
     }
 
-    func test_authorizeCommit_noOptionReported_commitsTheDefault() async throws {
-        let commits = Box(0)
+    func test_requireVerifiedCommit_optionApplePayReportsIsNotInTheList_blocksAuthorization() async throws {
         let sut = makeSession(
             onAddressChange: { _ in [Self.standard] },
-            onOptionChange: { _ in commits.value += 1 },
+            onOptionChange: { _ in },
             shipping: shipping(methodId: "standard", amount: 500)
         )
         try await sut.handleShippingAddressChange(address)
-        commits.value = 0
 
-        try await sut.authorizeCommit(selectedOptionId: nil)
-
-        XCTAssertEqual(commits.value, 1)
-        XCTAssertEqual(sut.verifiedCommit?.id, "standard")
+        XCTAssertThrowsError(try sut.requireVerifiedCommit(selectedOptionId: "express"))
     }
 
-    func test_authorizeCommit_noOptionsAtAll_blocksAuthorization() async {
-        let sut = makeSession(onAddressChange: { _ in [] })
+    func test_requireVerifiedCommit_noOptionReported_blocksAuthorization() async throws {
+        let sut = makeSession(
+            onAddressChange: { _ in [Self.standard] },
+            onOptionChange: { _ in },
+            shipping: shipping(methodId: "standard", amount: 500)
+        )
+        try await sut.handleShippingAddressChange(address)
 
-        do {
-            try await sut.authorizeCommit(selectedOptionId: nil)
-            XCTFail("Expected authorization to be blocked")
-        } catch {
-            XCTAssertTrue("\(error)".contains("no shipping option was committed"))
+        XCTAssertThrowsError(try sut.requireVerifiedCommit(selectedOptionId: nil)) { error in
+            XCTAssertTrue("\(error)".contains("none"))
         }
     }
 
-    func test_authorizeCommit_legacyMode_isNotGated() async throws {
-        let sut = makeSession(mode: .legacy)
+    func test_requireVerifiedCommit_noCommitAtAll_blocksAuthorization() {
+        let sut = makeSession(onAddressChange: { _ in [] })
 
-        try await sut.authorizeCommit(selectedOptionId: nil)
+        XCTAssertThrowsError(try sut.requireVerifiedCommit(selectedOptionId: "standard"))
     }
 
-    func test_authorizeCommit_shippingMethodNotRequired_isNotGated() async throws {
-        let sut = makeSession(requireShippingMethod: false)
+    func test_requireVerifiedCommit_legacyMode_isNotGated() throws {
+        try makeSession(mode: .legacy).requireVerifiedCommit(selectedOptionId: nil)
+    }
 
-        try await sut.authorizeCommit(selectedOptionId: nil)
+    func test_requireVerifiedCommit_shippingMethodNotRequired_isNotGated() throws {
+        try makeSession(requireShippingMethod: false).requireVerifiedCommit(selectedOptionId: nil)
     }
 
     // MARK: - Timeout
@@ -354,6 +352,25 @@ final class ApplePayShippingSessionTests: XCTestCase {
             XCTAssertTrue("\(error)".contains("onShippingOptionChange"))
             XCTAssertNil(sut.verifiedCommit)
         }
+    }
+
+    func test_addressChange_handlerThatIgnoresCancellation_stillTimesOut() async {
+        let release = Box<CheckedContinuation<Void, Never>?>(nil)
+        let sut = makeSession(
+            onAddressChange: { [release] _ in
+                await withCheckedContinuation { release.value = $0 }
+                return []
+            },
+            timeout: 0.2
+        )
+
+        do {
+            try await sut.handleShippingAddressChange(address)
+            XCTFail("Expected the callback to time out")
+        } catch {
+            XCTAssertTrue("\(error)".contains("onShippingAddressChange"))
+        }
+        release.value?.resume()
     }
 
     // MARK: - Helpers
