@@ -119,24 +119,15 @@ final class ApplePayShippingSession: LogReporter {
     try await commit(selected)
   }
 
-  /// Blocks authorization unless the amount Apple is about to charge was committed and verified.
-  /// Called from the authorization delegate *before* the sheet is completed, so a failure here charges
-  /// nothing. The shopper can accept the pre-selected default without ever changing the option, so a
-  /// missing commit is completed here rather than treated as an error.
-  func authorizeCommit(selectedOptionId: String?) async throws {
+  /// Apple takes no new total at authorization, so a failed in-sheet commit blocks instead of retrying.
+  func requireVerifiedCommit(selectedOptionId: String?) throws {
     guard mode == .callbacks, requireShippingMethod else { return }
-    if let verifiedCommit, verifiedCommit.id == selectedOptionId { return }
-
-    // Apple reports the option the shopper is paying for. Committing a different one would authorize
-    // a total the shopper never saw, so an id the session does not know blocks the payment.
-    let option = selectedOptionId.map { id in options.first { $0.id == id } } ?? options.first
-    guard let option else {
+    guard let selectedOptionId, verifiedCommit?.id == selectedOptionId else {
       throw handled(primerError: .merchantError(
-        message: "Apple Pay authorization was blocked: no shipping option was committed for the "
-          + "option the sheet reported (\(selectedOptionId ?? "none"))."
+        message: "Apple Pay authorization was blocked: the shipping option the sheet reported "
+          + "(\(selectedOptionId ?? "none")) has no verified commit."
       ))
     }
-    try await commit(option)
   }
 
   /// True when the sheet must show Apple's "cannot deliver to this address" error instead of a list.
@@ -216,24 +207,29 @@ final class ApplePayShippingSession: LogReporter {
     named name: String,
     _ operation: @escaping @Sendable () async throws -> T
   ) async throws -> T {
-    try await withThrowingTaskGroup(of: T.self) { group in
-      // The timer is cancelled on every exit path, not just the happy one. A merchant handler that
-      // throws is ordinary here, and leaving a 20 second sleep running behind it would keep the
-      // cooperative pool busy long after the attempt is over.
-      defer { group.cancelAll() }
+    // A task group waits for its children on exit, so it would wait out a handler that ignores cancellation.
+    let work = Task { try await operation() }
+    let timer = Task { [timeout] in try await Task.sleep(nanoseconds: UInt64(timeout * 1_000_000_000)) }
+    defer {
+      work.cancel()
+      timer.cancel()
+    }
+    let timeoutError = PrimerError.merchantError(
+      message: "The \(name) handler did not return within \(Int(timeout))s. Return from it once "
+        + "your backend has responded, or the payment attempt fails with nothing charged."
+    )
 
-      group.addTask { try await operation() }
-      group.addTask { [timeout] in
-        try await Task.sleep(nanoseconds: UInt64(timeout * 1_000_000_000))
-        throw PrimerError.merchantError(
-          message: "The \(name) handler did not return within \(Int(timeout))s. Return from it once "
-            + "your backend has responded, or the payment attempt fails with nothing charged."
-        )
+    return try await withTaskCancellationHandler {
+      try await withCheckedThrowingContinuation { continuation in
+        let oneShot = OneShotContinuation(continuation)
+        Task { oneShot.resume(with: await work.result) }
+        Task {
+          guard case .success = await timer.result else { return }
+          oneShot.resume(throwing: timeoutError)
+        }
       }
-      guard let result = try await group.next() else {
-        throw PrimerError.merchantError(message: "The \(name) handler produced no result.")
-      }
-      return result
+    } onCancel: {
+      work.cancel()
     }
   }
 }
