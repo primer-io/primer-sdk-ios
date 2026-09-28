@@ -12,7 +12,7 @@ Payment checkout framework with SwiftUI, async/await, and UI customization throu
 ## Entry Points
 
 - **SwiftUI (managed modal)**: `PrimerCheckout(clientToken:primerSettings:primerTheme:onCompletion:)` — renders the SDK's default screens, no customization slots
-- **SwiftUI (composable/inline)**: a `PrimerCheckoutSession` (held as `@StateObject`) wired in with the `.primerCheckoutSession(_:onCompletion:)` modifier, plus the composable views `PrimerCardForm`, `PrimerPaymentMethods`, `PrimerVaultedPaymentMethods`
+- **SwiftUI (composable/inline)**: a `PrimerCheckoutSession` (held as `@StateObject`) wired in with the `.primerCheckoutSession(_:theme:onCompletion:)` modifier, plus the composable views `PrimerCardForm`, `PrimerPaymentMethods`, `PrimerVaultedPaymentMethods`
 - **UIKit**: `PrimerCheckoutPresenter.presentCheckout(clientToken:from:primerSettings:primerTheme:completion:)` (+ convenience overloads)
 - **UIKit Delegate**: `PrimerCheckoutPresenterDelegate` — success, failure, dismiss, optional 3DS callbacks
 
@@ -20,7 +20,7 @@ Payment checkout framework with SwiftUI, async/await, and UI customization throu
 
 The scope protocols (`PrimerCheckoutScope`, `PrimerCardFormScope`, the per-method `Primer*Scope`, etc.) are **internal** — they are no longer part of the public API. Merchants integrate through:
 
-- **Entry**: `PrimerCheckout` (modal) or `PrimerCheckoutSession` + `.primerCheckoutSession(_:onCompletion:)` (composable/inline)
+- **Entry**: `PrimerCheckout` (modal) or `PrimerCheckoutSession` + `.primerCheckoutSession(_:theme:onCompletion:)` (composable/inline)
 - **Composable views**: `PrimerCardForm`, `PrimerPaymentMethods`, `PrimerVaultedPaymentMethods` — each exposes `@ViewBuilder` section slots and resolves its session from the environment
 - **Observable sessions** (injected by the modifier): `PrimerCardFormSession`, `PrimerSelectionSession` — each bridges its scope's `AsyncStream<State>` into a `@Published state` and exposes the mutation surface (e.g. `updateCardNumber`, `submit`, `select`)
 - **Defaults namespaces**: `CardFormDefaults`, `PaymentMethodsDefaults`, `VaultedPaymentMethodsDefaults` — default slot bodies plus per-field recomposition building blocks
@@ -66,11 +66,12 @@ All payment method scopes extend `PrimerPaymentMethodScope` (base protocol with 
 
 ### Vaulting (Saved Payment Methods)
 Via `PrimerPaymentMethodSelectionScope`:
-- `payWithVaultedPaymentMethod()` — pay with saved card
-- `payWithVaultedPaymentMethodAndCvv(_ cvv:)` — pay with CVV recapture
-- `updateCvvInput(_ cvv:)` — update CVV field
-- `showAllVaultedPaymentMethods()` — navigate to the saved-cards list; works inline and in the modal (both vault states are in `presentsInlineFlowSheet`). It is the only route to deleting a saved method from the SDK's own UI, so `VaultedPaymentMethodsDefaults.header` wires it in by default
-- State: `selectedVaultedPaymentMethod`, `requiresCvvInput`, `cvvInput`, `isCvvValid`, `cvvError`, `isVaultPaymentLoading`
+- `payWithVaultedPaymentMethod()` — pay with the selected saved method; routes to the CVV recapture screen first when the client session asks for it
+- `payWithVaultedPaymentMethodAndCvv(_ cvv:)` — pay with a recaptured CVV; called by `VaultedCardCvvRecaptureScreen`
+- `validateCvv(_ cvv:)` — validate against the selected card's scheme; the screen owns the text, the scope owns the rule
+- `showAllVaultedPaymentMethods()` — navigate to the saved-cards list; works inline and in the modal (all three vault states are in `presentsInlineFlowSheet`). It is the only route to deleting a saved method from the SDK's own UI, so `VaultedPaymentMethodsDefaults.header` wires it in by default
+- State: `selectedVaultedPaymentMethod`, `isVaultPaymentLoading`. **No CVV state.** The code lives in the recapture screen's own `@State` for as long as that screen does, so it is never readable from outside and cannot outlive the payment
+- Public pay verb: `PrimerSelectionSession.selectVaulted(_:)`, which marks then charges, matching Android's `PrimerVaultedPaymentMethodsController.select(method)`. Merchants keep their own highlight
 
 ### Surcharging
 Per-payment-method and per-card-network surcharge amounts:

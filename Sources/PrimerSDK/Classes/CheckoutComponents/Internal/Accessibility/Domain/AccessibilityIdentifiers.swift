@@ -88,6 +88,8 @@ enum AccessibilityIdentifiers {
     static let cvvField = "primer_checkout_components_vault_cvv_field"
     static let cvvSecurityLabel = "primer_checkout_components_vault_cvv_security_label"
     static let payButton = "primer_checkout_components_vault_pay_button"
+    /// The CVV recapture screen's own submit button, kept apart from ``payButton``.
+    static let cvvPayButton = "primer_checkout_components_vault_cvv_pay_button"
   }
 
   enum Common {

@@ -19,30 +19,41 @@ public final class PrimerSelectionSession: ObservableObject {
   /// The latest selection state, bridged from `scope.state`.
   @Published public private(set) var state: PrimerPaymentMethodSelectionState
 
+  /// The customer's saved (vaulted) payment methods.
+  ///
+  /// Published, so a list you build yourself re-renders when the set changes. That covers
+  /// ``delete(_:)`` and a delete made on the SDK's own saved-methods screen.
+  @Published public private(set) var vaultedPaymentMethods:
+    [PrimerHeadlessUniversalCheckout.VaultedPaymentMethod]
+
   /// The selection behavior surface (method selection, vaulted actions, navigation).
   let scope: PrimerPaymentMethodSelectionScope
 
   private let internalScope: (any PaymentMethodSelectionScopeInternal)?
   private var observationTask: Task<Void, Never>?
+  private var vaultObservationTask: Task<Void, Never>?
 
   init(scope: PrimerPaymentMethodSelectionScope) {
     self.scope = scope
     internalScope = scope as? any PaymentMethodSelectionScopeInternal
     state = internalScope?.currentState ?? PrimerPaymentMethodSelectionState()
+    vaultedPaymentMethods = internalScope?.vaultedPaymentMethods ?? []
     observationTask = Task { @MainActor [weak self] in
       for await newState in scope.state {
         self?.state = newState
+      }
+    }
+    vaultObservationTask = Task { @MainActor [weak self, internalScope] in
+      guard let stream = internalScope?.vaultedPaymentMethodsStream else { return }
+      for await methods in stream {
+        self?.vaultedPaymentMethods = methods
       }
     }
   }
 
   deinit {
     observationTask?.cancel()
-  }
-
-  /// Saved (vaulted) payment methods, loaded once during checkout initialization.
-  public var vaultedPaymentMethods: [PrimerHeadlessUniversalCheckout.VaultedPaymentMethod] {
-    internalScope?.vaultedPaymentMethods ?? []
+    vaultObservationTask?.cancel()
   }
 
   // MARK: - Selection
@@ -56,8 +67,20 @@ public final class PrimerSelectionSession: ObservableObject {
 
   // MARK: - Vaulted
 
-  /// Marks a vaulted method as selected so a subsequent submit targets it.
+  /// Pays with a saved payment method.
+  ///
+  /// This is the pay verb, so call it from your pay button rather than from a row tap. A card that
+  /// needs CVV recapture raises the SDK's CVV screen first, and that screen finishes the payment.
+  /// The outcome arrives through `.primerCheckoutSession(_:theme:onCompletion:)`.
+  ///
+  /// Keep which row looks selected in your own view state. It returns at once and the payment runs on.
   public func selectVaulted(_ method: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod) {
+    internalScope?.selectVaultedPaymentMethod(method)
+    Task { await scope.payWithVaultedPaymentMethod() }
+  }
+
+  /// Marks a saved method as the one the SDK's own screens act on, without paying.
+  func setSelectedVaulted(_ method: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod) {
     internalScope?.selectVaultedPaymentMethod(method)
   }
 
@@ -77,16 +100,4 @@ public final class PrimerSelectionSession: ObservableObject {
     scope.showAllVaultedPaymentMethods()
   }
 
-  /// Updates and validates the CVV for the selected vaulted card during CVV recapture.
-  /// Drives `state.cvvInput` / `state.isCvvValid` / `state.cvvError`.
-  public func updateCvvInput(_ cvv: String) {
-    scope.updateCvvInput(cvv)
-  }
-
-  /// Pays with the currently selected vaulted method. Used by the SDK's own vaulted submit button.
-  /// When the card requires CVV recapture, the first call reveals the CVV field; the next call
-  /// (once `state.isCvvValid`) submits with the captured CVV.
-  func submitSelectedVaulted() async {
-    await scope.payWithVaultedPaymentMethod()
-  }
 }

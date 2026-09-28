@@ -220,7 +220,7 @@ final class DefaultBillingAddressRedirectScope: PrimerBillingAddressRedirectScop
         paymentMethodType: paymentMethodType
       )
 
-      checkoutScope.startProcessing()
+      checkoutScope.startProcessing(payingWith: self)
 
       // Send billing address to backend before redirect
       let billingAddress = createBillingAddress()
@@ -240,7 +240,7 @@ final class DefaultBillingAddressRedirectScope: PrimerBillingAddressRedirectScop
         paymentMethodType: paymentMethodType
       )
 
-      checkoutScope.startProcessing()
+      checkoutScope.startProcessing(payingWith: self)
       internalState.status = .polling
 
       await analyticsInteractor?.trackEvent(
@@ -259,7 +259,7 @@ final class DefaultBillingAddressRedirectScope: PrimerBillingAddressRedirectScop
         return
       }
 
-      checkoutScope.startProcessing()
+      checkoutScope.startProcessing(payingWith: self)
       internalState.status = .failure(primerError.localizedDescription)
       checkoutScope.handlePaymentError(primerError)
     }

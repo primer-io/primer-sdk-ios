@@ -1,5 +1,5 @@
 # Uncomment the next line to define a global platform for your project
-platform :ios, '14.0'
+platform :ios, '15.0'
 project 'Primer.io Debug App.xcodeproj'
 workspace '../PrimerSDK.xcworkspace'
 
@@ -29,6 +29,15 @@ target 'Debug App' do
   pod 'IQKeyboardManagerSwift'
 
   post_install do |installer|
+    # Xcode 27 rejects IPHONEOS_DEPLOYMENT_TARGET below 15.0. Third-party pods still ship
+    # lower floors (PrimerIPay88MYSDK 10.0, IQKeyboard* 13.0); raise them to ours.
+    installer.pods_project.targets.each do |t|
+      t.build_configurations.each do |c|
+        if c.build_settings['IPHONEOS_DEPLOYMENT_TARGET'].to_f < 15.0
+          c.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.0'
+        end
+      end
+    end
     fix_code_signing(installer)
   end
 end

@@ -37,6 +37,12 @@ final class PrimerCheckoutSessionTests: XCTestCase {
     XCTAssertNil(sut.cardForm)
   }
 
+  func test_formatAmount_isNil_beforeReady() {
+    // No client session yet means no currency, and a guessed one is worse than nothing.
+    let sut = PrimerCheckoutSession(clientToken: token)
+    XCTAssertNil(sut.formatAmount(1000))
+  }
+
   func test_cancel_beforeStart_isSafeAndIdempotent() {
     let sut = PrimerCheckoutSession(clientToken: token)
     sut.cancel()
@@ -292,6 +298,12 @@ final class PrimerCheckoutSessionTests: XCTestCase {
     let selection = sut.selection
     XCTAssertNotNil(selection)
     XCTAssertTrue(selection === sut.selection)
+
+    // The decimal digits come from the client session's currency, which a merchant cannot work out
+    // from the currency code alone.
+    let formatted = sut.formatAmount(1000)
+    XCTAssertNotNil(formatted)
+    XCTAssertTrue(formatted?.contains("10") == true, "Expected 1000 minor units to render as 10, got \(formatted ?? "nil")")
 
     // Reassigning handlers now forwards to the live scope (the non-nil didSet path).
     sut.onBeforePaymentCreate = { _, handler in handler(.continuePaymentCreation()) }

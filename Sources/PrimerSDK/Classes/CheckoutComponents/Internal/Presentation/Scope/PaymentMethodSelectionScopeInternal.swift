@@ -13,6 +13,10 @@ import Foundation
 protocol PaymentMethodSelectionScopeInternal: PrimerPaymentMethodSelectionScope {
   var currentState: PrimerPaymentMethodSelectionState { get }
   var vaultedPaymentMethods: [PrimerHeadlessUniversalCheckout.VaultedPaymentMethod] { get }
+
+  /// Emits the saved-method list whenever it changes.
+  var vaultedPaymentMethodsStream: AsyncStream<[PrimerHeadlessUniversalCheckout.VaultedPaymentMethod]> { get }
+
   func syncSelectedVaultedPaymentMethod()
   func collapsePaymentMethods()
   func selectVaultedPaymentMethod(_ method: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod)

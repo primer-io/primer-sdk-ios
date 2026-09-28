@@ -29,7 +29,17 @@ final class PrimerInternal: LogReporter {
     let sdkSessionId = UUID().uuidString
     var checkoutSessionId: String?
     var timingEventId: String?
+    /// Which internal surface routes callbacks. Internal managers rewrite it as they are built.
     var sdkIntegrationType: PrimerSDKIntegrationType?
+
+    /// The product the merchant integrated. `sdkIntegrationType` reads `.headless` for
+    /// CheckoutComponents, so analytics cannot take the merchant's integration from it.
+    var sdkIntegrationProduct: PrimerSDKIntegrationType?
+
+    /// The value analytics reports as the merchant's integration.
+    var reportedIntegrationType: PrimerSDKIntegrationType? {
+        sdkIntegrationProduct ?? sdkIntegrationType
+    }
 
     // MARK: - INITIALIZATION
 
@@ -159,6 +169,7 @@ final class PrimerInternal: LogReporter {
 
     func showUniversalCheckout(clientToken: String, completion: ((Error?) -> Void)? = nil) {
         sdkIntegrationType = .dropIn
+        sdkIntegrationProduct = .dropIn
         intent = .checkout
         selectedPaymentMethodType = nil
         checkoutSessionId = UUID().uuidString
@@ -202,6 +213,7 @@ final class PrimerInternal: LogReporter {
 
     func showVaultManager(clientToken: String, completion: ((Error?) -> Void)? = nil) {
         sdkIntegrationType = .dropIn
+        sdkIntegrationProduct = .dropIn
         intent = .vault
         selectedPaymentMethodType = nil
 

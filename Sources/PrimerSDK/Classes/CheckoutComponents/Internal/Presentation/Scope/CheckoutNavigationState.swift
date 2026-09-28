@@ -15,6 +15,7 @@ enum CheckoutNavigationState: Equatable {
   case deleteVaultedPaymentMethodConfirmation(
     PrimerHeadlessUniversalCheckout.VaultedPaymentMethod)
   case paymentMethod(String)
+  case cvvRecapture
   case processing
   case success(PaymentResult)
   case failure(PrimerError)
@@ -26,13 +27,14 @@ enum CheckoutNavigationState: Equatable {
   /// Vault management belongs here even though `PrimerVaultedPaymentMethods` is embedded by the
   /// merchant — that component shows only the selected method, so "Show all" has nowhere to go unless
   /// the host presents the full list, and deleting from that list needs its confirmation screen too.
+  /// CVV recapture is here too: a merchant-owned pay button has nowhere to put the field.
   ///
   /// `loading`, `paymentMethodSelection` and `dismissed` stay out: those are rendered by the
   /// merchant's own embedded content.
   var presentsInlineFlowSheet: Bool {
     switch self {
     case .paymentMethod, .processing, .success, .failure,
-         .vaultedPaymentMethods, .deleteVaultedPaymentMethodConfirmation:
+         .vaultedPaymentMethods, .deleteVaultedPaymentMethodConfirmation, .cvvRecapture:
       true
     case .loading, .paymentMethodSelection, .dismissed:
       false
@@ -44,6 +46,7 @@ enum CheckoutNavigationState: Equatable {
     case (.loading, .loading),
       (.paymentMethodSelection, .paymentMethodSelection),
       (.vaultedPaymentMethods, .vaultedPaymentMethods),
+      (.cvvRecapture, .cvvRecapture),
       (.processing, .processing),
       (.dismissed, .dismissed):
       true

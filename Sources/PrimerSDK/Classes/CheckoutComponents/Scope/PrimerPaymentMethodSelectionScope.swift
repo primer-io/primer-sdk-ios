@@ -29,16 +29,18 @@ protocol PrimerPaymentMethodSelectionScope: AnyObject {
 
   // MARK: - Vault Payment Methods
 
-  /// Initiates payment with the currently selected vaulted payment method.
+  /// Initiates payment with the currently selected vaulted payment method. Routes to the CVV
+  /// recapture screen first when the client session asks for it.
   func payWithVaultedPaymentMethod() async
 
-  /// Initiates payment with the currently selected vaulted payment method and CVV.
+  /// Pays with the currently selected vaulted payment method and a recaptured CVV. Called by the
+  /// CVV recapture screen.
   /// - Parameter cvv: The CVV entered by the user
   func payWithVaultedPaymentMethodAndCvv(_ cvv: String) async
 
-  /// Updates the CVV input value and validates it.
-  /// - Parameter cvv: The CVV value to update
-  func updateCvvInput(_ cvv: String)
+  /// Validates a CVV against the selected card's scheme.
+  /// - Returns: `isValid`, plus an error message once the input can no longer become valid.
+  func validateCvv(_ cvv: String) -> (isValid: Bool, errorMessage: String?)
 
   /// Navigates to the screen showing all vaulted payment methods.
   func showAllVaultedPaymentMethods()
@@ -60,24 +62,10 @@ public struct PrimerPaymentMethodSelectionState: Equatable {
   public internal(set) var selectedVaultedPaymentMethod: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod?
   public internal(set) var isVaultPaymentLoading: Bool = false
 
-  // MARK: - CVV Recapture State
-
-  /// Indicates whether CVV input is required for the selected vaulted card
-  public internal(set) var requiresCvvInput: Bool = false
-
-  /// The CVV value entered by the user
-  public internal(set) var cvvInput: String = ""
-
-  /// CVV validation state
-  public internal(set) var isCvvValid: Bool = false
-
-  /// CVV validation error message
-  public internal(set) var cvvError: String?
-
   // MARK: - Payment Methods Expansion State
 
   /// Whether the payment methods section is expanded (showing all methods).
-  /// Default is true. Set to false when user selects vaulted method or CVV input opens.
+  /// Default is true. Set to false when the customer picks a saved method.
   public internal(set) var isPaymentMethodsExpanded: Bool = true
 
   public init(
@@ -89,10 +77,6 @@ public struct PrimerPaymentMethodSelectionState: Equatable {
     error: String? = nil,
     selectedVaultedPaymentMethod: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod? = nil,
     isVaultPaymentLoading: Bool = false,
-    requiresCvvInput: Bool = false,
-    cvvInput: String = "",
-    isCvvValid: Bool = false,
-    cvvError: String? = nil,
     isPaymentMethodsExpanded: Bool = true
   ) {
     self.paymentMethods = paymentMethods
@@ -103,10 +87,6 @@ public struct PrimerPaymentMethodSelectionState: Equatable {
     self.error = error
     self.selectedVaultedPaymentMethod = selectedVaultedPaymentMethod
     self.isVaultPaymentLoading = isVaultPaymentLoading
-    self.requiresCvvInput = requiresCvvInput
-    self.cvvInput = cvvInput
-    self.isCvvValid = isCvvValid
-    self.cvvError = cvvError
     self.isPaymentMethodsExpanded = isPaymentMethodsExpanded
   }
 
@@ -119,8 +99,6 @@ public struct PrimerPaymentMethodSelectionState: Equatable {
       && lhs.filteredPaymentMethods == rhs.filteredPaymentMethods && lhs.error == rhs.error
       && lhs.selectedVaultedPaymentMethod?.id == rhs.selectedVaultedPaymentMethod?.id
       && lhs.isVaultPaymentLoading == rhs.isVaultPaymentLoading
-      && lhs.requiresCvvInput == rhs.requiresCvvInput && lhs.cvvInput == rhs.cvvInput
-      && lhs.isCvvValid == rhs.isCvvValid && lhs.cvvError == rhs.cvvError
       && lhs.isPaymentMethodsExpanded == rhs.isPaymentMethodsExpanded
   }
 }

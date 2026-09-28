@@ -16,6 +16,8 @@ protocol ConfigurationService {
   var currency: Currency? { get }
   var amount: Int? { get }
   var captureVaultedCardCvv: Bool { get }
+  /// The locale every printed amount is formatted in.
+  var locale: Locale { get }
 }
 
 @available(iOS 15.0, *)
@@ -31,9 +33,17 @@ extension ConfigurationService {
 
 @available(iOS 15.0, *)
 final class DefaultConfigurationService: ConfigurationService {
+  private let settings: PrimerSettings
+
+  init(settings: PrimerSettings = PrimerSettings.current) {
+    self.settings = settings
+  }
+
   var apiConfiguration: PrimerAPIConfiguration? {
     PrimerAPIConfigurationModule.apiConfiguration
   }
+
+  var locale: Locale { settings.localeData.locale }
 
   var checkoutModules: [PrimerAPIConfiguration.CheckoutModule]? {
     apiConfiguration?.checkoutModules

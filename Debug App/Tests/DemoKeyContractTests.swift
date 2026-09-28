@@ -16,6 +16,7 @@ final class DemoKeyContractTests: XCTestCase {
         "prefill_cardholder_name", "before_payment_gate", "payment_method_list_only", "custom_payment_methods",
         "custom_grid_payment_methods", "radio_selection", "vault_management", "vaulted_payment_methods",
         "vault_mode_inline", "dynamic_vault", "merchant_navigation", "custom_result_screens", "custom_navigation",
+        "account_funding",
         "custom_theme", "red_theme", "green_theme", "purple_theme", "no_radius_theme", "small_sizes_theme",
         "large_sizes_theme", "light_typography_theme", "bold_typography_theme", "large_typography_theme",
         "custom_font_theme", "refresh_client_session"

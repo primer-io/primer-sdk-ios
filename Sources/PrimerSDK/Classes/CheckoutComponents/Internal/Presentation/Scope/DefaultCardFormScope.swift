@@ -415,7 +415,7 @@ final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, 
         paymentMethodType: PrimerPaymentMethodType.paymentCard.rawValue
       )
 
-      checkoutScope?.startProcessing()
+      checkoutScope?.startProcessing(payingWith: self)
 
       try await sendBillingAddressIfNeeded()
       let cardData = try await prepareCardPaymentData()
@@ -502,7 +502,8 @@ final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, 
       return
     }
 
-    let formattedSurcharge = "+ \(surcharge.toCurrencyString(currency: currency))"
+    let formattedSurcharge =
+      "+ \(surcharge.toCurrencyString(currency: currency, locale: configurationService.locale))"
     structuredState.surchargeAmountRaw = surcharge
     structuredState.surchargeAmount = formattedSurcharge
   }

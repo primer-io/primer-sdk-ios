@@ -13,7 +13,6 @@ struct VaultedPaymentMethodCard: View {
   let vaultedPaymentMethod: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod
   let isSelected: Bool
   let isEditMode: Bool
-  let cvvInputContent: (() -> AnyView)?
   let onTap: (() -> Void)?
   let onDeleteTapped: (() -> Void)?
 
@@ -25,14 +24,12 @@ struct VaultedPaymentMethodCard: View {
     vaultedPaymentMethod: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod,
     isSelected: Bool = false,
     isEditMode: Bool = false,
-    cvvInputContent: (() -> AnyView)? = nil,
     onTap: (() -> Void)? = nil,
     onDeleteTapped: (() -> Void)? = nil
   ) {
     self.vaultedPaymentMethod = vaultedPaymentMethod
     self.isSelected = isSelected
     self.isEditMode = isEditMode
-    self.cvvInputContent = cvvInputContent
     self.onTap = onTap
     self.onDeleteTapped = onDeleteTapped
   }
@@ -52,17 +49,11 @@ struct VaultedPaymentMethodCard: View {
 
   private func makeCardContent() -> some View {
     Button(action: { if !isEditMode { onTap?() } }) {
-      VStack(spacing: PrimerSpacing.medium(tokens: tokens)) {
-        makeMainCardRow()
-
-        if let cvvInputContent {
-          cvvInputContent()
-        }
-      }
-      .padding(PrimerSpacing.medium(tokens: tokens))
-      .frame(height: cvvInputContent == nil ? PrimerComponentHeight.vaultedPaymentMethodCard : nil)
-      .background(makeCardBackground())
-      .overlay(makeCardBorder())
+      makeMainCardRow()
+        .padding(PrimerSpacing.medium(tokens: tokens))
+        .frame(height: PrimerComponentHeight.vaultedPaymentMethodCard)
+        .background(makeCardBackground())
+        .overlay(makeCardBorder())
     }
     .buttonStyle(PlainButtonStyle())
     .accessibility(

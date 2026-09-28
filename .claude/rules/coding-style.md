@@ -16,7 +16,7 @@ These rules reflect team conventions enforced during code review. Follow them wh
 - **`[self]` over `[weak self]`** in `Task` closures when there is no retain cycle risk.
 - **Use `let x = if/switch` expression syntax** (Swift 5.9+) instead of declaring `var` then assigning in each branch.
 - **Implicit member expressions**: use `.foo` not `Type.foo` when the type is inferrable (e.g. `.center`, `.degrees(180)`, `.primary`).
-- **Functional references**: `.map(String.init)` not `.map { String($0) }`, `onCvvChange: scope.updateCvvInput` not `{ scope.updateCvvInput($0) }`.
+- **Functional references**: `.map(String.init)` not `.map { String($0) }`, `onCvvChange: validate` not `{ validate($0) }`.
 - **`optional.map`** for transformations: `method.backgroundColor.map(Color.init)` not `if let` unwrap-then-wrap.
 - **Nil coalescing** for defaults: `value ?? .fallback` not `if let value { value } else { .fallback }`.
 - **`isEmpty`** over `count == 0`.

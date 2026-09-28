@@ -34,6 +34,8 @@ struct FlowScreenFactory: LogReporter {
       makeVaultedPaymentMethodsView()
     case let .deleteVaultedPaymentMethodConfirmation(method):
       makeDeleteConfirmationView(method: method)
+    case .cvvRecapture:
+      makeCvvRecaptureView()
     case let .paymentMethod(paymentMethodType):
       makePaymentMethodView(type: paymentMethodType)
     case .processing:
@@ -94,6 +96,13 @@ struct FlowScreenFactory: LogReporter {
       vaultedPaymentMethod: method,
       navigator: scope.checkoutNavigator,
       scope: scope.paymentMethodSelectionInternal
+    )
+  }
+
+  private func makeCvvRecaptureView() -> some View {
+    VaultedCardCvvRecaptureScreen(
+      scope: scope.paymentMethodSelectionInternal,
+      navigator: scope.checkoutNavigator
     )
   }
 

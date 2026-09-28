@@ -307,7 +307,23 @@ platform :ios do
       visibility: "team"
     )
 
+    # Save before the second upload: upload_to_lambdatest overwrites APP_URL.
     save_lambdatest_id(lambdatest_id: ENV['APP_URL'])
+
+    # The CheckoutComponents E2E lane needs a build that can open a demo from a
+    # deep link. Only the CheckoutComponents line has that, so publish the same
+    # .ipa under a second name when the build carries it. The aliases above are
+    # untouched, and the check is the entry point itself rather than a branch
+    # name, so it keeps answering correctly once this line reaches master.
+    if File.exist?(cc_demo_entry_point)
+      upload_to_lambdatest(
+        lt_username: ENV["LAMBDATEST_USERNAME"],
+        lt_access_key: ENV["LAMBDATEST_ACCESS_KEY"],
+        file_path: options[:file_path],
+        custom_id: "cc-latest-ios",
+        visibility: "team"
+      )
+    end
 
   end
 
@@ -349,6 +365,14 @@ platform :ios do
     file_path = "../PrimerSDK.podspec"
     spec = Pod::Specification.from_file(file_path)
     spec.version.to_s
+  end
+
+  # Fastlane runs from `fastlane/`, so repo paths are relative to its parent.
+  def cc_demo_entry_point
+    File.expand_path(
+      "../Debug App/Sources/View Controllers/CheckoutComponents/DemoKey.swift",
+      __dir__
+    )
   end
 
   def get_appetize_version_name(build_type, pr_number)

@@ -116,7 +116,7 @@ extension ComposableContainer {
     try await criticalRegister(ConfigurationService.self) {
       _ = try await container.register(ConfigurationService.self)
         .asSingleton()
-        .with { _ in DefaultConfigurationService() }
+        .with { [settings] _ in DefaultConfigurationService(settings: settings) }
     }
   }
 

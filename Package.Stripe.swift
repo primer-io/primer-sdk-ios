@@ -5,7 +5,7 @@ import PackageDescription
 let package = Package(
     name: "PrimerSDK",
     defaultLocalization: "en",
-    platforms: [.iOS("13.1")],
+    platforms: [.iOS("15.0")],
     products: [.library(name: "PrimerSDK", targets: ["PrimerSDK"])],
     dependencies: [.package(url: "https://github.com/primer-io/primer-stripe-sdk-ios", from: "1.0.0")],
     targets: packageTargets,

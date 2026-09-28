@@ -26,6 +26,7 @@ enum DemoKey: String, CaseIterable {
     case merchantNavigation = "merchant_navigation"
     case customResultScreens = "custom_result_screens"
     case customNavigation = "custom_navigation"
+    case accountFunding = "account_funding"
     case customTheme = "custom_theme"
     case redTheme = "red_theme"
     case greenTheme = "green_theme"

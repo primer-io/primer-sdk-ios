@@ -102,7 +102,7 @@ final class DefaultPayPalScope: PrimerPayPalScope, ObservableObject, LogReporter
         paymentMethodType: PrimerPaymentMethodType.payPal.rawValue
       )
 
-      checkoutScope?.startProcessing()
+      checkoutScope?.startProcessing(payingWith: self)
 
       internalState.step = .redirecting
 

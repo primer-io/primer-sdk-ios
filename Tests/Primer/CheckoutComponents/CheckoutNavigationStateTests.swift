@@ -176,6 +176,18 @@ final class CheckoutNavigationStateTests: XCTestCase {
         )
     }
 
+    // A merchant-owned pay button has nowhere to put the CVV field, so the SDK has to raise it.
+    func test_presentsInlineFlowSheet_cvvRecapture_isTrue() {
+        XCTAssertTrue(CheckoutNavigationState.cvvRecapture.presentsInlineFlowSheet)
+    }
+
+    // The hand-written `==` ends in `default: false`, so a case without its own arm would be unequal
+    // to itself and re-fire every animation and inequality guard that reads this state.
+    func test_equality_cvvRecapture_equalsItself() {
+        XCTAssertEqual(CheckoutNavigationState.cvvRecapture, .cvvRecapture)
+        XCTAssertNotEqual(CheckoutNavigationState.cvvRecapture, .processing)
+    }
+
     // States the merchant's own embedded content renders; presenting them would double up.
     func test_presentsInlineFlowSheet_merchantOwnedStates_areFalse() {
         XCTAssertFalse(CheckoutNavigationState.loading.presentsInlineFlowSheet)

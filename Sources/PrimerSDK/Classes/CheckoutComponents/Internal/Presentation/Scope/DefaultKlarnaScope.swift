@@ -224,7 +224,7 @@ final class DefaultKlarnaScope: PrimerKlarnaScope, ObservableObject, LogReporter
       return
     }
 
-    checkoutScope.startProcessing()
+    checkoutScope.startProcessing(payingWith: self)
 
     await analyticsInteractor?.trackEvent(
       .paymentSubmitted,
@@ -269,7 +269,7 @@ final class DefaultKlarnaScope: PrimerKlarnaScope, ObservableObject, LogReporter
       logger.warn(message: "Klarna checkout scope was deallocated before finalization")
       return
     }
-    checkoutScope.startProcessing()
+    checkoutScope.startProcessing(payingWith: self)
 
     do {
       let result = try await processKlarnaInteractor.finalize()

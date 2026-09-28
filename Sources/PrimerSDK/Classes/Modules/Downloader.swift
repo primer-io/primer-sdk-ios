@@ -18,6 +18,14 @@ protocol DownloaderModule {
 // MARK: MISSING_TESTS
 final class Downloader: NSObject, DownloaderModule {
 
+    /// A private instance so the copy-error delegate never lands on `FileManager.default`.
+    /// Setting a delegate on the shared instance is documented as unsupported and traps on iOS 27.
+    private lazy var fileManager: FileManager = {
+        let manager = FileManager()
+        manager.delegate = self
+        return manager
+    }()
+
     private var documentDirectoryUrl: URL? {
         FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
     }
@@ -80,7 +88,6 @@ final class Downloader: NSObject, DownloaderModule {
             if let httpUrlResponse = cachedResponse.response as? HTTPURLResponse,
                validStatusCodesRange.contains(httpUrlResponse.statusCode) {
                 do {
-                    FileManager.default.delegate = self
                     try cachedResponse.data.write(to: localUrl)
                     return
                 } catch {
@@ -101,8 +108,7 @@ final class Downloader: NSObject, DownloaderModule {
                 throw handled(internalError: .serverError(status: statusCode))
             }
 
-            FileManager.default.delegate = self
-            try FileManager.default.copyItem(at: tempLocalUrl, to: localUrl)
+            try fileManager.copyItem(at: tempLocalUrl, to: localUrl)
 
             if cache?.cachedResponse(for: request) == nil, let data = try? Data(contentsOf: tempLocalUrl) {
                 cache?.storeCachedResponse(CachedURLResponse(response: response, data: data), for: request)

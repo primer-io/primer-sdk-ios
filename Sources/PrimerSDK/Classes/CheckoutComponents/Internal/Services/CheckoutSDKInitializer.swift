@@ -101,6 +101,7 @@ final class CheckoutSDKInitializer {
 
   private func setupSDKIntegration() {
     PrimerInternal.shared.sdkIntegrationType = .checkoutComponents
+    PrimerInternal.shared.sdkIntegrationProduct = .checkoutComponents
     PrimerInternal.shared.intent = .checkout
     PrimerInternal.shared.checkoutSessionId = UUID().uuidString
   }

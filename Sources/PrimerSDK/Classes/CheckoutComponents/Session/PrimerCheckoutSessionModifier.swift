@@ -24,14 +24,19 @@ public extension View {
   /// .primerCheckoutSession(session) { state in handle(state) }
   /// ```
   ///
+  /// - Parameter theme: Overrides the theme the session was built with, and re-themes on every
+  ///   change. Pass a value that follows your own app state to switch appearance without rebuilding
+  ///   the session. Leave it out to keep the session's own theme.
   /// - Parameter onCompletion: Receives `.failure` once per failed attempt — the checkout stays
   ///   usable so the shopper can retry — then `.success` or `.dismissed` exactly once, after which
   ///   nothing more is delivered.
   func primerCheckoutSession(
     _ session: PrimerCheckoutSession,
+    theme: PrimerCheckoutTheme? = nil,
     onCompletion: ((PrimerCheckoutState) -> Void)? = nil
   ) -> some View {
-    modifier(PrimerCheckoutSessionModifier(session: session, onCompletion: onCompletion))
+    modifier(
+      PrimerCheckoutSessionModifier(session: session, themeOverride: theme, onCompletion: onCompletion))
   }
 }
 
@@ -39,9 +44,12 @@ public extension View {
 private struct PrimerCheckoutSessionModifier: ViewModifier, LogReporter {
 
   @ObservedObject var session: PrimerCheckoutSession
+  let themeOverride: PrimerCheckoutTheme?
   let onCompletion: ((PrimerCheckoutState) -> Void)?
   @Environment(\.colorScheme) private var colorScheme
   @StateObject private var designTokensManager = DesignTokensManager()
+
+  private var theme: PrimerCheckoutTheme { themeOverride ?? session.theme }
 
   func body(content: Content) -> some View {
     content
@@ -57,15 +65,16 @@ private struct PrimerCheckoutSessionModifier: ViewModifier, LogReporter {
       .environment(\.primerCheckoutScope, session.internalScope)
       .overlay {
         if session.phase == .ready, let scope = session.internalScope {
-          InlineFlowHost(scope: scope, theme: session.theme)
+          InlineFlowHost(scope: scope, theme: theme)
         }
       }
       .task {
         session.setCompletionHandler(onCompletion)
         await session.start()
       }
-      .task {
-        designTokensManager.applyTheme(session.theme)
+      // Keyed on the theme so a new one re-resolves the tokens.
+      .task(id: theme) {
+        designTokensManager.applyTheme(theme)
         await loadDesignTokens(for: colorScheme)
       }
       .onChange(of: colorScheme) { newColorScheme in
