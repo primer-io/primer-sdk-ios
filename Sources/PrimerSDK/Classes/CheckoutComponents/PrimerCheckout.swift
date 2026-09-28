@@ -48,17 +48,17 @@ public struct PrimerCheckout: View {
   ///   - clientToken: The client token obtained from your backend.
   ///   - primerSettings: Configuration settings including payment options and UI preferences. Default: `PrimerSettings()`
   ///   - primerTheme: Theme configuration for design tokens. Default: `PrimerCheckoutTheme()`
-  ///   - onShippingAddressChange: Express Checkout shipping options for the shopper's address. Default: `nil`
-  ///   - onShippingOptionChange: Express Checkout commit of the selected option. Default: `nil`
   ///   - onCompletion: Receives `.failure` once per failed attempt, including a failed initialization,
   ///     while the checkout stays open for a retry. Then `.success` or `.dismissed` exactly once.
+  ///   - onShippingAddressChange: Express Checkout shipping options for the shopper's address. Default: `nil`
+  ///   - onShippingOptionChange: Express Checkout commit of the selected option. Default: `nil`
   public init(
     clientToken: String,
     primerSettings: PrimerSettings = PrimerSettings(),
     primerTheme: PrimerCheckoutTheme = PrimerCheckoutTheme(),
+    onCompletion: ((PrimerCheckoutState) -> Void)? = nil,
     onShippingAddressChange: ShippingAddressChangeHandler? = nil,
-    onShippingOptionChange: ShippingOptionChangeHandler? = nil,
-    onCompletion: ((PrimerCheckoutState) -> Void)? = nil
+    onShippingOptionChange: ShippingOptionChangeHandler? = nil
   ) {
     self.clientToken = clientToken
     settings = primerSettings
@@ -78,9 +78,9 @@ public struct PrimerCheckout: View {
     navigator: CheckoutNavigator,
     presentationContext: PresentationContext,
     integrationType: CheckoutComponentsIntegrationType,
+    onCompletion: ((PrimerCheckoutState) -> Void)? = nil,
     onShippingAddressChange: ShippingAddressChangeHandler? = nil,
-    onShippingOptionChange: ShippingOptionChangeHandler? = nil,
-    onCompletion: ((PrimerCheckoutState) -> Void)? = nil
+    onShippingOptionChange: ShippingOptionChangeHandler? = nil
   ) {
     self.clientToken = clientToken
     settings = primerSettings

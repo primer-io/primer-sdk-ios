@@ -17,9 +17,9 @@ public struct PrimerCheckout: View {
     clientToken: String,
     primerSettings: PrimerSettings = PrimerSettings(),
     primerTheme: PrimerCheckoutTheme = PrimerCheckoutTheme(),
+    onCompletion: ((PrimerCheckoutState) -> Void)? = nil,
     onShippingAddressChange: ShippingAddressChangeHandler? = nil,
-    onShippingOptionChange: ShippingOptionChangeHandler? = nil,
-    onCompletion: ((PrimerCheckoutState) -> Void)? = nil
+    onShippingOptionChange: ShippingOptionChangeHandler? = nil
   )
 }
 ```
@@ -47,9 +47,9 @@ public final class PrimerCheckoutSession: ObservableObject {
     clientToken: String,
     settings: PrimerSettings = PrimerSettings(),
     theme: PrimerCheckoutTheme = PrimerCheckoutTheme(),
+    idempotencyKey: @escaping @Sendable () -> String? = { nil },
     onShippingAddressChange: ShippingAddressChangeHandler? = nil,
-    onShippingOptionChange: ShippingOptionChangeHandler? = nil,
-    idempotencyKey: @escaping @Sendable () -> String? = { nil }
+    onShippingOptionChange: ShippingOptionChangeHandler? = nil
   )
 
   // Lifecycle. The modifier calls `start()` on appear and `cancel()` on disappear, so you
@@ -178,15 +178,15 @@ Pre-built slot bodies and per-field building blocks for recomposition.
     from viewController: UIViewController,
     primerSettings: PrimerSettings,
     primerTheme: PrimerCheckoutTheme,
+    completion: (() -> Void)? = nil,
     onShippingAddressChange: ShippingAddressChangeHandler? = nil,
-    onShippingOptionChange: ShippingOptionChangeHandler? = nil,
-    completion: (() -> Void)? = nil
+    onShippingOptionChange: ShippingOptionChangeHandler? = nil
   )
 
   // Convenience overloads
   public static func presentCheckout(clientToken: String, from: UIViewController, completion: (() -> Void)? = nil)
-  public static func presentCheckout(clientToken: String, from: UIViewController, primerSettings: PrimerSettings, onShippingAddressChange: ShippingAddressChangeHandler? = nil, onShippingOptionChange: ShippingOptionChangeHandler? = nil, completion: (() -> Void)? = nil)
-  public static func presentCheckout(clientToken: String, primerSettings: PrimerSettings, onShippingAddressChange: ShippingAddressChangeHandler? = nil, onShippingOptionChange: ShippingOptionChangeHandler? = nil, completion: (() -> Void)? = nil)
+  public static func presentCheckout(clientToken: String, from: UIViewController, primerSettings: PrimerSettings, completion: (() -> Void)? = nil, onShippingAddressChange: ShippingAddressChangeHandler? = nil, onShippingOptionChange: ShippingOptionChangeHandler? = nil)
+  public static func presentCheckout(clientToken: String, primerSettings: PrimerSettings, completion: (() -> Void)? = nil, onShippingAddressChange: ShippingAddressChangeHandler? = nil, onShippingOptionChange: ShippingOptionChangeHandler? = nil)
 
   // Dismiss
   public static func dismiss(animated: Bool = true, completion: (() -> Void)? = nil)

@@ -80,9 +80,9 @@ public final class PrimerCheckoutSession: ObservableObject {
     clientToken: String,
     settings: PrimerSettings = PrimerSettings(),
     theme: PrimerCheckoutTheme = PrimerCheckoutTheme(),
+    idempotencyKey: @escaping @Sendable () -> String? = { nil },
     onShippingAddressChange: ShippingAddressChangeHandler? = nil,
-    onShippingOptionChange: ShippingOptionChangeHandler? = nil,
-    idempotencyKey: @escaping @Sendable () -> String? = { nil }
+    onShippingOptionChange: ShippingOptionChangeHandler? = nil
   ) {
     self.clientToken = clientToken
     self.settings = settings
