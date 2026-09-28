@@ -221,15 +221,24 @@ final class ApplePayShippingSession: LogReporter {
 
     return try await withTaskCancellationHandler {
       try await withCheckedThrowingContinuation { continuation in
-        let oneShot = OneShotContinuation(continuation)
-        Task { oneShot.resume(with: await work.result) }
-        Task {
-          guard case .success = await timer.result else { return }
-          oneShot.resume(throwing: timeoutError)
-        }
+        Self.resume(OneShotContinuation(continuation), with: work, orTimeout: timer, timeoutError: timeoutError)
       }
     } onCancel: {
       work.cancel()
+    }
+  }
+
+  /// Resumes with the handler's result, or with `timeoutError` if the timer finishes first.
+  private nonisolated static func resume<T: Sendable>(
+    _ oneShot: OneShotContinuation<T>,
+    with work: Task<T, Error>,
+    orTimeout timer: Task<Void, Error>,
+    timeoutError: Error
+  ) {
+    Task { oneShot.resume(with: await work.result) }
+    Task {
+      guard case .success = await timer.result else { return }
+      oneShot.resume(throwing: timeoutError)
     }
   }
 }
