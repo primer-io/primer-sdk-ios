@@ -95,17 +95,17 @@ public protocol PrimerCheckoutPresenterDelegate: AnyObject {
     ///   - clientToken: The client token for the session
     ///   - viewController: The view controller to present from
     ///   - primerSettings: Configuration settings to apply for this checkout session
+    ///   - completion: Optional completion handler
     ///   - onShippingAddressChange: Express Checkout shipping options for the shopper's address
     ///   - onShippingOptionChange: Express Checkout commit of the selected option
-    ///   - completion: Optional completion handler
     /// - Note: This method is not @objc compatible due to PrimerSettings parameter. For Objective-C, use the overload without settings parameter.
     public static func presentCheckout(
         clientToken: String,
         from viewController: UIViewController,
         primerSettings: PrimerSettings,
+        completion: (() -> Void)? = nil,
         onShippingAddressChange: ShippingAddressChangeHandler? = nil,
-        onShippingOptionChange: ShippingOptionChangeHandler? = nil,
-        completion: (() -> Void)? = nil
+        onShippingOptionChange: ShippingOptionChangeHandler? = nil
     ) {
         shared.presentCheckout(
             clientToken: clientToken,
@@ -124,17 +124,17 @@ public protocol PrimerCheckoutPresenterDelegate: AnyObject {
     ///   - viewController: The view controller to present from
     ///   - primerSettings: Configuration settings to apply for this checkout session
     ///   - primerTheme: Theme configuration for design tokens
+    ///   - completion: Optional completion handler
     ///   - onShippingAddressChange: Express Checkout shipping options for the shopper's address
     ///   - onShippingOptionChange: Express Checkout commit of the selected option
-    ///   - completion: Optional completion handler
     public static func presentCheckout(
         clientToken: String,
         from viewController: UIViewController,
         primerSettings: PrimerSettings,
         primerTheme: PrimerCheckoutTheme,
+        completion: (() -> Void)? = nil,
         onShippingAddressChange: ShippingAddressChangeHandler? = nil,
-        onShippingOptionChange: ShippingOptionChangeHandler? = nil,
-        completion: (() -> Void)? = nil
+        onShippingOptionChange: ShippingOptionChangeHandler? = nil
     ) {
         shared.presentCheckout(
             clientToken: clientToken,
@@ -301,8 +301,6 @@ public protocol PrimerCheckoutPresenterDelegate: AnyObject {
                 navigator: navigator,
                 presentationContext: .direct,
                 integrationType: .uiKit,
-                onShippingAddressChange: onShippingAddressChange,
-            onShippingOptionChange: onShippingOptionChange,
                 onCompletion: { [weak self] state in
                     switch state {
                     case let .success(paymentResult):
@@ -314,7 +312,9 @@ public protocol PrimerCheckoutPresenterDelegate: AnyObject {
                         self?.dismissDirectly()
                         self?.handleCheckoutDismiss()
                     }
-                }
+                },
+                onShippingAddressChange: onShippingAddressChange,
+                onShippingOptionChange: onShippingOptionChange
             )
 
             activeCheckoutController = bridgeController
@@ -397,13 +397,15 @@ extension PrimerCheckoutPresenter {
     ///   - clientToken: The client token for the session
     ///   - primerSettings: Configuration settings to apply for this checkout session
     ///   - completion: Optional completion handler
+    ///   - onShippingAddressChange: Express Checkout shipping options for the shopper's address
+    ///   - onShippingOptionChange: Express Checkout commit of the selected option
     /// - Note: This method is not @objc compatible due to PrimerSettings parameter. For Objective-C, use the method that takes a UIViewController.
     public static func presentCheckout(
         clientToken: String,
         primerSettings: PrimerSettings,
+        completion: (() -> Void)? = nil,
         onShippingAddressChange: ShippingAddressChangeHandler? = nil,
-        onShippingOptionChange: ShippingOptionChangeHandler? = nil,
-        completion: (() -> Void)? = nil
+        onShippingOptionChange: ShippingOptionChangeHandler? = nil
     ) {
         guard let viewController = shared.findPresentingViewController() else {
             let error = PrimerError.unableToPresentPaymentMethod(
@@ -419,9 +421,9 @@ extension PrimerCheckoutPresenter {
             clientToken: clientToken,
             from: viewController,
             primerSettings: primerSettings,
+            completion: completion,
             onShippingAddressChange: onShippingAddressChange,
-            onShippingOptionChange: onShippingOptionChange,
-            completion: completion
+            onShippingOptionChange: onShippingOptionChange
         )
     }
 
