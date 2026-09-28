@@ -373,6 +373,20 @@ final class ApplePayShippingSessionTests: XCTestCase {
         release.value?.resume()
     }
 
+    func test_addressChange_cancelledCaller_cancelsTheHandler() async {
+        let sut = makeSession(onAddressChange: { _ in
+            try await Task.sleep(nanoseconds: 5_000_000_000)
+            return []
+        })
+
+        let attempt = Task { try await sut.handleShippingAddressChange(address) }
+        try? await Task.sleep(nanoseconds: 50_000_000)
+        attempt.cancel()
+
+        let result = await attempt.result
+        XCTAssertThrowsError(try result.get()) { XCTAssertTrue($0 is CancellationError) }
+    }
+
     // MARK: - Helpers
 
     /// A reference cell so `@Sendable` merchant callbacks can record what they were asked, without
