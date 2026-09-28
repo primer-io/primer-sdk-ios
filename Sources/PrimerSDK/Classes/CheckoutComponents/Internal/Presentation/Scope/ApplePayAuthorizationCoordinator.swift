@@ -95,7 +95,7 @@ final class ApplePayAuthorizationCoordinator: NSObject, PKPaymentAuthorizationCo
   }
 
   func paymentAuthorizationController(
-    _ controller: PKPaymentAuthorizationController,
+    _: PKPaymentAuthorizationController,
     didSelectShippingContact contact: PKContact
   ) async -> PKPaymentRequestShippingContactUpdate {
     guard let shippingSession, shippingSession.mode == .callbacks else {
@@ -135,7 +135,7 @@ final class ApplePayAuthorizationCoordinator: NSObject, PKPaymentAuthorizationCo
   }
 
   func paymentAuthorizationController(
-    _ controller: PKPaymentAuthorizationController,
+    _: PKPaymentAuthorizationController,
     didSelectShippingMethod shippingMethod: PKShippingMethod
   ) async -> PKPaymentRequestShippingMethodUpdate {
     guard let shippingSession, shippingSession.mode == .callbacks else {
