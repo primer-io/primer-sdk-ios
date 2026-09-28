@@ -81,10 +81,6 @@ final class CheckoutNavigator: ObservableObject, LogReporter {
     coordinator.handlePaymentFailure(error, checkoutData: checkoutData)
   }
 
-  func handleOtherPaymentMethods() {
-    coordinator.navigate(to: .paymentMethodSelection)
-  }
-
   func navigateBack() {
     coordinator.goBack()
   }
