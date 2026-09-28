@@ -31,7 +31,8 @@ final class PrimerPaymentMethod: Codable, LogReporter {
     var displayMetadata: PrimerPaymentMethod.DisplayMetadata?
     var baseLogoImage: PrimerTheme.BaseImage?
     let entry: Entry
-    
+    let clientRequirements: CodableValue?
+
     private let capabilities: [Capability]?
 
     lazy var internalPaymentMethodType: PrimerPaymentMethodType? = {
@@ -271,7 +272,8 @@ final class PrimerPaymentMethod: Codable, LogReporter {
              surcharge,
              options,
              displayMetadata,
-             entry
+             entry,
+             clientRequirements
     }
 
     init(
@@ -290,6 +292,7 @@ final class PrimerPaymentMethod: Codable, LogReporter {
         self.name = name
         self.capabilities = []
         self.entry = .pay
+        self.clientRequirements = nil
         self.processorConfigId = processorConfigId
         self.surcharge = surcharge
         self.options = options
@@ -314,6 +317,7 @@ final class PrimerPaymentMethod: Codable, LogReporter {
         )) ?? nil
         capabilities = (try? container.decode([Capability].self, forKey: .capabilities))
         entry = (try? container.decode(Entry.self, forKey: .entry)) ?? .pay
+        clientRequirements = try? container.decodeIfPresent(CodableValue.self, forKey: .clientRequirements)
 
         switch type {
         case "PAYMENT_CARD":
@@ -337,6 +341,7 @@ final class PrimerPaymentMethod: Codable, LogReporter {
         try container.encode(processorConfigId, forKey: .processorConfigId)
         try container.encode(surcharge, forKey: .surcharge)
         try container.encode(displayMetadata, forKey: .displayMetadata)
+        try container.encodeIfPresent(clientRequirements, forKey: .clientRequirements)
 
         if let options = options {
             try container.encode(options, forKey: .options)
