@@ -65,30 +65,26 @@ final class ApplePayShippingSession: LogReporter {
     self.timeout = timeout
   }
 
-  /// Resolves the mode from the client session and the merchant's Apple Pay options, mirroring web:
-  /// a legacy SHIPPING module always wins, and dynamic mode needs shipping to be collected at all.
+  /// Resolves the mode from the client session and the merchant's Apple Pay options. A legacy SHIPPING
+  /// module always wins, and dynamic mode needs both handlers, a required method and a postal address.
   static func resolveMode(
     checkoutModules: [Response.Body.Configuration.CheckoutModule]?,
     applePayOptions: PrimerApplePayOptions?,
-    hasAddressChangeHandler: Bool
+    hasShippingHandlers: Bool
   ) -> Mode {
-    // Without a handler there is nothing to ask, and taking the dynamic path would leave the sheet
-    // with no options and block authorization on a commit that can never happen. Merchants who set
-    // requireShippingMethod and register nothing keep the behaviour they have today.
-    guard hasAddressChangeHandler else { return .legacy }
+    // With any of these missing, the dynamic path blocks the payment or leaves shipping uncharged.
+    let shippingOptions = applePayOptions?.shippingOptions
+    guard hasShippingHandlers,
+          shippingOptions?.requireShippingMethod == true,
+          shippingOptions?.shippingContactFields?.contains(.postalAddress) == true
+    else { return .legacy }
 
     let hasLegacyShippingModule = checkoutModules?.contains { module in
       guard module.type == "SHIPPING" else { return false }
       let options = module.options as? Response.Body.Configuration.CheckoutModule.ShippingMethodOptions
       return options?.callbackMode != true
     } ?? false
-
-    guard !hasLegacyShippingModule else { return .legacy }
-
-    let shippingOptions = applePayOptions?.shippingOptions
-    let collectsShipping = shippingOptions?.requireShippingMethod == true
-      || shippingOptions?.shippingContactFields?.contains(.postalAddress) == true
-    return collectsShipping ? .callbacks : .legacy
+    return hasLegacyShippingModule ? .legacy : .callbacks
   }
 
   // MARK: - Sheet events

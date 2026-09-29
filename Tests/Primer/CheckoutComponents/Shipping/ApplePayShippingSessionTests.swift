@@ -36,7 +36,7 @@ final class ApplePayShippingSessionTests: XCTestCase {
         let mode = ApplePayShippingSession.resolveMode(
             checkoutModules: [module],
             applePayOptions: applePayOptions(requireShippingMethod: true),
-            hasAddressChangeHandler: true
+            hasShippingHandlers: true
         )
 
         XCTAssertEqual(mode, .legacy)
@@ -48,7 +48,7 @@ final class ApplePayShippingSessionTests: XCTestCase {
         let mode = ApplePayShippingSession.resolveMode(
             checkoutModules: [module],
             applePayOptions: applePayOptions(requireShippingMethod: true),
-            hasAddressChangeHandler: true
+            hasShippingHandlers: true
         )
 
         XCTAssertEqual(mode, .callbacks)
@@ -58,40 +58,40 @@ final class ApplePayShippingSessionTests: XCTestCase {
         let mode = ApplePayShippingSession.resolveMode(
             checkoutModules: nil,
             applePayOptions: applePayOptions(requireShippingMethod: true),
-            hasAddressChangeHandler: true
+            hasShippingHandlers: true
         )
 
         XCTAssertEqual(mode, .callbacks)
     }
 
-    func test_resolveMode_shippingNotCollected_staysLegacy() {
+    func test_resolveMode_shippingMethodNotRequired_staysLegacy() {
         let mode = ApplePayShippingSession.resolveMode(
             checkoutModules: nil,
             applePayOptions: applePayOptions(requireShippingMethod: false),
-            hasAddressChangeHandler: true
+            hasShippingHandlers: true
         )
 
         XCTAssertEqual(mode, .legacy)
     }
 
-    func test_resolveMode_noAddressHandler_staysLegacy() {
+    func test_resolveMode_missingHandler_staysLegacy() {
         let mode = ApplePayShippingSession.resolveMode(
             checkoutModules: nil,
             applePayOptions: applePayOptions(requireShippingMethod: true),
-            hasAddressChangeHandler: false
+            hasShippingHandlers: false
         )
 
-        XCTAssertEqual(mode, .legacy, "A merchant who registers nothing keeps today's behaviour")
+        XCTAssertEqual(mode, .legacy, "Without both handlers the merchant keeps today's behavior")
     }
 
-    func test_resolveMode_postalAddressOnly_usesCallbacks() {
+    func test_resolveMode_noPostalAddress_staysLegacy() {
         let mode = ApplePayShippingSession.resolveMode(
             checkoutModules: nil,
-            applePayOptions: applePayOptions(requireShippingMethod: false, contactFields: [.postalAddress]),
-            hasAddressChangeHandler: true
+            applePayOptions: applePayOptions(requireShippingMethod: true, contactFields: [.name]),
+            hasShippingHandlers: true
         )
 
-        XCTAssertEqual(mode, .callbacks)
+        XCTAssertEqual(mode, .legacy, "Apple never asks for an address, so no commit could happen")
     }
 
     // MARK: - Address change
@@ -430,7 +430,7 @@ final class ApplePayShippingSessionTests: XCTestCase {
 
     private func applePayOptions(
         requireShippingMethod: Bool,
-        contactFields: [PrimerApplePayOptions.RequiredContactField]? = nil
+        contactFields: [PrimerApplePayOptions.RequiredContactField]? = [.postalAddress]
     ) -> PrimerApplePayOptions {
         PrimerApplePayOptions(
             merchantIdentifier: "merchant.test",
