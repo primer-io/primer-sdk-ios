@@ -120,6 +120,10 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
         throw NSError(domain: "MockPrimerAPIClient", code: 1, userInfo: nil)
     }
 
+    func refreshClientSession(clientToken: DecodedJWTToken) async throws -> PrimerAPIConfiguration {
+        try await fetchConfiguration(clientToken: clientToken, requestParameters: nil).0
+    }
+
     func fetchVaultedPaymentMethods(
         clientToken: DecodedJWTToken,
         completion: @escaping (_ result: Result<Response.Body.VaultedPaymentMethods, Error>) -> Void
