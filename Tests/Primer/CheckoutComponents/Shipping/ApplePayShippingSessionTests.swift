@@ -315,10 +315,6 @@ final class ApplePayShippingSessionTests: XCTestCase {
         try makeSession(mode: .legacy).requireVerifiedCommit(selectedOptionId: nil)
     }
 
-    func test_requireVerifiedCommit_shippingMethodNotRequired_isNotGated() throws {
-        try makeSession(requireShippingMethod: false).requireVerifiedCommit(selectedOptionId: nil)
-    }
-
     // MARK: - Timeout
 
     func test_addressChange_handlerThatNeverReturns_failsTheAttempt() async {
@@ -398,7 +394,6 @@ final class ApplePayShippingSessionTests: XCTestCase {
 
     private func makeSession(
         mode: ApplePayShippingSession.Mode = .callbacks,
-        requireShippingMethod: Bool = true,
         onAddressChange: ShippingAddressChangeHandler? = nil,
         onOptionChange: ShippingOptionChangeHandler? = nil,
         shipping: @escaping () -> ClientSession.Order.ShippingMethod? = { nil },
@@ -406,7 +401,6 @@ final class ApplePayShippingSessionTests: XCTestCase {
     ) -> ApplePayShippingSession {
         ApplePayShippingSession(
             mode: mode,
-            requireShippingMethod: requireShippingMethod,
             addressChangeProvider: { onAddressChange },
             optionChangeProvider: { onOptionChange },
             refreshConfiguration: {},

@@ -262,7 +262,6 @@ final class ApplePayAuthorizationCoordinatorTests: XCTestCase {
         let committed = options.first
         return ApplePayShippingSession(
             mode: mode,
-            requireShippingMethod: true,
             addressChangeProvider: { { _ in options } },
             optionChangeProvider: { { _ in } },
             refreshConfiguration: {},

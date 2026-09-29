@@ -196,7 +196,6 @@ final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
         applePayOptions: applePayOptions,
         hasShippingHandlers: checkoutScope?.onShippingAddressChange != nil && checkoutScope?.onShippingOptionChange != nil
       ),
-      requireShippingMethod: applePayOptions?.shippingOptions?.requireShippingMethod == true,
       addressChangeProvider: { [weak checkoutScope] in checkoutScope?.onShippingAddressChange },
       optionChangeProvider: { [weak checkoutScope] in checkoutScope?.onShippingOptionChange }
     )
