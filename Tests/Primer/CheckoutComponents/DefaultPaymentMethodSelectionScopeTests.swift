@@ -350,6 +350,51 @@ final class DefaultPaymentMethodSelectionScopeTests: XCTestCase {
         XCTAssertNotEqual(mockCheckoutScope.navigationState, .cvvRecapture)
     }
 
+    func test_payWithVaultedPaymentMethod_asksTheMerchantGate() async throws {
+        // Given
+        sut = makeSut()
+        let method = makeVaultedPaymentMethod()
+        mockCheckoutScope.setVaultedPaymentMethods([method])
+        mockCheckoutScope.setSelectedVaultedPaymentMethod(method)
+        sut.syncSelectedVaultedPaymentMethod()
+        var askedType: String?
+        mockCheckoutScope.onBeforePaymentCreate = { data, decisionHandler in
+            askedType = data.paymentMethodType.type
+            decisionHandler(.continuePaymentCreation(withIdempotencyKey: "merchant-key"))
+        }
+        PrimerInternal.shared.currentIdempotencyKey = nil
+        defer { PrimerInternal.shared.currentIdempotencyKey = nil }
+
+        // When
+        await sut.payWithVaultedPaymentMethod()
+
+        // Then
+        XCTAssertEqual(askedType, method.paymentMethodType)
+        XCTAssertEqual(PrimerInternal.shared.currentIdempotencyKey, "merchant-key")
+    }
+
+    func test_payWithVaultedPaymentMethod_merchantAborts_failsWithoutProcessing() async throws {
+        // Given
+        sut = makeSut()
+        let method = makeVaultedPaymentMethod()
+        mockCheckoutScope.setVaultedPaymentMethods([method])
+        mockCheckoutScope.setSelectedVaultedPaymentMethod(method)
+        sut.syncSelectedVaultedPaymentMethod()
+        mockCheckoutScope.onBeforePaymentCreate = { _, decisionHandler in
+            decisionHandler(.abortPaymentCreation(withErrorMessage: "blocked"))
+        }
+
+        // When
+        await sut.payWithVaultedPaymentMethod()
+
+        // Then
+        guard case let .failure(error) = mockCheckoutScope.navigationState else {
+            return XCTFail("Expected .failure, got \(mockCheckoutScope.navigationState)")
+        }
+        guard case .merchantError = error else { return XCTFail("Expected merchantError, got \(error)") }
+        XCTAssertFalse(sut.currentState.isVaultPaymentLoading)
+    }
+
     // MARK: - payWithVaultedPaymentMethodAndCvv Tests
 
     func test_syncSelectedVaultedPaymentMethod_nilSelection_clearsState() async throws {

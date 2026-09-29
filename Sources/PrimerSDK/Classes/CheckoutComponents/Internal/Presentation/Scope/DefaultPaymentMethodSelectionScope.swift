@@ -252,8 +252,6 @@ final class DefaultPaymentMethodSelectionScope: PaymentMethodSelectionScopeInter
     logger.info(message: "[Vault] Starting payment with vaulted method: \(vaultedMethod.id)")
 
     internalState.isVaultPaymentLoading = true
-    // Without this the payment runs behind the merchant's own list, with nothing to show it started.
-    checkoutScope?.startProcessing(payingWith: nil)
 
     await analyticsInteractor?.trackEvent(
       .paymentSubmitted,
@@ -261,6 +259,11 @@ final class DefaultPaymentMethodSelectionScope: PaymentMethodSelectionScopeInter
     )
 
     do {
+      // The merchant gate runs before `startProcessing()`, as on every other payment method.
+      try await checkoutScope?.invokeBeforePaymentCreate(paymentMethodType: vaultedMethod.paymentMethodType)
+      // Without this the payment runs behind the merchant's own list, with nothing to show it started.
+      checkoutScope?.startProcessing(payingWith: nil)
+
       guard let container = await DIContainer.current else {
         throw PrimerError.unknown(message: "DIContainer.current is nil")
       }
