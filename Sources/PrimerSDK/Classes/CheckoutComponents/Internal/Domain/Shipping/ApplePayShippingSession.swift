@@ -38,14 +38,12 @@ final class ApplePayShippingSession: LogReporter {
 
   private let addressChangeProvider: () -> ShippingAddressChangeHandler?
   private let optionChangeProvider: () -> ShippingOptionChangeHandler?
-  private let requireShippingMethod: Bool
   private let refreshConfiguration: () async throws -> Void
   private let currentShipping: () -> ClientSession.Order.ShippingMethod?
   private let timeout: TimeInterval
 
   init(
     mode: Mode,
-    requireShippingMethod: Bool,
     addressChangeProvider: @escaping () -> ShippingAddressChangeHandler?,
     optionChangeProvider: @escaping () -> ShippingOptionChangeHandler?,
     refreshConfiguration: @escaping () async throws -> Void = {
@@ -57,7 +55,6 @@ final class ApplePayShippingSession: LogReporter {
     timeout: TimeInterval = ApplePayShippingSession.callbackTimeout
   ) {
     self.mode = mode
-    self.requireShippingMethod = requireShippingMethod
     self.addressChangeProvider = addressChangeProvider
     self.optionChangeProvider = optionChangeProvider
     self.refreshConfiguration = refreshConfiguration
@@ -103,21 +100,21 @@ final class ApplePayShippingSession: LogReporter {
     // default (or the shopper's next pick) commits.
     verifiedCommit = nil
 
-    if requireShippingMethod, let first = options.first {
+    if let first = options.first {
       try await commit(first)
     }
   }
 
   /// Commits the option the shopper picked in the sheet.
   func handleShippingOptionChange(optionId: String?) async throws {
-    guard mode == .callbacks, requireShippingMethod else { return }
+    guard mode == .callbacks else { return }
     guard let selected = moveToFront(optionId) else { return }
     try await commit(selected)
   }
 
   /// Apple takes no new total at authorization, so a failed in-sheet commit blocks instead of retrying.
   func requireVerifiedCommit(selectedOptionId: String?) throws {
-    guard mode == .callbacks, requireShippingMethod else { return }
+    guard mode == .callbacks else { return }
     guard let selectedOptionId, verifiedCommit?.id == selectedOptionId else {
       throw handled(primerError: .merchantError(
         message: "Apple Pay authorization was blocked: the shipping option the sheet reported "
@@ -128,7 +125,7 @@ final class ApplePayShippingSession: LogReporter {
 
   /// True when the sheet must show Apple's "cannot deliver to this address" error instead of a list.
   var isAddressUnserviceable: Bool {
-    mode == .callbacks && requireShippingMethod && options.isEmpty
+    mode == .callbacks && options.isEmpty
   }
 
   // MARK: - Internals
