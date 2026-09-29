@@ -167,9 +167,9 @@ public enum PrimerCheckoutState: Equatable {
   /// Contains the specific error with diagnostics information for debugging.
   ///
   /// `checkoutData` carries the payment id and order id when the payment was created before failing
-  /// (e.g. a decline), so it can be looked up on the merchant backend. Its payment status mirrors the
-  /// last Payments API response and may not reflect the decline. `checkoutData` is `nil` when the
-  /// failure happened before a payment existed (initialization, tokenization, connectivity).
+  /// (e.g. a decline), so it can be looked up on the merchant backend. Its payment status comes from the
+  /// last Payments API response the SDK received. `checkoutData` is `nil` when the failure happened
+  /// before a payment existed (initialization, tokenization, connectivity).
   case failure(PrimerError, checkoutData: PrimerCheckoutData? = nil)
 
   public static func == (lhs: PrimerCheckoutState, rhs: PrimerCheckoutState) -> Bool {
