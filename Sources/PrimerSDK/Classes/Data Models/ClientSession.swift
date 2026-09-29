@@ -69,6 +69,10 @@ final class ClientSession {
             ClientSession.Action(type: .setMobileNumber, params: ["mobileNumber": mobileNumber])
         }
 
+        static func setVaultOnSuccess(_ enabled: Bool) -> ClientSession.Action {
+            ClientSession.Action(type: .setVaultOnSuccess, params: ["vaultOnSuccess": enabled])
+        }
+
         // swiftlint:disable:next nesting
         enum ActionType: String {
             case selectPaymentMethod = "SELECT_PAYMENT_METHOD"
@@ -81,6 +85,7 @@ final class ClientSession {
             case setCustomerFirstName = "SET_CUSTOMER_FIRST_NAME"
             case setCustomerLastName = "SET_CUSTOMER_LAST_NAME"
             case setCustomerEmailAddress = "SET_EMAIL_ADDRESS"
+            case setVaultOnSuccess = "SET_VAULT_ON_SUCCESS"
         }
 
         var type: ActionType

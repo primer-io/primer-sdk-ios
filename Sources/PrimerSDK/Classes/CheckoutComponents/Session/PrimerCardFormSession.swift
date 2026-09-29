@@ -24,10 +24,12 @@ public final class PrimerCardFormSession: ObservableObject {
   let scope: any PrimerCardFormScope
 
   private let fieldScope: (any CardFormFieldScopeInternal)?
+  private let clientSessionActions: any ClientSessionActionsProtocol
   private var observationTask: Task<Void, Never>?
 
-  init(scope: any PrimerCardFormScope) {
+  init(scope: any PrimerCardFormScope, clientSessionActions: any ClientSessionActionsProtocol = ClientSessionActionsModule()) {
     self.scope = scope
+    self.clientSessionActions = clientSessionActions
     fieldScope = scope as? any CardFormFieldScopeInternal
     state = fieldScope?.currentState ?? PrimerCardFormState()
     if fieldScope == nil {
@@ -67,6 +69,12 @@ public final class PrimerCardFormSession: ObservableObject {
   /// Selects a co-badged card network.
   public func selectCardNetwork(_ network: PrimerCardNetwork) {
     fieldScope?.updateSelectedCardNetwork(network.network.rawValue)
+  }
+
+  /// Saves the card on a successful payment, or stops saving it, by updating the client session.
+  /// Use it for a shopper-facing "save card" control. The client session must have a customer id.
+  public func setVaultOnSuccess(_ enabled: Bool) async throws {
+    try await clientSessionActions.dispatch(actions: [.setVaultOnSuccess(enabled)])
   }
 
   // MARK: - Lifecycle

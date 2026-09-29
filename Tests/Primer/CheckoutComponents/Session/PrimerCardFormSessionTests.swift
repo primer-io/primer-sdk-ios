@@ -119,6 +119,33 @@ final class PrimerCardFormSessionTests: XCTestCase {
 
   // MARK: - Tests
 
+  func test_setVaultOnSuccess_dispatchesTheClientSessionAction() async throws {
+    // Given
+    let actions = MockClientSessionActionsModule()
+    let session = PrimerCardFormSession(scope: StubCardFormScope(), clientSessionActions: actions)
+
+    // When
+    try await session.setVaultOnSuccess(true)
+
+    // Then
+    let action = try XCTUnwrap(actions.lastDispatchActionsCall?.first)
+    XCTAssertEqual(action.type, .setVaultOnSuccess)
+    XCTAssertEqual(action.params?["vaultOnSuccess"] as? Bool, true)
+  }
+
+  func test_setVaultOnSuccess_whenTheUpdateFails_throws() async {
+    // Given
+    let actions = MockClientSessionActionsModule()
+    actions.dispatchActionsError = PrimerError.unknown(message: "offline")
+    let session = PrimerCardFormSession(scope: StubCardFormScope(), clientSessionActions: actions)
+
+    // When / Then
+    do {
+      try await session.setVaultOnSuccess(false)
+      XCTFail("Expected the update error")
+    } catch {}
+  }
+
   func test_init_startsScope_andExposesIt() {
     // Given
     let scope = StubCardFormScope()

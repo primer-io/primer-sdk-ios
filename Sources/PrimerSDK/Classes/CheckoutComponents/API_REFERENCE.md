@@ -229,10 +229,13 @@ public final class PrimerCardFormSession: ObservableObject {
   public func updateFirstName(_ value: String)
   public func updateLastName(_ value: String)
   public func selectCardNetwork(_ network: PrimerCardNetwork)
+  public func setVaultOnSuccess(_ enabled: Bool) async throws
   public func submit()
   public func cancel()
 }
 ```
+
+`setVaultOnSuccess(_:)` updates the client session, so a shopper-facing "save card" control decides whether a successful payment saves the card. The client session needs a customer id. It matches Android's `PrimerCardFormController.setVaultOnSuccess`.
 
 ### PrimerSelectionSession
 
