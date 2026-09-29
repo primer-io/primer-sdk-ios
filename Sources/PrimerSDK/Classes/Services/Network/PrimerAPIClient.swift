@@ -155,6 +155,26 @@ final class PrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
 
+    func refreshClientSession(clientToken: DecodedJWTToken) async throws -> PrimerAPIConfiguration {
+        do {
+            // Runs inside the Apple Pay sheet, so it skips display metadata and keeps retries short.
+            let (configuration, _): (PrimerAPIConfiguration, [String: String]?) = try await networkService.request(
+                .fetchConfiguration(
+                    clientToken: clientToken,
+                    requestParameters: Request.URLParameters.Configuration(
+                        skipPaymentMethodTypes: [],
+                        requestDisplayMetadata: false
+                    )
+                ),
+                retryConfig: RetryConfig(enabled: true, maxRetries: 2)
+            )
+            return configuration
+        } catch {
+            ErrorHandler.shared.handle(error: error)
+            throw error
+        }
+    }
+
     func createPayPalOrderSession(
         clientToken: DecodedJWTToken,
         payPalCreateOrderRequest: Request.Body.PayPal.CreateOrder,

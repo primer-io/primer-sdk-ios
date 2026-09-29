@@ -149,13 +149,15 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
     /// first because a cached read would hand back the pre-`PATCH` amount, which is exactly the stale
     /// total the authorization gate exists to prevent.
     func refreshSession() async throws {
-        ConfigurationCache.shared.clearCache()
-        // Display metadata is requested even though this refresh does not use it: the response is
-        // cached, and a later `setupSession` reading a metadata-free entry would rebuild the UI
-        // without it.
-        let configuration = try await fetchConfiguration(requestDisplayMetadata: true)
+        guard let clientToken = PrimerAPIConfigurationModule.decodedJWTToken else {
+            throw handled(primerError: .invalidClientToken())
+        }
+        let apiClient: PrimerAPIClientProtocol = PrimerAPIConfigurationModule.apiClient ?? PrimerAPIClient()
+        let configuration = try await apiClient.refreshClientSession(clientToken: clientToken)
         PrimerAPIConfigurationModule.apiConfiguration?.clientSession = configuration.clientSession
         PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules = configuration.checkoutModules
+        // The cached entry now holds a stale client session, so the next setup fetches a fresh one.
+        ConfigurationCache.shared.clearCache()
     }
 
     func storeRequiredActionClientToken(_ newClientToken: String) async throws {
