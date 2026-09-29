@@ -20,16 +20,6 @@ final class MockPrimerCheckoutPresenterDelegate: PrimerCheckoutPresenterDelegate
 
     private(set) var didDismissCallCount = 0
 
-    private(set) var willPresent3DSChallengeCallCount = 0
-    private(set) var capturedTokenData: PrimerPaymentMethodTokenData?
-
-    private(set) var didDismiss3DSChallengeCallCount = 0
-
-    private(set) var didComplete3DSChallengeCallCount = 0
-    private(set) var capturedThreeDSSuccess: Bool?
-    private(set) var capturedResumeToken: String?
-    private(set) var capturedThreeDSError: Error?
-
     func primerCheckoutPresenterDidCompleteWithSuccess(_ result: PaymentResult) {
         didCompleteWithSuccessCallCount += 1
         capturedSuccessResult = result
@@ -44,38 +34,11 @@ final class MockPrimerCheckoutPresenterDelegate: PrimerCheckoutPresenterDelegate
         didDismissCallCount += 1
     }
 
-    func primerCheckoutPresenterWillPresent3DSChallenge(
-        _ paymentMethodTokenData: PrimerPaymentMethodTokenData
-    ) {
-        willPresent3DSChallengeCallCount += 1
-        capturedTokenData = paymentMethodTokenData
-    }
-
-    func primerCheckoutPresenterDidDismiss3DSChallenge() {
-        didDismiss3DSChallengeCallCount += 1
-    }
-
-    func primerCheckoutPresenterDidComplete3DSChallenge(
-        success: Bool, resumeToken: String?, error: Error?
-    ) {
-        didComplete3DSChallengeCallCount += 1
-        capturedThreeDSSuccess = success
-        capturedResumeToken = resumeToken
-        capturedThreeDSError = error
-    }
-
     func reset() {
         didCompleteWithSuccessCallCount = 0
         capturedSuccessResult = nil
         didFailWithErrorCallCount = 0
         capturedError = nil
         didDismissCallCount = 0
-        willPresent3DSChallengeCallCount = 0
-        capturedTokenData = nil
-        didDismiss3DSChallengeCallCount = 0
-        didComplete3DSChallengeCallCount = 0
-        capturedThreeDSSuccess = nil
-        capturedResumeToken = nil
-        capturedThreeDSError = nil
     }
 }

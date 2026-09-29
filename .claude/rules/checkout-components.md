@@ -90,10 +90,7 @@ Per-payment-method and per-card-network surcharge amounts:
 - `CardFormDefaults.billingAddress(_:)` renders only when the configuration requires billing fields; each `CardFormDefaults.*` building block self-hides unless its field is in `CardFormConfiguration.cardFields`/`billingFields`
 
 ### 3DS
-- Automatic handling via `PrimerCheckoutPresenterDelegate` optional callbacks:
-  - `primerCheckoutPresenterWillPresent3DSChallenge(_:)`
-  - `primerCheckoutPresenterDidDismiss3DSChallenge()`
-  - `primerCheckoutPresenterDidComplete3DSChallenge(success:resumeToken:error:)`
+- Automatic handling; a failed challenge arrives as a failure, with no separate 3DS callbacks (Android parity)
 - Configurable via `PrimerSettings.debugOptions.is3DSSanityCheckEnabled`
 
 ### BIN Detection

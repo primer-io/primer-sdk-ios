@@ -15,49 +15,12 @@ public protocol PrimerCheckoutPresenterDelegate: AnyObject {
     /// - Parameter result: The payment result containing payment ID, status, and other details
     func primerCheckoutPresenterDidCompleteWithSuccess(_ result: PaymentResult)
 
-    /// Called when payment fails
+    /// Called once per failed attempt, including a failed initialization. The sheet stays open while
+    /// the SDK error screen offers a retry.
     func primerCheckoutPresenterDidFailWithError(_ error: PrimerError)
 
     /// Called when checkout is dismissed without completion
     func primerCheckoutPresenterDidDismiss()
-
-    // MARK: - 3DS Delegate Methods (Optional with default implementations)
-
-    /// Called when 3DS challenge is about to be presented
-    /// - Parameter paymentMethodTokenData: The payment method token data requiring 3DS
-    func primerCheckoutPresenterWillPresent3DSChallenge(
-        _ paymentMethodTokenData: PrimerPaymentMethodTokenData)
-
-    /// Called when 3DS challenge UI is dismissed
-    func primerCheckoutPresenterDidDismiss3DSChallenge()
-
-    /// Called when 3DS challenge completes (success or failure)
-    /// - Parameters:
-    ///   - success: Whether 3DS challenge was successful
-    ///   - resumeToken: The resume token if successful, nil if failed
-    ///   - error: The error if failed, nil if successful
-    func primerCheckoutPresenterDidComplete3DSChallenge(success: Bool, resumeToken: String?, error: Error?)
-}
-
-// MARK: - Optional 3DS Delegate Methods
-
-@available(iOS 15.0, *)
-extension PrimerCheckoutPresenterDelegate {
-    /// Override if you need 3DS challenge presentation callbacks
-    public func primerCheckoutPresenterWillPresent3DSChallenge(
-        _ paymentMethodTokenData: PrimerPaymentMethodTokenData
-    ) {
-    }
-
-    /// Override if you need 3DS challenge dismissal callbacks
-    public func primerCheckoutPresenterDidDismiss3DSChallenge() {
-    }
-
-    /// Override if you need 3DS challenge completion callbacks
-    public func primerCheckoutPresenterDidComplete3DSChallenge(
-        success: Bool, resumeToken: String?, error: Error?
-    ) {
-    }
 }
 
 /// UIKit entry point for CheckoutComponents SDK

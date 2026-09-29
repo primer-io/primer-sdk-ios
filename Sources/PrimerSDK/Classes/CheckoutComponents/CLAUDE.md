@@ -76,7 +76,6 @@ Paying with a saved method is `PrimerSelectionSession.selectVaulted(_:)`, which 
 - `primerCheckoutPresenterDidCompleteWithSuccess(_:)`: Payment successful
 - `primerCheckoutPresenterDidFailWithError(_:)`: Payment failed
 - `primerCheckoutPresenterDidDismiss()`: Checkout dismissed
-- Optional 3DS lifecycle methods
 
 ## State Management
 
@@ -186,9 +185,8 @@ CheckoutComponents integrates with PrimerSettings via:
 - `.direct`: Show cancel button (directly presented)
 
 ### 3DS Integration
-- Automatic 3DS handling via delegate callbacks
+- Automatic 3DS handling; a failed challenge arrives as a failure
 - Sanity checks configurable via settings
-- Lifecycle callbacks: willPresent, didPresent, willDismiss, didComplete
 
 ## Common Development Tasks
 

@@ -1246,8 +1246,9 @@ class DebugAppPrimerCheckoutPresenterDelegate: PrimerCheckoutPresenterDelegate {
     
     func primerCheckoutPresenterDidFailWithError(_ error: PrimerError) {
         print("❌ [Debug App] CheckoutComponents payment failed: \(error.localizedDescription)")
-        
-        DispatchQueue.main.async {
+        Task { @MainActor in
+            // Still presented means the SDK error screen offers a retry; the result screen waits for the end.
+            guard !PrimerCheckoutPresenter.isPresenting else { return }
             // Push the Debug App's error result screen to navigation stack (following Drop-in pattern)
             // This is called after CheckoutComponents modal has been dismissed
             if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
@@ -1327,77 +1328,24 @@ class DebugAppPrimerCheckoutPresenterDelegate: PrimerCheckoutPresenterDelegate {
             }
         }
     }
-    
-    // MARK: - 3DS Delegate Methods
-
-    func primerCheckoutPresenterWillPresent3DSChallenge(_ paymentMethodTokenData: PrimerPaymentMethodTokenData) {
-        print("🔐 [Debug App] CheckoutComponents will present 3DS challenge")
-        print("🔐 [Debug App] Payment method type: \(String(describing: paymentMethodTokenData.paymentMethodType))")
-        if let token = paymentMethodTokenData.token {
-            print("🔐 [Debug App] Token: \(token)")
-        }
-        // Note: 3DS is handled at payment creation level, not tokenization level
-        print("🔐 [Debug App] 3DS will be handled during payment creation if required")
-    }
-
-    func primerCheckoutPresenterDidDismiss3DSChallenge() {
-        print("🔐 [Debug App] CheckoutComponents 3DS challenge was dismissed")
-    }
-
-    func primerCheckoutPresenterDidComplete3DSChallenge(success: Bool, resumeToken: String?, error: Error?) {
-        if success {
-            print("🔐✅ [Debug App] CheckoutComponents 3DS challenge completed successfully")
-            if let resumeToken {
-                print("🔐✅ [Debug App] Resume token: \(resumeToken)")
-            }
-        } else {
-            print("🔐❌ [Debug App] CheckoutComponents 3DS challenge failed")
-            if let error {
-                print("🔐❌ [Debug App] 3DS Error: \(error.localizedDescription)")
-            }
-        }
-        
-        // Show a debug alert with 3DS result
-        DispatchQueue.main.async {
-            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-               let window = windowScene.windows.first,
-               let topController = Self.findTopViewController(from: window.rootViewController) {
-                
-                let title = success ? "3DS Success" : "3DS Failed"
-                var message = success ? "3DS authentication completed successfully" : "3DS authentication failed"
-                
-                if success, let resumeToken {
-                    message += "\nResume token: \(String(resumeToken.prefix(20)))..."
-                } else if !success, let error {
-                    message += "\nError: \(error.localizedDescription)"
-                }
-                
-                let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-                
-                topController.present(alert, animated: true, completion: nil)
-                print("🔐 [Debug App] Presented 3DS result alert")
-            }
-        }
-    }
 
     private static func findTopViewController(from viewController: UIViewController?) -> UIViewController? {
         guard let viewController else { return nil }
-        
+
         if let presented = viewController.presentedViewController {
             return findTopViewController(from: presented)
         }
-        
+
         if let navigation = viewController as? UINavigationController,
            let top = navigation.topViewController {
             return findTopViewController(from: top)
         }
-        
+
         if let tab = viewController as? UITabBarController,
            let selected = tab.selectedViewController {
             return findTopViewController(from: selected)
         }
-        
+
         return viewController
     }
 }
@@ -1427,23 +1375,5 @@ private class InlineTestPrimerCheckoutPresenterDelegate: PrimerCheckoutPresenter
     
     func primerCheckoutPresenterDidDismiss() {
         onResult(.success("Checkout was dismissed by user"))
-    }
-
-    // MARK: - 3DS Delegate Methods
-
-    func primerCheckoutPresenterWillPresent3DSChallenge(_ paymentMethodTokenData: PrimerPaymentMethodTokenData) {
-        print("🔐 [Inline Test] CheckoutComponents will present 3DS challenge")
-    }
-
-    func primerCheckoutPresenterDidDismiss3DSChallenge() {
-        print("🔐 [Inline Test] CheckoutComponents 3DS challenge was dismissed")
-    }
-
-    func primerCheckoutPresenterDidComplete3DSChallenge(success: Bool, resumeToken: String?, error: Error?) {
-        if success {
-            print("🔐✅ [Inline Test] CheckoutComponents 3DS challenge completed successfully")
-        } else {
-            print("🔐❌ [Inline Test] CheckoutComponents 3DS challenge failed")
-        }
     }
 }

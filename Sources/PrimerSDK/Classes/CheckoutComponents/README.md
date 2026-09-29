@@ -12,7 +12,7 @@ CheckoutComponents is the newest payment integration approach in the Primer iOS 
 - 🔄 **Reactive State Management**: `@Published` state observation via observable sessions
 - 💳 **Co-Badged Cards**: Automatic network detection with user selection and surcharge support
 - 🏠 **Dynamic Billing Address**: API-driven field configuration with smart visibility
-- 🔐 **Built-in 3DS**: Automatic 3D Secure handling with delegate callbacks
+- 🔐 **Built-in 3DS**: Automatic 3D Secure handling
 - 📱 **SwiftUI Native**: Modern Swift with async/await and ViewBuilder patterns
 - 🎯 **Type-Safe API**: Structured state management with comprehensive field validation
 - 🧩 **Modular Architecture**: Compose SDK building blocks with custom UI
@@ -321,11 +321,6 @@ extension ViewController: PrimerCheckoutPresenterDelegate {
     func primerCheckoutPresenterDidDismiss() {
         print("Checkout dismissed")
     }
-
-    // Optional — 3DS lifecycle
-    func primerCheckoutPresenterWillPresent3DSChallenge(_ paymentMethodTokenData: PrimerPaymentMethodTokenData) { }
-    func primerCheckoutPresenterDidDismiss3DSChallenge() { }
-    func primerCheckoutPresenterDidComplete3DSChallenge(success: Bool, resumeToken: String?, error: Error?) { }
 }
 
 PrimerCheckoutPresenter.shared.delegate = self
@@ -348,19 +343,7 @@ For SwiftUI, outcomes are delivered via `onCompletion`:
 
 ### 3D Secure
 
-3DS is handled automatically. The optional delegate methods let you track the lifecycle:
-
-```swift
-extension ViewController: PrimerCheckoutPresenterDelegate {
-    func primerCheckoutPresenterWillPresent3DSChallenge(_ paymentMethodTokenData: PrimerPaymentMethodTokenData) {
-        // Prepare UI for 3DS
-    }
-    func primerCheckoutPresenterDidDismiss3DSChallenge() { }
-    func primerCheckoutPresenterDidComplete3DSChallenge(success: Bool, resumeToken: String?, error: Error?) {
-        print("3DS completed: success=\(success)")
-    }
-}
-```
+3DS is handled automatically. A failed challenge reaches you as a failure, like any other declined payment.
 
 Enable/disable the sanity check via `PrimerSettings.debugOptions.is3DSSanityCheckEnabled`.
 
