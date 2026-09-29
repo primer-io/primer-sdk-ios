@@ -932,4 +932,57 @@ final class DefaultCheckoutScopeReloadTests: XCTestCase {
         // Then — the provider fills the gap rather than the key being silently dropped.
         XCTAssertEqual(PrimerInternal.shared.currentIdempotencyKey, "declarative-key")
     }
+
+    // MARK: - Single payment method with saved methods
+
+    /// One configured card, and a repository that returns `vaulted` for the shopper.
+    private func makeSingleMethodScope(
+        vaulted: [PrimerHeadlessUniversalCheckout.VaultedPaymentMethod]
+    ) async throws -> DefaultCheckoutScope {
+        SDKSessionHelper.setUp()
+        let container = try await ContainerTestHelpers.createTestContainer(
+            apiConfiguration: PrimerAPIConfigurationModule.apiConfiguration)
+        let repository = MockHeadlessRepository()
+        repository.vaultedPaymentMethodsToReturn = vaulted
+        _ = try await container.register(HeadlessRepository.self).asSingleton().with { _ in repository }
+        await DIContainer.setContainer(container)
+
+        let scope = DefaultCheckoutScope(
+            clientToken: TestData.Tokens.valid,
+            settings: PrimerSettings(paymentHandling: .auto, uiOptions: PrimerUIOptions(isInitScreenEnabled: false)),
+            navigator: CheckoutNavigator(coordinator: CheckoutCoordinator())
+        )
+        try await withTimeout(3.0) {
+            while scope.navigationState == .loading { await Task.yield() }
+        }
+        return scope
+    }
+
+    private func makeVaultedCard() throws -> PrimerHeadlessUniversalCheckout.VaultedPaymentMethod {
+        let data = try JSONSerialization.data(withJSONObject: ["last4Digits": "4242"])
+        return PrimerHeadlessUniversalCheckout.VaultedPaymentMethod(
+            id: "vault_1",
+            paymentMethodType: PrimerPaymentMethodType.paymentCard.rawValue,
+            paymentInstrumentType: .paymentCard,
+            paymentInstrumentData: try JSONDecoder().decode(Response.Body.Tokenization.PaymentInstrumentData.self, from: data),
+            analyticsId: "analytics_vault_1"
+        )
+    }
+
+    func test_singlePaymentMethod_withSavedMethods_staysOnSelection() async throws {
+        sut = try await makeSingleMethodScope(vaulted: [makeVaultedCard()])
+        defer { SDKSessionHelper.tearDown() }
+
+        XCTAssertEqual(sut.navigationState, .paymentMethodSelection)
+        XCTAssertEqual(sut.vaultedPaymentMethods.count, 1)
+        // The card form opened from here needs a way back to the saved card.
+        XCTAssertEqual(try DefaultCheckoutScope.validated(from: sut).1, .fromPaymentSelection)
+    }
+
+    func test_singlePaymentMethod_withoutSavedMethods_opensTheMethod() async throws {
+        sut = try await makeSingleMethodScope(vaulted: [])
+        defer { SDKSessionHelper.tearDown() }
+
+        XCTAssertEqual(sut.navigationState, .paymentMethod(PrimerPaymentMethodType.paymentCard.rawValue))
+    }
 }

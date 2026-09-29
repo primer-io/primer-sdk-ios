@@ -19,6 +19,7 @@ protocol CheckoutScopeInternal: PrimerCheckoutScope {
   var currentState: PrimerCheckoutState { get }
 
   var availablePaymentMethods: [InternalPaymentMethod] { get }
+  var hasAlternativeToCurrentMethod: Bool { get }
   var vaultedPaymentMethods: [PrimerHeadlessUniversalCheckout.VaultedPaymentMethod] { get }
   var selectedVaultedPaymentMethod: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod? { get }
 

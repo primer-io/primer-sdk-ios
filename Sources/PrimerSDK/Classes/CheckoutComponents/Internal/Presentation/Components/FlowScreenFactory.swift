@@ -168,8 +168,7 @@ struct FlowScreenFactory: LogReporter {
         scope.cancelActivePaymentMethod(returnToSelection: true)
       }
     }
-    // Counts total methods (the failed one is still present), so >1 means at least one alternative exists.
-    guard scope.availablePaymentMethods.count > 1 else { return nil }
+    guard scope.hasAlternativeToCurrentMethod else { return nil }
     return {
       logger.info(message: "Error screen choose other payment method tapped")
       scope.checkoutNavigator.handleOtherPaymentMethods()

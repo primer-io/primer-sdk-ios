@@ -249,6 +249,10 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
       }
 
       availablePaymentMethods = try await interactor.execute()
+      // Before the preload: a method scope's context depends on whether saved methods give it a way back.
+      if availablePaymentMethods.count == 1, !isInlineFlow {
+        await fetchVaultedPaymentMethods()
+      }
 
       await preloadPaymentMethodScopes()
 
@@ -262,7 +266,8 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
         // Inline embedding must not auto-present a payment method on launch — the merchant's own
         // inline view renders once `.ready`, and the flow sheet appears only after the merchant
         // triggers it. Stay on selection so the inline host treats this as a non-flow state.
-        if availablePaymentMethods.count == 1, !isInlineFlow,
+        // A returning shopper's saved methods live on the selection screen, so skip it only without any.
+        if !hasAlternativeToCurrentMethod, !isInlineFlow,
           let singlePaymentMethod = availablePaymentMethods.first {
           updateNavigationState(.paymentMethod(singlePaymentMethod.type))
         } else {
@@ -279,6 +284,20 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
       updateNavigationState(.failure(primerError))
       updateState(.failure(primerError))
     }
+  }
+
+  /// A failed fetch counts as none: the shopper can still pay with the configured method.
+  private func fetchVaultedPaymentMethods() async {
+    guard let container = await DIContainer.current,
+          let repository = try? await container.resolve(HeadlessRepository.self),
+          let methods = try? await repository.fetchVaultedPaymentMethods()
+    else { return }
+    setVaultedPaymentMethods(methods)
+  }
+
+  /// Another configured method or a saved one, so the shopper has somewhere to go back to.
+  var hasAlternativeToCurrentMethod: Bool {
+    availablePaymentMethods.count > 1 || !vaultedPaymentMethods.isEmpty
   }
 
   private func preloadPaymentMethodScopes() async {
@@ -662,7 +681,7 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
         recoverSuggestion: "Use the SDK-provided checkout scope"
       )
     }
-    let context: PresentationContext = scope.availablePaymentMethods.count > 1 ? .fromPaymentSelection : .direct
+    let context: PresentationContext = scope.hasAlternativeToCurrentMethod ? .fromPaymentSelection : .direct
     return (scope, context)
   }
 
