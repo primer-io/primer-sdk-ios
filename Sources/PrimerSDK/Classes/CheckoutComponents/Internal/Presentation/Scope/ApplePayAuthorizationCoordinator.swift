@@ -98,7 +98,7 @@ final class ApplePayAuthorizationCoordinator: NSObject, PKPaymentAuthorizationCo
     _: PKPaymentAuthorizationController,
     didSelectShippingContact contact: PKContact
   ) async -> PKPaymentRequestShippingContactUpdate {
-    guard let shippingSession, shippingSession.mode == .callbacks else {
+    guard let shippingSession, shippingSession.mode != .legacy else {
       return PKPaymentRequestShippingContactUpdate(
         errors: nil,
         paymentSummaryItems: currentSummaryItems(),
@@ -147,9 +147,9 @@ final class ApplePayAuthorizationCoordinator: NSObject, PKPaymentAuthorizationCo
       return PKPaymentRequestShippingMethodUpdate(paymentSummaryItems: currentSummaryItems())
     } catch {
       logger.error(message: "Apple Pay shipping option change failed: \(error.localizedDescription)")
-      // Fails in the sheet right away, instead of keeping the old total until the shopper taps Pay.
+      // A failed update makes Apple close the sheet, so resend the options with the held one first.
       let update = PKPaymentRequestShippingMethodUpdate(paymentSummaryItems: currentSummaryItems())
-      update.status = .failure
+      update.shippingMethods = ApplePayRequestBuilder.shippingMethods(from: shippingSession.options)
       return update
     }
   }

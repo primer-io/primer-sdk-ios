@@ -25,6 +25,8 @@ final class ApplePayShippingSession: LogReporter {
     /// The merchant app supplies options per address and commits the selection through its own
     /// backend `PATCH`. Primer stores no list.
     case callbacks
+    /// No shipping method: the merchant may `PATCH` per address, and the SDK only re-reads the total.
+    case addressOnly
   }
 
   /// These gate a live Apple Pay sheet against a real merchant backend `PATCH`, so a hung backend must
@@ -63,17 +65,16 @@ final class ApplePayShippingSession: LogReporter {
   }
 
   /// Resolves the mode from the client session and the merchant's Apple Pay options. A legacy SHIPPING
-  /// module always wins, and dynamic mode needs both handlers, a required method and a postal address.
+  /// module always wins, and every dynamic mode needs the address handler and a postal address field.
   static func resolveMode(
     checkoutModules: [Response.Body.Configuration.CheckoutModule]?,
     applePayOptions: PrimerApplePayOptions?,
-    hasShippingHandlers: Bool
+    hasAddressChangeHandler: Bool,
+    hasOptionChangeHandler: Bool
   ) -> Mode {
-    // With any of these missing, the dynamic path blocks the payment or leaves shipping uncharged.
     let shippingOptions = applePayOptions?.shippingOptions
-    guard hasShippingHandlers,
-          shippingOptions?.requireShippingMethod == true,
-          shippingOptions?.shippingContactFields?.contains(.postalAddress) == true
+    // Without a postal address field Apple sends no address, so no handler could ever run.
+    guard hasAddressChangeHandler, shippingOptions?.shippingContactFields?.contains(.postalAddress) == true
     else { return .legacy }
 
     let hasLegacyShippingModule = checkoutModules?.contains { module in
@@ -81,7 +82,10 @@ final class ApplePayShippingSession: LogReporter {
       let options = module.options as? Response.Body.Configuration.CheckoutModule.ShippingMethodOptions
       return options?.callbackMode != true
     } ?? false
-    return hasLegacyShippingModule ? .legacy : .callbacks
+    guard !hasLegacyShippingModule else { return .legacy }
+    guard shippingOptions?.requireShippingMethod == true else { return .addressOnly }
+    // Without the option handler nothing can commit, and the gate would block every payment.
+    return hasOptionChangeHandler ? .callbacks : .legacy
   }
 
   // MARK: - Sheet events
@@ -92,9 +96,13 @@ final class ApplePayShippingSession: LogReporter {
   /// Apple calls this when the sheet opens with a shipping contact and on every later address edit, so
   /// it is also the "on sheet open" call the contract asks for.
   func handleShippingAddressChange(_ address: PrimerAddress) async throws {
-    guard mode == .callbacks else { return }
+    guard mode != .legacy else { return }
 
-    options = try await requestOptions(for: address)
+    let received = try await requestOptions(for: address)
+    // The merchant may have patched the session for this address, so only the total is re-read.
+    guard mode == .callbacks else { return try await refresh() }
+
+    options = received
     moveToFront(currentShipping()?.methodId)
     // A fresh address makes any prior commit stale, so authorization is blocked again until the new
     // default (or the shopper's next pick) commits.
@@ -105,11 +113,15 @@ final class ApplePayShippingSession: LogReporter {
     }
   }
 
-  /// Commits the option the shopper picked in the sheet.
+  /// Commits the option the shopper picked, and falls back to the held option when that fails.
   func handleShippingOptionChange(optionId: String?) async throws {
-    guard mode == .callbacks else { return }
-    guard let selected = moveToFront(optionId) else { return }
-    try await commit(selected)
+    guard mode == .callbacks, let selected = moveToFront(optionId) else { return }
+    do {
+      try await commit(selected)
+    } catch {
+      await restoreHeldOption()
+      throw error
+    }
   }
 
   /// Apple takes no new total at authorization, so a failed in-sheet commit blocks instead of retrying.
@@ -166,11 +178,7 @@ final class ApplePayShippingSession: LogReporter {
       )
     }
 
-    await PrimerDelegateProxy.primerClientSessionWillUpdate()
-    try await refreshConfiguration()
-    if let configuration = PrimerAPIConfigurationModule.apiConfiguration {
-      await PrimerDelegateProxy.primerClientSessionDidUpdate(PrimerClientSession(from: configuration))
-    }
+    try await refresh()
 
     let shipping = currentShipping()
     guard shipping?.methodId == option.id, shipping?.amount == option.amount else {
@@ -182,6 +190,24 @@ final class ApplePayShippingSession: LogReporter {
           + "committed option before returning from onShippingOptionChange."
       ))
     }
+    verifiedCommit = option
+  }
+
+  private func refresh() async throws {
+    await PrimerDelegateProxy.primerClientSessionWillUpdate()
+    try await refreshConfiguration()
+    if let configuration = PrimerAPIConfigurationModule.apiConfiguration {
+      await PrimerDelegateProxy.primerClientSessionDidUpdate(PrimerClientSession(from: configuration))
+    }
+  }
+
+  /// Re-verifies the held option after a fresh read, since a failed handler may already have patched.
+  private func restoreHeldOption() async {
+    guard (try? await refresh()) != nil else { return }
+    let held = currentShipping()
+    guard let option = options.first(where: { $0.id == held?.methodId && $0.amount == held?.amount })
+    else { return }
+    moveToFront(option.id)
     verifiedCommit = option
   }
 
