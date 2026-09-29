@@ -16,17 +16,22 @@ final class PayPalRepositoryImpl: PayPalRepository, LogReporter {
   private let payPalService: PayPalServiceProtocol
   private let webAuthService: WebAuthenticationService
   private let tokenizationService: TokenizationServiceProtocol
+  private let createPaymentService: CreateResumePaymentServiceProtocol
   private let settings: PrimerSettingsProtocol
 
   init(
     payPalService: PayPalServiceProtocol = PayPalService(),
     webAuthService: WebAuthenticationService = DefaultWebAuthenticationService(),
     tokenizationService: TokenizationServiceProtocol = TokenizationService(),
+    createPaymentService: CreateResumePaymentServiceProtocol = CreateResumePaymentService(
+      paymentMethodType: PrimerPaymentMethodType.payPal.rawValue
+    ),
     settings: PrimerSettingsProtocol = PrimerSettings.current
   ) {
     self.payPalService = payPalService
     self.webAuthService = webAuthService
     self.tokenizationService = tokenizationService
+    self.createPaymentService = createPaymentService
     self.settings = settings
   }
 
@@ -82,6 +87,19 @@ final class PayPalRepositoryImpl: PayPalRepository, LogReporter {
       status: .success,
       token: tokenData.token,
       amount: nil,
+      paymentMethodType: PrimerPaymentMethodType.payPal.rawValue
+    )
+  }
+
+  func createPayment(token: String) async throws -> PaymentResult {
+    let response = try await createPaymentService.createPayment(
+      paymentRequest: Request.Body.Payment.Create(token: token)
+    )
+    return PaymentResult(
+      paymentId: response.id ?? UUID().uuidString,
+      status: PaymentStatus(from: response.status),
+      token: token,
+      amount: response.amount,
       paymentMethodType: PrimerPaymentMethodType.payPal.rawValue
     )
   }
