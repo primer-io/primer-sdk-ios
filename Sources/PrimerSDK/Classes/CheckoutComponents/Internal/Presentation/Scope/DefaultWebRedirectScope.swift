@@ -47,6 +47,7 @@ final class DefaultWebRedirectScope: PrimerWebRedirectScope, ObservableObject, L
 
     @Published private var internalState: PrimerWebRedirectState
 
+    private var paymentTask: Task<Void, Never>?
     private var hasStarted = false
 
     init(
@@ -75,9 +76,10 @@ final class DefaultWebRedirectScope: PrimerWebRedirectScope, ObservableObject, L
     }
 
     // Selecting a web-redirect method auto-launches the redirect — no intermediate "Continue" tap
-    // (Android parity). `prepareForReentry()` resets the one-shot guard for clean re-selection.
+    // (Android parity). `prepareForReentry()` resets the one-shot guard for clean re-selection;
+    // a reset that lands while a run is in flight takes effect once that run ends.
     func start() {
-        guard !hasStarted else { return }
+        guard !hasStarted, paymentTask == nil else { return }
         hasStarted = true
         submit()
     }
@@ -87,8 +89,10 @@ final class DefaultWebRedirectScope: PrimerWebRedirectScope, ObservableObject, L
     }
 
     func submit() {
-        Task {
+        guard paymentTask == nil else { return }
+        paymentTask = Task {
             await performPayment()
+            paymentTask = nil
         }
     }
 

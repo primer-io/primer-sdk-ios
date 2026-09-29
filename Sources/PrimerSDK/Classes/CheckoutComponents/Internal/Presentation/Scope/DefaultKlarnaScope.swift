@@ -49,6 +49,7 @@ final class DefaultKlarnaScope: PrimerKlarnaScope, ObservableObject, LogReporter
 
   private var authorizationToken: String?
 
+  private var sessionTask: Task<Void, Never>?
   private var hasStarted = false
 
   init(
@@ -64,11 +65,12 @@ final class DefaultKlarnaScope: PrimerKlarnaScope, ObservableObject, LogReporter
   }
 
   func start() {
-    guard !hasStarted else { return }
+    guard !hasStarted, sessionTask == nil else { return }
     hasStarted = true
     logger.debug(message: "Klarna scope started")
-    Task { [self] in
+    sessionTask = Task { [self] in
       await createSession()
+      sessionTask = nil
     }
   }
 

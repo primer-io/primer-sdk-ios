@@ -69,6 +69,32 @@ final class DefaultKlarnaScopeTests: XCTestCase {
         XCTAssertEqual(mockInteractor.createSessionCallCount, 1)
     }
 
+    @MainActor
+    func test_start_afterReentryWhileCreatingTheSession_keepsThatSession() async throws {
+        // Given
+        var heldSessions: [CheckedContinuation<Void, Never>] = []
+        mockInteractor.onCreateSession = {
+            await withCheckedContinuation { heldSessions.append($0) }
+            return KlarnaTestData.defaultSessionResult
+        }
+        let scope = createScope()
+        scope.start()
+        try await withTimeout(2.0) { [self] in
+            while mockInteractor.createSessionCallCount < 1 { await Task.yield() }
+        }
+
+        // When — the shopper returns to the list and picks Klarna again before the session exists
+        scope.prepareForReentry()
+        scope.start()
+        // why: asserting that no second session starts, so give one time to reach the interactor
+        try await Task.sleep(nanoseconds: 100_000_000)
+
+        // Then
+        XCTAssertEqual(mockInteractor.createSessionCallCount, 1)
+        heldSessions.forEach { $0.resume() }
+        _ = try await awaitValue(scope.state, matching: { $0.step == .categorySelection })
+    }
+
     // MARK: - State AsyncStream Tests
 
     @MainActor

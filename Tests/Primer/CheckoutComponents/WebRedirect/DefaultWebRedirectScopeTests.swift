@@ -190,6 +190,33 @@ final class DefaultWebRedirectScopeTests: XCTestCase {
         XCTAssertEqual(mockInteractor.executeCallCount, 2)
     }
 
+    @MainActor
+    func test_start_afterReentryWhileARunIsInFlight_keepsThatRun() async throws {
+        // Given
+        mockInteractor.paymentResultToReturn = PaymentResult(
+            paymentId: TestData.PaymentIds.success,
+            status: .success,
+            paymentMethodType: "ADYEN_SOFORT"
+        )
+        mockInteractor.shouldHold = true
+        let scope = createScope()
+        scope.start()
+        try await withTimeout(2.0) { [self] in
+            while mockInteractor.executeCallCount < 1 { await Task.yield() }
+        }
+
+        // When — the shopper returns to the list and picks the method again before the run ends
+        scope.prepareForReentry()
+        scope.start()
+        // why: asserting that no second run starts, so give one time to reach the interactor
+        try await Task.sleep(nanoseconds: 100_000_000)
+
+        // Then
+        XCTAssertEqual(mockInteractor.executeCallCount, 1)
+        mockInteractor.release()
+        _ = try await awaitValue(scope.state, matching: { $0.status == .success })
+    }
+
     // MARK: - State AsyncStream Tests
 
     @MainActor
