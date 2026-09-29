@@ -335,9 +335,9 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
         navigator.navigateToPaymentMethod(paymentMethodType, context: presentationContext)
       case .processing:
         navigator.navigateToProcessing()
-      case .success:
-        // Success handling is now done via the view's switch statement, not the navigator
-        break
+      case let .success(result):
+        // The view renders success from the scope; the route tells the UIKit presenter what a swipe ended.
+        navigator.navigateToSuccess(result)
       case let .failure(error):
         navigator.navigateToError(error)
       case .dismissed:

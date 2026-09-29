@@ -108,6 +108,21 @@ final class DefaultCheckoutScopeBehaviorTests: XCTestCase {
         }
     }
 
+    // The UIKit presenter reads the route on a swipe; without it a captured payment reports a dismiss.
+    func test_handlePaymentSuccess_movesTheCoordinatorToSuccess() {
+        // Given
+        sut = makeSut()
+
+        // When
+        sut.handlePaymentSuccess(makePaymentResult())
+
+        // Then
+        guard case let .success(result) = navigator.checkoutCoordinator.currentRoute else {
+            return XCTFail("Expected the success route, got \(navigator.checkoutCoordinator.currentRoute)")
+        }
+        XCTAssertEqual(result.paymentId, TestData.PaymentIds.success)
+    }
+
     // MARK: - handlePaymentError Tests
 
     func test_handlePaymentError_updatesStateToFailure() async throws {

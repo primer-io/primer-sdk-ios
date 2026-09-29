@@ -46,7 +46,8 @@ public struct PrimerCheckout: View {
   ///   - clientToken: The client token obtained from your backend.
   ///   - primerSettings: Configuration settings including payment options and UI preferences. Default: `PrimerSettings()`
   ///   - primerTheme: Theme configuration for design tokens. Default: `PrimerCheckoutTheme()`
-  ///   - onCompletion: Optional completion callback called when checkout completes with the final state (success, failure, or dismissed).
+  ///   - onCompletion: Receives `.failure` once per failed attempt, including a failed initialization,
+  ///     while the checkout stays open for a retry. Then `.success` or `.dismissed` exactly once.
   public init(
     clientToken: String,
     primerSettings: PrimerSettings = PrimerSettings(),
@@ -108,6 +109,7 @@ struct InternalCheckout: View, LogReporter {
 
   @State private var checkoutScope: DefaultCheckoutScope?
   @State private var initializationState: InitializationState = .idle
+  @State private var outcomeRelay = CheckoutOutcomeRelay()
   @Environment(\.colorScheme) private var colorScheme
 
   // Design tokens state for early theme application (splash screen)
@@ -161,7 +163,7 @@ struct InternalCheckout: View, LogReporter {
           CheckoutScopeObserver(
             scope: checkoutScope,
             theme: theme,
-            onCompletion: onCompletion
+            onCompletion: { outcomeRelay.deliver($0, to: onCompletion) }
           )
         } else {
           splashContent
@@ -180,6 +182,13 @@ struct InternalCheckout: View, LogReporter {
         clientToken: clientToken, integrationType: integrationType)
       await setupDesignTokens()
       await initializeSDK()
+    }
+    .task(id: checkoutScope.map(ObjectIdentifier.init)) {
+      // The flow screens report only when a result screen finishes, so failures come from the scope.
+      guard let checkoutScope else { return }
+      for await state in checkoutScope.state {
+        if case .failure = state { outcomeRelay.deliver(state, to: onCompletion) }
+      }
     }
     .onColorSchemeChange(of: colorScheme) { newColorScheme in
       Task {
@@ -257,6 +266,32 @@ struct InternalCheckout: View, LogReporter {
     } catch {
       let primerError = error as? PrimerError ?? PrimerError.underlyingErrors(errors: [error])
       initializationState = .failed(primerError)
+      outcomeRelay.deliver(.failure(primerError), to: onCompletion)
+    }
+  }
+}
+
+/// Gives `PrimerCheckout` the session's completion contract: `.failure` once per failed attempt, then
+/// `.success` or `.dismissed` exactly once.
+@available(iOS 15.0, *)
+@MainActor
+final class CheckoutOutcomeRelay {
+  private var hasEnded = false
+  private var lastFailureId: String?
+
+  func deliver(_ state: PrimerCheckoutState, to onCompletion: ((PrimerCheckoutState) -> Void)?) {
+    guard !hasEnded else { return }
+    switch state {
+    case let .failure(error):
+      // The scope stream and a disabled error screen both report the same failure.
+      guard error.diagnosticsId != lastFailureId else { return }
+      lastFailureId = error.diagnosticsId
+      onCompletion?(state)
+    case .success, .dismissed:
+      hasEnded = true
+      onCompletion?(state)
+    case .initializing, .ready:
+      break
     }
   }
 }

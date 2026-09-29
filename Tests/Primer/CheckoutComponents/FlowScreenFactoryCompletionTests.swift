@@ -128,3 +128,45 @@ final class FlowScreenFactoryCompletionTests: XCTestCase {
     return recorder
   }
 }
+
+/// `PrimerCheckout` must honour the same completion contract as the session.
+@available(iOS 15.0, *)
+@MainActor
+final class CheckoutOutcomeRelayTests: XCTestCase {
+
+  func test_deliver_forwardsEveryFailedAttempt_thenEndsOnce() {
+    let sut = CheckoutOutcomeRelay()
+    var states: [PrimerCheckoutState] = []
+    let result = PaymentResult(paymentId: TestData.PaymentIds.success, status: .success)
+
+    sut.deliver(.failure(.unknown(message: "declined")), to: { states.append($0) })
+    sut.deliver(.failure(.unknown(message: "declined")), to: { states.append($0) })
+    sut.deliver(.success(result), to: { states.append($0) })
+    sut.deliver(.dismissed, to: { states.append($0) })
+    sut.deliver(.failure(.unknown(message: "late")), to: { states.append($0) })
+
+    guard states.count == 3, case .failure = states[0], case .failure = states[1], case .success = states[2] else {
+      return XCTFail("Expected [.failure, .failure, .success], got \(states)")
+    }
+  }
+
+  func test_deliver_sameFailureFromTwoSources_forwardsItOnce() {
+    let sut = CheckoutOutcomeRelay()
+    var states: [PrimerCheckoutState] = []
+    let failure = PrimerCheckoutState.failure(.unknown(message: "declined"))
+
+    sut.deliver(failure, to: { states.append($0) })
+    sut.deliver(failure, to: { states.append($0) })
+
+    XCTAssertEqual(states.count, 1)
+  }
+
+  func test_deliver_ignoresLifecycleStates() {
+    let sut = CheckoutOutcomeRelay()
+    var states: [PrimerCheckoutState] = []
+
+    sut.deliver(.initializing, to: { states.append($0) })
+
+    XCTAssertTrue(states.isEmpty)
+  }
+}
