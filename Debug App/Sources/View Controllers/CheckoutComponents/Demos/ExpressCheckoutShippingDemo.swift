@@ -13,8 +13,8 @@ import SwiftUI
 /// Stands in for a merchant backend: the options are computed locally from the address, and the commit
 /// PATCHes the client session. A real integration does the PATCH server-side with its secret API key.
 ///
-/// Turn on "Capture shipping details" and "Require shipping method" in the app's Apple Pay settings
-/// first — Apple only sends a shipping contact when the sheet asks for one.
+/// Turn on "Capture shipping details", "Require shipping method" and the shipping "postalAddress" field
+/// in the app's Apple Pay settings first. Without all three the SDK keeps the legacy shipping path.
 ///
 /// Sandbox picks the workflow from the client session's metadata. The QA scenario for the legacy
 /// Express Checkout path is `scenario=APPLE_PAY_EC`; put that in the Metadata field on the session
@@ -62,7 +62,7 @@ private struct ExpressCheckoutShippingContent: View {
                 Text("Express Checkout Shipping").font(.title2.weight(.bold))
                 Text("Pick Apple Pay, then change the shipping address and method in the sheet")
                     .font(.subheadline).foregroundStyle(.secondary)
-                Text("Needs \"Capture shipping details\" and \"Require shipping method\" in Apple Pay settings")
+                Text("Needs \"Capture shipping details\", \"Require shipping method\" and shipping \"postalAddress\" in Apple Pay settings")
                     .font(.caption).foregroundStyle(.secondary)
 
                 switch session.phase {

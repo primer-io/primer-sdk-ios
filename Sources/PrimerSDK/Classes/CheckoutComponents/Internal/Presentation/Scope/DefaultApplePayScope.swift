@@ -194,7 +194,7 @@ final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
       mode: ApplePayShippingSession.resolveMode(
         checkoutModules: PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules,
         applePayOptions: applePayOptions,
-        hasAddressChangeHandler: checkoutScope?.onShippingAddressChange != nil
+        hasShippingHandlers: checkoutScope?.onShippingAddressChange != nil && checkoutScope?.onShippingOptionChange != nil
       ),
       requireShippingMethod: applePayOptions?.shippingOptions?.requireShippingMethod == true,
       addressChangeProvider: { [weak checkoutScope] in checkoutScope?.onShippingAddressChange },
