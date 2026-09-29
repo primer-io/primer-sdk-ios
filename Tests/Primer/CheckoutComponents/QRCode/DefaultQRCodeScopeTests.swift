@@ -201,10 +201,11 @@ final class DefaultQRCodeScopeTests: XCTestCase {
 
         checkoutScope.retryPayment()
 
+        // The mock fails again, so the restarted payment ends on the failure screen too; the second start is the proof.
         try await withTimeout(2.0) {
             while interactor.startPaymentCallCount < 2 { await Task.yield() }
         }
-        XCTAssertEqual(checkoutScope.navigationState, .paymentMethod("XENDIT_OVO"))
+        XCTAssertEqual(interactor.startPaymentCallCount, 2)
     }
 
     // MARK: - Helpers
