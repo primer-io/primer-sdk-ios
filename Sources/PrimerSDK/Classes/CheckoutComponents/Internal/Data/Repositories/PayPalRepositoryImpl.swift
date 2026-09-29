@@ -47,11 +47,16 @@ final class PayPalRepositoryImpl: PayPalRepository, LogReporter {
   func openWebAuthentication(url: URL) async throws -> URL {
     let scheme = try settings.paymentMethodOptions.validSchemeForUrlScheme()
     do {
-      return try await webAuthService.connect(
+      let callbackURL = try await webAuthService.connect(
         paymentMethodType: PrimerPaymentMethodType.payPal.rawValue,
         url: url,
         scheme: scheme
       )
+      // PayPal's "Cancel and return" link lands on PayPalService's cancelUrl, "<scheme>://paypal-cancel"
+      if callbackURL.host == "paypal-cancel" {
+        throw PrimerError.cancelled(paymentMethodType: PrimerPaymentMethodType.payPal.rawValue)
+      }
+      return callbackURL
     } catch let error as ASWebAuthenticationSessionError where error.code == .canceledLogin {
       throw PrimerError.cancelled(paymentMethodType: PrimerPaymentMethodType.payPal.rawValue)
     }

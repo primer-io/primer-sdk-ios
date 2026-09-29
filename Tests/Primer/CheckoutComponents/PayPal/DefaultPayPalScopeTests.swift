@@ -214,6 +214,25 @@ final class DefaultPayPalScopeTests: XCTestCase {
     }
 
     @MainActor
+    func test_submit_cancelledError_returnsToPaymentMethodSelection() async throws {
+        // Given
+        sut = DefaultPayPalScope(
+            checkoutScope: mockCheckoutScope,
+            processPayPalInteractor: mockInteractor
+        )
+        mockInteractor.executeResult = .failure(
+            PrimerError.cancelled(paymentMethodType: PrimerPaymentMethodType.payPal.rawValue)
+        )
+        let navigation = mockCheckoutScope.navigationStateStream
+
+        // When
+        sut.submit()
+
+        // Then
+        _ = try await awaitValue(navigation, equalTo: .paymentMethodSelection)
+    }
+
+    @MainActor
     func test_submit_emitsRedirectingDuringPayment() async throws {
         // Given — hold the interactor so the `.redirecting` step persists long enough to observe
         // deterministically (otherwise it is immediately replaced by `.success`).
