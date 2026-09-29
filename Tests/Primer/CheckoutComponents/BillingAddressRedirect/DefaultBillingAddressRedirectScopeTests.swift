@@ -396,6 +396,26 @@ final class DefaultBillingAddressRedirectScopeTests: XCTestCase {
     }
   }
 
+  func test_submit_whileAPaymentIsInFlight_paysOnce() async throws {
+    // Without the mock network delay, a second run would reach the interactor within the settle below.
+    (PrimerAPIConfigurationModule.apiClient as? MockPrimerAPIClient)?.mockedNetworkDelay = 0
+    mockInteractor.shouldHold = true
+    fillValidForm()
+    _ = try await awaitValue(sut.state, matching: { $0.isFormValid })
+    sut.submit()
+    try await withTimeout(2.0) { [self] in
+      while mockInteractor.executeCallCount < 1 { await Task.yield() }
+    }
+
+    sut.submit()
+    // why: asserting that no second payment starts, so give one time to reach the interactor
+    try await Task.sleep(nanoseconds: 100_000_000)
+
+    XCTAssertEqual(mockInteractor.executeCallCount, 1)
+    mockInteractor.release()
+    _ = try await awaitValue(sut.state, matching: { $0.status == .success })
+  }
+
   // MARK: - Helpers
 
   private func fillValidForm() {
@@ -429,11 +449,19 @@ private final class MockBillingAddressWebRedirectInteractor: ProcessWebRedirectP
   private(set) var lastPaymentMethodType: String?
   var resultToReturn = PaymentResult(paymentId: "test_123", status: .success)
   var errorToThrow: Error?
+  var shouldHold = false
+  private var heldExecutions: [CheckedContinuation<Void, Never>] = []
 
   func execute(paymentMethodType: String) async throws -> PaymentResult {
     executeCallCount += 1
     lastPaymentMethodType = paymentMethodType
+    if shouldHold { await withCheckedContinuation { heldExecutions.append($0) } }
     if let error = errorToThrow { throw error }
     return resultToReturn
+  }
+
+  func release() {
+    heldExecutions.forEach { $0.resume() }
+    heldExecutions = []
   }
 }

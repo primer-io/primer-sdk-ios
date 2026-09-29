@@ -227,6 +227,72 @@ final class DefaultAdyenKlarnaScopeTests: XCTestCase {
         XCTAssertEqual(mockInteractor.lastSelectedOption, option)
     }
 
+    func test_selectOption_whileAPaymentIsInFlight_paysOnce() async throws {
+        // Given
+        let option = AdyenKlarnaPaymentOption(id: "pay_later", name: "Pay Later")
+        mockInteractor.holdsExecute = true
+        sut.selectOption(option)
+        try await withTimeout(2.0) { [self] in
+            while mockInteractor.executeCallCount < 1 { await Task.yield() }
+        }
+
+        // When
+        sut.selectOption(option)
+        // why: asserting that no second payment starts, so give one time to reach the interactor
+        try await Task.sleep(nanoseconds: 100_000_000)
+
+        // Then
+        XCTAssertEqual(mockInteractor.executeCallCount, 1)
+        mockInteractor.release()
+        _ = try await awaitValue(sut.state, matching: { $0.status == .success })
+    }
+
+    // MARK: - Re-entry while a run is in flight
+
+    func test_start_afterReentryWhileFetchingOptions_fetchesOnceAndStillPaysTheSingleOption() async throws {
+        // Given
+        mockInteractor.fetchPaymentOptionsResult = .success([AdyenKlarnaPaymentOption(id: "pay_later", name: "Pay Later")])
+        mockInteractor.holdsFetch = true
+        sut.start()
+        try await withTimeout(2.0) { [self] in
+            while mockInteractor.fetchPaymentOptionsCallCount < 1 { await Task.yield() }
+        }
+
+        // When — the shopper returns to the list and picks the method again before the options arrive
+        sut.prepareForReentry()
+        sut.start()
+        // why: asserting that no second fetch starts, so give one time to reach the interactor
+        try await Task.sleep(nanoseconds: 100_000_000)
+
+        // Then
+        XCTAssertEqual(mockInteractor.fetchPaymentOptionsCallCount, 1)
+        mockInteractor.release()
+        _ = try await awaitValue(sut.state, matching: { $0.status == .success })
+        XCTAssertEqual(mockInteractor.executeCallCount, 1)
+    }
+
+    func test_start_afterReentryWhileTheSingleOptionPays_keepsThatPayment() async throws {
+        // Given
+        mockInteractor.fetchPaymentOptionsResult = .success([AdyenKlarnaPaymentOption(id: "pay_later", name: "Pay Later")])
+        mockInteractor.holdsExecute = true
+        sut.start()
+        try await withTimeout(2.0) { [self] in
+            while mockInteractor.executeCallCount < 1 { await Task.yield() }
+        }
+
+        // When
+        sut.prepareForReentry()
+        sut.start()
+        // why: asserting that no second run starts, so give one time to reach the interactor
+        try await Task.sleep(nanoseconds: 100_000_000)
+
+        // Then
+        XCTAssertEqual(mockInteractor.fetchPaymentOptionsCallCount, 1)
+        XCTAssertEqual(mockInteractor.executeCallCount, 1)
+        mockInteractor.release()
+        _ = try await awaitValue(sut.state, matching: { $0.status == .success })
+    }
+
     // MARK: - cancel
 
     func test_cancel_resetsStateToIdle() {

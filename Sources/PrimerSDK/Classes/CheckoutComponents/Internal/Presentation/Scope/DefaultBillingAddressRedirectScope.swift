@@ -48,6 +48,7 @@ final class DefaultBillingAddressRedirectScope: PrimerBillingAddressRedirectScop
 
   @Published private var internalState: PrimerBillingAddressRedirectState
 
+  private var paymentTask: Task<Void, Never>?
   private var hasStarted = false
 
   init(
@@ -99,9 +100,11 @@ final class DefaultBillingAddressRedirectScope: PrimerBillingAddressRedirectScop
       validateAllFields()
       return
     }
+    guard paymentTask == nil else { return }
 
-    Task {
+    paymentTask = Task {
       await performPayment()
+      paymentTask = nil
     }
   }
 

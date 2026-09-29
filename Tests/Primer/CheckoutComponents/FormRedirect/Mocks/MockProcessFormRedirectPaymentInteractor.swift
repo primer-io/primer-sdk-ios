@@ -19,8 +19,11 @@ final class MockProcessFormRedirectPaymentInteractor: ProcessFormRedirectPayment
     private(set) var executeSessionInfo: (any OffSessionPaymentSessionInfo)?
     var executeResult: Result<PaymentResult, Error> = .success(FormRedirectTestData.successPaymentResult)
     var executeDelay: TimeInterval = 0
+    /// When set, execute() suspends until release() is called.
+    var shouldHold = false
     var shouldCallOnPollingStarted: Bool = false
     private(set) var executeOnPollingStarted: (() -> Void)?
+    private var heldExecutions: [CheckedContinuation<Void, Never>] = []
 
     func execute(
         paymentMethodType: String,
@@ -40,12 +43,21 @@ final class MockProcessFormRedirectPaymentInteractor: ProcessFormRedirectPayment
             try await Task.sleep(nanoseconds: UInt64(executeDelay * 1_000_000_000))
         }
 
+        if shouldHold {
+            await withCheckedContinuation { heldExecutions.append($0) }
+        }
+
         switch executeResult {
         case let .success(result):
             return result
         case let .failure(error):
             throw error
         }
+    }
+
+    func release() {
+        heldExecutions.forEach { $0.resume() }
+        heldExecutions = []
     }
 
     // MARK: - Cancel Polling
@@ -66,6 +78,7 @@ final class MockProcessFormRedirectPaymentInteractor: ProcessFormRedirectPayment
         executeSessionInfo = nil
         executeResult = .success(FormRedirectTestData.successPaymentResult)
         executeDelay = 0
+        shouldHold = false
         shouldCallOnPollingStarted = false
         executeOnPollingStarted = nil
         cancelPollingCallCount = 0

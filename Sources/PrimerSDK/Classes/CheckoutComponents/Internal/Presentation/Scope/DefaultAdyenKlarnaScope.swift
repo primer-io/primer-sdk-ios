@@ -47,6 +47,7 @@ final class DefaultAdyenKlarnaScope: PrimerAdyenKlarnaScope, ObservableObject, L
 
     @Published private var internalState: PrimerAdyenKlarnaState
 
+    private var paymentTask: Task<Void, Never>?
     private var hasStarted = false
 
     init(
@@ -74,10 +75,12 @@ final class DefaultAdyenKlarnaScope: PrimerAdyenKlarnaScope, ObservableObject, L
     }
 
     func start() {
-        guard !hasStarted else { return }
+        guard !hasStarted, paymentTask == nil else { return }
         hasStarted = true
-        Task { [self] in
+        // The fetch counts as the payment run: with a single option it pays from inside it.
+        paymentTask = Task { [self] in
             await loadPaymentOptions()
+            paymentTask = nil
         }
     }
 
@@ -91,9 +94,10 @@ final class DefaultAdyenKlarnaScope: PrimerAdyenKlarnaScope, ObservableObject, L
     }
 
     func submit() {
-        guard internalState.selectedOption != nil else { return }
-        Task { [self] in
+        guard internalState.selectedOption != nil, paymentTask == nil else { return }
+        paymentTask = Task { [self] in
             await performPayment()
+            paymentTask = nil
         }
     }
 

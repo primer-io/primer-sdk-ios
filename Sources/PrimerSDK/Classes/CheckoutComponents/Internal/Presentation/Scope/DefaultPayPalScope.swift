@@ -43,6 +43,7 @@ final class DefaultPayPalScope: PrimerPayPalScope, ObservableObject, LogReporter
 
   @Published private var internalState = PrimerPayPalState()
 
+  private var paymentTask: Task<Void, Never>?
   private var hasStarted = false
 
   init(
@@ -58,9 +59,10 @@ final class DefaultPayPalScope: PrimerPayPalScope, ObservableObject, LogReporter
   }
 
   // Selecting PayPal auto-launches the redirect — no intermediate "Continue to PayPal" tap (Android
-  // parity). The one-shot guard is reset by `prepareForReentry()` so re-selecting restarts cleanly.
+  // parity). The one-shot guard is reset by `prepareForReentry()` so re-selecting restarts cleanly;
+  // a reset that lands while a run is in flight takes effect once that run ends.
   func start() {
-    guard !hasStarted else { return }
+    guard !hasStarted, paymentTask == nil else { return }
     hasStarted = true
     logger.debug(message: "PayPal scope started — auto-launching redirect")
     submit()
@@ -71,8 +73,10 @@ final class DefaultPayPalScope: PrimerPayPalScope, ObservableObject, LogReporter
   }
 
   func submit() {
-    Task {
+    guard paymentTask == nil else { return }
+    paymentTask = Task {
       await performPayment()
+      paymentTask = nil
     }
   }
 
