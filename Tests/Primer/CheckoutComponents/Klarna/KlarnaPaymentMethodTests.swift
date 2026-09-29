@@ -271,14 +271,14 @@ final class KlarnaPaymentMethodTests: XCTestCase {
     func test_register_createsScope_viaRegistry() async throws {
         // Given
         let registry = PaymentMethodRegistry.shared
-        registry.reset()
-        KlarnaPaymentMethod.register()
-
         let container = try await ContainerTestHelpers.createTestContainer()
         _ = try? await container.register(ProcessKlarnaPaymentInteractor.self)
             .asSingleton()
             .with { _ in StubProcessKlarnaPaymentInteractorForTests() }
+        // After the scope: its init resets the registry, and without PrimerKlarnaSDK it skips Klarna.
         let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+        registry.reset()
+        KlarnaPaymentMethod.register()
 
         // When
         let scope = try await registry.createScope(
