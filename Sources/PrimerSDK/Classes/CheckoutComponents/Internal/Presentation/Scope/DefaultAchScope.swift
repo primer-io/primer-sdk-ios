@@ -66,6 +66,7 @@ final class DefaultAchScope: PrimerAchScope, ObservableObject, LogReporter {
 
   func start() {
     logger.debug(message: "ACH scope started")
+    checkoutScope?.recordAttempt(self, restart: true)
     Task { [self] in
       await loadInitialUserDetails()
     }

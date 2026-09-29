@@ -122,6 +122,7 @@ final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
   func submit() {
     guard structuredState.isAvailable, !structuredState.isLoading else { return }
 
+    checkoutScope?.recordAttempt(self)
     paymentTask = Task { [self] in
       await performPayment()
     }

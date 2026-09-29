@@ -174,6 +174,39 @@ final class DefaultQRCodeScopeTests: XCTestCase {
         XCTAssertEqual(interactor.startPaymentCallCount, 2)
     }
 
+    // Regression: QR never recorded an attempt, so the error screen's Retry did nothing.
+    func test_retryPayment_afterAFailedPayment_startsThePaymentAgainOnTheQRScreen() async throws {
+        mockInteractor.startPaymentResult = .failure(
+            PrimerError.invalidValue(key: "test", value: nil, reason: "Declined")
+        )
+        let interactor = mockInteractor!
+        let checkoutScope = DefaultCheckoutScope(
+            clientToken: QRCodeTestData.Constants.mockToken,
+            settings: PrimerSettings(),
+            navigator: CheckoutNavigator()
+        )
+        let sut = DefaultQRCodeScope(
+            checkoutScope: checkoutScope,
+            presentationContext: .fromPaymentSelection,
+            interactor: mockInteractor,
+            paymentMethodType: "XENDIT_OVO"
+        )
+        checkoutScope.paymentMethodScopeCache["XENDIT_OVO"] = sut
+
+        sut.start()
+        _ = try await awaitValue(sut.state, matching: {
+            if case .failure = $0.status { return true }
+            return false
+        })
+
+        checkoutScope.retryPayment()
+
+        try await withTimeout(2.0) {
+            while interactor.startPaymentCallCount < 2 { await Task.yield() }
+        }
+        XCTAssertEqual(checkoutScope.navigationState, .paymentMethod("XENDIT_OVO"))
+    }
+
     // MARK: - Helpers
 
     private func createScope(

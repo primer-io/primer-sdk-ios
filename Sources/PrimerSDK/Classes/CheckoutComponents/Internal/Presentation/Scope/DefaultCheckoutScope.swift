@@ -104,6 +104,7 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
   /// What a retry re-runs.
   private enum PaymentAttempt {
     case paymentMethod(any PrimerPaymentMethodScope)
+    case restart(any PrimerPaymentMethodScope)
     case vaulted
   }
 
@@ -539,6 +540,8 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
 
   func handlePaymentMethodSelection(_ method: InternalPaymentMethod) {
     selectedPaymentMethodName = method.name
+    // A new choice ends the previous attempt, so Retry cannot restart a method the shopper left.
+    lastPaymentAttempt = nil
 
     if let scope = paymentMethodScopeCache[method.type] {
       scope.start()
@@ -601,6 +604,11 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
     updateNavigationState(.processing)
   }
 
+  /// For methods that keep their own screen instead of `.processing`. `restart` makes a retry start the method over.
+  func recordAttempt(_ scope: any PrimerPaymentMethodScope, restart: Bool = false) {
+    lastPaymentAttempt = restart ? .restart(scope) : .paymentMethod(scope)
+  }
+
   func handleAutoDismiss() {
     // The parent view (PrimerCheckout) observes .dismissed to tear down the entire checkout.
     updateState(.dismissed)
@@ -619,6 +627,13 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
     switch lastPaymentAttempt {
     case let .paymentMethod(scope):
       scope.submit()
+    case let .restart(scope):
+      guard let type = paymentMethodScopeCache.first(where: { $0.value === scope })?.key else { return }
+      // Off the failure screen first, so Back from the restarted method returns to the list.
+      navigator.navigateBack()
+      scope.prepareForReentry()
+      scope.start()
+      updateNavigationState(.paymentMethod(type))
     case .vaulted:
       // Goes through the full entry point, so a card that needs its CVV asks for it again.
       Task { await paymentMethodSelectionInternal.payWithVaultedPaymentMethod() }
