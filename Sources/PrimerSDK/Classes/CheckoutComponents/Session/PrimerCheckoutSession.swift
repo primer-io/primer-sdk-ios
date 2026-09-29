@@ -93,6 +93,7 @@ public final class PrimerCheckoutSession: ObservableObject {
   public func start() async {
     guard case .initializing = phase else { return }
 
+    await LoggingSessionContext.shared.initialize(clientToken: clientToken, integrationType: .swiftUI)
     let initializer = CheckoutSDKInitializer(
       clientToken: clientToken,
       primerSettings: settings,

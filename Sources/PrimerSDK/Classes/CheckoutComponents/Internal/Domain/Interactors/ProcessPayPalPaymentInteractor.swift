@@ -17,9 +17,21 @@ protocol ProcessPayPalPaymentInteractor {
 final class ProcessPayPalPaymentInteractorImpl: ProcessPayPalPaymentInteractor, LogReporter {
 
   private let repository: PayPalRepository
+  private let analytics: CheckoutComponentsAnalyticsInteractorProtocol?
 
-  init(repository: PayPalRepository) {
+  init(repository: PayPalRepository, analytics: CheckoutComponentsAnalyticsInteractorProtocol? = nil) {
     self.repository = repository
+    self.analytics = analytics
+  }
+
+  /// The shopper's part ends when PayPal hands control back after approval.
+  private func openApproval(_ url: URL) async throws {
+    let paymentMethod = PrimerPaymentMethodType.payPal.rawValue
+    await analytics?.trackRedirectToThirdParty(paymentMethod, destination: url, paymentId: nil)
+    _ = try await repository.openWebAuthentication(url: url)
+    await analytics?.trackReturnedFromThirdParty(paymentMethod, paymentId: nil)
+    await analytics?.trackSubmitted(paymentMethod)
+    logger.debug(message: "PayPal web authentication completed")
   }
 
   func execute() async throws -> PaymentResult {
@@ -52,8 +64,7 @@ final class ProcessPayPalPaymentInteractorImpl: ProcessPayPalPaymentInteractor, 
       }
 
       // 2. Open web authentication
-      _ = try await repository.openWebAuthentication(url: url)
-      logger.debug(message: "PayPal web authentication completed")
+      try await openApproval(url)
 
       // 3. Fetch payer info
       let payerInfo = try await repository.fetchPayerInfo(orderId: orderId)
@@ -99,8 +110,7 @@ final class ProcessPayPalPaymentInteractorImpl: ProcessPayPalPaymentInteractor, 
       }
 
       // 2. Open web authentication
-      _ = try await repository.openWebAuthentication(url: url)
-      logger.debug(message: "PayPal web authentication completed")
+      try await openApproval(url)
 
       // 3. Confirm billing agreement
       let billingAgreementResult = try await repository.confirmBillingAgreement()

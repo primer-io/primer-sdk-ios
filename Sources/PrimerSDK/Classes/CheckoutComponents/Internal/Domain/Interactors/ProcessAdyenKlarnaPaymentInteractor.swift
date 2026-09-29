@@ -19,13 +19,16 @@ final class ProcessAdyenKlarnaPaymentInteractorImpl: ProcessAdyenKlarnaPaymentIn
 
   private let repository: AdyenKlarnaRepository
   private let clientSessionActionsFactory: () -> ClientSessionActionsProtocol
+  private let analytics: CheckoutComponentsAnalyticsInteractorProtocol?
 
   init(
     repository: AdyenKlarnaRepository,
-    clientSessionActionsFactory: @escaping () -> ClientSessionActionsProtocol = { ClientSessionActionsModule() }
+    clientSessionActionsFactory: @escaping () -> ClientSessionActionsProtocol = { ClientSessionActionsModule() },
+    analytics: CheckoutComponentsAnalyticsInteractorProtocol? = nil
   ) {
     self.repository = repository
     self.clientSessionActionsFactory = clientSessionActionsFactory
+    self.analytics = analytics
   }
 
   func fetchPaymentOptions() async throws -> [AdyenKlarnaPaymentOption] {
@@ -68,10 +71,13 @@ final class ProcessAdyenKlarnaPaymentInteractorImpl: ProcessAdyenKlarnaPaymentIn
         sessionInfo: sessionInfo
       )
 
+      await analytics?.trackRedirectToThirdParty(paymentMethodType, destination: redirectUrl, paymentId: nil)
       _ = try await repository.openWebAuthentication(
         paymentMethodType: paymentMethodType,
         url: redirectUrl
       )
+      await analytics?.trackReturnedFromThirdParty(paymentMethodType, paymentId: nil)
+      await analytics?.trackSubmitted(paymentMethodType)
 
       let resumeToken = try await repository.pollForCompletion(statusUrl: statusUrl)
 

@@ -55,18 +55,37 @@ final class CheckoutAnalyticsTrackerTests: XCTestCase {
         )
     }
 
+    /// The 3DS observer lives on a background `Task`; there is no synchronous signal that it has
+    /// attached to the notification stream, so the post is retried until the tracked event lands.
+    private func postUntilTracked(
+        name: Notification.Name,
+        userInfo: [AnyHashable: Any],
+        timeout: TimeInterval = 2.0
+    ) async throws -> (eventType: AnalyticsEventType, metadata: AnalyticsEventMetadata?) {
+        let deadline = Date().addingTimeInterval(timeout)
+        while true {
+            NotificationCenter.default.post(name: name, object: nil, userInfo: userInfo)
+            if let event = await mockAnalytics.trackedEvents.first { return event }
+            if Date() > deadline { throw TestError.timeout }
+            try await Task.sleep(nanoseconds: 20_000_000)
+        }
+    }
+
     // MARK: - trackStateChange: ready
 
-    func test_trackStateChange_ready_tracksCheckoutFlowStarted() async {
+    func test_trackStateChange_ready_tracksCheckoutFlowStartedWithAvailablePaymentMethods() async {
         // Given
         let state = PrimerCheckoutState.ready(clientSession: makeClientSession())
+        let methods = [TestData.PaymentMethodTypes.card, TestData.PaymentMethodTypes.paypal]
 
         // When
-        await sut.trackStateChange(state)
+        await sut.trackStateChange(state, availablePaymentMethods: methods)
 
         // Then
-        let hasTracked = await mockAnalytics.hasTracked(.checkoutFlowStarted)
-        XCTAssertTrue(hasTracked)
+        let events = await mockAnalytics.trackedEvents
+        XCTAssertEqual(events.count, 1)
+        XCTAssertEqual(events.first?.eventType, .checkoutFlowStarted)
+        XCTAssertEqual(events.first?.metadata?.availablePaymentMethods, methods)
     }
 
     // MARK: - trackStateChange: success
@@ -114,7 +133,7 @@ final class CheckoutAnalyticsTrackerTests: XCTestCase {
         XCTAssertTrue(hasTracked)
     }
 
-    func test_trackStateChange_failure_withPaymentFailed_tracksPaymentMetadata() async {
+    func test_trackStateChange_failure_withPaymentFailed_tracksErrorDetails() async {
         // Given
         let error = PrimerError.paymentFailed(
             paymentMethodType: TestData.PaymentMethodTypes.card,
@@ -131,8 +150,12 @@ final class CheckoutAnalyticsTrackerTests: XCTestCase {
         let events = await mockAnalytics.trackedEvents
         XCTAssertEqual(events.count, 1)
         XCTAssertEqual(events.first?.eventType, .paymentFailure)
-        XCTAssertEqual(events.first?.metadata?.paymentMethod, TestData.PaymentMethodTypes.card)
-        XCTAssertEqual(events.first?.metadata?.paymentId, TestData.PaymentIds.success)
+        let payment = events.first?.metadata?.paymentEvent
+        XCTAssertEqual(payment?.paymentMethod, TestData.PaymentMethodTypes.card)
+        XCTAssertEqual(payment?.paymentId, TestData.PaymentIds.success)
+        XCTAssertEqual(payment?.errorCode, "payment-failed")
+        XCTAssertEqual(payment?.errorOrigin, "payment")
+        XCTAssertEqual(payment?.outcome, "failed")
     }
 
     // MARK: - trackStateChange: dismissed
@@ -159,35 +182,57 @@ final class CheckoutAnalyticsTrackerTests: XCTestCase {
 
     // MARK: - trackRetry
 
-    func test_trackRetry_withFailureState_tracksPaymentReattempted() async {
-        // Given
-        let error = PrimerError.paymentFailed(
-            paymentMethodType: TestData.PaymentMethodTypes.card,
-            paymentId: TestData.PaymentIds.success,
-            orderId: nil,
-            status: "FAILED",
-            diagnosticsId: "test_diagnostics"
-        )
-
+    func test_trackRetry_tracksPaymentReattempted() async {
         // When
-        await sut.trackRetry(navigationState: .failure(error))
+        await sut.trackRetry()
 
         // Then
         let events = await mockAnalytics.trackedEvents
         XCTAssertEqual(events.count, 1)
         XCTAssertEqual(events.first?.eventType, .paymentReattempted)
-        XCTAssertEqual(events.first?.metadata?.paymentMethod, TestData.PaymentMethodTypes.card)
+        XCTAssertNil(events.first?.metadata)
     }
 
-    func test_trackRetry_withNonFailureState_tracksWithGeneralMetadata() async {
+    // MARK: - trackNavigation
+
+    func test_trackNavigation_fromPaymentMethodToSelection_tracksUnselectedWithShopperCancelReason() async {
         // When
-        await sut.trackRetry(navigationState: .loading)
+        await sut.trackNavigation(from: .paymentMethod(TestData.PaymentMethodTypes.card), to: .paymentMethodSelection)
 
         // Then
         let events = await mockAnalytics.trackedEvents
         XCTAssertEqual(events.count, 1)
-        XCTAssertEqual(events.first?.eventType, .paymentReattempted)
-        XCTAssertNil(events.first?.metadata?.paymentMethod)
+        XCTAssertEqual(events.first?.eventType, .paymentMethodUnselected)
+        XCTAssertEqual(events.first?.metadata?.paymentMethod, TestData.PaymentMethodTypes.card)
+        XCTAssertEqual(
+            events.first?.metadata?.paymentEvent?.reason,
+            AnalyticsContract.UnselectReason.shopperCancel.rawValue
+        )
+    }
+
+    func test_trackNavigation_otherTransitions_tracksNothing() async {
+        // When
+        await sut.trackNavigation(from: .loading, to: .paymentMethodSelection)
+        await sut.trackNavigation(from: .paymentMethod(TestData.PaymentMethodTypes.klarna), to: .cvvRecapture)
+        await sut.trackNavigation(from: .paymentMethodSelection, to: .paymentMethod(TestData.PaymentMethodTypes.paypal))
+
+        // Then
+        let count = await mockAnalytics.trackEventCallCount
+        XCTAssertEqual(count, 0)
+    }
+
+    // MARK: - 3DS challenge notification
+
+    func test_threeDSChallengeNotification_tracksPaymentThreedsWithProvider() async throws {
+        // When
+        let event = try await postUntilTracked(
+            name: .primer3DSChallengePresented,
+            userInfo: [Notification.Name.primer3DSProviderKey: "NETCETERA"]
+        )
+
+        // Then
+        XCTAssertEqual(event.eventType, .paymentThreeds)
+        XCTAssertEqual(event.metadata?.threedsProvider, "NETCETERA")
     }
 
     // MARK: - Nil interactor

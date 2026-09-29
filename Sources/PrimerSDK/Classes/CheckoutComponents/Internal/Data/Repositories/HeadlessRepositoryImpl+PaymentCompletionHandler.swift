@@ -85,8 +85,6 @@ final class PaymentCompletionHandler: NSObject,
     _ paymentMethodTokenData: PrimerPaymentMethodTokenData,
     decisionHandler: @escaping (PrimerHeadlessUniversalCheckoutResumeDecision) -> Void
   ) {
-    repository?.trackThreeDSChallengeIfNeeded(from: paymentMethodTokenData)
-
     // For CheckoutComponents, we simply complete the tokenization
     // 3DS handling will be done at the payment creation level, not here
     decisionHandler(.complete())

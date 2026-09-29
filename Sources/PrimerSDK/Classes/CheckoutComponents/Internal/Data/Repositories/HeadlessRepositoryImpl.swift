@@ -456,27 +456,13 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
 
   // MARK: - Analytics Integration
 
-  func trackThreeDSChallengeIfNeeded(from tokenData: PrimerPaymentMethodTokenData) {
-    guard let authentication = tokenData.threeDSecureAuthentication else {
-      return
-    }
-
-    trackAnalyticsEvent(
-      .paymentThreeds,
-      metadata: .threeDS(
-        ThreeDSEvent(
-          paymentMethod: tokenData.paymentMethodType ?? "PAYMENT_CARD",
-          provider: threeDSProvider ?? "Unknown",
-          response: authentication.responseCode.rawValue
-        )))
-  }
-
   func trackRedirectToThirdPartyIfNeeded(
     from additionalInfo: PrimerCheckoutAdditionalInfo?,
     paymentMethodType: String
   ) {
     guard let additionalInfo,
-      let redirectUrl = extractRedirectURL(from: additionalInfo)
+      let redirectUrl = extractRedirectURL(from: additionalInfo),
+      let destination = URL(string: redirectUrl)
     else { return }
 
     if redirectUrl == lastTrackedRedirectDestination {
@@ -484,15 +470,7 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
     }
     lastTrackedRedirectDestination = redirectUrl
 
-    trackAnalyticsEvent(
-      .paymentRedirectToThirdParty,
-      metadata: .redirect(
-        RedirectEvent(
-          paymentMethod: paymentMethodType,
-          destinationUrl: redirectUrl
-        )
-      )
-    )
+    trackAnalytics { await $0.trackRedirectToThirdParty(paymentMethodType, destination: destination, paymentId: nil) }
   }
 
   private func extractRedirectURL(from info: PrimerCheckoutAdditionalInfo) -> String? {
@@ -545,9 +523,7 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
     ["http://", "https://"].contains { string.lowercased().hasPrefix($0) }
   }
 
-  private func trackAnalyticsEvent(
-    _ eventType: AnalyticsEventType, metadata: AnalyticsEventMetadata?
-  ) {
+  private func trackAnalytics(_ track: @escaping (CheckoutComponentsAnalyticsInteractorProtocol) async -> Void) {
     Task {
       await injectAnalyticsInteractor()
 
@@ -555,16 +531,8 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
         return
       }
 
-      await interactor.trackEvent(eventType, metadata: metadata)
+      await track(interactor)
     }
-  }
-
-  private var threeDSProvider: String? {
-    #if canImport(Primer3DS)
-      return Primer3DS.threeDsSdkProvider
-    #else
-      return nil
-    #endif
   }
 
   // MARK: - Analytics Interactor

@@ -20,6 +20,12 @@ import UIKit
     import Primer3DS
 #endif
 
+extension Notification.Name {
+    /// Posted right before the 3DS challenge UI appears. `userInfo` carries the provider.
+    static let primer3DSChallengePresented = Notification.Name("PrimerThreeDSChallengePresented")
+    static let primer3DSProviderKey = "provider"
+}
+
 protocol ThreeDSServiceProtocol {
 
     static var apiClient: PrimerAPIClientProtocol? { get set }
@@ -375,6 +381,11 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
             )
 
             Analytics.Service.fire(events: [present3DSUIEvent])
+            NotificationCenter.default.post(
+                name: .primer3DSChallengePresented,
+                object: nil,
+                userInfo: [Notification.Name.primer3DSProviderKey: Primer3DS.threeDsSdkProvider]
+            )
 
             return try await withCheckedThrowingContinuation { continuation in
                 primer3DS.performChallenge(

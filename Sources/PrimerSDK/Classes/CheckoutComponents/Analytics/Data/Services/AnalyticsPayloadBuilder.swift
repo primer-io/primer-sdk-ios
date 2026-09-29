@@ -16,9 +16,12 @@ struct AnalyticsPayloadBuilder {
     eventType: AnalyticsEventType,
     metadata: AnalyticsEventMetadata?,
     config: AnalyticsSessionConfig,
-    timestamp: Int? = nil
+    timestamp: Int? = nil,
+    envelope: AnalyticsFunnelState.Envelope? = nil,
+    integrationSurface: String? = nil
   ) -> AnalyticsPayload {
     let vault = metadata?.vaultEvent
+    let payment = metadata?.paymentEvent
     return AnalyticsPayload(
       id: .uuid,
       timestamp: timestamp ?? Int(Date().timeIntervalSince1970),
@@ -31,8 +34,8 @@ struct AnalyticsPayloadBuilder {
       userAgent: UIDevice.userAgent,
       eventType: nil,
       userLocale: metadata?.locale ?? GeneralEvent.formattedCurrentLocale,
-      paymentMethod: metadata?.paymentMethod,
-      paymentId: metadata?.paymentId,
+      paymentMethod: metadata?.paymentMethod ?? envelope?.paymentMethod,
+      paymentId: metadata?.paymentId ?? envelope?.paymentId,
       redirectDestinationUrl: metadata?.redirectDestinationUrl,
       threedsProvider: metadata?.threedsProvider,
       threedsResponse: metadata?.threedsResponse,
@@ -47,7 +50,17 @@ struct AnalyticsPayloadBuilder {
       exitedFromConfirmation: vault?.exitedFromConfirmation,
       network: vault?.network,
       expectedCvvLength: vault?.expectedCvvLength,
-      errorId: vault?.errorId
+      errorId: vault?.errorId,
+      contractVersion: AnalyticsContract.version,
+      attemptId: envelope?.attemptId,
+      integrationSurface: integrationSurface,
+      reason: payment?.reason,
+      errorCode: payment?.errorCode,
+      errorOrigin: payment?.errorOrigin,
+      outcome: payment?.outcome,
+      previousPaymentMethod: payment?.previousPaymentMethod,
+      lastStep: envelope?.lastStep,
+      availablePaymentMethods: metadata?.availablePaymentMethods
     )
   }
 }

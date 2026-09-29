@@ -26,9 +26,11 @@ public enum AnalyticsEventMetadata: Sendable {
 /// Metadata for general analytics events (checkout flow, SDK lifecycle)
 public struct GeneralEvent: Sendable {
   public let locale: String
+  public let availablePaymentMethods: [String]?
 
-  public init(locale: String = Self.formattedCurrentLocale) {
+  public init(locale: String = Self.formattedCurrentLocale, availablePaymentMethods: [String]? = nil) {
     self.locale = locale
+    self.availablePaymentMethods = availablePaymentMethods
   }
 
   public static var formattedCurrentLocale: String {
@@ -48,15 +50,33 @@ public struct PaymentEvent: Sendable {
   public let locale: String
   public let paymentMethod: String
   public let paymentId: String?
+  /// `shopper_cancel` or `merchant_abort`, on PAYMENT_METHOD_UNSELECTED
+  public let reason: String?
+  public let errorCode: String?
+  /// `payment`, `primer` or `integration`
+  public let errorOrigin: String?
+  /// `failed` or `unknown`, on PAYMENT_FAILURE
+  public let outcome: String?
+  public let previousPaymentMethod: String?
 
   public init(
     locale: String = GeneralEvent.formattedCurrentLocale,
     paymentMethod: String,
-    paymentId: String? = nil
+    paymentId: String? = nil,
+    reason: String? = nil,
+    errorCode: String? = nil,
+    errorOrigin: String? = nil,
+    outcome: String? = nil,
+    previousPaymentMethod: String? = nil
   ) {
     self.locale = locale
     self.paymentMethod = paymentMethod
     self.paymentId = paymentId
+    self.reason = reason
+    self.errorCode = errorCode
+    self.errorOrigin = errorOrigin
+    self.outcome = outcome
+    self.previousPaymentMethod = previousPaymentMethod
   }
 }
 
@@ -126,15 +146,18 @@ public struct RedirectEvent: Sendable {
   public let locale: String
   public let paymentMethod: String
   public let destinationUrl: String
+  public let paymentId: String?
 
   public init(
     locale: String = GeneralEvent.formattedCurrentLocale,
     paymentMethod: String,
-    destinationUrl: String
+    destinationUrl: String,
+    paymentId: String? = nil
   ) {
     self.locale = locale
     self.paymentMethod = paymentMethod
     self.destinationUrl = destinationUrl
+    self.paymentId = paymentId
   }
 }
 
@@ -160,18 +183,35 @@ extension AnalyticsEventMetadata {
     }
   }
 
+  /// Empty means unknown, so the attempt's method fills it in.
   var paymentMethod: String? {
-    switch self {
+    let method: String? = switch self {
     case let .payment(event): event.paymentMethod
     case let .threeDS(event): event.paymentMethod
     case let .redirect(event): event.paymentMethod
     default: nil
     }
+    return method?.isEmpty == false ? method : nil
   }
 
   var paymentId: String? {
     switch self {
     case let .payment(event): event.paymentId
+    case let .redirect(event): event.paymentId
+    default: nil
+    }
+  }
+
+  var paymentEvent: PaymentEvent? {
+    switch self {
+    case let .payment(event): event
+    default: nil
+    }
+  }
+
+  var availablePaymentMethods: [String]? {
+    switch self {
+    case let .general(event): event.availablePaymentMethods
     default: nil
     }
   }

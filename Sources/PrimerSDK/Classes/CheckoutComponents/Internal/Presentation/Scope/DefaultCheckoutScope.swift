@@ -331,7 +331,7 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
     internalState = newState
 
     Task { [self] in
-      await analyticsTracker?.trackStateChange(newState)
+      await analyticsTracker?.trackStateChange(newState, availablePaymentMethods: availablePaymentMethods.map(\.type))
     }
   }
 
@@ -340,7 +340,9 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
   }
 
   func updateNavigationState(_ newState: CheckoutNavigationState, syncToNavigator: Bool) {
+    let previous = navigationState
     navigationState = newState
+    Task { [self] in await analyticsTracker?.trackNavigation(from: previous, to: newState) }
 
     trackLifecycle(for: newState)
     announceScreenChange(for: newState)
@@ -544,6 +546,7 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
   /// directly (no list to return to). Mirrors Drop-In's popToMainScreen-on-cancel. Payment FAILURES
   /// must use `handlePaymentError` instead (error screen + dismiss).
   func cancelActivePaymentMethod(returnToSelection: Bool) {
+    Task { [self] in await analyticsTracker?.trackMethodLeft(nil, reason: .shopperCancel) }
     if returnToSelection {
       // Navigation-only: leaves the checkout state at `.ready` so no terminal outcome is delivered.
       // In the inline flow this closes the sheet and reveals the merchant's embedded list; in the
@@ -610,6 +613,8 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
 
     switch decision.type {
     case let .abort(errorMessage):
+      // Reported as UNSELECTED, so the FAILURE that follows for this attempt is dropped.
+      await analyticsTracker?.trackMethodLeft(paymentMethodType, reason: .merchantAbort)
       throw PrimerError.merchantError(message: errorMessage ?? "Payment creation aborted")
     case let .continue(idempotencyKey):
       // The imperative decision's key wins; fall back to the declarative provider only when it omits one.
@@ -640,6 +645,10 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
 
   var canRetryPayment: Bool { lastPaymentAttempt != nil }
 
+  func trackFlowExit() async {
+    await analyticsTracker?.trackFlowExited()
+  }
+
   func retryPayment() {
     guard let lastPaymentAttempt else {
       return logger.warn(message: "Retry tapped with no recorded payment attempt, ignoring")
@@ -649,9 +658,7 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
       guard case .failure = navigationState else { return }
     }
 
-    Task { @MainActor [weak self, navigationState] in
-      await self?.analyticsTracker?.trackRetry(navigationState: navigationState)
-    }
+    Task { @MainActor [weak self] in await self?.analyticsTracker?.trackRetry() }
 
     switch lastPaymentAttempt {
     case let .restart(method):

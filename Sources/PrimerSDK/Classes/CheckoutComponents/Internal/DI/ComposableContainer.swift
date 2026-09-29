@@ -178,7 +178,8 @@ extension ComposableContainer {
         .asTransient()
         .with { resolver in
           ProcessPayPalPaymentInteractorImpl(
-            repository: try await resolver.resolve(PayPalRepository.self)
+            repository: try await resolver.resolve(PayPalRepository.self),
+            analytics: try? await resolver.resolve(CheckoutComponentsAnalyticsInteractorProtocol.self)
           )
         }
     }
@@ -198,7 +199,8 @@ extension ComposableContainer {
         .asTransient()
         .with { resolver in
           ProcessAdyenKlarnaPaymentInteractorImpl(
-            repository: try await resolver.resolve(AdyenKlarnaRepository.self)
+            repository: try await resolver.resolve(AdyenKlarnaRepository.self),
+            analytics: try? await resolver.resolve(CheckoutComponentsAnalyticsInteractorProtocol.self)
           )
         }
     }
@@ -208,7 +210,8 @@ extension ComposableContainer {
         .asTransient()
         .with { resolver in
           ProcessWebRedirectPaymentInteractorImpl(
-            repository: try await resolver.resolve(WebRedirectRepository.self)
+            repository: try await resolver.resolve(WebRedirectRepository.self),
+            analytics: try? await resolver.resolve(CheckoutComponentsAnalyticsInteractorProtocol.self)
           )
         }
     }

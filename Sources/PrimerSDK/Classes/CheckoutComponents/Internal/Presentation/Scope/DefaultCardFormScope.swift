@@ -56,6 +56,8 @@ final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, 
   /// and BIN stream) must not overwrite it while it remains in `availableNetworks`.
   private var userSelectedNetwork: CardNetwork?
   private var currentCardData: PrimerCardData?
+  private var hasTrackedSelection = false
+  private var hasTrackedDetailsEntered = false
 
   init(
     checkoutScope: DefaultCheckoutScope,
@@ -404,26 +406,23 @@ final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, 
   func performSubmit() async {
     structuredState.isLoading = true
 
-    await analyticsInteractor?.trackEvent(
-      .paymentSubmitted,
-      metadata: .payment(PaymentEvent(paymentMethod: PrimerPaymentMethodType.paymentCard.rawValue)))
+    let card = PrimerPaymentMethodType.paymentCard.rawValue
+    // A merchant's own button can submit an invalid form, which is not the shopper doing their part.
+    if structuredState.isValid {
+      hasTrackedDetailsEntered = true
+      await analyticsInteractor?.trackSubmitted(card)
+    }
 
     do {
       // The merchant gate runs before any navigation: `startProcessing()` presents the processing
       // screen, and UIKit drops merchant UI raised from the callback while that transition is live.
-      try await checkoutScope?.invokeBeforePaymentCreate(
-        paymentMethodType: PrimerPaymentMethodType.paymentCard.rawValue
-      )
+      try await checkoutScope?.invokeBeforePaymentCreate(paymentMethodType: card)
 
       checkoutScope?.startProcessing(payingWith: self)
 
       try await sendBillingAddressIfNeeded()
       let cardData = try await prepareCardPaymentData()
-
-      await analyticsInteractor?.trackEvent(
-        .paymentProcessingStarted,
-        metadata: .payment(
-          PaymentEvent(paymentMethod: PrimerPaymentMethodType.paymentCard.rawValue)))
+      await analyticsInteractor?.trackProcessingStarted(card)
 
       let result = try await processCardPayment(cardData: cardData)
       await handlePaymentSuccess(result)
@@ -515,22 +514,29 @@ final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, 
     let hasValidExpiry = expiry && !structuredState.data[.expiryDate].isEmpty
     let hasValidCardholderName = cardholderName && !structuredState.data[.cardholderName].isEmpty
 
-    let wasValid = structuredState.isValid
-
     structuredState.isValid =
       hasValidCardNumber && hasValidCvv && hasValidExpiry && hasValidCardholderName
 
     if structuredState.isValid {
       structuredState.fieldErrors.removeAll()
+    }
 
-      if !wasValid {
-        Task { [self] in
-          await analyticsInteractor?.trackEvent(
-            .paymentDetailsEntered,
-            metadata: .payment(
-              PaymentEvent(paymentMethod: PrimerPaymentMethodType.paymentCard.rawValue)))
-        }
-      }
+    trackCardEntryProgress()
+  }
+
+  /// SELECTION on the first input (a standalone form has no list tap), DETAILS_ENTERED once every field is filled.
+  private func trackCardEntryProgress() {
+    let fields = structuredState.configuration.cardFields
+    let selects = !hasTrackedSelection && fields.contains { !structuredState.data[$0].isEmpty }
+    let entersDetails = !hasTrackedDetailsEntered && fields.allSatisfy { !structuredState.data[$0].isEmpty }
+    guard selects || entersDetails else { return }
+    hasTrackedSelection = hasTrackedSelection || selects
+    hasTrackedDetailsEntered = hasTrackedDetailsEntered || entersDetails
+
+    let card = PrimerPaymentMethodType.paymentCard.rawValue
+    Task { [self] in
+      if selects { await analyticsInteractor?.trackMethodSelected(card) }
+      if entersDetails { await analyticsInteractor?.trackDetailsEntered(card) }
     }
   }
 

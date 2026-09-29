@@ -167,8 +167,7 @@ final class DefaultPaymentMethodSelectionScope: PaymentMethodSelectionScopeInter
   }
 
   private func trackPaymentMethodSelection(_ paymentMethodType: String) async {
-    await analyticsInteractor?.trackEvent(
-      .paymentMethodSelection, metadata: .payment(PaymentEvent(paymentMethod: paymentMethodType)))
+    await analyticsInteractor?.trackMethodSelected(paymentMethodType)
   }
 
   func cancel() {
@@ -253,10 +252,9 @@ final class DefaultPaymentMethodSelectionScope: PaymentMethodSelectionScopeInter
 
     internalState.isVaultPaymentLoading = true
 
-    await analyticsInteractor?.trackEvent(
-      .paymentSubmitted,
-      metadata: .payment(PaymentEvent(paymentMethod: vaultedMethod.paymentMethodType))
-    )
+    let paymentMethod = vaultedMethod.paymentMethodType
+    await analyticsInteractor?.trackMethodSelected(paymentMethod)
+    await analyticsInteractor?.trackSubmitted(paymentMethod)
 
     do {
       // The merchant gate runs before `startProcessing()`, as on every other payment method.
@@ -268,6 +266,7 @@ final class DefaultPaymentMethodSelectionScope: PaymentMethodSelectionScopeInter
         throw PrimerError.unknown(message: "DIContainer.current is nil")
       }
       let interactor = try await container.resolve(SubmitVaultedPaymentInteractor.self)
+      await analyticsInteractor?.trackProcessingStarted(paymentMethod)
 
       let result = try await interactor.execute(
         vaultedPaymentMethodId: vaultedMethod.id,

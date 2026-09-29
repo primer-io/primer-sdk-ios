@@ -23,19 +23,28 @@ public enum AnalyticsEventType: String, Codable, Sendable, CaseIterable {
   /// User selects a payment method
   case paymentMethodSelection = "PAYMENT_METHOD_SELECTION"
 
-  /// Required payment details validated (e.g., card form is complete)
+  /// Shopper leaves an entered payment method without paying, or the merchant aborts it
+  case paymentMethodUnselected = "PAYMENT_METHOD_UNSELECTED"
+
+  /// Every required card field has a value
   case paymentDetailsEntered = "PAYMENT_DETAILS_ENTERED"
 
-  /// User taps Pay / Continue; before tokenization
+  /// Shopper did their part (valid card sent, wallet authorized, returned from redirect)
   case paymentSubmitted = "PAYMENT_SUBMITTED"
 
-  /// Primer begins processing (card tokenization or APM kickoff)
+  /// After the merchant gate, right before the first request to Primer
   case paymentProcessingStarted = "PAYMENT_PROCESSING_STARTED"
 
-  /// Redirect to third-party payment provider
+  /// Third-party page or app opened
   case paymentRedirectToThirdParty = "PAYMENT_REDIRECT_TO_THIRD_PARTY"
 
-  /// 3DS challenge presented
+  /// Third party returned control with a result
+  case paymentReturnedFromThirdParty = "PAYMENT_RETURNED_FROM_THIRD_PARTY"
+
+  /// Redirect method failed because `urlScheme` is missing or invalid
+  case redirectReturnUrlNotConfigured = "REDIRECT_RETURN_URL_NOT_CONFIGURED"
+
+  /// 3DS challenge shown
   case paymentThreeds = "PAYMENT_THREEDS"
 
   /// Payment completes successfully

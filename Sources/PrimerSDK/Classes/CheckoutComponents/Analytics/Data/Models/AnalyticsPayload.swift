@@ -100,4 +100,26 @@ struct AnalyticsPayload: Codable, Sendable {
 
   /// Error identifier on failure events
   let errorId: String?
+
+  // MARK: - Checkout Event Contract Fields
+
+  /// Version of the event definitions, bumped when an event's meaning changes
+  var contractVersion: Int = AnalyticsContract.version
+
+  /// One payment attempt, from entering a method to its outcome
+  var attemptId: String?
+
+  /// `swift_ui`, `ui_kit` or `react_native`
+  var integrationSurface: String?
+
+  var reason: String?
+  var errorCode: String?
+  var errorOrigin: String?
+  var outcome: String?
+  var previousPaymentMethod: String?
+
+  /// Last event sent before PAYMENT_FLOW_EXITED
+  var lastStep: String?
+
+  var availablePaymentMethods: [String]?
 }

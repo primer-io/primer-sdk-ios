@@ -10,121 +10,32 @@ import XCTest
 @_spi(PrimerInternal) @testable import PrimerFoundation
 @_spi(PrimerInternal) @testable import PrimerCore
 
-// MARK: - 3DS Challenge Tracking
-
-@available(iOS 15.0, *)
-@MainActor
-final class TrackThreeDSChallengeTests: XCTestCase {
-
-    private var sut: HeadlessRepositoryImpl!
-
-    override func setUp() {
-        super.setUp()
-        sut = HeadlessRepositoryImpl()
-    }
-
-    override func tearDown() {
-        sut = nil
-        super.tearDown()
-    }
-
-    func test_trackThreeDSChallenge_withNoAuthentication_doesNotCrash() {
-        // Given - token data without 3DS authentication
-        let tokenData = Response.Body.Tokenization(
-            analyticsId: "analytics-1",
-            id: "token-1",
-            isVaulted: false,
-            isAlreadyVaulted: false,
-            paymentInstrumentType: .paymentCard,
-            paymentMethodType: "PAYMENT_CARD",
-            paymentInstrumentData: nil,
-            threeDSecureAuthentication: nil,
-            token: "tok_123",
-            tokenType: .singleUse,
-            vaultData: nil
-        )
-
-        // When / Then - should not crash (early return when no auth)
-        sut.trackThreeDSChallengeIfNeeded(from: tokenData)
-    }
-
-    func test_trackThreeDSChallenge_withNilPaymentMethodType_usesDefault() {
-        // Given - token data with auth but no payment method type
-        let auth = ThreeDS.AuthenticationDetails(
-            responseCode: .challenge,
-            reasonCode: nil,
-            reasonText: nil,
-            protocolVersion: "2.1.0",
-            challengeIssued: true
-        )
-        let tokenData = Response.Body.Tokenization(
-            analyticsId: "analytics-3",
-            id: "token-3",
-            isVaulted: false,
-            isAlreadyVaulted: false,
-            paymentInstrumentType: .paymentCard,
-            paymentMethodType: nil,
-            paymentInstrumentData: nil,
-            threeDSecureAuthentication: auth,
-            token: "tok_789",
-            tokenType: .singleUse,
-            vaultData: nil
-        )
-
-        // When / Then - should not crash (uses "PAYMENT_CARD" default)
-        sut.trackThreeDSChallengeIfNeeded(from: tokenData)
-    }
-
-    func test_trackThreeDSChallenge_withVariousResponseCodes_doesNotCrash() {
-        // Given
-        let responseCodes: [ThreeDS.ResponseCode] = [
-            .notPerformed, .skipped, .authSuccess, .authFailed, .challenge, .METHOD,
-        ]
-
-        for responseCode in responseCodes {
-            let auth = ThreeDS.AuthenticationDetails(
-                responseCode: responseCode,
-                reasonCode: nil,
-                reasonText: nil,
-                protocolVersion: "2.2.0",
-                challengeIssued: false
-            )
-            let tokenData = Response.Body.Tokenization(
-                analyticsId: "analytics-\(responseCode.rawValue)",
-                id: "token-\(responseCode.rawValue)",
-                isVaulted: false,
-                isAlreadyVaulted: false,
-                paymentInstrumentType: .paymentCard,
-                paymentMethodType: "PAYMENT_CARD",
-                paymentInstrumentData: nil,
-                threeDSecureAuthentication: auth,
-                token: "tok_\(responseCode.rawValue)",
-                tokenType: .singleUse,
-                vaultData: nil
-            )
-
-            // When / Then
-            sut.trackThreeDSChallengeIfNeeded(from: tokenData)
-        }
-    }
-}
-
 // MARK: - Redirect Tracking
+//
+// 3DS challenge tracking moved off this repository: the challenge is now reported by
+// `CheckoutAnalyticsTracker` when `Notification.Name.primer3DSChallengePresented` fires
+// (see `CheckoutAnalyticsTrackerTests`), so `trackThreeDSChallengeIfNeeded` no longer exists here.
 
 @available(iOS 15.0, *)
 @MainActor
 final class TrackRedirectToThirdPartyTests: XCTestCase {
 
     private var sut: HeadlessRepositoryImpl!
+    private var mockAnalytics: MockTrackingAnalyticsInteractor!
 
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
+        try await super.setUp()
+        mockAnalytics = MockTrackingAnalyticsInteractor()
+        let container = try await ContainerTestHelpers.createTestContainer(analyticsInteractor: mockAnalytics)
+        await DIContainer.setContainer(container)
         sut = HeadlessRepositoryImpl()
     }
 
-    override func tearDown() {
+    override func tearDown() async throws {
         sut = nil
-        super.tearDown()
+        mockAnalytics = nil
+        await ContainerTestHelpers.resetSharedContainer()
+        try await super.tearDown()
     }
 
     func test_trackRedirect_withNilAdditionalInfo_doesNotCrash() {
@@ -132,6 +43,55 @@ final class TrackRedirectToThirdPartyTests: XCTestCase {
         sut.trackRedirectToThirdPartyIfNeeded(from: nil, paymentMethodType: "PAYMENT_CARD")
     }
 
+    func test_trackRedirect_withValidInfo_tracksRedirectToThirdPartyViaTypedCall() async throws {
+        // Given
+        let additionalInfo = PromptPayCheckoutAdditionalInfo(
+            expiresAt: "2026-01-01T00:00:00Z",
+            qrCodeUrl: "https://redirect.example.com/pay",
+            qrCodeBase64: nil
+        )
+
+        // When
+        sut.trackRedirectToThirdPartyIfNeeded(from: additionalInfo, paymentMethodType: "PROMPT_PAY")
+
+        // Then
+        let event = try await waitForTrackedEvent()
+        XCTAssertEqual(event.eventType, .paymentRedirectToThirdParty)
+        XCTAssertEqual(event.metadata?.paymentMethod, "PROMPT_PAY")
+        XCTAssertEqual(event.metadata?.redirectDestinationUrl, "https://redirect.example.com")
+    }
+
+    func test_trackRedirect_sameUrlTwice_tracksOnlyOnce() async throws {
+        // Given
+        let additionalInfo = PromptPayCheckoutAdditionalInfo(
+            expiresAt: "2026-01-01T00:00:00Z",
+            qrCodeUrl: "https://redirect.example.com/pay",
+            qrCodeBase64: nil
+        )
+
+        // When
+        sut.trackRedirectToThirdPartyIfNeeded(from: additionalInfo, paymentMethodType: "PROMPT_PAY")
+        _ = try await waitForTrackedEvent()
+        sut.trackRedirectToThirdPartyIfNeeded(from: additionalInfo, paymentMethodType: "PROMPT_PAY")
+
+        // Then — no second call lands for the deduplicated destination
+        // why: negative assertion — the first call already awaited fully, there is no
+        // further positive signal to await for the (intentionally absent) second one.
+        try await Task.sleep(nanoseconds: 100_000_000)
+        let count = await mockAnalytics.trackEventCallCount
+        XCTAssertEqual(count, 1)
+    }
+
+    private func waitForTrackedEvent(
+        timeout: TimeInterval = 2.0
+    ) async throws -> (eventType: AnalyticsEventType, metadata: AnalyticsEventMetadata?) {
+        let deadline = Date().addingTimeInterval(timeout)
+        while true {
+            if let event = await mockAnalytics.trackedEvents.first { return event }
+            if Date() > deadline { throw TestError.timeout }
+            try await Task.sleep(nanoseconds: 10_000_000)
+        }
+    }
 }
 
 // MARK: - Bin Data Stream

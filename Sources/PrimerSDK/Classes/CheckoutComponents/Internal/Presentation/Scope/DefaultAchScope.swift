@@ -346,15 +346,8 @@ final class DefaultAchScope: PrimerAchScope, ObservableObject, LogReporter {
       return
     }
 
-    await analyticsInteractor?.trackEvent(
-      .paymentSubmitted,
-      metadata: .payment(PaymentEvent(paymentMethod: PrimerPaymentMethodType.stripeAch.rawValue))
-    )
-
-    await analyticsInteractor?.trackEvent(
-      .paymentProcessingStarted,
-      metadata: .payment(PaymentEvent(paymentMethod: PrimerPaymentMethodType.stripeAch.rawValue))
-    )
+    await analyticsInteractor?.trackSubmitted(PrimerPaymentMethodType.stripeAch.rawValue)
+    await analyticsInteractor?.trackProcessingStarted(PrimerPaymentMethodType.stripeAch.rawValue)
 
     do {
       let result = try await processAchInteractor.completePayment(stripeData: stripeData)

@@ -43,6 +43,7 @@ final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
 
   private weak var checkoutScope: DefaultCheckoutScope?
   private var processPaymentInteractor: ProcessApplePayPaymentInteractor?
+  private var analytics: CheckoutComponentsAnalyticsInteractorProtocol?
   private let applePayPresentationManager: ApplePayPresenting
   private var authorizationCoordinator: ApplePayAuthorizationCoordinator?
   private(set) var paymentTask: Task<Void, Never>?
@@ -80,6 +81,7 @@ final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
       guard let container = await DIContainer.current else {
         throw ContainerError.containerUnavailable
       }
+      analytics = try? await container.resolve(CheckoutComponentsAnalyticsInteractorProtocol.self)
       processPaymentInteractor = try await container.resolve(ProcessApplePayPaymentInteractor.self)
     } catch {
       // Interactor resolution failed - will be retried lazily during payment
@@ -150,6 +152,9 @@ final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
         with: applePayRequest,
         presentationManager: applePayPresentationManager
       )
+      let applePay = PrimerPaymentMethodType.applePay.rawValue
+      await analytics?.trackSubmitted(applePay)
+      await analytics?.trackProcessingStarted(applePay)
 
       var interactor = processPaymentInteractor
       if interactor == nil {
