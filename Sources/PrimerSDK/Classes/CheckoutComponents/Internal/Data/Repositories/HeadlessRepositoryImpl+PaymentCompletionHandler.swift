@@ -70,7 +70,8 @@ final class PaymentCompletionHandler: NSObject,
     _ data: PrimerCheckoutPaymentMethodData,
     decisionHandler: @escaping (PrimerPaymentCreationDecision) -> Void
   ) {
-    decisionHandler(.continuePaymentCreation())
+    // The merchant gate already ran in the scope; hand its key back or the caller stores nil over it.
+    decisionHandler(.continuePaymentCreation(withIdempotencyKey: PrimerInternal.shared.currentIdempotencyKey))
   }
 
   // MARK: - 3DS Support

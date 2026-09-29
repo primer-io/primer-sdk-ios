@@ -127,3 +127,31 @@ final class PaymentCompletionHandlerTests: XCTestCase {
         XCTAssertTrue(mockRawDataManager.rawDataSetCount >= 1)
     }
 }
+
+// MARK: - Payment Creation Decision
+
+@available(iOS 15.0, *)
+@MainActor
+final class PaymentCompletionHandlerDecisionTests: XCTestCase {
+
+    override func tearDown() {
+        PrimerInternal.shared.currentIdempotencyKey = nil
+        super.tearDown()
+    }
+
+    func test_willCreatePayment_keepsTheMerchantIdempotencyKey() {
+        // Given — the scope stored the merchant's key before submit
+        PrimerInternal.shared.currentIdempotencyKey = "merchant-key"
+        let sut = PaymentCompletionHandler(repository: HeadlessRepositoryImpl()) { _ in }
+        var decision: PrimerPaymentCreationDecision?
+
+        // When
+        sut.primerHeadlessUniversalCheckoutWillCreatePaymentWithData(
+            PrimerCheckoutPaymentMethodData(type: PrimerCheckoutPaymentMethodType(type: "PAYMENT_CARD"))
+        ) { decision = $0 }
+
+        // Then
+        guard case let .continue(key) = decision?.type else { return XCTFail("Expected .continue") }
+        XCTAssertEqual(key, "merchant-key")
+    }
+}
