@@ -224,7 +224,8 @@ final class DefaultKlarnaScope: PrimerKlarnaScope, ObservableObject, LogReporter
       return
     }
 
-    checkoutScope.startProcessing(payingWith: self)
+    // Not `startProcessing`: authorization cannot run twice, so a retry opens a new session.
+    checkoutScope.updateNavigationState(.processing)
 
     await analyticsInteractor?.trackEvent(
       .paymentSubmitted,
@@ -269,7 +270,8 @@ final class DefaultKlarnaScope: PrimerKlarnaScope, ObservableObject, LogReporter
       logger.warn(message: "Klarna checkout scope was deallocated before finalization")
       return
     }
-    checkoutScope.startProcessing(payingWith: self)
+    // Not `startProcessing`, for the same reason as in `performAuthorization`.
+    checkoutScope.updateNavigationState(.processing)
 
     do {
       let result = try await processKlarnaInteractor.finalize()

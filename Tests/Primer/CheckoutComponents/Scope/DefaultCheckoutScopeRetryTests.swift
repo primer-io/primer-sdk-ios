@@ -17,7 +17,10 @@ final class DefaultCheckoutScopeRetryTests: XCTestCase {
     private var sut: DefaultCheckoutScope!
     private var navigator: CheckoutNavigator!
     private var cardScope: MockPaymentMethodScope!
+    private var qrScope: MockPaymentMethodScope!
     private var selection: MockSelectionScopeInternal!
+    private let card = InternalPaymentMethod(id: "card", type: TestData.PaymentMethodTypes.card, name: "Card")
+    private let qrMethod = InternalPaymentMethod(id: "qr", type: PrimerPaymentMethodType.xenditOvo.rawValue, name: "OVO")
 
     // `DefaultCheckoutScope` writes into `DIContainer.shared`, so this class resets it on both sides.
     // Without that, its scopes' async init races whichever class clears the container next, and the
@@ -27,6 +30,7 @@ final class DefaultCheckoutScopeRetryTests: XCTestCase {
         await ContainerTestHelpers.resetSharedContainer()
         navigator = CheckoutNavigator(coordinator: CheckoutCoordinator())
         cardScope = MockPaymentMethodScope()
+        qrScope = MockPaymentMethodScope()
         selection = MockSelectionScopeInternal()
         sut = DefaultCheckoutScope(
             clientToken: TestData.Tokens.valid,
@@ -34,12 +38,15 @@ final class DefaultCheckoutScopeRetryTests: XCTestCase {
             navigator: navigator
         )
         sut.cachedPaymentMethodSelection = selection
+        sut.availablePaymentMethods = [qrMethod, card]
+        sut.paymentMethodScopeCache = [qrMethod.type: qrScope, card.type: cardScope]
     }
 
     override func tearDown() async throws {
         sut = nil
         navigator = nil
         cardScope = nil
+        qrScope = nil
         selection = nil
         await ContainerTestHelpers.resetSharedContainer()
         try await super.tearDown()
@@ -120,53 +127,6 @@ final class DefaultCheckoutScopeRetryTests: XCTestCase {
         XCTAssertEqual(cardScope.submitCallCount, 0)
     }
 
-    // QR and ACH keep their own screen and never pass through `.processing`, so the retry restarts them.
-    func test_retryPayment_afterARestartableAttempt_startsTheMethodOverOnItsScreen() {
-        sut.paymentMethodScopeCache[TestData.PaymentMethodTypes.card] = cardScope
-        sut.updateNavigationState(.paymentMethodSelection)
-        sut.updateNavigationState(.paymentMethod(TestData.PaymentMethodTypes.card))
-        sut.recordAttempt(cardScope, restart: true)
-        sut.updateNavigationState(.failure(PrimerError.unknown(message: "declined")))
-
-        sut.retryPayment()
-
-        XCTAssertEqual(cardScope.prepareForReentryCallCount, 1)
-        XCTAssertEqual(cardScope.startCallCount, 1)
-        XCTAssertEqual(cardScope.submitCallCount, 0)
-        XCTAssertEqual(sut.navigationState, .paymentMethod(TestData.PaymentMethodTypes.card))
-        // The failure screen is gone, so Back returns to the list rather than to the old error.
-        let stack = navigator.checkoutCoordinator.navigationStack
-        XCTAssertEqual(stack.count, 2)
-        XCTAssertEqual(stack.first, .paymentMethodSelection)
-    }
-
-    // QR and ACH record the attempt on start, so a shopper who picks another method that fails
-    // before recording its own attempt would otherwise restart the method they left.
-    func test_retryPayment_afterChoosingAnotherMethod_doesNotRestartTheMethodLeft() {
-        sut.paymentMethodScopeCache[TestData.PaymentMethodTypes.card] = cardScope
-        sut.recordAttempt(cardScope, restart: true)
-        sut.handlePaymentMethodSelection(
-            InternalPaymentMethod(id: "pm_2", type: TestData.PaymentMethodTypes.paypal, name: TestData.PaymentMethodNames.paypalName)
-        )
-        sut.updateNavigationState(.failure(PrimerError.unknown(message: "declined")))
-
-        sut.retryPayment()
-
-        XCTAssertEqual(cardScope.startCallCount, 0)
-        XCTAssertEqual(cardScope.submitCallCount, 0)
-    }
-
-    // Apple Pay keeps its screen too, but its submit re-presents the sheet.
-    func test_retryPayment_afterAnAttemptRecordedWithoutRestart_resubmitsThatScope() {
-        sut.recordAttempt(cardScope)
-        sut.updateNavigationState(.failure(PrimerError.unknown(message: "declined")))
-
-        sut.retryPayment()
-
-        XCTAssertEqual(cardScope.submitCallCount, 1)
-        XCTAssertEqual(cardScope.startCallCount, 0)
-    }
-
     func test_retryPayment_afterFailure_stillTargetsTheFailedAttempt() {
         sut.startProcessing(payingWith: cardScope)
         sut.updateNavigationState(.failure(PrimerError.unknown(message: "declined")))
@@ -174,5 +134,82 @@ final class DefaultCheckoutScopeRetryTests: XCTestCase {
         sut.retryPayment()
 
         XCTAssertEqual(cardScope.submitCallCount, 1)
+        XCTAssertEqual(cardScope.startCallCount, 0)
+    }
+
+    func test_retryPayment_afterChoosingAnotherMethod_doesNotResubmitTheEarlierOne() {
+        sut.startProcessing(payingWith: cardScope)
+        sut.handlePaymentError(PrimerError.unknown(message: "declined"))
+        sut.cancelActivePaymentMethod(returnToSelection: true)
+
+        sut.retryPayment()
+
+        XCTAssertEqual(cardScope.submitCallCount, 0)
+    }
+
+    // Every way back to the list goes through navigation, not only the error screen's button.
+    func test_retryPayment_afterBackingOutToTheList_doesNotResubmitTheEarlierOne() {
+        sut.startProcessing(payingWith: cardScope)
+        sut.updateNavigationState(.paymentMethodSelection, syncToNavigator: false)
+
+        sut.retryPayment()
+
+        XCTAssertEqual(cardScope.submitCallCount, 0)
+    }
+
+    // QR, ACH and Apple Pay never reach `startProcessing`, so a retry has to open them again.
+    func test_retryPayment_afterAMethodThatNeverStartsProcessingFails_restartsIt() {
+        sut.updateNavigationState(.paymentMethodSelection)
+        sut.handlePaymentMethodSelection(qrMethod)
+        sut.handlePaymentError(PrimerError.unknown(message: "declined"))
+
+        sut.retryPayment()
+
+        XCTAssertEqual(qrScope.prepareForReentryCallCount, 1)
+        XCTAssertEqual(qrScope.startCallCount, 2)
+        XCTAssertEqual(qrScope.submitCallCount, 0)
+        XCTAssertEqual(sut.navigationState, .paymentMethod(qrMethod.type))
+        // The failure screen is gone, so Back returns to the list rather than to the old error.
+        let stack = navigator.checkoutCoordinator.navigationStack
+        XCTAssertEqual(stack.count, 2)
+        XCTAssertEqual(stack.first, .paymentMethodSelection)
+    }
+
+    func test_retryPayment_afterReturningToTheListAndFailingElsewhere_restartsTheNewMethod() {
+        sut.handlePaymentMethodSelection(card)
+        sut.startProcessing(payingWith: cardScope)
+        sut.handlePaymentError(PrimerError.unknown(message: "declined"))
+        sut.cancelActivePaymentMethod(returnToSelection: true)
+        sut.handlePaymentMethodSelection(qrMethod)
+        sut.handlePaymentError(PrimerError.unknown(message: "declined"))
+
+        sut.retryPayment()
+
+        XCTAssertEqual(cardScope.submitCallCount, 0)
+        XCTAssertEqual(cardScope.startCallCount, 1)
+        XCTAssertEqual(qrScope.startCallCount, 2)
+    }
+
+    // The merchant's onBeforePaymentCreate aborted, so there are no details to re-submit.
+    func test_retryPayment_afterAFailureBeforeProcessing_reopensTheMethod() {
+        sut.handlePaymentMethodSelection(card)
+        sut.handlePaymentError(PrimerError.merchantError(message: "Payment creation aborted"))
+
+        sut.retryPayment()
+
+        XCTAssertEqual(sut.navigationState, .paymentMethod(card.type))
+        XCTAssertEqual(cardScope.submitCallCount, 0)
+    }
+
+    // The error screen stays tappable until the navigation change reaches the view.
+    func test_retryPayment_tappedTwice_restartsOnce() {
+        sut.handlePaymentMethodSelection(qrMethod)
+        sut.handlePaymentError(PrimerError.unknown(message: "declined"))
+
+        sut.retryPayment()
+        sut.retryPayment()
+
+        XCTAssertEqual(qrScope.startCallCount, 2)
+        XCTAssertEqual(qrScope.prepareForReentryCallCount, 1)
     }
 }

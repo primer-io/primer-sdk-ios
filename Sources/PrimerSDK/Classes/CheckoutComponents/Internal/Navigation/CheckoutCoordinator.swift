@@ -28,7 +28,11 @@ final class CheckoutCoordinator: ObservableObject, LogReporter {
       lastPaymentMethodRoute = previousRoute
     }
 
-    switch route.navigationBehavior {
+    var behavior = route.navigationBehavior
+    // A push after the error screen replaces it, so Back never lands on an old error.
+    if case .failure = previousRoute, behavior == .push { behavior = .replace }
+
+    switch behavior {
     case .push:
       navigationStack.append(route)
     case .reset:
