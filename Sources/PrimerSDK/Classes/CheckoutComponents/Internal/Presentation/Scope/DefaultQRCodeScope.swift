@@ -67,7 +67,6 @@ final class DefaultQRCodeScope: PrimerQRCodeScope, ObservableObject, LogReporter
     guard !hasStarted else { return }
     hasStarted = true
     logger.debug(message: "QR code scope started")
-    checkoutScope?.recordAttempt(self, restart: true)
     Task { [self] in
       await performPayment()
     }

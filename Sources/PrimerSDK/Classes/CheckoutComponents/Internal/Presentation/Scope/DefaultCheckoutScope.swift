@@ -101,8 +101,10 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
 
   /// What a retry re-runs.
   private enum PaymentAttempt {
-    case paymentMethod(any PrimerPaymentMethodScope)
-    case restart(any PrimerPaymentMethodScope)
+    /// Opens the method again, as picking it from the list does.
+    case restart(InternalPaymentMethod)
+    /// Submits the details the method already collected.
+    case resubmit(any PrimerPaymentMethodScope)
     case vaulted
   }
 
@@ -377,6 +379,9 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
     switch state {
     case let .paymentMethod(type):
       currentPaymentMethodScope = paymentMethodScopeCache[type]
+      lastPaymentAttempt = availablePaymentMethods.first { $0.type == type }.map(PaymentAttempt.restart)
+    case .paymentMethodSelection:
+      lastPaymentAttempt = nil
     case .success, .dismissed:
       selectedPaymentMethodName = nil
       lastPaymentAttempt = nil
@@ -428,7 +433,8 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
   private func observeNavigationEvents() {
     navigationObservationTask = Task { @MainActor [weak self] in
       guard let self else { return }
-      for await route in navigator.navigationEvents {
+      // The stream buffers, so a route the coordinator has already left is skipped; the current one arrives on its own.
+      for await route in navigator.navigationEvents where route == navigator.checkoutCoordinator.currentRoute {
         let newNavigationState: CheckoutNavigationState
         switch route {
         case .loading:
@@ -565,8 +571,6 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
 
   func handlePaymentMethodSelection(_ method: InternalPaymentMethod) {
     selectedPaymentMethodName = method.name
-    // A new choice ends the previous attempt, so Retry cannot restart a method the shopper left.
-    lastPaymentAttempt = nil
 
     if let scope = paymentMethodScopeCache[method.type] {
       scope.start()
@@ -628,13 +632,8 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
 
   /// - Parameter scope: the payment method being paid with, or `nil` for a saved one.
   func startProcessing(payingWith scope: (any PrimerPaymentMethodScope)?) {
-    lastPaymentAttempt = scope.map(PaymentAttempt.paymentMethod) ?? .vaulted
+    lastPaymentAttempt = scope.map(PaymentAttempt.resubmit) ?? .vaulted
     updateNavigationState(.processing)
-  }
-
-  /// For methods that keep their own screen instead of `.processing`. `restart` makes a retry start the method over.
-  func recordAttempt(_ scope: any PrimerPaymentMethodScope, restart: Bool = false) {
-    lastPaymentAttempt = restart ? .restart(scope) : .paymentMethod(scope)
   }
 
   var canRetryPayment: Bool { lastPaymentAttempt != nil }
@@ -643,22 +642,21 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
     guard let lastPaymentAttempt else {
       return logger.warn(message: "Retry tapped with no recorded payment attempt, ignoring")
     }
+    if case .restart = lastPaymentAttempt {
+      // The error screen stays tappable until the view catches up, so only the first tap restarts.
+      guard case .failure = navigationState else { return }
+    }
 
-    Task { @MainActor [weak self] in
-      guard let self else { return }
-      await analyticsTracker?.trackRetry(navigationState: navigationState)
+    Task { @MainActor [weak self, navigationState] in
+      await self?.analyticsTracker?.trackRetry(navigationState: navigationState)
     }
 
     switch lastPaymentAttempt {
-    case let .paymentMethod(scope):
+    case let .restart(method):
+      paymentMethodScopeCache[method.type]?.prepareForReentry()
+      handlePaymentMethodSelection(method)
+    case let .resubmit(scope):
       scope.submit()
-    case let .restart(scope):
-      guard let type = paymentMethodScopeCache.first(where: { $0.value === scope })?.key else { return }
-      // Off the failure screen first, so Back from the restarted method returns to the list.
-      navigator.navigateBack()
-      scope.prepareForReentry()
-      scope.start()
-      updateNavigationState(.paymentMethod(type))
     case .vaulted:
       // Goes through the full entry point, so a card that needs its CVV asks for it again.
       Task { await paymentMethodSelectionInternal.payWithVaultedPaymentMethod() }
