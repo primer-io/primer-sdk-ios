@@ -178,6 +178,29 @@ final class ApplePayAuthorizationCoordinatorTests: XCTestCase {
         XCTAssertEqual((update.errors.first as? NSError)?.code, PKPaymentError.shippingAddressUnserviceableError.rawValue)
     }
 
+    func test_didSelectShippingMethod_failedCommit_failsTheUpdate() async throws {
+        let coordinator = try await coordinatorAfterAddressChange()
+
+        // The stubbed backend still holds Standard, so the Express commit fails verification.
+        let update = await coordinator.paymentAuthorizationController(
+            PKPaymentAuthorizationController(),
+            didSelectShippingMethod: shippingMethod("express")
+        )
+
+        XCTAssertEqual(update.status, .failure)
+    }
+
+    func test_didSelectShippingMethod_verifiedCommit_succeeds() async throws {
+        let coordinator = try await coordinatorAfterAddressChange()
+
+        let update = await coordinator.paymentAuthorizationController(
+            PKPaymentAuthorizationController(),
+            didSelectShippingMethod: shippingMethod("standard")
+        )
+
+        XCTAssertEqual(update.status, .success)
+    }
+
     func test_address_splitsTheStreetIntoTwoLines() {
         let address = ApplePayAuthorizationCoordinator.address(from: contact(countryCode: "GB", street: "1 High Street\nFlat 2"))
 
@@ -204,6 +227,30 @@ final class ApplePayAuthorizationCoordinatorTests: XCTestCase {
         manager.presentResult = .success(())
         Task { _ = try? await coordinator.authorize(with: request, presentationManager: manager) }
         try await Task.sleep(nanoseconds: 100_000_000)
+    }
+
+    private func coordinatorAfterAddressChange() async throws -> ApplePayAuthorizationCoordinator {
+        let coordinator = ApplePayAuthorizationCoordinator(
+            shippingSession: makeSession(
+                mode: .callbacks,
+                options: [
+                    PrimerShippingOption(id: "standard", name: "Standard", description: "3-5 days", amount: 500),
+                    PrimerShippingOption(id: "express", name: "Express", description: "Next day", amount: 1500)
+                ]
+            )
+        )
+        try await present(coordinator, with: createMockRequest())
+        _ = await coordinator.paymentAuthorizationController(
+            PKPaymentAuthorizationController(),
+            didSelectShippingContact: contact(countryCode: "GB")
+        )
+        return coordinator
+    }
+
+    private func shippingMethod(_ identifier: String) -> PKShippingMethod {
+        let method = PKShippingMethod(label: identifier, amount: 1)
+        method.identifier = identifier
+        return method
     }
 
     private func makeSession(
