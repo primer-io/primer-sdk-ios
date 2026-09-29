@@ -178,7 +178,7 @@ final class ApplePayAuthorizationCoordinatorTests: XCTestCase {
         XCTAssertEqual((update.errors.first as? NSError)?.code, PKPaymentError.shippingAddressUnserviceableError.rawValue)
     }
 
-    func test_didSelectShippingMethod_failedCommit_failsTheUpdate() async throws {
+    func test_didSelectShippingMethod_failedCommit_keepsTheSheetOnTheHeldOption() async throws {
         let coordinator = try await coordinatorAfterAddressChange()
 
         // The stubbed backend still holds Standard, so the Express commit fails verification.
@@ -187,7 +187,9 @@ final class ApplePayAuthorizationCoordinatorTests: XCTestCase {
             didSelectShippingMethod: shippingMethod("express")
         )
 
-        XCTAssertEqual(update.status, .failure)
+        // A failure status would make Apple close the sheet.
+        XCTAssertEqual(update.status, .success)
+        XCTAssertEqual(update.shippingMethods.first?.identifier, "standard")
     }
 
     func test_didSelectShippingMethod_verifiedCommit_succeeds() async throws {

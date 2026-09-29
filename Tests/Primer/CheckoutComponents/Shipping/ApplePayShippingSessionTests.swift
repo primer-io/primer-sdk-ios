@@ -33,65 +33,37 @@ final class ApplePayShippingSessionTests: XCTestCase {
             selectedShippingMethod: "standard"
         ))
 
-        let mode = ApplePayShippingSession.resolveMode(
-            checkoutModules: [module],
-            applePayOptions: applePayOptions(requireShippingMethod: true),
-            hasShippingHandlers: true
-        )
-
-        XCTAssertEqual(mode, .legacy)
+        XCTAssertEqual(resolve(modules: [module]), .legacy)
     }
 
     func test_resolveMode_callbackModeModule_usesCallbacks() {
-        let module = checkoutModule(ShippingMethodOptions(callbackMode: true))
-
-        let mode = ApplePayShippingSession.resolveMode(
-            checkoutModules: [module],
-            applePayOptions: applePayOptions(requireShippingMethod: true),
-            hasShippingHandlers: true
-        )
-
-        XCTAssertEqual(mode, .callbacks)
+        XCTAssertEqual(resolve(modules: [checkoutModule(ShippingMethodOptions(callbackMode: true))]), .callbacks)
     }
 
-    func test_resolveMode_noShippingModule_usesCallbacksWhenShippingIsCollected() {
-        let mode = ApplePayShippingSession.resolveMode(
-            checkoutModules: nil,
-            applePayOptions: applePayOptions(requireShippingMethod: true),
-            hasShippingHandlers: true
-        )
-
-        XCTAssertEqual(mode, .callbacks)
+    func test_resolveMode_noShippingModule_usesCallbacks() {
+        XCTAssertEqual(resolve(), .callbacks)
     }
 
-    func test_resolveMode_shippingMethodNotRequired_staysLegacy() {
-        let mode = ApplePayShippingSession.resolveMode(
-            checkoutModules: nil,
-            applePayOptions: applePayOptions(requireShippingMethod: false),
-            hasShippingHandlers: true
-        )
-
-        XCTAssertEqual(mode, .legacy)
+    func test_resolveMode_shippingMethodNotRequired_usesAddressOnly() {
+        XCTAssertEqual(resolve(requireShippingMethod: false), .addressOnly)
     }
 
-    func test_resolveMode_missingHandler_staysLegacy() {
-        let mode = ApplePayShippingSession.resolveMode(
-            checkoutModules: nil,
-            applePayOptions: applePayOptions(requireShippingMethod: true),
-            hasShippingHandlers: false
-        )
+    func test_resolveMode_addressOnlyWithoutOptionHandler_usesAddressOnly() {
+        XCTAssertEqual(resolve(requireShippingMethod: false, hasOptionHandler: false), .addressOnly)
+    }
 
-        XCTAssertEqual(mode, .legacy, "Without both handlers the merchant keeps today's behavior")
+    func test_resolveMode_noAddressHandler_staysLegacy() {
+        XCTAssertEqual(resolve(hasAddressHandler: false), .legacy)
+        XCTAssertEqual(resolve(requireShippingMethod: false, hasAddressHandler: false), .legacy)
+    }
+
+    func test_resolveMode_shippingMethodWithoutOptionHandler_staysLegacy() {
+        XCTAssertEqual(resolve(hasOptionHandler: false), .legacy, "Nothing could commit, so every payment would be blocked")
     }
 
     func test_resolveMode_noPostalAddress_staysLegacy() {
-        let mode = ApplePayShippingSession.resolveMode(
-            checkoutModules: nil,
-            applePayOptions: applePayOptions(requireShippingMethod: true, contactFields: [.name]),
-            hasShippingHandlers: true
-        )
-
-        XCTAssertEqual(mode, .legacy, "Apple never asks for an address, so no commit could happen")
+        XCTAssertEqual(resolve(contactFields: [.name]), .legacy, "Apple never asks for an address")
+        XCTAssertEqual(resolve(requireShippingMethod: false, contactFields: [.name]), .legacy)
     }
 
     // MARK: - Address change
@@ -199,11 +171,11 @@ final class ApplePayShippingSessionTests: XCTestCase {
         XCTAssertEqual(sut.options.map(\.id), ["express", "standard"])
     }
 
-    func test_optionChange_mismatchedCommit_throwsAndLeavesNothingVerified() async throws {
+    func test_optionChange_mismatchedCommit_throwsAndFallsBackToTheHeldOption() async throws {
         let sut = makeSession(
             onAddressChange: { _ in [Self.standard, Self.express] },
             onOptionChange: { _ in },
-            // The merchant PATCHes the wrong option.
+            // The merchant PATCHes the wrong option, so the session still holds Standard.
             shipping: shipping(methodId: "standard", amount: 500)
         )
         try await sut.handleShippingAddressChange(address)
@@ -212,9 +184,39 @@ final class ApplePayShippingSessionTests: XCTestCase {
             try await sut.handleShippingOptionChange(optionId: "express")
             XCTFail("Expected a commit mismatch")
         } catch {
-            XCTAssertNil(sut.verifiedCommit)
             XCTAssertTrue("\(error)".contains("express"))
+            XCTAssertEqual(sut.verifiedCommit?.id, "standard")
+            XCTAssertEqual(sut.options.first?.id, "standard", "The sheet shows the held option again")
         }
+    }
+
+    func test_optionChange_failedCommitWithoutFreshRead_verifiesNothing() async throws {
+        let refreshFails = Box(false)
+        let sut = makeSession(
+            onAddressChange: { _ in [Self.standard, Self.express] },
+            onOptionChange: { _ in },
+            shipping: shipping(methodId: "standard", amount: 500),
+            refresh: { if refreshFails.value { throw PrimerError.unknown() } }
+        )
+        try await sut.handleShippingAddressChange(address)
+        refreshFails.value = true
+
+        try? await sut.handleShippingOptionChange(optionId: "express")
+
+        XCTAssertNil(sut.verifiedCommit, "A stale read must not unblock Pay")
+    }
+
+    func test_optionChange_failedCommitWithNoHeldOption_verifiesNothing() async throws {
+        // The session holds no shipping at all, so every commit fails and nothing can be restored.
+        let sut = makeSession(
+            onAddressChange: { _ in [Self.standard, Self.express] },
+            onOptionChange: { _ in }
+        )
+        try? await sut.handleShippingAddressChange(address)
+
+        try? await sut.handleShippingOptionChange(optionId: "express")
+
+        XCTAssertNil(sut.verifiedCommit)
     }
 
     func test_optionChange_mismatchedAmount_throws() async throws {
@@ -245,6 +247,29 @@ final class ApplePayShippingSessionTests: XCTestCase {
         try await sut.handleShippingOptionChange(optionId: "unknown")
 
         XCTAssertEqual(commits.value, 1, "Only the eager default commit ran")
+    }
+
+    // MARK: - Address only
+
+    func test_addressOnly_asksTheMerchantAndRereadsTheTotalWithoutCommitting() async throws {
+        let addresses = Box(0)
+        let commits = Box(0)
+        let refreshes = Box(0)
+        let sut = makeSession(
+            mode: .addressOnly,
+            onAddressChange: { _ in addresses.value += 1; return [Self.standard] },
+            onOptionChange: { _ in commits.value += 1 },
+            refresh: { refreshes.value += 1 }
+        )
+
+        try await sut.handleShippingAddressChange(address)
+
+        XCTAssertEqual(addresses.value, 1)
+        XCTAssertEqual(refreshes.value, 1)
+        XCTAssertEqual(commits.value, 0)
+        XCTAssertTrue(sut.options.isEmpty, "No options are shown without a required shipping method")
+        XCTAssertFalse(sut.isAddressUnserviceable)
+        XCTAssertNoThrow(try sut.requireVerifiedCommit(selectedOptionId: nil))
     }
 
     // MARK: - Authorization gate
@@ -397,15 +422,31 @@ final class ApplePayShippingSessionTests: XCTestCase {
         onAddressChange: ShippingAddressChangeHandler? = nil,
         onOptionChange: ShippingOptionChangeHandler? = nil,
         shipping: @escaping () -> ClientSession.Order.ShippingMethod? = { nil },
+        refresh: @escaping () async throws -> Void = {},
         timeout: TimeInterval = ApplePayShippingSession.callbackTimeout
     ) -> ApplePayShippingSession {
         ApplePayShippingSession(
             mode: mode,
             addressChangeProvider: { onAddressChange },
             optionChangeProvider: { onOptionChange },
-            refreshConfiguration: {},
+            refreshConfiguration: refresh,
             currentShipping: shipping,
             timeout: timeout
+        )
+    }
+
+    private func resolve(
+        modules: [Response.Body.Configuration.CheckoutModule]? = nil,
+        requireShippingMethod: Bool = true,
+        contactFields: [PrimerApplePayOptions.RequiredContactField]? = [.postalAddress],
+        hasAddressHandler: Bool = true,
+        hasOptionHandler: Bool = true
+    ) -> ApplePayShippingSession.Mode {
+        ApplePayShippingSession.resolveMode(
+            checkoutModules: modules,
+            applePayOptions: applePayOptions(requireShippingMethod: requireShippingMethod, contactFields: contactFields),
+            hasAddressChangeHandler: hasAddressHandler,
+            hasOptionChangeHandler: hasOptionHandler
         )
     }
 
