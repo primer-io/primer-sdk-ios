@@ -979,6 +979,35 @@ final class DefaultCheckoutScopeReloadTests: XCTestCase {
         XCTAssertEqual(try DefaultCheckoutScope.validated(from: sut).1, .fromPaymentSelection)
     }
 
+    // Inline embedding never shows the splash, so it must not wait for it.
+    func test_inlineFlow_withInitScreenEnabled_skipsTheSplashPause() async throws {
+        SDKSessionHelper.setUp()
+        defer { SDKSessionHelper.tearDown() }
+        let container = try await ContainerTestHelpers.createTestContainer(
+            apiConfiguration: PrimerAPIConfigurationModule.apiConfiguration)
+        await DIContainer.setContainer(container)
+        let start = Date()
+
+        sut = DefaultCheckoutScope(
+            clientToken: TestData.Tokens.valid,
+            settings: PrimerSettings(paymentHandling: .auto, uiOptions: PrimerUIOptions(isInitScreenEnabled: true)),
+            navigator: CheckoutNavigator(coordinator: CheckoutCoordinator()),
+            isInlineFlow: true
+        )
+        for await state in sut.state {
+            if case .initializing = state { continue }
+            break
+        }
+
+        XCTAssertLessThan(Date().timeIntervalSince(start), 0.4)
+    }
+
+    func test_appearanceMode_forcesTheTokenScheme() {
+        XCTAssertEqual(PrimerAppearanceMode.dark.colorScheme(orSystem: .light), .dark)
+        XCTAssertEqual(PrimerAppearanceMode.light.colorScheme(orSystem: .dark), .light)
+        XCTAssertEqual(PrimerAppearanceMode.system.colorScheme(orSystem: .dark), .dark)
+    }
+
     func test_singlePaymentMethod_withoutSavedMethods_opensTheMethod() async throws {
         sut = try await makeSingleMethodScope(vaulted: [])
         defer { SDKSessionHelper.tearDown() }

@@ -553,6 +553,31 @@ final class DefaultPaymentMethodSelectionScopeTests: XCTestCase {
         XCTAssertEqual(mockRepo.fetchVaultedPaymentMethodsCallCount, fetchBaseline + 1)
     }
 
+    // Regression: a failed re-fetch after a successful delete left the deleted card listed.
+    func test_deleteVaultedPaymentMethod_refreshFails_stillRemovesTheCard() async throws {
+        // Given
+        let container = try await ContainerTestHelpers.createTestContainer()
+        let mockRepo = MockHeadlessRepository()
+        _ = try? await container.register(HeadlessRepository.self).asSingleton().with { _ in mockRepo }
+        await DIContainer.setContainer(container)
+        sut = makeSut()
+        try await withTimeout(2.0) {
+            while mockRepo.fetchVaultedPaymentMethodsCallCount < 1 { await Task.yield() }
+        }
+        let deleted = makeVaultedPaymentMethod(id: "vault_to_delete")
+        let kept = makeVaultedPaymentMethod(id: "vault_kept")
+        mockCheckoutScope.setVaultedPaymentMethods([deleted, kept])
+        mockCheckoutScope.setSelectedVaultedPaymentMethod(deleted)
+        mockRepo.fetchVaultedPaymentMethodsError = PrimerError.unknown(message: "offline")
+
+        // When
+        try await sut.deleteVaultedPaymentMethod(deleted)
+
+        // Then
+        XCTAssertEqual(mockCheckoutScope.vaultedPaymentMethods.map(\.id), ["vault_kept"])
+        XCTAssertNotEqual(mockCheckoutScope.selectedVaultedPaymentMethod?.id, "vault_to_delete")
+    }
+
     func test_deleteVaultedPaymentMethod_repositoryThrows_propagatesError() async throws {
         // Given
         let container = try await ContainerTestHelpers.createTestContainer()

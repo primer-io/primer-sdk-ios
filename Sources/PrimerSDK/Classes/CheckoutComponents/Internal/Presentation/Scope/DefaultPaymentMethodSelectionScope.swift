@@ -394,6 +394,11 @@ final class DefaultPaymentMethodSelectionScope: PaymentMethodSelectionScopeInter
 
     logger.info(message: "[Vault] Successfully deleted payment method: \(method.id)")
 
+    // Drop it locally first: a failed re-fetch must not leave the deleted card listed, or selected.
+    if let checkoutScope {
+      checkoutScope.setVaultedPaymentMethods(checkoutScope.vaultedPaymentMethods.filter { $0.id != method.id })
+      syncSelectedVaultedPaymentMethod()
+    }
     await refreshVaultedPaymentMethods()
   }
 

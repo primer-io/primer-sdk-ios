@@ -65,7 +65,7 @@ private struct PrimerCheckoutSessionModifier: ViewModifier, LogReporter {
       .environment(\.primerCheckoutScope, session.internalScope)
       .overlay {
         if session.phase == .ready, let scope = session.internalScope {
-          InlineFlowHost(scope: scope, theme: theme)
+          InlineFlowHost(scope: scope, theme: theme, appearanceMode: session.appearanceMode)
         }
       }
       .task {
@@ -83,9 +83,10 @@ private struct PrimerCheckoutSessionModifier: ViewModifier, LogReporter {
       .onDisappear { session.cancel() }
   }
 
+  /// The merchant's own layout keeps its scheme; only the SDK tokens follow a forced `appearanceMode`.
   private func loadDesignTokens(for colorScheme: ColorScheme) async {
     do {
-      try await designTokensManager.fetchTokens(for: colorScheme)
+      try await designTokensManager.fetchTokens(for: session.appearanceMode.colorScheme(orSystem: colorScheme))
     } catch {
       logger.error(message: "Failed to load design tokens: \(error)")
     }

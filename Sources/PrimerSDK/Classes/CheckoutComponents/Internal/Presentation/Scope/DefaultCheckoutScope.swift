@@ -177,7 +177,10 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
     CardPaymentMethod.register()
     PayPalPaymentMethod.register()
     ApplePayPaymentMethod.register()
-    KlarnaPaymentMethod.register()
+    // Without the Klarna SDK the method would list, then fail once the shopper picks a category.
+    #if canImport(PrimerKlarnaSDK)
+      KlarnaPaymentMethod.register()
+    #endif
     AdyenKlarnaPaymentMethod.register()
     AchPaymentMethod.register()
     FormRedirectPaymentMethod.register()
@@ -237,7 +240,8 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
         )
       }
 
-      if isInitScreenEnabled {
+      // Inline embedding never shows the splash, so the pause would only delay the merchant's view.
+      if isInitScreenEnabled, !isInlineFlow {
         try await Task.sleep(nanoseconds: 500_000_000)
       }
 

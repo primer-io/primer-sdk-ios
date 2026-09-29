@@ -303,10 +303,21 @@ final class CheckoutOutcomeRelay {
 
 // MARK: - Appearance Mode Support
 
+extension PrimerAppearanceMode {
+  /// The scheme the SDK's tokens follow: the merchant's forced one, else the system's.
+  func colorScheme(orSystem system: ColorScheme) -> ColorScheme {
+    switch self {
+    case .system: system
+    case .light: .light
+    case .dark: .dark
+    }
+  }
+}
+
 @available(iOS 15.0, *)
 extension View {
   @ViewBuilder
-  fileprivate func applyAppearanceMode(_ mode: PrimerAppearanceMode) -> some View {
+  func applyAppearanceMode(_ mode: PrimerAppearanceMode) -> some View {
     switch mode {
     case .system:
       self

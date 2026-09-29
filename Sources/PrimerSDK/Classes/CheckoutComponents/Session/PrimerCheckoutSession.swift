@@ -80,6 +80,8 @@ public final class PrimerCheckoutSession: ObservableObject {
   /// navigation and render follow-up screens. Non-nil only once `phase == .ready`.
   var internalScope: (any CheckoutScopeInternal)? { checkoutScope }
 
+  var appearanceMode: PrimerAppearanceMode { settings.uiOptions.appearanceMode }
+
   /// Sets the sink the `.primerCheckoutSession(_:onCompletion:)` modifier uses to deliver outcomes.
   func setCompletionHandler(_ handler: ((PrimerCheckoutState) -> Void)?) {
     onCompletion = handler
