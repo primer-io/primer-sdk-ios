@@ -146,7 +146,8 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
     registerPaymentMethods()
 
     Task { [self] in
-      await setupInteractors()
+      // A failed setup already reported itself; loading after it would report a second failure.
+      guard await setupInteractors() else { return }
       await loadPaymentMethods()
     }
 
@@ -167,7 +168,7 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
     paymentMethodScopeCache.removeAll()
     availablePaymentMethods = []
 
-    await setupInteractors()
+    guard await setupInteractors() else { return }
     await loadPaymentMethods()
   }
 
@@ -190,7 +191,7 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
     WebRedirectPaymentMethod.register(types: webRedirectTypes)
   }
 
-  private func setupInteractors() async {
+  private func setupInteractors() async -> Bool {
     do {
       guard let container = await DIContainer.current else {
         throw ContainerError.containerUnavailable
@@ -207,6 +208,7 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
 
       accessibilityAnnouncementService = try? await container.resolve(
         AccessibilityAnnouncementService.self)
+      return true
     } catch {
       let primerError = PrimerError.invalidArchitecture(
         description: "Failed to setup interactors: \(error.localizedDescription)",
@@ -215,6 +217,7 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
       logger.error(message: "Failed to setup interactors: \(primerError)", error: primerError)
       updateNavigationState(.failure(primerError))
       updateState(.failure(primerError))
+      return false
     }
   }
 
@@ -613,6 +616,8 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
     // The parent view (PrimerCheckout) observes .dismissed to tear down the entire checkout.
     updateState(.dismissed)
   }
+
+  var canRetryPayment: Bool { lastPaymentAttempt != nil }
 
   func retryPayment() {
     guard let lastPaymentAttempt else {

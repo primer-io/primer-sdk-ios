@@ -143,10 +143,11 @@ struct FlowScreenFactory: LogReporter {
     if scope.isErrorScreenEnabled {
       ErrorScreen(
         error: error,
-        onRetry: {
-          logger.info(message: "Error screen retry tapped")
-          scope.retryPayment()
-        },
+        onRetry: scope.canRetryPayment
+          ? {
+            logger.info(message: "Error screen retry tapped")
+            scope.retryPayment()
+          } : nil,
         onChooseOtherPaymentMethods: showOtherMethodsAction
       )
     } else {

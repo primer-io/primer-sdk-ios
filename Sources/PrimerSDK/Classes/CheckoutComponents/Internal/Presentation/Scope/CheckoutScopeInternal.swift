@@ -31,6 +31,8 @@ protocol CheckoutScopeInternal: PrimerCheckoutScope {
   func updateNavigationState(_ newState: CheckoutNavigationState)
   func cancelActivePaymentMethod(returnToSelection: Bool)
   func setSelectedVaultedPaymentMethod(_ method: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod?)
+  /// False when the failure came before any payment attempt, so a retry has nothing to repeat.
+  var canRetryPayment: Bool { get }
   func retryPayment()
   func reload() async
 }

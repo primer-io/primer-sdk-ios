@@ -25,7 +25,7 @@ struct SDKInitializationErrorView: View {
       Text(CheckoutComponentsStrings.paymentSystemError)
         .font(PrimerFont.headline(tokens: tokens))
 
-      Text(error.localizedDescription)
+      Text(error.plainDescription ?? CheckoutComponentsStrings.unexpectedError)
         .font(PrimerFont.subheadline(tokens: tokens))
         .foregroundColor(CheckoutColors.secondary(tokens: tokens))
         .multilineTextAlignment(.center)

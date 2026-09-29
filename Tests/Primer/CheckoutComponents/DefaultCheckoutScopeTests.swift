@@ -827,6 +827,41 @@ final class DefaultCheckoutScopeReloadTests: XCTestCase {
         XCTAssertTrue(sut.availablePaymentMethods.isEmpty)
     }
 
+    // Regression: a failed setup reported itself, then loading ran on and reported a second failure.
+    func test_reload_whenSetupFails_reportsOneFailure() async throws {
+        // Given
+        sut = try await ContainerTestHelpers.createSettledCheckoutScope()
+        var failures = 0
+        let observer = Task { [sut] in
+            // The stream replays the settled scope's own state first; only what reload emits counts.
+            for await state in sut!.state.dropFirst() {
+                if case .failure = state { failures += 1 }
+            }
+        }
+        defer { observer.cancel() }
+        try await Task.sleep(nanoseconds: 50_000_000)
+        await DIContainer.clearContainer()
+
+        // When
+        await sut.reload()
+        try await Task.sleep(nanoseconds: 300_000_000)
+
+        // Then
+        XCTAssertEqual(failures, 1)
+    }
+
+    func test_canRetryPayment_isFalseUntilAPaymentStarts() async throws {
+        // Given
+        sut = try await ContainerTestHelpers.createSettledCheckoutScope()
+        XCTAssertFalse(sut.canRetryPayment)
+
+        // When
+        sut.startProcessing(payingWith: nil)
+
+        // Then
+        XCTAssertTrue(sut.canRetryPayment)
+    }
+
     func test_reload_concurrentCall_isIgnoredByReentrancyGuard() async throws {
         // Given
         sut = try await ContainerTestHelpers.createSettledCheckoutScope()

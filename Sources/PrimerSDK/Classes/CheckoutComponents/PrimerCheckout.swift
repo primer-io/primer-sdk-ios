@@ -169,7 +169,12 @@ struct InternalCheckout: View, LogReporter {
           splashContent
         }
       case let .failed(error):
-        errorContent(error: error)
+        // The failure already reached `onCompletion`; with the error screen off the merchant owns what shows.
+        if settings.uiOptions.isErrorScreenEnabled {
+          errorContent(error: error)
+        } else {
+          Color.clear
+        }
       }
     }
     .background(backgroundColor)
