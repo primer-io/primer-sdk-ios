@@ -146,10 +146,11 @@ final class ApplePayAuthorizationCoordinator: NSObject, PKPaymentAuthorizationCo
       try await shippingSession.handleShippingOptionChange(optionId: shippingMethod.identifier)
       return PKPaymentRequestShippingMethodUpdate(paymentSummaryItems: currentSummaryItems())
     } catch {
-      // Apple gives this update no error channel, so the sheet just keeps the total it had. The commit
-      // stays unverified, and the authorization gate is what surfaces the failure and blocks the charge.
       logger.error(message: "Apple Pay shipping option change failed: \(error.localizedDescription)")
-      return PKPaymentRequestShippingMethodUpdate(paymentSummaryItems: currentSummaryItems())
+      // Fails in the sheet right away, instead of keeping the old total until the shopper taps Pay.
+      let update = PKPaymentRequestShippingMethodUpdate(paymentSummaryItems: currentSummaryItems())
+      update.status = .failure
+      return update
     }
   }
 
