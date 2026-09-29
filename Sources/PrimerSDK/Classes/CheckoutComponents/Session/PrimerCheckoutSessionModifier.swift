@@ -12,8 +12,8 @@ import SwiftUI
 public extension View {
 
   /// Wires a ``PrimerCheckoutSession`` into the SwiftUI environment, bootstraps it on appear, and
-  /// tears it down on disappear. Apply once around any Primer composable views — whether presented
-  /// modally via ``PrimerCheckout`` or embedded inline in the merchant's own layout.
+  /// tears it down on disappear. Apply once around the Primer composable views embedded in the
+  /// merchant's own layout. ``PrimerCheckout`` does not need it.
   ///
   /// ```swift
   /// @StateObject private var session = PrimerCheckoutSession(clientToken: token)

@@ -60,15 +60,8 @@ struct FlowScreenFactory: LogReporter {
     }
   }
 
-  @ViewBuilder
   private func makePaymentMethodSelectionView() -> some View {
-    if let customPaymentSelection = scope.paymentMethodSelectionScreen {
-      AnyView(customPaymentSelection(scope.paymentMethodSelection))
-    } else {
-      PaymentMethodSelectionScreen(
-        scope: scope.paymentMethodSelection
-      )
-    }
+    PaymentMethodSelectionScreen(scope: scope.paymentMethodSelection)
   }
 
   private func makeVaultedPaymentMethodsView() -> some View {
@@ -120,13 +113,9 @@ struct FlowScreenFactory: LogReporter {
   @ViewBuilder
   private func makeSuccessView(result: PaymentResult) -> some View {
     if scope.isSuccessScreenEnabled {
-      if let customSuccess = scope.successScreen {
-        AnyView(customSuccess(result))
-      } else {
-        SuccessScreen(result: result) {
-          logger.info(message: "Success screen auto-dismiss, calling completion callback")
-          onCompletion?(scope.currentState)
-        }
+      SuccessScreen(result: result) {
+        logger.info(message: "Success screen auto-dismiss, calling completion callback")
+        onCompletion?(scope.currentState)
       }
     } else {
       // `EmptyView` never enters the hierarchy, so its `onAppear` never runs. A rendered view is

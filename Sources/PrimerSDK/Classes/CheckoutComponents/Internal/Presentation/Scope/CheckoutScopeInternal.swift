@@ -23,8 +23,6 @@ protocol CheckoutScopeInternal: PrimerCheckoutScope {
   var vaultedPaymentMethods: [PrimerHeadlessUniversalCheckout.VaultedPaymentMethod] { get }
   var selectedVaultedPaymentMethod: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod? { get }
 
-  var paymentMethodSelectionScreen: PaymentMethodSelectionScreenComponent? { get }
-  var successScreen: ((PaymentResult) -> AnyView)? { get }
   var isInitScreenEnabled: Bool { get }
   var isSuccessScreenEnabled: Bool { get }
   var isErrorScreenEnabled: Bool { get }

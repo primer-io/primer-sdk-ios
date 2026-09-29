@@ -120,27 +120,22 @@ extension PrimerCheckoutScope {
 
 /// Represents the current state of the checkout flow.
 ///
-/// `PrimerCheckoutState` provides a way to observe the checkout lifecycle and respond
-/// to state changes. Use the `state` async stream on `PrimerCheckoutScope` to receive
-/// state updates.
+/// `onCompletion` on ``PrimerCheckout`` and on `.primerCheckoutSession(_:theme:onCompletion:)`
+/// delivers `.failure` once per failed attempt, then `.success` or `.dismissed` exactly once. The
+/// lifecycle (`.initializing`, `.ready`) is ``PrimerCheckoutSession/phase``, not `onCompletion`.
 ///
 /// Example usage:
 /// ```swift
-/// for await state in checkoutScope.state {
+/// PrimerCheckout(clientToken: token) { state in
 ///     switch state {
-///     case .initializing:
-///         showLoadingIndicator()
-///     case .ready(let clientSession):
-///         showPaymentMethods(
-///             amount: clientSession.totalAmount,
-///             currency: clientSession.currencyCode
-///         )
 ///     case .success(let result):
-///         showSuccessScreen(paymentId: result.paymentId)
+///         showConfirmation(paymentId: result.paymentId)
 ///     case .failure(let error):
-///         showErrorScreen(error: error)
+///         log(error) // The SDK error screen stays up for a retry.
 ///     case .dismissed:
-///         handleDismissal()
+///         closeCheckout()
+///     default:
+///         break
 ///     }
 /// }
 /// ```

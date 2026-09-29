@@ -174,27 +174,6 @@ final class DefaultCheckoutScopeBehaviorTests: XCTestCase {
         XCTAssertEqual(sut.navigationState, .processing)
     }
 
-    // MARK: - handleAutoDismiss Tests
-
-    func test_handleAutoDismiss_updatesStateToDismissed() async throws {
-        // Given
-        sut = makeSut()
-
-        // When
-        sut.handleAutoDismiss()
-
-        // Then
-        let state = try await awaitValue(sut.state) {
-            if case .dismissed = $0 { return true }
-            return false
-        }
-        if case .dismissed = state {
-            // Expected
-        } else {
-            XCTFail("Expected dismissed state")
-        }
-    }
-
     // MARK: - onDismiss Tests
 
     func test_onDismiss_setsStateToDismissed() async throws {
@@ -489,8 +468,6 @@ final class DefaultCheckoutScopeBehaviorTests: XCTestCase {
 
         // Then
         XCTAssertNil(sut.onBeforePaymentCreate)
-        XCTAssertNil(sut.successScreen)
-        XCTAssertNil(sut.paymentMethodSelectionScreen)
     }
 
     // MARK: - retryPayment Tests

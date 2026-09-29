@@ -17,8 +17,6 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
 
   var onBeforePaymentCreate: BeforePaymentCreateHandler?
   var idempotencyKeyProvider: (@Sendable () -> String?)?
-  var successScreen: ((_ result: PaymentResult) -> AnyView)?
-  var paymentMethodSelectionScreen: PaymentMethodSelectionScreenComponent?
 
   var paymentHandling: PrimerPaymentHandling {
     settings.paymentHandling
@@ -633,11 +631,6 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
   /// For methods that keep their own screen instead of `.processing`. `restart` makes a retry start the method over.
   func recordAttempt(_ scope: any PrimerPaymentMethodScope, restart: Bool = false) {
     lastPaymentAttempt = restart ? .restart(scope) : .paymentMethod(scope)
-  }
-
-  func handleAutoDismiss() {
-    // The parent view (PrimerCheckout) observes .dismissed to tear down the entire checkout.
-    updateState(.dismissed)
   }
 
   var canRetryPayment: Bool { lastPaymentAttempt != nil }
