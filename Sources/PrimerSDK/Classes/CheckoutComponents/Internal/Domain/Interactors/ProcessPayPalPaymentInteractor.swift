@@ -59,10 +59,16 @@ final class ProcessPayPalPaymentInteractorImpl: ProcessPayPalPaymentInteractor, 
       let payerInfo = try await repository.fetchPayerInfo(orderId: orderId)
       logger.debug(message: "PayPal payer info fetched")
 
-      // 4. Tokenize and process payment
-      let result = try await repository.tokenize(
+      // 4. Tokenize
+      let tokenResult = try await repository.tokenize(
         paymentInstrument: .order(orderId: orderId, payerInfo: payerInfo)
       )
+      guard let token = tokenResult.token else {
+        throw PrimerError.invalidValue(key: "paymentMethodTokenData.token")
+      }
+
+      // 5. Create the payment; the token alone charges nothing
+      let result = try await repository.createPayment(token: token)
       logger.debug(message: "PayPal checkout payment completed successfully")
 
       return result
