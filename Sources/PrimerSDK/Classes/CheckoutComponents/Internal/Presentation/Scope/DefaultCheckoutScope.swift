@@ -269,9 +269,10 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
         // inline view renders once `.ready`, and the flow sheet appears only after the merchant
         // triggers it. Stay on selection so the inline host treats this as a non-flow state.
         // A returning shopper's saved methods live on the selection screen, so skip it only without any.
+        // The modal flow opens its only method the way a row tap does, so the method starts too.
         if !hasAlternativeToCurrentMethod, !isInlineFlow,
           let singlePaymentMethod = availablePaymentMethods.first {
-          updateNavigationState(.paymentMethod(singlePaymentMethod.type))
+          handlePaymentMethodSelection(singlePaymentMethod)
         } else {
           updateNavigationState(.paymentMethodSelection)
         }
