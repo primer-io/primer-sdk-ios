@@ -101,7 +101,7 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
     
     @MainActor
     private func setupOrchestrator() async throws {
-        let context = generateContext()
+        let context = SDKContext.generate(payment: SDKPayment(paymentMethodType: config.type))
         let orchestrator = try await makeOrchestrator(context)
         self.orchestrator = orchestrator
         orchestrator.onURLOpened = { [weak self] in
@@ -169,22 +169,6 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
             context: ["trustedKeyFingerprints": ManifestValidator.trustedPublicKeys.map(\.fingerprint)]
         )
         Analytics.Service.fire(event: event)
-    }
-    
-    private func generateContext() -> SDKContext {
-        let apiConfiguration = PrimerAPIConfigurationModule.apiConfiguration
-        let analyticsUrl = PrimerAPIConfigurationModule.decodedJWTToken?.analyticsUrlV2
-        let checkoutSessionId = PrimerInternal.shared.checkoutSessionId
-        
-        return SDKContext(
-            sdk: SDK(),
-            device: SDKDevice(),
-            app: SDKApp(identifier: Bundle.primerFrameworkIdentifier),
-            session: SDKSession(configuration: apiConfiguration, sessionId: checkoutSessionId),
-            payment: SDKPayment(paymentMethodType: config.type),
-            merchant: SDKMerchant(primerAccountId: apiConfiguration?.primerAccountId),
-            analytics: SDKAnalytics(url: analyticsUrl)
-        )
     }
 }
 
