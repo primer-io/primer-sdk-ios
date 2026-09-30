@@ -85,17 +85,20 @@ public struct ThreeDSEvent: Sendable {
   public let locale: String
   public let paymentMethod: String
   public let provider: String
+  public let protocolVersion: String?
   public let response: String?
 
   public init(
     locale: String = GeneralEvent.formattedCurrentLocale,
     paymentMethod: String,
     provider: String,
+    protocolVersion: String? = nil,
     response: String? = nil
   ) {
     self.locale = locale
     self.paymentMethod = paymentMethod
     self.provider = provider
+    self.protocolVersion = protocolVersion
     self.response = response
   }
 }
@@ -219,6 +222,13 @@ extension AnalyticsEventMetadata {
   var threedsProvider: String? {
     switch self {
     case let .threeDS(event): event.provider
+    default: nil
+    }
+  }
+
+  var threedsProtocolVersion: String? {
+    switch self {
+    case let .threeDS(event): event.protocolVersion
     default: nil
     }
   }

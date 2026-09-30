@@ -14,21 +14,36 @@ import Foundation
 final class CheckoutAnalyticsTracker: LogReporter {
 
   private let analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol?
-  private let threeDSObservation: Task<Void, Never>
+  private let threeDSObservations: [Task<Void, Never>]
 
   init(analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol?) {
     self.analyticsInteractor = analyticsInteractor
-    // The 3DS service lives in the shared core, so it announces the challenge instead of calling CC analytics.
-    threeDSObservation = Task {
-      for await notification in NotificationCenter.default.notifications(named: .primer3DSChallengePresented) {
-        let provider = notification.userInfo?[Notification.Name.primer3DSProviderKey] as? String ?? "Unknown"
-        await analyticsInteractor?.trackThreeDSChallengeShown(provider: provider)
+    // The 3DS service lives in the shared core, so it announces the challenge and the result instead of calling CC analytics.
+    threeDSObservations = [
+      Task {
+        for await notification in NotificationCenter.default.notifications(named: .primer3DSChallengePresented) {
+          let info = notification.userInfo
+          await analyticsInteractor?.trackThreeDSChallengeShown(
+            provider: info?[Notification.Name.primer3DSProviderKey] as? String ?? "Unknown",
+            protocolVersion: info?[Notification.Name.primer3DSProtocolVersionKey] as? String
+          )
+        }
+      },
+      Task {
+        for await notification in NotificationCenter.default.notifications(named: .primer3DSAuthenticationCompleted) {
+          let info = notification.userInfo
+          guard let outcome = info?[Notification.Name.primer3DSOutcomeKey] as? String else { continue }
+          await analyticsInteractor?.recordThreeDSOutcome(AnalyticsFunnelState.ThreeDSOutcome(
+            authenticationOutcome: outcome,
+            skippedReasonCode: info?[Notification.Name.primer3DSSkippedReasonKey] as? String
+          ))
+        }
       }
-    }
+    ]
   }
 
   deinit {
-    threeDSObservation.cancel()
+    threeDSObservations.forEach { $0.cancel() }
   }
 
   func trackStateChange(_ state: PrimerCheckoutState, availablePaymentMethods: [String] = []) async {
@@ -46,9 +61,13 @@ final class CheckoutAnalyticsTracker: LogReporter {
     case let .success(result):
       await analyticsInteractor?.trackSuccess(result.paymentMethodType, paymentId: result.paymentId)
 
-    case let .failure(error, _):
+    case let .failure(error, checkoutData):
       let context = Self.paymentContext(of: error)
-      await analyticsInteractor?.trackFailure(error, paymentMethod: context.paymentMethod, paymentId: context.paymentId)
+      await analyticsInteractor?.trackFailure(
+        error,
+        paymentMethod: context.paymentMethod,
+        paymentId: checkoutData?.payment?.id ?? context.paymentId
+      )
 
     case .dismissed:
       await analyticsInteractor?.trackFlowExited()

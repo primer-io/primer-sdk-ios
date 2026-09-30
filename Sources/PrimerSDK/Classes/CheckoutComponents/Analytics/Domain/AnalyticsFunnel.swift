@@ -68,8 +68,11 @@ extension CheckoutComponentsAnalyticsInteractorProtocol {
   }
 
   /// The payment method comes from the attempt when the caller does not know it.
-  func trackThreeDSChallengeShown(provider: String) async {
-    await trackEvent(.paymentThreeds, metadata: .threeDS(ThreeDSEvent(paymentMethod: "", provider: provider)))
+  func trackThreeDSChallengeShown(provider: String, protocolVersion: String?) async {
+    await trackEvent(
+      .paymentThreeds,
+      metadata: .threeDS(ThreeDSEvent(paymentMethod: "", provider: provider, protocolVersion: protocolVersion))
+    )
   }
 
   func trackSuccess(_ paymentMethod: String?, paymentId: String?) async {

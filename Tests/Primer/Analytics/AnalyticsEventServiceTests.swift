@@ -938,6 +938,8 @@ actor TestableAnalyticsEventService: CheckoutComponentsAnalyticsServiceProtocol 
         }
     }
 
+    func recordThreeDSOutcome(_ outcome: AnalyticsFunnelState.ThreeDSOutcome) async {}
+
     func sendEvent(_ eventType: AnalyticsEventType, metadata: AnalyticsEventMetadata?) async {
         let eventTimestamp = Int(Date().timeIntervalSince1970)
         await sendEventWithTimestamp(eventType, metadata: metadata, timestamp: eventTimestamp)

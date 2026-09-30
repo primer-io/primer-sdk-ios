@@ -122,4 +122,11 @@ struct AnalyticsPayload: Codable, Sendable {
   var lastStep: String?
 
   var availablePaymentMethods: [String]?
+
+  /// On PAYMENT_THREEDS
+  var protocolVersion: String?
+
+  /// `AUTH_SUCCESS`, `AUTH_FAILED` or `SKIPPED`, on the SUCCESS or FAILURE of an attempt that ran 3DS
+  var authenticationOutcome: String?
+  var skippedReasonCode: String?
 }

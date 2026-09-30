@@ -194,6 +194,8 @@ private actor SpyAnalyticsService: CheckoutComponentsAnalyticsServiceProtocol {
 
     func initialize(config: AnalyticsSessionConfig) async {}
 
+    func recordThreeDSOutcome(_ outcome: AnalyticsFunnelState.ThreeDSOutcome) async {}
+
     func sendEvent(_ eventType: AnalyticsEventType, metadata: AnalyticsEventMetadata?) async {
         let call = Call(
             priority: Task.currentPriority,

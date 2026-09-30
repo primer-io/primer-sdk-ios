@@ -21,9 +21,14 @@ import UIKit
 #endif
 
 extension Notification.Name {
-    /// Posted right before the 3DS challenge UI appears. `userInfo` carries the provider.
+    /// Posted right before the 3DS challenge UI appears. `userInfo` carries the provider and the protocol version.
     static let primer3DSChallengePresented = Notification.Name("PrimerThreeDSChallengePresented")
+    /// Posted when the authentication has a final result. `userInfo` carries the outcome and the skipped reason.
+    static let primer3DSAuthenticationCompleted = Notification.Name("PrimerThreeDSAuthenticationCompleted")
     static let primer3DSProviderKey = "provider"
+    static let primer3DSProtocolVersionKey = "protocolVersion"
+    static let primer3DSOutcomeKey = "authenticationOutcome"
+    static let primer3DSSkippedReasonKey = "skippedReasonCode"
 }
 
 protocol ThreeDSServiceProtocol {
@@ -43,6 +48,7 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
 
     private var threeDSSDKWindow: UIWindow?
     private var initProtocolVersion: ThreeDS.ProtocolVersion?
+    private var challengeProtocolVersion: String?
     private var resumePaymentToken: String?
 
     #if canImport(Primer3DS)
@@ -320,6 +326,11 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
                              .notPerformed,
                              .skipped:
                             self.resumePaymentToken = beginAuthResponse.resumeToken
+                            let authentication = beginAuthResponse.authentication
+                            self.postAuthenticationOutcome(
+                                authentication.responseCode,
+                                skippedReasonCode: (authentication as? ThreeDS.SkippedAPIResponse)?.skippedReasonCode.rawValue
+                            )
 
                             let internalErr = InternalError.noNeedToPerform3ds(
                                 status: beginAuthResponse.authentication.responseCode.rawValue
@@ -327,6 +338,7 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
                             continuation.resume(throwing: internalErr)
                         case .challenge:
                             let authentication = beginAuthResponse.authentication
+                            self.challengeProtocolVersion = (authentication as? ThreeDS.AppV2ChallengeAPIResponse)?.protocolVersion
                             let serverAuthData = ThreeDS.ServerAuthData(
                                 acsReferenceNumber: authentication.acsReferenceNumber,
                                 acsSignedContent: authentication.acsSignedContent,
@@ -384,7 +396,10 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
             NotificationCenter.default.post(
                 name: .primer3DSChallengePresented,
                 object: nil,
-                userInfo: [Notification.Name.primer3DSProviderKey: Primer3DS.threeDsSdkProvider]
+                userInfo: [
+                    Notification.Name.primer3DSProviderKey: Primer3DS.threeDsSdkProvider,
+                    Notification.Name.primer3DSProtocolVersionKey: challengeProtocolVersion
+                ].compactMapValues { $0 }
             )
 
             return try await withCheckedThrowingContinuation { continuation in
@@ -474,10 +489,26 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
                 threeDSTokenId: paymentMethodToken,
                 continueInfo: continueInfo
             )
+            if let authentication = response.authentication {
+                postAuthenticationOutcome(authentication.responseCode, skippedReasonCode: authentication.skippedReasonCode)
+            }
             return response
         } catch {
             throw InternalError.failedToPerform3dsAndShouldBreak(error: error.normalizedForSDK)
         }
+    }
+
+    /// Nothing else carries the result out of this service, and CC analytics puts it on the payment outcome.
+    private func postAuthenticationOutcome(_ responseCode: ThreeDS.ResponseCode, skippedReasonCode: String?) {
+        guard [.authSuccess, .authFailed, .skipped].contains(responseCode) else { return }
+        NotificationCenter.default.post(
+            name: .primer3DSAuthenticationCompleted,
+            object: nil,
+            userInfo: [
+                Notification.Name.primer3DSOutcomeKey: responseCode.rawValue,
+                Notification.Name.primer3DSSkippedReasonKey: skippedReasonCode
+            ].compactMapValues { $0 }
+        )
     }
 }
 

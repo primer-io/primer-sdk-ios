@@ -38,6 +38,14 @@ struct AnalyticsFunnelState {
     let paymentMethod: String?
     let paymentId: String?
     let lastStep: String?
+    /// Only on the attempt's SUCCESS or FAILURE.
+    var threeDSOutcome: ThreeDSOutcome?
+  }
+
+  /// How the attempt's 3DS authentication ended, frictionless included.
+  struct ThreeDSOutcome: Equatable, Sendable {
+    let authenticationOutcome: String
+    let skippedReasonCode: String?
   }
 
   struct Output {
@@ -52,6 +60,7 @@ struct AnalyticsFunnelState {
   private var paymentId: String?
   private var isAttemptOpen = false
   private var hasSubmittedInAttempt = false
+  private var threeDSOutcome: ThreeDSOutcome?
   private var lastOutcome: AnalyticsEventType?
   private var selectedMethods: Set<String> = []
   private var hasStartedFlow = false
@@ -99,6 +108,11 @@ struct AnalyticsFunnelState {
     if let id = metadata?.paymentId { paymentId = id }
     outputs.append(emit(eventType, metadata: metadata))
     return outputs
+  }
+
+  /// Lives until the next attempt starts, so a late result never reaches another attempt.
+  mutating func recordThreeDSOutcome(_ outcome: ThreeDSOutcome) {
+    threeDSOutcome = outcome
   }
 
   // MARK: - Private
@@ -171,11 +185,14 @@ struct AnalyticsFunnelState {
     paymentId = nil
     isAttemptOpen = true
     hasSubmittedInAttempt = false
+    threeDSOutcome = nil
   }
 
   private mutating func emit(_ eventType: AnalyticsEventType, metadata: AnalyticsEventMetadata?) -> Output {
     lastStep = eventType.rawValue
-    return Output(eventType: eventType, metadata: metadata, envelope: envelope(lastStep: nil))
+    var stamped = envelope(lastStep: nil)
+    if eventType == .paymentSuccess || eventType == .paymentFailure { stamped.threeDSOutcome = threeDSOutcome }
+    return Output(eventType: eventType, metadata: metadata, envelope: stamped)
   }
 
   private func envelope(lastStep: String?) -> Envelope {

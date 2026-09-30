@@ -158,6 +158,20 @@ final class CheckoutAnalyticsTrackerTests: XCTestCase {
         XCTAssertEqual(payment?.outcome, "failed")
     }
 
+    func test_trackStateChange_failure_takesThePaymentIdFromCheckoutData() async {
+        // Given
+        let checkoutData = PrimerCheckoutData(
+            payment: PrimerCheckoutDataPayment(id: "pay_declined", orderId: nil, paymentFailureReason: nil, status: "DECLINED")
+        )
+
+        // When
+        await sut.trackStateChange(.failure(makeError(message: "Declined"), checkoutData: checkoutData))
+
+        // Then
+        let paymentId = await mockAnalytics.trackedEvents.first?.metadata?.paymentEvent?.paymentId
+        XCTAssertEqual(paymentId, "pay_declined")
+    }
+
     // MARK: - trackStateChange: dismissed
 
     func test_trackStateChange_dismissed_tracksPaymentFlowExited() async {
@@ -223,16 +237,37 @@ final class CheckoutAnalyticsTrackerTests: XCTestCase {
 
     // MARK: - 3DS challenge notification
 
-    func test_threeDSChallengeNotification_tracksPaymentThreedsWithProvider() async throws {
+    func test_threeDSChallengeNotification_tracksPaymentThreedsWithProviderAndProtocolVersion() async throws {
         // When
         let event = try await postUntilTracked(
             name: .primer3DSChallengePresented,
-            userInfo: [Notification.Name.primer3DSProviderKey: "NETCETERA"]
+            userInfo: [Notification.Name.primer3DSProviderKey: "NETCETERA", Notification.Name.primer3DSProtocolVersionKey: "2.2.0"]
         )
 
         // Then
         XCTAssertEqual(event.eventType, .paymentThreeds)
         XCTAssertEqual(event.metadata?.threedsProvider, "NETCETERA")
+        XCTAssertEqual(event.metadata?.threedsProtocolVersion, "2.2.0")
+    }
+
+    func test_threeDSAuthenticationNotification_recordsTheOutcomeWithoutAnEvent() async throws {
+        // Given
+        let userInfo = [Notification.Name.primer3DSOutcomeKey: "SKIPPED", Notification.Name.primer3DSSkippedReasonKey: "GATEWAY_UNAVAILABLE"]
+        let deadline = Date().addingTimeInterval(2)
+
+        // When
+        var recorded = await mockAnalytics.recordedThreeDSOutcomes
+        while recorded.isEmpty {
+            NotificationCenter.default.post(name: .primer3DSAuthenticationCompleted, object: nil, userInfo: userInfo)
+            if Date() > deadline { throw TestError.timeout }
+            try await Task.sleep(nanoseconds: 20_000_000)
+            recorded = await mockAnalytics.recordedThreeDSOutcomes
+        }
+
+        // Then
+        XCTAssertEqual(recorded.first, AnalyticsFunnelState.ThreeDSOutcome(authenticationOutcome: "SKIPPED", skippedReasonCode: "GATEWAY_UNAVAILABLE"))
+        let eventCount = await mockAnalytics.trackEventCallCount
+        XCTAssertEqual(eventCount, 0)
     }
 
     // MARK: - Nil interactor

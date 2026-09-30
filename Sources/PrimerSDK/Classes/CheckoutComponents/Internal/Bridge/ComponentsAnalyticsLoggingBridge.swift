@@ -140,7 +140,11 @@ public final class ComponentsAnalyticsLoggingBridge: LogReporter {
         }
 
         if let provider = metadata["threedsProvider"] {
-            return .threeDS(ThreeDSEvent(paymentMethod: paymentMethod, provider: provider))
+            return .threeDS(ThreeDSEvent(
+                paymentMethod: paymentMethod,
+                provider: provider,
+                protocolVersion: metadata["protocolVersion"]
+            ))
         }
 
         if let url = metadata["redirectDestinationUrl"] {

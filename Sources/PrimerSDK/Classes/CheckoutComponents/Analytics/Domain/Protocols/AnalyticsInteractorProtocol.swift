@@ -11,4 +11,6 @@ import Foundation
 /// Fire-and-forget analytics tracking via detached tasks
 protocol CheckoutComponentsAnalyticsInteractorProtocol: Actor {
   func trackEvent(_ eventType: AnalyticsEventType, metadata: AnalyticsEventMetadata?) async
+  /// Not an event: the open attempt keeps it for its SUCCESS or FAILURE.
+  func recordThreeDSOutcome(_ outcome: AnalyticsFunnelState.ThreeDSOutcome) async
 }

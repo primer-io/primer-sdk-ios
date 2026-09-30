@@ -204,6 +204,42 @@ final class AnalyticsFunnelStateTests: XCTestCase {
         XCTAssertEqual(threeDS.first?.envelope.attemptId, "attempt-1")
     }
 
+    // MARK: - 3DS outcome
+
+    func test_threeDSOutcome_goesOnTheAttemptsOutcomeOnly() {
+        let outcome = AnalyticsFunnelState.ThreeDSOutcome(authenticationOutcome: "AUTH_SUCCESS", skippedReasonCode: nil)
+        _ = sut.process(.paymentMethodSelection, metadata: payment(card))
+        sut.recordThreeDSOutcome(outcome)
+
+        let processing = sut.process(.paymentProcessingStarted, metadata: payment(card))
+        let success = sut.process(.paymentSuccess, metadata: payment(card))
+
+        XCTAssertNil(processing.first?.envelope.threeDSOutcome)
+        XCTAssertEqual(success.first?.envelope.threeDSOutcome, outcome)
+    }
+
+    func test_threeDSOutcome_doesNotCarryIntoTheNextAttempt() {
+        _ = sut.process(.paymentMethodSelection, metadata: payment(card))
+        sut.recordThreeDSOutcome(AnalyticsFunnelState.ThreeDSOutcome(authenticationOutcome: "AUTH_FAILED", skippedReasonCode: nil))
+
+        let switched = sut.process(.paymentMethodSelection, metadata: payment(payPal))
+        let success = sut.process(.paymentSuccess, metadata: payment(payPal))
+
+        XCTAssertEqual(names(switched), [.paymentMethodUnselected, .paymentMethodSelection])
+        XCTAssertNil(success.first?.envelope.threeDSOutcome)
+    }
+
+    func test_threeDSOutcome_afterTheAttemptEnded_doesNotReachTheRetry() {
+        _ = sut.process(.paymentMethodSelection, metadata: payment(card))
+        _ = sut.process(.paymentFailure, metadata: payment(card))
+        sut.recordThreeDSOutcome(AnalyticsFunnelState.ThreeDSOutcome(authenticationOutcome: "SKIPPED", skippedReasonCode: "GATEWAY_UNAVAILABLE"))
+
+        _ = sut.process(.paymentReattempted, metadata: nil)
+        let failure = sut.process(.paymentFailure, metadata: payment(card))
+
+        XCTAssertNil(failure.first?.envelope.threeDSOutcome)
+    }
+
     // MARK: - Helpers
 
     private func payment(_ method: String) -> AnalyticsEventMetadata {

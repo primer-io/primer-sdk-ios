@@ -162,6 +162,22 @@ final class AnalyticsEventServiceDeliveryTests: XCTestCase {
         XCTAssertEqual(calls.first?.payload.integrationSurface, "swift_ui")
     }
 
+    func test_recordThreeDSOutcome_isSentWithTheAttemptsSuccess() async throws {
+        // Given
+        let service = makeService()
+        await service.initialize(config: makeConfig())
+        await service.sendEvent(.paymentMethodSelection, metadata: .payment(PaymentEvent(paymentMethod: "PAYMENT_CARD")))
+
+        // When
+        await service.recordThreeDSOutcome(AnalyticsFunnelState.ThreeDSOutcome(authenticationOutcome: "AUTH_SUCCESS", skippedReasonCode: nil))
+        await service.sendEvent(.paymentSuccess, metadata: .payment(PaymentEvent(paymentMethod: "PAYMENT_CARD", paymentId: "pay_1")))
+
+        // Then
+        let calls = try await client.waitForCalls(count: 2)
+        XCTAssertNil(calls.first?.payload.authenticationOutcome)
+        XCTAssertEqual(calls.last?.payload.authenticationOutcome, "AUTH_SUCCESS")
+    }
+
     // MARK: - Helpers
 
     private func makeService(

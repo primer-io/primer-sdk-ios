@@ -100,6 +100,10 @@ actor AnalyticsEventService: CheckoutComponentsAnalyticsServiceProtocol, LogRepo
     process(eventType, metadata: metadata, timestamp: timestamp)
   }
 
+  func recordThreeDSOutcome(_ outcome: AnalyticsFunnelState.ThreeDSOutcome) async {
+    funnel.recordThreeDSOutcome(outcome)
+  }
+
   // MARK: - Private Methods
 
   private func process(_ eventType: AnalyticsEventType, metadata: AnalyticsEventMetadata?, timestamp: Int) {

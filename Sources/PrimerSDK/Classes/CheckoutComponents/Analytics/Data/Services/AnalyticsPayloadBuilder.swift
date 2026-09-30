@@ -60,7 +60,10 @@ struct AnalyticsPayloadBuilder {
       outcome: payment?.outcome,
       previousPaymentMethod: payment?.previousPaymentMethod,
       lastStep: envelope?.lastStep,
-      availablePaymentMethods: metadata?.availablePaymentMethods
+      availablePaymentMethods: metadata?.availablePaymentMethods,
+      protocolVersion: metadata?.threedsProtocolVersion,
+      authenticationOutcome: envelope?.threeDSOutcome?.authenticationOutcome,
+      skippedReasonCode: envelope?.threeDSOutcome?.skippedReasonCode
     )
   }
 }
