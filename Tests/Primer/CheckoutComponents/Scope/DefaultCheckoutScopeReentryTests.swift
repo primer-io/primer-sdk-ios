@@ -162,6 +162,29 @@ final class DefaultCheckoutScopeReentryTests: XCTestCase {
         XCTAssertEqual(interactor.createSessionCallCount, 2)
     }
 
+    func test_reselectingKlarna_afterACancelInKlarnasFlow_startsANewSession() async throws {
+        let interactor = MockProcessKlarnaPaymentInteractor()
+        interactor.sessionResultToReturn = KlarnaTestData.defaultSessionResult
+        interactor.paymentViewToReturn = UIView()
+        interactor.authorizationResultToReturn = .declined
+        let klarna = InternalPaymentMethod(id: "klarna", type: PrimerPaymentMethodType.klarna.rawValue, name: "Klarna")
+        let card = InternalPaymentMethod(id: "card", type: PrimerPaymentMethodType.paymentCard.rawValue, name: "Card")
+        let scope = DefaultKlarnaScope(checkoutScope: sut, processKlarnaInteractor: interactor)
+        sut.availablePaymentMethods = [klarna, card]
+        sut.paymentMethodScopeCache[klarna.type] = scope
+        sut.handlePaymentMethodSelection(klarna)
+        _ = try await awaitValue(scope.state) { $0.step == .categorySelection }
+        scope.selectPaymentCategory(KlarnaTestData.Constants.categoryPayNow)
+        _ = try await awaitValue(scope.state) { $0.step == .viewReady }
+        scope.submit()
+        await waitUntil { interactor.authorizeCallCount == 1 && self.sut.navigationState == .paymentMethodSelection }
+
+        sut.handlePaymentMethodSelection(klarna)
+        await waitUntil { interactor.createSessionCallCount == 2 }
+
+        XCTAssertEqual(interactor.createSessionCallCount, 2)
+    }
+
     private func waitForErrorScreen(file: StaticString = #filePath, line: UInt = #line) async {
         await waitUntil(file: file, line: line) { if case .failure = self.sut.navigationState { true } else { false } }
     }

@@ -255,12 +255,9 @@ final class DefaultKlarnaScope: PrimerKlarnaScope, ObservableObject, LogReporter
           selectedCategoryId: internalState.selectedCategoryId
         )
 
+      // Klarna reports a closed consent alert or sheet as approved:false, so this is a cancel, as in PayPal.
       case .declined:
-        let primerError = PrimerError.klarnaError(
-          message: "Klarna payment was declined",
-          diagnosticsId: UUID().uuidString
-        )
-        checkoutScope.handlePaymentError(primerError)
+        cancel()
       }
     } catch {
       handleError(error, context: "authorization")
@@ -298,11 +295,7 @@ final class DefaultKlarnaScope: PrimerKlarnaScope, ObservableObject, LogReporter
         await processPayment(authToken: authToken)
 
       case .declined:
-        let primerError = PrimerError.klarnaError(
-          message: "Klarna finalization was declined",
-          diagnosticsId: UUID().uuidString
-        )
-        checkoutScope.handlePaymentError(primerError)
+        cancel()
       }
     } catch {
       handleError(error, context: "finalization")
