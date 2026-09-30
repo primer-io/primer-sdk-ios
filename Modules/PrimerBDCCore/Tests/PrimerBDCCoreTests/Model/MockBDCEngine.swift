@@ -19,6 +19,10 @@ final class MockBDCEngine: BDCEngineProtocol {
     var applyEventResult: [String: Any] = ["newState": [:]]
     var lastEventState: String?
 
+    var checkClientRequirementsResult: ClientRequirementsVerdicts = [:]
+    var checkClientRequirementsError: Error?
+    var lastCheckedRequirements: [PaymentMethodRequirements]?
+
     func start(
         schema: String,
         context: SDKContext,
@@ -49,5 +53,14 @@ final class MockBDCEngine: BDCEngineProtocol {
     ) async throws -> [String: Any] where State: Encodable {
         lastEventState = (try? JSONEncoder().encode(state)).flatMap { String(data: $0, encoding: .utf8) }
         return applyEventResult
+    }
+    
+    func checkClientRequirements(
+        items: [PaymentMethodRequirements],
+        client: BDCClient
+    ) async throws -> ClientRequirementsVerdicts {
+        lastCheckedRequirements = items
+        if let checkClientRequirementsError { throw checkClientRequirementsError }
+        return checkClientRequirementsResult
     }
 }
