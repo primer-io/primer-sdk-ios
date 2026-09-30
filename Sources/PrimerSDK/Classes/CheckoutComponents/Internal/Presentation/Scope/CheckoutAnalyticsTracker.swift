@@ -42,7 +42,7 @@ final class CheckoutAnalyticsTracker: LogReporter {
         await analyticsInteractor?.trackEvent(.paymentSuccess, metadata: .general())
       }
 
-    case let .failure(error):
+    case let .failure(error, _):
       await analyticsInteractor?.trackEvent(
         .paymentFailure, metadata: extractFailureMetadata(from: error))
 
@@ -55,7 +55,7 @@ final class CheckoutAnalyticsTracker: LogReporter {
   }
 
   func trackRetry(navigationState: CheckoutNavigationState) async {
-    let metadata: AnalyticsEventMetadata = if case let .failure(error) = navigationState {
+    let metadata: AnalyticsEventMetadata = if case let .failure(error, _) = navigationState {
       extractFailureMetadata(from: error)
     } else {
       .general()

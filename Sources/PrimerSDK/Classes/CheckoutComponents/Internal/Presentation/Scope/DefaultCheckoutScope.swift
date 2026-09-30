@@ -362,8 +362,8 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
       case let .success(result):
         // The view renders success from the scope; the route tells the UIKit presenter what a swipe ended.
         navigator.navigateToSuccess(result)
-      case let .failure(error):
-        navigator.navigateToError(error)
+      case let .failure(error, checkoutData):
+        navigator.navigateToError(error, checkoutData: checkoutData)
       case .dismissed:
         // Dismissal is handled by the view layer through onCompletion callback
         break
@@ -444,8 +444,8 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
           newNavigationState = .paymentMethod(paymentMethodType)
         case .processing:
           newNavigationState = .processing
-        case let .failure(primerError):
-          newNavigationState = .failure(primerError)
+        case let .failure(primerError, checkoutData):
+          newNavigationState = .failure(primerError, checkoutData: checkoutData)
         default:
           continue
         }
@@ -616,10 +616,13 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
     updateNavigationState(.success(result))
   }
 
-  func handlePaymentError(_ error: PrimerError) {
-    updateState(.failure(error))
+  /// - Parameter checkoutData: the payment the headless layer created before failing, if any.
+  func handlePaymentError(_ error: PrimerError, checkoutData: PrimerCheckoutData? = nil) {
+    // The decline error carries the freshest status, so it wins over the create-time snapshot.
+    let checkoutData = error.failedPaymentCheckoutData ?? checkoutData
+    updateState(.failure(error, checkoutData: checkoutData))
     // Note: Error callback is invoked via navigateToError in updateNavigationState
-    updateNavigationState(.failure(error))
+    updateNavigationState(.failure(error, checkoutData: checkoutData))
   }
 
   /// - Parameter scope: the payment method being paid with, or `nil` for a saved one.

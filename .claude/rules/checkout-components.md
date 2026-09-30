@@ -50,7 +50,7 @@ All payment method scopes extend `PrimerPaymentMethodScope` (base protocol with 
 
 ## State Flows
 
-**Checkout**: `initializing → ready(totalAmount, currencyCode) → success(PaymentResult) | failure(PrimerError) → dismissed`
+**Checkout**: `initializing → ready(totalAmount, currencyCode) → success(PaymentResult) | failure(PrimerError, checkoutData:) → dismissed`
 
 **Per-method flows**:
 - **Card**: Field-level state (`PrimerCardFormState`) with validation, co-badged networks, surcharge

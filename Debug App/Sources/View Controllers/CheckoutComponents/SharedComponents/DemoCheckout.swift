@@ -46,9 +46,10 @@ private struct DemoCheckoutResult {
         case let .success(result):
             title = "Payment complete"
             message = "Payment \(result.paymentId) succeeded."
-        case let .failure(error):
+        case let .failure(error, checkoutData):
             title = "Payment failed"
-            message = error.localizedDescription
+            message = [error.localizedDescription, checkoutData?.payment?.id.map { "Payment \($0)" }]
+                .compactMap { $0 }.joined(separator: "\n")
         default:
             return nil
         }

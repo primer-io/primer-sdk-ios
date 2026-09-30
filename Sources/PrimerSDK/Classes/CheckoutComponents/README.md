@@ -314,8 +314,8 @@ extension ViewController: PrimerCheckoutPresenterDelegate {
         print("Payment successful: \(result.paymentId)")
     }
 
-    func primerCheckoutPresenterDidFailWithError(_ error: PrimerError) {
-        print("Payment failed: \(error.localizedDescription)")
+    func primerCheckoutPresenterDidFailWithError(_ error: PrimerError, checkoutData: PrimerCheckoutData?) {
+        print("Payment \(checkoutData?.payment?.id ?? "-") failed: \(error.localizedDescription)")
     }
 
     func primerCheckoutPresenterDidDismiss() {
@@ -332,7 +332,7 @@ For SwiftUI, outcomes are delivered via `onCompletion`:
 .primerCheckoutSession(session) { state in
     switch state {
     case .success(let result): handleSuccess(result)
-    case .failure(let error): handleError(error)
+    case let .failure(error, checkoutData): handleError(error, paymentId: checkoutData?.payment?.id)
     case .dismissed: dismiss()
     default: break
     }

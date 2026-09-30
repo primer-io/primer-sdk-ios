@@ -134,7 +134,7 @@ final class DefaultPaymentMethodSelectionScope: PaymentMethodSelectionScopeInter
         internalState.filteredPaymentMethods = composablePaymentMethods
 
         break
-      } else if case let .failure(error) = checkoutState {
+      } else if case let .failure(error, _) = checkoutState {
         internalState.error = error.localizedDescription
         break
       } else if case .dismissed = checkoutState {
@@ -282,9 +282,8 @@ final class DefaultPaymentMethodSelectionScope: PaymentMethodSelectionScopeInter
       internalState.isVaultPaymentLoading = false
       logger.error(message: "[Vault] Payment failed: \(error.localizedDescription)")
 
-      let primerError =
-        error as? PrimerError ?? PrimerError.unknown(message: error.localizedDescription)
-      checkoutScope?.handlePaymentError(primerError)
+      let failure = PaymentFailure(unwrapping: error)
+      checkoutScope?.handlePaymentError(failure.error, checkoutData: failure.checkoutData)
     }
   }
 

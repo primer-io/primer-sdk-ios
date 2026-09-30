@@ -206,7 +206,7 @@ final class DefaultAdyenKlarnaScopeTests: XCTestCase {
         if case .failure = currentState.status {
             XCTFail("Cancellation must not surface as a payment failure on the Klarna scope")
         }
-        if case let .failure(error) = checkoutScope.currentState, case .cancelled = error {
+        if case let .failure(error, _) = checkoutScope.currentState, case .cancelled = error {
             XCTFail("Cancellation must not propagate to the checkout scope as a payment error")
         }
     }

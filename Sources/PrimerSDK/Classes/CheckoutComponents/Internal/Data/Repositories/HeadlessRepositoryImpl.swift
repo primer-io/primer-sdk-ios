@@ -406,7 +406,8 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
 
         let completionHandler = PaymentCompletionHandler(
           repository: self,
-          paymentMethodType: paymentMethodType
+          paymentMethodType: paymentMethodType,
+          staleCheckoutData: vaultManager.paymentCheckoutData
         ) { [weak self] result in
           timeoutTask.cancel()
           self?.vaultPaymentCompletionHandler = nil

@@ -37,7 +37,7 @@ final class DefaultCheckoutScopePaymentHandlingTests: XCTestCase {
 
         let state = await settledState(of: sut)
 
-        guard case let .failure(error) = state else {
+        guard case let .failure(error, _) = state else {
             return XCTFail("Expected .failure, got \(state)")
         }
         XCTAssertEqual(error.errorId, "invalid-value")

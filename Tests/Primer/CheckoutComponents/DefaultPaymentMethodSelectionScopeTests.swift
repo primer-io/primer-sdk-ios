@@ -388,11 +388,39 @@ final class DefaultPaymentMethodSelectionScopeTests: XCTestCase {
         await sut.payWithVaultedPaymentMethod()
 
         // Then
-        guard case let .failure(error) = mockCheckoutScope.navigationState else {
+        guard case let .failure(error, _) = mockCheckoutScope.navigationState else {
             return XCTFail("Expected .failure, got \(mockCheckoutScope.navigationState)")
         }
         guard case .merchantError = error else { return XCTFail("Expected merchantError, got \(error)") }
         XCTAssertFalse(sut.currentState.isVaultPaymentLoading)
+    }
+
+    func test_payWithVaultedPaymentMethod_paymentFailureWithCheckoutData_reachesCheckoutScope() async throws {
+        // Given
+        let checkoutData = PrimerCheckoutData(
+            payment: PrimerCheckoutDataPayment(
+                id: TestData.PaymentIds.pending, orderId: "order-1", paymentFailureReason: nil, status: "PENDING"
+            )
+        )
+        let container = try await ContainerTestHelpers.createTestContainer()
+        _ = try await container.register(SubmitVaultedPaymentInteractor.self)
+            .asSingleton()
+            .with { _ in FailingSubmitVaultedPaymentInteractor(checkoutData: checkoutData) }
+        await DIContainer.setContainer(container)
+        sut = makeSut()
+        let method = makeVaultedPaymentMethod()
+        mockCheckoutScope.setVaultedPaymentMethods([method])
+        mockCheckoutScope.setSelectedVaultedPaymentMethod(method)
+        sut.syncSelectedVaultedPaymentMethod()
+
+        // When
+        await sut.payWithVaultedPaymentMethod()
+
+        // Then
+        guard case let .failure(_, received) = mockCheckoutScope.navigationState else {
+            return XCTFail("Expected failure, got \(mockCheckoutScope.navigationState)")
+        }
+        XCTAssertTrue(received === checkoutData)
     }
 
     // MARK: - payWithVaultedPaymentMethodAndCvv Tests
@@ -1136,5 +1164,18 @@ final class CheckoutPaymentMethodTests: XCTestCase {
         // Then
         XCTAssertNil(method.surcharge)
         XCTAssertTrue(method.hasUnknownSurcharge)
+    }
+}
+
+@available(iOS 15.0, *)
+private struct FailingSubmitVaultedPaymentInteractor: SubmitVaultedPaymentInteractor {
+    let checkoutData: PrimerCheckoutData
+
+    func execute(
+        vaultedPaymentMethodId: String,
+        paymentMethodType: String,
+        additionalData: PrimerVaultedPaymentMethodAdditionalData?
+    ) async throws -> PaymentResult {
+        throw PaymentFailure(error: .unknown(message: "3DS failed"), checkoutData: checkoutData)
     }
 }

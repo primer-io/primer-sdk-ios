@@ -89,6 +89,18 @@ final class PrimerCheckoutPresenterTests: XCTestCase {
         XCTAssertNotNil(mockDelegate.capturedError)
     }
 
+    func test_handlePaymentFailure_withCheckoutData_forwardsItToDelegate() {
+        let checkoutData = PrimerCheckoutData(
+            payment: PrimerCheckoutDataPayment(
+                id: TestData.PaymentIds.failed, orderId: "order-1", paymentFailureReason: nil, status: "FAILED"
+            )
+        )
+
+        sut.handlePaymentFailure(.unknown(message: "Declined"), checkoutData: checkoutData)
+
+        XCTAssertTrue(mockDelegate.capturedCheckoutData === checkoutData)
+    }
+
     // MARK: - handleCheckoutDismiss
 
     func test_handleCheckoutDismiss_withDelegate_callsDidDismiss() {
