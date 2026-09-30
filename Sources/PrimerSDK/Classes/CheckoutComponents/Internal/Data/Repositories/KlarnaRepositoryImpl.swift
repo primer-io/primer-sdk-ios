@@ -15,7 +15,7 @@ final class KlarnaRepositoryImpl: KlarnaRepository, LogReporter {
 
   private enum Timing {
     static let mockAuthorizationDelay: UInt64 = 2_000_000_000
-    static let operationTimeout: UInt64 = 30_000_000_000
+    static let viewLoadTimeout: UInt64 = 30_000_000_000
   }
 
   private let apiClient: PrimerAPIClientProtocol
@@ -30,7 +30,7 @@ final class KlarnaRepositoryImpl: KlarnaRepository, LogReporter {
 
   // Klarna SDK provider (only available when PrimerKlarnaSDK is imported)
   #if canImport(PrimerKlarnaSDK)
-    private var klarnaProvider: PrimerKlarnaProviding?
+    var klarnaProvider: PrimerKlarnaProviding?
 
     // Continuations for delegate-to-async bridging
     private var authorizationContinuation: CheckedContinuation<KlarnaAuthorizationResult, Error>?
@@ -147,7 +147,7 @@ final class KlarnaRepositoryImpl: KlarnaRepository, LogReporter {
       // Create and load the payment view using continuation.
       // Klarna SDK creates WKWebView internally, which must be initialized on the main thread.
       let timeoutTask = Task { [weak self] in
-        try? await Task.sleep(nanoseconds: Timing.operationTimeout)
+        try? await Task.sleep(nanoseconds: Timing.viewLoadTimeout)
         guard let self, let cont = viewLoadedContinuation else { return }
         viewLoadedContinuation = nil
         cont.resume(
@@ -197,17 +197,7 @@ final class KlarnaRepositoryImpl: KlarnaRepository, LogReporter {
         throw KlarnaHelpers.getMissingSDKError()
       }
 
-      let timeoutTask = Task { [weak self] in
-        try? await Task.sleep(nanoseconds: Timing.operationTimeout)
-        guard let self, let cont = authorizationContinuation else { return }
-        authorizationContinuation = nil
-        cont.resume(
-          throwing: PrimerError.klarnaError(
-            message: "Klarna authorization timed out",
-            diagnosticsId: UUID().uuidString
-          ))
-      }
-      defer { timeoutTask.cancel() }
+      // No timeout: Klarna's UI waits on the shopper, and a cancel comes back as approved:false.
       return try await withCheckedThrowingContinuation { continuation in
         self.cancelPendingContinuation(&self.authorizationContinuation)
         self.authorizationContinuation = continuation
@@ -226,17 +216,7 @@ final class KlarnaRepositoryImpl: KlarnaRepository, LogReporter {
         throw KlarnaHelpers.getMissingSDKError()
       }
 
-      let timeoutTask = Task { [weak self] in
-        try? await Task.sleep(nanoseconds: Timing.operationTimeout)
-        guard let self, let cont = finalizationContinuation else { return }
-        finalizationContinuation = nil
-        cont.resume(
-          throwing: PrimerError.klarnaError(
-            message: "Klarna finalization timed out",
-            diagnosticsId: UUID().uuidString
-          ))
-      }
-      defer { timeoutTask.cancel() }
+      // No timeout, as in authorize().
       return try await withCheckedThrowingContinuation { continuation in
         self.cancelPendingContinuation(&self.finalizationContinuation)
         self.finalizationContinuation = continuation
