@@ -131,14 +131,14 @@ public final class PrimerHeadlessUniversalCheckout: LogReporter {
         settings.uiOptions.isSuccessScreenEnabled = false
         settings.uiOptions.isErrorScreenEnabled = false
 
+        await BDCEngineProvider.warmUp(clientToken: clientToken)
+
         try await apiConfigurationModule.setupSession(
             forClientToken: clientToken,
             requestDisplayMetadata: true,
             requestClientTokenValidation: false,
             requestVaultedPaymentMethods: false
         )
-
-        await BDCEngineProvider.warmUpIfNeeded()
 
         let currencyLoader = CurrencyLoader(storage: DefaultCurrencyStorage(), networkService: CurrencyNetworkService())
         currencyLoader.updateCurrenciesFromAPI()
