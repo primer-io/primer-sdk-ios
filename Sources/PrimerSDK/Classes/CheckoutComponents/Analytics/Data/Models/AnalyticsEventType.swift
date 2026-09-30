@@ -29,7 +29,7 @@ public enum AnalyticsEventType: String, Codable, Sendable, CaseIterable {
   /// Every required card field has a value
   case paymentDetailsEntered = "PAYMENT_DETAILS_ENTERED"
 
-  /// Shopper did their part (valid card sent, wallet authorized, returned from redirect)
+  /// Shopper did their part (valid card sent, wallet authorized, returned from redirect). Always after PROCESSING_STARTED
   case paymentSubmitted = "PAYMENT_SUBMITTED"
 
   /// After the merchant gate, right before the first request to Primer

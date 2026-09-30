@@ -26,7 +26,8 @@ final class DefaultCardFormScopeTests: XCTestCase {
         processCardPaymentInteractor: ProcessCardPaymentInteractor? = nil,
         validateInputInteractor: ValidateInputInteractor? = nil,
         cardNetworkDetectionInteractor: CardNetworkDetectionInteractor? = nil,
-        configurationService: ConfigurationService? = nil
+        configurationService: ConfigurationService? = nil,
+        analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol = MockAnalyticsInteractor()
     ) -> DefaultCardFormScope {
         DefaultCardFormScope(
             checkoutScope: checkoutScope,
@@ -34,7 +35,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
             processCardPaymentInteractor: processCardPaymentInteractor ?? MockProcessCardPaymentInteractor(),
             validateInputInteractor: validateInputInteractor ?? MockValidateInputInteractor(),
             cardNetworkDetectionInteractor: cardNetworkDetectionInteractor ?? MockCardNetworkDetectionInteractor(),
-            analyticsInteractor: MockAnalyticsInteractor(),
+            analyticsInteractor: analyticsInteractor,
             configurationService: configurationService ?? MockConfigurationService.withDefaultConfiguration()
         )
     }
@@ -975,6 +976,54 @@ final class DefaultCardFormScopeTests: XCTestCase {
             }
             XCTAssertTrue(received === checkoutData)
         }
+    }
+
+    func test_performSubmit_tracksProcessingStartedBeforeSubmitted() async throws {
+        let container = try await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let analytics = MockTrackingAnalyticsInteractor()
+            let scope = createCardFormScope(checkoutScope: checkoutScope, analyticsInteractor: analytics)
+            fillValidCard(scope)
+
+            // When
+            await scope.performSubmit()
+
+            // Then
+            let tracked = await analytics.trackedEvents.map(\.eventType)
+            XCTAssertEqual(tracked.filter { $0 == .paymentProcessingStarted || $0 == .paymentSubmitted },
+                           [.paymentProcessingStarted, .paymentSubmitted])
+        }
+    }
+
+    func test_performSubmit_merchantAborts_doesNotTrackSubmitted() async throws {
+        let container = try await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            checkoutScope.onBeforePaymentCreate = { _, decisionHandler in
+                decisionHandler(.abortPaymentCreation(withErrorMessage: "blocked"))
+            }
+            let analytics = MockTrackingAnalyticsInteractor()
+            let scope = createCardFormScope(checkoutScope: checkoutScope, analyticsInteractor: analytics)
+            fillValidCard(scope)
+
+            // When
+            await scope.performSubmit()
+
+            // Then
+            let hasSubmitted = await analytics.hasTracked(.paymentSubmitted)
+            XCTAssertFalse(hasSubmitted)
+        }
+    }
+
+    private func fillValidCard(_ scope: DefaultCardFormScope) {
+        scope.updateCardNumber(TestData.CardNumbers.validVisa)
+        scope.updateCvv("123")
+        scope.updateExpiryDate("12/30")
+        scope.updateCardholderName("John Doe")
+        scope.updateValidationState(cardNumber: true, cvv: true, expiry: true, cardholderName: true)
     }
 
     // MARK: - submit Guard Tests

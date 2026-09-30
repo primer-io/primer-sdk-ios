@@ -408,10 +408,8 @@ final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, 
 
     let card = PrimerPaymentMethodType.paymentCard.rawValue
     // A merchant's own button can submit an invalid form, which is not the shopper doing their part.
-    if structuredState.isValid {
-      hasTrackedDetailsEntered = true
-      await analyticsInteractor?.trackSubmitted(card)
-    }
+    let isShopperSubmit = structuredState.isValid
+    if isShopperSubmit { hasTrackedDetailsEntered = true }
 
     do {
       // The merchant gate runs before any navigation: `startProcessing()` presents the processing
@@ -423,6 +421,7 @@ final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, 
       try await sendBillingAddressIfNeeded()
       let cardData = try await prepareCardPaymentData()
       await analyticsInteractor?.trackProcessingStarted(card)
+      if isShopperSubmit { await analyticsInteractor?.trackSubmitted(card) }
 
       let result = try await processCardPayment(cardData: cardData)
       await handlePaymentSuccess(result)

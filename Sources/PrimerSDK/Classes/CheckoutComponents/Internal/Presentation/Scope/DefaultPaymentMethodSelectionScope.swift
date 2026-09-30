@@ -254,7 +254,6 @@ final class DefaultPaymentMethodSelectionScope: PaymentMethodSelectionScopeInter
 
     let paymentMethod = vaultedMethod.paymentMethodType
     await analyticsInteractor?.trackMethodSelected(paymentMethod)
-    await analyticsInteractor?.trackSubmitted(paymentMethod)
 
     do {
       // The merchant gate runs before `startProcessing()`, as on every other payment method.
@@ -267,6 +266,7 @@ final class DefaultPaymentMethodSelectionScope: PaymentMethodSelectionScopeInter
       }
       let interactor = try await container.resolve(SubmitVaultedPaymentInteractor.self)
       await analyticsInteractor?.trackProcessingStarted(paymentMethod)
+      await analyticsInteractor?.trackSubmitted(paymentMethod)
 
       let result = try await interactor.execute(
         vaultedPaymentMethodId: vaultedMethod.id,

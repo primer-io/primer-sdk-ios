@@ -229,8 +229,8 @@ final class DefaultKlarnaScope: PrimerKlarnaScope, ObservableObject, LogReporter
     // Not `startProcessing`: authorization cannot run twice, so a retry opens a new session.
     checkoutScope.updateNavigationState(.processing)
 
-    await analyticsInteractor?.trackSubmitted(PrimerPaymentMethodType.klarna.rawValue)
     await analyticsInteractor?.trackProcessingStarted(PrimerPaymentMethodType.klarna.rawValue)
+    await analyticsInteractor?.trackSubmitted(PrimerPaymentMethodType.klarna.rawValue)
 
     do {
       let result = try await processKlarnaInteractor.authorize()

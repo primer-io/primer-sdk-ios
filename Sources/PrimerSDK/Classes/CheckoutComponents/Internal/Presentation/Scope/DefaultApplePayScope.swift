@@ -153,8 +153,8 @@ final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
         presentationManager: applePayPresentationManager
       )
       let applePay = PrimerPaymentMethodType.applePay.rawValue
-      await analytics?.trackSubmitted(applePay)
       await analytics?.trackProcessingStarted(applePay)
+      await analytics?.trackSubmitted(applePay)
 
       var interactor = processPaymentInteractor
       if interactor == nil {
