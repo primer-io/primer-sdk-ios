@@ -140,6 +140,8 @@ public final class PrimerHeadlessUniversalCheckout: LogReporter {
             requestVaultedPaymentMethods: false
         )
 
+        await ClientRequirements.checkConfiguration()
+
         let currencyLoader = CurrencyLoader(storage: DefaultCurrencyStorage(), networkService: CurrencyNetworkService())
         currencyLoader.updateCurrenciesFromAPI()
 

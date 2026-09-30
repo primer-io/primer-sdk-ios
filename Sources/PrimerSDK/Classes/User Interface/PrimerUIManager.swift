@@ -58,6 +58,8 @@ final class PrimerUIManager: PrimerUIManaging {
             requestVaultedPaymentMethods: !isHeadlessCheckoutDelegateImplemented
         )
 
+        await ClientRequirements.checkConfiguration()
+
         try PrimerUIManager.validatePaymentUIPresentation()
     }
 
