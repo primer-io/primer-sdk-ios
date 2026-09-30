@@ -150,13 +150,6 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
     try await withCheckedThrowingContinuation { continuation in
       let oneShot = OneShotContinuation(continuation)
       Task { @MainActor [self] in
-        let timeoutTask = Task {
-          try? await Task.sleep(nanoseconds: 60_000_000_000)
-          oneShot.resume(
-            throwing: PrimerError.unknown(
-              message: "Card payment timed out after 60 seconds"))
-        }
-
         do {
           let cardData = createCardData(
             cardNumber: cardNumber,
@@ -168,7 +161,6 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
           )
 
           let paymentHandler = PaymentCompletionHandler(repository: self) { [weak self] result in
-            timeoutTask.cancel()
             self?.cardPaymentCompletionHandler = nil
             oneShot.resume(with: result)
           }
@@ -185,11 +177,9 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
             cardData: cardData,
             selectedNetwork: selectedNetwork,
             oneShot: oneShot,
-            paymentHandler: paymentHandler,
-            timeoutTask: timeoutTask
+            paymentHandler: paymentHandler
           )
         } catch {
-          timeoutTask.cancel()
           oneShot.resume(throwing: error)
         }
       }
@@ -226,14 +216,12 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
     cardData: PrimerCardData,
     selectedNetwork: CardNetwork?,
     oneShot: OneShotContinuation<PaymentResult>,
-    paymentHandler: PaymentCompletionHandler,
-    timeoutTask: Task<Void, Never>
+    paymentHandler: PaymentCompletionHandler
   ) {
     rawDataManager.configure { [weak self] _, error in
       guard let self else { return }
 
       if let error {
-        timeoutTask.cancel()
         oneShot.resume(throwing: error)
         return
       }
@@ -244,8 +232,7 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
           selectedNetwork: selectedNetwork,
           oneShot: oneShot,
           validationResult: isValid,
-          validationErrors: errors,
-          timeoutTask: timeoutTask
+          validationErrors: errors
         )
       }
 
@@ -259,15 +246,13 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
     selectedNetwork: CardNetwork?,
     oneShot: OneShotContinuation<PaymentResult>,
     validationResult: Bool,
-    validationErrors: [Error]?,
-    timeoutTask: Task<Void, Never>
+    validationErrors: [Error]?
   ) {
     if validationResult {
       updateClientSessionBeforePayment(selectedNetwork: selectedNetwork) { [weak self] error in
         guard let self else { return }
 
         if let error {
-          timeoutTask.cancel()
           oneShot.resume(throwing: error)
           return
         }
@@ -276,7 +261,6 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
         Task { @MainActor in rawDataManager.submit() }
       }
     } else {
-      timeoutTask.cancel()
       handleValidationFailure(
         rawDataManager: rawDataManager,
         oneShot: oneShot,
@@ -397,19 +381,11 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
     return try await withCheckedThrowingContinuation { continuation in
       let oneShot = OneShotContinuation(continuation)
       Task { @MainActor [self] in
-        let timeoutTask = Task {
-          try? await Task.sleep(nanoseconds: 60_000_000_000)
-          oneShot.resume(
-            throwing: PrimerError.unknown(
-              message: "Vaulted payment timed out after 60 seconds"))
-        }
-
         let completionHandler = PaymentCompletionHandler(
           repository: self,
           paymentMethodType: paymentMethodType,
           staleCheckoutData: vaultManager.paymentCheckoutData
         ) { [weak self] result in
-          timeoutTask.cancel()
           self?.vaultPaymentCompletionHandler = nil
           oneShot.resume(with: result)
         }
