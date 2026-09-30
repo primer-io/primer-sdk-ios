@@ -523,6 +523,27 @@ final class DefaultCheckoutScopeBehaviorTests: XCTestCase {
         XCTAssertNil(scope)
     }
 
+    // DEBUG builds cache a second DefaultKlarnaScope for the PRIMER_TEST_KLARNA twin.
+    func test_getPaymentMethodScope_byType_withTwoScopesOfThatType_returnsTheSelectedOne() {
+        // Given
+        sut = makeSut()
+        let types = [PrimerPaymentMethodType.klarna.rawValue, "PRIMER_TEST_KLARNA"]
+        for type in types {
+            sut.paymentMethodScopeCache[type] = DefaultKlarnaScope(
+                checkoutScope: sut,
+                processKlarnaInteractor: MockProcessKlarnaPaymentInteractor()
+            )
+        }
+
+        for type in types {
+            // When
+            sut.updateNavigationState(.paymentMethod(type))
+
+            // Then
+            XCTAssertTrue(sut.getPaymentMethodScope(DefaultKlarnaScope.self) === sut.paymentMethodScopeCache[type], type)
+        }
+    }
+
     func test_getPaymentMethodScope_forEnum_delegatesToStringVersion() {
         // Given
         sut = makeSut()

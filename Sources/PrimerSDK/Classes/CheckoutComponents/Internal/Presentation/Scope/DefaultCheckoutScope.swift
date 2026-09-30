@@ -470,8 +470,10 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
     paymentMethodScopeCache[paymentMethodType] as? T
   }
 
+  /// Prefers the active payment method, because several cached scopes can share one class.
   func getPaymentMethodScope<T: PrimerPaymentMethodScope>(_ scopeType: T.Type) -> T? {
-    paymentMethodScopeCache.values.first { $0 is T } as? T
+    if let active = currentPaymentMethodScope as? T { return active }
+    return paymentMethodScopeCache.values.first { $0 is T } as? T
   }
 
   func getPaymentMethodScope<T: PrimerPaymentMethodScope>(
