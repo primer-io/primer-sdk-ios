@@ -143,6 +143,20 @@ final class PrimerErrorTests: XCTestCase {
         XCTAssertEqual(context[AnalyticsContextKeys.paymentMethodType] as? String, PrimerPaymentMethodType.applePay.rawValue)
     }
     
+    // MARK: - Klarna Error Tests
+
+    func testKlarnaErrorWithMessage() {
+        let error = PrimerError.klarnaError(message: "Klarna could not load the payment view")
+
+        XCTAssertEqual(error.plainDescription, "Klarna wrapper SDK encountered an error: Klarna could not load the payment view")
+    }
+
+    func testKlarnaErrorWithoutMessage() {
+        let error = PrimerError.klarnaError(message: nil)
+
+        XCTAssertEqual(error.plainDescription, "Klarna wrapper SDK encountered an error: unknown error")
+    }
+
     // MARK: - Error Info Tests
 
     // MARK: - Exposed Error Tests
