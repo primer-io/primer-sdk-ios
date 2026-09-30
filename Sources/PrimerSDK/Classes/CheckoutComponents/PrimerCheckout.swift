@@ -287,7 +287,7 @@ final class CheckoutOutcomeRelay {
   func deliver(_ state: PrimerCheckoutState, to onCompletion: ((PrimerCheckoutState) -> Void)?) {
     guard !hasEnded else { return }
     switch state {
-    case let .failure(error):
+    case let .failure(error, _):
       // The scope stream and a disabled error screen both report the same failure.
       guard error.diagnosticsId != lastFailureId else { return }
       lastFailureId = error.diagnosticsId

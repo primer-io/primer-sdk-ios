@@ -42,8 +42,8 @@ struct FlowScreenFactory: LogReporter {
       makeProcessingView()
     case let .success(result):
       makeSuccessView(result: result)
-    case let .failure(error):
-      makeFailureView(error: error)
+    case let .failure(error, checkoutData):
+      makeFailureView(error: error, checkoutData: checkoutData)
     case .dismissed:
       makeDismissedView()
     }
@@ -128,7 +128,7 @@ struct FlowScreenFactory: LogReporter {
   }
 
   @ViewBuilder
-  private func makeFailureView(error: PrimerError) -> some View {
+  private func makeFailureView(error: PrimerError, checkoutData: PrimerCheckoutData?) -> some View {
     if scope.isErrorScreenEnabled {
       ErrorScreen(
         error: error,
@@ -142,7 +142,7 @@ struct FlowScreenFactory: LogReporter {
     } else {
       Color.clear.onAppear {
         logger.debug(message: "[CheckoutComponents] Error screen disabled - auto-dismissing")
-        Task { @MainActor in onCompletion?(.failure(error)) }
+        Task { @MainActor in onCompletion?(.failure(error, checkoutData: checkoutData)) }
       }
     }
   }

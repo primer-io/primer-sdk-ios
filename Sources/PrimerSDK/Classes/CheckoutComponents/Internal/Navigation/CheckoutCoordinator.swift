@@ -53,7 +53,7 @@ final class CheckoutCoordinator: ObservableObject, LogReporter {
     navigationStack = []
   }
 
-  func handlePaymentFailure(_ error: PrimerError) {
-    navigate(to: .failure(error))
+  func handlePaymentFailure(_ error: PrimerError, checkoutData: PrimerCheckoutData? = nil) {
+    navigate(to: .failure(error, checkoutData: checkoutData))
   }
 }

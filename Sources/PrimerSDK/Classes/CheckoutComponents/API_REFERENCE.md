@@ -191,7 +191,7 @@ Pre-built slot bodies and per-field building blocks for recomposition.
 @available(iOS 15.0, *)
 public protocol PrimerCheckoutPresenterDelegate: AnyObject {
   func primerCheckoutPresenterDidCompleteWithSuccess(_ result: PaymentResult)
-  func primerCheckoutPresenterDidFailWithError(_ error: PrimerError)
+  func primerCheckoutPresenterDidFailWithError(_ error: PrimerError, checkoutData: PrimerCheckoutData?)
   func primerCheckoutPresenterDidDismiss()
 }
 ```
@@ -287,7 +287,7 @@ public enum PrimerCheckoutState: Equatable {
   case ready(clientSession: PrimerClientSession)
   case success(PaymentResult)
   case dismissed
-  case failure(PrimerError)
+  case failure(PrimerError, checkoutData: PrimerCheckoutData? = nil)  // checkoutData: payment id + order id when a payment was created
 }
 ```
 

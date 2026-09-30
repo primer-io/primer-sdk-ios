@@ -74,7 +74,7 @@ Paying with a saved method is `PrimerSelectionSession.selectVaulted(_:)`, which 
 ### Delegation, works only with UIKit Integration
 **PrimerCheckoutPresenterDelegate** protocol (PrimerCheckoutPresenter.swift:11):
 - `primerCheckoutPresenterDidCompleteWithSuccess(_:)`: Payment successful
-- `primerCheckoutPresenterDidFailWithError(_:)`: Payment failed
+- `primerCheckoutPresenterDidFailWithError(_:checkoutData:)`: Payment failed
 - `primerCheckoutPresenterDidDismiss()`: Checkout dismissed
 
 ## State Management
@@ -82,7 +82,7 @@ Paying with a saved method is `PrimerSelectionSession.selectVaulted(_:)`, which 
 ### Checkout State Flow
 ```swift
 PrimerCheckoutState:
-.initializing → .ready(totalAmount:currencyCode:) → .success(PaymentResult) | .failure(PrimerError) → .dismissed
+.initializing → .ready(totalAmount:currencyCode:) → .success(PaymentResult) | .failure(PrimerError, checkoutData:) → .dismissed
 ```
 
 ### Card Form State

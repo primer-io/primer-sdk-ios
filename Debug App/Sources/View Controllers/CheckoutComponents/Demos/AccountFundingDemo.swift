@@ -168,7 +168,7 @@ private struct AccountFundingCheckout: View {
         .primerCheckoutSession(session) { state in
             switch state {
             case let .success(result): status = .funded(reference: result.paymentId)
-            case let .failure(error): status = .failed(error.localizedDescription)
+            case let .failure(error, _): status = .failed(error.localizedDescription)
             default: break
             }
         }

@@ -17,6 +17,7 @@ final class MockPrimerCheckoutPresenterDelegate: PrimerCheckoutPresenterDelegate
 
     private(set) var didFailWithErrorCallCount = 0
     private(set) var capturedError: PrimerError?
+    private(set) var capturedCheckoutData: PrimerCheckoutData?
 
     private(set) var didDismissCallCount = 0
 
@@ -25,9 +26,10 @@ final class MockPrimerCheckoutPresenterDelegate: PrimerCheckoutPresenterDelegate
         capturedSuccessResult = result
     }
 
-    func primerCheckoutPresenterDidFailWithError(_ error: PrimerError) {
+    func primerCheckoutPresenterDidFailWithError(_ error: PrimerError, checkoutData: PrimerCheckoutData?) {
         didFailWithErrorCallCount += 1
         capturedError = error
+        capturedCheckoutData = checkoutData
     }
 
     func primerCheckoutPresenterDidDismiss() {

@@ -947,6 +947,36 @@ final class DefaultCardFormScopeTests: XCTestCase {
         }
     }
 
+    func test_performSubmit_paymentFailureWithCheckoutData_reachesCheckoutScope() async throws {
+        let container = try await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let checkoutData = PrimerCheckoutData(
+                payment: PrimerCheckoutDataPayment(
+                    id: TestData.PaymentIds.pending, orderId: "order-1", paymentFailureReason: nil, status: "PENDING"
+                )
+            )
+            let mockPaymentInteractor = MockProcessCardPaymentInteractor()
+            mockPaymentInteractor.errorToThrow = PaymentFailure(error: .unknown(message: "3DS failed"), checkoutData: checkoutData)
+            let scope = createCardFormScope(checkoutScope: checkoutScope, processCardPaymentInteractor: mockPaymentInteractor)
+
+            scope.updateCardNumber(TestData.CardNumbers.validVisa)
+            scope.updateCvv("123")
+            scope.updateExpiryDate("12/30")
+            scope.updateCardholderName("John Doe")
+
+            // When
+            await scope.performSubmit()
+
+            // Then
+            guard case let .failure(_, received) = checkoutScope.navigationState else {
+                return XCTFail("Expected failure, got \(checkoutScope.navigationState)")
+            }
+            XCTAssertTrue(received === checkoutData)
+        }
+    }
+
     // MARK: - submit Guard Tests
 
     func test_submit_whenAlreadyLoading_doesNotSubmitAgain() async throws {

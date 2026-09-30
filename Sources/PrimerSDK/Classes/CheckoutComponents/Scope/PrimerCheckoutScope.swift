@@ -130,8 +130,8 @@ extension PrimerCheckoutScope {
 ///     switch state {
 ///     case .success(let result):
 ///         showConfirmation(paymentId: result.paymentId)
-///     case .failure(let error):
-///         log(error) // The SDK error screen stays up for a retry.
+///     case let .failure(error, checkoutData):
+///         log(error, paymentId: checkoutData?.payment?.id) // The SDK error screen stays up for a retry.
 ///     case .dismissed:
 ///         closeCheckout()
 ///     default:
@@ -165,7 +165,12 @@ public enum PrimerCheckoutState: Equatable {
 
   /// Payment or checkout failed with an error.
   /// Contains the specific error with diagnostics information for debugging.
-  case failure(PrimerError)
+  ///
+  /// `checkoutData` carries the payment id and order id when the payment was created before failing
+  /// (e.g. a decline), so it can be looked up on the merchant backend. Its payment status mirrors the
+  /// last Payments API response and may not reflect the decline. `checkoutData` is `nil` when the
+  /// failure happened before a payment existed (initialization, tokenization, connectivity).
+  case failure(PrimerError, checkoutData: PrimerCheckoutData? = nil)
 
   public static func == (lhs: PrimerCheckoutState, rhs: PrimerCheckoutState) -> Bool {
     switch (lhs, rhs) {
@@ -176,8 +181,8 @@ public enum PrimerCheckoutState: Equatable {
       lhsSession.isValueEqual(to: rhsSession)
     case let (.success(lhsResult), .success(rhsResult)):
       lhsResult.paymentId == rhsResult.paymentId
-    case let (.failure(lhsError), .failure(rhsError)):
-      lhsError.errorId == rhsError.errorId
+    case let (.failure(lhsError, lhsData), .failure(rhsError, rhsData)):
+      lhsError.errorId == rhsError.errorId && lhsData?.payment?.id == rhsData?.payment?.id
     default:
       false
     }

@@ -1244,7 +1244,7 @@ class DebugAppPrimerCheckoutPresenterDelegate: PrimerCheckoutPresenterDelegate {
         }
     }
     
-    func primerCheckoutPresenterDidFailWithError(_ error: PrimerError) {
+    func primerCheckoutPresenterDidFailWithError(_ error: PrimerError, checkoutData: PrimerCheckoutData?) {
         print("❌ [Debug App] CheckoutComponents payment failed: \(error.localizedDescription)")
         Task { @MainActor in
             // Still presented means the SDK error screen offers a retry; the result screen waits for the end.
@@ -1279,7 +1279,7 @@ class DebugAppPrimerCheckoutPresenterDelegate: PrimerCheckoutPresenterDelegate {
                     paymentFailureReason: nil, // Will be shown in error details
                     status: "failed"
                 )
-                let failureData = PrimerCheckoutData(payment: failurePayment)
+                let failureData = checkoutData ?? PrimerCheckoutData(payment: failurePayment)
                 
                 // Create realistic logs for CheckoutComponents failure (matching Drop-in pattern)
                 var logs = ["primerCheckoutPresenterDidFailWithError"]
@@ -1369,7 +1369,7 @@ private class InlineTestPrimerCheckoutPresenterDelegate: PrimerCheckoutPresenter
         onResult(.success("Payment completed successfully! ✅ Payment ID: \(result.paymentId)"))
     }
     
-    func primerCheckoutPresenterDidFailWithError(_ error: PrimerError) {
+    func primerCheckoutPresenterDidFailWithError(_ error: PrimerError, checkoutData: PrimerCheckoutData?) {
         onResult(.failure("Payment failed: \(error.errorId) - \(error.localizedDescription)"))
     }
     

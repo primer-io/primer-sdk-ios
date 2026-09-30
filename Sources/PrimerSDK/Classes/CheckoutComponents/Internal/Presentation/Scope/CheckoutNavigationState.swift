@@ -18,7 +18,7 @@ enum CheckoutNavigationState: Equatable {
   case cvvRecapture
   case processing
   case success(PaymentResult)
-  case failure(PrimerError)
+  case failure(PrimerError, checkoutData: PrimerCheckoutData? = nil)
   case dismissed
 
   /// States the inline sheet (`InlineFlowHost`) presents: the payment flow, plus the SDK-owned
@@ -59,8 +59,8 @@ enum CheckoutNavigationState: Equatable {
       lhsType == rhsType
     case let (.success(lhsResult), .success(rhsResult)):
       lhsResult.paymentId == rhsResult.paymentId
-    case let (.failure(lhsError), .failure(rhsError)):
-      lhsError.diagnosticsId == rhsError.diagnosticsId
+    case let (.failure(lhsError, lhsData), .failure(rhsError, rhsData)):
+      lhsError.diagnosticsId == rhsError.diagnosticsId && lhsData?.payment?.id == rhsData?.payment?.id
     default:
       false
     }

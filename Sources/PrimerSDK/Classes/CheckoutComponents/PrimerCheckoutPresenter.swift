@@ -17,7 +17,9 @@ public protocol PrimerCheckoutPresenterDelegate: AnyObject {
 
     /// Called once per failed attempt, including a failed initialization. The sheet stays open while
     /// the SDK error screen offers a retry.
-    func primerCheckoutPresenterDidFailWithError(_ error: PrimerError)
+    /// - Parameter checkoutData: The payment id and order id when the payment was created before failing,
+    ///   `nil` otherwise. See `PrimerCheckoutState.failure`.
+    func primerCheckoutPresenterDidFailWithError(_ error: PrimerError, checkoutData: PrimerCheckoutData?)
 
     /// Called when checkout is dismissed without completion
     func primerCheckoutPresenterDidDismiss()
@@ -210,12 +212,14 @@ public protocol PrimerCheckoutPresenterDelegate: AnyObject {
     }
 
     /// Reports every failed attempt. The sheet closes only when no SDK error screen offers a retry.
-    func handlePaymentFailure(_ error: PrimerError, closesCheckout: Bool = true) {
+    func handlePaymentFailure(
+        _ error: PrimerError, checkoutData: PrimerCheckoutData? = nil, closesCheckout: Bool = true
+    ) {
         logger.error(message: "Payment failed: \(error)")
 
-        guard closesCheckout else { return deliverFailure(error) }
+        guard closesCheckout else { return deliverFailure(error, checkoutData: checkoutData) }
         dismissDirectly { [weak self] in
-            self?.deliverFailure(error)
+            self?.deliverFailure(error, checkoutData: checkoutData)
             self?.hasDeliveredResult = true
         }
     }
@@ -249,10 +253,10 @@ public protocol PrimerCheckoutPresenterDelegate: AnyObject {
         delegate.primerCheckoutPresenterDidCompleteWithSuccess(result)
     }
 
-    private func deliverFailure(_ error: PrimerError) {
+    private func deliverFailure(_ error: PrimerError, checkoutData: PrimerCheckoutData?) {
         guard !hasDeliveredResult else { return }
         guard let delegate else { return logger.error(message: "No delegate set for payment failure") }
-        delegate.primerCheckoutPresenterDidFailWithError(error)
+        delegate.primerCheckoutPresenterDidFailWithError(error, checkoutData: checkoutData)
     }
 
     private func presentCheckout(
@@ -287,9 +291,9 @@ public protocol PrimerCheckoutPresenterDelegate: AnyObject {
                     switch state {
                     case let .success(paymentResult):
                         self?.handlePaymentSuccess(paymentResult)
-                    case let .failure(error):
+                    case let .failure(error, checkoutData):
                         self?.handlePaymentFailure(
-                            error, closesCheckout: !primerSettings.uiOptions.isErrorScreenEnabled)
+                            error, checkoutData: checkoutData, closesCheckout: !primerSettings.uiOptions.isErrorScreenEnabled)
                     default:
                         self?.dismissDirectly()
                         self?.handleCheckoutDismiss()
@@ -389,7 +393,7 @@ extension PrimerCheckoutPresenter {
                 reason: "No presenting view controller found"
             )
 
-            shared.delegate?.primerCheckoutPresenterDidFailWithError(error)
+            shared.delegate?.primerCheckoutPresenterDidFailWithError(error, checkoutData: nil)
             return
         }
 

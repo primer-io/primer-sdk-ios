@@ -20,6 +20,7 @@ private final class MockVaultManager: VaultManagerProtocol {
     private(set) var deleteCallCount = 0
     private(set) var startPaymentFlowCallCount = 0
     private(set) var lastDeletedId: String?
+    var paymentCheckoutData: PrimerCheckoutData?
 
     var fetchResult: ([PrimerHeadlessUniversalCheckout.VaultedPaymentMethod]?, Error?)
     var deleteError: Error?

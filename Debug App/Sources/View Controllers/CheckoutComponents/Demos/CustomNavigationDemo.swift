@@ -49,7 +49,7 @@ private struct CustomNavigationContent: View {
             switch outcome {
             case let .success(result):
                 SuccessWithNavigation(result: result)
-            case let .failure(error):
+            case let .failure(error, _):
                 ErrorWithSupport(error: error)
             default:
                 checkout
