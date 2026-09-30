@@ -22,6 +22,8 @@ public struct PrimerCheckout: View {
 }
 ```
 
+`onCompletion` follows the session's contract. It receives `.failure` once per failed attempt, including a failed initialization, while the SDK error screen stays up for a retry. Then it receives `.success` or `.dismissed` exactly once. `.success` arrives after the SDK success screen closes. Close your sheet on `.success` and `.dismissed`, not on `.failure`.
+
 ### PrimerCheckoutSession + modifier (SwiftUI — composable/inline)
 
 ```swift
@@ -188,17 +190,13 @@ Pre-built slot bodies and per-field building blocks for recomposition.
 ```swift
 @available(iOS 15.0, *)
 public protocol PrimerCheckoutPresenterDelegate: AnyObject {
-  // Required
   func primerCheckoutPresenterDidCompleteWithSuccess(_ result: PaymentResult)
-  func primerCheckoutPresenterDidFailWithError(_ error: PrimerError)
+  func primerCheckoutPresenterDidFailWithError(_ error: PrimerError, checkoutData: PrimerCheckoutData?)
   func primerCheckoutPresenterDidDismiss()
-
-  // Optional (3DS)
-  func primerCheckoutPresenterWillPresent3DSChallenge(_ paymentMethodTokenData: PrimerPaymentMethodTokenData)
-  func primerCheckoutPresenterDidDismiss3DSChallenge()
-  func primerCheckoutPresenterDidComplete3DSChallenge(success: Bool, resumeToken: String?, error: Error?)
 }
 ```
+
+`primerCheckoutPresenterDidFailWithError` fires once per failed attempt, including a failed initialization. The sheet stays open while the SDK error screen offers a retry, and closes on the failure only when `isErrorScreenEnabled` is false. Then `primerCheckoutPresenterDidCompleteWithSuccess` or `primerCheckoutPresenterDidDismiss` fires exactly once.
 
 ---
 
@@ -231,10 +229,13 @@ public final class PrimerCardFormSession: ObservableObject {
   public func updateFirstName(_ value: String)
   public func updateLastName(_ value: String)
   public func selectCardNetwork(_ network: PrimerCardNetwork)
+  public func setVaultOnSuccess(_ enabled: Bool) async throws
   public func submit()
   public func cancel()
 }
 ```
+
+`setVaultOnSuccess(_:)` updates the client session, so a shopper-facing "save card" control decides whether a successful payment saves the card. The client session needs a customer id. It matches Android's `PrimerCardFormController.setVaultOnSuccess`.
 
 ### PrimerSelectionSession
 
@@ -286,7 +287,7 @@ public enum PrimerCheckoutState: Equatable {
   case ready(clientSession: PrimerClientSession)
   case success(PaymentResult)
   case dismissed
-  case failure(PrimerError)
+  case failure(PrimerError, checkoutData: PrimerCheckoutData? = nil)  // checkoutData: payment id + order id when a payment was created
 }
 ```
 

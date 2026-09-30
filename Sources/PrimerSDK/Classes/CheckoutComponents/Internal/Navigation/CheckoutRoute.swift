@@ -35,7 +35,7 @@ enum CheckoutRoute: Hashable, Identifiable {
   case cvvRecapture
   case processing
   case success(PaymentResult)
-  case failure(PrimerError)
+  case failure(PrimerError, checkoutData: PrimerCheckoutData? = nil)
   case paymentMethod(String, PresentationContext)
 
   var id: String {
@@ -51,7 +51,7 @@ enum CheckoutRoute: Hashable, Identifiable {
     case let .paymentMethod(type, context):
       "payment-method-\(type)-\(context == .direct ? "direct" : "selection")"
     case let .success(result): "success-\(result.paymentId)"
-    case let .failure(error): "failure-\(error.diagnosticsId)"
+    case let .failure(error, _): "failure-\(error.diagnosticsId)"
     }
   }
 

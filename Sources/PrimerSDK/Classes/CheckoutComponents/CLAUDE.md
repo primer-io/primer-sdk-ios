@@ -74,16 +74,15 @@ Paying with a saved method is `PrimerSelectionSession.selectVaulted(_:)`, which 
 ### Delegation, works only with UIKit Integration
 **PrimerCheckoutPresenterDelegate** protocol (PrimerCheckoutPresenter.swift:11):
 - `primerCheckoutPresenterDidCompleteWithSuccess(_:)`: Payment successful
-- `primerCheckoutPresenterDidFailWithError(_:)`: Payment failed
+- `primerCheckoutPresenterDidFailWithError(_:checkoutData:)`: Payment failed
 - `primerCheckoutPresenterDidDismiss()`: Checkout dismissed
-- Optional 3DS lifecycle methods
 
 ## State Management
 
 ### Checkout State Flow
 ```swift
 PrimerCheckoutState:
-.initializing → .ready(totalAmount:currencyCode:) → .success(PaymentResult) | .failure(PrimerError) → .dismissed
+.initializing → .ready(totalAmount:currencyCode:) → .success(PaymentResult) | .failure(PrimerError, checkoutData:) → .dismissed
 ```
 
 ### Card Form State
@@ -186,9 +185,8 @@ CheckoutComponents integrates with PrimerSettings via:
 - `.direct`: Show cancel button (directly presented)
 
 ### 3DS Integration
-- Automatic 3DS handling via delegate callbacks
+- Automatic 3DS handling; a failed challenge arrives as a failure
 - Sanity checks configurable via settings
-- Lifecycle callbacks: willPresent, didPresent, willDismiss, didComplete
 
 ## Common Development Tasks
 

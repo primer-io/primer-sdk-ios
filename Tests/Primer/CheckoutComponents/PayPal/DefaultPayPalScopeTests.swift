@@ -45,19 +45,19 @@ final class DefaultPayPalScopeTests: XCTestCase {
         // transient `.redirecting` step deterministically instead of racing a fast return.
         var shouldHold = false
         private(set) var executeCallCount = 0
-        private var continuation: CheckedContinuation<Void, Never>?
+        private var continuations: [CheckedContinuation<Void, Never>] = []
 
         func execute() async throws -> PaymentResult {
             executeCallCount += 1
             if shouldHold {
-                await withCheckedContinuation { continuation = $0 }
+                await withCheckedContinuation { continuations.append($0) }
             }
             return try executeResult.get()
         }
 
         func release() {
-            continuation?.resume()
-            continuation = nil
+            continuations.forEach { $0.resume() }
+            continuations = []
         }
     }
 
@@ -117,6 +117,31 @@ final class DefaultPayPalScopeTests: XCTestCase {
             while mockInteractor.executeCallCount < 2 { await Task.yield() }
         }
         XCTAssertEqual(mockInteractor.executeCallCount, 2)
+    }
+
+    @MainActor
+    func test_start_afterReentryWhileARunIsInFlight_keepsThatRun() async throws {
+        // Given
+        mockInteractor.shouldHold = true
+        sut = DefaultPayPalScope(
+            checkoutScope: mockCheckoutScope,
+            processPayPalInteractor: mockInteractor
+        )
+        sut.start()
+        try await withTimeout(2.0) { [self] in
+            while mockInteractor.executeCallCount < 1 { await Task.yield() }
+        }
+
+        // When — the shopper returns to the list and picks PayPal again before the run ends
+        sut.prepareForReentry()
+        sut.start()
+        // why: asserting that no second run starts, so give one time to reach the interactor
+        try await Task.sleep(nanoseconds: 100_000_000)
+
+        // Then
+        XCTAssertEqual(mockInteractor.executeCallCount, 1)
+        mockInteractor.release()
+        _ = try await awaitValue(sut.state, matching: { $0.step == .success })
     }
 
     // MARK: - Submit Tests
@@ -211,6 +236,25 @@ final class DefaultPayPalScopeTests: XCTestCase {
         if case .failure = firstState.step {
             XCTFail("Cancellation must not transition to failure")
         }
+    }
+
+    @MainActor
+    func test_submit_cancelledError_returnsToPaymentMethodSelection() async throws {
+        // Given
+        sut = DefaultPayPalScope(
+            checkoutScope: mockCheckoutScope,
+            processPayPalInteractor: mockInteractor
+        )
+        mockInteractor.executeResult = .failure(
+            PrimerError.cancelled(paymentMethodType: PrimerPaymentMethodType.payPal.rawValue)
+        )
+        let navigation = mockCheckoutScope.navigationStateStream
+
+        // When
+        sut.submit()
+
+        // Then
+        _ = try await awaitValue(navigation, equalTo: .paymentMethodSelection)
     }
 
     @MainActor

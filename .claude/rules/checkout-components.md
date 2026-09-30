@@ -50,7 +50,7 @@ All payment method scopes extend `PrimerPaymentMethodScope` (base protocol with 
 
 ## State Flows
 
-**Checkout**: `initializing → ready(totalAmount, currencyCode) → success(PaymentResult) | failure(PrimerError) → dismissed`
+**Checkout**: `initializing → ready(totalAmount, currencyCode) → success(PaymentResult) | failure(PrimerError, checkoutData:) → dismissed`
 
 **Per-method flows**:
 - **Card**: Field-level state (`PrimerCardFormState`) with validation, co-badged networks, surcharge
@@ -90,10 +90,7 @@ Per-payment-method and per-card-network surcharge amounts:
 - `CardFormDefaults.billingAddress(_:)` renders only when the configuration requires billing fields; each `CardFormDefaults.*` building block self-hides unless its field is in `CardFormConfiguration.cardFields`/`billingFields`
 
 ### 3DS
-- Automatic handling via `PrimerCheckoutPresenterDelegate` optional callbacks:
-  - `primerCheckoutPresenterWillPresent3DSChallenge(_:)`
-  - `primerCheckoutPresenterDidDismiss3DSChallenge()`
-  - `primerCheckoutPresenterDidComplete3DSChallenge(success:resumeToken:error:)`
+- Automatic handling; a failed challenge arrives as a failure, with no separate 3DS callbacks (Android parity)
 - Configurable via `PrimerSettings.debugOptions.is3DSSanityCheckEnabled`
 
 ### BIN Detection

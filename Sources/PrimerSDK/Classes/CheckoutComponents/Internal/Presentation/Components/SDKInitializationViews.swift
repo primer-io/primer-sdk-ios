@@ -26,7 +26,7 @@ struct SDKInitializationErrorView: View {
         .primerTypography(.headline, tokens: tokens)
         .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
 
-      Text(error.localizedDescription)
+      Text(error.plainDescription ?? CheckoutComponentsStrings.unexpectedError)
         .primerTypography(.subheadline, tokens: tokens)
         .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
         .multilineTextAlignment(.center)

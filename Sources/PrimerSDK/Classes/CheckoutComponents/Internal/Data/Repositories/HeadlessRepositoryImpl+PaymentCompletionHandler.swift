@@ -21,14 +21,18 @@ final class PaymentCompletionHandler: NSObject,
   private weak var repository: HeadlessRepositoryImpl?
   private var validationCompletion: ((Bool, [Error]?) -> Void)?
   private let paymentMethodType: String
+  private let staleCheckoutData: PrimerCheckoutData?
 
+  /// - Parameter staleCheckoutData: a previous attempt's payment the headless layer may still report.
   init(
     repository: HeadlessRepositoryImpl,
     paymentMethodType: String = "PAYMENT_CARD",
+    staleCheckoutData: PrimerCheckoutData? = nil,
     completion: @escaping (Result<PaymentResult, Error>) -> Void
   ) {
     self.repository = repository
     self.paymentMethodType = paymentMethodType
+    self.staleCheckoutData = staleCheckoutData
     self.completion = completion
     super.init()
   }
@@ -63,14 +67,16 @@ final class PaymentCompletionHandler: NSObject,
     }
     hasCompleted = true
 
-    completion(.failure(err))
+    let checkoutData = checkoutData === staleCheckoutData ? nil : checkoutData
+    completion(.failure(PaymentFailure(error: PaymentFailure(unwrapping: err).error, checkoutData: checkoutData)))
   }
 
   func primerHeadlessUniversalCheckoutWillCreatePaymentWithData(
     _ data: PrimerCheckoutPaymentMethodData,
     decisionHandler: @escaping (PrimerPaymentCreationDecision) -> Void
   ) {
-    decisionHandler(.continuePaymentCreation())
+    // The merchant gate already ran in the scope; hand its key back or the caller stores nil over it.
+    decisionHandler(.continuePaymentCreation(withIdempotencyKey: PrimerInternal.shared.currentIdempotencyKey))
   }
 
   // MARK: - 3DS Support

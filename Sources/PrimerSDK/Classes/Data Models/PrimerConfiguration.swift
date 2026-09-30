@@ -270,7 +270,8 @@ extension Response.Body {
                                       network["surcharge"] is Int,
                                       let surchargeValue = network["surcharge"] as? Int
                                 else { continue }
-                                hasCardSurcharge = surchargeValue > 0
+                                // Any network with a fee makes the card's fee unknown until the number is typed.
+                                hasCardSurcharge = hasCardSurcharge || surchargeValue > 0
                             }
                         } else {
                             if let surcharge = paymentMethodOption["surcharge"] as? Int {

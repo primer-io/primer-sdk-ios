@@ -8,8 +8,7 @@ import PrimerSDK
 import SwiftUI
 
 /// Dynamic Vault — a fully custom single-page checkout layout (a product card with the card form
-/// embedded below). Per-form `vaultOnSuccess` toggling isn't exposed on ``PrimerCardFormSession`` yet,
-/// so the save-card control is shown disabled to mark the gap.
+/// embedded below), with a save-card toggle that drives ``PrimerCardFormSession/setVaultOnSuccess(_:)``.
 @available(iOS 15.0, *)
 struct DynamicVaultDemo: View, CheckoutComponentsDemo {
     static var metadata: DemoMetadata {
@@ -39,6 +38,7 @@ struct DynamicVaultDemo: View, CheckoutComponentsDemo {
 @available(iOS 15.0, *)
 private struct DynamicVaultContent: View {
     @StateObject private var session: PrimerCheckoutSession
+    @State private var saveCard = false
 
     init(clientToken: String, settings: PrimerSettings) {
         _session = StateObject(wrappedValue: PrimerCheckoutSession(clientToken: clientToken, settings: settings))
@@ -56,10 +56,7 @@ private struct DynamicVaultContent: View {
                     VStack(alignment: .leading, spacing: 12) {
                         Text("Pay with card").font(.headline)
                         PrimerCardForm()
-                        Toggle("Save card for future payments", isOn: .constant(false))
-                            .disabled(true)
-                        Text("Per-form vault toggling isn't exposed on iOS yet.")
-                            .font(.caption2).foregroundStyle(.secondary)
+                        Toggle("Save card for future payments", isOn: saveCardBinding)
                     }
                     .padding(16)
                     .background(Color(.secondarySystemBackground))
@@ -70,6 +67,20 @@ private struct DynamicVaultContent: View {
         }
         .background(Color(.systemGroupedBackground))
         .demoCheckout(session)
+    }
+
+    /// Flips back when the client session update fails, so the toggle never claims a save that won't happen.
+    private var saveCardBinding: Binding<Bool> {
+        Binding(get: { saveCard }, set: { enabled in
+            saveCard = enabled
+            Task {
+                do {
+                    try await session.cardForm?.setVaultOnSuccess(enabled)
+                } catch {
+                    saveCard = !enabled
+                }
+            }
+        })
     }
 
     private var productCard: some View {

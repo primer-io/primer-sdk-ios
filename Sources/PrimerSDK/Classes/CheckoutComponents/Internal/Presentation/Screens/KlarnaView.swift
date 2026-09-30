@@ -43,6 +43,8 @@ struct KlarnaView: View, LogReporter {
     .padding(.vertical, PrimerSpacing.large(tokens: tokens))
     .navigationBarHidden(true)
     .background(CheckoutColors.background(tokens: tokens))
+    // Without a container element the identifier propagates to every child and hides theirs.
+    .accessibilityElement(children: .contain)
     .accessibilityIdentifier(AccessibilityIdentifiers.Klarna.container)
     .task {
       for await state in scope.state {
@@ -177,6 +179,8 @@ struct KlarnaView: View, LogReporter {
           makeCategoryCard(for: category)
         }
       }
+      // Without a container element the identifier propagates to every child and hides theirs.
+      .accessibilityElement(children: .contain)
       .accessibilityIdentifier(AccessibilityIdentifiers.Klarna.categoriesContainer)
 
       // Authorize button (visible when a category is selected and view is ready)

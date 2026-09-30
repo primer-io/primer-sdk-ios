@@ -89,6 +89,18 @@ final class PrimerCheckoutPresenterTests: XCTestCase {
         XCTAssertNotNil(mockDelegate.capturedError)
     }
 
+    func test_handlePaymentFailure_withCheckoutData_forwardsItToDelegate() {
+        let checkoutData = PrimerCheckoutData(
+            payment: PrimerCheckoutDataPayment(
+                id: TestData.PaymentIds.failed, orderId: "order-1", paymentFailureReason: nil, status: "FAILED"
+            )
+        )
+
+        sut.handlePaymentFailure(.unknown(message: "Declined"), checkoutData: checkoutData)
+
+        XCTAssertTrue(mockDelegate.capturedCheckoutData === checkoutData)
+    }
+
     // MARK: - handleCheckoutDismiss
 
     func test_handleCheckoutDismiss_withDelegate_callsDidDismiss() {
@@ -160,17 +172,16 @@ final class PrimerCheckoutPresenterTests: XCTestCase {
         )
     }
 
-    func test_handleInteractiveDismiss_onFailureRoute_callsDidFailWithError() {
-        // Given
+    func test_handleInteractiveDismiss_onFailureRoute_callsDidDismiss() {
+        // Given - the decline reached the delegate when it happened
         sut.activeNavigator = makeNavigator(showing: .failure(makeError()))
 
         // When
         sut.handleInteractiveDismiss()
 
         // Then
-        XCTAssertEqual(mockDelegate.didFailWithErrorCallCount, 1)
-        XCTAssertEqual(mockDelegate.capturedError?.diagnosticsId, TestData.DiagnosticsIds.test)
-        XCTAssertEqual(mockDelegate.didDismissCallCount, 0)
+        XCTAssertEqual(mockDelegate.didDismissCallCount, 1)
+        XCTAssertEqual(mockDelegate.didFailWithErrorCallCount, 0)
     }
 
     func test_handleInteractiveDismiss_onSuccessRoute_callsDidCompleteWithSuccess() {
@@ -208,19 +219,6 @@ final class PrimerCheckoutPresenterTests: XCTestCase {
         XCTAssertEqual(mockDelegate.didDismissCallCount, 1)
     }
 
-    func test_handleInteractiveDismiss_thenPaymentFailure_reportsFailureOnce() {
-        // Given
-        let error = makeError()
-        sut.activeNavigator = makeNavigator(showing: .failure(error))
-
-        // When - the shopper swipes, then the SDK's own completion path fires for the same outcome
-        sut.handleInteractiveDismiss()
-        sut.handlePaymentFailure(error)
-
-        // Then
-        XCTAssertEqual(mockDelegate.didFailWithErrorCallCount, 1)
-    }
-
     func test_handleInteractiveDismiss_clearsActiveNavigator() {
         // Given
         sut.activeNavigator = makeNavigator(showing: .paymentMethodSelection)
@@ -232,12 +230,25 @@ final class PrimerCheckoutPresenterTests: XCTestCase {
         XCTAssertNil(sut.activeNavigator)
     }
 
-    func test_handleCheckoutDismiss_afterFailureDelivered_doesNotCallDidDismiss() {
-        // Given
-        sut.activeNavigator = makeNavigator(showing: .failure(makeError()))
-        sut.handleInteractiveDismiss()
+    // MARK: - Failures on the error screen
 
-        // When - a late dismissal path fires after the outcome already reached the merchant
+    func test_handlePaymentFailure_onTheErrorScreen_doesNotEndThePresentation() {
+        // Given
+        let result = PaymentResult(paymentId: TestData.PaymentIds.success, status: .success)
+
+        // When - two declines with a retry each, then a success
+        sut.handlePaymentFailure(makeError(), closesCheckout: false)
+        sut.handlePaymentFailure(makeError(), closesCheckout: false)
+        sut.handlePaymentSuccess(result)
+
+        // Then
+        XCTAssertEqual(mockDelegate.didFailWithErrorCallCount, 2)
+        XCTAssertEqual(mockDelegate.didCompleteWithSuccessCallCount, 1)
+    }
+
+    func test_handlePaymentFailure_closingTheSheet_endsThePresentation() {
+        // When - no error screen, so the failure closes the sheet
+        sut.handlePaymentFailure(makeError())
         sut.handleCheckoutDismiss()
 
         // Then

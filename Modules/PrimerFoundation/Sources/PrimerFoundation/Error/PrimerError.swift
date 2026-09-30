@@ -329,7 +329,7 @@ public enum PrimerError: PrimerErrorProtocol {
         case .nolSdkInitError:
             return "Nol SDK initialization error"
         case let .klarnaError(message, _):
-            return "Klarna wrapper SDK encountered an error: \(String(describing: message))"
+            return "Klarna wrapper SDK encountered an error: \(message ?? "unknown error")"
         case .klarnaUserNotApproved:
             return "User is not approved to perform Klarna payments"
         case let .stripeError(_, message, _):

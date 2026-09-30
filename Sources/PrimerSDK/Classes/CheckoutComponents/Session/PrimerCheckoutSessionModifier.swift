@@ -12,8 +12,8 @@ import SwiftUI
 public extension View {
 
   /// Wires a ``PrimerCheckoutSession`` into the SwiftUI environment, bootstraps it on appear, and
-  /// tears it down on disappear. Apply once around any Primer composable views — whether presented
-  /// modally via ``PrimerCheckout`` or embedded inline in the merchant's own layout.
+  /// tears it down on disappear. Apply once around the Primer composable views embedded in the
+  /// merchant's own layout. ``PrimerCheckout`` does not need it.
   ///
   /// ```swift
   /// @StateObject private var session = PrimerCheckoutSession(clientToken: token)
@@ -65,7 +65,7 @@ private struct PrimerCheckoutSessionModifier: ViewModifier, LogReporter {
       .environment(\.primerCheckoutScope, session.internalScope)
       .overlay {
         if session.phase == .ready, let scope = session.internalScope {
-          InlineFlowHost(scope: scope, theme: theme)
+          InlineFlowHost(scope: scope, theme: theme, appearanceMode: session.appearanceMode)
         }
       }
       .task {
@@ -83,9 +83,10 @@ private struct PrimerCheckoutSessionModifier: ViewModifier, LogReporter {
       .onDisappear { session.cancel() }
   }
 
+  /// The merchant's own layout keeps its scheme; only the SDK tokens follow a forced `appearanceMode`.
   private func loadDesignTokens(for colorScheme: ColorScheme) async {
     do {
-      try await designTokensManager.fetchTokens(for: colorScheme)
+      try await designTokensManager.fetchTokens(for: session.appearanceMode.colorScheme(orSystem: colorScheme))
     } catch {
       logger.error(message: "Failed to load design tokens: \(error)")
     }

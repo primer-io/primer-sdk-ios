@@ -49,4 +49,5 @@ protocol PayPalRepository {
   func confirmBillingAgreement() async throws -> PayPalBillingAgreementResult
   func fetchPayerInfo(orderId: String) async throws -> PayPalPayerInfo
   func tokenize(paymentInstrument: PayPalPaymentInstrumentData) async throws -> PaymentResult
+  func createPayment(token: String) async throws -> PaymentResult
 }

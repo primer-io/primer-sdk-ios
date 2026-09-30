@@ -16,17 +16,22 @@ final class PayPalRepositoryImpl: PayPalRepository, LogReporter {
   private let payPalService: PayPalServiceProtocol
   private let webAuthService: WebAuthenticationService
   private let tokenizationService: TokenizationServiceProtocol
+  private let createPaymentService: CreateResumePaymentServiceProtocol
   private let settings: PrimerSettingsProtocol
 
   init(
     payPalService: PayPalServiceProtocol = PayPalService(),
     webAuthService: WebAuthenticationService = DefaultWebAuthenticationService(),
     tokenizationService: TokenizationServiceProtocol = TokenizationService(),
+    createPaymentService: CreateResumePaymentServiceProtocol = CreateResumePaymentService(
+      paymentMethodType: PrimerPaymentMethodType.payPal.rawValue
+    ),
     settings: PrimerSettingsProtocol = PrimerSettings.current
   ) {
     self.payPalService = payPalService
     self.webAuthService = webAuthService
     self.tokenizationService = tokenizationService
+    self.createPaymentService = createPaymentService
     self.settings = settings
   }
 
@@ -42,11 +47,16 @@ final class PayPalRepositoryImpl: PayPalRepository, LogReporter {
   func openWebAuthentication(url: URL) async throws -> URL {
     let scheme = try settings.paymentMethodOptions.validSchemeForUrlScheme()
     do {
-      return try await webAuthService.connect(
+      let callbackURL = try await webAuthService.connect(
         paymentMethodType: PrimerPaymentMethodType.payPal.rawValue,
         url: url,
         scheme: scheme
       )
+      // PayPal's "Cancel and return" link lands on PayPalService's cancelUrl, "<scheme>://paypal-cancel"
+      if callbackURL.host == "paypal-cancel" {
+        throw PrimerError.cancelled(paymentMethodType: PrimerPaymentMethodType.payPal.rawValue)
+      }
+      return callbackURL
     } catch let error as ASWebAuthenticationSessionError where error.code == .canceledLogin {
       throw PrimerError.cancelled(paymentMethodType: PrimerPaymentMethodType.payPal.rawValue)
     }
@@ -82,6 +92,19 @@ final class PayPalRepositoryImpl: PayPalRepository, LogReporter {
       status: .success,
       token: tokenData.token,
       amount: nil,
+      paymentMethodType: PrimerPaymentMethodType.payPal.rawValue
+    )
+  }
+
+  func createPayment(token: String) async throws -> PaymentResult {
+    let response = try await createPaymentService.createPayment(
+      paymentRequest: Request.Body.Payment.Create(token: token)
+    )
+    return PaymentResult(
+      paymentId: response.id ?? UUID().uuidString,
+      status: PaymentStatus(from: response.status),
+      token: token,
+      amount: response.amount,
       paymentMethodType: PrimerPaymentMethodType.payPal.rawValue
     )
   }

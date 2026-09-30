@@ -17,6 +17,7 @@ final class PayPalRepositoryImplTests: XCTestCase {
     private var mockPayPalService: MockPayPalService!
     private var mockWebAuthService: MockWebAuthenticationService!
     private var mockTokenizationService: MockTokenizationService!
+    private var mockCreatePaymentService: MockCreateResumePaymentService!
     private var sut: PayPalRepositoryImpl!
 
     override func setUp() async throws {
@@ -24,24 +25,29 @@ final class PayPalRepositoryImplTests: XCTestCase {
         mockPayPalService = MockPayPalService()
         mockWebAuthService = MockWebAuthenticationService()
         mockTokenizationService = MockTokenizationService()
-        sut = PayPalRepositoryImpl(
-            payPalService: mockPayPalService,
-            webAuthService: mockWebAuthService,
-            tokenizationService: mockTokenizationService
-        )
+        mockCreatePaymentService = MockCreateResumePaymentService()
 
-        // Set up PrimerSettings with valid URL scheme for tests
+        // Registered before building sut, which reads PrimerSettings.current at init
         let settings = PrimerSettings(
             paymentMethodOptions: PrimerPaymentMethodOptions(urlScheme: "testapp://payment")
         )
         DependencyContainer.register(settings as PrimerSettingsProtocol)
+
+        sut = PayPalRepositoryImpl(
+            payPalService: mockPayPalService,
+            webAuthService: mockWebAuthService,
+            tokenizationService: mockTokenizationService,
+            createPaymentService: mockCreatePaymentService
+        )
     }
 
     override func tearDown() async throws {
+        PrimerInternal.shared.intent = nil
         sut = nil
         mockPayPalService = nil
         mockWebAuthService = nil
         mockTokenizationService = nil
+        mockCreatePaymentService = nil
         try await super.tearDown()
     }
 
@@ -273,6 +279,68 @@ final class PayPalRepositoryImplTests: XCTestCase {
         }
     }
 
+    func test_openWebAuthentication_payPalCancelCallback_throwsCancelled() async {
+        // Given - PayPal's "Cancel and return" link completes the session with the cancel URL
+        mockWebAuthService.connectResult = .success(URL(string: "testapp://paypal-cancel")!)
+
+        // When/Then
+        await assertThrowsCancelled { try await sut.openWebAuthentication(url: URL(string: "https://paypal.com/approve")!) }
+    }
+
+    func test_openWebAuthentication_payPalCancelCallbackWithQuery_throwsCancelled() async {
+        // Given
+        mockWebAuthService.connectResult = .success(URL(string: "testapp://paypal-cancel?token=EC-123")!)
+
+        // When/Then
+        await assertThrowsCancelled { try await sut.openWebAuthentication(url: URL(string: "https://paypal.com/approve")!) }
+    }
+
+    func test_openWebAuthentication_payPalSuccessCallback_returnsUrl() async throws {
+        // Given
+        let callbackURL = URL(string: "testapp://paypal-success?token=EC-123")!
+        mockWebAuthService.connectResult = .success(callbackURL)
+
+        // When
+        let result = try await sut.openWebAuthentication(url: URL(string: "https://paypal.com/approve")!)
+
+        // Then
+        XCTAssertEqual(result, callbackURL)
+    }
+
+    // MARK: - Cancel callback through the interactor
+
+    func test_cancelCallback_checkoutFlow_stopsBeforeFetchingPayerInfo() async {
+        // Given
+        PrimerInternal.shared.intent = .checkout
+        mockWebAuthService.connectResult = .success(URL(string: "testapp://paypal-cancel")!)
+        mockPayPalService.fetchPayerInfoResult = .failure(NSError(domain: "test", code: 400))
+        var createPaymentCalled = false
+        mockCreatePaymentService.onCreatePayment = { _ in
+            createPaymentCalled = true
+            return nil
+        }
+        let interactor = ProcessPayPalPaymentInteractorImpl(repository: sut)
+
+        // When/Then
+        await assertThrowsCancelled { try await interactor.execute() }
+        XCTAssertFalse(mockPayPalService.fetchPayerInfoCalled)
+        XCTAssertFalse(mockTokenizationService.tokenizeCalled)
+        XCTAssertFalse(createPaymentCalled)
+    }
+
+    func test_cancelCallback_vaultFlow_stopsBeforeConfirmingBillingAgreement() async {
+        // Given
+        PrimerInternal.shared.intent = .vault
+        mockWebAuthService.connectResult = .success(URL(string: "testapp://paypal-cancel")!)
+        mockPayPalService.confirmBillingAgreementResult = .failure(NSError(domain: "test", code: 400))
+        let interactor = ProcessPayPalPaymentInteractorImpl(repository: sut)
+
+        // When/Then
+        await assertThrowsCancelled { try await interactor.execute() }
+        XCTAssertFalse(mockPayPalService.confirmBillingAgreementCalled)
+        XCTAssertFalse(mockTokenizationService.tokenizeCalled)
+    }
+
     // MARK: - confirmBillingAgreement Tests
 
     func test_confirmBillingAgreement_mapsShippingAddress() async throws {
@@ -465,7 +533,69 @@ final class PayPalRepositoryImplTests: XCTestCase {
         XCTAssertFalse(result.paymentId.isEmpty)
     }
 
+    // MARK: - createPayment Tests
+
+    func test_createPayment_sendsTokenAndMapsPayment() async throws {
+        // Given
+        var sentToken: String?
+        mockCreatePaymentService.onCreatePayment = { request in
+            sentToken = request.paymentMethodToken
+            return Response.Body.Payment(
+                id: "pay_paypal",
+                paymentId: "pay_paypal",
+                amount: 50,
+                currencyCode: "GBP",
+                customer: nil,
+                customerId: nil,
+                dateStr: nil,
+                order: nil,
+                orderId: nil,
+                requiredAction: nil,
+                status: .success,
+                paymentFailureReason: nil
+            )
+        }
+
+        // When
+        let result = try await sut.createPayment(token: "tok_paypal")
+
+        // Then
+        XCTAssertEqual(sentToken, "tok_paypal")
+        XCTAssertEqual(result.paymentId, "pay_paypal")
+        XCTAssertEqual(result.status, .success)
+        XCTAssertEqual(result.token, "tok_paypal")
+        XCTAssertEqual(result.amount, 50)
+        XCTAssertEqual(result.paymentMethodType, PrimerPaymentMethodType.payPal.rawValue)
+    }
+
+    func test_createPayment_propagatesError() async {
+        // Given: the mock throws when `onCreatePayment` is unset
+
+        // When/Then
+        do {
+            _ = try await sut.createPayment(token: "tok_paypal")
+            XCTFail("Expected error to be thrown")
+        } catch {
+            XCTAssertTrue(error is PrimerError)
+        }
+    }
+
     // MARK: - Helpers
+
+    private func assertThrowsCancelled<T>(
+        _ operation: () async throws -> T,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) async {
+        do {
+            _ = try await operation()
+            XCTFail("Expected PrimerError.cancelled", file: file, line: line)
+        } catch let PrimerError.cancelled(paymentMethodType, _) {
+            XCTAssertEqual(paymentMethodType, PrimerPaymentMethodType.payPal.rawValue, file: file, line: line)
+        } catch {
+            XCTFail("Expected PrimerError.cancelled, got \(error)", file: file, line: line)
+        }
+    }
 
     private func createMockTokenData(id: String?, token: String? = nil) -> PrimerPaymentMethodTokenData {
         Response.Body.Tokenization(

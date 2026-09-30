@@ -49,6 +49,7 @@ final class DefaultKlarnaScope: PrimerKlarnaScope, ObservableObject, LogReporter
 
   private var authorizationToken: String?
 
+  private var sessionTask: Task<Void, Never>?
   private var hasStarted = false
 
   init(
@@ -64,11 +65,12 @@ final class DefaultKlarnaScope: PrimerKlarnaScope, ObservableObject, LogReporter
   }
 
   func start() {
-    guard !hasStarted else { return }
+    guard !hasStarted, sessionTask == nil else { return }
     hasStarted = true
     logger.debug(message: "Klarna scope started")
-    Task { [self] in
+    sessionTask = Task { [self] in
       await createSession()
+      sessionTask = nil
     }
   }
 
@@ -224,7 +226,8 @@ final class DefaultKlarnaScope: PrimerKlarnaScope, ObservableObject, LogReporter
       return
     }
 
-    checkoutScope.startProcessing(payingWith: self)
+    // Not `startProcessing`: authorization cannot run twice, so a retry opens a new session.
+    checkoutScope.updateNavigationState(.processing)
 
     await analyticsInteractor?.trackEvent(
       .paymentSubmitted,
@@ -252,12 +255,9 @@ final class DefaultKlarnaScope: PrimerKlarnaScope, ObservableObject, LogReporter
           selectedCategoryId: internalState.selectedCategoryId
         )
 
+      // Klarna reports a closed consent alert or sheet as approved:false, so this is a cancel, as in PayPal.
       case .declined:
-        let primerError = PrimerError.klarnaError(
-          message: "Klarna payment was declined",
-          diagnosticsId: UUID().uuidString
-        )
-        checkoutScope.handlePaymentError(primerError)
+        cancel()
       }
     } catch {
       handleError(error, context: "authorization")
@@ -269,7 +269,8 @@ final class DefaultKlarnaScope: PrimerKlarnaScope, ObservableObject, LogReporter
       logger.warn(message: "Klarna checkout scope was deallocated before finalization")
       return
     }
-    checkoutScope.startProcessing(payingWith: self)
+    // Not `startProcessing`, for the same reason as in `performAuthorization`.
+    checkoutScope.updateNavigationState(.processing)
 
     do {
       let result = try await processKlarnaInteractor.finalize()
@@ -294,11 +295,7 @@ final class DefaultKlarnaScope: PrimerKlarnaScope, ObservableObject, LogReporter
         await processPayment(authToken: authToken)
 
       case .declined:
-        let primerError = PrimerError.klarnaError(
-          message: "Klarna finalization was declined",
-          diagnosticsId: UUID().uuidString
-        )
-        checkoutScope.handlePaymentError(primerError)
+        cancel()
       }
     } catch {
       handleError(error, context: "finalization")

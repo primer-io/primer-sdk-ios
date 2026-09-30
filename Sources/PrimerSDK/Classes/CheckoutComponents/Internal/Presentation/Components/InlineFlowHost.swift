@@ -28,14 +28,20 @@ struct InlineFlowHost: View, LogReporter {
   let scope: any CheckoutScopeInternal
 
   private let theme: PrimerCheckoutTheme
+  private let appearanceMode: PrimerAppearanceMode
   @State private var sheetItem: FlowSheetItem?
   @Environment(\.bridgeController) private var bridgeController
   @StateObject private var designTokensManager = DesignTokensManager()
   @Environment(\.colorScheme) private var colorScheme
 
-  init(scope: any CheckoutScopeInternal, theme: PrimerCheckoutTheme = PrimerCheckoutTheme()) {
+  init(
+    scope: any CheckoutScopeInternal,
+    theme: PrimerCheckoutTheme = PrimerCheckoutTheme(),
+    appearanceMode: PrimerAppearanceMode = .system
+  ) {
     self.scope = scope
     self.theme = theme
+    self.appearanceMode = appearanceMode
   }
 
   var body: some View {
@@ -76,6 +82,8 @@ struct InlineFlowHost: View, LogReporter {
     .environment(\.designTokens, designTokensManager.tokens)
     .environment(\.primerCheckoutScope, scope)
     .environment(\.layoutDirection, RTLSupport.layoutDirection)
+    // The sheet is SDK UI, so it follows a forced appearance the way `PrimerCheckout` does.
+    .applyAppearanceMode(appearanceMode)
   }
 
   /// FLOW states need a follow-up screen presented in the sheet. NON-FLOW states are owned by the
@@ -105,7 +113,7 @@ struct InlineFlowHost: View, LogReporter {
     logger.info(
       message: "Loading design tokens for color scheme: \(colorScheme == .dark ? "dark" : "light")")
     do {
-      try await designTokensManager.fetchTokens(for: colorScheme)
+      try await designTokensManager.fetchTokens(for: appearanceMode.colorScheme(orSystem: colorScheme))
       logger.info(message: "Design tokens loaded successfully")
     } catch {
       logger.error(message: "Failed to load design tokens: \(error)")

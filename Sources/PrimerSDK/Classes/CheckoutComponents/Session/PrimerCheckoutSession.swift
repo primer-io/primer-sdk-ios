@@ -15,8 +15,8 @@ import SwiftUI
 /// SDK, runs client-token initialization, creates the checkout scope, and bridges per-method scopes
 /// into observable `*Session` objects that the composable views (e.g. ``PrimerCardForm``) consume.
 ///
-/// The same session powers both the modal ``PrimerCheckout`` and fully inline embedding: any Primer
-/// composable view placed under the modifier resolves its session from the environment.
+/// Any Primer composable view placed under the modifier resolves its session from the environment.
+/// The modal ``PrimerCheckout`` does not use a session; it builds its own checkout.
 @available(iOS 15.0, *)
 @MainActor
 public final class PrimerCheckoutSession: ObservableObject {
@@ -45,7 +45,8 @@ public final class PrimerCheckoutSession: ObservableObject {
   }
 
   /// Declarative idempotency-key provider, invoked once per payment attempt just before the SDK
-  /// creates the payment; return nil (default) to opt out. Ignored when `onBeforePaymentCreate` is set.
+  /// creates the payment; return nil (default) to opt out. Used when `onBeforePaymentCreate` is not
+  /// set, or when it continues without a key.
   /// Mutations are forwarded to the checkout scope immediately, so post-`.ready` assignment still applies.
   public var idempotencyKey: @Sendable () -> String? {
     didSet { checkoutScope?.idempotencyKeyProvider = idempotencyKey }
@@ -56,7 +57,7 @@ public final class PrimerCheckoutSession: ObservableObject {
   let theme: PrimerCheckoutTheme
   let navigator = CheckoutNavigator()
   let presentationContext: PresentationContext = .fromPaymentSelection
-  private var initializer: CheckoutSDKInitializer?
+  var initializer: CheckoutSDKInitializer?
   private(set) var checkoutScope: DefaultCheckoutScope?
   private var sessionCache: [String: AnyObject] = [:]
   private var isRefreshing = false
@@ -78,6 +79,8 @@ public final class PrimerCheckoutSession: ObservableObject {
   /// The internal checkout scope, exposed module-internally so the inline flow host can observe
   /// navigation and render follow-up screens. Non-nil only once `phase == .ready`.
   var internalScope: (any CheckoutScopeInternal)? { checkoutScope }
+
+  var appearanceMode: PrimerAppearanceMode { settings.uiOptions.appearanceMode }
 
   /// Sets the sink the `.primerCheckoutSession(_:onCompletion:)` modifier uses to deliver outcomes.
   func setCompletionHandler(_ handler: ((PrimerCheckoutState) -> Void)?) {
@@ -117,6 +120,9 @@ public final class PrimerCheckoutSession: ObservableObject {
     checkoutScope = scope
 
     for await checkoutState in scope.state {
+      // `cancel()` detaches the scope before its `.dismissed` arrives; this loop must not deliver it
+      // after the latch reset, or it latches again and swallows the restarted session's outcome.
+      guard checkoutScope === scope else { return }
       switch checkoutState {
       case let .ready(clientSession):
         self.clientSession = clientSession
@@ -124,8 +130,13 @@ public final class PrimerCheckoutSession: ObservableObject {
       case .failure:
         // Before `.ready` this is an initialization failure. It ends the session, and one broken
         // launch emits it from two places (`setupInteractors` then `loadPaymentMethods`), so latch
-        // and stop observing or the merchant hears the same failure twice.
+        // and stop observing or the merchant hears the same failure twice. A refresh also passes
+        // through `.initializing`, but its failure is one attempt, not the end of the session.
         guard case .ready = phase else {
+          if isRefreshing {
+            onCompletion?(checkoutState)
+            continue
+          }
           complete(with: checkoutState)
           return
         }
@@ -160,9 +171,10 @@ public final class PrimerCheckoutSession: ObservableObject {
       try await initializer?.refreshConfiguration()
     } catch {
       // A failed reload must not strand the session at `.initializing`: restore `.ready` so the
-      // merchant can retry, then surface the failure via `onCompletion`.
+      // merchant can retry, then surface the failure via `onCompletion`. Not latched: the session
+      // is still usable, so a later `.success` or `.dismissed` must still arrive.
       phase = .ready
-      complete(with: .failure(error as? PrimerError ?? .underlyingErrors(errors: [error])))
+      onCompletion?(.failure(error as? PrimerError ?? .underlyingErrors(errors: [error])))
       return
     }
 

@@ -10,6 +10,7 @@ import Foundation
 
 @available(iOS 15.0, *)
 protocol VaultManagerProtocol: AnyObject {
+    var paymentCheckoutData: PrimerCheckoutData? { get }
     func configure() throws
     func fetchVaultedPaymentMethods(
         completion: @escaping ([PrimerHeadlessUniversalCheckout.VaultedPaymentMethod]?, Error?) -> Void

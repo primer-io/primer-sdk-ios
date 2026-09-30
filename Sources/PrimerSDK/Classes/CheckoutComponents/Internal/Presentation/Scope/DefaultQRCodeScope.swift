@@ -43,6 +43,7 @@ final class DefaultQRCodeScope: PrimerQRCodeScope, ObservableObject, LogReporter
 
   @Published private var internalState = PrimerQRCodeState()
 
+  private var paymentTask: Task<Void, Never>?
   private var hasStarted = false
 
   // MARK: - Initialization
@@ -64,11 +65,12 @@ final class DefaultQRCodeScope: PrimerQRCodeScope, ObservableObject, LogReporter
   // MARK: - PrimerPaymentMethodScope Methods
 
   func start() {
-    guard !hasStarted else { return }
+    guard !hasStarted, paymentTask == nil else { return }
     hasStarted = true
     logger.debug(message: "QR code scope started")
-    Task { [self] in
+    paymentTask = Task { [self] in
       await performPayment()
+      paymentTask = nil
     }
   }
 

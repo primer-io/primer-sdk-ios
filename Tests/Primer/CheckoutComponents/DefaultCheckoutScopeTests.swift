@@ -108,6 +108,21 @@ final class DefaultCheckoutScopeBehaviorTests: XCTestCase {
         }
     }
 
+    // The UIKit presenter reads the route on a swipe; without it a captured payment reports a dismiss.
+    func test_handlePaymentSuccess_movesTheCoordinatorToSuccess() {
+        // Given
+        sut = makeSut()
+
+        // When
+        sut.handlePaymentSuccess(makePaymentResult())
+
+        // Then
+        guard case let .success(result) = navigator.checkoutCoordinator.currentRoute else {
+            return XCTFail("Expected the success route, got \(navigator.checkoutCoordinator.currentRoute)")
+        }
+        XCTAssertEqual(result.paymentId, TestData.PaymentIds.success)
+    }
+
     // MARK: - handlePaymentError Tests
 
     func test_handlePaymentError_updatesStateToFailure() async throws {
@@ -157,27 +172,6 @@ final class DefaultCheckoutScopeBehaviorTests: XCTestCase {
 
         // Then
         XCTAssertEqual(sut.navigationState, .processing)
-    }
-
-    // MARK: - handleAutoDismiss Tests
-
-    func test_handleAutoDismiss_updatesStateToDismissed() async throws {
-        // Given
-        sut = makeSut()
-
-        // When
-        sut.handleAutoDismiss()
-
-        // Then
-        let state = try await awaitValue(sut.state) {
-            if case .dismissed = $0 { return true }
-            return false
-        }
-        if case .dismissed = state {
-            // Expected
-        } else {
-            XCTFail("Expected dismissed state")
-        }
     }
 
     // MARK: - onDismiss Tests
@@ -474,8 +468,6 @@ final class DefaultCheckoutScopeBehaviorTests: XCTestCase {
 
         // Then
         XCTAssertNil(sut.onBeforePaymentCreate)
-        XCTAssertNil(sut.successScreen)
-        XCTAssertNil(sut.paymentMethodSelectionScreen)
     }
 
     // MARK: - retryPayment Tests
@@ -529,6 +521,27 @@ final class DefaultCheckoutScopeBehaviorTests: XCTestCase {
 
         // Then
         XCTAssertNil(scope)
+    }
+
+    // DEBUG builds cache a second DefaultKlarnaScope for the PRIMER_TEST_KLARNA twin.
+    func test_getPaymentMethodScope_byType_withTwoScopesOfThatType_returnsTheSelectedOne() {
+        // Given
+        sut = makeSut()
+        let types = [PrimerPaymentMethodType.klarna.rawValue, "PRIMER_TEST_KLARNA"]
+        for type in types {
+            sut.paymentMethodScopeCache[type] = DefaultKlarnaScope(
+                checkoutScope: sut,
+                processKlarnaInteractor: MockProcessKlarnaPaymentInteractor()
+            )
+        }
+
+        for type in types {
+            // When
+            sut.updateNavigationState(.paymentMethod(type))
+
+            // Then
+            XCTAssertTrue(sut.getPaymentMethodScope(DefaultKlarnaScope.self) === sut.paymentMethodScopeCache[type], type)
+        }
     }
 
     func test_getPaymentMethodScope_forEnum_delegatesToStringVersion() {
@@ -812,6 +825,41 @@ final class DefaultCheckoutScopeReloadTests: XCTestCase {
         XCTAssertTrue(sut.availablePaymentMethods.isEmpty)
     }
 
+    // Regression: a failed setup reported itself, then loading ran on and reported a second failure.
+    func test_reload_whenSetupFails_reportsOneFailure() async throws {
+        // Given
+        sut = try await ContainerTestHelpers.createSettledCheckoutScope()
+        var failures = 0
+        let observer = Task { [sut] in
+            // The stream replays the settled scope's own state first; only what reload emits counts.
+            for await state in sut!.state.dropFirst() {
+                if case .failure = state { failures += 1 }
+            }
+        }
+        defer { observer.cancel() }
+        try await Task.sleep(nanoseconds: 50_000_000)
+        await DIContainer.clearContainer()
+
+        // When
+        await sut.reload()
+        try await Task.sleep(nanoseconds: 300_000_000)
+
+        // Then
+        XCTAssertEqual(failures, 1)
+    }
+
+    func test_canRetryPayment_isFalseUntilAPaymentStarts() async throws {
+        // Given
+        sut = try await ContainerTestHelpers.createSettledCheckoutScope()
+        XCTAssertFalse(sut.canRetryPayment)
+
+        // When
+        sut.startProcessing(payingWith: nil)
+
+        // Then
+        XCTAssertTrue(sut.canRetryPayment)
+    }
+
     func test_reload_concurrentCall_isIgnoredByReentrancyGuard() async throws {
         // Given
         sut = try await ContainerTestHelpers.createSettledCheckoutScope()
@@ -881,5 +929,87 @@ final class DefaultCheckoutScopeReloadTests: XCTestCase {
 
         // Then — the provider fills the gap rather than the key being silently dropped.
         XCTAssertEqual(PrimerInternal.shared.currentIdempotencyKey, "declarative-key")
+    }
+
+    // MARK: - Single payment method with saved methods
+
+    /// One configured card, and a repository that returns `vaulted` for the shopper.
+    private func makeSingleMethodScope(
+        vaulted: [PrimerHeadlessUniversalCheckout.VaultedPaymentMethod]
+    ) async throws -> DefaultCheckoutScope {
+        SDKSessionHelper.setUp()
+        let container = try await ContainerTestHelpers.createTestContainer(
+            apiConfiguration: PrimerAPIConfigurationModule.apiConfiguration)
+        let repository = MockHeadlessRepository()
+        repository.vaultedPaymentMethodsToReturn = vaulted
+        _ = try await container.register(HeadlessRepository.self).asSingleton().with { _ in repository }
+        await DIContainer.setContainer(container)
+
+        let scope = DefaultCheckoutScope(
+            clientToken: TestData.Tokens.valid,
+            settings: PrimerSettings(paymentHandling: .auto, uiOptions: PrimerUIOptions(isInitScreenEnabled: false)),
+            navigator: CheckoutNavigator(coordinator: CheckoutCoordinator())
+        )
+        try await withTimeout(3.0) {
+            while scope.navigationState == .loading { await Task.yield() }
+        }
+        return scope
+    }
+
+    private func makeVaultedCard() throws -> PrimerHeadlessUniversalCheckout.VaultedPaymentMethod {
+        let data = try JSONSerialization.data(withJSONObject: ["last4Digits": "4242"])
+        return PrimerHeadlessUniversalCheckout.VaultedPaymentMethod(
+            id: "vault_1",
+            paymentMethodType: PrimerPaymentMethodType.paymentCard.rawValue,
+            paymentInstrumentType: .paymentCard,
+            paymentInstrumentData: try JSONDecoder().decode(Response.Body.Tokenization.PaymentInstrumentData.self, from: data),
+            analyticsId: "analytics_vault_1"
+        )
+    }
+
+    func test_singlePaymentMethod_withSavedMethods_staysOnSelection() async throws {
+        sut = try await makeSingleMethodScope(vaulted: [makeVaultedCard()])
+        defer { SDKSessionHelper.tearDown() }
+
+        XCTAssertEqual(sut.navigationState, .paymentMethodSelection)
+        XCTAssertEqual(sut.vaultedPaymentMethods.count, 1)
+        // The card form opened from here needs a way back to the saved card.
+        XCTAssertEqual(try DefaultCheckoutScope.validated(from: sut).1, .fromPaymentSelection)
+    }
+
+    // Inline embedding never shows the splash, so it must not wait for it.
+    func test_inlineFlow_withInitScreenEnabled_skipsTheSplashPause() async throws {
+        SDKSessionHelper.setUp()
+        defer { SDKSessionHelper.tearDown() }
+        let container = try await ContainerTestHelpers.createTestContainer(
+            apiConfiguration: PrimerAPIConfigurationModule.apiConfiguration)
+        await DIContainer.setContainer(container)
+        let start = Date()
+
+        sut = DefaultCheckoutScope(
+            clientToken: TestData.Tokens.valid,
+            settings: PrimerSettings(paymentHandling: .auto, uiOptions: PrimerUIOptions(isInitScreenEnabled: true)),
+            navigator: CheckoutNavigator(coordinator: CheckoutCoordinator()),
+            isInlineFlow: true
+        )
+        for await state in sut.state {
+            if case .initializing = state { continue }
+            break
+        }
+
+        XCTAssertLessThan(Date().timeIntervalSince(start), 0.4)
+    }
+
+    func test_appearanceMode_forcesTheTokenScheme() {
+        XCTAssertEqual(PrimerAppearanceMode.dark.colorScheme(orSystem: .light), .dark)
+        XCTAssertEqual(PrimerAppearanceMode.light.colorScheme(orSystem: .dark), .light)
+        XCTAssertEqual(PrimerAppearanceMode.system.colorScheme(orSystem: .dark), .dark)
+    }
+
+    func test_singlePaymentMethod_withoutSavedMethods_opensTheMethod() async throws {
+        sut = try await makeSingleMethodScope(vaulted: [])
+        defer { SDKSessionHelper.tearDown() }
+
+        XCTAssertEqual(sut.navigationState, .paymentMethod(PrimerPaymentMethodType.paymentCard.rawValue))
     }
 }

@@ -42,7 +42,8 @@ struct ErrorScreen: View {
         .accessibilityIdentifier(AccessibilityIdentifiers.Error.title)
         .accessibilityAddTraits(.isHeader)
 
-      Text(error.errorDescription ?? CheckoutComponentsStrings.unexpectedError)
+      // `errorDescription` wraps the text in the error and diagnostics ids, which mean nothing to a shopper.
+      Text(error.plainDescription ?? CheckoutComponentsStrings.unexpectedError)
         .primerTypography(.bodyMedium, tokens: tokens)
         .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
         .multilineTextAlignment(.center)

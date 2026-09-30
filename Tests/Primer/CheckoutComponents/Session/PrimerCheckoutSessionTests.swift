@@ -5,6 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 @testable import PrimerSDK
+@_spi(PrimerInternal) @testable import PrimerNetworking
 import XCTest
 @_spi(PrimerInternal) @testable import PrimerFoundation
 @_spi(PrimerInternal) @testable import PrimerCore
@@ -321,6 +322,62 @@ final class PrimerCheckoutSessionTests: XCTestCase {
     XCTAssertEqual(sut.phase, .ready)
   }
 
+  // Regression: a failed refresh used the one-shot latch, so the payment that followed never arrived.
+  func test_refresh_whenReloadFails_stillDeliversTheLaterSuccess() async throws {
+    let scope = try await makeSettledScope()
+    let sut = PrimerCheckoutSession(clientToken: token)
+    var completions: [PrimerCheckoutState] = []
+    sut.setCompletionHandler { completions.append($0) }
+    let task = Task { await sut.observeCheckoutState(scope) }
+    try await withTimeout(3.0) { [sut] in
+      while sut.phase != .ready { await Task.yield() }
+    }
+    sut.initializer = CheckoutSDKInitializer(
+      clientToken: token,
+      primerSettings: PrimerSettings(),
+      navigator: CheckoutNavigator(),
+      presentationContext: .fromPaymentSelection,
+      configurationModule: FailingConfigurationModule()
+    )
+
+    await sut.refresh()
+    scope.handlePaymentSuccess(PaymentResult(paymentId: TestData.PaymentIds.success, status: .success))
+    await task.value
+
+    XCTAssertEqual(sut.phase, .ready)
+    guard completions.count == 2, case .failure = completions.first, case .success = completions.last else {
+      return XCTFail("Expected [.failure, .success], got \(completions)")
+    }
+  }
+
+  // Regression: the old loop delivered the `.dismissed` that `cancel()` caused after the latch reset,
+  // which latched again and swallowed the restarted session's outcome.
+  func test_cancel_thenRestart_deliversTheRestartedOutcome() async throws {
+    let firstScope = try await makeSettledScope()
+    let sut = PrimerCheckoutSession(clientToken: token)
+    var completions: [PrimerCheckoutState] = []
+    sut.setCompletionHandler { completions.append($0) }
+    let firstTask = Task { await sut.observeCheckoutState(firstScope) }
+    try await withTimeout(3.0) { [sut] in
+      while sut.phase != .ready { await Task.yield() }
+    }
+
+    sut.cancel()
+    await firstTask.value
+
+    let secondScope = try await makeSettledScope()
+    let secondTask = Task { await sut.observeCheckoutState(secondScope) }
+    try await withTimeout(3.0) { [sut] in
+      while sut.phase != .ready { await Task.yield() }
+    }
+    secondScope.handlePaymentSuccess(PaymentResult(paymentId: TestData.PaymentIds.success, status: .success))
+    await secondTask.value
+
+    guard completions.count == 1, case .success = completions.first else {
+      return XCTFail("Expected [.success], got \(completions)")
+    }
+  }
+
   func test_cancel_whenReady_resetsToRestartableState() async throws {
     let (sut, task) = try await driveToReady()
 
@@ -333,5 +390,32 @@ final class PrimerCheckoutSessionTests: XCTestCase {
     XCTAssertEqual(sut.phase, .initializing)
     XCTAssertNil(sut.selection)
     XCTAssertNil(sut.cardForm)
+  }
+}
+
+/// Fails every session setup, so `refresh()` takes its reload-failure branch.
+private final class FailingConfigurationModule: PrimerAPIConfigurationModuleProtocol, AnalyticsSessionConfigProviding {
+  static var apiClient: PrimerAPIClientProtocol?
+  static var clientToken: JWTToken?
+  static var decodedJWTToken: DecodedJWTToken?
+  static var apiConfiguration: PrimerAPIConfiguration?
+
+  static func resetSession() {}
+
+  func setupSession(
+    forClientToken clientToken: String,
+    requestDisplayMetadata: Bool,
+    requestClientTokenValidation: Bool,
+    requestVaultedPaymentMethods: Bool
+  ) async throws {
+    throw PrimerError.unknown(message: "reload failed")
+  }
+
+  func updateSession(withActions actionsRequest: ClientSessionUpdateRequest) async throws {}
+
+  func storeRequiredActionClientToken(_ newClientToken: String) async throws {}
+
+  func makeAnalyticsSessionConfig(checkoutSessionId: String, clientToken: String, sdkVersion: String) -> AnalyticsSessionConfig? {
+    nil
   }
 }

@@ -93,9 +93,11 @@ final class DefaultFormRedirectScope: PrimerFormRedirectScope, ObservableObject,
       logger.warn(message: "Submit called but form is not valid")
       return
     }
+    guard paymentTask == nil else { return }
 
     paymentTask = Task {
       await performPayment()
+      paymentTask = nil
     }
   }
 
@@ -293,9 +295,9 @@ final class DefaultFormRedirectScope: PrimerFormRedirectScope, ObservableObject,
     }
   }
 
+  // Keeps `paymentTask` set: the run clears it when it ends, so a new submit waits for the cancelled one.
   private func cancelPaymentProcessing() {
     paymentTask?.cancel()
-    paymentTask = nil
     processPaymentInteractor.cancelPolling(paymentMethodType: paymentMethodType)
   }
 }

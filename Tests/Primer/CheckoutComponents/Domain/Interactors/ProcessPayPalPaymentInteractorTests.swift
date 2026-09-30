@@ -50,7 +50,10 @@ final class ProcessPayPalPaymentInteractorTests: XCTestCase {
             )
         )
         var tokenizeResult: Result<PaymentResult, Error> = .success(
-            PaymentResult(paymentId: "payment-123", status: .success)
+            PaymentResult(paymentId: "payment-123", status: .success, token: "token-123")
+        )
+        var createPaymentResult: Result<PaymentResult, Error> = .success(
+            PaymentResult(paymentId: "created-payment-123", status: .success, token: "token-123")
         )
 
         var startOrderSessionCalled = false
@@ -62,6 +65,7 @@ final class ProcessPayPalPaymentInteractorTests: XCTestCase {
         var fetchPayerInfoOrderId: String?
         var tokenizeCalled = false
         var tokenizePaymentInstrument: PayPalPaymentInstrumentData?
+        var createPaymentToken: String?
 
         func startOrderSession() async throws -> (orderId: String, approvalUrl: String) {
             startOrderSessionCalled = true
@@ -95,6 +99,11 @@ final class ProcessPayPalPaymentInteractorTests: XCTestCase {
             tokenizePaymentInstrument = paymentInstrument
             return try tokenizeResult.get()
         }
+
+        func createPayment(token: String) async throws -> PaymentResult {
+            createPaymentToken = token
+            return try createPaymentResult.get()
+        }
     }
 
     // MARK: - Checkout Flow Tests
@@ -113,7 +122,8 @@ final class ProcessPayPalPaymentInteractorTests: XCTestCase {
         XCTAssertTrue(mockRepository.tokenizeCalled)
         XCTAssertFalse(mockRepository.startBillingAgreementSessionCalled)
         XCTAssertFalse(mockRepository.confirmBillingAgreementCalled)
-        XCTAssertEqual(result.paymentId, "payment-123")
+        XCTAssertEqual(mockRepository.createPaymentToken, "token-123")
+        XCTAssertEqual(result.paymentId, "created-payment-123")
         XCTAssertEqual(result.status, .success)
     }
 
@@ -129,7 +139,7 @@ final class ProcessPayPalPaymentInteractorTests: XCTestCase {
         XCTAssertTrue(mockRepository.openWebAuthenticationCalled)
         XCTAssertTrue(mockRepository.fetchPayerInfoCalled)
         XCTAssertTrue(mockRepository.tokenizeCalled)
-        XCTAssertEqual(result.paymentId, "payment-123")
+        XCTAssertEqual(result.paymentId, "created-payment-123")
     }
 
     func test_execute_checkoutFlow_passesCorrectOrderIdToFetchPayerInfo() async throws {
@@ -197,6 +207,7 @@ final class ProcessPayPalPaymentInteractorTests: XCTestCase {
         XCTAssertTrue(mockRepository.tokenizeCalled)
         XCTAssertFalse(mockRepository.startOrderSessionCalled)
         XCTAssertFalse(mockRepository.fetchPayerInfoCalled)
+        XCTAssertNil(mockRepository.createPaymentToken)
         XCTAssertEqual(result.paymentId, "payment-123")
         XCTAssertEqual(result.status, .success)
     }
@@ -345,6 +356,41 @@ final class ProcessPayPalPaymentInteractorTests: XCTestCase {
         }
     }
 
+    func test_execute_checkoutFlow_throwsWithoutCreatingPaymentWhenTokenIsMissing() async {
+        // Given
+        PrimerInternal.shared.intent = .checkout
+        mockRepository.tokenizeResult = .success(PaymentResult(paymentId: "token-id", status: .success))
+
+        // When/Then
+        do {
+            _ = try await sut.execute()
+            XCTFail("Expected error to be thrown")
+        } catch let error as PrimerError {
+            guard case let .invalidValue(key, _, _, _) = error else {
+                return XCTFail("Expected invalidValue error, got: \(error)")
+            }
+            XCTAssertEqual(key, "paymentMethodTokenData.token")
+            XCTAssertNil(mockRepository.createPaymentToken)
+        } catch {
+            XCTFail("Expected PrimerError, got: \(error)")
+        }
+    }
+
+    func test_execute_checkoutFlow_propagatesCreatePaymentError() async {
+        // Given
+        PrimerInternal.shared.intent = .checkout
+        let expectedError = NSError(domain: "test", code: 450, userInfo: nil)
+        mockRepository.createPaymentResult = .failure(expectedError)
+
+        // When/Then
+        do {
+            _ = try await sut.execute()
+            XCTFail("Expected error to be thrown")
+        } catch {
+            XCTAssertEqual((error as NSError).code, 450)
+        }
+    }
+
     func test_execute_vaultFlow_propagatesStartBillingAgreementError() async {
         // Given
         PrimerInternal.shared.intent = .vault
@@ -380,7 +426,7 @@ final class ProcessPayPalPaymentInteractorTests: XCTestCase {
     func test_execute_returnsCorrectPaymentStatus_pending() async throws {
         // Given
         PrimerInternal.shared.intent = .checkout
-        mockRepository.tokenizeResult = .success(PaymentResult(paymentId: "pending-payment", status: .pending))
+        mockRepository.createPaymentResult = .success(PaymentResult(paymentId: "pending-payment", status: .pending))
 
         // When
         let result = try await sut.execute()
@@ -392,7 +438,7 @@ final class ProcessPayPalPaymentInteractorTests: XCTestCase {
     func test_execute_returnsCorrectPaymentStatus_failed() async throws {
         // Given
         PrimerInternal.shared.intent = .checkout
-        mockRepository.tokenizeResult = .success(PaymentResult(paymentId: "failed-payment", status: .failed))
+        mockRepository.createPaymentResult = .success(PaymentResult(paymentId: "failed-payment", status: .failed))
 
         // When
         let result = try await sut.execute()
@@ -404,7 +450,7 @@ final class ProcessPayPalPaymentInteractorTests: XCTestCase {
     func test_execute_returnsFullPaymentResult() async throws {
         // Given
         PrimerInternal.shared.intent = .checkout
-        mockRepository.tokenizeResult = .success(PaymentResult(
+        mockRepository.createPaymentResult = .success(PaymentResult(
             paymentId: "full-payment",
             status: .success,
             token: "token-abc",

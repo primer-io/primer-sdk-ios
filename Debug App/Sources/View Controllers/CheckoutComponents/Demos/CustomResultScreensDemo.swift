@@ -50,8 +50,8 @@ private struct CustomResultScreensContent: View {
             switch outcome {
             case let .success(result):
                 CustomSuccessScreen(result: result)
-            case let .failure(error):
-                CustomErrorScreen(error: error)
+            case let .failure(error, checkoutData):
+                CustomErrorScreen(error: error, paymentId: checkoutData?.payment?.id)
             default:
                 checkout
             }
@@ -130,6 +130,7 @@ private struct CustomSuccessScreen: View {
 @available(iOS 15.0, *)
 private struct CustomErrorScreen: View {
     let error: PrimerError
+    let paymentId: String?
 
     var body: some View {
         VStack(spacing: 16) {
@@ -137,6 +138,9 @@ private struct CustomErrorScreen: View {
             Text("Payment Failed").font(.title2.weight(.bold)).foregroundStyle(.red)
             Text(error.localizedDescription)
                 .multilineTextAlignment(.center).foregroundStyle(.secondary)
+            if let paymentId {
+                Text("Payment reference: \(paymentId)").font(.footnote.monospaced()).foregroundStyle(.secondary)
+            }
         }
         .padding(32)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)

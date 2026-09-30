@@ -335,6 +335,27 @@ final class DefaultFormRedirectScopeTests: XCTestCase {
         XCTAssertEqual(state.status, .awaitingExternalCompletion)
     }
 
+    @MainActor
+    func test_submit_whileAPaymentIsInFlight_paysOnce() async throws {
+        mockInteractor.shouldHold = true
+        let scope = createScope(paymentMethodType: FormRedirectTestData.Constants.blikPaymentMethodType)
+        scope.start()
+        scope.updateField(.otpCode, value: "123456")
+        _ = try await awaitValue(scope.state, matching: { $0.isSubmitEnabled })
+        scope.submit()
+        try await withTimeout(2.0) { [self] in
+            while mockInteractor.executeCallCount < 1 { await Task.yield() }
+        }
+
+        scope.submit()
+        // why: asserting that no second payment starts, so give one time to reach the interactor
+        try await Task.sleep(nanoseconds: 100_000_000)
+
+        XCTAssertEqual(mockInteractor.executeCallCount, 1)
+        mockInteractor.release()
+        _ = try await awaitValue(scope.state, matching: { $0.status == .success })
+    }
+
     // MARK: - Cancel Tests
 
     @MainActor

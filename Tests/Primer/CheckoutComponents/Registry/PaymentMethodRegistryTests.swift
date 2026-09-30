@@ -186,11 +186,13 @@ final class MockPaymentMethodScope: PrimerPaymentMethodScope {
     }
 
     private(set) var submitCallCount = 0
+    private(set) var startCallCount = 0
+    private(set) var prepareForReentryCallCount = 0
 
-    // No-op: mock stub for protocol conformance
-    func start() {}
+    func start() { startCallCount += 1 }
     func submit() { submitCallCount += 1 }
     func cancel() {}
+    func prepareForReentry() { prepareForReentryCallCount += 1 }
 }
 
 struct MockPaymentMethodState: Equatable {

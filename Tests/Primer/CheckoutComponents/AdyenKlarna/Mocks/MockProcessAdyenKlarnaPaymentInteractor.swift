@@ -18,23 +18,40 @@ final class MockProcessAdyenKlarnaPaymentInteractor: ProcessAdyenKlarnaPaymentIn
     var executeResult: Result<PaymentResult, Error> = .success(
         PaymentResult(paymentId: "pay-123", status: .success, amount: 1000, currencyCode: "EUR", paymentMethodType: "ADYEN_KLARNA")
     )
+    /// When set, the matching call suspends until release() is called.
+    var holdsFetch = false
+    var holdsExecute = false
 
     // MARK: - Call Tracking
 
     private(set) var fetchPaymentOptionsCallCount = 0
     private(set) var executeCallCount = 0
     private(set) var lastSelectedOption: AdyenKlarnaPaymentOption?
+    private var heldCalls: [CheckedContinuation<Void, Never>] = []
 
     // MARK: - ProcessAdyenKlarnaPaymentInteractor
 
     func fetchPaymentOptions() async throws -> [AdyenKlarnaPaymentOption] {
         fetchPaymentOptionsCallCount += 1
+        if holdsFetch { await hold() }
         return try fetchPaymentOptionsResult.get()
     }
 
     func execute(selectedOption: AdyenKlarnaPaymentOption) async throws -> PaymentResult {
         executeCallCount += 1
         lastSelectedOption = selectedOption
+        if holdsExecute { await hold() }
         return try executeResult.get()
+    }
+
+    // MARK: - Test Helpers
+
+    func release() {
+        heldCalls.forEach { $0.resume() }
+        heldCalls = []
+    }
+
+    private func hold() async {
+        await withCheckedContinuation { heldCalls.append($0) }
     }
 }

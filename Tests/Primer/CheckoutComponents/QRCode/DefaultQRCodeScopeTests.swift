@@ -174,6 +174,31 @@ final class DefaultQRCodeScopeTests: XCTestCase {
         XCTAssertEqual(interactor.startPaymentCallCount, 2)
     }
 
+    func test_start_afterReentryWhilePolling_keepsThatPayment() async throws {
+        var heldPolls: [CheckedContinuation<Void, Never>] = []
+        mockInteractor.startPaymentResult = .success(QRCodeTestData.defaultPaymentData)
+        mockInteractor.onPollAndComplete = {
+            await withCheckedContinuation { heldPolls.append($0) }
+            return QRCodeTestData.successPaymentResult
+        }
+        let interactor = mockInteractor!
+        let sut = createScope()
+        sut.start()
+        try await withTimeout(2.0) {
+            while interactor.pollAndCompleteCallCount < 1 { await Task.yield() }
+        }
+
+        // The shopper returns to the list and picks the method again while the QR code is still showing.
+        sut.prepareForReentry()
+        sut.start()
+        // why: asserting that no second payment starts, so give one time to reach the interactor
+        try await Task.sleep(nanoseconds: 100_000_000)
+
+        XCTAssertEqual(interactor.startPaymentCallCount, 1)
+        heldPolls.forEach { $0.resume() }
+        _ = try await awaitValue(sut.state, matching: { $0.status == .success })
+    }
+
     // MARK: - Helpers
 
     private func createScope(

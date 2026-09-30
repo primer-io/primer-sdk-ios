@@ -15,49 +15,14 @@ public protocol PrimerCheckoutPresenterDelegate: AnyObject {
     /// - Parameter result: The payment result containing payment ID, status, and other details
     func primerCheckoutPresenterDidCompleteWithSuccess(_ result: PaymentResult)
 
-    /// Called when payment fails
-    func primerCheckoutPresenterDidFailWithError(_ error: PrimerError)
+    /// Called once per failed attempt, including a failed initialization. The sheet stays open while
+    /// the SDK error screen offers a retry.
+    /// - Parameter checkoutData: The payment id and order id when the payment was created before failing,
+    ///   `nil` otherwise. See `PrimerCheckoutState.failure`.
+    func primerCheckoutPresenterDidFailWithError(_ error: PrimerError, checkoutData: PrimerCheckoutData?)
 
     /// Called when checkout is dismissed without completion
     func primerCheckoutPresenterDidDismiss()
-
-    // MARK: - 3DS Delegate Methods (Optional with default implementations)
-
-    /// Called when 3DS challenge is about to be presented
-    /// - Parameter paymentMethodTokenData: The payment method token data requiring 3DS
-    func primerCheckoutPresenterWillPresent3DSChallenge(
-        _ paymentMethodTokenData: PrimerPaymentMethodTokenData)
-
-    /// Called when 3DS challenge UI is dismissed
-    func primerCheckoutPresenterDidDismiss3DSChallenge()
-
-    /// Called when 3DS challenge completes (success or failure)
-    /// - Parameters:
-    ///   - success: Whether 3DS challenge was successful
-    ///   - resumeToken: The resume token if successful, nil if failed
-    ///   - error: The error if failed, nil if successful
-    func primerCheckoutPresenterDidComplete3DSChallenge(success: Bool, resumeToken: String?, error: Error?)
-}
-
-// MARK: - Optional 3DS Delegate Methods
-
-@available(iOS 15.0, *)
-extension PrimerCheckoutPresenterDelegate {
-    /// Override if you need 3DS challenge presentation callbacks
-    public func primerCheckoutPresenterWillPresent3DSChallenge(
-        _ paymentMethodTokenData: PrimerPaymentMethodTokenData
-    ) {
-    }
-
-    /// Override if you need 3DS challenge dismissal callbacks
-    public func primerCheckoutPresenterDidDismiss3DSChallenge() {
-    }
-
-    /// Override if you need 3DS challenge completion callbacks
-    public func primerCheckoutPresenterDidComplete3DSChallenge(
-        success: Bool, resumeToken: String?, error: Error?
-    ) {
-    }
 }
 
 /// UIKit entry point for CheckoutComponents SDK
@@ -76,11 +41,12 @@ extension PrimerCheckoutPresenterDelegate {
     // MARK: - Properties
 
     /// Navigator of the active checkout. Read on interactive dismissal to learn which screen the shopper
-    /// left, so the delegate hears about a decline the SDK error screen was still showing.
+    /// left, so a swipe on the success screen still reports the captured payment.
     var activeNavigator: CheckoutNavigator?
 
-    /// Set once a terminal result reached the delegate for the active presentation. A swipe on the
-    /// result screen and the screen's own auto-dismiss must not both report the same outcome.
+    /// Set once the presentation ended with a success, a dismissal or a failure that closed the sheet.
+    /// A swipe on the result screen and the screen's own auto-dismiss must not both report it.
+    /// A failure the error screen shows does not set it: the shopper can still retry.
     var hasDeliveredResult = false
 
     /// The currently active UIViewController hosting the SwiftUI checkout view
@@ -245,11 +211,16 @@ extension PrimerCheckoutPresenterDelegate {
         }
     }
 
-    func handlePaymentFailure(_ error: PrimerError) {
+    /// Reports every failed attempt. The sheet closes only when no SDK error screen offers a retry.
+    func handlePaymentFailure(
+        _ error: PrimerError, checkoutData: PrimerCheckoutData? = nil, closesCheckout: Bool = true
+    ) {
         logger.error(message: "Payment failed: \(error)")
 
+        guard closesCheckout else { return deliverFailure(error, checkoutData: checkoutData) }
         dismissDirectly { [weak self] in
-            self?.deliverFailure(error)
+            self?.deliverFailure(error, checkoutData: checkoutData)
+            self?.hasDeliveredResult = true
         }
     }
 
@@ -260,21 +231,17 @@ extension PrimerCheckoutPresenterDelegate {
     }
 
     /// The shopper swiped the sheet away. UIKit reports this only for interactive dismissal, so the
-    /// programmatic paths above never race it. The current route decides what the merchant hears: a
-    /// decline still on screen is a failure, a finished payment is a success, anything else a dismiss.
+    /// programmatic paths above never race it. A finished payment is a success; anything else is a
+    /// dismiss, because a decline on the error screen already reached the delegate when it happened.
     func handleInteractiveDismiss() {
         let route = activeNavigator?.checkoutCoordinator.currentRoute
         clearActiveCheckout()
         isPresentingCheckout = false
 
-        switch route {
-        case let .failure(error):
-            logger.info(message: "Checkout dismissed on the error screen, reporting the failure")
-            deliverFailure(error)
-        case let .success(result):
+        if case let .success(result) = route {
             logger.info(message: "Checkout dismissed on the success screen, reporting the success")
             deliverSuccess(result)
-        default:
+        } else {
             handleCheckoutDismiss()
         }
     }
@@ -286,11 +253,10 @@ extension PrimerCheckoutPresenterDelegate {
         delegate.primerCheckoutPresenterDidCompleteWithSuccess(result)
     }
 
-    private func deliverFailure(_ error: PrimerError) {
+    private func deliverFailure(_ error: PrimerError, checkoutData: PrimerCheckoutData?) {
         guard !hasDeliveredResult else { return }
-        hasDeliveredResult = true
         guard let delegate else { return logger.error(message: "No delegate set for payment failure") }
-        delegate.primerCheckoutPresenterDidFailWithError(error)
+        delegate.primerCheckoutPresenterDidFailWithError(error, checkoutData: checkoutData)
     }
 
     private func presentCheckout(
@@ -325,8 +291,9 @@ extension PrimerCheckoutPresenterDelegate {
                     switch state {
                     case let .success(paymentResult):
                         self?.handlePaymentSuccess(paymentResult)
-                    case let .failure(error):
-                        self?.handlePaymentFailure(error)
+                    case let .failure(error, checkoutData):
+                        self?.handlePaymentFailure(
+                            error, checkoutData: checkoutData, closesCheckout: !primerSettings.uiOptions.isErrorScreenEnabled)
                     default:
                         self?.dismissDirectly()
                         self?.handleCheckoutDismiss()
@@ -426,7 +393,7 @@ extension PrimerCheckoutPresenter {
                 reason: "No presenting view controller found"
             )
 
-            shared.delegate?.primerCheckoutPresenterDidFailWithError(error)
+            shared.delegate?.primerCheckoutPresenterDidFailWithError(error, checkoutData: nil)
             return
         }
 

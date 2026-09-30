@@ -120,27 +120,22 @@ extension PrimerCheckoutScope {
 
 /// Represents the current state of the checkout flow.
 ///
-/// `PrimerCheckoutState` provides a way to observe the checkout lifecycle and respond
-/// to state changes. Use the `state` async stream on `PrimerCheckoutScope` to receive
-/// state updates.
+/// `onCompletion` on ``PrimerCheckout`` and on `.primerCheckoutSession(_:theme:onCompletion:)`
+/// delivers `.failure` once per failed attempt, then `.success` or `.dismissed` exactly once. The
+/// lifecycle (`.initializing`, `.ready`) is ``PrimerCheckoutSession/phase``, not `onCompletion`.
 ///
 /// Example usage:
 /// ```swift
-/// for await state in checkoutScope.state {
+/// PrimerCheckout(clientToken: token) { state in
 ///     switch state {
-///     case .initializing:
-///         showLoadingIndicator()
-///     case .ready(let clientSession):
-///         showPaymentMethods(
-///             amount: clientSession.totalAmount,
-///             currency: clientSession.currencyCode
-///         )
 ///     case .success(let result):
-///         showSuccessScreen(paymentId: result.paymentId)
-///     case .failure(let error):
-///         showErrorScreen(error: error)
+///         showConfirmation(paymentId: result.paymentId)
+///     case let .failure(error, checkoutData):
+///         log(error, paymentId: checkoutData?.payment?.id) // The SDK error screen stays up for a retry.
 ///     case .dismissed:
-///         handleDismissal()
+///         closeCheckout()
+///     default:
+///         break
 ///     }
 /// }
 /// ```
@@ -170,7 +165,12 @@ public enum PrimerCheckoutState: Equatable {
 
   /// Payment or checkout failed with an error.
   /// Contains the specific error with diagnostics information for debugging.
-  case failure(PrimerError)
+  ///
+  /// `checkoutData` carries the payment id and order id when the payment was created before failing
+  /// (e.g. a decline), so it can be looked up on the merchant backend. Its payment status comes from the
+  /// last Payments API response the SDK received. `checkoutData` is `nil` when the failure happened
+  /// before a payment existed (initialization, tokenization, connectivity).
+  case failure(PrimerError, checkoutData: PrimerCheckoutData? = nil)
 
   public static func == (lhs: PrimerCheckoutState, rhs: PrimerCheckoutState) -> Bool {
     switch (lhs, rhs) {
@@ -181,8 +181,8 @@ public enum PrimerCheckoutState: Equatable {
       lhsSession.isValueEqual(to: rhsSession)
     case let (.success(lhsResult), .success(rhsResult)):
       lhsResult.paymentId == rhsResult.paymentId
-    case let (.failure(lhsError), .failure(rhsError)):
-      lhsError.errorId == rhsError.errorId
+    case let (.failure(lhsError, lhsData), .failure(rhsError, rhsData)):
+      lhsError.errorId == rhsError.errorId && lhsData?.payment?.id == rhsData?.payment?.id
     default:
       false
     }

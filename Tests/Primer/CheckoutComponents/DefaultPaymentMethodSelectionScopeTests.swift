@@ -350,6 +350,79 @@ final class DefaultPaymentMethodSelectionScopeTests: XCTestCase {
         XCTAssertNotEqual(mockCheckoutScope.navigationState, .cvvRecapture)
     }
 
+    func test_payWithVaultedPaymentMethod_asksTheMerchantGate() async throws {
+        // Given
+        sut = makeSut()
+        let method = makeVaultedPaymentMethod()
+        mockCheckoutScope.setVaultedPaymentMethods([method])
+        mockCheckoutScope.setSelectedVaultedPaymentMethod(method)
+        sut.syncSelectedVaultedPaymentMethod()
+        var askedType: String?
+        mockCheckoutScope.onBeforePaymentCreate = { data, decisionHandler in
+            askedType = data.paymentMethodType.type
+            decisionHandler(.continuePaymentCreation(withIdempotencyKey: "merchant-key"))
+        }
+        PrimerInternal.shared.currentIdempotencyKey = nil
+        defer { PrimerInternal.shared.currentIdempotencyKey = nil }
+
+        // When
+        await sut.payWithVaultedPaymentMethod()
+
+        // Then
+        XCTAssertEqual(askedType, method.paymentMethodType)
+        XCTAssertEqual(PrimerInternal.shared.currentIdempotencyKey, "merchant-key")
+    }
+
+    func test_payWithVaultedPaymentMethod_merchantAborts_failsWithoutProcessing() async throws {
+        // Given
+        sut = makeSut()
+        let method = makeVaultedPaymentMethod()
+        mockCheckoutScope.setVaultedPaymentMethods([method])
+        mockCheckoutScope.setSelectedVaultedPaymentMethod(method)
+        sut.syncSelectedVaultedPaymentMethod()
+        mockCheckoutScope.onBeforePaymentCreate = { _, decisionHandler in
+            decisionHandler(.abortPaymentCreation(withErrorMessage: "blocked"))
+        }
+
+        // When
+        await sut.payWithVaultedPaymentMethod()
+
+        // Then
+        guard case let .failure(error, _) = mockCheckoutScope.navigationState else {
+            return XCTFail("Expected .failure, got \(mockCheckoutScope.navigationState)")
+        }
+        guard case .merchantError = error else { return XCTFail("Expected merchantError, got \(error)") }
+        XCTAssertFalse(sut.currentState.isVaultPaymentLoading)
+    }
+
+    func test_payWithVaultedPaymentMethod_paymentFailureWithCheckoutData_reachesCheckoutScope() async throws {
+        // Given
+        let checkoutData = PrimerCheckoutData(
+            payment: PrimerCheckoutDataPayment(
+                id: TestData.PaymentIds.pending, orderId: "order-1", paymentFailureReason: nil, status: "PENDING"
+            )
+        )
+        let container = try await ContainerTestHelpers.createTestContainer()
+        _ = try await container.register(SubmitVaultedPaymentInteractor.self)
+            .asSingleton()
+            .with { _ in FailingSubmitVaultedPaymentInteractor(checkoutData: checkoutData) }
+        await DIContainer.setContainer(container)
+        sut = makeSut()
+        let method = makeVaultedPaymentMethod()
+        mockCheckoutScope.setVaultedPaymentMethods([method])
+        mockCheckoutScope.setSelectedVaultedPaymentMethod(method)
+        sut.syncSelectedVaultedPaymentMethod()
+
+        // When
+        await sut.payWithVaultedPaymentMethod()
+
+        // Then
+        guard case let .failure(_, received) = mockCheckoutScope.navigationState else {
+            return XCTFail("Expected failure, got \(mockCheckoutScope.navigationState)")
+        }
+        XCTAssertTrue(received === checkoutData)
+    }
+
     // MARK: - payWithVaultedPaymentMethodAndCvv Tests
 
     func test_syncSelectedVaultedPaymentMethod_nilSelection_clearsState() async throws {
@@ -506,6 +579,31 @@ final class DefaultPaymentMethodSelectionScopeTests: XCTestCase {
             while mockRepo.fetchVaultedPaymentMethodsCallCount < fetchBaseline + 1 { await Task.yield() }
         }
         XCTAssertEqual(mockRepo.fetchVaultedPaymentMethodsCallCount, fetchBaseline + 1)
+    }
+
+    // Regression: a failed re-fetch after a successful delete left the deleted card listed.
+    func test_deleteVaultedPaymentMethod_refreshFails_stillRemovesTheCard() async throws {
+        // Given
+        let container = try await ContainerTestHelpers.createTestContainer()
+        let mockRepo = MockHeadlessRepository()
+        _ = try? await container.register(HeadlessRepository.self).asSingleton().with { _ in mockRepo }
+        await DIContainer.setContainer(container)
+        sut = makeSut()
+        try await withTimeout(2.0) {
+            while mockRepo.fetchVaultedPaymentMethodsCallCount < 1 { await Task.yield() }
+        }
+        let deleted = makeVaultedPaymentMethod(id: "vault_to_delete")
+        let kept = makeVaultedPaymentMethod(id: "vault_kept")
+        mockCheckoutScope.setVaultedPaymentMethods([deleted, kept])
+        mockCheckoutScope.setSelectedVaultedPaymentMethod(deleted)
+        mockRepo.fetchVaultedPaymentMethodsError = PrimerError.unknown(message: "offline")
+
+        // When
+        try await sut.deleteVaultedPaymentMethod(deleted)
+
+        // Then
+        XCTAssertEqual(mockCheckoutScope.vaultedPaymentMethods.map(\.id), ["vault_kept"])
+        XCTAssertNotEqual(mockCheckoutScope.selectedVaultedPaymentMethod?.id, "vault_to_delete")
     }
 
     func test_deleteVaultedPaymentMethod_repositoryThrows_propagatesError() async throws {
@@ -1066,5 +1164,18 @@ final class CheckoutPaymentMethodTests: XCTestCase {
         // Then
         XCTAssertNil(method.surcharge)
         XCTAssertTrue(method.hasUnknownSurcharge)
+    }
+}
+
+@available(iOS 15.0, *)
+private struct FailingSubmitVaultedPaymentInteractor: SubmitVaultedPaymentInteractor {
+    let checkoutData: PrimerCheckoutData
+
+    func execute(
+        vaultedPaymentMethodId: String,
+        paymentMethodType: String,
+        additionalData: PrimerVaultedPaymentMethodAdditionalData?
+    ) async throws -> PaymentResult {
+        throw PaymentFailure(error: .unknown(message: "3DS failed"), checkoutData: checkoutData)
     }
 }

@@ -184,4 +184,19 @@ final class CheckoutCoordinatorTests: XCTestCase {
         sut.navigate(to: .paymentMethodSelection)
         XCTAssertEqual(sut.currentRoute, .paymentMethodSelection)
     }
+
+    // A retried method takes the error screen's place, so Back returns to the list.
+    func test_navigate_pushAfterFailure_replacesTheErrorScreen() {
+        let qrRoute = CheckoutRoute.paymentMethod(PrimerPaymentMethodType.xenditOvo.rawValue, .fromPaymentSelection)
+        sut.navigate(to: .paymentMethodSelection)
+        sut.navigate(to: .paymentMethod(TestData.PaymentMethodTypes.card, .fromPaymentSelection))
+        sut.navigate(to: .processing)
+        sut.handlePaymentFailure(PrimerError.unknown(message: "declined"))
+
+        sut.navigate(to: qrRoute)
+
+        XCTAssertEqual(sut.navigationStack, [.paymentMethodSelection, qrRoute])
+        sut.goBack()
+        XCTAssertEqual(sut.currentRoute, .paymentMethodSelection)
+    }
 }

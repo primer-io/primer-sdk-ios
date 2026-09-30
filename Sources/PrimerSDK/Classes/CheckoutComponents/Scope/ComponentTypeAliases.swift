@@ -15,10 +15,3 @@ import SwiftUI
 typealias CountryItemComponent = (PrimerCountry, @escaping () -> Void) -> any View
 
 // MARK: - Scope-Aware Screen Components
-
-/// Screen component receiving PaymentMethodSelectionScope for full customization.
-/// Enables merchants to build completely custom payment selection screens with access to
-/// payment methods list and navigation actions.
-@available(iOS 15.0, *)
-typealias PaymentMethodSelectionScreenComponent =
-  (PrimerPaymentMethodSelectionScope) -> any View

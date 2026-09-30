@@ -134,7 +134,7 @@ final class DefaultPaymentMethodSelectionScope: PaymentMethodSelectionScopeInter
         internalState.filteredPaymentMethods = composablePaymentMethods
 
         break
-      } else if case let .failure(error) = checkoutState {
+      } else if case let .failure(error, _) = checkoutState {
         internalState.error = error.localizedDescription
         break
       } else if case .dismissed = checkoutState {
@@ -252,8 +252,6 @@ final class DefaultPaymentMethodSelectionScope: PaymentMethodSelectionScopeInter
     logger.info(message: "[Vault] Starting payment with vaulted method: \(vaultedMethod.id)")
 
     internalState.isVaultPaymentLoading = true
-    // Without this the payment runs behind the merchant's own list, with nothing to show it started.
-    checkoutScope?.startProcessing(payingWith: nil)
 
     await analyticsInteractor?.trackEvent(
       .paymentSubmitted,
@@ -261,6 +259,11 @@ final class DefaultPaymentMethodSelectionScope: PaymentMethodSelectionScopeInter
     )
 
     do {
+      // The merchant gate runs before `startProcessing()`, as on every other payment method.
+      try await checkoutScope?.invokeBeforePaymentCreate(paymentMethodType: vaultedMethod.paymentMethodType)
+      // Without this the payment runs behind the merchant's own list, with nothing to show it started.
+      checkoutScope?.startProcessing(payingWith: nil)
+
       guard let container = await DIContainer.current else {
         throw PrimerError.unknown(message: "DIContainer.current is nil")
       }
@@ -279,9 +282,8 @@ final class DefaultPaymentMethodSelectionScope: PaymentMethodSelectionScopeInter
       internalState.isVaultPaymentLoading = false
       logger.error(message: "[Vault] Payment failed: \(error.localizedDescription)")
 
-      let primerError =
-        error as? PrimerError ?? PrimerError.unknown(message: error.localizedDescription)
-      checkoutScope?.handlePaymentError(primerError)
+      let failure = PaymentFailure(unwrapping: error)
+      checkoutScope?.handlePaymentError(failure.error, checkoutData: failure.checkoutData)
     }
   }
 
@@ -391,6 +393,11 @@ final class DefaultPaymentMethodSelectionScope: PaymentMethodSelectionScopeInter
 
     logger.info(message: "[Vault] Successfully deleted payment method: \(method.id)")
 
+    // Drop it locally first: a failed re-fetch must not leave the deleted card listed, or selected.
+    if let checkoutScope {
+      checkoutScope.setVaultedPaymentMethods(checkoutScope.vaultedPaymentMethods.filter { $0.id != method.id })
+      syncSelectedVaultedPaymentMethod()
+    }
     await refreshVaultedPaymentMethods()
   }
 

@@ -14,6 +14,7 @@ import XCTest
 final class DefaultKlarnaScopeTests: XCTestCase {
 
     private var mockInteractor: MockProcessKlarnaPaymentInteractor!
+    private var checkoutScope: DefaultCheckoutScope?
 
     override func setUp() async throws {
         try await super.setUp()
@@ -23,6 +24,7 @@ final class DefaultKlarnaScopeTests: XCTestCase {
 
     override func tearDown() async throws {
         mockInteractor = nil
+        checkoutScope = nil
         await ContainerTestHelpers.resetSharedContainer()
         try await super.tearDown()
     }
@@ -67,6 +69,32 @@ final class DefaultKlarnaScopeTests: XCTestCase {
 
         // Then
         XCTAssertEqual(mockInteractor.createSessionCallCount, 1)
+    }
+
+    @MainActor
+    func test_start_afterReentryWhileCreatingTheSession_keepsThatSession() async throws {
+        // Given
+        var heldSessions: [CheckedContinuation<Void, Never>] = []
+        mockInteractor.onCreateSession = {
+            await withCheckedContinuation { heldSessions.append($0) }
+            return KlarnaTestData.defaultSessionResult
+        }
+        let scope = createScope()
+        scope.start()
+        try await withTimeout(2.0) { [self] in
+            while mockInteractor.createSessionCallCount < 1 { await Task.yield() }
+        }
+
+        // When — the shopper returns to the list and picks Klarna again before the session exists
+        scope.prepareForReentry()
+        scope.start()
+        // why: asserting that no second session starts, so give one time to reach the interactor
+        try await Task.sleep(nanoseconds: 100_000_000)
+
+        // Then
+        XCTAssertEqual(mockInteractor.createSessionCallCount, 1)
+        heldSessions.forEach { $0.resume() }
+        _ = try await awaitValue(scope.state, matching: { $0.step == .categorySelection })
     }
 
     // MARK: - State AsyncStream Tests
@@ -409,7 +437,101 @@ final class DefaultKlarnaScopeTests: XCTestCase {
         XCTAssertEqual(mockInteractor.tokenizeCallCount, 0)
     }
 
+    // MARK: - Leaving Klarna's Flow
+
+    // Klarna reports Cancel on its consent alert or in its sheet as approved:false.
+    @MainActor
+    func test_authorize_declined_returnsToPaymentMethodSelection() async throws {
+        // Given
+        mockInteractor.authorizationResultToReturn = .declined
+        let scope = try await makeScopeOnKlarnaScreen()
+
+        // When
+        let destination = try await destinationAfter { scope.authorizePayment() }
+
+        // Then
+        XCTAssertEqual(destination, .paymentMethodSelection)
+    }
+
+    @MainActor
+    func test_authorize_declined_withoutAList_dismissesTheCheckout() async throws {
+        // Given
+        mockInteractor.authorizationResultToReturn = .declined
+        let scope = try await makeScopeOnKlarnaScreen(presentationContext: .direct)
+
+        // When
+        let destination = try await destinationAfter { scope.authorizePayment() }
+
+        // Then
+        XCTAssertEqual(destination, .dismissed)
+    }
+
+    @MainActor
+    func test_finalize_declined_returnsToPaymentMethodSelection() async throws {
+        // Given
+        mockInteractor.authorizationResultToReturn = .finalizationRequired(authToken: KlarnaTestData.Constants.authToken)
+        mockInteractor.finalizationResultToReturn = .declined
+        let scope = try await makeScopeOnKlarnaScreen()
+        scope.authorizePayment()
+        _ = try await awaitValue(scope.state) { $0.step == .awaitingFinalization }
+
+        // When
+        let destination = try await destinationAfter { scope.finalizePayment() }
+
+        // Then
+        XCTAssertEqual(destination, .paymentMethodSelection)
+    }
+
+    @MainActor
+    func test_authorize_klarnaError_showsTheErrorScreen() async throws {
+        // Given
+        let error = PrimerError.klarnaError(message: "Klarna rejected the purchase")
+        mockInteractor.authorizeError = error
+        let scope = try await makeScopeOnKlarnaScreen()
+
+        // When
+        let destination = try await destinationAfter { scope.authorizePayment() }
+
+        // Then
+        XCTAssertEqual(destination, .failure(error))
+    }
+
     // MARK: - Helper
+
+    /// A scope whose category view is ready, on a live checkout that shows the Klarna screen.
+    @MainActor
+    private func makeScopeOnKlarnaScreen(
+        presentationContext: PresentationContext = .fromPaymentSelection
+    ) async throws -> DefaultKlarnaScope {
+        mockInteractor.sessionResultToReturn = KlarnaTestData.defaultSessionResult
+        mockInteractor.paymentViewToReturn = UIView()
+        let checkoutScope = try await ContainerTestHelpers.createSettledCheckoutScope()
+        self.checkoutScope = checkoutScope
+        let scope = DefaultKlarnaScope(
+            checkoutScope: checkoutScope,
+            presentationContext: presentationContext,
+            processKlarnaInteractor: mockInteractor
+        )
+        scope.start()
+        _ = try await awaitValue(scope.state) { $0.step == .categorySelection }
+        scope.selectPaymentCategory(KlarnaTestData.Constants.categoryPayNow)
+        _ = try await awaitValue(scope.state) { $0.step == .viewReady }
+        checkoutScope.updateNavigationState(.paymentMethod(PrimerPaymentMethodType.klarna.rawValue))
+        return scope
+    }
+
+    /// Where the checkout goes when it leaves the Klarna flow: the list, a dismissal or the error screen.
+    @MainActor
+    private func destinationAfter(_ action: () -> Void) async throws -> CheckoutNavigationState {
+        let navigation = try XCTUnwrap(checkoutScope).navigationStateStream
+        action()
+        return try await awaitValue(navigation) {
+            switch $0 {
+            case .paymentMethodSelection, .dismissed, .failure: true
+            default: false
+            }
+        }
+    }
 
     @MainActor
     private func createScope(

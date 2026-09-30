@@ -76,7 +76,11 @@ struct DefaultCheckoutDemo: View, CheckoutComponentsDemo {
                 PrimerCheckout(
                     clientToken: clientToken,
                     primerSettings: configuration.settings,
-                    onCompletion: { _ in dismiss() }
+                    onCompletion: { state in
+                        // A failure leaves the SDK error screen up for a retry.
+                        if case .failure = state, configuration.settings.uiOptions.isErrorScreenEnabled { return }
+                        dismiss()
+                    }
                 )
             }
         }

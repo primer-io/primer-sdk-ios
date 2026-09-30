@@ -42,8 +42,8 @@ struct FlowScreenFactory: LogReporter {
       makeProcessingView()
     case let .success(result):
       makeSuccessView(result: result)
-    case let .failure(error):
-      makeFailureView(error: error)
+    case let .failure(error, checkoutData):
+      makeFailureView(error: error, checkoutData: checkoutData)
     case .dismissed:
       makeDismissedView()
     }
@@ -60,15 +60,8 @@ struct FlowScreenFactory: LogReporter {
     }
   }
 
-  @ViewBuilder
   private func makePaymentMethodSelectionView() -> some View {
-    if let customPaymentSelection = scope.paymentMethodSelectionScreen {
-      AnyView(customPaymentSelection(scope.paymentMethodSelection))
-    } else {
-      PaymentMethodSelectionScreen(
-        scope: scope.paymentMethodSelection
-      )
-    }
+    PaymentMethodSelectionScreen(scope: scope.paymentMethodSelection)
   }
 
   private func makeVaultedPaymentMethodsView() -> some View {
@@ -120,13 +113,9 @@ struct FlowScreenFactory: LogReporter {
   @ViewBuilder
   private func makeSuccessView(result: PaymentResult) -> some View {
     if scope.isSuccessScreenEnabled {
-      if let customSuccess = scope.successScreen {
-        AnyView(customSuccess(result))
-      } else {
-        SuccessScreen(result: result) {
-          logger.info(message: "Success screen auto-dismiss, calling completion callback")
-          onCompletion?(scope.currentState)
-        }
+      SuccessScreen(result: result) {
+        logger.info(message: "Success screen auto-dismiss, calling completion callback")
+        onCompletion?(scope.currentState)
       }
     } else {
       // `EmptyView` never enters the hierarchy, so its `onAppear` never runs. A rendered view is
@@ -139,20 +128,21 @@ struct FlowScreenFactory: LogReporter {
   }
 
   @ViewBuilder
-  private func makeFailureView(error: PrimerError) -> some View {
+  private func makeFailureView(error: PrimerError, checkoutData: PrimerCheckoutData?) -> some View {
     if scope.isErrorScreenEnabled {
       ErrorScreen(
         error: error,
-        onRetry: {
-          logger.info(message: "Error screen retry tapped")
-          scope.retryPayment()
-        },
+        onRetry: scope.canRetryPayment
+          ? {
+            logger.info(message: "Error screen retry tapped")
+            scope.retryPayment()
+          } : nil,
         onChooseOtherPaymentMethods: showOtherMethodsAction
       )
     } else {
       Color.clear.onAppear {
         logger.debug(message: "[CheckoutComponents] Error screen disabled - auto-dismissing")
-        Task { @MainActor in onCompletion?(.failure(error)) }
+        Task { @MainActor in onCompletion?(.failure(error, checkoutData: checkoutData)) }
       }
     }
   }
@@ -160,18 +150,12 @@ struct FlowScreenFactory: LogReporter {
   /// Action for the failure screen's "choose other payment method" button — also the inline flow's
   /// way off the error screen. Inline embedding returns to the merchant's own list (closing the
   /// sheet); the modal flow routes back to the SDK selection screen when an alternative exists.
-  private var showOtherMethodsAction: (() -> Void)? {
-    if isInlineFlow {
-      return {
-        logger.info(message: "Error screen return-to-list tapped (inline)")
-        scope.cancelActivePaymentMethod(returnToSelection: true)
-      }
-    }
-    // Counts total methods (the failed one is still present), so >1 means at least one alternative exists.
-    guard scope.availablePaymentMethods.count > 1 else { return nil }
+  var showOtherMethodsAction: (() -> Void)? {
+    guard isInlineFlow || scope.hasAlternativeToCurrentMethod else { return nil }
     return {
       logger.info(message: "Error screen choose other payment method tapped")
-      scope.checkoutNavigator.handleOtherPaymentMethods()
+      // Through cancel, so re-selecting the failed method starts it again.
+      scope.cancelActivePaymentMethod(returnToSelection: true)
     }
   }
 

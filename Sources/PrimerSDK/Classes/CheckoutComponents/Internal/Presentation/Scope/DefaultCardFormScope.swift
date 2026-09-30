@@ -476,9 +476,8 @@ final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, 
   private func handlePaymentError(_ error: Error) async {
     structuredState.isLoading = false
     billingAddressSent = false
-    let primerError =
-      error as? PrimerError ?? PrimerError.unknown(message: error.localizedDescription)
-    checkoutScope?.handlePaymentError(primerError)
+    let failure = PaymentFailure(unwrapping: error)
+    checkoutScope?.handlePaymentError(failure.error, checkoutData: failure.checkoutData)
   }
 
   private func handlePaymentSuccess(_ result: PaymentResult) async {

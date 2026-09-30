@@ -22,7 +22,11 @@ struct ManagedCheckoutView: View {
             clientToken: clientToken,
             primerSettings: settings,
             primerTheme: theme,
-            onCompletion: { _ in dismiss() }
+            onCompletion: { state in
+                // A failure leaves the SDK error screen up for a retry.
+                if case .failure = state, settings.uiOptions.isErrorScreenEnabled { return }
+                dismiss()
+            }
         )
     }
 }

@@ -17,8 +17,6 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
 
   var onBeforePaymentCreate: BeforePaymentCreateHandler?
   var idempotencyKeyProvider: (@Sendable () -> String?)?
-  var successScreen: ((_ result: PaymentResult) -> AnyView)?
-  var paymentMethodSelectionScreen: PaymentMethodSelectionScreenComponent?
 
   var paymentHandling: PrimerPaymentHandling {
     settings.paymentHandling
@@ -103,7 +101,10 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
 
   /// What a retry re-runs.
   private enum PaymentAttempt {
-    case paymentMethod(any PrimerPaymentMethodScope)
+    /// Opens the method again, as picking it from the list does.
+    case restart(InternalPaymentMethod)
+    /// Submits the details the method already collected.
+    case resubmit(any PrimerPaymentMethodScope)
     case vaulted
   }
 
@@ -145,7 +146,8 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
     registerPaymentMethods()
 
     Task { [self] in
-      await setupInteractors()
+      // A failed setup already reported itself; loading after it would report a second failure.
+      guard await setupInteractors() else { return }
       await loadPaymentMethods()
     }
 
@@ -166,7 +168,7 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
     paymentMethodScopeCache.removeAll()
     availablePaymentMethods = []
 
-    await setupInteractors()
+    guard await setupInteractors() else { return }
     await loadPaymentMethods()
   }
 
@@ -175,7 +177,10 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
     CardPaymentMethod.register()
     PayPalPaymentMethod.register()
     ApplePayPaymentMethod.register()
-    KlarnaPaymentMethod.register()
+    // Without the Klarna SDK the method would list, then fail once the shopper picks a category.
+    #if canImport(PrimerKlarnaSDK)
+      KlarnaPaymentMethod.register()
+    #endif
     AdyenKlarnaPaymentMethod.register()
     AchPaymentMethod.register()
     FormRedirectPaymentMethod.register()
@@ -189,7 +194,7 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
     WebRedirectPaymentMethod.register(types: webRedirectTypes)
   }
 
-  private func setupInteractors() async {
+  private func setupInteractors() async -> Bool {
     do {
       guard let container = await DIContainer.current else {
         throw ContainerError.containerUnavailable
@@ -206,6 +211,7 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
 
       accessibilityAnnouncementService = try? await container.resolve(
         AccessibilityAnnouncementService.self)
+      return true
     } catch {
       let primerError = PrimerError.invalidArchitecture(
         description: "Failed to setup interactors: \(error.localizedDescription)",
@@ -214,6 +220,7 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
       logger.error(message: "Failed to setup interactors: \(primerError)", error: primerError)
       updateNavigationState(.failure(primerError))
       updateState(.failure(primerError))
+      return false
     }
   }
 
@@ -233,7 +240,8 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
         )
       }
 
-      if isInitScreenEnabled {
+      // Inline embedding never shows the splash, so the pause would only delay the merchant's view.
+      if isInitScreenEnabled, !isInlineFlow {
         try await Task.sleep(nanoseconds: 500_000_000)
       }
 
@@ -245,6 +253,10 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
       }
 
       availablePaymentMethods = try await interactor.execute()
+      // Before the preload: a method scope's context depends on whether saved methods give it a way back.
+      if availablePaymentMethods.count == 1, !isInlineFlow {
+        await fetchVaultedPaymentMethods()
+      }
 
       await preloadPaymentMethodScopes()
 
@@ -258,9 +270,11 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
         // Inline embedding must not auto-present a payment method on launch — the merchant's own
         // inline view renders once `.ready`, and the flow sheet appears only after the merchant
         // triggers it. Stay on selection so the inline host treats this as a non-flow state.
-        if availablePaymentMethods.count == 1, !isInlineFlow,
+        // A returning shopper's saved methods live on the selection screen, so skip it only without any.
+        // The modal flow opens its only method the way a row tap does, so the method starts too.
+        if !hasAlternativeToCurrentMethod, !isInlineFlow,
           let singlePaymentMethod = availablePaymentMethods.first {
-          updateNavigationState(.paymentMethod(singlePaymentMethod.type))
+          handlePaymentMethodSelection(singlePaymentMethod)
         } else {
           updateNavigationState(.paymentMethodSelection)
         }
@@ -275,6 +289,20 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
       updateNavigationState(.failure(primerError))
       updateState(.failure(primerError))
     }
+  }
+
+  /// A failed fetch counts as none: the shopper can still pay with the configured method.
+  private func fetchVaultedPaymentMethods() async {
+    guard let container = await DIContainer.current,
+          let repository = try? await container.resolve(HeadlessRepository.self),
+          let methods = try? await repository.fetchVaultedPaymentMethods()
+    else { return }
+    setVaultedPaymentMethods(methods)
+  }
+
+  /// Another configured method or a saved one, so the shopper has somewhere to go back to.
+  var hasAlternativeToCurrentMethod: Bool {
+    availablePaymentMethods.count > 1 || !vaultedPaymentMethods.isEmpty
   }
 
   private func preloadPaymentMethodScopes() async {
@@ -334,11 +362,11 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
         navigator.navigateToPaymentMethod(paymentMethodType, context: presentationContext)
       case .processing:
         navigator.navigateToProcessing()
-      case .success:
-        // Success handling is now done via the view's switch statement, not the navigator
-        break
-      case let .failure(error):
-        navigator.navigateToError(error)
+      case let .success(result):
+        // The view renders success from the scope; the route tells the UIKit presenter what a swipe ended.
+        navigator.navigateToSuccess(result)
+      case let .failure(error, checkoutData):
+        navigator.navigateToError(error, checkoutData: checkoutData)
       case .dismissed:
         // Dismissal is handled by the view layer through onCompletion callback
         break
@@ -351,6 +379,9 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
     switch state {
     case let .paymentMethod(type):
       currentPaymentMethodScope = paymentMethodScopeCache[type]
+      lastPaymentAttempt = availablePaymentMethods.first { $0.type == type }.map(PaymentAttempt.restart)
+    case .paymentMethodSelection:
+      lastPaymentAttempt = nil
     case .success, .dismissed:
       selectedPaymentMethodName = nil
       lastPaymentAttempt = nil
@@ -402,7 +433,8 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
   private func observeNavigationEvents() {
     navigationObservationTask = Task { @MainActor [weak self] in
       guard let self else { return }
-      for await route in navigator.navigationEvents {
+      // The stream buffers, so a route the coordinator has already left is skipped; the current one arrives on its own.
+      for await route in navigator.navigationEvents where route == navigator.checkoutCoordinator.currentRoute {
         let newNavigationState: CheckoutNavigationState
         switch route {
         case .loading:
@@ -419,8 +451,8 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
           newNavigationState = .paymentMethod(paymentMethodType)
         case .processing:
           newNavigationState = .processing
-        case let .failure(primerError):
-          newNavigationState = .failure(primerError)
+        case let .failure(primerError, checkoutData):
+          newNavigationState = .failure(primerError, checkoutData: checkoutData)
         default:
           continue
         }
@@ -438,8 +470,10 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
     paymentMethodScopeCache[paymentMethodType] as? T
   }
 
+  /// Prefers the active payment method, because several cached scopes can share one class.
   func getPaymentMethodScope<T: PrimerPaymentMethodScope>(_ scopeType: T.Type) -> T? {
-    paymentMethodScopeCache.values.first { $0 is T } as? T
+    if let active = currentPaymentMethodScope as? T { return active }
+    return paymentMethodScopeCache.values.first { $0 is T } as? T
   }
 
   func getPaymentMethodScope<T: PrimerPaymentMethodScope>(
@@ -589,35 +623,41 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
     updateNavigationState(.success(result))
   }
 
-  func handlePaymentError(_ error: PrimerError) {
-    updateState(.failure(error))
+  /// - Parameter checkoutData: the payment the headless layer created before failing, if any.
+  func handlePaymentError(_ error: PrimerError, checkoutData: PrimerCheckoutData? = nil) {
+    // The decline error carries the freshest status, so it wins over the create-time snapshot.
+    let checkoutData = error.failedPaymentCheckoutData ?? checkoutData
+    updateState(.failure(error, checkoutData: checkoutData))
     // Note: Error callback is invoked via navigateToError in updateNavigationState
-    updateNavigationState(.failure(error))
+    updateNavigationState(.failure(error, checkoutData: checkoutData))
   }
 
   /// - Parameter scope: the payment method being paid with, or `nil` for a saved one.
   func startProcessing(payingWith scope: (any PrimerPaymentMethodScope)?) {
-    lastPaymentAttempt = scope.map(PaymentAttempt.paymentMethod) ?? .vaulted
+    lastPaymentAttempt = scope.map(PaymentAttempt.resubmit) ?? .vaulted
     updateNavigationState(.processing)
   }
 
-  func handleAutoDismiss() {
-    // The parent view (PrimerCheckout) observes .dismissed to tear down the entire checkout.
-    updateState(.dismissed)
-  }
+  var canRetryPayment: Bool { lastPaymentAttempt != nil }
 
   func retryPayment() {
     guard let lastPaymentAttempt else {
       return logger.warn(message: "Retry tapped with no recorded payment attempt, ignoring")
     }
+    if case .restart = lastPaymentAttempt {
+      // The error screen stays tappable until the view catches up, so only the first tap restarts.
+      guard case .failure = navigationState else { return }
+    }
 
-    Task { @MainActor [weak self] in
-      guard let self else { return }
-      await analyticsTracker?.trackRetry(navigationState: navigationState)
+    Task { @MainActor [weak self, navigationState] in
+      await self?.analyticsTracker?.trackRetry(navigationState: navigationState)
     }
 
     switch lastPaymentAttempt {
-    case let .paymentMethod(scope):
+    case let .restart(method):
+      paymentMethodScopeCache[method.type]?.prepareForReentry()
+      handlePaymentMethodSelection(method)
+    case let .resubmit(scope):
       scope.submit()
     case .vaulted:
       // Goes through the full entry point, so a card that needs its CVV asks for it again.
@@ -642,7 +682,7 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
         recoverSuggestion: "Use the SDK-provided checkout scope"
       )
     }
-    let context: PresentationContext = scope.availablePaymentMethods.count > 1 ? .fromPaymentSelection : .direct
+    let context: PresentationContext = scope.hasAlternativeToCurrentMethod ? .fromPaymentSelection : .direct
     return (scope, context)
   }
 
