@@ -43,7 +43,7 @@ final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
 
   private weak var checkoutScope: DefaultCheckoutScope?
   private var processPaymentInteractor: ProcessApplePayPaymentInteractor?
-  private var analytics: CheckoutComponentsAnalyticsInteractorProtocol?
+  let analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol?
   private let applePayPresentationManager: ApplePayPresenting
   private var authorizationCoordinator: ApplePayAuthorizationCoordinator?
   private(set) var paymentTask: Task<Void, Never>?
@@ -55,6 +55,7 @@ final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
   init(
     checkoutScope: DefaultCheckoutScope,
     presentationContext: PresentationContext = .fromPaymentSelection,
+    analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol? = nil,
     applePayPresentationManager: ApplePayPresenting = ApplePayPresentationManager(),
     clientSessionActionsFactory: @escaping () -> ClientSessionActionsProtocol = { ClientSessionActionsModule() },
     applePayRequestFactory: @escaping () throws -> ApplePayRequest = { try ApplePayRequestBuilder.build() },
@@ -62,6 +63,7 @@ final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
   ) {
     self.checkoutScope = checkoutScope
     self.presentationContext = presentationContext
+    self.analyticsInteractor = analyticsInteractor
     self.applePayPresentationManager = applePayPresentationManager
     self.clientSessionActionsFactory = clientSessionActionsFactory
     self.applePayRequestFactory = applePayRequestFactory
@@ -81,7 +83,6 @@ final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
       guard let container = await DIContainer.current else {
         throw ContainerError.containerUnavailable
       }
-      analytics = try? await container.resolve(CheckoutComponentsAnalyticsInteractorProtocol.self)
       processPaymentInteractor = try await container.resolve(ProcessApplePayPaymentInteractor.self)
     } catch {
       // Interactor resolution failed - will be retried lazily during payment
@@ -153,8 +154,8 @@ final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
         presentationManager: applePayPresentationManager
       )
       let applePay = PrimerPaymentMethodType.applePay.rawValue
-      await analytics?.trackProcessingStarted(applePay)
-      await analytics?.trackSubmitted(applePay)
+      await analyticsInteractor?.trackProcessingStarted(applePay)
+      await analyticsInteractor?.trackSubmitted(applePay)
 
       var interactor = processPaymentInteractor
       if interactor == nil {

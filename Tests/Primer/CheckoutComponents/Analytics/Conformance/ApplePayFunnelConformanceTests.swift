@@ -185,11 +185,13 @@ final class ApplePayFunnelConformanceTests: XCTestCase {
         // Replaces the registration the scope's init just made, before its load task preloads the method scopes.
         PaymentMethodRegistry.shared.register(
             forKey: applePay,
-            scopeCreator: { [presenter, clientSessionActions] checkoutScope, _ in
+            scopeCreator: { [presenter, clientSessionActions] checkoutScope, container in
                 let (scope, context) = try DefaultCheckoutScope.validated(from: checkoutScope)
+                let analyticsInteractor = try? await container.resolve(CheckoutComponentsAnalyticsInteractorProtocol.self)
                 return DefaultApplePayScope(
                     checkoutScope: scope,
                     presentationContext: context,
+                    analyticsInteractor: analyticsInteractor,
                     applePayPresentationManager: presenter,
                     clientSessionActionsFactory: { clientSessionActions },
                     applePayRequestFactory: {
