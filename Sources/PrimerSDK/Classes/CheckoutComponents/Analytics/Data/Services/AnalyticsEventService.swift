@@ -4,6 +4,7 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+import Network
 import UIKit
 @_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerCore
@@ -34,6 +35,8 @@ actor AnalyticsEventService: CheckoutComponentsAnalyticsServiceProtocol, LogRepo
   private let sleep: @Sendable (UInt64) async -> Void
   private let beginBackgroundTask: @MainActor @Sendable () -> UIBackgroundTaskIdentifier
   private let endBackgroundTask: @MainActor @Sendable (UIBackgroundTaskIdentifier) -> Void
+  private let connectivity: AnalyticsConnectivity
+  private let selectedMethods: SelectedMethodsMemory
 
   // MARK: - State
 
@@ -64,7 +67,9 @@ actor AnalyticsEventService: CheckoutComponentsAnalyticsServiceProtocol, LogRepo
     },
     endBackgroundTask: @escaping @MainActor @Sendable (UIBackgroundTaskIdentifier) -> Void = {
       UIApplication.shared.endBackgroundTask($0)
-    }
+    },
+    connectivity: AnalyticsConnectivity = PathMonitorConnectivity.shared,
+    selectedMethods: SelectedMethodsMemory = .shared
   ) {
     self.payloadBuilder = payloadBuilder
     self.networkClient = networkClient
@@ -75,6 +80,8 @@ actor AnalyticsEventService: CheckoutComponentsAnalyticsServiceProtocol, LogRepo
     self.sleep = sleep
     self.beginBackgroundTask = beginBackgroundTask
     self.endBackgroundTask = endBackgroundTask
+    self.connectivity = connectivity
+    self.selectedMethods = selectedMethods
   }
 
   deinit {
@@ -102,7 +109,7 @@ actor AnalyticsEventService: CheckoutComponentsAnalyticsServiceProtocol, LogRepo
     let early = await eventBuffer.flush()
     sessionConfig = config
     integrationSurface = surface
-    funnel = AnalyticsFunnelState()
+    funnel = AnalyticsFunnelState(selectedMethods: selectedMethods.methods(for: config.clientSessionId))
     isStarting = false
     observeBackground()
 
@@ -147,6 +154,9 @@ actor AnalyticsEventService: CheckoutComponentsAnalyticsServiceProtocol, LogRepo
       )
       enqueue(QueuedEvent(payload: payload, endpoint: endpoint, token: sessionConfig.clientSessionToken))
     }
+    if eventType == .paymentMethodSelection {
+      selectedMethods.remember(funnel.selectedMethods, for: sessionConfig.clientSessionId)
+    }
   }
 
   private func enqueue(_ event: QueuedEvent) {
@@ -169,10 +179,16 @@ actor AnalyticsEventService: CheckoutComponentsAnalyticsServiceProtocol, LogRepo
   }
 
   private func deliver(_ event: QueuedEvent) async {
-    for sendIndex in 0 ..< Delivery.maxSends {
+    var sendIndex = 0
+    while sendIndex < Delivery.maxSends {
       do {
         return try await networkClient.send(payload: event.payload, to: event.endpoint, token: event.token)
       } catch {
+        // As on Web, a send while the device is offline costs no attempt: the event waits for the network.
+        if error is URLError, connectivity.isOffline {
+          await connectivity.waitUntilOnline()
+          continue
+        }
         guard Self.isRetryable(error), sendIndex < Delivery.maxSends - 1 else {
           return logger.error(
             message: "[Analytics] Failed to send \(event.payload.eventName): \(error.localizedDescription)"
@@ -181,6 +197,7 @@ actor AnalyticsEventService: CheckoutComponentsAnalyticsServiceProtocol, LogRepo
         if !skipsRetryDelay, sendIndex < retryDelays.count {
           await sleep(retryDelays[sendIndex])
         }
+        sendIndex += 1
       }
     }
   }
@@ -221,4 +238,78 @@ actor AnalyticsEventService: CheckoutComponentsAnalyticsServiceProtocol, LogRepo
 enum AnalyticsError: Error {
   case requestFailed
   case httpStatus(Int)
+}
+
+// MARK: - Connectivity
+
+protocol AnalyticsConnectivity: Sendable {
+  var isOffline: Bool { get }
+  func waitUntilOnline() async
+}
+
+final class PathMonitorConnectivity: AnalyticsConnectivity, @unchecked Sendable {
+  static let shared = PathMonitorConnectivity()
+
+  private let monitor = NWPathMonitor()
+  private let lock = NSLock()
+  // Online until the first path update says otherwise, so a slow monitor never holds an event.
+  private var isOnline = true
+  private var waiters: [CheckedContinuation<Void, Never>] = []
+
+  private init() {
+    monitor.pathUpdateHandler = { [weak self] in self?.update(isOnline: $0.status == .satisfied) }
+    monitor.start(queue: DispatchQueue(label: "io.primer.analytics.connectivity"))
+  }
+
+  var isOffline: Bool {
+    lock.lock()
+    defer { lock.unlock() }
+    return !isOnline
+  }
+
+  func waitUntilOnline() async {
+    await withCheckedContinuation { continuation in
+      lock.lock()
+      guard !isOnline else {
+        lock.unlock()
+        return continuation.resume()
+      }
+      waiters.append(continuation)
+      lock.unlock()
+    }
+  }
+
+  private func update(isOnline: Bool) {
+    lock.lock()
+    self.isOnline = isOnline
+    let resumed = isOnline ? waiters : []
+    if isOnline { waiters = [] }
+    lock.unlock()
+    resumed.forEach { $0.resume() }
+  }
+}
+
+// MARK: - Selected Methods
+
+/// SELECTION goes out once per method per client session. An inline remount builds a new service, so the
+/// methods already selected live here, for the latest client session only.
+final class SelectedMethodsMemory: @unchecked Sendable {
+  static let shared = SelectedMethodsMemory()
+
+  private let lock = NSLock()
+  private var clientSessionId: String?
+  private var methods: Set<String> = []
+
+  func methods(for clientSessionId: String) -> Set<String> {
+    lock.lock()
+    defer { lock.unlock() }
+    return clientSessionId == self.clientSessionId ? methods : []
+  }
+
+  func remember(_ methods: Set<String>, for clientSessionId: String) {
+    lock.lock()
+    defer { lock.unlock() }
+    self.clientSessionId = clientSessionId
+    self.methods = methods
+  }
 }

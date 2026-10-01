@@ -62,14 +62,19 @@ struct AnalyticsFunnelState {
   private var hasSubmittedInAttempt = false
   private var threeDSOutcome: ThreeDSOutcome?
   private var lastOutcome: AnalyticsEventType?
-  private var selectedMethods: Set<String> = []
+  private(set) var selectedMethods: Set<String>
   private var hasStartedFlow = false
   private var hasSucceeded = false
   private var hasExited = false
   private var lastStep: String?
 
-  init(makeAttemptId: @escaping @Sendable () -> String = { UUID().uuidString }) {
+  /// - Parameter selectedMethods: the methods this client session already selected before a remount.
+  init(
+    makeAttemptId: @escaping @Sendable () -> String = { UUID().uuidString },
+    selectedMethods: Set<String> = []
+  ) {
     self.makeAttemptId = makeAttemptId
+    self.selectedMethods = selectedMethods
   }
 
   /// The events to send for one tracked event, in order. Empty when the contract drops it.

@@ -245,6 +245,70 @@ final class AnalyticsEventServiceDeliveryTests: XCTestCase {
         XCTAssertEqual(delays, [], "A retry during the background flush must not wait")
     }
 
+    // MARK: - Offline
+
+    func test_sendWhileOffline_waitsForTheNetworkWithoutSpendingAnAttempt() async throws {
+        // Given
+        let connectivity = FakeConnectivity(offlineChecks: 4)
+        let sleeps = SleepRecorder()
+        await client.enqueueErrors(Array(repeating: URLError(.notConnectedToInternet), count: 4))
+        let service = makeService(retryDelays: [1_000, 2_000], sleep: { await sleeps.record($0) }, connectivity: connectivity)
+        await service.initialize(config: makeConfig())
+
+        // When
+        await service.sendEvent(.sdkInitStart, metadata: nil)
+
+        // Then
+        let calls = try await client.waitForCalls(count: 5)
+        XCTAssertEqual(calls.count, 5, "4 sends while offline, then the one that got through")
+        XCTAssertEqual(connectivity.waits, 4)
+        let delays = await sleeps.delays
+        XCTAssertEqual(delays, [])
+        try await assertNoFurtherCalls()
+    }
+
+    // MARK: - Selection across a remount
+
+    func test_selection_afterARemountOfTheSameClientSession_isNotSentAgain() async throws {
+        // Given
+        let memory = SelectedMethodsMemory()
+        let first = makeService(selectedMethods: memory)
+        await first.initialize(config: makeConfig())
+        await first.sendEvent(.paymentMethodSelection, metadata: .payment(PaymentEvent(paymentMethod: "PAYMENT_CARD")))
+        _ = try await client.waitForCalls(count: 1)
+
+        // When
+        let remounted = makeService(selectedMethods: memory)
+        await remounted.initialize(config: makeConfig())
+        await remounted.sendEvent(.paymentMethodSelection, metadata: .payment(PaymentEvent(paymentMethod: "PAYMENT_CARD")))
+        await remounted.sendEvent(.paymentProcessingStarted, metadata: .payment(PaymentEvent(paymentMethod: "PAYMENT_CARD")))
+
+        // Then
+        let calls = try await client.waitForCalls(count: 2)
+        XCTAssertEqual(calls.map(\.payload.eventName), ["PAYMENT_METHOD_SELECTION", "PAYMENT_PROCESSING_STARTED"])
+        XCTAssertNotNil(calls[1].payload.attemptId)
+        XCTAssertNotEqual(calls[0].payload.attemptId, calls[1].payload.attemptId)
+        try await assertNoFurtherCalls()
+    }
+
+    func test_selection_inANewClientSession_isSentAgain() async throws {
+        // Given
+        let memory = SelectedMethodsMemory()
+        let first = makeService(selectedMethods: memory)
+        await first.initialize(config: makeConfig())
+        await first.sendEvent(.paymentMethodSelection, metadata: .payment(PaymentEvent(paymentMethod: "PAYMENT_CARD")))
+        _ = try await client.waitForCalls(count: 1)
+
+        // When
+        let next = makeService(selectedMethods: memory)
+        await next.initialize(config: makeConfig(clientSessionId: "client_next"))
+        await next.sendEvent(.paymentMethodSelection, metadata: .payment(PaymentEvent(paymentMethod: "PAYMENT_CARD")))
+
+        // Then
+        let calls = try await client.waitForCalls(count: 2)
+        XCTAssertEqual(calls.map(\.payload.eventName), ["PAYMENT_METHOD_SELECTION", "PAYMENT_METHOD_SELECTION"])
+    }
+
     // MARK: - Helpers
 
     private func makeService(
@@ -252,7 +316,9 @@ final class AnalyticsEventServiceDeliveryTests: XCTestCase {
         retryDelays: [UInt64] = [0, 0],
         sleep: @escaping @Sendable (UInt64) async -> Void = { _ in },
         beginBackgroundTask: @escaping @MainActor @Sendable () -> UIBackgroundTaskIdentifier = { .invalid },
-        endBackgroundTask: @escaping @MainActor @Sendable (UIBackgroundTaskIdentifier) -> Void = { _ in }
+        endBackgroundTask: @escaping @MainActor @Sendable (UIBackgroundTaskIdentifier) -> Void = { _ in },
+        connectivity: AnalyticsConnectivity = FakeConnectivity(),
+        selectedMethods: SelectedMethodsMemory = SelectedMethodsMemory()
     ) -> AnalyticsEventService {
         AnalyticsEventService(
             payloadBuilder: AnalyticsPayloadBuilder(),
@@ -263,7 +329,9 @@ final class AnalyticsEventServiceDeliveryTests: XCTestCase {
             retryDelays: retryDelays,
             sleep: sleep,
             beginBackgroundTask: beginBackgroundTask,
-            endBackgroundTask: endBackgroundTask
+            endBackgroundTask: endBackgroundTask,
+            connectivity: connectivity,
+            selectedMethods: selectedMethods
         )
     }
 
@@ -285,11 +353,11 @@ final class AnalyticsEventServiceDeliveryTests: XCTestCase {
         }
     }
 
-    private func makeConfig() -> AnalyticsSessionConfig {
+    private func makeConfig(clientSessionId: String = "client_delivery_test") -> AnalyticsSessionConfig {
         AnalyticsSessionConfig(
             environment: .dev,
             checkoutSessionId: "cs_delivery_test",
-            clientSessionId: "client_delivery_test",
+            clientSessionId: clientSessionId,
             primerAccountId: "acc_delivery_test",
             sdkVersion: "3.0.0",
             clientSessionToken: "token_delivery_test"
@@ -377,6 +445,35 @@ private actor RecordingAnalyticsNetworkClient: AnalyticsEventSending {
             try await Task.sleep(nanoseconds: 5_000_000)
         }
         return calls
+    }
+}
+
+/// Reports the device offline for the first `offlineChecks` checks, then online.
+private final class FakeConnectivity: AnalyticsConnectivity, @unchecked Sendable {
+    private let lock = NSLock()
+    private var offlineChecks: Int
+    private var waitCount = 0
+
+    init(offlineChecks: Int = 0) {
+        self.offlineChecks = offlineChecks
+    }
+
+    var isOffline: Bool {
+        lock.lock()
+        defer { lock.unlock() }
+        guard offlineChecks > 0 else { return false }
+        offlineChecks -= 1
+        return true
+    }
+
+    var waits: Int {
+        lock.lock()
+        defer { lock.unlock() }
+        return waitCount
+    }
+
+    func waitUntilOnline() async {
+        lock.withLock { waitCount += 1 }
     }
 }
 
