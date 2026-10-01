@@ -31,12 +31,17 @@ actor AnalyticsEventService: CheckoutComponentsAnalyticsServiceProtocol, LogRepo
   private let integrationSurfaceProvider: @Sendable () async -> String?
   /// Wait before the 2nd and the 3rd send.
   private let retryDelays: [UInt64]
+  private let sleep: @Sendable (UInt64) async -> Void
+  private let beginBackgroundTask: @MainActor @Sendable () -> UIBackgroundTaskIdentifier
+  private let endBackgroundTask: @MainActor @Sendable (UIBackgroundTaskIdentifier) -> Void
 
   // MARK: - State
 
   private var sessionConfig: AnalyticsSessionConfig?
   private var integrationSurface: String?
   private var funnel = AnalyticsFunnelState()
+  private var isStarting = false
+  private var arrivedWhileStarting: [AnalyticsEventBuffer.BufferedEvent] = []
   private var queue: [QueuedEvent] = []
   private var isDraining = false
   private var skipsRetryDelay = false
@@ -52,7 +57,14 @@ actor AnalyticsEventService: CheckoutComponentsAnalyticsServiceProtocol, LogRepo
     integrationSurfaceProvider: @escaping @Sendable () async -> String? = {
       await LoggingSessionContext.shared.getSessionData().integrationType?.rawValue
     },
-    retryDelays: [UInt64] = [1_000_000_000, 2_000_000_000]
+    retryDelays: [UInt64] = [1_000_000_000, 2_000_000_000],
+    sleep: @escaping @Sendable (UInt64) async -> Void = { try? await Task.sleep(nanoseconds: $0) },
+    beginBackgroundTask: @escaping @MainActor @Sendable () -> UIBackgroundTaskIdentifier = {
+      UIApplication.shared.beginBackgroundTask(withName: "PrimerAnalyticsFlush")
+    },
+    endBackgroundTask: @escaping @MainActor @Sendable (UIBackgroundTaskIdentifier) -> Void = {
+      UIApplication.shared.endBackgroundTask($0)
+    }
   ) {
     self.payloadBuilder = payloadBuilder
     self.networkClient = networkClient
@@ -60,6 +72,9 @@ actor AnalyticsEventService: CheckoutComponentsAnalyticsServiceProtocol, LogRepo
     self.environmentProvider = environmentProvider
     self.integrationSurfaceProvider = integrationSurfaceProvider
     self.retryDelays = retryDelays
+    self.sleep = sleep
+    self.beginBackgroundTask = beginBackgroundTask
+    self.endBackgroundTask = endBackgroundTask
   }
 
   deinit {
@@ -81,19 +96,26 @@ actor AnalyticsEventService: CheckoutComponentsAnalyticsServiceProtocol, LogRepo
 
   /// Starts a new checkout session: the funnel rules reset, then events that arrived early are sent.
   func initialize(config: AnalyticsSessionConfig) async {
+    // Events that arrive during the awaits wait too, so none uses the old session or overtakes an earlier one.
+    isStarting = true
+    let surface = await integrationSurfaceProvider()
+    let early = await eventBuffer.flush()
     sessionConfig = config
-    integrationSurface = await integrationSurfaceProvider()
+    integrationSurface = surface
     funnel = AnalyticsFunnelState()
+    isStarting = false
     observeBackground()
 
-    for (eventType, metadata, timestamp) in await eventBuffer.flush() {
+    for (eventType, metadata, timestamp) in early + arrivedWhileStarting {
       process(eventType, metadata: metadata, timestamp: timestamp)
     }
+    arrivedWhileStarting = []
   }
 
   /// Queues the event and returns, so a slow endpoint never delays the payment.
   func sendEvent(_ eventType: AnalyticsEventType, metadata: AnalyticsEventMetadata?) async {
     let timestamp = Int(Date().timeIntervalSince1970)
+    if isStarting { return arrivedWhileStarting.append((eventType, metadata, timestamp)) }
     guard sessionConfig != nil else {
       return await eventBuffer.buffer(eventType: eventType, metadata: metadata, timestamp: timestamp)
     }
@@ -157,7 +179,7 @@ actor AnalyticsEventService: CheckoutComponentsAnalyticsServiceProtocol, LogRepo
           )
         }
         if !skipsRetryDelay, sendIndex < retryDelays.count {
-          try? await Task.sleep(nanoseconds: retryDelays[sendIndex])
+          await sleep(retryDelays[sendIndex])
         }
       }
     }
@@ -185,12 +207,12 @@ actor AnalyticsEventService: CheckoutComponentsAnalyticsServiceProtocol, LogRepo
   private func flushForBackground() async {
     guard isDraining else { return }
     skipsRetryDelay = true
-    let taskId = await MainActor.run { UIApplication.shared.beginBackgroundTask(withName: "PrimerAnalyticsFlush") }
+    let taskId = await beginBackgroundTask()
     let deadline = DispatchTime.now().uptimeNanoseconds + Delivery.backgroundFlushLimit
     while isDraining, DispatchTime.now().uptimeNanoseconds < deadline {
       try? await Task.sleep(nanoseconds: 50_000_000)
     }
-    await MainActor.run { UIApplication.shared.endBackgroundTask(taskId) }
+    await endBackgroundTask(taskId)
   }
 }
 

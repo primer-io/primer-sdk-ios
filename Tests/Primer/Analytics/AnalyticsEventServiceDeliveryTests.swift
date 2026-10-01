@@ -5,6 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 @testable import PrimerSDK
+import UIKit
 import XCTest
 
 /// Delivery behaviour of the real `AnalyticsEventService` actor: ordering, retries, the queue cap,
@@ -178,10 +179,80 @@ final class AnalyticsEventServiceDeliveryTests: XCTestCase {
         XCTAssertEqual(calls.last?.payload.authenticationOutcome, "AUTH_SUCCESS")
     }
 
+    // MARK: - A new session
+
+    func test_sendEvent_whileTheSessionStarts_waitsForItAndKeepsTheOrder() async throws {
+        // Given
+        let surface = SurfaceGate()
+        let service = makeService(integrationSurfaceProvider: { await surface.wait() })
+        await service.sendEvent(.sdkInitStart, metadata: nil)
+        let starting = Task { await service.initialize(config: makeConfig()) }
+        try await surface.waitUntilAsked()
+
+        // When
+        await service.sendEvent(.sdkInitEnd, metadata: nil)
+        await surface.answer("swift_ui")
+        await starting.value
+
+        // Then
+        let calls = try await client.waitForCalls(count: 2)
+        XCTAssertEqual(calls.map(\.payload.eventName), ["SDK_INIT_START", "SDK_INIT_END"])
+        XCTAssertEqual(calls.last?.payload.integrationSurface, "swift_ui")
+    }
+
+    // MARK: - Retry delays and the background flush
+
+    func test_retry_waitsTheBackoffDelaysBetweenSends() async throws {
+        // Given
+        let sleeps = SleepRecorder()
+        await client.enqueueErrors([URLError(.timedOut), URLError(.timedOut)])
+        let service = makeService(retryDelays: [1_000, 2_000], sleep: { await sleeps.record($0) })
+        await service.initialize(config: makeConfig())
+
+        // When
+        await service.sendEvent(.sdkInitStart, metadata: nil)
+
+        // Then
+        _ = try await client.waitForCalls(count: 3)
+        let delays = await sleeps.delays
+        XCTAssertEqual(delays, [1_000, 2_000])
+    }
+
+    func test_background_keepsTheAppAwakeUntilTheQueueDrains_andSkipsTheBackoff() async throws {
+        // Given
+        let sleeps = SleepRecorder()
+        let tasks = await MainActor.run { BackgroundTaskRecorder() }
+        let service = makeService(
+            retryDelays: [1_000, 2_000],
+            sleep: { await sleeps.record($0) },
+            beginBackgroundTask: { tasks.begin() },
+            endBackgroundTask: { tasks.end($0) }
+        )
+        await service.initialize(config: makeConfig())
+        await client.blockNextSend()
+        await client.enqueueErrors([URLError(.timedOut)])
+        await service.sendEvent(.sdkInitStart, metadata: nil)
+        try await client.waitUntilBlocking()
+
+        // When
+        try await postBackgroundUntil { await MainActor.run { !tasks.begun.isEmpty } }
+        await client.release()
+
+        // Then
+        _ = try await client.waitForCalls(count: 2)
+        try await waitUntil { await MainActor.run { tasks.ended.count == tasks.begun.count } }
+        let delays = await sleeps.delays
+        XCTAssertEqual(delays, [], "A retry during the background flush must not wait")
+    }
+
     // MARK: - Helpers
 
     private func makeService(
-        integrationSurfaceProvider: @escaping @Sendable () async -> String? = { nil }
+        integrationSurfaceProvider: @escaping @Sendable () async -> String? = { nil },
+        retryDelays: [UInt64] = [0, 0],
+        sleep: @escaping @Sendable (UInt64) async -> Void = { _ in },
+        beginBackgroundTask: @escaping @MainActor @Sendable () -> UIBackgroundTaskIdentifier = { .invalid },
+        endBackgroundTask: @escaping @MainActor @Sendable (UIBackgroundTaskIdentifier) -> Void = { _ in }
     ) -> AnalyticsEventService {
         AnalyticsEventService(
             payloadBuilder: AnalyticsPayloadBuilder(),
@@ -189,8 +260,29 @@ final class AnalyticsEventServiceDeliveryTests: XCTestCase {
             eventBuffer: AnalyticsEventBuffer(),
             environmentProvider: AnalyticsEnvironmentProvider(),
             integrationSurfaceProvider: integrationSurfaceProvider,
-            retryDelays: [0, 0]
+            retryDelays: retryDelays,
+            sleep: sleep,
+            beginBackgroundTask: beginBackgroundTask,
+            endBackgroundTask: endBackgroundTask
         )
+    }
+
+    /// The observer attaches on a background task, so the post repeats until it is seen.
+    private func postBackgroundUntil(_ condition: () async -> Bool) async throws {
+        let deadline = Date().addingTimeInterval(2)
+        while await !condition() {
+            NotificationCenter.default.post(name: UIApplication.didEnterBackgroundNotification, object: nil)
+            if Date() > deadline { throw TestError.timeout }
+            try await Task.sleep(nanoseconds: 20_000_000)
+        }
+    }
+
+    private func waitUntil(_ condition: () async -> Bool) async throws {
+        let deadline = Date().addingTimeInterval(2)
+        while await !condition() {
+            if Date() > deadline { throw TestError.timeout }
+            try await Task.sleep(nanoseconds: 10_000_000)
+        }
     }
 
     private func makeConfig() -> AnalyticsSessionConfig {
@@ -285,5 +377,51 @@ private actor RecordingAnalyticsNetworkClient: AnalyticsEventSending {
             try await Task.sleep(nanoseconds: 5_000_000)
         }
         return calls
+    }
+}
+
+/// Holds the integration surface lookup open, so a test can send events while the session starts.
+private actor SurfaceGate {
+    private var continuation: CheckedContinuation<String?, Never>?
+
+    func wait() async -> String? {
+        await withCheckedContinuation { continuation = $0 }
+    }
+
+    func answer(_ surface: String?) {
+        continuation?.resume(returning: surface)
+        continuation = nil
+    }
+
+    func waitUntilAsked(timeout: TimeInterval = 2.0) async throws {
+        let deadline = Date().addingTimeInterval(timeout)
+        while continuation == nil {
+            if Date() > deadline { throw TestError.timeout }
+            try await Task.sleep(nanoseconds: 5_000_000)
+        }
+    }
+}
+
+private actor SleepRecorder {
+    private(set) var delays: [UInt64] = []
+
+    func record(_ delay: UInt64) {
+        delays.append(delay)
+    }
+}
+
+@MainActor
+private final class BackgroundTaskRecorder {
+    private(set) var begun: [UIBackgroundTaskIdentifier] = []
+    private(set) var ended: [UIBackgroundTaskIdentifier] = []
+
+    func begin() -> UIBackgroundTaskIdentifier {
+        let id = UIBackgroundTaskIdentifier(rawValue: begun.count + 1)
+        begun.append(id)
+        return id
+    }
+
+    func end(_ id: UIBackgroundTaskIdentifier) {
+        ended.append(id)
     }
 }
