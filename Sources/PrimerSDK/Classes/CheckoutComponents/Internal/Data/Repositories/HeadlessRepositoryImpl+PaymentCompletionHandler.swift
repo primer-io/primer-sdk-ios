@@ -18,19 +18,16 @@ final class PaymentCompletionHandler: NSObject,
 
   private let completion: (Result<PaymentResult, Error>) -> Void
   private var hasCompleted = false
-  private weak var repository: HeadlessRepositoryImpl?
   private var validationCompletion: ((Bool, [Error]?) -> Void)?
   private let paymentMethodType: String
   private let staleCheckoutData: PrimerCheckoutData?
 
   /// - Parameter staleCheckoutData: a previous attempt's payment the headless layer may still report.
   init(
-    repository: HeadlessRepositoryImpl,
     paymentMethodType: String = "PAYMENT_CARD",
     staleCheckoutData: PrimerCheckoutData? = nil,
     completion: @escaping (Result<PaymentResult, Error>) -> Void
   ) {
-    self.repository = repository
     self.paymentMethodType = paymentMethodType
     self.staleCheckoutData = staleCheckoutData
     self.completion = completion
@@ -95,18 +92,6 @@ final class PaymentCompletionHandler: NSObject,
     decisionHandler: @escaping (PrimerHeadlessUniversalCheckoutResumeDecision) -> Void
   ) {
     decisionHandler(.complete())
-  }
-
-  func primerHeadlessUniversalCheckoutDidEnterResumePendingWithPaymentAdditionalInfo(
-    _ additionalInfo: PrimerCheckoutAdditionalInfo?
-  ) {
-    repository?.trackRedirectToThirdPartyIfNeeded(from: additionalInfo, paymentMethodType: paymentMethodType)
-  }
-
-  func primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo(
-    _ additionalInfo: PrimerCheckoutAdditionalInfo?
-  ) {
-    repository?.trackRedirectToThirdPartyIfNeeded(from: additionalInfo, paymentMethodType: paymentMethodType)
   }
 
   // MARK: - PrimerHeadlessUniversalCheckoutRawDataManagerDelegate (Validation)

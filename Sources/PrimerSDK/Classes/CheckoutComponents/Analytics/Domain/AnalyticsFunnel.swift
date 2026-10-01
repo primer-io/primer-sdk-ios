@@ -47,19 +47,21 @@ extension CheckoutComponentsAnalyticsInteractorProtocol {
     await trackEvent(.paymentProcessingStarted, metadata: .payment(PaymentEvent(paymentMethod: paymentMethod)))
   }
 
-  func trackRedirectToThirdParty(_ paymentMethod: String, destination: URL, paymentId: String?) async {
+  /// `paymentMethod` nil means the method of the open attempt.
+  func trackRedirectToThirdParty(_ paymentMethod: String?, destination: URL, paymentId: String?) async {
     // Origin only, the path and query can carry tokens.
     let origin = destination.host.map { "\(destination.scheme ?? "https")://\($0)" } ?? ""
     await trackEvent(
       .paymentRedirectToThirdParty,
-      metadata: .redirect(RedirectEvent(paymentMethod: paymentMethod, destinationUrl: origin, paymentId: paymentId))
+      metadata: .redirect(RedirectEvent(paymentMethod: paymentMethod ?? "", destinationUrl: origin, paymentId: paymentId))
     )
   }
 
-  func trackReturnedFromThirdParty(_ paymentMethod: String, paymentId: String?) async {
+  /// `paymentMethod` nil means the method of the open attempt.
+  func trackReturnedFromThirdParty(_ paymentMethod: String?, paymentId: String?) async {
     await trackEvent(
       .paymentReturnedFromThirdParty,
-      metadata: .payment(PaymentEvent(paymentMethod: paymentMethod, paymentId: paymentId))
+      metadata: .payment(PaymentEvent(paymentMethod: paymentMethod ?? "", paymentId: paymentId))
     )
   }
 
@@ -106,6 +108,21 @@ extension CheckoutComponentsAnalyticsInteractorProtocol {
 
   func trackFlowExited() async {
     await trackEvent(.paymentFlowExited, metadata: nil)
+  }
+
+  // MARK: - Pages the shared core opens
+
+  func redirectOpened(_ url: URL, paymentId: String?) async {
+    await trackRedirectToThirdParty(nil, destination: url, paymentId: paymentId)
+  }
+
+  /// SUBMITTED went out before the payment, so only the return is added.
+  func redirectReturned(paymentId: String?) async {
+    await trackReturnedFromThirdParty(nil, paymentId: paymentId)
+  }
+
+  func threeDSChallengeShown(provider: String, protocolVersion: String?) async {
+    await trackThreeDSChallengeShown(provider: provider, protocolVersion: protocolVersion)
   }
 }
 

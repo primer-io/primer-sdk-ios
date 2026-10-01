@@ -89,6 +89,7 @@ extension PrimerHeadlessUniversalCheckout {
         }
         private var resumePaymentId: String?
         public private(set) var paymentCheckoutData: PrimerCheckoutData?
+        weak var requiredActionObserver: RequiredActionObserver?
 
         // MARK: validation related vars
         public private(set) var isDataValid: Bool = false
@@ -505,6 +506,7 @@ extension PrimerHeadlessUniversalCheckout {
 
             var pollingModule: PollingModule? = PollingModule(url: statusUrl)
             do {
+                await requiredActionObserver?.threeDSChallengeShown(provider: ProcessorThreeDS.provider, protocolVersion: nil)
                 try await presentWebRedirectViewControllerWithRedirectUrl(redirectUrl)
                 webViewCompletion = { _, err in
                     if let err {
@@ -542,6 +544,7 @@ extension PrimerHeadlessUniversalCheckout {
 
                 var pollingModule: PollingModule? = PollingModule(url: statusUrl)
                 do {
+                    await requiredActionObserver?.redirectOpened(redirectUrl, paymentId: resumePaymentId)
                     try await presentWebRedirectViewControllerWithRedirectUrl(redirectUrl)
                     webViewCompletion = { _, err in
                         if let err {
@@ -549,7 +552,9 @@ extension PrimerHeadlessUniversalCheckout {
                             pollingModule = nil
                         }
                     }
-                    return try await pollingModule?.start()
+                    let resumeToken = try await pollingModule?.start()
+                    if resumeToken != nil { await requiredActionObserver?.redirectReturned(paymentId: resumePaymentId) }
+                    return resumeToken
                 } catch {
                     if let primerErr = error as? PrimerError {
                         pollingModule?.cancel(withError: primerErr)

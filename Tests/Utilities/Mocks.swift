@@ -415,6 +415,14 @@ extension MockAppState {
         ]) { _, new in new })
     }
 
+    static var mockClientTokenWithProcessor3DS: String {
+        try! jwtFactory.create(payload: mockSandboxPayload.merging([
+            "intent": "PROCESSOR_3DS",
+            "redirectUrl": "https://localhost/processor-3ds",
+            "statusUrl": "https://localhost/status"
+        ]) { _, new in new })
+    }
+
     static var mockClientTokenWithQRCode: String {
         // swiftlint:disable:next line_length
         let minimalPNGBase64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="

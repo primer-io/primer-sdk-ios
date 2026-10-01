@@ -63,7 +63,7 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
   let (binDataStream, binDataContinuation) = AsyncStream<PrimerBinData>.makeStream()
   // Last detected networks to avoid duplicate notifications
   var lastDetectedNetworks: [CardNetwork] = []
-  private var lastTrackedRedirectDestination: String?
+  let analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol?
 
   private let clientSessionActionsFactory: () -> ClientSessionActionsProtocol
   private var configurationServiceFactory: (() -> ConfigurationService)?
@@ -76,12 +76,14 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
     },
     configurationServiceFactory: (() -> ConfigurationService)? = nil,
     rawDataManagerFactory: RawDataManagerFactoryProtocol = DefaultRawDataManagerFactory(),
-    vaultManagerFactory: (() -> any VaultManagerProtocol)? = nil
+    vaultManagerFactory: (() -> any VaultManagerProtocol)? = nil,
+    analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol? = nil
   ) {
     self.clientSessionActionsFactory = clientSessionActionsFactory
     self.configurationServiceFactory = configurationServiceFactory
     self.rawDataManagerFactory = rawDataManagerFactory
     self.vaultManagerFactory = vaultManagerFactory
+    self.analyticsInteractor = analyticsInteractor
   }
 
   private func injectConfigurationService() async {
@@ -160,7 +162,7 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
             selectedNetwork: selectedNetwork
           )
 
-          let paymentHandler = PaymentCompletionHandler(repository: self) { [weak self] result in
+          let paymentHandler = PaymentCompletionHandler { [weak self] result in
             self?.cardPaymentCompletionHandler = nil
             oneShot.resume(with: result)
           }
@@ -171,6 +173,7 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
             paymentMethodType: "PAYMENT_CARD",
             delegate: paymentHandler
           )
+          rawDataManager.requiredActionObserver = analyticsInteractor
 
           configureRawDataManagerAndSubmit(
             rawDataManager: rawDataManager,
@@ -382,7 +385,6 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
       let oneShot = OneShotContinuation(continuation)
       Task { @MainActor [self] in
         let completionHandler = PaymentCompletionHandler(
-          repository: self,
           paymentMethodType: paymentMethodType,
           staleCheckoutData: vaultManager.paymentCheckoutData
         ) { [weak self] result in
@@ -392,6 +394,7 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
 
         vaultPaymentCompletionHandler = completionHandler
         PrimerHeadlessUniversalCheckout.current.delegate = completionHandler
+        vaultManager.requiredActionObserver = analyticsInteractor
 
         vaultManager.startPaymentFlow(
           vaultedPaymentMethodId: vaultedPaymentMethodId,
@@ -451,106 +454,6 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
       } catch {
         completion(error)
       }
-    }
-  }
-
-  // MARK: - Analytics Integration
-
-  func trackRedirectToThirdPartyIfNeeded(
-    from additionalInfo: PrimerCheckoutAdditionalInfo?,
-    paymentMethodType: String
-  ) {
-    guard let additionalInfo,
-      let redirectUrl = extractRedirectURL(from: additionalInfo),
-      let destination = URL(string: redirectUrl)
-    else { return }
-
-    if redirectUrl == lastTrackedRedirectDestination {
-      return
-    }
-    lastTrackedRedirectDestination = redirectUrl
-
-    trackAnalytics { await $0.trackRedirectToThirdParty(paymentMethodType, destination: destination, paymentId: nil) }
-  }
-
-  private func extractRedirectURL(from info: PrimerCheckoutAdditionalInfo) -> String? {
-    let candidateKeys = [
-      "redirectUrl", "url", "deeplinkUrl", "deepLinkUrl", "qrCodeUrl", "link", "href"
-    ]
-
-    for key in candidateKeys {
-      let selector = NSSelectorFromString(key)
-      guard info.responds(to: selector) else { continue }
-      if let value = info.value(forKey: key) as? String, isLikelyURL(value) {
-        return value
-      }
-      if let url = info.value(forKey: key) as? URL {
-        return url.absoluteString
-      }
-    }
-
-    for child in Mirror(reflecting: info).children {
-      if let nestedInfo = child.value as? PrimerCheckoutAdditionalInfo,
-        let nestedUrl = extractRedirectURL(from: nestedInfo) {
-        return nestedUrl
-      }
-
-      if let url = extractURL(from: child.value) {
-        return url
-      }
-    }
-
-    return nil
-  }
-
-  private func extractURL(from value: Any) -> String? {
-    if let string = value as? String, isLikelyURL(string) {
-      return string
-    }
-
-    if let url = value as? URL {
-      return url.absoluteString
-    }
-
-    if let info = value as? PrimerCheckoutAdditionalInfo {
-      return extractRedirectURL(from: info)
-    }
-
-    return nil
-  }
-
-  private func isLikelyURL(_ string: String) -> Bool {
-    ["http://", "https://"].contains { string.lowercased().hasPrefix($0) }
-  }
-
-  private func trackAnalytics(_ track: @escaping (CheckoutComponentsAnalyticsInteractorProtocol) async -> Void) {
-    Task {
-      await injectAnalyticsInteractor()
-
-      guard let interactor = analyticsInteractor else {
-        return
-      }
-
-      await track(interactor)
-    }
-  }
-
-  // MARK: - Analytics Interactor
-
-  private var analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol?
-
-  private func injectAnalyticsInteractor() async {
-    guard analyticsInteractor == nil else { return }
-
-    do {
-      guard let container = await DIContainer.current else {
-        return
-      }
-
-      analyticsInteractor = try await container.resolve(
-        CheckoutComponentsAnalyticsInteractorProtocol.self)
-    } catch {
-      logger.error(message: "Failed to resolve dependency: \(error)")
     }
   }
 }

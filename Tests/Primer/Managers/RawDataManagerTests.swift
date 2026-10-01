@@ -125,6 +125,9 @@ final class RawDataManagerTests: XCTestCase {
             return self.paymentResponseAfterResume
         }
 
+        let observer = RecordingRequiredActionObserver()
+        sut.requiredActionObserver = observer
+
         headlessCheckoutDelegate.onDidFail = { error in
             XCTFail("Failed with error: \(error.localizedDescription)")
         }
@@ -139,6 +142,47 @@ final class RawDataManagerTests: XCTestCase {
         sut.submit()
 
         waitForExpectations(timeout: 45.0)
+        XCTAssertEqual(observer.calls, [
+            .redirectOpened(URL(string: "https://localhost/redirect")!, paymentId: "id"),
+            .redirectReturned(paymentId: "id")
+        ])
+    }
+
+    func testProcessor3DS_reportsTheChallengeAndNoRedirect() throws {
+        let apiClient = MockPrimerAPIClient()
+        PrimerAPIConfigurationModule.apiClient = apiClient
+        PollingModule.apiClient = apiClient
+        apiClient.fetchConfigurationWithActionsResult = (PrimerAPIConfiguration.current, nil)
+        apiClient.pollingResults = [(PollingResponse(status: .complete, id: "4321", source: "src"), nil)]
+
+        headlessCheckoutDelegate.onWillCreatePaymentWithData = { _, decisionHandler in
+            decisionHandler(.continuePaymentCreation())
+        }
+        tokenizationService.onTokenize = { _ in .success(self.tokenizationResponseBody) }
+        createResumePaymentService.onCreatePayment = { _ in
+            self.paymentResponseBody(requiredActionToken: MockAppState.mockClientTokenWithProcessor3DS)
+        }
+        createResumePaymentService.onResumePayment = { _, _ in self.paymentResponseAfterResume }
+
+        let expectDidCompleteCheckout = expectation(description: "Headless checkout completed")
+        headlessCheckoutDelegate.onDidCompleteCheckoutWithData = { _ in expectDidCompleteCheckout.fulfill() }
+        headlessCheckoutDelegate.onDidFail = { error in
+            XCTFail("Failed with error: \(error.localizedDescription)")
+        }
+        let observer = RecordingRequiredActionObserver()
+        sut.requiredActionObserver = observer
+
+        sut.rawData = PrimerCardData(
+            cardNumber: "4111 1111 1111 1111",
+            expiryDate: "03/2030",
+            cvv: "123",
+            cardholderName: "John Appleseed"
+        )
+
+        sut.submit()
+
+        waitForExpectations(timeout: 15.0)
+        XCTAssertEqual(observer.calls, [.threeDSChallengeShown(provider: "PROCESSOR", protocolVersion: nil)])
     }
 
     func testAbortPaymentFlow() throws {
@@ -325,6 +369,19 @@ final class RawDataManagerTests: XCTestCase {
             ),
             customerId: "customer_id",
             orderId: "order_id",
+            status: .success
+        )
+    }
+
+    func paymentResponseBody(requiredActionToken: String) -> Response.Body.Payment {
+        .init(
+            id: "id",
+            paymentId: "payment_id",
+            amount: 123,
+            currencyCode: "GBP",
+            customerId: "customer_id",
+            orderId: "order_id",
+            requiredAction: .init(clientToken: requiredActionToken, name: .checkout, description: "description"),
             status: .success
         )
     }

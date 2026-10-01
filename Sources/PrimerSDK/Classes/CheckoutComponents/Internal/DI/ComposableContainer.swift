@@ -263,7 +263,11 @@ extension ComposableContainer {
     try await criticalRegister(HeadlessRepository.self) {
       _ = try await container.register(HeadlessRepository.self)
         .asSingleton()
-        .with { _ in await HeadlessRepositoryImpl() }
+        .with { resolver in
+          await HeadlessRepositoryImpl(
+            analyticsInteractor: try? await resolver.resolve(CheckoutComponentsAnalyticsInteractorProtocol.self)
+          )
+        }
     }
 
     try await criticalRegister(PaymentMethodMapper.self) {

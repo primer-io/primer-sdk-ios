@@ -231,6 +231,22 @@ final class AnalyticsFunnelStateTests: XCTestCase {
         XCTAssertEqual(threeDS.first?.envelope.attemptId, "attempt-1")
     }
 
+    func test_cardRedirect_afterSubmitted_staysInTheAttemptWithItsPaymentId() {
+        _ = sut.process(.paymentMethodSelection, metadata: payment(card))
+        _ = sut.process(.paymentSubmitted, metadata: payment(card))
+
+        let redirect = sut.process(
+            .paymentRedirectToThirdParty,
+            metadata: .redirect(RedirectEvent(paymentMethod: "", destinationUrl: "https://bank.example.com", paymentId: "pay_1"))
+        )
+        let returned = sut.process(.paymentReturnedFromThirdParty, metadata: .payment(PaymentEvent(paymentMethod: "")))
+
+        XCTAssertEqual(names(redirect + returned), [.paymentRedirectToThirdParty, .paymentReturnedFromThirdParty])
+        XCTAssertEqual(returned.first?.envelope.paymentMethod, card)
+        XCTAssertEqual(returned.first?.envelope.attemptId, "attempt-1")
+        XCTAssertEqual(returned.first?.envelope.paymentId, "pay_1")
+    }
+
     // MARK: - 3DS outcome
 
     func test_threeDSOutcome_goesOnTheAttemptsOutcomeOnly() {
