@@ -158,6 +158,28 @@ final class CheckoutAnalyticsTrackerTests: XCTestCase {
         XCTAssertEqual(payment?.outcome, "failed")
     }
 
+    // The shared vault flow reports UNKNOWN when its token has no payment method type.
+    func test_trackStateChange_failureWithAnUnknownMethod_sendsTheAttemptsMethod() async {
+        // Given
+        let funnel = FunnelAnalyticsInteractor()
+        let tracker = CheckoutAnalyticsTracker(analyticsInteractor: funnel)
+        await funnel.trackMethodSelected(TestData.PaymentMethodTypes.card)
+        let error = PrimerError.paymentFailed(
+            paymentMethodType: "UNKNOWN",
+            paymentId: TestData.PaymentIds.success,
+            orderId: nil,
+            status: "FAILED",
+            diagnosticsId: "test_diagnostics"
+        )
+
+        // When
+        await tracker.trackStateChange(.failure(error))
+
+        // Then
+        let sent = await funnel.sent
+        XCTAssertEqual(sent.last, FunnelAnalyticsInteractor.Sent(.paymentFailure, TestData.PaymentMethodTypes.card, attempt: 1))
+    }
+
     func test_trackStateChange_failure_takesThePaymentIdFromCheckoutData() async {
         // Given
         let checkoutData = PrimerCheckoutData(

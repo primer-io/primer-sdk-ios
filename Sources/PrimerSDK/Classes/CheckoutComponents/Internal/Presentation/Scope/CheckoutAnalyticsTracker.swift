@@ -106,6 +106,7 @@ final class CheckoutAnalyticsTracker: LogReporter {
 
   private static func paymentContext(of error: PrimerError) -> (paymentMethod: String?, paymentId: String?) {
     guard case let .paymentFailed(paymentMethodType, paymentId, _, _, _) = error else { return (nil, nil) }
-    return (paymentMethodType, paymentId)
+    // The shared vault flow says UNKNOWN when its token has no type, so the attempt's method is used instead.
+    return (paymentMethodType == "UNKNOWN" ? nil : paymentMethodType, paymentId)
   }
 }
