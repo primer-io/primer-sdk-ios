@@ -60,11 +60,14 @@ final class PrimerPaymentMethodEntryRoutingTests: XCTestCase {
 
 final class BackendDrivenCheckoutSetupEndpointTests: XCTestCase {
 
-    func testSetupPostsToTheClientSessionVerb() throws {
+    func testSetupPostsToThePaymentMethodSetupsCollection() throws {
         let paymentMethod = try decodePaymentMethod(entry: "\"onSelect\"")
         let setup = BackendDrivenCheckoutEndpoint.setup(paymentMethod: paymentMethod)
 
-        XCTAssertTrue(setup.path.hasSuffix(":setup"), "Expected a :setup verb, got \(setup.path)")
+        XCTAssertTrue(
+            setup.path.hasSuffix("/payment-method-setups"),
+            "Expected the payment-method-setups collection, got \(setup.path)"
+        )
         XCTAssertEqual(setup.method, .post)
         XCTAssertNil(setup.queryParameters)
     }
@@ -75,9 +78,18 @@ final class BackendDrivenCheckoutSetupEndpointTests: XCTestCase {
         let pay = BackendDrivenCheckoutEndpoint.pay(paymentMethod: paymentMethod)
 
         XCTAssertEqual(
-            setup.path.replacingOccurrences(of: ":setup", with: ""),
+            setup.path.replacingOccurrences(of: "/payment-method-setups", with: ""),
             pay.path.replacingOccurrences(of: ":pay", with: "")
         )
+    }
+
+    func testPollTargetsTheSetupCreatedByTheCollection() throws {
+        let paymentMethod = try decodePaymentMethod(entry: "\"onSelect\"")
+        let setup = BackendDrivenCheckoutEndpoint.setup(paymentMethod: paymentMethod)
+        let poll = BackendDrivenCheckoutEndpoint.pollSetup(setupId: "setup-1")
+
+        XCTAssertEqual(poll.path, setup.path + "/setup-1")
+        XCTAssertEqual(poll.method, .get)
     }
 }
 
