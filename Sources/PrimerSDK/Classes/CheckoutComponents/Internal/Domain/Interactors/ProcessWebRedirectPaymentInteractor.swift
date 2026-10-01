@@ -62,20 +62,22 @@ final class ProcessWebRedirectPaymentInteractorImpl: ProcessWebRedirectPaymentIn
 
       let sessionInfo = createSessionInfo(for: paymentMethodType)
 
-      let (redirectUrl, statusUrl) = try await repository.tokenize(
+      let payment = try await repository.tokenize(
         paymentMethodType: paymentMethodType,
         sessionInfo: sessionInfo
       )
 
-      await analytics?.trackRedirectToThirdParty(paymentMethodType, destination: redirectUrl, paymentId: nil)
+      await analytics?.trackRedirectToThirdParty(paymentMethodType, destination: payment.redirectUrl, paymentId: payment.paymentId)
       _ = try await repository.openWebAuthentication(
         paymentMethodType: paymentMethodType,
-        url: redirectUrl
+        url: payment.redirectUrl
       )
-      await analytics?.trackReturnedFromThirdParty(paymentMethodType, paymentId: nil)
-      await analytics?.trackSubmitted(paymentMethodType)
+      // Opening another app returns at once, so that shopper is back only when the result arrives.
+      let opensApp = !payment.redirectUrl.hasWebBasedScheme
+      if !opensApp { await analytics?.trackReturned(paymentMethodType, paymentId: payment.paymentId) }
 
-      let resumeToken = try await repository.pollForCompletion(statusUrl: statusUrl)
+      let resumeToken = try await repository.pollForCompletion(statusUrl: payment.statusUrl)
+      if opensApp { await analytics?.trackReturned(paymentMethodType, paymentId: payment.paymentId) }
 
       let result = try await repository.resumePayment(
         paymentMethodType: paymentMethodType,

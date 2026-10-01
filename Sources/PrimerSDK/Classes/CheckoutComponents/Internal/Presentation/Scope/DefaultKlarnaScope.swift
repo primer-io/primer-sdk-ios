@@ -230,7 +230,6 @@ final class DefaultKlarnaScope: PrimerKlarnaScope, ObservableObject, LogReporter
     checkoutScope.updateNavigationState(.processing)
 
     await analyticsInteractor?.trackProcessingStarted(PrimerPaymentMethodType.klarna.rawValue)
-    await analyticsInteractor?.trackSubmitted(PrimerPaymentMethodType.klarna.rawValue)
 
     do {
       let result = try await processKlarnaInteractor.authorize()
@@ -295,7 +294,9 @@ final class DefaultKlarnaScope: PrimerKlarnaScope, ObservableObject, LogReporter
     }
   }
 
+  /// Klarna approved, so the shopper's part is done.
   private func processPayment(authToken: String) async {
+    await analyticsInteractor?.trackSubmitted(PrimerPaymentMethodType.klarna.rawValue)
     do {
       let result = try await processKlarnaInteractor.tokenize(authToken: authToken)
       guard let checkoutScope else {

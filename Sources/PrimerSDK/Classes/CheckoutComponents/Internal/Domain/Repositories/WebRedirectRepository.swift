@@ -8,11 +8,18 @@ import Foundation
 @_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerCore
 
+/// The payment exists before the shopper leaves for the third party.
+struct RedirectPayment: Equatable {
+    let redirectUrl: URL
+    let statusUrl: URL
+    let paymentId: String?
+}
+
 @available(iOS 15.0, *)
 protocol WebRedirectRepository {
     func tokenize(
         paymentMethodType: String, sessionInfo: WebRedirectSessionInfo
-    ) async throws -> (redirectUrl: URL, statusUrl: URL)
+    ) async throws -> RedirectPayment
     func openWebAuthentication(paymentMethodType: String, url: URL) async throws -> URL
     func pollForCompletion(statusUrl: URL) async throws -> String
     func resumePayment(

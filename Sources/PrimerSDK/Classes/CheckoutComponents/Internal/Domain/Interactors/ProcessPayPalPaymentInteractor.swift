@@ -24,13 +24,12 @@ final class ProcessPayPalPaymentInteractorImpl: ProcessPayPalPaymentInteractor, 
     self.analytics = analytics
   }
 
-  /// The shopper's part ends when PayPal hands control back after approval.
+  /// The shopper's part ends when PayPal hands control back after approval. No payment exists yet.
   private func openApproval(_ url: URL) async throws {
     let paymentMethod = PrimerPaymentMethodType.payPal.rawValue
     await analytics?.trackRedirectToThirdParty(paymentMethod, destination: url, paymentId: nil)
     _ = try await repository.openWebAuthentication(url: url)
-    await analytics?.trackReturnedFromThirdParty(paymentMethod, paymentId: nil)
-    await analytics?.trackSubmitted(paymentMethod)
+    await analytics?.trackReturned(paymentMethod, paymentId: nil)
     logger.debug(message: "PayPal web authentication completed")
   }
 
