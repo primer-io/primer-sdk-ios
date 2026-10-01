@@ -423,6 +423,12 @@ extension MockAppState {
         ]) { _, new in new })
     }
 
+    static var mockClientTokenWith3DS: String {
+        try! jwtFactory.create(payload: mockSandboxPayload.merging([
+            "intent": "3DS_AUTHENTICATION"
+        ]) { _, new in new })
+    }
+
     static var mockClientTokenWithQRCode: String {
         // swiftlint:disable:next line_length
         let minimalPNGBase64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="

@@ -6,11 +6,13 @@
 
 import Foundation
 
-/// Hears about the pages the shared core opens during one payment. Drop-in and headless set none.
+/// Hears about the pages and the 3DS the shared core runs during one payment. Drop-in and headless set none.
 protocol RequiredActionObserver: AnyObject, Sendable {
     func redirectOpened(_ url: URL, paymentId: String?) async
     func redirectReturned(paymentId: String?) async
     func threeDSChallengeShown(provider: String, protocolVersion: String?) async
+    /// Only `AUTH_SUCCESS`, `AUTH_FAILED` and `SKIPPED` are reported.
+    func threeDSCompleted(authenticationOutcome: String, skippedReasonCode: String?) async
 }
 
 enum ProcessorThreeDS {

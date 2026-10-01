@@ -365,7 +365,7 @@ extension PrimerHeadlessUniversalCheckout {
             _ decodedJWTToken: DecodedJWTToken,
             paymentMethodTokenData: PrimerPaymentMethodTokenData
         ) async throws -> String? {
-            try await ThreeDSService().perform3DS(
+            try await ThreeDSService(observer: requiredActionObserver).perform3DS(
                 paymentMethodTokenData: paymentMethodTokenData,
                 sdkDismissed: nil
             )

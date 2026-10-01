@@ -7,7 +7,7 @@
 @testable import PrimerSDK
 import XCTest
 
-/// What checkout analytics sends for the pages the shared core opens.
+/// What checkout analytics sends for the pages and 3DS the shared core runs.
 @available(iOS 15.0, *)
 final class RequiredActionObserverTests: XCTestCase {
 
@@ -55,5 +55,26 @@ final class RequiredActionObserverTests: XCTestCase {
         XCTAssertEqual(events.map(\.eventType), [.paymentThreeds])
         XCTAssertNil(events.first?.metadata?.paymentMethod)
         XCTAssertEqual(events.first?.metadata?.threedsProvider, "PROCESSOR")
+    }
+
+    func test_threeDSChallengeShown_carriesTheProtocolVersion() async {
+        // When
+        await sut.threeDSChallengeShown(provider: "NETCETERA", protocolVersion: "2.2.0")
+
+        // Then
+        let events = await sut.trackedEvents
+        XCTAssertEqual(events.first?.metadata?.threedsProvider, "NETCETERA")
+        XCTAssertEqual(events.first?.metadata?.threedsProtocolVersion, "2.2.0")
+    }
+
+    func test_threeDSCompleted_recordsTheOutcomeWithoutAnEvent() async {
+        // When
+        await sut.threeDSCompleted(authenticationOutcome: "SKIPPED", skippedReasonCode: "GATEWAY_UNAVAILABLE")
+
+        // Then
+        let recorded = await sut.recordedThreeDSOutcomes
+        XCTAssertEqual(recorded, [AnalyticsFunnelState.ThreeDSOutcome(authenticationOutcome: "SKIPPED", skippedReasonCode: "GATEWAY_UNAVAILABLE")])
+        let eventCount = await sut.trackEventCallCount
+        XCTAssertEqual(eventCount, 0)
     }
 }

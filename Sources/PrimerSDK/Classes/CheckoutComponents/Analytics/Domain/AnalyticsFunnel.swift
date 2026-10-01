@@ -75,14 +75,6 @@ extension CheckoutComponentsAnalyticsInteractorProtocol {
     await trackEvent(.redirectReturnUrlNotConfigured, metadata: .payment(PaymentEvent(paymentMethod: paymentMethod)))
   }
 
-  /// The payment method comes from the attempt when the caller does not know it.
-  func trackThreeDSChallengeShown(provider: String, protocolVersion: String?) async {
-    await trackEvent(
-      .paymentThreeds,
-      metadata: .threeDS(ThreeDSEvent(paymentMethod: "", provider: provider, protocolVersion: protocolVersion))
-    )
-  }
-
   func trackSuccess(_ paymentMethod: String?, paymentId: String?) async {
     let metadata: AnalyticsEventMetadata = paymentMethod.map {
       .payment(PaymentEvent(paymentMethod: $0, paymentId: paymentId))
@@ -110,7 +102,7 @@ extension CheckoutComponentsAnalyticsInteractorProtocol {
     await trackEvent(.paymentFlowExited, metadata: nil)
   }
 
-  // MARK: - Pages the shared core opens
+  // MARK: - Pages and 3DS the shared core runs
 
   func redirectOpened(_ url: URL, paymentId: String?) async {
     await trackRedirectToThirdParty(nil, destination: url, paymentId: paymentId)
@@ -121,8 +113,18 @@ extension CheckoutComponentsAnalyticsInteractorProtocol {
     await trackReturnedFromThirdParty(nil, paymentId: paymentId)
   }
 
+  /// The payment method comes from the open attempt.
   func threeDSChallengeShown(provider: String, protocolVersion: String?) async {
-    await trackThreeDSChallengeShown(provider: provider, protocolVersion: protocolVersion)
+    await trackEvent(
+      .paymentThreeds,
+      metadata: .threeDS(ThreeDSEvent(paymentMethod: "", provider: provider, protocolVersion: protocolVersion))
+    )
+  }
+
+  func threeDSCompleted(authenticationOutcome: String, skippedReasonCode: String?) async {
+    await recordThreeDSOutcome(
+      AnalyticsFunnelState.ThreeDSOutcome(authenticationOutcome: authenticationOutcome, skippedReasonCode: skippedReasonCode)
+    )
   }
 }
 

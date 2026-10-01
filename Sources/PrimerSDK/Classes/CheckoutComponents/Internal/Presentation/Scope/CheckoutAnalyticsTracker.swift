@@ -4,7 +4,6 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import Foundation
 @_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerCore
 
@@ -14,36 +13,9 @@ import Foundation
 final class CheckoutAnalyticsTracker: LogReporter {
 
   private let analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol?
-  private let threeDSObservations: [Task<Void, Never>]
 
   init(analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol?) {
     self.analyticsInteractor = analyticsInteractor
-    // The 3DS service lives in the shared core, so it announces the challenge and the result instead of calling CC analytics.
-    threeDSObservations = [
-      Task {
-        for await notification in NotificationCenter.default.notifications(named: .primer3DSChallengePresented) {
-          let info = notification.userInfo
-          await analyticsInteractor?.trackThreeDSChallengeShown(
-            provider: info?[Notification.Name.primer3DSProviderKey] as? String ?? "Unknown",
-            protocolVersion: info?[Notification.Name.primer3DSProtocolVersionKey] as? String
-          )
-        }
-      },
-      Task {
-        for await notification in NotificationCenter.default.notifications(named: .primer3DSAuthenticationCompleted) {
-          let info = notification.userInfo
-          guard let outcome = info?[Notification.Name.primer3DSOutcomeKey] as? String else { continue }
-          await analyticsInteractor?.recordThreeDSOutcome(AnalyticsFunnelState.ThreeDSOutcome(
-            authenticationOutcome: outcome,
-            skippedReasonCode: info?[Notification.Name.primer3DSSkippedReasonKey] as? String
-          ))
-        }
-      }
-    ]
-  }
-
-  deinit {
-    stopObservingThreeDS()
   }
 
   func trackStateChange(_ state: PrimerCheckoutState, availablePaymentMethods: [String] = []) async {
@@ -70,7 +42,6 @@ final class CheckoutAnalyticsTracker: LogReporter {
       )
 
     case .dismissed:
-      stopObservingThreeDS()
       await analyticsInteractor?.trackFlowExited()
 
     default:
@@ -95,13 +66,7 @@ final class CheckoutAnalyticsTracker: LogReporter {
 
   /// For surfaces that close without passing through `.dismissed`.
   func trackFlowExited() async {
-    stopObservingThreeDS()
     await analyticsInteractor?.trackFlowExited()
-  }
-
-  /// A closed checkout can outlive its screen, and must not send another session's 3DS.
-  private nonisolated func stopObservingThreeDS() {
-    threeDSObservations.forEach { $0.cancel() }
   }
 
   private static func paymentContext(of error: PrimerError) -> (paymentMethod: String?, paymentId: String?) {

@@ -7,13 +7,14 @@
 import Foundation
 @testable import PrimerSDK
 
-/// Records what the shared core reports about the pages it opens, readable from a synchronous test.
+/// Records what the shared core reports about its pages and 3DS, readable from a synchronous test.
 final class RecordingRequiredActionObserver: RequiredActionObserver, @unchecked Sendable {
 
     enum Call: Equatable {
         case redirectOpened(URL, paymentId: String?)
         case redirectReturned(paymentId: String?)
         case threeDSChallengeShown(provider: String, protocolVersion: String?)
+        case threeDSCompleted(authenticationOutcome: String, skippedReasonCode: String?)
     }
 
     private let lock = NSLock()
@@ -31,6 +32,10 @@ final class RecordingRequiredActionObserver: RequiredActionObserver, @unchecked 
 
     func threeDSChallengeShown(provider: String, protocolVersion: String?) async {
         record(.threeDSChallengeShown(provider: provider, protocolVersion: protocolVersion))
+    }
+
+    func threeDSCompleted(authenticationOutcome: String, skippedReasonCode: String?) async {
+        record(.threeDSCompleted(authenticationOutcome: authenticationOutcome, skippedReasonCode: skippedReasonCode))
     }
 
     private func record(_ call: Call) {
