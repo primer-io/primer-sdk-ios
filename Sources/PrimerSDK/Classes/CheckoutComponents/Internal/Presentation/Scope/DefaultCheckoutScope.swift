@@ -115,6 +115,7 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
   private var configurationService: ConfigurationService?
   private var paymentMethodsInteractor: GetPaymentMethodsInteractor?
   private var analyticsTracker: CheckoutAnalyticsTracker?
+  private var lastAnalyticsTask: Task<Void, Never>?
   private var analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol?
   private var accessibilityAnnouncementService: AccessibilityAnnouncementService?
   private var selectedPaymentMethodName: String?
@@ -276,7 +277,7 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
           let singlePaymentMethod = availablePaymentMethods.first {
           // The card form selects on the shopper's first input.
           if singlePaymentMethod.type != PrimerPaymentMethodType.paymentCard.rawValue {
-            Task { [self] in await analyticsInteractor?.trackMethodSelected(singlePaymentMethod.type) }
+            trackInOrder { await $0.analyticsInteractor?.trackMethodSelected(singlePaymentMethod.type) }
           }
           handlePaymentMethodSelection(singlePaymentMethod)
         } else {
@@ -334,8 +335,15 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
     if case .dismissed = internalState { return }
     internalState = newState
 
-    Task { [self] in
-      await analyticsTracker?.trackStateChange(newState, availablePaymentMethods: availablePaymentMethods.map(\.type))
+    trackInOrder { await $0.analyticsTracker?.trackStateChange(newState, availablePaymentMethods: $0.availablePaymentMethods.map(\.type)) }
+  }
+
+  /// Each event waits for the one asked for before it, so the funnel sees them in the checkout's order.
+  private func trackInOrder(_ track: @escaping @MainActor (DefaultCheckoutScope) async -> Void) {
+    let previous = lastAnalyticsTask
+    lastAnalyticsTask = Task { [self] in
+      await previous?.value
+      await track(self)
     }
   }
 
@@ -346,7 +354,7 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
   func updateNavigationState(_ newState: CheckoutNavigationState, syncToNavigator: Bool) {
     let previous = navigationState
     navigationState = newState
-    Task { [self] in await analyticsTracker?.trackNavigation(from: previous, to: newState) }
+    trackInOrder { await $0.analyticsTracker?.trackNavigation(from: previous, to: newState) }
 
     trackLifecycle(for: newState)
     announceScreenChange(for: newState)
@@ -552,7 +560,7 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
   /// - Parameter abandonsMethod: false when only the screen closes and the payment still runs.
   func cancelActivePaymentMethod(returnToSelection: Bool, abandonsMethod: Bool = true) {
     if abandonsMethod {
-      Task { [self] in await analyticsTracker?.trackMethodLeft(nil, reason: .shopperCancel) }
+      trackInOrder { await $0.analyticsTracker?.trackMethodLeft(nil, reason: .shopperCancel) }
     }
     if returnToSelection {
       // Navigation-only: leaves the checkout state at `.ready` so no terminal outcome is delivered.
@@ -603,7 +611,8 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
   ///   This matches the pattern used in Drop-In and Headless flows. A proper DI solution would require
   ///   refactoring the networking layer to use injected dependencies instead of the enum pattern.
   func invokeBeforePaymentCreate(paymentMethodType: String) async throws {
-    // Paying with a method selects it, and paying again after an outcome starts a new attempt.
+    // Paying selects the method. It waits for the queued events, so paying after an outcome starts a new attempt.
+    await lastAnalyticsTask?.value
     await analyticsInteractor?.trackMethodSelected(paymentMethodType)
     guard let callback = onBeforePaymentCreate else {
       // No imperative handler — fall back to the declarative idempotency-key provider.
@@ -655,6 +664,7 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
   var canRetryPayment: Bool { lastPaymentAttempt != nil }
 
   func trackFlowExit() async {
+    await lastAnalyticsTask?.value
     await analyticsTracker?.trackFlowExited()
   }
 
@@ -667,7 +677,7 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
       guard case .failure = navigationState else { return }
     }
 
-    Task { @MainActor [weak self] in await self?.analyticsTracker?.trackRetry() }
+    trackInOrder { await $0.analyticsTracker?.trackRetry() }
 
     switch lastPaymentAttempt {
     case let .restart(method):
