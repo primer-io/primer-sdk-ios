@@ -329,7 +329,9 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
                             let authentication = beginAuthResponse.authentication
                             self.postAuthenticationOutcome(
                                 authentication.responseCode,
+                                // A reason this SDK does not know decodes as the generic `Authentication`.
                                 skippedReasonCode: (authentication as? ThreeDS.SkippedAPIResponse)?.skippedReasonCode.rawValue
+                                    ?? (authentication as? ThreeDS.Authentication)?.skippedReasonCode
                             )
 
                             let internalErr = InternalError.noNeedToPerform3ds(

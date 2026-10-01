@@ -43,7 +43,7 @@ final class CheckoutAnalyticsTracker: LogReporter {
   }
 
   deinit {
-    threeDSObservations.forEach { $0.cancel() }
+    stopObservingThreeDS()
   }
 
   func trackStateChange(_ state: PrimerCheckoutState, availablePaymentMethods: [String] = []) async {
@@ -70,6 +70,7 @@ final class CheckoutAnalyticsTracker: LogReporter {
       )
 
     case .dismissed:
+      stopObservingThreeDS()
       await analyticsInteractor?.trackFlowExited()
 
     default:
@@ -94,7 +95,13 @@ final class CheckoutAnalyticsTracker: LogReporter {
 
   /// For surfaces that close without passing through `.dismissed`.
   func trackFlowExited() async {
+    stopObservingThreeDS()
     await analyticsInteractor?.trackFlowExited()
+  }
+
+  /// A closed checkout can outlive its screen, and must not send another session's 3DS.
+  private nonisolated func stopObservingThreeDS() {
+    threeDSObservations.forEach { $0.cancel() }
   }
 
   private static func paymentContext(of error: PrimerError) -> (paymentMethod: String?, paymentId: String?) {

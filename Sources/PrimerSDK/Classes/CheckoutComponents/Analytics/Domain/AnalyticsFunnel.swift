@@ -63,6 +63,12 @@ extension CheckoutComponentsAnalyticsInteractorProtocol {
     )
   }
 
+  /// The shopper came back from the third party with a result, which is their part of a redirect payment.
+  func trackReturned(_ paymentMethod: String, paymentId: String?) async {
+    await trackReturnedFromThirdParty(paymentMethod, paymentId: paymentId)
+    await trackSubmitted(paymentMethod)
+  }
+
   func trackRedirectReturnUrlNotConfigured(_ paymentMethod: String) async {
     await trackEvent(.redirectReturnUrlNotConfigured, metadata: .payment(PaymentEvent(paymentMethod: paymentMethod)))
   }
@@ -93,7 +99,7 @@ extension CheckoutComponentsAnalyticsInteractorProtocol {
     await trackEvent(.paymentFailure, metadata: .payment(event))
   }
 
-  /// A new attempt at the same method. The previous method is added by the funnel.
+  /// A new attempt at the same method, sent only after a failure. The previous method is added by the funnel.
   func trackReattempted() async {
     await trackEvent(.paymentReattempted, metadata: nil)
   }

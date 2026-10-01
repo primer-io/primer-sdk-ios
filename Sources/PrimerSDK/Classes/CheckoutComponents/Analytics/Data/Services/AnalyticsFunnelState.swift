@@ -130,13 +130,9 @@ struct AnalyticsFunnelState {
     return (implied, selectedMethods.insert(method).inserted)
   }
 
-  /// Empty when the retried attempt already started, and so was already reported as reattempted.
+  /// Empty when the retried attempt already started, or when no failure came before it.
   private mutating func reattempt(_ method: String?) -> [Output] {
-    guard !isAttemptOpen else { return [] }
-    let previous = paymentMethod
-    startAttempt(method)
-    lastOutcome = nil
-    return [emit(.paymentReattempted, metadata: reattempted(previous: previous))]
+    isAttemptOpen ? [] : beginAttempt(method)
   }
 
   /// Nil drops the event: DETAILS_ENTERED after this attempt's SUBMITTED is late.
@@ -155,7 +151,11 @@ struct AnalyticsFunnelState {
     } else {
       // An attempt that already has an outcome, such as a merchant abort reported as UNSELECTED.
       if attemptId != nil, !isAttemptOpen { return false }
-      if attemptId == nil { startAttempt(method) }
+      if attemptId == nil {
+        // No attempt and no method: the checkout failed to load, which the contract does not count as a payment.
+        guard method != nil else { return false }
+        startAttempt(method)
+      }
       hasSucceeded = hasSucceeded || outcome == .paymentSuccess
     }
     isAttemptOpen = false

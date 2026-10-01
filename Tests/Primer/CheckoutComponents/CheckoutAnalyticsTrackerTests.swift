@@ -270,6 +270,32 @@ final class CheckoutAnalyticsTrackerTests: XCTestCase {
         XCTAssertEqual(eventCount, 0)
     }
 
+    func test_threeDSChallenge_afterTheCheckoutIsDismissed_isNotTracked() async throws {
+        try await assertStopsObservingThreeDS { await self.sut.trackStateChange(.dismissed) }
+    }
+
+    func test_threeDSChallenge_afterTheFlowExited_isNotTracked() async throws {
+        try await assertStopsObservingThreeDS { await self.sut.trackFlowExited() }
+    }
+
+    /// A closed checkout can stay in memory, so a later checkout's 3DS must not reach it.
+    private func assertStopsObservingThreeDS(after endingTheSession: () async -> Void) async throws {
+        let userInfo = [Notification.Name.primer3DSProviderKey: "NETCETERA"]
+        _ = try await postUntilTracked(name: .primer3DSChallengePresented, userInfo: userInfo)
+
+        await endingTheSession()
+        // why: the retried posts above can still be in flight; let them land before the reset.
+        try await Task.sleep(nanoseconds: 100_000_000)
+        await mockAnalytics.reset()
+        for _ in 0 ..< 5 {
+            NotificationCenter.default.post(name: .primer3DSChallengePresented, object: nil, userInfo: userInfo)
+            try await Task.sleep(nanoseconds: 20_000_000)
+        }
+
+        let threeDS = await mockAnalytics.trackedEvents.filter { $0.eventType == .paymentThreeds }
+        XCTAssertTrue(threeDS.isEmpty)
+    }
+
     // MARK: - Nil interactor
 
     func test_trackStateChange_nilInteractor_doesNotCrash() async {

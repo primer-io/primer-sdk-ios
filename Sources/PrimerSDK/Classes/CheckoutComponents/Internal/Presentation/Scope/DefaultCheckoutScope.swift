@@ -271,9 +271,13 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
         // inline view renders once `.ready`, and the flow sheet appears only after the merchant
         // triggers it. Stay on selection so the inline host treats this as a non-flow state.
         // A returning shopper's saved methods live on the selection screen, so skip it only without any.
-        // The modal flow opens its only method the way a row tap does, so the method starts too.
+        // The modal flow opens its only method the way a row tap does, so the method starts and is selected too.
         if !hasAlternativeToCurrentMethod, !isInlineFlow,
           let singlePaymentMethod = availablePaymentMethods.first {
+          // The card form selects on the shopper's first input.
+          if singlePaymentMethod.type != PrimerPaymentMethodType.paymentCard.rawValue {
+            Task { [self] in await analyticsInteractor?.trackMethodSelected(singlePaymentMethod.type) }
+          }
           handlePaymentMethodSelection(singlePaymentMethod)
         } else {
           updateNavigationState(.paymentMethodSelection)
@@ -545,8 +549,11 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
   /// the method was opened from selection; dismisses the whole checkout when it was presented
   /// directly (no list to return to). Mirrors Drop-In's popToMainScreen-on-cancel. Payment FAILURES
   /// must use `handlePaymentError` instead (error screen + dismiss).
-  func cancelActivePaymentMethod(returnToSelection: Bool) {
-    Task { [self] in await analyticsTracker?.trackMethodLeft(nil, reason: .shopperCancel) }
+  /// - Parameter abandonsMethod: false when only the screen closes and the payment still runs.
+  func cancelActivePaymentMethod(returnToSelection: Bool, abandonsMethod: Bool = true) {
+    if abandonsMethod {
+      Task { [self] in await analyticsTracker?.trackMethodLeft(nil, reason: .shopperCancel) }
+    }
     if returnToSelection {
       // Navigation-only: leaves the checkout state at `.ready` so no terminal outcome is delivered.
       // In the inline flow this closes the sheet and reveals the merchant's embedded list; in the
@@ -596,6 +603,8 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
   ///   This matches the pattern used in Drop-In and Headless flows. A proper DI solution would require
   ///   refactoring the networking layer to use injected dependencies instead of the enum pattern.
   func invokeBeforePaymentCreate(paymentMethodType: String) async throws {
+    // Paying with a method selects it, and paying again after an outcome starts a new attempt.
+    await analyticsInteractor?.trackMethodSelected(paymentMethodType)
     guard let callback = onBeforePaymentCreate else {
       // No imperative handler — fall back to the declarative idempotency-key provider.
       PrimerInternal.shared.currentIdempotencyKey = idempotencyKeyProvider?()

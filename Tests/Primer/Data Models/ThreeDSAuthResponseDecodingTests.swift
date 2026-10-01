@@ -39,6 +39,18 @@ final class ThreeDSAuthResponseDecodingTests: XCTestCase {
         XCTAssertEqual(skipped.skippedReasonCode.rawValue, "ACQUIRER_NOT_CONFIGURED")
     }
 
+    func test_beginAuth_skippedWithAnUnknownReason_keepsTheReasonOnTheGenericAuthentication() throws {
+        let response: ThreeDS.BeginAuthResponse = try decode(authentication: [
+            "responseCode": "SKIPPED",
+            "skippedReasonCode": "A_REASON_THIS_SDK_DOES_NOT_KNOW",
+            "skippedReasonText": "Unknown reason"
+        ])
+
+        XCTAssertNil(response.authentication as? ThreeDS.SkippedAPIResponse)
+        let authentication = try XCTUnwrap(response.authentication as? ThreeDS.Authentication)
+        XCTAssertEqual(authentication.skippedReasonCode, "A_REASON_THIS_SDK_DOES_NOT_KNOW")
+    }
+
     func test_continueAuth_skippedWithAnUnknownReason_stillDecodes() throws {
         let response: ThreeDS.PostAuthResponse = try decode(authentication: [
             "responseCode": "SKIPPED",

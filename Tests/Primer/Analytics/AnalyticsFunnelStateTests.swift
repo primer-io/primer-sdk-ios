@@ -108,6 +108,27 @@ final class AnalyticsFunnelStateTests: XCTestCase {
         XCTAssertEqual(sut.process(.paymentProcessingStarted, metadata: payment(card)).first?.envelope.attemptId, "attempt-2")
     }
 
+    func test_retry_afterAMerchantAbort_startsANewAttemptWithoutReattempted() {
+        _ = sut.process(.paymentMethodSelection, metadata: payment(card))
+        _ = sut.process(.paymentMethodUnselected, metadata: .payment(PaymentEvent(paymentMethod: card, reason: "merchant_abort")))
+
+        XCTAssertTrue(sut.process(.paymentReattempted, metadata: nil).isEmpty)
+        XCTAssertEqual(sut.process(.paymentProcessingStarted, metadata: payment(card)).first?.envelope.attemptId, "attempt-2")
+    }
+
+    // A merchant's own pay button submits again without the SDK's retry.
+    func test_selectionOnResubmit_afterAFailure_reopensTheAttemptForAMerchantAbort() {
+        _ = sut.process(.paymentMethodSelection, metadata: payment(card))
+        _ = sut.process(.paymentFailure, metadata: payment(card))
+
+        let resubmit = sut.process(.paymentMethodSelection, metadata: payment(card))
+        let abort = sut.process(.paymentMethodUnselected, metadata: .payment(PaymentEvent(paymentMethod: card, reason: "merchant_abort")))
+
+        XCTAssertEqual(names(resubmit), [.paymentReattempted])
+        XCTAssertEqual(names(abort), [.paymentMethodUnselected])
+        XCTAssertEqual(abort.first?.envelope.attemptId, "attempt-2")
+    }
+
     func test_detailsEntered_afterSubmitted_isDropped() {
         _ = sut.process(.paymentMethodSelection, metadata: payment(card))
         _ = sut.process(.paymentSubmitted, metadata: payment(card))
@@ -140,6 +161,12 @@ final class AnalyticsFunnelStateTests: XCTestCase {
 
         XCTAssertEqual(names(outputs), [.paymentSuccess])
         XCTAssertEqual(outputs.first?.envelope.attemptId, "attempt-1")
+    }
+
+    // A checkout that failed to load, which is not a payment.
+    func test_failure_withNoAttemptAndNoMethod_isDropped() {
+        XCTAssertTrue(sut.process(.paymentFailure, metadata: payment("")).isEmpty)
+        XCTAssertTrue(sut.process(.paymentSuccess, metadata: .general()).isEmpty)
     }
 
     func test_unselected_withNoOpenAttempt_isDropped() {
