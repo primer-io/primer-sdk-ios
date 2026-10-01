@@ -309,6 +309,102 @@ final class AnalyticsEventServiceDeliveryTests: XCTestCase {
         XCTAssertEqual(calls.map(\.payload.eventName), ["PAYMENT_METHOD_SELECTION", "PAYMENT_METHOD_SELECTION"])
     }
 
+    // MARK: - Session
+
+    func test_sendEvent_carriesTheSessionAndGoesToItsEnvironment() async throws {
+        // Given
+        let service = makeService()
+        await service.initialize(config: makeConfig(environment: .staging))
+
+        // When
+        await service.sendEvent(.sdkInitStart, metadata: nil)
+
+        // Then
+        let calls = try await client.waitForCalls(count: 1)
+        let call = try XCTUnwrap(calls.first)
+        XCTAssertEqual(call.payload.checkoutSessionId, "cs_delivery_test")
+        XCTAssertEqual(call.payload.clientSessionId, "client_delivery_test")
+        XCTAssertEqual(call.payload.primerAccountId, "acc_delivery_test")
+        XCTAssertEqual(call.payload.sdkVersion, "3.0.0")
+        XCTAssertEqual(call.token, "token_delivery_test")
+        XCTAssertEqual(call.endpoint, AnalyticsEnvironmentProvider().getEndpointURL(for: .staging))
+    }
+
+    func test_initializeAgain_sendsWithTheNewSession() async throws {
+        // Given
+        let service = makeService()
+        await service.initialize(config: makeConfig())
+
+        // When
+        await service.initialize(config: makeConfig(environment: .staging, clientSessionId: "client_next"))
+        await service.sendEvent(.sdkInitStart, metadata: nil)
+
+        // Then
+        let calls = try await client.waitForCalls(count: 1)
+        let call = try XCTUnwrap(calls.first)
+        XCTAssertEqual(call.payload.clientSessionId, "client_next")
+        XCTAssertEqual(call.endpoint, AnalyticsEnvironmentProvider().getEndpointURL(for: .staging))
+    }
+
+    func test_bufferedEvents_keepTheTimeTheyHappened() async throws {
+        // Given
+        let service = makeService()
+        let bufferedAt = Int(Date().timeIntervalSince1970)
+        await service.sendEvent(.sdkInitStart, metadata: nil)
+        // why: timestamps are whole seconds, so only real time shows the buffered one kept its own.
+        try await Task.sleep(nanoseconds: 1_100_000_000)
+
+        // When
+        await service.initialize(config: makeConfig())
+        let sentAt = Int(Date().timeIntervalSince1970)
+        await service.sendEvent(.sdkInitEnd, metadata: nil)
+
+        // Then
+        let calls = try await client.waitForCalls(count: 2)
+        XCTAssertEqual(calls.map(\.payload.eventName), ["SDK_INIT_START", "SDK_INIT_END"])
+        XCTAssertEqual(calls[0].payload.timestamp, bufferedAt, accuracy: 1)
+        XCTAssertLessThan(calls[0].payload.timestamp, sentAt)
+        XCTAssertGreaterThanOrEqual(calls[1].payload.timestamp, sentAt)
+    }
+
+    // MARK: - Concurrency and failures
+
+    func test_concurrentSends_areAllDelivered() async throws {
+        // Given
+        let service = makeService()
+        await service.initialize(config: makeConfig())
+
+        // When
+        await withTaskGroup(of: Void.self) { group in
+            for index in 0 ..< 10 {
+                group.addTask {
+                    await service.sendEvent(.sdkInitEnd, metadata: .payment(PaymentEvent(paymentMethod: "METHOD_\(index)")))
+                }
+            }
+        }
+
+        // Then
+        let calls = try await client.waitForCalls(count: 10)
+        XCTAssertEqual(Set(calls.compactMap(\.payload.paymentMethod)).count, 10)
+        try await assertNoFurtherCalls()
+    }
+
+    func test_eventAfterOneThatUsedUpItsTries_isStillSent() async throws {
+        // Given
+        await client.enqueueErrors(Array(repeating: AnalyticsError.httpStatus(503), count: 3))
+        let service = makeService()
+        await service.initialize(config: makeConfig())
+        await service.sendEvent(.sdkInitStart, metadata: nil)
+        _ = try await client.waitForCalls(count: 3)
+
+        // When
+        await service.sendEvent(.sdkInitEnd, metadata: nil)
+
+        // Then
+        let calls = try await client.waitForCalls(count: 4)
+        XCTAssertEqual(calls.last?.payload.eventName, "SDK_INIT_END")
+    }
+
     // MARK: - Helpers
 
     private func makeService(
@@ -353,9 +449,12 @@ final class AnalyticsEventServiceDeliveryTests: XCTestCase {
         }
     }
 
-    private func makeConfig(clientSessionId: String = "client_delivery_test") -> AnalyticsSessionConfig {
+    private func makeConfig(
+        environment: AnalyticsEnvironment = .dev,
+        clientSessionId: String = "client_delivery_test"
+    ) -> AnalyticsSessionConfig {
         AnalyticsSessionConfig(
-            environment: .dev,
+            environment: environment,
             checkoutSessionId: "cs_delivery_test",
             clientSessionId: clientSessionId,
             primerAccountId: "acc_delivery_test",
