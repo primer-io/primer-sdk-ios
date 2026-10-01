@@ -98,6 +98,22 @@ final class BillingAddressFunnelConformanceTests: XCTestCase {
         ])
     }
 
+    func test_failedAddressUpload_stillStartsTheAttemptsProcessing() async throws {
+        sut = try await makeSettledScope()
+
+        try await payWithAffirm(addressUploadError: NSError(domain: "test", code: 500))
+
+        try await funnel.waitFor(.paymentFailure)
+        try await funnel.settle()
+        let sent = await funnel.sent
+        XCTAssertEqual(sent, [
+            Sent(.checkoutFlowStarted),
+            Sent(.paymentMethodSelection, affirm, attempt: 1),
+            Sent(.paymentProcessingStarted, affirm, attempt: 1),
+            Sent(.paymentFailure, affirm, attempt: 1)
+        ])
+    }
+
     func test_retryAfterADecline_isASecondAttempt() async throws {
         repository.resumePaymentResult = .failure(declined())
         sut = try await makeSettledScope()
@@ -139,7 +155,7 @@ final class BillingAddressFunnelConformanceTests: XCTestCase {
     }
 
     /// Picks Affirm from the list, fills the billing address and pays, as the shopper does.
-    private func payWithAffirm() async throws {
+    private func payWithAffirm(addressUploadError: Error? = nil) async throws {
         sut.paymentMethodSelection.onPaymentMethodSelected(
             paymentMethod: CheckoutPaymentMethod(id: affirm, type: affirm, name: "Affirm")
         )
@@ -148,7 +164,7 @@ final class BillingAddressFunnelConformanceTests: XCTestCase {
         // The billing address goes to the client session before the redirect.
         let apiClient = MockPrimerAPIClient()
         apiClient.mockedNetworkDelay = 0
-        apiClient.fetchConfigurationWithActionsResult = (PrimerAPIConfiguration.current, nil)
+        apiClient.fetchConfigurationWithActionsResult = addressUploadError.map { (nil, $0) } ?? (PrimerAPIConfiguration.current, nil)
         PrimerAPIConfigurationModule.apiClient = apiClient
 
         let cached: DefaultBillingAddressRedirectScope? = sut.getPaymentMethodScope(for: affirm)

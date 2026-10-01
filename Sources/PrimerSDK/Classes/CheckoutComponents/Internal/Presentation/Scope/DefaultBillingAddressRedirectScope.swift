@@ -219,6 +219,8 @@ final class DefaultBillingAddressRedirectScope: PrimerBillingAddressRedirectScop
       )
 
       checkoutScope.startProcessing(payingWith: self)
+      // Before the address upload, so a failed upload still counts as a started payment.
+      await analyticsInteractor?.trackProcessingStarted(paymentMethodType)
 
       // Send billing address to backend before redirect
       let billingAddress = createBillingAddress()
@@ -226,8 +228,6 @@ final class DefaultBillingAddressRedirectScope: PrimerBillingAddressRedirectScop
         try await ClientSessionActionsModule
           .updateBillingAddressViaClientSessionActionWithAddressIfNeeded(billingAddress)
       }
-
-      await analyticsInteractor?.trackProcessingStarted(paymentMethodType)
 
       internalState.status = .redirecting
 

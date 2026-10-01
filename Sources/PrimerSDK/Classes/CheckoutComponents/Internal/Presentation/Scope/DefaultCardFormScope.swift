@@ -417,12 +417,12 @@ final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, 
       try await checkoutScope?.invokeBeforePaymentCreate(paymentMethodType: card)
 
       checkoutScope?.startProcessing(payingWith: self)
-
-      try await sendBillingAddressIfNeeded()
-      let cardData = try await prepareCardPaymentData()
+      // Before the address upload, so a failed upload still counts as a submitted payment.
       await analyticsInteractor?.trackProcessingStarted(card)
       if isShopperSubmit { await analyticsInteractor?.trackSubmitted(card) }
 
+      try await sendBillingAddressIfNeeded()
+      let cardData = try await prepareCardPaymentData()
       let result = try await processCardPayment(cardData: cardData)
       await handlePaymentSuccess(result)
     } catch {

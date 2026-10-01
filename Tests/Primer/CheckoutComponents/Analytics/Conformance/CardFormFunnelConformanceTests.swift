@@ -34,6 +34,7 @@ final class CardFormFunnelConformanceTests: XCTestCase {
         cardForm = nil
         sut = nil
         PrimerInternal.shared.sdkIntegrationType = integrationType
+        PrimerAPIConfigurationModule.apiClient = nil
         SDKSessionHelper.tearDown()
         await ContainerTestHelpers.resetSharedContainer()
         try await super.tearDown()
@@ -85,6 +86,31 @@ final class CardFormFunnelConformanceTests: XCTestCase {
             Sent(.paymentSubmitted, card, attempt: 2),
             Sent(.paymentSuccess, card, attempt: 2)
         ])
+    }
+
+    func test_failedBillingAddressUpload_stillCountsAsASubmittedPayment() async throws {
+        try await openCardForm()
+        try await fillCard()
+        enter("94105", in: .postalCode)
+        let apiClient = MockPrimerAPIClient()
+        apiClient.mockedNetworkDelay = 0
+        apiClient.fetchConfigurationWithActionsResult = (nil, NSError(domain: "test", code: 500))
+        PrimerAPIConfigurationModule.apiClient = apiClient
+
+        await cardForm.performSubmit()
+
+        try await funnel.waitFor(.paymentFailure)
+        try await funnel.settle()
+        let sent = await funnel.sent
+        XCTAssertEqual(sent, [
+            Sent(.checkoutFlowStarted),
+            Sent(.paymentMethodSelection, card, attempt: 1),
+            Sent(.paymentDetailsEntered, card, attempt: 1),
+            Sent(.paymentProcessingStarted, card, attempt: 1),
+            Sent(.paymentSubmitted, card, attempt: 1),
+            Sent(.paymentFailure, card, attempt: 1)
+        ])
+        XCTAssertEqual(paymentInteractor.executeCallCount, 0)
     }
 
     func test_merchantAbortBeforeThePayment_sendsUnselectedAndNoSubmit() async throws {
