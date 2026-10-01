@@ -35,13 +35,7 @@ struct SingletonStrategy: RetentionStrategy {
     if let stored = await container.getInstance(forKey: key) {
       return stored
     }
-    let new = try await registration.buildAsync(container)
-    // Double-check: another task may have resolved while we awaited the factory
-    if let stored = await container.getInstance(forKey: key) {
-      return stored
-    }
-    await container.setInstance(new, forKey: key)
-    return new
+    return try await container.singleton(forKey: key) { try await registration.buildAsync(container) }
   }
 }
 
