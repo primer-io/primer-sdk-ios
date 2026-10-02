@@ -11,6 +11,7 @@ import Foundation
 @available(iOS 15.0, *)
 protocol RawDataManagerProtocol: AnyObject {
   var delegate: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate? { get set }
+  var requiredActionObserver: RequiredActionObserver? { get set }
   var rawData: PrimerRawData? { get set }
   var isDataValid: Bool { get }
   var requiredInputElementTypes: [PrimerInputElementType] { get }

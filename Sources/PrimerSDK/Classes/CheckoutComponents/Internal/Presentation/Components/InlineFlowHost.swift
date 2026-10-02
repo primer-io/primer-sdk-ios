@@ -105,8 +105,9 @@ struct InlineFlowHost: View, LogReporter {
   /// list and resets the active method's one-shot start guard, so the next selection re-presents
   /// cleanly. Modeling this as a coordinator stack-pop double-popped the stack (the screen's back
   /// already pops), which emptied it and left "back" doing nothing.
+  /// A payment in flight still ends in success or failure, so swiping its sheet away does not abandon it.
   private func handleSheetDismiss() {
-    scope.cancelActivePaymentMethod(returnToSelection: true)
+    scope.cancelActivePaymentMethod(returnToSelection: true, abandonsMethod: scope.currentNavigationState != .processing)
   }
 
   private func loadDesignTokens(for colorScheme: ColorScheme) async {

@@ -122,14 +122,9 @@ final class DefaultFormRedirectScope: PrimerFormRedirectScope, ObservableObject,
     internalState.fields[index].isValid = validationResult.isValid
     internalState.fields[index].errorMessage = validationResult.error
 
-    if internalState.isSubmitEnabled, !hasTrackedDetailsEntered {
+    if !hasTrackedDetailsEntered, internalState.fields.allSatisfy({ !$0.value.isEmpty }) {
       hasTrackedDetailsEntered = true
-      Task {
-        await analyticsInteractor?.trackEvent(
-          .paymentDetailsEntered,
-          metadata: .payment(PaymentEvent(paymentMethod: paymentMethodType))
-        )
-      }
+      Task { await analyticsInteractor?.trackDetailsEntered(paymentMethodType) }
     }
   }
 
@@ -229,11 +224,6 @@ final class DefaultFormRedirectScope: PrimerFormRedirectScope, ObservableObject,
 
     internalState.status = .submitting
 
-    await analyticsInteractor?.trackEvent(
-      .paymentSubmitted,
-      metadata: .payment(PaymentEvent(paymentMethod: paymentMethodType))
-    )
-
     do {
       // The merchant gate runs before any navigation: `startProcessing()` presents the processing
       // screen, and UIKit drops merchant UI raised from the callback while that transition is live.
@@ -245,22 +235,14 @@ final class DefaultFormRedirectScope: PrimerFormRedirectScope, ObservableObject,
 
       let sessionInfo = try buildSessionInfo()
 
-      await analyticsInteractor?.trackEvent(
-        .paymentProcessingStarted,
-        metadata: .payment(PaymentEvent(paymentMethod: paymentMethodType))
-      )
+      await analyticsInteractor?.trackProcessingStarted(paymentMethodType)
+      await analyticsInteractor?.trackSubmitted(paymentMethodType)
 
       let result = try await processPaymentInteractor.execute(
         paymentMethodType: paymentMethodType,
         sessionInfo: sessionInfo,
         onPollingStarted: { [self] in
-          Task { @MainActor in
-            internalState.status = .awaitingExternalCompletion
-            await analyticsInteractor?.trackEvent(
-              .paymentRedirectToThirdParty,
-              metadata: .payment(PaymentEvent(paymentMethod: paymentMethodType))
-            )
-          }
+          Task { @MainActor in internalState.status = .awaitingExternalCompletion }
         }
       )
 

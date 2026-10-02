@@ -221,6 +221,8 @@ struct InternalCheckout: View, LogReporter {
       }
     }
     .onDisappear {
+      // Host dismiss, UIKit swipe and presenter dismiss all land here. The scope keeps analytics alive until sent.
+      Task { [checkoutScope] in await checkoutScope?.trackFlowExit() }
       sdkInitializer.cleanup()
     }
   }
