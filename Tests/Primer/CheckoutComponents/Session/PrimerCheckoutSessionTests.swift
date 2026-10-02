@@ -413,6 +413,8 @@ private final class FailingConfigurationModule: PrimerAPIConfigurationModuleProt
 
   func updateSession(withActions actionsRequest: ClientSessionUpdateRequest) async throws {}
 
+  func refreshSession() async throws {}
+
   func storeRequiredActionClientToken(_ newClientToken: String) async throws {}
 
   func makeAnalyticsSessionConfig(checkoutSessionId: String, clientToken: String, sdkVersion: String) -> AnalyticsSessionConfig? {

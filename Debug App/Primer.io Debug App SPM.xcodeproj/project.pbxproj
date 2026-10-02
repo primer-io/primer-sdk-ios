@@ -57,6 +57,7 @@
 		A79D984C2EE700350024B330 /* NetworkingUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = A79D98382EE700350024B330 /* NetworkingUtils.swift */; };
 		A7C561392EF2F08100689089 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7C561382EF2F08100689089 /* SceneDelegate.swift */; };
 		BA6BF5912E78581C003D8B3D /* Collection+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA6BF5902E78581A003D8B3D /* Collection+Extensions.swift */; };
+		C3FE08F6B957FD73C7E93849 /* ExpressCheckoutShippingDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93E3F366CC00E25B211034DA /* ExpressCheckoutShippingDemo.swift */; };
 		CD5937A241E9C52DF7AECB27 /* CustomPaymentMethodsDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1A32D055772B6C11F24A8E5 /* CustomPaymentMethodsDemo.swift */; };
 		CF97371D60965AA1AD73278D /* CardFormSheetDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2ED9F91432AF8ED3D89788AA /* CardFormSheetDemo.swift */; };
 		DCB2CCB41AF76D0CFCE40749 /* VaultedPaymentMethodsDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4DFDCD42068B7EA774E7F54 /* VaultedPaymentMethodsDemo.swift */; };
@@ -177,6 +178,7 @@
 		9128566126AA7F571FFECA3A /* Range+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Range+Extensions.swift"; sourceTree = "<group>"; };
 		92BE0A1A904DCEA405A11CC1 /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/Main.strings; sourceTree = "<group>"; };
 		93B0425B4E015B55C98BFCDA /* DemoCheckout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DemoCheckout.swift; sourceTree = "<group>"; };
+		93E3F366CC00E25B211034DA /* ExpressCheckoutShippingDemo.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ExpressCheckoutShippingDemo.swift; sourceTree = "<group>"; };
 		93F15C1E46C70C3D73B50F31 /* UIStackViewExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIStackViewExtensions.swift; sourceTree = "<group>"; };
 		942332BD921CBCAFBC77BD6D /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/Main.strings; sourceTree = "<group>"; };
 		9738210504256BA5E8E2C546 /* DemoKey.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DemoKey.swift; sourceTree = "<group>"; };
@@ -432,6 +434,7 @@
 				28946B4727879D28DB6F2D88 /* AccountFundingDemo.swift */,
 				AF5D3160BAA0820B3285E300 /* AccountFundingComponents.swift */,
 				A287E22B59B3131BFFBA1D47 /* AccountFundingAmountScreen.swift */,
+				93E3F366CC00E25B211034DA /* ExpressCheckoutShippingDemo.swift */,
 			);
 			path = Demos;
 			sourceTree = "<group>";
@@ -716,6 +719,7 @@
 				798EC66B8E0CD63D5C613155 /* AccountFundingDemo.swift in Sources */,
 				3B39CC8B712396BBBD3284F7 /* AccountFundingComponents.swift in Sources */,
 				1581F070BD584C47B1441BD5 /* AccountFundingAmountScreen.swift in Sources */,
+				C3FE08F6B957FD73C7E93849 /* ExpressCheckoutShippingDemo.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

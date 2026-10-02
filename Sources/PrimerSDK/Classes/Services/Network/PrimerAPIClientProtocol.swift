@@ -35,6 +35,8 @@ protocol PrimerAPIClientProtocol:
         requestParameters: Request.URLParameters.Configuration?
     ) async throws -> (PrimerAPIConfiguration, [String: String]?)
 
+    func refreshClientSession(clientToken: DecodedJWTToken) async throws -> PrimerAPIConfiguration
+
     func validateClientToken(
         request: Request.Body.ClientTokenValidation,
         completion: @escaping APICompletion<SuccessResponse>
