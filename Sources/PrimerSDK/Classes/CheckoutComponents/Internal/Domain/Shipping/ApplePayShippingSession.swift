@@ -97,6 +97,8 @@ final class ApplePayShippingSession: LogReporter {
   /// it is also the "on sheet open" call the contract asks for.
   func handleShippingAddressChange(_ address: PrimerAddress) async throws {
     guard mode != .legacy else { return }
+    // A fresh address makes any prior commit stale, even when the handler then fails.
+    verifiedCommit = nil
 
     let received = try await requestOptions(for: address)
     // The merchant may have patched the session for this address, so only the total is re-read.
@@ -104,9 +106,6 @@ final class ApplePayShippingSession: LogReporter {
 
     options = received
     moveToFront(currentShipping()?.methodId)
-    // A fresh address makes any prior commit stale, so authorization is blocked again until the new
-    // default (or the shopper's next pick) commits.
-    verifiedCommit = nil
 
     if let first = options.first {
       try await commit(first)
