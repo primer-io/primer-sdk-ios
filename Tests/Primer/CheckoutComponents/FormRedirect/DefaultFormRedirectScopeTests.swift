@@ -225,6 +225,28 @@ final class DefaultFormRedirectScopeTests: XCTestCase {
     }
 
     @MainActor
+    func test_submit_tracksProcessingStartedBeforeSubmitted() async throws {
+        let analytics = MockTrackingAnalyticsInteractor()
+        let scope = DefaultFormRedirectScope(
+            paymentMethodType: FormRedirectTestData.Constants.blikPaymentMethodType,
+            processPaymentInteractor: mockInteractor,
+            analyticsInteractor: analytics
+        )
+        scope.start()
+        scope.updateField(.otpCode, value: "123456")
+        _ = try await awaitValue(scope.state, matching: { $0.isSubmitEnabled })
+
+        scope.submit()
+        try await withTimeout(2.0) { [self] in
+            while mockInteractor.executeCallCount == 0 { await Task.yield() }
+        }
+
+        let tracked = await analytics.trackedEvents.map(\.eventType)
+        XCTAssertEqual(tracked.filter { $0 == .paymentProcessingStarted || $0 == .paymentSubmitted },
+                       [.paymentProcessingStarted, .paymentSubmitted])
+    }
+
+    @MainActor
     func test_submit_blik_passesCorrectSessionInfo() async throws {
         let scope = createScope(paymentMethodType: FormRedirectTestData.Constants.blikPaymentMethodType)
         scope.start()
