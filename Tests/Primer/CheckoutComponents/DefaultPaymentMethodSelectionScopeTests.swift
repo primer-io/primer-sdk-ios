@@ -393,6 +393,29 @@ final class DefaultPaymentMethodSelectionScopeTests: XCTestCase {
         }
         guard case .merchantError = error else { return XCTFail("Expected merchantError, got \(error)") }
         XCTAssertFalse(sut.currentState.isVaultPaymentLoading)
+        let tracked = await mockAnalytics.trackedEvents.map(\.eventType)
+        XCTAssertFalse(tracked.contains(.paymentSubmitted))
+    }
+
+    func test_payWithVaultedPaymentMethod_tracksProcessingStartedBeforeSubmitted() async throws {
+        // Given
+        let container = try await ContainerTestHelpers.createTestContainer()
+        _ = try await container.register(SubmitVaultedPaymentInteractor.self)
+            .asSingleton()
+            .with { _ in FailingSubmitVaultedPaymentInteractor(checkoutData: PrimerCheckoutData(payment: nil)) }
+        await DIContainer.setContainer(container)
+        sut = makeSut()
+        let method = makeVaultedPaymentMethod()
+        mockCheckoutScope.setVaultedPaymentMethods([method])
+        mockCheckoutScope.setSelectedVaultedPaymentMethod(method)
+        sut.syncSelectedVaultedPaymentMethod()
+
+        // When
+        await sut.payWithVaultedPaymentMethod()
+
+        // Then
+        let tracked = await mockAnalytics.trackedEvents.map(\.eventType)
+        XCTAssertEqual(tracked, [.paymentMethodSelection, .paymentProcessingStarted, .paymentSubmitted])
     }
 
     func test_payWithVaultedPaymentMethod_paymentFailureWithCheckoutData_reachesCheckoutScope() async throws {

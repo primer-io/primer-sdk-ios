@@ -28,15 +28,18 @@ final class ProcessWebRedirectPaymentInteractorImpl: ProcessWebRedirectPaymentIn
   private let repository: WebRedirectRepository
   private let clientSessionActionsFactory: () -> ClientSessionActionsProtocol
   private let deeplinkAbilityProvider: DeeplinkAbilityProviding
+  private let analytics: CheckoutComponentsAnalyticsInteractorProtocol?
 
   init(
     repository: WebRedirectRepository,
     clientSessionActionsFactory: @escaping () -> ClientSessionActionsProtocol = { ClientSessionActionsModule() },
-    deeplinkAbilityProvider: DeeplinkAbilityProviding = UIApplication.shared
+    deeplinkAbilityProvider: DeeplinkAbilityProviding = UIApplication.shared,
+    analytics: CheckoutComponentsAnalyticsInteractorProtocol? = nil
   ) {
     self.repository = repository
     self.clientSessionActionsFactory = clientSessionActionsFactory
     self.deeplinkAbilityProvider = deeplinkAbilityProvider
+    self.analytics = analytics
   }
 
   func execute(paymentMethodType: String) async throws -> PaymentResult {
@@ -50,21 +53,31 @@ final class ProcessWebRedirectPaymentInteractorImpl: ProcessWebRedirectPaymentIn
 
       // Fail fast on a missing/invalid urlScheme before tokenizing, so a misconfigured redirect
       // doesn't fire a /payment-instruments call only to throw the same error afterwards.
-      _ = try PrimerSettings.current.paymentMethodOptions.validSchemeForUrlScheme()
+      do {
+        _ = try PrimerSettings.current.paymentMethodOptions.validSchemeForUrlScheme()
+      } catch {
+        await analytics?.trackRedirectReturnUrlNotConfigured(paymentMethodType)
+        throw error
+      }
 
       let sessionInfo = createSessionInfo(for: paymentMethodType)
 
-      let (redirectUrl, statusUrl) = try await repository.tokenize(
+      let payment = try await repository.tokenize(
         paymentMethodType: paymentMethodType,
         sessionInfo: sessionInfo
       )
 
+      await analytics?.trackRedirectToThirdParty(paymentMethodType, destination: payment.redirectUrl, paymentId: payment.paymentId)
       _ = try await repository.openWebAuthentication(
         paymentMethodType: paymentMethodType,
-        url: redirectUrl
+        url: payment.redirectUrl
       )
+      // Opening another app returns at once, so that shopper is back only when the result arrives.
+      let opensApp = !payment.redirectUrl.hasWebBasedScheme
+      if !opensApp { await analytics?.trackReturned(paymentMethodType, paymentId: payment.paymentId) }
 
-      let resumeToken = try await repository.pollForCompletion(statusUrl: statusUrl)
+      let resumeToken = try await repository.pollForCompletion(statusUrl: payment.statusUrl)
+      if opensApp { await analytics?.trackReturned(paymentMethodType, paymentId: payment.paymentId) }
 
       let result = try await repository.resumePayment(
         paymentMethodType: paymentMethodType,

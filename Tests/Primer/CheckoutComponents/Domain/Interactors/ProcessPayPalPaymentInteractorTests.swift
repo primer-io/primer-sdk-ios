@@ -13,17 +13,20 @@ import XCTest
 final class ProcessPayPalPaymentInteractorTests: XCTestCase {
 
     private var mockRepository: MockPayPalRepository!
+    private var mockAnalytics: MockTrackingAnalyticsInteractor!
     private var sut: ProcessPayPalPaymentInteractorImpl!
 
     override func setUp() async throws {
         try await super.setUp()
         mockRepository = MockPayPalRepository()
-        sut = ProcessPayPalPaymentInteractorImpl(repository: mockRepository)
+        mockAnalytics = MockTrackingAnalyticsInteractor()
+        sut = ProcessPayPalPaymentInteractorImpl(repository: mockRepository, analytics: mockAnalytics)
     }
 
     override func tearDown() async throws {
         PrimerInternal.shared.intent = nil
         mockRepository = nil
+        mockAnalytics = nil
         sut = nil
         try await super.tearDown()
     }
@@ -472,5 +475,37 @@ final class ProcessPayPalPaymentInteractorTests: XCTestCase {
         XCTAssertEqual(result.amount, 1000)
         XCTAssertEqual(result.currencyCode, "USD")
         XCTAssertEqual(result.paymentMethodType, "PAYPAL")
+    }
+
+    // MARK: - Analytics Tests
+
+    func test_execute_checkoutFlow_tracksThirdPartyRedirectSequence() async throws {
+        // Given
+        PrimerInternal.shared.intent = .checkout
+
+        // When
+        _ = try await sut.execute()
+
+        // Then
+        let events = await mockAnalytics.trackedEvents
+        XCTAssertEqual(
+            events.map(\.eventType),
+            [.paymentRedirectToThirdParty, .paymentReturnedFromThirdParty, .paymentSubmitted]
+        )
+    }
+
+    func test_execute_checkoutFlow_webAuthenticationThrows_tracksOnlyRedirectToThirdParty() async {
+        // Given
+        PrimerInternal.shared.intent = .checkout
+        mockRepository.openWebAuthenticationResult = .failure(TestError.networkFailure)
+
+        // When/Then
+        do {
+            _ = try await sut.execute()
+            XCTFail("Expected error to be thrown")
+        } catch {
+            let events = await mockAnalytics.trackedEvents
+            XCTAssertEqual(events.map(\.eventType), [.paymentRedirectToThirdParty])
+        }
     }
 }

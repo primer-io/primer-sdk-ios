@@ -14,9 +14,10 @@ final class MockWebRedirectRepository: WebRedirectRepository {
 
     // MARK: - Configurable Return Values
 
-    var tokenizeResult: Result<(redirectUrl: URL, statusUrl: URL), Error> = .success((
+    var tokenizeResult: Result<RedirectPayment, Error> = .success(RedirectPayment(
         redirectUrl: URL(string: "https://redirect.example.com")!,
-        statusUrl: URL(string: "https://status.example.com")!
+        statusUrl: URL(string: "https://status.example.com")!,
+        paymentId: "mock_payment_id"
     ))
 
     var openWebAuthResult: Result<URL, Error> = .success(URL(string: "https://callback.example.com")!)
@@ -52,7 +53,7 @@ final class MockWebRedirectRepository: WebRedirectRepository {
     func tokenize(
         paymentMethodType: String,
         sessionInfo: WebRedirectSessionInfo
-    ) async throws -> (redirectUrl: URL, statusUrl: URL) {
+    ) async throws -> RedirectPayment {
         tokenizeCallCount += 1
         lastTokenizePaymentMethodType = paymentMethodType
         lastTokenizeSessionInfo = sessionInfo
@@ -124,9 +125,10 @@ final class MockWebRedirectRepository: WebRedirectRepository {
         lastResumePaymentMethodType = nil
         lastResumeToken = nil
 
-        tokenizeResult = .success((
+        tokenizeResult = .success(RedirectPayment(
             redirectUrl: URL(string: "https://redirect.example.com")!,
-            statusUrl: URL(string: "https://status.example.com")!
+            statusUrl: URL(string: "https://status.example.com")!,
+            paymentId: "mock_payment_id"
         ))
         openWebAuthResult = .success(URL(string: "https://callback.example.com")!)
         pollResult = .success("mock_resume_token")

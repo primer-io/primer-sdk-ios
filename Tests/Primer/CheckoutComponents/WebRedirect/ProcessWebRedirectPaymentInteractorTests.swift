@@ -15,6 +15,7 @@ final class ProcessWebRedirectPaymentInteractorTests: XCTestCase {
     private var mockRepository: MockWebRedirectRepository!
     private var mockClientSessionActions: WebRedirectMockClientSessionActions!
     private var mockDeeplinkProvider: MockDeeplinkAbilityProvider!
+    private var mockAnalytics: MockTrackingAnalyticsInteractor!
     private var sut: ProcessWebRedirectPaymentInteractorImpl!
 
     override func setUp() {
@@ -22,10 +23,12 @@ final class ProcessWebRedirectPaymentInteractorTests: XCTestCase {
         mockRepository = MockWebRedirectRepository()
         mockClientSessionActions = WebRedirectMockClientSessionActions()
         mockDeeplinkProvider = MockDeeplinkAbilityProvider()
+        mockAnalytics = MockTrackingAnalyticsInteractor()
         sut = ProcessWebRedirectPaymentInteractorImpl(
             repository: mockRepository,
             clientSessionActionsFactory: { [unowned self] in mockClientSessionActions },
-            deeplinkAbilityProvider: mockDeeplinkProvider
+            deeplinkAbilityProvider: mockDeeplinkProvider,
+            analytics: mockAnalytics
         )
         // The interactor now validates urlScheme up front (before tokenize), so the success paths
         // require a valid scheme in the resolved settings.
@@ -36,6 +39,7 @@ final class ProcessWebRedirectPaymentInteractorTests: XCTestCase {
         mockRepository = nil
         mockClientSessionActions = nil
         mockDeeplinkProvider = nil
+        mockAnalytics = nil
         sut = nil
         SDKSessionHelper.tearDown()
         super.tearDown()
@@ -258,6 +262,95 @@ final class ProcessWebRedirectPaymentInteractorTests: XCTestCase {
         PrimerInternal.shared.sdkIntegrationType = originalIntegrationType
         PrimerInternal.shared.intent = originalIntent
         PrimerHeadlessUniversalCheckout.current.delegate = originalDelegate
+    }
+
+    // MARK: - Analytics Tests
+
+    func test_execute_successfulFlow_tracksThirdPartyRedirectSequence() async throws {
+        // Given
+        mockRepository.resumePaymentResult = .success(PaymentResult(
+            paymentId: "test_payment_123",
+            status: .success,
+            paymentMethodType: "ADYEN_SOFORT"
+        ))
+
+        // When
+        _ = try await sut.execute(paymentMethodType: "ADYEN_SOFORT")
+
+        // Then
+        let events = await mockAnalytics.trackedEvents
+        XCTAssertEqual(
+            events.map(\.eventType),
+            [.paymentRedirectToThirdParty, .paymentReturnedFromThirdParty, .paymentSubmitted]
+        )
+    }
+
+    func test_execute_redirectEvents_carryThePaymentCreatedBeforeTheRedirect() async throws {
+        // When
+        _ = try await sut.execute(paymentMethodType: "ADYEN_SOFORT")
+
+        // Then
+        let events = await mockAnalytics.trackedEvents.filter { $0.eventType != .paymentSubmitted }
+        XCTAssertEqual(events.map(\.metadata?.paymentId), ["mock_payment_id", "mock_payment_id"])
+    }
+
+    private let appSwitchPayment = RedirectPayment(
+        redirectUrl: URL(string: "vipps://pay")!,
+        statusUrl: URL(string: "https://status.example.com")!,
+        paymentId: "mock_payment_id"
+    )
+
+    func test_execute_appSwitch_withNoResult_tracksNoReturn() async {
+        // Given
+        mockRepository.tokenizeResult = .success(appSwitchPayment)
+        mockRepository.pollResult = .failure(PrimerError.cancelled(paymentMethodType: "ADYEN_VIPPS"))
+
+        // When
+        _ = try? await sut.execute(paymentMethodType: "ADYEN_VIPPS")
+
+        // Then
+        let events = await mockAnalytics.trackedEvents
+        XCTAssertEqual(events.map(\.eventType), [.paymentRedirectToThirdParty])
+    }
+
+    func test_execute_appSwitch_tracksTheReturnOnceTheResultArrives() async throws {
+        // Given
+        mockRepository.tokenizeResult = .success(appSwitchPayment)
+
+        // When
+        _ = try await sut.execute(paymentMethodType: "ADYEN_VIPPS")
+
+        // Then
+        let events = await mockAnalytics.trackedEvents
+        XCTAssertEqual(events.map(\.eventType), [.paymentRedirectToThirdParty, .paymentReturnedFromThirdParty, .paymentSubmitted])
+    }
+
+    func test_execute_missingUrlScheme_tracksRedirectReturnUrlNotConfigured() async {
+        // Given
+        registerSettings(urlScheme: nil)
+
+        // When/Then
+        do {
+            _ = try await sut.execute(paymentMethodType: "ADYEN_SOFORT")
+            XCTFail("Expected error to be thrown")
+        } catch {
+            let events = await mockAnalytics.trackedEvents
+            XCTAssertEqual(events.map(\.eventType), [.redirectReturnUrlNotConfigured])
+        }
+    }
+
+    func test_execute_openWebAuthenticationThrows_tracksOnlyRedirectToThirdParty() async {
+        // Given
+        mockRepository.openWebAuthResult = .failure(TestError.networkFailure)
+
+        // When/Then
+        do {
+            _ = try await sut.execute(paymentMethodType: "ADYEN_SOFORT")
+            XCTFail("Expected error to be thrown")
+        } catch {
+            let events = await mockAnalytics.trackedEvents
+            XCTAssertEqual(events.map(\.eventType), [.paymentRedirectToThirdParty])
+        }
     }
 }
 

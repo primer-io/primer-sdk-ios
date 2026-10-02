@@ -115,6 +115,7 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
   private var configurationService: ConfigurationService?
   private var paymentMethodsInteractor: GetPaymentMethodsInteractor?
   private var analyticsTracker: CheckoutAnalyticsTracker?
+  private var lastAnalyticsTask: Task<Void, Never>?
   private var analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol?
   private var accessibilityAnnouncementService: AccessibilityAnnouncementService?
   private var selectedPaymentMethodName: String?
@@ -271,9 +272,13 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
         // inline view renders once `.ready`, and the flow sheet appears only after the merchant
         // triggers it. Stay on selection so the inline host treats this as a non-flow state.
         // A returning shopper's saved methods live on the selection screen, so skip it only without any.
-        // The modal flow opens its only method the way a row tap does, so the method starts too.
+        // The modal flow opens its only method the way a row tap does, so the method starts and is selected too.
         if !hasAlternativeToCurrentMethod, !isInlineFlow,
           let singlePaymentMethod = availablePaymentMethods.first {
+          // The card form selects on the shopper's first input.
+          if singlePaymentMethod.type != PrimerPaymentMethodType.paymentCard.rawValue {
+            trackInOrder { await $0.analyticsInteractor?.trackMethodSelected(singlePaymentMethod.type) }
+          }
           handlePaymentMethodSelection(singlePaymentMethod)
         } else {
           updateNavigationState(.paymentMethodSelection)
@@ -330,8 +335,15 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
     if case .dismissed = internalState { return }
     internalState = newState
 
-    Task { [self] in
-      await analyticsTracker?.trackStateChange(newState)
+    trackInOrder { await $0.analyticsTracker?.trackStateChange(newState, availablePaymentMethods: $0.availablePaymentMethods.map(\.type)) }
+  }
+
+  /// Each event waits for the one asked for before it, so the funnel sees them in the checkout's order.
+  private func trackInOrder(_ track: @escaping @MainActor (DefaultCheckoutScope) async -> Void) {
+    let previous = lastAnalyticsTask
+    lastAnalyticsTask = Task { [self] in
+      await previous?.value
+      await track(self)
     }
   }
 
@@ -340,7 +352,9 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
   }
 
   func updateNavigationState(_ newState: CheckoutNavigationState, syncToNavigator: Bool) {
+    let previous = navigationState
     navigationState = newState
+    trackInOrder { await $0.analyticsTracker?.trackNavigation(from: previous, to: newState) }
 
     trackLifecycle(for: newState)
     announceScreenChange(for: newState)
@@ -543,7 +557,11 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
   /// the method was opened from selection; dismisses the whole checkout when it was presented
   /// directly (no list to return to). Mirrors Drop-In's popToMainScreen-on-cancel. Payment FAILURES
   /// must use `handlePaymentError` instead (error screen + dismiss).
-  func cancelActivePaymentMethod(returnToSelection: Bool) {
+  /// - Parameter abandonsMethod: false when only the screen closes and the payment still runs.
+  func cancelActivePaymentMethod(returnToSelection: Bool, abandonsMethod: Bool = true) {
+    if abandonsMethod {
+      trackInOrder { await $0.analyticsTracker?.trackMethodLeft(nil, reason: .shopperCancel) }
+    }
     if returnToSelection {
       // Navigation-only: leaves the checkout state at `.ready` so no terminal outcome is delivered.
       // In the inline flow this closes the sheet and reveals the merchant's embedded list; in the
@@ -593,6 +611,9 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
   ///   This matches the pattern used in Drop-In and Headless flows. A proper DI solution would require
   ///   refactoring the networking layer to use injected dependencies instead of the enum pattern.
   func invokeBeforePaymentCreate(paymentMethodType: String) async throws {
+    // Paying selects the method. It waits for the queued events, so paying after an outcome starts a new attempt.
+    await lastAnalyticsTask?.value
+    await analyticsInteractor?.trackMethodSelected(paymentMethodType)
     guard let callback = onBeforePaymentCreate else {
       // No imperative handler — fall back to the declarative idempotency-key provider.
       PrimerInternal.shared.currentIdempotencyKey = idempotencyKeyProvider?()
@@ -610,6 +631,8 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
 
     switch decision.type {
     case let .abort(errorMessage):
+      // Reported as UNSELECTED, so the FAILURE that follows for this attempt is dropped.
+      await analyticsTracker?.trackMethodLeft(paymentMethodType, reason: .merchantAbort)
       throw PrimerError.merchantError(message: errorMessage ?? "Payment creation aborted")
     case let .continue(idempotencyKey):
       // The imperative decision's key wins; fall back to the declarative provider only when it omits one.
@@ -640,6 +663,11 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
 
   var canRetryPayment: Bool { lastPaymentAttempt != nil }
 
+  func trackFlowExit() async {
+    await lastAnalyticsTask?.value
+    await analyticsTracker?.trackFlowExited()
+  }
+
   func retryPayment() {
     guard let lastPaymentAttempt else {
       return logger.warn(message: "Retry tapped with no recorded payment attempt, ignoring")
@@ -649,9 +677,7 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
       guard case .failure = navigationState else { return }
     }
 
-    Task { @MainActor [weak self, navigationState] in
-      await self?.analyticsTracker?.trackRetry(navigationState: navigationState)
-    }
+    trackInOrder { await $0.analyticsTracker?.trackRetry() }
 
     switch lastPaymentAttempt {
     case let .restart(method):

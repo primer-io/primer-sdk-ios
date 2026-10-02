@@ -43,6 +43,7 @@ final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
 
   private weak var checkoutScope: DefaultCheckoutScope?
   private var processPaymentInteractor: ProcessApplePayPaymentInteractor?
+  let analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol?
   private let applePayPresentationManager: ApplePayPresenting
   private var authorizationCoordinator: ApplePayAuthorizationCoordinator?
   private(set) var paymentTask: Task<Void, Never>?
@@ -54,6 +55,7 @@ final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
   init(
     checkoutScope: DefaultCheckoutScope,
     presentationContext: PresentationContext = .fromPaymentSelection,
+    analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol? = nil,
     applePayPresentationManager: ApplePayPresenting = ApplePayPresentationManager(),
     clientSessionActionsFactory: @escaping () -> ClientSessionActionsProtocol = { ClientSessionActionsModule() },
     applePayRequestFactory: @escaping () throws -> ApplePayRequest = { try ApplePayRequestBuilder.build() },
@@ -61,6 +63,7 @@ final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
   ) {
     self.checkoutScope = checkoutScope
     self.presentationContext = presentationContext
+    self.analyticsInteractor = analyticsInteractor
     self.applePayPresentationManager = applePayPresentationManager
     self.clientSessionActionsFactory = clientSessionActionsFactory
     self.applePayRequestFactory = applePayRequestFactory
@@ -150,6 +153,9 @@ final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
         with: applePayRequest,
         presentationManager: applePayPresentationManager
       )
+      let applePay = PrimerPaymentMethodType.applePay.rawValue
+      await analyticsInteractor?.trackProcessingStarted(applePay)
+      await analyticsInteractor?.trackSubmitted(applePay)
 
       var interactor = processPaymentInteractor
       if interactor == nil {
