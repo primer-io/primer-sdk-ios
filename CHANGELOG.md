@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fix
 
-- don't set a delegate on FileManager.default — crashes on iOS 27 (ORC-8465) (#1933)
+- Prevent crash on iOS 27 when loading payment method images (ORC-8465) (#1933)
 - Correct Polish BLIK typo and drop-in copy (ESC-1105) (#1871)
 
 ## 2.52.0 (2026-08-25)
