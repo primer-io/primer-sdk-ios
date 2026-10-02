@@ -37,7 +37,11 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
 
     private var threeDSSDKWindow: UIWindow?
     private var initProtocolVersion: ThreeDS.ProtocolVersion?
+    private var challengeProtocolVersion: String?
     private var resumePaymentToken: String?
+    private weak var observer: RequiredActionObserver?
+    /// Kept until the payment continues, because the begin-auth response arrives in a callback.
+    private var beginAuthOutcome: (responseCode: ThreeDS.ResponseCode, skippedReasonCode: String?)?
 
     #if canImport(Primer3DS)
         private var primer3DS: Primer3DS!
@@ -45,6 +49,10 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
     #endif
 
     private var paymentMethodType: String?
+
+    init(observer: RequiredActionObserver? = nil) {
+        self.observer = observer
+    }
 
     func perform3DS(
         paymentMethodTokenData: PrimerPaymentMethodTokenData,
@@ -195,6 +203,9 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
         private func handleAuthenticationError(paymentMethodTokenData: PrimerPaymentMethodTokenData, error: Error) async throws -> String {
             var continueInfo: ThreeDS.ContinueInfo?
             if case InternalError.noNeedToPerform3ds = error {
+                if let beginAuthOutcome {
+                    await reportAuthenticationOutcome(beginAuthOutcome.responseCode, skippedReasonCode: beginAuthOutcome.skippedReasonCode)
+                }
                 guard let resumePaymentToken else { throw handled(primerError: .invalidValue(key: "resumeToken")) }
                 return resumePaymentToken
             } else if case let InternalError.failedToPerform3dsAndShouldBreak(primerErr) = error {
@@ -314,6 +325,13 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
                              .notPerformed,
                              .skipped:
                             self.resumePaymentToken = beginAuthResponse.resumeToken
+                            let authentication = beginAuthResponse.authentication
+                            self.beginAuthOutcome = (
+                                authentication.responseCode,
+                                // A reason this SDK does not know decodes as the generic `Authentication`.
+                                (authentication as? ThreeDS.SkippedAPIResponse)?.skippedReasonCode.rawValue
+                                    ?? (authentication as? ThreeDS.Authentication)?.skippedReasonCode
+                            )
 
                             let internalErr = InternalError.noNeedToPerform3ds(
                                 status: beginAuthResponse.authentication.responseCode.rawValue
@@ -321,6 +339,7 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
                             continuation.resume(throwing: internalErr)
                         case .challenge:
                             let authentication = beginAuthResponse.authentication
+                            self.challengeProtocolVersion = (authentication as? ThreeDS.AppV2ChallengeAPIResponse)?.protocolVersion
                             let serverAuthData = ThreeDS.ServerAuthData(
                                 acsReferenceNumber: authentication.acsReferenceNumber,
                                 acsSignedContent: authentication.acsSignedContent,
@@ -375,6 +394,7 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
             )
 
             Analytics.Service.fire(events: [present3DSUIEvent])
+            await observer?.threeDSChallengeShown(provider: Primer3DS.threeDsSdkProvider, protocolVersion: challengeProtocolVersion)
 
             return try await withCheckedThrowingContinuation { continuation in
                 primer3DS.performChallenge(
@@ -463,10 +483,19 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
                 threeDSTokenId: paymentMethodToken,
                 continueInfo: continueInfo
             )
+            if let authentication = response.authentication {
+                await reportAuthenticationOutcome(authentication.responseCode, skippedReasonCode: authentication.skippedReasonCode)
+            }
             return response
         } catch {
             throw InternalError.failedToPerform3dsAndShouldBreak(error: error.normalizedForSDK)
         }
+    }
+
+    /// Nothing else carries the result out of this service, and CC analytics puts it on the payment outcome.
+    private func reportAuthenticationOutcome(_ responseCode: ThreeDS.ResponseCode, skippedReasonCode: String?) async {
+        guard [.authSuccess, .authFailed, .skipped].contains(responseCode) else { return }
+        await observer?.threeDSCompleted(authenticationOutcome: responseCode.rawValue, skippedReasonCode: skippedReasonCode)
     }
 }
 
