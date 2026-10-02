@@ -19,4 +19,8 @@ actor DefaultAnalyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol 
   func trackEvent(_ eventType: AnalyticsEventType, metadata: AnalyticsEventMetadata?) async {
     await eventService.sendEvent(eventType, metadata: metadata)
   }
+
+  func recordThreeDSOutcome(_ outcome: AnalyticsFunnelState.ThreeDSOutcome) async {
+    await eventService.recordThreeDSOutcome(outcome)
+  }
 }

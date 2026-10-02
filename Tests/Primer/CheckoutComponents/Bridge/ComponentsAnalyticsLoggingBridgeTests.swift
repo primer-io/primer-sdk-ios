@@ -166,11 +166,13 @@ final class ComponentsAnalyticsLoggingBridgeTests: XCTestCase {
         let result = ComponentsAnalyticsLoggingBridge.mapMetadata([
             "paymentMethod": "PAYMENT_CARD",
             "threedsProvider": "ADYEN",
+            "protocolVersion": "2.2.0"
         ], for: .paymentThreeds)
 
         // Then
         XCTAssertEqual(result.paymentMethod, "PAYMENT_CARD")
         XCTAssertEqual(result.threedsProvider, "ADYEN")
+        XCTAssertEqual(result.threedsProtocolVersion, "2.2.0")
     }
 
     func test_mapMetadata_withRedirectUrl_returnsRedirect() {
@@ -373,6 +375,8 @@ private final actor MockBridgeAnalyticsService: CheckoutComponentsAnalyticsServi
     func sendEvent(_ eventType: AnalyticsEventType, metadata: AnalyticsEventMetadata?) async {
         sentEvents.append((eventType: eventType, metadata: metadata))
     }
+
+    func recordThreeDSOutcome(_ outcome: AnalyticsFunnelState.ThreeDSOutcome) async {}
 }
 
 @available(iOS 15.0, *)
