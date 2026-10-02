@@ -206,9 +206,10 @@ extension UITextField {
     toolbar.tintColor = tint
     toolbar.sizeToFit()
 
+    // Not .done: iOS 26 draws it as .prominent, a capsule filled with the tint, which makes the label unreadable.
     let doneItem = UIBarButtonItem(
       title: CheckoutComponentsStrings.doneButton,
-      style: .done,
+      style: .plain,
       target: target,
       action: action
     )
