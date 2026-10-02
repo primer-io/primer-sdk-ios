@@ -94,11 +94,6 @@ final class DefaultPayPalScope: PrimerPayPalScope, ObservableObject, LogReporter
   private func performPayment() async {
     internalState.step = .loading
 
-    await analyticsInteractor?.trackEvent(
-      .paymentSubmitted,
-      metadata: .payment(PaymentEvent(paymentMethod: PrimerPaymentMethodType.payPal.rawValue))
-    )
-
     do {
       // The merchant gate runs before any navigation: `startProcessing()` presents the processing
       // screen, and UIKit drops merchant UI raised from the callback while that transition is live.
@@ -110,10 +105,7 @@ final class DefaultPayPalScope: PrimerPayPalScope, ObservableObject, LogReporter
 
       internalState.step = .redirecting
 
-      await analyticsInteractor?.trackEvent(
-        .paymentProcessingStarted,
-        metadata: .payment(PaymentEvent(paymentMethod: PrimerPaymentMethodType.payPal.rawValue))
-      )
+      await analyticsInteractor?.trackProcessingStarted(PrimerPaymentMethodType.payPal.rawValue)
 
       let result = try await processPayPalInteractor.execute()
 

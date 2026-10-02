@@ -19,13 +19,16 @@ final class ProcessAdyenKlarnaPaymentInteractorImpl: ProcessAdyenKlarnaPaymentIn
 
   private let repository: AdyenKlarnaRepository
   private let clientSessionActionsFactory: () -> ClientSessionActionsProtocol
+  private let analytics: CheckoutComponentsAnalyticsInteractorProtocol?
 
   init(
     repository: AdyenKlarnaRepository,
-    clientSessionActionsFactory: @escaping () -> ClientSessionActionsProtocol = { ClientSessionActionsModule() }
+    clientSessionActionsFactory: @escaping () -> ClientSessionActionsProtocol = { ClientSessionActionsModule() },
+    analytics: CheckoutComponentsAnalyticsInteractorProtocol? = nil
   ) {
     self.repository = repository
     self.clientSessionActionsFactory = clientSessionActionsFactory
+    self.analytics = analytics
   }
 
   func fetchPaymentOptions() async throws -> [AdyenKlarnaPaymentOption] {
@@ -63,17 +66,22 @@ final class ProcessAdyenKlarnaPaymentInteractorImpl: ProcessAdyenKlarnaPaymentIn
         paymentMethodType: selectedOption.name
       )
 
-      let (redirectUrl, statusUrl) = try await repository.tokenize(
+      let payment = try await repository.tokenize(
         paymentMethodType: paymentMethodType,
         sessionInfo: sessionInfo
       )
 
+      await analytics?.trackRedirectToThirdParty(paymentMethodType, destination: payment.redirectUrl, paymentId: payment.paymentId)
       _ = try await repository.openWebAuthentication(
         paymentMethodType: paymentMethodType,
-        url: redirectUrl
+        url: payment.redirectUrl
       )
+      // Opening another app returns at once, so that shopper is back only when the result arrives.
+      let opensApp = !payment.redirectUrl.hasWebBasedScheme
+      if !opensApp { await analytics?.trackReturned(paymentMethodType, paymentId: payment.paymentId) }
 
-      let resumeToken = try await repository.pollForCompletion(statusUrl: statusUrl)
+      let resumeToken = try await repository.pollForCompletion(statusUrl: payment.statusUrl)
+      if opensApp { await analytics?.trackReturned(paymentMethodType, paymentId: payment.paymentId) }
 
       let result = try await repository.resumePayment(
         paymentMethodType: paymentMethodType,

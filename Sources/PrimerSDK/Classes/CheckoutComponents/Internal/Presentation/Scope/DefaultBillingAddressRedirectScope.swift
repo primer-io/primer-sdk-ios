@@ -211,11 +211,6 @@ final class DefaultBillingAddressRedirectScope: PrimerBillingAddressRedirectScop
 
     internalState.status = .submitting
 
-    await analyticsInteractor?.trackEvent(
-      .paymentSubmitted,
-      metadata: .payment(PaymentEvent(paymentMethod: paymentMethodType))
-    )
-
     do {
       // The merchant gate runs before any navigation: `startProcessing()` presents the processing
       // screen, and UIKit drops merchant UI raised from the callback while that transition is live.
@@ -224,6 +219,8 @@ final class DefaultBillingAddressRedirectScope: PrimerBillingAddressRedirectScop
       )
 
       checkoutScope.startProcessing(payingWith: self)
+      // Before the address upload, so a failed upload still counts as a started payment.
+      await analyticsInteractor?.trackProcessingStarted(paymentMethodType)
 
       // Send billing address to backend before redirect
       let billingAddress = createBillingAddress()
@@ -231,11 +228,6 @@ final class DefaultBillingAddressRedirectScope: PrimerBillingAddressRedirectScop
         try await ClientSessionActionsModule
           .updateBillingAddressViaClientSessionActionWithAddressIfNeeded(billingAddress)
       }
-
-      await analyticsInteractor?.trackEvent(
-        .paymentProcessingStarted,
-        metadata: .payment(PaymentEvent(paymentMethod: paymentMethodType))
-      )
 
       internalState.status = .redirecting
 
@@ -245,11 +237,6 @@ final class DefaultBillingAddressRedirectScope: PrimerBillingAddressRedirectScop
 
       checkoutScope.startProcessing(payingWith: self)
       internalState.status = .polling
-
-      await analyticsInteractor?.trackEvent(
-        .paymentRedirectToThirdParty,
-        metadata: .payment(PaymentEvent(paymentMethod: paymentMethodType))
-      )
 
       internalState.status = .success
       checkoutScope.handlePaymentSuccess(result)

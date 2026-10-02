@@ -63,6 +63,17 @@ final class ComposableContainerTests: XCTestCase {
         _ = try await container.resolve(PaymentMethodMapper.self)
     }
 
+    func test_configure_givesTheHeadlessRepositoryTheAnalyticsInteractor() async throws {
+        try await ComposableContainer(settings: PrimerSettings()).configure()
+        guard let container = await DIContainer.current else { return XCTFail("Container should be published after configure") }
+
+        let repository = try await container.resolve(HeadlessRepository.self) as? HeadlessRepositoryImpl
+        let analytics = try await container.resolve(CheckoutComponentsAnalyticsInteractorProtocol.self)
+
+        let injected = await MainActor.run { repository?.analyticsInteractor }
+        XCTAssertTrue(injected === analytics)
+    }
+
     // MARK: - Container Publishing Ordering
 
     func test_configure_beforeCall_doesNotPublishContainer() async {

@@ -19,10 +19,12 @@ struct ApplePayPaymentMethod: PaymentMethodProtocol {
     diContainer: any ContainerProtocol
   ) async throws -> any PrimerPaymentMethodScope {
     let (defaultCheckoutScope, paymentMethodContext) = try DefaultCheckoutScope.validated(from: checkoutScope)
+    let analyticsInteractor = try? await diContainer.resolve(CheckoutComponentsAnalyticsInteractorProtocol.self)
 
     return DefaultApplePayScope(
       checkoutScope: defaultCheckoutScope,
-      presentationContext: paymentMethodContext
+      presentationContext: paymentMethodContext,
+      analyticsInteractor: analyticsInteractor
     )
   }
 

@@ -21,6 +21,7 @@ private final class MockVaultManager: VaultManagerProtocol {
     private(set) var startPaymentFlowCallCount = 0
     private(set) var lastDeletedId: String?
     var paymentCheckoutData: PrimerCheckoutData?
+    weak var requiredActionObserver: RequiredActionObserver?
 
     var fetchResult: ([PrimerHeadlessUniversalCheckout.VaultedPaymentMethod]?, Error?)
     var deleteError: Error?
@@ -82,6 +83,30 @@ final class HeadlessRepositoryVaultMockTests: XCTestCase {
         sut = nil
         mockVaultManager = nil
         super.tearDown()
+    }
+
+    // MARK: - processVaultedPayment — Analytics Observer
+
+    func test_processVaultedPayment_givesTheVaultManagerTheAnalyticsObserver() async throws {
+        // Given
+        let analytics = MockTrackingAnalyticsInteractor()
+        sut = HeadlessRepositoryImpl(vaultManagerFactory: { [unowned self] in mockVaultManager }, analyticsInteractor: analytics)
+
+        // When
+        let payment = Task { [self] in
+            _ = try? await sut.processVaultedPayment(vaultedPaymentMethodId: "vault_0", paymentMethodType: "PAYMENT_CARD", additionalData: nil)
+        }
+        defer { payment.cancel() }
+        let vaultManager: MockVaultManager = mockVaultManager
+        try await withTimeout(2) {
+            while vaultManager.startPaymentFlowCallCount == 0 {
+                try Task.checkCancellation()
+                await Task.yield()
+            }
+        }
+
+        // Then
+        XCTAssertTrue(vaultManager.requiredActionObserver === analytics)
     }
 
     // MARK: - fetchVaultedPaymentMethods — Returns Mock Data

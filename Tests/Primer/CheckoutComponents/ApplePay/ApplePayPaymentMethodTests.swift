@@ -40,6 +40,23 @@ final class ApplePayPaymentMethodTests: XCTestCase {
     }
 
     @MainActor
+    func test_createScope_injectsTheAnalyticsInteractorFromTheContainer() async throws {
+        // Given
+        let analytics = MockTrackingAnalyticsInteractor()
+        let container = try await ContainerTestHelpers.createTestContainer(analyticsInteractor: analytics)
+
+        // When
+        let scope = try await ApplePayPaymentMethod.createScope(
+            checkoutScope: createCheckoutScope(),
+            diContainer: container
+        )
+
+        // Then
+        let injected = try XCTUnwrap(scope as? DefaultApplePayScope).analyticsInteractor
+        XCTAssertTrue(injected as AnyObject === analytics)
+    }
+
+    @MainActor
     func test_createScope_withNoPaymentMethods_setsDirectContext() async throws {
         // Given - no payment methods means single payment method scenario
         let checkoutScope = createCheckoutScope()

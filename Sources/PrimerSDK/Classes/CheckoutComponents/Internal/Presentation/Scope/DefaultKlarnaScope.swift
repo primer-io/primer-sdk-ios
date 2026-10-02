@@ -229,15 +229,7 @@ final class DefaultKlarnaScope: PrimerKlarnaScope, ObservableObject, LogReporter
     // Not `startProcessing`: authorization cannot run twice, so a retry opens a new session.
     checkoutScope.updateNavigationState(.processing)
 
-    await analyticsInteractor?.trackEvent(
-      .paymentSubmitted,
-      metadata: .payment(PaymentEvent(paymentMethod: PrimerPaymentMethodType.klarna.rawValue))
-    )
-
-    await analyticsInteractor?.trackEvent(
-      .paymentProcessingStarted,
-      metadata: .payment(PaymentEvent(paymentMethod: PrimerPaymentMethodType.klarna.rawValue))
-    )
+    await analyticsInteractor?.trackProcessingStarted(PrimerPaymentMethodType.klarna.rawValue)
 
     do {
       let result = try await processKlarnaInteractor.authorize()
@@ -302,7 +294,9 @@ final class DefaultKlarnaScope: PrimerKlarnaScope, ObservableObject, LogReporter
     }
   }
 
+  /// Klarna approved, so the shopper's part is done.
   private func processPayment(authToken: String) async {
+    await analyticsInteractor?.trackSubmitted(PrimerPaymentMethodType.klarna.rawValue)
     do {
       let result = try await processKlarnaInteractor.tokenize(authToken: authToken)
       guard let checkoutScope else {
