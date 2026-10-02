@@ -34,7 +34,7 @@ struct VaultSection: View {
     .padding(PrimerSpacing.small(tokens: tokens))
     .background(
       RoundedRectangle(cornerRadius: PrimerRadius.large(tokens: tokens))
-        .fill(CheckoutColors.gray100(tokens: tokens))
+        .fill(CheckoutColors.backgroundSecondary(tokens: tokens))
     )
   }
 

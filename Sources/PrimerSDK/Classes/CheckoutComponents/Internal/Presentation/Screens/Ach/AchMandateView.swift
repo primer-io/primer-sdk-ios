@@ -32,7 +32,7 @@ struct AchMandateView: View, LogReporter {
           .frame(maxWidth: .infinity, alignment: .leading)
           .background(
             RoundedRectangle(cornerRadius: PrimerRadius.small(tokens: tokens))
-              .fill(CheckoutColors.gray100(tokens: tokens))
+              .fill(CheckoutColors.backgroundSecondary(tokens: tokens))
           )
       }
       .frame(maxHeight: Layout.mandateTextMaxHeight)
