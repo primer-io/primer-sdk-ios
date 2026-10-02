@@ -153,6 +153,26 @@ final class ApplePayShippingSessionTests: XCTestCase {
         }
     }
 
+    func test_addressChange_failingHandler_dropsThePriorCommit() async throws {
+        let fails = Box(false)
+        let sut = makeSession(
+            onAddressChange: { _ in
+                if fails.value { throw PrimerError.unknown(message: "rates unavailable") }
+                return [Self.standard]
+            },
+            onOptionChange: { _ in },
+            shipping: shipping(methodId: "standard", amount: 500)
+        )
+        try await sut.handleShippingAddressChange(address)
+        XCTAssertEqual(sut.verifiedCommit?.id, "standard")
+
+        fails.value = true
+        try? await sut.handleShippingAddressChange(address)
+
+        XCTAssertNil(sut.verifiedCommit)
+        XCTAssertThrowsError(try sut.requireVerifiedCommit(selectedOptionId: "standard"))
+    }
+
     // MARK: - Option change
 
     func test_optionChange_commitsTheSelectedOptionAndMovesItToTheFront() async throws {
