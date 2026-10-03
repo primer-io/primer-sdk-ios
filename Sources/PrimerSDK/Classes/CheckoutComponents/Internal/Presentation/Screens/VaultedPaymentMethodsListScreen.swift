@@ -16,9 +16,29 @@ struct VaultedPaymentMethodsListScreen: View {
   let onSelect: (PrimerHeadlessUniversalCheckout.VaultedPaymentMethod) -> Void
   let onBack: () -> Void
   let onDeleteTapped: (PrimerHeadlessUniversalCheckout.VaultedPaymentMethod) -> Void
+  let onEditModeChange: (Bool) -> Void
 
-  @State private var isEditMode: Bool = false
+  // Starts from the caller's value: the screen is rebuilt after the delete confirmation and must stay in edit mode.
+  @State private var isEditMode: Bool
   @Environment(\.designTokens) private var tokens
+
+  init(
+    vaultedPaymentMethods: [PrimerHeadlessUniversalCheckout.VaultedPaymentMethod],
+    selectedVaultedPaymentMethod: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod?,
+    isEditMode: Bool = false,
+    onSelect: @escaping (PrimerHeadlessUniversalCheckout.VaultedPaymentMethod) -> Void,
+    onBack: @escaping () -> Void,
+    onDeleteTapped: @escaping (PrimerHeadlessUniversalCheckout.VaultedPaymentMethod) -> Void,
+    onEditModeChange: @escaping (Bool) -> Void = { _ in }
+  ) {
+    self.vaultedPaymentMethods = vaultedPaymentMethods
+    self.selectedVaultedPaymentMethod = selectedVaultedPaymentMethod
+    self.onSelect = onSelect
+    self.onBack = onBack
+    self.onDeleteTapped = onDeleteTapped
+    self.onEditModeChange = onEditModeChange
+    _isEditMode = State(initialValue: isEditMode)
+  }
 
   var body: some View {
     VStack(spacing: 0) {
@@ -26,8 +46,8 @@ struct VaultedPaymentMethodsListScreen: View {
         showBackButton: true,
         onBack: onBack,
         rightButton: isEditMode
-          ? .doneButton(action: { isEditMode = false })
-          : .editButton(action: { isEditMode = true })
+          ? .doneButton(action: { setEditMode(false) })
+          : .editButton(action: { setEditMode(true) })
       )
       makeTitle()
       makeContent()
@@ -71,6 +91,11 @@ struct VaultedPaymentMethodsListScreen: View {
       .padding(.horizontal, PrimerSpacing.large(tokens: tokens))
       .padding(.bottom, PrimerSpacing.xlarge(tokens: tokens))
     }
+  }
+
+  private func setEditMode(_ editing: Bool) {
+    isEditMode = editing
+    onEditModeChange(editing)
   }
 
   private func isMethodSelected(_ method: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod) -> Bool {

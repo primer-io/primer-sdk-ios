@@ -53,6 +53,26 @@ final class VaultedPaymentMethodManagerTests: XCTestCase {
         XCTAssertNil(sut.selectedMethod)
     }
 
+    func test_initial_isEditing_isFalse() {
+        XCTAssertFalse(sut.isEditing)
+    }
+
+    // MARK: - setEditing
+
+    func test_setEditing_keepsEditModeUntilTurnedOff() {
+        // When
+        sut.setEditing(true)
+
+        // Then
+        XCTAssertTrue(sut.isEditing)
+
+        // When
+        sut.setEditing(false)
+
+        // Then
+        XCTAssertFalse(sut.isEditing)
+    }
+
     // MARK: - setMethods
 
     func test_setMethods_withMethods_updatesArray() {
