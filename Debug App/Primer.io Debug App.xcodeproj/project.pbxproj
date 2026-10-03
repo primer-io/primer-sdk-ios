@@ -28,7 +28,6 @@
 		592E00D98C8835CBCDAA26D9 /* MerchantDropInUIViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9874F439DA3EA5854A454687 /* MerchantDropInUIViewController.swift */; };
 		5E24CD5B3084FE3E8A3E85EC /* CheckoutTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72845A3010F10A88F2EC7849 /* CheckoutTheme.swift */; };
 		60F6C3AFA11A7EDB0687856A /* ViewController+PrimerUIHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4139D8F153BB399DA67F2EE /* ViewController+PrimerUIHelpers.swift */; };
-		625C653A30707EBC0078F3A3 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 625C653930707EBC0078F3A3 /* SceneDelegate.swift */; };
 		72F8D6065334FCD5B726A52C /* MerchantHeadlessCheckoutRawPhoneNumberDataViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 404E173A513B986A36F835F7 /* MerchantHeadlessCheckoutRawPhoneNumberDataViewController.swift */; };
 		85605C241F1CD45BA676D4A7 /* String+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9023841AFCE8E3205CB713A /* String+Extensions.swift */; };
 		85EDC3F175D699BFF6BD48EF /* ViewController+Primer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39CCCB917D1881082ED75975 /* ViewController+Primer.swift */; };
@@ -45,6 +44,7 @@
 		949864026D1CDE6F5C62C66E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CE259612A00F85709107B872 /* Main.storyboard */; };
 		A19EF5632B20E22E00A72F60 /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = A19EF5622B20E22E00A72F60 /* .swiftlint.yml */; };
 		A1A1FD8B2DA599550069B0DB /* chocolate_bar_demo.otf in Resources */ = {isa = PBXBuildFile; fileRef = A1A1FD8A2DA599550069B0DB /* chocolate_bar_demo.otf */; };
+		A7C561362EF2F07100689089 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7C561352EF2F07100689089 /* SceneDelegate.swift */; };
 		AAE3B30B64B6822A20987FCA /* CreateClientToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = 229849A3DBE0858EE90673B9 /* CreateClientToken.swift */; };
 		AD9CF1073EE0676E6640481A /* MerchantHeadlessCheckoutRawDataViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B866FF13033A5CB8B4C3388E /* MerchantHeadlessCheckoutRawDataViewController.swift */; };
 		BA6BF5952E7858A5003D8B3D /* Collection+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA6BF5942E7858A5003D8B3D /* Collection+Extensions.swift */; };
@@ -132,7 +132,6 @@
 		4C353D84EABA4990DAB4DD28 /* MerchantHeadlessCheckoutRawRetailDataViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchantHeadlessCheckoutRawRetailDataViewController.swift; sourceTree = "<group>"; };
 		4E79C93EA805E87E1137A513 /* PaymentMethodCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentMethodCell.swift; sourceTree = "<group>"; };
 		52F54EC3C1ACE19DF48BD6E2 /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
-		625C653930707EBC0078F3A3 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		6493EA8D95DDA066DE982B24 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Main.strings; sourceTree = "<group>"; };
 		68E2722188A5A2948DB31144 /* Debug App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Debug App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6D2261DDEE5DC5D2ED518037 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
@@ -210,6 +209,7 @@
 		A1A701452C739C1D002E236F /* id */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = id; path = id.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		A1A701462C739C1D002E236F /* id */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = id; path = id.lproj/Main.strings; sourceTree = "<group>"; };
 		A6AEF11B151368BF993C3EA9 /* TestScenario.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestScenario.swift; sourceTree = "<group>"; };
+		A7C561352EF2F07100689089 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		B18D7E7738BF86467B0F1465 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		B1FD8065D40A2D691F643F3B /* UIViewController+API.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+API.swift"; sourceTree = "<group>"; };
 		B866FF13033A5CB8B4C3388E /* MerchantHeadlessCheckoutRawDataViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchantHeadlessCheckoutRawDataViewController.swift; sourceTree = "<group>"; };
@@ -372,6 +372,7 @@
 		5E99BB590FD6521F2D5403BB /* Sources */ = {
 			isa = PBXGroup;
 			children = (
+				A7C561352EF2F07100689089 /* SceneDelegate.swift */,
 				553A7EDE72B8249F55A0E6B9 /* Extension */,
 				D9AC6F54A87D432982864A63 /* Model */,
 				64FB843527A1671D550B536F /* Network */,
@@ -379,7 +380,6 @@
 				F214F09DF97D2A83FC7D0BE0 /* View */,
 				0E5CB4D963647832FF985B29 /* View Controllers */,
 				DAC5687FF32E8661F1A00CE5 /* AppDelegate.swift */,
-				625C653930707EBC0078F3A3 /* SceneDelegate.swift */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -729,6 +729,7 @@
 				85605C241F1CD45BA676D4A7 /* String+Extensions.swift in Sources */,
 				04F323662BD40A2300F5927C /* MerchantNewLineItemViewController.swift in Sources */,
 				87FC1AC72BE50E0B00C9F474 /* MerchantHeadlessCheckoutStripeAchViewController.swift in Sources */,
+				A7C561362EF2F07100689089 /* SceneDelegate.swift in Sources */,
 				0BB8BB3F9A6AC28A0C107DC8 /* UIStackViewExtensions.swift in Sources */,
 				87FC1ACD2BE51DCA00C9F474 /* MerchantHeadlessCheckoutStripeAchViewController+StripeAch.swift in Sources */,
 				DE53DA2D0AD108306C92E198 /* UIViewController+API.swift in Sources */,
@@ -763,7 +764,6 @@
 				04F3235C2BD2F99000F5927C /* UIApplication+Extensions.swift in Sources */,
 				8761410C2B849A250058CA8C /* MerchantHeadlessKlarnaInitializationView+Elements.swift in Sources */,
 				0478EAFE2C247BD600A4F5E2 /* TestHelper.swift in Sources */,
-				625C653A30707EBC0078F3A3 /* SceneDelegate.swift in Sources */,
 				876140EF2B6BE8C20058CA8C /* MerchantHelpers.swift in Sources */,
 				0489E2BB2B68F71300FA0682 /* TapGestureRecognizer.swift in Sources */,
 				F08F63DA2B9B5BC5006EF9A9 /* AppLinkConfigProvider.swift in Sources */,

@@ -25,9 +25,8 @@ target 'Debug App' do
   pod 'IQKeyboardManagerSwift'
 
   post_install do |installer|
-    # Xcode 27 rejects IPHONEOS_DEPLOYMENT_TARGET below 15.0. The SDK's podspecs keep 13.0 for
-    # merchants and third-party pods ship lower floors (PrimerIPay88MYSDK 10.0); raise them to
-    # the app's 15.0 for this build only.
+    # Xcode 27 rejects IPHONEOS_DEPLOYMENT_TARGET below 15.0. Third-party pods still ship
+    # lower floors (PrimerIPay88MYSDK 10.0, IQKeyboard* 13.0); raise them to ours.
     installer.pods_project.targets.each do |t|
       t.build_configurations.each do |c|
         if c.build_settings['IPHONEOS_DEPLOYMENT_TARGET'].to_f < 15.0
