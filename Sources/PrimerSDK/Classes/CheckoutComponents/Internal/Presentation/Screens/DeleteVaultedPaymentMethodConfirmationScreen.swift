@@ -14,6 +14,8 @@ struct DeleteVaultedPaymentMethodConfirmationScreen: View, LogReporter {
   let vaultedPaymentMethod: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod
   let navigator: CheckoutNavigator
   let scope: any PaymentMethodSelectionScopeInternal
+  /// Done ends editing as well as closing the question; Back and Cancel return to the list still editing.
+  var onDone: () -> Void = {}
 
   @Environment(\.designTokens) private var tokens
 
@@ -42,7 +44,10 @@ struct DeleteVaultedPaymentMethodConfirmationScreen: View, LogReporter {
     CheckoutHeaderView(
       showBackButton: true,
       onBack: navigator.navigateBack,
-      rightButton: .doneButton(action: navigator.navigateBack)
+      rightButton: .doneButton(action: {
+        onDone()
+        navigator.navigateBack()
+      })
     )
   }
 

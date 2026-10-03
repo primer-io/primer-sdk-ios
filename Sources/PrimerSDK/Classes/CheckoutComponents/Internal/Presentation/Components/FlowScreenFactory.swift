@@ -91,7 +91,8 @@ struct FlowScreenFactory: LogReporter {
     DeleteVaultedPaymentMethodConfirmationScreen(
       vaultedPaymentMethod: method,
       navigator: scope.checkoutNavigator,
-      scope: scope.paymentMethodSelectionInternal
+      scope: scope.paymentMethodSelectionInternal,
+      onDone: { scope.setVaultEditing(false) }
     )
   }
 
