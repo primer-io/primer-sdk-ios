@@ -28,6 +28,7 @@
 		592E00D98C8835CBCDAA26D9 /* MerchantDropInUIViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9874F439DA3EA5854A454687 /* MerchantDropInUIViewController.swift */; };
 		5E24CD5B3084FE3E8A3E85EC /* CheckoutTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72845A3010F10A88F2EC7849 /* CheckoutTheme.swift */; };
 		60F6C3AFA11A7EDB0687856A /* ViewController+PrimerUIHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4139D8F153BB399DA67F2EE /* ViewController+PrimerUIHelpers.swift */; };
+		625C653A30707EBC0078F3A3 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 625C653930707EBC0078F3A3 /* SceneDelegate.swift */; };
 		72F8D6065334FCD5B726A52C /* MerchantHeadlessCheckoutRawPhoneNumberDataViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 404E173A513B986A36F835F7 /* MerchantHeadlessCheckoutRawPhoneNumberDataViewController.swift */; };
 		85605C241F1CD45BA676D4A7 /* String+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9023841AFCE8E3205CB713A /* String+Extensions.swift */; };
 		85EDC3F175D699BFF6BD48EF /* ViewController+Primer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39CCCB917D1881082ED75975 /* ViewController+Primer.swift */; };
@@ -131,6 +132,7 @@
 		4C353D84EABA4990DAB4DD28 /* MerchantHeadlessCheckoutRawRetailDataViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchantHeadlessCheckoutRawRetailDataViewController.swift; sourceTree = "<group>"; };
 		4E79C93EA805E87E1137A513 /* PaymentMethodCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentMethodCell.swift; sourceTree = "<group>"; };
 		52F54EC3C1ACE19DF48BD6E2 /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
+		625C653930707EBC0078F3A3 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		6493EA8D95DDA066DE982B24 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Main.strings; sourceTree = "<group>"; };
 		68E2722188A5A2948DB31144 /* Debug App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Debug App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6D2261DDEE5DC5D2ED518037 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
@@ -377,6 +379,7 @@
 				F214F09DF97D2A83FC7D0BE0 /* View */,
 				0E5CB4D963647832FF985B29 /* View Controllers */,
 				DAC5687FF32E8661F1A00CE5 /* AppDelegate.swift */,
+				625C653930707EBC0078F3A3 /* SceneDelegate.swift */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -650,9 +653,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Debug App/Pods-Debug App-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Debug App/Pods-Debug App-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -756,6 +763,7 @@
 				04F3235C2BD2F99000F5927C /* UIApplication+Extensions.swift in Sources */,
 				8761410C2B849A250058CA8C /* MerchantHeadlessKlarnaInitializationView+Elements.swift in Sources */,
 				0478EAFE2C247BD600A4F5E2 /* TestHelper.swift in Sources */,
+				625C653A30707EBC0078F3A3 /* SceneDelegate.swift in Sources */,
 				876140EF2B6BE8C20058CA8C /* MerchantHelpers.swift in Sources */,
 				0489E2BB2B68F71300FA0682 /* TapGestureRecognizer.swift in Sources */,
 				F08F63DA2B9B5BC5006EF9A9 /* AppLinkConfigProvider.swift in Sources */,
@@ -1016,7 +1024,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				VALIDATE_PRODUCT = YES;
@@ -1103,7 +1111,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";

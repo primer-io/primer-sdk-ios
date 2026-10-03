@@ -18,6 +18,7 @@
 		044F805D2C6B4F9800E9F878 /* MerchantHeadlessStripeAchFieldsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044F80582C6B4F9800E9F878 /* MerchantHeadlessStripeAchFieldsViewModel.swift */; };
 		0498E1CF2BFB509F00EEF9EE /* PrimerNolPaySDK in Frameworks */ = {isa = PBXBuildFile; productRef = 0498E1CE2BFB509F00EEF9EE /* PrimerNolPaySDK */; };
 		049A055C2B4BF044002CEEBA /* MerchantHeadlessVaultManagerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049A055B2B4BF044002CEEBA /* MerchantHeadlessVaultManagerViewController.swift */; };
+		625C653C30707F6A0078F3A3 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 625C653B30707F6A0078F3A3 /* SceneDelegate.swift */; };
 		8723ADDD2B8E0F5100A5FE23 /* MerchantHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8723ADDC2B8E0F5100A5FE23 /* MerchantHelpers.swift */; };
 		8723ADE42B8E0FAB00A5FE23 /* MerchantHeadlessKlarnaInitializationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8723ADDF2B8E0FAB00A5FE23 /* MerchantHeadlessKlarnaInitializationView.swift */; };
 		8723ADE52B8E0FAB00A5FE23 /* MerchantHeadlessKlarnaInitializationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8723ADE02B8E0FAB00A5FE23 /* MerchantHeadlessKlarnaInitializationViewModel.swift */; };
@@ -106,6 +107,7 @@
 		4C353D84EABA4990DAB4DD28 /* MerchantHeadlessCheckoutRawRetailDataViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchantHeadlessCheckoutRawRetailDataViewController.swift; sourceTree = "<group>"; };
 		4E79C93EA805E87E1137A513 /* PaymentMethodCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentMethodCell.swift; sourceTree = "<group>"; };
 		52F54EC3C1ACE19DF48BD6E2 /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
+		625C653B30707F6A0078F3A3 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		6493EA8D95DDA066DE982B24 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Main.strings; sourceTree = "<group>"; };
 		6D2261DDEE5DC5D2ED518037 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		6D665EEA8106E51925C3CF2B /* da */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = da; path = da.lproj/Main.strings; sourceTree = "<group>"; };
@@ -284,6 +286,7 @@
 				F214F09DF97D2A83FC7D0BE0 /* View */,
 				0E5CB4D963647832FF985B29 /* View Controllers */,
 				DAC5687FF32E8661F1A00CE5 /* AppDelegate.swift */,
+				625C653B30707F6A0078F3A3 /* SceneDelegate.swift */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -522,6 +525,7 @@
 				F00C66062ACC67FA00187028 /* MerchantDropInUIViewController.swift in Sources */,
 				0442C4072B7CE1E900EAD8EE /* TapGestureRecognizer.swift in Sources */,
 				8723ADE52B8E0FAB00A5FE23 /* MerchantHeadlessKlarnaInitializationViewModel.swift in Sources */,
+				625C653C30707F6A0078F3A3 /* SceneDelegate.swift in Sources */,
 				8723ADE82B8E0FAB00A5FE23 /* MerchantHeadlessCheckoutKlarnaViewController.swift in Sources */,
 				F00C66082ACC67FA00187028 /* MerchantHeadlessCheckoutAvailablePaymentMethodsViewController.swift in Sources */,
 				E11F475C2B06C5A40091C31F /* MerchantHeadlessCheckoutBankViewController.swift in Sources */,
@@ -639,7 +643,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				VALIDATE_PRODUCT = YES;
@@ -657,7 +661,7 @@
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = N8UN9TR5DY;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -690,7 +694,7 @@
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = N8UN9TR5DY;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -764,7 +768,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
