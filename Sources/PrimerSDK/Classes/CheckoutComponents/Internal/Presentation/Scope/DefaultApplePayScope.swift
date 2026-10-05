@@ -189,11 +189,9 @@ final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
   }
 
   private func makeShippingSession() -> ApplePayShippingSession {
-    let applePayOptions = PrimerSettings.current.paymentMethodOptions.applePayOptions
-    return ApplePayShippingSession(
+    ApplePayShippingSession(
       mode: ApplePayShippingSession.resolveMode(
         checkoutModules: PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules,
-        applePayOptions: applePayOptions,
         hasAddressChangeHandler: checkoutScope?.onShippingAddressChange != nil,
         hasOptionChangeHandler: checkoutScope?.onShippingOptionChange != nil
       ),

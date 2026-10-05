@@ -64,28 +64,34 @@ final class ApplePayShippingSession: LogReporter {
     self.timeout = timeout
   }
 
-  /// Resolves the mode from the client session and the merchant's Apple Pay options. A legacy SHIPPING
-  /// module always wins, and every dynamic mode needs the address handler and a postal address field.
+  /// Resolves the mode from the client session and the registered handlers. A legacy SHIPPING module
+  /// always wins. The handlers turn on what the sheet needs, so the Apple Pay shipping options are not read.
   static func resolveMode(
     checkoutModules: [Response.Body.Configuration.CheckoutModule]?,
-    applePayOptions: PrimerApplePayOptions?,
     hasAddressChangeHandler: Bool,
     hasOptionChangeHandler: Bool
   ) -> Mode {
-    let shippingOptions = applePayOptions?.shippingOptions
-    // Without a postal address field Apple sends no address, so no handler could ever run.
-    guard hasAddressChangeHandler, shippingOptions?.shippingContactFields?.contains(.postalAddress) == true
-    else { return .legacy }
+    guard hasAddressChangeHandler else {
+      if hasOptionChangeHandler {
+        PrimerLogging.shared.logger.warn(
+          message: "onShippingOptionChange is set without onShippingAddressChange, so neither runs. Set both."
+        )
+      }
+      return .legacy
+    }
 
     let hasLegacyShippingModule = checkoutModules?.contains { module in
       guard module.type == "SHIPPING" else { return false }
       let options = module.options as? Response.Body.Configuration.CheckoutModule.ShippingMethodOptions
       return options?.callbackMode != true
     } ?? false
-    guard !hasLegacyShippingModule else { return .legacy }
-    guard shippingOptions?.requireShippingMethod == true else { return .addressOnly }
-    // Without the option handler nothing can commit, and the gate would block every payment.
-    return hasOptionChangeHandler ? .callbacks : .legacy
+    guard !hasLegacyShippingModule else {
+      PrimerLogging.shared.logger.warn(
+        message: "The client session has a SHIPPING checkout module, so the shipping handlers do not run."
+      )
+      return .legacy
+    }
+    return hasOptionChangeHandler ? .callbacks : .addressOnly
   }
 
   // MARK: - Sheet events

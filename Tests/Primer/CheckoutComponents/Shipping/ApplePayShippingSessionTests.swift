@@ -40,30 +40,17 @@ final class ApplePayShippingSessionTests: XCTestCase {
         XCTAssertEqual(resolve(modules: [checkoutModule(ShippingMethodOptions(callbackMode: true))]), .callbacks)
     }
 
-    func test_resolveMode_noShippingModule_usesCallbacks() {
+    func test_resolveMode_bothHandlers_usesCallbacks() {
         XCTAssertEqual(resolve(), .callbacks)
     }
 
-    func test_resolveMode_shippingMethodNotRequired_usesAddressOnly() {
-        XCTAssertEqual(resolve(requireShippingMethod: false), .addressOnly)
-    }
-
-    func test_resolveMode_addressOnlyWithoutOptionHandler_usesAddressOnly() {
-        XCTAssertEqual(resolve(requireShippingMethod: false, hasOptionHandler: false), .addressOnly)
+    func test_resolveMode_addressHandlerOnly_usesAddressOnly() {
+        XCTAssertEqual(resolve(hasOptionHandler: false), .addressOnly)
     }
 
     func test_resolveMode_noAddressHandler_staysLegacy() {
         XCTAssertEqual(resolve(hasAddressHandler: false), .legacy)
-        XCTAssertEqual(resolve(requireShippingMethod: false, hasAddressHandler: false), .legacy)
-    }
-
-    func test_resolveMode_shippingMethodWithoutOptionHandler_staysLegacy() {
-        XCTAssertEqual(resolve(hasOptionHandler: false), .legacy, "Nothing could commit, so every payment would be blocked")
-    }
-
-    func test_resolveMode_noPostalAddress_staysLegacy() {
-        XCTAssertEqual(resolve(contactFields: [.name]), .legacy, "Apple never asks for an address")
-        XCTAssertEqual(resolve(requireShippingMethod: false, contactFields: [.name]), .legacy)
+        XCTAssertEqual(resolve(hasAddressHandler: false, hasOptionHandler: false), .legacy)
     }
 
     // MARK: - Address change
@@ -457,14 +444,11 @@ final class ApplePayShippingSessionTests: XCTestCase {
 
     private func resolve(
         modules: [Response.Body.Configuration.CheckoutModule]? = nil,
-        requireShippingMethod: Bool = true,
-        contactFields: [PrimerApplePayOptions.RequiredContactField]? = [.postalAddress],
         hasAddressHandler: Bool = true,
         hasOptionHandler: Bool = true
     ) -> ApplePayShippingSession.Mode {
         ApplePayShippingSession.resolveMode(
             checkoutModules: modules,
-            applePayOptions: applePayOptions(requireShippingMethod: requireShippingMethod, contactFields: contactFields),
             hasAddressChangeHandler: hasAddressHandler,
             hasOptionChangeHandler: hasOptionHandler
         )
@@ -481,19 +465,5 @@ final class ApplePayShippingSessionTests: XCTestCase {
 
     private func checkoutModule(_ options: ShippingMethodOptions) -> Response.Body.Configuration.CheckoutModule {
         Response.Body.Configuration.CheckoutModule(type: "SHIPPING", requestUrlStr: nil, options: options)
-    }
-
-    private func applePayOptions(
-        requireShippingMethod: Bool,
-        contactFields: [PrimerApplePayOptions.RequiredContactField]? = [.postalAddress]
-    ) -> PrimerApplePayOptions {
-        PrimerApplePayOptions(
-            merchantIdentifier: "merchant.test",
-            merchantName: "Test",
-            shippingOptions: PrimerApplePayOptions.ShippingOptions(
-                shippingContactFields: contactFields,
-                requireShippingMethod: requireShippingMethod
-            )
-        )
     }
 }

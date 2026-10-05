@@ -41,7 +41,9 @@ struct ApplePayRequestBuilder {
       merchantIdentifier: merchantIdentifier,
       countryCode: countryCode,
       items: try createOrderItems(from: clientSession, selectedShippingItem: shippingMethods.selectedItem),
-      shippingMethods: shippingMethods.methods
+      shippingMethods: shippingMethods.methods,
+      // The handlers need an address, so the merchant does not have to ask for one in the settings too.
+      requiredShippingContactFields: mode == .legacy ? [] : [.postalAddress]
     )
   }
 

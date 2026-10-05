@@ -509,6 +509,7 @@ Rules:
 - `onShippingAddressChange` returning an empty list shows Apple Pay's "cannot deliver to this address" error in the sheet.
 - `onShippingOptionChange` must `PATCH` `order.shipping.methodId` and `order.shipping.amount` on the client session from your backend. The SDK re-reads the session, checks the values match, and only then allows authorization.
 - A SHIPPING checkout module without `callbackMode` always wins. The handlers are ignored in that case.
-- The handlers need `onShippingAddressChange` and `.postalAddress` in `shippingContactFields`. With `requireShippingMethod`, both handlers are required and the selection is committed. Without it, only the address handler runs and the SDK re-reads the total. Otherwise the legacy path runs.
+- The handlers turn shipping on in the sheet. No `PrimerApplePayOptions.ShippingOptions` are needed: the SDK asks for a postal address itself.
+- With both handlers, the sheet shows the options and the selection is committed. With only `onShippingAddressChange`, the sheet shows no options and the SDK re-reads the total after each address. Without `onShippingAddressChange`, the legacy path runs.
 - If a commit fails, the sheet stays open and shows the option the client session still holds.
-- Enable shipping in the sheet through `PrimerApplePayOptions.ShippingOptions`.
+- `shippingContactFields` still adds other fields, for example name or email.
