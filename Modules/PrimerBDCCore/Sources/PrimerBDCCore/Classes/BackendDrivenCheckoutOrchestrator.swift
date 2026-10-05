@@ -67,6 +67,18 @@ public final class BackendDrivenCheckoutOrchestrator {
         try await stepOrchestrator.start(rawSchema: flow.schema.jsonString, initialState: initialState)
     }
 
+    /// Runs one screen the backend published, for a caller that drives its own instruction loop.
+    public func execute(
+        schema: CodableValue,
+        parameters: CodableValue,
+        pciUrl: String?,
+        coreUrl: String?
+    ) async throws {
+        let sdk = SDKUrls(pciUrl: pciUrl, coreUrl: coreUrl)
+        let initialState = try InitialState(params: parameters, sdk: sdk, currentAttempt: nil).casted(to: CodableValue.self)
+        try await stepOrchestrator.start(rawSchema: schema.jsonString, initialState: initialState)
+    }
+
     private func resolveOutcome(_ outcome: CheckoutOutcome?, payment: PaymentInfo?) throws -> CheckoutResult {
         switch outcome {
         case .complete: return .success(payment: payment)

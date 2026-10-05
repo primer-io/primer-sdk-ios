@@ -112,16 +112,57 @@ final class DefaultCheckoutScopeVaultIntentTests: XCTestCase {
         XCTAssertEqual(sut.navigationState, .vaulted(token))
     }
 
+    // MARK: - Backend-driven setup
+
+    func test_vault_offersABackendDrivenSetupMethodTheSDKCanRun() async throws {
+        let sut = try await makeSut(paymentMethods: [cardMethod, backendDrivenKlarna], runnableSetupTypes: ["KLARNA"])
+
+        _ = await settledState(of: sut)
+
+        XCTAssertEqual(sut.availablePaymentMethods.map(\.type), ["PAYMENT_CARD", "KLARNA"])
+        XCTAssertTrue(sut.paymentMethodScopeCache["KLARNA"] is DefaultBackendDrivenSetupScope)
+    }
+
+    func test_vault_hidesABackendDrivenSetupMethodTheSDKCannotRun() async throws {
+        let sut = try await makeSut(paymentMethods: [cardMethod, backendDrivenKlarna], runnableSetupTypes: [])
+
+        _ = await settledState(of: sut)
+
+        XCTAssertEqual(sut.availablePaymentMethods.map(\.type), ["PAYMENT_CARD"])
+    }
+
+    func test_checkout_neverRoutesAMethodThroughTheBackendDrivenSetup() async throws {
+        let sut = try await makeSut(
+            intent: .checkout,
+            paymentMethods: [cardMethod, backendDrivenKlarna],
+            runnableSetupTypes: ["KLARNA"]
+        )
+
+        _ = await settledState(of: sut)
+
+        XCTAssertFalse(sut.paymentMethodScopeCache.values.contains { $0 is DefaultBackendDrivenSetupScope })
+    }
+
     // MARK: - Helpers
 
     private var cardMethod: PrimerPaymentMethod { Mocks.PaymentMethods.paymentCardPaymentMethod }
     private var payPalMethod: PrimerPaymentMethod { Mocks.PaymentMethods.paypalPaymentMethod }
 
+    /// Decoded, because only decoding reads `entry`; the memberwise init always sets `.pay`.
+    private var backendDrivenKlarna: PrimerPaymentMethod {
+        let json = """
+        {"id": "klarna-config", "implementationType": "BACKEND_DRIVEN", "type": "KLARNA", "name": "Klarna", "entry": "onSelect"}
+        """
+        // swiftlint:disable:next force_try
+        return try! JSONDecoder().decode(PrimerPaymentMethod.self, from: Data(json.utf8))
+    }
+
     private func makeSut(
         intent: PrimerSessionIntent = .vault,
         paymentMethods: [PrimerPaymentMethod]? = nil,
         hasCustomer: Bool = true,
-        repository: MockHeadlessRepository? = nil
+        repository: MockHeadlessRepository? = nil,
+        runnableSetupTypes: Set<String> = []
     ) async throws -> DefaultCheckoutScope {
         SDKSessionHelper.setUp(
             withPaymentMethods: paymentMethods ?? [cardMethod],
@@ -133,13 +174,16 @@ final class DefaultCheckoutScopeVaultIntentTests: XCTestCase {
         if let repository {
             _ = try await container.register(HeadlessRepository.self).asSingleton().with { _ in repository }
         }
+        let setupRepository = MockBackendDrivenSetupRepository(result: .success("multi_use_token"))
+        _ = try await container.register(BackendDrivenSetupRepository.self).asSingleton().with { _ in setupRepository }
         await DIContainer.setContainer(container)
 
         return DefaultCheckoutScope(
             clientToken: TestData.Tokens.valid,
             settings: PrimerSettings(uiOptions: PrimerUIOptions(isInitScreenEnabled: false)),
             intent: intent,
-            navigator: CheckoutNavigator(coordinator: CheckoutCoordinator())
+            navigator: CheckoutNavigator(coordinator: CheckoutCoordinator()),
+            runnableSetupTypes: { _ in runnableSetupTypes }
         )
     }
 

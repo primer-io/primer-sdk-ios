@@ -56,6 +56,27 @@ final class BackendDrivenCheckoutOrchestratorTests: XCTestCase {
         )
     }
 
+    func testExecuteRunsThePublishedScreenOnce() async throws {
+        let mock = MockStepOrchestrator()
+        let schema = CodableValue.object(["id": .string("@primer/klarna")])
+        let sut = BackendDrivenCheckoutOrchestrator(stepOrchestrator: mock)
+
+        try await sut.execute(schema: schema, parameters: .object([:]), pciUrl: nil, coreUrl: nil)
+
+        XCTAssertEqual(mock.startCallCount, 1)
+        XCTAssertEqual(mock.lastRawSchema, try schema.jsonString)
+    }
+
+    func testExecutePropagatesAStepFailure() async {
+        let mock = MockStepOrchestrator()
+        mock.startError = Error.failed
+        let sut = BackendDrivenCheckoutOrchestrator(stepOrchestrator: mock)
+
+        await XCTAssertThrowsErrorAsync {
+            try await sut.execute(schema: .object([:]), parameters: .object([:]), pciUrl: nil, coreUrl: nil)
+        }
+    }
+
     func testWaitThenEnd() async throws {
         try await assertRun(
             [.wait(delayMilliseconds: 0), .end(outcome: .complete, payment: nil)],

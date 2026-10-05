@@ -302,6 +302,12 @@ extension ComposableContainer {
         .with { _ in WebRedirectRepositoryImpl() }
     }
 
+    await guardedRegister(BackendDrivenSetupRepository.self) {
+      _ = try await container.register(BackendDrivenSetupRepository.self)
+        .asTransient()
+        .with { _ in await BackendDrivenSetupRepositoryImpl() }
+    }
+
     await guardedRegister(FormRedirectRepository.self) {
       _ = try await container.register(FormRedirectRepository.self)
         .asTransient()

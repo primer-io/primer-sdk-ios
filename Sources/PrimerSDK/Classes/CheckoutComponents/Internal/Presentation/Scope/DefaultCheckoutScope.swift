@@ -131,8 +131,8 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
   /// launch (the merchant's own view owns that).
   private let isInlineFlow: Bool
 
-  /// The methods CheckoutComponents can save without a payment.
-  static let vaultablePaymentMethodTypes: Set<String> = [PrimerPaymentMethodType.paymentCard.rawValue]
+  /// The backend-driven setup methods this SDK can run; injected so tests skip the BDC engine.
+  private let runnableSetupTypes: @MainActor ([PrimerPaymentMethod]?) async -> Set<String>
 
   init(
     clientToken: String,
@@ -140,11 +140,14 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
     intent: PrimerSessionIntent = .checkout,
     navigator: CheckoutNavigator,
     presentationContext: PresentationContext = .fromPaymentSelection,
-    isInlineFlow: Bool = false
+    isInlineFlow: Bool = false,
+    runnableSetupTypes: @escaping @MainActor ([PrimerPaymentMethod]?) async -> Set<String> =
+      BackendDrivenSetupPaymentMethod.runnableSetupTypes(in:)
   ) {
     self.clientToken = clientToken
     self.settings = settings
     self.intent = intent
+    self.runnableSetupTypes = runnableSetupTypes
     self.navigator = navigator
     self.presentationContext = presentationContext
     self.isInlineFlow = isInlineFlow
@@ -202,6 +205,12 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
       .filter { $0.implementationType == .webRedirect }
       .map(\.type) ?? []
     WebRedirectPaymentMethod.register(types: webRedirectTypes)
+
+    // Last, so a backend-driven setup replaces the native flow registered for the same type.
+    if intent == .vault {
+      let setupMethods = BackendDrivenSetupPaymentMethod.setupMethods(in: PrimerAPIConfigurationModule.apiConfiguration?.paymentMethods)
+      BackendDrivenSetupPaymentMethod.register(types: setupMethods.map(\.type))
+    }
   }
 
   private func setupInteractors() async -> Bool {
@@ -264,7 +273,7 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
 
       availablePaymentMethods = try await interactor.execute()
       if intent == .vault {
-        availablePaymentMethods = try vaultablePaymentMethods(from: availablePaymentMethods)
+        availablePaymentMethods = try await vaultablePaymentMethods(from: availablePaymentMethods)
       }
       // Before the preload: a method scope's context depends on whether saved methods give it a way back.
       if availablePaymentMethods.count == 1, !isInlineFlow {
@@ -304,13 +313,15 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
     }
   }
 
-  /// Saving needs a customer to save to, and a method CheckoutComponents can save without a payment.
-  private func vaultablePaymentMethods(from methods: [InternalPaymentMethod]) throws -> [InternalPaymentMethod] {
+  /// Saving needs a customer to save to, and a method CheckoutComponents can save without a payment:
+  /// a card, or a backend-driven method that starts with a setup this SDK can run.
+  private func vaultablePaymentMethods(from methods: [InternalPaymentMethod]) async throws -> [InternalPaymentMethod] {
     guard configurationService?.apiConfiguration?.clientSession?.customer?.id?.isEmpty == false else {
       // The same error the Headless vault manager raises for a session without a customer.
       throw PrimerError.invalidClientSessionValue(name: "customer.id", allowedValue: "string")
     }
-    let vaultable = methods.filter { Self.vaultablePaymentMethodTypes.contains($0.type) }
+    let setupTypes = await runnableSetupTypes(configurationService?.apiConfiguration?.paymentMethods)
+    let vaultable = methods.filter { $0.type == PrimerPaymentMethodType.paymentCard.rawValue || setupTypes.contains($0.type) }
     guard !vaultable.isEmpty else { throw PrimerError.unsupportedIntent(intent: .vault) }
     return vaultable
   }
