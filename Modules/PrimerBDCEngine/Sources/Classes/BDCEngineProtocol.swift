@@ -28,4 +28,8 @@ public protocol BDCEngineProtocol: AnyObject {
         schema: String,
         state: State
     ) async throws -> [String: Any]
+    func checkClientRequirements(
+        items: [PaymentMethodRequirements],
+        client: BDCClient
+    ) async throws -> ClientRequirementsVerdicts
 }
