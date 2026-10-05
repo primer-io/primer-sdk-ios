@@ -70,6 +70,31 @@ final class PrimerCheckoutPresenterTests: XCTestCase {
         XCTAssertEqual(mockDelegate.capturedSuccessResult?.status, .success)
     }
 
+    // MARK: - handleVaultSuccess
+
+    func test_handleVaultSuccess_withDelegate_callsDidVaultPaymentMethodOnce() {
+        sut.handleVaultSuccess(savedToken)
+        sut.handleCheckoutDismiss()
+
+        XCTAssertEqual(mockDelegate.capturedPaymentMethodTokens, [savedToken])
+        XCTAssertEqual(mockDelegate.didCompleteWithSuccessCallCount, 0)
+        XCTAssertEqual(mockDelegate.didDismissCallCount, 0)
+    }
+
+    func test_handleVaultSuccess_delegateWithoutVaultMethod_usesTheDefaultAndEnds() {
+        let delegate = SuccessOnlyDelegate()
+        sut.delegate = delegate
+
+        sut.handleVaultSuccess(savedToken)
+        sut.handleCheckoutDismiss()
+
+        XCTAssertEqual(delegate.didDismissCallCount, 0)
+    }
+
+    private var savedToken: PrimerPaymentMethodToken {
+        PrimerPaymentMethodToken(token: "multi_use_token", paymentMethodType: "PAYMENT_CARD")
+    }
+
     // MARK: - handlePaymentFailure
 
     func test_handlePaymentFailure_withDelegate_callsDidFailWithError() {
@@ -198,6 +223,15 @@ final class PrimerCheckoutPresenterTests: XCTestCase {
         XCTAssertEqual(mockDelegate.didDismissCallCount, 0)
     }
 
+    func test_handleInteractiveDismiss_onVaultedRoute_callsDidVaultPaymentMethod() {
+        sut.activeNavigator = makeNavigator(showing: .vaulted(savedToken))
+
+        sut.handleInteractiveDismiss()
+
+        XCTAssertEqual(mockDelegate.capturedPaymentMethodTokens, [savedToken])
+        XCTAssertEqual(mockDelegate.didDismissCallCount, 0)
+    }
+
     func test_handleInteractiveDismiss_onSelectionRoute_callsDidDismiss() {
         // Given
         sut.activeNavigator = makeNavigator(showing: .paymentMethodSelection)
@@ -264,4 +298,14 @@ final class PrimerCheckoutPresenterTests: XCTestCase {
         // Then
         XCTAssertEqual(mockDelegate.didDismissCallCount, 1)
     }
+}
+
+/// A delegate written before the vault intent existed: it still compiles and the save still ends the presentation.
+@available(iOS 15.0, *)
+private final class SuccessOnlyDelegate: PrimerCheckoutPresenterDelegate {
+    private(set) var didDismissCallCount = 0
+
+    func primerCheckoutPresenterDidCompleteWithSuccess(_ result: PaymentResult) {}
+    func primerCheckoutPresenterDidFailWithError(_ error: PrimerError, checkoutData: PrimerCheckoutData?) {}
+    func primerCheckoutPresenterDidDismiss() { didDismissCallCount += 1 }
 }

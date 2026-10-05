@@ -67,6 +67,7 @@ public final class PrimerCheckoutSession: ObservableObject {
   private let clientToken: String
   private let settings: PrimerSettings
   let theme: PrimerCheckoutTheme
+  private let intent: PrimerSessionIntent
   let navigator = CheckoutNavigator()
   let presentationContext: PresentationContext = .fromPaymentSelection
   var initializer: CheckoutSDKInitializer?
@@ -76,10 +77,13 @@ public final class PrimerCheckoutSession: ObservableObject {
   private var hasCompleted = false
   private var onCompletion: ((PrimerCheckoutState) -> Void)?
 
+  /// - Parameter intent: `.vault` saves a payment method without a payment and ends in `.vaulted`.
+  ///   The client session needs a customer id.
   public init(
     clientToken: String,
     settings: PrimerSettings = PrimerSettings(),
     theme: PrimerCheckoutTheme = PrimerCheckoutTheme(),
+    intent: PrimerSessionIntent = .checkout,
     idempotencyKey: @escaping @Sendable () -> String? = { nil },
     onShippingAddressChange: ShippingAddressChangeHandler? = nil,
     onShippingOptionChange: ShippingOptionChangeHandler? = nil
@@ -87,6 +91,7 @@ public final class PrimerCheckoutSession: ObservableObject {
     self.clientToken = clientToken
     self.settings = settings
     self.theme = theme
+    self.intent = intent
     self.onShippingAddressChange = onShippingAddressChange
     self.onShippingOptionChange = onShippingOptionChange
     self.idempotencyKey = idempotencyKey
@@ -113,6 +118,7 @@ public final class PrimerCheckoutSession: ObservableObject {
       clientToken: clientToken,
       primerSettings: settings,
       primerTheme: theme,
+      intent: intent,
       navigator: navigator,
       presentationContext: presentationContext,
       isInlineFlow: true
@@ -162,8 +168,8 @@ public final class PrimerCheckoutSession: ObservableObject {
         // the sub-sessions stay usable, so forward it and keep observing — latching here would leave
         // a merchant who retries after a decline never hearing the second outcome.
         onCompletion?(checkoutState)
-      case .success, .dismissed:
-        // Success and dismissal do end it, so they are delivered at most once; once latched, any
+      case .success, .vaulted, .dismissed:
+        // Success, a save and dismissal do end it, so they are delivered at most once; once latched, any
         // further one (e.g. a `.dismissed` produced by a view-lifecycle `cancel()`) is ignored.
         // Breaking out of the loop also tears down the scope's state observation deterministically.
         complete(with: checkoutState)

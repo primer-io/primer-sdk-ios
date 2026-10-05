@@ -62,6 +62,13 @@ final class FlowScreenFactoryCompletionTests: XCTestCase {
     XCTAssertEqual(received.paymentId, result.paymentId)
   }
 
+  func test_vaultedState_successScreenDisabled_callsCompletionOnceWithVaulted() async {
+    let token = PrimerPaymentMethodToken(token: "multi_use_token", paymentMethodType: "PAYMENT_CARD")
+    let recorder = await render(.vaulted(token), successScreen: false, errorScreen: true)
+
+    XCTAssertEqual(recorder.states, [.vaulted(token)])
+  }
+
   // MARK: - Harness sanity
 
   /// Guards the harness itself: if appearance callbacks never fire in this host, the positive tests
@@ -148,6 +155,17 @@ final class CheckoutOutcomeRelayTests: XCTestCase {
     guard states.count == 3, case .failure = states[0], case .failure = states[1], case .success = states[2] else {
       return XCTFail("Expected [.failure, .failure, .success], got \(states)")
     }
+  }
+
+  func test_deliver_vaulted_endsTheCheckout() {
+    let sut = CheckoutOutcomeRelay()
+    var states: [PrimerCheckoutState] = []
+    let token = PrimerPaymentMethodToken(token: "multi_use_token", paymentMethodType: "PAYMENT_CARD")
+
+    sut.deliver(.vaulted(token), to: { states.append($0) })
+    sut.deliver(.dismissed, to: { states.append($0) })
+
+    XCTAssertEqual(states, [.vaulted(token)])
   }
 
   func test_deliver_sameFailureFromTwoSources_forwardsItOnce() {

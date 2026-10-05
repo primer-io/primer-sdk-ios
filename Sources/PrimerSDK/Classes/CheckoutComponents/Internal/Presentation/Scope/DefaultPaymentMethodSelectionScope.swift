@@ -61,6 +61,8 @@ final class DefaultPaymentMethodSelectionScope: PaymentMethodSelectionScopeInter
   }
 
   func refreshVaultedPaymentMethods() async {
+    // Saved methods pay, and building the vault manager resets the shared intent to `.checkout`.
+    guard checkoutScope?.intent != .vault else { return }
     do {
       guard let container = await DIContainer.current else { return }
       let repository = try await container.resolve(HeadlessRepository.self)

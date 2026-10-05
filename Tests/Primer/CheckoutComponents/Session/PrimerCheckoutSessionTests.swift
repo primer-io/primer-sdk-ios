@@ -188,6 +188,22 @@ final class PrimerCheckoutSessionTests: XCTestCase {
     }
   }
 
+  func test_observeCheckoutState_deliversVaultedExactlyOnce() async throws {
+    let scope = try await makeSettledScope()
+    let sut = PrimerCheckoutSession(clientToken: token, intent: .vault)
+    var completions: [PrimerCheckoutState] = []
+    sut.setCompletionHandler { completions.append($0) }
+    let saved = PrimerPaymentMethodToken(token: "multi_use_token", paymentMethodType: "PAYMENT_CARD")
+
+    let task = Task { await sut.observeCheckoutState(scope) }
+    await Task.yield()
+    scope.handleVaultSuccess(saved)
+    await task.value
+    scope.onDismiss()
+
+    XCTAssertEqual(completions, [.vaulted(saved)])
+  }
+
   // Regression: the loop used to latch on the first terminal state of any kind, so a merchant who
   // retried after a decline never heard the second outcome. A failure is recoverable and must not
   // end the session; success still ends it, so exactly two outcomes arrive, in order.

@@ -42,6 +42,8 @@ struct FlowScreenFactory: LogReporter {
       makeProcessingView()
     case let .success(result):
       makeSuccessView(result: result)
+    case let .vaulted(paymentMethodToken):
+      makeVaultedView(paymentMethodToken: paymentMethodToken)
     case let .failure(error, checkoutData):
       makeFailureView(error: error, checkoutData: checkoutData)
     case .dismissed:
@@ -113,7 +115,7 @@ struct FlowScreenFactory: LogReporter {
   @ViewBuilder
   private func makeSuccessView(result: PaymentResult) -> some View {
     if scope.isSuccessScreenEnabled {
-      SuccessScreen(result: result) {
+      SuccessScreen {
         logger.info(message: "Success screen auto-dismiss, calling completion callback")
         onCompletion?(scope.currentState)
       }
@@ -123,6 +125,24 @@ struct FlowScreenFactory: LogReporter {
       Color.clear.onAppear {
         logger.debug(message: "[CheckoutComponents] Success screen disabled - auto-dismissing")
         Task { @MainActor in onCompletion?(.success(result)) }
+      }
+    }
+  }
+
+  @ViewBuilder
+  private func makeVaultedView(paymentMethodToken: PrimerPaymentMethodToken) -> some View {
+    if scope.isSuccessScreenEnabled {
+      SuccessScreen(
+        title: CheckoutComponentsStrings.vaultSuccessTitle,
+        message: CheckoutComponentsStrings.vaultSuccessSubtitle
+      ) {
+        logger.info(message: "Saved screen auto-dismiss, calling completion callback")
+        onCompletion?(.vaulted(paymentMethodToken))
+      }
+    } else {
+      Color.clear.onAppear {
+        logger.debug(message: "[CheckoutComponents] Success screen disabled - auto-dismissing the saved screen")
+        Task { @MainActor in onCompletion?(.vaulted(paymentMethodToken)) }
       }
     }
   }

@@ -28,8 +28,8 @@ public extension View {
   ///   change. Pass a value that follows your own app state to switch appearance without rebuilding
   ///   the session. Leave it out to keep the session's own theme.
   /// - Parameter onCompletion: Receives `.failure` once per failed attempt — the checkout stays
-  ///   usable so the shopper can retry — then `.success` or `.dismissed` exactly once, after which
-  ///   nothing more is delivered.
+  ///   usable so the shopper can retry — then `.success`, `.vaulted` or `.dismissed` exactly once,
+  ///   after which nothing more is delivered.
   func primerCheckoutSession(
     _ session: PrimerCheckoutSession,
     theme: PrimerCheckoutTheme? = nil,

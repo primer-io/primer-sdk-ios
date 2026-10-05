@@ -35,6 +35,7 @@ enum CheckoutRoute: Hashable, Identifiable {
   case cvvRecapture
   case processing
   case success(PaymentResult)
+  case vaulted(PrimerPaymentMethodToken)
   case failure(PrimerError, checkoutData: PrimerCheckoutData? = nil)
   case paymentMethod(String, PresentationContext)
 
@@ -51,6 +52,7 @@ enum CheckoutRoute: Hashable, Identifiable {
     case let .paymentMethod(type, context):
       "payment-method-\(type)-\(context == .direct ? "direct" : "selection")"
     case let .success(result): "success-\(result.paymentId)"
+    case let .vaulted(paymentMethodToken): "vaulted-\(paymentMethodToken.paymentMethodType)"
     case let .failure(error, _): "failure-\(error.diagnosticsId)"
     }
   }
@@ -73,7 +75,7 @@ enum CheckoutRoute: Hashable, Identifiable {
     case .cvvRecapture: .push
     case .paymentMethod: .push
     case .processing: .replace
-    case .success, .failure: .replace
+    case .success, .vaulted, .failure: .replace
     }
   }
 }

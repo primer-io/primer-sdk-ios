@@ -19,6 +19,7 @@ final class CheckoutSDKInitializer {
   private let clientToken: String
   private let primerSettings: PrimerSettings
   private let primerTheme: PrimerCheckoutTheme
+  private let intent: PrimerSessionIntent
   private let navigator: CheckoutNavigator
   private let presentationContext: PresentationContext
   private let isInlineFlow: Bool
@@ -32,6 +33,7 @@ final class CheckoutSDKInitializer {
     clientToken: String,
     primerSettings: PrimerSettings,
     primerTheme: PrimerCheckoutTheme = PrimerCheckoutTheme(),
+    intent: PrimerSessionIntent = .checkout,
     navigator: CheckoutNavigator,
     presentationContext: PresentationContext,
     isInlineFlow: Bool = false,
@@ -41,6 +43,7 @@ final class CheckoutSDKInitializer {
     self.clientToken = clientToken
     self.primerSettings = primerSettings
     self.primerTheme = primerTheme
+    self.intent = intent
     self.navigator = navigator
     self.presentationContext = presentationContext
     self.isInlineFlow = isInlineFlow
@@ -102,7 +105,8 @@ final class CheckoutSDKInitializer {
   private func setupSDKIntegration() {
     PrimerInternal.shared.sdkIntegrationType = .checkoutComponents
     PrimerInternal.shared.sdkIntegrationProduct = .checkoutComponents
-    PrimerInternal.shared.intent = .checkout
+    // The shared core reads it: under `.vault` tokenization asks for a multi-use token.
+    PrimerInternal.shared.intent = intent
     PrimerInternal.shared.checkoutSessionId = UUID().uuidString
   }
 
@@ -119,6 +123,7 @@ final class CheckoutSDKInitializer {
     DefaultCheckoutScope(
       clientToken: clientToken,
       settings: primerSettings,
+      intent: intent,
       navigator: navigator,
       presentationContext: presentationContext,
       isInlineFlow: isInlineFlow
