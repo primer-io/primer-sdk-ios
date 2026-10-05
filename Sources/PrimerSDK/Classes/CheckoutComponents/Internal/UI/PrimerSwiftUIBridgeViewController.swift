@@ -233,7 +233,9 @@ extension PrimerSwiftUIBridgeViewController {
     navigator: CheckoutNavigator,
     presentationContext: PresentationContext = .direct,
     integrationType: CheckoutComponentsIntegrationType = .uiKit,
-    onCompletion: ((PrimerCheckoutState) -> Void)? = nil
+    onCompletion: ((PrimerCheckoutState) -> Void)? = nil,
+    onShippingAddressChange: ShippingAddressChangeHandler? = nil,
+    onShippingOptionChange: ShippingOptionChangeHandler? = nil
   ) -> PrimerSwiftUIBridgeViewController {
 
     let logger = PrimerLogging.shared.logger
@@ -247,7 +249,9 @@ extension PrimerSwiftUIBridgeViewController {
       navigator: navigator,
       presentationContext: presentationContext,
       integrationType: integrationType,
-      onCompletion: onCompletion
+      onCompletion: onCompletion,
+      onShippingAddressChange: onShippingAddressChange,
+      onShippingOptionChange: onShippingOptionChange
     )
 
     // Create bridge controller

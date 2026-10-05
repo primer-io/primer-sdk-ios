@@ -400,6 +400,23 @@ final class ApplePayPresentationManagerTests: XCTestCase {
         XCTAssertEqual(request.supportedNetworks, [.visa, .masterCard, .amex, .discover])
     }
 
+    func testRequiredShippingContactFieldsAreAddedToTheSettingsFields() throws {
+        SDKSessionHelper.setUp()
+        defer { SDKSessionHelper.tearDown() }
+        let settings = PrimerSettings(paymentMethodOptions: .init(applePayOptions: .init(
+            merchantIdentifier: "merchant_id",
+            merchantName: "merchant_name",
+            shippingOptions: .init(shippingContactFields: [.name], requireShippingMethod: false)
+        )))
+        DependencyContainer.register(settings as PrimerSettingsProtocol)
+        var applePayRequest = makeApplePayRequest()
+        applePayRequest.requiredShippingContactFields = [.postalAddress]
+
+        let request = try sut.createRequest(for: applePayRequest)
+
+        XCTAssertEqual(request.requiredShippingContactFields, [.name, .postalAddress])
+    }
+
     func makeApplePayRequest() -> ApplePayRequest {
         ApplePayRequest(
             currency: Currency(code: "GBP", decimalDigits: 2),

@@ -222,7 +222,7 @@ final class DefaultAdyenKlarnaScopeTests: XCTestCase {
         sut.selectOption(option)
 
         // Then
-        let state = try await awaitValue(sut.state, matching: { $0.selectedOption != nil })
+        let state = try await awaitValue(sut.state, matching: { $0.status == .success })
         XCTAssertEqual(state.selectedOption, option)
         XCTAssertEqual(mockInteractor.lastSelectedOption, option)
     }

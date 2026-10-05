@@ -42,6 +42,17 @@ final class DefaultCheckoutScopeBehaviorTests: XCTestCase {
         )
     }
 
+    /// This class registers no container, so setup fails and sets `.failure`. Waiting for it keeps the stream tests free of that race.
+    private func makeSettledSut() async throws -> DefaultCheckoutScope {
+        let sut = makeSut(settings: PrimerSettings(uiOptions: PrimerUIOptions(isInitScreenEnabled: false)))
+        _ = try await awaitValue(sut.navigationStateStream, matching: {
+            if case .failure = $0 { return true }
+            return false
+        })
+        sut.updateNavigationState(.loading)
+        return sut
+    }
+
     private func makePaymentResult(
         paymentId: String = TestData.PaymentIds.success,
         paymentMethodType: String? = nil
@@ -680,8 +691,8 @@ final class DefaultCheckoutScopeBehaviorTests: XCTestCase {
     // MARK: - navigationStateStream Tests
 
     func test_navigationStateStream_emitsInitialNavigationState() async throws {
-        // Given — disable init screen so the async init task cannot mutate the navigation state.
-        sut = makeSut(settings: PrimerSettings(uiOptions: PrimerUIOptions(isInitScreenEnabled: false)))
+        // Given
+        sut = try await makeSettledSut()
 
         // When
         let value = try await awaitFirst(sut.navigationStateStream)
@@ -692,7 +703,7 @@ final class DefaultCheckoutScopeBehaviorTests: XCTestCase {
 
     func test_navigationStateStream_emitsUpdatedNavigationStates() async throws {
         // Given
-        sut = makeSut(settings: PrimerSettings(uiOptions: PrimerUIOptions(isInitScreenEnabled: false)))
+        sut = try await makeSettledSut()
         let stream = sut.navigationStateStream
 
         // When — collect from the replayed initial `.loading` through to `.processing`. Mutating
@@ -707,9 +718,9 @@ final class DefaultCheckoutScopeBehaviorTests: XCTestCase {
         XCTAssertEqual(states.last, .processing)
     }
 
-    func test_navigationStateStream_consumerEarlyExit_terminatesCleanly() async {
+    func test_navigationStateStream_consumerEarlyExit_terminatesCleanly() async throws {
         // Given
-        sut = makeSut(settings: PrimerSettings(uiOptions: PrimerUIOptions(isInitScreenEnabled: false)))
+        sut = try await makeSettledSut()
         var receivedCount = 0
 
         // When — break after the first value to trigger the onTermination handler.

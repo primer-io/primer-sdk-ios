@@ -586,15 +586,16 @@ final class DefaultPaymentMethodSelectionScopeTests: XCTestCase {
         // Given
         let container = try await ContainerTestHelpers.createTestContainer()
         let mockRepo = MockHeadlessRepository()
+        let deleted = makeVaultedPaymentMethod(id: "vault_to_delete")
+        let kept = makeVaultedPaymentMethod(id: "vault_kept")
+        mockRepo.vaultedPaymentMethodsToReturn = [deleted, kept]
         _ = try? await container.register(HeadlessRepository.self).asSingleton().with { _ in mockRepo }
         await DIContainer.setContainer(container)
         sut = makeSut()
-        try await withTimeout(2.0) {
-            while mockRepo.fetchVaultedPaymentMethodsCallCount < 1 { await Task.yield() }
+        // why: the init refresh sets the list, so waiting for its call alone lets its result land after the test's setup
+        try await withTimeout(2.0) { [self] in
+            while mockCheckoutScope.vaultedPaymentMethods.count < 2 { await Task.yield() }
         }
-        let deleted = makeVaultedPaymentMethod(id: "vault_to_delete")
-        let kept = makeVaultedPaymentMethod(id: "vault_kept")
-        mockCheckoutScope.setVaultedPaymentMethods([deleted, kept])
         mockCheckoutScope.setSelectedVaultedPaymentMethod(deleted)
         mockRepo.fetchVaultedPaymentMethodsError = PrimerError.unknown(message: "offline")
 

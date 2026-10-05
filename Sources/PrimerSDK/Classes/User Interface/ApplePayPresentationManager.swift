@@ -58,6 +58,7 @@ final class ApplePayPresentationManager: ApplePayPresenting, LogReporter, Sendab
         // Map contact fields from options
         let contactFields = mapContactFieldsFromOptions(applePayOptions: applePayOptions)
         request.requiredShippingContactFields = contactFields.mappedShippingContactFields
+            .union(applePayRequest.requiredShippingContactFields)
         request.requiredBillingContactFields = contactFields.mappedBillingContactFields
 
         request.currencyCode = applePayRequest.currency.code

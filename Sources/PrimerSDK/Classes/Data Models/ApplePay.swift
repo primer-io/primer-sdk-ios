@@ -25,6 +25,8 @@ struct ApplePayRequest {
     var recurringPaymentRequest: ApplePayRecurringPaymentRequest?
     var deferredPaymentRequest: ApplePayDeferredPaymentRequest?
     var automaticReloadRequest: ApplePayAutomaticReloadRequest?
+    /// Added to the fields the merchant's settings require.
+    var requiredShippingContactFields: Set<PKContactField> = []
 }
 
 protocol ApplePayPaymentRequestBase: Codable {

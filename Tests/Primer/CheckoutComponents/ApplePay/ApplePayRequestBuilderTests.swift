@@ -37,6 +37,14 @@ final class ApplePayRequestBuilderTests: XCTestCase {
         XCTAssertFalse(request.items.isEmpty)
     }
 
+    func test_build_shippingHandlerModes_requireAPostalAddress() throws {
+        setupValidConfiguration()
+
+        XCTAssertEqual(try ApplePayRequestBuilder.build(mode: .callbacks).requiredShippingContactFields, [.postalAddress])
+        XCTAssertEqual(try ApplePayRequestBuilder.build(mode: .addressOnly).requiredShippingContactFields, [.postalAddress])
+        XCTAssertTrue(try ApplePayRequestBuilder.build(mode: .legacy).requiredShippingContactFields.isEmpty)
+    }
+
     func test_build_success_withMerchantAmount_createsSingleSummaryItem() throws {
         // Given
         let order = ClientSession.Order(

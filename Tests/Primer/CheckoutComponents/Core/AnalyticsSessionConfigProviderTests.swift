@@ -118,6 +118,8 @@ private final class StubConfigurationModule: PrimerAPIConfigurationModuleProtoco
 
     func updateSession(withActions actionsRequest: ClientSessionUpdateRequest) async throws {}
 
+    func refreshSession() async throws {}
+
     func storeRequiredActionClientToken(_ newClientToken: String) async throws {}
 
     func makeAnalyticsSessionConfig(

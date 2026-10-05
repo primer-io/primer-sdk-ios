@@ -14,6 +14,21 @@ import SwiftUI
 public typealias BeforePaymentCreateHandler = @Sendable (_ data: PrimerCheckoutPaymentMethodData,
                                                         _ decisionHandler: @escaping (PrimerPaymentCreationDecision) -> Void) -> Void
 
+/// Supplies the shipping options for an address while the wallet sheet is open. Called on sheet open
+/// and on every address change, and must return within 20 seconds. An empty list shows the wallet's
+/// "cannot deliver to this address" message. `nil` unregisters the handler.
+@available(iOS 15.0, *)
+public typealias ShippingAddressChangeHandler =
+  @Sendable (_ change: PrimerShippingAddressChange) async throws -> [PrimerShippingOption]
+
+/// The shopper selected an option, or the default is being committed. Have your backend `PATCH`
+/// `order.shipping` to the option, then return. The SDK re-reads the session, checks it matches,
+/// refreshes the total and only then allows authorization. Must return within 20 seconds. `nil`
+/// unregisters the handler.
+@available(iOS 15.0, *)
+public typealias ShippingOptionChangeHandler =
+  @Sendable (_ change: PrimerShippingOptionChange) async throws -> Void
+
 /// The main scope interface for PrimerCheckout, providing lifecycle control and customizable UI components.
 @available(iOS 15.0, *)
 @MainActor
@@ -82,6 +97,14 @@ protocol PrimerCheckoutScope: AnyObject {
   /// Called before a payment is created. Use the decision handler to provide an idempotency key
   /// or abort payment creation. If not set, payments proceed without an idempotency key.
   var onBeforePaymentCreate: BeforePaymentCreateHandler? { get set }
+
+  /// Express Checkout: supplies the shipping options while the Apple Pay sheet is open. If not set,
+  /// the sheet falls back to the options baked into the client session.
+  var onShippingAddressChange: ShippingAddressChangeHandler? { get set }
+
+  /// Express Checkout: commits the option the shopper picked. If not set, the shipping amount is
+  /// never committed and a warning is logged.
+  var onShippingOptionChange: ShippingOptionChangeHandler? { get set }
 
   // MARK: - Payment Settings
 
