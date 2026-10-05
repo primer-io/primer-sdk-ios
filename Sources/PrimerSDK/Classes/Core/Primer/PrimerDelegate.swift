@@ -88,8 +88,12 @@ final class PrimerDelegateProxy: LogReporter {
                     continuation.resume(returning: decision)
                 }
             } else if PrimerInternal.shared.sdkIntegrationType == .checkoutComponents {
-                // CheckoutComponents handles tokenization through its own scope mechanism
-                continuation.resume(returning: PrimerResumeDecision.succeed())
+                // CheckoutComponents installs its flow handler as the headless delegate; a save ends there.
+                let isHandled: Void? = PrimerHeadlessUniversalCheckout.current.delegate?
+                    .primerHeadlessUniversalCheckoutDidTokenizePaymentMethod?(paymentMethodTokenData) { decision in
+                        continuation.resume(returning: decision)
+                    }
+                if isHandled == nil { continuation.resume(returning: PrimerResumeDecision.succeed()) }
             }
         }
     }

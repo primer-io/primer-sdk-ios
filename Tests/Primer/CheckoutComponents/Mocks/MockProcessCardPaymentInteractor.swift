@@ -18,6 +18,9 @@ final class MockProcessCardPaymentInteractor: ProcessCardPaymentInteractor {
     var resultToReturn: PaymentResult = PaymentResult(paymentId: "test-payment-id", status: .success)
     var errorToThrow: Error?
 
+    private(set) var vaultCallCount = 0
+    var tokenToReturn = PrimerPaymentMethodToken(token: "test-multi-use-token", paymentMethodType: "PAYMENT_CARD")
+
     func execute(cardData: CardPaymentData) async throws -> PaymentResult {
         executeCallCount += 1
         lastCardData = cardData
@@ -25,6 +28,15 @@ final class MockProcessCardPaymentInteractor: ProcessCardPaymentInteractor {
             throw error
         }
         return resultToReturn
+    }
+
+    func vault(cardData: CardPaymentData) async throws -> PrimerPaymentMethodToken {
+        vaultCallCount += 1
+        lastCardData = cardData
+        if let error = errorToThrow {
+            throw error
+        }
+        return tokenToReturn
     }
 
     func reset() {

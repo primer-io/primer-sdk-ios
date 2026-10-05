@@ -162,6 +162,17 @@ private actor SpyHeadlessRepository: HeadlessRepository {
         PaymentResult(paymentId: "", status: .success)
     }
 
+    func vaultCard(
+        cardNumber: String,
+        cvv: String,
+        expiryMonth: String,
+        expiryYear: String,
+        cardholderName: String,
+        selectedNetwork: CardNetwork?
+    ) async throws -> PrimerPaymentMethodToken {
+        PrimerPaymentMethodToken(token: "", paymentMethodType: "PAYMENT_CARD")
+    }
+
     nonisolated func getNetworkDetectionStream() -> AsyncStream<[CardNetwork]> {
         AsyncStream { _ in }
     }

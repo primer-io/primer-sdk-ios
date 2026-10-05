@@ -93,6 +93,25 @@ final class MockHeadlessRepository: HeadlessRepository {
         return result
     }
 
+    var vaultCardTokenToReturn = PrimerPaymentMethodToken(token: "test-multi-use-token", paymentMethodType: "PAYMENT_CARD")
+    private(set) var vaultCardCallCount = 0
+
+    func vaultCard(
+        cardNumber: String,
+        cvv: String,
+        expiryMonth: String,
+        expiryYear: String,
+        cardholderName: String,
+        selectedNetwork: CardNetwork?
+    ) async throws -> PrimerPaymentMethodToken {
+        vaultCardCallCount += 1
+        lastCardNumber = cardNumber
+        if let processCardPaymentError {
+            throw processCardPaymentError
+        }
+        return vaultCardTokenToReturn
+    }
+
     func getNetworkDetectionStream() -> AsyncStream<[CardNetwork]> {
         AsyncStream { [self] continuation in
             networkDetectionContinuation = continuation

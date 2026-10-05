@@ -19,6 +19,8 @@ struct CardPaymentData {
 
 protocol ProcessCardPaymentInteractor {
   func execute(cardData: CardPaymentData) async throws -> PaymentResult
+  /// Saves the card as a multi-use token and creates no payment.
+  func vault(cardData: CardPaymentData) async throws -> PrimerPaymentMethodToken
 }
 
 @available(iOS 15.0, *)
@@ -49,6 +51,22 @@ final class ProcessCardPaymentInteractorImpl: ProcessCardPaymentInteractor, LogR
       return result
     } catch {
       logger.error(message: "Card payment processing failed: \(error)", error: error)
+      throw error
+    }
+  }
+
+  func vault(cardData: CardPaymentData) async throws -> PrimerPaymentMethodToken {
+    do {
+      return try await repository.vaultCard(
+        cardNumber: cardData.cardNumber,
+        cvv: cardData.cvv,
+        expiryMonth: cardData.expiryMonth,
+        expiryYear: cardData.expiryYear,
+        cardholderName: cardData.cardholderName,
+        selectedNetwork: cardData.selectedNetwork
+      )
+    } catch {
+      logger.error(message: "Saving the card failed: \(error)", error: error)
       throw error
     }
   }

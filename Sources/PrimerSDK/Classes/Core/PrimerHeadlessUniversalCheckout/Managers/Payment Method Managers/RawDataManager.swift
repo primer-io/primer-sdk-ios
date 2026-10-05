@@ -254,6 +254,12 @@ extension PrimerHeadlessUniversalCheckout {
                     (self.rawData as? PrimerCardData)?.wipe()
                     self.paymentMethodTokenData = paymentMethodTokenData
 
+                    // A save creates no payment: the multi-use token is the result.
+                    guard PrimerInternal.shared.intent != .vault else {
+                        _ = await PrimerDelegateProxy.primerDidTokenizePaymentMethod(paymentMethodTokenData)
+                        return
+                    }
+
                     let checkoutData = try await self.startPaymentFlow(withPaymentMethodTokenData: paymentMethodTokenData)
 
                     if PrimerSettings.current.paymentHandling == .auto, let checkoutData {

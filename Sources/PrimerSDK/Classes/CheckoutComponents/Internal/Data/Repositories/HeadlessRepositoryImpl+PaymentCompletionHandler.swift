@@ -17,6 +17,7 @@ final class PaymentCompletionHandler: NSObject,
   LogReporter {
 
   private let completion: (Result<PaymentResult, Error>) -> Void
+  private let onTokenized: ((PrimerPaymentMethodTokenData) -> Void)?
   private var hasCompleted = false
   private weak var repository: HeadlessRepositoryImpl?
   private var validationCompletion: ((Bool, [Error]?) -> Void)?
@@ -24,15 +25,18 @@ final class PaymentCompletionHandler: NSObject,
   private let staleCheckoutData: PrimerCheckoutData?
 
   /// - Parameter staleCheckoutData: a previous attempt's payment the headless layer may still report.
+  /// - Parameter onTokenized: ends the flow with the token when no payment follows, as under the `.vault` intent.
   init(
     repository: HeadlessRepositoryImpl,
     paymentMethodType: String = "PAYMENT_CARD",
     staleCheckoutData: PrimerCheckoutData? = nil,
+    onTokenized: ((PrimerPaymentMethodTokenData) -> Void)? = nil,
     completion: @escaping (Result<PaymentResult, Error>) -> Void
   ) {
     self.repository = repository
     self.paymentMethodType = paymentMethodType
     self.staleCheckoutData = staleCheckoutData
+    self.onTokenized = onTokenized
     self.completion = completion
     super.init()
   }
@@ -86,6 +90,11 @@ final class PaymentCompletionHandler: NSObject,
     decisionHandler: @escaping (PrimerHeadlessUniversalCheckoutResumeDecision) -> Void
   ) {
     repository?.trackThreeDSChallengeIfNeeded(from: paymentMethodTokenData)
+
+    if let onTokenized, !hasCompleted {
+      hasCompleted = true
+      onTokenized(paymentMethodTokenData)
+    }
 
     // For CheckoutComponents, we simply complete the tokenization
     // 3DS handling will be done at the payment creation level, not here

@@ -425,6 +425,13 @@ final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, 
         metadata: .payment(
           PaymentEvent(paymentMethod: PrimerPaymentMethodType.paymentCard.rawValue)))
 
+      if checkoutScope?.intent == .vault {
+        let paymentMethodToken = try await processCardPaymentInteractor.vault(cardData: cardData)
+        structuredState.isLoading = false
+        checkoutScope?.handleVaultSuccess(paymentMethodToken)
+        return
+      }
+
       let result = try await processCardPayment(cardData: cardData)
       await handlePaymentSuccess(result)
     } catch {
