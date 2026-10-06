@@ -147,7 +147,7 @@ struct CardFormScreen: View, LogReporter {
       return CheckoutComponentsStrings.addCardButton
     }
 
-    guard PrimerInternal.shared.intent == .checkout,
+    guard !scope.savesCard,
       let configurationService,
       let currency = configurationService.currency
     else {

@@ -61,8 +61,7 @@ final class DefaultPaymentMethodSelectionScope: PaymentMethodSelectionScopeInter
   }
 
   func refreshVaultedPaymentMethods() async {
-    // Saved methods pay, and building the vault manager resets the shared intent to `.checkout`.
-    guard checkoutScope?.intent != .vault else { return }
+    guard checkoutScope?.anyPaymentMethodPays != false else { return }
     do {
       guard let container = await DIContainer.current else { return }
       let repository = try await container.resolve(HeadlessRepository.self)
@@ -181,12 +180,12 @@ final class DefaultPaymentMethodSelectionScope: PaymentMethodSelectionScopeInter
   // MARK: - Vault Payment
 
   func payWithVaultedPaymentMethod() async {
-    guard checkoutScope?.intent != .vault else {
-      return logger.warn(message: "[Vault] A saved payment method cannot pay under the vault intent, ignoring the submit")
-    }
     guard let vaultedMethod = internalState.selectedVaultedPaymentMethod else {
       logger.warn(message: "[Vault] No vaulted payment method selected")
       return
+    }
+    guard checkoutScope?.intent(for: vaultedMethod.paymentMethodType) != .vault else {
+      return logger.warn(message: "[Vault] A saved payment method cannot pay under the vault intent, ignoring the submit")
     }
 
     // The CVV screen submits through `payWithVaultedPaymentMethodAndCvv`.
@@ -249,7 +248,7 @@ final class DefaultPaymentMethodSelectionScope: PaymentMethodSelectionScopeInter
     vaultedMethod: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod,
     additionalData: PrimerVaultedPaymentMethodAdditionalData?
   ) async {
-    guard checkoutScope?.intent != .vault else {
+    guard checkoutScope?.intent(for: vaultedMethod.paymentMethodType) != .vault else {
       return logger.warn(message: "[Vault] A saved payment method cannot pay under the vault intent, ignoring the submit")
     }
     // A merchant's own pay button need not disable itself, so guard against a double tap here.

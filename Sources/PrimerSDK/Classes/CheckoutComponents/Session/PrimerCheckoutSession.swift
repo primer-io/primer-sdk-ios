@@ -68,6 +68,7 @@ public final class PrimerCheckoutSession: ObservableObject {
   private let settings: PrimerSettings
   let theme: PrimerCheckoutTheme
   private let intent: PrimerSessionIntent
+  private let paymentMethodIntents: [String: PrimerSessionIntent]
   let navigator = CheckoutNavigator()
   let presentationContext: PresentationContext = .fromPaymentSelection
   var initializer: CheckoutSDKInitializer?
@@ -77,13 +78,17 @@ public final class PrimerCheckoutSession: ObservableObject {
   private var hasCompleted = false
   private var onCompletion: ((PrimerCheckoutState) -> Void)?
 
-  /// - Parameter intent: `.vault` saves a payment method without a payment and ends in `.vaulted`.
-  ///   The client session needs a customer id.
+  /// - Parameters:
+  ///   - intent: `.vault` saves a payment method without a payment and ends in `.vaulted`.
+  ///     The client session needs a customer id.
+  ///   - paymentMethodIntents: Overrides `intent` per payment method type, for example
+  ///     `["PAYMENT_CARD": .vault]` saves a card while other methods pay.
   public init(
     clientToken: String,
     settings: PrimerSettings = PrimerSettings(),
     theme: PrimerCheckoutTheme = PrimerCheckoutTheme(),
     intent: PrimerSessionIntent = .checkout,
+    paymentMethodIntents: [String: PrimerSessionIntent] = [:],
     idempotencyKey: @escaping @Sendable () -> String? = { nil },
     onShippingAddressChange: ShippingAddressChangeHandler? = nil,
     onShippingOptionChange: ShippingOptionChangeHandler? = nil
@@ -92,6 +97,7 @@ public final class PrimerCheckoutSession: ObservableObject {
     self.settings = settings
     self.theme = theme
     self.intent = intent
+    self.paymentMethodIntents = paymentMethodIntents
     self.onShippingAddressChange = onShippingAddressChange
     self.onShippingOptionChange = onShippingOptionChange
     self.idempotencyKey = idempotencyKey
@@ -119,6 +125,7 @@ public final class PrimerCheckoutSession: ObservableObject {
       primerSettings: settings,
       primerTheme: theme,
       intent: intent,
+      paymentMethodIntents: paymentMethodIntents,
       navigator: navigator,
       presentationContext: presentationContext,
       isInlineFlow: true

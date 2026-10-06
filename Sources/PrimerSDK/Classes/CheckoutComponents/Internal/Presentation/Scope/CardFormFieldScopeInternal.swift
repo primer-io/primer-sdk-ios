@@ -31,6 +31,9 @@ struct FieldValidationStates: Equatable {
 protocol CardFormFieldScopeInternal: PrimerCardFormScope {
   var currentState: PrimerCardFormState { get }
 
+  /// True when the card resolves to the `.vault` intent, so the submit saves it and pays nothing.
+  var savesCard: Bool { get }
+
   /// Nested country-selection scope (internal).
   var selectCountry: PrimerSelectCountryScope { get }
 
@@ -47,4 +50,9 @@ protocol CardFormFieldScopeInternal: PrimerCardFormScope {
   /// Auto-detected network from the card number (keystroke/BIN prefix); ignored while the user has
   /// pinned a still-available co-badge network.
   func autoSelectDetectedNetwork(_ network: String)
+}
+
+@available(iOS 15.0, *)
+extension CardFormFieldScopeInternal {
+  var savesCard: Bool { false }
 }

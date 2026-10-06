@@ -109,6 +109,7 @@ public extension PrimerCheckoutPresenterDelegate {
     ///   - viewController: The view controller to present from
     ///   - primerSettings: Configuration settings to apply for this checkout session
     ///   - intent: `.vault` saves a payment method without a payment. Default: `.checkout`
+    ///   - paymentMethodIntents: Overrides `intent` per payment method type. Default: `[:]`
     ///   - completion: Optional completion handler
     ///   - onShippingAddressChange: Express Checkout shipping options for the shopper's address
     ///   - onShippingOptionChange: Express Checkout commit of the selected option
@@ -118,6 +119,7 @@ public extension PrimerCheckoutPresenterDelegate {
         from viewController: UIViewController,
         primerSettings: PrimerSettings,
         intent: PrimerSessionIntent = .checkout,
+        paymentMethodIntents: [String: PrimerSessionIntent] = [:],
         completion: (() -> Void)? = nil,
         onShippingAddressChange: ShippingAddressChangeHandler? = nil,
         onShippingOptionChange: ShippingOptionChangeHandler? = nil
@@ -127,7 +129,7 @@ public extension PrimerCheckoutPresenterDelegate {
             from: viewController,
             primerSettings: primerSettings,
             primerTheme: PrimerCheckoutTheme(),
-            intent: intent,
+            intents: (intent, paymentMethodIntents),
             onShippingAddressChange: onShippingAddressChange,
             onShippingOptionChange: onShippingOptionChange,
             completion: completion
@@ -141,6 +143,7 @@ public extension PrimerCheckoutPresenterDelegate {
     ///   - primerSettings: Configuration settings to apply for this checkout session
     ///   - primerTheme: Theme configuration for design tokens
     ///   - intent: `.vault` saves a payment method without a payment. Default: `.checkout`
+    ///   - paymentMethodIntents: Overrides `intent` per payment method type. Default: `[:]`
     ///   - completion: Optional completion handler
     ///   - onShippingAddressChange: Express Checkout shipping options for the shopper's address
     ///   - onShippingOptionChange: Express Checkout commit of the selected option
@@ -150,6 +153,7 @@ public extension PrimerCheckoutPresenterDelegate {
         primerSettings: PrimerSettings,
         primerTheme: PrimerCheckoutTheme,
         intent: PrimerSessionIntent = .checkout,
+        paymentMethodIntents: [String: PrimerSessionIntent] = [:],
         completion: (() -> Void)? = nil,
         onShippingAddressChange: ShippingAddressChangeHandler? = nil,
         onShippingOptionChange: ShippingOptionChangeHandler? = nil
@@ -159,7 +163,7 @@ public extension PrimerCheckoutPresenterDelegate {
             from: viewController,
             primerSettings: primerSettings,
             primerTheme: primerTheme,
-            intent: intent,
+            intents: (intent, paymentMethodIntents),
             onShippingAddressChange: onShippingAddressChange,
             onShippingOptionChange: onShippingOptionChange,
             completion: completion
@@ -314,7 +318,7 @@ public extension PrimerCheckoutPresenterDelegate {
         from viewController: UIViewController,
         primerSettings: PrimerSettings,
         primerTheme: PrimerCheckoutTheme,
-        intent: PrimerSessionIntent,
+        intents: (session: PrimerSessionIntent, perMethod: [String: PrimerSessionIntent]),
         onShippingAddressChange: ShippingAddressChangeHandler?,
         onShippingOptionChange: ShippingOptionChangeHandler?,
         completion: (() -> Void)?
@@ -337,7 +341,8 @@ public extension PrimerCheckoutPresenterDelegate {
                 clientToken: clientToken,
                 settings: primerSettings,
                 theme: primerTheme,
-                intent: intent,
+                intent: intents.session,
+                paymentMethodIntents: intents.perMethod,
                 navigator: navigator,
                 presentationContext: .direct,
                 integrationType: .uiKit,
@@ -439,6 +444,7 @@ extension PrimerCheckoutPresenter {
     ///   - clientToken: The client token for the session
     ///   - primerSettings: Configuration settings to apply for this checkout session
     ///   - intent: `.vault` saves a payment method without a payment. Default: `.checkout`
+    ///   - paymentMethodIntents: Overrides `intent` per payment method type. Default: `[:]`
     ///   - completion: Optional completion handler
     ///   - onShippingAddressChange: Express Checkout shipping options for the shopper's address
     ///   - onShippingOptionChange: Express Checkout commit of the selected option
@@ -447,6 +453,7 @@ extension PrimerCheckoutPresenter {
         clientToken: String,
         primerSettings: PrimerSettings,
         intent: PrimerSessionIntent = .checkout,
+        paymentMethodIntents: [String: PrimerSessionIntent] = [:],
         completion: (() -> Void)? = nil,
         onShippingAddressChange: ShippingAddressChangeHandler? = nil,
         onShippingOptionChange: ShippingOptionChangeHandler? = nil
@@ -466,6 +473,7 @@ extension PrimerCheckoutPresenter {
             from: viewController,
             primerSettings: primerSettings,
             intent: intent,
+            paymentMethodIntents: paymentMethodIntents,
             completion: completion,
             onShippingAddressChange: onShippingAddressChange,
             onShippingOptionChange: onShippingOptionChange

@@ -20,6 +20,7 @@ final class CheckoutSDKInitializer {
   private let primerSettings: PrimerSettings
   private let primerTheme: PrimerCheckoutTheme
   private let intent: PrimerSessionIntent
+  private let paymentMethodIntents: [String: PrimerSessionIntent]
   private let navigator: CheckoutNavigator
   private let presentationContext: PresentationContext
   private let isInlineFlow: Bool
@@ -34,6 +35,7 @@ final class CheckoutSDKInitializer {
     primerSettings: PrimerSettings,
     primerTheme: PrimerCheckoutTheme = PrimerCheckoutTheme(),
     intent: PrimerSessionIntent = .checkout,
+    paymentMethodIntents: [String: PrimerSessionIntent] = [:],
     navigator: CheckoutNavigator,
     presentationContext: PresentationContext,
     isInlineFlow: Bool = false,
@@ -44,6 +46,7 @@ final class CheckoutSDKInitializer {
     self.primerSettings = primerSettings
     self.primerTheme = primerTheme
     self.intent = intent
+    self.paymentMethodIntents = paymentMethodIntents
     self.navigator = navigator
     self.presentationContext = presentationContext
     self.isInlineFlow = isInlineFlow
@@ -124,6 +127,7 @@ final class CheckoutSDKInitializer {
       clientToken: clientToken,
       settings: primerSettings,
       intent: intent,
+      paymentMethodIntents: paymentMethodIntents,
       navigator: navigator,
       presentationContext: presentationContext,
       isInlineFlow: isInlineFlow

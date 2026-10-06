@@ -126,6 +126,9 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
   /// `.vault` saves a payment method and never creates a payment.
   let intent: PrimerSessionIntent
 
+  /// Overrides `intent` per payment method type.
+  let paymentMethodIntents: [String: PrimerSessionIntent]
+
   /// True when driven by inline embedding (`PrimerCheckoutSession`); false for the modal
   /// `PrimerCheckout` path. Inline embedding must not auto-route to a single payment method on
   /// launch (the merchant's own view owns that).
@@ -138,6 +141,7 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
     clientToken: String,
     settings: PrimerSettings,
     intent: PrimerSessionIntent = .checkout,
+    paymentMethodIntents: [String: PrimerSessionIntent] = [:],
     navigator: CheckoutNavigator,
     presentationContext: PresentationContext = .fromPaymentSelection,
     isInlineFlow: Bool = false
@@ -145,6 +149,7 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
     self.clientToken = clientToken
     self.settings = settings
     self.intent = intent
+    self.paymentMethodIntents = paymentMethodIntents
     self.navigator = navigator
     self.presentationContext = presentationContext
     self.isInlineFlow = isInlineFlow
@@ -262,10 +267,7 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
         )
       }
 
-      availablePaymentMethods = try await interactor.execute()
-      if intent == .vault {
-        availablePaymentMethods = try vaultablePaymentMethods(from: availablePaymentMethods)
-      }
+      availablePaymentMethods = try await offeredPaymentMethods(from: interactor.execute())
       // Before the preload: a method scope's context depends on whether saved methods give it a way back.
       if availablePaymentMethods.count == 1, !isInlineFlow {
         await fetchVaultedPaymentMethods()
@@ -304,21 +306,47 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
     }
   }
 
-  /// Saving needs a customer to save to, and a method CheckoutComponents can save without a payment.
-  private func vaultablePaymentMethods(from methods: [InternalPaymentMethod]) throws -> [InternalPaymentMethod] {
-    guard configurationService?.apiConfiguration?.clientSession?.customer?.id?.isEmpty == false else {
-      // The same error the Headless vault manager raises for a session without a customer.
+  func intent(for paymentMethodType: String) -> PrimerSessionIntent {
+    paymentMethodIntents[paymentMethodType] ?? intent
+  }
+
+  /// Saved methods always pay, so they have no place when every type saves.
+  var anyPaymentMethodPays: Bool {
+    intent == .checkout || paymentMethodIntents.values.contains(.checkout)
+  }
+
+  /// The shared core reads one global intent, so each method applies its own before it runs.
+  @discardableResult
+  private func applyIntent(for paymentMethodType: String) -> PrimerSessionIntent {
+    let methodIntent = intent(for: paymentMethodType)
+    PrimerInternal.shared.intent = methodIntent
+    return methodIntent
+  }
+
+  /// Hides what a session-wide save cannot save, and rejects an intent map CheckoutComponents cannot honor.
+  private func offeredPaymentMethods(from methods: [InternalPaymentMethod]) throws -> [InternalPaymentMethod] {
+    let types = Set(methods.map(\.type))
+    for type in paymentMethodIntents.keys where !types.contains(type) {
+      logger.debug(message: "\(type) is not in the session, ignoring its intent")
+    }
+    let vaultable = Self.vaultablePaymentMethodTypes
+    if let type = types.first(where: { paymentMethodIntents[$0] == .vault && !vaultable.contains($0) }) {
+      logger.error(message: "\(type) cannot be saved without a payment")
+      throw PrimerError.unsupportedIntent(intent: .vault)
+    }
+    let offered = methods.filter { intent(for: $0.type) == .checkout || vaultable.contains($0.type) }
+    guard !offered.isEmpty || methods.isEmpty else { throw PrimerError.unsupportedIntent(intent: .vault) }
+    // The same error the Headless vault manager raises for a session without a customer.
+    if offered.contains(where: { intent(for: $0.type) == .vault }),
+       configurationService?.apiConfiguration?.clientSession?.customer?.id?.isEmpty != false {
       throw PrimerError.invalidClientSessionValue(name: "customer.id", allowedValue: "string")
     }
-    let vaultable = methods.filter { Self.vaultablePaymentMethodTypes.contains($0.type) }
-    guard !vaultable.isEmpty else { throw PrimerError.unsupportedIntent(intent: .vault) }
-    return vaultable
+    return offered
   }
 
   /// A failed fetch counts as none: the shopper can still pay with the configured method.
   private func fetchVaultedPaymentMethods() async {
-    // Saved methods pay, and building the vault manager resets the shared intent to `.checkout`.
-    guard intent == .checkout else { return }
+    guard anyPaymentMethodPays else { return }
     guard let container = await DIContainer.current,
           let repository = try? await container.resolve(HeadlessRepository.self),
           let methods = try? await repository.fetchVaultedPaymentMethods()
@@ -603,10 +631,11 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
 
   func handlePaymentMethodSelection(_ method: InternalPaymentMethod) {
     // Every registered method keeps a scope, and most of them pay, so a save starts only an offered one.
-    guard intent != .vault || availablePaymentMethods.contains(where: { $0.type == method.type }) else {
+    guard intent(for: method.type) == .checkout || availablePaymentMethods.contains(where: { $0.type == method.type }) else {
       return logger.warn(message: "\(method.type) cannot be saved under the vault intent, ignoring the selection")
     }
     selectedPaymentMethodName = method.name
+    applyIntent(for: method.type)
 
     if let scope = paymentMethodScopeCache[method.type] {
       scope.start()
@@ -627,8 +656,8 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
   ///   This matches the pattern used in Drop-In and Headless flows. A proper DI solution would require
   ///   refactoring the networking layer to use injected dependencies instead of the enum pattern.
   func invokeBeforePaymentCreate(paymentMethodType: String) async throws {
-    // A save creates no payment, so there is nothing to approve.
-    guard intent == .checkout else { return }
+    // Every method calls this right before it tokenizes. A save creates no payment, so there is nothing to approve.
+    guard applyIntent(for: paymentMethodType) == .checkout else { return }
     guard let callback = onBeforePaymentCreate else {
       // No imperative handler — fall back to the declarative idempotency-key provider.
       PrimerInternal.shared.currentIdempotencyKey = idempotencyKeyProvider?()
@@ -707,7 +736,8 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
   }
 
   func setVaultedPaymentMethods(_ methods: [PrimerHeadlessUniversalCheckout.VaultedPaymentMethod]) {
-    vaultManager.setMethods(methods)
+    // A saved method always pays, so a type that saves hides its saved methods.
+    vaultManager.setMethods(methods.filter { intent(for: $0.paymentMethodType) == .checkout })
   }
 
   func setSelectedVaultedPaymentMethod(

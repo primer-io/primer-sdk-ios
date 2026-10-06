@@ -67,7 +67,10 @@ enum ContainerTestHelpers {
     /// Installs a fresh minimal test container as `DIContainer.shared` so the scope's init can actually run.
     /// The test may later swap the container via `DIContainer.setContainer(_:)`; the scope's stored state survives.
     @MainActor
-    static func createSettledCheckoutScope(intent: PrimerSessionIntent = .checkout) async throws -> DefaultCheckoutScope {
+    static func createSettledCheckoutScope(
+        intent: PrimerSessionIntent = .checkout,
+        paymentMethodIntents: [String: PrimerSessionIntent] = [:]
+    ) async throws -> DefaultCheckoutScope {
         let container = try await createTestContainer()
         await DIContainer.setContainer(container)
 
@@ -81,6 +84,7 @@ enum ContainerTestHelpers {
             clientToken: TestData.Tokens.valid,
             settings: settings,
             intent: intent,
+            paymentMethodIntents: paymentMethodIntents,
             navigator: navigator
         )
 

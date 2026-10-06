@@ -977,6 +977,35 @@ final class DefaultCardFormScopeTests: XCTestCase {
         }
     }
 
+    func test_performSubmit_cardVaultOverride_savesTheCardInACheckoutSession() async throws {
+        let container = try await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = DefaultCheckoutScope(
+                clientToken: TestData.Tokens.valid,
+                settings: PrimerSettings(paymentHandling: .auto, uiOptions: PrimerUIOptions(isInitScreenEnabled: false)),
+                paymentMethodIntents: ["PAYMENT_CARD": .vault],
+                navigator: CheckoutNavigator(coordinator: CheckoutCoordinator())
+            )
+            for await state in checkoutScope.state where state != .initializing { break }
+            let mockPaymentInteractor = MockProcessCardPaymentInteractor()
+            let scope = createCardFormScope(checkoutScope: checkoutScope, processCardPaymentInteractor: mockPaymentInteractor)
+
+            scope.updateCardNumber(TestData.CardNumbers.validVisa)
+            scope.updateCvv("123")
+            scope.updateExpiryDate("12/30")
+            scope.updateCardholderName("John Doe")
+
+            await scope.performSubmit()
+
+            XCTAssertTrue(scope.savesCard)
+            XCTAssertEqual(mockPaymentInteractor.vaultCallCount, 1)
+            XCTAssertEqual(mockPaymentInteractor.executeCallCount, 0)
+            XCTAssertEqual(PrimerInternal.shared.intent, .vault)
+            PrimerInternal.shared.intent = nil
+        }
+    }
+
     func test_performSubmit_paymentFailureWithCheckoutData_reachesCheckoutScope() async throws {
         let container = try await createTestContainer()
 

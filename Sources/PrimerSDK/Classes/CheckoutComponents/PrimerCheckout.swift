@@ -37,6 +37,7 @@ public struct PrimerCheckout: View {
   private let settings: PrimerSettings
   private let theme: PrimerCheckoutTheme
   private let intent: PrimerSessionIntent
+  private let paymentMethodIntents: [String: PrimerSessionIntent]
   private let onCompletion: ((PrimerCheckoutState) -> Void)?
   private let onShippingAddressChange: ShippingAddressChangeHandler?
   private let onShippingOptionChange: ShippingOptionChangeHandler?
@@ -51,6 +52,8 @@ public struct PrimerCheckout: View {
   ///   - primerTheme: Theme configuration for design tokens. Default: `PrimerCheckoutTheme()`
   ///   - intent: `.vault` saves a payment method without a payment and ends in `.vaulted`. The client
   ///     session needs a customer id. Default: `.checkout`
+  ///   - paymentMethodIntents: Overrides `intent` per payment method type, for example
+  ///     `["PAYMENT_CARD": .vault]` saves a card while other methods pay. Default: `[:]`
   ///   - onCompletion: Receives `.failure` once per failed attempt, including a failed initialization,
   ///     while the checkout stays open for a retry. Then `.success`, `.vaulted` or `.dismissed` exactly once.
   ///   - onShippingAddressChange: Express Checkout shipping options for the shopper's address. Default: `nil`
@@ -60,6 +63,7 @@ public struct PrimerCheckout: View {
     primerSettings: PrimerSettings = PrimerSettings(),
     primerTheme: PrimerCheckoutTheme = PrimerCheckoutTheme(),
     intent: PrimerSessionIntent = .checkout,
+    paymentMethodIntents: [String: PrimerSessionIntent] = [:],
     onCompletion: ((PrimerCheckoutState) -> Void)? = nil,
     onShippingAddressChange: ShippingAddressChangeHandler? = nil,
     onShippingOptionChange: ShippingOptionChangeHandler? = nil
@@ -68,6 +72,7 @@ public struct PrimerCheckout: View {
     settings = primerSettings
     theme = primerTheme
     self.intent = intent
+    self.paymentMethodIntents = paymentMethodIntents
     self.onShippingAddressChange = onShippingAddressChange
     self.onShippingOptionChange = onShippingOptionChange
     self.onCompletion = onCompletion
@@ -81,6 +86,7 @@ public struct PrimerCheckout: View {
     primerSettings: PrimerSettings,
     primerTheme: PrimerCheckoutTheme,
     intent: PrimerSessionIntent = .checkout,
+    paymentMethodIntents: [String: PrimerSessionIntent] = [:],
     navigator: CheckoutNavigator,
     presentationContext: PresentationContext,
     integrationType: CheckoutComponentsIntegrationType,
@@ -92,6 +98,7 @@ public struct PrimerCheckout: View {
     settings = primerSettings
     theme = primerTheme
     self.intent = intent
+    self.paymentMethodIntents = paymentMethodIntents
     self.onShippingAddressChange = onShippingAddressChange
     self.onShippingOptionChange = onShippingOptionChange
     self.onCompletion = onCompletion
@@ -106,6 +113,7 @@ public struct PrimerCheckout: View {
       settings: settings,
       theme: theme,
       intent: intent,
+      paymentMethodIntents: paymentMethodIntents,
       navigator: navigator,
       presentationContext: presentationContext,
       integrationType: integrationType,
@@ -154,6 +162,7 @@ struct InternalCheckout: View, LogReporter {
     settings: PrimerSettings,
     theme: PrimerCheckoutTheme,
     intent: PrimerSessionIntent,
+    paymentMethodIntents: [String: PrimerSessionIntent],
     navigator: CheckoutNavigator,
     presentationContext: PresentationContext,
     integrationType: CheckoutComponentsIntegrationType,
@@ -176,6 +185,7 @@ struct InternalCheckout: View, LogReporter {
       primerSettings: settings,
       primerTheme: theme,
       intent: intent,
+      paymentMethodIntents: paymentMethodIntents,
       navigator: navigator,
       presentationContext: presentationContext
     )
