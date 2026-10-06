@@ -72,6 +72,9 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
                 await PrimerStepResolverRegistry.shared.register(HTTPRequestResolver(), for: .httpRequest)
                 
                 if config.entry.requiresSetup {
+                    #if canImport(PrimerKlarnaSDK)
+                    KlarnaWidgetComponent.register()
+                    #endif
                     await presentSDUI()
                     try await orchestrator?.runSetup(
                         pciUrl: PrimerAPIConfigurationModule.apiConfiguration?.pciUrl,
