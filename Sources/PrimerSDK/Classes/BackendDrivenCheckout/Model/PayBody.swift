@@ -5,11 +5,23 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+@_spi(PrimerInternal) import PrimerFoundation
 
 struct PayBody: Encodable {
     let paymentMethodConfigId: String?
     let processorMerchantAccountId: String
     let paymentMethodType: String
+    
+    private let clientInfo = ClientInfo(
+        merchant: ClientSessionMerchantDataRequest(
+            applicationId: Bundle.main.bundleIdentifier
+        )
+    )
+}
+
+struct SetupBody: Encodable {
+    let flow: PrimerSessionIntent
+    let paymentMethodConfigId: String?
     
     private let clientInfo = ClientInfo(
         merchant: ClientSessionMerchantDataRequest(

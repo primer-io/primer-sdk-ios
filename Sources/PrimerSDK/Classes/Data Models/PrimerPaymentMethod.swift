@@ -372,10 +372,7 @@ extension PrimerPaymentMethod {
         case eager
 
         var requiresSetup: Bool {
-            switch self {
-            case .pay: false
-            case .onSelect, .eager: true
-            }
+            true
         }
     }
 }

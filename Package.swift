@@ -7,7 +7,10 @@ let package = Package(
     defaultLocalization: "en",
     platforms: [.iOS("15.0")],
     products: [.library(name: "PrimerSDK", targets: ["PrimerSDK"])],
-    dependencies: [.package(url: "https://github.com/primer-io/primer-sdk-3ds-ios", from: "2.7.0")],
+    dependencies: [
+        .package(url: "https://github.com/primer-io/primer-sdk-3ds-ios", from: "2.7.0"),
+        .package(url: "https://github.com/primer-io/primer-klarna-sdk-ios", from: "1.4.0")
+    ],
     targets: packageTargets,
     swiftLanguageVersions: [.v5]
 )
@@ -42,6 +45,7 @@ private var packageTargets: [Target] {
 
 private var primerSDKDependencies: [Target.Dependency] {
     [
+        .product(name: "PrimerKlarnaSDK", package: "primer-klarna-sdk-ios"),
         .product(name: "Primer3DS", package: "primer-sdk-3ds-ios"),
         "PrimerBDCCore",
         "PrimerBDCEngine",

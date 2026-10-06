@@ -9,4 +9,5 @@
     case staging = "STAGING"
     case sandbox = "SANDBOX"
     case production = "PRODUCTION"
+    case localDocker = "LOCAL_DOCKER"
 }

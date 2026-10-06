@@ -48,7 +48,7 @@ enum Environment: String, Codable {
         case .local:
             URL(string: "https://primer-mock-back-end.herokuapp.com")!
         default:
-            URL(string: "https://us-central1-primerdemo-8741b.cloudfunctions.net")!
+            URL(string: "http://localhost:8085")!
         }
     }
 

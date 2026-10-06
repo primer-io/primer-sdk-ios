@@ -272,7 +272,7 @@ final class Networking {
         apiVersion: PrimerApiVersion,
         completion: @escaping (String?, Error?) -> Void
     ) {
-        let url = environment.baseUrl.appendingPathComponent("/api/client-session")
+        let url = environment.baseUrl.appendingPathComponent("/client-session/2.4")
 
         var bodyData: Data!
 

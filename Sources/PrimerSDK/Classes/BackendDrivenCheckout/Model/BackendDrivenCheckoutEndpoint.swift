@@ -21,13 +21,13 @@ extension BackendDrivenCheckoutEndpoint: Endpoint {
     var baseURL: String? {
         switch self {
         case .expandClientSession, .pay, .setup, .pollSetup: PrimerAPIConfiguration.current?.pciUrl
-        case .manifest: "https://sdk.primer.io/"
+        case .manifest: "https://sdk.dev.primer.io/"
         }
     }
     
     var path: String {
         switch self {
-        case let .manifest(environment):"state-processor/v0/manifests/\(environment.rawValue.lowercased()).json"
+        case .manifest: "state-processor/pr-24/manifest.json"
         case .pay: "client-session/\(PrimerAPIConfigurationModule.clientSessionId):pay"
         case .setup: "client-session/\(PrimerAPIConfigurationModule.clientSessionId)/payment-method-setups"
         case let .pollSetup(setupId):
@@ -55,7 +55,10 @@ extension BackendDrivenCheckoutEndpoint: Endpoint {
     var body: Data? {
         switch self {
         case .manifest, .expandClientSession, .pollSetup: return nil
-        case .pay, .setup:
+        case let .setup(paymentMethod: method):
+            let body = SetupBody(flow: .checkout, paymentMethodConfigId: method.id)
+            return try? body.data()
+        case .pay:
             guard let paymentMethod, let options = paymentMethod.merchantOptions else { return nil }
             let body = PayBody(
                 paymentMethodConfigId: paymentMethod.id,
