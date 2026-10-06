@@ -196,7 +196,14 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
           self?.cardPaymentCompletionHandler = nil
           switch result {
           case let .failure(error): oneShot.resume(throwing: error)
-          case .success: oneShot.resume(throwing: PrimerError.unknown(message: "A card save created a payment"))
+          // Keeps the payment id, so the merchant can find the payment the save created.
+          case let .success(payment):
+            oneShot.resume(throwing: PaymentFailure(
+              error: .unknown(message: "A card save created a payment"),
+              checkoutData: PrimerCheckoutData(payment: PrimerCheckoutDataPayment(
+                id: payment.paymentId, orderId: nil, paymentFailureReason: nil, status: "SUCCESS"
+              ))
+            ))
           }
         }
       )

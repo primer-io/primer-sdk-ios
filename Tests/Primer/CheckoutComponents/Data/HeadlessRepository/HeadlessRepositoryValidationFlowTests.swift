@@ -300,7 +300,7 @@ final class ClientSessionUpdateBeforePaymentTests: XCTestCase {
         XCTAssertEqual(token, PrimerPaymentMethodToken(token: "multi_use_token", paymentMethodType: "PAYMENT_CARD"))
     }
 
-    func test_vaultCard_whenAPaymentCompletes_throwsInsteadOfHanging() async {
+    func test_vaultCard_whenAPaymentCompletes_throwsWithThePaymentId() async {
         defer { PrimerInternal.shared.intent = nil }
         submitting { [self] in
             completionHandler?.primerHeadlessUniversalCheckoutDidCompleteCheckoutWithData(
@@ -314,7 +314,9 @@ final class ClientSessionUpdateBeforePaymentTests: XCTestCase {
             _ = try await vaultCard()
             XCTFail("Expected the save to fail")
         } catch {
-            guard case .unknown? = error as? PrimerError else { return XCTFail("Expected .unknown, got \(error)") }
+            let failure = PaymentFailure(unwrapping: error)
+            guard case .unknown = failure.error else { return XCTFail("Expected .unknown, got \(failure.error)") }
+            XCTAssertEqual(failure.checkoutData?.payment?.id, "pay-1")
         }
     }
 
