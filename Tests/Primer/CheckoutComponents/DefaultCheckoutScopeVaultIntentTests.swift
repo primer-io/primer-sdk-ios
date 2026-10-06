@@ -112,6 +112,25 @@ final class DefaultCheckoutScopeVaultIntentTests: XCTestCase {
         XCTAssertEqual(sut.navigationState, .vaulted(token))
     }
 
+    func test_vault_ignoresASelectedMethodThatCannotBeSaved() async throws {
+        let sut = try await makeSut(paymentMethods: [cardMethod, payPalMethod])
+        _ = await settledState(of: sut)
+        let navigationBefore = sut.navigationState
+
+        sut.handlePaymentMethodSelection(InternalPaymentMethod(id: "paypal", type: "PAYPAL", name: "PayPal"))
+
+        XCTAssertEqual(sut.navigationState, navigationBefore)
+    }
+
+    func test_vault_startsAnOfferedMethod() async throws {
+        let sut = try await makeSut(paymentMethods: [cardMethod, payPalMethod])
+        _ = await settledState(of: sut)
+
+        sut.handlePaymentMethodSelection(InternalPaymentMethod(id: "card", type: "PAYMENT_CARD", name: "Card"))
+
+        XCTAssertEqual(sut.navigationState, .paymentMethod("PAYMENT_CARD"))
+    }
+
     // MARK: - Helpers
 
     private var cardMethod: PrimerPaymentMethod { Mocks.PaymentMethods.paymentCardPaymentMethod }

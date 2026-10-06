@@ -602,6 +602,10 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
   }
 
   func handlePaymentMethodSelection(_ method: InternalPaymentMethod) {
+    // Every registered method keeps a scope, and most of them pay, so a save starts only an offered one.
+    guard intent != .vault || availablePaymentMethods.contains(where: { $0.type == method.type }) else {
+      return logger.warn(message: "\(method.type) cannot be saved under the vault intent, ignoring the selection")
+    }
     selectedPaymentMethodName = method.name
 
     if let scope = paymentMethodScopeCache[method.type] {
