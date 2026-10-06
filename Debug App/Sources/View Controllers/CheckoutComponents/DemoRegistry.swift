@@ -48,6 +48,7 @@ enum DemoRegistry {
         (VaultManagementDemo.metadata, { AnyView(VaultManagementDemo(configuration: $0)) }),
         (VaultedPaymentMethodsDemo.metadata, { AnyView(VaultedPaymentMethodsDemo(configuration: $0)) }),
         (VaultModeInlineDemo.metadata, { AnyView(VaultModeInlineDemo(configuration: $0)) }),
+        (MixedIntentsDemo.metadata, { AnyView(MixedIntentsDemo(configuration: $0)) }),
         (DynamicVaultDemo.metadata, { AnyView(DynamicVaultDemo(configuration: $0)) }),
         // Navigation & flows
         (MerchantNavigationDemo.metadata, { AnyView(MerchantNavigationDemo(configuration: $0)) }),

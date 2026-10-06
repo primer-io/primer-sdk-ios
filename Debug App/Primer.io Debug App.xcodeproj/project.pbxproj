@@ -22,6 +22,7 @@
 		04F323662BD40A2300F5927C /* MerchantNewLineItemViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ED746F8924E70AD868BC0F4 /* MerchantNewLineItemViewController.swift */; };
 		083003072FB6B30EDBAB67D8 /* AccountFundingDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDDFFCC6D5DEBAE07EEA733D /* AccountFundingDemo.swift */; };
 		0BB8BB3F9A6AC28A0C107DC8 /* UIStackViewExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93F15C1E46C70C3D73B50F31 /* UIStackViewExtensions.swift */; };
+		112A315D26EB54DAE5B8FE93 /* MixedIntentsDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4848E51C8DA110E59A2707FF /* MixedIntentsDemo.swift */; };
 		135E5BFD51371FABB5FF35D3 /* MerchantHeadlessCheckoutAvailablePaymentMethodsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72E691B9A6A8EBB9F6A6B266 /* MerchantHeadlessCheckoutAvailablePaymentMethodsViewController.swift */; };
 		14EE32F4821BD1F19F75227F /* MerchantHeadlessCheckoutRawRetailDataViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C353D84EABA4990DAB4DD28 /* MerchantHeadlessCheckoutRawRetailDataViewController.swift */; };
 		15569B2278CC8663753C5A8B /* PrefillCardholderNameDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2170C5E5BB7F4AF96A1D0981 /* PrefillCardholderNameDemo.swift */; };
@@ -177,6 +178,7 @@
 		3E5ADFE02C37750D49E97575 /* VaultModeInlineDemo.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VaultModeInlineDemo.swift; sourceTree = "<group>"; };
 		404E173A513B986A36F835F7 /* MerchantHeadlessCheckoutRawPhoneNumberDataViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchantHeadlessCheckoutRawPhoneNumberDataViewController.swift; sourceTree = "<group>"; };
 		483D2036DE3F89CA2C244C4F /* Debug App Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Debug App Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		4848E51C8DA110E59A2707FF /* MixedIntentsDemo.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MixedIntentsDemo.swift; sourceTree = "<group>"; };
 		4ACFB17A73AB7240BED98585 /* ExampleApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ExampleApp.entitlements; sourceTree = "<group>"; };
 		4C353D84EABA4990DAB4DD28 /* MerchantHeadlessCheckoutRawRetailDataViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchantHeadlessCheckoutRawRetailDataViewController.swift; sourceTree = "<group>"; };
 		4E79C93EA805E87E1137A513 /* PaymentMethodCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentMethodCell.swift; sourceTree = "<group>"; };
@@ -546,6 +548,7 @@
 				65D5BE730AB25FA05274B204 /* AccountFundingComponents.swift */,
 				5E065909BA2A6B57812AE380 /* AccountFundingAmountScreen.swift */,
 				6BDAFB7BE70BEE47FC59B6D7 /* ExpressCheckoutShippingDemo.swift */,
+				4848E51C8DA110E59A2707FF /* MixedIntentsDemo.swift */,
 			);
 			path = Demos;
 			sourceTree = "<group>";
@@ -965,6 +968,7 @@
 				CC337D02E26B9CDDBBEA6328 /* AccountFundingComponents.swift in Sources */,
 				C24964EF6F0104C1F3E9C37A /* AccountFundingAmountScreen.swift in Sources */,
 				5E0C814A879A6C7005405FE7 /* ExpressCheckoutShippingDemo.swift in Sources */,
+				112A315D26EB54DAE5B8FE93 /* MixedIntentsDemo.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
