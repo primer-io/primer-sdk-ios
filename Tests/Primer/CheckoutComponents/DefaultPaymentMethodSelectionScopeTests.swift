@@ -395,6 +395,24 @@ final class DefaultPaymentMethodSelectionScopeTests: XCTestCase {
         XCTAssertFalse(sut.currentState.isVaultPaymentLoading)
     }
 
+    func test_payWithVaultedPaymentMethod_underTheVaultIntent_neverPays() async throws {
+        // Given
+        mockCheckoutScope = try await ContainerTestHelpers.createSettledCheckoutScope(intent: .vault)
+        sut = makeSut()
+        let method = makeVaultedPaymentMethod()
+        mockCheckoutScope.setVaultedPaymentMethods([method])
+        mockCheckoutScope.setSelectedVaultedPaymentMethod(method)
+        sut.syncSelectedVaultedPaymentMethod()
+
+        // When
+        await sut.payWithVaultedPaymentMethod()
+
+        // Then
+        let hasSubmitted = await mockAnalytics.hasTracked(.paymentSubmitted)
+        XCTAssertFalse(hasSubmitted)
+        XCTAssertFalse(sut.currentState.isVaultPaymentLoading)
+    }
+
     func test_payWithVaultedPaymentMethod_paymentFailureWithCheckoutData_reachesCheckoutScope() async throws {
         // Given
         let checkoutData = PrimerCheckoutData(

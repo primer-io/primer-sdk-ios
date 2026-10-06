@@ -246,6 +246,9 @@ final class DefaultPaymentMethodSelectionScope: PaymentMethodSelectionScopeInter
     vaultedMethod: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod,
     additionalData: PrimerVaultedPaymentMethodAdditionalData?
   ) async {
+    guard checkoutScope?.intent != .vault else {
+      return logger.warn(message: "[Vault] A saved payment method cannot pay under the vault intent, ignoring the submit")
+    }
     // A merchant's own pay button need not disable itself, so guard against a double tap here.
     guard !internalState.isVaultPaymentLoading else {
       return logger.warn(message: "[Vault] A payment is already in flight, ignoring the repeat submit")
