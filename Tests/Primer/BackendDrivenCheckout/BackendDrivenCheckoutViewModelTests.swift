@@ -227,6 +227,10 @@ private final class MockBDCInstructionProvider: ClientInstructionProvider {
     init(_ instructions: [ClientInstruction]) { self.instructions = instructions }
     
     func fetchPayInstruction() async throws -> ClientInstruction { try next() }
+
+    func fetchSetupFlow() async throws -> SetupFlow {
+        SetupFlow(schema: .object([:]), parameters: .object([:]))
+    }
     func fetchNextInstruction() async throws -> ClientInstruction { try next() }
     
     private func next() throws -> ClientInstruction {

@@ -8,9 +8,8 @@ import Foundation
 @_spi(PrimerInternal) import PrimerBDCCore
 
 extension BDCEngineProvider {
-    static func warmUpIfNeeded() {
-        let paymentMethods = PrimerAPIConfigurationModule.apiConfiguration?.paymentMethods
-        guard paymentMethods?.contains(where: \.isBackendDriven) == true else { return }
-        shared.warmUp(manifestProvider: NetworkSignedManifestProvider())
+    static func warmUp(clientToken: String) {
+        let provider = NetworkSignedManifestProvider(token: clientToken.decodedJWTToken)
+        shared.warmUp(manifestProvider: provider)
     }
 }

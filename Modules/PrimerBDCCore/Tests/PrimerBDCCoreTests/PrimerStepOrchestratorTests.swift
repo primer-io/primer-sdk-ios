@@ -168,6 +168,7 @@ private extension PrimerStepOrchestratorTests {
         SDKContext(
             sdk: SDK(type: "IOS_NATIVE", version: "1.0", integrationType: "DROP_IN", paymentHandling: "AUTO"),
             device: SDKDevice(
+                platform: "IOS",    
                 type: nil,
                 make: "Apple",
                 model: "iPhone",

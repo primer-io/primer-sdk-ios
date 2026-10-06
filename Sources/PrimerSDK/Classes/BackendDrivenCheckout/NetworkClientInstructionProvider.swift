@@ -1,7 +1,7 @@
 //
 //  NetworkClientInstructionProvider.swift
 //
-//  Copyright © 2026 Primer API Ltd. All rights reserved.
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 @_spi(PrimerInternal) import PrimerBDCCore
@@ -17,6 +17,11 @@ struct NetworkClientInstructionProvider: ClientInstructionProvider {
         return response.clientInstruction.toClientInstruction(response: response)
     }
 
+    func fetchSetupFlow() async throws -> SetupFlow {
+        let response: ClientInstructionSetupResponse = try await request(.setup(paymentMethod: paymentMethod))
+        return SetupFlow(schema: response.schema, parameters: response.parameters)
+    }
+    
     func fetchNextInstruction() async throws -> ClientInstruction {
         let response: ClientSessionInstructionResponse = try await request(.expandClientSession)
         return response.clientInstruction.toClientInstruction(response: response)
