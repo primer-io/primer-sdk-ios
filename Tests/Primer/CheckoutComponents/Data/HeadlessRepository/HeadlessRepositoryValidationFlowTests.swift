@@ -284,6 +284,74 @@ final class ClientSessionUpdateBeforePaymentTests: XCTestCase {
         await fulfillment(of: [submitExpectation], timeout: 5.0)
         task.cancel()
     }
+
+    func test_vaultCard_afterTheIntentWasReset_savesUnderTheVaultIntent() async throws {
+        PrimerInternal.shared.intent = .checkout
+        defer { PrimerInternal.shared.intent = nil }
+        var intentAtSubmit: PrimerSessionIntent?
+        submitting { [self] in
+            intentAtSubmit = PrimerInternal.shared.intent
+            completionHandler?.primerHeadlessUniversalCheckoutDidTokenizePaymentMethod?(makeTokenData()) { _ in }
+        }
+
+        let token = try await vaultCard()
+
+        XCTAssertEqual(intentAtSubmit, .vault)
+        XCTAssertEqual(token, PrimerPaymentMethodToken(token: "multi_use_token", paymentMethodType: "PAYMENT_CARD"))
+    }
+
+    func test_vaultCard_whenAPaymentCompletes_throwsInsteadOfHanging() async {
+        defer { PrimerInternal.shared.intent = nil }
+        submitting { [self] in
+            completionHandler?.primerHeadlessUniversalCheckoutDidCompleteCheckoutWithData(
+                PrimerCheckoutData(
+                    payment: PrimerCheckoutDataPayment(id: "pay-1", orderId: "order-1", paymentFailureReason: nil, status: "SUCCESS")
+                )
+            )
+        }
+
+        do {
+            _ = try await vaultCard()
+            XCTFail("Expected the save to fail")
+        } catch {
+            guard case .unknown? = error as? PrimerError else { return XCTFail("Expected .unknown, got \(error)") }
+        }
+    }
+
+    private var completionHandler: PrimerHeadlessUniversalCheckoutDelegate? {
+        PrimerHeadlessUniversalCheckout.current.delegate
+    }
+
+    private func submitting(_ onSubmit: @escaping @MainActor () -> Void) {
+        mockRawDataManagerFactory.createMockHandler = { _, delegate in
+            let mock = MockRawDataManager()
+            mock.delegate = delegate
+            mock.autoTriggerValidation = true
+            mock.isDataValid = true
+            mock.onSubmit = { Task { @MainActor in onSubmit() } }
+            return mock
+        }
+    }
+
+    private func vaultCard() async throws -> PrimerPaymentMethodToken {
+        try await sut.vaultCard(
+            cardNumber: "4242424242424242",
+            cvv: "123",
+            expiryMonth: "12",
+            expiryYear: "25",
+            cardholderName: "Test",
+            selectedNetwork: .visa
+        )
+    }
+
+    private func makeTokenData() -> PrimerPaymentMethodTokenData {
+        PrimerPaymentMethodTokenData(
+            analyticsId: "test", id: "test", isVaulted: false, isAlreadyVaulted: false,
+            paymentInstrumentType: .paymentCard, paymentMethodType: "PAYMENT_CARD",
+            paymentInstrumentData: nil, threeDSecureAuthentication: nil,
+            token: "multi_use_token", tokenType: .multiUse, vaultData: nil
+        )
+    }
 }
 
 // MARK: - Network Surcharge Dict Format

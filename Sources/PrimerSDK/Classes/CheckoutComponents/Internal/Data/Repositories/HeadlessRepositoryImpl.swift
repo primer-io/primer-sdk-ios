@@ -180,6 +180,8 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
       cardholderName: cardholderName,
       selectedNetwork: selectedNetwork
     )
+    // Building a VaultManager resets the shared intent, which picks the token type and the stop.
+    PrimerInternal.shared.intent = .vault
     return try await submitCard(cardData, selectedNetwork: selectedNetwork) { oneShot in
       PaymentCompletionHandler(
         repository: self,
@@ -192,7 +194,10 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
         },
         completion: { [weak self] result in
           self?.cardPaymentCompletionHandler = nil
-          if case let .failure(error) = result { oneShot.resume(throwing: error) }
+          switch result {
+          case let .failure(error): oneShot.resume(throwing: error)
+          case .success: oneShot.resume(throwing: PrimerError.unknown(message: "A card save created a payment"))
+          }
         }
       )
     }
