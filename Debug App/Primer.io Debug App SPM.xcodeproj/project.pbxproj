@@ -25,6 +25,7 @@
 		8723ADE72B8E0FAB00A5FE23 /* MerchantHeadlessCheckoutKlarnaViewController+Klarna.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8723ADE22B8E0FAB00A5FE23 /* MerchantHeadlessCheckoutKlarnaViewController+Klarna.swift */; };
 		8723ADE82B8E0FAB00A5FE23 /* MerchantHeadlessCheckoutKlarnaViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8723ADE32B8E0FAB00A5FE23 /* MerchantHeadlessCheckoutKlarnaViewController.swift */; };
 		87BD7B802C2350B900BE70E8 /* PrimerStripeSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 87BD7B7F2C2350B900BE70E8 /* PrimerStripeSDK */; };
+		A7C561392EF2F08100689089 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7C561382EF2F08100689089 /* SceneDelegate.swift */; };
 		BA6BF5912E78581C003D8B3D /* Collection+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA6BF5902E78581A003D8B3D /* Collection+Extensions.swift */; };
 		E11F475C2B06C5A40091C31F /* MerchantHeadlessCheckoutBankViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F47582B06C5A40091C31F /* MerchantHeadlessCheckoutBankViewController.swift */; };
 		E11F475D2B06C5A40091C31F /* BanksListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F47592B06C5A40091C31F /* BanksListView.swift */; };
@@ -131,6 +132,7 @@
 		9874F439DA3EA5854A454687 /* MerchantDropInUIViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchantDropInUIViewController.swift; sourceTree = "<group>"; };
 		A1604A656AF654D7422A2A5E /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Main.strings; sourceTree = "<group>"; };
 		A6AEF11B151368BF993C3EA9 /* TestScenario.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestScenario.swift; sourceTree = "<group>"; };
+		A7C561382EF2F08100689089 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		B18D7E7738BF86467B0F1465 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		B1FD8065D40A2D691F643F3B /* UIViewController+API.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+API.swift"; sourceTree = "<group>"; };
 		B866FF13033A5CB8B4C3388E /* MerchantHeadlessCheckoutRawDataViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchantHeadlessCheckoutRawDataViewController.swift; sourceTree = "<group>"; };
@@ -277,6 +279,7 @@
 		5E99BB590FD6521F2D5403BB /* Sources */ = {
 			isa = PBXGroup;
 			children = (
+				A7C561382EF2F08100689089 /* SceneDelegate.swift */,
 				0442C4052B7CE1E900EAD8EE /* Utilities */,
 				553A7EDE72B8249F55A0E6B9 /* Extension */,
 				D9AC6F54A87D432982864A63 /* Model */,
@@ -507,6 +510,7 @@
 				F00C65FB2ACC67FA00187028 /* String+Extensions.swift in Sources */,
 				049A055C2B4BF044002CEEBA /* MerchantHeadlessVaultManagerViewController.swift in Sources */,
 				F00C65FC2ACC67FA00187028 /* UIStackViewExtensions.swift in Sources */,
+				A7C561392EF2F08100689089 /* SceneDelegate.swift in Sources */,
 				F00C65FD2ACC67FA00187028 /* UIViewController+API.swift in Sources */,
 				043C7FA22C49749E0018929E /* TestHelper.swift in Sources */,
 				F00C65FE2ACC67FA00187028 /* ViewController+Primer.swift in Sources */,
@@ -639,7 +643,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				VALIDATE_PRODUCT = YES;
@@ -657,7 +661,7 @@
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = N8UN9TR5DY;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -690,7 +694,7 @@
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = N8UN9TR5DY;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -764,7 +768,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
