@@ -46,6 +46,36 @@ final class PrimerStepOrchestratorTests: XCTestCase {
         try await assertActionDispatches(actionType: "http.request")
     }
 
+    func testRendersTheTopLayerOfTheRenderStack() async throws {
+        let engine = MockBDCEngine()
+        let resolver = MockStepResolver()
+        let registry = PrimerStepResolverRegistry()
+        registry.register(resolver, for: "ui.render")
+        engine.startResult = [
+            "newState": [:],
+            "renderStack": [
+                ["stepId": "base", "presentation": "fullscreen", "processedUI": ["type": "Text"]],
+                ["stepId": "top", "presentation": "sheet", "processedUI": ["type": "Column"]],
+            ]
+        ]
+
+        let sut = PrimerStepOrchestrator(engine: engine, context: stubContext, registry: registry)
+        try await sut.start(rawSchema: "{}", initialState: .object([:]))
+
+        XCTAssertEqual(resolver.resolvedData, [.object(["type": .string("Column")])])
+    }
+
+    func testRenderStackWithoutARendererDoesNotFailTheStep() async throws {
+        let engine = MockBDCEngine()
+        engine.startResult = [
+            "newState": [:],
+            "renderStack": [["stepId": "top", "presentation": "fullscreen", "processedUI": ["type": "Text"]]]
+        ]
+
+        let sut = PrimerStepOrchestrator(engine: engine, context: stubContext, registry: PrimerStepResolverRegistry())
+        try await sut.start(rawSchema: "{}", initialState: .object([:]))
+    }
+
     func testNoResolverSendsUnsupported() async throws {
         let engine = MockBDCEngine()
         engine.startResult = action(type: "http.request")
