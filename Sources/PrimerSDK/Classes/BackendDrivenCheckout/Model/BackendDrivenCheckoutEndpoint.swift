@@ -22,13 +22,13 @@ extension BackendDrivenCheckoutEndpoint: Endpoint {
     var baseURL: String? {
         switch self {
         case .expandClientSession, .pay, .payWithToken, .setup, .pollSetup: PrimerAPIConfiguration.current?.pciUrl
-        case .manifest: "https://sdk.primer.io/"
+        case .manifest: "https://sdk.dev.primer.io/"
         }
     }
     
     var path: String {
         switch self {
-        case let .manifest(environment):"state-processor/v0/manifests/\(environment.rawValue.lowercased()).json"
+        case .manifest: "state-processor/pr-24/manifest.json"
         case .pay, .payWithToken: "client-session/\(PrimerAPIConfigurationModule.clientSessionId):pay"
         case .setup: "client-session/\(PrimerAPIConfigurationModule.clientSessionId)/payment-method-setups"
         case let .pollSetup(setupId):

@@ -278,7 +278,7 @@ extension PrimerAPI {
             return baseURL
         case let .fetchConfiguration(clientToken, _):
             guard let baseURL = clientToken.configurationUrl else { return nil }
-            return baseURL
+            return "http://localhost:8085/client-sdk/configuration"
         case let .poll(_, url):
             return url
         case let .sendAnalyticsEvents(_, url, _),
