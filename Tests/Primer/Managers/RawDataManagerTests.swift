@@ -142,14 +142,18 @@ final class RawDataManagerTests: XCTestCase {
     }
 
     func testVaultIntent_inCheckoutComponents_stopsAfterTokenizationAndHandsOverTheToken() throws {
-        PrimerInternal.shared.sdkIntegrationType = .checkoutComponents
+        PrimerInternal.shared.sdkIntegrationProduct = .checkoutComponents
         PrimerInternal.shared.intent = .vault
         defer {
-            PrimerInternal.shared.sdkIntegrationType = nil
+            PrimerInternal.shared.sdkIntegrationProduct = nil
             PrimerInternal.shared.intent = nil
         }
 
-        tokenizationService.onTokenize = { _ in .success(self.tokenizationResponseBody) }
+        tokenizationService.onTokenize = { requestBody in
+            XCTAssertEqual(requestBody.tokenType, .multiUse)
+            XCTAssertEqual(requestBody.paymentFlow, .vault)
+            return .success(self.tokenizationResponseBody)
+        }
 
         let expectNoPayment = expectation(description: "No payment created")
         expectNoPayment.isInverted = true
@@ -182,6 +186,40 @@ final class RawDataManagerTests: XCTestCase {
         sut.submit()
 
         wait(for: [expectToken, expectNoPayment, expectNoCompletion], timeout: 2.0)
+    }
+
+    func testVaultIntent_leftOverInHeadless_stillCreatesThePayment() throws {
+        PrimerInternal.shared.sdkIntegrationProduct = .headless
+        PrimerInternal.shared.intent = .vault
+        defer {
+            PrimerInternal.shared.sdkIntegrationProduct = nil
+            PrimerInternal.shared.intent = nil
+        }
+
+        tokenizationService.onTokenize = { _ in .success(self.tokenizationResponseBody) }
+
+        let expectCreatePayment = expectation(description: "Payment created")
+        createResumePaymentService.onCreatePayment = { _ in
+            expectCreatePayment.fulfill()
+            return self.paymentResponseBody
+        }
+
+        let expectDidCompleteCheckout = expectation(description: "Headless checkout completed")
+        headlessCheckoutDelegate.onDidCompleteCheckoutWithData = { _ in expectDidCompleteCheckout.fulfill() }
+        headlessCheckoutDelegate.onDidFail = { error in
+            XCTFail("Failed with error: \(error.localizedDescription)")
+        }
+
+        sut.rawData = PrimerCardData(
+            cardNumber: "4111 1111 1111 1111",
+            expiryDate: "03/2030",
+            cvv: "123",
+            cardholderName: "John Appleseed"
+        )
+
+        sut.submit()
+
+        wait(for: [expectCreatePayment, expectDidCompleteCheckout], timeout: 10.0)
     }
 
     func testAbortPaymentFlow() throws {
