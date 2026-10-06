@@ -77,6 +77,23 @@ final class BackendDrivenCheckoutOrchestratorTests: XCTestCase {
         XCTAssertEqual(mock.startCallCount, 1)
     }
 
+    func testExecutePassesParametersAtTheTopLevelOfTheInitialState() async throws {
+        let mock = MockStepOrchestrator()
+        let parameters: CodableValue = .object(["klarna": .object(["clientToken": .string("token")])])
+        try await run(
+            mock: mock,
+            instructions: [
+                .execute(delayMilliseconds: 0, schema: .object([:]), parameters: parameters, currentAttempt: nil),
+                .end(outcome: .complete, payment: nil),
+            ]
+        )
+
+        guard case let .object(state)? = mock.startedInitialStates.first else { return XCTFail("Expected an object") }
+        XCTAssertEqual(state["klarna"], .object(["clientToken": .string("token")]))
+        XCTAssertNotNil(state["sdk"])
+        XCTAssertNil(state["params"])
+    }
+
     func testExecuteErrorPropagates() async {
         let mock = MockStepOrchestrator()
         mock.startError = Error.failed

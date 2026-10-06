@@ -11,9 +11,11 @@ final class MockStepOrchestrator: StepOrchestrating {
     var onURLOpen: (() -> Void)?
     var startCallCount = 0
     var startError: Swift.Error?
+    var startedInitialStates: [CodableValue] = []
 
     func start(rawSchema: String, initialState: CodableValue) async throws {
         startCallCount += 1
+        startedInitialStates.append(initialState)
         if let startError { throw startError }
     }
     
