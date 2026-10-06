@@ -181,6 +181,9 @@ final class DefaultPaymentMethodSelectionScope: PaymentMethodSelectionScopeInter
   // MARK: - Vault Payment
 
   func payWithVaultedPaymentMethod() async {
+    guard checkoutScope?.intent != .vault else {
+      return logger.warn(message: "[Vault] A saved payment method cannot pay under the vault intent, ignoring the submit")
+    }
     guard let vaultedMethod = internalState.selectedVaultedPaymentMethod else {
       logger.warn(message: "[Vault] No vaulted payment method selected")
       return
