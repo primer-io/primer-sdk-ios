@@ -163,7 +163,8 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
 
                 handle(cardMetadata: metadata, forCardState: cardState)
 
-                let binData = buildBinData(from: enrichedNetworks, firstDigits: result.firstDigits, status: .complete)
+                // The metadata's order is the merchant's, whatever order the server sent
+                let binData = buildBinData(from: metadata.detectedCardNetworks.items, firstDigits: result.firstDigits, status: .complete)
                 setCachedBinData(binData, for: binKey(for: cardState.cardNumber))
                 delegate?.primerRawDataManager?(rawDataManager, didReceiveBinData: binData)
             } catch {
