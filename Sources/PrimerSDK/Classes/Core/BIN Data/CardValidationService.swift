@@ -163,7 +163,8 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
 
                 handle(cardMetadata: metadata, forCardState: cardState)
 
-                let binData = buildBinData(from: enrichedNetworks, firstDigits: result.firstDigits, status: .complete)
+                // The metadata's order is the merchant's, whatever order the server sent
+                let binData = buildBinData(from: metadata.detectedCardNetworks.items, firstDigits: result.firstDigits, status: .complete)
                 setCachedBinData(binData, for: binKey(for: cardState.cardNumber))
                 delegate?.primerRawDataManager?(rawDataManager, didReceiveBinData: binData)
             } catch {
@@ -236,21 +237,14 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
     }
 
     private func buildBinData(from networks: [PrimerCardNetwork], firstDigits: String?, status: PrimerBinDataStatus) -> PrimerBinData {
-        let (allowed, others) = orderedByMerchant(networks)
+        let preferred = networks.first(where: \.allowed)
+        let alternatives = networks.filter { $0 !== preferred }
         return PrimerBinData(
-            preferred: allowed.first,
-            alternatives: Array(allowed.dropFirst()) + others,
+            preferred: preferred,
+            alternatives: alternatives,
             status: status,
             firstDigits: firstDigits
         )
-    }
-
-    /// Splits networks into the allowed ones, in the merchant's `orderedAllowedCardNetworks` order, and the rest,
-    /// in the order received. Both delegate events order networks this way, whatever order the server used.
-    private func orderedByMerchant(_ networks: [PrimerCardNetwork]) -> (allowed: [PrimerCardNetwork], others: [PrimerCardNetwork]) {
-        let allowed = allowedCardNetworks.compactMap { network in networks.first { $0.network == network } }
-        let others = networks.filter { !allowedCardNetworks.contains($0.network) }
-        return (allowed, others)
     }
 
     // MARK: Model generation
@@ -272,9 +266,11 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
         let detected: [PrimerCardNetwork]
 
         if let enrichedNetworks {
-            let (allowed, others) = orderedByMerchant(enrichedNetworks)
-            selectable = allowed
-            detected = allowed + others
+            selectable = allowedCardNetworks.compactMap { allowed in
+                enrichedNetworks.first { $0.network == allowed }
+            }
+            let unallowed = enrichedNetworks.filter { !allowedCardNetworks.contains($0.network) }
+            detected = selectable + unallowed
         } else {
             selectable = allowedCardNetworks
                 .filter(networks.contains)

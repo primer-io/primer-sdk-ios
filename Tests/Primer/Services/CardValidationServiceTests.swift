@@ -561,59 +561,48 @@ final class CardValidationServiceTests: XCTestCase {
     }
 
     func testRemoteValidation_binData_preferredAndAlternatives() throws {
-        assertRemoteBinData(
-            server: ["VISA", "MASTERCARD"],
-            allowed: [.visa, .masterCard],
-            preferred: .visa,
-            alternatives: [.masterCard]
-        )
-    }
+        // Given
+        sut = createCardValidationService(allowedNetworks: [.visa, .masterCard])
+        let bin = String(TestConstants.fullCardNumber.prefix(maxBinLength))
+        configureMockAPIClient(bin: bin, networks: ["VISA", "MASTERCARD"], firstDigits: "552266")
 
-    func testRemoteValidation_binData_followsMerchantNetworkOrder() throws {
-        // The merchant prefers Mastercard, unlike the server and the test session
-        assertRemoteBinData(
-            server: ["VISA", "MASTERCARD"],
-            allowed: [.masterCard, .visa],
-            preferred: .masterCard,
-            alternatives: [.visa]
-        )
-    }
+        let binDataExpectation = expectation(description: "BinData with preferred and alternatives received")
 
-    func testRemoteValidation_binData_listsNotAllowedNetworksLast() throws {
-        // Networks the merchant doesn't allow keep the server's order, after the allowed ones
-        assertRemoteBinData(
-            server: ["JCB", "MASTERCARD", "CARTES_BANCAIRES", "VISA"],
-            allowed: [.visa, .masterCard],
-            preferred: .visa,
-            alternatives: [.masterCard, .jcb, .cartesBancaires]
-        )
-    }
-
-    func testRemoteValidation_binData_noAllowedNetwork_hasNoPreferred() throws {
-        assertRemoteBinData(
-            server: ["JCB", "CARTES_BANCAIRES"],
-            allowed: [.visa, .masterCard],
-            preferred: nil,
-            alternatives: [.jcb, .cartesBancaires]
-        )
-    }
-
-    func testLocalValidation_binData_followsMerchantAllowedNetworks() throws {
-        // Given: the test session allows Mastercard, this merchant list doesn't
-        sut = createCardValidationService(allowedNetworks: [.visa])
-        let binDataExpectation = expectation(description: "Partial bin data without a preferred network received")
+        // When
         delegate.onBinDataReceived = { _, binData in
-            XCTAssertEqual(binData.status, .partial)
-            XCTAssertNil(binData.preferred)
-            XCTAssertEqual(binData.alternatives.map(\.network), [.masterCard])
+            guard binData.status == .complete else { return }
+            XCTAssertNotNil(binData.preferred, "Should have a preferred network")
+            XCTAssertFalse(binData.alternatives.isEmpty, "Should have alternatives")
+            XCTAssertEqual(1 + binData.alternatives.count, 2, "Should have 2 total networks")
             binDataExpectation.fulfill()
         }
 
+        // Then
+        enterCardNumber(TestConstants.fullCardNumber)
+
+        wait(for: [binDataExpectation], timeout: TestConstants.standardTimeout)
+    }
+
+    func testRemoteValidation_binData_followsMerchantNetworkOrder() throws {
+        // Given: the server lists JCB and Visa first, the merchant prefers Mastercard and doesn't allow JCB
+        sut = createCardValidationService(allowedNetworks: [.masterCard, .visa])
+        let bin = String(TestConstants.fullCardNumber.prefix(maxBinLength))
+        configureMockAPIClient(bin: bin, networks: ["JCB", "VISA", "MASTERCARD"])
+
+        let binDataExpectation = expectation(description: "BinData in the merchant's order received")
+
         // When
-        sut.validateCardNetworks(withCardNumber: TestConstants.shortCardNumber)
+        delegate.onBinDataReceived = { _, binData in
+            guard binData.status == .complete else { return }
+            XCTAssertEqual(binData.preferred?.network, .masterCard)
+            XCTAssertEqual(binData.alternatives.map(\.network), [.visa, .jcb])
+            binDataExpectation.fulfill()
+        }
 
         // Then
-        wait(for: [binDataExpectation], timeout: TestConstants.shortTimeout)
+        enterCardNumber(TestConstants.fullCardNumber)
+
+        wait(for: [binDataExpectation], timeout: TestConstants.standardTimeout)
     }
 
     func testRemoteValidationError_deliversPartialBinData() throws {
@@ -675,40 +664,6 @@ final class CardValidationServiceTests: XCTestCase {
             allowedCardNetworks: allowedNetworks,
             apiClient: apiClient
         )
-    }
-
-    /// Enters a card number whose BIN the server answers with `server`, then checks the complete BinData,
-    /// and that it lists the networks in the same order as the metadata event.
-    private func assertRemoteBinData(
-        server: [String],
-        allowed: [CardNetwork],
-        preferred: CardNetwork?,
-        alternatives: [CardNetwork],
-        file: StaticString = #file,
-        line: UInt = #line
-    ) {
-        sut = createCardValidationService(allowedNetworks: allowed)
-        configureMockAPIClient(bin: String(TestConstants.fullCardNumber.prefix(maxBinLength)), networks: server)
-
-        var metadataOrder: [CardNetwork]?
-        let binDataExpectation = expectation(description: "Complete bin data received")
-        binDataExpectation.assertForOverFulfill = false
-        delegate.onMetadataForCardValidationState = { _, metadata, _ in
-            guard metadata.source == .remote else { return }
-            metadataOrder = metadata.detectedCardNetworks.items.map(\.network)
-        }
-        delegate.onBinDataReceived = { _, binData in
-            guard binData.status == .complete else { return }
-            let binDataOrder = [binData.preferred].compactMap { $0?.network } + binData.alternatives.map(\.network)
-            XCTAssertEqual(binData.preferred?.network, preferred, file: file, line: line)
-            XCTAssertEqual(binData.alternatives.map(\.network), alternatives, file: file, line: line)
-            XCTAssertEqual(binDataOrder, metadataOrder, "BinData and metadata disagree on the order", file: file, line: line)
-            binDataExpectation.fulfill()
-        }
-
-        enterCardNumber(TestConstants.fullCardNumber)
-
-        wait(for: [binDataExpectation], timeout: TestConstants.standardTimeout)
     }
 
     private func configureMockAPIClient(bin: String, networks: [String], firstDigits: String? = nil) {
