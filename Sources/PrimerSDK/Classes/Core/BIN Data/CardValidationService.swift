@@ -236,14 +236,21 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
     }
 
     private func buildBinData(from networks: [PrimerCardNetwork], firstDigits: String?, status: PrimerBinDataStatus) -> PrimerBinData {
-        let preferred = networks.first(where: \.allowed)
-        let alternatives = networks.filter { $0 !== preferred }
+        let (allowed, others) = orderedByMerchant(networks)
         return PrimerBinData(
-            preferred: preferred,
-            alternatives: alternatives,
+            preferred: allowed.first,
+            alternatives: Array(allowed.dropFirst()) + others,
             status: status,
             firstDigits: firstDigits
         )
+    }
+
+    /// Splits networks into the allowed ones, in the merchant's `orderedAllowedCardNetworks` order, and the rest,
+    /// in the order received. Both delegate events order networks this way, whatever order the server used.
+    private func orderedByMerchant(_ networks: [PrimerCardNetwork]) -> (allowed: [PrimerCardNetwork], others: [PrimerCardNetwork]) {
+        let allowed = allowedCardNetworks.compactMap { network in networks.first { $0.network == network } }
+        let others = networks.filter { !allowedCardNetworks.contains($0.network) }
+        return (allowed, others)
     }
 
     // MARK: Model generation
@@ -265,11 +272,9 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
         let detected: [PrimerCardNetwork]
 
         if let enrichedNetworks {
-            selectable = allowedCardNetworks.compactMap { allowed in
-                enrichedNetworks.first { $0.network == allowed }
-            }
-            let unallowed = enrichedNetworks.filter { !allowedCardNetworks.contains($0.network) }
-            detected = selectable + unallowed
+            let (allowed, others) = orderedByMerchant(enrichedNetworks)
+            selectable = allowed
+            detected = allowed + others
         } else {
             selectable = allowedCardNetworks
                 .filter(networks.contains)
