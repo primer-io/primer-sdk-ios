@@ -182,8 +182,8 @@ public enum PrimerCheckoutState: Equatable {
   /// Contains the full payment result with payment ID, status, and other details.
   case success(PaymentResult)
 
-  /// The shopper saved a payment method and no payment was made. Delivered only under the `.vault`
-  /// intent, which never delivers `.success`.
+  /// The shopper saved a payment method and no payment was made. Delivered for a method whose intent
+  /// is `.vault`. A session where every method saves never delivers `.success`.
   case vaulted(PrimerPaymentMethodToken)
 
   /// Checkout has been dismissed by user action or programmatically.

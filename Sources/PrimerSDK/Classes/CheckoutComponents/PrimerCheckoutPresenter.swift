@@ -15,7 +15,7 @@ public protocol PrimerCheckoutPresenterDelegate: AnyObject {
     /// - Parameter result: The payment result containing payment ID, status, and other details
     func primerCheckoutPresenterDidCompleteWithSuccess(_ result: PaymentResult)
 
-    /// Called when the shopper saved a payment method under the `.vault` intent. No payment was made.
+    /// Called when the shopper saved a payment method whose intent is `.vault`. No payment was made.
     /// - Parameter paymentMethodToken: The multi-use token to store on your backend.
     func primerCheckoutPresenterDidVaultPaymentMethod(_ paymentMethodToken: PrimerPaymentMethodToken)
 
