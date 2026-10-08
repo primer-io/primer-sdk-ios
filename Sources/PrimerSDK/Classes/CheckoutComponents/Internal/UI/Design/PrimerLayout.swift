@@ -163,8 +163,6 @@ enum PrimerCardNetworkSelector {
   static let badgeHeight: CGFloat = 20
   static let buttonFrameWidth: CGFloat = 34
   static let buttonFrameHeight: CGFloat = 26
-  static let buttonTotalWidth: CGFloat = 36
-  static let selectedBorderHeight: CGFloat = 28
   static let chevronSize: CGFloat = 20
   static let chevronFontSize: CGFloat = 10
 }
