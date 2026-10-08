@@ -116,16 +116,16 @@ struct CardholderNameTextField: UIViewRepresentable, LogReporter {
       let currentText = cardholderName
 
       guard let textRange = Range(range, in: currentText) else { return false }
-      let newText = currentText.replacingCharacters(in: textRange, with: string)
 
-      // Validate allowed characters (letters, spaces, apostrophes, hyphens)
-      if !string.isEmpty {
-        let allowedCharacterSet = CharacterSet.letters.union(CharacterSet(charactersIn: " '-"))
-        let characterSet = CharacterSet(charactersIn: string)
-        if !allowedCharacterSet.isSuperset(of: characterSet) {
-          return false
-        }
+      // Paste and AutoFill hand over a whole name, so drop what a name cannot hold instead of all of it.
+      let allowedCharacterSet = CharacterSet.letters.union(CharacterSet(charactersIn: " '-"))
+      let accepted = String(String.UnicodeScalarView(
+        string.replacingOccurrences(of: "\u{2019}", with: "'").unicodeScalars.filter(allowedCharacterSet.contains)
+      ))
+      if !string.isEmpty, accepted.isEmpty {
+        return false
       }
+      let newText = currentText.replacingCharacters(in: textRange, with: accepted)
 
       cardholderName = newText
       scope.updateCardholderName(newText)
