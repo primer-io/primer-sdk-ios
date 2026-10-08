@@ -165,10 +165,7 @@ extension UITextField {
     )
   }
 
-  /// The token-derived colours of a bridged field, reapplied after a colour-scheme change and around a payment lock.
-  ///
-  /// Deliberately narrow: the field's font, border and fill stay, and the Done button is repainted in place,
-  /// because writing those on a live field is what broke the two earlier attempts at this fix.
+  /// Colours only, and the Done button in place: replacing it or writing the font during the update broke the form.
   func repaintPrimerColors(placeholder: String, tokens: DesignTokens?, isEnabled: Bool = true) {
     textColor = UIColor(CheckoutColors.inputText(tokens: tokens, isEnabled: isEnabled))
     tintColor = UIColor(CheckoutColors.borderFocus(tokens: tokens))
@@ -246,12 +243,7 @@ extension UITextField {
   }
 }
 
-/// Holds the token set and lock state a bridged field was last painted with, so `updateUIView`
-/// repaints on a colour-scheme change or when the form locks for a payment, and does nothing on the
-/// keystrokes that make up almost every other call.
-///
-/// Identity, not equality: `DesignTokensManager` decodes a fresh `DesignTokens` per scheme, and the
-/// `UIColor`s built from it never compare equal, so a value check would repaint every time.
+/// Keeps keystrokes from repainting. Compared by identity, because a fresh `DesignTokens` per scheme never compares equal.
 @available(iOS 15.0, *)
 final class PrimerFieldRepainter {
   private var appliedTokens: DesignTokens?
@@ -286,7 +278,7 @@ final class PrimerFieldRepainter {
     }
   }
 
-  /// A scheme change decodes new tokens with the same font and spacing, so only a re-theme moves them.
+  /// A scheme change keeps the font and spacing, so only the first token load and a re-theme move them.
   private static func typographyMoved(from old: DesignTokens?, to new: DesignTokens?) -> Bool {
     PrimerFont.uiFontBodyLarge(tokens: old) != PrimerFont.uiFontBodyLarge(tokens: new)
       || PrimerTextStyle.bodyLarge.letterSpacing(tokens: old) != PrimerTextStyle.bodyLarge.letterSpacing(tokens: new)
