@@ -29,14 +29,14 @@ enum ThemeDemos {
         DemoMetadata(key: key, name: name, description: description, tags: ["THEME"], isCustom: false, category: .themes)
     }
 
+    /// Dark mode reads `darkColors` alone, so the brand is named for both schemes.
     private static func brandTheme(_ hex: UInt32) -> PrimerCheckoutTheme {
-        PrimerCheckoutTheme(
-            colors: ColorOverrides(
-                primerColorBrand: Color(hex: hex),
-                primerColorBorderOutlinedDefault: Color(hex: hex),
-                primerColorBorderOutlinedFocus: Color(hex: hex)
-            )
+        let colors = ColorOverrides(
+            primerColorBrand: Color(hex: hex),
+            primerColorBorderOutlinedDefault: Color(hex: hex),
+            primerColorBorderOutlinedFocus: Color(hex: hex)
         )
+        return PrimerCheckoutTheme(colors: colors, darkColors: colors)
     }
 
     /// Applies the same `TypographyStyle` to every text token — the shape shared by the weight, size,
@@ -53,12 +53,15 @@ enum ThemeDemos {
         )
     }
 
+    private static let customColors = ColorOverrides(
+        primerColorBrand: Color(hex: 0x6B46C1),
+        primerColorBorderOutlinedDefault: Color(hex: 0xD6BCFA),
+        primerColorBorderOutlinedFocus: Color(hex: 0x6B46C1)
+    )
+
     private static let customTheme = PrimerCheckoutTheme(
-        colors: ColorOverrides(
-            primerColorBrand: Color(hex: 0x6B46C1),
-            primerColorBorderOutlinedDefault: Color(hex: 0xD6BCFA),
-            primerColorBorderOutlinedFocus: Color(hex: 0x6B46C1)
-        ),
+        colors: customColors,
+        darkColors: customColors,
         radius: RadiusOverrides(
             primerRadiusXsmall: 8, primerRadiusSmall: 12, primerRadiusMedium: 16,
             primerRadiusLarge: 24, primerRadiusBase: 12
