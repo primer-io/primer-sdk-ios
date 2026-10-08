@@ -147,7 +147,7 @@ extension MyViewController: PrimerCheckoutPresenterDelegate {
         print("Payment ID: \(result.paymentId)")
     }
 
-    func primerCheckoutPresenterDidFailWithError(_ error: PrimerError) {
+    func primerCheckoutPresenterDidFailWithError(_ error: PrimerError, checkoutData: PrimerCheckoutData?) {
         // Handle payment failure
         print("Payment failed: \(error)")
     }
@@ -158,88 +158,45 @@ extension MyViewController: PrimerCheckoutPresenterDelegate {
 }
 ```
 
-### 🎨 Custom UI & Styling
+### 🎨 Theme
 
-Customize the checkout experience using scope-based APIs:
+Visual styling is token-driven via `PrimerCheckoutTheme`:
 
 ```swift
+let theme = PrimerCheckoutTheme(
+    colors: ColorOverrides(primerColorBrand: .purple),
+    radius: RadiusOverrides(primerRadiusBase: 12)
+)
+
 PrimerCheckout(
     clientToken: clientToken,
-    primerSettings: PrimerSettings(),
-    scope: { checkoutScope in
-        // Customize the card form
-        if let cardFormScope: DefaultCardFormScope = checkoutScope.getPaymentMethodScope(for: .paymentCard) {
-
-            // Custom styling for card number field
-            cardFormScope.cardNumberField = { label, styling in
-                AnyView(
-                    cardFormScope.PrimerCardNumberField(
-                        label: "Card Number",
-                        styling: PrimerFieldStyling(
-                            font: .system(.body, design: .monospaced),
-                            backgroundColor: Color.blue.opacity(0.05),
-                            borderColor: .blue,
-                            cornerRadius: 8,
-                            borderWidth: 2
-                        )
-                    )
-                )
-            }
-
-            // Customize container/navigation
-            checkoutScope.container = { content in
-                AnyView(
-                    NavigationView {
-                        content()
-                            .navigationBarTitle("Custom Checkout", displayMode: .inline)
-                    }
-                )
-            }
-        }
-    }
+    primerTheme: theme
 )
 ```
 
-### 📊 State Observation
+### 🧩 Composable Views
 
-Observe checkout state changes using AsyncStream:
+Embed the composable views in your own layout, wire them with `.primerCheckoutSession(_:theme:onCompletion:)`, and replace a section through its slot:
 
 ```swift
-// In your scope customization
-if let cardFormScope: DefaultCardFormScope = checkoutScope.getPaymentMethodScope(for: .paymentCard) {
+struct CheckoutView: View {
+    @StateObject private var session = PrimerCheckoutSession(clientToken: "your_client_token")
 
-    // Observe card form state
-    Task {
-        for await state in cardFormScope.state {
-            print("Form valid: \(state.isValid)")
-            print("Card network: \(state.cardNetwork?.displayName ?? "Unknown")")
-
-            // Access individual field states
-            if let cardNumberState = state.cardNumber {
-                print("Card number valid: \(cardNumberState.isValid)")
-            }
+    var body: some View {
+        ScrollView {
+            PrimerPaymentMethods()
+            PrimerCardForm(submitButton: { session in
+                MyPayButton(isLoading: session.state.isLoading) { session.submit() }
+            })
+        }
+        .primerCheckoutSession(session) { state in
+            // Handle checkout state: .success, .failure, .dismissed
         }
     }
 }
 ```
 
-### 🧩 Scope-Based Customization
-
-CheckoutComponents provides different scopes for granular customization:
-
-- **`PrimerCheckoutScope`**: Main checkout lifecycle, container, and navigation
-- **`PrimerCardFormScope`**: Card form with field-level customization
-- **`PrimerPaymentMethodSelectionScope`**: Payment method selection UI
-
-```swift
-// Example: Complete screen replacement
-if let cardFormScope: DefaultCardFormScope = checkoutScope.getPaymentMethodScope(for: .paymentCard) {
-    cardFormScope.screen = { presentationContext in
-        // Return your completely custom card form screen
-        CustomCardFormView(scope: cardFormScope)
-    }
-}
-```
+The [CheckoutComponents guide](Sources/PrimerSDK/Classes/CheckoutComponents/README.md) lists every slot, building block and theme token.
 
 **Note:** Check the [Detailed iOS Documentation](https://www.notion.so/primerapi/iOS-SDK-ebbf44a733624d17bfd0c3a746f171a2) for complete API reference and advanced customization options.
 
