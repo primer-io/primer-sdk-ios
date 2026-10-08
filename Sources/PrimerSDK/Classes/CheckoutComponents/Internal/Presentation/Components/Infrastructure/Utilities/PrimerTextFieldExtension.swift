@@ -127,6 +127,8 @@ extension UITextField {
     self.placeholder = placeholder
     borderStyle = .none
     backgroundColor = .clear
+    // At large text sizes the placeholder's width would otherwise push the form off screen.
+    setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
 
     // Apply keyboard configuration
     keyboardType = configuration.keyboardType
