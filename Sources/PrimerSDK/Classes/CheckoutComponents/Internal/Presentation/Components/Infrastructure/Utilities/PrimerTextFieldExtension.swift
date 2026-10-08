@@ -145,7 +145,7 @@ extension UITextField {
     font = textFont
     adjustsFontForContentSizeCategory = true
     textColor = UIColor(CheckoutColors.inputText(tokens: tokens))
-    // The caret, like Android's cursor, takes the focused border colour.
+    // The caret takes the focused border colour, so a themed focus ring and caret match.
     tintColor = UIColor(CheckoutColors.borderFocus(tokens: tokens))
     // A UITextField kerns typed text from its default attributes, not from `font`.
     if let letterSpacing = PrimerTextStyle.bodyLarge.letterSpacing(tokens: tokens) {
@@ -165,13 +165,10 @@ extension UITextField {
     )
   }
 
-  /// The token-derived colours a bridged field paints, reapplied after a colour-scheme change and
-  /// when the field locks or unlocks around a payment (locked text takes `textDisabled`): the text,
-  /// the placeholder, the caret and the tint of the Done button.
+  /// The token-derived colours of a bridged field, reapplied after a colour-scheme change and around a payment lock.
   ///
-  /// Deliberately narrow. It does not touch the font, border or fill, and it repaints the existing
-  /// `inputAccessoryView` rather than replacing it: writing those on a live field is what broke the
-  /// two earlier attempts at this fix.
+  /// Deliberately narrow: the field's font, border and fill stay, and the Done button is repainted in place,
+  /// because writing those on a live field is what broke the two earlier attempts at this fix.
   func repaintPrimerColors(placeholder: String, tokens: DesignTokens?, isEnabled: Bool = true) {
     textColor = UIColor(CheckoutColors.inputText(tokens: tokens, isEnabled: isEnabled))
     tintColor = UIColor(CheckoutColors.borderFocus(tokens: tokens))
@@ -187,9 +184,7 @@ extension UITextField {
     }
   }
 
-  /// The font and letter spacing of the typed text, which only a re-theme moves. The repainter calls
-  /// this after the SwiftUI update and only when they changed: writing the font from every update
-  /// invalidated the field's size mid-layout and stopped the card form rendering.
+  /// Run only when the font or spacing moved, after the update: writing the font on every update stopped the form rendering.
   func repaintPrimerTypography(placeholder: String, tokens: DesignTokens?, isEnabled: Bool) {
     font = PrimerFont.uiFontBodyLarge(tokens: tokens)
     if let letterSpacing = PrimerTextStyle.bodyLarge.letterSpacing(tokens: tokens) {
@@ -253,8 +248,7 @@ extension UITextField {
 
 /// Holds the token set and lock state a bridged field was last painted with, so `updateUIView`
 /// repaints on a colour-scheme change or when the form locks for a payment, and does nothing on the
-/// keystrokes that make up almost every other call. A lock also disables the field and ends its edit,
-/// and a re-theme that moves the font or letter spacing rewrites them once the update is over.
+/// keystrokes that make up almost every other call.
 ///
 /// Identity, not equality: `DesignTokensManager` decodes a fresh `DesignTokens` per scheme, and the
 /// `UIColor`s built from it never compare equal, so a value check would repaint every time.
