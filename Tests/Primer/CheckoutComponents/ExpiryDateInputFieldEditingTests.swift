@@ -54,6 +54,33 @@ final class ExpiryDateInputFieldEditingTests: XCTestCase {
         XCTAssertEqual(expiryDate, "12/31")
     }
 
+    /// Password managers and Live Text hand over the year in full.
+    func test_pastedDateWithAFourDigitYear_keepsItsYear() async {
+        await type("12/2031", at: NSRange(location: 0, length: 0))
+
+        XCTAssertEqual(expiryDate, "12/31")
+    }
+
+    func test_pastedDateWithAOneDigitMonth_keepsItsMonth() async {
+        await type("1/31", at: NSRange(location: 0, length: 0))
+
+        XCTAssertEqual(expiryDate, "01/31")
+    }
+
+    func test_pastedMonthAndFullYearWithoutSeparator_keepsBoth() async {
+        await type("122031", at: NSRange(location: 0, length: 0))
+
+        XCTAssertEqual(expiryDate, "12/31")
+    }
+
+    func test_pasteThatIsNotADate_changesNothing() async {
+        expiryDate = "12/30"
+
+        await type("12/3/2031", at: NSRange(location: 0, length: 5))
+
+        XCTAssertEqual(expiryDate, "12/30")
+    }
+
     func test_typingAfterTheSeparator_stillAppends() async {
         expiryDate = "12/3"
 

@@ -123,9 +123,7 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
         return false
       }
 
-      // A pasted "12/30" keeps its digits rather than being refused for the separator.
-      let digits = String(String.UnicodeScalarView(string.unicodeScalars.filter(CharacterSet.decimalDigits.contains)))
-      if !string.isEmpty, digits.isEmpty {
+      guard let digits = Self.expiryDigits(string), string.isEmpty || !digits.isEmpty else {
         return false
       }
 
@@ -147,6 +145,22 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
       }
 
       return false
+    }
+
+    /// A pasted date as MMYY digits, or nil when it is not one. Flattened as-is, "12/2031" and "1/31" became wrong dates.
+    private static func expiryDigits(_ string: String) -> String? {
+      let parts = string.components(separatedBy: CharacterSet.decimalDigits.inverted).filter { !$0.isEmpty }
+      switch parts.count {
+      case 0:
+        return ""
+      case 1:
+        // A month and a full year with nothing between them, as a card scan gives it.
+        return parts[0].count == 6 ? String(parts[0].prefix(2) + parts[0].suffix(2)) : parts[0]
+      case 2 where (1 ... 2).contains(parts[0].count) && [2, 4].contains(parts[1].count):
+        return String(repeating: "0", count: 2 - parts[0].count) + parts[0] + parts[1].suffix(2)
+      default:
+        return nil
+      }
     }
 
     private func processInput(currentText: String, range: NSRange, string: String) -> String {
