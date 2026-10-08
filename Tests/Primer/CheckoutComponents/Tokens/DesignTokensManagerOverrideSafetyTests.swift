@@ -61,6 +61,15 @@ final class DesignTokensManagerOverrideSafetyTests: XCTestCase {
         XCTAssertEqual(tokens.primerTypographyErrorSize, 14, "error still inherits the finite body small size")
     }
 
+    /// The brand is written into the token JSON too, and a NaN component would abort the app there.
+    func test_brandWithNonFiniteComponents_isIgnoredInsteadOfCrashing() async throws {
+        sut.applyTheme(PrimerCheckoutTheme(colors: ColorOverrides(primerColorBrand: Color(red: .nan, green: 0, blue: 0))))
+
+        try await sut.fetchTokens(for: .light)
+
+        XCTAssertNotNil(sut.tokens)
+    }
+
     /// The inline modifier keys a task on the theme, and NaN never equals itself, so the task would restart forever.
     func test_nonFiniteOverrides_leaveTheThemeEqualToItself() {
         let theme = PrimerCheckoutTheme(

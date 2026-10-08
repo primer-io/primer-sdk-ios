@@ -28,8 +28,8 @@ public struct PrimerCheckoutTheme: Equatable {
   public let typography: TypographyOverrides?
   public let width: WidthOverrides?
 
-  /// Creates a new theme configuration with optional overrides. A NaN or infinite number in any
-  /// override is ignored, and the default applies.
+  /// Creates a new theme configuration with optional overrides. A NaN or infinite radius, spacing,
+  /// size, width or typography number is ignored with a warning, and the default applies.
   /// - Parameters:
   ///   - colors: Color token overrides, applied in light mode. Default: nil (uses internal defaults)
   ///   - darkColors: Color token overrides applied in dark mode only. Anything left nil here uses Primer's dark

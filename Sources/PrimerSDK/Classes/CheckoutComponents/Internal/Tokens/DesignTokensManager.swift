@@ -129,7 +129,9 @@ final class DesignTokensManager: ObservableObject {
     var green: CGFloat = 0
     var blue: CGFloat = 0
     var alpha: CGFloat = 0
-    guard UIColor(color).resolvedColor(with: .current).getRed(&red, green: &green, blue: &blue, alpha: &alpha) else {
+    // JSONSerialization aborts the app on a NaN or infinite component, and `try` cannot catch that.
+    guard UIColor(color).resolvedColor(with: .current).getRed(&red, green: &green, blue: &blue, alpha: &alpha),
+          [red, green, blue, alpha].allSatisfy(\.isFinite) else {
       PrimerLogging.shared.logger.error(
         message: "[DesignTokens] Palette override ignored: color has no readable RGB components.")
       return nil
