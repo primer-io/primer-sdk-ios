@@ -159,12 +159,13 @@ extension UITextField {
     )
   }
 
-  /// The two token-derived colours a bridged field paints, reapplied after a colour-scheme change
-  /// and when the field locks or unlocks around a payment (locked text takes `textDisabled`).
+  /// The token-derived colours a bridged field paints, reapplied after a colour-scheme change and
+  /// when the field locks or unlocks around a payment (locked text takes `textDisabled`): the text,
+  /// the placeholder and the tint of the Done button.
   ///
-  /// Deliberately narrow. It does not touch the font, border, fill or `inputAccessoryView`: none of
-  /// those change with the scheme, and writing them on a live field is what broke the two earlier
-  /// attempts at this fix.
+  /// Deliberately narrow. It does not touch the font, border or fill, and it repaints the existing
+  /// `inputAccessoryView` rather than replacing it: writing those on a live field is what broke the
+  /// two earlier attempts at this fix.
   func repaintPrimerColors(placeholder: String, tokens: DesignTokens?, isEnabled: Bool = true) {
     textColor = UIColor(CheckoutColors.inputText(tokens: tokens, isEnabled: isEnabled))
     attributedPlaceholder = NSAttributedString(
@@ -174,6 +175,9 @@ extension UITextField {
         tokens: tokens
       )
     )
+    if let toolbar = inputAccessoryView as? UIToolbar {
+      Self.paintDoneAccessory(toolbar, tokens: tokens)
+    }
   }
 
   private static func primerPlaceholderAttributes(
@@ -200,8 +204,6 @@ extension UITextField {
       frame: CGRect(x: 0, y: 0, width: 0, height: PrimerComponentHeight.keyboardAccessory)
     )
     toolbar.barStyle = .default
-    let tint = UIColor(CheckoutColors.buttonPrimary(tokens: tokens))
-    toolbar.tintColor = tint
     toolbar.sizeToFit()
 
     // Not .done: iOS 26 draws it as .prominent, a capsule filled with the tint, which makes the label unreadable.
@@ -212,12 +214,20 @@ extension UITextField {
       action: action
     )
     doneItem.accessibilityLabel = CheckoutComponentsStrings.doneButton
-    let titleFont = PrimerFont.uiFontTitleLarge(tokens: tokens)
-    doneItem.setTitleTextAttributes([.font: titleFont, .foregroundColor: tint], for: .normal)
-    doneItem.setTitleTextAttributes([.font: titleFont, .foregroundColor: tint], for: .highlighted)
 
     toolbar.items = [.flexibleSpace(), doneItem]
+    paintDoneAccessory(toolbar, tokens: tokens)
     return toolbar
+  }
+
+  private static func paintDoneAccessory(_ toolbar: UIToolbar, tokens: DesignTokens?) {
+    let tint = UIColor(CheckoutColors.buttonPrimary(tokens: tokens))
+    let attributes: [NSAttributedString.Key: Any] = [.font: PrimerFont.uiFontTitleLarge(tokens: tokens), .foregroundColor: tint]
+    toolbar.tintColor = tint
+    toolbar.items?.forEach {
+      $0.setTitleTextAttributes(attributes, for: .normal)
+      $0.setTitleTextAttributes(attributes, for: .highlighted)
+    }
   }
 }
 

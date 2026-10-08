@@ -53,6 +53,29 @@ final class PrimerFieldRepainterTests: XCTestCase {
         XCTAssertTrue(field.inputAccessoryView === accessory)
     }
 
+    /// A theme can give dark mode its own brand, and the Done button is drawn in the brand.
+    func test_repaint_tintsTheExistingDoneButtonWithTheNewBrand() throws {
+        let light = try DesignTokensManager.makeTokens(for: .light)
+        let dark = try DesignTokensManager.makeTokens(for: .dark)
+        dark.primerColorBrand = Color(red: 0, green: 1, blue: 0)
+        let field = UITextField()
+        field.configurePrimerStyle(
+            placeholder: "Card number",
+            configuration: .numberPad,
+            tokens: light,
+            doneButtonTarget: nil,
+            doneButtonAction: #selector(UIResponder.resignFirstResponder)
+        )
+        let toolbar = try XCTUnwrap(field.inputAccessoryView as? UIToolbar)
+
+        field.repaintPrimerColors(placeholder: "Card number", tokens: dark)
+
+        let brand = UIColor(CheckoutColors.buttonPrimary(tokens: dark))
+        XCTAssertTrue(field.inputAccessoryView === toolbar)
+        XCTAssertEqual(toolbar.tintColor, brand)
+        XCTAssertEqual(toolbar.items?.last?.titleTextAttributes(for: .normal)?[.foregroundColor] as? UIColor, brand)
+    }
+
     func test_repaint_onASecureField_keepsTheRealValue() throws {
         let light = try DesignTokensManager.makeTokens(for: .light)
         let dark = try DesignTokensManager.makeTokens(for: .dark)
