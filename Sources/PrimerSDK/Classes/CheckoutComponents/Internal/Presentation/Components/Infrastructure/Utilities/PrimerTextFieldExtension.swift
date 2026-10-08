@@ -129,6 +129,8 @@ extension UITextField {
     backgroundColor = .clear
     // At large text sizes the placeholder's width would otherwise push the form off screen.
     setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+    // Without it SwiftUI stretches the field, and its row, to any height a parent offers.
+    setContentHuggingPriority(.defaultHigh, for: .vertical)
 
     // Apply keyboard configuration
     keyboardType = configuration.keyboardType
