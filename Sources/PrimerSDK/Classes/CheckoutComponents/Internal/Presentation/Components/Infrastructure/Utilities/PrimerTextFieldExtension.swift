@@ -180,6 +180,19 @@ extension UITextField {
     }
   }
 
+  /// The font and letter spacing of the typed text, which only a re-theme moves. The repainter calls
+  /// this after the SwiftUI update and only when they changed: writing the font from every update
+  /// invalidated the field's size mid-layout and stopped the card form rendering.
+  func repaintPrimerTypography(placeholder: String, tokens: DesignTokens?, isEnabled: Bool) {
+    font = PrimerFont.uiFontBodyLarge(tokens: tokens)
+    if let letterSpacing = PrimerTextStyle.bodyLarge.letterSpacing(tokens: tokens) {
+      defaultTextAttributes[.kern] = letterSpacing
+    } else {
+      defaultTextAttributes.removeValue(forKey: .kern)
+    }
+    repaintPrimerColors(placeholder: placeholder, tokens: tokens, isEnabled: isEnabled)
+  }
+
   private static func primerPlaceholderAttributes(
     font: UIFont,
     tokens: DesignTokens?
@@ -233,7 +246,8 @@ extension UITextField {
 
 /// Holds the token set and lock state a bridged field was last painted with, so `updateUIView`
 /// repaints on a colour-scheme change or when the form locks for a payment, and does nothing on the
-/// keystrokes that make up almost every other call. A lock also disables the field and ends its edit.
+/// keystrokes that make up almost every other call. A lock also disables the field and ends its edit,
+/// and a re-theme that moves the font or letter spacing rewrites them once the update is over.
 ///
 /// Identity, not equality: `DesignTokensManager` decodes a fresh `DesignTokens` per scheme, and the
 /// `UIColor`s built from it never compare equal, so a value check would repaint every time.
@@ -254,6 +268,7 @@ final class PrimerFieldRepainter {
     isEnabled: Bool = true
   ) {
     guard appliedTokens !== tokens || appliedEnabled != isEnabled else { return }
+    let typographyMoved = Self.typographyMoved(from: appliedTokens, to: tokens)
     appliedTokens = tokens
     appliedEnabled = isEnabled
     textField.repaintPrimerColors(placeholder: placeholder, tokens: tokens, isEnabled: isEnabled)
@@ -262,6 +277,18 @@ final class PrimerFieldRepainter {
     if !isEnabled, textField.isFirstResponder {
       DispatchQueue.main.async { [weak textField] in textField?.resignFirstResponder() }
     }
+    if typographyMoved {
+      DispatchQueue.main.async { [weak self, weak textField] in
+        guard let self else { return }
+        textField?.repaintPrimerTypography(placeholder: placeholder, tokens: appliedTokens, isEnabled: appliedEnabled)
+      }
+    }
+  }
+
+  /// A scheme change decodes new tokens with the same font and spacing, so only a re-theme moves them.
+  private static func typographyMoved(from old: DesignTokens?, to new: DesignTokens?) -> Bool {
+    PrimerFont.uiFontBodyLarge(tokens: old) != PrimerFont.uiFontBodyLarge(tokens: new)
+      || PrimerTextStyle.bodyLarge.letterSpacing(tokens: old) != PrimerTextStyle.bodyLarge.letterSpacing(tokens: new)
   }
 }
 

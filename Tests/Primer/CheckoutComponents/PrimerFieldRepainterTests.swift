@@ -171,6 +171,58 @@ final class PrimerFieldRepainterTests: XCTestCase {
         XCTAssertEqual(field.resignCount, 1, "only the lock ends the edit")
     }
 
+    // MARK: - Re-theme
+
+    func test_repaintIfNeeded_reTheme_movesTheFontAndSpacingOfTypedTextAndPlaceholder() throws {
+        let light = try DesignTokensManager.makeTokens(for: .light)
+        let themed = try DesignTokensManager.makeTokens(for: .light)
+        themed.primerTypographyBodyLargeSize = 22
+        themed.primerTypographyBodyLargeLetterSpacing = 1.5
+        let field = makeConfiguredField(tokens: light)
+        field.text = "4242 4242"
+        let repainter = PrimerFieldRepainter()
+        repainter.markApplied(light)
+
+        repainter.repaintIfNeeded(field, placeholder: "Card number", tokens: themed)
+        drainMainQueue()
+
+        let font = PrimerFont.uiFontBodyLarge(tokens: themed)
+        let kern = try XCTUnwrap(PrimerTextStyle.bodyLarge.letterSpacing(tokens: themed))
+        XCTAssertNotEqual(kern, PrimerTextStyle.bodyLarge.letterSpacing(tokens: light))
+        XCTAssertEqual(field.font, font)
+        XCTAssertEqual(field.defaultTextAttributes[.kern] as? CGFloat, kern)
+        XCTAssertEqual(field.attributedPlaceholder?.attribute(.font, at: 0, effectiveRange: nil) as? UIFont, font)
+        XCTAssertEqual(field.attributedPlaceholder?.attribute(.kern, at: 0, effectiveRange: nil) as? CGFloat, kern)
+        XCTAssertEqual(field.text, "4242 4242")
+    }
+
+    /// Rewriting the font from every update stopped the card form rendering, so a scheme change must not.
+    func test_repaintIfNeeded_schemeChange_leavesTheFontAlone() throws {
+        let light = try DesignTokensManager.makeTokens(for: .light)
+        let dark = try DesignTokensManager.makeTokens(for: .dark)
+        let field = makeConfiguredField(tokens: light)
+        field.font = UIFont.systemFont(ofSize: 21)
+        let repainter = PrimerFieldRepainter()
+        repainter.markApplied(light)
+
+        repainter.repaintIfNeeded(field, placeholder: "Card number", tokens: dark)
+        drainMainQueue()
+
+        XCTAssertEqual(field.font, UIFont.systemFont(ofSize: 21))
+    }
+
+    private func makeConfiguredField(tokens: DesignTokens) -> UITextField {
+        let field = UITextField()
+        field.configurePrimerStyle(
+            placeholder: "Card number",
+            configuration: .numberPad,
+            tokens: tokens,
+            doneButtonTarget: nil,
+            doneButtonAction: #selector(UIResponder.resignFirstResponder)
+        )
+        return field
+    }
+
     private func drainMainQueue() {
         let drained = expectation(description: "main queue drained")
         DispatchQueue.main.async { drained.fulfill() }
