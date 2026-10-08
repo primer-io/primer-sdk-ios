@@ -11,6 +11,9 @@ public enum StepCapability: String, CaseIterable, Sendable {
     case httpRequest = "http.request"
     case urlOpen = "url.open"
     case platformLog = "platform.log"
+    case klarnaAuthorize = "klarna.authorize"
+    case klarnaFinalize = "klarna.finalize"
+    case primerComplete = "primer.complete"
 }
 
 @_spi(PrimerInternal)
