@@ -201,7 +201,7 @@ enum PrimerFont {
     Font(uiFontExtraLargeIcon(tokens: tokens))
   }
 
-  /// Small badge font (10pt, weight 500) - for compact badge text
+  /// Small badge font (10pt, body small weight) - for compact badge text
   static func smallBadge(tokens: DesignTokens?) -> Font {
     Font(uiFontSmallBadge(tokens: tokens))
   }
