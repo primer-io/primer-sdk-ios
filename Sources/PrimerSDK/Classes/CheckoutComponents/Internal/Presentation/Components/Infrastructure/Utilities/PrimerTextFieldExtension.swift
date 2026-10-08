@@ -166,9 +166,7 @@ extension UITextField {
   /// those change with the scheme, and writing them on a live field is what broke the two earlier
   /// attempts at this fix.
   func repaintPrimerColors(placeholder: String, tokens: DesignTokens?, isEnabled: Bool = true) {
-    textColor = UIColor(
-      isEnabled ? CheckoutColors.inputText(tokens: tokens) : CheckoutColors.textDisabled(tokens: tokens)
-    )
+    textColor = UIColor(CheckoutColors.inputText(tokens: tokens, isEnabled: isEnabled))
     attributedPlaceholder = NSAttributedString(
       string: placeholder,
       attributes: Self.primerPlaceholderAttributes(
@@ -225,7 +223,7 @@ extension UITextField {
 
 /// Holds the token set and lock state a bridged field was last painted with, so `updateUIView`
 /// repaints on a colour-scheme change or when the form locks for a payment, and does nothing on the
-/// keystrokes that make up almost every other call.
+/// keystrokes that make up almost every other call. A lock also disables the field and ends its edit.
 ///
 /// Identity, not equality: `DesignTokensManager` decodes a fresh `DesignTokens` per scheme, and the
 /// `UIColor`s built from it never compare equal, so a value check would repaint every time.
@@ -249,6 +247,11 @@ final class PrimerFieldRepainter {
     appliedTokens = tokens
     appliedEnabled = isEnabled
     textField.repaintPrimerColors(placeholder: placeholder, tokens: tokens, isEnabled: isEnabled)
+    textField.isEnabled = isEnabled
+    // Greyed out alone, a focused field kept typing into the payment. Async: ending the edit writes a binding.
+    if !isEnabled, textField.isFirstResponder {
+      DispatchQueue.main.async { [weak textField] in textField?.resignFirstResponder() }
+    }
   }
 }
 

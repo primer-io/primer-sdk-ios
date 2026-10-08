@@ -27,6 +27,7 @@ struct CountryInputField: View, LogReporter {
   @State private var isFocused: Bool = false
   @State private var showCountryPicker: Bool = false
   @Environment(\.designTokens) private var tokens
+  @Environment(\.isInputEnabled) private var isInputEnabled
 
   // MARK: - Computed Properties
 
@@ -34,7 +35,7 @@ struct CountryInputField: View, LogReporter {
     guard !countryName.isEmpty else {
       return CheckoutColors.textPlaceholder(tokens: tokens)
     }
-    return CheckoutColors.inputText(tokens: tokens)
+    return CheckoutColors.inputText(tokens: tokens, isEnabled: isInputEnabled)
   }
 
   private var selectedCountryFromScope: PrimerCountry? {

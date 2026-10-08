@@ -26,6 +26,7 @@ extension PrimerInputFieldContainer {
       .padding(.trailing, PrimerSpacing.medium(tokens: tokens))
       .frame(height: PrimerSize.xxlarge(tokens: tokens))
       .background(makeTextFieldContainerBackground())
+      .disabled(!isInputEnabled)
   }
 
   func makeTextFieldContainerContent() -> some View {

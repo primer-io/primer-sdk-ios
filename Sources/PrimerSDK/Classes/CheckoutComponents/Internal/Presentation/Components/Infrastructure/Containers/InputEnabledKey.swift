@@ -6,8 +6,9 @@
 
 import SwiftUI
 
-/// Whether the fields below accept input. Set once by the form, read by every field container, so a
-/// screen does not have to thread a flag through a dozen views to lock what it already knows is busy.
+/// Whether the fields below accept input. Set once by the screen that owns the fields, read by every
+/// field, so a screen does not have to thread a flag through a dozen views to lock what it already
+/// knows is busy. A locked field is disabled and gives up focus, not only greyed out.
 @available(iOS 15.0, *)
 private struct InputEnabledKey: EnvironmentKey {
   static let defaultValue = true

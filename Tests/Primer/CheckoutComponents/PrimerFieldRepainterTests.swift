@@ -104,6 +104,56 @@ final class PrimerFieldRepainterTests: XCTestCase {
         XCTAssertEqual(field.textColor, UIColor(CheckoutColors.inputText(tokens: light)))
     }
 
+    // MARK: - What a lock does besides the colours
+
+    func test_repaintIfNeeded_lock_disablesTheFieldAndUnlockEnablesItAgain() throws {
+        let light = try DesignTokensManager.makeTokens(for: .light)
+        let field = makeField(tokens: light)
+        let repainter = PrimerFieldRepainter()
+        repainter.markApplied(light)
+
+        repainter.repaintIfNeeded(field, placeholder: "Card number", tokens: light, isEnabled: false)
+        XCTAssertFalse(field.isEnabled)
+
+        repainter.repaintIfNeeded(field, placeholder: "Card number", tokens: light, isEnabled: true)
+        XCTAssertTrue(field.isEnabled)
+    }
+
+    func test_repaintIfNeeded_lock_endsTheEditOfAFocusedField() throws {
+        let light = try DesignTokensManager.makeTokens(for: .light)
+        let field = FocusedField()
+        let repainter = PrimerFieldRepainter()
+        repainter.markApplied(light)
+
+        repainter.repaintIfNeeded(field, placeholder: "Card number", tokens: light, isEnabled: false)
+        drainMainQueue()
+
+        XCTAssertEqual(field.resignCount, 1)
+    }
+
+    func test_repaintIfNeeded_unlockAndNewTokens_leaveTheFocusAlone() throws {
+        let light = try DesignTokensManager.makeTokens(for: .light)
+        let dark = try DesignTokensManager.makeTokens(for: .dark)
+        let field = FocusedField()
+        let repainter = PrimerFieldRepainter()
+        repainter.markApplied(light)
+        repainter.repaintIfNeeded(field, placeholder: "Card number", tokens: light, isEnabled: false)
+        drainMainQueue()
+        field.hasFocus = true
+
+        repainter.repaintIfNeeded(field, placeholder: "Card number", tokens: light, isEnabled: true)
+        repainter.repaintIfNeeded(field, placeholder: "Card number", tokens: dark, isEnabled: true)
+        drainMainQueue()
+
+        XCTAssertEqual(field.resignCount, 1, "only the lock ends the edit")
+    }
+
+    private func drainMainQueue() {
+        let drained = expectation(description: "main queue drained")
+        DispatchQueue.main.async { drained.fulfill() }
+        wait(for: [drained], timeout: 1)
+    }
+
     func test_repaintIfNeeded_newTokens_repaintsOnceAndThenStops() throws {
         let light = try DesignTokensManager.makeTokens(for: .light)
         let dark = try DesignTokensManager.makeTokens(for: .dark)
@@ -117,5 +167,17 @@ final class PrimerFieldRepainterTests: XCTestCase {
         field.textColor = .magenta
         repainter.repaintIfNeeded(field, placeholder: "Card number", tokens: dark)
         XCTAssertEqual(field.textColor, .magenta, "the same token set must not repaint twice")
+    }
+}
+
+/// Reports focus without a key window, which a unit test cannot rely on.
+private final class FocusedField: UITextField {
+    var hasFocus = true
+    private(set) var resignCount = 0
+    override var isFirstResponder: Bool { hasFocus }
+    override func resignFirstResponder() -> Bool {
+        resignCount += 1
+        hasFocus = false
+        return true
     }
 }

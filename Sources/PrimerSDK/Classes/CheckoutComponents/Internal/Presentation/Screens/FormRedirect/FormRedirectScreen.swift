@@ -115,6 +115,7 @@ struct FormRedirectScreen: View {
                 )
             }
         }
+        .environment(\.isInputEnabled, !currentState.isLoading)
     }
 
     // MARK: - Submit Button Section
@@ -154,6 +155,7 @@ private struct FormFieldView: View {
     let onSubmit: () -> Void
 
     @Environment(\.designTokens) private var tokens
+    @Environment(\.isInputEnabled) private var isInputEnabled
     @FocusState private var hasKeyboardFocus: Bool
     @State private var isFocused = false
 
@@ -194,18 +196,19 @@ private struct FormFieldView: View {
             if let prefix = field.countryCodePrefix, field.fieldType == .phoneNumber {
                 Text(prefix)
                     .primerTypography(.bodyLarge, tokens: tokens)
-                    .foregroundColor(CheckoutColors.inputText(tokens: tokens))
+                    .foregroundColor(CheckoutColors.inputText(tokens: tokens, isEnabled: isInputEnabled))
                     .accessibilityIdentifier(AccessibilityIdentifiers.FormRedirect.phonePrefix)
             }
 
             TextField(field.placeholder, text: valueBinding)
                 .primerFieldTypography(.bodyLarge, tokens: tokens)
-                .foregroundColor(CheckoutColors.inputText(tokens: tokens))
+                .foregroundColor(CheckoutColors.inputText(tokens: tokens, isEnabled: isInputEnabled))
                 .keyboardType(field.keyboardType.uiKeyboardType)
                 .textContentType(field.fieldType.textContentType)
                 .focused($hasKeyboardFocus)
                 .onSubmit(onSubmit)
                 .onChange(of: hasKeyboardFocus) { isFocused = $0 }
+                .onChange(of: isInputEnabled) { if !$0 { hasKeyboardFocus = false } }
         }
     }
 

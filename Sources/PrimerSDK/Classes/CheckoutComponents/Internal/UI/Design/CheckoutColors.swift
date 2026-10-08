@@ -123,12 +123,14 @@ enum CheckoutColors {
     tokens?.primerColorBackgroundPrimary ?? Color(.systemBackground)
   }
 
-  static func inputBackground(tokens: DesignTokens?) -> Color {
-    tokens?.primerColorBackgroundOutlinedDefault ?? .white
+  static func inputBackground(tokens: DesignTokens?, isEnabled: Bool = true) -> Color {
+    isEnabled
+      ? tokens?.primerColorBackgroundOutlinedDefault ?? .white
+      : backgroundOutlinedDisabled(tokens: tokens)
   }
 
-  static func inputText(tokens: DesignTokens?) -> Color {
-    tokens?.primerColorTextOutlinedDefault ?? .primary
+  static func inputText(tokens: DesignTokens?, isEnabled: Bool = true) -> Color {
+    isEnabled ? tokens?.primerColorTextOutlinedDefault ?? .primary : textDisabled(tokens: tokens)
   }
 
   static func inputBorder(tokens: DesignTokens?) -> Color {

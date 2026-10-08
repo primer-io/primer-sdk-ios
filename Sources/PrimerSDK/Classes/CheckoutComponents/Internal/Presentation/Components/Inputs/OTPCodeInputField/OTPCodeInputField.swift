@@ -25,7 +25,9 @@ struct OTPCodeInputField: View, LogReporter {
   @State private var isValid: Bool = false
   @State private var errorMessage: String?
   @State private var isFocused: Bool = false
+  @FocusState private var hasKeyboardFocus: Bool
   @Environment(\.designTokens) private var tokens
+  @Environment(\.isInputEnabled) private var isInputEnabled
 
   /// `prompt` takes a `Text`, which a view modifier cannot produce, so the placeholder keeps a
   /// plain `Font` and inherits the field's letter spacing.
@@ -79,7 +81,9 @@ struct OTPCodeInputField: View, LogReporter {
           .foregroundColor(CheckoutColors.textPlaceholder(tokens: tokens))
       )
       .primerFieldTypography(.bodyLarge, tokens: tokens)
-      .foregroundColor(CheckoutColors.inputText(tokens: tokens))
+      .foregroundColor(CheckoutColors.inputText(tokens: tokens, isEnabled: isInputEnabled))
+      .focused($hasKeyboardFocus)
+      .onChange(of: isInputEnabled) { if !$0 { hasKeyboardFocus = false } }
       .keyboardType(.numberPad)
       .textContentType(.oneTimeCode)
       .frame(height: PrimerSize.xxlarge(tokens: tokens))

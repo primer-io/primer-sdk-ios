@@ -31,6 +31,7 @@ struct BillingAddressRedirectScreen: View {
       VStack(spacing: PrimerSpacing.xxlarge(tokens: tokens)) {
         makeHeaderSection()
         makeBillingAddressForm()
+          .environment(\.isInputEnabled, !isSubmitInFlight)
         makeSubmitButtonSection()
       }
       .padding(.horizontal, PrimerSpacing.large(tokens: tokens))
@@ -45,6 +46,7 @@ struct BillingAddressRedirectScreen: View {
         billingState = newState
       }
     }
+    .onChange(of: isSubmitInFlight) { if $0 { focusedField = nil } }
   }
 
   // MARK: - Header
@@ -162,7 +164,7 @@ struct BillingAddressRedirectScreen: View {
         HStack {
           if let selected = CountryCode(rawValue: countryCode) {
             Text("\(selected.flag ?? "") \(selected.country)")
-              .foregroundColor(CheckoutColors.inputText(tokens: tokens))
+              .foregroundColor(CheckoutColors.inputText(tokens: tokens, isEnabled: !isSubmitInFlight))
           } else {
             Text(CheckoutComponentsStrings.countrySelectorPlaceholder)
               .foregroundColor(CheckoutColors.textPlaceholder(tokens: tokens))
@@ -194,7 +196,7 @@ struct BillingAddressRedirectScreen: View {
     ) {
       TextField(placeholder, text: text)
         .primerFieldTypography(.bodyLarge, tokens: tokens)
-        .foregroundColor(CheckoutColors.inputText(tokens: tokens))
+        .foregroundColor(CheckoutColors.inputText(tokens: tokens, isEnabled: !isSubmitInFlight))
         .focused($focusedField, equals: fieldType)
         .autocapitalization(.words)
         .disableAutocorrection(true)
