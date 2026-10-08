@@ -32,7 +32,7 @@ final class DesignTokensManager: ObservableObject {
       for: colorScheme, valueOverrides: tokenValueOverrides(colors: colors, colorScheme: colorScheme))
 
     // applied last so an explicit token wins over a palette value it aliases
-    applyThemeOverrides(to: loadedTokens, colors: colors)
+    applyThemeOverrides(to: loadedTokens, colors: colors, colorScheme: colorScheme)
 
     tokens = loadedTokens
   }
@@ -124,14 +124,12 @@ final class DesignTokensManager: ObservableObject {
     }
   }
 
-  /// Resolved for the scheme being loaded: `getRed` alone reads a dynamic color for whatever trait is current.
   private nonisolated static func colorComponents(_ color: Color, for colorScheme: ColorScheme) -> [CGFloat]? {
     var red: CGFloat = 0
     var green: CGFloat = 0
     var blue: CGFloat = 0
     var alpha: CGFloat = 0
-    let traits = UITraitCollection(userInterfaceStyle: colorScheme == .dark ? .dark : .light)
-    guard UIColor(color).resolvedColor(with: traits).getRed(&red, green: &green, blue: &blue, alpha: &alpha) else {
+    guard resolved(color, for: colorScheme).getRed(&red, green: &green, blue: &blue, alpha: &alpha) else {
       PrimerLogging.shared.logger.error(
         message: "[DesignTokens] Palette override ignored: color has no readable RGB components.")
       return nil
@@ -139,15 +137,21 @@ final class DesignTokensManager: ObservableObject {
     return [red, green, blue, alpha]
   }
 
+  /// Read for the scheme being loaded rather than the current trait, keeping the current contrast setting.
+  private nonisolated static func resolved(_ color: Color, for colorScheme: ColorScheme) -> UIColor {
+    let style = UITraitCollection(userInterfaceStyle: colorScheme == .dark ? .dark : .light)
+    return UIColor(color).resolvedColor(with: UITraitCollection(traitsFrom: [.current, style]))
+  }
+
   // MARK: - Apply Theme Overrides
 
   /// Applies merchant theme overrides to the loaded design tokens.
   /// This ensures that CheckoutColors and other direct token accessors respect theme customizations.
-  private func applyThemeOverrides(to tokens: DesignTokens, colors: ColorOverrides?) {
+  private func applyThemeOverrides(to tokens: DesignTokens, colors: ColorOverrides?, colorScheme: ColorScheme) {
     guard let theme = themeOverrides else { return }
 
     if let colors {
-      applyColorOverrides(to: tokens, from: colors)
+      applyColorOverrides(to: tokens, from: colors, colorScheme: colorScheme)
     }
     if let radius = theme.radius {
       applyRadiusOverrides(to: tokens, from: radius)
@@ -166,8 +170,9 @@ final class DesignTokensManager: ObservableObject {
     }
   }
 
-  private func applyColorOverrides(to tokens: DesignTokens, from colors: ColorOverrides) {
-    if let value = colors.primerColorBrand { tokens.primerColorBrand = value }
+  private func applyColorOverrides(to tokens: DesignTokens, from colors: ColorOverrides, colorScheme: ColorScheme) {
+    // Resolved like the aliases injected from it, so a forced appearance cannot split brand from focus.
+    if let value = colors.primerColorBrand { tokens.primerColorBrand = Color(Self.resolved(value, for: colorScheme)) }
     if let value = colors.primerColorOnBrand { tokens.primerColorOnBrand = value }
     applySemanticColorOverrides(to: tokens, from: colors)
     applyTextColorOverrides(to: tokens, from: colors)

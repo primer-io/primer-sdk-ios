@@ -88,6 +88,7 @@ final class DesignTokensManagerOverrideSafetyTests: XCTestCase {
         UITraitCollection.current = UITraitCollection(userInterfaceStyle: .light)
         try await sut.fetchTokens(for: .dark)
         let darkFocus = try XCTUnwrap(sut.tokens?.primerColorFocus)
+        let darkBrand = try XCTUnwrap(sut.tokens?.primerColorBrand)
 
         UITraitCollection.current = UITraitCollection(userInterfaceStyle: .dark)
         try await sut.fetchTokens(for: .light)
@@ -95,6 +96,8 @@ final class DesignTokensManagerOverrideSafetyTests: XCTestCase {
 
         XCTAssertEqual(components(of: darkFocus), components(of: UIColor.green))
         XCTAssertEqual(components(of: lightFocus), components(of: UIColor.red))
+        UITraitCollection.current = UITraitCollection(userInterfaceStyle: .light)
+        XCTAssertEqual(components(of: darkBrand), components(of: UIColor.green), "the brand itself follows its aliases")
     }
 
     private func components(of color: Color) -> [CGFloat] {

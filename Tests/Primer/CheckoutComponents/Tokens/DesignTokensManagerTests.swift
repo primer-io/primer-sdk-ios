@@ -118,7 +118,7 @@ final class DesignTokensManagerTests: XCTestCase {
 
         // Then
         let tokens = try XCTUnwrap(sut.tokens)
-        XCTAssertEqual(tokens.primerColorBrand, customBrand)
+        XCTAssertEqual(rgba(tokens.primerColorBrand), rgba(customBrand))
     }
 
     func test_applyTheme_semanticColorOverrides_appliedToTokens() async throws {
@@ -620,7 +620,7 @@ final class DesignTokensManagerTests: XCTestCase {
 
             // Then
             let tokens = try XCTUnwrap(manager.tokens, "'\(badValue)' discarded the whole token set")
-            XCTAssertEqual(tokens.primerColorBrand, .purple, "'\(badValue)' discarded the color override")
+            XCTAssertEqual(rgba(tokens.primerColorBrand), rgba(.purple), "'\(badValue)' discarded the color override")
             XCTAssertEqual(tokens.primerRadiusMedium, 30, "'\(badValue)' discarded the radius override")
             XCTAssertEqual(tokens.primerTypographyBrand, "Inter")
             XCTAssertEqual(tokens.primerTypographyBodyMediumFont, "Inter")
@@ -647,7 +647,7 @@ final class DesignTokensManagerTests: XCTestCase {
 
         // Then
         let tokens = try XCTUnwrap(sut.tokens)
-        XCTAssertEqual(tokens.primerColorBrand, .red)
+        XCTAssertEqual(rgba(tokens.primerColorBrand), rgba(.red))
         XCTAssertEqual(tokens.primerRadiusMedium, 16)
         XCTAssertEqual(tokens.primerSpaceLarge, 24)
         XCTAssertEqual(tokens.primerSizeXlarge, 48)
@@ -756,7 +756,7 @@ final class DesignTokensManagerTests: XCTestCase {
 
         // Then
         let tokens = try XCTUnwrap(sut.tokens)
-        XCTAssertEqual(tokens.primerColorBrand, customColor)
+        XCTAssertEqual(rgba(tokens.primerColorBrand, .dark), rgba(customColor, .dark))
     }
 
     // MARK: - Light and Dark Colour Sets
@@ -773,7 +773,7 @@ final class DesignTokensManagerTests: XCTestCase {
         let dark = try XCTUnwrap(sut.tokens?.primerColorBrand)
 
         // Then light takes the color and dark keeps Primer's designed default
-        XCTAssertEqual(light, .pink)
+        XCTAssertEqual(rgba(light), rgba(.pink))
         XCTAssertEqual(dark, shippedDarkBrand)
     }
 
@@ -795,9 +795,9 @@ final class DesignTokensManagerTests: XCTestCase {
         let dark = try XCTUnwrap(sut.tokens)
 
         // Then light ignores the dark set, and dark takes what it names plus Primer's dark defaults
-        XCTAssertEqual(lightBrand, .pink)
+        XCTAssertEqual(rgba(lightBrand), rgba(.pink))
         XCTAssertEqual(lightText, .green)
-        XCTAssertEqual(dark.primerColorBrand, .blue)
+        XCTAssertEqual(rgba(dark.primerColorBrand, .dark), rgba(.blue, .dark))
         XCTAssertEqual(dark.primerColorTextPrimary, shippedDarkText)
     }
 
@@ -829,7 +829,16 @@ final class DesignTokensManagerTests: XCTestCase {
 
         // Then light keeps the shipped color and only dark moves
         XCTAssertEqual(light, shippedBrand)
-        XCTAssertEqual(dark, .blue)
+        XCTAssertEqual(rgba(dark, .dark), rgba(.blue, .dark))
+    }
+
+    /// The brand token is resolved for the loaded scheme, so it is compared by value, not by `Color` identity.
+    private func rgba(_ color: Color?, _ style: UIUserInterfaceStyle = .light) -> [Int] {
+        guard let color else { return [] }
+        var red: CGFloat = 0, green: CGFloat = 0, blue: CGFloat = 0, alpha: CGFloat = 0
+        UIColor(color).resolvedColor(with: UITraitCollection(userInterfaceStyle: style))
+            .getRed(&red, green: &green, blue: &blue, alpha: &alpha)
+        return [red, green, blue, alpha].map { Int(($0 * 255).rounded()) }
     }
 
     private func colorTokens(of tokens: DesignTokens) -> [String: Color] {
@@ -879,7 +888,7 @@ final class DesignTokensManagerTests: XCTestCase {
         // Then
         let tokens = try XCTUnwrap(sut.tokens)
         XCTAssertEqual(tokens.primerColorBorderOutlinedSelected, .green)
-        XCTAssertEqual(tokens.primerColorBrand, .pink)
+        XCTAssertEqual(rgba(tokens.primerColorBrand), rgba(.pink))
     }
 
     func test_fetchTokens_noOverrides_brandInjectionIsANoOp() async throws {
