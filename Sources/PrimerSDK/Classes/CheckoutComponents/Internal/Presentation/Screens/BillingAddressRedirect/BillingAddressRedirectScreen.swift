@@ -116,7 +116,8 @@ struct BillingAddressRedirectScreen: View {
         identifier: AccessibilityIdentifiers.BillingAddressRedirect.addressLine2Field,
         onUpdate: scope.updateAddressLine2
       )
-      HStack(spacing: PrimerSpacing.medium(tokens: tokens)) {
+      // Top-aligned, as in the card form: an error under one field must not push its neighbour down.
+      HStack(alignment: .top, spacing: PrimerSpacing.medium(tokens: tokens)) {
         makeTextField(
           label: CheckoutComponentsStrings.postalCodeLabel,
           placeholder: CheckoutComponentsStrings.postalCodePlaceholder,
