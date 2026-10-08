@@ -83,6 +83,7 @@ struct OTPCodeInputField: View, LogReporter {
       .primerFieldTypography(.bodyLarge, tokens: tokens)
       .foregroundColor(CheckoutColors.inputText(tokens: tokens, isEnabled: isInputEnabled))
       .focused($hasKeyboardFocus)
+      .onChange(of: hasKeyboardFocus) { isFocused = $0 }
       .onChange(of: isInputEnabled) { if !$0 { hasKeyboardFocus = false } }
       .keyboardType(.numberPad)
       .textContentType(.oneTimeCode)
