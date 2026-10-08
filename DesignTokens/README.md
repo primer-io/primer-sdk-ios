@@ -34,7 +34,7 @@ This repository uses [Style Dictionary](https://amzn.github.io/style-dictionary/
    One configuration file is provided:
 
    - `config-light.js`:
-     - This file registers a custom Swift format to generate a flat SwiftUI‑compatible class (named `DesignTokensLight`).
+     - This file registers a custom Swift format to generate a flat SwiftUI‑compatible class (named `DesignTokens`).
      - It reads tokens from `tokens/base.json` and uses a custom transform group (`primer-ios-swiftui`) that converts names to camel case, formats colors using a custom `color/ColorSwiftUI` transform, and outputs literal values for content and assets.
      - Developer Note: We omit the default 'size/swift/remToCGFloat' transform so that dimension tokens (e.g. spaces and sizes) are computed without extra arithmetic wrappers. In this file, when dimension tokens are encountered, we remove any unwanted wrappers and evaluate the arithmetic to output a raw numeric value.
 
@@ -48,7 +48,7 @@ This repository uses [Style Dictionary](https://amzn.github.io/style-dictionary/
    ```
 
    This runs:
-   - `npm run build-light` – Generates `DesignTokensLight.swift` in the build path.
+   - `npm run build-light` – Generates `DesignTokens.swift` in the build path.
 
    The output files are placed in your iOS project under `../Sources/PrimerSDK/Classes/Components/Design/`.
 
