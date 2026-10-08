@@ -276,7 +276,8 @@ struct BillingAddressRedirectScreen: View {
         isLoading: isSubmitInFlight,
         accessibilityConfiguration: AccessibilityConfiguration(
           identifier: AccessibilityIdentifiers.BillingAddressRedirect.submitButton,
-          label: submitButtonText,
+          label: isSubmitInFlight ? CheckoutComponentsStrings.a11ySubmitButtonLoading : submitButtonText,
+          hint: isSubmitInFlight || billingState.isFormValid ? nil : CheckoutComponentsStrings.a11ySubmitButtonDisabled,
           traits: [.isButton]
         ),
         action: scope.submit

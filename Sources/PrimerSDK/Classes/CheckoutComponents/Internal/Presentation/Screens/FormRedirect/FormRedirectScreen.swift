@@ -137,12 +137,13 @@ struct FormRedirectScreen: View {
             isLoading: currentState.isLoading,
             accessibilityConfiguration: AccessibilityConfiguration(
                 identifier: AccessibilityIdentifiers.FormRedirect.submitButton,
-                label: CheckoutComponentsStrings.a11ySubmitButtonLabel,
-                hint: currentState.isLoading
+                label: currentState.isLoading
+                    ? CheckoutComponentsStrings.a11ySubmitButtonLoading
+                    : CheckoutComponentsStrings.a11ySubmitButtonLabel,
+                // An enabled hint would repeat the label word for word in many languages.
+                hint: currentState.isLoading || currentState.isSubmitEnabled
                     ? nil
-                    : (currentState.isSubmitEnabled
-                        ? CheckoutComponentsStrings.a11ySubmitButtonHint
-                        : CheckoutComponentsStrings.a11ySubmitButtonDisabled),
+                    : CheckoutComponentsStrings.a11ySubmitButtonDisabled,
                 traits: [.isButton]
             ),
             action: scope.submit
