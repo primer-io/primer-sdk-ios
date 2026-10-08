@@ -64,6 +64,7 @@ struct BillingAddressRedirectScreen: View {
             }
             .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
           }
+          .buttonStyle(PlainButtonStyle())
           .accessibility(config: AccessibilityConfiguration(
             identifier: AccessibilityIdentifiers.BillingAddressRedirect.backButton,
             label: CheckoutComponentsStrings.a11yBack,

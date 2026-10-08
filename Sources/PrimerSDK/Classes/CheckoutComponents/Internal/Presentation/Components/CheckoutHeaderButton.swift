@@ -31,6 +31,7 @@ struct CheckoutHeaderButton: View {
       }
       .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
     }
+    .buttonStyle(PlainButtonStyle())
     .accessibility(
       config: AccessibilityConfiguration(
         identifier: config.accessibilityIdentifier,

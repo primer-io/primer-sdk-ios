@@ -93,6 +93,7 @@ struct CheckoutHeaderView: View {
       .font(PrimerFont.bodyMedium(tokens: tokens))
       .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
     }
+    .buttonStyle(PlainButtonStyle())
     .accessibility(
       config: AccessibilityConfiguration(
         identifier: AccessibilityIdentifiers.Common.backButton,
