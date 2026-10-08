@@ -94,6 +94,13 @@ struct PrimerTextFieldConfiguration {
 
 @available(iOS 15.0, *)
 extension UITextField {
+  /// SwiftUI writes the binding back on its next update, and a keystroke before then would edit the old text.
+  func applyPrimerEdit(_ text: String, caretOffset: Int) {
+    self.text = text
+    guard let caret = position(from: beginningOfDocument, offset: caretOffset) else { return }
+    selectedTextRange = textRange(from: caret, to: caret)
+  }
+
   func configurePrimerStyle(
     placeholder: String,
     configuration: PrimerTextFieldConfiguration,

@@ -140,6 +140,7 @@ struct EmailTextField: UIViewRepresentable, LogReporter {
 
       scope?.updateValidationState(\.email, isValid: isValid)
 
+      textField.applyPrimerEdit(newText, caretOffset: range.location + string.utf16.count)
       return false
     }
 

@@ -131,6 +131,7 @@ struct CardholderNameTextField: UIViewRepresentable, LogReporter {
 
       scope.updateValidationState(\.cardholderName, isValid: isValid)
 
+      textField.applyPrimerEdit(newText, caretOffset: range.location + accepted.utf16.count)
       return false
     }
 
