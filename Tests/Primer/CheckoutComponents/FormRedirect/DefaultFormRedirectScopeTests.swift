@@ -176,6 +176,46 @@ final class DefaultFormRedirectScopeTests: XCTestCase {
         XCTAssertFalse(state.fields.first?.isValid ?? true)
     }
 
+    /// Submit prepends the dialling code, so a pasted international number must not keep its own.
+    @MainActor
+    func test_updateField_mbway_pastedInternationalNumber_dropsTheDialCode() async throws {
+        for pasted in ["+351 912 345 678", "00351 912 345 678"] {
+            let scope = createScope(paymentMethodType: FormRedirectTestData.Constants.mbwayPaymentMethodType)
+            scope.start()
+
+            scope.updateField(.phoneNumber, value: pasted)
+
+            let state = try await awaitValue(scope.state, matching: { $0.fields.first?.value.isEmpty == false })
+            XCTAssertEqual(state.fields.first?.value, "912345678", pasted)
+        }
+    }
+
+    @MainActor
+    func test_updateField_mbway_nationalNumberStartingWithTheDialDigits_isKept() async throws {
+        let scope = createScope(paymentMethodType: FormRedirectTestData.Constants.mbwayPaymentMethodType)
+        scope.start()
+
+        scope.updateField(.phoneNumber, value: "351912345")
+
+        let state = try await awaitValue(scope.state, matching: { $0.fields.first?.value.isEmpty == false })
+        XCTAssertEqual(state.fields.first?.value, "351912345")
+    }
+
+    @MainActor
+    func test_submit_mbway_pastedInternationalNumber_sendsTheDialCodeOnce() async throws {
+        let scope = createScope(paymentMethodType: FormRedirectTestData.Constants.mbwayPaymentMethodType)
+        scope.start()
+        scope.updateField(.phoneNumber, value: "+351 912 345 678")
+        _ = try await awaitValue(scope.state, matching: { $0.isSubmitEnabled })
+
+        scope.submit()
+        try await withTimeout(2.0) { [self] in
+            while mockInteractor.executeSessionInfo == nil { await Task.yield() }
+        }
+
+        XCTAssertEqual((mockInteractor.executeSessionInfo as? InputPhonenumberSessionInfo)?.phoneNumber, "+351912345678")
+    }
+
     @MainActor
     func test_updateField_nonExistentFieldType_isIgnored() async throws {
         let scope = createScope(paymentMethodType: FormRedirectTestData.Constants.blikPaymentMethodType)
