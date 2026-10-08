@@ -118,10 +118,7 @@ struct CardholderNameTextField: UIViewRepresentable, LogReporter {
       guard let textRange = Range(range, in: currentText) else { return false }
 
       // Paste and AutoFill hand over a whole name, so drop what a name cannot hold instead of all of it.
-      let allowedCharacterSet = CharacterSet.letters.union(CharacterSet(charactersIn: " '-"))
-      let accepted = String(String.UnicodeScalarView(
-        string.replacingOccurrences(of: "\u{2019}", with: "'").unicodeScalars.filter(allowedCharacterSet.contains)
-      ))
+      let accepted = Self.nameText(string)
       if !string.isEmpty, accepted.isEmpty {
         return false
       }
@@ -135,6 +132,18 @@ struct CardholderNameTextField: UIViewRepresentable, LogReporter {
       scope.updateValidationState(\.cardholderName, isValid: isValid)
 
       return false
+    }
+
+    /// Contacts and paste bring typographic spaces, dashes and apostrophes, which would otherwise join or split a name.
+    private static func nameText(_ string: String) -> String {
+      let allowed = CharacterSet.letters.union(CharacterSet(charactersIn: " '-"))
+      return String(string.compactMap { character -> Character? in
+        if character.isWhitespace { return " " }
+        if character.unicodeScalars.first?.properties.generalCategory == .dashPunctuation { return "-" }
+        if "\u{2018}\u{2019}".contains(character) { return "'" }
+        // Whole characters, so an emoji's variation selector cannot survive as a letter-like mark.
+        return character.unicodeScalars.allSatisfy(allowed.contains) ? character : nil
+      })
     }
 
     private func validateCardholderName() {
