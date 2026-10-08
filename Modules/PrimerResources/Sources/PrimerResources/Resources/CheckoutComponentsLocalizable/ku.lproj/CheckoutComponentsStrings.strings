@@ -205,6 +205,7 @@
 "primer_klarna_select_category_description" = "Hilbijêre ka tu çawa dixwazî bidî";
 "primer_klarna_loading_title" = "Tê barkirin";
 "primer_klarna_loading_subtitle" = "Ev dibe ku çend çirkeyan bigire.";
+"primer_klarna_pay_with" = "Bi rêya bipire";
 "accessibility_klarna_category" = "Vebijarka daynê %@";
 "accessibility_klarna_category_selected" = "Vebijarka daynê %@, hatiye hilbijartin";
 "accessibility_klarna_payment_view" = "Forma daynê ya Klarna";

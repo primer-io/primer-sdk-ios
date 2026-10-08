@@ -27,7 +27,8 @@ struct InternalPaymentMethod: Equatable {
   let borderWidth: CGFloat?
   let cornerRadius: CGFloat?
   let logoVariants: PrimerTheme.BaseImage?
-  let borderWidthVariants: PrimerTheme.BaseBorderWidth?
+  let backgroundColorVariants: PrimerTheme.BaseColors?
+  let textColorVariants: PrimerTheme.BaseColors?
 
   init(
     id: String,
@@ -48,7 +49,8 @@ struct InternalPaymentMethod: Equatable {
     borderWidth: CGFloat? = nil,
     cornerRadius: CGFloat? = nil,
     logoVariants: PrimerTheme.BaseImage? = nil,
-    borderWidthVariants: PrimerTheme.BaseBorderWidth? = nil
+    backgroundColorVariants: PrimerTheme.BaseColors? = nil,
+    textColorVariants: PrimerTheme.BaseColors? = nil
   ) {
     self.id = id
     self.type = type
@@ -68,7 +70,8 @@ struct InternalPaymentMethod: Equatable {
     self.borderWidth = borderWidth
     self.cornerRadius = cornerRadius
     self.logoVariants = logoVariants
-    self.borderWidthVariants = borderWidthVariants
+    self.backgroundColorVariants = backgroundColorVariants
+    self.textColorVariants = textColorVariants
   }
 
   // Manual conformance: `UIImage`/`UIColor` fields block automatic synthesis. All
@@ -85,6 +88,7 @@ struct InternalPaymentMethod: Equatable {
       && lhs.borderColor == rhs.borderColor && lhs.borderWidth == rhs.borderWidth
       && lhs.cornerRadius == rhs.cornerRadius
       && lhs.logoVariants === rhs.logoVariants
-      && lhs.borderWidthVariants === rhs.borderWidthVariants
+      && lhs.backgroundColorVariants === rhs.backgroundColorVariants
+      && lhs.textColorVariants === rhs.textColorVariants
   }
 }

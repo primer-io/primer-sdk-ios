@@ -205,6 +205,7 @@
 "primer_klarna_select_category_description" = "Ընտրեք, թե ինչպես եք ուզում վճարել";
 "primer_klarna_loading_title" = "Ներբեռնվում է";
 "primer_klarna_loading_subtitle" = "Սա կարող է տևել մի քանի վայրկյան։";
+"primer_klarna_pay_with" = "Վճարել";
 "accessibility_klarna_category" = "%@ վճարման տարբերակ";
 "accessibility_klarna_category_selected" = "%@ վճարման տարբերակ, ընտրված";
 "accessibility_klarna_payment_view" = "Klarna վճարման ձև";

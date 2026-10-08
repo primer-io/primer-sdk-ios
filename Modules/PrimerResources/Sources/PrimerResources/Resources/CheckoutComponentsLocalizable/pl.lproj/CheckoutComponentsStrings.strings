@@ -205,6 +205,7 @@
 "primer_klarna_select_category_description" = "Wybierz sposób płatności";
 "primer_klarna_loading_title" = "Ładowanie";
 "primer_klarna_loading_subtitle" = "To może potrwać kilka sekund.";
+"primer_klarna_pay_with" = "Zapłać za pomocą";
 "accessibility_klarna_category" = "Opcja płatności %@";
 "accessibility_klarna_category_selected" = "Opcja płatności %@, wybrano";
 "accessibility_klarna_payment_view" = "Formularz płatności Klarna";

@@ -205,6 +205,7 @@
 "primer_klarna_select_category_description" = "Kies hoe u wilt betalen";
 "primer_klarna_loading_title" = "Laden";
 "primer_klarna_loading_subtitle" = "Dit kan enkele seconden duren.";
+"primer_klarna_pay_with" = "Betaal met";
 "accessibility_klarna_category" = "%@ betaaloptie";
 "accessibility_klarna_category_selected" = "%@ betaaloptie, geselecteerd";
 "accessibility_klarna_payment_view" = "Klarna-betaalformulier";

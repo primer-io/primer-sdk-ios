@@ -43,7 +43,8 @@ final class PaymentMethodMapperImpl: PaymentMethodMapper {
       cornerRadius: internalMethod.cornerRadius
     )
     method.logoVariants = internalMethod.logoVariants
-    method.borderWidthVariants = internalMethod.borderWidthVariants
+    method.backgroundColorVariants = internalMethod.backgroundColorVariants
+    method.textColorVariants = internalMethod.textColorVariants
     return method
   }
 

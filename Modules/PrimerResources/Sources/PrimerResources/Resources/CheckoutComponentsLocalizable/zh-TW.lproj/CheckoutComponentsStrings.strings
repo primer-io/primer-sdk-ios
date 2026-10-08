@@ -205,6 +205,7 @@
 "primer_klarna_select_category_description" = "選擇您的付款方式";
 "primer_klarna_loading_title" = "載入中";
 "primer_klarna_loading_subtitle" = "這可能需要幾秒鐘。";
+"primer_klarna_pay_with" = "付款方式";
 "accessibility_klarna_category" = "%@ 付款選項";
 "accessibility_klarna_category_selected" = "%@ 付款選項，已選取";
 "accessibility_klarna_payment_view" = "Klarna付款表單";

@@ -205,6 +205,7 @@
 "primer_klarna_select_category_description" = "Nasıl ödeme yapmak istediğinizi seçin";
 "primer_klarna_loading_title" = "Yükleniyor";
 "primer_klarna_loading_subtitle" = "Bu birkaç saniye sürebilir.";
+"primer_klarna_pay_with" = "ile öde";
 "accessibility_klarna_category" = "%@ ödeme seçeneği";
 "accessibility_klarna_category_selected" = "%@ ödeme seçeneği, seçili";
 "accessibility_klarna_payment_view" = "Klarna ödeme formu";

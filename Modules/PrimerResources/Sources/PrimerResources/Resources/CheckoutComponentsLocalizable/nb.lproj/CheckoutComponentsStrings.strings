@@ -205,6 +205,7 @@
 "primer_klarna_select_category_description" = "Velg hvordan du vil betale";
 "primer_klarna_loading_title" = "Laster";
 "primer_klarna_loading_subtitle" = "Dette kan ta noen sekunder.";
+"primer_klarna_pay_with" = "Betal med";
 "accessibility_klarna_category" = "%@ betalingsalternativ";
 "accessibility_klarna_category_selected" = "%@ betalingsalternativ, valgt";
 "accessibility_klarna_payment_view" = "Klarna-betalingsskjema";

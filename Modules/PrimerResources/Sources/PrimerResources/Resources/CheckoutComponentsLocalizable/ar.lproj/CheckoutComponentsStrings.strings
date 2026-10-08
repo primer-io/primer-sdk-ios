@@ -205,6 +205,7 @@
 "primer_klarna_select_category_description" = "اختر طريقة الدفع المفضلة";
 "primer_klarna_loading_title" = "جارٍ التحميل";
 "primer_klarna_loading_subtitle" = "قد يستغرق هذا بضع ثوانٍ.";
+"primer_klarna_pay_with" = "ادفع باستخدام";
 "accessibility_klarna_category" = "خيار الدفع %@";
 "accessibility_klarna_category_selected" = "خيار الدفع %@، محدد";
 "accessibility_klarna_payment_view" = "نموذج الدفع Klarna";

@@ -205,6 +205,7 @@
 "primer_klarna_select_category_description" = "お支払い方法を選択してください";
 "primer_klarna_loading_title" = "読み込み中";
 "primer_klarna_loading_subtitle" = "数秒かかる場合があります。";
+"primer_klarna_pay_with" = "で支払う";
 "accessibility_klarna_category" = "%@ 支払いオプション";
 "accessibility_klarna_category_selected" = "%@ 支払いオプション、選択済み";
 "accessibility_klarna_payment_view" = "Klarna支払いフォーム";

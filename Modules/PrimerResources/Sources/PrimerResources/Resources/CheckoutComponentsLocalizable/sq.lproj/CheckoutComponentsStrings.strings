@@ -205,6 +205,7 @@
 "primer_klarna_select_category_description" = "Zgjidhni si dëshironi të paguani";
 "primer_klarna_loading_title" = "Po ngarkohet";
 "primer_klarna_loading_subtitle" = "Kjo mund të zgjasë disa sekonda.";
+"primer_klarna_pay_with" = "Paguaj me";
 "accessibility_klarna_category" = "Opsion pagese %@";
 "accessibility_klarna_category_selected" = "Opsion pagese %@, i zgjedhur";
 "accessibility_klarna_payment_view" = "Formulari i pagesës Klarna";

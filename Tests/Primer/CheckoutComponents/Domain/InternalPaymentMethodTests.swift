@@ -38,7 +38,6 @@ final class InternalPaymentMethodTests: XCTestCase {
         XCTAssertNil(method.borderWidth)
         XCTAssertNil(method.cornerRadius)
         XCTAssertNil(method.logoVariants)
-        XCTAssertNil(method.borderWidthVariants)
     }
 
     func test_init_withAllParams_setsAllProperties() {
@@ -150,24 +149,37 @@ final class InternalPaymentMethodTests: XCTestCase {
         XCTAssertNotEqual(method1, method2)
     }
 
-    func test_equality_differentBorderWidthVariants_areNotEqual() {
+    func test_equality_differentBackgroundColorVariants_areNotEqual() {
         let method1 = InternalPaymentMethod(
             id: "pm-1", type: "CARD", name: "Card",
-            borderWidthVariants: PrimerTheme.BaseBorderWidth(colored: 1, light: 1, dark: 2))
+            backgroundColorVariants: PrimerTheme.BaseColors(coloredHex: "#FFC439", lightHex: nil, darkHex: nil))
         let method2 = InternalPaymentMethod(
             id: "pm-1", type: "CARD", name: "Card",
-            borderWidthVariants: PrimerTheme.BaseBorderWidth(colored: 1, light: 1, dark: 2))
+            backgroundColorVariants: PrimerTheme.BaseColors(coloredHex: "#FFC439", lightHex: nil, darkHex: nil))
+
+        XCTAssertNotEqual(method1, method2)
+    }
+
+    func test_equality_differentTextColorVariants_areNotEqual() {
+        let method1 = InternalPaymentMethod(
+            id: "pm-1", type: "CARD", name: "Card",
+            textColorVariants: PrimerTheme.BaseColors(coloredHex: nil, lightHex: "#000000", darkHex: "#FFFFFF"))
+        let method2 = InternalPaymentMethod(
+            id: "pm-1", type: "CARD", name: "Card",
+            textColorVariants: PrimerTheme.BaseColors(coloredHex: nil, lightHex: "#000000", darkHex: "#FFFFFF"))
 
         XCTAssertNotEqual(method1, method2)
     }
 
     func test_equality_sameVariantObjects_areEqual() {
         let logo = PrimerTheme.BaseImage(colored: UIImage(), light: nil, dark: nil)
-        let width = PrimerTheme.BaseBorderWidth(colored: 1, light: 1, dark: 2)
+        let colors = PrimerTheme.BaseColors(coloredHex: "#FFC439", lightHex: nil, darkHex: nil)
         let method1 = InternalPaymentMethod(
-            id: "pm-1", type: "CARD", name: "Card", logoVariants: logo, borderWidthVariants: width)
+            id: "pm-1", type: "CARD", name: "Card", logoVariants: logo,
+            backgroundColorVariants: colors, textColorVariants: colors)
         let method2 = InternalPaymentMethod(
-            id: "pm-1", type: "CARD", name: "Card", logoVariants: logo, borderWidthVariants: width)
+            id: "pm-1", type: "CARD", name: "Card", logoVariants: logo,
+            backgroundColorVariants: colors, textColorVariants: colors)
 
         XCTAssertEqual(method1, method2)
     }

@@ -205,6 +205,7 @@
 "primer_klarna_select_category_description" = "Выберите способ оплаты";
 "primer_klarna_loading_title" = "Загрузка";
 "primer_klarna_loading_subtitle" = "Это может занять несколько секунд.";
+"primer_klarna_pay_with" = "Оплатить через";
 "accessibility_klarna_category" = "Вариант оплаты %@";
 "accessibility_klarna_category_selected" = "Вариант оплаты %@, выбран";
 "accessibility_klarna_payment_view" = "Форма оплаты Klarna";

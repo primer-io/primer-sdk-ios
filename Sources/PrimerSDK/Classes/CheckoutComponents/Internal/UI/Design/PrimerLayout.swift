@@ -95,6 +95,9 @@ enum PrimerComponentHeight {
   static let errorMessage: CGFloat = 16
   static let keyboardAccessory: CGFloat = 44
   static let paymentMethodCard: CGFloat = 44
+  /// The design's logo frame (PayPal 75 x 26 in a 44 high button). Backend logos carry the same
+  /// transparent padding, so the frame is sized, not the ink.
+  static let paymentMethodLogo: CGFloat = 26
   /// The design's minimum tappable height, shared by every button.
   static let interactive: CGFloat = 44
   static let vaultedPaymentMethodCard: CGFloat = 64
@@ -108,7 +111,6 @@ enum PrimerComponentHeight {
 // MARK: - Primer Component Widths
 
 enum PrimerComponentWidth {
-  static let paymentMethodIcon: CGFloat = 32
   static let cvvFieldMax: CGFloat = 120
 }
 

@@ -205,6 +205,7 @@
 "primer_klarna_select_category_description" = "เลือกวิธีที่คุณต้องการชำระเงิน";
 "primer_klarna_loading_title" = "กำลังโหลด";
 "primer_klarna_loading_subtitle" = "อาจใช้เวลาสักครู่";
+"primer_klarna_pay_with" = "ชำระเงินด้วย";
 "accessibility_klarna_category" = "ตัวเลือกการชำระเงิน %@";
 "accessibility_klarna_category_selected" = "ตัวเลือกการชำระเงิน %@, เลือกแล้ว";
 "accessibility_klarna_payment_view" = "แบบฟอร์มชำระเงิน Klarna";
