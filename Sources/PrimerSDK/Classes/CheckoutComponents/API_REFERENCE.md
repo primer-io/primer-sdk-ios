@@ -361,7 +361,7 @@ public struct PrimerCheckoutTheme: Equatable {
 
 **Override types**: `ColorOverrides`, `RadiusOverrides`, `SpacingOverrides`, `SizeOverrides`, `TypographyOverrides`, `WidthOverrides`. See `Scope/PrimerCheckoutTheme.swift` for all token names.
 
-**Light and dark colours**: `colors` applies in both colour schemes. Add `darkColors` to give dark mode its own values — each one left nil there falls back to the matching `colors` value, so only the colours that differ need naming. `radius`, `spacing`, `sizes`, `typography` and `width` are colour-scheme independent and have no dark counterpart.
+**Light and dark colours**: `colors` applies in light mode only. Dark mode reads `darkColors` alone, and each value left nil there takes Primer's dark default, not the matching `colors` value: a colour picked against white is a guess on a dark background. To keep a colour in dark mode, name it in `darkColors` too. `radius`, `spacing`, `sizes`, `typography` and `width` are colour-scheme independent and have no dark counterpart.
 
 ```swift
 PrimerCheckoutTheme(

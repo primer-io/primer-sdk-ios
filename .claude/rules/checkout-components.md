@@ -102,12 +102,14 @@ Per-payment-method and per-card-network surcharge amounts:
 
 | Category | Type | Tokens |
 |----------|------|--------|
-| Colors | `ColorOverrides` | brand, 9 grays, semantic (green, red, blue), background, text (primary/secondary/placeholder/disabled/negative/link), borders (outlined 8 states, transparent 6 states), icons, focus, loader |
+| Colors | `ColorOverrides` | brand, onBrand, background (primary, secondary, outlined 6 states, transparent 5 states), text (primary/secondary/placeholder/disabled/negative/link/outlinedDefault), borders (outlined 7 states, transparent 5 states), icons (primary/disabled/negative/positive), focus, loader |
 | Radius | `RadiusOverrides` | xsmall(2), small(4), medium(8), large(12), base(4) |
 | Spacing | `SpacingOverrides` | xxsmall(2), xsmall(4), small(8), medium(12), large(16), xlarge(20), xxlarge(24), base(4) |
-| Sizes | `SizeOverrides` | small(16), medium(20), large(24), xlarge(32), xxlarge(44), xxxlarge(56), base(4) |
-| Typography | `TypographyOverrides` | titleXlarge, titleLarge, bodyLarge, bodyMedium, bodySmall — each with font, weight, size, letterSpacing, lineHeight |
-| Border Width | `BorderWidthOverrides` | thin(1), medium(2), thick(3) |
+| Sizes | `SizeOverrides` | small(16), medium(20), large(24), xlarge(32), xxlarge(40), xxxlarge(56), base(4) |
+| Typography | `TypographyOverrides` | brand (family for every style), titleXlarge, titleLarge, bodyLarge, bodyMedium, bodySmall, error — each with font, weight, size, letterSpacing, lineHeight |
+| Width | `WidthOverrides` | default(1), focus(2), error(2), selected(2) |
+
+Colours are per scheme: `colors` applies in light mode and `darkColors` in dark mode. Dark mode does not fall back to `colors`; anything `darkColors` leaves nil takes Primer's dark default.
 
 Internal source: `DesignTokens`, decoded from `base.json` (light) or `base.json` + `dark.json` merged (dark) by `DesignTokensManager`.
 
