@@ -141,6 +141,7 @@ struct PostalCodeTextField: UIViewRepresentable, LogReporter {
 
       scope.updateValidationState(\.postalCode, isValid: isValid)
 
+      textField.applyPrimerEdit(newText, caretOffset: range.location + string.utf16.count)
       return false
     }
 

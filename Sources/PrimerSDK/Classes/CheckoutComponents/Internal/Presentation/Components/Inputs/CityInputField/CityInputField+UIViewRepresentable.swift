@@ -125,6 +125,7 @@ struct CityTextField: UIViewRepresentable, LogReporter {
 
       scope.updateValidationState(\.city, isValid: isValid)
 
+      textField.applyPrimerEdit(newText, caretOffset: range.location + string.utf16.count)
       return false
     }
 

@@ -80,7 +80,37 @@ final class CardholderNameInputFieldEditingTests: XCTestCase {
         XCTAssertEqual(cardholderName, "Jo")
     }
 
+    /// SwiftUI sets the field's text only on its next update, and a fast key arrives before it.
+    func test_keysTypedBeforeTheNextUpdate_stayInOrder() async {
+        let field = UITextField()
+        let coordinator = await makeCoordinator()
+
+        for key in ["A", "d", "a"] {
+            let end = NSRange(location: field.text?.utf16.count ?? 0, length: 0)
+            _ = coordinator.textField(field, shouldChangeCharactersIn: end, replacementString: key)
+        }
+
+        XCTAssertEqual(cardholderName, "Ada")
+        XCTAssertEqual(field.text, "Ada")
+    }
+
+    func test_insertInTheMiddle_leavesTheCaretAfterTheInsertedText() async throws {
+        let field = UITextField()
+        field.text = "Aa"
+        cardholderName = "Aa"
+        let coordinator = await makeCoordinator()
+
+        _ = coordinator.textField(field, shouldChangeCharactersIn: NSRange(location: 1, length: 0), replacementString: "d")
+
+        let caret = try XCTUnwrap(field.selectedTextRange?.start)
+        XCTAssertEqual(field.offset(from: field.beginningOfDocument, to: caret), 2)
+    }
+
     private func type(_ string: String, at range: NSRange = NSRange(location: 0, length: 0)) async {
+        _ = await makeCoordinator().textField(UITextField(), shouldChangeCharactersIn: range, replacementString: string)
+    }
+
+    private func makeCoordinator() async -> CardholderNameTextField.Coordinator {
         let scope = DefaultCardFormScope(
             checkoutScope: await ContainerTestHelpers.createMockCheckoutScope(),
             presentationContext: .fromPaymentSelection,
@@ -90,7 +120,7 @@ final class CardholderNameInputFieldEditingTests: XCTestCase {
             analyticsInteractor: MockAnalyticsInteractor(),
             configurationService: MockConfigurationService.withDefaultConfiguration()
         )
-        let coordinator = CardholderNameTextField.Coordinator(
+        return CardholderNameTextField.Coordinator(
             validationService: DefaultValidationService(),
             cardholderName: Binding(get: { self.cardholderName }, set: { self.cardholderName = $0 }),
             isValid: Binding(get: { self.isValid }, set: { self.isValid = $0 }),
@@ -98,6 +128,5 @@ final class CardholderNameInputFieldEditingTests: XCTestCase {
             isFocused: Binding(get: { self.isFocused }, set: { self.isFocused = $0 }),
             scope: scope
         )
-        _ = coordinator.textField(UITextField(), shouldChangeCharactersIn: range, replacementString: string)
     }
 }
