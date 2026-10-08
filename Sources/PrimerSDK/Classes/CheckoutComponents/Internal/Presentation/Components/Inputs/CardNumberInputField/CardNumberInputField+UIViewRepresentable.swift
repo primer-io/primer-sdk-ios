@@ -208,15 +208,17 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
       formattedText: String,
       insertText: String
     ) -> String {
-      let unformattedPos = calculateUnformattedPosition(
-        upToIndex: range.location,
-        in: formattedText
-      )
-      if unformattedPos <= currentText.count {
-        let index = currentText.index(currentText.startIndex, offsetBy: unformattedPos)
-        return currentText.inserting(contentsOf: insertText, at: index)
+      // A paste or AutoFill over a selection replaces the selected digits rather than landing before them.
+      let selected = getUnformattedRange(formattedRange: range, formattedText: formattedText, unformattedText: currentText)
+      let remaining = selected.length > 0
+        ? handleDeletion(currentText: currentText, unformattedRange: selected)
+        : currentText
+      let unformattedPos = selected.location
+      if unformattedPos <= remaining.count {
+        let index = remaining.index(remaining.startIndex, offsetBy: unformattedPos)
+        return remaining.inserting(contentsOf: insertText, at: index)
       } else {
-        return currentText + insertText
+        return remaining + insertText
       }
     }
 
