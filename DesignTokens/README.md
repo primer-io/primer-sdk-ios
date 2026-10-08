@@ -50,7 +50,7 @@ This repository uses [Style Dictionary](https://amzn.github.io/style-dictionary/
    This runs:
    - `npm run build-light` – Generates `DesignTokens.swift` in the build path.
 
-   The output files are placed in your iOS project under `../Sources/PrimerSDK/Classes/Components/Design/`.
+   The output file is placed in your iOS project under `../Sources/PrimerSDK/Classes/CheckoutComponents/Internal/Tokens/`.
 
 ## Customization & How It Works
 
