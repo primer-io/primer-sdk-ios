@@ -152,9 +152,12 @@ private struct VaultedMethodRowContent: View {
       .padding(PrimerSpacing.medium(tokens: tokens))
       .frame(maxWidth: .infinity)
       .overlay(
+        // The selected border, as on Android, so the selection does not rest on the checkmark alone.
         RoundedRectangle(cornerRadius: PrimerRadius.medium(tokens: tokens))
-          .stroke(
-            CheckoutColors.borderDefault(tokens: tokens), lineWidth: PrimerBorderWidth.standard(tokens: tokens))
+          .strokeBorder(
+            isSelected ? CheckoutColors.borderSelected(tokens: tokens) : CheckoutColors.borderDefault(tokens: tokens),
+            lineWidth: isSelected
+              ? PrimerBorderWidth.selected(tokens: tokens) : PrimerBorderWidth.standard(tokens: tokens))
       )
     }
     .buttonStyle(PlainButtonStyle())
@@ -162,6 +165,7 @@ private struct VaultedMethodRowContent: View {
     .accessibilityIdentifier(
       AccessibilityIdentifiers.PaymentSelection.vaultedPaymentMethodItem(method.id))
     .accessibilityLabel(method.displayData.accessibilityLabel)
+    .accessibilityAddTraits(isSelected ? .isSelected : [])
   }
 }
 
