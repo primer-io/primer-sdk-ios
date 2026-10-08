@@ -123,13 +123,13 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
         return false
       }
 
-      // Only allow numbers and return for non-numeric input except deletion
-      if !string.isEmpty,
-        !CharacterSet.decimalDigits.isSuperset(of: CharacterSet(charactersIn: string)) {
+      // A pasted "12/30" keeps its digits rather than being refused for the separator.
+      let digits = String(String.UnicodeScalarView(string.unicodeScalars.filter(CharacterSet.decimalDigits.contains)))
+      if !string.isEmpty, digits.isEmpty {
         return false
       }
 
-      let newText = processInput(currentText: currentText, range: range, string: string)
+      let newText = processInput(currentText: currentText, range: range, string: digits)
 
       expiryDate = newText
       textField.text = newText
@@ -164,22 +164,14 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
       }
 
       // Remove the / character temporarily for easier processing
-      let sanitizedText = currentText.replacingOccurrences(of: "/", with: "")
+      var newSanitizedText = currentText.replacingOccurrences(of: "/", with: "")
 
-      // Calculate where to insert the new text
-      var sanitizedLocation = range.location
-      if range.location > 2, currentText.count >= 3, currentText.contains("/") {
-        sanitizedLocation -= 1
-      }
-
-      var newSanitizedText = sanitizedText
-      if sanitizedLocation <= sanitizedText.count {
-        let index = newSanitizedText.index(
-          newSanitizedText.startIndex, offsetBy: min(sanitizedLocation, newSanitizedText.count))
-        newSanitizedText.insert(contentsOf: string, at: index)
-      } else {
-        newSanitizedText += string
-      }
+      // Counted in digits so the separator does not shift the range, and a selection is replaced, not kept.
+      let start = min(currentText.prefix(range.location).filter(\.isNumber).count, newSanitizedText.count)
+      let selected = currentText.dropFirst(range.location).prefix(range.length).filter(\.isNumber).count
+      let lower = newSanitizedText.index(newSanitizedText.startIndex, offsetBy: start)
+      let upper = newSanitizedText.index(lower, offsetBy: min(selected, newSanitizedText.count - start))
+      newSanitizedText.replaceSubrange(lower..<upper, with: string)
 
       // Limit to 4 digits total (MMYY format)
       newSanitizedText = String(newSanitizedText.prefix(4))
