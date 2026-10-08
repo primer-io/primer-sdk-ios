@@ -41,6 +41,18 @@ final class CardholderNameInputFieldEditingTests: XCTestCase {
         XCTAssertEqual(cardholderName, "Seán O'Brien")
     }
 
+    func test_typographicHyphenAndSpace_keepTheNamePartsApart() async {
+        await type("Jean\u{2011}Pierre\u{00A0}Dupont")
+
+        XCTAssertEqual(cardholderName, "Jean-Pierre Dupont")
+    }
+
+    func test_emoji_isDroppedWithItsVariationSelector() async {
+        await type("Jane\u{2764}\u{FE0F}")
+
+        XCTAssertEqual(cardholderName, "Jane")
+    }
+
     func test_onlyDisallowedCharacters_changeNothing() async {
         cardholderName = "Jo"
 
