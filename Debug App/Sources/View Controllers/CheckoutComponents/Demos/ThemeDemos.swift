@@ -29,10 +29,11 @@ enum ThemeDemos {
         DemoMetadata(key: key, name: name, description: description, tags: ["THEME"], isCustom: false, category: .themes)
     }
 
-    /// Dark mode reads `darkColors` alone, so the brand is named for both schemes.
+    /// Dark mode reads `darkColors` alone, and its default label on the brand is near black, so both are set here.
     private static func brandTheme(_ hex: UInt32) -> PrimerCheckoutTheme {
         let colors = ColorOverrides(
             primerColorBrand: Color(hex: hex),
+            primerColorOnBrand: .white,
             primerColorBorderOutlinedDefault: Color(hex: hex),
             primerColorBorderOutlinedFocus: Color(hex: hex)
         )
@@ -55,6 +56,7 @@ enum ThemeDemos {
 
     private static let customColors = ColorOverrides(
         primerColorBrand: Color(hex: 0x6B46C1),
+        primerColorOnBrand: .white,
         primerColorBorderOutlinedDefault: Color(hex: 0xD6BCFA),
         primerColorBorderOutlinedFocus: Color(hex: 0x6B46C1)
     )
