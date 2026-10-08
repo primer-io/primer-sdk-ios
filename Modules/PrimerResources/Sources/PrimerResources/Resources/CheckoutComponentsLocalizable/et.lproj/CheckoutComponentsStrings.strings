@@ -205,7 +205,6 @@
 "primer_klarna_select_category_description" = "Valige, kuidas soovite maksta";
 "primer_klarna_loading_title" = "Laadimine";
 "primer_klarna_loading_subtitle" = "See võib võtta mõne sekundi.";
-"primer_klarna_pay_with" = "Maksa teenusega";
 "accessibility_klarna_category" = "%@ maksevalik";
 "accessibility_klarna_category_selected" = "%@ maksevalik, valitud";
 "accessibility_klarna_payment_view" = "Klarna maksevorm";

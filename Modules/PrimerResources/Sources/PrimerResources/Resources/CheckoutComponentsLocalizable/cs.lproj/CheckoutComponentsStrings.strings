@@ -205,7 +205,6 @@
 "primer_klarna_select_category_description" = "Vyberte, jak chcete zaplatit";
 "primer_klarna_loading_title" = "Načítání";
 "primer_klarna_loading_subtitle" = "Může to trvat několik sekund.";
-"primer_klarna_pay_with" = "Zaplaťte přes";
 "accessibility_klarna_category" = "Platební možnost %@";
 "accessibility_klarna_category_selected" = "Platební možnost %@, vybráno";
 "accessibility_klarna_payment_view" = "Platební formulář Klarna";

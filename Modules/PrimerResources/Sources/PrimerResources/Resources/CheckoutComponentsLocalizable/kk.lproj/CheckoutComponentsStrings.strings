@@ -205,7 +205,6 @@
 "primer_klarna_select_category_description" = "Қалай төлегіңіз келетінін таңдаңыз";
 "primer_klarna_loading_title" = "Жүктелуде";
 "primer_klarna_loading_subtitle" = "Бұл бірнеше секунд алуы мүмкін.";
-"primer_klarna_pay_with" = "арқылы төлеу";
 "accessibility_klarna_category" = "%@ төлем опциясы";
 "accessibility_klarna_category_selected" = "%@ төлем опциясы, таңдалған";
 "accessibility_klarna_payment_view" = "Klarna төлем формасы";

@@ -205,7 +205,6 @@
 "primer_klarna_select_category_description" = "Alegeți cum doriți să plătiți";
 "primer_klarna_loading_title" = "Se încarcă";
 "primer_klarna_loading_subtitle" = "Aceasta poate dura câteva secunde.";
-"primer_klarna_pay_with" = "Plătește cu";
 "accessibility_klarna_category" = "Opțiune de plată %@";
 "accessibility_klarna_category_selected" = "Opțiune de plată %@, selectat";
 "accessibility_klarna_payment_view" = "Formular de plată Klarna";

@@ -205,7 +205,6 @@
 "primer_klarna_select_category_description" = "Izvēlieties, kā vēlaties maksāt";
 "primer_klarna_loading_title" = "Ielādē";
 "primer_klarna_loading_subtitle" = "Tas var aizņemt dažas sekundes.";
-"primer_klarna_pay_with" = "Maksāt ar";
 "accessibility_klarna_category" = "%@ maksājuma iespēja";
 "accessibility_klarna_category_selected" = "%@ maksājuma iespēja, atlasīts";
 "accessibility_klarna_payment_view" = "Klarna maksājuma veidlapa";

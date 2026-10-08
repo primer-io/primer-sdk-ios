@@ -205,7 +205,6 @@
 "primer_klarna_select_category_description" = "Επιλέξτε πώς θέλετε να πληρώσετε";
 "primer_klarna_loading_title" = "Φόρτωση";
 "primer_klarna_loading_subtitle" = "Αυτό μπορεί να διαρκέσει μερικά δευτερόλεπτα.";
-"primer_klarna_pay_with" = "Πληρωμή με";
 "accessibility_klarna_category" = "Επιλογή πληρωμής %@";
 "accessibility_klarna_category_selected" = "Επιλογή πληρωμής %@, επιλεγμένο";
 "accessibility_klarna_payment_view" = "Φόρμα πληρωμής Klarna";

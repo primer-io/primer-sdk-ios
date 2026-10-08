@@ -205,7 +205,6 @@
 "primer_klarna_select_category_description" = "Изберете как искате да платите";
 "primer_klarna_loading_title" = "Зареждане";
 "primer_klarna_loading_subtitle" = "Това може да отнеме няколко секунди.";
-"primer_klarna_pay_with" = "Плати с";
 "accessibility_klarna_category" = "Опция за плащане %@";
 "accessibility_klarna_category_selected" = "Опция за плащане %@, избрано";
 "accessibility_klarna_payment_view" = "Формуляр за плащане Klarna";

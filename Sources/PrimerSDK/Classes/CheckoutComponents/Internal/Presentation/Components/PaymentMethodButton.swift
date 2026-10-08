@@ -116,11 +116,13 @@ struct PaymentMethodButton: View {
   }
 
   private func makeKlarnaButton() -> some View {
-    makeButton(fill: PaymentMethodColors.klarnaBlack, label: CheckoutComponentsStrings.a11yPayWithKlarna) {
+    let label = CheckoutComponentsStrings.a11yPayWithKlarna
+    let text = KlarnaButtonText(label)
+    return makeButton(fill: PaymentMethodColors.klarnaBlack, label: label) {
       HStack(spacing: PrimerSpacing.small(tokens: tokens)) {
-        Text(CheckoutComponentsStrings.klarnaPayWith)
-          .primerTypography(.titleLarge, tokens: tokens)
-          .foregroundColor(PaymentMethodColors.klarnaOnBlack)
+        if let before = text.before {
+          makeKlarnaText(before)
+        }
         if let wordmark = UIImage(primerResource: Self.klarnaWordmarkName) {
           Image(uiImage: wordmark)
             .renderingMode(.template)
@@ -131,8 +133,17 @@ struct PaymentMethodButton: View {
                 .fill(PaymentMethodColors.klarnaPink)
             )
         }
+        if let after = text.after {
+          makeKlarnaText(after)
+        }
       }
     }
+  }
+
+  private func makeKlarnaText(_ text: String) -> some View {
+    Text(text)
+      .primerTypography(.titleLarge, tokens: tokens)
+      .foregroundColor(PaymentMethodColors.klarnaOnBlack)
   }
 
   private func partnerTextColor(for variant: PaymentMethodAssetVariant) -> Color {

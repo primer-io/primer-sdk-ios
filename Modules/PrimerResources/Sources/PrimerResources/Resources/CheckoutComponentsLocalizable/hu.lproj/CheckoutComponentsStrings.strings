@@ -205,7 +205,6 @@
 "primer_klarna_select_category_description" = "Válassza ki a fizetési módot";
 "primer_klarna_loading_title" = "Betöltés";
 "primer_klarna_loading_subtitle" = "Ez eltarthat néhány másodpercig.";
-"primer_klarna_pay_with" = "Fizetés ezzel";
 "accessibility_klarna_category" = "%@ fizetési lehetőség";
 "accessibility_klarna_category_selected" = "%@ fizetési lehetőség, kiválasztva";
 "accessibility_klarna_payment_view" = "Klarna fizetési űrlap";

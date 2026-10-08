@@ -1199,14 +1199,6 @@ enum CheckoutComponentsStrings {
     comment: "Klarna loading subtitle text"
   )
 
-  static let klarnaPayWith = NSLocalizedString(
-    "primer_klarna_pay_with",
-    tableName: tableName,
-    bundle: .primerResources,
-    value: "Pay with",
-    comment: "Text before the Klarna badge on the payment method list button"
-  )
-
   // MARK: Klarna Accessibility Strings
 
   static func a11yKlarnaCategory(_ categoryName: String) -> String {

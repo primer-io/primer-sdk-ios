@@ -205,7 +205,6 @@
 "primer_klarna_select_category_description" = "نحوه پرداخت را انتخاب کنید";
 "primer_klarna_loading_title" = "بارگذاری";
 "primer_klarna_loading_subtitle" = "این ممکن است چند ثانیه طول بکشد.";
-"primer_klarna_pay_with" = "پرداخت با";
 "accessibility_klarna_category" = "گزینه پرداخت %@";
 "accessibility_klarna_category_selected" = "گزینه پرداخت %@، انتخاب شده";
 "accessibility_klarna_payment_view" = "فرم پرداخت Klarna";

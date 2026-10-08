@@ -205,7 +205,6 @@
 "primer_klarna_select_category_description" = "Piliin kung paano mo gustong magbayad";
 "primer_klarna_loading_title" = "Naglo-load";
 "primer_klarna_loading_subtitle" = "Maaari itong tumagal ng ilang segundo.";
-"primer_klarna_pay_with" = "Magbayad gamit ang";
 "accessibility_klarna_category" = "%@ opsyon sa pagbabayad";
 "accessibility_klarna_category_selected" = "%@ opsyon sa pagbabayad, napili";
 "accessibility_klarna_payment_view" = "Klarna form sa pagbabayad";

@@ -212,7 +212,6 @@
 "primer_klarna_select_category_description" = "Choose how you'd like to pay";
 "primer_klarna_loading_title" = "Loading";
 "primer_klarna_loading_subtitle" = "This may take a few seconds.";
-"primer_klarna_pay_with" = "Pay with";
 "accessibility_klarna_category" = "%@ payment option";
 "accessibility_klarna_category_selected" = "%@ payment option, selected";
 "accessibility_klarna_payment_view" = "Klarna payment form";

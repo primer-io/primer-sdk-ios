@@ -205,7 +205,6 @@
 "primer_klarna_select_category_description" = "Chọn cách bạn muốn thanh toán";
 "primer_klarna_loading_title" = "Đang tải";
 "primer_klarna_loading_subtitle" = "Quá trình này có thể mất vài giây.";
-"primer_klarna_pay_with" = "Thanh toán bằng";
 "accessibility_klarna_category" = "Tùy chọn thanh toán %@";
 "accessibility_klarna_category_selected" = "Tùy chọn thanh toán %@, đã chọn";
 "accessibility_klarna_payment_view" = "Biểu mẫu thanh toán Klarna";

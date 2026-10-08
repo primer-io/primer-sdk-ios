@@ -205,7 +205,6 @@
 "primer_klarna_select_category_description" = "चुनें कि आप कैसे भुगतान करना चाहते हैं";
 "primer_klarna_loading_title" = "लोड हो रहा है";
 "primer_klarna_loading_subtitle" = "इसमें कुछ सेकंड लग सकते हैं।";
-"primer_klarna_pay_with" = "इसके साथ भुगतान करें";
 "accessibility_klarna_category" = "%@ भुगतान विकल्प";
 "accessibility_klarna_category_selected" = "%@ भुगतान विकल्प, चयनित";
 "accessibility_klarna_payment_view" = "Klarna भुगतान फ़ॉर्म";

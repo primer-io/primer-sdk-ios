@@ -205,7 +205,6 @@
 "primer_klarna_select_category_description" = "აირჩიეთ როგორ გსურთ გადახდა";
 "primer_klarna_loading_title" = "იტვირთება";
 "primer_klarna_loading_subtitle" = "შეიძლება რამდენიმე წამი დასჭირდეს.";
-"primer_klarna_pay_with" = "გადაიხადე";
 "accessibility_klarna_category" = "%@ გადახდის ვარიანტი";
 "accessibility_klarna_category_selected" = "%@ გადახდის ვარიანტი, არჩეული";
 "accessibility_klarna_payment_view" = "Klarna გადახდის ფორმა";

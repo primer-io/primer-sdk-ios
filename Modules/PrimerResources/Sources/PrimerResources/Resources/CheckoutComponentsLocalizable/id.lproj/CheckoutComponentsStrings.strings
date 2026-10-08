@@ -205,7 +205,6 @@
 "primer_klarna_select_category_description" = "Pilih cara pembayaran Anda";
 "primer_klarna_loading_title" = "Memuat";
 "primer_klarna_loading_subtitle" = "Ini mungkin memerlukan beberapa detik.";
-"primer_klarna_pay_with" = "Bayar dengan";
 "accessibility_klarna_category" = "Opsi pembayaran %@";
 "accessibility_klarna_category_selected" = "Opsi pembayaran %@, dipilih";
 "accessibility_klarna_payment_view" = "Formulir pembayaran Klarna";

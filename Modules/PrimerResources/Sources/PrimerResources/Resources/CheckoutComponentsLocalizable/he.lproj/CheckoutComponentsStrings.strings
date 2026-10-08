@@ -205,7 +205,6 @@
 "primer_klarna_select_category_description" = "בחרו כיצד תרצו לשלם";
 "primer_klarna_loading_title" = "טוען";
 "primer_klarna_loading_subtitle" = "פעולה זו עשויה להימשך מספר שניות.";
-"primer_klarna_pay_with" = "שלם באמצעות";
 "accessibility_klarna_category" = "אפשרות תשלום %@";
 "accessibility_klarna_category_selected" = "אפשרות תשלום %@, נבחר";
 "accessibility_klarna_payment_view" = "טופס תשלום Klarna";
