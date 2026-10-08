@@ -24,7 +24,8 @@ extension PrimerInputFieldContainer {
     HStack(spacing: PrimerSpacing.small(tokens: tokens), content: makeTextFieldContainerContent)
       .padding(.leading, PrimerSpacing.medium(tokens: tokens))
       .padding(.trailing, PrimerSpacing.medium(tokens: tokens))
-      .frame(height: PrimerSize.xxlarge(tokens: tokens))
+      // A minimum, not a fixed height: at the larger accessibility text sizes the text outgrows 40pt.
+      .frame(minHeight: PrimerSize.xxlarge(tokens: tokens))
       .background(makeTextFieldContainerBackground())
       .disabled(!isInputEnabled)
   }

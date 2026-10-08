@@ -87,7 +87,7 @@ struct OTPCodeInputField: View, LogReporter {
       .onChange(of: isInputEnabled) { if !$0 { hasKeyboardFocus = false } }
       .keyboardType(.numberPad)
       .textContentType(.oneTimeCode)
-      .frame(height: PrimerSize.xxlarge(tokens: tokens))
+      .frame(minHeight: PrimerSize.xxlarge(tokens: tokens))
       .onChange(of: otpCode) { newValue in
         if newValue.count > expectedLength {
           otpCode = String(newValue.prefix(expectedLength))

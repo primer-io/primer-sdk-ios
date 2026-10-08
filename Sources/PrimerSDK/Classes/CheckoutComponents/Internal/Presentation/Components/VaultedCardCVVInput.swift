@@ -102,7 +102,8 @@ struct VaultedCardCVVInput: View {
       if errorMessage != nil { PrimerFieldErrorIcon() }
     }
     .padding(.horizontal, PrimerSpacing.medium(tokens: tokens))
-    .frame(width: PrimerComponentWidth.cvvFieldMax, height: PrimerSize.xxlarge(tokens: tokens))
+    .frame(width: PrimerComponentWidth.cvvFieldMax)
+    .frame(minHeight: PrimerSize.xxlarge(tokens: tokens))
     .background(
       RoundedRectangle(cornerRadius: PrimerRadius.small(tokens: tokens))
         .fill(CheckoutColors.inputBackground(tokens: tokens, isEnabled: isInputEnabled))
