@@ -88,7 +88,7 @@ struct CardNumberInputField: View, LogReporter {
               .padding(.vertical, 2)
               .background(CheckoutColors.backgroundSecondary(tokens: tokens))
               .cornerRadius(PrimerRadius.xsmall(tokens: tokens))
-              .frame(height: PrimerSize.small(tokens: tokens))
+              .frame(minHeight: PrimerSize.small(tokens: tokens))
           }
 
           if availableNetworks.count > 1 {
