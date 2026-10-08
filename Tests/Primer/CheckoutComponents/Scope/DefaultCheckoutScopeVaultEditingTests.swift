@@ -19,11 +19,8 @@ final class DefaultCheckoutScopeVaultEditingTests: XCTestCase {
     override func setUp() async throws {
         try await super.setUp()
         await ContainerTestHelpers.resetSharedContainer()
-        sut = DefaultCheckoutScope(
-            clientToken: TestData.Tokens.valid,
-            settings: PrimerSettings(),
-            navigator: CheckoutNavigator(coordinator: CheckoutCoordinator())
-        )
+        // Settled first: the scope's own init navigates, and that would end edit mode behind the test's back.
+        sut = try await ContainerTestHelpers.createSettledCheckoutScope()
         sut.updateNavigationState(.vaultedPaymentMethods)
         sut.setVaultEditing(true)
     }
