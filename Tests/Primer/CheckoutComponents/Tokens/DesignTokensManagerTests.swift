@@ -832,15 +832,6 @@ final class DesignTokensManagerTests: XCTestCase {
         XCTAssertEqual(rgba(dark, .dark), rgba(.blue, .dark))
     }
 
-    /// The brand token is resolved for the loaded scheme, so it is compared by value, not by `Color` identity.
-    private func rgba(_ color: Color?, _ style: UIUserInterfaceStyle = .light) -> [Int] {
-        guard let color else { return [] }
-        var red: CGFloat = 0, green: CGFloat = 0, blue: CGFloat = 0, alpha: CGFloat = 0
-        UIColor(color).resolvedColor(with: UITraitCollection(userInterfaceStyle: style))
-            .getRed(&red, green: &green, blue: &blue, alpha: &alpha)
-        return [red, green, blue, alpha].map { Int(($0 * 255).rounded()) }
-    }
-
     private func colorTokens(of tokens: DesignTokens) -> [String: Color] {
         Mirror(reflecting: tokens).children.reduce(into: [String: Color]()) { result, child in
             guard let label = child.label, label.hasPrefix("primerColor"),

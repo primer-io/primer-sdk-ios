@@ -125,13 +125,4 @@ final class ThemeOverrideMappingTests: XCTestCase {
         XCTAssertEqual(PrimerInputElementType.phoneNumber.fieldConfiguration.keyboardType, .phonePad)
         XCTAssertEqual(PrimerInputElementType.firstName.fieldConfiguration.keyboardType, .default)
     }
-
-    /// Overrides are pinned to the loaded scheme, so they compare by value, not by identity.
-    private func rgba(_ color: Color?) -> [Int] {
-        guard let color else { return [] }
-        var red: CGFloat = 0, green: CGFloat = 0, blue: CGFloat = 0, alpha: CGFloat = 0
-        UIColor(color).resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
-            .getRed(&red, green: &green, blue: &blue, alpha: &alpha)
-        return [red, green, blue, alpha].map { Int(($0 * 255).rounded()) }
-    }
 }
