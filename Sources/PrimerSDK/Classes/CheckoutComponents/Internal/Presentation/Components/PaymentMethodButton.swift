@@ -73,8 +73,9 @@ struct PaymentMethodButton: View {
   }
 
   private func borderColor(for method: CheckoutPaymentMethod) -> Color {
-    if let color = method.borderColor, color != .clear {
-      return resolved(color)
+    // A dynamic backend colour never equals `.clear`, so transparency is read from the resolved alpha.
+    if let color = method.borderColor?.resolvedColor(with: traits), color.cgColor.alpha > 0 {
+      return Color(color)
     }
     guard !hasVisibleBackground else { return .clear }
     return CheckoutColors.borderDefault(tokens: tokens)
