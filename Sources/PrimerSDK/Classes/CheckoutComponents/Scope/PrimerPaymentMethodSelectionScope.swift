@@ -205,6 +205,15 @@ public struct CheckoutPaymentMethod: Equatable, Identifiable {
     lhs.id == rhs.id && lhs.type == rhs.type && lhs.name == rhs.name
       && lhs.surcharge == rhs.surcharge && lhs.hasUnknownSurcharge == rhs.hasUnknownSurcharge
       && lhs.formattedSurcharge == rhs.formattedSurcharge
-      && lhs.backgroundColor == rhs.backgroundColor
+      && sameColor(lhs.backgroundColor, rhs.backgroundColor)
+  }
+
+  /// Backend colours are dynamic, and two dynamic `UIColor`s never compare equal even for the same hex.
+  private static func sameColor(_ lhs: UIColor?, _ rhs: UIColor?) -> Bool {
+    guard let lhs, let rhs else { return lhs == nil && rhs == nil }
+    return [UIUserInterfaceStyle.light, .dark].allSatisfy {
+      let traits = UITraitCollection(userInterfaceStyle: $0)
+      return lhs.resolvedColor(with: traits) == rhs.resolvedColor(with: traits)
+    }
   }
 }

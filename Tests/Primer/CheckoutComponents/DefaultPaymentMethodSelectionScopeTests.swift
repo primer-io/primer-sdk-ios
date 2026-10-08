@@ -1136,6 +1136,31 @@ final class CheckoutPaymentMethodTests: XCTestCase {
         )
     }
 
+    /// Each mapping of a backend colour builds a new dynamic `UIColor`, as a refresh does.
+    func test_checkoutPaymentMethod_equality_sameBackendColorMappedTwice() throws {
+        let colors = try backendColors(light: "#FFC439", dark: "#003087")
+
+        XCTAssertEqual(
+            CheckoutPaymentMethod(id: "pm_1", type: "PAYPAL", name: "PayPal", backgroundColor: colors.uiColor),
+            CheckoutPaymentMethod(id: "pm_1", type: "PAYPAL", name: "PayPal", backgroundColor: colors.uiColor)
+        )
+    }
+
+    func test_checkoutPaymentMethod_equality_differentDarkBackendColor() throws {
+        let colors = try backendColors(light: "#FFC439", dark: "#003087")
+        let otherDark = try backendColors(light: "#FFC439", dark: "#000000")
+
+        XCTAssertNotEqual(
+            CheckoutPaymentMethod(id: "pm_1", type: "PAYPAL", name: "PayPal", backgroundColor: colors.uiColor),
+            CheckoutPaymentMethod(id: "pm_1", type: "PAYPAL", name: "PayPal", backgroundColor: otherDark.uiColor)
+        )
+    }
+
+    private func backendColors(light: String, dark: String) throws -> PrimerTheme.BaseColors {
+        let json = try JSONSerialization.data(withJSONObject: ["light": light, "dark": dark])
+        return try JSONDecoder().decode(PrimerTheme.BaseColors.self, from: json)
+    }
+
     func test_checkoutPaymentMethod_withSurcharge() {
         // Given / When
         let method = CheckoutPaymentMethod(
