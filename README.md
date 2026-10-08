@@ -94,7 +94,7 @@ The Swift Package Manager is a tool for automating the distribution of Swift cod
 
 ## 🚀 Modern Integration: CheckoutComponents (iOS 15+)
 
-CheckoutComponents is our modern, SwiftUI-based checkout solution with full UI customization and scope-based architecture. It provides exact Android API parity for cross-platform consistency.
+CheckoutComponents is our modern, SwiftUI-based checkout solution. You can present it as a whole, or compose its views into your own layout and replace their sections through slots. It provides exact Android API parity for cross-platform consistency.
 
 ### 📱 Pure SwiftUI Integration
 
@@ -165,7 +165,7 @@ Visual styling is token-driven via `PrimerCheckoutTheme`:
 ```swift
 let theme = PrimerCheckoutTheme(
     colors: ColorOverrides(primerColorBrand: .purple),
-    radius: RadiusOverrides(primerRadiusBase: 12)
+    radius: RadiusOverrides(primerRadiusMedium: 12)
 )
 
 PrimerCheckout(
@@ -196,7 +196,7 @@ struct CheckoutView: View {
 }
 ```
 
-The [CheckoutComponents guide](Sources/PrimerSDK/Classes/CheckoutComponents/README.md) lists every slot, building block and theme token.
+The [CheckoutComponents guide](Sources/PrimerSDK/Classes/CheckoutComponents/README.md) describes the slots, the building blocks and theming.
 
 **Note:** Check the [Detailed iOS Documentation](https://www.notion.so/primerapi/iOS-SDK-ebbf44a733624d17bfd0c3a746f171a2) for complete API reference and advanced customization options.
 
