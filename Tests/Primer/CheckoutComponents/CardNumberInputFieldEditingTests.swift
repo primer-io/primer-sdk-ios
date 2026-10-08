@@ -56,6 +56,15 @@ final class CardNumberInputFieldEditingTests: XCTestCase {
         XCTAssertEqual(cardNumber, "4242424242424242")
     }
 
+    func test_insertInTheMiddleWithoutSelection_landsAtTheCaret() async {
+        cardNumber = "424242424242424"
+        let (coordinator, field) = await makeField(formatted: "4242 4242 4242 424")
+
+        _ = coordinator.textField(field, shouldChangeCharactersIn: NSRange(location: 5, length: 0), replacementString: "9")
+
+        XCTAssertEqual(cardNumber, "4242942424242424")
+    }
+
     private func makeField(formatted: String = "4242 4242 4242 4242") async -> (CardNumberTextField.Coordinator, SecureTextField) {
         let scope = DefaultCardFormScope(
             checkoutScope: await ContainerTestHelpers.createMockCheckoutScope(),
