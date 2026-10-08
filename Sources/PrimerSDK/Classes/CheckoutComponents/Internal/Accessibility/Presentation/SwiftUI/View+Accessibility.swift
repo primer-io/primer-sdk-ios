@@ -66,7 +66,10 @@ private struct ConditionalAccessibilityHint: ViewModifier {
   let hint: String?
 
   func body(content: Content) -> some View {
-    if let hint, !hint.isEmpty {
+    // A branch that flips rebuilds the content, and a rebuilt text field loses its focus.
+    if #available(iOS 18.0, *) {
+      content.accessibilityHint(hint ?? "", isEnabled: hint?.isEmpty == false)
+    } else if let hint, !hint.isEmpty {
       content.accessibilityHint(hint)
     } else {
       content
@@ -79,9 +82,11 @@ private struct ConditionalAccessibilityValue: ViewModifier {
   let value: String?
 
   func body(content: Content) -> some View {
-    if let value, !value.isEmpty {
-      content.accessibilityValue(value)
+    // An empty value would hide the field's own value, so it is switched off rather than set to "".
+    if #available(iOS 18.0, *) {
+      content.accessibilityValue(value ?? "", isEnabled: value?.isEmpty == false)
     } else {
+      // Only a branch could apply it here, and a field's error flips that branch on every focus.
       content
     }
   }
