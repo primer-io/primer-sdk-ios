@@ -35,7 +35,7 @@ final class DesignTokensManager: ObservableObject {
     // the only place the color scheme picks a set, so everything below works off one resolved set
     let colors = themeOverrides?.resolvedColors(for: colorScheme)
     let loadedTokens = try Self.makeTokens(
-      for: colorScheme, valueOverrides: tokenValueOverrides(colors: colors))
+      for: colorScheme, valueOverrides: tokenValueOverrides(colors: colors, colorScheme: colorScheme))
 
     // applied last so an explicit token wins over a palette value it aliases
     applyThemeOverrides(to: loadedTokens, colors: colors)
@@ -44,7 +44,7 @@ final class DesignTokensManager: ObservableObject {
   }
 
   /// Injected before references resolve, so tokens aliasing the brand color or the brand font follow the override.
-  private func tokenValueOverrides(colors: ColorOverrides?) -> [String: Any] {
+  private func tokenValueOverrides(colors: ColorOverrides?, colorScheme: ColorScheme) -> [String: Any] {
     var overrides: [String: Any] = [:]
     if let brandFont = typographyOverrides?.brand {
       // rejected here rather than downstream: a value the passes rewrite fails the whole decode
@@ -77,7 +77,8 @@ final class DesignTokensManager: ObservableObject {
       }
     }
 
-    guard let brand = colors?.primerColorBrand, let components = Self.colorComponents(brand) else {
+    guard let brand = colors?.primerColorBrand,
+          let components = Self.colorComponents(brand, for: colorScheme) else {
       return overrides
     }
     overrides["primerColorBrand"] = components
@@ -129,12 +130,14 @@ final class DesignTokensManager: ObservableObject {
     }
   }
 
-  private nonisolated static func colorComponents(_ color: Color) -> [CGFloat]? {
+  /// Resolved for the scheme being loaded: `getRed` alone reads a dynamic color for whatever trait is current.
+  private nonisolated static func colorComponents(_ color: Color, for colorScheme: ColorScheme) -> [CGFloat]? {
     var red: CGFloat = 0
     var green: CGFloat = 0
     var blue: CGFloat = 0
     var alpha: CGFloat = 0
-    guard UIColor(color).getRed(&red, green: &green, blue: &blue, alpha: &alpha) else {
+    let traits = UITraitCollection(userInterfaceStyle: colorScheme == .dark ? .dark : .light)
+    guard UIColor(color).resolvedColor(with: traits).getRed(&red, green: &green, blue: &blue, alpha: &alpha) else {
       PrimerLogging.shared.logger.error(
         message: "[DesignTokens] Palette override ignored: color has no readable RGB components.")
       return nil

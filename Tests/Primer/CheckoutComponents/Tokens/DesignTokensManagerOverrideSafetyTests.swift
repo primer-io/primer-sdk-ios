@@ -59,4 +59,36 @@ final class DesignTokensManagerOverrideSafetyTests: XCTestCase {
         XCTAssertEqual(tokens.primerTypographyBodySmallLineHeight, 16)
         XCTAssertEqual(tokens.primerTypographyErrorSize, 14, "error still inherits the finite body small size")
     }
+
+    // MARK: - Dynamic brand color
+
+    func test_dynamicBrand_resolvesAliasesForTheLoadedScheme_notTheCurrentTrait() async throws {
+        let brand = Color(UIColor { $0.userInterfaceStyle == .dark ? .green : .red })
+        sut.applyTheme(PrimerCheckoutTheme(
+            colors: ColorOverrides(primerColorBrand: brand),
+            darkColors: ColorOverrides(primerColorBrand: brand)))
+        let previous = UITraitCollection.current
+        defer { UITraitCollection.current = previous }
+
+        UITraitCollection.current = UITraitCollection(userInterfaceStyle: .light)
+        try await sut.fetchTokens(for: .dark)
+        let darkFocus = try XCTUnwrap(sut.tokens?.primerColorFocus)
+
+        UITraitCollection.current = UITraitCollection(userInterfaceStyle: .dark)
+        try await sut.fetchTokens(for: .light)
+        let lightFocus = try XCTUnwrap(sut.tokens?.primerColorFocus)
+
+        XCTAssertEqual(components(of: darkFocus), components(of: UIColor.green))
+        XCTAssertEqual(components(of: lightFocus), components(of: UIColor.red))
+    }
+
+    private func components(of color: Color) -> [CGFloat] {
+        components(of: UIColor(color))
+    }
+
+    private func components(of color: UIColor) -> [CGFloat] {
+        var red: CGFloat = 0, green: CGFloat = 0, blue: CGFloat = 0, alpha: CGFloat = 0
+        color.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
+        return [red, green, blue, alpha].map { ($0 * 255).rounded() }
+    }
 }
