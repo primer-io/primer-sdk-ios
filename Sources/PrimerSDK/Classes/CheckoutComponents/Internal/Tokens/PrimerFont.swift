@@ -28,6 +28,9 @@ enum PrimerFont {
   private nonisolated(unsafe) static var warnedFamilies: Set<String> = []
   private static let warnedFamiliesLock = NSLock()
 
+  // `Primer.init` registered Inter, and CheckoutComponents reaches it only after its first screens draw.
+  private static let registerFontsOnce: Void = FontRegistration.registerFonts()
+
   // MARK: - Base Font Function
 
   /// Creates a UIFont with design token parameters and automatic Dynamic Type scaling.
@@ -47,6 +50,7 @@ enum PrimerFont {
     size: CGFloat?,
     isItalic: Bool = false
   ) -> UIFont {
+    _ = registerFontsOnce
     let fontFamily = family ?? "Inter"
     let fontSize = size ?? 14
     let fontWeight = weight ?? 400
