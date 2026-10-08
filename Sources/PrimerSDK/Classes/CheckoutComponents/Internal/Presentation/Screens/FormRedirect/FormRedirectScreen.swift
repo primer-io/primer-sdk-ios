@@ -138,7 +138,11 @@ struct FormRedirectScreen: View {
             accessibilityConfiguration: AccessibilityConfiguration(
                 identifier: AccessibilityIdentifiers.FormRedirect.submitButton,
                 label: CheckoutComponentsStrings.a11ySubmitButtonLabel,
-                hint: currentState.isSubmitEnabled ? nil : CheckoutComponentsStrings.a11ySubmitButtonHint,
+                hint: currentState.isLoading
+                    ? nil
+                    : (currentState.isSubmitEnabled
+                        ? CheckoutComponentsStrings.a11ySubmitButtonHint
+                        : CheckoutComponentsStrings.a11ySubmitButtonDisabled),
                 traits: [.isButton]
             ),
             action: scope.submit
@@ -205,11 +209,11 @@ private struct FormFieldView: View {
             TextField(field.placeholder, text: valueBinding)
                 .primerFieldTypography(.bodyLarge, tokens: tokens)
                 .foregroundColor(CheckoutColors.inputText(tokens: tokens, isEnabled: isInputEnabled))
+                .tint(CheckoutColors.borderFocus(tokens: tokens))
                 .keyboardType(field.keyboardType.uiKeyboardType)
                 .textContentType(field.fieldType.textContentType)
                 .focused($hasKeyboardFocus)
                 .onSubmit(onSubmit)
-                .tint(CheckoutColors.borderFocus(tokens: tokens))
                 .onChange(of: hasKeyboardFocus) { isFocused = $0 }
                 .onChange(of: isInputEnabled) { if !$0 { hasKeyboardFocus = false } }
                 .accessibilityIdentifier(AccessibilityIdentifiers.inputField(within: accessibilityIdentifier))
