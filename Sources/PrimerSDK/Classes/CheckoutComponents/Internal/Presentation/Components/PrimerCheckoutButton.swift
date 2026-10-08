@@ -73,12 +73,14 @@ struct PrimerCheckoutButton<Label: View>: View {
       : CheckoutColors.borderDisabled(tokens: tokens)
   }
 
-  private var borderWidth: CGFloat { style == .outlined ? PrimerBorderWidth.standard : 0 }
+  private var borderWidth: CGFloat { style == .outlined ? PrimerBorderWidth.standard(tokens: tokens) : 0 }
 
   var body: some View {
     Button(action: action) {
       content
     }
+    // A merchant's `.buttonStyle` on a parent view must not restyle the checkout's own buttons.
+    .buttonStyle(PlainButtonStyle())
     .disabled(!isEnabled || isLoading)
   }
 
