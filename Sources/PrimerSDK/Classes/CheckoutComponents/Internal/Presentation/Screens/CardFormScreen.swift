@@ -89,7 +89,7 @@ struct CardFormScreen: View, LogReporter {
       .accessibilityAddTraits(.isHeader)
   }
 
-  // Plain "Pay" like Android, RN, Web and Figma; the merchant setting for the text is ORC-8704.
+  // Plain "Pay" like Android, RN, Web and Figma.
   private var payTitle: String {
     scope.cardFormUIOptions?.payButtonAddNewCard == true
       ? CheckoutComponentsStrings.addCardButton : CheckoutComponentsStrings.payButton
