@@ -104,7 +104,8 @@ struct FormRedirectScreen: View {
     }
 
     private func makeDefaultFormSection() -> some View {
-        VStack(spacing: PrimerSpacing.medium(tokens: tokens)) {
+        // Each field container pads its own bottom, as in the card form.
+        VStack(spacing: 0) {
             ForEach(currentState.fields) { field in
                 FormFieldView(
                     field: field,
@@ -160,7 +161,7 @@ private struct FormFieldView: View {
     @State private var isFocused = false
 
     var body: some View {
-        VStack(alignment: .leading, spacing: PrimerSpacing.small(tokens: tokens)) {
+        VStack(alignment: .leading, spacing: 0) {
             PrimerInputFieldContainer(
                 label: field.label,
                 text: valueBinding,

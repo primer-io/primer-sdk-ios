@@ -96,7 +96,8 @@ struct BillingAddressRedirectScreen: View {
   // MARK: - Billing Address Form
 
   private func makeBillingAddressForm() -> some View {
-    VStack(spacing: PrimerSpacing.medium(tokens: tokens)) {
+    // Each field container pads its own bottom, as in the card form.
+    VStack(spacing: 0) {
       makeCountryField()
       makeTextField(
         label: CheckoutComponentsStrings.addressLine1Label,
