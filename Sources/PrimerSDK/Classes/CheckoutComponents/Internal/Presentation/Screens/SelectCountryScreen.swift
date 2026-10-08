@@ -78,6 +78,7 @@ struct SelectCountryScreen: View, LogReporter {
         )
       )
       .textFieldStyle(PlainTextFieldStyle())
+      .tint(CheckoutColors.borderFocus(tokens: tokens))
       .accessibilityIdentifier(AccessibilityIdentifiers.SelectCountry.searchField)
 
       if !countryState.searchQuery.isEmpty {
