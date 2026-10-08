@@ -14,9 +14,12 @@ struct PaymentMethodButton: View {
   let onSelect: () -> Void
 
   @Environment(\.designTokens) private var tokens
+  @Environment(\.designTokensColorScheme) private var tokensColorScheme
   @Environment(\.colorScheme) private var colorScheme
 
-  private var isDark: Bool { colorScheme == .dark }
+  /// The tokens' scheme, so a forced `appearanceMode` inline moves the logo, border and backend colours with the fill.
+  private var isDark: Bool { (tokensColorScheme ?? colorScheme) == .dark }
+  private var traits: UITraitCollection { UITraitCollection(userInterfaceStyle: isDark ? .dark : .light) }
 
   var body: some View {
     let radius = method.cornerRadius ?? PrimerRadius.medium(tokens: tokens)
@@ -26,7 +29,7 @@ struct PaymentMethodButton: View {
         Text(method.buttonText ?? method.name)
           .primerTypography(.bodyLarge, tokens: tokens)
           .foregroundColor(
-            method.textColor.map(Color.init) ?? CheckoutColors.textPrimary(tokens: tokens))
+            method.textColor.map(resolved) ?? CheckoutColors.textPrimary(tokens: tokens))
       }
       .frame(maxWidth: .infinity)
       .padding(.horizontal, PrimerSpacing.large(tokens: tokens))
@@ -35,7 +38,7 @@ struct PaymentMethodButton: View {
       .background(
         RoundedRectangle(cornerRadius: radius)
           .fill(
-            method.backgroundColor.map(Color.init) ?? CheckoutColors.background(tokens: tokens))
+            method.backgroundColor.map(resolved) ?? CheckoutColors.background(tokens: tokens))
       )
       .overlay(
         RoundedRectangle(cornerRadius: radius)
@@ -52,22 +55,26 @@ struct PaymentMethodButton: View {
     ))
   }
 
+  /// Backend colours are dynamic, and a plain `Color(_:)` would resolve them for the view's trait instead.
+  private func resolved(_ color: UIColor) -> Color {
+    Color(color.resolvedColor(with: traits))
+  }
+
   private var hasVisibleBackground: Bool {
-    guard let bg = method.backgroundColor else { return false }
+    guard let background = method.backgroundColor else { return false }
     var red: CGFloat = 0
     var green: CGFloat = 0
     var blue: CGFloat = 0
     var alpha: CGFloat = 0
     // a dynamic colour resolves against UITraitCollection.current here, not this view's scheme
-    bg.resolvedColor(with: UITraitCollection(userInterfaceStyle: isDark ? .dark : .light))
-      .getRed(&red, green: &green, blue: &blue, alpha: &alpha)
+    background.resolvedColor(with: traits).getRed(&red, green: &green, blue: &blue, alpha: &alpha)
     let luminance = 0.299 * red + 0.587 * green + 0.114 * blue
     return alpha > 0.1 && luminance < 0.95
   }
 
   private func borderColor(for method: CheckoutPaymentMethod) -> Color {
     if let color = method.borderColor, color != .clear {
-      return Color(color)
+      return resolved(color)
     }
     guard !hasVisibleBackground else { return .clear }
     return CheckoutColors.borderDefault(tokens: tokens)
