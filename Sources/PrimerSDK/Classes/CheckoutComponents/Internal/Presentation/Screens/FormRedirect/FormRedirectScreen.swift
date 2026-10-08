@@ -174,6 +174,7 @@ private struct FormFieldView: View {
                     identifier: accessibilityIdentifier,
                     label: accessibilityLabel,
                     hint: accessibilityHint,
+                    value: field.errorMessage,
                     traits: []
                 ),
                 combinesChildren: false
@@ -209,6 +210,7 @@ private struct FormFieldView: View {
                 .onSubmit(onSubmit)
                 .onChange(of: hasKeyboardFocus) { isFocused = $0 }
                 .onChange(of: isInputEnabled) { if !$0 { hasKeyboardFocus = false } }
+                .accessibilityIdentifier(AccessibilityIdentifiers.inputField(within: accessibilityIdentifier))
         }
     }
 
@@ -225,8 +227,10 @@ private struct FormFieldView: View {
         switch field.fieldType {
         case .otpCode:
             CheckoutComponentsStrings.a11yFormRedirectOtpLabel
+        // The label replaces the combined children, so the dialling code would go unread without it.
         case .phoneNumber:
-            CheckoutComponentsStrings.a11yFormRedirectPhoneLabel
+            [CheckoutComponentsStrings.a11yFormRedirectPhoneLabel, field.countryCodePrefix]
+                .compactMap { $0 }.joined(separator: ", ")
         }
     }
 

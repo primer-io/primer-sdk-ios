@@ -176,8 +176,17 @@ struct BillingAddressRedirectScreen: View {
         }
         .font(PrimerFont.bodyLarge(tokens: tokens))
       }
-      .accessibilityIdentifier(AccessibilityIdentifiers.BillingAddressRedirect.countryCodeField)
+      .accessibilityIdentifier(
+        AccessibilityIdentifiers.inputField(within: AccessibilityIdentifiers.BillingAddressRedirect.countryCodeField))
     }
+    .accessibility(
+      config: fieldAccessibility(
+        for: .countryCode,
+        identifier: AccessibilityIdentifiers.BillingAddressRedirect.countryCodeField,
+        label: CheckoutComponentsStrings.countryLabel
+      ),
+      combinesChildren: false
+    )
   }
 
   private func makeTextField(
@@ -201,8 +210,39 @@ struct BillingAddressRedirectScreen: View {
         .focused($focusedField, equals: fieldType)
         .autocapitalization(.words)
         .disableAutocorrection(true)
-        .accessibilityIdentifier(identifier)
+        .accessibilityIdentifier(AccessibilityIdentifiers.inputField(within: identifier))
         .onChange(of: text.wrappedValue, perform: onUpdate)
+    }
+    .accessibility(
+      config: fieldAccessibility(for: fieldType, identifier: identifier, label: label),
+      combinesChildren: false
+    )
+  }
+
+  /// The container combines label, field and error into one element, so the element carries the
+  /// field's identifier and its error, and the field inside keeps an `_input` identifier of its own.
+  private func fieldAccessibility(
+    for fieldType: PrimerInputElementType,
+    identifier: String,
+    label: String
+  ) -> AccessibilityConfiguration {
+    AccessibilityConfiguration(
+      identifier: identifier,
+      label: label,
+      hint: accessibilityHint(for: fieldType),
+      value: billingState.errors[fieldType]?.message,
+      traits: []
+    )
+  }
+
+  private func accessibilityHint(for fieldType: PrimerInputElementType) -> String? {
+    switch fieldType {
+    case .countryCode: CheckoutComponentsStrings.a11yBillingAddressCountryHint
+    case .addressLine1, .addressLine2: CheckoutComponentsStrings.a11yBillingAddressHint
+    case .postalCode: CheckoutComponentsStrings.a11yBillingAddressPostalCodeHint
+    case .city: CheckoutComponentsStrings.a11yBillingAddressCityHint
+    case .state: CheckoutComponentsStrings.a11yBillingAddressStateHint
+    default: nil
     }
   }
 
