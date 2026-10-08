@@ -188,7 +188,9 @@ struct BillingAddressRedirectScreen: View {
       config: fieldAccessibility(
         for: .countryCode,
         identifier: AccessibilityIdentifiers.BillingAddressRedirect.countryCodeField,
-        label: CheckoutComponentsStrings.countryLabel
+        label: CheckoutComponentsStrings.countryLabel,
+        // The label replaces the menu's own text, so the selected country is read as the value.
+        value: CountryCode(rawValue: countryCode)?.country
       ),
       combinesChildren: false
     )
@@ -225,18 +227,18 @@ struct BillingAddressRedirectScreen: View {
     )
   }
 
-  /// The container combines label, field and error into one element, so the element carries the
-  /// field's identifier and its error, and the field inside keeps an `_input` identifier of its own.
+  /// The container merges its children into one element, so that element carries the field's id and error.
   private func fieldAccessibility(
     for fieldType: PrimerInputElementType,
     identifier: String,
-    label: String
+    label: String,
+    value: String? = nil
   ) -> AccessibilityConfiguration {
     AccessibilityConfiguration(
       identifier: identifier,
       label: label,
       hint: accessibilityHint(for: fieldType),
-      value: billingState.errors[fieldType]?.message,
+      value: billingState.errors[fieldType]?.message ?? value,
       traits: []
     )
   }

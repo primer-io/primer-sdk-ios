@@ -106,7 +106,8 @@ struct OTPCodeInputField: View, LogReporter {
       config: AccessibilityConfiguration(
         identifier: AccessibilityIdentifiers.FormRedirect.otpField,
         label: label ?? "OTP Code",
-        hint: CheckoutComponentsStrings.a11yOtpFieldHint
+        hint: CheckoutComponentsStrings.a11yOtpFieldHint,
+        value: errorMessage
       ),
       combinesChildren: false
     )
