@@ -1,0 +1,72 @@
+//
+//  CardholderNameInputFieldEditingTests.swift
+//
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
+
+@testable import PrimerSDK
+import SwiftUI
+import UIKit
+import XCTest
+
+/// AutoFill and paste hand the delegate a whole name in one call.
+@available(iOS 15.0, *)
+@MainActor
+final class CardholderNameInputFieldEditingTests: XCTestCase {
+
+    private var cardholderName = ""
+    private var isValid = false
+    private var errorMessage: String?
+    private var isFocused = true
+
+    override func setUp() async throws {
+        try await super.setUp()
+        await ContainerTestHelpers.resetSharedContainer()
+    }
+
+    override func tearDown() async throws {
+        await ContainerTestHelpers.resetSharedContainer()
+        try await super.tearDown()
+    }
+
+    func test_pastedNameWithAStrayCharacter_keepsTheName() async {
+        await type("John Smith.")
+
+        XCTAssertEqual(cardholderName, "John Smith")
+    }
+
+    func test_typographicApostrophe_isKeptAsAPlainOne() async {
+        await type("Seán O\u{2019}Brien")
+
+        XCTAssertEqual(cardholderName, "Seán O'Brien")
+    }
+
+    func test_onlyDisallowedCharacters_changeNothing() async {
+        cardholderName = "Jo"
+
+        await type("42", at: NSRange(location: 2, length: 0))
+
+        XCTAssertEqual(cardholderName, "Jo")
+    }
+
+    private func type(_ string: String, at range: NSRange = NSRange(location: 0, length: 0)) async {
+        let scope = DefaultCardFormScope(
+            checkoutScope: await ContainerTestHelpers.createMockCheckoutScope(),
+            presentationContext: .fromPaymentSelection,
+            processCardPaymentInteractor: MockProcessCardPaymentInteractor(),
+            validateInputInteractor: MockValidateInputInteractor(),
+            cardNetworkDetectionInteractor: MockCardNetworkDetectionInteractor(),
+            analyticsInteractor: MockAnalyticsInteractor(),
+            configurationService: MockConfigurationService.withDefaultConfiguration()
+        )
+        let coordinator = CardholderNameTextField.Coordinator(
+            validationService: DefaultValidationService(),
+            cardholderName: Binding(get: { self.cardholderName }, set: { self.cardholderName = $0 }),
+            isValid: Binding(get: { self.isValid }, set: { self.isValid = $0 }),
+            errorMessage: Binding(get: { self.errorMessage }, set: { self.errorMessage = $0 }),
+            isFocused: Binding(get: { self.isFocused }, set: { self.isFocused = $0 }),
+            scope: scope
+        )
+        _ = coordinator.textField(UITextField(), shouldChangeCharactersIn: range, replacementString: string)
+    }
+}
