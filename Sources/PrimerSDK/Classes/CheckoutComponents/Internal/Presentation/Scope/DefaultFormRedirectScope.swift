@@ -196,10 +196,12 @@ final class DefaultFormRedirectScope: PrimerFormRedirectScope, ObservableObject,
     }
   }
 
-  /// A pasted or AutoFilled number in international form already carries the dialling code that
-  /// submit prepends, so it is dropped here rather than sent twice.
+  /// Submit prepends the session's dialling code, so a pasted number that carries the same one drops it here.
   private func nationalNumber(from input: String, digits: String) -> String {
-    let trimmed = input.trimmingCharacters(in: .whitespaces)
+    // Pasted text can start with a newline or an invisible direction mark before the "+".
+    let trimmed = String(String.UnicodeScalarView(input.unicodeScalars.drop {
+      $0.properties.isWhitespace || $0.properties.generalCategory == .format
+    }))
     let dialDigits = (internalState.phoneField?.dialCode ?? "").filter(\.isNumber)
     guard !dialDigits.isEmpty, trimmed.hasPrefix("+") || trimmed.hasPrefix("00") else { return digits }
     let international = trimmed.hasPrefix("+") ? digits : String(digits.dropFirst(2))
