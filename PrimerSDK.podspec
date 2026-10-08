@@ -21,6 +21,7 @@ Pod::Spec.new do |s|
         ss.dependency "PrimerCore", "= #{s.version}"
         ss.dependency "PrimerBDCEngine", "= #{s.version}"
         ss.dependency "PrimerBDCCore", "= #{s.version}"
+        ss.dependency "PrimerBDCUI", "= #{s.version}"
         ss.dependency "PrimerFoundation", "= #{s.version}"
         ss.dependency "PrimerStepResolver", "= #{s.version}"
         ss.dependency "PrimerNetworking", "= #{s.version}"
