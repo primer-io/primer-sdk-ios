@@ -61,6 +61,7 @@ struct BillingAddressRedirectScreen: View {
                 .font(PrimerFont.bodyMedium(tokens: tokens))
                 .foregroundColor(CheckoutColors.iconPrimary(tokens: tokens))
               Text(CheckoutComponentsStrings.backButton)
+                .primerTypography(.bodyMedium, tokens: tokens)
             }
             .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
           }
@@ -167,15 +168,17 @@ struct BillingAddressRedirectScreen: View {
           if let selected = CountryCode(rawValue: countryCode) {
             Text("\(selected.flag ?? "") \(selected.country)")
               .foregroundColor(CheckoutColors.inputText(tokens: tokens, isEnabled: !isSubmitInFlight))
+              .primerFieldTypography(.bodyLarge, tokens: tokens)
           } else {
             Text(CheckoutComponentsStrings.countrySelectorPlaceholder)
               .foregroundColor(CheckoutColors.textPlaceholder(tokens: tokens))
+              .primerFieldTypography(.bodyLarge, tokens: tokens)
           }
           Spacer(minLength: 0)
           Image(systemName: "chevron.down")
             .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
+            .font(PrimerFont.bodyLarge(tokens: tokens))
         }
-        .font(PrimerFont.bodyLarge(tokens: tokens))
       }
       .accessibilityIdentifier(
         AccessibilityIdentifiers.inputField(within: AccessibilityIdentifiers.BillingAddressRedirect.countryCodeField))
