@@ -212,6 +212,7 @@ struct BillingAddressRedirectScreen: View {
         .autocapitalization(.words)
         .disableAutocorrection(true)
         .accessibilityIdentifier(AccessibilityIdentifiers.inputField(within: identifier))
+        .tint(CheckoutColors.borderFocus(tokens: tokens))
         .onChange(of: text.wrappedValue, perform: onUpdate)
     }
     .accessibility(

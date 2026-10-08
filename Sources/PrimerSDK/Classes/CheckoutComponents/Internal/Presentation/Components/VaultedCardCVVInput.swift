@@ -97,6 +97,7 @@ struct VaultedCardCVVInput: View {
         .multilineTextAlignment(.leading)
         .primerFieldTypography(.bodyLarge, tokens: tokens)
         .foregroundColor(CheckoutColors.inputText(tokens: tokens, isEnabled: isInputEnabled))
+        .tint(CheckoutColors.borderFocus(tokens: tokens))
         .onChange(of: isInputEnabled) { if !$0 { isFocused = false } }
 
       if errorMessage != nil { PrimerFieldErrorIcon() }

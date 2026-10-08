@@ -209,6 +209,7 @@ private struct FormFieldView: View {
                 .textContentType(field.fieldType.textContentType)
                 .focused($hasKeyboardFocus)
                 .onSubmit(onSubmit)
+                .tint(CheckoutColors.borderFocus(tokens: tokens))
                 .onChange(of: hasKeyboardFocus) { isFocused = $0 }
                 .onChange(of: isInputEnabled) { if !$0 { hasKeyboardFocus = false } }
                 .accessibilityIdentifier(AccessibilityIdentifiers.inputField(within: accessibilityIdentifier))

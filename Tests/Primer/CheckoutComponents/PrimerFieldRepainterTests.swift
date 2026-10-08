@@ -34,6 +34,18 @@ final class PrimerFieldRepainterTests: XCTestCase {
         XCTAssertEqual(placeholderColour, UIColor(CheckoutColors.textPlaceholder(tokens: dark)))
     }
 
+    /// The caret follows the focused border, as Android's cursor does, and a theme can move both.
+    func test_repaint_tintsTheCaretWithTheFocusedBorderColour() throws {
+        let light = try DesignTokensManager.makeTokens(for: .light)
+        let themed = try DesignTokensManager.makeTokens(for: .light)
+        themed.primerColorBorderOutlinedFocus = Color(red: 1, green: 0, blue: 0)
+        let field = makeField(tokens: light)
+
+        field.repaintPrimerColors(placeholder: "Card number", tokens: themed)
+
+        XCTAssertEqual(field.tintColor, UIColor(CheckoutColors.borderFocus(tokens: themed)))
+    }
+
     /// The two earlier attempts at this fix rewrote these as well, and lost the shopper's input.
     func test_repaint_leavesText_font_borderAndAccessoryAlone() throws {
         let light = try DesignTokensManager.makeTokens(for: .light)

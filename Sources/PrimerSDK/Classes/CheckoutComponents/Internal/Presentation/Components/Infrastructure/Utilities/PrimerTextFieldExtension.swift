@@ -141,6 +141,8 @@ extension UITextField {
     font = textFont
     adjustsFontForContentSizeCategory = true
     textColor = UIColor(CheckoutColors.inputText(tokens: tokens))
+    // The caret, like Android's cursor, takes the focused border colour.
+    tintColor = UIColor(CheckoutColors.borderFocus(tokens: tokens))
     // A UITextField kerns typed text from its default attributes, not from `font`.
     if let letterSpacing = PrimerTextStyle.bodyLarge.letterSpacing(tokens: tokens) {
       defaultTextAttributes[.kern] = letterSpacing
@@ -161,13 +163,14 @@ extension UITextField {
 
   /// The token-derived colours a bridged field paints, reapplied after a colour-scheme change and
   /// when the field locks or unlocks around a payment (locked text takes `textDisabled`): the text,
-  /// the placeholder and the tint of the Done button.
+  /// the placeholder, the caret and the tint of the Done button.
   ///
   /// Deliberately narrow. It does not touch the font, border or fill, and it repaints the existing
   /// `inputAccessoryView` rather than replacing it: writing those on a live field is what broke the
   /// two earlier attempts at this fix.
   func repaintPrimerColors(placeholder: String, tokens: DesignTokens?, isEnabled: Bool = true) {
     textColor = UIColor(CheckoutColors.inputText(tokens: tokens, isEnabled: isEnabled))
+    tintColor = UIColor(CheckoutColors.borderFocus(tokens: tokens))
     attributedPlaceholder = NSAttributedString(
       string: placeholder,
       attributes: Self.primerPlaceholderAttributes(
