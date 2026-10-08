@@ -94,6 +94,45 @@ final class BackendDrivenCheckoutOrchestratorTests: XCTestCase {
         XCTAssertNil(state["params"])
     }
 
+    func testSetupDoesNotPollUnderSuspend() async throws {
+        let provider = MockInstructionProvider([])
+        let mock = MockStepOrchestrator()
+
+        try await BackendDrivenCheckoutOrchestrator(stepOrchestrator: mock)
+            .runSetup(pciUrl: nil, coreUrl: nil, instructionProvider: provider)
+
+        XCTAssertEqual(provider.fetchCount, 1)
+        XCTAssertEqual(mock.startCallCount, 1)
+    }
+
+    func testSetupPollsUnderIntervalUntilComplete() async throws {
+        let provider = MockInstructionProvider([])
+        provider.setupFlow = SetupFlow(schema: .object([:]), parameters: .object([:]), setupId: "setup-1", nextPoll: .interval)
+        provider.setupStates = [
+            SetupState(instruction: .wait, nextPoll: .interval),
+            SetupState(instruction: .setupComplete(token: "token"), nextPoll: .interval),
+        ]
+        let mock = MockStepOrchestrator()
+
+        try await BackendDrivenCheckoutOrchestrator(stepOrchestrator: mock)
+            .runSetup(pciUrl: nil, coreUrl: nil, instructionProvider: provider)
+
+        XCTAssertEqual(provider.fetchCount, 3)
+        XCTAssertEqual(mock.startCallCount, 1)
+    }
+
+    func testSetupStartsANewScreenOnExecute() async throws {
+        let provider = MockInstructionProvider([])
+        provider.setupFlow = SetupFlow(schema: .object([:]), parameters: .object([:]), setupId: "setup-1", nextPoll: .interval)
+        provider.setupStates = [SetupState(instruction: .execute(screen: .object([:])), nextPoll: .suspend)]
+        let mock = MockStepOrchestrator()
+
+        try await BackendDrivenCheckoutOrchestrator(stepOrchestrator: mock)
+            .runSetup(pciUrl: nil, coreUrl: nil, instructionProvider: provider)
+
+        XCTAssertEqual(mock.startCallCount, 2)
+    }
+
     func testExecuteErrorPropagates() async {
         let mock = MockStepOrchestrator()
         mock.startError = Error.failed
