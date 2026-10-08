@@ -34,7 +34,23 @@ final class PrimerFieldRepainterTests: XCTestCase {
         XCTAssertEqual(placeholderColour, UIColor(CheckoutColors.textPlaceholder(tokens: dark)))
     }
 
-    /// The caret follows the focused border, as Android's cursor does, and a theme can move both.
+    func test_configure_tintsANewFieldsCaretWithTheFocusedBorderColour() throws {
+        let themed = try DesignTokensManager.makeTokens(for: .light)
+        themed.primerColorBorderOutlinedFocus = Color(red: 1, green: 0, blue: 0)
+        let field = UITextField()
+
+        field.configurePrimerStyle(
+            placeholder: "Card number",
+            configuration: .numberPad,
+            tokens: themed,
+            doneButtonTarget: nil,
+            doneButtonAction: #selector(UIResponder.resignFirstResponder)
+        )
+
+        XCTAssertEqual(field.tintColor, UIColor(CheckoutColors.borderFocus(tokens: themed)))
+    }
+
+    /// The caret follows the focused border, and a theme can move both.
     func test_repaint_tintsTheCaretWithTheFocusedBorderColour() throws {
         let light = try DesignTokensManager.makeTokens(for: .light)
         let themed = try DesignTokensManager.makeTokens(for: .light)
@@ -196,6 +212,7 @@ final class PrimerFieldRepainterTests: XCTestCase {
         repainter.markApplied(light)
 
         repainter.repaintIfNeeded(field, placeholder: "Card number", tokens: themed)
+        XCTAssertEqual(field.font, PrimerFont.uiFontBodyLarge(tokens: light), "the font must wait for the update to end")
         drainMainQueue()
 
         let font = PrimerFont.uiFontBodyLarge(tokens: themed)

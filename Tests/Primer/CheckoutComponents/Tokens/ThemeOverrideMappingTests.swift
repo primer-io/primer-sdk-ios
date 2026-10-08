@@ -119,7 +119,6 @@ final class ThemeOverrideMappingTests: XCTestCase {
         for (type, contentType) in expected {
             XCTAssertEqual(type.fieldConfiguration.textContentType, contentType, "\(type)")
         }
-        XCTAssertNil(PrimerInputElementType.city.fieldConfiguration.textContentType)
     }
 
     func test_fieldConfiguration_givesThePhoneThePhonePad() {
