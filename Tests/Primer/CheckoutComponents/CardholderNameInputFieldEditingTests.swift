@@ -53,6 +53,25 @@ final class CardholderNameInputFieldEditingTests: XCTestCase {
         XCTAssertEqual(cardholderName, "Jane")
     }
 
+    /// The iOS Persian keyboard writes this surname with a zero-width non-joiner after the "n".
+    func test_letterFollowedByAJoiner_keepsTheLetter() async {
+        await type("\u{062D}\u{0633}\u{0646}\u{200C}\u{0632}\u{0627}\u{062F}\u{0647}")
+
+        XCTAssertEqual(cardholderName, "\u{062D}\u{0633}\u{0646}\u{0632}\u{0627}\u{062F}\u{0647}")
+    }
+
+    func test_conjunctWithAJoiner_keepsItsLetters() async {
+        await type("\u{0915}\u{094D}\u{200D}\u{0937}")
+
+        XCTAssertEqual(cardholderName, "\u{0915}\u{094D}\u{0937}")
+    }
+
+    func test_letterWithASkinToneModifier_keepsTheLetter() async {
+        await type("Ana\u{1F3FD}")
+
+        XCTAssertEqual(cardholderName, "Ana")
+    }
+
     func test_onlyDisallowedCharacters_changeNothing() async {
         cardholderName = "Jo"
 
