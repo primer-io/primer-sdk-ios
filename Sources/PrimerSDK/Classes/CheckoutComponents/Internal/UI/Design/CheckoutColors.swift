@@ -28,10 +28,6 @@ enum CheckoutColors {
     tokens?.primerColorTextDisabled ?? Color(.tertiaryLabel)
   }
 
-  static func textLink(tokens: DesignTokens?) -> Color {
-    tokens?.primerColorTextLink ?? .blue
-  }
-
   static func iconPrimary(tokens: DesignTokens?) -> Color {
     tokens?.primerColorIconPrimary ?? .primary
   }
@@ -69,14 +65,6 @@ enum CheckoutColors {
     tokens?.primerColorBackgroundSecondary ?? Color(red: 0.961, green: 0.961, blue: 0.961)
   }
 
-  static func gray100(tokens: DesignTokens?) -> Color {
-    tokens?.primerColorGray100 ?? Color(.systemGray6)
-  }
-
-  static func gray200(tokens: DesignTokens?) -> Color {
-    tokens?.primerColorGray200 ?? Color(.systemGray5)
-  }
-
   static func gray300(tokens: DesignTokens?) -> Color {
     tokens?.primerColorGray300 ?? Color(.systemGray4)
   }
@@ -95,15 +83,6 @@ enum CheckoutColors {
 
   static func iconPositive(tokens: DesignTokens?) -> Color {
     tokens?.primerColorIconPositive ?? Color(.systemGreen)
-  }
-
-  /// Label/spinner colour on a surface filled with `textPrimary`, which the label inverts with; a
-  /// disabled surface is light, so the label follows web and Android onto `textDisabled`.
-  /// Primary buttons are brand-filled and use `onBrand` instead.
-  static func onPrimary(tokens: DesignTokens?, isEnabled: Bool = true) -> Color {
-    isEnabled
-      ? (tokens?.primerColorBackgroundPrimary ?? .white)
-      : (tokens?.primerColorTextDisabled ?? Color(.tertiaryLabel))
   }
 
   /// Label/spinner colour on a brand-filled surface, which is every primary button: the merchant's
@@ -131,14 +110,6 @@ enum CheckoutColors {
 
   static func inputText(tokens: DesignTokens?, isEnabled: Bool = true) -> Color {
     isEnabled ? tokens?.primerColorTextOutlinedDefault ?? .primary : textDisabled(tokens: tokens)
-  }
-
-  static func inputBorder(tokens: DesignTokens?) -> Color {
-    tokens?.primerColorBorderOutlinedDefault ?? Color(.systemGray4)
-  }
-
-  static func inputBorderFocused(tokens: DesignTokens?) -> Color {
-    tokens?.primerColorBorderOutlinedFocus ?? .blue
   }
 
   // MARK: - Button Colors
