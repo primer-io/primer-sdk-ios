@@ -179,7 +179,9 @@ final class DefaultFormRedirectScopeTests: XCTestCase {
     /// Submit prepends the dialling code, so a pasted international number must not keep its own.
     @MainActor
     func test_updateField_mbway_pastedInternationalNumber_dropsTheDialCode() async throws {
-        for pasted in ["+351 912 345 678", "00351 912 345 678", "\n+351 912 345 678", "\u{200E}+351 912 345 678"] {
+        for pasted in [
+            "+351 912 345 678", "00351 912 345 678", "\n+351 912 345 678", "\u{200E}+351 912 345 678", "(+351) 912 345 678"
+        ] {
             let scope = createScope(paymentMethodType: FormRedirectTestData.Constants.mbwayPaymentMethodType)
             scope.start()
 
