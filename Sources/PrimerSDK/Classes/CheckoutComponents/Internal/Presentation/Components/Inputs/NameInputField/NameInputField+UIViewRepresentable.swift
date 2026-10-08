@@ -181,10 +181,10 @@ struct NameTextField: UIViewRepresentable, LogReporter {
         }
       }()
 
-      let result = validationService.validate(
-        input: name,
-        with: NameRule(inputElementType: elementType)
-      )
+      // The billing phone reuses this field, and the name rule rejects every digit.
+      let result = inputType == .phoneNumber
+        ? validationService.validateField(type: .phoneNumber, value: name)
+        : validationService.validate(input: name, with: NameRule(inputElementType: elementType))
 
       isValid = result.isValid
       errorMessage = result.errorMessage
