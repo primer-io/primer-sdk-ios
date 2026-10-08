@@ -37,17 +37,18 @@ final class PrimerFieldRepainterTests: XCTestCase {
     func test_configure_tintsANewFieldsCaretWithTheFocusedBorderColour() throws {
         let themed = try DesignTokensManager.makeTokens(for: .light)
         themed.primerColorBorderOutlinedFocus = Color(red: 1, green: 0, blue: 0)
-        let field = UITextField()
 
-        field.configurePrimerStyle(
-            placeholder: "Card number",
-            configuration: .numberPad,
-            tokens: themed,
-            doneButtonTarget: nil,
-            doneButtonAction: #selector(UIResponder.resignFirstResponder)
-        )
+        let field = makeConfiguredField(tokens: themed)
 
         XCTAssertEqual(field.tintColor, UIColor(CheckoutColors.borderFocus(tokens: themed)))
+    }
+
+    /// At large text sizes the placeholder pushed the form off screen, and in a tall parent the row stretched.
+    func test_configure_letsTheFieldNarrowAndKeepsItToItsTextHeight() throws {
+        let field = try makeConfiguredField(tokens: DesignTokensManager.makeTokens(for: .light))
+
+        XCTAssertEqual(field.contentCompressionResistancePriority(for: .horizontal), .defaultLow)
+        XCTAssertEqual(field.contentHuggingPriority(for: .vertical), .defaultHigh)
     }
 
     /// The caret follows the focused border, and a theme can move both.
