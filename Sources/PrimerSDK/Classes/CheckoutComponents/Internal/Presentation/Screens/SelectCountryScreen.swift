@@ -90,6 +90,7 @@ struct SelectCountryScreen: View, LogReporter {
             Image(systemName: "xmark.circle.fill")
               .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
           })
+        .buttonStyle(PlainButtonStyle())
       }
     }
     .padding(.horizontal, PrimerSpacing.medium(tokens: tokens))
