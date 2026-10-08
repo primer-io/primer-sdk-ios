@@ -274,7 +274,12 @@ final class DesignTokensManager: ObservableObject {
     if let value = colors.primerColorIconDisabled { tokens.primerColorIconDisabled = value }
     if let value = colors.primerColorIconNegative { tokens.primerColorIconNegative = value }
     if let value = colors.primerColorIconPositive { tokens.primerColorIconPositive = value }
-    if let value = colors.primerColorFocus { tokens.primerColorFocus = value }
+    if let value = colors.primerColorFocus {
+      tokens.primerColorFocus = value
+      // both focus borders alias focus, so they follow unless the merchant names them too
+      if colors.primerColorBorderOutlinedFocus == nil { tokens.primerColorBorderOutlinedFocus = value }
+      if colors.primerColorBorderTransparentFocus == nil { tokens.primerColorBorderTransparentFocus = value }
+    }
     if let value = colors.primerColorLoader { tokens.primerColorLoader = value }
   }
 

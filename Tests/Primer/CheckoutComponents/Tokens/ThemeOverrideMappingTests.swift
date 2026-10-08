@@ -80,6 +80,31 @@ final class ThemeOverrideMappingTests: XCTestCase {
         XCTAssertEqual(tokens.primerTypographyErrorLineHeight, 19)
     }
 
+    // MARK: - Focus
+
+    /// Both focus borders alias focus, as on Android, so the focus override moves the focused field border.
+    func test_focusOverride_movesBothFocusBorders() async throws {
+        sut.applyTheme(PrimerCheckoutTheme(colors: ColorOverrides(primerColorFocus: .orange)))
+
+        try await sut.fetchTokens(for: .light)
+
+        let tokens = try XCTUnwrap(sut.tokens)
+        XCTAssertEqual(tokens.primerColorBorderOutlinedFocus, .orange)
+        XCTAssertEqual(tokens.primerColorBorderTransparentFocus, .orange)
+        XCTAssertEqual(CheckoutColors.borderFocus(tokens: tokens), .orange)
+    }
+
+    func test_focusOverride_leavesAFocusBorderTheMerchantNamed() async throws {
+        sut.applyTheme(PrimerCheckoutTheme(colors: ColorOverrides(
+            primerColorBorderOutlinedFocus: .purple,
+            primerColorFocus: .orange
+        )))
+
+        try await sut.fetchTokens(for: .light)
+
+        XCTAssertEqual(sut.tokens?.primerColorBorderOutlinedFocus, .purple)
+    }
+
     // MARK: - Keyboard and AutoFill per field
 
     func test_fieldConfiguration_offersTheMatchingAutoFill() {
