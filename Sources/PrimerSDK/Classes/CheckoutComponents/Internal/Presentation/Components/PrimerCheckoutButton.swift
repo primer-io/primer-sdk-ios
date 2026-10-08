@@ -108,6 +108,8 @@ struct PrimerCheckoutButton<Label: View>: View {
       RoundedRectangle(cornerRadius: radius)
         .stroke(borderColor, lineWidth: borderWidth)
     )
+    // The outlined fill is clear, so the tap area is stated rather than left to the style.
+    .contentShape(RoundedRectangle(cornerRadius: radius))
     .accessibilityIfPresent(accessibilityConfiguration)
   }
 }
