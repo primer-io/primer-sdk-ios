@@ -76,10 +76,12 @@ struct PaymentMethodPlaceholder: View {
               .font(PrimerFont.bodyMedium(tokens: tokens))
               .foregroundColor(CheckoutColors.iconPrimary(tokens: tokens))
             Text(CheckoutComponentsStrings.backButton)
+              .primerTypography(.bodyMedium, tokens: tokens)
           }
           .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
         }
       )
+      .buttonStyle(PlainButtonStyle())
       .accessibility(
         config: AccessibilityConfiguration(
           identifier: AccessibilityIdentifiers.Common.backButton,

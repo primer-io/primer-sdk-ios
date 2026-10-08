@@ -43,6 +43,7 @@ struct ApplePayScreen: View {
             .font(PrimerFont.bodyMedium(tokens: tokens))
             .foregroundColor(CheckoutColors.iconPrimary(tokens: tokens))
         }
+        .buttonStyle(PlainButtonStyle())
         .padding(.leading, PrimerSpacing.large(tokens: tokens))
         .accessibility(
           config: AccessibilityConfiguration(
@@ -68,6 +69,7 @@ struct ApplePayScreen: View {
             .font(PrimerFont.bodyMedium(tokens: tokens))
             .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
         }
+        .buttonStyle(PlainButtonStyle())
         .padding(.trailing, PrimerSpacing.large(tokens: tokens))
         .accessibility(
           config: AccessibilityConfiguration(

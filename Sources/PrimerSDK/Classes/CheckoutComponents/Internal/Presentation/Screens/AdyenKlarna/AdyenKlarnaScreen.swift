@@ -57,9 +57,11 @@ struct AdyenKlarnaScreen: View {
                                 .font(PrimerFont.bodyMedium(tokens: tokens))
                                 .foregroundColor(CheckoutColors.iconPrimary(tokens: tokens))
                             Text(CheckoutComponentsStrings.backButton)
+                                .primerTypography(.bodyMedium, tokens: tokens)
                         }
                         .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
                     }
+                    .buttonStyle(PlainButtonStyle())
                     .accessibility(config: AccessibilityConfiguration(
                         identifier: AccessibilityIdentifiers.AdyenKlarna.backButton,
                         label: CheckoutComponentsStrings.a11yBack,
