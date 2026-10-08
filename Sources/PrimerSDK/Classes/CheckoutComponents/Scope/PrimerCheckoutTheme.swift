@@ -28,7 +28,8 @@ public struct PrimerCheckoutTheme: Equatable {
   public let typography: TypographyOverrides?
   public let width: WidthOverrides?
 
-  /// Creates a new theme configuration with optional overrides.
+  /// Creates a new theme configuration with optional overrides. A NaN or infinite number in any
+  /// override is ignored, and the default applies.
   /// - Parameters:
   ///   - colors: Color token overrides, applied in light mode. Default: nil (uses internal defaults)
   ///   - darkColors: Color token overrides applied in dark mode only. Anything left nil here uses Primer's dark
@@ -235,11 +236,11 @@ public struct RadiusOverrides: Equatable {
     primerRadiusLarge: CGFloat? = nil,
     primerRadiusBase: CGFloat? = nil
   ) {
-    self.primerRadiusXsmall = primerRadiusXsmall
-    self.primerRadiusSmall = primerRadiusSmall
-    self.primerRadiusMedium = primerRadiusMedium
-    self.primerRadiusLarge = primerRadiusLarge
-    self.primerRadiusBase = primerRadiusBase
+    self.primerRadiusXsmall = primerRadiusXsmall.finite
+    self.primerRadiusSmall = primerRadiusSmall.finite
+    self.primerRadiusMedium = primerRadiusMedium.finite
+    self.primerRadiusLarge = primerRadiusLarge.finite
+    self.primerRadiusBase = primerRadiusBase.finite
   }
 }
 
@@ -276,14 +277,14 @@ public struct SpacingOverrides: Equatable {
     primerSpaceXxlarge: CGFloat? = nil,
     primerSpaceBase: CGFloat? = nil
   ) {
-    self.primerSpaceXxsmall = primerSpaceXxsmall
-    self.primerSpaceXsmall = primerSpaceXsmall
-    self.primerSpaceSmall = primerSpaceSmall
-    self.primerSpaceMedium = primerSpaceMedium
-    self.primerSpaceLarge = primerSpaceLarge
-    self.primerSpaceXlarge = primerSpaceXlarge
-    self.primerSpaceXxlarge = primerSpaceXxlarge
-    self.primerSpaceBase = primerSpaceBase
+    self.primerSpaceXxsmall = primerSpaceXxsmall.finite
+    self.primerSpaceXsmall = primerSpaceXsmall.finite
+    self.primerSpaceSmall = primerSpaceSmall.finite
+    self.primerSpaceMedium = primerSpaceMedium.finite
+    self.primerSpaceLarge = primerSpaceLarge.finite
+    self.primerSpaceXlarge = primerSpaceXlarge.finite
+    self.primerSpaceXxlarge = primerSpaceXxlarge.finite
+    self.primerSpaceBase = primerSpaceBase.finite
   }
 }
 
@@ -317,13 +318,13 @@ public struct SizeOverrides: Equatable {
     primerSizeXxxlarge: CGFloat? = nil,
     primerSizeBase: CGFloat? = nil
   ) {
-    self.primerSizeSmall = primerSizeSmall
-    self.primerSizeMedium = primerSizeMedium
-    self.primerSizeLarge = primerSizeLarge
-    self.primerSizeXlarge = primerSizeXlarge
-    self.primerSizeXxlarge = primerSizeXxlarge
-    self.primerSizeXxxlarge = primerSizeXxxlarge
-    self.primerSizeBase = primerSizeBase
+    self.primerSizeSmall = primerSizeSmall.finite
+    self.primerSizeMedium = primerSizeMedium.finite
+    self.primerSizeLarge = primerSizeLarge.finite
+    self.primerSizeXlarge = primerSizeXlarge.finite
+    self.primerSizeXxlarge = primerSizeXxlarge.finite
+    self.primerSizeXxxlarge = primerSizeXxxlarge.finite
+    self.primerSizeBase = primerSizeBase.finite
   }
 }
 
@@ -357,10 +358,10 @@ public struct TypographyOverrides: Equatable {
       lineHeight: CGFloat? = nil
     ) {
       self.font = font
-      self.letterSpacing = letterSpacing
+      self.letterSpacing = letterSpacing.finite
       self.weight = weight
-      self.size = size
-      self.lineHeight = lineHeight
+      self.size = size.finite
+      self.lineHeight = lineHeight.finite
     }
   }
 
@@ -432,11 +433,16 @@ public struct WidthOverrides: Equatable {
     primerWidthError: CGFloat? = nil,
     primerWidthSelected: CGFloat? = nil
   ) {
-    self.primerWidthDefault = primerWidthDefault
-    self.primerWidthFocus = primerWidthFocus
-    self.primerWidthError = primerWidthError
-    self.primerWidthSelected = primerWidthSelected
+    self.primerWidthDefault = primerWidthDefault.finite
+    self.primerWidthFocus = primerWidthFocus.finite
+    self.primerWidthError = primerWidthError.finite
+    self.primerWidthSelected = primerWidthSelected.finite
   }
+}
+
+private extension Optional where Wrapped == CGFloat {
+  /// NaN never equals itself, so a theme holding one would restart every `.task(id: theme)` that keys on it.
+  var finite: CGFloat? { flatMap { $0.isFinite ? $0 : nil } }
 }
 
 // MARK: - Color Scheme Resolution

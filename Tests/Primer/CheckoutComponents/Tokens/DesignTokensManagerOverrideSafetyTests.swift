@@ -60,6 +60,21 @@ final class DesignTokensManagerOverrideSafetyTests: XCTestCase {
         XCTAssertEqual(tokens.primerTypographyErrorSize, 14, "error still inherits the finite body small size")
     }
 
+    /// The inline modifier keys a task on the theme, and NaN never equals itself, so the task would restart forever.
+    func test_nonFiniteOverrides_leaveTheThemeEqualToItself() {
+        let theme = PrimerCheckoutTheme(
+            radius: RadiusOverrides(primerRadiusSmall: .nan),
+            spacing: SpacingOverrides(primerSpaceSmall: .infinity),
+            sizes: SizeOverrides(primerSizeSmall: -.infinity),
+            typography: TypographyOverrides(bodySmall: .init(size: .nan)),
+            width: WidthOverrides(primerWidthDefault: .nan)
+        )
+
+        XCTAssertEqual(theme, theme)
+        XCTAssertNil(theme.typography?.bodySmall?.size)
+        XCTAssertNil(theme.radius?.primerRadiusSmall)
+    }
+
     // MARK: - Dynamic brand color
 
     func test_dynamicBrand_resolvesAliasesForTheLoadedScheme_notTheCurrentTrait() async throws {
