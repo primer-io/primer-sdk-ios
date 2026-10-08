@@ -16,11 +16,17 @@ import SwiftUI
 final class DesignTokensManager: ObservableObject {
   @Published var tokens: DesignTokens?
   private var themeOverrides: PrimerCheckoutTheme?
+  private var typographyOverrides: TypographyOverrides?
 
   // MARK: - Theme Override API
 
   func applyTheme(_ theme: PrimerCheckoutTheme) {
     themeOverrides = theme
+    typographyOverrides = theme.typography?.droppingNonFiniteValues
+    if typographyOverrides != theme.typography {
+      PrimerLogging.shared.logger.error(
+        message: "[DesignTokens] Typography overrides that are NaN or infinite are ignored.")
+    }
   }
 
   // MARK: - Token Loading
@@ -40,7 +46,7 @@ final class DesignTokensManager: ObservableObject {
   /// Injected before references resolve, so tokens aliasing the brand color or the brand font follow the override.
   private func tokenValueOverrides(colors: ColorOverrides?) -> [String: Any] {
     var overrides: [String: Any] = [:]
-    if let brandFont = themeOverrides?.typography?.brand {
+    if let brandFont = typographyOverrides?.brand {
       // rejected here rather than downstream: a value the passes rewrite fails the whole decode
       if DesignTokensProcessor.isTokenAuthoringSyntax(brandFont) {
         PrimerLogging.shared.logger.error(
@@ -50,7 +56,7 @@ final class DesignTokensManager: ObservableObject {
       }
     }
     // Error references bodySmall, and references resolve before the override pass.
-    if let bodySmall = themeOverrides?.typography?.bodySmall {
+    if let bodySmall = typographyOverrides?.bodySmall {
       if let font = bodySmall.font {
         if DesignTokensProcessor.isTokenAuthoringSyntax(font) {
           PrimerLogging.shared.logger.error(
@@ -155,7 +161,7 @@ final class DesignTokensManager: ObservableObject {
     if let sizes = theme.sizes {
       applySizeOverrides(to: tokens, from: sizes)
     }
-    if let typography = theme.typography {
+    if let typography = typographyOverrides {
       applyTypographyOverrides(to: tokens, from: typography)
     }
     if let width = theme.width {
@@ -428,6 +434,35 @@ final class DesignTokensManager: ObservableObject {
     return dictionary
   }
 
+}
+
+@available(iOS 15.0, *)
+private extension TypographyOverrides {
+  /// `JSONSerialization` raises an Objective-C exception on NaN or infinity, which `try` cannot catch.
+  var droppingNonFiniteValues: TypographyOverrides {
+    TypographyOverrides(
+      brand: brand,
+      titleXlarge: titleXlarge?.droppingNonFiniteValues,
+      titleLarge: titleLarge?.droppingNonFiniteValues,
+      bodyLarge: bodyLarge?.droppingNonFiniteValues,
+      bodyMedium: bodyMedium?.droppingNonFiniteValues,
+      bodySmall: bodySmall?.droppingNonFiniteValues,
+      error: error?.droppingNonFiniteValues
+    )
+  }
+}
+
+@available(iOS 15.0, *)
+private extension TypographyOverrides.TypographyStyle {
+  var droppingNonFiniteValues: Self {
+    Self(
+      font: font,
+      letterSpacing: letterSpacing.flatMap { $0.isFinite ? $0 : nil },
+      weight: weight,
+      size: size.flatMap { $0.isFinite ? $0 : nil },
+      lineHeight: lineHeight.flatMap { $0.isFinite ? $0 : nil }
+    )
+  }
 }
 
 // swiftlint:enable cyclomatic_complexity
