@@ -5,6 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 @testable import PrimerSDK
+@_spi(PrimerInternal) @testable import PrimerFoundation
 import SwiftUI
 import UIKit
 import XCTest
@@ -73,6 +74,21 @@ final class DesignTokensManagerOverrideSafetyTests: XCTestCase {
         XCTAssertEqual(theme, theme)
         XCTAssertNil(theme.typography?.bodySmall?.size)
         XCTAssertNil(theme.radius?.primerRadiusSmall)
+        XCTAssertNil(theme.spacing?.primerSpaceSmall)
+        XCTAssertNil(theme.sizes?.primerSizeSmall)
+        XCTAssertNil(theme.width?.primerWidthDefault)
+    }
+
+    /// Dropped quietly, the merchant would see a theme that does not apply and no reason why.
+    func test_nonFiniteOverride_logsAWarning() {
+        let spy = WarningCounter()
+        let previous = PrimerLogging.shared.logger
+        PrimerLogging.shared.logger = spy
+        defer { PrimerLogging.shared.logger = previous }
+
+        _ = SpacingOverrides(primerSpaceSmall: .nan, primerSpaceMedium: 12)
+
+        XCTAssertEqual(spy.warnings, 1)
     }
 
     // MARK: - Dynamic brand color
@@ -131,5 +147,14 @@ final class DesignTokensManagerOverrideSafetyTests: XCTestCase {
         var red: CGFloat = 0, green: CGFloat = 0, blue: CGFloat = 0, alpha: CGFloat = 0
         color.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
         return [red, green, blue, alpha].map { ($0 * 255).rounded() }
+    }
+}
+
+private final class WarningCounter: PrimerLogger {
+    var logLevel: LogLevel = .warning
+    private(set) var warnings = 0
+
+    func log(level: LogLevel, message: String, userInfo: Encodable?, metadata: PrimerLogMetadata) {
+        if level == .warning, message.contains("NaN") { warnings += 1 }
     }
 }

@@ -442,7 +442,11 @@ public struct WidthOverrides: Equatable {
 
 private extension Optional where Wrapped == CGFloat {
   /// NaN never equals itself, so a theme holding one would restart every `.task(id: theme)` that keys on it.
-  var finite: CGFloat? { flatMap { $0.isFinite ? $0 : nil } }
+  var finite: CGFloat? {
+    guard let value = self, !value.isFinite else { return self }
+    PrimerLogging.shared.logger.warn(message: "[PrimerCheckoutTheme] A NaN or infinite theme number is ignored.")
+    return nil
+  }
 }
 
 // MARK: - Color Scheme Resolution
