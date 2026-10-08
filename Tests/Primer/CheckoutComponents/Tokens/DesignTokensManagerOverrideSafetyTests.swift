@@ -100,6 +100,29 @@ final class DesignTokensManagerOverrideSafetyTests: XCTestCase {
         XCTAssertEqual(components(of: darkBrand), components(of: UIColor.green), "the brand itself follows its aliases")
     }
 
+    /// Inline, a forced dark checkout sits in the merchant's light views: every colour override has to follow the
+    /// loaded scheme, and the brand must still pick up Increase Contrast when the shopper turns it on later.
+    func test_colorOverrides_followTheLoadedScheme_andKeepTheContrastLive() async throws {
+        let color = Color(UIColor { traits in
+            switch (traits.userInterfaceStyle, traits.accessibilityContrast) {
+            case (.dark, .high): .blue
+            case (.dark, _): .green
+            default: .red
+            }
+        })
+        sut.applyTheme(PrimerCheckoutTheme(darkColors: ColorOverrides(primerColorBrand: color, primerColorOnBrand: color)))
+
+        try await sut.fetchTokens(for: .dark)
+        let brand = try UIColor(XCTUnwrap(sut.tokens?.primerColorBrand))
+        let onBrand = try UIColor(XCTUnwrap(sut.tokens?.primerColorOnBrand))
+        let lightView = UITraitCollection(userInterfaceStyle: .light)
+        let lightViewHighContrast = UITraitCollection(traitsFrom: [lightView, .init(accessibilityContrast: .high)])
+
+        XCTAssertEqual(components(of: brand.resolvedColor(with: lightView)), components(of: UIColor.green))
+        XCTAssertEqual(components(of: onBrand.resolvedColor(with: lightView)), components(of: UIColor.green))
+        XCTAssertEqual(components(of: brand.resolvedColor(with: lightViewHighContrast)), components(of: UIColor.blue))
+    }
+
     private func components(of color: Color) -> [CGFloat] {
         components(of: UIColor(color))
     }

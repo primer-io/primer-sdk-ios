@@ -61,8 +61,8 @@ final class ThemeOverrideMappingTests: XCTestCase {
                 tokens.primerColorBackgroundTransparentDisabled,
                 tokens.primerColorBackgroundTransparentLoading,
                 tokens.primerColorBackgroundTransparentSelected
-            ],
-            colors
+            ].map { rgba($0) },
+            colors.map { rgba($0) }
         )
     }
 
@@ -89,9 +89,9 @@ final class ThemeOverrideMappingTests: XCTestCase {
         try await sut.fetchTokens(for: .light)
 
         let tokens = try XCTUnwrap(sut.tokens)
-        XCTAssertEqual(tokens.primerColorBorderOutlinedFocus, .orange)
-        XCTAssertEqual(tokens.primerColorBorderTransparentFocus, .orange)
-        XCTAssertEqual(CheckoutColors.borderFocus(tokens: tokens), .orange)
+        XCTAssertEqual(rgba(tokens.primerColorBorderOutlinedFocus), rgba(.orange))
+        XCTAssertEqual(rgba(tokens.primerColorBorderTransparentFocus), rgba(.orange))
+        XCTAssertEqual(rgba(CheckoutColors.borderFocus(tokens: tokens)), rgba(.orange))
     }
 
     func test_focusOverride_leavesAFocusBorderTheMerchantNamed() async throws {
@@ -102,7 +102,7 @@ final class ThemeOverrideMappingTests: XCTestCase {
 
         try await sut.fetchTokens(for: .light)
 
-        XCTAssertEqual(sut.tokens?.primerColorBorderOutlinedFocus, .purple)
+        XCTAssertEqual(rgba(sut.tokens?.primerColorBorderOutlinedFocus), rgba(.purple))
     }
 
     // MARK: - Keyboard and AutoFill per field
@@ -124,5 +124,14 @@ final class ThemeOverrideMappingTests: XCTestCase {
     func test_fieldConfiguration_givesThePhoneThePhonePad() {
         XCTAssertEqual(PrimerInputElementType.phoneNumber.fieldConfiguration.keyboardType, .phonePad)
         XCTAssertEqual(PrimerInputElementType.firstName.fieldConfiguration.keyboardType, .default)
+    }
+
+    /// Overrides are pinned to the loaded scheme, so they compare by value, not by identity.
+    private func rgba(_ color: Color?) -> [Int] {
+        guard let color else { return [] }
+        var red: CGFloat = 0, green: CGFloat = 0, blue: CGFloat = 0, alpha: CGFloat = 0
+        UIColor(color).resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
+            .getRed(&red, green: &green, blue: &blue, alpha: &alpha)
+        return [red, green, blue, alpha].map { Int(($0 * 255).rounded()) }
     }
 }

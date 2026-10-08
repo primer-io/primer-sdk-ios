@@ -27,18 +27,17 @@ final class DesignTokensManager: ObservableObject {
 
   func fetchTokens(for colorScheme: ColorScheme) async throws {
     // the only place the color scheme picks a set, so everything below works off one resolved set
-    let colors = themeOverrides?.resolvedColors(for: colorScheme)
-    let loadedTokens = try Self.makeTokens(
-      for: colorScheme, valueOverrides: tokenValueOverrides(colors: colors, colorScheme: colorScheme))
+    let colors = themeOverrides?.resolvedColors(for: colorScheme)?.pinned(to: colorScheme)
+    let loadedTokens = try Self.makeTokens(for: colorScheme, valueOverrides: tokenValueOverrides(colors: colors))
 
     // applied last so an explicit token wins over a palette value it aliases
-    applyThemeOverrides(to: loadedTokens, colors: colors, colorScheme: colorScheme)
+    applyThemeOverrides(to: loadedTokens, colors: colors)
 
     tokens = loadedTokens
   }
 
   /// Injected before references resolve, so tokens aliasing the brand color or the brand font follow the override.
-  private func tokenValueOverrides(colors: ColorOverrides?, colorScheme: ColorScheme) -> [String: Any] {
+  private func tokenValueOverrides(colors: ColorOverrides?) -> [String: Any] {
     var overrides: [String: Any] = [:]
     if let brandFont = themeOverrides?.typography?.brand {
       // rejected here rather than downstream: a value the passes rewrite fails the whole decode
@@ -72,7 +71,7 @@ final class DesignTokensManager: ObservableObject {
     }
 
     guard let brand = colors?.primerColorBrand,
-          let components = Self.colorComponents(brand, for: colorScheme) else {
+          let components = Self.colorComponents(brand) else {
       return overrides
     }
     overrides["primerColorBrand"] = components
@@ -124,12 +123,13 @@ final class DesignTokensManager: ObservableObject {
     }
   }
 
-  private nonisolated static func colorComponents(_ color: Color, for colorScheme: ColorScheme) -> [CGFloat]? {
+  /// The colour is pinned to the loaded scheme, so the current trait supplies only its contrast setting.
+  private nonisolated static func colorComponents(_ color: Color) -> [CGFloat]? {
     var red: CGFloat = 0
     var green: CGFloat = 0
     var blue: CGFloat = 0
     var alpha: CGFloat = 0
-    guard resolved(color, for: colorScheme).getRed(&red, green: &green, blue: &blue, alpha: &alpha) else {
+    guard UIColor(color).resolvedColor(with: .current).getRed(&red, green: &green, blue: &blue, alpha: &alpha) else {
       PrimerLogging.shared.logger.error(
         message: "[DesignTokens] Palette override ignored: color has no readable RGB components.")
       return nil
@@ -137,21 +137,15 @@ final class DesignTokensManager: ObservableObject {
     return [red, green, blue, alpha]
   }
 
-  /// Read for the scheme being loaded rather than the current trait, keeping the current contrast setting.
-  private nonisolated static func resolved(_ color: Color, for colorScheme: ColorScheme) -> UIColor {
-    let style = UITraitCollection(userInterfaceStyle: colorScheme == .dark ? .dark : .light)
-    return UIColor(color).resolvedColor(with: UITraitCollection(traitsFrom: [.current, style]))
-  }
-
   // MARK: - Apply Theme Overrides
 
   /// Applies merchant theme overrides to the loaded design tokens.
   /// This ensures that CheckoutColors and other direct token accessors respect theme customizations.
-  private func applyThemeOverrides(to tokens: DesignTokens, colors: ColorOverrides?, colorScheme: ColorScheme) {
+  private func applyThemeOverrides(to tokens: DesignTokens, colors: ColorOverrides?) {
     guard let theme = themeOverrides else { return }
 
     if let colors {
-      applyColorOverrides(to: tokens, from: colors, colorScheme: colorScheme)
+      applyColorOverrides(to: tokens, from: colors)
     }
     if let radius = theme.radius {
       applyRadiusOverrides(to: tokens, from: radius)
@@ -170,9 +164,8 @@ final class DesignTokensManager: ObservableObject {
     }
   }
 
-  private func applyColorOverrides(to tokens: DesignTokens, from colors: ColorOverrides, colorScheme: ColorScheme) {
-    // Resolved like the aliases injected from it, so a forced appearance cannot split brand from focus.
-    if let value = colors.primerColorBrand { tokens.primerColorBrand = Color(Self.resolved(value, for: colorScheme)) }
+  private func applyColorOverrides(to tokens: DesignTokens, from colors: ColorOverrides) {
+    if let value = colors.primerColorBrand { tokens.primerColorBrand = value }
     if let value = colors.primerColorOnBrand { tokens.primerColorOnBrand = value }
     applySemanticColorOverrides(to: tokens, from: colors)
     applyTextColorOverrides(to: tokens, from: colors)
@@ -441,6 +434,62 @@ final class DesignTokensManager: ObservableObject {
     return dictionary
   }
 
+}
+
+@available(iOS 15.0, *)
+private extension ColorOverrides {
+  /// Inline, the merchant's views keep their scheme, so an unpinned dynamic colour would mix with tokens loaded for another.
+  func pinned(to colorScheme: ColorScheme) -> ColorOverrides { // swiftlint:disable:this function_body_length
+    let style: UIUserInterfaceStyle = colorScheme == .dark ? .dark : .light
+    // Only the style is replaced: contrast and the other traits still come from the view.
+    let pin: (Color?) -> Color? = { color in
+      color.map { color in
+        Color(UIColor { UIColor(color).resolvedColor(with: UITraitCollection(traitsFrom: [$0, .init(userInterfaceStyle: style)])) })
+      }
+    }
+    return ColorOverrides(
+      primerColorBrand: pin(primerColorBrand),
+      primerColorOnBrand: pin(primerColorOnBrand),
+      primerColorBackgroundPrimary: pin(primerColorBackgroundPrimary),
+      primerColorBackgroundSecondary: pin(primerColorBackgroundSecondary),
+      primerColorBackgroundOutlinedDefault: pin(primerColorBackgroundOutlinedDefault),
+      primerColorBackgroundOutlinedActive: pin(primerColorBackgroundOutlinedActive),
+      primerColorBackgroundOutlinedDisabled: pin(primerColorBackgroundOutlinedDisabled),
+      primerColorBackgroundOutlinedLoading: pin(primerColorBackgroundOutlinedLoading),
+      primerColorBackgroundOutlinedSelected: pin(primerColorBackgroundOutlinedSelected),
+      primerColorBackgroundOutlinedError: pin(primerColorBackgroundOutlinedError),
+      primerColorBackgroundTransparentDefault: pin(primerColorBackgroundTransparentDefault),
+      primerColorBackgroundTransparentActive: pin(primerColorBackgroundTransparentActive),
+      primerColorBackgroundTransparentDisabled: pin(primerColorBackgroundTransparentDisabled),
+      primerColorBackgroundTransparentLoading: pin(primerColorBackgroundTransparentLoading),
+      primerColorBackgroundTransparentSelected: pin(primerColorBackgroundTransparentSelected),
+      primerColorTextPrimary: pin(primerColorTextPrimary),
+      primerColorTextSecondary: pin(primerColorTextSecondary),
+      primerColorTextPlaceholder: pin(primerColorTextPlaceholder),
+      primerColorTextDisabled: pin(primerColorTextDisabled),
+      primerColorTextNegative: pin(primerColorTextNegative),
+      primerColorTextLink: pin(primerColorTextLink),
+      primerColorTextOutlinedDefault: pin(primerColorTextOutlinedDefault),
+      primerColorBorderOutlinedDefault: pin(primerColorBorderOutlinedDefault),
+      primerColorBorderOutlinedActive: pin(primerColorBorderOutlinedActive),
+      primerColorBorderOutlinedFocus: pin(primerColorBorderOutlinedFocus),
+      primerColorBorderOutlinedDisabled: pin(primerColorBorderOutlinedDisabled),
+      primerColorBorderOutlinedError: pin(primerColorBorderOutlinedError),
+      primerColorBorderOutlinedSelected: pin(primerColorBorderOutlinedSelected),
+      primerColorBorderOutlinedLoading: pin(primerColorBorderOutlinedLoading),
+      primerColorBorderTransparentDefault: pin(primerColorBorderTransparentDefault),
+      primerColorBorderTransparentActive: pin(primerColorBorderTransparentActive),
+      primerColorBorderTransparentFocus: pin(primerColorBorderTransparentFocus),
+      primerColorBorderTransparentDisabled: pin(primerColorBorderTransparentDisabled),
+      primerColorBorderTransparentSelected: pin(primerColorBorderTransparentSelected),
+      primerColorIconPrimary: pin(primerColorIconPrimary),
+      primerColorIconDisabled: pin(primerColorIconDisabled),
+      primerColorIconNegative: pin(primerColorIconNegative),
+      primerColorIconPositive: pin(primerColorIconPositive),
+      primerColorFocus: pin(primerColorFocus),
+      primerColorLoader: pin(primerColorLoader)
+    )
+  }
 }
 
 // swiftlint:enable cyclomatic_complexity
