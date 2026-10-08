@@ -198,9 +198,9 @@ final class DefaultFormRedirectScope: PrimerFormRedirectScope, ObservableObject,
 
   /// Submit prepends the session's dialling code, so a pasted number that carries the same one drops it here.
   private func nationalNumber(from input: String, digits: String) -> String {
-    // Pasted text can start with a newline or an invisible direction mark before the "+".
+    // Pasted text can start with a newline, an invisible direction mark or a bracket before the "+".
     let trimmed = String(String.UnicodeScalarView(input.unicodeScalars.drop {
-      $0.properties.isWhitespace || $0.properties.generalCategory == .format
+      $0 != "+" && !CharacterSet.decimalDigits.contains($0)
     }))
     let dialDigits = (internalState.phoneField?.dialCode ?? "").filter(\.isNumber)
     guard !dialDigits.isEmpty, trimmed.hasPrefix("+") || trimmed.hasPrefix("00") else { return digits }
