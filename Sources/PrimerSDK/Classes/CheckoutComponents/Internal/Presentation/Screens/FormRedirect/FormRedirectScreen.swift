@@ -131,16 +131,15 @@ struct FormRedirectScreen: View {
     }
 
     private func makeDefaultSubmitButton() -> some View {
-        PrimerCheckoutButton(
-            scope.submitButtonText ?? defaultSubmitButtonText,
+        let title = scope.submitButtonText ?? defaultSubmitButtonText
+        return PrimerCheckoutButton(
+            title,
             isEnabled: currentState.isSubmitEnabled,
             isLoading: currentState.isLoading,
             accessibilityConfiguration: AccessibilityConfiguration(
                 identifier: AccessibilityIdentifiers.FormRedirect.submitButton,
-                label: currentState.isLoading
-                    ? CheckoutComponentsStrings.a11ySubmitButtonLoading
-                    : CheckoutComponentsStrings.a11ySubmitButtonLabel,
-                // An enabled hint would repeat the label word for word in many languages.
+                // The visible title, so a Voice Control user can say what the button shows.
+                label: currentState.isLoading ? CheckoutComponentsStrings.a11ySubmitButtonLoading : title,
                 hint: currentState.isLoading || currentState.isSubmitEnabled
                     ? nil
                     : CheckoutComponentsStrings.a11ySubmitButtonDisabled,
