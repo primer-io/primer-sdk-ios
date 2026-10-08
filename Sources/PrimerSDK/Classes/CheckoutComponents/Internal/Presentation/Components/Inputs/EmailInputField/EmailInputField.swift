@@ -94,7 +94,8 @@ struct EmailInputField: View, LogReporter {
       config: AccessibilityConfiguration(
         identifier: AccessibilityIdentifiers.CardForm.billingEmailField,
         label: label ?? placeholder,
-        hint: CheckoutComponentsStrings.a11yEmailFieldHint
+        hint: CheckoutComponentsStrings.a11yEmailFieldHint,
+        value: errorMessage
       ),
       combinesChildren: false
     )

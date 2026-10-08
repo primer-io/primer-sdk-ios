@@ -102,7 +102,8 @@ struct CountryInputField: View, LogReporter {
         identifier: AccessibilityIdentifiers.CardForm.billingAddressField("country"),
         label: label ?? CheckoutComponentsStrings.a11yBillingAddressCountryLabel,
         hint: CheckoutComponentsStrings.a11yBillingAddressCountryHint,
-        value: errorMessage,
+        // The label replaces the button's own text, so the selected country is read as the value.
+        value: errorMessage ?? countryName,
         traits: []
       ),
       combinesChildren: false
