@@ -78,16 +78,7 @@ public struct ColorOverrides: Equatable {
   public let primerColorBackgroundPrimary: Color?
   public let primerColorBackgroundSecondary: Color?
   public let primerColorBackgroundOutlinedDefault: Color?
-  public let primerColorBackgroundOutlinedActive: Color?
   public let primerColorBackgroundOutlinedDisabled: Color?
-  public let primerColorBackgroundOutlinedLoading: Color?
-  public let primerColorBackgroundOutlinedSelected: Color?
-  public let primerColorBackgroundOutlinedError: Color?
-  public let primerColorBackgroundTransparentDefault: Color?
-  public let primerColorBackgroundTransparentActive: Color?
-  public let primerColorBackgroundTransparentDisabled: Color?
-  public let primerColorBackgroundTransparentLoading: Color?
-  public let primerColorBackgroundTransparentSelected: Color?
   public let primerColorTextPrimary: Color?
   public let primerColorTextSecondary: Color?
   public let primerColorTextPlaceholder: Color?
@@ -132,16 +123,7 @@ public struct ColorOverrides: Equatable {
     primerColorBackgroundPrimary: Color? = nil,
     primerColorBackgroundSecondary: Color? = nil,
     primerColorBackgroundOutlinedDefault: Color? = nil,
-    primerColorBackgroundOutlinedActive: Color? = nil,
     primerColorBackgroundOutlinedDisabled: Color? = nil,
-    primerColorBackgroundOutlinedLoading: Color? = nil,
-    primerColorBackgroundOutlinedSelected: Color? = nil,
-    primerColorBackgroundOutlinedError: Color? = nil,
-    primerColorBackgroundTransparentDefault: Color? = nil,
-    primerColorBackgroundTransparentActive: Color? = nil,
-    primerColorBackgroundTransparentDisabled: Color? = nil,
-    primerColorBackgroundTransparentLoading: Color? = nil,
-    primerColorBackgroundTransparentSelected: Color? = nil,
     primerColorTextPrimary: Color? = nil,
     primerColorTextSecondary: Color? = nil,
     primerColorTextPlaceholder: Color? = nil,
@@ -173,16 +155,7 @@ public struct ColorOverrides: Equatable {
     self.primerColorBackgroundPrimary = primerColorBackgroundPrimary
     self.primerColorBackgroundSecondary = primerColorBackgroundSecondary
     self.primerColorBackgroundOutlinedDefault = primerColorBackgroundOutlinedDefault
-    self.primerColorBackgroundOutlinedActive = primerColorBackgroundOutlinedActive
     self.primerColorBackgroundOutlinedDisabled = primerColorBackgroundOutlinedDisabled
-    self.primerColorBackgroundOutlinedLoading = primerColorBackgroundOutlinedLoading
-    self.primerColorBackgroundOutlinedSelected = primerColorBackgroundOutlinedSelected
-    self.primerColorBackgroundOutlinedError = primerColorBackgroundOutlinedError
-    self.primerColorBackgroundTransparentDefault = primerColorBackgroundTransparentDefault
-    self.primerColorBackgroundTransparentActive = primerColorBackgroundTransparentActive
-    self.primerColorBackgroundTransparentDisabled = primerColorBackgroundTransparentDisabled
-    self.primerColorBackgroundTransparentLoading = primerColorBackgroundTransparentLoading
-    self.primerColorBackgroundTransparentSelected = primerColorBackgroundTransparentSelected
     self.primerColorTextPrimary = primerColorTextPrimary
     self.primerColorTextSecondary = primerColorTextSecondary
     self.primerColorTextPlaceholder = primerColorTextPlaceholder
