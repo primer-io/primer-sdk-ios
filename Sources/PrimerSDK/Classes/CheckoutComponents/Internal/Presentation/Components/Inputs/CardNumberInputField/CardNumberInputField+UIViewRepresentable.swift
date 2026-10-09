@@ -117,6 +117,11 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
       let currentText = cardNumber
       let previousText = (textField as? SecureTextField)?.internalText ?? ""
       let isDeletion = string.isEmpty
+      let caret = textField.selectedTextRange.map { textField.offset(from: textField.beginningOfDocument, to: $0.start) }
+      // A forward delete over a group space, unlike a backspace, removes the digit after it.
+      let isForwardDeleteOverSpace = isDeletion && range.length == 1 && caret == range.location
+        && previousText.dropFirst(range.location).first?.isNumber == false
+      let range = isForwardDeleteOverSpace ? NSRange(location: range.location, length: 2) : range
       let newCardNumber = processTextFieldChange(
         currentText: currentText,
         range: range,

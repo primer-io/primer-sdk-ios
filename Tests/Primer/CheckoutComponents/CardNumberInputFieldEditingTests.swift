@@ -131,6 +131,16 @@ final class CardNumberInputFieldEditingTests: XCTestCase {
         XCTAssertEqual(caret, 3)
     }
 
+    func test_forwardDeleteOverAGroupSpace_deletesTheDigitAfterIt() async throws {
+        cardNumber = "42424242"
+        let (coordinator, field) = await makeField(formatted: "4242 4242")
+
+        let caret = try edit(coordinator, field, NSRange(location: 4, length: 1), "", forwardDelete: true)
+
+        XCTAssertEqual(cardNumber, "4242242")
+        XCTAssertEqual(caret, 4)
+    }
+
     func test_deleteASelectionAcrossAGroupSpace_leavesTheCaretAtItsStart() async throws {
         let (coordinator, field) = await makeField()
 
@@ -160,13 +170,16 @@ final class CardNumberInputFieldEditingTests: XCTestCase {
         XCTAssertEqual(caret, 10)
     }
 
-    /// Selects what UIKit has selected for this edit, a backspace leaving its caret after the removed character.
+    /// Selects what UIKit has selected for this edit: a backspace leaves its caret after the removed
+    /// character, a forward delete before it.
     private func edit(
-        _ coordinator: CardNumberTextField.Coordinator, _ field: UITextField, _ range: NSRange, _ string: String
+        _ coordinator: CardNumberTextField.Coordinator, _ field: UITextField, _ range: NSRange, _ string: String,
+        forwardDelete: Bool = false
     ) throws -> Int {
-        let isBackspace = string.isEmpty && range.length == 1
-        let start = try XCTUnwrap(field.position(from: field.beginningOfDocument, offset: range.location + (isBackspace ? 1 : 0)))
-        let end = try XCTUnwrap(field.position(from: start, offset: isBackspace ? 0 : range.length))
+        let isSingleDelete = string.isEmpty && range.length == 1
+        let caretAfter = isSingleDelete && !forwardDelete
+        let start = try XCTUnwrap(field.position(from: field.beginningOfDocument, offset: range.location + (caretAfter ? 1 : 0)))
+        let end = try XCTUnwrap(field.position(from: start, offset: isSingleDelete ? 0 : range.length))
         field.selectedTextRange = field.textRange(from: start, to: end)
 
         _ = coordinator.textField(field, shouldChangeCharactersIn: range, replacementString: string)
