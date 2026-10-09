@@ -996,6 +996,27 @@ final class DefaultCardFormScopeTests: XCTestCase {
         }
     }
 
+    func test_performSubmit_againWhileTheMerchantDecides_asksTheMerchantOnce() async throws {
+        let container = try await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            var decisions: [(PrimerPaymentCreationDecision) -> Void] = []
+            checkoutScope.onBeforePaymentCreate = { _, decisionHandler in decisions.append(decisionHandler) }
+            let scope = createCardFormScope(checkoutScope: checkoutScope)
+
+            // The Pay button calls performSubmit directly, so a double tap reaches it twice.
+            let first = Task { await scope.performSubmit() }
+            let second = Task { await scope.performSubmit() }
+            for _ in 0..<20 { await Task.yield() }
+
+            XCTAssertEqual(decisions.count, 1)
+            decisions.forEach { $0(.abortPaymentCreation()) }
+            await first.value
+            await second.value
+        }
+    }
+
     // MARK: - cancel Tests
 
     func test_cancel_fromSelection_returnsToSelectionNotDismissed() async throws {

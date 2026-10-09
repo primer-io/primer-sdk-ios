@@ -345,7 +345,6 @@ final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, 
   func start() {}
 
   func submit() {
-    guard !structuredState.isLoading else { return }
     Task { [self] in
       await performSubmit()
     }
@@ -402,6 +401,8 @@ final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, 
   }
 
   func performSubmit() async {
+    // Checked and set before any await, so a second tap or retry cannot start another payment.
+    guard !structuredState.isLoading else { return }
     structuredState.isLoading = true
 
     await analyticsInteractor?.trackEvent(
