@@ -14,6 +14,7 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
 
   @Published private var internalState = PrimerCheckoutState.initializing
   @Published var navigationState = CheckoutNavigationState.loading
+  @Published private var isAwaitingPaymentDecision = false
 
   var onBeforePaymentCreate: BeforePaymentCreateHandler?
   var onShippingAddressChange: ShippingAddressChangeHandler?
@@ -31,6 +32,21 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
     AsyncStream { continuation in
       let task = Task { [self] in
         for await value in $internalState.values {
+          continuation.yield(value)
+        }
+        continuation.finish()
+      }
+
+      continuation.onTermination = { _ in
+        task.cancel()
+      }
+    }
+  }
+
+  var isAwaitingPaymentDecisionStream: AsyncStream<Bool> {
+    AsyncStream { continuation in
+      let task = Task { [self] in
+        for await value in $isAwaitingPaymentDecision.values {
           continuation.yield(value)
         }
         continuation.finish()
@@ -601,6 +617,7 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
       return
     }
 
+    isAwaitingPaymentDecision = true
     let decision = await withCheckedContinuation { (continuation: CheckedContinuation<PrimerPaymentCreationDecision, Never>) in
       let data = PrimerCheckoutPaymentMethodData(
         type: PrimerCheckoutPaymentMethodType(type: paymentMethodType)
@@ -609,6 +626,7 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
         continuation.resume(returning: decision)
       }
     }
+    isAwaitingPaymentDecision = false
 
     switch decision.type {
     case let .abort(errorMessage):

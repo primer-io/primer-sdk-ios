@@ -736,6 +736,31 @@ final class DefaultCheckoutScopeBehaviorTests: XCTestCase {
 
     // MARK: - invokeBeforePaymentCreate Tests
 
+    func test_invokeBeforePaymentCreate_reportsTheWaitUntilTheMerchantAnswers() async throws {
+        sut = makeSut()
+        var decide: ((PrimerPaymentCreationDecision) -> Void)?
+        sut.onBeforePaymentCreate = { _, decisionHandler in decide = decisionHandler }
+        var reported: [Bool] = []
+        let watcher = Task { for await isAwaiting in sut.isAwaitingPaymentDecisionStream { reported.append(isAwaiting) } }
+        defer { watcher.cancel() }
+
+        let gate = Task { try await sut.invokeBeforePaymentCreate(paymentMethodType: TestData.PaymentMethodTypes.card) }
+        try await waitUntil { decide != nil && reported.last == true }
+        XCTAssertEqual(reported.last, true)
+
+        decide?(.continuePaymentCreation())
+        try await gate.value
+        try await waitUntil { reported.last == false }
+        XCTAssertEqual(reported.last, false)
+    }
+
+    private func waitUntil(_ condition: () -> Bool) async throws {
+        let deadline = Date().addingTimeInterval(1)
+        while !condition(), Date() < deadline {
+            try await Task.sleep(nanoseconds: 10_000_000)
+        }
+    }
+
     func test_invokeBeforePaymentCreate_noCallback_returnsImmediately() async throws {
         // Given
         sut = makeSut()

@@ -84,6 +84,8 @@ struct InlineFlowHost: View, LogReporter {
     .environment(\.layoutDirection, RTLSupport.layoutDirection)
     // The sheet is SDK UI, so it follows a forced appearance the way `PrimerCheckout` does.
     .applyAppearanceMode(appearanceMode)
+    // Outside the navigation stack, which drops the dismissal lock.
+    .modifier(PaymentSwipeLock(scope: scope, isProcessing: state == .processing))
   }
 
   /// FLOW states need a follow-up screen presented in the sheet. NON-FLOW states are owned by the
@@ -126,5 +128,25 @@ struct InlineFlowHost: View, LogReporter {
   private struct FlowSheetItem: Identifiable {
     let navigationState: CheckoutNavigationState
     let id = "inline-flow"
+  }
+}
+
+/// A payment cannot be stopped once the merchant gate or the processing starts, so the sheet stays
+/// until its outcome, as in the Drop-in. The gate state lives here because a presented sheet does
+/// not pick up later state of the view that presents it.
+@available(iOS 15.0, *)
+private struct PaymentSwipeLock: ViewModifier {
+  let scope: any CheckoutScopeInternal
+  let isProcessing: Bool
+  @State private var isAwaitingPaymentDecision = false
+
+  func body(content: Content) -> some View {
+    content
+      .interactiveDismissDisabled(isProcessing || isAwaitingPaymentDecision)
+      .task {
+        for await isAwaiting in scope.isAwaitingPaymentDecisionStream {
+          isAwaitingPaymentDecision = isAwaiting
+        }
+      }
   }
 }
