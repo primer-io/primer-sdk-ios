@@ -124,11 +124,11 @@ extension StripeAchHeadlessComponent {
     private func createAction(from validationError: ACHUserDetailsError) -> ClientSession.Action? {
         switch validationError {
         case .invalidFirstName:
-            return ClientSession.Action.setCustomerFirstName(inputUserDetails.firstName)
+            ClientSession.Action.setCustomerFirstName(inputUserDetails.firstName)
         case .invalidLastName:
-            return ClientSession.Action.setCustomerLastName(inputUserDetails.lastName)
+            ClientSession.Action.setCustomerLastName(inputUserDetails.lastName)
         case .invalidEmailAddress:
-            return ClientSession.Action.setCustomerEmailAddress(inputUserDetails.emailAddress)
+            ClientSession.Action.setCustomerEmailAddress(inputUserDetails.emailAddress)
         }
     }
 }

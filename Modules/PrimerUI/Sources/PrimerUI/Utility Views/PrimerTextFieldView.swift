@@ -174,7 +174,7 @@ open class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
 
         guard let primerTextField = textField as? PrimerTextField else { return }
 
-        if let isValid = self.isValid {
+        if let isValid {
             validation = (isValid(primerTextField.internalText ?? "") ?? false)
                 ? PrimerTextField.Validation.valid
                 : PrimerTextField.Validation.invalid(PrimerError.invalidValue(key: "primerTextField.text", value: textField.text))
@@ -187,7 +187,7 @@ open class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
         case let .invalid(err):
             delegate?.primerTextFieldView(self, isValid: false)
 
-            if let err = err {
+            if let err {
                 delegate?.primerTextFieldView(self, validationDidFailWithError: err)
             }
 

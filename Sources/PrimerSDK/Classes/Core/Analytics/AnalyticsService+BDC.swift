@@ -9,8 +9,8 @@
 @_spi(PrimerInternal) import PrimerStepResolver
 
 extension Analytics.Service: StepResolver {
-    func resolve(_ step: CodableValue) async throws -> StepResolutionResult {
-        fire(event: RawAnalyticsEvent(payload: step))
+    func resolve(_ data: CodableValue) async throws -> StepResolutionResult {
+        fire(event: RawAnalyticsEvent(payload: data))
         return StepResolutionResult(outcome: .success)
     }
 }

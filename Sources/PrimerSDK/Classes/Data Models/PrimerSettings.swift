@@ -20,6 +20,20 @@ protocol PrimerSettingsProtocol {
     var apiVersion: PrimerApiVersion { get }
 }
 
+/// Configuration object for customizing the Primer SDK behavior.
+///
+/// `PrimerSettings` allows you to configure various aspects of the checkout experience,
+/// including payment handling mode, localization, payment method options, and UI customization.
+///
+/// Example usage:
+/// ```swift
+/// let settings = PrimerSettings(
+///     paymentHandling: .auto,
+///     localeData: PrimerLocaleData(languageCode: "en"),
+///     uiOptions: PrimerUIOptions(isSuccessScreenEnabled: true)
+/// )
+/// Primer.shared.configure(settings: settings)
+/// ```
 public final class PrimerSettings: PrimerSettingsProtocol, Codable {
 
     static var current: PrimerSettings {
@@ -27,12 +41,27 @@ public final class PrimerSettings: PrimerSettingsProtocol, Codable {
         guard let primerSettings = settings as? PrimerSettings else { fatalError() }
         return primerSettings
     }
+
+    /// Determines how payments are processed after tokenization.
+    /// Use `.auto` for automatic processing or `.manual` for server-side control.
     public let paymentHandling: PrimerPaymentHandling
+
+    /// Localization settings including language and region codes.
     public let localeData: PrimerLocaleData
+
+    /// Configuration options specific to individual payment methods (e.g., Apple Pay, Klarna).
     public let paymentMethodOptions: PrimerPaymentMethodOptions
+
+    /// UI customization options for the checkout screens.
     public let uiOptions: PrimerUIOptions
+
+    /// Debug and development options for testing.
     public let debugOptions: PrimerDebugOptions
+
+    /// Enables caching of client session data for improved performance.
     public let clientSessionCachingEnabled: Bool
+
+    /// The Primer API version to use for requests.
     public let apiVersion: PrimerApiVersion
 
     public init(
@@ -69,7 +98,7 @@ protocol PrimerPaymentMethodOptionsProtocol {
 
 extension PrimerPaymentMethodOptions: PrimerPaymentMethodOptionsProtocol {
     func validUrlForUrlScheme() throws -> URL {
-        guard let urlScheme = urlScheme, let url = URL(string: urlScheme), url.scheme != nil else {
+        guard let urlScheme, let url = URL(string: urlScheme), url.scheme != nil else {
             throw handled(primerError: .invalidValue(key: "urlScheme"))
         }
         return url
@@ -86,13 +115,31 @@ extension PrimerPaymentMethodOptions: PrimerPaymentMethodOptionsProtocol {
 
 public final class PrimerUIOptions: Codable {
 
+    /// Whether to show the initialization/loading screen when the SDK starts.
+    /// Default is `true`.
     public internal(set) var isInitScreenEnabled: Bool
+
+    /// Whether to show a success screen after payment completion.
+    /// Default is `true`.
     public internal(set) var isSuccessScreenEnabled: Bool
+
+    /// Whether to show an error screen when payment fails.
+    /// Default is `true`.
     public internal(set) var isErrorScreenEnabled: Bool
+
+    /// The mechanisms users can use to dismiss the checkout modal.
+    /// Default is `[.gestures]`.
     public internal(set) var dismissalMechanism: [DismissalMechanism]
+
+    /// Additional options specific to the card form UI.
     public internal(set) var cardFormUIOptions: PrimerCardFormUIOptions?
+
+    /// The appearance mode for the UI (system, light, or dark).
+    /// Default is `.system`, which follows the device setting.
     public internal(set) var appearanceMode: PrimerAppearanceMode
-    public let theme: PrimerTheme
+
+    /// The visual theme configuration for the checkout UI.
+    public var theme: PrimerTheme
 
     private enum CodingKeys: String, CodingKey {
         case isInitScreenEnabled,
@@ -113,9 +160,9 @@ public final class PrimerUIOptions: Codable {
         appearanceMode: PrimerAppearanceMode? = nil,
         theme: PrimerTheme? = nil
     ) {
-        self.isInitScreenEnabled = isInitScreenEnabled != nil ? isInitScreenEnabled! : true
-        self.isSuccessScreenEnabled = isSuccessScreenEnabled != nil ? isSuccessScreenEnabled! : true
-        self.isErrorScreenEnabled = isErrorScreenEnabled != nil ? isErrorScreenEnabled! : true
+        self.isInitScreenEnabled = isInitScreenEnabled ?? true
+        self.isSuccessScreenEnabled = isSuccessScreenEnabled ?? true
+        self.isErrorScreenEnabled = isErrorScreenEnabled ?? true
         self.dismissalMechanism = dismissalMechanism ?? [.gestures]
         self.cardFormUIOptions = cardFormUIOptions
         self.appearanceMode = appearanceMode ?? .system
@@ -124,13 +171,13 @@ public final class PrimerUIOptions: Codable {
 
     public required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.isInitScreenEnabled = try container.decode(Bool.self, forKey: .isInitScreenEnabled)
-        self.isSuccessScreenEnabled = try container.decode(Bool.self, forKey: .isSuccessScreenEnabled)
-        self.isErrorScreenEnabled = try container.decode(Bool.self, forKey: .isErrorScreenEnabled)
-        self.dismissalMechanism = try container.decode([DismissalMechanism].self, forKey: .dismissalMechanism)
-        self.cardFormUIOptions = try container.decodeIfPresent(PrimerCardFormUIOptions.self, forKey: .cardFormUIOptions)
-        self.appearanceMode = try container.decodeIfPresent(PrimerAppearanceMode.self, forKey: .appearanceMode) ?? .system
-        self.theme = PrimerTheme()
+        isInitScreenEnabled = try container.decode(Bool.self, forKey: .isInitScreenEnabled)
+        isSuccessScreenEnabled = try container.decode(Bool.self, forKey: .isSuccessScreenEnabled)
+        isErrorScreenEnabled = try container.decode(Bool.self, forKey: .isErrorScreenEnabled)
+        dismissalMechanism = try container.decodeIfPresent([DismissalMechanism].self, forKey: .dismissalMechanism) ?? [.gestures]
+        cardFormUIOptions = try container.decodeIfPresent(PrimerCardFormUIOptions.self, forKey: .cardFormUIOptions)
+        appearanceMode = try container.decodeIfPresent(PrimerAppearanceMode.self, forKey: .appearanceMode) ?? .system
+        theme = PrimerTheme()
     }
 
     public func encode(to encoder: Encoder) throws {

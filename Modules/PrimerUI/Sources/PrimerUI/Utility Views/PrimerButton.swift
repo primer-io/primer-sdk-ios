@@ -123,7 +123,7 @@ extension PrimerButton {
 
     private func setupStyleBasedOnCustomThemeIfNeeded() {
 
-        guard let theme = theme else {
+        guard let theme else {
             return
         }
 

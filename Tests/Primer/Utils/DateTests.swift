@@ -77,12 +77,10 @@ class PrimerDateTests: XCTestCase {
         let oneYearAgoStr = "\(String(currentMonth).paddingToLeft(upTo: 2, using: "0"))/\(String(oneYearAgo))"
         print("oneYearAgoStr: \(oneYearAgoStr)")
 
-        let oneYearAndOneMonthAgoStr: String
-
-        if currentMonth > 1 {
-            oneYearAndOneMonthAgoStr = "\(String(currentMonth - 1).paddingToLeft(upTo: 2, using: "0"))/\(String(oneYearAgo))"
+        let oneYearAndOneMonthAgoStr: String = if currentMonth > 1 {
+            "\(String(currentMonth - 1).paddingToLeft(upTo: 2, using: "0"))/\(String(oneYearAgo))"
         } else {
-            oneYearAndOneMonthAgoStr = "\(String(12).paddingToLeft(upTo: 2, using: "0"))/\(String(oneYearAgo - 1))"
+            "\(String(12).paddingToLeft(upTo: 2, using: "0"))/\(String(oneYearAgo - 1))"
         }
 
         print("oneYearAndOneMonthAgoStr: \(oneYearAndOneMonthAgoStr)")

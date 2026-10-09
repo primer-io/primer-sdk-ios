@@ -11,9 +11,9 @@ extension UserDefaults {
 
     static var primerFramework: UserDefaults {
         if Primer.shared.integrationOptions?.reactNativeVersion == nil {
-            return UserDefaults(suiteName: Bundle.primerFrameworkIdentifier) ?? UserDefaults.standard
+            UserDefaults(suiteName: Bundle.primerFrameworkIdentifier) ?? UserDefaults.standard
         } else {
-            return UserDefaults.standard
+            UserDefaults.standard
         }
     }
 }

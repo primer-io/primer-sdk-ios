@@ -108,19 +108,19 @@ public final class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
                         if errors.isEmpty {
                             self.countryCode = countryCode
                             self.mobileNumber = mobileNumber
-                            self.validationDelegate?.didUpdate(validationStatus: .valid, for: data)
+                            validationDelegate?.didUpdate(validationStatus: .valid, for: data)
                         } else {
-                            self.validationDelegate?.didUpdate(validationStatus: .invalid(errors: errors), for: data)
+                            validationDelegate?.didUpdate(validationStatus: .invalid(errors: errors), for: data)
                         }
 
                     case let .invalid(errors: validationErrors):
                         errors += validationErrors
-                        self.validationDelegate?.didUpdate(validationStatus: .invalid(errors: errors), for: data)
+                        validationDelegate?.didUpdate(validationStatus: .invalid(errors: errors), for: data)
 
                     default: break
                     }
                 case let .failure(error):
-                    self.validationDelegate?.didUpdate(validationStatus: .error(error: error), for: data)
+                    validationDelegate?.didUpdate(validationStatus: .error(error: error), for: data)
                 }
             }
         }
@@ -168,17 +168,17 @@ public final class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
                         switch result {
                         case let .success(success):
                             if success {
-                                self.nextDataStep = .paymentRequested
-                                self.stepDelegate?.didReceiveStep(step: self.nextDataStep)
+                                nextDataStep = .paymentRequested
+                                stepDelegate?.didReceiveStep(step: nextDataStep)
                                 completion?(.success(true))
                             } else {
                                 let error = handled(primerError: .nolError(code: "unknown", message: "Payment failed from unknown reason"))
-                                self.errorDelegate?.didReceiveError(error: error)
+                                errorDelegate?.didReceiveError(error: error)
                                 completion?(.failure(error))
                             }
                         case let .failure(error):
                             let error = handled(primerError: .nolError(code: error.errorCode, message: error.description))
-                            self.errorDelegate?.didReceiveError(error: error)
+                            errorDelegate?.didReceiveError(error: error)
                             completion?(.failure(error))
                         }
                     }

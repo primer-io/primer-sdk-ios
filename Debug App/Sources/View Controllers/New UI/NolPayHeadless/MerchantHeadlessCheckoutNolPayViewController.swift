@@ -237,7 +237,7 @@ class MerchantHeadlessCheckoutNolPayViewController: UIViewController {
     @objc func startLinkingFlowButtonTapped() {
         paymentInProgress = false
         linkCardComponent.start()
-        self.showAlert(title: "Linking started", message: "Linking process started, please tap on 'Scan' button.")
+        showAlert(title: "Linking started", message: "Linking process started, please tap on 'Scan' button.")
     }
 
     @objc func scanCardButtonTapped() {
@@ -382,14 +382,14 @@ extension MerchantHeadlessCheckoutNolPayViewController: PrimerHeadlessErrorableD
             for error in errors {
                 message += (error.errorDescription ?? error.localizedDescription) + "\n"
             }
-            self.showAlert(title: "Validation Error", message: "\(message)")
+            showAlert(title: "Validation Error", message: "\(message)")
         case let .error(error: error):
-            self.showAlert(title: "Error", message: error.errorDescription ?? error.localizedDescription)
+            showAlert(title: "Error", message: error.errorDescription ?? error.localizedDescription)
         }
     }
 
     func didReceiveError(error: PrimerError) {
-        self.showAlert(title: "Error", message: error.errorDescription ?? error.localizedDescription)
+        showAlert(title: "Error", message: error.errorDescription ?? error.localizedDescription)
     }
 
     func didReceiveStep(step: PrimerHeadlessStep) {
@@ -397,11 +397,11 @@ extension MerchantHeadlessCheckoutNolPayViewController: PrimerHeadlessErrorableD
             switch step {
 
             case let .collectPhoneData(cardNumber):
-                self.showAlert(title: "Next step", message: "Enter phone number and country code, for card number: \(cardNumber)")
+                showAlert(title: "Next step", message: "Enter phone number and country code, for card number: \(cardNumber)")
             case let .collectOtpData(phoneNumber):
-                self.showAlert(title: "OTP Sent", message: "Check \(phoneNumber) SMS inbox")
+                showAlert(title: "OTP Sent", message: "Check \(phoneNumber) SMS inbox")
             case .cardLinked:
-                self.showAlert(title: "Success", message: "Card linked successfully! To list it use LIST LINKED CARDS FLOW")
+                showAlert(title: "Success", message: "Card linked successfully! To list it use LIST LINKED CARDS FLOW")
             default: break
             }
 
@@ -409,20 +409,20 @@ extension MerchantHeadlessCheckoutNolPayViewController: PrimerHeadlessErrorableD
             switch step {
 
             case .collectCardAndPhoneData:
-                self.showAlert(title: "Next step", message: "Select card to be unlinked, and enter phone number and country code")
+                showAlert(title: "Next step", message: "Select card to be unlinked, and enter phone number and country code")
             case .collectOtpData:
-                self.showAlert(title: "OTP Sent", message: "Check you SMS inbox")
+                showAlert(title: "OTP Sent", message: "Check you SMS inbox")
             case .cardUnlinked:
-                self.showAlert(title: "Success", message: "Card unlinked successfully!")
+                showAlert(title: "Success", message: "Card unlinked successfully!")
             }
         } else if let step = step as? NolPayPaymentStep {
             switch step {
 
             case .collectCardAndPhoneData:
-                self.showAlert(title: "Payment started", message: "Please wait")
+                showAlert(title: "Payment started", message: "Please wait")
             case .paymentRequested:
                 paymentInProgress = false
-                self.showAlert(title: "Payment requested", message: "You made a succesfull payment request with your Nol card, show spinner and wait for the successful payment")
+                showAlert(title: "Payment requested", message: "You made a succesfull payment request with your Nol card, show spinner and wait for the successful payment")
             }
         }
     }

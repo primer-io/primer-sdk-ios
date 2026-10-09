@@ -1,7 +1,7 @@
 //
 //  PrimerCardData.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
@@ -10,22 +10,22 @@ public final class PrimerCardData: PrimerRawData {
 
     public var cardNumber: String {
         didSet {
-            self.onDataDidChange?()
+            onDataDidChange?()
         }
     }
     public var expiryDate: String {
         didSet {
-            self.onDataDidChange?()
+            onDataDidChange?()
         }
     }
     public var cvv: String {
         didSet {
-            self.onDataDidChange?()
+            onDataDidChange?()
         }
     }
     public var cardholderName: String? {
         didSet {
-            self.onDataDidChange?()
+            onDataDidChange?()
         }
     }
 
@@ -55,5 +55,13 @@ public final class PrimerCardData: PrimerRawData {
         self.cardholderName = cardholderName
         self.cardNetwork = cardNetwork
         super.init()
+    }
+
+    func wipe() {
+        cardNumber = ""
+        expiryDate = ""
+        cvv = ""
+        cardholderName = nil
+        cardNetwork = nil
     }
 }

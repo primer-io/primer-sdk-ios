@@ -9,12 +9,14 @@
     }
   ],
   "defaultOptions" : {
+    "defaultTestExecutionTimeAllowance" : 120,
     "environmentVariableEntries" : [
       {
         "key" : "UNIT_TESTS",
         "value" : "1"
       }
     ],
+    "maximumTestExecutionTimeAllowance" : 120,
     "testTimeoutsEnabled" : true
   },
   "testTargets" : [

@@ -155,6 +155,9 @@
 /* Cardholder name */
 "primer-card-form-name" = "Nombre";
 
+/* Billing address section title - Card Form */
+"primer-card-form-billing-address" = "Billing address";
+
 /* Pay - Card Form (Checkout submit button text) */
 "primer-card-form-pay" = "Pagar";
 
@@ -349,4 +352,7 @@
 
 /* Upload the screenshot in your banking app. - QR code screen subtitle label */
 "uploadScreenshot" = "Sube la captura de pantalla a la aplicación de tu banco";
+
+
+/* CheckoutComponents Keys - Spanish */
 

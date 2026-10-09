@@ -4,6 +4,7 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+import CryptoKit
 import Foundation
 @_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerBDCCore
@@ -28,6 +29,7 @@ protocol PrimerAPIConfigurationModuleProtocol {
         requestVaultedPaymentMethods: Bool
     ) async throws
     func updateSession(withActions actionsRequest: ClientSessionUpdateRequest) async throws
+    func refreshSession() async throws
     func storeRequiredActionClientToken(_ newClientToken: String) async throws
 }
 
@@ -81,10 +83,9 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
     }
 
     static var cacheKey: String? {
-        guard let cacheKey = Self.clientToken else {
-            return nil
-        }
-        return cacheKey
+        guard let token = Self.clientToken else { return nil }
+        let hash = SHA256.hash(data: Data(token.utf8))
+        return hash.prefix(8).map { String(format: "%02x", $0) }.joined()
     }
 
     static func resetSession() {
@@ -139,6 +140,26 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
         ConfigurationCache.shared.setData(cachedData, forKey: cacheKey)
     }
 
+    /// Re-reads the configuration from the network and swaps in the fresh client session and checkout
+    /// modules, leaving everything else (payment methods, display metadata) in place.
+    ///
+    /// A pure read, unlike `updateSession(withActions:)`: Express Checkout shipping needs the amount
+    /// Primer recomputed after the *merchant's* `PATCH`, and firing our own action alongside it would
+    /// race two writers on one client session inside the wallet sheet's window. The cache is cleared
+    /// first because a cached read would hand back the pre-`PATCH` amount, which is exactly the stale
+    /// total the authorization gate exists to prevent.
+    func refreshSession() async throws {
+        guard let clientToken = PrimerAPIConfigurationModule.decodedJWTToken else {
+            throw handled(primerError: .invalidClientToken())
+        }
+        let apiClient: PrimerAPIClientProtocol = PrimerAPIConfigurationModule.apiClient ?? PrimerAPIClient()
+        let configuration = try await apiClient.refreshClientSession(clientToken: clientToken)
+        PrimerAPIConfigurationModule.apiConfiguration?.clientSession = configuration.clientSession
+        PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules = configuration.checkoutModules
+        // The cached entry now holds a stale client session, so the next setup fetches a fresh one.
+        ConfigurationCache.shared.clearCache()
+    }
+
     func storeRequiredActionClientToken(_ newClientToken: String) async throws {
         do {
             try await validateClientToken(newClientToken, requestRemoteClientTokenValidation: true)
@@ -175,19 +196,6 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
 
         let previousDecodedToken = PrimerAPIConfigurationModule.decodedJWTToken
 
-        currentDecodedToken.configurationUrl = currentDecodedToken.configurationUrl?.replacingOccurrences(
-            of: "10.0.2.2:8080",
-            with: "localhost:8080"
-        )
-        currentDecodedToken.coreUrl = currentDecodedToken.coreUrl?.replacingOccurrences(
-            of: "10.0.2.2:8080",
-            with: "localhost:8080"
-        )
-        currentDecodedToken.pciUrl = currentDecodedToken.pciUrl?.replacingOccurrences(
-            of: "10.0.2.2:8080",
-            with: "localhost:8080"
-        )
-
         if currentDecodedToken.env == nil {
             currentDecodedToken.env = previousDecodedToken?.env
         }
@@ -216,9 +224,9 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
             tmpSecondSegment = dataStr
         }
 
-        if segments.count > 1, let tmpSecondSegment = tmpSecondSegment {
+        if segments.count > 1, let tmpSecondSegment {
             segments[1] = tmpSecondSegment
-        } else if segments.count == 1, let tmpSecondSegment = tmpSecondSegment {
+        } else if segments.count == 1, let tmpSecondSegment {
             segments.append(tmpSecondSegment)
         }
 
@@ -325,6 +333,79 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
 
     private var cachingEnabled: Bool {
         PrimerSettings.current.clientSessionCachingEnabled
+    }
+}
+
+extension PrimerAPIConfigurationModule: AnalyticsSessionConfigProviding {
+
+    func makeAnalyticsSessionConfig(
+        checkoutSessionId: String,
+        clientToken: String,
+        sdkVersion: String
+    ) -> AnalyticsSessionConfig? {
+        guard let tokenPayload = decodeAnalyticsPayload(from: clientToken) else {
+            logger.debug(message: "⚠️ Failed to decode client token for analytics")
+            return nil
+        }
+
+        let environmentSource = PrimerAPIConfigurationModule.decodedJWTToken?.env
+            ?? (tokenPayload["env"] as? String)
+            ?? AnalyticsEnvironment.production.rawValue
+        let environment = AnalyticsEnvironment(rawValue: environmentSource.uppercased()) ?? .production
+
+        let configClientSessionId = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.clientSessionId?
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        let payloadClientSessionId = (tokenPayload["clientSessionId"] as? String)?
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        let clientSessionId = configClientSessionId?.isEmpty == false
+            ? configClientSessionId!
+            : (payloadClientSessionId ?? "")
+
+        let configPrimerAccountId = PrimerAPIConfigurationModule.apiConfiguration?.primerAccountId?
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        let payloadPrimerAccountId = (tokenPayload["primerAccountId"] as? String)?
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        let primerAccountId = configPrimerAccountId?.isEmpty == false
+            ? configPrimerAccountId!
+            : (payloadPrimerAccountId ?? "")
+
+        guard !clientSessionId.isEmpty, !primerAccountId.isEmpty else {
+            logger.debug(message: "Missing analytics identifiers: clientSessionId=\(clientSessionId.isEmpty), primerAccountId=\(primerAccountId.isEmpty)")
+            return nil
+        }
+
+        let resolvedSDKVersion = sdkVersion.isEmpty ? "unknown" : sdkVersion
+
+        return AnalyticsSessionConfig(
+            environment: environment,
+            checkoutSessionId: checkoutSessionId,
+            clientSessionId: clientSessionId,
+            primerAccountId: primerAccountId,
+            sdkVersion: resolvedSDKVersion,
+            clientSessionToken: clientToken
+        )
+    }
+
+    private func decodeAnalyticsPayload(from token: String) -> [String: Any]? {
+        let components = token.components(separatedBy: ".")
+        guard components.count == 3 else { return nil }
+
+        let payloadSegment = components[1]
+        let paddedPayload = payloadSegment
+            .replacingOccurrences(of: "-", with: "+")
+            .replacingOccurrences(of: "_", with: "/")
+            .padding(
+                toLength: ((payloadSegment.count + 3) / 4) * 4,
+                withPad: "=",
+                startingAt: 0
+            )
+
+        guard let payloadData = Data(base64Encoded: paddedPayload),
+              let json = try? JSONSerialization.jsonObject(with: payloadData) as? [String: Any] else {
+            return nil
+        }
+
+        return json
     }
 }
 // swiftlint:enable type_body_length

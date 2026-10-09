@@ -43,7 +43,7 @@ final class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
             throw handled(primerError: .invalidClientToken())
         }
 
-        let paymentResponse = try await self.apiClient.createPayment(
+        let paymentResponse = try await apiClient.createPayment(
             clientToken: clientToken,
             paymentRequestBody: paymentRequest
         )
@@ -98,21 +98,23 @@ final class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
             throw handled(primerError: .invalidClientToken())
         }
 
+        let paymentResponse: Response.Body.Payment
         do {
-            let paymentResponse = try await self.apiClient.resumePayment(
+            paymentResponse = try await apiClient.resumePayment(
                 clientToken: clientToken,
                 paymentId: paymentId,
                 paymentResumeRequest: paymentResumeRequest
             )
-
-            try validateResponse(paymentResponse: paymentResponse, callType: .resume)
-            return paymentResponse
         } catch {
             throw handled(primerError: .failedToResumePayment(
-                paymentMethodType: self.paymentMethodType,
+                paymentMethodType: paymentMethodType,
                 description: error.localizedDescription
             ))
         }
+
+        // Validated outside the catch so a declined resume keeps its payment id, order id and status.
+        try validateResponse(paymentResponse: paymentResponse, callType: .resume)
+        return paymentResponse
     }
 
     /**

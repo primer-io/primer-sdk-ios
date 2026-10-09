@@ -39,11 +39,11 @@ import Foundation
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.momentType = try container.decode(Analytics.Event.Property.TimerType.self, forKey: .momentType)
-        self.id = try container.decodeIfPresent(String.self, forKey: .id)
-        self.params = try container.decodeIfPresent([String: AnyCodable].self, forKey: .params)
-        self.duration = try container.decodeIfPresent(TimeInterval.self, forKey: .duration)
-        self.context = try container.decodeIfPresent([String: Any].self, forKey: .context)
+        momentType = try container.decode(Analytics.Event.Property.TimerType.self, forKey: .momentType)
+        id = try container.decodeIfPresent(String.self, forKey: .id)
+        params = try container.decodeIfPresent([String: AnyCodable].self, forKey: .params)
+        duration = try container.decodeIfPresent(TimeInterval.self, forKey: .duration)
+        context = try container.decodeIfPresent([String: Any].self, forKey: .context)
     }
 
     public func encode(to encoder: Encoder) throws {

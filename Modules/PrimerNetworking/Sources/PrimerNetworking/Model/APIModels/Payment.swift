@@ -49,7 +49,7 @@ extension Request.Body.Payment {
         public let paymentMethodToken: String
 
         public init(token: String) {
-            self.paymentMethodToken = token
+            paymentMethodToken = token
         }
     }
 
@@ -57,7 +57,7 @@ extension Request.Body.Payment {
         public let resumeToken: String
 
         public init(token: String) {
-            self.resumeToken = token
+            resumeToken = token
         }
     }
 
@@ -151,9 +151,9 @@ extension Response.Body {
     public var rawValue: RawValue {
         switch self {
         case .failed:
-            return "payment-failed"
+            "payment-failed"
         case .cancelledByCustomer:
-            return "cancelled-by-customer"
+            "cancelled-by-customer"
         }
     }
 

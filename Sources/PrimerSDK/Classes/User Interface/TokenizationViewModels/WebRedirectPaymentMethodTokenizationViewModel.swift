@@ -71,13 +71,13 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
     override func receivedNotification(_ notification: Notification) {
         switch notification.name.rawValue {
         case Notification.Name.receivedUrlSchemeRedirect.rawValue:
-            self.webViewController?.dismiss(animated: true)
-            self.uiManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: nil, message: nil)
+            webViewController?.dismiss(animated: true)
+            uiManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: nil, message: nil)
 
         case Notification.Name.receivedUrlSchemeCancellation.rawValue:
-            self.webViewController?.dismiss(animated: true)
-            self.cancel()
-            self.uiManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: nil, message: nil)
+            webViewController?.dismiss(animated: true)
+            cancel()
+            uiManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: nil, message: nil)
         default:
             super.receivedNotification(notification)
         }
@@ -91,7 +91,7 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
 
     override func start() {
         didFinishPayment = { [weak self] _ in
-            guard let self = self else { return }
+            guard let self else { return }
             Task { @MainActor in self.cleanup() }
         }
 
@@ -103,13 +103,13 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
     func setupNotificationObservers() {
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(self.receivedNotification(_:)),
+            selector: #selector(receivedNotification(_:)),
             name: Notification.Name.receivedUrlSchemeRedirect,
             object: nil
         )
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(self.receivedNotification(_:)),
+            selector: #selector(receivedNotification(_:)),
             name: Notification.Name.receivedUrlSchemeCancellation,
             object: nil
         )
@@ -330,13 +330,13 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
         case PrimerPaymentMethodType.adyenVipps.rawValue:
             /// If the Vipps app is not installed, fall back to the Web flow.
             if let deepLinkUrl = URL(string: Self.adyenVippsDeeplinkUrl),
-               self.deeplinkAbilityProvider.canOpenURL(deepLinkUrl) == true {
-                return WebRedirectSessionInfo(locale: PrimerSettings.current.localeData.localeCode)
+               deeplinkAbilityProvider.canOpenURL(deepLinkUrl) == true {
+                WebRedirectSessionInfo(locale: PrimerSettings.current.localeData.localeCode)
             } else {
-                return WebRedirectSessionInfo(locale: PrimerSettings.current.localeData.localeCode, platform: "WEB")
+                WebRedirectSessionInfo(locale: PrimerSettings.current.localeData.localeCode, platform: "WEB")
             }
         default:
-            return WebRedirectSessionInfo(locale: PrimerSettings.current.localeData.localeCode)
+            WebRedirectSessionInfo(locale: PrimerSettings.current.localeData.localeCode)
 
         }
     }
@@ -361,16 +361,16 @@ extension WebRedirectPaymentMethodTokenizationViewModel: SFSafariViewControllerD
         )
         Analytics.Service.fire(events: [messageEvent])
 
-        self.cancel()
+        cancel()
     }
 
     func safariViewController(_ controller: SFSafariViewController, didCompleteInitialLoad didLoadSuccessfully: Bool) {
         if didLoadSuccessfully {
-            self.didPresentPaymentMethodUI?()
+            didPresentPaymentMethodUI?()
         }
 
-        if let redirectUrlRequestId = self.redirectUrlRequestId,
-           let redirectUrlComponents = self.redirectUrlComponents {
+        if let redirectUrlRequestId,
+           let redirectUrlComponents {
             let networkEvent = Analytics.Event.networkCall(
                 callType: .requestEnd,
                 id: redirectUrlRequestId,
@@ -397,8 +397,8 @@ extension WebRedirectPaymentMethodTokenizationViewModel: SFSafariViewControllerD
         }
 
         if URL.absoluteString.hasSuffix("primer.io/static/loading.html") || URL.absoluteString.hasSuffix("primer.io/static/loading-spinner.html") {
-            self.webViewController?.dismiss(animated: true)
-            self.uiManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: nil, message: nil)
+            webViewController?.dismiss(animated: true)
+            uiManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: nil, message: nil)
         }
     }
 }

@@ -54,7 +54,7 @@ extension PrimerHeadlessUniversalCheckout {
                 .compactMap { $0.tokenizationModel as? TokenizationViewModelType }
                 .first
 
-            guard let viewModel = viewModel else {
+            guard let viewModel else {
                 return nil
             }
 

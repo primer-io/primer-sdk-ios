@@ -11,7 +11,7 @@ public extension URL {
     var hasWebBasedScheme: Bool {
         ["http", "https"].contains(scheme?.lowercased() ?? "")
     }
-    
+
     var schemeAndHost: String {
         [scheme, host].compactMap(\.self).joined(separator: "://")
     }

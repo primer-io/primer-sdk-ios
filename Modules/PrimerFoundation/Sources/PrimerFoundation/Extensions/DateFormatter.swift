@@ -17,7 +17,7 @@ public extension DateFormatter {
      - Returns: The DateFormatter instance.
      */
     func withVoucherExpirationDateFormat() -> DateFormatter {
-        self.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+        dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
         return self
     }
 }
@@ -33,8 +33,8 @@ public extension DateFormatter {
      - Returns: The DateFormatter instance.
      */
     func withExpirationDisplayDateFormat() -> DateFormatter {
-        self.dateStyle = .medium
-        self.timeStyle = .short
+        dateStyle = .medium
+        timeStyle = .short
         return self
     }
 

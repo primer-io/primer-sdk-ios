@@ -13,15 +13,15 @@ extension PrimerValidationStatus: Equatable {
     public static func == (lhs: PrimerValidationStatus, rhs: PrimerValidationStatus) -> Bool {
         switch (lhs, rhs) {
         case (.validating, .validating):
-            return true
+            true
         case (.valid, .valid):
-            return true
+            true
         case let (.invalid(errorsLHS), .invalid(errorsRHS)):
-            return errorsLHS == errorsRHS
+            errorsLHS == errorsRHS
         case let (.error(errorLHS), .error(errorRHS)):
-            return errorLHS.errorCode == errorRHS.errorCode
+            errorLHS.errorCode == errorRHS.errorCode
         default:
-            return false
+            false
         }
     }
 }
@@ -42,25 +42,25 @@ extension PrimerValidationError: Equatable {
              let (.invalidPhoneNumber(message1, id1), .invalidPhoneNumber(message2, id2)),
              let (.invalidOTPCode(message1, id1), .invalidOTPCode(message2, id2)),
              let (.invalidCardType(message1, id1), .invalidCardType(message2, id2)):
-            return message1 == message2 && id1 == id2
+            message1 == message2 && id1 == id2
         case let (.invalidRawData(id1), .invalidRawData(id2)),
              let (.banksNotLoaded(id1), .banksNotLoaded(id2)),
              let (.sessionNotCreated(id1), .sessionNotCreated(id2)),
              let (.invalidPaymentCategory(id1), .invalidPaymentCategory(id2)),
              let (.paymentAlreadyFinalized(id1), .paymentAlreadyFinalized(id2)):
-            return id1 == id2
+            id1 == id2
         case let (
             .vaultedPaymentDataMismatch(type1, validType1, id1),
             .vaultedPaymentDataMismatch(type2, validType2, id2)
         ):
-            return type1 == type2 && validType1 == validType2 && id1 == id2
+            type1 == type2 && validType1 == validType2 && id1 == id2
         case let (
             .invalidBankId(bankId1, diagnosticsId: id1),
             .invalidBankId(bankId2, diagnosticsId: id2)
         ):
-            return bankId1 == bankId2 && id1 == id2
+            bankId1 == bankId2 && id1 == id2
         default:
-            return false
+            false
         }
     }
 }

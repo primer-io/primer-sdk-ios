@@ -1,0 +1,175 @@
+//
+//  FlowScreenFactory.swift
+//
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
+
+import SwiftUI
+@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerCore
+
+/// Single source of truth that maps a ``CheckoutNavigationState`` to its SwiftUI screen.
+///
+/// Both the modal host (``CheckoutScopeObserver``) and the inline host (``InlineFlowHost``) render
+/// through this factory, so flow screens (payment method, processing, success, failure) look and
+/// behave identically regardless of how the checkout is embedded. The `isInlineFlow` flag tunes the
+/// few places where inline embedding must differ (e.g. hiding the "choose other payment methods"
+/// affordance on the failure screen).
+@available(iOS 15.0, *)
+@MainActor
+struct FlowScreenFactory: LogReporter {
+  let scope: any CheckoutScopeInternal
+  let theme: PrimerCheckoutTheme
+  let onCompletion: ((PrimerCheckoutState) -> Void)?
+  let isInlineFlow: Bool
+
+  @ViewBuilder
+  func view(for state: CheckoutNavigationState) -> some View {
+    switch state {
+    case .loading:
+      makeLoadingView()
+    case .paymentMethodSelection:
+      makePaymentMethodSelectionView()
+    case .vaultedPaymentMethods:
+      makeVaultedPaymentMethodsView()
+    case let .deleteVaultedPaymentMethodConfirmation(method):
+      makeDeleteConfirmationView(method: method)
+    case .cvvRecapture:
+      makeCvvRecaptureView()
+    case let .paymentMethod(paymentMethodType):
+      makePaymentMethodView(type: paymentMethodType)
+    case .processing:
+      makeProcessingView()
+    case let .success(result):
+      makeSuccessView(result: result)
+    case let .failure(error, checkoutData):
+      makeFailureView(error: error, checkoutData: checkoutData)
+    case .dismissed:
+      makeDismissedView()
+    }
+  }
+
+  @ViewBuilder
+  private func makeLoadingView() -> some View {
+    if scope.isInitScreenEnabled {
+      SplashScreen()
+    } else {
+      EmptyView().onAppear {
+        logger.debug(message: "[CheckoutComponents] Init screen disabled - skipping loading view")
+      }
+    }
+  }
+
+  private func makePaymentMethodSelectionView() -> some View {
+    PaymentMethodSelectionScreen(scope: scope.paymentMethodSelection)
+  }
+
+  private func makeVaultedPaymentMethodsView() -> some View {
+    VaultedPaymentMethodsListScreen(
+      vaultedPaymentMethods: scope.vaultedPaymentMethods,
+      selectedVaultedPaymentMethod: scope.selectedVaultedPaymentMethod,
+      onSelect: { method in
+        scope.setSelectedVaultedPaymentMethod(method)
+        scope.paymentMethodSelectionInternal.collapsePaymentMethods()
+        scope.checkoutNavigator.navigateBack()
+      },
+      onBack: {
+        scope.checkoutNavigator.navigateBack()
+      },
+      onDeleteTapped: { method in
+        scope.updateNavigationState(.deleteVaultedPaymentMethodConfirmation(method))
+      }
+    )
+  }
+
+  private func makeDeleteConfirmationView(
+    method: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod
+  ) -> some View {
+    DeleteVaultedPaymentMethodConfirmationScreen(
+      vaultedPaymentMethod: method,
+      navigator: scope.checkoutNavigator,
+      scope: scope.paymentMethodSelectionInternal
+    )
+  }
+
+  private func makeCvvRecaptureView() -> some View {
+    VaultedCardCvvRecaptureScreen(
+      scope: scope.paymentMethodSelectionInternal,
+      navigator: scope.checkoutNavigator
+    )
+  }
+
+  private func makePaymentMethodView(type: String) -> some View {
+    PaymentMethodScreen(
+      paymentMethodType: type,
+      checkoutScope: scope
+    )
+  }
+
+  private func makeProcessingView() -> some View {
+    DefaultLoadingScreen()
+  }
+
+  @ViewBuilder
+  private func makeSuccessView(result: PaymentResult) -> some View {
+    if scope.isSuccessScreenEnabled {
+      SuccessScreen(result: result) {
+        logger.info(message: "Success screen auto-dismiss, calling completion callback")
+        onCompletion?(scope.currentState)
+      }
+    } else {
+      // `EmptyView` never enters the hierarchy, so its `onAppear` never runs. A rendered view is
+      // required for the completion to fire when the merchant disables the SDK screen.
+      Color.clear.onAppear {
+        logger.debug(message: "[CheckoutComponents] Success screen disabled - auto-dismissing")
+        Task { @MainActor in onCompletion?(.success(result)) }
+      }
+    }
+  }
+
+  @ViewBuilder
+  private func makeFailureView(error: PrimerError, checkoutData: PrimerCheckoutData?) -> some View {
+    if scope.isErrorScreenEnabled {
+      ErrorScreen(
+        error: error,
+        onRetry: scope.canRetryPayment
+          ? {
+            logger.info(message: "Error screen retry tapped")
+            scope.retryPayment()
+          } : nil,
+        onChooseOtherPaymentMethods: showOtherMethodsAction
+      )
+    } else {
+      Color.clear.onAppear {
+        logger.debug(message: "[CheckoutComponents] Error screen disabled - auto-dismissing")
+        Task { @MainActor in onCompletion?(.failure(error, checkoutData: checkoutData)) }
+      }
+    }
+  }
+
+  /// Action for the failure screen's "choose other payment method" button — also the inline flow's
+  /// way off the error screen. Inline embedding returns to the merchant's own list (closing the
+  /// sheet); the modal flow routes back to the SDK selection screen when an alternative exists.
+  var showOtherMethodsAction: (() -> Void)? {
+    guard isInlineFlow || scope.hasAlternativeToCurrentMethod else { return nil }
+    return {
+      logger.info(message: "Error screen choose other payment method tapped")
+      // Through cancel, so re-selecting the failed method starts it again.
+      scope.cancelActivePaymentMethod(returnToSelection: true)
+    }
+  }
+
+  private func makeDismissedView() -> some View {
+    VStack {
+      Text(CheckoutComponentsStrings.dismissingMessage)
+        .font(.caption)
+        .foregroundColor(.secondary)
+    }
+    .onAppear {
+      logger.info(message: "Checkout dismissed, calling completion callback")
+      Task { @MainActor in
+        onCompletion?(.dismissed)
+      }
+    }
+  }
+}

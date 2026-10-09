@@ -6,7 +6,7 @@
 
 import SwiftUI
 import XCTest
-@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) @testable import PrimerFoundation
 @testable import PrimerSDK
 
 final class PrimerCustomResultViewControllerTests: XCTestCase {

@@ -17,8 +17,8 @@ public final class CurrencyLoader: LogReporter {
     private var networkService: CurrencyNetworkServiceProtocol
 
     public init() {
-        self.storage = DefaultCurrencyStorage()
-        self.networkService = CurrencyNetworkService()
+        storage = DefaultCurrencyStorage()
+        networkService = CurrencyNetworkService()
     }
 
     init(storage: CurrencyStorageProtocol, networkService: CurrencyNetworkServiceProtocol) {
@@ -60,8 +60,8 @@ public final class CurrencyLoader: LogReporter {
 
         let request = URLRequest(url: url)
         networkService.fetchData(with: request) { [weak self] data, _, error in
-            guard let data = data, error == nil else {
-                if let error = error {
+            guard let data, error == nil else {
+                if let error {
                     ErrorHandler.handle(error: error)
                 }
                 self?.logger.error(message: "Error fetching currencies from API: \(error?.localizedDescription ?? "Unknown error")")

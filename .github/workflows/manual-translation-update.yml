@@ -8,6 +8,9 @@ on:
         required: true
         default: 'master'
 
+permissions:
+  contents: read
+
 jobs:
   update-translations:
     runs-on: ubuntu-latest
@@ -18,6 +21,7 @@ jobs:
         with:
           fetch-depth: 0
           token: ${{ secrets.RELEASE_ACCESS_TOKEN }}
+          persist-credentials: false
 
       - name: Install Phrase CLI
         uses: phrase/setup-cli@884b5c75c4f61b8888a3ff30d34eb7111d20fa86
@@ -26,10 +30,12 @@ jobs:
 
       - name: Prepend Phrase configuration
         run: |
-          echo "phrase:" > .phrase.yml
-          echo "  access_token: ${PHRASE_ACCESS_KEY}" >> .phrase.yml
-          echo "  project_id: ${PHRASE_PROJECT_ID}" >> .phrase.yml
-          cat phrase_config.yml >> .phrase.yml
+          {
+            echo "phrase:"
+            echo "  access_token: ${PHRASE_ACCESS_KEY}"
+            echo "  project_id: ${PHRASE_PROJECT_ID}"
+            cat phrase_config.yml
+          } > .phrase.yml
         env:
           PHRASE_ACCESS_KEY: ${{ secrets.PHRASE_ACCESS_KEY }}
           PHRASE_PROJECT_ID: ${{ secrets.PHRASE_PROJECT_ID }}
@@ -49,9 +55,9 @@ jobs:
             echo "Changes detected:"
             git diff
           fi
-          
+
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1
         with:
           token: ${{ secrets.RELEASE_ACCESS_TOKEN }}
           base: ${{ github.event.inputs.branch }}

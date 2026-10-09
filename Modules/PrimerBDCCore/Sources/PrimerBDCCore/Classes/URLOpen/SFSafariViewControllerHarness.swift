@@ -21,8 +21,8 @@ final class SFSafariViewControllerHarness: NSObject, StepResolver {
         registerForNotifications()
     }
     
-    func resolve(_ step: CodableValue) async throws -> StepResolutionResult {
-        let browserStep = try step.casted(to: URLOpenParams.self)
+    func resolve(_ data: CodableValue) async throws -> StepResolutionResult {
+        let browserStep = try data.casted(to: URLOpenParams.self)
 
         guard let url = URL(string: browserStep.url), open(url) else {
             logger.error("Could not present Safari for \(browserStep.url)")

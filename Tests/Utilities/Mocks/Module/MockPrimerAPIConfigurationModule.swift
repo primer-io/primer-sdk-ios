@@ -6,7 +6,7 @@
 
 @testable import PrimerSDK
 import XCTest
-@_spi(PrimerInternal) import PrimerNetworking
+@_spi(PrimerInternal) @testable import PrimerNetworking
 
 final class MockPrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol {
     static var apiClient: PrimerAPIClientProtocol?
@@ -50,7 +50,18 @@ final class MockPrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoc
     }
 
     func updateSession(withActions actionsRequest: ClientSessionUpdateRequest) async throws {
-        guard let mockedAPIConfiguration = mockedAPIConfiguration else {
+        guard let mockedAPIConfiguration else {
+            XCTAssert(false, "Set 'mockedAPIConfiguration' on your MockPrimerAPIConfigurationModule")
+            return
+        }
+
+        try await Task.sleep(nanoseconds: UInt64(mockedNetworkDelay * 1_000_000_000))
+
+        PrimerAPIConfigurationModule.apiConfiguration = mockedAPIConfiguration
+    }
+
+    func refreshSession() async throws {
+        guard let mockedAPIConfiguration else {
             XCTAssert(false, "Set 'mockedAPIConfiguration' on your MockPrimerAPIConfigurationModule")
             return
         }

@@ -28,7 +28,7 @@ final class PrimerExpiryDateFieldViewTests: XCTestCase {
     func testValidationValidCode() throws {
         view.text = ""
 
-        let expectation = self.expectation(description: "onIsValid is called")
+        let expectation = expectation(description: "onIsValid is called")
         delegate.onIsValid = { isValid in
             XCTAssertNotNil(isValid)
             XCTAssertTrue(isValid!)
@@ -53,7 +53,7 @@ final class PrimerExpiryDateFieldViewTests: XCTestCase {
     func testValidationInvalidCode() throws {
         view.text = ""
 
-        let expectation = self.expectation(description: "onIsValid is called")
+        let expectation = expectation(description: "onIsValid is called")
         delegate.onIsValid = { isValid in
             XCTAssertNotNil(isValid)
             XCTAssertFalse(isValid!)
@@ -81,7 +81,7 @@ final class PrimerExpiryDateFieldViewTests: XCTestCase {
     func testValidationValidCodePartials() throws {
         view.text = ""
 
-        let expectation = self.expectation(description: "onIsValid is called")
+        let expectation = expectation(description: "onIsValid is called")
         delegate.onIsValid = { isValid in
             if self.view.textField!.internalText!.count < 5 { return }
             XCTAssertNotNil(isValid)

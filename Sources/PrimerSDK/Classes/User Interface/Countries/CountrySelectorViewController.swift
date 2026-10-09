@@ -59,11 +59,11 @@ final class CountrySelectorViewController: PrimerFormViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        if self.viewModel.tableView.superview == nil {
-            let lastView = self.verticalStackView.arrangedSubviews.last!
-            self.verticalStackView.removeArrangedSubview(lastView)
-            self.verticalStackView.addArrangedSubview(self.viewModel.tableView)
-            self.viewModel.tableView.translatesAutoresizingMaskIntoConstraints = false
+        if viewModel.tableView.superview == nil {
+            let lastView = verticalStackView.arrangedSubviews.last!
+            verticalStackView.removeArrangedSubview(lastView)
+            verticalStackView.addArrangedSubview(viewModel.tableView)
+            viewModel.tableView.translatesAutoresizingMaskIntoConstraints = false
         }
     }
 }

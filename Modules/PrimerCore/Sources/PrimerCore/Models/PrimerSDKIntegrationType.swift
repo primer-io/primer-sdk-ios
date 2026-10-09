@@ -9,4 +9,5 @@ import Foundation
 @_spi(PrimerInternal) public enum PrimerSDKIntegrationType: String, Codable {
     case dropIn     = "DROP_IN"
     case headless   = "HEADLESS"
+    case checkoutComponents = "CHECKOUT_COMPONENTS"
 }

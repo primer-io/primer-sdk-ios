@@ -40,7 +40,7 @@ extension NativeUIValidateable {
             )
         }
 
-        if let intent = intent {
+        if let intent {
             if (intent == .vault && !paymentMethod.isVaultingEnabled) ||
                 (intent == .checkout && !paymentMethod.isCheckoutEnabled) {
                 throw handled(primerError: .unsupportedIntent(intent: intent))

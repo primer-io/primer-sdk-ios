@@ -28,7 +28,7 @@ import Foundation
         line: Int = #line,
         function: String = #function
     ) {
-        self.logger.error(message: error.localizedDescription, file: file, line: line, function: function)
+        logger.error(message: error.localizedDescription, file: file, line: line, function: function)
 
         // Check if error should be filtered from server reporting
         if shouldFilterError(error) {

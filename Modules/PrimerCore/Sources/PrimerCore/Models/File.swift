@@ -30,8 +30,8 @@ public typealias FileExtension = String
     public var localUrl: URL? {
         guard let cacheDirectoryUrl = Self.cacheDirectoryUrl else { return nil }
 
-        var tmpFilename: String = self.fileName
-        if let fileExtension = self.fileExtension {
+        var tmpFilename: String = fileName
+        if let fileExtension {
             tmpFilename += "." + fileExtension
         }
 
@@ -41,7 +41,7 @@ public typealias FileExtension = String
     private var base64Data: Data?
 
     public var data: Data? {
-        guard let localUrl = localUrl else { return nil }
+        guard let localUrl else { return nil }
         return try? Data(contentsOf: localUrl)
     }
 

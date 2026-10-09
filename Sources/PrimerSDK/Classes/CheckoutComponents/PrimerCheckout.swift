@@ -1,0 +1,366 @@
+//
+//  PrimerCheckout.swift
+//
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
+
+import SwiftUI
+@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerCore
+
+/// Pure SwiftUI implementation for CheckoutComponents SDK — the prebuilt, fully managed modal flow.
+///
+/// Example usage (minimal):
+/// ```swift
+/// PrimerCheckout(clientToken: "your_client_token")
+/// ```
+///
+/// This modal renders the SDK's default screens; it does not expose the composable views or their
+/// `@ViewBuilder` slots. To customize the UI, embed the composable views (e.g. ``PrimerCardForm``)
+/// inline in your own layout and wire them up with `.primerCheckoutSession(_:)`, which injects the
+/// session those views resolve from the environment:
+/// ```swift
+/// @StateObject private var session = PrimerCheckoutSession(clientToken: "your_client_token")
+///
+/// ScrollView {
+///     PrimerCardForm(submitButton: { session in
+///         MyPayButton(isLoading: session.state.isLoading) { session.submit() }
+///     })
+/// }
+/// .primerCheckoutSession(session) { state in handle(state) }
+/// ```
+@available(iOS 15.0, *)
+@MainActor
+public struct PrimerCheckout: View {
+
+  private let clientToken: String
+  private let settings: PrimerSettings
+  private let theme: PrimerCheckoutTheme
+  private let onCompletion: ((PrimerCheckoutState) -> Void)?
+  private let onShippingAddressChange: ShippingAddressChangeHandler?
+  private let onShippingOptionChange: ShippingOptionChangeHandler?
+  @StateObject private var navigator: CheckoutNavigator
+  private let presentationContext: PresentationContext
+  private let integrationType: CheckoutComponentsIntegrationType
+
+  /// Creates a PrimerCheckout view.
+  /// - Parameters:
+  ///   - clientToken: The client token obtained from your backend.
+  ///   - primerSettings: Configuration settings including payment options and UI preferences. Default: `PrimerSettings()`
+  ///   - primerTheme: Theme configuration for design tokens. Default: `PrimerCheckoutTheme()`
+  ///   - onCompletion: Receives `.failure` once per failed attempt, including a failed initialization,
+  ///     while the checkout stays open for a retry. Then `.success` or `.dismissed` exactly once.
+  ///   - onShippingAddressChange: Express Checkout shipping options for the shopper's address. Default: `nil`
+  ///   - onShippingOptionChange: Express Checkout commit of the selected option. Default: `nil`
+  public init(
+    clientToken: String,
+    primerSettings: PrimerSettings = PrimerSettings(),
+    primerTheme: PrimerCheckoutTheme = PrimerCheckoutTheme(),
+    onCompletion: ((PrimerCheckoutState) -> Void)? = nil,
+    onShippingAddressChange: ShippingAddressChangeHandler? = nil,
+    onShippingOptionChange: ShippingOptionChangeHandler? = nil
+  ) {
+    self.clientToken = clientToken
+    settings = primerSettings
+    theme = primerTheme
+    self.onShippingAddressChange = onShippingAddressChange
+    self.onShippingOptionChange = onShippingOptionChange
+    self.onCompletion = onCompletion
+    _navigator = StateObject(wrappedValue: CheckoutNavigator())
+    presentationContext = .fromPaymentSelection
+    integrationType = .swiftUI
+  }
+
+  init(
+    clientToken: String,
+    primerSettings: PrimerSettings,
+    primerTheme: PrimerCheckoutTheme,
+    navigator: CheckoutNavigator,
+    presentationContext: PresentationContext,
+    integrationType: CheckoutComponentsIntegrationType,
+    onCompletion: ((PrimerCheckoutState) -> Void)? = nil,
+    onShippingAddressChange: ShippingAddressChangeHandler? = nil,
+    onShippingOptionChange: ShippingOptionChangeHandler? = nil
+  ) {
+    self.clientToken = clientToken
+    settings = primerSettings
+    theme = primerTheme
+    self.onShippingAddressChange = onShippingAddressChange
+    self.onShippingOptionChange = onShippingOptionChange
+    self.onCompletion = onCompletion
+    _navigator = StateObject(wrappedValue: navigator)
+    self.presentationContext = presentationContext
+    self.integrationType = integrationType
+  }
+
+  public var body: some View {
+    InternalCheckout(
+      clientToken: clientToken,
+      settings: settings,
+      theme: theme,
+      navigator: navigator,
+      presentationContext: presentationContext,
+      integrationType: integrationType,
+      onShippingAddressChange: onShippingAddressChange,
+      onShippingOptionChange: onShippingOptionChange,
+      onCompletion: onCompletion
+    )
+  }
+}
+
+// MARK: - Internal Implementation
+
+@available(iOS 15.0, *)
+@MainActor
+struct InternalCheckout: View, LogReporter {
+  private let clientToken: String
+  private let settings: PrimerSettings
+  private let theme: PrimerCheckoutTheme
+  private let navigator: CheckoutNavigator
+  private let presentationContext: PresentationContext
+  private let integrationType: CheckoutComponentsIntegrationType
+  private let onShippingAddressChange: ShippingAddressChangeHandler?
+  private let onShippingOptionChange: ShippingOptionChangeHandler?
+  private let onCompletion: ((PrimerCheckoutState) -> Void)?
+
+  @State private var checkoutScope: DefaultCheckoutScope?
+  @State private var initializationState: InitializationState = .idle
+  @State private var outcomeRelay = CheckoutOutcomeRelay()
+  @Environment(\.colorScheme) private var colorScheme
+
+  // Design tokens state for early theme application (splash screen)
+  @StateObject private var designTokensManager = DesignTokensManager()
+
+  private let sdkInitializer: CheckoutSDKInitializer
+
+  enum InitializationState {
+    case idle
+    case initializing
+    case retrying
+    case initialized
+    case failed(PrimerError)
+  }
+
+  init(
+    clientToken: String,
+    settings: PrimerSettings,
+    theme: PrimerCheckoutTheme,
+    navigator: CheckoutNavigator,
+    presentationContext: PresentationContext,
+    integrationType: CheckoutComponentsIntegrationType,
+    onShippingAddressChange: ShippingAddressChangeHandler?,
+    onShippingOptionChange: ShippingOptionChangeHandler?,
+    onCompletion: ((PrimerCheckoutState) -> Void)?
+  ) {
+    self.clientToken = clientToken
+    self.settings = settings
+    self.theme = theme
+    self.navigator = navigator
+    self.presentationContext = presentationContext
+    self.integrationType = integrationType
+    self.onShippingAddressChange = onShippingAddressChange
+    self.onShippingOptionChange = onShippingOptionChange
+    self.onCompletion = onCompletion
+
+    sdkInitializer = CheckoutSDKInitializer(
+      clientToken: clientToken,
+      primerSettings: settings,
+      primerTheme: theme,
+      navigator: navigator,
+      presentationContext: presentationContext
+    )
+  }
+
+  var body: some View {
+    VStack(spacing: 0) {
+      switch initializationState {
+      case .idle, .initializing:
+        splashContent
+      case .retrying:
+        loadingContent
+      case .initialized:
+        if let checkoutScope {
+          CheckoutScopeObserver(
+            scope: checkoutScope,
+            theme: theme,
+            onCompletion: { outcomeRelay.deliver($0, to: onCompletion) }
+          )
+        } else {
+          splashContent
+        }
+      case let .failed(error):
+        // The failure already reached `onCompletion`; with the error screen off the merchant owns what shows.
+        if settings.uiOptions.isErrorScreenEnabled {
+          errorContent(error: error)
+        } else {
+          Color.clear
+        }
+      }
+    }
+    .background(backgroundColor)
+    .environment(\.designTokens, designTokensManager.tokens)
+    .applyAppearanceMode(settings.uiOptions.appearanceMode)
+    .environment(\.layoutDirection, RTLSupport.layoutDirection)
+    .task {
+      await LoggingSessionContext.shared.recordInitStartTime()
+      await LoggingSessionContext.shared.initialize(
+        clientToken: clientToken, integrationType: integrationType)
+      await setupDesignTokens()
+      await initializeSDK()
+    }
+    .task(id: checkoutScope.map(ObjectIdentifier.init)) {
+      // The flow screens report only when a result screen finishes, so failures come from the scope.
+      guard let checkoutScope else { return }
+      for await state in checkoutScope.state {
+        if case .failure = state { outcomeRelay.deliver(state, to: onCompletion) }
+      }
+    }
+    .onColorSchemeChange(of: colorScheme) { newColorScheme in
+      Task {
+        await loadDesignTokens(for: newColorScheme)
+      }
+    }
+    .onDisappear {
+      sdkInitializer.cleanup()
+    }
+  }
+
+  // MARK: - Design Token Management
+
+  /// Background color that uses theme override first, then loaded tokens, then system default.
+  /// This ensures the background color is correct from the first render.
+  private var backgroundColor: Color {
+    // Priority 1: Theme override (available immediately)
+    if let themeBackground = theme.colors?.primerColorBackground {
+      return themeBackground
+    }
+    // Priority 2: Loaded design tokens (available after async load)
+    if let tokens = designTokensManager.tokens {
+      return CheckoutColors.background(tokens: tokens)
+    }
+    // Priority 3: System default based on color scheme
+    return colorScheme == .dark ? Color(white: 0.11) : .white
+  }
+
+  private func setupDesignTokens() async {
+    designTokensManager.applyTheme(theme)
+    await loadDesignTokens(for: colorScheme)
+  }
+
+  private func loadDesignTokens(for colorScheme: ColorScheme) async {
+    do {
+      try await designTokensManager.fetchTokens(for: colorScheme)
+    } catch {
+      logger.error(message: "[InternalCheckout] Failed to load design tokens: \(error)")
+    }
+  }
+
+  // MARK: - Content Builders
+
+  private var splashContent: some View {
+    SplashScreen()
+  }
+
+  private var loadingContent: some View {
+    DefaultLoadingScreen()
+  }
+
+  private func errorContent(error: PrimerError) -> some View {
+    SDKInitializationErrorView(error: error) {
+      Task {
+        await initializeSDK(isRetry: true)
+      }
+    }
+  }
+
+  // MARK: - Private Methods
+
+  private func initializeSDK(isRetry: Bool = false) async {
+    switch initializationState {
+    case .idle, .failed: break
+    default: return
+    }
+
+    initializationState = isRetry ? .retrying : .initializing
+
+    do {
+      let result = try await sdkInitializer.initialize()
+      result.checkoutScope.onShippingAddressChange = onShippingAddressChange
+      result.checkoutScope.onShippingOptionChange = onShippingOptionChange
+      checkoutScope = result.checkoutScope
+
+      initializationState = .initialized
+    } catch {
+      let primerError = error as? PrimerError ?? PrimerError.underlyingErrors(errors: [error])
+      initializationState = .failed(primerError)
+      outcomeRelay.deliver(.failure(primerError), to: onCompletion)
+    }
+  }
+}
+
+/// Gives `PrimerCheckout` the session's completion contract: `.failure` once per failed attempt, then
+/// `.success` or `.dismissed` exactly once.
+@available(iOS 15.0, *)
+@MainActor
+final class CheckoutOutcomeRelay {
+  private var hasEnded = false
+  private var lastFailureId: String?
+
+  func deliver(_ state: PrimerCheckoutState, to onCompletion: ((PrimerCheckoutState) -> Void)?) {
+    guard !hasEnded else { return }
+    switch state {
+    case let .failure(error, _):
+      // The scope stream and a disabled error screen both report the same failure.
+      guard error.diagnosticsId != lastFailureId else { return }
+      lastFailureId = error.diagnosticsId
+      onCompletion?(state)
+    case .success, .dismissed:
+      hasEnded = true
+      onCompletion?(state)
+    case .initializing, .ready:
+      break
+    }
+  }
+}
+
+// MARK: - Appearance Mode Support
+
+extension PrimerAppearanceMode {
+  /// The scheme the SDK's tokens follow: the merchant's forced one, else the system's.
+  func colorScheme(orSystem system: ColorScheme) -> ColorScheme {
+    switch self {
+    case .system: system
+    case .light: .light
+    case .dark: .dark
+    }
+  }
+}
+
+@available(iOS 15.0, *)
+extension View {
+  @ViewBuilder
+  func applyAppearanceMode(_ mode: PrimerAppearanceMode) -> some View {
+    switch mode {
+    case .system:
+      self
+    case .light:
+      preferredColorScheme(.light)
+    case .dark:
+      preferredColorScheme(.dark)
+    }
+  }
+
+  /// Reacts to color-scheme changes, using the two-parameter `onChange` on iOS 17+ to avoid the
+  /// single-parameter form deprecated there, and falling back to the original form on earlier OS.
+  @ViewBuilder
+  fileprivate func onColorSchemeChange(
+    of colorScheme: ColorScheme,
+    _ action: @escaping (ColorScheme) -> Void
+  ) -> some View {
+    if #available(iOS 17.0, *) {
+      onChange(of: colorScheme) { _, newColorScheme in action(newColorScheme) }
+    } else {
+      onChange(of: colorScheme) { newColorScheme in action(newColorScheme) }
+    }
+  }
+}

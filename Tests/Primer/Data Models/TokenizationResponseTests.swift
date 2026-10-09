@@ -64,7 +64,7 @@ class TokenizationResponseTests: XCTestCase {
         var tokenizationResponseDictionary = _tokenizationResponseDictionary
         var tokenizationResponseData = try JSONSerialization.data(withJSONObject: tokenizationResponseDictionary)
         var primerPaymentMethodToken = try JSONDecoder().decode(PrimerPaymentMethodTokenData.self, from: tokenizationResponseData)
-        self.validatePaymentMethodTokenData(forResponse: tokenizationResponseDictionary, withToken: primerPaymentMethodToken)
+        validatePaymentMethodTokenData(forResponse: tokenizationResponseDictionary, withToken: primerPaymentMethodToken)
 
         tokenizationResponseDictionary["analyticsId"] = nil
         tokenizationResponseDictionary["isAlreadyVaulted"] = true
@@ -78,7 +78,7 @@ class TokenizationResponseTests: XCTestCase {
 
         tokenizationResponseData = try JSONSerialization.data(withJSONObject: tokenizationResponseDictionary)
         primerPaymentMethodToken = try JSONDecoder().decode(PrimerPaymentMethodTokenData.self, from: tokenizationResponseData)
-        self.validatePaymentMethodTokenData(forResponse: tokenizationResponseDictionary, withToken: primerPaymentMethodToken)
+        validatePaymentMethodTokenData(forResponse: tokenizationResponseDictionary, withToken: primerPaymentMethodToken)
     }
 
     func test_tokenization_response_with_missing_payment_method_type() throws {
