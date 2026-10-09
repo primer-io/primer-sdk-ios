@@ -17,7 +17,8 @@ protocol HeadlessRepository {
     expiryMonth: String,
     expiryYear: String,
     cardholderName: String,
-    selectedNetwork: CardNetwork?
+    selectedNetwork: CardNetwork?,
+    surchargeNetwork: CardNetwork?
   ) async throws -> PaymentResult
   nonisolated func getNetworkDetectionStream() -> AsyncStream<[CardNetwork]>
   nonisolated func getBinDataStream() -> AsyncStream<PrimerBinData>

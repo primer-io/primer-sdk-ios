@@ -45,6 +45,7 @@ final class MockHeadlessRepository: HeadlessRepository {
     private(set) var lastExpiryYear: String?
     private(set) var lastCardholderName: String?
     private(set) var lastSelectedNetwork: CardNetwork?
+    private(set) var lastSurchargeNetwork: CardNetwork?
     private(set) var lastVaultedPaymentMethodId: String?
     private(set) var lastVaultedPaymentMethodType: String?
     private(set) var lastVaultedPaymentAdditionalData: PrimerVaultedPaymentMethodAdditionalData?
@@ -72,7 +73,8 @@ final class MockHeadlessRepository: HeadlessRepository {
         expiryMonth: String,
         expiryYear: String,
         cardholderName: String,
-        selectedNetwork: CardNetwork?
+        selectedNetwork: CardNetwork?,
+        surchargeNetwork: CardNetwork?
     ) async throws -> PaymentResult {
         processCardPaymentCallCount += 1
 
@@ -82,6 +84,7 @@ final class MockHeadlessRepository: HeadlessRepository {
         lastExpiryYear = expiryYear
         lastCardholderName = cardholderName
         lastSelectedNetwork = selectedNetwork
+        lastSurchargeNetwork = surchargeNetwork
 
         if let processCardPaymentError {
             throw processCardPaymentError
@@ -182,6 +185,7 @@ final class MockHeadlessRepository: HeadlessRepository {
         lastExpiryYear = nil
         lastCardholderName = nil
         lastSelectedNetwork = nil
+        lastSurchargeNetwork = nil
         lastVaultedPaymentMethodId = nil
         lastVaultedPaymentMethodType = nil
         lastVaultedPaymentAdditionalData = nil

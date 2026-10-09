@@ -125,6 +125,7 @@ final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, 
           preferredNetwork = effective
           // Show the surcharge for the network actually dispatched (the user's pin, or the
           // auto-defaulted first network), so the displayed amount matches what the backend charges.
+          // Only a pin, while it is the network shown, goes out as the preferred network (prepareCardPaymentData).
           updateSurchargeAmount(for: effective)
         } else {
           structuredState.selectedNetwork = nil
@@ -451,7 +452,8 @@ final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, 
       expiryMonth: expiryMonth,
       expiryYear: fullYear,
       cardholderName: structuredState.data[.cardholderName],
-      selectedNetwork: preferredNetwork
+      selectedNetwork: userSelectedNetwork == preferredNetwork ? userSelectedNetwork : nil,
+      surchargeNetwork: preferredNetwork
     )
   }
 
