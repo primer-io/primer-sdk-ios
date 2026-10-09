@@ -473,7 +473,9 @@ final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, 
   }
 
   private func processCardPayment(cardData: CardPaymentData) async throws -> PaymentResult {
-    try await processCardPaymentInteractor.execute(cardData: cardData)
+    // A checkout that went away during the merchant gate starts no payment, as in the Drop-in.
+    guard checkoutScope != nil else { throw PrimerError.cancelled(paymentMethodType: PrimerPaymentMethodType.paymentCard.rawValue) }
+    return try await processCardPaymentInteractor.execute(cardData: cardData)
   }
 
   private func handlePaymentError(_ error: Error) async {

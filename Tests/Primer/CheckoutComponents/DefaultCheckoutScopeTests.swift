@@ -754,6 +754,31 @@ final class DefaultCheckoutScopeBehaviorTests: XCTestCase {
         XCTAssertEqual(reported.last, false)
     }
 
+    func test_invokeBeforePaymentCreate_checkoutClosedWhileTheMerchantDecides_startsNoPayment() async throws {
+        sut = makeSut()
+        var decide: ((PrimerPaymentCreationDecision) -> Void)?
+        sut.onBeforePaymentCreate = { _, decisionHandler in decide = decisionHandler }
+        let gate = Task { try await sut.invokeBeforePaymentCreate(paymentMethodType: TestData.PaymentMethodTypes.card) }
+        try await waitUntil { decide != nil }
+
+        sut.onDismiss()
+        decide?(.continuePaymentCreation())
+
+        do {
+            try await gate.value
+            XCTFail("Expected the payment not to start")
+        } catch PrimerError.cancelled {}
+    }
+
+    func test_updateNavigationState_afterTheCheckoutClosed_keepsItClosed() {
+        sut = makeSut()
+        sut.onDismiss()
+
+        sut.updateNavigationState(.processing)
+
+        XCTAssertEqual(sut.navigationState, .dismissed)
+    }
+
     private func waitUntil(_ condition: () -> Bool) async throws {
         let deadline = Date().addingTimeInterval(1)
         while !condition(), Date() < deadline {

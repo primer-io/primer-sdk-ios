@@ -354,6 +354,8 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
   }
 
   func updateNavigationState(_ newState: CheckoutNavigationState) {
+    // A late payment step must not bring a closed checkout back on screen.
+    if case .dismissed = internalState, newState != .dismissed { return }
     updateNavigationState(newState, syncToNavigator: true)
   }
 
@@ -627,6 +629,8 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
       }
     }
     isAwaitingPaymentDecision = false
+    // A checkout closed while the merchant decided starts no payment, as in the Drop-in.
+    if case .dismissed = internalState { throw PrimerError.cancelled(paymentMethodType: paymentMethodType) }
 
     switch decision.type {
     case let .abort(errorMessage):
