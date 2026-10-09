@@ -13,7 +13,6 @@ import XCTest
 @MainActor
 final class PaymentFailureTests: XCTestCase {
 
-    private var repository: HeadlessRepositoryImpl!
     private var result: Result<PaymentResult, Error>?
 
     override func setUp() async throws {
@@ -22,7 +21,6 @@ final class PaymentFailureTests: XCTestCase {
     }
 
     override func tearDown() async throws {
-        repository = nil
         result = nil
         await ContainerTestHelpers.resetSharedContainer()
         try await super.tearDown()
@@ -142,8 +140,7 @@ final class PaymentFailureTests: XCTestCase {
     // MARK: - Helpers
 
     private func makeHandler(staleCheckoutData: PrimerCheckoutData? = nil) -> PaymentCompletionHandler {
-        repository = HeadlessRepositoryImpl()
-        return PaymentCompletionHandler(repository: repository, staleCheckoutData: staleCheckoutData) { [weak self] in
+        PaymentCompletionHandler(staleCheckoutData: staleCheckoutData) { [weak self] in
             self?.result = $0
         }
     }

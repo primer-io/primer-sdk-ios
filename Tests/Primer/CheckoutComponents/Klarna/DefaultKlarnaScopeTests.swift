@@ -496,6 +496,48 @@ final class DefaultKlarnaScopeTests: XCTestCase {
         XCTAssertEqual(destination, .failure(error))
     }
 
+    // MARK: - Analytics
+
+    @MainActor
+    func test_authorize_approved_tracksSubmittedAfterKlarnaApproves() async throws {
+        let analytics = try await authorize(returning: .approved(authToken: KlarnaTestData.Constants.authToken))
+
+        let events = await analytics.trackedEvents.map(\.eventType)
+        XCTAssertEqual(events, [.paymentProcessingStarted, .paymentSubmitted])
+    }
+
+    @MainActor
+    func test_authorize_declined_tracksNoSubmitted() async throws {
+        let analytics = try await authorize(returning: .declined)
+
+        let events = await analytics.trackedEvents.map(\.eventType)
+        XCTAssertEqual(events, [.paymentProcessingStarted])
+    }
+
+    @MainActor
+    private func authorize(returning result: KlarnaAuthorizationResult) async throws -> MockTrackingAnalyticsInteractor {
+        mockInteractor.sessionResultToReturn = KlarnaTestData.defaultSessionResult
+        mockInteractor.paymentViewToReturn = UIView()
+        let authorized = expectation(description: "authorize called")
+        mockInteractor.onAuthorize = {
+            authorized.fulfill()
+            return result
+        }
+        mockInteractor.onTokenize = { _ in KlarnaTestData.successPaymentResult }
+        let analytics = MockTrackingAnalyticsInteractor()
+        let scope = createScope(analytics: analytics)
+        scope.start()
+        _ = try await awaitValue(scope.state, matching: { $0.step == .categorySelection })
+        scope.selectPaymentCategory(KlarnaTestData.Constants.categoryPayNow)
+        _ = try await awaitValue(scope.state, matching: { $0.step == .viewReady })
+
+        scope.authorizePayment()
+        await fulfillment(of: [authorized], timeout: 2.0)
+        // why: the events after the authorization run on the same task, so give it a tick to finish.
+        try await Task.sleep(nanoseconds: 100_000_000)
+        return analytics
+    }
+
     // MARK: - Helper
 
     /// A scope whose category view is ready, on a live checkout that shows the Klarna screen.
@@ -535,7 +577,8 @@ final class DefaultKlarnaScopeTests: XCTestCase {
 
     @MainActor
     private func createScope(
-        presentationContext: PresentationContext = .fromPaymentSelection
+        presentationContext: PresentationContext = .fromPaymentSelection,
+        analytics: CheckoutComponentsAnalyticsInteractorProtocol? = nil
     ) -> DefaultKlarnaScope {
         let checkoutScope = DefaultCheckoutScope(
             clientToken: KlarnaTestData.Constants.mockToken,
@@ -546,7 +589,8 @@ final class DefaultKlarnaScopeTests: XCTestCase {
         return DefaultKlarnaScope(
             checkoutScope: checkoutScope,
             presentationContext: presentationContext,
-            processKlarnaInteractor: mockInteractor
+            processKlarnaInteractor: mockInteractor,
+            analyticsInteractor: analytics
         )
     }
 }
