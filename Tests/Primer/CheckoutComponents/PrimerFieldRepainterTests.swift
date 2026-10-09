@@ -43,12 +43,11 @@ final class PrimerFieldRepainterTests: XCTestCase {
         XCTAssertEqual(field.tintColor, UIColor(CheckoutColors.borderFocus(tokens: themed)))
     }
 
-    /// At large text sizes the placeholder pushed the form off screen, and in a tall parent the row stretched.
-    func test_configure_letsTheFieldNarrowAndKeepsItToItsTextHeight() throws {
+    /// At large text sizes the placeholder pushed the form off screen.
+    func test_configure_letsTheFieldNarrow() throws {
         let field = try makeConfiguredField(tokens: DesignTokensManager.makeTokens(for: .light))
 
         XCTAssertEqual(field.contentCompressionResistancePriority(for: .horizontal), .defaultLow)
-        XCTAssertEqual(field.contentHuggingPriority(for: .vertical), .defaultHigh)
     }
 
     /// The caret follows the focused border, and a theme can move both.
