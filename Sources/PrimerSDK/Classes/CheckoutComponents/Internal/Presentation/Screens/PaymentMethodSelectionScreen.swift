@@ -110,7 +110,7 @@ struct PaymentMethodSelectionScreen: View, LogReporter {
     .accessibility(
       config: AccessibilityConfiguration(
         identifier: AccessibilityIdentifiers.PaymentSelection.showOtherWaysButton,
-        label: CheckoutComponentsStrings.a11yShowOtherWaysToPay,
+        label: CheckoutComponentsStrings.showOtherWaysToPay,
         traits: [.isButton]
       ))
   }

@@ -818,14 +818,6 @@ enum CheckoutComponentsStrings {
     comment: "Button text to expand and show all available payment methods"
   )
 
-  static let a11yShowOtherWaysToPay = NSLocalizedString(
-    "accessibility_payment_selection_show_other_ways_to_pay",
-    tableName: tableName,
-    bundle: .primerResources,
-    value: "Show other ways to pay",
-    comment: "VoiceOver label for button to expand payment methods"
-  )
-
   static let allSavedPaymentMethods = NSLocalizedString(
     "primer_vault_manage_title",
     tableName: tableName,
@@ -941,14 +933,6 @@ enum CheckoutComponentsStrings {
     comment: "Error shown on the CVV recapture screen when the payment could not be started"
   )
 
-  static let cvvPlaceholderDigit = NSLocalizedString(
-    "primer_vault_cvv_placeholder_digit",
-    tableName: tableName,
-    bundle: .primerResources,
-    value: "0",
-    comment: "Single digit used to build CVV placeholder (e.g., '000' for 3-digit CVV)"
-  )
-
   static let cvvRecaptureInstruction = NSLocalizedString(
     "primer_vault_cvv_hint",
     tableName: tableName,
@@ -964,26 +948,6 @@ enum CheckoutComponentsStrings {
     value: "Please enter a valid CVV.",
     comment: "Error message when CVV is invalid"
   )
-
-  static let a11yVaultCVVLabel = NSLocalizedString(
-    "accessibility_vault_cvv_label",
-    tableName: tableName,
-    bundle: .primerResources,
-    value: "CVV input field",
-    comment: "VoiceOver label for CVV input field in vault payment flow"
-  )
-
-  static func a11yVaultCVVHint(length: Int) -> String {
-    let format = NSLocalizedString(
-      "accessibility_vault_cvv_hint",
-      tableName: tableName,
-      bundle: .primerResources,
-      value: "Enter %d digit security code",
-      comment:
-        "VoiceOver hint for CVV field with expected length. Parameter is the number of digits (3 or 4)"
-    )
-    return String(format: format, length)
-  }
 
   static let noCountriesFound = NSLocalizedString(
     "primer_country_no_results",

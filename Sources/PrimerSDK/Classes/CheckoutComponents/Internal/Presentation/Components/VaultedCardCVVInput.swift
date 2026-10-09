@@ -27,7 +27,7 @@ struct VaultedCardCVVInput: View {
   }
 
   private var cvvPlaceholder: String {
-    String(repeating: CheckoutComponentsStrings.cvvPlaceholderDigit, count: expectedCvvLength)
+    expectedCvvLength == 4 ? CheckoutComponentsStrings.cvvAmexPlaceholder : CheckoutComponentsStrings.cvvStandardPlaceholder
   }
 
   /// Custom binding that filters input to digits only and limits length
@@ -111,8 +111,8 @@ struct VaultedCardCVVInput: View {
       .accessibility(
         config: AccessibilityConfiguration(
           identifier: AccessibilityIdentifiers.Vault.cvvField,
-          label: CheckoutComponentsStrings.a11yVaultCVVLabel,
-          hint: CheckoutComponentsStrings.a11yVaultCVVHint(length: expectedCvvLength),
+          label: CheckoutComponentsStrings.a11yCVCLabel,
+          hint: CheckoutComponentsStrings.a11yCVCHint,
           traits: []
         ))
   }
