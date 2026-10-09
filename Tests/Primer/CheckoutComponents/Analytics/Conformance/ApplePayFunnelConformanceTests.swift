@@ -194,7 +194,7 @@ final class ApplePayFunnelConformanceTests: XCTestCase {
                     analyticsInteractor: analyticsInteractor,
                     applePayPresentationManager: presenter,
                     clientSessionActionsFactory: { clientSessionActions },
-                    applePayRequestFactory: {
+                    applePayRequestFactory: { _ in
                         ApplePayRequest(
                             currency: Currency(code: "GBP", decimalDigits: 2),
                             merchantIdentifier: ApplePayTestData.Constants.merchantIdentifier,
