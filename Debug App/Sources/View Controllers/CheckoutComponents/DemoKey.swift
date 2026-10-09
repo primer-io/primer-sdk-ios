@@ -41,4 +41,5 @@ enum DemoKey: String, CaseIterable {
     case refreshClientSession = "refresh_client_session"
     case expressCheckoutShipping = "express_checkout_shipping"
     case mixedIntents = "mixed_intents"
+    case vaultSingleMethod = "vault_single_method"
 }
