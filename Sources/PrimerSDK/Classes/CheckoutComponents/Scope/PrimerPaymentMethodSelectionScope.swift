@@ -154,18 +154,20 @@ public struct CheckoutPaymentMethod: Equatable, Identifiable {
   /// Custom text color for the payment method button.
   public let textColor: UIColor?
 
-  /// Custom border color for the payment method button.
+  /// Custom border color for the payment method button. The SDK's default row ignores it.
   public let borderColor: UIColor?
 
-  /// Custom border width for the payment method button.
+  /// Custom border width for the payment method button. The SDK's default row ignores it.
   public let borderWidth: CGFloat?
 
-  /// Custom corner radius for the payment method button.
+  /// Custom corner radius for the payment method button. The SDK's default row ignores it.
   public let cornerRadius: CGFloat?
 
-  // Not public: the prebuilt tile picks the scheme variant at render time, while `icon` and `borderWidth` stay the public snapshot.
+  // Not public: the default row picks one backend version per button at render time;
+  // `icon`, `backgroundColor`, `textColor` and `borderWidth` stay the public snapshot.
   var logoVariants: PrimerTheme.BaseImage?
-  var borderWidthVariants: PrimerTheme.BaseBorderWidth?
+  var backgroundColorVariants: PrimerTheme.BaseColors?
+  var textColorVariants: PrimerTheme.BaseColors?
 
   public init(
     id: String,

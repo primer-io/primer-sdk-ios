@@ -16,83 +16,141 @@ struct PaymentMethodButton: View {
   @Environment(\.designTokens) private var tokens
   @Environment(\.colorScheme) private var colorScheme
 
+  private static let klarnaWordmarkName = "klarna-logo-light"
+
   private var isDark: Bool { colorScheme == .dark }
 
   var body: some View {
-    let radius = method.cornerRadius ?? PrimerRadius.medium(tokens: tokens)
+    switch PrimerPaymentMethodType(rawValue: method.type) {
+    case .paymentCard: makeCardButton()
+    case .applePay: makeApplePayButton()
+    case .klarna: makeKlarnaButton()
+    default: makePartnerButton()
+    }
+  }
+
+  private func makeButton<Content: View>(
+    fill: Color,
+    border: Color? = nil,
+    label: String,
+    @ViewBuilder content: () -> Content
+  ) -> some View {
+    let shape = RoundedRectangle(cornerRadius: PrimerRadius.medium(tokens: tokens))
     return Button(action: onSelect) {
-      HStack(spacing: PrimerSpacing.large(tokens: tokens)) {
-        icon
-        Text(method.buttonText ?? method.name)
-          .primerTypography(.bodyLarge, tokens: tokens)
-          .foregroundColor(
-            method.textColor.map(Color.init) ?? CheckoutColors.textPrimary(tokens: tokens))
-      }
-      .frame(maxWidth: .infinity)
-      .padding(.horizontal, PrimerSpacing.large(tokens: tokens))
-      .padding(.vertical, PrimerSpacing.medium(tokens: tokens))
-      .frame(minHeight: PrimerComponentHeight.paymentMethodCard)
-      .background(
-        RoundedRectangle(cornerRadius: radius)
-          .fill(
-            method.backgroundColor.map(Color.init) ?? CheckoutColors.background(tokens: tokens))
-      )
-      .overlay(
-        RoundedRectangle(cornerRadius: radius)
-          .strokeBorder(
-            borderColor(for: method),
-            lineWidth: borderWidth(for: method))
-      )
+      content()
+        .frame(maxWidth: .infinity)
+        .padding(.horizontal, PrimerSpacing.large(tokens: tokens))
+        .padding(.vertical, PrimerSpacing.small(tokens: tokens))
+        .frame(minHeight: PrimerComponentHeight.paymentMethodCard)
+        .background(shape.fill(fill))
+        .overlay {
+          if let border {
+            shape.strokeBorder(border, lineWidth: PrimerBorderWidth.standard(tokens: tokens))
+          }
+        }
     }
     .buttonStyle(PaymentMethodButtonStyle())
     .accessibility(config: AccessibilityConfiguration(
       identifier: AccessibilityIdentifiers.PaymentSelection.paymentMethodItem(method.type),
-      label: CheckoutComponentsStrings.a11yPaymentMethodButton(method.buttonText ?? method.name),
+      label: label,
       traits: [.isButton]
     ))
   }
 
-  private var hasVisibleBackground: Bool {
-    guard let bg = method.backgroundColor else { return false }
-    var red: CGFloat = 0
-    var green: CGFloat = 0
-    var blue: CGFloat = 0
-    var alpha: CGFloat = 0
-    // a dynamic colour resolves against UITraitCollection.current here, not this view's scheme
-    bg.resolvedColor(with: UITraitCollection(userInterfaceStyle: isDark ? .dark : .light))
-      .getRed(&red, green: &green, blue: &blue, alpha: &alpha)
-    let luminance = 0.299 * red + 0.587 * green + 0.114 * blue
-    return alpha > 0.1 && luminance < 0.95
+  private func makePartnerButton() -> some View {
+    let variant = PaymentMethodAssetVariant.forBackground(method.backgroundColorVariants, isDark: isDark)
+    let background = method.backgroundColorVariants.flatMap {
+      variant.value(colored: $0.coloredHex, light: $0.lightHex, dark: $0.darkHex)?.hexToUIColor()
+    } ?? method.backgroundColor
+    let logo = method.logoVariants.flatMap {
+      variant.valueOrAny(colored: $0.colored, light: $0.light, dark: $0.dark, isDark: isDark)
+    } ?? method.icon
+    return makeButton(
+      fill: background.map(Color.init) ?? CheckoutColors.background(tokens: tokens),
+      label: CheckoutComponentsStrings.a11yPaymentMethodButton(method.buttonText ?? method.name)
+    ) {
+      if let logo {
+        Image(uiImage: logo)
+          .resizable()
+          .aspectRatio(contentMode: .fit)
+          .frame(height: PrimerComponentHeight.paymentMethodLogo)
+      } else {
+        Text(method.buttonText ?? method.name)
+          .primerTypography(.titleLarge, tokens: tokens)
+          .foregroundColor(partnerTextColor(for: variant))
+      }
+    }
   }
 
-  private func borderColor(for method: CheckoutPaymentMethod) -> Color {
-    if let color = method.borderColor, color != .clear {
-      return Color(color)
+  private func makeCardButton() -> some View {
+    makeButton(
+      fill: CheckoutColors.inputBackground(tokens: tokens),
+      border: CheckoutColors.borderDefault(tokens: tokens),
+      label: CheckoutComponentsStrings.a11yPayWithCard
+    ) {
+      HStack(spacing: PrimerSpacing.small(tokens: tokens)) {
+        if let icon = ImageName.creditCard.image {
+          Image(uiImage: icon)
+            .renderingMode(.template)
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+            .frame(width: PrimerSize.small(tokens: tokens), height: PrimerSize.small(tokens: tokens))
+            .foregroundColor(CheckoutColors.iconPrimary(tokens: tokens))
+        }
+        Text(CheckoutComponentsStrings.cardPaymentTitle)
+          .primerTypography(.titleLarge, tokens: tokens)
+          .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
+      }
     }
-    guard !hasVisibleBackground else { return .clear }
-    return CheckoutColors.borderDefault(tokens: tokens)
   }
 
-  private func borderWidth(for method: CheckoutPaymentMethod) -> CGFloat {
-    if let width = method.borderWidthVariants?.resolvedValue(isDark: isDark) ?? method.borderWidth, width > 0 {
-      return width
-    }
-    guard !hasVisibleBackground else { return 0 }
-    return PrimerBorderWidth.standard(tokens: tokens)
+  private func makeApplePayButton() -> some View {
+    ApplePayButtonView(
+      style: .automatic,
+      cornerRadius: PrimerRadius.medium(tokens: tokens),
+      height: PrimerComponentHeight.paymentMethodCard,
+      accessibilityIdentifier: AccessibilityIdentifiers.PaymentSelection.paymentMethodItem(method.type),
+      action: onSelect
+    )
+    .frame(maxWidth: .infinity)
   }
 
-  @ViewBuilder
-  private var icon: some View {
-    let image =
-      method.logoVariants?.image(isDark: isDark) ?? method.icon
-      ?? PrimerPaymentMethodType(rawValue: method.type)?.defaultImageName.image
-    if let image {
-      Image(uiImage: image)
-        .resizable()
-        .aspectRatio(contentMode: .fit)
-        .frame(
-          width: PrimerComponentWidth.paymentMethodIcon, height: PrimerSize.large(tokens: tokens))
+  private func makeKlarnaButton() -> some View {
+    let label = CheckoutComponentsStrings.a11yPayWithKlarna
+    let text = KlarnaButtonText(label)
+    return makeButton(fill: PaymentMethodColors.klarnaBlack, label: label) {
+      HStack(spacing: PrimerSpacing.small(tokens: tokens)) {
+        if let before = text.before {
+          makeKlarnaText(before)
+        }
+        if let wordmark = UIImage(primerResource: Self.klarnaWordmarkName) {
+          Image(uiImage: wordmark)
+            .renderingMode(.template)
+            .foregroundColor(PaymentMethodColors.klarnaBlack)
+            .padding(PrimerSpacing.small(tokens: tokens))
+            .background(
+              RoundedRectangle(cornerRadius: PrimerRadius.medium(tokens: tokens))
+                .fill(PaymentMethodColors.klarnaPink)
+            )
+        }
+        if let after = text.after {
+          makeKlarnaText(after)
+        }
+      }
     }
+  }
+
+  private func makeKlarnaText(_ text: String) -> some View {
+    Text(text)
+      .primerTypography(.titleLarge, tokens: tokens)
+      .foregroundColor(PaymentMethodColors.klarnaOnBlack)
+  }
+
+  private func partnerTextColor(for variant: PaymentMethodAssetVariant) -> Color {
+    let textColor = method.textColorVariants.flatMap {
+      variant.valueOrAny(colored: $0.coloredHex, light: $0.lightHex, dark: $0.darkHex, isDark: isDark)?.hexToUIColor()
+    } ?? method.textColor
+    return textColor.map(Color.init) ?? CheckoutColors.textPrimary(tokens: tokens)
   }
 }
 

@@ -1761,6 +1761,22 @@ enum CheckoutComponentsStrings {
     return String(format: format, name)
   }
 
+  static let a11yPayWithCard = NSLocalizedString(
+    "accessibility_payment_selection_pay_with_card",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Pay with card",
+    comment: "VoiceOver label for the card button on the payment method list"
+  )
+
+  static let a11yPayWithKlarna = NSLocalizedString(
+    "accessibility_payment_selection_pay_with_klarna",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Pay with Klarna",
+    comment: "VoiceOver label for the Klarna button on the payment method list"
+  )
+
   // MARK: Screen Change Announcements
 
   static func a11yScreenPaymentMethod(_ paymentMethodName: String) -> String {
