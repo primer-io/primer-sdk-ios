@@ -153,8 +153,27 @@ final class DefaultCheckoutScopeVaultIntentTests: XCTestCase {
         XCTAssertEqual(Set(sut.availablePaymentMethods.map(\.type)), ["PAYMENT_CARD", "PAYPAL"])
     }
 
-    func test_mix_explicitVaultForAMethodThatCannotBeSaved_failsAtStart() async throws {
+    func test_mix_explicitVaultForAMethodThatCannotBeSaved_hidesTheMethod() async throws {
         let sut = try await makeSut(intent: .checkout, paymentMethodIntents: ["PAYPAL": .vault], paymentMethods: [cardMethod, payPalMethod])
+
+        let state = await settledState(of: sut)
+
+        guard case .ready = state else { return XCTFail("Expected .ready, got \(state)") }
+        XCTAssertEqual(sut.availablePaymentMethods.map(\.type), ["PAYMENT_CARD"])
+    }
+
+    func test_mix_hiddenSaveNeedsNoCustomerId() async throws {
+        let sut = try await makeSut(
+            intent: .checkout, paymentMethodIntents: ["PAYPAL": .vault], paymentMethods: [cardMethod, payPalMethod], hasCustomer: false
+        )
+
+        let state = await settledState(of: sut)
+
+        guard case .ready = state else { return XCTFail("Expected .ready, got \(state)") }
+    }
+
+    func test_mix_explicitVaultForTheOnlyMethod_failsWhenNothingIsLeft() async throws {
+        let sut = try await makeSut(intent: .checkout, paymentMethodIntents: ["PAYPAL": .vault], paymentMethods: [payPalMethod])
 
         let state = await settledState(of: sut)
 

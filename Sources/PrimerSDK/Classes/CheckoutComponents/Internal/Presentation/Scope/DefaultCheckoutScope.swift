@@ -323,18 +323,18 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
     return methodIntent
   }
 
-  /// Hides what a session-wide save cannot save, and rejects an intent map CheckoutComponents cannot honor.
+  /// Hides a method that should save but cannot, rather than let it pay.
   private func offeredPaymentMethods(from methods: [InternalPaymentMethod]) throws -> [InternalPaymentMethod] {
     let types = Set(methods.map(\.type))
     for type in paymentMethodIntents.keys where !types.contains(type) {
       logger.debug(message: "\(type) is not in the session, ignoring its intent")
     }
     let vaultable = Self.vaultablePaymentMethodTypes
-    if let type = types.first(where: { paymentMethodIntents[$0] == .vault && !vaultable.contains($0) }) {
-      logger.error(message: "\(type) cannot be saved without a payment")
-      throw PrimerError.unsupportedIntent(intent: .vault)
+    let offered = methods.filter {
+      guard intent(for: $0.type) == .vault, !vaultable.contains($0.type) else { return true }
+      logger.warn(message: "\($0.type) cannot be saved without a payment, hiding it")
+      return false
     }
-    let offered = methods.filter { intent(for: $0.type) == .checkout || vaultable.contains($0.type) }
     guard !offered.isEmpty || methods.isEmpty else { throw PrimerError.unsupportedIntent(intent: .vault) }
     // The same error the Headless vault manager raises for a session without a customer.
     if offered.contains(where: { intent(for: $0.type) == .vault }),
