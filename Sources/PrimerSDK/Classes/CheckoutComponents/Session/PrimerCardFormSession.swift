@@ -80,5 +80,6 @@ public final class PrimerCardFormSession: ObservableObject {
   // MARK: - Lifecycle
 
   public func submit() { scope.submit() }
+  /// Leaves the card form. Ignored while a payment runs, because the payment cannot be stopped.
   public func cancel() { scope.cancel() }
 }

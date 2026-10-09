@@ -350,13 +350,15 @@ final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, 
     }
   }
 
+  // A running payment cannot be stopped, so leaving the form would only hide it, as in the Drop-in.
   func onBack() {
-    if presentationContext.shouldShowBackButton {
+    if presentationContext.shouldShowBackButton, !structuredState.isLoading {
       checkoutScope?.checkoutNavigator.navigateBack()
     }
   }
 
   func cancel() {
+    guard !structuredState.isLoading else { return }
     networkDetectionTask?.cancel()
     networkDetectionTask = nil
     binDataTask?.cancel()

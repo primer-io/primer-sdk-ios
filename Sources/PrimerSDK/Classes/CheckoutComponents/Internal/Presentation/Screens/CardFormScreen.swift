@@ -71,6 +71,7 @@ struct CardFormScreen: View, LogReporter {
               ))
         }
       }
+      .disabled(cardFormState.isLoading)
 
       titleSection
     }

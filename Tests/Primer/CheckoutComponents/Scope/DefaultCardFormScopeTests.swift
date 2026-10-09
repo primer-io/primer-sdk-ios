@@ -1035,7 +1035,39 @@ final class DefaultCardFormScopeTests: XCTestCase {
         }
     }
 
+    func test_cancel_whileAPaymentRuns_keepsTheForm() async throws {
+        let container = try await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createCardFormScope(checkoutScope: checkoutScope)
+            checkoutScope.updateNavigationState(.paymentMethod(PrimerPaymentMethodType.paymentCard.rawValue))
+            scope.structuredState.isLoading = true
+
+            scope.cancel()
+
+            XCTAssertEqual(checkoutScope.currentNavigationState, .paymentMethod(PrimerPaymentMethodType.paymentCard.rawValue))
+        }
+    }
+
     // MARK: - onBack Tests
+
+    func test_onBack_whileAPaymentRuns_keepsTheForm() async throws {
+        let container = try await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createCardFormScope(checkoutScope: checkoutScope)
+            let coordinator = checkoutScope.checkoutNavigator.checkoutCoordinator
+            coordinator.navigate(to: .paymentMethodSelection)
+            coordinator.navigate(to: .vaultedPaymentMethods)
+            scope.structuredState.isLoading = true
+
+            scope.onBack()
+
+            XCTAssertEqual(coordinator.navigationStack.count, 2)
+        }
+    }
 
     func test_onBack_fromPaymentSelection_navigatesBack() async throws {
         let container = try await createTestContainer()
