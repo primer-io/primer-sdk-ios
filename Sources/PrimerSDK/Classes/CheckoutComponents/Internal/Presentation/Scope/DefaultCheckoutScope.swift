@@ -15,6 +15,8 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
   @Published private var internalState = PrimerCheckoutState.initializing
   @Published var navigationState = CheckoutNavigationState.loading
   @Published private var isAwaitingPaymentDecision = false
+  /// How long the merchant may take to answer `onBeforePaymentCreate` before the SDK warns, in nanoseconds.
+  var paymentDecisionWarningDelay: UInt64 = 5_000_000_000
 
   var onBeforePaymentCreate: BeforePaymentCreateHandler?
   var onShippingAddressChange: ShippingAddressChangeHandler?
@@ -622,6 +624,14 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
     }
 
     isAwaitingPaymentDecision = true
+    // The gate never times out. `try`, not `try?`, so an answer in time cancels the warning.
+    let lateAnswerWarning = Task { [paymentDecisionWarningDelay] in
+      try await Task.sleep(nanoseconds: paymentDecisionWarningDelay)
+      Self.logger.warn(message: """
+      The 'decisionHandler' of 'onBeforePaymentCreate' hasn't been called. \
+      Make sure you call the decision handler otherwise the SDK will hang.
+      """)
+    }
     let decision = await withCheckedContinuation { (continuation: CheckedContinuation<PrimerPaymentCreationDecision, Never>) in
       let data = PrimerCheckoutPaymentMethodData(
         type: PrimerCheckoutPaymentMethodType(type: paymentMethodType)
@@ -630,6 +640,7 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
         continuation.resume(returning: decision)
       }
     }
+    lateAnswerWarning.cancel()
     isAwaitingPaymentDecision = false
     // A checkout closed while the merchant decided starts no payment, as in the Drop-in.
     if case .dismissed = internalState { throw PrimerError.cancelled(paymentMethodType: paymentMethodType) }

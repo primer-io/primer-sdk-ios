@@ -770,6 +770,41 @@ final class DefaultCheckoutScopeBehaviorTests: XCTestCase {
         } catch PrimerError.cancelled {}
     }
 
+    func test_invokeBeforePaymentCreate_merchantSlowToAnswer_logsAWarning() async throws {
+        let spy = installWarningSpy()
+        sut = makeSut()
+        sut.paymentDecisionWarningDelay = 10_000_000
+        var decide: ((PrimerPaymentCreationDecision) -> Void)?
+        sut.onBeforePaymentCreate = { _, decisionHandler in decide = decisionHandler }
+        let gate = Task { try await sut.invokeBeforePaymentCreate(paymentMethodType: TestData.PaymentMethodTypes.card) }
+
+        try await waitUntil { spy.gateWarnings == 1 }
+
+        XCTAssertEqual(spy.gateWarnings, 1)
+        decide?(.continuePaymentCreation())
+        try await gate.value
+    }
+
+    func test_invokeBeforePaymentCreate_merchantAnswersInTime_logsNoWarning() async throws {
+        let spy = installWarningSpy()
+        sut = makeSut()
+        sut.paymentDecisionWarningDelay = 100_000_000
+        sut.onBeforePaymentCreate = { _, decisionHandler in decisionHandler(.continuePaymentCreation()) }
+
+        try await sut.invokeBeforePaymentCreate(paymentMethodType: TestData.PaymentMethodTypes.card)
+        try await Task.sleep(nanoseconds: 300_000_000)
+
+        XCTAssertEqual(spy.gateWarnings, 0)
+    }
+
+    private func installWarningSpy() -> GateWarningSpy {
+        let spy = GateWarningSpy()
+        let previous = PrimerLogging.shared.logger
+        PrimerLogging.shared.logger = spy
+        addTeardownBlock { PrimerLogging.shared.logger = previous }
+        return spy
+    }
+
     func test_cancelActivePaymentMethod_whileTheMerchantDecides_keepsTheScreen() async throws {
         sut = makeSut()
         var decide: ((PrimerPaymentCreationDecision) -> Void)?
@@ -1088,5 +1123,14 @@ final class DefaultCheckoutScopeReloadTests: XCTestCase {
         defer { SDKSessionHelper.tearDown() }
 
         XCTAssertEqual(sut.navigationState, .paymentMethod(PrimerPaymentMethodType.paymentCard.rawValue))
+    }
+}
+
+private final class GateWarningSpy: PrimerLogger {
+    var logLevel: LogLevel = .warning
+    private(set) var gateWarnings = 0
+
+    func log(level: LogLevel, message: String, userInfo: Encodable?, metadata: PrimerLogMetadata) {
+        if level == .warning, message.contains("onBeforePaymentCreate") { gateWarnings += 1 }
     }
 }
