@@ -67,7 +67,6 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
     @Binding private var isFocused: Bool
     private let scope: any CardFormFieldScopeInternal
     private let validationService: ValidationService
-    private var savedCursorPosition: Int = 0
     private var validationTimer: Timer?
 
     init(
@@ -115,15 +114,14 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
       _ textField: UITextField, shouldChangeCharactersIn range: NSRange,
       replacementString string: String
     ) -> Bool {
-      let secureTextField = textField as? SecureTextField
-      saveCursorPosition(textField)
       let currentText = cardNumber
+      let previousText = (textField as? SecureTextField)?.internalText ?? ""
       let isDeletion = string.isEmpty
       let newCardNumber = processTextFieldChange(
         currentText: currentText,
         range: range,
         replacementString: string,
-        formattedText: secureTextField?.internalText ?? "",
+        formattedText: previousText,
         isDeletion: isDeletion
       )
       guard newCardNumber != currentText || isDeletion else {
@@ -133,13 +131,14 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
       scope.updateCardNumber(newCardNumber)
       updateCardNetworkIfNeeded(newCardNumber)
       let formattedText = CardNumberFormatter.format(newCardNumber, for: cardNetwork)
-      secureTextField?.internalText = formattedText
-      restoreCursorPosition(
-        textField: textField,
-        formattedText: formattedText,
-        originalCursorPos: savedCursorPosition,
-        isDeletion: isDeletion,
-        insertedLength: isDeletion ? 0 : string.count
+      let edited = getUnformattedRange(formattedRange: range, formattedText: previousText, unformattedText: currentText)
+      // A backspace over a group space removes the digit before it.
+      let digitsBeforeCaret = isDeletion
+        ? (edited.length > 0 ? edited.location : max(edited.location - 1, 0))
+        : edited.location + string.filter(\.isNumber).count
+      textField.applyPrimerEdit(
+        formattedText,
+        caretOffset: caretOffset(afterDigits: min(digitsBeforeCaret, newCardNumber.count), in: formattedText)
       )
       updateValidationState(newCardNumber)
       return false
@@ -251,34 +250,15 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
       }
     }
 
-    private func saveCursorPosition(_ textField: UITextField) {
-      if let selectedRange = textField.selectedTextRange {
-        savedCursorPosition = textField.offset(
-          from: textField.beginningOfDocument, to: selectedRange.start)
+    /// Counted in digits, so the group spaces the formatter moves never shift the caret.
+    private func caretOffset(afterDigits digits: Int, in formattedText: String) -> Int {
+      guard digits > 0 else { return 0 }
+      var seen = 0
+      for (offset, character) in formattedText.enumerated() where character.isNumber {
+        seen += 1
+        if seen == digits { return offset + 1 }
       }
-    }
-
-    private func restoreCursorPosition(
-      textField: UITextField, formattedText: String, originalCursorPos: Int, isDeletion: Bool,
-      insertedLength: Int
-    ) {
-      var newCursorPosition: Int
-      if isDeletion {
-        newCursorPosition = min(originalCursorPos, formattedText.count)
-      } else {
-        newCursorPosition = min(originalCursorPos + insertedLength, formattedText.count)
-        if originalCursorPos < formattedText.count {
-          let spacesAdded = formattedText.prefix(newCursorPosition).filter { $0 == " " }.count
-          newCursorPosition = min(
-            originalCursorPos + insertedLength + spacesAdded, formattedText.count)
-        }
-      }
-      DispatchQueue.main.async {
-        if let newPosition = textField.position(
-          from: textField.beginningOfDocument, offset: newCursorPosition) {
-          textField.selectedTextRange = textField.textRange(from: newPosition, to: newPosition)
-        }
-      }
+      return formattedText.count
     }
 
     private func getUnformattedRange(

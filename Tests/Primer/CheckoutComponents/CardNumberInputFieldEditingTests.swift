@@ -65,6 +65,116 @@ final class CardNumberInputFieldEditingTests: XCTestCase {
         XCTAssertEqual(cardNumber, "4242942424242424")
     }
 
+    func test_pasteOverAMiddleGroup_leavesTheCaretAfterThePastedDigits() async throws {
+        let (coordinator, field) = await makeField()
+
+        let caret = try edit(coordinator, field, NSRange(location: 10, length: 4), "5555")
+
+        XCTAssertEqual(field.internalText, "4242 4242 5555 4242")
+        XCTAssertEqual(caret, 14)
+    }
+
+    func test_typeBeforeAGroupSpace_leavesTheCaretAfterTheDigit() async throws {
+        cardNumber = "42424242"
+        let (coordinator, field) = await makeField(formatted: "4242 4242")
+
+        let caret = try edit(coordinator, field, NSRange(location: 4, length: 0), "9")
+
+        XCTAssertEqual(field.internalText, "4242 9424 2")
+        XCTAssertEqual(caret, 6)
+    }
+
+    func test_typeInTheMiddleOfAGroup_leavesTheCaretAfterTheDigit() async throws {
+        cardNumber = "424242424242424"
+        let (coordinator, field) = await makeField(formatted: "4242 4242 4242 424")
+
+        let caret = try edit(coordinator, field, NSRange(location: 6, length: 0), "9")
+
+        XCTAssertEqual(field.internalText, "4242 4924 2424 2424")
+        XCTAssertEqual(caret, 7)
+    }
+
+    func test_typeAtTheEnd_leavesTheCaretAtTheEnd() async throws {
+        cardNumber = "424242424242424"
+        let (coordinator, field) = await makeField(formatted: "4242 4242 4242 424")
+
+        let caret = try edit(coordinator, field, NSRange(location: 18, length: 0), "2")
+
+        XCTAssertEqual(caret, 19)
+    }
+
+    func test_pastePastTheLengthCap_leavesTheCaretAtTheEnd() async throws {
+        let (coordinator, field) = await makeField()
+
+        let caret = try edit(coordinator, field, NSRange(location: 19, length: 0), "123456")
+
+        XCTAssertEqual(cardNumber, "4242424242424242123")
+        XCTAssertEqual(caret, field.internalText?.count)
+    }
+
+    func test_backspaceInTheMiddle_leavesTheCaretWhereTheDigitWas() async throws {
+        let (coordinator, field) = await makeField()
+
+        let caret = try edit(coordinator, field, NSRange(location: 6, length: 1), "")
+
+        XCTAssertEqual(cardNumber, "424244242424242")
+        XCTAssertEqual(caret, 6)
+    }
+
+    func test_backspaceOverAGroupSpace_deletesTheDigitBeforeIt() async throws {
+        cardNumber = "42424242"
+        let (coordinator, field) = await makeField(formatted: "4242 4242")
+
+        let caret = try edit(coordinator, field, NSRange(location: 4, length: 1), "")
+
+        XCTAssertEqual(cardNumber, "4244242")
+        XCTAssertEqual(caret, 3)
+    }
+
+    func test_deleteASelectionAcrossAGroupSpace_leavesTheCaretAtItsStart() async throws {
+        let (coordinator, field) = await makeField()
+
+        let caret = try edit(coordinator, field, NSRange(location: 2, length: 5), "")
+
+        XCTAssertEqual(cardNumber, "424242424242")
+        XCTAssertEqual(caret, 2)
+    }
+
+    func test_autoFillWithDashesOverTheWholeNumber_leavesTheCaretAtTheEnd() async throws {
+        let (coordinator, field) = await makeField()
+
+        let caret = try edit(coordinator, field, NSRange(location: 0, length: 19), "5555-5555-5555-4444")
+
+        XCTAssertEqual(field.internalText, "5555 5555 5555 4444")
+        XCTAssertEqual(caret, 19)
+    }
+
+    func test_backspaceInAnAmexGroup_leavesTheCaretWhereTheDigitWas() async throws {
+        cardNumber = "378282246310005"
+        cardNetwork = .amex
+        let (coordinator, field) = await makeField(formatted: "3782 822463 10005")
+
+        let caret = try edit(coordinator, field, NSRange(location: 10, length: 1), "")
+
+        XCTAssertEqual(cardNumber, "37828224610005")
+        XCTAssertEqual(caret, 10)
+    }
+
+    /// Selects what UIKit has selected for this edit, a backspace leaving its caret after the removed character.
+    private func edit(
+        _ coordinator: CardNumberTextField.Coordinator, _ field: UITextField, _ range: NSRange, _ string: String
+    ) throws -> Int {
+        let isBackspace = string.isEmpty && range.length == 1
+        let start = try XCTUnwrap(field.position(from: field.beginningOfDocument, offset: range.location + (isBackspace ? 1 : 0)))
+        let end = try XCTUnwrap(field.position(from: start, offset: isBackspace ? 0 : range.length))
+        field.selectedTextRange = field.textRange(from: start, to: end)
+
+        _ = coordinator.textField(field, shouldChangeCharactersIn: range, replacementString: string)
+
+        let caret = try XCTUnwrap(field.selectedTextRange?.start)
+        return field.offset(from: field.beginningOfDocument, to: caret)
+    }
+
     private func makeField(formatted: String = "4242 4242 4242 4242") async -> (CardNumberTextField.Coordinator, SecureTextField) {
         let scope = DefaultCardFormScope(
             checkoutScope: await ContainerTestHelpers.createMockCheckoutScope(),
