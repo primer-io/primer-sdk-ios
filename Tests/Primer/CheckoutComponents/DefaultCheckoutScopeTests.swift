@@ -770,6 +770,22 @@ final class DefaultCheckoutScopeBehaviorTests: XCTestCase {
         } catch PrimerError.cancelled {}
     }
 
+    func test_cancelActivePaymentMethod_whileTheMerchantDecides_keepsTheScreen() async throws {
+        sut = makeSut()
+        var decide: ((PrimerPaymentCreationDecision) -> Void)?
+        sut.onBeforePaymentCreate = { _, decisionHandler in decide = decisionHandler }
+        sut.updateNavigationState(.failure(PrimerError.invalidValue(key: "test", value: nil, reason: nil)))
+        let gate = Task { try await sut.invokeBeforePaymentCreate(paymentMethodType: TestData.PaymentMethodTypes.card) }
+        try await waitUntil { decide != nil }
+
+        // The error screen's "Choose other payment method" during a retry's gate.
+        sut.cancelActivePaymentMethod(returnToSelection: true)
+
+        XCTAssertNotEqual(sut.navigationState, .paymentMethodSelection)
+        decide?(.abortPaymentCreation())
+        _ = try? await gate.value
+    }
+
     func test_updateNavigationState_afterTheCheckoutClosed_keepsItClosed() {
         sut = makeSut()
         sut.onDismiss()

@@ -564,6 +564,8 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
   /// directly (no list to return to). Mirrors Drop-In's popToMainScreen-on-cancel. Payment FAILURES
   /// must use `handlePaymentError` instead (error screen + dismiss).
   func cancelActivePaymentMethod(returnToSelection: Bool) {
+    // Leaving while the merchant decides would only hide a payment that may still start, as in the Drop-in.
+    guard !isAwaitingPaymentDecision else { return }
     if returnToSelection {
       // Navigation-only: leaves the checkout state at `.ready` so no terminal outcome is delivered.
       // In the inline flow this closes the sheet and reveals the merchant's embedded list; in the
