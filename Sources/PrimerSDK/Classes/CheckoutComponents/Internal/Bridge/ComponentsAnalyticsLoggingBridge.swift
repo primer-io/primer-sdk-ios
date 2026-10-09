@@ -134,17 +134,31 @@ public final class ComponentsAnalyticsLoggingBridge: LogReporter {
         guard let metadata else { return .general() }
 
         guard let paymentMethod = metadata["paymentMethod"], !paymentMethod.isEmpty else {
-            return .general()
+            // Comma-separated, because bridge values are strings.
+            let methods = metadata["availablePaymentMethods"].map { $0.split(separator: ",").map(String.init) }
+            return .general(GeneralEvent(availablePaymentMethods: methods))
         }
 
         if let provider = metadata["threedsProvider"] {
-            return .threeDS(ThreeDSEvent(paymentMethod: paymentMethod, provider: provider))
+            return .threeDS(ThreeDSEvent(
+                paymentMethod: paymentMethod,
+                provider: provider,
+                protocolVersion: metadata["protocolVersion"]
+            ))
         }
 
         if let url = metadata["redirectDestinationUrl"] {
-            return .redirect(RedirectEvent(paymentMethod: paymentMethod, destinationUrl: url))
+            return .redirect(RedirectEvent(paymentMethod: paymentMethod, destinationUrl: url, paymentId: metadata["paymentId"]))
         }
 
-        return .payment(PaymentEvent(paymentMethod: paymentMethod, paymentId: metadata["paymentId"]))
+        return .payment(PaymentEvent(
+            paymentMethod: paymentMethod,
+            paymentId: metadata["paymentId"],
+            reason: metadata["reason"],
+            errorCode: metadata["errorCode"],
+            errorOrigin: metadata["errorOrigin"],
+            outcome: metadata["outcome"],
+            previousPaymentMethod: metadata["previousPaymentMethod"]
+        ))
     }
 }

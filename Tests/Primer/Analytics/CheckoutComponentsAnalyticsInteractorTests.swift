@@ -171,6 +171,20 @@ final class CheckoutComponentsAnalyticsInteractorTests: XCTestCase {
         let call = try await service.nextCall()
         XCTAssertEqual(call.metadata?.redirectDestinationUrl, "https://example.com/redirect")
     }
+
+    func testRecordThreeDSOutcome_PassesTheOutcomeToService() async {
+        // Given
+        let service = SpyAnalyticsService()
+        let interactor = DefaultAnalyticsInteractor(eventService: service)
+        let outcome = AnalyticsFunnelState.ThreeDSOutcome(authenticationOutcome: "AUTH_SUCCESS", skippedReasonCode: nil)
+
+        // When
+        await interactor.recordThreeDSOutcome(outcome)
+
+        // Then
+        let recorded = await service.recordedThreeDSOutcomes
+        XCTAssertEqual(recorded, [outcome])
+    }
 }
 
 // MARK: - Test Doubles
@@ -193,6 +207,12 @@ private actor SpyAnalyticsService: CheckoutComponentsAnalyticsServiceProtocol {
     }
 
     func initialize(config: AnalyticsSessionConfig) async {}
+
+    private(set) var recordedThreeDSOutcomes: [AnalyticsFunnelState.ThreeDSOutcome] = []
+
+    func recordThreeDSOutcome(_ outcome: AnalyticsFunnelState.ThreeDSOutcome) async {
+        recordedThreeDSOutcomes.append(outcome)
+    }
 
     func sendEvent(_ eventType: AnalyticsEventType, metadata: AnalyticsEventMetadata?) async {
         let call = Call(
