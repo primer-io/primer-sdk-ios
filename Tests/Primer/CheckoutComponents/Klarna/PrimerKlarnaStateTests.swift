@@ -29,6 +29,16 @@ final class KlarnaStateTests: XCTestCase {
         XCTAssertNil(state.selectedCategoryId)
     }
 
+    func test_defaultInit_paymentViewHeightIsZero() {
+        let state = PrimerKlarnaState()
+        XCTAssertEqual(state.paymentViewHeight, 0)
+    }
+
+    func test_defaultInit_isSelectedOptionReadyIsFalse() {
+        let state = PrimerKlarnaState()
+        XCTAssertFalse(state.isSelectedOptionReady)
+    }
+
     // MARK: - Custom Initialization Tests
 
     func test_customInit_setsStep() {
@@ -87,6 +97,12 @@ final class KlarnaStateTests: XCTestCase {
         let categories = KlarnaTestData.allCategories
         let state1 = PrimerKlarnaState(step: .categorySelection, categories: categories, selectedCategoryId: "pay_now")
         let state2 = PrimerKlarnaState(step: .categorySelection, categories: categories, selectedCategoryId: "pay_later")
+        XCTAssertNotEqual(state1, state2)
+    }
+
+    func test_state_differentPaymentViewHeights_areNotEqual() {
+        let state1 = PrimerKlarnaState(step: .viewReady, paymentViewHeight: 0)
+        let state2 = PrimerKlarnaState(step: .viewReady, paymentViewHeight: KlarnaTestData.Constants.paymentViewHeight)
         XCTAssertNotEqual(state1, state2)
     }
 

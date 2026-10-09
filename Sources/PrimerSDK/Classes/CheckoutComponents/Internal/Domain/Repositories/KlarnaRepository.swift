@@ -25,6 +25,7 @@ enum KlarnaAuthorizationResult: Equatable {
 
 @available(iOS 15.0, *)
 @MainActor protocol KlarnaRepository {
+  nonisolated var paymentViewHeights: AsyncStream<CGFloat> { get }
   func createSession() async throws -> KlarnaSessionResult
   func configureForCategory(clientToken: String, categoryId: String) async throws -> UIView?
   func authorize() async throws -> KlarnaAuthorizationResult

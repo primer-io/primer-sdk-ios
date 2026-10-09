@@ -14,6 +14,7 @@ struct KlarnaView: View, LogReporter {
   let scope: any PrimerKlarnaScope
 
   @Environment(\.designTokens) private var tokens
+  @Environment(\.bridgeController) private var bridgeController
   @State private var klarnaState: PrimerKlarnaState = .init()
 
   // MARK: - Layout Constants
@@ -22,12 +23,21 @@ struct KlarnaView: View, LogReporter {
     static let logoWidth: CGFloat = 56
     static let logoHeight: CGFloat = 24
     static let spinnerSize: CGFloat = 56
-    static let badgeWidth: CGFloat = 56
-    static let badgeHeight: CGFloat = 40
-    static let paymentViewMinHeight: CGFloat = 200
-    static let inlineLoadingMinHeight: CGFloat = 100
-    static let badgeCornerRadius: CGFloat = 2
-    static let placeholderOpacity: Double = 0.8
+    static let badgeSlotHeight: CGFloat = 40
+  }
+
+  private enum SheetContent: Equatable {
+    case loading
+    case categories(expandedHeight: CGFloat)
+    case finalization
+  }
+
+  private var sheetContent: SheetContent {
+    switch klarnaState.step {
+    case .categorySelection, .viewReady: .categories(expandedHeight: klarnaState.paymentViewHeight)
+    case .awaitingFinalization: .finalization
+    default: .loading
+    }
   }
 
   var body: some View {
@@ -50,6 +60,9 @@ struct KlarnaView: View, LogReporter {
       for await state in scope.state {
         klarnaState = state
       }
+    }
+    .onChange(of: sheetContent) { _ in
+      bridgeController?.invalidateContentSize()
     }
   }
 
@@ -183,41 +196,35 @@ struct KlarnaView: View, LogReporter {
       .accessibilityElement(children: .contain)
       .accessibilityIdentifier(AccessibilityIdentifiers.Klarna.categoriesContainer)
 
-      // Authorize button (visible when a category is selected and view is ready)
-      if klarnaState.step == .viewReady {
-        makeAuthorizeButtonSection()
-          .padding(.top, PrimerSpacing.large(tokens: tokens))
-      }
+      makeAuthorizeButtonSection()
+        .padding(.top, PrimerSpacing.large(tokens: tokens))
     }
   }
 
   @MainActor
   private func makeCategoryCard(for category: KlarnaPaymentCategory) -> some View {
     let isSelected = klarnaState.selectedCategoryId == category.id
+    // Shown at zero height first: Klarna measures it only once it is laid out.
+    let showsPaymentView = isSelected && klarnaState.step == .viewReady
+    let isExpanded = showsPaymentView && klarnaState.paymentViewHeight > 0
 
     return VStack(
-      alignment: .leading, spacing: isSelected ? PrimerSpacing.medium(tokens: tokens) : 0
+      alignment: .leading, spacing: isExpanded ? PrimerSpacing.medium(tokens: tokens) : 0
     ) {
-      // Category header
       Button(action: {
         scope.selectPaymentCategory(category.id)
       }) {
         HStack(spacing: PrimerSpacing.medium(tokens: tokens)) {
-          // Category badge image
-          makeCategoryBadge(for: category)
+          makeCategoryBadge()
 
-          // Category name
           Text(category.name)
             .primerTypography(.bodyLarge, tokens: tokens)
             .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
 
           Spacer()
 
-          // Checkmark for selected
           if isSelected {
-            Image(systemName: "checkmark")
-              .foregroundColor(CheckoutColors.borderSelected(tokens: tokens))
-              .font(PrimerFont.bodyMedium(tokens: tokens))
+            makeSelectionIndicator()
           }
         }
       }
@@ -228,18 +235,13 @@ struct KlarnaView: View, LogReporter {
           : CheckoutComponentsStrings.a11yKlarnaCategory(category.name)
       )
 
-      // Expanded Klarna SDK view or inline loading indicator
-      if isSelected, let paymentView = scope.paymentView {
+      if showsPaymentView, let paymentView = scope.paymentView {
         KlarnaPaymentViewRepresentable(paymentView: paymentView)
           .id(category.id)
-          .frame(minHeight: Layout.paymentViewMinHeight)
+          .frame(height: klarnaState.paymentViewHeight)
+          .accessibilityHidden(!isExpanded)
           .accessibilityIdentifier(AccessibilityIdentifiers.Klarna.paymentViewContainer)
           .accessibilityLabel(CheckoutComponentsStrings.a11yKlarnaPaymentView)
-      } else if isSelected, scope.paymentView == nil, klarnaState.step != .viewReady {
-        ProgressView()
-          .progressViewStyle(CircularProgressViewStyle(tint: CheckoutColors.loader(tokens: tokens)))
-          .frame(maxWidth: .infinity, minHeight: Layout.inlineLoadingMinHeight)
-          .accessibilityLabel(CheckoutComponentsStrings.a11yLoading)
       }
     }
     .padding(PrimerSpacing.medium(tokens: tokens))
@@ -257,29 +259,25 @@ struct KlarnaView: View, LogReporter {
   }
 
   @MainActor
-  private func makeCategoryBadge(for category: KlarnaPaymentCategory) -> some View {
-    AsyncImage(url: URL(string: category.standardAssetUrl)) { image in
-      image
-        .resizable()
-        .aspectRatio(contentMode: .fit)
-    } placeholder: {
-      RoundedRectangle(cornerRadius: Layout.badgeCornerRadius)
-        .fill(CheckoutColors.gray300(tokens: tokens).opacity(Layout.placeholderOpacity))
-        .overlay(
-          Text("K")
-            .primerTypography(.bodyLarge, tokens: tokens)
-            .foregroundColor(.white)
-        )
-    }
-    .frame(width: Layout.badgeWidth, height: Layout.badgeHeight)
-    .clipShape(RoundedRectangle(cornerRadius: Layout.badgeCornerRadius))
+  private func makeCategoryBadge() -> some View {
+    Image(uiImage: UIImage.klarnaBadgeColored ?? UIImage())
+      .frame(height: Layout.badgeSlotHeight)
   }
 
-  // MARK: - Shared Button Builder
-
   @MainActor
-  private func makePrimaryButton(title: String, action: @escaping () -> Void) -> some View {
-    PrimerCheckoutButton(title, action: action)
+  private func makeSelectionIndicator() -> some View {
+    Group {
+      if klarnaState.isSelectedOptionReady {
+        Image(systemName: "checkmark")
+          .foregroundColor(CheckoutColors.borderSelected(tokens: tokens))
+          .font(PrimerFont.bodyMedium(tokens: tokens))
+      } else {
+        ProgressView()
+          .progressViewStyle(CircularProgressViewStyle(tint: CheckoutColors.loader(tokens: tokens)))
+          .accessibilityLabel(CheckoutComponentsStrings.a11yLoading)
+      }
+    }
+    .frame(width: PrimerSize.medium(tokens: tokens), height: PrimerSize.medium(tokens: tokens))
   }
 
   // MARK: - Authorize Button
@@ -290,7 +288,11 @@ struct KlarnaView: View, LogReporter {
     if let customButton = scope.authorizeButton {
       AnyView(customButton(scope))
     } else {
-      makePrimaryButton(title: CheckoutComponentsStrings.klarnaAuthorizeButton, action: scope.authorizePayment)
+      PrimerCheckoutButton(
+        CheckoutComponentsStrings.klarnaAuthorizeButton,
+        isEnabled: klarnaState.isSelectedOptionReady,
+        action: scope.authorizePayment
+      )
         .accessibilityIdentifier(AccessibilityIdentifiers.Klarna.authorizeButton)
         .accessibilityLabel(CheckoutComponentsStrings.klarnaAuthorizeButton)
         .accessibilityHint(CheckoutComponentsStrings.a11yKlarnaAuthorizeHint)
@@ -310,7 +312,7 @@ struct KlarnaView: View, LogReporter {
       if let customButton = scope.finalizeButton {
         AnyView(customButton(scope))
       } else {
-        makePrimaryButton(title: CheckoutComponentsStrings.klarnaFinalizeButton, action: scope.finalizePayment)
+        PrimerCheckoutButton(CheckoutComponentsStrings.klarnaFinalizeButton, action: scope.finalizePayment)
           .accessibilityIdentifier(AccessibilityIdentifiers.Klarna.finalizeButton)
           .accessibilityLabel(CheckoutComponentsStrings.klarnaFinalizeButton)
           .accessibilityHint(CheckoutComponentsStrings.a11yKlarnaFinalizeHint)

@@ -5,7 +5,6 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 #if canImport(PrimerKlarnaSDK)
-import KlarnaMobileSDK
 import PrimerKlarnaSDK
 @testable import PrimerSDK
 import XCTest
@@ -23,13 +22,15 @@ final class KlarnaRepositoryImplDelegateTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        provider = MockKlarnaProvider()
+        let provider = MockKlarnaProvider()
         sut = KlarnaRepositoryImpl(
             apiClient: MockPrimerAPIClient(),
             tokenizationService: MockTokenizationService(),
             createResumePaymentService: MockCreateResumePaymentService()
         )
         sut.klarnaProvider = provider
+        sut.makeKlarnaProvider = { _, _, _ in provider }
+        self.provider = provider
     }
 
     override func tearDown() {
@@ -66,6 +67,21 @@ final class KlarnaRepositoryImplDelegateTests: XCTestCase {
         XCTAssertEqual(result, .approved(authToken: authToken))
     }
 
+    func test_configureForCategory_newView_appliesAppearanceModeBetweenCreateAndInitialize() async throws {
+        // Given
+        let configuration = Task {
+            try await sut.configureForCategory(clientToken: KlarnaTestsMocks.clientToken, categoryId: KlarnaTestsMocks.paymentMethod)
+        }
+
+        // When
+        await waitUntil { self.provider.calls.contains(.initializePaymentView) }
+
+        // Then
+        XCTAssertEqual(provider.calls, [.createPaymentView, .readPaymentView, .initializePaymentView])
+        sut.primerKlarnaWrapperLoaded()
+        _ = try await configuration.value
+    }
+
     private func waitUntil(file: StaticString = #filePath, line: UInt = #line, _ condition: () -> Bool) async {
         for _ in 0 ..< 200 {
             if condition() { return }
@@ -73,24 +89,5 @@ final class KlarnaRepositoryImplDelegateTests: XCTestCase {
         }
         XCTFail("Timed out waiting for the condition", file: file, line: line)
     }
-}
-
-private final class MockKlarnaProvider: PrimerKlarnaProviding {
-    var paymentView: KlarnaPaymentView?
-    weak var paymentViewDelegate: PrimerKlarnaProviderPaymentViewDelegate?
-    weak var authorizationDelegate: PrimerKlarnaProviderAuthorizationDelegate?
-    weak var finalizationDelegate: PrimerKlarnaProviderFinalizationDelegate?
-    weak var errorDelegate: PrimerKlarnaProviderErrorDelegate?
-    private(set) var authorizeCallCount = 0
-    private(set) var finaliseCallCount = 0
-
-    func createPaymentView() {}
-    func initializePaymentView() {}
-    func loadPaymentReview() {}
-    func loadPaymentView(jsonData: String?) {}
-    func removePaymentView() {}
-    func authorize(autoFinalize: Bool, jsonData: String?) { authorizeCallCount += 1 }
-    func reauthorize(jsonData: String?) {}
-    func finalise(jsonData: String?) { finaliseCallCount += 1 }
 }
 #endif

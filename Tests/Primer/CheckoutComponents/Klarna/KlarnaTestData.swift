@@ -25,6 +25,7 @@ enum KlarnaTestData {
         static let categoryPayNow = "pay_now"
         static let categoryPayLater = "pay_later"
         static let categorySliceIt = "slice_it"
+        static let paymentViewHeight: CGFloat = 312
     }
 
     // MARK: - Categories

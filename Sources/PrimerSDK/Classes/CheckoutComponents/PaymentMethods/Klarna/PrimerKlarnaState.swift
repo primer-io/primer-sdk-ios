@@ -24,14 +24,20 @@ struct PrimerKlarnaState: Equatable, @unchecked Sendable {
   var step: Step
   var categories: [KlarnaPaymentCategory]
   var selectedCategoryId: String?
+  var paymentViewHeight: CGFloat
+  var isSelectedOptionReady: Bool
 
   init(
     step: Step = .loading,
     categories: [KlarnaPaymentCategory] = [],
-    selectedCategoryId: String? = nil
+    selectedCategoryId: String? = nil,
+    paymentViewHeight: CGFloat = 0,
+    isSelectedOptionReady: Bool = false
   ) {
     self.step = step
     self.categories = categories
     self.selectedCategoryId = selectedCategoryId
+    self.paymentViewHeight = paymentViewHeight
+    self.isSelectedOptionReady = isSelectedOptionReady
   }
 }
