@@ -222,7 +222,7 @@ public struct CardSubmitButton: View {
 
   public var body: some View {
     Button(action: session.submit) {
-      Text(CheckoutComponentsStrings.payButton)
+      Text(title)
         .frame(maxWidth: .infinity)
         .padding(PrimerSpacing.medium(tokens: tokens))
     }
@@ -230,8 +230,13 @@ public struct CardSubmitButton: View {
     .accessibility(
       config: AccessibilityConfiguration(
         identifier: AccessibilityIdentifiers.CardForm.submitButton,
-        label: CheckoutComponentsStrings.payButton,
+        label: title,
         traits: [.isButton]
       ))
+  }
+
+  private var title: String {
+    (session.scope as? any CardFormFieldScopeInternal)?.savesCard == true
+      ? CheckoutComponentsStrings.addCardButton : CheckoutComponentsStrings.payButton
   }
 }

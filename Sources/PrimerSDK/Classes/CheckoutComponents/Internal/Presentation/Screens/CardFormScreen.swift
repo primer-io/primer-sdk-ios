@@ -93,7 +93,7 @@ struct CardFormScreen: View, LogReporter {
   }
 
   private var titleSection: some View {
-    Text(CheckoutComponentsStrings.cardPaymentTitle)
+    Text(scope.savesCard ? CheckoutComponentsStrings.addCardButton : CheckoutComponentsStrings.cardPaymentTitle)
       .font(PrimerFont.titleXLarge(tokens: tokens))
       .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
       .frame(maxWidth: .infinity, alignment: .leading)
@@ -143,12 +143,11 @@ struct CardFormScreen: View, LogReporter {
   /// Computes the submit-button title, formatting the amount with the accessibility-friendly
   /// currency formatter when `accessible` is true and the visible formatter otherwise.
   private func payTitle(accessible: Bool) -> String {
-    if scope.cardFormUIOptions?.payButtonAddNewCard == true {
+    if scope.savesCard || scope.cardFormUIOptions?.payButtonAddNewCard == true {
       return CheckoutComponentsStrings.addCardButton
     }
 
-    guard !scope.savesCard,
-      let configurationService,
+    guard let configurationService,
       let currency = configurationService.currency
     else {
       return CheckoutComponentsStrings.payButton
