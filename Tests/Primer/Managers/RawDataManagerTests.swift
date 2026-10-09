@@ -141,6 +141,87 @@ final class RawDataManagerTests: XCTestCase {
         waitForExpectations(timeout: 45.0)
     }
 
+    func testVaultIntent_inCheckoutComponents_stopsAfterTokenizationAndHandsOverTheToken() throws {
+        PrimerInternal.shared.sdkIntegrationProduct = .checkoutComponents
+        PrimerInternal.shared.intent = .vault
+        defer {
+            PrimerInternal.shared.sdkIntegrationProduct = nil
+            PrimerInternal.shared.intent = nil
+        }
+
+        tokenizationService.onTokenize = { requestBody in
+            XCTAssertEqual(requestBody.tokenType, .multiUse)
+            XCTAssertEqual(requestBody.paymentFlow, .vault)
+            return .success(self.tokenizationResponseBody)
+        }
+
+        let expectNoPayment = expectation(description: "No payment created")
+        expectNoPayment.isInverted = true
+        createResumePaymentService.onCreatePayment = { _ in
+            expectNoPayment.fulfill()
+            return self.paymentResponseBody
+        }
+
+        let expectNoCompletion = expectation(description: "No checkout completion")
+        expectNoCompletion.isInverted = true
+        headlessCheckoutDelegate.onDidCompleteCheckoutWithData = { _ in expectNoCompletion.fulfill() }
+
+        let expectToken = expectation(description: "Token handed over")
+        headlessCheckoutDelegate.onDidTokenizePaymentMethod = { tokenData, decisionHandler in
+            XCTAssertEqual(tokenData.token, "token")
+            decisionHandler(.complete())
+            expectToken.fulfill()
+        }
+        headlessCheckoutDelegate.onDidFail = { error in
+            XCTFail("Failed with error: \(error.localizedDescription)")
+        }
+
+        sut.rawData = PrimerCardData(
+            cardNumber: "4111 1111 1111 1111",
+            expiryDate: "03/2030",
+            cvv: "123",
+            cardholderName: "John Appleseed"
+        )
+
+        sut.submit()
+
+        wait(for: [expectToken, expectNoPayment, expectNoCompletion], timeout: 2.0)
+    }
+
+    func testVaultIntent_leftOverInHeadless_stillCreatesThePayment() throws {
+        PrimerInternal.shared.sdkIntegrationProduct = .headless
+        PrimerInternal.shared.intent = .vault
+        defer {
+            PrimerInternal.shared.sdkIntegrationProduct = nil
+            PrimerInternal.shared.intent = nil
+        }
+
+        tokenizationService.onTokenize = { _ in .success(self.tokenizationResponseBody) }
+
+        let expectCreatePayment = expectation(description: "Payment created")
+        createResumePaymentService.onCreatePayment = { _ in
+            expectCreatePayment.fulfill()
+            return self.paymentResponseBody
+        }
+
+        let expectDidCompleteCheckout = expectation(description: "Headless checkout completed")
+        headlessCheckoutDelegate.onDidCompleteCheckoutWithData = { _ in expectDidCompleteCheckout.fulfill() }
+        headlessCheckoutDelegate.onDidFail = { error in
+            XCTFail("Failed with error: \(error.localizedDescription)")
+        }
+
+        sut.rawData = PrimerCardData(
+            cardNumber: "4111 1111 1111 1111",
+            expiryDate: "03/2030",
+            cvv: "123",
+            cardholderName: "John Appleseed"
+        )
+
+        sut.submit()
+
+        wait(for: [expectCreatePayment, expectDidCompleteCheckout], timeout: 10.0)
+    }
+
     func testAbortPaymentFlow() throws {
         let expectWillCreatePaymentWithData = expectation(description: "Will create payment with data")
         headlessCheckoutDelegate.onWillCreatePaymentWithData = { _, decisionHandler in

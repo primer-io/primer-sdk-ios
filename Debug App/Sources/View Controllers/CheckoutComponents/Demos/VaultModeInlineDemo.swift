@@ -42,7 +42,9 @@ private struct VaultModeInlineContent: View {
     @State private var lastToken: String?
 
     init(clientToken: String, settings: PrimerSettings) {
-        _session = StateObject(wrappedValue: PrimerCheckoutSession(clientToken: clientToken, settings: settings))
+        _session = StateObject(
+            wrappedValue: PrimerCheckoutSession(clientToken: clientToken, settings: settings, intent: .vault)
+        )
     }
 
     private enum Screen { case list, cardForm }
@@ -61,8 +63,8 @@ private struct VaultModeInlineContent: View {
         }
         .primerCheckoutSession(session) { state in
             switch state {
-            case let .success(result):
-                lastToken = result.paymentId
+            case let .vaulted(saved):
+                lastToken = saved.token
                 screen = .list
             case .failure:
                 screen = .list

@@ -562,6 +562,22 @@ enum CheckoutComponentsStrings {
     comment: "Success screen title"
   )
 
+  static let vaultSuccessTitle = NSLocalizedString(
+    "primer_vault_success_title",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Payment method saved",
+    comment: "Title of the screen shown after a payment method is saved without a payment"
+  )
+
+  static let vaultSuccessSubtitle = NSLocalizedString(
+    "primer_vault_success_subtitle",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Your payment method has been saved for future use.",
+    comment: "Message on the screen shown after a payment method is saved without a payment"
+  )
+
   static let paymentFailed = NSLocalizedString(
     "primer_checkout_error_title",
     tableName: tableName,

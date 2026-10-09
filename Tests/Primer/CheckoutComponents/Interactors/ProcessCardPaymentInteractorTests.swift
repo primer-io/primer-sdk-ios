@@ -27,6 +27,27 @@ final class ProcessCardPaymentInteractorTests: XCTestCase {
         super.tearDown()
     }
 
+    // MARK: - Vault
+
+    func test_vault_savesThroughTheRepositoryAndReturnsItsToken() async throws {
+        let token = try await sut.vault(cardData: createTestCardData())
+
+        XCTAssertEqual(token, mockRepository.vaultCardTokenToReturn)
+        XCTAssertEqual(mockRepository.vaultCardCallCount, 1)
+        XCTAssertEqual(mockRepository.processCardPaymentCallCount, 0)
+    }
+
+    func test_vault_whenSavingFails_throws() async {
+        mockRepository.processCardPaymentError = TestError.networkFailure
+
+        do {
+            _ = try await sut.vault(cardData: createTestCardData())
+            XCTFail("Expected an error")
+        } catch {
+            XCTAssertEqual(error as? TestError, .networkFailure)
+        }
+    }
+
     // MARK: - Success Tests
 
     func test_execute_withValidCardData_returnsPaymentResult() async throws {

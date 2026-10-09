@@ -36,6 +36,8 @@ public struct PrimerCheckout: View {
   private let clientToken: String
   private let settings: PrimerSettings
   private let theme: PrimerCheckoutTheme
+  private let intent: PrimerSessionIntent
+  private let paymentMethodIntents: [String: PrimerSessionIntent]
   private let onCompletion: ((PrimerCheckoutState) -> Void)?
   private let onShippingAddressChange: ShippingAddressChangeHandler?
   private let onShippingOptionChange: ShippingOptionChangeHandler?
@@ -48,14 +50,20 @@ public struct PrimerCheckout: View {
   ///   - clientToken: The client token obtained from your backend.
   ///   - primerSettings: Configuration settings including payment options and UI preferences. Default: `PrimerSettings()`
   ///   - primerTheme: Theme configuration for design tokens. Default: `PrimerCheckoutTheme()`
+  ///   - intent: `.vault` saves a payment method without a payment and ends in `.vaulted`. The client
+  ///     session needs a customer id. Default: `.checkout`
+  ///   - paymentMethodIntents: Overrides `intent` per payment method type, for example
+  ///     `["PAYMENT_CARD": .vault]` saves a card while other methods pay. Default: `[:]`
   ///   - onCompletion: Receives `.failure` once per failed attempt, including a failed initialization,
-  ///     while the checkout stays open for a retry. Then `.success` or `.dismissed` exactly once.
+  ///     while the checkout stays open for a retry. Then `.success`, `.vaulted` or `.dismissed` exactly once.
   ///   - onShippingAddressChange: Express Checkout shipping options for the shopper's address. Default: `nil`
   ///   - onShippingOptionChange: Express Checkout commit of the selected option. Default: `nil`
   public init(
     clientToken: String,
     primerSettings: PrimerSettings = PrimerSettings(),
     primerTheme: PrimerCheckoutTheme = PrimerCheckoutTheme(),
+    intent: PrimerSessionIntent = .checkout,
+    paymentMethodIntents: [String: PrimerSessionIntent] = [:],
     onCompletion: ((PrimerCheckoutState) -> Void)? = nil,
     onShippingAddressChange: ShippingAddressChangeHandler? = nil,
     onShippingOptionChange: ShippingOptionChangeHandler? = nil
@@ -63,6 +71,8 @@ public struct PrimerCheckout: View {
     self.clientToken = clientToken
     settings = primerSettings
     theme = primerTheme
+    self.intent = intent
+    self.paymentMethodIntents = paymentMethodIntents
     self.onShippingAddressChange = onShippingAddressChange
     self.onShippingOptionChange = onShippingOptionChange
     self.onCompletion = onCompletion
@@ -75,6 +85,8 @@ public struct PrimerCheckout: View {
     clientToken: String,
     primerSettings: PrimerSettings,
     primerTheme: PrimerCheckoutTheme,
+    intent: PrimerSessionIntent = .checkout,
+    paymentMethodIntents: [String: PrimerSessionIntent] = [:],
     navigator: CheckoutNavigator,
     presentationContext: PresentationContext,
     integrationType: CheckoutComponentsIntegrationType,
@@ -85,6 +97,8 @@ public struct PrimerCheckout: View {
     self.clientToken = clientToken
     settings = primerSettings
     theme = primerTheme
+    self.intent = intent
+    self.paymentMethodIntents = paymentMethodIntents
     self.onShippingAddressChange = onShippingAddressChange
     self.onShippingOptionChange = onShippingOptionChange
     self.onCompletion = onCompletion
@@ -98,6 +112,8 @@ public struct PrimerCheckout: View {
       clientToken: clientToken,
       settings: settings,
       theme: theme,
+      intent: intent,
+      paymentMethodIntents: paymentMethodIntents,
       navigator: navigator,
       presentationContext: presentationContext,
       integrationType: integrationType,
@@ -145,6 +161,8 @@ struct InternalCheckout: View, LogReporter {
     clientToken: String,
     settings: PrimerSettings,
     theme: PrimerCheckoutTheme,
+    intent: PrimerSessionIntent,
+    paymentMethodIntents: [String: PrimerSessionIntent],
     navigator: CheckoutNavigator,
     presentationContext: PresentationContext,
     integrationType: CheckoutComponentsIntegrationType,
@@ -166,6 +184,8 @@ struct InternalCheckout: View, LogReporter {
       clientToken: clientToken,
       primerSettings: settings,
       primerTheme: theme,
+      intent: intent,
+      paymentMethodIntents: paymentMethodIntents,
       navigator: navigator,
       presentationContext: presentationContext
     )
@@ -299,7 +319,7 @@ struct InternalCheckout: View, LogReporter {
 }
 
 /// Gives `PrimerCheckout` the session's completion contract: `.failure` once per failed attempt, then
-/// `.success` or `.dismissed` exactly once.
+/// `.success`, `.vaulted` or `.dismissed` exactly once.
 @available(iOS 15.0, *)
 @MainActor
 final class CheckoutOutcomeRelay {
@@ -314,7 +334,7 @@ final class CheckoutOutcomeRelay {
       guard error.diagnosticsId != lastFailureId else { return }
       lastFailureId = error.diagnosticsId
       onCompletion?(state)
-    case .success, .dismissed:
+    case .success, .vaulted, .dismissed:
       hasEnded = true
       onCompletion?(state)
     case .initializing, .ready:

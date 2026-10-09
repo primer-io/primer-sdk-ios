@@ -18,6 +18,7 @@ enum CheckoutNavigationState: Equatable {
   case cvvRecapture
   case processing
   case success(PaymentResult)
+  case vaulted(PrimerPaymentMethodToken)
   case failure(PrimerError, checkoutData: PrimerCheckoutData? = nil)
   case dismissed
 
@@ -33,7 +34,7 @@ enum CheckoutNavigationState: Equatable {
   /// merchant's own embedded content.
   var presentsInlineFlowSheet: Bool {
     switch self {
-    case .paymentMethod, .processing, .success, .failure,
+    case .paymentMethod, .processing, .success, .vaulted, .failure,
          .vaultedPaymentMethods, .deleteVaultedPaymentMethodConfirmation, .cvvRecapture:
       true
     case .loading, .paymentMethodSelection, .dismissed:
@@ -59,6 +60,8 @@ enum CheckoutNavigationState: Equatable {
       lhsType == rhsType
     case let (.success(lhsResult), .success(rhsResult)):
       lhsResult.paymentId == rhsResult.paymentId
+    case let (.vaulted(lhsToken), .vaulted(rhsToken)):
+      lhsToken == rhsToken
     case let (.failure(lhsError, lhsData), .failure(rhsError, rhsData)):
       lhsError.diagnosticsId == rhsError.diagnosticsId && lhsData?.payment?.id == rhsData?.payment?.id
     default:

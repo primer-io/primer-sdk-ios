@@ -154,4 +154,36 @@ final class PaymentCompletionHandlerDecisionTests: XCTestCase {
         guard case let .continue(key) = decision?.type else { return XCTFail("Expected .continue") }
         XCTAssertEqual(key, "merchant-key")
     }
+
+    func test_didTokenize_withOnTokenized_handsOverTheTokenOnceAndCompletes() {
+        var tokens: [String?] = []
+        var completions = 0
+        let sut = PaymentCompletionHandler(
+            repository: HeadlessRepositoryImpl(),
+            onTokenized: { tokens.append($0.token) },
+            completion: { _ in completions += 1 }
+        )
+        let tokenData = PrimerPaymentMethodTokenData(
+            analyticsId: "analytics-id",
+            id: "id",
+            isVaulted: true,
+            isAlreadyVaulted: false,
+            paymentInstrumentType: .paymentCard,
+            paymentMethodType: "PAYMENT_CARD",
+            paymentInstrumentData: nil,
+            threeDSecureAuthentication: nil,
+            token: "multi_use_token",
+            tokenType: .multiUse,
+            vaultData: nil
+        )
+        var decisions = 0
+
+        sut.primerHeadlessUniversalCheckoutDidTokenizePaymentMethod(tokenData) { _ in decisions += 1 }
+        sut.primerHeadlessUniversalCheckoutDidTokenizePaymentMethod(tokenData) { _ in decisions += 1 }
+        sut.primerHeadlessUniversalCheckoutDidFail(withError: PrimerError.unknown(), checkoutData: nil)
+
+        XCTAssertEqual(tokens, ["multi_use_token"])
+        XCTAssertEqual(decisions, 2)
+        XCTAssertEqual(completions, 0)
+    }
 }

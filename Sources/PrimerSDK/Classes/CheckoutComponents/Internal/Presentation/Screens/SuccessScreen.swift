@@ -10,14 +10,20 @@ import SwiftUI
 
 @available(iOS 15.0, *)
 struct SuccessScreen: View {
-  let result: PaymentResult
+  let title: String
+  let message: String
   let onDismiss: (() -> Void)?
 
   @Environment(\.designTokens) private var tokens
   @State private var iconScale: CGFloat = 0.3
 
-  init(result: PaymentResult, onDismiss: (() -> Void)? = nil) {
-    self.result = result
+  init(
+    title: String = CheckoutComponentsStrings.paymentSuccessful,
+    message: String = CheckoutComponentsStrings.redirectConfirmationMessage,
+    onDismiss: (() -> Void)? = nil
+  ) {
+    self.title = title
+    self.message = message
     self.onDismiss = onDismiss
   }
 
@@ -36,7 +42,7 @@ struct SuccessScreen: View {
 
         VStack(spacing: PrimerSpacing.xsmall(tokens: tokens)) {
           // Primary success message
-          Text(CheckoutComponentsStrings.paymentSuccessful)
+          Text(title)
             .font(PrimerFont.bodyLarge(tokens: tokens))
             .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
             .multilineTextAlignment(.center)
@@ -44,7 +50,7 @@ struct SuccessScreen: View {
             .accessibilityAddTraits(.isHeader)
 
           // Secondary redirect message
-          Text(CheckoutComponentsStrings.redirectConfirmationMessage)
+          Text(message)
             .font(PrimerFont.bodyMedium(tokens: tokens))
             .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
             .multilineTextAlignment(.center)

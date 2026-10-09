@@ -42,6 +42,8 @@ final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, 
 
   var currentState: PrimerCardFormState { structuredState.redactedForMerchant() }
 
+  var savesCard: Bool { checkoutScope?.intent(for: PrimerPaymentMethodType.paymentCard.rawValue) == .vault }
+
   private weak var checkoutScope: DefaultCheckoutScope?
   private let processCardPaymentInteractor: ProcessCardPaymentInteractor
   private let validateInputInteractor: ValidateInputInteractor?
@@ -428,8 +430,12 @@ final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, 
         metadata: .payment(
           PaymentEvent(paymentMethod: PrimerPaymentMethodType.paymentCard.rawValue)))
 
-      let result = try await processCardPayment(cardData: cardData)
-      await handlePaymentSuccess(result)
+      guard savesCard else {
+        return try await handlePaymentSuccess(processCardPayment(cardData: cardData))
+      }
+      let paymentMethodToken = try await processCardPaymentInteractor.vault(cardData: cardData)
+      structuredState.isLoading = false
+      checkoutScope?.handleVaultSuccess(paymentMethodToken)
     } catch {
       await handlePaymentError(error)
     }

@@ -18,6 +18,7 @@
 		044F805D2C6B4F9800E9F878 /* MerchantHeadlessStripeAchFieldsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044F80582C6B4F9800E9F878 /* MerchantHeadlessStripeAchFieldsViewModel.swift */; };
 		049A055C2B4BF044002CEEBA /* MerchantHeadlessVaultManagerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049A055B2B4BF044002CEEBA /* MerchantHeadlessVaultManagerViewController.swift */; };
 		07ECCE4CFE7E50B38D3A8A8F /* CustomResultScreensDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFE914C245FEA2E9BE21554A /* CustomResultScreensDemo.swift */; };
+		0C83E96E94B5795963E8553A /* MixedIntentsDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3347025ADC1BC8A31626193C /* MixedIntentsDemo.swift */; };
 		0E23A44D6172BA67A38955A0 /* PaymentMethodListOnlyDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA4F1DB1A8A8238DB1B138E2 /* PaymentMethodListOnlyDemo.swift */; };
 		1581F070BD584C47B1441BD5 /* AccountFundingAmountScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = A287E22B59B3131BFFBA1D47 /* AccountFundingAmountScreen.swift */; };
 		209D815C3D311FAD27E795C6 /* CustomGridPaymentMethodsDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607F97B6D513B6F1A41D0ADD /* CustomGridPaymentMethodsDemo.swift */; };
@@ -43,6 +44,7 @@
 		8723ADE62B8E0FAB00A5FE23 /* MerchantHeadlessKlarnaInitializationView+Elements.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8723ADE12B8E0FAB00A5FE23 /* MerchantHeadlessKlarnaInitializationView+Elements.swift */; };
 		8723ADE72B8E0FAB00A5FE23 /* MerchantHeadlessCheckoutKlarnaViewController+Klarna.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8723ADE22B8E0FAB00A5FE23 /* MerchantHeadlessCheckoutKlarnaViewController+Klarna.swift */; };
 		8723ADE82B8E0FAB00A5FE23 /* MerchantHeadlessCheckoutKlarnaViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8723ADE32B8E0FAB00A5FE23 /* MerchantHeadlessCheckoutKlarnaViewController.swift */; };
+		8AED4D51A35FC2C0452F1361 /* VaultSingleMethodDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = D402373BF8F598EFDADF72A6 /* VaultSingleMethodDemo.swift */; };
 		A07F7242200659BFC1965806 /* ManagedCheckoutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8813DA419F34A882D7937240 /* ManagedCheckoutView.swift */; };
 		A087956F941E77C61F203BCA /* VaultManagementDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1253E6BFB1BFBE0B7CA08632 /* VaultManagementDemo.swift */; };
 		A79D98422EE700350024B330 /* DefaultCheckoutDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = A79D98322EE700350024B330 /* DefaultCheckoutDemo.swift */; };
@@ -141,6 +143,7 @@
 		2A328E38DA586FFE0ED2894B /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Main.strings; sourceTree = "<group>"; };
 		2E64F057A39A91CA01CCB57F /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/Main.strings; sourceTree = "<group>"; };
 		2ED9F91432AF8ED3D89788AA /* CardFormSheetDemo.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CardFormSheetDemo.swift; sourceTree = "<group>"; };
+		3347025ADC1BC8A31626193C /* MixedIntentsDemo.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MixedIntentsDemo.swift; sourceTree = "<group>"; };
 		33E18D5B5190C64631309D1B /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		39CCCB917D1881082ED75975 /* ViewController+Primer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ViewController+Primer.swift"; sourceTree = "<group>"; };
 		404E173A513B986A36F835F7 /* MerchantHeadlessCheckoutRawPhoneNumberDataViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchantHeadlessCheckoutRawPhoneNumberDataViewController.swift; sourceTree = "<group>"; };
@@ -211,6 +214,7 @@
 		C18C9664115CFDEB59FED19A /* MerchantSessionAndSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchantSessionAndSettingsViewController.swift; sourceTree = "<group>"; };
 		C4DFE77F28AB538220A0F6EE /* ka */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ka; path = ka.lproj/Main.strings; sourceTree = "<group>"; };
 		C7EB86C62BA46BF51C64ABC2 /* nb */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nb; path = nb.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
+		D402373BF8F598EFDADF72A6 /* VaultSingleMethodDemo.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VaultSingleMethodDemo.swift; sourceTree = "<group>"; };
 		D4139D8F153BB399DA67F2EE /* ViewController+PrimerUIHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ViewController+PrimerUIHelpers.swift"; sourceTree = "<group>"; };
 		D51D2375B4BB8E65866F369C /* DynamicVaultDemo.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DynamicVaultDemo.swift; sourceTree = "<group>"; };
 		D5C1B1F65A9382606A25CE77 /* el */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = el; path = el.lproj/Main.strings; sourceTree = "<group>"; };
@@ -435,6 +439,8 @@
 				AF5D3160BAA0820B3285E300 /* AccountFundingComponents.swift */,
 				A287E22B59B3131BFFBA1D47 /* AccountFundingAmountScreen.swift */,
 				93E3F366CC00E25B211034DA /* ExpressCheckoutShippingDemo.swift */,
+				3347025ADC1BC8A31626193C /* MixedIntentsDemo.swift */,
+				D402373BF8F598EFDADF72A6 /* VaultSingleMethodDemo.swift */,
 			);
 			path = Demos;
 			sourceTree = "<group>";
@@ -720,6 +726,8 @@
 				3B39CC8B712396BBBD3284F7 /* AccountFundingComponents.swift in Sources */,
 				1581F070BD584C47B1441BD5 /* AccountFundingAmountScreen.swift in Sources */,
 				C3FE08F6B957FD73C7E93849 /* ExpressCheckoutShippingDemo.swift in Sources */,
+				0C83E96E94B5795963E8553A /* MixedIntentsDemo.swift in Sources */,
+				8AED4D51A35FC2C0452F1361 /* VaultSingleMethodDemo.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -19,6 +19,14 @@ protocol HeadlessRepository {
     cardholderName: String,
     selectedNetwork: CardNetwork?
   ) async throws -> PaymentResult
+  func vaultCard(
+    cardNumber: String,
+    cvv: String,
+    expiryMonth: String,
+    expiryYear: String,
+    cardholderName: String,
+    selectedNetwork: CardNetwork?
+  ) async throws -> PrimerPaymentMethodToken
   nonisolated func getNetworkDetectionStream() -> AsyncStream<[CardNetwork]>
   nonisolated func getBinDataStream() -> AsyncStream<PrimerBinData>
   func updateCardNumberInRawDataManager(_ cardNumber: String) async

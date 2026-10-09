@@ -290,6 +290,10 @@ private final class StubProcessCardPaymentInteractor: ProcessCardPaymentInteract
     func execute(cardData: CardPaymentData) async throws -> PaymentResult {
         PaymentResult(paymentId: TestData.PaymentIds.success, status: .success)
     }
+
+    func vault(cardData: CardPaymentData) async throws -> PrimerPaymentMethodToken {
+        PrimerPaymentMethodToken(token: "test-multi-use-token", paymentMethodType: "PAYMENT_CARD")
+    }
 }
 
 @available(iOS 15.0, *)

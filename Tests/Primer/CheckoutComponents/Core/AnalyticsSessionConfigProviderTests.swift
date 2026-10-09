@@ -93,6 +93,42 @@ final class CheckoutSDKInitializerAnalyticsProviderTests: XCTestCase {
         XCTAssertEqual(configurationModule.capturedConfigParameters?.checkoutSessionId, PrimerInternal.shared.checkoutSessionId)
         XCTAssertFalse(configurationModule.capturedConfigParameters?.sdkVersion.isEmpty ?? true)
     }
+
+    func test_initialize_withVaultIntent_setsSharedIntentToVault() async throws {
+        let initializer = makeInitializer(intent: .vault)
+
+        let result = try await initializer.initialize()
+
+        XCTAssertEqual(PrimerInternal.shared.intent, .vault)
+        XCTAssertEqual(result.checkoutScope.intent, .vault)
+    }
+
+    func test_initialize_withoutIntent_replacesStaleVaultIntentWithCheckout() async throws {
+        PrimerInternal.shared.intent = .vault
+        let initializer = CheckoutSDKInitializer(
+            clientToken: tokenWithIds,
+            primerSettings: PrimerSettings(),
+            navigator: CheckoutNavigator(),
+            presentationContext: .fromPaymentSelection,
+            configurationModule: StubConfigurationModule()
+        )
+
+        let result = try await initializer.initialize()
+
+        XCTAssertEqual(PrimerInternal.shared.intent, .checkout)
+        XCTAssertEqual(result.checkoutScope.intent, .checkout)
+    }
+
+    private func makeInitializer(intent: PrimerSessionIntent) -> CheckoutSDKInitializer {
+        CheckoutSDKInitializer(
+            clientToken: tokenWithIds,
+            primerSettings: PrimerSettings(),
+            intent: intent,
+            navigator: CheckoutNavigator(),
+            presentationContext: .fromPaymentSelection,
+            configurationModule: StubConfigurationModule()
+        )
+    }
 }
 
 private final class StubConfigurationModule: PrimerAPIConfigurationModuleProtocol, AnalyticsSessionConfigProviding {

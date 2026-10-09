@@ -21,9 +21,15 @@ final class MockPrimerCheckoutPresenterDelegate: PrimerCheckoutPresenterDelegate
 
     private(set) var didDismissCallCount = 0
 
+    private(set) var capturedPaymentMethodTokens: [PrimerPaymentMethodToken] = []
+
     func primerCheckoutPresenterDidCompleteWithSuccess(_ result: PaymentResult) {
         didCompleteWithSuccessCallCount += 1
         capturedSuccessResult = result
+    }
+
+    func primerCheckoutPresenterDidVaultPaymentMethod(_ paymentMethodToken: PrimerPaymentMethodToken) {
+        capturedPaymentMethodTokens.append(paymentMethodToken)
     }
 
     func primerCheckoutPresenterDidFailWithError(_ error: PrimerError, checkoutData: PrimerCheckoutData?) {

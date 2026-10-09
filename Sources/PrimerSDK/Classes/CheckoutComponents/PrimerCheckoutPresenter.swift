@@ -15,6 +15,10 @@ public protocol PrimerCheckoutPresenterDelegate: AnyObject {
     /// - Parameter result: The payment result containing payment ID, status, and other details
     func primerCheckoutPresenterDidCompleteWithSuccess(_ result: PaymentResult)
 
+    /// Called when the shopper saved a payment method whose intent is `.vault`. No payment was made.
+    /// - Parameter paymentMethodToken: The multi-use token to store on your backend.
+    func primerCheckoutPresenterDidVaultPaymentMethod(_ paymentMethodToken: PrimerPaymentMethodToken)
+
     /// Called once per failed attempt, including a failed initialization. The sheet stays open while
     /// the SDK error screen offers a retry.
     /// - Parameter checkoutData: The payment id and order id when the payment was created before failing,
@@ -23,6 +27,15 @@ public protocol PrimerCheckoutPresenterDelegate: AnyObject {
 
     /// Called when checkout is dismissed without completion
     func primerCheckoutPresenterDidDismiss()
+}
+
+@available(iOS 15.0, *)
+public extension PrimerCheckoutPresenterDelegate {
+    func primerCheckoutPresenterDidVaultPaymentMethod(_ paymentMethodToken: PrimerPaymentMethodToken) {
+        PrimerLogging.shared.logger.warn(
+            message: "The saved payment method token is not handled. Implement primerCheckoutPresenterDidVaultPaymentMethod(_:)."
+        )
+    }
 }
 
 /// UIKit entry point for CheckoutComponents SDK
@@ -95,6 +108,8 @@ public protocol PrimerCheckoutPresenterDelegate: AnyObject {
     ///   - clientToken: The client token for the session
     ///   - viewController: The view controller to present from
     ///   - primerSettings: Configuration settings to apply for this checkout session
+    ///   - intent: `.vault` saves a payment method without a payment. Default: `.checkout`
+    ///   - paymentMethodIntents: Overrides `intent` per payment method type. Default: `[:]`
     ///   - completion: Optional completion handler
     ///   - onShippingAddressChange: Express Checkout shipping options for the shopper's address
     ///   - onShippingOptionChange: Express Checkout commit of the selected option
@@ -103,6 +118,8 @@ public protocol PrimerCheckoutPresenterDelegate: AnyObject {
         clientToken: String,
         from viewController: UIViewController,
         primerSettings: PrimerSettings,
+        intent: PrimerSessionIntent = .checkout,
+        paymentMethodIntents: [String: PrimerSessionIntent] = [:],
         completion: (() -> Void)? = nil,
         onShippingAddressChange: ShippingAddressChangeHandler? = nil,
         onShippingOptionChange: ShippingOptionChangeHandler? = nil
@@ -112,6 +129,7 @@ public protocol PrimerCheckoutPresenterDelegate: AnyObject {
             from: viewController,
             primerSettings: primerSettings,
             primerTheme: PrimerCheckoutTheme(),
+            intents: (intent, paymentMethodIntents),
             onShippingAddressChange: onShippingAddressChange,
             onShippingOptionChange: onShippingOptionChange,
             completion: completion
@@ -124,6 +142,8 @@ public protocol PrimerCheckoutPresenterDelegate: AnyObject {
     ///   - viewController: The view controller to present from
     ///   - primerSettings: Configuration settings to apply for this checkout session
     ///   - primerTheme: Theme configuration for design tokens
+    ///   - intent: `.vault` saves a payment method without a payment. Default: `.checkout`
+    ///   - paymentMethodIntents: Overrides `intent` per payment method type. Default: `[:]`
     ///   - completion: Optional completion handler
     ///   - onShippingAddressChange: Express Checkout shipping options for the shopper's address
     ///   - onShippingOptionChange: Express Checkout commit of the selected option
@@ -132,6 +152,8 @@ public protocol PrimerCheckoutPresenterDelegate: AnyObject {
         from viewController: UIViewController,
         primerSettings: PrimerSettings,
         primerTheme: PrimerCheckoutTheme,
+        intent: PrimerSessionIntent = .checkout,
+        paymentMethodIntents: [String: PrimerSessionIntent] = [:],
         completion: (() -> Void)? = nil,
         onShippingAddressChange: ShippingAddressChangeHandler? = nil,
         onShippingOptionChange: ShippingOptionChangeHandler? = nil
@@ -141,6 +163,7 @@ public protocol PrimerCheckoutPresenterDelegate: AnyObject {
             from: viewController,
             primerSettings: primerSettings,
             primerTheme: primerTheme,
+            intents: (intent, paymentMethodIntents),
             onShippingAddressChange: onShippingAddressChange,
             onShippingOptionChange: onShippingOptionChange,
             completion: completion
@@ -223,6 +246,14 @@ public protocol PrimerCheckoutPresenterDelegate: AnyObject {
         }
     }
 
+    func handleVaultSuccess(_ paymentMethodToken: PrimerPaymentMethodToken) {
+        logger.info(message: "Payment method saved: \(paymentMethodToken.paymentMethodType)")
+
+        dismissDirectly { [weak self] in
+            self?.deliverVaulted(paymentMethodToken)
+        }
+    }
+
     /// Reports every failed attempt. The sheet closes only when no SDK error screen offers a retry.
     func handlePaymentFailure(
         _ error: PrimerError, checkoutData: PrimerCheckoutData? = nil, closesCheckout: Bool = true
@@ -249,17 +280,21 @@ public protocol PrimerCheckoutPresenterDelegate: AnyObject {
     }
 
     /// The shopper swiped the sheet away. UIKit reports this only for interactive dismissal, so the
-    /// programmatic paths above never race it. A finished payment is a success; anything else is a
-    /// dismiss, because a decline on the error screen already reached the delegate when it happened.
+    /// programmatic paths above never race it. A finished payment or save is reported as such; anything
+    /// else is a dismiss, because a decline on the error screen already reached the delegate when it happened.
     func handleInteractiveDismiss() {
         let route = activeNavigator?.checkoutCoordinator.currentRoute
         clearActiveCheckout()
         isPresentingCheckout = false
 
-        if case let .success(result) = route {
+        switch route {
+        case let .success(result):
             logger.info(message: "Checkout dismissed on the success screen, reporting the success")
             deliverSuccess(result)
-        } else {
+        case let .vaulted(paymentMethodToken):
+            logger.info(message: "Checkout dismissed on the saved screen, reporting the save")
+            deliverVaulted(paymentMethodToken)
+        default:
             handleCheckoutDismiss()
         }
     }
@@ -269,6 +304,13 @@ public protocol PrimerCheckoutPresenterDelegate: AnyObject {
         hasDeliveredResult = true
         guard let delegate else { return logger.error(message: "No delegate set for payment success") }
         delegate.primerCheckoutPresenterDidCompleteWithSuccess(result)
+    }
+
+    private func deliverVaulted(_ paymentMethodToken: PrimerPaymentMethodToken) {
+        guard !hasDeliveredResult else { return }
+        hasDeliveredResult = true
+        guard let delegate else { return logger.error(message: "No delegate set for the saved payment method") }
+        delegate.primerCheckoutPresenterDidVaultPaymentMethod(paymentMethodToken)
     }
 
     private func deliverFailure(_ error: PrimerError, checkoutData: PrimerCheckoutData?) {
@@ -282,6 +324,7 @@ public protocol PrimerCheckoutPresenterDelegate: AnyObject {
         from viewController: UIViewController,
         primerSettings: PrimerSettings,
         primerTheme: PrimerCheckoutTheme,
+        intents: (session: PrimerSessionIntent, perMethod: [String: PrimerSessionIntent]),
         onShippingAddressChange: ShippingAddressChangeHandler?,
         onShippingOptionChange: ShippingOptionChangeHandler?,
         completion: (() -> Void)?
@@ -304,6 +347,8 @@ public protocol PrimerCheckoutPresenterDelegate: AnyObject {
                 clientToken: clientToken,
                 settings: primerSettings,
                 theme: primerTheme,
+                intent: intents.session,
+                paymentMethodIntents: intents.perMethod,
                 navigator: navigator,
                 presentationContext: .direct,
                 integrationType: .uiKit,
@@ -311,6 +356,8 @@ public protocol PrimerCheckoutPresenterDelegate: AnyObject {
                     switch state {
                     case let .success(paymentResult):
                         self?.handlePaymentSuccess(paymentResult)
+                    case let .vaulted(paymentMethodToken):
+                        self?.handleVaultSuccess(paymentMethodToken)
                     case let .failure(error, checkoutData):
                         self?.handlePaymentFailure(
                             error, checkoutData: checkoutData, closesCheckout: !primerSettings.uiOptions.isErrorScreenEnabled)
@@ -403,6 +450,8 @@ extension PrimerCheckoutPresenter {
     /// - Parameters:
     ///   - clientToken: The client token for the session
     ///   - primerSettings: Configuration settings to apply for this checkout session
+    ///   - intent: `.vault` saves a payment method without a payment. Default: `.checkout`
+    ///   - paymentMethodIntents: Overrides `intent` per payment method type. Default: `[:]`
     ///   - completion: Optional completion handler
     ///   - onShippingAddressChange: Express Checkout shipping options for the shopper's address
     ///   - onShippingOptionChange: Express Checkout commit of the selected option
@@ -410,6 +459,8 @@ extension PrimerCheckoutPresenter {
     public static func presentCheckout(
         clientToken: String,
         primerSettings: PrimerSettings,
+        intent: PrimerSessionIntent = .checkout,
+        paymentMethodIntents: [String: PrimerSessionIntent] = [:],
         completion: (() -> Void)? = nil,
         onShippingAddressChange: ShippingAddressChangeHandler? = nil,
         onShippingOptionChange: ShippingOptionChangeHandler? = nil
@@ -428,6 +479,8 @@ extension PrimerCheckoutPresenter {
             clientToken: clientToken,
             from: viewController,
             primerSettings: primerSettings,
+            intent: intent,
+            paymentMethodIntents: paymentMethodIntents,
             completion: completion,
             onShippingAddressChange: onShippingAddressChange,
             onShippingOptionChange: onShippingOptionChange

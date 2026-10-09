@@ -147,23 +147,79 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
     cardholderName: String,
     selectedNetwork: CardNetwork?
   ) async throws -> PaymentResult {
+    let cardData = createCardData(
+      cardNumber: cardNumber,
+      cvv: cvv,
+      expiryMonth: expiryMonth,
+      expiryYear: expiryYear,
+      cardholderName: cardholderName,
+      selectedNetwork: selectedNetwork
+    )
+    return try await submitCard(cardData, selectedNetwork: selectedNetwork) { oneShot in
+      PaymentCompletionHandler(repository: self) { [weak self] result in
+        self?.cardPaymentCompletionHandler = nil
+        oneShot.resume(with: result)
+      }
+    }
+  }
+
+  /// The shared core stops after tokenization under the `.vault` intent and reports the token instead of a payment.
+  func vaultCard(
+    cardNumber: String,
+    cvv: String,
+    expiryMonth: String,
+    expiryYear: String,
+    cardholderName: String,
+    selectedNetwork: CardNetwork?
+  ) async throws -> PrimerPaymentMethodToken {
+    let cardData = createCardData(
+      cardNumber: cardNumber,
+      cvv: cvv,
+      expiryMonth: expiryMonth,
+      expiryYear: expiryYear,
+      cardholderName: cardholderName,
+      selectedNetwork: selectedNetwork
+    )
+    // Building a VaultManager resets the shared intent, which picks the token type and the stop.
+    PrimerInternal.shared.intent = .vault
+    return try await submitCard(cardData, selectedNetwork: selectedNetwork) { oneShot in
+      PaymentCompletionHandler(
+        repository: self,
+        onTokenized: { [weak self] tokenData in
+          self?.cardPaymentCompletionHandler = nil
+          guard let token = tokenData.token else {
+            return oneShot.resume(throwing: PrimerError.invalidValue(key: "paymentMethodTokenData.token"))
+          }
+          oneShot.resume(returning: PrimerPaymentMethodToken(token: token, paymentMethodType: "PAYMENT_CARD"))
+        },
+        completion: { [weak self] result in
+          self?.cardPaymentCompletionHandler = nil
+          switch result {
+          case let .failure(error): oneShot.resume(throwing: error)
+          // Keeps the payment id, so the merchant can find the payment the save created.
+          case let .success(payment):
+            oneShot.resume(throwing: PaymentFailure(
+              error: .unknown(message: "A card save created a payment"),
+              checkoutData: PrimerCheckoutData(payment: PrimerCheckoutDataPayment(
+                id: payment.paymentId, orderId: nil, paymentFailureReason: nil, status: "SUCCESS"
+              ))
+            ))
+          }
+        }
+      )
+    }
+  }
+
+  private func submitCard<T>(
+    _ cardData: PrimerCardData,
+    selectedNetwork: CardNetwork?,
+    makeHandler: @escaping @MainActor (OneShotContinuation<T>) -> PaymentCompletionHandler
+  ) async throws -> T {
     try await withCheckedThrowingContinuation { continuation in
       let oneShot = OneShotContinuation(continuation)
       Task { @MainActor [self] in
         do {
-          let cardData = createCardData(
-            cardNumber: cardNumber,
-            cvv: cvv,
-            expiryMonth: expiryMonth,
-            expiryYear: expiryYear,
-            cardholderName: cardholderName,
-            selectedNetwork: selectedNetwork
-          )
-
-          let paymentHandler = PaymentCompletionHandler(repository: self) { [weak self] result in
-            self?.cardPaymentCompletionHandler = nil
-            oneShot.resume(with: result)
-          }
+          let paymentHandler = makeHandler(oneShot)
           cardPaymentCompletionHandler = paymentHandler
           PrimerHeadlessUniversalCheckout.current.delegate = paymentHandler
 
@@ -211,11 +267,11 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
   }
 
   @MainActor
-  private func configureRawDataManagerAndSubmit(
+  private func configureRawDataManagerAndSubmit<T>(
     rawDataManager: RawDataManagerProtocol,
     cardData: PrimerCardData,
     selectedNetwork: CardNetwork?,
-    oneShot: OneShotContinuation<PaymentResult>,
+    oneShot: OneShotContinuation<T>,
     paymentHandler: PaymentCompletionHandler
   ) {
     rawDataManager.configure { [weak self] _, error in
@@ -241,10 +297,10 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
   }
 
   @MainActor
-  private func submitPaymentWithValidation(
+  private func submitPaymentWithValidation<T>(
     rawDataManager: RawDataManagerProtocol,
     selectedNetwork: CardNetwork?,
-    oneShot: OneShotContinuation<PaymentResult>,
+    oneShot: OneShotContinuation<T>,
     validationResult: Bool,
     validationErrors: [Error]?
   ) {
@@ -269,9 +325,9 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
     }
   }
 
-  private func handleValidationFailure(
+  private func handleValidationFailure<T>(
     rawDataManager: RawDataManagerProtocol,
-    oneShot: OneShotContinuation<PaymentResult>,
+    oneShot: OneShotContinuation<T>,
     validationErrors: [Error]?
   ) {
     // Use the actual validation errors from the delegate if available
