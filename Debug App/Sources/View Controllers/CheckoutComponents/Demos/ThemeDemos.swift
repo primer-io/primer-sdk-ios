@@ -61,7 +61,7 @@ enum ThemeDemos {
         ),
         radius: RadiusOverrides(
             primerRadiusXsmall: 8, primerRadiusSmall: 12, primerRadiusMedium: 16,
-            primerRadiusLarge: 24, primerRadiusBase: 12
+            primerRadiusLarge: 24
         ),
         typography: TypographyOverrides(
             titleXlarge: .init(weight: .semibold),
@@ -75,7 +75,7 @@ enum ThemeDemos {
     private static let noRadiusTheme = PrimerCheckoutTheme(
         radius: RadiusOverrides(
             primerRadiusXsmall: 0, primerRadiusSmall: 0, primerRadiusMedium: 0,
-            primerRadiusLarge: 0, primerRadiusBase: 0
+            primerRadiusLarge: 0
         )
     )
 

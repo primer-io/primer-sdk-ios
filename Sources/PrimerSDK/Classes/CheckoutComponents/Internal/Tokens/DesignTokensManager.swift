@@ -265,7 +265,6 @@ final class DesignTokensManager: ObservableObject {
     if let value = radius.primerRadiusSmall { tokens.primerRadiusSmall = value }
     if let value = radius.primerRadiusMedium { tokens.primerRadiusMedium = value }
     if let value = radius.primerRadiusLarge { tokens.primerRadiusLarge = value }
-    if let value = radius.primerRadiusBase { tokens.primerRadiusBase = value }
   }
 
   private func applySpacingOverrides(to tokens: DesignTokens, from spacing: SpacingOverrides) {
@@ -276,7 +275,6 @@ final class DesignTokensManager: ObservableObject {
     if let value = spacing.primerSpaceLarge { tokens.primerSpaceLarge = value }
     if let value = spacing.primerSpaceXlarge { tokens.primerSpaceXlarge = value }
     if let value = spacing.primerSpaceXxlarge { tokens.primerSpaceXxlarge = value }
-    if let value = spacing.primerSpaceBase { tokens.primerSpaceBase = value }
   }
 
   private func applySizeOverrides(to tokens: DesignTokens, from sizes: SizeOverrides) {
@@ -286,7 +284,6 @@ final class DesignTokensManager: ObservableObject {
     if let value = sizes.primerSizeXlarge { tokens.primerSizeXlarge = value }
     if let value = sizes.primerSizeXxlarge { tokens.primerSizeXxlarge = value }
     if let value = sizes.primerSizeXxxlarge { tokens.primerSizeXxxlarge = value }
-    if let value = sizes.primerSizeBase { tokens.primerSizeBase = value }
   }
 
   private func applyWidthOverrides(

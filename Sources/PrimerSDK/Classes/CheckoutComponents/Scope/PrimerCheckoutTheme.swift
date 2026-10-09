@@ -198,21 +198,17 @@ public struct RadiusOverrides: Equatable {
   public let primerRadiusMedium: CGFloat?
   /// Internal: primerRadiusLarge (default: 12)
   public let primerRadiusLarge: CGFloat?
-  /// Internal: primerRadiusBase (default: 4)
-  public let primerRadiusBase: CGFloat?
 
   public init(
     primerRadiusXsmall: CGFloat? = nil,
     primerRadiusSmall: CGFloat? = nil,
     primerRadiusMedium: CGFloat? = nil,
-    primerRadiusLarge: CGFloat? = nil,
-    primerRadiusBase: CGFloat? = nil
+    primerRadiusLarge: CGFloat? = nil
   ) {
     self.primerRadiusXsmall = primerRadiusXsmall
     self.primerRadiusSmall = primerRadiusSmall
     self.primerRadiusMedium = primerRadiusMedium
     self.primerRadiusLarge = primerRadiusLarge
-    self.primerRadiusBase = primerRadiusBase
   }
 }
 
@@ -236,8 +232,6 @@ public struct SpacingOverrides: Equatable {
   public let primerSpaceXlarge: CGFloat?
   /// Internal: primerSpaceXxlarge (default: 24)
   public let primerSpaceXxlarge: CGFloat?
-  /// Internal: primerSpaceBase (default: 4)
-  public let primerSpaceBase: CGFloat?
 
   public init(
     primerSpaceXxsmall: CGFloat? = nil,
@@ -246,8 +240,7 @@ public struct SpacingOverrides: Equatable {
     primerSpaceMedium: CGFloat? = nil,
     primerSpaceLarge: CGFloat? = nil,
     primerSpaceXlarge: CGFloat? = nil,
-    primerSpaceXxlarge: CGFloat? = nil,
-    primerSpaceBase: CGFloat? = nil
+    primerSpaceXxlarge: CGFloat? = nil
   ) {
     self.primerSpaceXxsmall = primerSpaceXxsmall
     self.primerSpaceXsmall = primerSpaceXsmall
@@ -256,7 +249,6 @@ public struct SpacingOverrides: Equatable {
     self.primerSpaceLarge = primerSpaceLarge
     self.primerSpaceXlarge = primerSpaceXlarge
     self.primerSpaceXxlarge = primerSpaceXxlarge
-    self.primerSpaceBase = primerSpaceBase
   }
 }
 
@@ -278,8 +270,6 @@ public struct SizeOverrides: Equatable {
   public let primerSizeXxlarge: CGFloat?
   /// Internal: primerSizeXxxlarge (default: 56)
   public let primerSizeXxxlarge: CGFloat?
-  /// Internal: primerSizeBase (default: 4)
-  public let primerSizeBase: CGFloat?
 
   public init(
     primerSizeSmall: CGFloat? = nil,
@@ -287,8 +277,7 @@ public struct SizeOverrides: Equatable {
     primerSizeLarge: CGFloat? = nil,
     primerSizeXlarge: CGFloat? = nil,
     primerSizeXxlarge: CGFloat? = nil,
-    primerSizeXxxlarge: CGFloat? = nil,
-    primerSizeBase: CGFloat? = nil
+    primerSizeXxxlarge: CGFloat? = nil
   ) {
     self.primerSizeSmall = primerSizeSmall
     self.primerSizeMedium = primerSizeMedium
@@ -296,7 +285,6 @@ public struct SizeOverrides: Equatable {
     self.primerSizeXlarge = primerSizeXlarge
     self.primerSizeXxlarge = primerSizeXxlarge
     self.primerSizeXxxlarge = primerSizeXxxlarge
-    self.primerSizeBase = primerSizeBase
   }
 }
 

@@ -259,8 +259,7 @@ final class DesignTokensManagerTests: XCTestCase {
                 primerRadiusXsmall: 10,
                 primerRadiusSmall: 20,
                 primerRadiusMedium: 30,
-                primerRadiusLarge: 40,
-                primerRadiusBase: 50
+                primerRadiusLarge: 40
             )
         )
         sut.applyTheme(theme)
@@ -274,7 +273,6 @@ final class DesignTokensManagerTests: XCTestCase {
         XCTAssertEqual(tokens.primerRadiusSmall, 20)
         XCTAssertEqual(tokens.primerRadiusMedium, 30)
         XCTAssertEqual(tokens.primerRadiusLarge, 40)
-        XCTAssertEqual(tokens.primerRadiusBase, 50)
     }
 
     func test_applyTheme_partialRadiusOverride_onlyOverriddenTokensChanged() async throws {
@@ -306,8 +304,7 @@ final class DesignTokensManagerTests: XCTestCase {
                 primerSpaceMedium: 4,
                 primerSpaceLarge: 5,
                 primerSpaceXlarge: 6,
-                primerSpaceXxlarge: 7,
-                primerSpaceBase: 8
+                primerSpaceXxlarge: 7
             )
         )
         sut.applyTheme(theme)
@@ -324,7 +321,6 @@ final class DesignTokensManagerTests: XCTestCase {
         XCTAssertEqual(tokens.primerSpaceLarge, 5)
         XCTAssertEqual(tokens.primerSpaceXlarge, 6)
         XCTAssertEqual(tokens.primerSpaceXxlarge, 7)
-        XCTAssertEqual(tokens.primerSpaceBase, 8)
     }
 
     // MARK: - Size Overrides
@@ -338,8 +334,7 @@ final class DesignTokensManagerTests: XCTestCase {
                 primerSizeLarge: 30,
                 primerSizeXlarge: 40,
                 primerSizeXxlarge: 50,
-                primerSizeXxxlarge: 60,
-                primerSizeBase: 70
+                primerSizeXxxlarge: 60
             )
         )
         sut.applyTheme(theme)
@@ -355,7 +350,6 @@ final class DesignTokensManagerTests: XCTestCase {
         XCTAssertEqual(tokens.primerSizeXlarge, 40)
         XCTAssertEqual(tokens.primerSizeXxlarge, 50)
         XCTAssertEqual(tokens.primerSizeXxxlarge, 60)
-        XCTAssertEqual(tokens.primerSizeBase, 70)
     }
 
     // MARK: - Typography Overrides
@@ -673,15 +667,15 @@ final class DesignTokensManagerTests: XCTestCase {
     func test_applyTheme_appliedThenFetchedMultipleTimes_overridesPersist() async throws {
         // Given
         sut.applyTheme(PrimerCheckoutTheme(
-            spacing: SpacingOverrides(primerSpaceBase: 10)
+            spacing: SpacingOverrides(primerSpaceSmall: 10)
         ))
 
         // When
         try await sut.fetchTokens(for: .light)
-        let firstLoad = sut.tokens?.primerSpaceBase
+        let firstLoad = sut.tokens?.primerSpaceSmall
 
         try await sut.fetchTokens(for: .dark)
-        let secondLoad = sut.tokens?.primerSpaceBase
+        let secondLoad = sut.tokens?.primerSpaceSmall
 
         // Then
         XCTAssertEqual(firstLoad, 10)
