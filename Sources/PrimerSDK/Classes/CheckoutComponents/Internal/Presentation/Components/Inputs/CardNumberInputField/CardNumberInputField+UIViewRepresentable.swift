@@ -29,16 +29,25 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
 
     textField.configurePrimerStyle(
       placeholder: placeholder,
-      configuration: .numberPad,
+      configuration: .numberPad.offering(.creditCardNumber),
       tokens: tokens,
       doneButtonTarget: context.coordinator,
       doneButtonAction: #selector(Coordinator.doneButtonTapped)
     )
 
+    context.coordinator.repainter.markApplied(tokens)
+
     return textField
   }
 
   func updateUIView(_ textField: SecureTextField, context: Context) {
+    context.coordinator.repainter.repaintIfNeeded(
+      textField,
+      placeholder: placeholder,
+      tokens: tokens,
+      isEnabled: context.environment.isInputEnabled
+    )
+
     let formatted = CardNumberFormatter.format(cardNumber, for: cardNetwork)
     if textField.internalText != formatted {
       textField.internalText = formatted
@@ -58,6 +67,7 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
   }
 
   final class Coordinator: NSObject, UITextFieldDelegate, LogReporter {
+    let repainter = PrimerFieldRepainter()
     // MARK: - Properties
 
     @Binding private var cardNumber: String

@@ -23,11 +23,12 @@ struct SDKInitializationErrorView: View {
         .foregroundColor(CheckoutColors.orange(tokens: tokens))
 
       Text(CheckoutComponentsStrings.paymentSystemError)
-        .font(PrimerFont.headline(tokens: tokens))
+        .primerTypography(.headline, tokens: tokens)
+        .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
 
       Text(error.plainDescription ?? CheckoutComponentsStrings.unexpectedError)
-        .font(PrimerFont.subheadline(tokens: tokens))
-        .foregroundColor(CheckoutColors.secondary(tokens: tokens))
+        .primerTypography(.subheadline, tokens: tokens)
+        .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
         .multilineTextAlignment(.center)
         .padding(.horizontal, PrimerSpacing.large(tokens: tokens))
 

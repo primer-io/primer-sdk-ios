@@ -87,7 +87,7 @@ struct VaultedPaymentMethodCard: View {
         Spacer()
         Image(systemName: "xmark")
           .font(PrimerFont.smallBadge(tokens: tokens))
-          .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
+          .foregroundColor(CheckoutColors.iconPrimary(tokens: tokens))
           .frame(width: PrimerSize.medium(tokens: tokens), height: PrimerSize.medium(tokens: tokens))
       }
       .frame(width: PrimerSize.xxlarge(tokens: tokens), height: PrimerSize.xxlarge(tokens: tokens))
@@ -116,7 +116,7 @@ struct VaultedPaymentMethodCard: View {
       // Name row (hidden if nil)
       if let name = displayData.name {
         Text(name)
-          .font(PrimerFont.bodyLarge(tokens: tokens))
+          .primerTypography(.bodyLarge, tokens: tokens)
           .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
           .lineLimit(1)
       }
@@ -125,7 +125,7 @@ struct VaultedPaymentMethodCard: View {
       HStack(spacing: PrimerSpacing.xsmall(tokens: tokens)) {
         makeBrandBadge()
         Text(displayData.brandName)
-          .font(PrimerFont.bodySmall(tokens: tokens))
+          .primerTypography(.bodySmall, tokens: tokens)
           .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
           .lineLimit(1)
       }
@@ -155,7 +155,7 @@ struct VaultedPaymentMethodCard: View {
             width: PrimerCardNetworkSelector.badgeWidth,
             height: PrimerCardNetworkSelector.badgeHeight
           )
-          .background(CheckoutColors.gray100(tokens: tokens))
+          .background(CheckoutColors.backgroundSecondary(tokens: tokens))
           .cornerRadius(PrimerRadius.xsmall(tokens: tokens))
       }
     }
@@ -168,14 +168,14 @@ struct VaultedPaymentMethodCard: View {
     VStack(alignment: .trailing, spacing: PrimerSpacing.xsmall(tokens: tokens)) {
       if let primaryValue = displayData.primaryValue {
         Text(primaryValue)
-          .font(PrimerFont.bodyMedium(tokens: tokens))
+          .primerTypography(.bodyMedium, tokens: tokens)
           .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
           .lineLimit(1)
       }
 
       if let secondaryValue = displayData.secondaryValue {
         Text(secondaryValue)
-          .font(PrimerFont.bodySmall(tokens: tokens))
+          .primerTypography(.bodySmall, tokens: tokens)
           .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
           .lineLimit(1)
       }
@@ -187,7 +187,7 @@ struct VaultedPaymentMethodCard: View {
   private func makeCheckmark() -> some View {
     Image(systemName: "checkmark")
       .font(PrimerFont.body(tokens: tokens))
-      .foregroundColor(CheckoutColors.borderFocus(tokens: tokens))
+      .foregroundColor(CheckoutColors.borderSelected(tokens: tokens))
   }
 
   // MARK: - Card Background
@@ -203,7 +203,7 @@ struct VaultedPaymentMethodCard: View {
     RoundedRectangle(cornerRadius: PrimerRadius.medium(tokens: tokens))
       .stroke(
         isSelected
-          ? CheckoutColors.borderFocus(tokens: tokens)
+          ? CheckoutColors.borderSelected(tokens: tokens)
           : CheckoutColors.borderDefault(tokens: tokens),
         lineWidth: isSelected
           ? PrimerBorderWidth.selected(tokens: tokens) : PrimerBorderWidth.standard(tokens: tokens)

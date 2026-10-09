@@ -97,7 +97,7 @@ Visual styling is token-driven via `PrimerCheckoutTheme`:
 ```swift
 let theme = PrimerCheckoutTheme(
     colors: ColorOverrides(primerColorBrand: .purple),
-    radius: RadiusOverrides(primerRadiusBase: 12)
+    radius: RadiusOverrides(primerRadiusSmall: 8)
 )
 
 // UIKit

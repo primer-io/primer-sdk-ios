@@ -74,6 +74,7 @@ struct AchView: View, LogReporter {
           HStack(spacing: PrimerSpacing.xsmall(tokens: tokens)) {
             Image(systemName: RTLIcon.backChevron)
               .font(PrimerFont.bodyMedium(tokens: tokens))
+              .foregroundColor(CheckoutColors.iconPrimary(tokens: tokens))
             Text(CheckoutComponentsStrings.backButton)
           }
           .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
@@ -89,22 +90,15 @@ struct AchView: View, LogReporter {
       Spacer()
 
       Text(CheckoutComponentsStrings.achPayWithTitle)
-        .font(PrimerFont.titleLarge(tokens: tokens))
+        .primerTypography(.titleLarge, tokens: tokens)
         .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
 
       Spacer()
 
       if scope.dismissalMechanism.contains(.closeButton) {
-        Button(CheckoutComponentsStrings.cancelButton, action: scope.cancel)
-          .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
-          .accessibility(
-            config: AccessibilityConfiguration(
-              identifier: AccessibilityIdentifiers.Common.closeButton,
-              label: CheckoutComponentsStrings.a11yCancel,
-              traits: [.isButton]
-            ))
+        CheckoutHeaderButton(config: .closeButton(action: scope.cancel))
       } else {
-        Text(CheckoutComponentsStrings.cancelButton)
+        CheckoutHeaderButton(config: .closeButton(action: {}))
           .hidden()
       }
     }
@@ -139,7 +133,7 @@ struct AchView: View, LogReporter {
         .frame(height: PrimerSpacing.xxlarge(tokens: tokens) * 2)
 
       ProgressView()
-        .progressViewStyle(CircularProgressViewStyle(tint: CheckoutColors.blue(tokens: tokens)))
+        .progressViewStyle(CircularProgressViewStyle(tint: CheckoutColors.loader(tokens: tokens)))
         .scaleEffect(PrimerScale.large)
         .frame(width: Layout.spinnerSize, height: Layout.spinnerSize)
         .accessibilityIdentifier(AccessibilityIdentifiers.Ach.loadingIndicator)
@@ -148,7 +142,7 @@ struct AchView: View, LogReporter {
         .frame(height: PrimerSpacing.small(tokens: tokens))
 
       Text(CheckoutComponentsStrings.loading)
-        .font(PrimerFont.bodyLarge(tokens: tokens))
+        .primerTypography(.bodyLarge, tokens: tokens)
         .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
 
       Spacer()

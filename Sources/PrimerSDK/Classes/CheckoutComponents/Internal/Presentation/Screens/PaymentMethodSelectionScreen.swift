@@ -43,7 +43,7 @@ struct PaymentMethodSelectionScreen: View, LogReporter {
     HStack {
       if let formattedAmount {
         Text(CheckoutComponentsStrings.paymentAmountTitle(formattedAmount))
-          .font(PrimerFont.titleXLarge(tokens: tokens))
+          .primerTypography(.titleXLarge, tokens: tokens)
           .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
           .accessibilityAddTraits(.isHeader)
       }
@@ -51,14 +51,7 @@ struct PaymentMethodSelectionScreen: View, LogReporter {
       Spacer()
 
       if scope.dismissalMechanism.contains(.closeButton) {
-        Button(CheckoutComponentsStrings.cancelButton, action: scope.cancel)
-          .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
-          .accessibility(
-            config: AccessibilityConfiguration(
-              identifier: AccessibilityIdentifiers.Common.closeButton,
-              label: CheckoutComponentsStrings.a11yCancel,
-              traits: [.isButton]
-            ))
+        CheckoutHeaderButton(config: .closeButton(action: scope.cancel))
       }
     }
     .padding(.horizontal, PrimerSpacing.large(tokens: tokens))
@@ -96,7 +89,7 @@ struct PaymentMethodSelectionScreen: View, LogReporter {
   private func makeShowOtherWaysToPayButton() -> some View {
     Button(action: scope.showOtherWaysToPay) {
       Text(CheckoutComponentsStrings.showOtherWaysToPay)
-        .font(PrimerFont.titleLarge(tokens: tokens))
+        .primerTypography(.titleLarge, tokens: tokens)
         .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
         .frame(maxWidth: .infinity)
         .padding(PrimerSpacing.medium(tokens: tokens))

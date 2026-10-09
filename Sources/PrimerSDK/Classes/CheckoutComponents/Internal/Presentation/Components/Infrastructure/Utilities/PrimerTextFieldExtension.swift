@@ -18,6 +18,19 @@ struct PrimerTextFieldConfiguration {
   let returnKeyType: UIReturnKeyType
   let isSecureTextEntry: Bool
 
+  /// The same configuration carrying a content type, so one preset covers several fields that
+  /// differ only in what the OS should offer to fill.
+  func offering(_ contentType: UITextContentType?) -> PrimerTextFieldConfiguration {
+    PrimerTextFieldConfiguration(
+      keyboardType: keyboardType,
+      autocapitalizationType: autocapitalizationType,
+      autocorrectionType: autocorrectionType,
+      textContentType: contentType,
+      returnKeyType: returnKeyType,
+      isSecureTextEntry: isSecureTextEntry
+    )
+  }
+
   static let standard = PrimerTextFieldConfiguration(
     keyboardType: .default,
     autocapitalizationType: .words,
@@ -61,6 +74,16 @@ struct PrimerTextFieldConfiguration {
     autocapitalizationType: .allCharacters,
     autocorrectionType: .no,
     textContentType: nil,
+    returnKeyType: .done,
+    isSecureTextEntry: false
+  )
+
+  /// Phone entry. The billing phone was on an alphabetic keyboard with word capitalisation.
+  static let phoneNumber = PrimerTextFieldConfiguration(
+    keyboardType: .phonePad,
+    autocapitalizationType: .none,
+    autocorrectionType: .no,
+    textContentType: .telephoneNumber,
     returnKeyType: .done,
     isSecureTextEntry: false
   )
@@ -124,13 +147,16 @@ extension UITextField {
     let textFont = PrimerFont.uiFontBodyLarge(tokens: tokens)
     font = textFont
     adjustsFontForContentSizeCategory = true
-    textColor = UIColor(CheckoutColors.textPrimary(tokens: tokens))
+    textColor = UIColor(CheckoutColors.inputText(tokens: tokens))
+    // A UITextField kerns typed text from its default attributes, not from `font`.
+    if let letterSpacing = PrimerTextStyle.bodyLarge.letterSpacing(tokens: tokens) {
+      defaultTextAttributes[.kern] = letterSpacing
+    }
 
     // Placeholder styling with design tokens
-    let placeholderColor = UIColor(CheckoutColors.textPlaceholder(tokens: tokens))
     attributedPlaceholder = NSAttributedString(
       string: placeholder,
-      attributes: [.foregroundColor: placeholderColor, .font: textFont]
+      attributes: Self.primerPlaceholderAttributes(font: textFont, tokens: tokens)
     )
 
     inputAccessoryView = Self.makeDoneAccessory(
@@ -138,6 +164,39 @@ extension UITextField {
       target: doneButtonTarget,
       action: doneButtonAction
     )
+  }
+
+  /// The two token-derived colours a bridged field paints, reapplied after a colour-scheme change
+  /// and when the field locks or unlocks around a payment (locked text takes `textDisabled`).
+  ///
+  /// Deliberately narrow. It does not touch the font, border, fill or `inputAccessoryView`: none of
+  /// those change with the scheme, and writing them on a live field is what broke the two earlier
+  /// attempts at this fix.
+  func repaintPrimerColors(placeholder: String, tokens: DesignTokens?, isEnabled: Bool = true) {
+    textColor = UIColor(
+      isEnabled ? CheckoutColors.inputText(tokens: tokens) : CheckoutColors.textDisabled(tokens: tokens)
+    )
+    attributedPlaceholder = NSAttributedString(
+      string: placeholder,
+      attributes: Self.primerPlaceholderAttributes(
+        font: font ?? PrimerFont.uiFontBodyLarge(tokens: tokens),
+        tokens: tokens
+      )
+    )
+  }
+
+  private static func primerPlaceholderAttributes(
+    font: UIFont,
+    tokens: DesignTokens?
+  ) -> [NSAttributedString.Key: Any] {
+    var attributes: [NSAttributedString.Key: Any] = [
+      .foregroundColor: UIColor(CheckoutColors.textPlaceholder(tokens: tokens)),
+      .font: font
+    ]
+    if let letterSpacing = PrimerTextStyle.bodyLarge.letterSpacing(tokens: tokens) {
+      attributes[.kern] = letterSpacing
+    }
+    return attributes
   }
 
   /// Auto-sizing keyboard toolbar with a trailing "Done" button.
@@ -168,5 +227,52 @@ extension UITextField {
 
     toolbar.items = [.flexibleSpace(), doneItem]
     return toolbar
+  }
+}
+
+/// Holds the token set and lock state a bridged field was last painted with, so `updateUIView`
+/// repaints on a colour-scheme change or when the form locks for a payment, and does nothing on the
+/// keystrokes that make up almost every other call.
+///
+/// Identity, not equality: `DesignTokensManager` decodes a fresh `DesignTokens` per scheme, and the
+/// `UIColor`s built from it never compare equal, so a value check would repaint every time.
+@available(iOS 15.0, *)
+final class PrimerFieldRepainter {
+  private var appliedTokens: DesignTokens?
+  private var appliedEnabled = true
+
+  /// Seeded from `makeUIView`, which has already painted the field.
+  func markApplied(_ tokens: DesignTokens?) {
+    appliedTokens = tokens
+  }
+
+  func repaintIfNeeded(
+    _ textField: UITextField,
+    placeholder: String,
+    tokens: DesignTokens?,
+    isEnabled: Bool = true
+  ) {
+    guard appliedTokens !== tokens || appliedEnabled != isEnabled else { return }
+    appliedTokens = tokens
+    appliedEnabled = isEnabled
+    textField.repaintPrimerColors(placeholder: placeholder, tokens: tokens, isEnabled: isEnabled)
+  }
+}
+
+// MARK: - Per-field configuration
+
+@available(iOS 15.0, *)
+extension PrimerInputElementType {
+  /// What the OS should offer to fill, and the keyboard to go with it. Without a content type iOS
+  /// shows no saved card, no camera scan and no saved address, which is what the card form had.
+  var fieldConfiguration: PrimerTextFieldConfiguration {
+    switch self {
+    case .phoneNumber: .phoneNumber
+    case .firstName: .standard.offering(.givenName)
+    case .lastName: .standard.offering(.familyName)
+    case .addressLine1: .standard.offering(.streetAddressLine1)
+    case .addressLine2: .standard.offering(.streetAddressLine2)
+    default: .standard
+    }
   }
 }

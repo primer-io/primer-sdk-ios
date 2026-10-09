@@ -19,7 +19,7 @@ struct AchUserDetailsView: View, LogReporter {
   var body: some View {
     VStack(spacing: PrimerSpacing.large(tokens: tokens)) {
       Text(CheckoutComponentsStrings.achPersonalDetailsSubtitle)
-        .font(PrimerFont.bodyLarge(tokens: tokens))
+        .primerTypography(.bodyLarge, tokens: tokens)
         .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
         .multilineTextAlignment(.center)
         .accessibilityIdentifier(AccessibilityIdentifiers.Ach.userDetailsTitle)
@@ -76,7 +76,7 @@ struct AchUserDetailsView: View, LogReporter {
       .accessibilityIdentifier(AccessibilityIdentifiers.Ach.emailField)
 
       Text(CheckoutComponentsStrings.achEmailDisclaimer)
-        .font(PrimerFont.bodySmall(tokens: tokens))
+        .primerTypography(.bodySmall, tokens: tokens)
         .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
         .accessibilityIdentifier(AccessibilityIdentifiers.Ach.emailDisclaimer)
     }
@@ -86,26 +86,18 @@ struct AchUserDetailsView: View, LogReporter {
     if let customButton = scope.submitButton {
       AnyView(customButton(scope))
     } else {
-      Button(action: scope.submitUserDetails) {
-        Text(CheckoutComponentsStrings.achContinueButton)
-          .font(PrimerFont.body(tokens: tokens))
-          .foregroundColor(CheckoutColors.white(tokens: tokens))
-          .frame(maxWidth: .infinity)
-          .padding(.vertical, PrimerSpacing.large(tokens: tokens))
-          .background(
-            achState.isSubmitEnabled
-              ? CheckoutColors.textPrimary(tokens: tokens)
-              : CheckoutColors.textSecondary(tokens: tokens)
-          )
-          .cornerRadius(PrimerRadius.small(tokens: tokens))
-      }
-      .disabled(!achState.isSubmitEnabled)
-      .accessibilityIdentifier(AccessibilityIdentifiers.Ach.submitButton)
-      .accessibilityLabel(CheckoutComponentsStrings.achContinueButton)
-      .accessibilityHint(
-        achState.isSubmitEnabled
-          ? CheckoutComponentsStrings.a11yAchContinueHint
-          : CheckoutComponentsStrings.a11ySubmitButtonDisabled
+      PrimerCheckoutButton(
+        CheckoutComponentsStrings.achContinueButton,
+        isEnabled: achState.isSubmitEnabled,
+        accessibilityConfiguration: AccessibilityConfiguration(
+          identifier: AccessibilityIdentifiers.Ach.submitButton,
+          label: CheckoutComponentsStrings.achContinueButton,
+          hint: achState.isSubmitEnabled
+            ? CheckoutComponentsStrings.a11yAchContinueHint
+            : CheckoutComponentsStrings.a11ySubmitButtonDisabled,
+          traits: [.isButton]
+        ),
+        action: scope.submitUserDetails
       )
     }
   }

@@ -73,7 +73,7 @@ public struct PaymentMethodsHeaderContent: View {
   @Environment(\.designTokens) private var tokens
   public var body: some View {
     Text(CheckoutComponentsStrings.choosePaymentMethod)
-      .font(PrimerFont.titleLarge(tokens: tokens))
+      .primerTypography(.titleLarge, tokens: tokens)
       .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
       .frame(maxWidth: .infinity, alignment: .leading)
       .accessibilityIdentifier(AccessibilityIdentifiers.PaymentSelection.header)
@@ -99,7 +99,7 @@ public struct PaymentMethodsEmptyContent: View {
         .font(PrimerFont.largeIcon(tokens: tokens))
         .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
       Text(CheckoutComponentsStrings.noPaymentMethodsAvailable)
-        .font(PrimerFont.body(tokens: tokens))
+        .primerTypography(.body, tokens: tokens)
         .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
     }
     .frame(maxWidth: .infinity)
@@ -141,12 +141,12 @@ private struct VaultedMethodRowContent: View {
             .frame(width: PrimerSize.large(tokens: tokens), height: PrimerSize.large(tokens: tokens))
         }
         Text(label)
-          .font(PrimerFont.bodyLarge(tokens: tokens))
+          .primerTypography(.bodyLarge, tokens: tokens)
           .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
         Spacer()
         if isSelected {
           Image(systemName: "checkmark.circle.fill")
-            .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
+            .foregroundColor(CheckoutColors.borderSelected(tokens: tokens))
         }
       }
       .padding(PrimerSpacing.medium(tokens: tokens))
@@ -170,37 +170,20 @@ private struct VaultedSubmitContent: View {
   let isLoading: Bool
   let isEnabled: Bool
   let onSubmit: () -> Void
-  @Environment(\.designTokens) private var tokens
 
   var body: some View {
-    Button(action: onSubmit) {
-      Group {
-        if isLoading {
-          ProgressView()
-            .progressViewStyle(CircularProgressViewStyle(tint: CheckoutColors.white(tokens: tokens)))
-        } else {
-          Text(CheckoutComponentsStrings.payButton)
-        }
-      }
-      .font(PrimerFont.body(tokens: tokens))
-      .foregroundColor(CheckoutColors.white(tokens: tokens))
-      .frame(maxWidth: .infinity)
-      .padding(.vertical, PrimerSpacing.large(tokens: tokens))
-      .background(
-        isEnabled && !isLoading
-          ? CheckoutColors.textPrimary(tokens: tokens)
-          : CheckoutColors.gray300(tokens: tokens)
-      )
-      .cornerRadius(PrimerRadius.small(tokens: tokens))
-    }
-    .disabled(!isEnabled || isLoading)
-    .accessibility(
-      config: AccessibilityConfiguration(
+    PrimerCheckoutButton(
+      CheckoutComponentsStrings.payButton,
+      isEnabled: isEnabled,
+      isLoading: isLoading,
+      accessibilityConfiguration: AccessibilityConfiguration(
         identifier: AccessibilityIdentifiers.Vault.payButton,
         // The combined element hides the spinner, so the label must carry the loading state.
         label: isLoading
           ? CheckoutComponentsStrings.a11ySubmitButtonLoading : CheckoutComponentsStrings.payButton,
         traits: [.isButton]
-      ))
+      ),
+      action: onSubmit
+    )
   }
 }

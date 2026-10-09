@@ -5,6 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 @testable import PrimerSDK
+import UIKit
 import XCTest
 @_spi(PrimerInternal) @testable import PrimerFoundation
 @_spi(PrimerInternal) @testable import PrimerCore
@@ -35,6 +36,25 @@ final class PaymentMethodMapperTests: XCTestCase {
             surcharge: surcharge,
             hasUnknownSurcharge: hasUnknownSurcharge
         )
+    }
+
+    // MARK: - Scheme Variants
+
+    func test_mapToPublic_carriesLogoAndBorderWidthVariants() {
+        // Given
+        let mapper = createMapper()
+        let logo = PrimerTheme.BaseImage(colored: UIImage(), light: nil, dark: nil)
+        let width = PrimerTheme.BaseBorderWidth(colored: 1, light: 1, dark: 2)
+        let internalMethod = InternalPaymentMethod(
+            id: "pm-1", type: "PAYMENT_CARD", name: "Card",
+            logoVariants: logo, borderWidthVariants: width)
+
+        // When
+        let result = mapper.mapToPublic(internalMethod)
+
+        // Then
+        XCTAssertTrue(result.logoVariants === logo)
+        XCTAssertTrue(result.borderWidthVariants === width)
     }
 
     // MARK: - Surcharge Formatting Tests

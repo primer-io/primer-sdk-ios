@@ -33,7 +33,7 @@ struct VaultedCardCvvRecaptureScreen: View, LogReporter {
 
       if let vaultedPaymentMethod {
         Text(CheckoutComponentsStrings.vaultCvvTitle)
-          .font(PrimerFont.titleXLarge(tokens: tokens))
+          .primerTypography(.titleXLarge, tokens: tokens)
           .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
           .accessibilityAddTraits(.isHeader)
 
@@ -51,7 +51,7 @@ struct VaultedCardCvvRecaptureScreen: View, LogReporter {
       } else {
         // The selection was cleared underneath us, so there is nothing left to charge.
         Text(CheckoutComponentsStrings.vaultCvvGenericError)
-          .font(PrimerFont.body(tokens: tokens))
+          .primerTypography(.body, tokens: tokens)
           .foregroundColor(CheckoutColors.textNegative(tokens: tokens))
       }
 
@@ -64,36 +64,18 @@ struct VaultedCardCvvRecaptureScreen: View, LogReporter {
   // MARK: - Pay Button
 
   private func makePayButton() -> some View {
-    Button(action: submit) {
-      Group {
-        if isSubmitting {
-          ProgressView()
-            .progressViewStyle(CircularProgressViewStyle(tint: CheckoutColors.background(tokens: tokens)))
-            .accessibilityLabel(CheckoutComponentsStrings.a11yLoading)
-        } else {
-          Text(CheckoutComponentsStrings.payButton)
-        }
-      }
-      .font(PrimerFont.titleLarge(tokens: tokens))
-      .foregroundColor(CheckoutColors.background(tokens: tokens))
-      .frame(maxWidth: .infinity)
-      .padding(PrimerSpacing.medium(tokens: tokens))
-      .background(
-        RoundedRectangle(cornerRadius: PrimerRadius.medium(tokens: tokens))
-          .fill(
-            isValid || isSubmitting
-              ? CheckoutColors.borderFocus(tokens: tokens)
-              : CheckoutColors.gray300(tokens: tokens))
-      )
-    }
-    .disabled(!isValid || isSubmitting)
-    .accessibility(
-      config: AccessibilityConfiguration(
+    PrimerCheckoutButton(
+      CheckoutComponentsStrings.payButton,
+      isEnabled: isValid,
+      isLoading: isSubmitting,
+      accessibilityConfiguration: AccessibilityConfiguration(
         identifier: AccessibilityIdentifiers.Vault.cvvPayButton,
         label: isSubmitting
           ? CheckoutComponentsStrings.a11ySubmitButtonLoading : CheckoutComponentsStrings.payButton,
         traits: [.isButton]
-      ))
+      ),
+      action: submit
+    )
   }
 
   // MARK: - Actions

@@ -26,8 +26,6 @@ struct KlarnaView: View, LogReporter {
     static let badgeHeight: CGFloat = 40
     static let paymentViewMinHeight: CGFloat = 200
     static let inlineLoadingMinHeight: CGFloat = 100
-    static let selectedBorderWidth: CGFloat = 2
-    static let defaultBorderWidth: CGFloat = 1
     static let badgeCornerRadius: CGFloat = 2
     static let placeholderOpacity: Double = 0.8
   }
@@ -67,6 +65,7 @@ struct KlarnaView: View, LogReporter {
             HStack(spacing: PrimerSpacing.xsmall(tokens: tokens)) {
               Image(systemName: RTLIcon.backChevron)
                 .font(PrimerFont.bodyMedium(tokens: tokens))
+                .foregroundColor(CheckoutColors.iconPrimary(tokens: tokens))
               Text(CheckoutComponentsStrings.backButton)
             }
             .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
@@ -88,20 +87,10 @@ struct KlarnaView: View, LogReporter {
       Spacer()
 
       if scope.dismissalMechanism.contains(.closeButton) {
-        Button(
-          CheckoutComponentsStrings.cancelButton,
-          action: scope.cancel
-        )
-        .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
-        .accessibility(
-          config: AccessibilityConfiguration(
-            identifier: AccessibilityIdentifiers.Common.closeButton,
-            label: CheckoutComponentsStrings.a11yCancel,
-            traits: [.isButton]
-          ))
+        CheckoutHeaderButton(config: .closeButton(action: scope.cancel))
       } else {
         // Invisible spacer to keep logo centered
-        Text(CheckoutComponentsStrings.cancelButton)
+        CheckoutHeaderButton(config: .closeButton(action: {}))
           .hidden()
       }
     }
@@ -117,7 +106,7 @@ struct KlarnaView: View, LogReporter {
           .frame(width: Layout.logoWidth, height: Layout.logoHeight)
       } else {
         Text(CheckoutComponentsStrings.klarnaBrandName)
-          .font(PrimerFont.titleLarge(tokens: tokens))
+          .primerTypography(.titleLarge, tokens: tokens)
           .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
       }
     }
@@ -154,7 +143,7 @@ struct KlarnaView: View, LogReporter {
         .frame(height: PrimerSpacing.xxlarge(tokens: tokens) * 2)
 
       ProgressView()
-        .progressViewStyle(CircularProgressViewStyle(tint: CheckoutColors.blue(tokens: tokens)))
+        .progressViewStyle(CircularProgressViewStyle(tint: CheckoutColors.loader(tokens: tokens)))
         .scaleEffect(PrimerScale.large)
         .frame(width: Layout.spinnerSize, height: Layout.spinnerSize)
         .accessibilityIdentifier(AccessibilityIdentifiers.Klarna.loadingIndicator)
@@ -163,11 +152,11 @@ struct KlarnaView: View, LogReporter {
         .frame(height: PrimerSpacing.small(tokens: tokens))
 
       Text(CheckoutComponentsStrings.klarnaLoadingTitle)
-        .font(PrimerFont.bodyLarge(tokens: tokens))
+        .primerTypography(.bodyLarge, tokens: tokens)
         .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
 
       Text(CheckoutComponentsStrings.klarnaLoadingSubtitle)
-        .font(PrimerFont.bodyMedium(tokens: tokens))
+        .primerTypography(.bodyMedium, tokens: tokens)
         .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
 
       Spacer()
@@ -219,7 +208,7 @@ struct KlarnaView: View, LogReporter {
 
           // Category name
           Text(category.name)
-            .font(PrimerFont.bodyLarge(tokens: tokens))
+            .primerTypography(.bodyLarge, tokens: tokens)
             .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
 
           Spacer()
@@ -227,7 +216,7 @@ struct KlarnaView: View, LogReporter {
           // Checkmark for selected
           if isSelected {
             Image(systemName: "checkmark")
-              .foregroundColor(CheckoutColors.blue(tokens: tokens))
+              .foregroundColor(CheckoutColors.borderSelected(tokens: tokens))
               .font(PrimerFont.bodyMedium(tokens: tokens))
           }
         }
@@ -248,7 +237,7 @@ struct KlarnaView: View, LogReporter {
           .accessibilityLabel(CheckoutComponentsStrings.a11yKlarnaPaymentView)
       } else if isSelected, scope.paymentView == nil, klarnaState.step != .viewReady {
         ProgressView()
-          .progressViewStyle(CircularProgressViewStyle(tint: CheckoutColors.blue(tokens: tokens)))
+          .progressViewStyle(CircularProgressViewStyle(tint: CheckoutColors.loader(tokens: tokens)))
           .frame(maxWidth: .infinity, minHeight: Layout.inlineLoadingMinHeight)
           .accessibilityLabel(CheckoutComponentsStrings.a11yLoading)
       }
@@ -259,8 +248,9 @@ struct KlarnaView: View, LogReporter {
       RoundedRectangle(cornerRadius: PrimerRadius.medium(tokens: tokens))
         .stroke(
           isSelected
-            ? CheckoutColors.blue(tokens: tokens) : CheckoutColors.borderDefault(tokens: tokens),
-          lineWidth: isSelected ? Layout.selectedBorderWidth : Layout.defaultBorderWidth
+            ? CheckoutColors.borderSelected(tokens: tokens) : CheckoutColors.borderDefault(tokens: tokens),
+          lineWidth: isSelected
+            ? PrimerBorderWidth.selected(tokens: tokens) : PrimerBorderWidth.standard(tokens: tokens)
         )
     )
     .clipShape(RoundedRectangle(cornerRadius: PrimerRadius.medium(tokens: tokens)))
@@ -277,7 +267,7 @@ struct KlarnaView: View, LogReporter {
         .fill(CheckoutColors.gray300(tokens: tokens).opacity(Layout.placeholderOpacity))
         .overlay(
           Text("K")
-            .font(PrimerFont.bodyLarge(tokens: tokens))
+            .primerTypography(.bodyLarge, tokens: tokens)
             .foregroundColor(.white)
         )
     }
@@ -289,15 +279,7 @@ struct KlarnaView: View, LogReporter {
 
   @MainActor
   private func makePrimaryButton(title: String, action: @escaping () -> Void) -> some View {
-    Button(action: action) {
-      Text(title)
-        .font(PrimerFont.body(tokens: tokens))
-        .foregroundColor(CheckoutColors.white(tokens: tokens))
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, PrimerSpacing.large(tokens: tokens))
-        .background(CheckoutColors.textPrimary(tokens: tokens))
-        .cornerRadius(PrimerRadius.small(tokens: tokens))
-    }
+    PrimerCheckoutButton(title, action: action)
   }
 
   // MARK: - Authorize Button
@@ -321,7 +303,7 @@ struct KlarnaView: View, LogReporter {
   private func makeFinalizationContent() -> some View {
     VStack(spacing: PrimerSpacing.xlarge(tokens: tokens)) {
       Text(CheckoutComponentsStrings.klarnaSelectCategoryDescription)
-        .font(PrimerFont.bodyMedium(tokens: tokens))
+        .primerTypography(.bodyMedium, tokens: tokens)
         .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
         .multilineTextAlignment(.center)
 

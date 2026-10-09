@@ -31,15 +31,13 @@ This repository uses [Style Dictionary](https://amzn.github.io/style-dictionary/
 
 4. **Understanding the Configuration Files:**
 
-   Two configuration files are provided:
+   One configuration file is provided:
 
    - `config-light.js`:
      - This file registers a custom Swift format to generate a flat SwiftUI‑compatible class (named `DesignTokensLight`).
      - It reads tokens from `tokens/base.json` and uses a custom transform group (`primer-ios-swiftui`) that converts names to camel case, formats colors using a custom `color/ColorSwiftUI` transform, and outputs literal values for content and assets.
      - Developer Note: We omit the default 'size/swift/remToCGFloat' transform so that dimension tokens (e.g. spaces and sizes) are computed without extra arithmetic wrappers. In this file, when dimension tokens are encountered, we remove any unwanted wrappers and evaluate the arithmetic to output a raw numeric value.
 
-   - `config-dark.js`:
-     - This file is similar but processes `tokens/dark.json` to generate the `DesignTokensDark` class.
 
 5. **Build the Tokens:**
 
@@ -49,9 +47,8 @@ This repository uses [Style Dictionary](https://amzn.github.io/style-dictionary/
    npm run build
    ```
 
-   This command runs the following two scripts sequentially:
+   This runs:
    - `npm run build-light` – Generates `DesignTokensLight.swift` in the build path.
-   - `npm run build-dark` – Generates `DesignTokensDark.swift` in the build path.
 
    The output files are placed in your iOS project under `../Sources/PrimerSDK/Classes/Components/Design/`.
 
@@ -59,14 +56,14 @@ This repository uses [Style Dictionary](https://amzn.github.io/style-dictionary/
 
 ### Custom Swift Format
 
-In each config file (see `config-light.js` and `config-dark.js`), a custom format is registered using:
+In `config-light.js`, a custom format is registered using:
 
 ```js
 StyleDictionary.registerFormat({
   name: 'primer/ios/swift',
   format: function({ dictionary }) {
     // The generated file begins with Swift lint directives and imports SwiftUI.
-    // A class is defined (DesignTokensLight or DesignTokensDark) that conforms to Decodable.
+    // A class is defined (DesignTokens) that conforms to Decodable.
     // For each token, we:
     //   - Determine the Swift type based on the token type:
     //       • Color for color tokens.
@@ -121,15 +118,15 @@ This caused runtime errors because CGFloat isn't defined in the Node.js environm
    npm run build
    ```
 
-   This regenerates the Swift files with the latest values.
+   This regenerates the Swift file with the latest values.
 
 3. **Integrate with Your iOS Project:**
-   - The generated Swift files (`DesignTokens.swift` and `DesignTokensDark.swift`) should be added to your iOS project. Your theming or token manager can then choose between these based on the current color scheme.
+   - The generated `DesignTokens.swift` carries the compiled-in light defaults. Dark mode is resolved at runtime by `DesignTokensManager`, which merges `dark.json` over `base.json` and decodes into the same type — there is no separate dark class.
 
 ## Additional Notes
 
 ### Dynamic Theming:
-The generated classes conform to Decodable so that at runtime you can parse a JSON payload (if you choose to fetch updated tokens from an API) into these models. This allows dynamic theming of the SDK based on user-selected branding.
+The generated class conforms to Decodable so that at runtime you can parse a JSON payload (if you choose to fetch updated tokens from an API) into these models. This allows dynamic theming of the SDK based on user-selected branding.
 
 ### Extending the Approach:
 The approach shown here can be extended to generate other assets or to support additional platforms. Developers can register their own custom formats and transform groups following the Style Dictionary reference.

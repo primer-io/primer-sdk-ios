@@ -12,8 +12,7 @@ import SwiftUI
 
 /// Theme configuration providing optional overrides for internal design tokens.
 ///
-/// Internal `DesignTokens` and `DesignTokensDark` classes (auto-generated from JSON)
-/// remain the source of truth. `PrimerCheckoutTheme` allows merchants to override specific
+/// The internal `DesignTokens` class (auto-generated from JSON) remains the source of truth. `PrimerCheckoutTheme` allows merchants to override specific
 /// token values without replacing the entire token system.
 ///
 /// When a merchant provides an override, `DesignTokensManager` merges it with
@@ -22,34 +21,40 @@ import SwiftUI
 public struct PrimerCheckoutTheme: Equatable {
 
   public let colors: ColorOverrides?
+  public let darkColors: ColorOverrides?
   public let radius: RadiusOverrides?
   public let spacing: SpacingOverrides?
   public let sizes: SizeOverrides?
   public let typography: TypographyOverrides?
-  public let borderWidth: BorderWidthOverrides?
+  public let width: WidthOverrides?
 
   /// Creates a new theme configuration with optional overrides.
   /// - Parameters:
-  ///   - colors: Color token overrides. Default: nil (uses internal defaults)
+  ///   - colors: Color token overrides, applied in light mode. Default: nil (uses internal defaults)
+  ///   - darkColors: Color token overrides applied in dark mode only. Anything left nil here uses Primer's dark
+  ///     default rather than the matching `colors` value, because a colour chosen against white is a guess on a
+  ///     dark background. Default: nil (Primer's dark defaults apply)
   ///   - radius: Radius token overrides. Default: nil (uses internal defaults)
   ///   - spacing: Spacing token overrides. Default: nil (uses internal defaults)
   ///   - sizes: Size token overrides. Default: nil (uses internal defaults)
   ///   - typography: Typography token overrides. Default: nil (uses internal defaults)
-  ///   - borderWidth: Border width token overrides. Default: nil (uses internal defaults)
+  ///   - width: Border width token overrides. Default: nil (uses internal defaults)
   public init(
     colors: ColorOverrides? = nil,
+    darkColors: ColorOverrides? = nil,
     radius: RadiusOverrides? = nil,
     spacing: SpacingOverrides? = nil,
     sizes: SizeOverrides? = nil,
     typography: TypographyOverrides? = nil,
-    borderWidth: BorderWidthOverrides? = nil
+    width: WidthOverrides? = nil
   ) {
     self.colors = colors
+    self.darkColors = darkColors
     self.radius = radius
     self.spacing = spacing
     self.sizes = sizes
     self.typography = typography
-    self.borderWidth = borderWidth
+    self.width = width
   }
 }
 
@@ -64,45 +69,27 @@ public struct ColorOverrides: Equatable {
   // MARK: Brand & Primary Colors
 
   public let primerColorBrand: Color?
-
-  // MARK: Grays (matching internal DesignTokens)
-
-  public let primerColorGray000: Color?
-  public let primerColorGray100: Color?
-  public let primerColorGray200: Color?
-  public let primerColorGray300: Color?
-  public let primerColorGray400: Color?
-  public let primerColorGray500: Color?
-  public let primerColorGray600: Color?
-  public let primerColorGray700: Color?
-  public let primerColorGray900: Color?
-
-  // MARK: Semantic Colors (matching internal DesignTokens)
-
-  /// Success color (internal: primerColorGreen500)
-  public let primerColorGreen500: Color?
-  /// Error colors (internal: primerColorRed100, primerColorRed500, primerColorRed900)
-  public let primerColorRed100: Color?
-  public let primerColorRed500: Color?
-  public let primerColorRed900: Color?
-  /// Info/link colors (internal: primerColorBlue500, primerColorBlue900)
-  public let primerColorBlue500: Color?
-  public let primerColorBlue900: Color?
+  /// Text and icons on brand-filled buttons: the pay button label and its spinner. Nil follows
+  /// `primerColorBackgroundPrimary`.
+  public let primerColorOnBrand: Color?
 
   // MARK: Semantic UI Colors (matching internal DesignTokens)
 
-  public let primerColorBackground: Color?
+  public let primerColorBackgroundPrimary: Color?
+  public let primerColorBackgroundSecondary: Color?
+  public let primerColorBackgroundOutlinedDefault: Color?
+  public let primerColorBackgroundOutlinedDisabled: Color?
   public let primerColorTextPrimary: Color?
   public let primerColorTextSecondary: Color?
   public let primerColorTextPlaceholder: Color?
   public let primerColorTextDisabled: Color?
   public let primerColorTextNegative: Color?
   public let primerColorTextLink: Color?
+  public let primerColorTextOutlinedDefault: Color?
 
   // MARK: Border Colors (matching internal DesignTokens)
 
   public let primerColorBorderOutlinedDefault: Color?
-  public let primerColorBorderOutlinedHover: Color?
   public let primerColorBorderOutlinedActive: Color?
   public let primerColorBorderOutlinedFocus: Color?
   public let primerColorBorderOutlinedDisabled: Color?
@@ -113,7 +100,6 @@ public struct ColorOverrides: Equatable {
   // MARK: Border Transparent Colors
 
   public let primerColorBorderTransparentDefault: Color?
-  public let primerColorBorderTransparentHover: Color?
   public let primerColorBorderTransparentActive: Color?
   public let primerColorBorderTransparentFocus: Color?
   public let primerColorBorderTransparentDisabled: Color?
@@ -133,30 +119,19 @@ public struct ColorOverrides: Equatable {
 
   public init(
     primerColorBrand: Color? = nil,
-    primerColorGray000: Color? = nil,
-    primerColorGray100: Color? = nil,
-    primerColorGray200: Color? = nil,
-    primerColorGray300: Color? = nil,
-    primerColorGray400: Color? = nil,
-    primerColorGray500: Color? = nil,
-    primerColorGray600: Color? = nil,
-    primerColorGray700: Color? = nil,
-    primerColorGray900: Color? = nil,
-    primerColorGreen500: Color? = nil,
-    primerColorRed100: Color? = nil,
-    primerColorRed500: Color? = nil,
-    primerColorRed900: Color? = nil,
-    primerColorBlue500: Color? = nil,
-    primerColorBlue900: Color? = nil,
-    primerColorBackground: Color? = nil,
+    primerColorOnBrand: Color? = nil,
+    primerColorBackgroundPrimary: Color? = nil,
+    primerColorBackgroundSecondary: Color? = nil,
+    primerColorBackgroundOutlinedDefault: Color? = nil,
+    primerColorBackgroundOutlinedDisabled: Color? = nil,
     primerColorTextPrimary: Color? = nil,
     primerColorTextSecondary: Color? = nil,
     primerColorTextPlaceholder: Color? = nil,
     primerColorTextDisabled: Color? = nil,
     primerColorTextNegative: Color? = nil,
     primerColorTextLink: Color? = nil,
+    primerColorTextOutlinedDefault: Color? = nil,
     primerColorBorderOutlinedDefault: Color? = nil,
-    primerColorBorderOutlinedHover: Color? = nil,
     primerColorBorderOutlinedActive: Color? = nil,
     primerColorBorderOutlinedFocus: Color? = nil,
     primerColorBorderOutlinedDisabled: Color? = nil,
@@ -164,7 +139,6 @@ public struct ColorOverrides: Equatable {
     primerColorBorderOutlinedSelected: Color? = nil,
     primerColorBorderOutlinedLoading: Color? = nil,
     primerColorBorderTransparentDefault: Color? = nil,
-    primerColorBorderTransparentHover: Color? = nil,
     primerColorBorderTransparentActive: Color? = nil,
     primerColorBorderTransparentFocus: Color? = nil,
     primerColorBorderTransparentDisabled: Color? = nil,
@@ -177,30 +151,19 @@ public struct ColorOverrides: Equatable {
     primerColorLoader: Color? = nil
   ) {
     self.primerColorBrand = primerColorBrand
-    self.primerColorGray000 = primerColorGray000
-    self.primerColorGray100 = primerColorGray100
-    self.primerColorGray200 = primerColorGray200
-    self.primerColorGray300 = primerColorGray300
-    self.primerColorGray400 = primerColorGray400
-    self.primerColorGray500 = primerColorGray500
-    self.primerColorGray600 = primerColorGray600
-    self.primerColorGray700 = primerColorGray700
-    self.primerColorGray900 = primerColorGray900
-    self.primerColorGreen500 = primerColorGreen500
-    self.primerColorRed100 = primerColorRed100
-    self.primerColorRed500 = primerColorRed500
-    self.primerColorRed900 = primerColorRed900
-    self.primerColorBlue500 = primerColorBlue500
-    self.primerColorBlue900 = primerColorBlue900
-    self.primerColorBackground = primerColorBackground
+    self.primerColorOnBrand = primerColorOnBrand
+    self.primerColorBackgroundPrimary = primerColorBackgroundPrimary
+    self.primerColorBackgroundSecondary = primerColorBackgroundSecondary
+    self.primerColorBackgroundOutlinedDefault = primerColorBackgroundOutlinedDefault
+    self.primerColorBackgroundOutlinedDisabled = primerColorBackgroundOutlinedDisabled
     self.primerColorTextPrimary = primerColorTextPrimary
     self.primerColorTextSecondary = primerColorTextSecondary
     self.primerColorTextPlaceholder = primerColorTextPlaceholder
     self.primerColorTextDisabled = primerColorTextDisabled
     self.primerColorTextNegative = primerColorTextNegative
     self.primerColorTextLink = primerColorTextLink
+    self.primerColorTextOutlinedDefault = primerColorTextOutlinedDefault
     self.primerColorBorderOutlinedDefault = primerColorBorderOutlinedDefault
-    self.primerColorBorderOutlinedHover = primerColorBorderOutlinedHover
     self.primerColorBorderOutlinedActive = primerColorBorderOutlinedActive
     self.primerColorBorderOutlinedFocus = primerColorBorderOutlinedFocus
     self.primerColorBorderOutlinedDisabled = primerColorBorderOutlinedDisabled
@@ -208,7 +171,6 @@ public struct ColorOverrides: Equatable {
     self.primerColorBorderOutlinedSelected = primerColorBorderOutlinedSelected
     self.primerColorBorderOutlinedLoading = primerColorBorderOutlinedLoading
     self.primerColorBorderTransparentDefault = primerColorBorderTransparentDefault
-    self.primerColorBorderTransparentHover = primerColorBorderTransparentHover
     self.primerColorBorderTransparentActive = primerColorBorderTransparentActive
     self.primerColorBorderTransparentFocus = primerColorBorderTransparentFocus
     self.primerColorBorderTransparentDisabled = primerColorBorderTransparentDisabled
@@ -236,21 +198,17 @@ public struct RadiusOverrides: Equatable {
   public let primerRadiusMedium: CGFloat?
   /// Internal: primerRadiusLarge (default: 12)
   public let primerRadiusLarge: CGFloat?
-  /// Internal: primerRadiusBase (default: 4)
-  public let primerRadiusBase: CGFloat?
 
   public init(
     primerRadiusXsmall: CGFloat? = nil,
     primerRadiusSmall: CGFloat? = nil,
     primerRadiusMedium: CGFloat? = nil,
-    primerRadiusLarge: CGFloat? = nil,
-    primerRadiusBase: CGFloat? = nil
+    primerRadiusLarge: CGFloat? = nil
   ) {
     self.primerRadiusXsmall = primerRadiusXsmall
     self.primerRadiusSmall = primerRadiusSmall
     self.primerRadiusMedium = primerRadiusMedium
     self.primerRadiusLarge = primerRadiusLarge
-    self.primerRadiusBase = primerRadiusBase
   }
 }
 
@@ -274,8 +232,6 @@ public struct SpacingOverrides: Equatable {
   public let primerSpaceXlarge: CGFloat?
   /// Internal: primerSpaceXxlarge (default: 24)
   public let primerSpaceXxlarge: CGFloat?
-  /// Internal: primerSpaceBase (default: 4)
-  public let primerSpaceBase: CGFloat?
 
   public init(
     primerSpaceXxsmall: CGFloat? = nil,
@@ -284,8 +240,7 @@ public struct SpacingOverrides: Equatable {
     primerSpaceMedium: CGFloat? = nil,
     primerSpaceLarge: CGFloat? = nil,
     primerSpaceXlarge: CGFloat? = nil,
-    primerSpaceXxlarge: CGFloat? = nil,
-    primerSpaceBase: CGFloat? = nil
+    primerSpaceXxlarge: CGFloat? = nil
   ) {
     self.primerSpaceXxsmall = primerSpaceXxsmall
     self.primerSpaceXsmall = primerSpaceXsmall
@@ -294,7 +249,6 @@ public struct SpacingOverrides: Equatable {
     self.primerSpaceLarge = primerSpaceLarge
     self.primerSpaceXlarge = primerSpaceXlarge
     self.primerSpaceXxlarge = primerSpaceXxlarge
-    self.primerSpaceBase = primerSpaceBase
   }
 }
 
@@ -312,12 +266,10 @@ public struct SizeOverrides: Equatable {
   public let primerSizeLarge: CGFloat?
   /// Internal: primerSizeXlarge (default: 32)
   public let primerSizeXlarge: CGFloat?
-  /// Internal: primerSizeXxlarge (default: 44)
+  /// Internal: primerSizeXxlarge (default: 40)
   public let primerSizeXxlarge: CGFloat?
   /// Internal: primerSizeXxxlarge (default: 56)
   public let primerSizeXxxlarge: CGFloat?
-  /// Internal: primerSizeBase (default: 4)
-  public let primerSizeBase: CGFloat?
 
   public init(
     primerSizeSmall: CGFloat? = nil,
@@ -325,8 +277,7 @@ public struct SizeOverrides: Equatable {
     primerSizeLarge: CGFloat? = nil,
     primerSizeXlarge: CGFloat? = nil,
     primerSizeXxlarge: CGFloat? = nil,
-    primerSizeXxxlarge: CGFloat? = nil,
-    primerSizeBase: CGFloat? = nil
+    primerSizeXxxlarge: CGFloat? = nil
   ) {
     self.primerSizeSmall = primerSizeSmall
     self.primerSizeMedium = primerSizeMedium
@@ -334,7 +285,6 @@ public struct SizeOverrides: Equatable {
     self.primerSizeXlarge = primerSizeXlarge
     self.primerSizeXxlarge = primerSizeXxlarge
     self.primerSizeXxxlarge = primerSizeXxxlarge
-    self.primerSizeBase = primerSizeBase
   }
 }
 
@@ -377,6 +327,10 @@ public struct TypographyOverrides: Equatable {
 
   // MARK: - Token Properties
 
+  /// Font family every style below falls back to, so one typeface covers the whole sheet.
+  /// A style naming its own `font` wins over this. Default: nil (Inter).
+  public let brand: String?
+
   /// Title extra large: Inter, -0.6 letter spacing, weight 550, size 24, line height 32
   public let titleXlarge: TypographyStyle?
 
@@ -392,44 +346,71 @@ public struct TypographyOverrides: Equatable {
   /// Body small: Inter, 0 letter spacing, weight 400, size 12, line height 16
   public let bodySmall: TypographyStyle?
 
+  /// Field error text. Defaults to the body small values, so it can be styled on its own.
+  public let error: TypographyStyle?
+
   /// Creates typography overrides with all optional properties.
   public init(
+    brand: String? = nil,
     titleXlarge: TypographyStyle? = nil,
     titleLarge: TypographyStyle? = nil,
     bodyLarge: TypographyStyle? = nil,
     bodyMedium: TypographyStyle? = nil,
-    bodySmall: TypographyStyle? = nil
+    bodySmall: TypographyStyle? = nil,
+    error: TypographyStyle? = nil
   ) {
+    self.brand = brand
     self.titleXlarge = titleXlarge
     self.titleLarge = titleLarge
     self.bodyLarge = bodyLarge
     self.bodyMedium = bodyMedium
     self.bodySmall = bodySmall
+    self.error = error
   }
 }
 
-// MARK: - BorderWidthOverrides
+// MARK: - WidthOverrides
 
-/// Optional border width token overrides.
+/// Optional border width token overrides. Named for the field state they apply to, matching design.
 @available(iOS 15.0, *)
-public struct BorderWidthOverrides: Equatable {
-  /// Internal: primerBorderWidthThin (default: 1)
-  public let primerBorderWidthThin: CGFloat?
+public struct WidthOverrides: Equatable {
+  /// Internal: primerWidthDefault (default: 1)
+  public let primerWidthDefault: CGFloat?
 
-  /// Internal: primerBorderWidthMedium (default: 2)
-  public let primerBorderWidthMedium: CGFloat?
+  /// Internal: primerWidthFocus (default: 2)
+  public let primerWidthFocus: CGFloat?
 
-  /// Internal: primerBorderWidthThick (default: 3)
-  public let primerBorderWidthThick: CGFloat?
+  /// Internal: primerWidthError (default: 2)
+  public let primerWidthError: CGFloat?
 
-  /// Creates border width overrides with all optional properties.
+  /// Internal: primerWidthSelected (default: 2)
+  public let primerWidthSelected: CGFloat?
+
+  /// Creates width overrides with all optional properties.
   public init(
-    primerBorderWidthThin: CGFloat? = nil,
-    primerBorderWidthMedium: CGFloat? = nil,
-    primerBorderWidthThick: CGFloat? = nil
+    primerWidthDefault: CGFloat? = nil,
+    primerWidthFocus: CGFloat? = nil,
+    primerWidthError: CGFloat? = nil,
+    primerWidthSelected: CGFloat? = nil
   ) {
-    self.primerBorderWidthThin = primerBorderWidthThin
-    self.primerBorderWidthMedium = primerBorderWidthMedium
-    self.primerBorderWidthThick = primerBorderWidthThick
+    self.primerWidthDefault = primerWidthDefault
+    self.primerWidthFocus = primerWidthFocus
+    self.primerWidthError = primerWidthError
+    self.primerWidthSelected = primerWidthSelected
+  }
+}
+
+// MARK: - Color Scheme Resolution
+
+@available(iOS 15.0, *)
+extension PrimerCheckoutTheme {
+  /// The colour overrides that apply in one colour scheme.
+  ///
+  /// Dark mode reads `darkColors` alone. Whatever it leaves unset uses Primer's dark default, not the
+  /// matching `colors` value: a colour picked against white is a guess on a dark background, and a white
+  /// sheet colour carried into dark would remove dark mode entirely.
+  func resolvedColors(for colorScheme: ColorScheme) -> ColorOverrides? {
+    guard colorScheme == .dark else { return colors }
+    return darkColors
   }
 }

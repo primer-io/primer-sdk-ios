@@ -17,6 +17,10 @@ final class VaultedPaymentMethodManager: ObservableObject {
   @Published private(set) var methods: [PrimerHeadlessUniversalCheckout.VaultedPaymentMethod] = []
   @Published private(set) var selectedMethod: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod?
 
+  /// The saved methods list's edit mode. Kept here because the list screen is rebuilt when the shopper
+  /// comes back from the delete confirmation, and Cancel there must leave the list in edit mode.
+  private(set) var isEditing = false
+
   func setMethods(_ newMethods: [PrimerHeadlessUniversalCheckout.VaultedPaymentMethod]) {
     methods = newMethods
 
@@ -35,5 +39,9 @@ final class VaultedPaymentMethodManager: ObservableObject {
   func setSelectedMethod(_ method: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod?) {
     selectedMethod = method
     onSelectionChanged?(method)
+  }
+
+  func setEditing(_ editing: Bool) {
+    isEditing = editing
   }
 }

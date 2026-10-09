@@ -34,14 +34,12 @@ struct CountryInputField: View, LogReporter {
     guard !countryName.isEmpty else {
       return CheckoutColors.textPlaceholder(tokens: tokens)
     }
-    return CheckoutColors.textPrimary(tokens: tokens)
+    return CheckoutColors.inputText(tokens: tokens)
   }
 
   private var selectedCountryFromScope: PrimerCountry? {
     scope.currentState.selectedCountry
   }
-
-  private var fieldFont: Font { PrimerFont.bodyLarge(tokens: tokens) }
 
   // MARK: - Initialization
 
@@ -77,12 +75,12 @@ struct CountryInputField: View, LogReporter {
               // Flag emoji
               if let countryFlag, !countryName.isEmpty {
                 Text(countryFlag)
-                  .font(fieldFont)
+                  .primerFieldTypography(.bodyLarge, tokens: tokens)
               }
 
               // Country name or placeholder
               Text(countryName.isEmpty ? placeholder : countryName)
-                .font(fieldFont)
+                .primerFieldTypography(.bodyLarge, tokens: tokens)
                 .foregroundColor(countryTextColor)
                 .frame(maxWidth: .infinity, alignment: .leading)
               Spacer(minLength: 0)
@@ -94,7 +92,7 @@ struct CountryInputField: View, LogReporter {
         .buttonStyle(PlainButtonStyle())
       },
       rightComponent: {
-        Image(systemName: "chevron.down")
+        Image(systemName: RTLIcon.forwardChevron)
           .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
       }
     )

@@ -28,16 +28,25 @@ struct CityTextField: UIViewRepresentable, LogReporter {
 
     textField.configurePrimerStyle(
       placeholder: placeholder,
-      configuration: .standard,
+      configuration: .standard.offering(.addressCity),
       tokens: tokens,
       doneButtonTarget: context.coordinator,
       doneButtonAction: #selector(Coordinator.doneButtonTapped)
     )
 
+    context.coordinator.repainter.markApplied(tokens)
+
     return textField
   }
 
   func updateUIView(_ textField: UITextField, context: Context) {
+    context.coordinator.repainter.repaintIfNeeded(
+      textField,
+      placeholder: placeholder,
+      tokens: tokens,
+      isEnabled: context.environment.isInputEnabled
+    )
+
     if textField.text != city {
       textField.text = city
     }
@@ -55,6 +64,7 @@ struct CityTextField: UIViewRepresentable, LogReporter {
   }
 
   final class Coordinator: NSObject, UITextFieldDelegate, LogReporter {
+    let repainter = PrimerFieldRepainter()
     private let validationService: ValidationService
     @Binding private var city: String
     @Binding private var isValid: Bool

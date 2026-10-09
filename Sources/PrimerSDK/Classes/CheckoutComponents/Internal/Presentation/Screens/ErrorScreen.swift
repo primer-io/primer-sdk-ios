@@ -32,19 +32,19 @@ struct ErrorScreen: View {
 
       Image(systemName: "exclamationmark.triangle.fill")
         .font(PrimerFont.largeIcon(tokens: tokens))
-        .foregroundColor(CheckoutColors.borderError(tokens: tokens))
+        .foregroundColor(CheckoutColors.iconNegative(tokens: tokens))
         .accessibilityIdentifier(AccessibilityIdentifiers.Error.icon)
         .accessibilityHidden(true)
 
       Text(CheckoutComponentsStrings.paymentFailed)
-        .font(PrimerFont.titleLarge(tokens: tokens))
+        .primerTypography(.titleLarge, tokens: tokens)
         .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
         .accessibilityIdentifier(AccessibilityIdentifiers.Error.title)
         .accessibilityAddTraits(.isHeader)
 
       // `errorDescription` wraps the text in the error and diagnostics ids, which mean nothing to a shopper.
       Text(error.plainDescription ?? CheckoutComponentsStrings.unexpectedError)
-        .font(PrimerFont.bodyMedium(tokens: tokens))
+        .primerTypography(.bodyMedium, tokens: tokens)
         .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
         .multilineTextAlignment(.center)
         .padding(.horizontal, PrimerSpacing.xxlarge(tokens: tokens))
@@ -68,24 +68,15 @@ struct ErrorScreen: View {
   }
 
   private func makeRetryButton() -> some View {
-    Button {
-      onRetry?()
-    } label: {
-      Text(CheckoutComponentsStrings.retryButton)
-        .font(PrimerFont.bodyMedium(tokens: tokens))
-        .fontWeight(.semibold)
-        .foregroundColor(.white)
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, PrimerSpacing.medium(tokens: tokens))
-        .background(CheckoutColors.blue(tokens: tokens))
-        .cornerRadius(PrimerRadius.medium(tokens: tokens))
-    }
-    .accessibility(
-      config: AccessibilityConfiguration(
+    PrimerCheckoutButton(
+      CheckoutComponentsStrings.retryButton,
+      accessibilityConfiguration: AccessibilityConfiguration(
         identifier: AccessibilityIdentifiers.Error.retryButton,
         label: CheckoutComponentsStrings.retryButton,
         traits: [.isButton]
-      ))
+      ),
+      action: { onRetry?() }
+    )
   }
 
   private func makeOtherPaymentButton() -> some View {
@@ -93,15 +84,16 @@ struct ErrorScreen: View {
       onChooseOtherPaymentMethods?()
     } label: {
       Text(CheckoutComponentsStrings.chooseOtherPaymentMethod)
-        .font(PrimerFont.bodyMedium(tokens: tokens))
-        .fontWeight(.semibold)
+        .primerTypography(.bodyMedium, tokens: tokens)
         .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
         .frame(maxWidth: .infinity)
         .padding(.vertical, PrimerSpacing.medium(tokens: tokens))
         .background(Color.clear)
         .overlay(
           RoundedRectangle(cornerRadius: PrimerRadius.medium(tokens: tokens))
-            .stroke(CheckoutColors.borderDefault(tokens: tokens), lineWidth: 1)
+            .stroke(
+              CheckoutColors.borderDefault(tokens: tokens),
+              lineWidth: PrimerBorderWidth.standard(tokens: tokens))
         )
     }
     .accessibility(

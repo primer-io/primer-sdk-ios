@@ -27,18 +27,25 @@ struct CardholderNameTextField: UIViewRepresentable, LogReporter {
 
     textField.configurePrimerStyle(
       placeholder: placeholder,
-      configuration: .standard,
+      configuration: .standard.offering(.name),
       tokens: tokens,
       doneButtonTarget: context.coordinator,
       doneButtonAction: #selector(Coordinator.doneButtonTapped)
     )
 
-    textField.font = PrimerFont.uiFontBodyLarge(tokens: tokens)
+    context.coordinator.repainter.markApplied(tokens)
 
     return textField
   }
 
   func updateUIView(_ textField: UITextField, context: Context) {
+    context.coordinator.repainter.repaintIfNeeded(
+      textField,
+      placeholder: placeholder,
+      tokens: tokens,
+      isEnabled: context.environment.isInputEnabled
+    )
+
     if textField.text != cardholderName {
       textField.text = cardholderName
     }
@@ -56,6 +63,7 @@ struct CardholderNameTextField: UIViewRepresentable, LogReporter {
   }
 
   final class Coordinator: NSObject, UITextFieldDelegate, LogReporter {
+    let repainter = PrimerFieldRepainter()
     private let validationService: ValidationService
     @Binding private var cardholderName: String
     @Binding private var isValid: Bool

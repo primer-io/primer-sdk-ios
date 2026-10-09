@@ -348,9 +348,6 @@
                      location = "group:Tokens"
                      name = "Tokens">
                      <FileRef
-                        location = "group:DesignTokensDark.swift">
-                     </FileRef>
-                     <FileRef
                         location = "group:DesignTokensProcessor.swift">
                      </FileRef>
                      <FileRef

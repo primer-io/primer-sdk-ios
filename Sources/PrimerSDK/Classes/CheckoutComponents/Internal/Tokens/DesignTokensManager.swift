@@ -26,38 +26,124 @@ final class DesignTokensManager: ObservableObject {
   // MARK: - Token Loading
 
   func fetchTokens(for colorScheme: ColorScheme) async throws {
-    // Load and merge tokens
+    // the only place the color scheme picks a set, so everything below works off one resolved set
+    let colors = themeOverrides?.resolvedColors(for: colorScheme)
+    let loadedTokens = try Self.makeTokens(
+      for: colorScheme, valueOverrides: tokenValueOverrides(colors: colors))
+
+    // applied last so an explicit token wins over a palette value it aliases
+    applyThemeOverrides(to: loadedTokens, colors: colors)
+
+    tokens = loadedTokens
+  }
+
+  /// Injected before references resolve, so tokens aliasing the brand color or the brand font follow the override.
+  private func tokenValueOverrides(colors: ColorOverrides?) -> [String: Any] {
+    var overrides: [String: Any] = [:]
+    if let brandFont = themeOverrides?.typography?.brand {
+      // rejected here rather than downstream: a value the passes rewrite fails the whole decode
+      if DesignTokensProcessor.isTokenAuthoringSyntax(brandFont) {
+        PrimerLogging.shared.logger.error(
+          message: "[DesignTokens] Brand font override ignored: '\(brandFont)' is not a font family name.")
+      } else {
+        overrides["primerTypographyBrand"] = brandFont
+      }
+    }
+    // Error references bodySmall, and references resolve before the override pass.
+    if let bodySmall = themeOverrides?.typography?.bodySmall {
+      if let font = bodySmall.font {
+        if DesignTokensProcessor.isTokenAuthoringSyntax(font) {
+          PrimerLogging.shared.logger.error(
+            message: "[DesignTokens] Body small font override ignored: '\(font)' is not a font family name.")
+        } else {
+          overrides["primerTypographyBodySmallFont"] = font
+        }
+      }
+      if let size = bodySmall.size { overrides["primerTypographyBodySmallSize"] = size }
+      if let lineHeight = bodySmall.lineHeight {
+        overrides["primerTypographyBodySmallLineHeight"] = lineHeight
+      }
+      if let letterSpacing = bodySmall.letterSpacing {
+        overrides["primerTypographyBodySmallLetterSpacing"] = letterSpacing
+      }
+      if let weight = bodySmall.weight {
+        overrides["primerTypographyBodySmallWeight"] = fontWeightToCGFloat(weight)
+      }
+    }
+
+    guard let brand = colors?.primerColorBrand, let components = Self.colorComponents(brand) else {
+      return overrides
+    }
+    overrides["primerColorBrand"] = components
+    return overrides
+  }
+
+  /// Previews and tests call this with no overrides so they resolve what production resolves.
+  nonisolated static func makeTokens(
+    for colorScheme: ColorScheme,
+    valueOverrides: [String: Any] = [:]
+  ) throws -> DesignTokens {
     let baseDict = try loadJSON(named: "base")
-    let mergedDict =
+    var mergedDict =
       colorScheme == .dark
       ? DesignTokensProcessor.mergeDictionaries(baseDict, with: try loadJSON(named: "dark"))
       : baseDict
 
-    // Process tokens through transformation pipeline
-    var processedDict = DesignTokensProcessor.resolveReferences(in: mergedDict)
-    processedDict = DesignTokensProcessor.convertHexColors(in: processedDict)
+    if !valueOverrides.isEmpty {
+      mergedDict = applyValueOverrides(valueOverrides, to: mergedDict)
+    }
+
+    let processedDict = DesignTokensProcessor.convertHexColors(in: mergedDict)
     var flatDict = DesignTokensProcessor.flattenTokenDictionary(processedDict)
     flatDict = DesignTokensProcessor.resolveFlattenedReferences(in: flatDict, source: processedDict)
     flatDict = DesignTokensProcessor.evaluateMath(in: flatDict)
 
-    // Decode tokens from JSON
     let data = try JSONSerialization.data(withJSONObject: flatDict)
-    let loadedTokens = try JSONDecoder().decode(DesignTokens.self, from: data)
+    return try JSONDecoder().decode(DesignTokens.self, from: data)
+  }
 
-    // Apply merchant theme overrides on top of loaded tokens
-    applyThemeOverrides(to: loadedTokens)
+  /// Replaces matching leaves in place so the existing reference pass picks the new value up.
+  private nonisolated static func applyValueOverrides(
+    _ overrides: [String: Any],
+    to dict: [String: Any],
+    prefix: String = ""
+  ) -> [String: Any] {
+    dict.reduce(into: [String: Any]()) { result, pair in
+      let (key, value) = pair
+      let path = prefix.isEmpty ? key : "\(prefix).\(key)"
+      guard var nested = value as? [String: Any] else {
+        result[key] = value
+        return
+      }
+      if nested["value"] != nil,
+         let override = overrides[DesignTokensProcessor.flattenedName(for: path)] {
+        nested["value"] = override
+      }
+      result[key] = applyValueOverrides(overrides, to: nested, prefix: path)
+    }
+  }
 
-    tokens = loadedTokens
+  private nonisolated static func colorComponents(_ color: Color) -> [CGFloat]? {
+    var red: CGFloat = 0
+    var green: CGFloat = 0
+    var blue: CGFloat = 0
+    var alpha: CGFloat = 0
+    guard UIColor(color).getRed(&red, green: &green, blue: &blue, alpha: &alpha) else {
+      PrimerLogging.shared.logger.error(
+        message: "[DesignTokens] Palette override ignored: color has no readable RGB components.")
+      return nil
+    }
+    return [red, green, blue, alpha]
   }
 
   // MARK: - Apply Theme Overrides
 
   /// Applies merchant theme overrides to the loaded design tokens.
   /// This ensures that CheckoutColors and other direct token accessors respect theme customizations.
-  private func applyThemeOverrides(to tokens: DesignTokens) {
+  private func applyThemeOverrides(to tokens: DesignTokens, colors: ColorOverrides?) {
     guard let theme = themeOverrides else { return }
 
-    if let colors = theme.colors {
+    if let colors {
       applyColorOverrides(to: tokens, from: colors)
     }
     if let radius = theme.radius {
@@ -72,44 +158,41 @@ final class DesignTokensManager: ObservableObject {
     if let typography = theme.typography {
       applyTypographyOverrides(to: tokens, from: typography)
     }
-    if let borderWidth = theme.borderWidth {
-      applyBorderWidthOverrides(to: tokens, from: borderWidth)
+    if let width = theme.width {
+      applyWidthOverrides(to: tokens, from: width)
     }
   }
 
   private func applyColorOverrides(to tokens: DesignTokens, from colors: ColorOverrides) {
-    applyBrandAndGrayColorOverrides(to: tokens, from: colors)
+    if let value = colors.primerColorBrand { tokens.primerColorBrand = value }
+    if let value = colors.primerColorOnBrand { tokens.primerColorOnBrand = value }
     applySemanticColorOverrides(to: tokens, from: colors)
     applyTextColorOverrides(to: tokens, from: colors)
     applyBorderColorOverrides(to: tokens, from: colors)
     applyIconAndOtherColorOverrides(to: tokens, from: colors)
   }
 
-  private func applyBrandAndGrayColorOverrides(to tokens: DesignTokens, from colors: ColorOverrides) {
-    if let value = colors.primerColorBrand { tokens.primerColorBrand = value }
-    if let value = colors.primerColorGray000 { tokens.primerColorGray000 = value }
-    if let value = colors.primerColorGray100 { tokens.primerColorGray100 = value }
-    if let value = colors.primerColorGray200 { tokens.primerColorGray200 = value }
-    if let value = colors.primerColorGray300 { tokens.primerColorGray300 = value }
-    if let value = colors.primerColorGray400 { tokens.primerColorGray400 = value }
-    if let value = colors.primerColorGray500 { tokens.primerColorGray500 = value }
-    if let value = colors.primerColorGray600 { tokens.primerColorGray600 = value }
-    if let value = colors.primerColorGray700 { tokens.primerColorGray700 = value }
-    if let value = colors.primerColorGray900 { tokens.primerColorGray900 = value }
-  }
-
   private func applySemanticColorOverrides(to tokens: DesignTokens, from colors: ColorOverrides) {
-    if let value = colors.primerColorGreen500 { tokens.primerColorGreen500 = value }
-    if let value = colors.primerColorRed100 { tokens.primerColorRed100 = value }
-    if let value = colors.primerColorRed500 { tokens.primerColorRed500 = value }
-    if let value = colors.primerColorRed900 { tokens.primerColorRed900 = value }
-    if let value = colors.primerColorBlue500 { tokens.primerColorBlue500 = value }
-    if let value = colors.primerColorBlue900 { tokens.primerColorBlue900 = value }
-    if let value = colors.primerColorBackground { tokens.primerColorBackground = value }
+    if let value = colors.primerColorBackgroundPrimary {
+      tokens.primerColorBackgroundPrimary = value
+      // the input fill aliases the sheet, so it follows unless the merchant names it too
+      if colors.primerColorBackgroundOutlinedDefault == nil {
+        tokens.primerColorBackgroundOutlinedDefault = value
+      }
+    }
+    if let value = colors.primerColorBackgroundOutlinedDefault { tokens.primerColorBackgroundOutlinedDefault = value }
+    if let value = colors.primerColorTextOutlinedDefault { tokens.primerColorTextOutlinedDefault = value }
+    if let value = colors.primerColorBackgroundSecondary { tokens.primerColorBackgroundSecondary = value }
+    if let value = colors.primerColorBackgroundOutlinedDisabled { tokens.primerColorBackgroundOutlinedDisabled = value }
   }
 
   private func applyTextColorOverrides(to tokens: DesignTokens, from colors: ColorOverrides) {
-    if let value = colors.primerColorTextPrimary { tokens.primerColorTextPrimary = value }
+    if let value = colors.primerColorTextPrimary {
+      tokens.primerColorTextPrimary = value
+      if colors.primerColorTextOutlinedDefault == nil {
+        tokens.primerColorTextOutlinedDefault = value
+      }
+    }
     if let value = colors.primerColorTextSecondary { tokens.primerColorTextSecondary = value }
     if let value = colors.primerColorTextPlaceholder { tokens.primerColorTextPlaceholder = value }
     if let value = colors.primerColorTextDisabled { tokens.primerColorTextDisabled = value }
@@ -127,9 +210,6 @@ final class DesignTokensManager: ObservableObject {
   ) {
     if let value = colors.primerColorBorderOutlinedDefault {
       tokens.primerColorBorderOutlinedDefault = value
-    }
-    if let value = colors.primerColorBorderOutlinedHover {
-      tokens.primerColorBorderOutlinedHover = value
     }
     if let value = colors.primerColorBorderOutlinedActive {
       tokens.primerColorBorderOutlinedActive = value
@@ -156,9 +236,6 @@ final class DesignTokensManager: ObservableObject {
   ) {
     if let value = colors.primerColorBorderTransparentDefault {
       tokens.primerColorBorderTransparentDefault = value
-    }
-    if let value = colors.primerColorBorderTransparentHover {
-      tokens.primerColorBorderTransparentHover = value
     }
     if let value = colors.primerColorBorderTransparentActive {
       tokens.primerColorBorderTransparentActive = value
@@ -188,7 +265,6 @@ final class DesignTokensManager: ObservableObject {
     if let value = radius.primerRadiusSmall { tokens.primerRadiusSmall = value }
     if let value = radius.primerRadiusMedium { tokens.primerRadiusMedium = value }
     if let value = radius.primerRadiusLarge { tokens.primerRadiusLarge = value }
-    if let value = radius.primerRadiusBase { tokens.primerRadiusBase = value }
   }
 
   private func applySpacingOverrides(to tokens: DesignTokens, from spacing: SpacingOverrides) {
@@ -199,7 +275,6 @@ final class DesignTokensManager: ObservableObject {
     if let value = spacing.primerSpaceLarge { tokens.primerSpaceLarge = value }
     if let value = spacing.primerSpaceXlarge { tokens.primerSpaceXlarge = value }
     if let value = spacing.primerSpaceXxlarge { tokens.primerSpaceXxlarge = value }
-    if let value = spacing.primerSpaceBase { tokens.primerSpaceBase = value }
   }
 
   private func applySizeOverrides(to tokens: DesignTokens, from sizes: SizeOverrides) {
@@ -209,15 +284,15 @@ final class DesignTokensManager: ObservableObject {
     if let value = sizes.primerSizeXlarge { tokens.primerSizeXlarge = value }
     if let value = sizes.primerSizeXxlarge { tokens.primerSizeXxlarge = value }
     if let value = sizes.primerSizeXxxlarge { tokens.primerSizeXxxlarge = value }
-    if let value = sizes.primerSizeBase { tokens.primerSizeBase = value }
   }
 
-  private func applyBorderWidthOverrides(
-    to tokens: DesignTokens, from borderWidth: BorderWidthOverrides
+  private func applyWidthOverrides(
+    to tokens: DesignTokens, from width: WidthOverrides
   ) {
-    if let value = borderWidth.primerBorderWidthThin { tokens.primerBorderWidthThin = value }
-    if let value = borderWidth.primerBorderWidthMedium { tokens.primerBorderWidthMedium = value }
-    if let value = borderWidth.primerBorderWidthThick { tokens.primerBorderWidthThick = value }
+    if let value = width.primerWidthDefault { tokens.primerWidthDefault = value }
+    if let value = width.primerWidthFocus { tokens.primerWidthFocus = value }
+    if let value = width.primerWidthError { tokens.primerWidthError = value }
+    if let value = width.primerWidthSelected { tokens.primerWidthSelected = value }
   }
 
   private func applyTypographyOverrides(
@@ -297,6 +372,21 @@ final class DesignTokensManager: ObservableObject {
         tokens.primerTypographyBodySmallLineHeight = lineHeight
       }
     }
+
+    // Error
+    if let style = typography.error {
+      if let font = style.font { tokens.primerTypographyErrorFont = font }
+      if let size = style.size { tokens.primerTypographyErrorSize = size }
+      if let weight = style.weight {
+        tokens.primerTypographyErrorWeight = fontWeightToCGFloat(weight)
+      }
+      if let letterSpacing = style.letterSpacing {
+        tokens.primerTypographyErrorLetterSpacing = letterSpacing
+      }
+      if let lineHeight = style.lineHeight {
+        tokens.primerTypographyErrorLineHeight = lineHeight
+      }
+    }
   }
 
   private func fontWeightToCGFloat(_ weight: Font.Weight) -> CGFloat {
@@ -316,7 +406,7 @@ final class DesignTokensManager: ObservableObject {
 
   // MARK: - JSON Loading
 
-  private func loadJSON(named fileName: String) throws -> [String: Any] {
+  nonisolated static func loadJSON(named fileName: String) throws -> [String: Any] {
     guard let url = Bundle.primerResources.url(forResource: fileName, withExtension: "json"),
       let data = try? Data(contentsOf: url),
       let dictionary = try? JSONSerialization.jsonObject(with: data) as? [String: Any]

@@ -94,6 +94,10 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
     vaultManager.selectedMethod
   }
 
+  var isVaultEditing: Bool {
+    vaultManager.isEditing
+  }
+
   var isInitScreenEnabled: Bool { settings.uiOptions.isInitScreenEnabled }
   var isSuccessScreenEnabled: Bool { settings.uiOptions.isSuccessScreenEnabled }
   var isErrorScreenEnabled: Bool { settings.uiOptions.isErrorScreenEnabled }
@@ -710,6 +714,10 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
     _ method: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod?
   ) {
     vaultManager.setSelectedMethod(method)
+  }
+
+  func setVaultEditing(_ editing: Bool) {
+    vaultManager.setEditing(editing)
   }
 
   static func validated(from checkoutScope: any PrimerCheckoutScope) throws -> (DefaultCheckoutScope, PresentationContext) {

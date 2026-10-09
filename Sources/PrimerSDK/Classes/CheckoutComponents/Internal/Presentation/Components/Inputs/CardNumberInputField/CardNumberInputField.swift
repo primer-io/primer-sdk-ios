@@ -82,11 +82,11 @@ struct CardNumberInputField: View, LogReporter {
         HStack(spacing: PrimerSpacing.xsmall(tokens: tokens)) {
           if let surchargeAmount {
             Text(surchargeAmount)
-              .font(PrimerFont.caption(tokens: tokens))
+              .primerTypography(.caption, tokens: tokens)
               .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
               .padding(.horizontal, PrimerSpacing.xsmall(tokens: tokens))
               .padding(.vertical, 2)
-              .background(CheckoutColors.gray200(tokens: tokens))
+              .background(CheckoutColors.backgroundSecondary(tokens: tokens))
               .cornerRadius(PrimerRadius.xsmall(tokens: tokens))
               .frame(height: PrimerSize.small(tokens: tokens))
           }
@@ -114,7 +114,7 @@ struct CardNumberInputField: View, LogReporter {
                 )
               }
             }
-          } else if displayNetwork != .unknown {
+          } else {
             CardNetworkBadge(network: displayNetwork)
           }
         }

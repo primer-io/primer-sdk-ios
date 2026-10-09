@@ -55,6 +55,7 @@ struct AdyenKlarnaScreen: View {
                         HStack(spacing: PrimerSpacing.xsmall(tokens: tokens)) {
                             Image(systemName: RTLIcon.backChevron)
                                 .font(PrimerFont.bodyMedium(tokens: tokens))
+                                .foregroundColor(CheckoutColors.iconPrimary(tokens: tokens))
                             Text(CheckoutComponentsStrings.backButton)
                         }
                         .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
@@ -69,18 +70,17 @@ struct AdyenKlarnaScreen: View {
                 Spacer()
 
                 if scope.dismissalMechanism.contains(.closeButton) {
-                    Button(CheckoutComponentsStrings.cancelButton, action: scope.cancel)
-                        .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
-                        .accessibility(config: AccessibilityConfiguration(
+                    CheckoutHeaderButton(
+                        config: .closeButton(
                             identifier: AccessibilityIdentifiers.AdyenKlarna.cancelButton,
-                            label: CheckoutComponentsStrings.a11yCancel,
-                            traits: [.isButton]
-                        ))
+                            action: scope.cancel
+                        )
+                    )
                 }
             }
 
             Text(CheckoutComponentsStrings.adyenKlarnaTitle)
-                .font(PrimerFont.titleXLarge(tokens: tokens))
+                .primerTypography(.titleXLarge, tokens: tokens)
                 .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .accessibilityAddTraits(.isHeader)
@@ -107,7 +107,7 @@ struct AdyenKlarnaScreen: View {
     private func makeOptionSelectionContent() -> some View {
         VStack(spacing: PrimerSpacing.medium(tokens: tokens)) {
             Text(CheckoutComponentsStrings.adyenKlarnaSelectOption)
-                .font(PrimerFont.body(tokens: tokens))
+                .primerTypography(.body, tokens: tokens)
                 .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
                 .frame(maxWidth: .infinity, alignment: .leading)
 
@@ -130,7 +130,7 @@ struct AdyenKlarnaScreen: View {
                 makeKlarnaLogoBadge()
 
                 Text(CheckoutComponentsStrings.adyenKlarnaOptionDisplayName(for: option.name))
-                    .font(PrimerFont.bodyLarge(tokens: tokens))
+                    .primerTypography(.bodyLarge, tokens: tokens)
                     .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
 
                 Spacer()
@@ -140,7 +140,9 @@ struct AdyenKlarnaScreen: View {
             .background(CheckoutColors.background(tokens: tokens))
             .overlay(
                 RoundedRectangle(cornerRadius: PrimerRadius.medium(tokens: tokens))
-                    .stroke(CheckoutColors.borderDefault(tokens: tokens), lineWidth: 1)
+                    .stroke(
+                        CheckoutColors.borderDefault(tokens: tokens),
+                        lineWidth: PrimerBorderWidth.standard(tokens: tokens))
             )
             .clipShape(RoundedRectangle(cornerRadius: PrimerRadius.medium(tokens: tokens)))
         }
@@ -175,7 +177,7 @@ struct AdyenKlarnaScreen: View {
             Spacer()
             makePaymentMethodLogo()
             ProgressView()
-                .progressViewStyle(CircularProgressViewStyle(tint: CheckoutColors.textSecondary(tokens: tokens)))
+                .progressViewStyle(CircularProgressViewStyle(tint: CheckoutColors.loader(tokens: tokens)))
                 .scaleEffect(PrimerScale.small)
             Spacer()
         }

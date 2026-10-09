@@ -4,9 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "build": "yarn run build-light && yarn run build-dark",
-    "build-light": "style-dictionary build --config ./config-light.js",
-    "build-dark": "style-dictionary build --config ./config-dark.js"
+    "build": "yarn run build-light",
+    "build-light": "style-dictionary build --config ./config-light.js"
   },
   "devDependencies": {
     "style-dictionary": "^4.3.3"

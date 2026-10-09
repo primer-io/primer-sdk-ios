@@ -24,6 +24,7 @@ struct BillingAddressRedirectScreen: View {
   @State private var postalCode = ""
   @State private var city = ""
   @State private var state = ""
+  @FocusState private var focusedField: PrimerInputElementType?
 
   var body: some View {
     ScrollView {
@@ -56,6 +57,7 @@ struct BillingAddressRedirectScreen: View {
             HStack(spacing: PrimerSpacing.xsmall(tokens: tokens)) {
               Image(systemName: RTLIcon.backChevron)
                 .font(PrimerFont.bodyMedium(tokens: tokens))
+                .foregroundColor(CheckoutColors.iconPrimary(tokens: tokens))
               Text(CheckoutComponentsStrings.backButton)
             }
             .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
@@ -70,20 +72,19 @@ struct BillingAddressRedirectScreen: View {
         Spacer()
 
         if scope.dismissalMechanism.contains(.closeButton) {
-          Button(CheckoutComponentsStrings.cancelButton, action: scope.cancel)
-            .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
+          CheckoutHeaderButton(config: .closeButton(action: scope.cancel))
         }
       }
 
       Text(paymentMethodDisplayName)
-        .font(PrimerFont.titleXLarge(tokens: tokens))
+        .primerTypography(.titleXLarge, tokens: tokens)
         .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
         .frame(maxWidth: .infinity, alignment: .leading)
         .accessibilityAddTraits(.isHeader)
 
       if let surcharge = billingState.surchargeAmount {
         Text(surcharge)
-          .font(PrimerFont.bodySmall(tokens: tokens))
+          .primerTypography(.bodySmall, tokens: tokens)
           .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
       }
     }
@@ -140,11 +141,14 @@ struct BillingAddressRedirectScreen: View {
   }
 
   private func makeCountryField() -> some View {
-    VStack(alignment: .leading, spacing: PrimerSpacing.xsmall(tokens: tokens)) {
-      Text(CheckoutComponentsStrings.countryLabel)
-        .font(PrimerFont.bodySmall(tokens: tokens))
-        .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
-
+    PrimerInputFieldContainer(
+      label: CheckoutComponentsStrings.countryLabel,
+      text: $countryCode,
+      isValid: .constant(billingState.errors[.countryCode] == nil),
+      errorMessage: errorBinding(for: .countryCode),
+      // A menu takes no keyboard focus, so it never paints the focused border.
+      isFocused: .constant(false)
+    ) {
       Menu {
         ForEach(CountryCode.allCases, id: \.self) { country in
           Button {
@@ -158,31 +162,18 @@ struct BillingAddressRedirectScreen: View {
         HStack {
           if let selected = CountryCode(rawValue: countryCode) {
             Text("\(selected.flag ?? "") \(selected.country)")
-              .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
+              .foregroundColor(CheckoutColors.inputText(tokens: tokens))
           } else {
             Text(CheckoutComponentsStrings.countrySelectorPlaceholder)
               .foregroundColor(CheckoutColors.textPlaceholder(tokens: tokens))
           }
-          Spacer()
+          Spacer(minLength: 0)
           Image(systemName: "chevron.down")
             .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
         }
         .font(PrimerFont.bodyLarge(tokens: tokens))
-        .padding(.vertical, PrimerSpacing.medium(tokens: tokens))
-        .padding(.horizontal, PrimerSpacing.medium(tokens: tokens))
-        .background(CheckoutColors.background(tokens: tokens))
-        .overlay(
-          RoundedRectangle(cornerRadius: PrimerRadius.small(tokens: tokens))
-            .stroke(fieldBorderColor(for: .countryCode), lineWidth: PrimerBorderWidth.standard(tokens: tokens))
-        )
       }
       .accessibilityIdentifier(AccessibilityIdentifiers.BillingAddressRedirect.countryCodeField)
-
-      if let error = billingState.errors[.countryCode] {
-        Text(error.message)
-          .font(PrimerFont.bodySmall(tokens: tokens))
-          .foregroundColor(CheckoutColors.textNegative(tokens: tokens))
-      }
     }
   }
 
@@ -194,40 +185,31 @@ struct BillingAddressRedirectScreen: View {
     identifier: String,
     onUpdate: @escaping (String) -> Void
   ) -> some View {
-    VStack(alignment: .leading, spacing: PrimerSpacing.xsmall(tokens: tokens)) {
-      Text(label)
-        .font(PrimerFont.bodySmall(tokens: tokens))
-        .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
-
+    PrimerInputFieldContainer(
+      label: label,
+      text: text,
+      isValid: .constant(billingState.errors[fieldType] == nil),
+      errorMessage: errorBinding(for: fieldType),
+      isFocused: focusBinding(for: fieldType)
+    ) {
       TextField(placeholder, text: text)
-        .font(PrimerFont.bodyLarge(tokens: tokens))
-        .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
-        .padding(.vertical, PrimerSpacing.medium(tokens: tokens))
-        .padding(.horizontal, PrimerSpacing.medium(tokens: tokens))
-        .background(CheckoutColors.background(tokens: tokens))
-        .overlay(
-          RoundedRectangle(cornerRadius: PrimerRadius.small(tokens: tokens))
-            .stroke(fieldBorderColor(for: fieldType), lineWidth: PrimerBorderWidth.standard(tokens: tokens))
-        )
+        .primerFieldTypography(.bodyLarge, tokens: tokens)
+        .foregroundColor(CheckoutColors.inputText(tokens: tokens))
+        .focused($focusedField, equals: fieldType)
         .autocapitalization(.words)
         .disableAutocorrection(true)
         .accessibilityIdentifier(identifier)
-        .onChange(of: text.wrappedValue) { newValue in
-          onUpdate(newValue)
-        }
-
-      if let error = billingState.errors[fieldType] {
-        Text(error.message)
-          .font(PrimerFont.bodySmall(tokens: tokens))
-          .foregroundColor(CheckoutColors.textNegative(tokens: tokens))
-      }
+        .onChange(of: text.wrappedValue, perform: onUpdate)
     }
   }
 
-  private func fieldBorderColor(for fieldType: PrimerInputElementType) -> Color {
-    billingState.errors[fieldType] != nil
-      ? CheckoutColors.textNegative(tokens: tokens)
-      : CheckoutColors.borderDefault(tokens: tokens)
+  private func errorBinding(for fieldType: PrimerInputElementType) -> Binding<String?> {
+    .constant(billingState.errors[fieldType]?.message)
+  }
+
+  /// The container only reads this, and focus is owned by `focusedField`.
+  private func focusBinding(for fieldType: PrimerInputElementType) -> Binding<Bool> {
+    Binding(get: { focusedField == fieldType }, set: { _ in })
   }
 
   // MARK: - Submit Button
@@ -237,50 +219,27 @@ struct BillingAddressRedirectScreen: View {
     if let customButton = scope.submitButton {
       AnyView(customButton(scope))
     } else {
-      Button(action: scope.submit) {
-        makeSubmitButtonContent()
-      }
-      .disabled(isButtonDisabled)
+      PrimerCheckoutButton(
+        submitButtonText,
+        isEnabled: billingState.isFormValid,
+        isLoading: isSubmitInFlight,
+        accessibilityConfiguration: AccessibilityConfiguration(
+          identifier: AccessibilityIdentifiers.BillingAddressRedirect.submitButton,
+          label: submitButtonText,
+          traits: [.isButton]
+        ),
+        action: scope.submit
+      )
     }
-  }
-
-  private func makeSubmitButtonContent() -> some View {
-    let isLoading = [.submitting, .redirecting, .polling].contains(billingState.status)
-
-    return HStack {
-      if isLoading {
-        ProgressView()
-          .progressViewStyle(CircularProgressViewStyle(tint: CheckoutColors.white(tokens: tokens)))
-          .scaleEffect(PrimerScale.small)
-      } else {
-        Text(submitButtonText)
-      }
-    }
-    .font(PrimerFont.body(tokens: tokens))
-    .foregroundColor(CheckoutColors.white(tokens: tokens))
-    .frame(maxWidth: .infinity)
-    .padding(.vertical, PrimerSpacing.large(tokens: tokens))
-    .background(submitButtonBackground)
-    .cornerRadius(PrimerRadius.small(tokens: tokens))
-    .accessibility(config: AccessibilityConfiguration(
-      identifier: AccessibilityIdentifiers.BillingAddressRedirect.submitButton,
-      label: submitButtonText,
-      traits: [.isButton]
-    ))
   }
 
   private var submitButtonText: String {
     scope.submitButtonText ?? CheckoutComponentsStrings.webRedirectButtonContinue(paymentMethodDisplayName)
   }
 
-  private var submitButtonBackground: Color {
-    isButtonDisabled
-      ? CheckoutColors.gray300(tokens: tokens)
-      : CheckoutColors.textPrimary(tokens: tokens)
-  }
-
-  private var isButtonDisabled: Bool {
-    !billingState.isFormValid || [.submitting, .redirecting, .polling].contains(billingState.status)
+  /// The button keeps its brand fill while the payment is in flight; only an invalid form greys it out.
+  private var isSubmitInFlight: Bool {
+    [.submitting, .redirecting, .polling].contains(billingState.status)
   }
 
   private var paymentMethodDisplayName: String {

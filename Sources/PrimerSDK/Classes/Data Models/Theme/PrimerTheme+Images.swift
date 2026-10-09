@@ -24,6 +24,10 @@ extension PrimerTheme {
                 return nil
             }
         }
+
+        func image(isDark: Bool) -> UIImage? {
+            schemeVariant(isDark: isDark, colored: colored, light: light, dark: dark)
+        }
     }
 
     public final class BaseColoredURLs: Codable {
@@ -75,11 +79,13 @@ extension PrimerTheme {
         var darkHex: String?
         var lightHex: String?
 
-        /// Convert to UIColor based on current appearance mode
+        /// Resolves per trait collection, so a colour-scheme change repaints it wherever it is drawn.
         var uiColor: UIColor? {
-            let isDarkMode = UIScreen.isDarkModeEnabled
-            let hexString = isDarkMode ? (darkHex ?? coloredHex ?? lightHex) : (coloredHex ?? lightHex ?? darkHex)
-            return hexString?.hexToUIColor()
+            // a malformed hex keeps the old one-shot resolution rather than leaking the other scheme's colour
+            guard let light = hex(isDark: false)?.hexToUIColor(), let dark = hex(isDark: true)?.hexToUIColor() else {
+                return hex(isDark: UIScreen.isDarkModeEnabled)?.hexToUIColor()
+            }
+            return UIColor { $0.userInterfaceStyle == .dark ? dark : light }
         }
 
         // swiftlint:disable:next nesting
@@ -117,6 +123,10 @@ extension PrimerTheme {
             try? container.encode(darkHex, forKey: .darkHex)
             try? container.encode(lightHex, forKey: .lightHex)
         }
+
+        func hex(isDark: Bool) -> String? {
+            schemeVariant(isDark: isDark, colored: coloredHex, light: lightHex, dark: darkHex)
+        }
     }
 
     public final class BaseBorderWidth: Codable {
@@ -134,8 +144,7 @@ extension PrimerTheme {
 
         /// Resolve to a CGFloat based on current appearance mode
         var resolvedValue: CGFloat? {
-            let isDarkMode = UIScreen.isDarkModeEnabled
-            return isDarkMode ? (dark ?? colored ?? light) : (colored ?? light ?? dark)
+            resolvedValue(isDark: UIScreen.isDarkModeEnabled)
         }
 
         init?(
@@ -161,10 +170,18 @@ extension PrimerTheme {
             try? container.encode(light, forKey: .light)
             try? container.encode(dark, forKey: .dark)
         }
+
+        func resolvedValue(isDark: Bool) -> CGFloat? {
+            schemeVariant(isDark: isDark, colored: colored, light: light, dark: dark)
+        }
     }
 }
 
 // MARK: - Helper Extensions
+
+private func schemeVariant<T>(isDark: Bool, colored: T?, light: T?, dark: T?) -> T? {
+    isDark ? (dark ?? colored ?? light) : (colored ?? light ?? dark)
+}
 
 extension String {
     /// Convert hex string to UIColor

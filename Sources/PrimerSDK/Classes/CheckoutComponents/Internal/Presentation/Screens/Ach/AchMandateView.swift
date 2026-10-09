@@ -18,21 +18,21 @@ struct AchMandateView: View, LogReporter {
   var body: some View {
     VStack(spacing: PrimerSpacing.large(tokens: tokens)) {
       Text(CheckoutComponentsStrings.achMandateTitle)
-        .font(PrimerFont.titleLarge(tokens: tokens))
+        .primerTypography(.titleLarge, tokens: tokens)
         .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
         .multilineTextAlignment(.center)
         .accessibilityIdentifier(AccessibilityIdentifiers.Ach.mandateTitle)
 
       ScrollView {
         Text(achState.mandateText ?? "")
-          .font(PrimerFont.bodyMedium(tokens: tokens))
+          .primerTypography(.bodyMedium, tokens: tokens)
           .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
           .multilineTextAlignment(.leading)
           .padding(PrimerSpacing.medium(tokens: tokens))
           .frame(maxWidth: .infinity, alignment: .leading)
           .background(
             RoundedRectangle(cornerRadius: PrimerRadius.small(tokens: tokens))
-              .fill(CheckoutColors.gray100(tokens: tokens))
+              .fill(CheckoutColors.backgroundSecondary(tokens: tokens))
           )
       }
       .frame(maxHeight: Layout.mandateTextMaxHeight)
@@ -52,30 +52,30 @@ struct AchMandateView: View, LogReporter {
   }
 
   private func makeAcceptButton() -> some View {
-    Button(action: scope.acceptMandate) {
-      Text(CheckoutComponentsStrings.achMandateAcceptButton)
-        .font(PrimerFont.body(tokens: tokens))
-        .foregroundColor(CheckoutColors.white(tokens: tokens))
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, PrimerSpacing.large(tokens: tokens))
-        .background(CheckoutColors.textPrimary(tokens: tokens))
-        .cornerRadius(PrimerRadius.small(tokens: tokens))
-    }
-    .accessibilityIdentifier(AccessibilityIdentifiers.Ach.mandateAcceptButton)
-    .accessibilityLabel(CheckoutComponentsStrings.achMandateAcceptButton)
-    .accessibilityHint(CheckoutComponentsStrings.a11yAchMandateAcceptHint)
+    PrimerCheckoutButton(
+      CheckoutComponentsStrings.achMandateAcceptButton,
+      accessibilityConfiguration: AccessibilityConfiguration(
+        identifier: AccessibilityIdentifiers.Ach.mandateAcceptButton,
+        label: CheckoutComponentsStrings.achMandateAcceptButton,
+        hint: CheckoutComponentsStrings.a11yAchMandateAcceptHint,
+        traits: [.isButton]
+      ),
+      action: scope.acceptMandate
+    )
   }
 
   private func makeDeclineButton() -> some View {
     Button(action: scope.declineMandate) {
       Text(CheckoutComponentsStrings.achMandateDeclineButton)
-        .font(PrimerFont.body(tokens: tokens))
+        .primerTypography(.body, tokens: tokens)
         .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
         .frame(maxWidth: .infinity)
         .padding(.vertical, PrimerSpacing.large(tokens: tokens))
         .background(
           RoundedRectangle(cornerRadius: PrimerRadius.small(tokens: tokens))
-            .stroke(CheckoutColors.borderDefault(tokens: tokens), lineWidth: 1)
+            .stroke(
+              CheckoutColors.borderDefault(tokens: tokens),
+              lineWidth: PrimerBorderWidth.standard(tokens: tokens))
         )
     }
     .accessibilityIdentifier(AccessibilityIdentifiers.Ach.mandateDeclineButton)

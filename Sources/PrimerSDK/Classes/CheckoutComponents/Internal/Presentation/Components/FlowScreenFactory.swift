@@ -68,17 +68,20 @@ struct FlowScreenFactory: LogReporter {
     VaultedPaymentMethodsListScreen(
       vaultedPaymentMethods: scope.vaultedPaymentMethods,
       selectedVaultedPaymentMethod: scope.selectedVaultedPaymentMethod,
+      isEditMode: scope.isVaultEditing,
       onSelect: { method in
         scope.setSelectedVaultedPaymentMethod(method)
         scope.paymentMethodSelectionInternal.collapsePaymentMethods()
         scope.checkoutNavigator.navigateBack()
       },
       onBack: {
+        scope.setVaultEditing(false)
         scope.checkoutNavigator.navigateBack()
       },
       onDeleteTapped: { method in
         scope.updateNavigationState(.deleteVaultedPaymentMethodConfirmation(method))
-      }
+      },
+      onEditModeChange: { scope.setVaultEditing($0) }
     )
   }
 
@@ -88,7 +91,8 @@ struct FlowScreenFactory: LogReporter {
     DeleteVaultedPaymentMethodConfirmationScreen(
       vaultedPaymentMethod: method,
       navigator: scope.checkoutNavigator,
-      scope: scope.paymentMethodSelectionInternal
+      scope: scope.paymentMethodSelectionInternal,
+      onDone: { scope.setVaultEditing(false) }
     )
   }
 

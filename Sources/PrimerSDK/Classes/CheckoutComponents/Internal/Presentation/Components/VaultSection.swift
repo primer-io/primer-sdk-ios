@@ -34,44 +34,27 @@ struct VaultSection: View {
     .padding(PrimerSpacing.small(tokens: tokens))
     .background(
       RoundedRectangle(cornerRadius: PrimerRadius.large(tokens: tokens))
-        .fill(CheckoutColors.gray100(tokens: tokens))
+        .fill(CheckoutColors.backgroundSecondary(tokens: tokens))
     )
   }
 
   // MARK: - Pay Button
 
   private func makePayButton() -> some View {
-    Button(action: {
-      Task {
-        await scope.payWithVaultedPaymentMethod()
-      }
-    }) {
-      HStack {
-        if isLoading {
-          ProgressView()
-            .progressViewStyle(
-              CircularProgressViewStyle(tint: CheckoutColors.background(tokens: tokens)))
-            .accessibilityLabel(CheckoutComponentsStrings.a11yLoading)
-        } else {
-          Text(CheckoutComponentsStrings.payButton)
-        }
-      }
-      .font(PrimerFont.titleLarge(tokens: tokens))
-      .foregroundColor(CheckoutColors.background(tokens: tokens))
-      .frame(maxWidth: .infinity)
-      .padding(PrimerSpacing.medium(tokens: tokens))
-      .background(
-        RoundedRectangle(cornerRadius: PrimerRadius.medium(tokens: tokens))
-          .fill(CheckoutColors.borderFocus(tokens: tokens))
-      )
-    }
-    .disabled(isLoading)
-    .accessibility(
-      config: AccessibilityConfiguration(
+    PrimerCheckoutButton(
+      CheckoutComponentsStrings.payButton,
+      isLoading: isLoading,
+      accessibilityConfiguration: AccessibilityConfiguration(
         identifier: AccessibilityIdentifiers.Vault.payButton,
         label: CheckoutComponentsStrings.payButton,
         traits: [.isButton]
-      ))
+      ),
+      action: {
+        Task {
+          await scope.payWithVaultedPaymentMethod()
+        }
+      }
+    )
   }
 
 }

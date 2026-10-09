@@ -129,34 +129,17 @@ struct FormRedirectScreen: View {
     }
 
     private func makeDefaultSubmitButton() -> some View {
-        Button(action: scope.submit) {
-            HStack(spacing: PrimerSpacing.small(tokens: tokens)) {
-                if currentState.isLoading {
-                    ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                }
-
-                Text(scope.submitButtonText ?? defaultSubmitButtonText)
-                    .font(PrimerFont.bodyMedium(tokens: tokens))
-            }
-            .frame(maxWidth: .infinity)
-            .frame(height: PrimerComponentHeight.button)
-            .foregroundColor(CheckoutColors.buttonTextPrimary(tokens: tokens))
-            .background(
-                RoundedRectangle(cornerRadius: PrimerRadius.medium(tokens: tokens))
-                    .fill(currentState.isSubmitEnabled && !currentState.isLoading
-                          ? CheckoutColors.buttonPrimary(tokens: tokens)
-                          : CheckoutColors.buttonDisabled(tokens: tokens))
-            )
-        }
-        .disabled(!currentState.isSubmitEnabled || currentState.isLoading)
-        .accessibility(
-            config: AccessibilityConfiguration(
+        PrimerCheckoutButton(
+            scope.submitButtonText ?? defaultSubmitButtonText,
+            isEnabled: currentState.isSubmitEnabled,
+            isLoading: currentState.isLoading,
+            accessibilityConfiguration: AccessibilityConfiguration(
                 identifier: AccessibilityIdentifiers.FormRedirect.submitButton,
                 label: CheckoutComponentsStrings.a11ySubmitButtonLabel,
                 hint: currentState.isSubmitEnabled ? nil : CheckoutComponentsStrings.a11ySubmitButtonHint,
                 traits: [.isButton]
-            )
+            ),
+            action: scope.submit
         )
     }
 }
@@ -171,74 +154,58 @@ private struct FormFieldView: View {
     let onSubmit: () -> Void
 
     @Environment(\.designTokens) private var tokens
-    @FocusState private var isFocused: Bool
+    @FocusState private var hasKeyboardFocus: Bool
+    @State private var isFocused = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: PrimerSpacing.small(tokens: tokens)) {
-            Text(field.label)
-                .font(PrimerFont.caption(tokens: tokens))
-                .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
-
-            makeInputField()
-
-            if let errorMessage = field.errorMessage {
-                Text(errorMessage)
-                    .font(PrimerFont.caption(tokens: tokens))
-                    .foregroundColor(CheckoutColors.error(tokens: tokens))
-            } else if let helperText = field.helperText {
-                Text(helperText)
-                    .font(PrimerFont.caption(tokens: tokens))
-                    .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
-            }
-        }
-    }
-
-    private func makeInputField() -> some View {
-        HStack(spacing: PrimerSpacing.small(tokens: tokens)) {
-            if let prefix = field.countryCodePrefix, field.fieldType == .phoneNumber {
-                Text(prefix)
-                    .font(PrimerFont.bodyLarge(tokens: tokens))
-                    .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
-                    .accessibilityIdentifier(AccessibilityIdentifiers.FormRedirect.phonePrefix)
-            }
-
-            TextField(field.placeholder, text: Binding(
-                get: { field.value },
-                set: { onValueChanged($0) }
-            ))
-            .font(PrimerFont.bodyLarge(tokens: tokens))
-            .keyboardType(field.keyboardType.uiKeyboardType)
-            .textContentType(field.fieldType.textContentType)
-            .focused($isFocused)
-            .onSubmit { onSubmit() }
+            PrimerInputFieldContainer(
+                label: field.label,
+                text: valueBinding,
+                isValid: .constant(field.errorMessage == nil),
+                errorMessage: .constant(field.errorMessage),
+                isFocused: $isFocused,
+                textFieldBuilder: makeInputField
+            )
             .accessibility(
                 config: AccessibilityConfiguration(
                     identifier: accessibilityIdentifier,
                     label: accessibilityLabel,
                     hint: accessibilityHint,
                     traits: []
-                )
+                ),
+                combinesChildren: false
             )
+
+            if field.errorMessage == nil, let helperText = field.helperText {
+                Text(helperText)
+                    .primerTypography(.caption, tokens: tokens)
+                    .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
+            }
         }
-        .padding(.horizontal, PrimerSpacing.medium(tokens: tokens))
-        .padding(.vertical, PrimerSpacing.medium(tokens: tokens))
-        .background(
-            RoundedRectangle(cornerRadius: PrimerRadius.small(tokens: tokens))
-                .stroke(borderColor, lineWidth: PrimerBorderWidth.standard(tokens: tokens))
-                .background(
-                    RoundedRectangle(cornerRadius: PrimerRadius.small(tokens: tokens))
-                        .fill(CheckoutColors.inputBackground(tokens: tokens))
-                )
-        )
     }
 
-    private var borderColor: Color {
-        if field.errorMessage != nil {
-            CheckoutColors.error(tokens: tokens)
-        } else if isFocused {
-            CheckoutColors.inputBorderFocused(tokens: tokens)
-        } else {
-            CheckoutColors.inputBorder(tokens: tokens)
+    private var valueBinding: Binding<String> {
+        Binding(get: { field.value }, set: onValueChanged)
+    }
+
+    private func makeInputField() -> some View {
+        HStack(spacing: PrimerSpacing.small(tokens: tokens)) {
+            if let prefix = field.countryCodePrefix, field.fieldType == .phoneNumber {
+                Text(prefix)
+                    .primerTypography(.bodyLarge, tokens: tokens)
+                    .foregroundColor(CheckoutColors.inputText(tokens: tokens))
+                    .accessibilityIdentifier(AccessibilityIdentifiers.FormRedirect.phonePrefix)
+            }
+
+            TextField(field.placeholder, text: valueBinding)
+                .primerFieldTypography(.bodyLarge, tokens: tokens)
+                .foregroundColor(CheckoutColors.inputText(tokens: tokens))
+                .keyboardType(field.keyboardType.uiKeyboardType)
+                .textContentType(field.fieldType.textContentType)
+                .focused($hasKeyboardFocus)
+                .onSubmit(onSubmit)
+                .onChange(of: hasKeyboardFocus) { isFocused = $0 }
         }
     }
 

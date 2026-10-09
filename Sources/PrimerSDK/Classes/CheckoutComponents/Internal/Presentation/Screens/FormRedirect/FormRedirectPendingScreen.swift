@@ -38,12 +38,12 @@ struct FormRedirectPendingScreen: View {
                 makePaymentMethodIcon()
 
                 Text(CheckoutComponentsStrings.formRedirectPendingTitle)
-                    .font(PrimerFont.titleLarge(tokens: tokens))
+                    .primerTypography(.titleLarge, tokens: tokens)
                     .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
                     .multilineTextAlignment(.center)
 
                 Text(currentState.pendingMessage ?? CheckoutComponentsStrings.formRedirectPendingMessage)
-                    .font(PrimerFont.bodyLarge(tokens: tokens))
+                    .primerTypography(.bodyLarge, tokens: tokens)
                     .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, PrimerSpacing.xlarge(tokens: tokens))
@@ -51,7 +51,7 @@ struct FormRedirectPendingScreen: View {
 
                 ProgressView()
                     .progressViewStyle(
-                        CircularProgressViewStyle(tint: CheckoutColors.borderFocus(tokens: tokens))
+                        CircularProgressViewStyle(tint: CheckoutColors.loader(tokens: tokens))
                     )
                     .scaleEffect(PrimerScale.large)
                     .accessibilityIdentifier(AccessibilityIdentifiers.FormRedirect.loadingIndicator)
@@ -78,17 +78,10 @@ struct FormRedirectPendingScreen: View {
             Spacer()
 
             if scope.dismissalMechanism.contains(.closeButton) {
-                Button(action: scope.cancel) {
-                    Text(CheckoutComponentsStrings.cancelButton)
-                        .font(PrimerFont.titleLarge(tokens: tokens))
-                        .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
-                }
-                .accessibilityIdentifier(AccessibilityIdentifiers.FormRedirect.cancelButton)
-                .accessibility(
-                    config: AccessibilityConfiguration(
+                CheckoutHeaderButton(
+                    config: .closeButton(
                         identifier: AccessibilityIdentifiers.FormRedirect.cancelButton,
-                        label: CheckoutComponentsStrings.a11yCancel,
-                        traits: [.isButton]
+                        action: scope.cancel
                     )
                 )
             }
