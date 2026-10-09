@@ -71,24 +71,35 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
                 let instructionProvider = makeInstructionProvider(config)
                 await PrimerStepResolverRegistry.shared.register(HTTPRequestResolver(), for: .httpRequest)
                 
+                let pciUrl = PrimerAPIConfigurationModule.apiConfiguration?.pciUrl
+                let coreUrl = PrimerAPIConfigurationModule.apiConfiguration?.coreUrl
+                let result: CheckoutResult?
+
                 if config.entry.requiresSetup {
                     #if canImport(PrimerKlarnaSDK)
                     KlarnaWidgetComponent.register()
                     #endif
                     await presentSDUI()
-                    try await orchestrator?.runSetup(
-                        pciUrl: PrimerAPIConfigurationModule.apiConfiguration?.pciUrl,
-                        coreUrl: PrimerAPIConfigurationModule.apiConfiguration?.coreUrl,
+                    let token = try await orchestrator?.runSetup(
+                        pciUrl: pciUrl,
+                        coreUrl: coreUrl,
                         instructionProvider: instructionProvider
                     )
-                    return await dismissSDUI()
+                    await dismissSDUI()
+                    guard let token, PrimerSettings.current.paymentHandling == .auto else { return }
+                    result = try await orchestrator?.pay(
+                        paymentInstrumentTokenId: token,
+                        pciUrl: pciUrl,
+                        coreUrl: coreUrl,
+                        instructionProvider: instructionProvider
+                    )
+                } else {
+                    result = try await orchestrator?.run(
+                        pciUrl: pciUrl,
+                        coreUrl: coreUrl,
+                        instructionProvider: instructionProvider
+                    )
                 }
-
-                let result = try await orchestrator?.run(
-                    pciUrl: PrimerAPIConfigurationModule.apiConfiguration?.pciUrl,
-                    coreUrl: PrimerAPIConfigurationModule.apiConfiguration?.coreUrl,
-                    instructionProvider: instructionProvider
-                )
                 
                 switch result {
                 case let .success(payment): await handleSuccess(payment)

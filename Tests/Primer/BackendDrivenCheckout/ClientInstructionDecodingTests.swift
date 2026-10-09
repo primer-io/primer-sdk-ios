@@ -80,7 +80,13 @@ final class ClientInstructionSetupStateResponseDecodingTests: XCTestCase {
         let result = try decode(#"{"paymentMethodSetupId": "setup-1", "instruction": {"type": "SETUP_COMPLETE", "payload": {"paymentInstrumentToken": "tok_123"} } }"#)
         XCTAssertEqual(result.instruction.type, .setupComplete)
         XCTAssertNil(result.instruction.nextPoll)
-        XCTAssertEqual(result.instruction.payload?.paymentInstrumentToken, "tok_123")
+        XCTAssertEqual(result.instruction.payload?.paymentInstrumentToken?.token, "tok_123")
+    }
+
+    func testDecodesSetupCompleteWithATokenObject() throws {
+        let token = #"{"token": "tok_123", "tokenType": "SINGLE_USE", "paymentInstrumentType": "KLARNA_AUTHORIZATION_TOKEN", "paymentMethodType": "KLARNA", "paymentInstrumentData": {}, "analyticsId": "a1", "isVaulted": false}"#
+        let result = try decode(#"{"paymentMethodSetupId": "setup-1", "instruction": {"type": "SETUP_COMPLETE", "payload": {"paymentInstrumentToken": \#(token)} } }"#)
+        XCTAssertEqual(result.instruction.payload?.paymentInstrumentToken?.token, "tok_123")
     }
 }
 

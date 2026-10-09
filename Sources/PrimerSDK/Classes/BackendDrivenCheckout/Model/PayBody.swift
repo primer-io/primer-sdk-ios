@@ -18,6 +18,16 @@ struct PayBody: Encodable {
     )
 }
 
+struct TokenPayBody: Encodable {
+    let paymentInstrumentTokenId: String
+
+    private let clientInfo = ClientInfo(
+        merchant: ClientSessionMerchantDataRequest(
+            applicationId: Bundle.main.bundleIdentifier
+        )
+    )
+}
+
 private struct ClientInfo: Encodable {
     fileprivate let locale = PrimerSettings.current.localeData.localeCode
     fileprivate let platform = "IOS"
