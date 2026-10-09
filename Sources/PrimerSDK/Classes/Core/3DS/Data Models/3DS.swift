@@ -329,6 +329,8 @@ public final class ThreeDS {
         let eci: String?
         let protocolVersion: String?
         let xid: String?
+        /// A String, not `SkippedCode`: an unknown reason must not fail the whole response.
+        var skippedReasonCode: String?
     }
 
     struct SkippedAPIResponse: ThreeDSAuthenticationProtocol, Codable {

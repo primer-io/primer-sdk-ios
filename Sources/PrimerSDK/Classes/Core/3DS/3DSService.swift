@@ -38,6 +38,7 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
     private var threeDSSDKWindow: UIWindow?
     private var initProtocolVersion: ThreeDS.ProtocolVersion?
     private var resumePaymentToken: String?
+    private let observerReport: ThreeDSObserverReport
 
     #if canImport(Primer3DS)
         private var primer3DS: Primer3DS!
@@ -45,6 +46,10 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
     #endif
 
     private var paymentMethodType: String?
+
+    init(observer: RequiredActionObserver? = nil) {
+        observerReport = ThreeDSObserverReport(observer: observer)
+    }
 
     func perform3DS(
         paymentMethodTokenData: PrimerPaymentMethodTokenData,
@@ -195,6 +200,7 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
         private func handleAuthenticationError(paymentMethodTokenData: PrimerPaymentMethodTokenData, error: Error) async throws -> String {
             var continueInfo: ThreeDS.ContinueInfo?
             if case InternalError.noNeedToPerform3ds = error {
+                await observerReport.noChallengeNeeded()
                 guard let resumePaymentToken else { throw handled(primerError: .invalidValue(key: "resumeToken")) }
                 return resumePaymentToken
             } else if case let InternalError.failedToPerform3dsAndShouldBreak(primerErr) = error {
@@ -307,6 +313,7 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
                 ) { result in
                     switch result {
                     case let .success(beginAuthResponse):
+                        self.observerReport.beginAuthResponded(with: beginAuthResponse.authentication)
                         switch beginAuthResponse.authentication.responseCode {
                         case .authSuccess,
                              .authFailed,
@@ -375,6 +382,7 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
             )
 
             Analytics.Service.fire(events: [present3DSUIEvent])
+            await observerReport.challengeShown(provider: Primer3DS.threeDsSdkProvider)
 
             return try await withCheckedThrowingContinuation { continuation in
                 primer3DS.performChallenge(
@@ -463,6 +471,7 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
                 threeDSTokenId: paymentMethodToken,
                 continueInfo: continueInfo
             )
+            await observerReport.continued(with: response.authentication)
             return response
         } catch {
             throw InternalError.failedToPerform3dsAndShouldBreak(error: error.normalizedForSDK)
