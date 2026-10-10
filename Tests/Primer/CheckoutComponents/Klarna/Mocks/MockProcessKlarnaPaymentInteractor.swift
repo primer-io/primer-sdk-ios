@@ -12,6 +12,11 @@ import UIKit
 @available(iOS 15.0, *)
 final class MockProcessKlarnaPaymentInteractor: ProcessKlarnaPaymentInteractor {
 
+    // MARK: - Payment View Heights
+
+    let paymentViewHeights: AsyncStream<CGFloat>
+    let paymentViewHeightContinuation: AsyncStream<CGFloat>.Continuation
+
     // MARK: - Configurable Return Values
 
     var sessionResultToReturn: KlarnaSessionResult?
@@ -27,6 +32,11 @@ final class MockProcessKlarnaPaymentInteractor: ProcessKlarnaPaymentInteractor {
     var authorizeError: Error?
     var finalizeError: Error?
     var tokenizeError: Error?
+
+    // MARK: - Holds
+
+    var holdsCreateSession = false
+    var holdsConfigureForCategory = false
 
     // MARK: - Call Tracking
 
@@ -50,10 +60,19 @@ final class MockProcessKlarnaPaymentInteractor: ProcessKlarnaPaymentInteractor {
     var onFinalize: (() async throws -> KlarnaAuthorizationResult)?
     var onTokenize: ((String) async throws -> PaymentResult)?
 
+    private var heldCalls: [CheckedContinuation<Void, Never>] = []
+
+    var heldCallCount: Int { heldCalls.count }
+
+    init() {
+        (paymentViewHeights, paymentViewHeightContinuation) = AsyncStream.makeStream(of: CGFloat.self)
+    }
+
     // MARK: - ProcessKlarnaPaymentInteractor Protocol
 
     func createSession() async throws -> KlarnaSessionResult {
         createSessionCallCount += 1
+        if holdsCreateSession { await hold() }
 
         if let onCreateSession {
             return try await onCreateSession()
@@ -73,6 +92,7 @@ final class MockProcessKlarnaPaymentInteractor: ProcessKlarnaPaymentInteractor {
         configureForCategoryCallCount += 1
         lastClientToken = clientToken
         lastCategoryId = categoryId
+        if holdsConfigureForCategory { await hold() }
 
         if let onConfigureForCategory {
             return try await onConfigureForCategory(clientToken, categoryId)
@@ -139,6 +159,15 @@ final class MockProcessKlarnaPaymentInteractor: ProcessKlarnaPaymentInteractor {
 
     // MARK: - Test Helpers
 
+    func release() {
+        heldCalls.forEach { $0.resume() }
+        heldCalls = []
+    }
+
+    func waitForPaymentViewHeight() async {
+        await hold()
+    }
+
     func reset() {
         createSessionCallCount = 0
         configureForCategoryCallCount = 0
@@ -167,5 +196,13 @@ final class MockProcessKlarnaPaymentInteractor: ProcessKlarnaPaymentInteractor {
         onAuthorize = nil
         onFinalize = nil
         onTokenize = nil
+
+        holdsCreateSession = false
+        holdsConfigureForCategory = false
+        release()
+    }
+
+    private func hold() async {
+        await withCheckedContinuation { heldCalls.append($0) }
     }
 }

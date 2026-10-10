@@ -23,6 +23,7 @@ final class DefaultKlarnaScopeTests: XCTestCase {
     }
 
     override func tearDown() async throws {
+        mockInteractor.release()
         mockInteractor = nil
         checkoutScope = nil
         await ContainerTestHelpers.resetSharedContainer()
@@ -74,16 +75,11 @@ final class DefaultKlarnaScopeTests: XCTestCase {
     @MainActor
     func test_start_afterReentryWhileCreatingTheSession_keepsThatSession() async throws {
         // Given
-        var heldSessions: [CheckedContinuation<Void, Never>] = []
-        mockInteractor.onCreateSession = {
-            await withCheckedContinuation { heldSessions.append($0) }
-            return KlarnaTestData.defaultSessionResult
-        }
+        mockInteractor.sessionResultToReturn = KlarnaTestData.defaultSessionResult
+        mockInteractor.holdsCreateSession = true
         let scope = createScope()
         scope.start()
-        try await withTimeout(2.0) { [self] in
-            while mockInteractor.createSessionCallCount < 1 { await Task.yield() }
-        }
+        try await awaitHeldCall()
 
         // When — the shopper returns to the list and picks Klarna again before the session exists
         scope.prepareForReentry()
@@ -93,7 +89,7 @@ final class DefaultKlarnaScopeTests: XCTestCase {
 
         // Then
         XCTAssertEqual(mockInteractor.createSessionCallCount, 1)
-        heldSessions.forEach { $0.resume() }
+        mockInteractor.release()
         _ = try await awaitValue(scope.state, matching: { $0.step == .categorySelection })
     }
 
@@ -153,7 +149,153 @@ final class DefaultKlarnaScopeTests: XCTestCase {
         XCTAssertEqual(mockInteractor.configureForCategoryCallCount, 0)
     }
 
+    // MARK: - Payment View Height Tests
+
+    @MainActor
+    func test_paymentViewHeight_reportedWhileTheViewLoads_isIgnored() async throws {
+        // Given
+        let scope = try await makeScopeLoadingCategory()
+
+        // When
+        mockInteractor.paymentViewHeightContinuation.yield(KlarnaTestData.Constants.paymentViewHeight)
+        await Task.yield()
+        let loading = try await awaitFirst(scope.state)
+        mockInteractor.release()
+        let loaded = try await awaitValue(scope.state) { $0.step == .viewReady }
+
+        // Then
+        XCTAssertEqual(loading.step, .categorySelection)
+        XCTAssertEqual(loading.paymentViewHeight, 0)
+        XCTAssertEqual(loaded.paymentViewHeight, 0)
+        XCTAssertFalse(loaded.isSelectedOptionReady)
+    }
+
+    @MainActor
+    func test_paymentViewHeight_reportedAfterTheViewLoads_makesTheOptionReady() async throws {
+        // Given
+        let scope = try await makeScopeWithLoadedView()
+
+        // When
+        mockInteractor.paymentViewHeightContinuation.yield(KlarnaTestData.Constants.paymentViewHeight)
+        let state = try await awaitValue(scope.state) { $0.isSelectedOptionReady }
+
+        // Then
+        XCTAssertEqual(state.step, .viewReady)
+        XCTAssertEqual(state.paymentViewHeight, KlarnaTestData.Constants.paymentViewHeight)
+    }
+
+    @MainActor
+    func test_paymentViewHeight_notReportedInTime_fallsBackAndMakesTheOptionReady() async throws {
+        // Given
+        let scope = try await makeScopeWithLoadedView()
+
+        // When
+        mockInteractor.release()
+        let state = try await awaitValue(scope.state) { $0.isSelectedOptionReady }
+
+        // Then
+        XCTAssertEqual(state.step, .viewReady)
+        XCTAssertEqual(state.paymentViewHeight, DefaultKlarnaScope.fallbackPaymentViewHeight)
+    }
+
+    @MainActor
+    func test_paymentViewHeight_reportedAfterTheFallback_replacesIt() async throws {
+        // Given
+        let scope = try await makeScopeWithLoadedView()
+        mockInteractor.release()
+        _ = try await awaitValue(scope.state) { $0.isSelectedOptionReady }
+
+        // When
+        mockInteractor.paymentViewHeightContinuation.yield(KlarnaTestData.Constants.paymentViewHeight)
+        let state = try await awaitValue(scope.state) {
+            $0.paymentViewHeight != DefaultKlarnaScope.fallbackPaymentViewHeight
+        }
+
+        // Then
+        XCTAssertEqual(state.paymentViewHeight, KlarnaTestData.Constants.paymentViewHeight)
+        XCTAssertTrue(state.isSelectedOptionReady)
+    }
+
+    @MainActor
+    func test_paymentViewHeight_reportedInTime_isKeptWhenTheWaitEnds() async throws {
+        // Given
+        let scope = try await makeScopeWithLoadedView()
+        mockInteractor.paymentViewHeightContinuation.yield(KlarnaTestData.Constants.paymentViewHeight)
+        _ = try await awaitValue(scope.state) { $0.isSelectedOptionReady }
+
+        // When
+        mockInteractor.release()
+        await Task.yield()
+        let state = try await awaitFirst(scope.state)
+
+        // Then
+        XCTAssertEqual(state.paymentViewHeight, KlarnaTestData.Constants.paymentViewHeight)
+    }
+
+    @MainActor
+    func test_isSelectedOptionReady_withoutAKlarnaView_isTrueOnceLoaded() async throws {
+        // Given
+        mockInteractor.sessionResultToReturn = KlarnaTestData.defaultSessionResult
+        let scope = createScope()
+        scope.start()
+        _ = try await awaitValue(scope.state) { $0.step == .categorySelection }
+
+        // When
+        scope.selectPaymentCategory(KlarnaTestData.Constants.categoryPayNow)
+        let state = try await awaitValue(scope.state) { $0.step == .viewReady }
+
+        // Then
+        XCTAssertTrue(state.isSelectedOptionReady)
+        XCTAssertEqual(state.paymentViewHeight, 0)
+    }
+
+    @MainActor
+    func test_selectPaymentCategory_afterAnotherIsReady_resetsTheHeightAndReadiness() async throws {
+        // Given
+        let scope = try await makeScopeOnKlarnaScreen()
+
+        // When
+        scope.selectPaymentCategory(KlarnaTestData.Constants.categoryPayLater)
+        let state = try await awaitValue(scope.state) {
+            $0.selectedCategoryId == KlarnaTestData.Constants.categoryPayLater
+        }
+
+        // Then
+        XCTAssertEqual(state.paymentViewHeight, 0)
+        XCTAssertFalse(state.isSelectedOptionReady)
+    }
+
     // MARK: - authorizePayment Tests
+
+    @MainActor
+    func test_authorizePayment_whileTheViewLoads_doesNotAuthorize() async throws {
+        // Given
+        let scope = try await makeScopeLoadingCategory()
+
+        // When
+        scope.authorizePayment()
+        await Task.yield()
+
+        // Then
+        let state = try await awaitFirst(scope.state)
+        XCTAssertEqual(state.step, .categorySelection)
+        XCTAssertEqual(mockInteractor.authorizeCallCount, 0)
+    }
+
+    @MainActor
+    func test_authorizePayment_beforeTheViewIsMeasured_doesNotAuthorize() async throws {
+        // Given
+        let scope = try await makeScopeWithLoadedView()
+
+        // When
+        scope.authorizePayment()
+        await Task.yield()
+
+        // Then
+        let state = try await awaitFirst(scope.state)
+        XCTAssertEqual(state.step, .viewReady)
+        XCTAssertEqual(mockInteractor.authorizeCallCount, 0)
+    }
 
     @MainActor
     func test_authorizePayment_callsInteractorAuthorize() async throws {
@@ -173,6 +315,7 @@ final class DefaultKlarnaScopeTests: XCTestCase {
         // Select a category and wait for view to load
         scope.selectPaymentCategory(KlarnaTestData.Constants.categoryPayNow)
         _ = try await awaitValue(scope.state, matching: { $0.step == .viewReady })
+        try await measurePaymentView(of: scope)
 
         // When
         scope.authorizePayment()
@@ -229,6 +372,7 @@ final class DefaultKlarnaScopeTests: XCTestCase {
 
         scope.selectPaymentCategory(KlarnaTestData.Constants.categoryPayNow)
         _ = try await awaitValue(scope.state, matching: { $0.step == .viewReady })
+        try await measurePaymentView(of: scope)
 
         // When
         scope.submit()
@@ -297,6 +441,7 @@ final class DefaultKlarnaScopeTests: XCTestCase {
         // Select category
         scope.selectPaymentCategory(KlarnaTestData.Constants.categoryPayNow)
         _ = try await awaitValue(scope.state, matching: { $0.step == .viewReady })
+        try await measurePaymentView(of: scope)
 
         // Authorize
         scope.authorizePayment()
@@ -331,6 +476,7 @@ final class DefaultKlarnaScopeTests: XCTestCase {
         // Select category + load view
         scope.selectPaymentCategory(KlarnaTestData.Constants.categoryPayNow)
         _ = try await awaitValue(scope.state, matching: { $0.step == .viewReady })
+        try await measurePaymentView(of: scope)
 
         // Authorize - should move to awaitingFinalization
         scope.authorizePayment()
@@ -402,6 +548,7 @@ final class DefaultKlarnaScopeTests: XCTestCase {
         _ = try await awaitValue(scope.state, matching: { $0.step == .categorySelection })
         scope.selectPaymentCategory(KlarnaTestData.Constants.categoryPayNow)
         _ = try await awaitValue(scope.state, matching: { $0.step == .viewReady })
+        try await measurePaymentView(of: scope)
 
         // When
         scope.authorizePayment()
@@ -427,6 +574,7 @@ final class DefaultKlarnaScopeTests: XCTestCase {
         _ = try await awaitValue(scope.state, matching: { $0.step == .categorySelection })
         scope.selectPaymentCategory(KlarnaTestData.Constants.categoryPayNow)
         _ = try await awaitValue(scope.state, matching: { $0.step == .viewReady })
+        try await measurePaymentView(of: scope)
 
         // When
         scope.authorizePayment()
@@ -498,6 +646,43 @@ final class DefaultKlarnaScopeTests: XCTestCase {
 
     // MARK: - Helper
 
+    @MainActor
+    private func awaitHeldCall(count: Int = 1) async throws {
+        try await withTimeout(2.0) { [self] in
+            while mockInteractor.heldCallCount < count { await Task.yield() }
+        }
+    }
+
+    @MainActor
+    private func measurePaymentView(of scope: DefaultKlarnaScope) async throws {
+        mockInteractor.paymentViewHeightContinuation.yield(KlarnaTestData.Constants.paymentViewHeight)
+        _ = try await awaitValue(scope.state) { $0.isSelectedOptionReady }
+    }
+
+    @MainActor
+    private func makeScopeLoadingCategory(
+        _ categoryId: String = KlarnaTestData.Constants.categoryPayNow
+    ) async throws -> DefaultKlarnaScope {
+        mockInteractor.sessionResultToReturn = KlarnaTestData.defaultSessionResult
+        mockInteractor.paymentViewToReturn = UIView()
+        mockInteractor.holdsConfigureForCategory = true
+        let scope = createScope()
+        scope.start()
+        _ = try await awaitValue(scope.state) { $0.step == .categorySelection }
+        scope.selectPaymentCategory(categoryId)
+        try await awaitHeldCall()
+        return scope
+    }
+
+    @MainActor
+    private func makeScopeWithLoadedView() async throws -> DefaultKlarnaScope {
+        let scope = try await makeScopeLoadingCategory()
+        mockInteractor.release()
+        _ = try await awaitValue(scope.state) { $0.step == .viewReady }
+        try await awaitHeldCall()
+        return scope
+    }
+
     /// A scope whose category view is ready, on a live checkout that shows the Klarna screen.
     @MainActor
     private func makeScopeOnKlarnaScreen(
@@ -510,12 +695,14 @@ final class DefaultKlarnaScopeTests: XCTestCase {
         let scope = DefaultKlarnaScope(
             checkoutScope: checkoutScope,
             presentationContext: presentationContext,
-            processKlarnaInteractor: mockInteractor
+            processKlarnaInteractor: mockInteractor,
+            waitForPaymentViewHeight: mockInteractor.waitForPaymentViewHeight
         )
         scope.start()
         _ = try await awaitValue(scope.state) { $0.step == .categorySelection }
         scope.selectPaymentCategory(KlarnaTestData.Constants.categoryPayNow)
         _ = try await awaitValue(scope.state) { $0.step == .viewReady }
+        try await measurePaymentView(of: scope)
         checkoutScope.updateNavigationState(.paymentMethod(PrimerPaymentMethodType.klarna.rawValue))
         return scope
     }
@@ -546,7 +733,8 @@ final class DefaultKlarnaScopeTests: XCTestCase {
         return DefaultKlarnaScope(
             checkoutScope: checkoutScope,
             presentationContext: presentationContext,
-            processKlarnaInteractor: mockInteractor
+            processKlarnaInteractor: mockInteractor,
+            waitForPaymentViewHeight: mockInteractor.waitForPaymentViewHeight
         )
     }
 }

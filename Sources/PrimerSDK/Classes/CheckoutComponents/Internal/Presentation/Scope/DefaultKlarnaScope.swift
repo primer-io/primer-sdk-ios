@@ -12,6 +12,9 @@ import SwiftUI
 @MainActor
 final class DefaultKlarnaScope: PrimerKlarnaScope, ObservableObject, LogReporter {
 
+  nonisolated static let paymentViewHeightTimeout: UInt64 = 1_500_000_000
+  static let fallbackPaymentViewHeight: CGFloat = 200
+
   private(set) var presentationContext: PresentationContext
 
   var dismissalMechanism: [DismissalMechanism] {
@@ -42,6 +45,7 @@ final class DefaultKlarnaScope: PrimerKlarnaScope, ObservableObject, LogReporter
   private weak var checkoutScope: DefaultCheckoutScope?
   private let processKlarnaInteractor: ProcessKlarnaPaymentInteractor
   private let analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol?
+  private let waitForPaymentViewHeight: () async -> Void
 
   @Published private var internalState = PrimerKlarnaState()
 
@@ -50,18 +54,30 @@ final class DefaultKlarnaScope: PrimerKlarnaScope, ObservableObject, LogReporter
   private var authorizationToken: String?
 
   private var sessionTask: Task<Void, Never>?
+  private var paymentViewHeightTask: Task<Void, Never>?
+  private var paymentViewHeightFallbackTask: Task<Void, Never>?
   private var hasStarted = false
 
   init(
     checkoutScope: DefaultCheckoutScope,
     presentationContext: PresentationContext = .fromPaymentSelection,
     processKlarnaInteractor: ProcessKlarnaPaymentInteractor,
-    analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol? = nil
+    analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol? = nil,
+    waitForPaymentViewHeight: @escaping () async -> Void = {
+      try? await Task.sleep(nanoseconds: DefaultKlarnaScope.paymentViewHeightTimeout)
+    }
   ) {
     self.checkoutScope = checkoutScope
     self.presentationContext = presentationContext
     self.processKlarnaInteractor = processKlarnaInteractor
     self.analyticsInteractor = analyticsInteractor
+    self.waitForPaymentViewHeight = waitForPaymentViewHeight
+    observePaymentViewHeights()
+  }
+
+  deinit {
+    paymentViewHeightTask?.cancel()
+    paymentViewHeightFallbackTask?.cancel()
   }
 
   func start() {
@@ -103,6 +119,7 @@ final class DefaultKlarnaScope: PrimerKlarnaScope, ObservableObject, LogReporter
       selectedCategoryId: categoryId
     )
     paymentView = nil
+    paymentViewHeightFallbackTask?.cancel()
 
     Task { [self] in
       await loadPaymentView(for: categoryId)
@@ -110,10 +127,11 @@ final class DefaultKlarnaScope: PrimerKlarnaScope, ObservableObject, LogReporter
   }
 
   func authorizePayment() {
-    guard internalState.step == .viewReady || internalState.step == .categorySelection else {
-      logger.warn(message: "Cannot authorize in current step: \(internalState.step)")
+    guard internalState.isSelectedOptionReady else {
+      logger.warn(message: "Cannot authorize before the selected option is ready, step: \(internalState.step)")
       return
     }
+    paymentViewHeightFallbackTask?.cancel()
 
     internalState = PrimerKlarnaState(
       step: .authorizationStarted,
@@ -144,6 +162,35 @@ final class DefaultKlarnaScope: PrimerKlarnaScope, ObservableObject, LogReporter
       return
     }
     checkoutScope.checkoutNavigator.navigateBack()
+  }
+
+  private func observePaymentViewHeights() {
+    let heights = processKlarnaInteractor.paymentViewHeights
+    paymentViewHeightTask = Task { [weak self] in
+      for await height in heights {
+        guard let self else { return }
+        updatePaymentViewHeight(height)
+      }
+    }
+  }
+
+  private func updatePaymentViewHeight(_ height: CGFloat) {
+    guard internalState.step == .viewReady, height != internalState.paymentViewHeight else { return }
+    internalState.paymentViewHeight = height
+    guard height > 0 else { return }
+    paymentViewHeightFallbackTask?.cancel()
+    internalState.isSelectedOptionReady = true
+  }
+
+  private func startPaymentViewHeightFallback() {
+    paymentViewHeightFallbackTask = Task { [weak self, waitForPaymentViewHeight] in
+      await waitForPaymentViewHeight()
+      guard let self, !Task.isCancelled, internalState.step == .viewReady, !internalState.isSelectedOptionReady
+      else { return }
+      logger.warn(message: "Klarna reported no payment view height, showing the fallback height")
+      internalState.paymentViewHeight = Self.fallbackPaymentViewHeight
+      internalState.isSelectedOptionReady = true
+    }
   }
 
   private func handleError(_ error: Error, context: String) {
@@ -202,8 +249,12 @@ final class DefaultKlarnaScope: PrimerKlarnaScope, ObservableObject, LogReporter
       internalState = PrimerKlarnaState(
         step: .viewReady,
         categories: internalState.categories,
-        selectedCategoryId: internalState.selectedCategoryId
+        selectedCategoryId: internalState.selectedCategoryId,
+        isSelectedOptionReady: view == nil
       )
+      if view != nil {
+        startPaymentViewHeightFallback()
+      }
     } catch {
       logger.error(message: "Failed to load Klarna payment view: \(error.localizedDescription)")
       guard internalState.selectedCategoryId == categoryId else { return }
