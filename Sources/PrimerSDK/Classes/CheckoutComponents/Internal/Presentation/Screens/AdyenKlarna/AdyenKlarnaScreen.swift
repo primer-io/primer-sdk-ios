@@ -54,10 +54,10 @@ struct AdyenKlarnaScreen: View {
                     Button(action: scope.onBack) {
                         HStack(spacing: PrimerSpacing.xsmall(tokens: tokens)) {
                             Image(systemName: RTLIcon.backChevron)
-                                .font(PrimerFont.bodyMedium(tokens: tokens))
+                                .font(PrimerFont.titleLarge(tokens: tokens))
                                 .foregroundColor(CheckoutColors.iconPrimary(tokens: tokens))
                             Text(CheckoutComponentsStrings.backButton)
-                                .primerTypography(.bodyMedium, tokens: tokens)
+                                .primerTypography(.titleLarge, tokens: tokens)
                         }
                         .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
                     }

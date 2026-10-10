@@ -40,7 +40,7 @@ struct ApplePayScreen: View {
       if presentationContext.shouldShowBackButton {
         Button(action: scope.onBack) {
           Image(systemName: RTLIcon.backChevron)
-            .font(PrimerFont.bodyMedium(tokens: tokens))
+            .font(PrimerFont.titleLarge(tokens: tokens))
             .foregroundColor(CheckoutColors.iconPrimary(tokens: tokens))
         }
         .buttonStyle(PlainButtonStyle())
