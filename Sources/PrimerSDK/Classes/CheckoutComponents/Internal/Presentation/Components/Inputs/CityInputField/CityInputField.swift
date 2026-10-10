@@ -55,7 +55,8 @@ struct CityInputField: View, LogReporter {
           placeholder: placeholder,
           validationService: validationService,
           scope: scope,
-          tokens: tokens
+          tokens: tokens,
+          accessibility: accessibilityConfig
         )
       } else {
         // Fallback view while loading validation service
@@ -65,19 +66,23 @@ struct CityInputField: View, LogReporter {
       }
     }
     .accessibility(
-      config: AccessibilityConfiguration(
-        identifier: AccessibilityIdentifiers.CardForm.billingCityField,
-        label: label ?? placeholder,
-        hint: CheckoutComponentsStrings.a11yBillingAddressCityHint,
-        value: errorMessage,
-        traits: []
-      ),
+      config: accessibilityConfig,
       combinesChildren: false
     )
     .programmaticValue(.city, from: scope, text: $city, isFocused: $isFocused)
     .onAppear {
       setupValidationService()
     }
+  }
+
+  private var accessibilityConfig: AccessibilityConfiguration {
+    AccessibilityConfiguration(
+      identifier: AccessibilityIdentifiers.CardForm.billingCityField,
+      label: label ?? placeholder,
+      hint: CheckoutComponentsStrings.a11yBillingAddressCityHint,
+      value: errorMessage,
+      traits: []
+    )
   }
 
   private func setupValidationService() {

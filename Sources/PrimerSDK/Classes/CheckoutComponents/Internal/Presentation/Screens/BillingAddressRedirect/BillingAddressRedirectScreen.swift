@@ -31,6 +31,7 @@ struct BillingAddressRedirectScreen: View {
       VStack(spacing: PrimerSpacing.xxlarge(tokens: tokens)) {
         makeHeaderSection()
         makeBillingAddressForm()
+          .environment(\.isInputEnabled, !isSubmitInFlight)
         makeSubmitButtonSection()
       }
       .padding(.horizontal, PrimerSpacing.large(tokens: tokens))
@@ -45,6 +46,7 @@ struct BillingAddressRedirectScreen: View {
         billingState = newState
       }
     }
+    .onChange(of: isSubmitInFlight) { if $0 { focusedField = nil } }
   }
 
   // MARK: - Header
@@ -56,12 +58,14 @@ struct BillingAddressRedirectScreen: View {
           Button(action: scope.onBack) {
             HStack(spacing: PrimerSpacing.xsmall(tokens: tokens)) {
               Image(systemName: RTLIcon.backChevron)
-                .font(PrimerFont.bodyMedium(tokens: tokens))
+                .font(PrimerFont.titleLarge(tokens: tokens))
                 .foregroundColor(CheckoutColors.iconPrimary(tokens: tokens))
               Text(CheckoutComponentsStrings.backButton)
+                .primerTypography(.titleLarge, tokens: tokens)
             }
             .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
           }
+          .buttonStyle(PlainButtonStyle())
           .accessibility(config: AccessibilityConfiguration(
             identifier: AccessibilityIdentifiers.BillingAddressRedirect.backButton,
             label: CheckoutComponentsStrings.a11yBack,
@@ -93,7 +97,8 @@ struct BillingAddressRedirectScreen: View {
   // MARK: - Billing Address Form
 
   private func makeBillingAddressForm() -> some View {
-    VStack(spacing: PrimerSpacing.medium(tokens: tokens)) {
+    // Each field container pads its own bottom, as in the card form.
+    VStack(spacing: 0) {
       makeCountryField()
       makeTextField(
         label: CheckoutComponentsStrings.addressLine1Label,
@@ -111,7 +116,8 @@ struct BillingAddressRedirectScreen: View {
         identifier: AccessibilityIdentifiers.BillingAddressRedirect.addressLine2Field,
         onUpdate: scope.updateAddressLine2
       )
-      HStack(spacing: PrimerSpacing.medium(tokens: tokens)) {
+      // Top-aligned, as in the card form: an error under one field must not push its neighbour down.
+      HStack(alignment: .top, spacing: PrimerSpacing.medium(tokens: tokens)) {
         makeTextField(
           label: CheckoutComponentsStrings.postalCodeLabel,
           placeholder: CheckoutComponentsStrings.postalCodePlaceholder,
@@ -162,19 +168,32 @@ struct BillingAddressRedirectScreen: View {
         HStack {
           if let selected = CountryCode(rawValue: countryCode) {
             Text("\(selected.flag ?? "") \(selected.country)")
-              .foregroundColor(CheckoutColors.inputText(tokens: tokens))
+              .foregroundColor(CheckoutColors.inputText(tokens: tokens, isEnabled: !isSubmitInFlight))
+              .primerFieldTypography(.bodyLarge, tokens: tokens)
           } else {
             Text(CheckoutComponentsStrings.countrySelectorPlaceholder)
               .foregroundColor(CheckoutColors.textPlaceholder(tokens: tokens))
+              .primerFieldTypography(.bodyLarge, tokens: tokens)
           }
           Spacer(minLength: 0)
           Image(systemName: "chevron.down")
             .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
+            .font(PrimerFont.bodyLarge(tokens: tokens))
         }
-        .font(PrimerFont.bodyLarge(tokens: tokens))
       }
-      .accessibilityIdentifier(AccessibilityIdentifiers.BillingAddressRedirect.countryCodeField)
+      .accessibilityIdentifier(
+        AccessibilityIdentifiers.inputField(within: AccessibilityIdentifiers.BillingAddressRedirect.countryCodeField))
     }
+    .accessibility(
+      config: fieldAccessibility(
+        for: .countryCode,
+        identifier: AccessibilityIdentifiers.BillingAddressRedirect.countryCodeField,
+        label: CheckoutComponentsStrings.countryLabel,
+        // The label replaces the menu's own text, so the selected country is read as the value.
+        value: CountryCode(rawValue: countryCode)?.country
+      ),
+      combinesChildren: false
+    )
   }
 
   private func makeTextField(
@@ -194,12 +213,44 @@ struct BillingAddressRedirectScreen: View {
     ) {
       TextField(placeholder, text: text)
         .primerFieldTypography(.bodyLarge, tokens: tokens)
-        .foregroundColor(CheckoutColors.inputText(tokens: tokens))
+        .foregroundColor(CheckoutColors.inputText(tokens: tokens, isEnabled: !isSubmitInFlight))
         .focused($focusedField, equals: fieldType)
         .autocapitalization(.words)
         .disableAutocorrection(true)
-        .accessibilityIdentifier(identifier)
+        .accessibilityIdentifier(AccessibilityIdentifiers.inputField(within: identifier))
+        .tint(CheckoutColors.borderFocus(tokens: tokens))
         .onChange(of: text.wrappedValue, perform: onUpdate)
+    }
+    .accessibility(
+      config: fieldAccessibility(for: fieldType, identifier: identifier, label: label),
+      combinesChildren: false
+    )
+  }
+
+  /// The container merges its children into one element, so that element carries the field's id and error.
+  private func fieldAccessibility(
+    for fieldType: PrimerInputElementType,
+    identifier: String,
+    label: String,
+    value: String? = nil
+  ) -> AccessibilityConfiguration {
+    AccessibilityConfiguration(
+      identifier: identifier,
+      label: label,
+      hint: accessibilityHint(for: fieldType),
+      value: billingState.errors[fieldType]?.message ?? value,
+      traits: []
+    )
+  }
+
+  private func accessibilityHint(for fieldType: PrimerInputElementType) -> String? {
+    switch fieldType {
+    case .countryCode: CheckoutComponentsStrings.a11yBillingAddressCountryHint
+    case .addressLine1, .addressLine2: CheckoutComponentsStrings.a11yBillingAddressHint
+    case .postalCode: CheckoutComponentsStrings.a11yBillingAddressPostalCodeHint
+    case .city: CheckoutComponentsStrings.a11yBillingAddressCityHint
+    case .state: CheckoutComponentsStrings.a11yBillingAddressStateHint
+    default: nil
     }
   }
 
@@ -225,7 +276,8 @@ struct BillingAddressRedirectScreen: View {
         isLoading: isSubmitInFlight,
         accessibilityConfiguration: AccessibilityConfiguration(
           identifier: AccessibilityIdentifiers.BillingAddressRedirect.submitButton,
-          label: submitButtonText,
+          label: isSubmitInFlight ? CheckoutComponentsStrings.a11ySubmitButtonLoading : submitButtonText,
+          hint: isSubmitInFlight || billingState.isFormValid ? nil : CheckoutComponentsStrings.a11ySubmitButtonDisabled,
           traits: [.isButton]
         ),
         action: scope.submit

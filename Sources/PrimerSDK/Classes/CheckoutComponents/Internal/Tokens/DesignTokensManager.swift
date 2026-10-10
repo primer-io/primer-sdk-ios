@@ -27,9 +27,8 @@ final class DesignTokensManager: ObservableObject {
 
   func fetchTokens(for colorScheme: ColorScheme) async throws {
     // the only place the color scheme picks a set, so everything below works off one resolved set
-    let colors = themeOverrides?.resolvedColors(for: colorScheme)
-    let loadedTokens = try Self.makeTokens(
-      for: colorScheme, valueOverrides: tokenValueOverrides(colors: colors))
+    let colors = themeOverrides?.resolvedColors(for: colorScheme)?.pinned(to: colorScheme)
+    let loadedTokens = try Self.makeTokens(for: colorScheme, valueOverrides: tokenValueOverrides(colors: colors))
 
     // applied last so an explicit token wins over a palette value it aliases
     applyThemeOverrides(to: loadedTokens, colors: colors)
@@ -71,7 +70,8 @@ final class DesignTokensManager: ObservableObject {
       }
     }
 
-    guard let brand = colors?.primerColorBrand, let components = Self.colorComponents(brand) else {
+    guard let brand = colors?.primerColorBrand,
+          let components = Self.colorComponents(brand) else {
       return overrides
     }
     overrides["primerColorBrand"] = components
@@ -123,12 +123,15 @@ final class DesignTokensManager: ObservableObject {
     }
   }
 
+  /// The colour is pinned to the loaded scheme, so the current trait supplies only its contrast setting.
   private nonisolated static func colorComponents(_ color: Color) -> [CGFloat]? {
     var red: CGFloat = 0
     var green: CGFloat = 0
     var blue: CGFloat = 0
     var alpha: CGFloat = 0
-    guard UIColor(color).getRed(&red, green: &green, blue: &blue, alpha: &alpha) else {
+    // JSONSerialization aborts the app on a NaN or infinite component, and `try` cannot catch that.
+    guard UIColor(color).resolvedColor(with: .current).getRed(&red, green: &green, blue: &blue, alpha: &alpha),
+          [red, green, blue, alpha].allSatisfy(\.isFinite) else {
       PrimerLogging.shared.logger.error(
         message: "[DesignTokens] Palette override ignored: color has no readable RGB components.")
       return nil
@@ -256,7 +259,12 @@ final class DesignTokensManager: ObservableObject {
     if let value = colors.primerColorIconDisabled { tokens.primerColorIconDisabled = value }
     if let value = colors.primerColorIconNegative { tokens.primerColorIconNegative = value }
     if let value = colors.primerColorIconPositive { tokens.primerColorIconPositive = value }
-    if let value = colors.primerColorFocus { tokens.primerColorFocus = value }
+    if let value = colors.primerColorFocus {
+      tokens.primerColorFocus = value
+      // both focus borders alias focus, so they follow unless the merchant names them too
+      if colors.primerColorBorderOutlinedFocus == nil { tokens.primerColorBorderOutlinedFocus = value }
+      if colors.primerColorBorderTransparentFocus == nil { tokens.primerColorBorderTransparentFocus = value }
+    }
     if let value = colors.primerColorLoader { tokens.primerColorLoader = value }
   }
 
@@ -416,6 +424,53 @@ final class DesignTokensManager: ObservableObject {
     return dictionary
   }
 
+}
+
+@available(iOS 15.0, *)
+private extension ColorOverrides {
+  /// Inline, the merchant's views keep their scheme, so an unpinned dynamic colour would mix with tokens loaded for another.
+  func pinned(to colorScheme: ColorScheme) -> ColorOverrides { // swiftlint:disable:this function_body_length
+    let style: UIUserInterfaceStyle = colorScheme == .dark ? .dark : .light
+    // Only the style is replaced: contrast and the other traits still come from the view.
+    let pin: (Color?) -> Color? = { color in
+      color.map { color in
+        Color(UIColor { UIColor(color).resolvedColor(with: UITraitCollection(traitsFrom: [$0, .init(userInterfaceStyle: style)])) })
+      }
+    }
+    return ColorOverrides(
+      primerColorBrand: pin(primerColorBrand),
+      primerColorOnBrand: pin(primerColorOnBrand),
+      primerColorBackgroundPrimary: pin(primerColorBackgroundPrimary),
+      primerColorBackgroundSecondary: pin(primerColorBackgroundSecondary),
+      primerColorBackgroundOutlinedDefault: pin(primerColorBackgroundOutlinedDefault),
+      primerColorBackgroundOutlinedDisabled: pin(primerColorBackgroundOutlinedDisabled),
+      primerColorTextPrimary: pin(primerColorTextPrimary),
+      primerColorTextSecondary: pin(primerColorTextSecondary),
+      primerColorTextPlaceholder: pin(primerColorTextPlaceholder),
+      primerColorTextDisabled: pin(primerColorTextDisabled),
+      primerColorTextNegative: pin(primerColorTextNegative),
+      primerColorTextLink: pin(primerColorTextLink),
+      primerColorTextOutlinedDefault: pin(primerColorTextOutlinedDefault),
+      primerColorBorderOutlinedDefault: pin(primerColorBorderOutlinedDefault),
+      primerColorBorderOutlinedActive: pin(primerColorBorderOutlinedActive),
+      primerColorBorderOutlinedFocus: pin(primerColorBorderOutlinedFocus),
+      primerColorBorderOutlinedDisabled: pin(primerColorBorderOutlinedDisabled),
+      primerColorBorderOutlinedError: pin(primerColorBorderOutlinedError),
+      primerColorBorderOutlinedSelected: pin(primerColorBorderOutlinedSelected),
+      primerColorBorderOutlinedLoading: pin(primerColorBorderOutlinedLoading),
+      primerColorBorderTransparentDefault: pin(primerColorBorderTransparentDefault),
+      primerColorBorderTransparentActive: pin(primerColorBorderTransparentActive),
+      primerColorBorderTransparentFocus: pin(primerColorBorderTransparentFocus),
+      primerColorBorderTransparentDisabled: pin(primerColorBorderTransparentDisabled),
+      primerColorBorderTransparentSelected: pin(primerColorBorderTransparentSelected),
+      primerColorIconPrimary: pin(primerColorIconPrimary),
+      primerColorIconDisabled: pin(primerColorIconDisabled),
+      primerColorIconNegative: pin(primerColorIconNegative),
+      primerColorIconPositive: pin(primerColorIconPositive),
+      primerColorFocus: pin(primerColorFocus),
+      primerColorLoader: pin(primerColorLoader)
+    )
+  }
 }
 
 // swiftlint:enable cyclomatic_complexity

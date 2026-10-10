@@ -13,8 +13,8 @@ import SwiftUI
 enum ThemeDemos {
     static let entries: [(metadata: DemoMetadata, theme: PrimerCheckoutTheme)] = [
         (meta(.customTheme, "Custom Theme", "Purple brand, rounded corners, custom type"), customTheme),
-        (meta(.redTheme, "Red Theme", "Brand color override"), brandTheme(0xE53E3E)),
-        (meta(.greenTheme, "Green Theme", "Brand color override"), brandTheme(0x38A169)),
+        (meta(.redTheme, "Red Theme", "Brand color override"), brandTheme(0xE53E3E, onBrand: .black)),
+        (meta(.greenTheme, "Green Theme", "Brand color override"), brandTheme(0x38A169, onBrand: .black)),
         (meta(.purpleTheme, "Purple Theme", "Brand color override"), brandTheme(0x805AD5)),
         (meta(.noRadiusTheme, "No Radius", "Sharp rectangular design via radius tokens"), noRadiusTheme),
         (meta(.smallSizesTheme, "Small Sizes", "Compact components via size tokens"), smallSizesTheme),
@@ -29,14 +29,16 @@ enum ThemeDemos {
         DemoMetadata(key: key, name: name, description: description, tags: ["THEME"], isCustom: false, category: .themes)
     }
 
-    private static func brandTheme(_ hex: UInt32) -> PrimerCheckoutTheme {
-        PrimerCheckoutTheme(
-            colors: ColorOverrides(
-                primerColorBrand: Color(hex: hex),
-                primerColorBorderOutlinedDefault: Color(hex: hex),
-                primerColorBorderOutlinedFocus: Color(hex: hex)
-            )
+    /// Dark mode reads `darkColors` alone, and its default label on the brand is near black, so both are set here.
+    /// White on the red and green fills is below the 4.5:1 text contrast minimum, so they take a black label.
+    private static func brandTheme(_ hex: UInt32, onBrand: Color = .white) -> PrimerCheckoutTheme {
+        let colors = ColorOverrides(
+            primerColorBrand: Color(hex: hex),
+            primerColorOnBrand: onBrand,
+            primerColorBorderOutlinedDefault: Color(hex: hex),
+            primerColorBorderOutlinedFocus: Color(hex: hex)
         )
+        return PrimerCheckoutTheme(colors: colors, darkColors: colors)
     }
 
     /// Applies the same `TypographyStyle` to every text token — the shape shared by the weight, size,
@@ -53,12 +55,16 @@ enum ThemeDemos {
         )
     }
 
+    private static let customColors = ColorOverrides(
+        primerColorBrand: Color(hex: 0x6B46C1),
+        primerColorOnBrand: .white,
+        primerColorBorderOutlinedDefault: Color(hex: 0xD6BCFA),
+        primerColorBorderOutlinedFocus: Color(hex: 0x6B46C1)
+    )
+
     private static let customTheme = PrimerCheckoutTheme(
-        colors: ColorOverrides(
-            primerColorBrand: Color(hex: 0x6B46C1),
-            primerColorBorderOutlinedDefault: Color(hex: 0xD6BCFA),
-            primerColorBorderOutlinedFocus: Color(hex: 0x6B46C1)
-        ),
+        colors: customColors,
+        darkColors: customColors,
         radius: RadiusOverrides(
             primerRadiusXsmall: 8, primerRadiusSmall: 12, primerRadiusMedium: 16,
             primerRadiusLarge: 24

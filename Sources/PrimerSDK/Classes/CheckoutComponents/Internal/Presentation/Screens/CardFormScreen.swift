@@ -43,12 +43,14 @@ struct CardFormScreen: View, LogReporter {
           Button(action: scope.onBack) {
             HStack(spacing: PrimerSpacing.xsmall(tokens: tokens)) {
               Image(systemName: RTLIcon.backChevron)
-                .font(PrimerFont.bodyMedium(tokens: tokens))
+                .font(PrimerFont.titleLarge(tokens: tokens))
                 .foregroundColor(CheckoutColors.iconPrimary(tokens: tokens))
               Text(CheckoutComponentsStrings.backButton)
+                .primerTypography(.titleLarge, tokens: tokens)
             }
             .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
           }
+          .buttonStyle(PlainButtonStyle())
           .accessibility(
             config: AccessibilityConfiguration(
               identifier: AccessibilityIdentifiers.Common.backButton,
@@ -89,7 +91,7 @@ struct CardFormScreen: View, LogReporter {
       .accessibilityAddTraits(.isHeader)
   }
 
-  // Plain "Pay" like Android, RN, Web and Figma; the merchant setting for the text is ORC-8704.
+  // Plain "Pay" like Android, RN, Web and Figma.
   private var payTitle: String {
     scope.cardFormUIOptions?.payButtonAddNewCard == true
       ? CheckoutComponentsStrings.addCardButton : CheckoutComponentsStrings.payButton

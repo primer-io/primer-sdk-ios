@@ -71,7 +71,8 @@ struct CardNumberInputField: View, LogReporter {
             scope: scope,
             placeholder: placeholder,
             validationService: validationService,
-            tokens: tokens
+            tokens: tokens,
+            accessibility: accessibilityConfig
           )
         } else {
           TextField(placeholder, text: .constant(""))
@@ -88,7 +89,7 @@ struct CardNumberInputField: View, LogReporter {
               .padding(.vertical, 2)
               .background(CheckoutColors.backgroundSecondary(tokens: tokens))
               .cornerRadius(PrimerRadius.xsmall(tokens: tokens))
-              .frame(height: PrimerSize.small(tokens: tokens))
+              .frame(minHeight: PrimerSize.small(tokens: tokens))
           }
 
           if availableNetworks.count > 1 {
@@ -121,13 +122,7 @@ struct CardNumberInputField: View, LogReporter {
       }
     )
     .accessibility(
-      config: AccessibilityConfiguration(
-        identifier: AccessibilityIdentifiers.CardForm.cardNumberField,
-        label: CheckoutComponentsStrings.a11yCardNumberLabel,
-        hint: CheckoutComponentsStrings.a11yCardNumberHint,
-        value: errorMessage,
-        traits: []
-      ),
+      config: accessibilityConfig,
       combinesChildren: false
     )
     .programmaticValue(.cardNumber, from: scope, text: $cardNumber, isFocused: $isFocused)
@@ -147,6 +142,16 @@ struct CardNumberInputField: View, LogReporter {
   }
 
   // MARK: - Private Methods
+
+  private var accessibilityConfig: AccessibilityConfiguration {
+    AccessibilityConfiguration(
+      identifier: AccessibilityIdentifiers.CardForm.cardNumberField,
+      label: CheckoutComponentsStrings.a11yCardNumberLabel,
+      hint: CheckoutComponentsStrings.a11yCardNumberHint,
+      value: errorMessage,
+      traits: []
+    )
+  }
 
   private func setupValidationService() {
     guard let container else {

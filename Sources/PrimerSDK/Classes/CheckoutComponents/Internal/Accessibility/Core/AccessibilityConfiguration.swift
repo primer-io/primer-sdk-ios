@@ -18,6 +18,11 @@ struct AccessibilityConfiguration {
   let isHidden: Bool
   let sortPriority: Int
 
+  var labelWithValue: String {
+    guard let value, !value.isEmpty else { return label }
+    return "\(label), \(value)"
+  }
+
   init(
     identifier: String,
     label: String,

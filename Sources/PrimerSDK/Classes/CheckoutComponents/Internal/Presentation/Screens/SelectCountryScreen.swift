@@ -78,6 +78,7 @@ struct SelectCountryScreen: View, LogReporter {
         )
       )
       .textFieldStyle(PlainTextFieldStyle())
+      .tint(CheckoutColors.borderFocus(tokens: tokens))
       .accessibilityIdentifier(AccessibilityIdentifiers.SelectCountry.searchField)
 
       if !countryState.searchQuery.isEmpty {
@@ -89,6 +90,7 @@ struct SelectCountryScreen: View, LogReporter {
             Image(systemName: "xmark.circle.fill")
               .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
           })
+        .buttonStyle(PlainButtonStyle())
       }
     }
     .padding(.horizontal, PrimerSpacing.medium(tokens: tokens))

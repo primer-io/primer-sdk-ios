@@ -73,12 +73,14 @@ struct AchView: View, LogReporter {
         Button(action: scope.onBack) {
           HStack(spacing: PrimerSpacing.xsmall(tokens: tokens)) {
             Image(systemName: RTLIcon.backChevron)
-              .font(PrimerFont.bodyMedium(tokens: tokens))
+              .font(PrimerFont.titleLarge(tokens: tokens))
               .foregroundColor(CheckoutColors.iconPrimary(tokens: tokens))
             Text(CheckoutComponentsStrings.backButton)
+              .primerTypography(.titleLarge, tokens: tokens)
           }
           .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
         }
+        .buttonStyle(PlainButtonStyle())
         .accessibility(
           config: AccessibilityConfiguration(
             identifier: AccessibilityIdentifiers.Common.backButton,

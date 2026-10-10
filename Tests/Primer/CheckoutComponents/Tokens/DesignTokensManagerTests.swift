@@ -118,7 +118,7 @@ final class DesignTokensManagerTests: XCTestCase {
 
         // Then
         let tokens = try XCTUnwrap(sut.tokens)
-        XCTAssertEqual(tokens.primerColorBrand, customBrand)
+        XCTAssertEqual(rgba(tokens.primerColorBrand), rgba(customBrand))
     }
 
     func test_applyTheme_semanticColorOverrides_appliedToTokens() async throws {
@@ -135,7 +135,7 @@ final class DesignTokensManagerTests: XCTestCase {
 
         // Then
         let tokens = try XCTUnwrap(sut.tokens)
-        XCTAssertEqual(tokens.primerColorBackgroundPrimary, .white)
+        XCTAssertEqual(rgba(tokens.primerColorBackgroundPrimary), rgba(.white))
     }
 
     func test_applyTheme_textColorOverrides_appliedToTokens() async throws {
@@ -158,12 +158,12 @@ final class DesignTokensManagerTests: XCTestCase {
 
         // Then
         let tokens = try XCTUnwrap(sut.tokens)
-        XCTAssertEqual(tokens.primerColorTextPrimary, customColor)
-        XCTAssertEqual(tokens.primerColorTextSecondary, customColor)
-        XCTAssertEqual(tokens.primerColorTextPlaceholder, customColor)
-        XCTAssertEqual(tokens.primerColorTextDisabled, customColor)
-        XCTAssertEqual(tokens.primerColorTextNegative, customColor)
-        XCTAssertEqual(tokens.primerColorTextLink, customColor)
+        XCTAssertEqual(rgba(tokens.primerColorTextPrimary), rgba(customColor))
+        XCTAssertEqual(rgba(tokens.primerColorTextSecondary), rgba(customColor))
+        XCTAssertEqual(rgba(tokens.primerColorTextPlaceholder), rgba(customColor))
+        XCTAssertEqual(rgba(tokens.primerColorTextDisabled), rgba(customColor))
+        XCTAssertEqual(rgba(tokens.primerColorTextNegative), rgba(customColor))
+        XCTAssertEqual(rgba(tokens.primerColorTextLink), rgba(customColor))
     }
 
     func test_applyTheme_outlinedBorderColorOverrides_appliedToTokens() async throws {
@@ -187,13 +187,13 @@ final class DesignTokensManagerTests: XCTestCase {
 
         // Then
         let tokens = try XCTUnwrap(sut.tokens)
-        XCTAssertEqual(tokens.primerColorBorderOutlinedDefault, customColor)
-        XCTAssertEqual(tokens.primerColorBorderOutlinedActive, customColor)
-        XCTAssertEqual(tokens.primerColorBorderOutlinedFocus, customColor)
-        XCTAssertEqual(tokens.primerColorBorderOutlinedDisabled, customColor)
-        XCTAssertEqual(tokens.primerColorBorderOutlinedError, customColor)
-        XCTAssertEqual(tokens.primerColorBorderOutlinedSelected, customColor)
-        XCTAssertEqual(tokens.primerColorBorderOutlinedLoading, customColor)
+        XCTAssertEqual(rgba(tokens.primerColorBorderOutlinedDefault), rgba(customColor))
+        XCTAssertEqual(rgba(tokens.primerColorBorderOutlinedActive), rgba(customColor))
+        XCTAssertEqual(rgba(tokens.primerColorBorderOutlinedFocus), rgba(customColor))
+        XCTAssertEqual(rgba(tokens.primerColorBorderOutlinedDisabled), rgba(customColor))
+        XCTAssertEqual(rgba(tokens.primerColorBorderOutlinedError), rgba(customColor))
+        XCTAssertEqual(rgba(tokens.primerColorBorderOutlinedSelected), rgba(customColor))
+        XCTAssertEqual(rgba(tokens.primerColorBorderOutlinedLoading), rgba(customColor))
     }
 
     func test_applyTheme_transparentBorderColorOverrides_appliedToTokens() async throws {
@@ -215,11 +215,11 @@ final class DesignTokensManagerTests: XCTestCase {
 
         // Then
         let tokens = try XCTUnwrap(sut.tokens)
-        XCTAssertEqual(tokens.primerColorBorderTransparentDefault, customColor)
-        XCTAssertEqual(tokens.primerColorBorderTransparentActive, customColor)
-        XCTAssertEqual(tokens.primerColorBorderTransparentFocus, customColor)
-        XCTAssertEqual(tokens.primerColorBorderTransparentDisabled, customColor)
-        XCTAssertEqual(tokens.primerColorBorderTransparentSelected, customColor)
+        XCTAssertEqual(rgba(tokens.primerColorBorderTransparentDefault), rgba(customColor))
+        XCTAssertEqual(rgba(tokens.primerColorBorderTransparentActive), rgba(customColor))
+        XCTAssertEqual(rgba(tokens.primerColorBorderTransparentFocus), rgba(customColor))
+        XCTAssertEqual(rgba(tokens.primerColorBorderTransparentDisabled), rgba(customColor))
+        XCTAssertEqual(rgba(tokens.primerColorBorderTransparentSelected), rgba(customColor))
     }
 
     func test_applyTheme_iconAndOtherColorOverrides_appliedToTokens() async throws {
@@ -242,12 +242,12 @@ final class DesignTokensManagerTests: XCTestCase {
 
         // Then
         let tokens = try XCTUnwrap(sut.tokens)
-        XCTAssertEqual(tokens.primerColorIconPrimary, customColor)
-        XCTAssertEqual(tokens.primerColorIconDisabled, customColor)
-        XCTAssertEqual(tokens.primerColorIconNegative, customColor)
-        XCTAssertEqual(tokens.primerColorIconPositive, customColor)
-        XCTAssertEqual(tokens.primerColorFocus, customColor)
-        XCTAssertEqual(tokens.primerColorLoader, customColor)
+        XCTAssertEqual(rgba(tokens.primerColorIconPrimary), rgba(customColor))
+        XCTAssertEqual(rgba(tokens.primerColorIconDisabled), rgba(customColor))
+        XCTAssertEqual(rgba(tokens.primerColorIconNegative), rgba(customColor))
+        XCTAssertEqual(rgba(tokens.primerColorIconPositive), rgba(customColor))
+        XCTAssertEqual(rgba(tokens.primerColorFocus), rgba(customColor))
+        XCTAssertEqual(rgba(tokens.primerColorLoader), rgba(customColor))
     }
 
     // MARK: - Radius Overrides
@@ -614,7 +614,7 @@ final class DesignTokensManagerTests: XCTestCase {
 
             // Then
             let tokens = try XCTUnwrap(manager.tokens, "'\(badValue)' discarded the whole token set")
-            XCTAssertEqual(tokens.primerColorBrand, .purple, "'\(badValue)' discarded the color override")
+            XCTAssertEqual(rgba(tokens.primerColorBrand), rgba(.purple), "'\(badValue)' discarded the color override")
             XCTAssertEqual(tokens.primerRadiusMedium, 30, "'\(badValue)' discarded the radius override")
             XCTAssertEqual(tokens.primerTypographyBrand, "Inter")
             XCTAssertEqual(tokens.primerTypographyBodyMediumFont, "Inter")
@@ -641,7 +641,7 @@ final class DesignTokensManagerTests: XCTestCase {
 
         // Then
         let tokens = try XCTUnwrap(sut.tokens)
-        XCTAssertEqual(tokens.primerColorBrand, .red)
+        XCTAssertEqual(rgba(tokens.primerColorBrand), rgba(.red))
         XCTAssertEqual(tokens.primerRadiusMedium, 16)
         XCTAssertEqual(tokens.primerSpaceLarge, 24)
         XCTAssertEqual(tokens.primerSizeXlarge, 48)
@@ -750,7 +750,7 @@ final class DesignTokensManagerTests: XCTestCase {
 
         // Then
         let tokens = try XCTUnwrap(sut.tokens)
-        XCTAssertEqual(tokens.primerColorBrand, customColor)
+        XCTAssertEqual(rgba(tokens.primerColorBrand, .dark), rgba(customColor, .dark))
     }
 
     // MARK: - Light and Dark Colour Sets
@@ -767,7 +767,7 @@ final class DesignTokensManagerTests: XCTestCase {
         let dark = try XCTUnwrap(sut.tokens?.primerColorBrand)
 
         // Then light takes the color and dark keeps Primer's designed default
-        XCTAssertEqual(light, .pink)
+        XCTAssertEqual(rgba(light), rgba(.pink))
         XCTAssertEqual(dark, shippedDarkBrand)
     }
 
@@ -789,9 +789,9 @@ final class DesignTokensManagerTests: XCTestCase {
         let dark = try XCTUnwrap(sut.tokens)
 
         // Then light ignores the dark set, and dark takes what it names plus Primer's dark defaults
-        XCTAssertEqual(lightBrand, .pink)
-        XCTAssertEqual(lightText, .green)
-        XCTAssertEqual(dark.primerColorBrand, .blue)
+        XCTAssertEqual(rgba(lightBrand), rgba(.pink))
+        XCTAssertEqual(rgba(lightText), rgba(.green))
+        XCTAssertEqual(rgba(dark.primerColorBrand, .dark), rgba(.blue, .dark))
         XCTAssertEqual(dark.primerColorTextPrimary, shippedDarkText)
     }
 
@@ -823,7 +823,7 @@ final class DesignTokensManagerTests: XCTestCase {
 
         // Then light keeps the shipped color and only dark moves
         XCTAssertEqual(light, shippedBrand)
-        XCTAssertEqual(dark, .blue)
+        XCTAssertEqual(rgba(dark, .dark), rgba(.blue, .dark))
     }
 
     private func colorTokens(of tokens: DesignTokens) -> [String: Color] {
@@ -872,8 +872,8 @@ final class DesignTokensManagerTests: XCTestCase {
 
         // Then
         let tokens = try XCTUnwrap(sut.tokens)
-        XCTAssertEqual(tokens.primerColorBorderOutlinedSelected, .green)
-        XCTAssertEqual(tokens.primerColorBrand, .pink)
+        XCTAssertEqual(rgba(tokens.primerColorBorderOutlinedSelected), rgba(.green))
+        XCTAssertEqual(rgba(tokens.primerColorBrand), rgba(.pink))
     }
 
     func test_fetchTokens_noOverrides_brandInjectionIsANoOp() async throws {
@@ -1072,8 +1072,8 @@ final class DesignTokensManagerTests: XCTestCase {
 
         // Then the input fill follows it, as it did before the tokens were split
         let tokens = try XCTUnwrap(sut.tokens)
-        XCTAssertEqual(tokens.primerColorBackgroundPrimary, .pink)
-        XCTAssertEqual(tokens.primerColorBackgroundOutlinedDefault, .pink)
+        XCTAssertEqual(rgba(tokens.primerColorBackgroundPrimary), rgba(.pink))
+        XCTAssertEqual(rgba(tokens.primerColorBackgroundOutlinedDefault), rgba(.pink))
     }
 
     func test_applyTheme_textOverrideAlone_carriesIntoTheInputText() async throws {
@@ -1085,7 +1085,7 @@ final class DesignTokensManagerTests: XCTestCase {
 
         // Then
         let tokens = try XCTUnwrap(sut.tokens)
-        XCTAssertEqual(tokens.primerColorTextOutlinedDefault, .pink)
+        XCTAssertEqual(rgba(tokens.primerColorTextOutlinedDefault), rgba(.pink))
     }
 
     func test_applyTheme_explicitInputColour_winsOverTheInheritedOne() async throws {
@@ -1104,8 +1104,8 @@ final class DesignTokensManagerTests: XCTestCase {
 
         // Then
         let tokens = try XCTUnwrap(sut.tokens)
-        XCTAssertEqual(tokens.primerColorBackgroundPrimary, .pink)
-        XCTAssertEqual(tokens.primerColorBackgroundOutlinedDefault, .green)
+        XCTAssertEqual(rgba(tokens.primerColorBackgroundPrimary), rgba(.pink))
+        XCTAssertEqual(rgba(tokens.primerColorBackgroundOutlinedDefault), rgba(.green))
     }
 
     // MARK: - On-brand label
@@ -1129,7 +1129,7 @@ final class DesignTokensManagerTests: XCTestCase {
 
         // Then the label follows it
         let tokens = try XCTUnwrap(sut.tokens)
-        XCTAssertEqual(CheckoutColors.onBrand(tokens: tokens), .pink)
+        XCTAssertEqual(rgba(CheckoutColors.onBrand(tokens: tokens)), rgba(.pink))
     }
 
     func test_onBrand_explicitOverride_winsOverTheSheetColour() async throws {
@@ -1142,8 +1142,8 @@ final class DesignTokensManagerTests: XCTestCase {
 
         // Then
         let tokens = try XCTUnwrap(sut.tokens)
-        XCTAssertEqual(tokens.primerColorOnBrand, .black)
-        XCTAssertEqual(CheckoutColors.onBrand(tokens: tokens), .black)
+        XCTAssertEqual(rgba(tokens.primerColorOnBrand), rgba(.black))
+        XCTAssertEqual(rgba(CheckoutColors.onBrand(tokens: tokens)), rgba(.black))
     }
 
     func test_onBrand_lightOverride_leavesDarkOnItsOwnSheetColour() async throws {
@@ -1182,8 +1182,8 @@ final class DesignTokensManagerTests: XCTestCase {
 
         // Then an icon next to a text takes the icon color
         let tokens = try XCTUnwrap(sut.tokens)
-        XCTAssertEqual(CheckoutColors.iconPrimary(tokens: tokens), .blue)
-        XCTAssertEqual(CheckoutColors.textPrimary(tokens: tokens), .purple)
+        XCTAssertEqual(rgba(CheckoutColors.iconPrimary(tokens: tokens)), rgba(.blue))
+        XCTAssertEqual(rgba(CheckoutColors.textPrimary(tokens: tokens)), rgba(.purple))
     }
 
     func test_iconPrimary_withoutTokens_fallsBackToPrimary() {

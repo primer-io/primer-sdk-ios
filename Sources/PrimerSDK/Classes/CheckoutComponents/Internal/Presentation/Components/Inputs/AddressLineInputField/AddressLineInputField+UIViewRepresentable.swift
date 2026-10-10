@@ -23,6 +23,7 @@ struct AddressLineTextField: UIViewRepresentable, LogReporter {
   let onAddressChange: ((String) -> Void)?
   let onValidationChange: ((Bool) -> Void)?
   let tokens: DesignTokens?
+  let accessibility: AccessibilityConfiguration
 
   func makeUIView(context: Context) -> UITextField {
     let textField = UITextField()
@@ -53,6 +54,8 @@ struct AddressLineTextField: UIViewRepresentable, LogReporter {
     if textField.text != addressLine {
       textField.text = addressLine
     }
+
+    textField.applyAccessibility(accessibility)
   }
 
   func makeCoordinator() -> Coordinator {

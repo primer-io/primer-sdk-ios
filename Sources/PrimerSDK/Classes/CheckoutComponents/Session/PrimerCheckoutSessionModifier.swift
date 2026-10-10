@@ -62,6 +62,7 @@ private struct PrimerCheckoutSessionModifier: ViewModifier, LogReporter {
       // is silently ignored inline), and the checkout scope is exposed for parity.
       .environment(\.diContainer, DIContainer.currentSync)
       .environment(\.designTokens, designTokensManager.tokens)
+      .environment(\.designTokensColorScheme, session.appearanceMode.colorScheme(orSystem: colorScheme))
       .environment(\.primerCheckoutScope, session.internalScope)
       .overlay {
         if session.phase == .ready, let scope = session.internalScope {

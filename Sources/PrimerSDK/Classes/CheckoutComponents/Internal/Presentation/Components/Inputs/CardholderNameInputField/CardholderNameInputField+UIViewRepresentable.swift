@@ -19,6 +19,7 @@ struct CardholderNameTextField: UIViewRepresentable, LogReporter {
   let validationService: ValidationService
   let scope: any CardFormFieldScopeInternal
   let tokens: DesignTokens?
+  let accessibility: AccessibilityConfiguration
 
   func makeUIView(context: Context) -> UITextField {
     let textField = UITextField()
@@ -49,6 +50,8 @@ struct CardholderNameTextField: UIViewRepresentable, LogReporter {
     if textField.text != cardholderName {
       textField.text = cardholderName
     }
+
+    textField.applyAccessibility(accessibility)
   }
 
   func makeCoordinator() -> Coordinator {

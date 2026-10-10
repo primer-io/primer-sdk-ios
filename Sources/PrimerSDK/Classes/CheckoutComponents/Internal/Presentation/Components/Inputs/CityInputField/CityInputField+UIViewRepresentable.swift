@@ -20,6 +20,7 @@ struct CityTextField: UIViewRepresentable, LogReporter {
   let validationService: ValidationService
   let scope: any CardFormFieldScopeInternal
   let tokens: DesignTokens?
+  let accessibility: AccessibilityConfiguration
 
   func makeUIView(context: Context) -> UITextField {
     let textField = UITextField()
@@ -50,6 +51,8 @@ struct CityTextField: UIViewRepresentable, LogReporter {
     if textField.text != city {
       textField.text = city
     }
+
+    textField.applyAccessibility(accessibility)
   }
 
   func makeCoordinator() -> Coordinator {

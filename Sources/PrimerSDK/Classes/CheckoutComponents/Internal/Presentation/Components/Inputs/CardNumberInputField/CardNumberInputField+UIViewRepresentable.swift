@@ -21,6 +21,7 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
   let placeholder: String
   let validationService: ValidationService
   let tokens: DesignTokens?
+  let accessibility: AccessibilityConfiguration
 
   func makeUIView(context: Context) -> SecureTextField {
     let textField = SecureTextField()
@@ -52,6 +53,8 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
     if textField.internalText != formatted {
       textField.internalText = formatted
     }
+
+    textField.applyAccessibility(accessibility)
   }
 
   func makeCoordinator() -> Coordinator {

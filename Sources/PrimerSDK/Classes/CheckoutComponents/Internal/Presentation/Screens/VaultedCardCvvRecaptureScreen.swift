@@ -46,6 +46,7 @@ struct VaultedCardCvvRecaptureScreen: View, LogReporter {
           cardNetwork: vaultedPaymentMethod.cardNetwork,
           onCvvChange: validate
         )
+        .environment(\.isInputEnabled, !isSubmitting)
 
         makePayButton()
       } else {

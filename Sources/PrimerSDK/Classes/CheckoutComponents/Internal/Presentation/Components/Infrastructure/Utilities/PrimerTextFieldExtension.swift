@@ -127,6 +127,8 @@ extension UITextField {
     self.placeholder = placeholder
     borderStyle = .none
     backgroundColor = .clear
+    // At large text sizes the placeholder's width would otherwise push the form off screen.
+    setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
 
     // Apply keyboard configuration
     keyboardType = configuration.keyboardType
@@ -141,6 +143,8 @@ extension UITextField {
     font = textFont
     adjustsFontForContentSizeCategory = true
     textColor = UIColor(CheckoutColors.inputText(tokens: tokens))
+    // The caret takes the focused border colour, so a themed focus ring and caret match.
+    tintColor = UIColor(CheckoutColors.borderFocus(tokens: tokens))
     // A UITextField kerns typed text from its default attributes, not from `font`.
     if let letterSpacing = PrimerTextStyle.bodyLarge.letterSpacing(tokens: tokens) {
       defaultTextAttributes[.kern] = letterSpacing
@@ -159,16 +163,10 @@ extension UITextField {
     )
   }
 
-  /// The two token-derived colours a bridged field paints, reapplied after a colour-scheme change
-  /// and when the field locks or unlocks around a payment (locked text takes `textDisabled`).
-  ///
-  /// Deliberately narrow. It does not touch the font, border, fill or `inputAccessoryView`: none of
-  /// those change with the scheme, and writing them on a live field is what broke the two earlier
-  /// attempts at this fix.
+  /// Colours only, and the Done button in place: replacing it or writing the font during the update broke the form.
   func repaintPrimerColors(placeholder: String, tokens: DesignTokens?, isEnabled: Bool = true) {
-    textColor = UIColor(
-      isEnabled ? CheckoutColors.inputText(tokens: tokens) : CheckoutColors.textDisabled(tokens: tokens)
-    )
+    textColor = UIColor(CheckoutColors.inputText(tokens: tokens, isEnabled: isEnabled))
+    tintColor = UIColor(CheckoutColors.borderFocus(tokens: tokens))
     attributedPlaceholder = NSAttributedString(
       string: placeholder,
       attributes: Self.primerPlaceholderAttributes(
@@ -176,6 +174,20 @@ extension UITextField {
         tokens: tokens
       )
     )
+    if let toolbar = inputAccessoryView as? UIToolbar {
+      Self.paintDoneAccessory(toolbar, tokens: tokens)
+    }
+  }
+
+  /// Run only when the font or spacing moved, after the update: writing the font on every update stopped the form rendering.
+  func repaintPrimerTypography(placeholder: String, tokens: DesignTokens?, isEnabled: Bool) {
+    font = PrimerFont.uiFontBodyLarge(tokens: tokens)
+    if let letterSpacing = PrimerTextStyle.bodyLarge.letterSpacing(tokens: tokens) {
+      defaultTextAttributes[.kern] = letterSpacing
+    } else {
+      defaultTextAttributes.removeValue(forKey: .kern)
+    }
+    repaintPrimerColors(placeholder: placeholder, tokens: tokens, isEnabled: isEnabled)
   }
 
   private static func primerPlaceholderAttributes(
@@ -202,8 +214,6 @@ extension UITextField {
       frame: CGRect(x: 0, y: 0, width: 0, height: PrimerComponentHeight.keyboardAccessory)
     )
     toolbar.barStyle = .default
-    let tint = UIColor(CheckoutColors.buttonPrimary(tokens: tokens))
-    toolbar.tintColor = tint
     toolbar.sizeToFit()
 
     // Not .done: iOS 26 draws it as .prominent, a capsule filled with the tint, which makes the label unreadable.
@@ -214,21 +224,24 @@ extension UITextField {
       action: action
     )
     doneItem.accessibilityLabel = CheckoutComponentsStrings.doneButton
-    let titleFont = PrimerFont.uiFontTitleLarge(tokens: tokens)
-    doneItem.setTitleTextAttributes([.font: titleFont, .foregroundColor: tint], for: .normal)
-    doneItem.setTitleTextAttributes([.font: titleFont, .foregroundColor: tint], for: .highlighted)
 
     toolbar.items = [.flexibleSpace(), doneItem]
+    paintDoneAccessory(toolbar, tokens: tokens)
     return toolbar
+  }
+
+  private static func paintDoneAccessory(_ toolbar: UIToolbar, tokens: DesignTokens?) {
+    let tint = UIColor(CheckoutColors.buttonPrimary(tokens: tokens))
+    let attributes: [NSAttributedString.Key: Any] = [.font: PrimerFont.uiFontTitleLarge(tokens: tokens), .foregroundColor: tint]
+    toolbar.tintColor = tint
+    toolbar.items?.forEach {
+      $0.setTitleTextAttributes(attributes, for: .normal)
+      $0.setTitleTextAttributes(attributes, for: .highlighted)
+    }
   }
 }
 
-/// Holds the token set and lock state a bridged field was last painted with, so `updateUIView`
-/// repaints on a colour-scheme change or when the form locks for a payment, and does nothing on the
-/// keystrokes that make up almost every other call.
-///
-/// Identity, not equality: `DesignTokensManager` decodes a fresh `DesignTokens` per scheme, and the
-/// `UIColor`s built from it never compare equal, so a value check would repaint every time.
+/// Keeps keystrokes from repainting. Compared by identity, because a fresh `DesignTokens` per scheme never compares equal.
 @available(iOS 15.0, *)
 final class PrimerFieldRepainter {
   private var appliedTokens: DesignTokens?
@@ -246,9 +259,27 @@ final class PrimerFieldRepainter {
     isEnabled: Bool = true
   ) {
     guard appliedTokens !== tokens || appliedEnabled != isEnabled else { return }
+    let typographyMoved = Self.typographyMoved(from: appliedTokens, to: tokens)
     appliedTokens = tokens
     appliedEnabled = isEnabled
     textField.repaintPrimerColors(placeholder: placeholder, tokens: tokens, isEnabled: isEnabled)
+    textField.isEnabled = isEnabled
+    // Greyed out alone, a focused field kept typing into the payment. Async: ending the edit writes a binding.
+    if !isEnabled, textField.isFirstResponder {
+      DispatchQueue.main.async { [weak textField] in textField?.resignFirstResponder() }
+    }
+    if typographyMoved {
+      DispatchQueue.main.async { [weak self, weak textField] in
+        guard let self else { return }
+        textField?.repaintPrimerTypography(placeholder: placeholder, tokens: appliedTokens, isEnabled: appliedEnabled)
+      }
+    }
+  }
+
+  /// A scheme change keeps the font and spacing, so only the first token load and a re-theme move them.
+  private static func typographyMoved(from old: DesignTokens?, to new: DesignTokens?) -> Bool {
+    PrimerFont.uiFontBodyLarge(tokens: old) != PrimerFont.uiFontBodyLarge(tokens: new)
+      || PrimerTextStyle.bodyLarge.letterSpacing(tokens: old) != PrimerTextStyle.bodyLarge.letterSpacing(tokens: new)
   }
 }
 

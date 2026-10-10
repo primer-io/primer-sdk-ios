@@ -24,8 +24,13 @@ extension PrimerInputFieldContainer {
     HStack(spacing: PrimerSpacing.small(tokens: tokens), content: makeTextFieldContainerContent)
       .padding(.leading, PrimerSpacing.medium(tokens: tokens))
       .padding(.trailing, PrimerSpacing.medium(tokens: tokens))
-      .frame(height: PrimerSize.xxlarge(tokens: tokens))
+      // Fixed, so the bridged text field fills the box and takes a tap anywhere in it; grows with large text.
+      .frame(height: max(
+        PrimerSize.xxlarge(tokens: tokens),
+        PrimerFont.uiFontBodyLarge(tokens: tokens).lineHeight + 2 * PrimerSpacing.small(tokens: tokens)
+      ))
       .background(makeTextFieldContainerBackground())
+      .disabled(!isInputEnabled)
   }
 
   func makeTextFieldContainerContent() -> some View {
