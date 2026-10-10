@@ -40,6 +40,12 @@ private struct ConditionalAccessibilityElement: ViewModifier {
   let config: AccessibilityConfiguration
   let combinesChildren: Bool
 
+  /// Before iOS 18 the value can't be switched on and off without rebuilding the field, so it is read with the label.
+  private var label: String {
+    if #available(iOS 18.0, *) { return config.label }
+    return config.labelWithValue
+  }
+
   @ViewBuilder
   func body(content: Content) -> some View {
     if combinesChildren {
@@ -52,7 +58,7 @@ private struct ConditionalAccessibilityElement: ViewModifier {
   private func applyMetadata(to content: some View) -> some View {
     content
       .accessibilityIdentifier(config.identifier)
-      .accessibilityLabel(config.label)
+      .accessibilityLabel(label)
       .modifier(ConditionalAccessibilityHint(hint: config.hint))
       .modifier(ConditionalAccessibilityValue(value: config.value))
       .accessibilityAddTraits(config.traits)
@@ -86,7 +92,7 @@ private struct ConditionalAccessibilityValue: ViewModifier {
     if #available(iOS 18.0, *) {
       content.accessibilityValue(value ?? "", isEnabled: value?.isEmpty == false)
     } else {
-      // Only a branch could apply it here, and a field's error flips that branch on every focus.
+      // Only a branch could apply it here, and a field's error flips that branch on every focus, so the label reads it.
       content
     }
   }
