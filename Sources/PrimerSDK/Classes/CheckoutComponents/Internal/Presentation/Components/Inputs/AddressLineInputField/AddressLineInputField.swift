@@ -87,7 +87,8 @@ struct AddressLineInputField: View, LogReporter {
           scope: scope,
           onAddressChange: onAddressChange,
           onValidationChange: onValidationChange,
-          tokens: tokens
+          tokens: tokens,
+          accessibility: accessibilityConfig
         )
       } else {
         // Fallback view while loading validation service
@@ -97,18 +98,22 @@ struct AddressLineInputField: View, LogReporter {
       }
     }
     .accessibility(
-      config: AccessibilityConfiguration(
-        identifier: AccessibilityIdentifiers.CardForm.billingAddressField(for: inputType, fallback: "address_line"),
-        label: label ?? placeholder,
-        hint: CheckoutComponentsStrings.a11yBillingAddressHint,
-        value: errorMessage
-      ),
+      config: accessibilityConfig,
       combinesChildren: false
     )
     .programmaticValue(inputType, from: scope, text: $addressLine, isFocused: $isFocused)
     .onAppear {
       setupValidationService()
     }
+  }
+
+  private var accessibilityConfig: AccessibilityConfiguration {
+    AccessibilityConfiguration(
+      identifier: AccessibilityIdentifiers.CardForm.billingAddressField(for: inputType, fallback: "address_line"),
+      label: label ?? placeholder,
+      hint: CheckoutComponentsStrings.a11yBillingAddressHint,
+      value: errorMessage
+    )
   }
 
   private func setupValidationService() {

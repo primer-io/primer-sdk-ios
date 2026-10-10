@@ -23,6 +23,7 @@ struct NameTextField: UIViewRepresentable, LogReporter {
   let onNameChange: ((String) -> Void)?
   let onValidationChange: ((Bool) -> Void)?
   let tokens: DesignTokens?
+  let accessibility: AccessibilityConfiguration
 
   func makeUIView(context: Context) -> UITextField {
     let textField = UITextField()
@@ -53,6 +54,8 @@ struct NameTextField: UIViewRepresentable, LogReporter {
     if textField.text != name {
       textField.text = name
     }
+
+    textField.applyAccessibility(accessibility)
   }
 
   func makeCoordinator() -> Coordinator {

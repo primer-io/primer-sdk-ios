@@ -78,7 +78,8 @@ struct EmailInputField: View, LogReporter {
           scope: scope,
           onEmailChange: onEmailChange,
           onValidationChange: onValidationChange,
-          tokens: tokens
+          tokens: tokens,
+          accessibility: accessibilityConfig
         )
       } else {
         // Fallback view while loading validation service
@@ -91,12 +92,7 @@ struct EmailInputField: View, LogReporter {
       }
     }
     .accessibility(
-      config: AccessibilityConfiguration(
-        identifier: AccessibilityIdentifiers.CardForm.billingEmailField,
-        label: label ?? placeholder,
-        hint: CheckoutComponentsStrings.a11yEmailFieldHint,
-        value: errorMessage
-      ),
+      config: accessibilityConfig,
       combinesChildren: false
     )
     .onAppear {
@@ -106,6 +102,15 @@ struct EmailInputField: View, LogReporter {
         onEmailChange?(initialValue)
       }
     }
+  }
+
+  private var accessibilityConfig: AccessibilityConfiguration {
+    AccessibilityConfiguration(
+      identifier: AccessibilityIdentifiers.CardForm.billingEmailField,
+      label: label ?? placeholder,
+      hint: CheckoutComponentsStrings.a11yEmailFieldHint,
+      value: errorMessage
+    )
   }
 
   private func setupValidationService() {

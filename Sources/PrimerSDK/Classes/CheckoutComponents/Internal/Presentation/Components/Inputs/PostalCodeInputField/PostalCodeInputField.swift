@@ -70,7 +70,8 @@ struct PostalCodeInputField: View, LogReporter {
           keyboardType: keyboardTypeForCountry,
           validationService: validationService,
           scope: scope,
-          tokens: tokens
+          tokens: tokens,
+          accessibility: accessibilityConfig
         )
       } else {
         // Fallback view while loading validation service
@@ -81,19 +82,23 @@ struct PostalCodeInputField: View, LogReporter {
       }
     }
     .accessibility(
-      config: AccessibilityConfiguration(
-        identifier: AccessibilityIdentifiers.CardForm.billingPostalCodeField,
-        label: label ?? placeholder,
-        hint: CheckoutComponentsStrings.a11yBillingAddressPostalCodeHint,
-        value: errorMessage,
-        traits: []
-      ),
+      config: accessibilityConfig,
       combinesChildren: false
     )
     .programmaticValue(.postalCode, from: scope, text: $postalCode, isFocused: $isFocused)
     .onAppear {
       setupValidationService()
     }
+  }
+
+  private var accessibilityConfig: AccessibilityConfiguration {
+    AccessibilityConfiguration(
+      identifier: AccessibilityIdentifiers.CardForm.billingPostalCodeField,
+      label: label ?? placeholder,
+      hint: CheckoutComponentsStrings.a11yBillingAddressPostalCodeHint,
+      value: errorMessage,
+      traits: []
+    )
   }
 
   private func setupValidationService() {

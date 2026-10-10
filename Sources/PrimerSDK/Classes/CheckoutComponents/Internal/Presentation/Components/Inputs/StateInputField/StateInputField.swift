@@ -55,7 +55,8 @@ struct StateInputField: View, LogReporter {
           placeholder: placeholder,
           validationService: validationService,
           scope: scope,
-          tokens: tokens
+          tokens: tokens,
+          accessibility: accessibilityConfig
         )
       } else {
         // Fallback view while loading validation service
@@ -65,18 +66,22 @@ struct StateInputField: View, LogReporter {
       }
     }
     .accessibility(
-      config: AccessibilityConfiguration(
-        identifier: AccessibilityIdentifiers.CardForm.billingStateField,
-        label: label ?? placeholder,
-        hint: CheckoutComponentsStrings.a11yBillingAddressStateHint,
-        value: errorMessage
-      ),
+      config: accessibilityConfig,
       combinesChildren: false
     )
     .programmaticValue(.state, from: scope, text: $state, isFocused: $isFocused)
     .onAppear {
       setupValidationService()
     }
+  }
+
+  private var accessibilityConfig: AccessibilityConfiguration {
+    AccessibilityConfiguration(
+      identifier: AccessibilityIdentifiers.CardForm.billingStateField,
+      label: label ?? placeholder,
+      hint: CheckoutComponentsStrings.a11yBillingAddressStateHint,
+      value: errorMessage
+    )
   }
 
   private func setupValidationService() {

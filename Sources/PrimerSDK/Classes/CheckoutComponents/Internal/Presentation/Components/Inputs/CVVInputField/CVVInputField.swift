@@ -59,7 +59,8 @@ struct CVVInputField: View, LogReporter {
           cardNetwork: cardNetwork,
           validationService: validationService,
           scope: scope,
-          tokens: tokens
+          tokens: tokens,
+          accessibility: accessibilityConfig
         )
       } else {
         // Fallback view while loading validation service
@@ -69,19 +70,23 @@ struct CVVInputField: View, LogReporter {
       }
     }
     .accessibility(
-      config: AccessibilityConfiguration(
-        identifier: AccessibilityIdentifiers.CardForm.cvcField,
-        label: CheckoutComponentsStrings.a11yCVCLabel,
-        hint: CheckoutComponentsStrings.a11yCVCHint,
-        value: errorMessage,
-        traits: []
-      ),
+      config: accessibilityConfig,
       combinesChildren: false
     )
     .programmaticValue(.cvv, from: scope, text: $cvv, isFocused: $isFocused)
     .onAppear {
       setupValidationService()
     }
+  }
+
+  private var accessibilityConfig: AccessibilityConfiguration {
+    AccessibilityConfiguration(
+      identifier: AccessibilityIdentifiers.CardForm.cvcField,
+      label: CheckoutComponentsStrings.a11yCVCLabel,
+      hint: CheckoutComponentsStrings.a11yCVCHint,
+      value: errorMessage,
+      traits: []
+    )
   }
 
   private func setupValidationService() {
