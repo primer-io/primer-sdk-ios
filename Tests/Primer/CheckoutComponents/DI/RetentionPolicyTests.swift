@@ -195,6 +195,25 @@ final class RetentionPolicyTests: XCTestCase {
             XCTAssertTrue(instance === firstInstance)
         }
     }
+
+    // Two tasks resolving the same type at once are not a circular dependency.
+    func test_singleton_withOverlappingResolutions_resolvesEveryTime() async throws {
+        let container = Container()
+        _ = try await container.register(MockRetentionService.self).asSingleton().with { _ in
+            // why: keeps each resolution open so that they overlap
+            try? await Task.sleep(nanoseconds: 10_000_000)
+            return MockRetentionService()
+        }
+
+        let resolvedCount = await withTaskGroup(of: Bool.self, returning: Int.self) { group in
+            for _ in 0 ..< 10 {
+                group.addTask { (try? await container.resolve(MockRetentionService.self)) != nil }
+            }
+            return await group.reduce(0) { $0 + ($1 ? 1 : 0) }
+        }
+
+        XCTAssertEqual(resolvedCount, 10)
+    }
 }
 
 // MARK: - Test Types
