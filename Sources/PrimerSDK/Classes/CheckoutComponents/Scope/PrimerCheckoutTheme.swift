@@ -79,16 +79,7 @@ public struct ColorOverrides: Equatable {
   public let primerColorBackgroundPrimary: Color?
   public let primerColorBackgroundSecondary: Color?
   public let primerColorBackgroundOutlinedDefault: Color?
-  public let primerColorBackgroundOutlinedActive: Color?
   public let primerColorBackgroundOutlinedDisabled: Color?
-  public let primerColorBackgroundOutlinedLoading: Color?
-  public let primerColorBackgroundOutlinedSelected: Color?
-  public let primerColorBackgroundOutlinedError: Color?
-  public let primerColorBackgroundTransparentDefault: Color?
-  public let primerColorBackgroundTransparentActive: Color?
-  public let primerColorBackgroundTransparentDisabled: Color?
-  public let primerColorBackgroundTransparentLoading: Color?
-  public let primerColorBackgroundTransparentSelected: Color?
   public let primerColorTextPrimary: Color?
   public let primerColorTextSecondary: Color?
   public let primerColorTextPlaceholder: Color?
@@ -133,16 +124,7 @@ public struct ColorOverrides: Equatable {
     primerColorBackgroundPrimary: Color? = nil,
     primerColorBackgroundSecondary: Color? = nil,
     primerColorBackgroundOutlinedDefault: Color? = nil,
-    primerColorBackgroundOutlinedActive: Color? = nil,
     primerColorBackgroundOutlinedDisabled: Color? = nil,
-    primerColorBackgroundOutlinedLoading: Color? = nil,
-    primerColorBackgroundOutlinedSelected: Color? = nil,
-    primerColorBackgroundOutlinedError: Color? = nil,
-    primerColorBackgroundTransparentDefault: Color? = nil,
-    primerColorBackgroundTransparentActive: Color? = nil,
-    primerColorBackgroundTransparentDisabled: Color? = nil,
-    primerColorBackgroundTransparentLoading: Color? = nil,
-    primerColorBackgroundTransparentSelected: Color? = nil,
     primerColorTextPrimary: Color? = nil,
     primerColorTextSecondary: Color? = nil,
     primerColorTextPlaceholder: Color? = nil,
@@ -174,16 +156,7 @@ public struct ColorOverrides: Equatable {
     self.primerColorBackgroundPrimary = primerColorBackgroundPrimary
     self.primerColorBackgroundSecondary = primerColorBackgroundSecondary
     self.primerColorBackgroundOutlinedDefault = primerColorBackgroundOutlinedDefault
-    self.primerColorBackgroundOutlinedActive = primerColorBackgroundOutlinedActive
     self.primerColorBackgroundOutlinedDisabled = primerColorBackgroundOutlinedDisabled
-    self.primerColorBackgroundOutlinedLoading = primerColorBackgroundOutlinedLoading
-    self.primerColorBackgroundOutlinedSelected = primerColorBackgroundOutlinedSelected
-    self.primerColorBackgroundOutlinedError = primerColorBackgroundOutlinedError
-    self.primerColorBackgroundTransparentDefault = primerColorBackgroundTransparentDefault
-    self.primerColorBackgroundTransparentActive = primerColorBackgroundTransparentActive
-    self.primerColorBackgroundTransparentDisabled = primerColorBackgroundTransparentDisabled
-    self.primerColorBackgroundTransparentLoading = primerColorBackgroundTransparentLoading
-    self.primerColorBackgroundTransparentSelected = primerColorBackgroundTransparentSelected
     self.primerColorTextPrimary = primerColorTextPrimary
     self.primerColorTextSecondary = primerColorTextSecondary
     self.primerColorTextPlaceholder = primerColorTextPlaceholder
@@ -226,21 +199,17 @@ public struct RadiusOverrides: Equatable {
   public let primerRadiusMedium: CGFloat?
   /// Internal: primerRadiusLarge (default: 12)
   public let primerRadiusLarge: CGFloat?
-  /// Internal: primerRadiusBase (default: 4)
-  public let primerRadiusBase: CGFloat?
 
   public init(
     primerRadiusXsmall: CGFloat? = nil,
     primerRadiusSmall: CGFloat? = nil,
     primerRadiusMedium: CGFloat? = nil,
-    primerRadiusLarge: CGFloat? = nil,
-    primerRadiusBase: CGFloat? = nil
+    primerRadiusLarge: CGFloat? = nil
   ) {
     self.primerRadiusXsmall = primerRadiusXsmall.finite
     self.primerRadiusSmall = primerRadiusSmall.finite
     self.primerRadiusMedium = primerRadiusMedium.finite
     self.primerRadiusLarge = primerRadiusLarge.finite
-    self.primerRadiusBase = primerRadiusBase.finite
   }
 }
 
@@ -264,8 +233,6 @@ public struct SpacingOverrides: Equatable {
   public let primerSpaceXlarge: CGFloat?
   /// Internal: primerSpaceXxlarge (default: 24)
   public let primerSpaceXxlarge: CGFloat?
-  /// Internal: primerSpaceBase (default: 4)
-  public let primerSpaceBase: CGFloat?
 
   public init(
     primerSpaceXxsmall: CGFloat? = nil,
@@ -274,8 +241,7 @@ public struct SpacingOverrides: Equatable {
     primerSpaceMedium: CGFloat? = nil,
     primerSpaceLarge: CGFloat? = nil,
     primerSpaceXlarge: CGFloat? = nil,
-    primerSpaceXxlarge: CGFloat? = nil,
-    primerSpaceBase: CGFloat? = nil
+    primerSpaceXxlarge: CGFloat? = nil
   ) {
     self.primerSpaceXxsmall = primerSpaceXxsmall.finite
     self.primerSpaceXsmall = primerSpaceXsmall.finite
@@ -284,7 +250,6 @@ public struct SpacingOverrides: Equatable {
     self.primerSpaceLarge = primerSpaceLarge.finite
     self.primerSpaceXlarge = primerSpaceXlarge.finite
     self.primerSpaceXxlarge = primerSpaceXxlarge.finite
-    self.primerSpaceBase = primerSpaceBase.finite
   }
 }
 
@@ -306,8 +271,6 @@ public struct SizeOverrides: Equatable {
   public let primerSizeXxlarge: CGFloat?
   /// Internal: primerSizeXxxlarge (default: 56)
   public let primerSizeXxxlarge: CGFloat?
-  /// Internal: primerSizeBase (default: 4)
-  public let primerSizeBase: CGFloat?
 
   public init(
     primerSizeSmall: CGFloat? = nil,
@@ -315,8 +278,7 @@ public struct SizeOverrides: Equatable {
     primerSizeLarge: CGFloat? = nil,
     primerSizeXlarge: CGFloat? = nil,
     primerSizeXxlarge: CGFloat? = nil,
-    primerSizeXxxlarge: CGFloat? = nil,
-    primerSizeBase: CGFloat? = nil
+    primerSizeXxxlarge: CGFloat? = nil
   ) {
     self.primerSizeSmall = primerSizeSmall.finite
     self.primerSizeMedium = primerSizeMedium.finite
@@ -324,7 +286,6 @@ public struct SizeOverrides: Equatable {
     self.primerSizeXlarge = primerSizeXlarge.finite
     self.primerSizeXxlarge = primerSizeXxlarge.finite
     self.primerSizeXxxlarge = primerSizeXxxlarge.finite
-    self.primerSizeBase = primerSizeBase.finite
   }
 }
 

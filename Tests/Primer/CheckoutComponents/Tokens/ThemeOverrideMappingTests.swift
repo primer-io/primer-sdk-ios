@@ -26,21 +26,12 @@ final class ThemeOverrideMappingTests: XCTestCase {
     }
 
     func test_backgroundOverrides_eachReachItsOwnToken() async throws {
-        let colors = (1 ... 13).map { Color(red: Double($0) / 20, green: 0.5, blue: 0.5) }
+        let colors = (1 ... 4).map { Color(red: Double($0) / 20, green: 0.5, blue: 0.5) }
         sut.applyTheme(PrimerCheckoutTheme(colors: ColorOverrides(
             primerColorBackgroundPrimary: colors[0],
             primerColorBackgroundSecondary: colors[1],
             primerColorBackgroundOutlinedDefault: colors[2],
-            primerColorBackgroundOutlinedActive: colors[3],
-            primerColorBackgroundOutlinedDisabled: colors[4],
-            primerColorBackgroundOutlinedLoading: colors[5],
-            primerColorBackgroundOutlinedSelected: colors[6],
-            primerColorBackgroundOutlinedError: colors[7],
-            primerColorBackgroundTransparentDefault: colors[8],
-            primerColorBackgroundTransparentActive: colors[9],
-            primerColorBackgroundTransparentDisabled: colors[10],
-            primerColorBackgroundTransparentLoading: colors[11],
-            primerColorBackgroundTransparentSelected: colors[12]
+            primerColorBackgroundOutlinedDisabled: colors[3]
         )))
 
         try await sut.fetchTokens(for: .light)
@@ -51,16 +42,7 @@ final class ThemeOverrideMappingTests: XCTestCase {
                 tokens.primerColorBackgroundPrimary,
                 tokens.primerColorBackgroundSecondary,
                 tokens.primerColorBackgroundOutlinedDefault,
-                tokens.primerColorBackgroundOutlinedActive,
-                tokens.primerColorBackgroundOutlinedDisabled,
-                tokens.primerColorBackgroundOutlinedLoading,
-                tokens.primerColorBackgroundOutlinedSelected,
-                tokens.primerColorBackgroundOutlinedError,
-                tokens.primerColorBackgroundTransparentDefault,
-                tokens.primerColorBackgroundTransparentActive,
-                tokens.primerColorBackgroundTransparentDisabled,
-                tokens.primerColorBackgroundTransparentLoading,
-                tokens.primerColorBackgroundTransparentSelected
+                tokens.primerColorBackgroundOutlinedDisabled
             ].map { rgba($0) },
             colors.map { rgba($0) }
         )

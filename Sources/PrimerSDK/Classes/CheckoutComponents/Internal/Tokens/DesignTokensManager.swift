@@ -186,16 +186,7 @@ final class DesignTokensManager: ObservableObject {
     if let value = colors.primerColorBackgroundOutlinedDefault { tokens.primerColorBackgroundOutlinedDefault = value }
     if let value = colors.primerColorTextOutlinedDefault { tokens.primerColorTextOutlinedDefault = value }
     if let value = colors.primerColorBackgroundSecondary { tokens.primerColorBackgroundSecondary = value }
-    if let value = colors.primerColorBackgroundOutlinedActive { tokens.primerColorBackgroundOutlinedActive = value }
     if let value = colors.primerColorBackgroundOutlinedDisabled { tokens.primerColorBackgroundOutlinedDisabled = value }
-    if let value = colors.primerColorBackgroundOutlinedLoading { tokens.primerColorBackgroundOutlinedLoading = value }
-    if let value = colors.primerColorBackgroundOutlinedSelected { tokens.primerColorBackgroundOutlinedSelected = value }
-    if let value = colors.primerColorBackgroundOutlinedError { tokens.primerColorBackgroundOutlinedError = value }
-    if let value = colors.primerColorBackgroundTransparentDefault { tokens.primerColorBackgroundTransparentDefault = value }
-    if let value = colors.primerColorBackgroundTransparentActive { tokens.primerColorBackgroundTransparentActive = value }
-    if let value = colors.primerColorBackgroundTransparentDisabled { tokens.primerColorBackgroundTransparentDisabled = value }
-    if let value = colors.primerColorBackgroundTransparentLoading { tokens.primerColorBackgroundTransparentLoading = value }
-    if let value = colors.primerColorBackgroundTransparentSelected { tokens.primerColorBackgroundTransparentSelected = value }
   }
 
   private func applyTextColorOverrides(to tokens: DesignTokens, from colors: ColorOverrides) {
@@ -282,7 +273,6 @@ final class DesignTokensManager: ObservableObject {
     if let value = radius.primerRadiusSmall { tokens.primerRadiusSmall = value }
     if let value = radius.primerRadiusMedium { tokens.primerRadiusMedium = value }
     if let value = radius.primerRadiusLarge { tokens.primerRadiusLarge = value }
-    if let value = radius.primerRadiusBase { tokens.primerRadiusBase = value }
   }
 
   private func applySpacingOverrides(to tokens: DesignTokens, from spacing: SpacingOverrides) {
@@ -293,7 +283,6 @@ final class DesignTokensManager: ObservableObject {
     if let value = spacing.primerSpaceLarge { tokens.primerSpaceLarge = value }
     if let value = spacing.primerSpaceXlarge { tokens.primerSpaceXlarge = value }
     if let value = spacing.primerSpaceXxlarge { tokens.primerSpaceXxlarge = value }
-    if let value = spacing.primerSpaceBase { tokens.primerSpaceBase = value }
   }
 
   private func applySizeOverrides(to tokens: DesignTokens, from sizes: SizeOverrides) {
@@ -303,7 +292,6 @@ final class DesignTokensManager: ObservableObject {
     if let value = sizes.primerSizeXlarge { tokens.primerSizeXlarge = value }
     if let value = sizes.primerSizeXxlarge { tokens.primerSizeXxlarge = value }
     if let value = sizes.primerSizeXxxlarge { tokens.primerSizeXxxlarge = value }
-    if let value = sizes.primerSizeBase { tokens.primerSizeBase = value }
   }
 
   private func applyWidthOverrides(
@@ -455,16 +443,7 @@ private extension ColorOverrides {
       primerColorBackgroundPrimary: pin(primerColorBackgroundPrimary),
       primerColorBackgroundSecondary: pin(primerColorBackgroundSecondary),
       primerColorBackgroundOutlinedDefault: pin(primerColorBackgroundOutlinedDefault),
-      primerColorBackgroundOutlinedActive: pin(primerColorBackgroundOutlinedActive),
       primerColorBackgroundOutlinedDisabled: pin(primerColorBackgroundOutlinedDisabled),
-      primerColorBackgroundOutlinedLoading: pin(primerColorBackgroundOutlinedLoading),
-      primerColorBackgroundOutlinedSelected: pin(primerColorBackgroundOutlinedSelected),
-      primerColorBackgroundOutlinedError: pin(primerColorBackgroundOutlinedError),
-      primerColorBackgroundTransparentDefault: pin(primerColorBackgroundTransparentDefault),
-      primerColorBackgroundTransparentActive: pin(primerColorBackgroundTransparentActive),
-      primerColorBackgroundTransparentDisabled: pin(primerColorBackgroundTransparentDisabled),
-      primerColorBackgroundTransparentLoading: pin(primerColorBackgroundTransparentLoading),
-      primerColorBackgroundTransparentSelected: pin(primerColorBackgroundTransparentSelected),
       primerColorTextPrimary: pin(primerColorTextPrimary),
       primerColorTextSecondary: pin(primerColorTextSecondary),
       primerColorTextPlaceholder: pin(primerColorTextPlaceholder),
