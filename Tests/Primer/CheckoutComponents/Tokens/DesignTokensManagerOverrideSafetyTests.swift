@@ -145,7 +145,10 @@ final class DesignTokensManagerOverrideSafetyTests: XCTestCase {
 
         XCTAssertEqual(components(of: brand.resolvedColor(with: lightView)), components(of: UIColor.green))
         XCTAssertEqual(components(of: onBrand.resolvedColor(with: lightView)), components(of: UIColor.green))
-        XCTAssertEqual(components(of: brand.resolvedColor(with: lightViewHighContrast)), components(of: UIColor.blue))
+        // iOS 17 resolves through SwiftUI, which has no public way to pass Increase Contrast.
+        if #available(iOS 18.0, *) {
+            XCTAssertEqual(components(of: brand.resolvedColor(with: lightViewHighContrast)), components(of: UIColor.blue))
+        }
     }
 
     private func components(of color: Color) -> [CGFloat] {

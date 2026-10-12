@@ -132,7 +132,7 @@ final class DesignTokensManager: ObservableObject {
     var blue: CGFloat = 0
     var alpha: CGFloat = 0
     // JSONSerialization aborts the app on a NaN or infinite component, and `try` cannot catch that.
-    guard UIColor(color).resolvedColor(with: .current).getRed(&red, green: &green, blue: &blue, alpha: &alpha),
+    guard color.resolvedUIColor(with: .current).getRed(&red, green: &green, blue: &blue, alpha: &alpha),
           [red, green, blue, alpha].allSatisfy(\.isFinite) else {
       PrimerLogging.shared.logger.error(
         message: "[DesignTokens] Palette override ignored: color has no readable RGB components.")
@@ -429,6 +429,18 @@ final class DesignTokensManager: ObservableObject {
 }
 
 @available(iOS 15.0, *)
+private extension Color {
+  /// Before iOS 18, `UIColor(_:)` flattens a dynamic colour for the device's mode, so iOS 17 asks SwiftUI instead.
+  func resolvedUIColor(with traits: UITraitCollection) -> UIColor {
+    if #available(iOS 18.0, *) { return UIColor(self).resolvedColor(with: traits) }
+    guard #available(iOS 17.0, *) else { return UIColor(self).resolvedColor(with: traits) }
+    var environment = EnvironmentValues()
+    environment.colorScheme = traits.userInterfaceStyle == .dark ? .dark : .light
+    return UIColor(cgColor: resolve(in: environment).cgColor)
+  }
+}
+
+@available(iOS 15.0, *)
 private extension ColorOverrides {
   /// Inline, the merchant's views keep their scheme, so an unpinned dynamic colour would mix with tokens loaded for another.
   func pinned(to colorScheme: ColorScheme) -> ColorOverrides { // swiftlint:disable:this function_body_length
@@ -436,7 +448,7 @@ private extension ColorOverrides {
     // Only the style is replaced: contrast and the other traits still come from the view.
     let pin: (Color?) -> Color? = { color in
       color.map { color in
-        Color(UIColor { UIColor(color).resolvedColor(with: UITraitCollection(traitsFrom: [$0, .init(userInterfaceStyle: style)])) })
+        Color(UIColor { color.resolvedUIColor(with: UITraitCollection(traitsFrom: [$0, .init(userInterfaceStyle: style)])) })
       }
     }
     return ColorOverrides(
