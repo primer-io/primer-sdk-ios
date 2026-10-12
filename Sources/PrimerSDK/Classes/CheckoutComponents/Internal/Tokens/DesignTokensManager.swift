@@ -99,7 +99,9 @@ final class DesignTokensManager: ObservableObject {
     flatDict = DesignTokensProcessor.evaluateMath(in: flatDict)
 
     let data = try JSONSerialization.data(withJSONObject: flatDict)
-    return try JSONDecoder().decode(DesignTokens.self, from: data)
+    let tokens = try JSONDecoder().decode(DesignTokens.self, from: data)
+    tokens.colorScheme = colorScheme
+    return tokens
   }
 
   /// Replaces matching leaves in place so the existing reference pass picks the new value up.

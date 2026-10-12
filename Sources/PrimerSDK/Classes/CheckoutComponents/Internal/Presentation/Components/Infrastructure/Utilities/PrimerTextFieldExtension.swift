@@ -137,6 +137,7 @@ extension UITextField {
     textContentType = configuration.textContentType
     returnKeyType = configuration.returnKeyType
     isSecureTextEntry = configuration.isSecureTextEntry
+    keyboardAppearance = UIKeyboardAppearance(tokens?.colorScheme)
 
     // Text styling with design tokens
     let textFont = PrimerFont.uiFontBodyLarge(tokens: tokens)
@@ -167,6 +168,12 @@ extension UITextField {
   func repaintPrimerColors(placeholder: String, tokens: DesignTokens?, isEnabled: Bool = true) {
     textColor = UIColor(CheckoutColors.inputText(tokens: tokens, isEnabled: isEnabled))
     tintColor = UIColor(CheckoutColors.borderFocus(tokens: tokens))
+    let appearance = UIKeyboardAppearance(tokens?.colorScheme)
+    if keyboardAppearance != appearance {
+      keyboardAppearance = appearance
+      // The keyboard and its accessory are built once, so a live change needs a reload.
+      if isFirstResponder { reloadInputViews() }
+    }
     attributedPlaceholder = NSAttributedString(
       string: placeholder,
       attributes: Self.primerPlaceholderAttributes(
@@ -234,9 +241,26 @@ extension UITextField {
     let tint = UIColor(CheckoutColors.buttonPrimary(tokens: tokens))
     let attributes: [NSAttributedString.Key: Any] = [.font: PrimerFont.uiFontTitleLarge(tokens: tokens), .foregroundColor: tint]
     toolbar.tintColor = tint
+    toolbar.overrideUserInterfaceStyle = switch tokens?.colorScheme {
+    case .dark: .dark
+    case .light: .light
+    default: .unspecified
+    }
     toolbar.items?.forEach {
       $0.setTitleTextAttributes(attributes, for: .normal)
       $0.setTitleTextAttributes(attributes, for: .highlighted)
+    }
+  }
+}
+
+@available(iOS 15.0, *)
+extension UIKeyboardAppearance {
+  /// No scheme (tokens not loaded yet) leaves the keyboard on the system's choice.
+  init(_ colorScheme: ColorScheme?) {
+    self = switch colorScheme {
+    case .dark: .dark
+    case .light: .light
+    default: .default
     }
   }
 }

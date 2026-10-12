@@ -147,6 +147,9 @@ final class DesignTokens: Decodable {
   var primerSizeXxxlarge: CGFloat? = 56
   var primerSizeBase: CGFloat? = 4
 
+  /// The scheme this set was resolved for; UIKit surfaces such as the keyboard take it from here.
+  var colorScheme: ColorScheme?
+
   // Coding keys to map JSON keys to properties.
   enum CodingKeys: String, CodingKey {
     case primerColorBackgroundPrimary

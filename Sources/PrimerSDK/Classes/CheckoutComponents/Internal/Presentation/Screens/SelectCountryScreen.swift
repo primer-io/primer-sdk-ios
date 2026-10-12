@@ -82,6 +82,7 @@ struct SelectCountryScreen: View, LogReporter {
         )
       )
       .textFieldStyle(PlainTextFieldStyle())
+      .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
       .tint(CheckoutColors.borderFocus(tokens: tokens))
       .focused($isSearchFocused)
       .accessibilityIdentifier(AccessibilityIdentifiers.SelectCountry.searchField)

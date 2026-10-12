@@ -130,6 +130,8 @@ struct CountryInputField: View, LogReporter {
           showCountryPicker = false
         }
       )
+      // A sheet takes the phone's scheme, not the one the checkout was forced to.
+      .sheetInterfaceStyle(tokens?.colorScheme)
     }
   }
 

@@ -43,6 +43,27 @@ final class PrimerFieldRepainterTests: XCTestCase {
         XCTAssertEqual(field.tintColor, UIColor(CheckoutColors.borderFocus(tokens: themed)))
     }
 
+    func test_configure_setsTheKeyboardAndDoneBarToTheSchemeTheTokensWereResolvedFor() throws {
+        let dark = makeConfiguredField(tokens: try DesignTokensManager.makeTokens(for: .dark))
+        let light = makeConfiguredField(tokens: try DesignTokensManager.makeTokens(for: .light))
+
+        XCTAssertEqual(dark.keyboardAppearance, .dark)
+        XCTAssertEqual(light.keyboardAppearance, .light)
+        XCTAssertEqual((dark.inputAccessoryView as? UIToolbar)?.overrideUserInterfaceStyle, .dark)
+        XCTAssertEqual((light.inputAccessoryView as? UIToolbar)?.overrideUserInterfaceStyle, .light)
+    }
+
+    func test_repaint_movesTheKeyboardAndDoneBarWithTheScheme() throws {
+        let light = try DesignTokensManager.makeTokens(for: .light)
+        let dark = try DesignTokensManager.makeTokens(for: .dark)
+        let field = makeConfiguredField(tokens: light)
+
+        field.repaintPrimerColors(placeholder: "Card number", tokens: dark)
+
+        XCTAssertEqual(field.keyboardAppearance, .dark)
+        XCTAssertEqual((field.inputAccessoryView as? UIToolbar)?.overrideUserInterfaceStyle, .dark)
+    }
+
     /// At large text sizes the placeholder pushed the form off screen.
     func test_configure_letsTheFieldNarrow() throws {
         let field = try makeConfiguredField(tokens: DesignTokensManager.makeTokens(for: .light))
