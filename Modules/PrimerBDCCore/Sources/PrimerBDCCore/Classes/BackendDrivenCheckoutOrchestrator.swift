@@ -62,9 +62,22 @@ public final class BackendDrivenCheckoutOrchestrator {
     ) async throws {
         let flow = try await instructionProvider.fetchSetupFlow()
         let sdk = SDKUrls(pciUrl: pciUrl, coreUrl: coreUrl)
-        let object = InitialState(params: flow.parameters, sdk: sdk, currentAttempt: nil)
-        let initialState = try object.casted(to: CodableValue.self)
-        try await stepOrchestrator.start(rawSchema: flow.schema.jsonString, initialState: initialState)
+        let initialState = InitialState(params: flow.parameters, sdk: sdk, currentAttempt: nil)
+        let codableValue = try initialState.casted(to: CodableValue.self)
+        try await stepOrchestrator.start(rawSchema: flow.schema.jsonString, initialState: codableValue)
+
+        var nextPoll = flow.nextPoll
+        while nextPoll == .interval {
+            try Task.checkCancellation()
+            let state = try await instructionProvider.fetchSetupState(setupId: flow.setupId)
+            switch state.instruction {
+            case .wait: break
+            case .setupComplete: return // TODO: hand the token to :pay
+            case let .execute(screen):
+                try await stepOrchestrator.start(rawSchema: screen.jsonString, initialState: codableValue)
+            }
+            nextPoll = state.nextPoll
+        }
     }
 
     private func resolveOutcome(_ outcome: CheckoutOutcome?, payment: PaymentInfo?) throws -> CheckoutResult {

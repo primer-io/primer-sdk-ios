@@ -41,7 +41,7 @@ final class ClientInstructionDecodingTests: XCTestCase {
 final class ClientInstructionSetupResponseDecodingTests: XCTestCase {
 
     func testDecodesBareSchemaAndParameters() throws {
-        let json = #"{"schema": { "steps": [] }, "parameters": { "key": "value" } }"#
+        let json = #"{"schema": { "steps": [] }, "parameters": { "key": "value" }, "paymentMethodSetupId": "setup-1", "nextPoll": "interval" }"#
         let result = try decode(json)
         XCTAssertEqual(result.schema, .object(["steps": .array([])]))
         XCTAssertEqual(result.parameters, .object(["key": .string("value")]))
