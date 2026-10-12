@@ -180,6 +180,8 @@ struct BillingAddressRedirectScreen: View {
             .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
             .font(PrimerFont.bodyLarge(tokens: tokens))
         }
+        .frame(maxHeight: .infinity)
+        .contentShape(Rectangle())
       }
       .accessibilityIdentifier(
         AccessibilityIdentifiers.inputField(within: AccessibilityIdentifiers.BillingAddressRedirect.countryCodeField))
@@ -220,6 +222,8 @@ struct BillingAddressRedirectScreen: View {
         .accessibilityIdentifier(AccessibilityIdentifiers.inputField(within: identifier))
         .tint(CheckoutColors.borderFocus(tokens: tokens))
         .onChange(of: text.wrappedValue, perform: onUpdate)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .focusesFieldOnTap { focusedField = fieldType }
     }
     .accessibility(
       config: fieldAccessibility(for: fieldType, identifier: identifier, label: label),

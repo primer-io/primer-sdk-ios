@@ -19,6 +19,7 @@ struct VaultedCardCVVInput: View {
 
   @Environment(\.designTokens) private var tokens
   @Environment(\.isInputEnabled) private var isInputEnabled
+  @Environment(\.sizeCategory) private var sizeCategory  // Observes Dynamic Type changes
   @FocusState private var isFocused: Bool
 
   // MARK: - Computed Properties
@@ -48,7 +49,7 @@ struct VaultedCardCVVInput: View {
   // MARK: - Body
 
   var body: some View {
-    VStack(alignment: .leading, spacing: PrimerSpacing.small(tokens: tokens)) {
+    VStack(alignment: .leading, spacing: PrimerSpacing.xsmall(tokens: tokens)) {
       makeCvvInputRow()
       errorMessage.map(makeErrorLabel)
     }
@@ -99,12 +100,13 @@ struct VaultedCardCVVInput: View {
         .foregroundColor(CheckoutColors.inputText(tokens: tokens, isEnabled: isInputEnabled))
         .tint(CheckoutColors.borderFocus(tokens: tokens))
         .onChange(of: isInputEnabled) { if !$0 { isFocused = false } }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .focusesFieldOnTap { isFocused = true }
 
       if errorMessage != nil { PrimerFieldErrorIcon() }
     }
     .padding(.horizontal, PrimerSpacing.medium(tokens: tokens))
-    .frame(width: PrimerComponentWidth.cvvFieldMax)
-    .frame(minHeight: PrimerSize.xxlarge(tokens: tokens))
+    .frame(width: PrimerComponentWidth.cvvFieldMax, height: PrimerComponentHeight.inputField(tokens: tokens))
     .background(
       RoundedRectangle(cornerRadius: PrimerRadius.small(tokens: tokens))
         .fill(CheckoutColors.inputBackground(tokens: tokens, isEnabled: isInputEnabled))
@@ -112,7 +114,7 @@ struct VaultedCardCVVInput: View {
     .disabled(!isInputEnabled)
     .overlay(
       RoundedRectangle(cornerRadius: PrimerRadius.small(tokens: tokens))
-        .stroke(cvvBorderColor, lineWidth: cvvBorderWidth)
+        .strokeBorder(cvvBorderColor, lineWidth: cvvBorderWidth)
     )
     .accessibility(
         config: AccessibilityConfiguration(

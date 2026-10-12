@@ -59,6 +59,4 @@ extension PrimerInputFieldContainer {
       ? PrimerBorderWidth.focused(tokens: tokens)
       : PrimerBorderWidth.standard(tokens: tokens)
   }
-  var errorMessageMinHeight: CGFloat { hasError ? PrimerComponentHeight.errorMessage : 0 }
-  var errorMessageTopPadding: CGFloat { hasError ? PrimerSpacing.xsmall(tokens: tokens) : 0 }
 }

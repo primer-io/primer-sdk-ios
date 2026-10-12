@@ -86,7 +86,7 @@ struct CountryInputField: View, LogReporter {
                 .frame(maxWidth: .infinity, alignment: .leading)
               Spacer(minLength: 0)
             }
-            .frame(minHeight: PrimerSize.xxlarge(tokens: tokens))
+            .frame(maxHeight: .infinity)
             .contentShape(Rectangle())
           }
         )

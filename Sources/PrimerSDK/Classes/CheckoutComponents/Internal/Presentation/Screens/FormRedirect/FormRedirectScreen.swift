@@ -204,6 +204,8 @@ private struct FormFieldView: View {
                     .primerTypography(.bodyLarge, tokens: tokens)
                     .foregroundColor(CheckoutColors.inputText(tokens: tokens, isEnabled: isInputEnabled))
                     .accessibilityIdentifier(AccessibilityIdentifiers.FormRedirect.phonePrefix)
+                    // Lets a tap on the prefix reach the tap target behind it.
+                    .allowsHitTesting(false)
             }
 
             TextField(field.placeholder, text: valueBinding)
@@ -218,6 +220,8 @@ private struct FormFieldView: View {
                 .onChange(of: isInputEnabled) { if !$0 { hasKeyboardFocus = false } }
                 .accessibilityIdentifier(AccessibilityIdentifiers.inputField(within: accessibilityIdentifier))
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .focusesFieldOnTap { hasKeyboardFocus = true }
     }
 
     private var accessibilityIdentifier: String {

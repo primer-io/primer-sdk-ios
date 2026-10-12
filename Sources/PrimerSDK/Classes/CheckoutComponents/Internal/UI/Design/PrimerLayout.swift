@@ -4,7 +4,7 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import CoreGraphics
+import UIKit
 @_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerCore
 
@@ -103,6 +103,18 @@ enum PrimerComponentHeight {
   static let emptyStateMinHeight: CGFloat = 200
   static let emptyStateTopPadding: CGFloat = 100
   static let button: CGFloat = 50
+}
+
+@available(iOS 15.0, *)
+extension PrimerComponentHeight {
+  private static let bodyLargeDefaultLineHeight: CGFloat = 20
+
+  /// An input box: one body-large line between medium padding, never under the tappable minimum.
+  static func inputField(tokens: DesignTokens?) -> CGFloat {
+    let lineHeight = PrimerTextStyle.bodyLarge.lineHeight(tokens: tokens)
+      ?? UIFontMetrics.default.scaledValue(for: bodyLargeDefaultLineHeight)
+    return max(interactive, 2 * PrimerSpacing.medium(tokens: tokens) + lineHeight)
+  }
 }
 
 // MARK: - Primer Component Widths

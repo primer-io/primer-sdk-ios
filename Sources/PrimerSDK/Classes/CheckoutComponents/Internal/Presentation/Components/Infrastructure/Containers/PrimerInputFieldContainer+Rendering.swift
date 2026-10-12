@@ -25,10 +25,7 @@ extension PrimerInputFieldContainer {
       .padding(.leading, PrimerSpacing.medium(tokens: tokens))
       .padding(.trailing, PrimerSpacing.medium(tokens: tokens))
       // Fixed, so the bridged text field fills the box and takes a tap anywhere in it; grows with large text.
-      .frame(height: max(
-        PrimerSize.xxlarge(tokens: tokens),
-        PrimerFont.uiFontBodyLarge(tokens: tokens).lineHeight + 2 * PrimerSpacing.small(tokens: tokens)
-      ))
+      .frame(height: PrimerComponentHeight.inputField(tokens: tokens))
       .background(makeTextFieldContainerBackground())
       .disabled(!isInputEnabled)
   }
@@ -69,8 +66,7 @@ extension PrimerInputFieldContainer {
       .primerTypography(.error, tokens: tokens)
       .foregroundColor(errorMessageForegroundColor)
       .fixedSize(horizontal: false, vertical: true)
-      .frame(minHeight: errorMessageMinHeight)
-      .padding(.top, errorMessageTopPadding)
+      .frame(minHeight: PrimerComponentHeight.errorMessage)
       .onAppear {
         // Announce error to VoiceOver when error appears
         if hasError {
