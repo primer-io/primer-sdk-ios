@@ -40,6 +40,17 @@ struct AccessibilityConfiguration {
     self.isHidden = isHidden
     self.sortPriority = sortPriority
   }
+
+  /// Named by its visible title so Voice Control reaches it; processing is a value because hints can be switched off.
+  static func submitButton(identifier: String, title: String, isEnabled: Bool, isLoading: Bool) -> Self {
+    AccessibilityConfiguration(
+      identifier: identifier,
+      label: title,
+      hint: isLoading || isEnabled ? nil : CheckoutComponentsStrings.a11ySubmitButtonDisabled,
+      value: isLoading ? CheckoutComponentsStrings.a11ySubmitButtonLoading : nil,
+      traits: [.isButton]
+    )
+  }
 }
 
 extension AccessibilityConfiguration: Equatable {}

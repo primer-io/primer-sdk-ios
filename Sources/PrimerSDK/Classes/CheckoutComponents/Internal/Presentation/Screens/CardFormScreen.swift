@@ -105,15 +105,11 @@ struct CardFormScreen: View, LogReporter {
       payTitle,
       isEnabled: isEnabled,
       isLoading: cardFormState.isLoading,
-      accessibilityConfiguration: AccessibilityConfiguration(
+      accessibilityConfiguration: .submitButton(
         identifier: AccessibilityIdentifiers.CardForm.submitButton,
-        label: cardFormState.isLoading ? CheckoutComponentsStrings.a11ySubmitButtonLoading : payTitle,
-        hint: cardFormState.isLoading
-          ? nil
-          : (isEnabled
-            ? CheckoutComponentsStrings.a11ySubmitButtonHint
-            : CheckoutComponentsStrings.a11ySubmitButtonDisabled),
-        traits: [.isButton]
+        title: payTitle,
+        isEnabled: isEnabled,
+        isLoading: cardFormState.isLoading
       ),
       action: submitAction
     )

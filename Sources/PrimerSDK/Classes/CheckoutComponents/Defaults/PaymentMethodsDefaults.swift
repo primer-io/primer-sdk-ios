@@ -180,12 +180,11 @@ private struct VaultedSubmitContent: View {
       CheckoutComponentsStrings.payButton,
       isEnabled: isEnabled,
       isLoading: isLoading,
-      accessibilityConfiguration: AccessibilityConfiguration(
+      accessibilityConfiguration: .submitButton(
         identifier: AccessibilityIdentifiers.Vault.payButton,
-        // The combined element hides the spinner, so the label must carry the loading state.
-        label: isLoading
-          ? CheckoutComponentsStrings.a11ySubmitButtonLoading : CheckoutComponentsStrings.payButton,
-        traits: [.isButton]
+        title: CheckoutComponentsStrings.payButton,
+        isEnabled: isEnabled,
+        isLoading: isLoading
       ),
       action: onSubmit
     )

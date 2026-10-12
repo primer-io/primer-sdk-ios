@@ -44,10 +44,11 @@ struct VaultSection: View {
     PrimerCheckoutButton(
       CheckoutComponentsStrings.payButton,
       isLoading: isLoading,
-      accessibilityConfiguration: AccessibilityConfiguration(
+      accessibilityConfiguration: .submitButton(
         identifier: AccessibilityIdentifiers.Vault.payButton,
-        label: CheckoutComponentsStrings.payButton,
-        traits: [.isButton]
+        title: CheckoutComponentsStrings.payButton,
+        isEnabled: true,
+        isLoading: isLoading
       ),
       action: {
         Task {

@@ -136,14 +136,11 @@ struct FormRedirectScreen: View {
             title,
             isEnabled: currentState.isSubmitEnabled,
             isLoading: currentState.isLoading,
-            accessibilityConfiguration: AccessibilityConfiguration(
+            accessibilityConfiguration: .submitButton(
                 identifier: AccessibilityIdentifiers.FormRedirect.submitButton,
-                // The visible title, so a Voice Control user can say what the button shows.
-                label: currentState.isLoading ? CheckoutComponentsStrings.a11ySubmitButtonLoading : title,
-                hint: currentState.isLoading || currentState.isSubmitEnabled
-                    ? nil
-                    : CheckoutComponentsStrings.a11ySubmitButtonDisabled,
-                traits: [.isButton]
+                title: title,
+                isEnabled: currentState.isSubmitEnabled,
+                isLoading: currentState.isLoading
             ),
             action: scope.submit
         )

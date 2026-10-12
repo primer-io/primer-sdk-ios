@@ -43,7 +43,7 @@ private struct ConditionalAccessibilityElement: ViewModifier {
   /// Before iOS 18 the value can't be switched on and off without rebuilding the field, so it is read with the label.
   private var label: String {
     if #available(iOS 18.0, *) { return config.label }
-    return config.labelWithValue
+    return combinesChildren ? config.label : config.labelWithValue
   }
 
   @ViewBuilder
@@ -60,7 +60,7 @@ private struct ConditionalAccessibilityElement: ViewModifier {
       .accessibilityIdentifier(config.identifier)
       .accessibilityLabel(label)
       .modifier(ConditionalAccessibilityHint(hint: config.hint))
-      .modifier(ConditionalAccessibilityValue(value: config.value))
+      .modifier(ConditionalAccessibilityValue(value: config.value, combinesChildren: combinesChildren))
       .accessibilityAddTraits(config.traits)
       .accessibilityHidden(config.isHidden)
       .modifier(ConditionalAccessibilitySortPriority(sortPriority: config.sortPriority))
@@ -86,11 +86,15 @@ private struct ConditionalAccessibilityHint: ViewModifier {
 @available(iOS 15.0, *)
 private struct ConditionalAccessibilityValue: ViewModifier {
   let value: String?
+  let combinesChildren: Bool
 
   func body(content: Content) -> some View {
     // An empty value would hide the field's own value, so it is switched off rather than set to "".
     if #available(iOS 18.0, *) {
       content.accessibilityValue(value ?? "", isEnabled: value?.isEmpty == false)
+    } else if combinesChildren {
+      // A combined element has no value of its own for "" to hide, so it is always set and never rebuilt.
+      content.accessibilityValue(value ?? "")
     } else {
       // Only a branch could apply it here, and a field's error flips that branch on every focus, so the label reads it.
       content
