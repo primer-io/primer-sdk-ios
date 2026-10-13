@@ -83,16 +83,15 @@
          * Then notifies the `errorDelegate` with the specific `PrimerError`.
          */
         func createSessionError(_ error: KlarnaSessionError) {
-            var primerError: PrimerError
-            switch error {
-            case .missingConfiguration: primerError = .missingPrimerConfiguration()
-            case .invalidClientToken: primerError = .invalidClientToken()
-            case let .sessionCreationFailed(error): primerError = .failedToCreateSession(error: error)
-            case .klarnaAuthorizationFailed: primerError = PrimerError.klarnaError(message: "PrimerKlarnaWrapperAuthorization failed")
-            case .klarnaFinalizationFailed: primerError = .klarnaError(message: "PrimerKlarnaWrapperFinalization failed")
-            case .klarnaUserNotApproved: primerError = .klarnaUserNotApproved()
+            var primerError: PrimerError = switch error {
+            case .missingConfiguration: .missingPrimerConfiguration()
+            case .invalidClientToken: .invalidClientToken()
+            case let .sessionCreationFailed(error): .failedToCreateSession(error: error)
+            case .klarnaAuthorizationFailed: PrimerError.klarnaError(message: "PrimerKlarnaWrapperAuthorization failed")
+            case .klarnaFinalizationFailed: .klarnaError(message: "PrimerKlarnaWrapperFinalization failed")
+            case .klarnaUserNotApproved: .klarnaUserNotApproved()
             case let .sessionAuthorizationFailed(error: error):
-                primerError = .failedToCreatePayment(paymentMethodType: "KLARNA", description: error.localizedDescription)
+                .failedToCreatePayment(paymentMethodType: "KLARNA", description: error.localizedDescription)
             }
             handleReceivedError(error: primerError)
         }
@@ -109,7 +108,7 @@
                 let task = Task { @MainActor [weak self] in
                     try? await Task.sleep(nanoseconds: 5_000_000_000)
                     guard let self else { return }
-                    self.logger.warn(
+                    logger.warn(
                         message:
                         """
                         The 'decisionHandler' of 'primerHeadlessUniversalCheckoutWillCreatePaymentWithData' hasn't been called.

@@ -34,19 +34,19 @@ import UIKit
         
         if let languageCode = Locale.current.languageCode {
             if let regionCode = Locale.current.regionCode {
-                self.locale = "\(languageCode)-\(regionCode)"
+                locale = "\(languageCode)-\(regionCode)"
             } else {
-                self.locale = "\(languageCode)"
+                locale = "\(languageCode)"
             }
         }
         
-        self.modelIdentifier = UIDevice.modelIdentifier
-        self.modelName = UIDevice.model.rawValue
-        self.platformVersion = UIDevice.current.systemVersion
-        self.screen = Device.Screen()
+        modelIdentifier = UIDevice.modelIdentifier
+        modelName = UIDevice.model.rawValue
+        platformVersion = UIDevice.current.systemVersion
+        screen = Device.Screen()
         self.uniqueDeviceIdentifier = uniqueDeviceIdentifier
         if let mem = reportMemory() {
-            self.memoryFootprint = mem
+            memoryFootprint = mem
         }
         
     }

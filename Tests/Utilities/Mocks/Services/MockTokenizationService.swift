@@ -6,7 +6,9 @@
 
 import Foundation
 import PrimerFoundation
+@_spi(PrimerInternal) @testable import PrimerNetworking
 @testable import PrimerSDK
+@_spi(PrimerInternal) import PrimerCore
 
 final class MockTokenizationService: TokenizationServiceProtocol {
 

@@ -18,14 +18,14 @@ import Foundation
         public var errorId: String {
             switch self {
             case .iPay88Error:
-                return "ipay88"
+                "ipay88"
             }
         }
 
         public var errorDescription: String? {
             switch self {
             case let .iPay88Error(description, _):
-                return "[\(errorId)] iPay88 failed with error \(description) (diagnosticsId: \(self.diagnosticsId))"
+                "[\(errorId)] iPay88 failed with error \(description) (diagnosticsId: \(diagnosticsId))"
             }
         }
 
@@ -47,10 +47,12 @@ import Foundation
             case let .iPay88Error(description, userInfo):
                 tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
                 tmpUserInfo["description"] = description
-                tmpUserInfo["diagnosticsId"] = self.diagnosticsId
+                tmpUserInfo["diagnosticsId"] = diagnosticsId
             }
 
             return tmpUserInfo
         }
+
+        public var isReportable: Bool { true }
     }
 #endif

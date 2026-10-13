@@ -24,6 +24,10 @@ extension PrimerTheme {
                 return nil
             }
         }
+
+        func image(isDark: Bool) -> UIImage? {
+            schemeVariant(isDark: isDark, colored: colored, light: light, dark: dark)
+        }
     }
 
     public final class BaseColoredURLs: Codable {
@@ -75,6 +79,15 @@ extension PrimerTheme {
         var darkHex: String?
         var lightHex: String?
 
+        /// Resolves per trait collection, so a colour-scheme change repaints it wherever it is drawn.
+        var uiColor: UIColor? {
+            // a malformed hex keeps the old one-shot resolution rather than leaking the other scheme's colour
+            guard let light = hex(isDark: false)?.hexToUIColor(), let dark = hex(isDark: true)?.hexToUIColor() else {
+                return hex(isDark: UIScreen.isDarkModeEnabled)?.hexToUIColor()
+            }
+            return UIColor { $0.userInterfaceStyle == .dark ? dark : light }
+        }
+
         // swiftlint:disable:next nesting
         private enum CodingKeys: String, CodingKey {
             case coloredHex = "colored"
@@ -110,6 +123,10 @@ extension PrimerTheme {
             try? container.encode(darkHex, forKey: .darkHex)
             try? container.encode(lightHex, forKey: .lightHex)
         }
+
+        func hex(isDark: Bool) -> String? {
+            schemeVariant(isDark: isDark, colored: coloredHex, light: lightHex, dark: darkHex)
+        }
     }
 
     public final class BaseBorderWidth: Codable {
@@ -123,6 +140,11 @@ extension PrimerTheme {
             case colored
             case dark
             case light
+        }
+
+        /// Resolve to a CGFloat based on current appearance mode
+        var resolvedValue: CGFloat? {
+            resolvedValue(isDark: UIScreen.isDarkModeEnabled)
         }
 
         init?(
@@ -148,5 +170,40 @@ extension PrimerTheme {
             try? container.encode(light, forKey: .light)
             try? container.encode(dark, forKey: .dark)
         }
+
+        func resolvedValue(isDark: Bool) -> CGFloat? {
+            schemeVariant(isDark: isDark, colored: colored, light: light, dark: dark)
+        }
+    }
+}
+
+// MARK: - Helper Extensions
+
+private func schemeVariant<T>(isDark: Bool, colored: T?, light: T?, dark: T?) -> T? {
+    isDark ? (dark ?? colored ?? light) : (colored ?? light ?? dark)
+}
+
+extension String {
+    /// Convert hex string to UIColor
+    func hexToUIColor() -> UIColor? {
+        var hexString = trimmingCharacters(in: .whitespacesAndNewlines)
+
+        // Remove # prefix if present
+        if hexString.hasPrefix("#") {
+            hexString.removeFirst()
+        }
+
+        // Ensure valid length
+        guard hexString.count == 6 else { return nil }
+
+        // Parse RGB components
+        var rgb: UInt64 = 0
+        guard Scanner(string: hexString).scanHexInt64(&rgb) else { return nil }
+
+        let red = CGFloat((rgb >> 16) & 0xFF) / 255.0
+        let green = CGFloat((rgb >> 8) & 0xFF) / 255.0
+        let blue = CGFloat(rgb & 0xFF) / 255.0
+
+        return UIColor(red: red, green: green, blue: blue, alpha: 1.0)
     }
 }

@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
     s.name         = "PrimerStepResolver"
-    s.version      = "2.53.0"
+    s.version      = "3.0.0-beta.7"
     s.summary      = "Step resolution engine for Primer iOS SDK"
     s.description  = "Step resolution and navigation logic for Primer Backend Driven Checkout."
     s.homepage     = "https://www.primer.io"
@@ -9,7 +9,7 @@ Pod::Spec.new do |s|
     s.source       = { :git => "https://github.com/primer-io/primer-sdk-ios.git", :tag => "#{s.version}" }
 
     s.swift_version = '5'
-    s.ios.deployment_target = '13.0'
+    s.ios.deployment_target = '15.0'
 
     s.ios.source_files = "Modules/PrimerStepResolver/Sources/**/*.{swift}"
     s.ios.frameworks   = "Foundation"

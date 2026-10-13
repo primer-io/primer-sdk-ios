@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
     s.name         = "PrimerResources"
-    s.version      = "2.53.0"
+    s.version      = "3.0.0-beta.7"
     s.summary      = "Resources for Primer SDK"
     s.description  = "Contains resources (images, localisations, etc) used by PrimerSDK."
     s.homepage     = "https://www.primer.io"
@@ -9,7 +9,7 @@ Pod::Spec.new do |s|
     s.source       = { :git => "https://github.com/primer-io/primer-sdk-ios.git", :tag => "#{s.version}" }
 
     s.swift_version = '5'
-    s.ios.deployment_target = '13.0'
+    s.ios.deployment_target = '15.0'
 
     s.source_files = "Modules/PrimerResources/Sources/PrimerResources/**/*.swift"
     s.ios.resource_bundles = {
@@ -17,8 +17,10 @@ Pod::Spec.new do |s|
             "Modules/PrimerResources/Sources/PrimerResources/Resources/*.xcassets",
             "Modules/PrimerResources/Sources/PrimerResources/Resources/Localizable/**/*.strings",
             "Modules/PrimerResources/Sources/PrimerResources/Resources/Localizable/**/*.stringsdict",
+            "Modules/PrimerResources/Sources/PrimerResources/Resources/CheckoutComponentsLocalizable/**/*.strings",
             "Modules/PrimerResources/Sources/PrimerResources/Resources/Nibs/*",
-            "Modules/PrimerResources/Sources/PrimerResources/Resources/JSONs/**/*.json"
+            "Modules/PrimerResources/Sources/PrimerResources/Resources/JSONs/**/*.json",
+            "Modules/PrimerResources/Sources/PrimerResources/Resources/Fonts/*.ttf"
         ]
     }
 end

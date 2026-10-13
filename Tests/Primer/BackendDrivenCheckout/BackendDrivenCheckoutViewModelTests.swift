@@ -5,7 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 @testable @_spi(PrimerInternal) import PrimerBDCCore
-@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) @testable import PrimerFoundation
 @testable import PrimerSDK
 import XCTest
 
@@ -228,8 +228,12 @@ private final class MockBDCInstructionProvider: ClientInstructionProvider {
     
     func fetchPayInstruction() async throws -> ClientInstruction { try next() }
 
+    func fetchSetupState(setupId: String) async throws -> SetupState {
+        SetupState(instruction: .wait, nextPoll: .suspend)
+    }
+
     func fetchSetupFlow() async throws -> SetupFlow {
-        SetupFlow(schema: .object([:]), parameters: .object([:]))
+        SetupFlow(schema: .object([:]), parameters: .object([:]), setupId: "setup-1", nextPoll: .suspend)
     }
     func fetchNextInstruction() async throws -> ClientInstruction { try next() }
     

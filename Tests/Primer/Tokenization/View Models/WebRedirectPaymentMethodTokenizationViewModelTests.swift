@@ -5,7 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 @_spi(PrimerInternal) import PrimerFoundation
-@testable import PrimerSDK
+@_spi(PrimerInternal) @testable import PrimerSDK
 @_spi(PrimerInternal) @testable import PrimerNetworking
 import XCTest
 
@@ -128,8 +128,11 @@ final class WebRedirectPaymentMethodTokenizationViewModelTests: XCTestCase {
             decision(.continuePaymentCreation())
         }
 
+        let tokenizeInFlight = expectation(description: "tokenization in flight")
+        let cancellationPosted = DispatchSemaphore(value: 0)
         tokenizationService.onTokenize = { _ in
-            sleep(1)
+            tokenizeInFlight.fulfill()
+            cancellationPosted.wait()
             return Result.success(
                 PrimerPaymentMethodTokenData(
                     analyticsId: "analytics_id",
@@ -148,12 +151,14 @@ final class WebRedirectPaymentMethodTokenizationViewModelTests: XCTestCase {
         }
         sut.start()
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            let cancelNotification = Notification(name: Notification.Name.receivedUrlSchemeCancellation)
-            NotificationCenter.default.post(cancelNotification)
-        }
-
+        // Post the cancellation once tokenization is in flight. cancel() resolves the in-flight
+        // CancellableTask with .cancelled immediately, independent of the tokenization body, so
+        // assert that surfaced before releasing the now-abandoned body (its later resume is a
+        // no-op). This removes the tokenization-vs-cancellation timing race that flaked under load.
+        wait(for: [tokenizeInFlight], timeout: 2.0)
+        NotificationCenter.default.post(Notification(name: Notification.Name.receivedUrlSchemeCancellation))
         wait(for: [expectDidFail], timeout: 2.0)
+        cancellationPosted.signal()
     }
 
     func test_startFlow_whenAborted_shouldCallOnDidFail() throws {

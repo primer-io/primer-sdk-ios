@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
     s.name         = "PrimerNetworking"
-    s.version      = "2.53.0"
+    s.version      = "3.0.0-beta.7"
     s.summary      = "Networking objects + utilities for Primer SDK"
     s.description  = "Networking objects and utilities used by PrimerSDK."
     s.homepage     = "https://www.primer.io"
@@ -9,7 +9,7 @@ Pod::Spec.new do |s|
     s.source       = { :git => "https://github.com/primer-io/primer-sdk-ios.git", :tag => "#{s.version}" }
 
     s.swift_version = '5'
-    s.ios.deployment_target = '13.0'
+    s.ios.deployment_target = '15.0'
 
     s.ios.source_files = "Modules/PrimerNetworking/Sources/**/*.{swift}"
     s.ios.frameworks   = "Foundation", "UIKit"

@@ -28,11 +28,11 @@ import UIKit
     public func color(for state: ColorState) -> UIColor {
         switch state {
         case .enabled:
-            return enabled
+            enabled
         case .disabled:
-            return disabled
+            disabled
         case .selected:
-            return selected
+            selected
         }
     }
 }

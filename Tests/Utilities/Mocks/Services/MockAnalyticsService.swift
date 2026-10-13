@@ -5,7 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 @testable import PrimerSDK
-@_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) @testable import PrimerCore
 
 final actor MockAnalyticsService: AnalyticsServiceProtocol {
     private var eventsStorage: [any AnalyticsEvent] = []

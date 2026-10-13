@@ -1,0 +1,213 @@
+//
+//  VaultedCardCVVInput.swift
+//
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
+
+import SwiftUI
+@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerCore
+
+@available(iOS 15.0, *)
+struct VaultedCardCVVInput: View {
+  @Binding var cvv: String
+  @Binding var isValid: Bool
+  @Binding var errorMessage: String?
+
+  let cardNetwork: CardNetwork
+  let onCvvChange: (String) -> Void
+
+  @Environment(\.designTokens) private var tokens
+  @Environment(\.isInputEnabled) private var isInputEnabled
+  @Environment(\.sizeCategory) private var sizeCategory  // Observes Dynamic Type changes
+  @FocusState private var isFocused: Bool
+
+  // MARK: - Computed Properties
+
+  private var expectedCvvLength: Int {
+    cardNetwork.validation?.code.length ?? 3
+  }
+
+  private var cvvPlaceholder: String {
+    expectedCvvLength == 4 ? CheckoutComponentsStrings.cvvAmexPlaceholder : CheckoutComponentsStrings.cvvStandardPlaceholder
+  }
+
+  /// Custom binding that filters input to digits only and limits length
+  private var filteredCvvBinding: Binding<String> {
+    Binding(
+      get: { cvv },
+      set: { newValue in
+        let filtered = String(newValue.filter(\.isNumber).prefix(expectedCvvLength))
+        // Only propagate when the filtered value actually changes to avoid redundant validation round-trips
+        guard cvv != filtered else { return }
+        cvv = filtered
+        onCvvChange(filtered)
+      }
+    )
+  }
+
+  // MARK: - Body
+
+  var body: some View {
+    VStack(alignment: .leading, spacing: PrimerSpacing.xsmall(tokens: tokens)) {
+      makeCvvInputRow()
+      errorMessage.map(makeErrorLabel)
+    }
+    .onAppear {
+      DispatchQueue.main.asyncAfter(deadline: .now() + PrimerAnimationDuration.focusDelay) {
+        isFocused = true
+      }
+    }
+  }
+
+  // MARK: - CVV Input Row
+
+  private func makeCvvInputRow() -> some View {
+    HStack(spacing: PrimerSpacing.small(tokens: tokens)) {
+      HStack(spacing: PrimerSpacing.xsmall(tokens: tokens)) {
+        Image(systemName: "lock.fill")
+          .font(PrimerFont.bodySmall(tokens: tokens))
+          .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
+
+        Text(CheckoutComponentsStrings.cvvRecaptureInstruction)
+          .primerTypography(.bodySmall, tokens: tokens)
+          .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
+          .lineLimit(2)
+          .fixedSize(horizontal: false, vertical: true)
+      }
+      .accessibility(
+        config: AccessibilityConfiguration(
+          identifier: AccessibilityIdentifiers.Vault.cvvSecurityLabel,
+          label: CheckoutComponentsStrings.cvvRecaptureInstruction,
+          traits: []
+        ))
+
+      Spacer()
+
+      makeCvvTextField()
+    }
+  }
+
+  // MARK: - CVV Text Field
+
+  private func makeCvvTextField() -> some View {
+    HStack(spacing: PrimerSpacing.xsmall(tokens: tokens)) {
+      SecureField(cvvPlaceholder, text: filteredCvvBinding)
+        .keyboardType(.numberPad)
+        .focused($isFocused)
+        .multilineTextAlignment(.leading)
+        .primerFieldTypography(.bodyLarge, tokens: tokens)
+        .foregroundColor(CheckoutColors.inputText(tokens: tokens, isEnabled: isInputEnabled))
+        .tint(CheckoutColors.borderFocus(tokens: tokens))
+        .onChange(of: isInputEnabled) { if !$0 { isFocused = false } }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .focusesFieldOnTap { isFocused = true }
+
+      if errorMessage != nil { PrimerFieldErrorIcon() }
+    }
+    .padding(.horizontal, PrimerSpacing.medium(tokens: tokens))
+    .frame(width: PrimerComponentWidth.cvvFieldMax, height: PrimerComponentHeight.inputField(tokens: tokens))
+    .background(
+      RoundedRectangle(cornerRadius: PrimerRadius.small(tokens: tokens))
+        .fill(CheckoutColors.inputBackground(tokens: tokens, isEnabled: isInputEnabled))
+    )
+    .disabled(!isInputEnabled)
+    .overlay(
+      RoundedRectangle(cornerRadius: PrimerRadius.small(tokens: tokens))
+        .strokeBorder(cvvBorderColor, lineWidth: cvvBorderWidth)
+    )
+    .accessibility(
+        config: AccessibilityConfiguration(
+          identifier: AccessibilityIdentifiers.Vault.cvvField,
+          label: CheckoutComponentsStrings.a11yCVCLabel,
+          hint: CheckoutComponentsStrings.a11yCVCHint,
+          traits: []
+        ))
+  }
+
+  // MARK: - Error Label
+
+  private func makeErrorLabel(_ message: String) -> some View {
+    Text(message)
+      .primerTypography(.error, tokens: tokens)
+      .foregroundColor(CheckoutColors.textNegative(tokens: tokens))
+  }
+
+  // MARK: - Helpers
+
+  private var cvvBorderWidth: CGFloat {
+    if !isInputEnabled {
+      PrimerBorderWidth.standard(tokens: tokens)
+    } else if errorMessage != nil {
+      PrimerBorderWidth.error(tokens: tokens)
+    } else if isFocused {
+      PrimerBorderWidth.focused(tokens: tokens)
+    } else {
+      PrimerBorderWidth.standard(tokens: tokens)
+    }
+  }
+
+  private var cvvBorderColor: Color {
+    if !isInputEnabled {
+      CheckoutColors.borderDisabled(tokens: tokens)
+    } else if errorMessage != nil {
+      CheckoutColors.borderError(tokens: tokens)
+    } else if isFocused {
+      CheckoutColors.borderFocus(tokens: tokens)
+    } else {
+      CheckoutColors.borderDefault(tokens: tokens)
+    }
+  }
+}
+
+// MARK: - Preview
+
+#if DEBUG
+  @available(iOS 17.0, *)
+  #Preview("CVV Input - Empty") {
+    VaultedCardCVVInput(
+      cvv: .constant(""),
+      isValid: .constant(false),
+      errorMessage: .constant(nil),
+      cardNetwork: .visa,
+      onCvvChange: { _ in }
+    )
+    .padding()
+  }
+
+  @available(iOS 17.0, *)
+  #Preview("CVV Input - Valid") {
+    VaultedCardCVVInput(
+      cvv: .constant("123"),
+      isValid: .constant(true),
+      errorMessage: .constant(nil),
+      cardNetwork: .visa,
+      onCvvChange: { _ in }
+    )
+    .padding()
+  }
+
+  @available(iOS 17.0, *)
+  #Preview("CVV Input - Error") {
+    VaultedCardCVVInput(
+      cvv: .constant("12"),
+      isValid: .constant(false),
+      errorMessage: .constant("Please enter a valid CVV"),
+      cardNetwork: .visa,
+      onCvvChange: { _ in }
+    )
+    .padding()
+  }
+
+  @available(iOS 17.0, *)
+  #Preview("CVV Input - AMEX (4 digits)") {
+    VaultedCardCVVInput(
+      cvv: .constant(""),
+      isValid: .constant(false),
+      errorMessage: .constant(nil),
+      cardNetwork: .amex,
+      onCvvChange: { _ in }
+    )
+    .padding()
+  }
+#endif

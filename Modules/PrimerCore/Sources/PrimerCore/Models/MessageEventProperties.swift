@@ -39,11 +39,11 @@ import Foundation
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.message = try container.decodeIfPresent(String.self, forKey: .message)
-        self.messageType = try container.decode(Analytics.Event.Property.MessageType.self, forKey: .messageType)
-        self.severity = try container.decode(Analytics.Event.Property.Severity.self, forKey: .severity)
-        self.diagnosticsId = try container.decodeIfPresent(String.self, forKey: .diagnosticsId)
-        self.context = try container.decodeIfPresent([String: Any].self, forKey: .context)
+        message = try container.decodeIfPresent(String.self, forKey: .message)
+        messageType = try container.decode(Analytics.Event.Property.MessageType.self, forKey: .messageType)
+        severity = try container.decode(Analytics.Event.Property.Severity.self, forKey: .severity)
+        diagnosticsId = try container.decodeIfPresent(String.self, forKey: .diagnosticsId)
+        context = try container.decodeIfPresent([String: Any].self, forKey: .context)
     }
 
     public func encode(to encoder: Encoder) throws {

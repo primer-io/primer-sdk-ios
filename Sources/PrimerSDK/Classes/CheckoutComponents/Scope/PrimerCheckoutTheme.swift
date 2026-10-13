@@ -1,0 +1,426 @@
+//
+//  PrimerCheckoutTheme.swift
+//
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
+
+import SwiftUI
+@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerCore
+
+// MARK: - PrimerCheckoutTheme
+
+/// Theme configuration providing optional overrides for internal design tokens.
+///
+/// The internal `DesignTokens` class (auto-generated from JSON) remains the source of truth. `PrimerCheckoutTheme` allows merchants to override specific
+/// token values without replacing the entire token system.
+///
+/// When a merchant provides an override, `DesignTokensManager` merges it with
+/// internal defaults. Nil values fall back to internal token values.
+@available(iOS 15.0, *)
+public struct PrimerCheckoutTheme: Equatable {
+
+  public let colors: ColorOverrides?
+  public let darkColors: ColorOverrides?
+  public let radius: RadiusOverrides?
+  public let spacing: SpacingOverrides?
+  public let sizes: SizeOverrides?
+  public let typography: TypographyOverrides?
+  public let width: WidthOverrides?
+
+  /// Creates a new theme configuration with optional overrides. A NaN or infinite radius, spacing,
+  /// size, width or typography number is ignored with a warning, and the default applies.
+  /// - Parameters:
+  ///   - colors: Color token overrides, applied in light mode. Default: nil (uses internal defaults)
+  ///   - darkColors: Color token overrides applied in dark mode only. Anything left nil here uses Primer's dark
+  ///     default rather than the matching `colors` value, because a colour chosen against white is a guess on a
+  ///     dark background. Default: nil (Primer's dark defaults apply)
+  ///   - radius: Radius token overrides. Default: nil (uses internal defaults)
+  ///   - spacing: Spacing token overrides. Default: nil (uses internal defaults)
+  ///   - sizes: Size token overrides. Default: nil (uses internal defaults)
+  ///   - typography: Typography token overrides. Default: nil (uses internal defaults)
+  ///   - width: Border width token overrides. Default: nil (uses internal defaults)
+  public init(
+    colors: ColorOverrides? = nil,
+    darkColors: ColorOverrides? = nil,
+    radius: RadiusOverrides? = nil,
+    spacing: SpacingOverrides? = nil,
+    sizes: SizeOverrides? = nil,
+    typography: TypographyOverrides? = nil,
+    width: WidthOverrides? = nil
+  ) {
+    self.colors = colors
+    self.darkColors = darkColors
+    self.radius = radius
+    self.spacing = spacing
+    self.sizes = sizes
+    self.typography = typography
+    self.width = width
+  }
+}
+
+// MARK: - ColorOverrides
+
+/// Optional color token overrides.
+/// Property names match internal `DesignTokens` for consistency.
+/// All properties are optional - nil values use internal defaults.
+@available(iOS 15.0, *)
+public struct ColorOverrides: Equatable {
+
+  // MARK: Brand & Primary Colors
+
+  public let primerColorBrand: Color?
+  /// Text and icons on brand-filled buttons: the pay button label and its spinner. Nil follows
+  /// `primerColorBackgroundPrimary`.
+  public let primerColorOnBrand: Color?
+
+  // MARK: Semantic UI Colors (matching internal DesignTokens)
+
+  public let primerColorBackgroundPrimary: Color?
+  public let primerColorBackgroundSecondary: Color?
+  public let primerColorBackgroundOutlinedDefault: Color?
+  public let primerColorBackgroundOutlinedDisabled: Color?
+  public let primerColorTextPrimary: Color?
+  public let primerColorTextSecondary: Color?
+  public let primerColorTextPlaceholder: Color?
+  public let primerColorTextDisabled: Color?
+  public let primerColorTextNegative: Color?
+  public let primerColorTextLink: Color?
+  public let primerColorTextOutlinedDefault: Color?
+
+  // MARK: Border Colors (matching internal DesignTokens)
+
+  public let primerColorBorderOutlinedDefault: Color?
+  public let primerColorBorderOutlinedActive: Color?
+  public let primerColorBorderOutlinedFocus: Color?
+  public let primerColorBorderOutlinedDisabled: Color?
+  public let primerColorBorderOutlinedError: Color?
+  public let primerColorBorderOutlinedSelected: Color?
+  public let primerColorBorderOutlinedLoading: Color?
+
+  // MARK: Border Transparent Colors
+
+  public let primerColorBorderTransparentDefault: Color?
+  public let primerColorBorderTransparentActive: Color?
+  public let primerColorBorderTransparentFocus: Color?
+  public let primerColorBorderTransparentDisabled: Color?
+  public let primerColorBorderTransparentSelected: Color?
+
+  // MARK: Icon Colors
+
+  public let primerColorIconPrimary: Color?
+  public let primerColorIconDisabled: Color?
+  public let primerColorIconNegative: Color?
+  public let primerColorIconPositive: Color?
+
+  // MARK: Other
+
+  public let primerColorFocus: Color?
+  public let primerColorLoader: Color?
+
+  public init(
+    primerColorBrand: Color? = nil,
+    primerColorOnBrand: Color? = nil,
+    primerColorBackgroundPrimary: Color? = nil,
+    primerColorBackgroundSecondary: Color? = nil,
+    primerColorBackgroundOutlinedDefault: Color? = nil,
+    primerColorBackgroundOutlinedDisabled: Color? = nil,
+    primerColorTextPrimary: Color? = nil,
+    primerColorTextSecondary: Color? = nil,
+    primerColorTextPlaceholder: Color? = nil,
+    primerColorTextDisabled: Color? = nil,
+    primerColorTextNegative: Color? = nil,
+    primerColorTextLink: Color? = nil,
+    primerColorTextOutlinedDefault: Color? = nil,
+    primerColorBorderOutlinedDefault: Color? = nil,
+    primerColorBorderOutlinedActive: Color? = nil,
+    primerColorBorderOutlinedFocus: Color? = nil,
+    primerColorBorderOutlinedDisabled: Color? = nil,
+    primerColorBorderOutlinedError: Color? = nil,
+    primerColorBorderOutlinedSelected: Color? = nil,
+    primerColorBorderOutlinedLoading: Color? = nil,
+    primerColorBorderTransparentDefault: Color? = nil,
+    primerColorBorderTransparentActive: Color? = nil,
+    primerColorBorderTransparentFocus: Color? = nil,
+    primerColorBorderTransparentDisabled: Color? = nil,
+    primerColorBorderTransparentSelected: Color? = nil,
+    primerColorIconPrimary: Color? = nil,
+    primerColorIconDisabled: Color? = nil,
+    primerColorIconNegative: Color? = nil,
+    primerColorIconPositive: Color? = nil,
+    primerColorFocus: Color? = nil,
+    primerColorLoader: Color? = nil
+  ) {
+    self.primerColorBrand = primerColorBrand
+    self.primerColorOnBrand = primerColorOnBrand
+    self.primerColorBackgroundPrimary = primerColorBackgroundPrimary
+    self.primerColorBackgroundSecondary = primerColorBackgroundSecondary
+    self.primerColorBackgroundOutlinedDefault = primerColorBackgroundOutlinedDefault
+    self.primerColorBackgroundOutlinedDisabled = primerColorBackgroundOutlinedDisabled
+    self.primerColorTextPrimary = primerColorTextPrimary
+    self.primerColorTextSecondary = primerColorTextSecondary
+    self.primerColorTextPlaceholder = primerColorTextPlaceholder
+    self.primerColorTextDisabled = primerColorTextDisabled
+    self.primerColorTextNegative = primerColorTextNegative
+    self.primerColorTextLink = primerColorTextLink
+    self.primerColorTextOutlinedDefault = primerColorTextOutlinedDefault
+    self.primerColorBorderOutlinedDefault = primerColorBorderOutlinedDefault
+    self.primerColorBorderOutlinedActive = primerColorBorderOutlinedActive
+    self.primerColorBorderOutlinedFocus = primerColorBorderOutlinedFocus
+    self.primerColorBorderOutlinedDisabled = primerColorBorderOutlinedDisabled
+    self.primerColorBorderOutlinedError = primerColorBorderOutlinedError
+    self.primerColorBorderOutlinedSelected = primerColorBorderOutlinedSelected
+    self.primerColorBorderOutlinedLoading = primerColorBorderOutlinedLoading
+    self.primerColorBorderTransparentDefault = primerColorBorderTransparentDefault
+    self.primerColorBorderTransparentActive = primerColorBorderTransparentActive
+    self.primerColorBorderTransparentFocus = primerColorBorderTransparentFocus
+    self.primerColorBorderTransparentDisabled = primerColorBorderTransparentDisabled
+    self.primerColorBorderTransparentSelected = primerColorBorderTransparentSelected
+    self.primerColorIconPrimary = primerColorIconPrimary
+    self.primerColorIconDisabled = primerColorIconDisabled
+    self.primerColorIconNegative = primerColorIconNegative
+    self.primerColorIconPositive = primerColorIconPositive
+    self.primerColorFocus = primerColorFocus
+    self.primerColorLoader = primerColorLoader
+  }
+}
+
+// MARK: - RadiusOverrides
+
+/// Optional radius token overrides.
+/// Property names match internal `DesignTokens`.
+@available(iOS 15.0, *)
+public struct RadiusOverrides: Equatable {
+  /// Internal: primerRadiusXsmall (default: 2)
+  public let primerRadiusXsmall: CGFloat?
+  /// Internal: primerRadiusSmall (default: 4)
+  public let primerRadiusSmall: CGFloat?
+  /// Internal: primerRadiusMedium (default: 8)
+  public let primerRadiusMedium: CGFloat?
+  /// Internal: primerRadiusLarge (default: 12)
+  public let primerRadiusLarge: CGFloat?
+
+  public init(
+    primerRadiusXsmall: CGFloat? = nil,
+    primerRadiusSmall: CGFloat? = nil,
+    primerRadiusMedium: CGFloat? = nil,
+    primerRadiusLarge: CGFloat? = nil
+  ) {
+    self.primerRadiusXsmall = primerRadiusXsmall.finite
+    self.primerRadiusSmall = primerRadiusSmall.finite
+    self.primerRadiusMedium = primerRadiusMedium.finite
+    self.primerRadiusLarge = primerRadiusLarge.finite
+  }
+}
+
+// MARK: - SpacingOverrides
+
+/// Optional spacing token overrides.
+/// Property names match internal `DesignTokens`.
+@available(iOS 15.0, *)
+public struct SpacingOverrides: Equatable {
+  /// Internal: primerSpaceXxsmall (default: 2)
+  public let primerSpaceXxsmall: CGFloat?
+  /// Internal: primerSpaceXsmall (default: 4)
+  public let primerSpaceXsmall: CGFloat?
+  /// Internal: primerSpaceSmall (default: 8)
+  public let primerSpaceSmall: CGFloat?
+  /// Internal: primerSpaceMedium (default: 12)
+  public let primerSpaceMedium: CGFloat?
+  /// Internal: primerSpaceLarge (default: 16)
+  public let primerSpaceLarge: CGFloat?
+  /// Internal: primerSpaceXlarge (default: 20)
+  public let primerSpaceXlarge: CGFloat?
+  /// Internal: primerSpaceXxlarge (default: 24)
+  public let primerSpaceXxlarge: CGFloat?
+
+  public init(
+    primerSpaceXxsmall: CGFloat? = nil,
+    primerSpaceXsmall: CGFloat? = nil,
+    primerSpaceSmall: CGFloat? = nil,
+    primerSpaceMedium: CGFloat? = nil,
+    primerSpaceLarge: CGFloat? = nil,
+    primerSpaceXlarge: CGFloat? = nil,
+    primerSpaceXxlarge: CGFloat? = nil
+  ) {
+    self.primerSpaceXxsmall = primerSpaceXxsmall.finite
+    self.primerSpaceXsmall = primerSpaceXsmall.finite
+    self.primerSpaceSmall = primerSpaceSmall.finite
+    self.primerSpaceMedium = primerSpaceMedium.finite
+    self.primerSpaceLarge = primerSpaceLarge.finite
+    self.primerSpaceXlarge = primerSpaceXlarge.finite
+    self.primerSpaceXxlarge = primerSpaceXxlarge.finite
+  }
+}
+
+// MARK: - SizeOverrides
+
+/// Optional size token overrides.
+/// Property names match internal `DesignTokens`.
+@available(iOS 15.0, *)
+public struct SizeOverrides: Equatable {
+  /// Internal: primerSizeSmall (default: 16)
+  public let primerSizeSmall: CGFloat?
+  /// Internal: primerSizeMedium (default: 20)
+  public let primerSizeMedium: CGFloat?
+  /// Internal: primerSizeLarge (default: 24)
+  public let primerSizeLarge: CGFloat?
+  /// Internal: primerSizeXlarge (default: 32)
+  public let primerSizeXlarge: CGFloat?
+  /// Internal: primerSizeXxlarge (default: 40)
+  public let primerSizeXxlarge: CGFloat?
+  /// Internal: primerSizeXxxlarge (default: 56)
+  public let primerSizeXxxlarge: CGFloat?
+
+  public init(
+    primerSizeSmall: CGFloat? = nil,
+    primerSizeMedium: CGFloat? = nil,
+    primerSizeLarge: CGFloat? = nil,
+    primerSizeXlarge: CGFloat? = nil,
+    primerSizeXxlarge: CGFloat? = nil,
+    primerSizeXxxlarge: CGFloat? = nil
+  ) {
+    self.primerSizeSmall = primerSizeSmall.finite
+    self.primerSizeMedium = primerSizeMedium.finite
+    self.primerSizeLarge = primerSizeLarge.finite
+    self.primerSizeXlarge = primerSizeXlarge.finite
+    self.primerSizeXxlarge = primerSizeXxlarge.finite
+    self.primerSizeXxxlarge = primerSizeXxxlarge.finite
+  }
+}
+
+// MARK: - TypographyOverrides
+
+/// Optional typography token overrides for customizing text styles.
+@available(iOS 15.0, *)
+public struct TypographyOverrides: Equatable {
+
+  // MARK: - Typography Style
+
+  /// Individual typography style configuration.
+  public struct TypographyStyle: Equatable {
+    /// Custom font family name (e.g., "Inter")
+    public let font: String?
+    /// Letter spacing in points
+    public let letterSpacing: CGFloat?
+    /// Font weight
+    public let weight: Font.Weight?
+    /// Font size in points
+    public let size: CGFloat?
+    /// Line height in points
+    public let lineHeight: CGFloat?
+
+    /// Creates a typography style with optional properties.
+    public init(
+      font: String? = nil,
+      letterSpacing: CGFloat? = nil,
+      weight: Font.Weight? = nil,
+      size: CGFloat? = nil,
+      lineHeight: CGFloat? = nil
+    ) {
+      self.font = font
+      self.letterSpacing = letterSpacing.finite
+      self.weight = weight
+      self.size = size.finite
+      self.lineHeight = lineHeight.finite
+    }
+  }
+
+  // MARK: - Token Properties
+
+  /// Font family every style below falls back to, so one typeface covers the whole sheet.
+  /// A style naming its own `font` wins over this. Default: nil (Inter).
+  public let brand: String?
+
+  /// Title extra large: Inter, -0.6 letter spacing, weight 550, size 24, line height 32
+  public let titleXlarge: TypographyStyle?
+
+  /// Title large: Inter, -0.2 letter spacing, weight 550, size 16, line height 20
+  public let titleLarge: TypographyStyle?
+
+  /// Body large: Inter, -0.2 letter spacing, weight 400, size 16, line height 20
+  public let bodyLarge: TypographyStyle?
+
+  /// Body medium: Inter, 0 letter spacing, weight 400, size 14, line height 20
+  public let bodyMedium: TypographyStyle?
+
+  /// Body small: Inter, 0 letter spacing, weight 400, size 12, line height 16
+  public let bodySmall: TypographyStyle?
+
+  /// Field error text. Defaults to the body small values, so it can be styled on its own.
+  public let error: TypographyStyle?
+
+  /// Creates typography overrides with all optional properties.
+  public init(
+    brand: String? = nil,
+    titleXlarge: TypographyStyle? = nil,
+    titleLarge: TypographyStyle? = nil,
+    bodyLarge: TypographyStyle? = nil,
+    bodyMedium: TypographyStyle? = nil,
+    bodySmall: TypographyStyle? = nil,
+    error: TypographyStyle? = nil
+  ) {
+    self.brand = brand
+    self.titleXlarge = titleXlarge
+    self.titleLarge = titleLarge
+    self.bodyLarge = bodyLarge
+    self.bodyMedium = bodyMedium
+    self.bodySmall = bodySmall
+    self.error = error
+  }
+}
+
+// MARK: - WidthOverrides
+
+/// Optional border width token overrides. Named for the field state they apply to, matching design.
+@available(iOS 15.0, *)
+public struct WidthOverrides: Equatable {
+  /// Internal: primerWidthDefault (default: 1)
+  public let primerWidthDefault: CGFloat?
+
+  /// Internal: primerWidthFocus (default: 2)
+  public let primerWidthFocus: CGFloat?
+
+  /// Internal: primerWidthError (default: 2)
+  public let primerWidthError: CGFloat?
+
+  /// Internal: primerWidthSelected (default: 2)
+  public let primerWidthSelected: CGFloat?
+
+  /// Creates width overrides with all optional properties.
+  public init(
+    primerWidthDefault: CGFloat? = nil,
+    primerWidthFocus: CGFloat? = nil,
+    primerWidthError: CGFloat? = nil,
+    primerWidthSelected: CGFloat? = nil
+  ) {
+    self.primerWidthDefault = primerWidthDefault.finite
+    self.primerWidthFocus = primerWidthFocus.finite
+    self.primerWidthError = primerWidthError.finite
+    self.primerWidthSelected = primerWidthSelected.finite
+  }
+}
+
+private extension Optional where Wrapped == CGFloat {
+  /// NaN never equals itself, so a theme holding one would restart every `.task(id: theme)` that keys on it.
+  var finite: CGFloat? {
+    guard let value = self, !value.isFinite else { return self }
+    PrimerLogging.shared.logger.warn(message: "[PrimerCheckoutTheme] A NaN or infinite theme number is ignored.")
+    return nil
+  }
+}
+
+// MARK: - Color Scheme Resolution
+
+@available(iOS 15.0, *)
+extension PrimerCheckoutTheme {
+  /// The colour overrides that apply in one colour scheme.
+  ///
+  /// Dark mode reads `darkColors` alone. Whatever it leaves unset uses Primer's dark default, not the
+  /// matching `colors` value: a colour picked against white is a guess on a dark background, and a white
+  /// sheet colour carried into dark would remove dark mode entirely.
+  func resolvedColors(for colorScheme: ColorScheme) -> ColorOverrides? {
+    guard colorScheme == .dark else { return colors }
+    return darkColors
+  }
+}

@@ -8,24 +8,59 @@ import Foundation
 import PassKit
 import UIKit
 
+/// Represents a card network (card scheme) that can process card payments.
+///
+/// `CardNetwork` identifies the payment network associated with a credit or debit card.
+/// The SDK uses this to determine card validation rules, display appropriate icons,
+/// and handle co-badged card scenarios where multiple networks are available.
+///
+/// The network is automatically detected from the card number during input,
+/// or can be specified explicitly when working with tokenized payment methods.
+///
+/// Example usage:
+/// ```swift
+/// // Detect network from card number
+/// let network = CardNetwork(cardNumber: "4242424242424242") // Returns .visa
+///
+/// // Check if network is allowed by merchant
+/// if network.allowsUserSelection {
+///     // Show network selector for co-badged cards
+/// }
+/// ```
 public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
     
     // https://github.com/primer-io/platform/blob/59980a07113089000c9814b079579e15c616b6db/platform/commons/models/bin_range.py#L66
+    /// American Express cards (starts with 34 or 37).
     case amex = "AMEX"
+    /// Bancontact cards (Belgian debit card network).
     case bancontact = "BANCONTACT"
+    /// Cartes Bancaires (French domestic card network).
     case cartesBancaires = "CARTES_BANCAIRES"
+    /// Diners Club International cards.
     case diners = "DINERS_CLUB"
+    /// Discover cards (primarily US).
     case discover = "DISCOVER"
+    /// EFTPOS (Australian domestic debit network).
     case eftpos = "EFTPOS"
+    /// Elo cards (Brazilian card network).
     case elo = "ELO"
+    /// Hiper cards (Brazilian card network).
     case hiper = "HIPER"
+    /// Hipercard cards (Brazilian card network).
     case hipercard = "HIPERCARD"
+    /// JCB cards (Japan Credit Bureau).
     case jcb = "JCB"
+    /// Maestro debit cards (Mastercard brand).
     case maestro = "MAESTRO"
+    /// Mastercard credit and debit cards.
     case masterCard = "MASTERCARD"
+    /// Mir cards (Russian national payment system).
     case mir = "MIR"
+    /// Visa credit and debit cards.
     case visa = "VISA"
+    /// UnionPay cards (China's largest card network).
     case unionpay = "UNIONPAY"
+    /// Unknown or unsupported card network.
     case unknown = "OTHER" // or "UNKNOWN"
     
     public init(cardNumber: String) {
@@ -35,7 +70,7 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
     @_spi(PrimerInternal) public var validation: CardNetworkValidation? {
         switch self {
         case .amex:
-            return CardNetworkValidation(
+            CardNetworkValidation(
                 niceType: "American Express",
                 patterns: [[34], [37]],
                 gaps: [4, 10],
@@ -47,10 +82,10 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
             )
 
         case .bancontact, .cartesBancaires, .eftpos:
-            return nil
+            nil
 
         case .diners:
-            return CardNetworkValidation(
+            CardNetworkValidation(
                 niceType: "Diners",
                 patterns: [[300, 305], [36], [38], [39]],
                 gaps: [4, 10],
@@ -62,7 +97,7 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
             )
 
         case .discover:
-            return CardNetworkValidation(
+            CardNetworkValidation(
                 niceType: "Discover",
                 patterns: [[6011], [644, 649], [65]],
                 gaps: [4, 8, 12],
@@ -74,7 +109,7 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
             )
 
         case .elo:
-            return CardNetworkValidation(
+            CardNetworkValidation(
                 niceType: "Elo",
                 patterns: [
                     [401178],
@@ -112,7 +147,7 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
             )
 
         case .hiper:
-            return CardNetworkValidation(
+            CardNetworkValidation(
                 niceType: "Hiper",
                 patterns: [[637095], [63737423], [63743358], [637568], [637599], [637609], [637612]],
                 gaps: [4, 8, 12],
@@ -124,7 +159,7 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
             )
 
         case .hipercard:
-            return CardNetworkValidation(
+            CardNetworkValidation(
                 niceType: "Hiper",
                 patterns: [[606282]],
                 gaps: [4, 8, 12],
@@ -136,7 +171,7 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
             )
 
         case .jcb:
-            return CardNetworkValidation(
+            CardNetworkValidation(
                 niceType: "JCB",
                 patterns: [[2131], [1800], [3528, 3589]],
                 gaps: [4, 8, 12],
@@ -147,11 +182,13 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
                 )
             )
 
+        // Note: v3.0 breaking change — Mastercard formatting changed from [4, 10]
+        // (groups of 4-6-6) to [4, 8, 12] (groups of 4-4-4-4) per industry standard.
         case .masterCard:
-            return CardNetworkValidation(
+            CardNetworkValidation(
                 niceType: "Mastercard",
                 patterns: [[51, 55], [2221, 2229], [223, 229], [23, 26], [270, 271], [2720]],
-                gaps: [4, 10],
+                gaps: [4, 8, 12],
                 lengths: [16],
                 code: CardNetworkCode(
                     name: "CVC",
@@ -160,7 +197,7 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
             )
 
         case .maestro:
-            return CardNetworkValidation(
+            CardNetworkValidation(
                 niceType: "Maestro",
                 patterns: [
                     [493698],
@@ -181,7 +218,7 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
             )
 
         case .mir:
-            return CardNetworkValidation(
+            CardNetworkValidation(
                 niceType: "Mir",
                 patterns: [[2200, 2204]],
                 gaps: [4, 8, 12],
@@ -193,7 +230,7 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
             )
 
         case .visa:
-            return CardNetworkValidation(
+            CardNetworkValidation(
                 niceType: "Visa",
                 patterns: [[4]],
                 gaps: [4, 8, 12],
@@ -205,7 +242,7 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
             )
 
         case .unionpay:
-            return CardNetworkValidation(
+            CardNetworkValidation(
                 niceType: "UnionPay",
                 patterns: [
                     [620],
@@ -242,7 +279,7 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
                 )
             )
         case .unknown:
-            return nil
+            nil
         }
     }
 

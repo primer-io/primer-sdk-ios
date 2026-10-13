@@ -31,7 +31,7 @@
                 return
             }
 
-            if let authToken = authToken, approved == true {
+            if let authToken, approved == true {
                 if PrimerInternal.shared.sdkIntegrationType == .headless {
                     finalizeSession(token: authToken, fromAuthorization: false)
                 } else {

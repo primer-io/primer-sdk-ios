@@ -263,7 +263,7 @@ public enum CountryCode: String, Codable, CaseIterable {
 
 public extension CountryCode {
     var flag: String {
-        let unicodeScalars = self.rawValue
+        let unicodeScalars = rawValue
             .unicodeScalars
             .map { $0.value + 0x1F1E6 - 65 }
             .compactMap(UnicodeScalar.init)

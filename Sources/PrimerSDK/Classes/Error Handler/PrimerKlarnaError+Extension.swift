@@ -19,11 +19,11 @@ import Foundation
         public var errorId: String {
             switch self {
             case .userNotApproved:
-                return "klarna-user-not-approved"
+                "klarna-user-not-approved"
             case .klarnaSdkError:
-                return "klarna-sdk-error"
+                "klarna-sdk-error"
             default:
-                return "klarna-unknown-error-id"
+                "klarna-unknown-error-id"
             }
         }
 
@@ -37,5 +37,7 @@ import Foundation
         public var diagnosticsId: String {
             UUID().uuidString
         }
+
+        public var isReportable: Bool { true }
     }
 #endif
