@@ -1582,14 +1582,6 @@ enum CheckoutComponentsStrings {
 
   // MARK: Submit Button Accessibility
 
-  static let a11ySubmitButtonLabel = NSLocalizedString(
-    "accessibility_card_form_submit_label",
-    tableName: tableName,
-    bundle: .primerResources,
-    value: "Submit payment",
-    comment: "VoiceOver label for submit payment button"
-  )
-
   static let a11ySubmitButtonHint = NSLocalizedString(
     "accessibility_card_form_submit_hint",
     tableName: tableName,

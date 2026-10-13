@@ -60,7 +60,7 @@ struct CardFormFieldsView: View {
         }
       }
     }
-    // The form already knew it was busy and told only the button. Every field container reads this.
+    // The form already knew it was busy and told only the button. Every field reads this.
     .environment(\.isInputEnabled, !cardFormState.isLoading)
     .onAppear {
       formConfiguration = scope.getFormConfiguration()

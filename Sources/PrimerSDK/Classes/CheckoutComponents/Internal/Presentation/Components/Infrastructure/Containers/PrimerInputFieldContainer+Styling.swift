@@ -28,9 +28,7 @@ extension PrimerInputFieldContainer {
 
   /// A locked field takes the disabled fill, the same token Android and React Native use for it.
   var fieldBackgroundColor: Color {
-    isInputEnabled
-      ? CheckoutColors.inputBackground(tokens: tokens)
-      : CheckoutColors.backgroundOutlinedDisabled(tokens: tokens)
+    CheckoutColors.inputBackground(tokens: tokens, isEnabled: isInputEnabled)
   }
 
   var errorMessageForegroundColor: Color {
@@ -54,11 +52,11 @@ extension PrimerInputFieldContainer {
 extension PrimerInputFieldContainer {
   var fieldCornerRadius: CGFloat { PrimerRadius.small(tokens: tokens) }
   var textFieldContainerBackgroundLineWidth: CGFloat {
+    // The disabled colour wins over error and focus, so the width has to follow it.
+    if !isInputEnabled { return PrimerBorderWidth.standard(tokens: tokens) }
     if hasError { return PrimerBorderWidth.error(tokens: tokens) }
     return isFocused
       ? PrimerBorderWidth.focused(tokens: tokens)
       : PrimerBorderWidth.standard(tokens: tokens)
   }
-  var errorMessageMinHeight: CGFloat { hasError ? PrimerComponentHeight.errorMessage : 0 }
-  var errorMessageTopPadding: CGFloat { hasError ? PrimerSpacing.xsmall(tokens: tokens) : 0 }
 }

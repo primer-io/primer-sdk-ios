@@ -152,9 +152,12 @@ private struct VaultedMethodRowContent: View {
       .padding(PrimerSpacing.medium(tokens: tokens))
       .frame(maxWidth: .infinity)
       .overlay(
+        // The selected border, as on Android, so the selection does not rest on the checkmark alone.
         RoundedRectangle(cornerRadius: PrimerRadius.medium(tokens: tokens))
-          .stroke(
-            CheckoutColors.borderDefault(tokens: tokens), lineWidth: PrimerBorderWidth.standard(tokens: tokens))
+          .strokeBorder(
+            isSelected ? CheckoutColors.borderSelected(tokens: tokens) : CheckoutColors.borderDefault(tokens: tokens),
+            lineWidth: isSelected
+              ? PrimerBorderWidth.selected(tokens: tokens) : PrimerBorderWidth.standard(tokens: tokens))
       )
     }
     .buttonStyle(PlainButtonStyle())
@@ -162,6 +165,7 @@ private struct VaultedMethodRowContent: View {
     .accessibilityIdentifier(
       AccessibilityIdentifiers.PaymentSelection.vaultedPaymentMethodItem(method.id))
     .accessibilityLabel(method.displayData.accessibilityLabel)
+    .accessibilityAddTraits(isSelected ? .isSelected : [])
   }
 }
 
@@ -176,12 +180,11 @@ private struct VaultedSubmitContent: View {
       CheckoutComponentsStrings.payButton,
       isEnabled: isEnabled,
       isLoading: isLoading,
-      accessibilityConfiguration: AccessibilityConfiguration(
+      accessibilityConfiguration: .submitButton(
         identifier: AccessibilityIdentifiers.Vault.payButton,
-        // The combined element hides the spinner, so the label must carry the loading state.
-        label: isLoading
-          ? CheckoutComponentsStrings.a11ySubmitButtonLoading : CheckoutComponentsStrings.payButton,
-        traits: [.isButton]
+        title: CheckoutComponentsStrings.payButton,
+        isEnabled: isEnabled,
+        isLoading: isLoading
       ),
       action: onSubmit
     )

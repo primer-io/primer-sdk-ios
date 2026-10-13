@@ -95,7 +95,9 @@ struct ErrorScreen: View {
               CheckoutColors.borderDefault(tokens: tokens),
               lineWidth: PrimerBorderWidth.standard(tokens: tokens))
         )
+        .contentShape(RoundedRectangle(cornerRadius: PrimerRadius.medium(tokens: tokens)))
     }
+    .buttonStyle(PlainButtonStyle())
     .accessibility(
       config: AccessibilityConfiguration(
         identifier: AccessibilityIdentifiers.Error.otherPaymentMethodButton,

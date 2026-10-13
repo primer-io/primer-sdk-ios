@@ -64,13 +64,15 @@ struct KlarnaView: View, LogReporter {
           label: {
             HStack(spacing: PrimerSpacing.xsmall(tokens: tokens)) {
               Image(systemName: RTLIcon.backChevron)
-                .font(PrimerFont.bodyMedium(tokens: tokens))
+                .font(PrimerFont.titleLarge(tokens: tokens))
                 .foregroundColor(CheckoutColors.iconPrimary(tokens: tokens))
               Text(CheckoutComponentsStrings.backButton)
+                .primerTypography(.titleLarge, tokens: tokens)
             }
             .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
           }
         )
+        .buttonStyle(PlainButtonStyle())
         .accessibility(
           config: AccessibilityConfiguration(
             identifier: AccessibilityIdentifiers.Common.backButton,
@@ -199,9 +201,9 @@ struct KlarnaView: View, LogReporter {
       alignment: .leading, spacing: isSelected ? PrimerSpacing.medium(tokens: tokens) : 0
     ) {
       // Category header
-      Button(action: {
+      Button {
         scope.selectPaymentCategory(category.id)
-      }) {
+      } label: {
         HStack(spacing: PrimerSpacing.medium(tokens: tokens)) {
           // Category badge image
           makeCategoryBadge(for: category)
@@ -220,7 +222,9 @@ struct KlarnaView: View, LogReporter {
               .font(PrimerFont.bodyMedium(tokens: tokens))
           }
         }
+        .contentShape(Rectangle())
       }
+      .buttonStyle(PlainButtonStyle())
       .accessibilityIdentifier(AccessibilityIdentifiers.Klarna.categoryButton(category.id))
       .accessibilityLabel(
         isSelected

@@ -46,6 +46,7 @@ struct VaultedCardCvvRecaptureScreen: View, LogReporter {
           cardNetwork: vaultedPaymentMethod.cardNetwork,
           onCvvChange: validate
         )
+        .environment(\.isInputEnabled, !isSubmitting)
 
         makePayButton()
       } else {
@@ -68,11 +69,11 @@ struct VaultedCardCvvRecaptureScreen: View, LogReporter {
       CheckoutComponentsStrings.payButton,
       isEnabled: isValid,
       isLoading: isSubmitting,
-      accessibilityConfiguration: AccessibilityConfiguration(
+      accessibilityConfiguration: .submitButton(
         identifier: AccessibilityIdentifiers.Vault.cvvPayButton,
-        label: isSubmitting
-          ? CheckoutComponentsStrings.a11ySubmitButtonLoading : CheckoutComponentsStrings.payButton,
-        traits: [.isButton]
+        title: CheckoutComponentsStrings.payButton,
+        isEnabled: isValid,
+        isLoading: isSubmitting
       ),
       action: submit
     )

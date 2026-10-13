@@ -40,9 +40,10 @@ struct ApplePayScreen: View {
       if presentationContext.shouldShowBackButton {
         Button(action: scope.onBack) {
           Image(systemName: RTLIcon.backChevron)
-            .font(PrimerFont.bodyMedium(tokens: tokens))
+            .font(PrimerFont.titleLarge(tokens: tokens))
             .foregroundColor(CheckoutColors.iconPrimary(tokens: tokens))
         }
+        .buttonStyle(PlainButtonStyle())
         .padding(.leading, PrimerSpacing.large(tokens: tokens))
         .accessibility(
           config: AccessibilityConfiguration(
@@ -68,6 +69,7 @@ struct ApplePayScreen: View {
             .font(PrimerFont.bodyMedium(tokens: tokens))
             .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
         }
+        .buttonStyle(PlainButtonStyle())
         .padding(.trailing, PrimerSpacing.large(tokens: tokens))
         .accessibility(
           config: AccessibilityConfiguration(
