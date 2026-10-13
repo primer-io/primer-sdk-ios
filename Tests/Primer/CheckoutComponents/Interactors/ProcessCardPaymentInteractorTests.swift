@@ -73,7 +73,8 @@ final class ProcessCardPaymentInteractorTests: XCTestCase {
             expiryMonth: "12",
             expiryYear: "2030",
             cardholderName: TestData.CardholderNames.valid,
-            selectedNetwork: .visa
+            selectedNetwork: .visa,
+            surchargeNetwork: .visa
         )
         mockRepository.paymentResultToReturn = PaymentResult(
             paymentId: "test-payment",
@@ -85,6 +86,28 @@ final class ProcessCardPaymentInteractorTests: XCTestCase {
 
         // Then
         XCTAssertEqual(mockRepository.lastSelectedNetwork, .visa)
+        XCTAssertEqual(mockRepository.lastSurchargeNetwork, .visa)
+    }
+
+    func test_execute_withoutPick_passesOnlyTheSurchargeNetwork() async throws {
+        // Given: no pick; the card form shows Cartes Bancaires
+        let cardData = CardPaymentData(
+            cardNumber: TestData.CardNumbers.coBadgedCartesBancairesVisa,
+            cvv: TestData.CVV.valid3Digit,
+            expiryMonth: "12",
+            expiryYear: "2030",
+            cardholderName: TestData.CardholderNames.valid,
+            selectedNetwork: nil,
+            surchargeNetwork: .cartesBancaires
+        )
+        mockRepository.paymentResultToReturn = PaymentResult(paymentId: "test-payment", status: .success)
+
+        // When
+        _ = try await sut.execute(cardData: cardData)
+
+        // Then
+        XCTAssertNil(mockRepository.lastSelectedNetwork)
+        XCTAssertEqual(mockRepository.lastSurchargeNetwork, .cartesBancaires)
     }
 
     // MARK: - Error Tests
@@ -112,7 +135,8 @@ final class ProcessCardPaymentInteractorTests: XCTestCase {
             expiryMonth: "12",
             expiryYear: "2030",
             cardholderName: TestData.CardholderNames.valid,
-            selectedNetwork: nil
+            selectedNetwork: nil,
+            surchargeNetwork: nil
         )
     }
 }

@@ -26,6 +26,7 @@ extension TestData {
         static let validDiners = "3056930009020004"
         static let validJCB = "3566002020360505"
         static let valid19Digit = "4532015112830366999"
+        static let coBadgedCartesBancairesVisa = "4035501000000008"
 
         // Invalid card numbers
         static let invalidLuhn = "4242424242424241"
