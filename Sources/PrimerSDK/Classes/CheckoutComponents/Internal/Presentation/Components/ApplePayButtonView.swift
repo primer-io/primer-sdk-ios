@@ -14,17 +14,23 @@ struct ApplePayButtonView: View {
   private let style: PKPaymentButtonStyle
   private let type: PKPaymentButtonType
   private let cornerRadius: CGFloat
+  private let height: CGFloat
+  private let accessibilityIdentifier: String?
   private let action: () -> Void
 
   init(
     style: PKPaymentButtonStyle = .black,
     type: PKPaymentButtonType = .plain,
     cornerRadius: CGFloat = 8.0,
+    height: CGFloat = PrimerComponentHeight.button,
+    accessibilityIdentifier: String? = nil,
     action: @escaping () -> Void
   ) {
     self.style = style
     self.type = type
     self.cornerRadius = cornerRadius
+    self.height = height
+    self.accessibilityIdentifier = accessibilityIdentifier
     self.action = action
   }
 
@@ -33,9 +39,10 @@ struct ApplePayButtonView: View {
       style: style,
       type: type,
       cornerRadius: cornerRadius,
+      accessibilityIdentifier: accessibilityIdentifier,
       action: action
     )
-    .frame(height: 50)
+    .frame(height: height)
   }
 }
 
@@ -44,11 +51,14 @@ private struct ApplePayButtonRepresentable: UIViewRepresentable {
   let style: PKPaymentButtonStyle
   let type: PKPaymentButtonType
   let cornerRadius: CGFloat
+  let accessibilityIdentifier: String?
   let action: () -> Void
 
   func makeUIView(context: Context) -> PKPaymentButton {
     let button = PKPaymentButton(paymentButtonType: type, paymentButtonStyle: style)
     button.cornerRadius = cornerRadius
+    // PassKit owns the label and trait; only the identifier is ours.
+    button.accessibilityIdentifier = accessibilityIdentifier
     button.addTarget(
       context.coordinator, action: #selector(Coordinator.buttonTapped), for: .touchUpInside)
     return button
@@ -56,6 +66,8 @@ private struct ApplePayButtonRepresentable: UIViewRepresentable {
 
   func updateUIView(_ uiView: PKPaymentButton, context: Context) {
     uiView.cornerRadius = cornerRadius
+    // `.automatic` follows the button's own trait, so pin it to the scheme the SwiftUI row renders in.
+    uiView.overrideUserInterfaceStyle = UIUserInterfaceStyle(context.environment.colorScheme)
     context.coordinator.action = action
   }
 

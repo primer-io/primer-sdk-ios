@@ -133,7 +133,8 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
         borderWidth: displayButton?.borderWidth?.resolvedValue,
         cornerRadius: displayButton?.cornerRadius.map(CGFloat.init),
         logoVariants: primerMethod.baseLogoImage,
-        borderWidthVariants: displayButton?.borderWidth
+        backgroundColorVariants: displayButton?.backgroundColor,
+        textColorVariants: displayButton?.textColor
       )
     }
 

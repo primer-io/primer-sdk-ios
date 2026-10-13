@@ -40,21 +40,36 @@ final class PaymentMethodMapperTests: XCTestCase {
 
     // MARK: - Scheme Variants
 
-    func test_mapToPublic_carriesLogoAndBorderWidthVariants() {
+    func test_mapToPublic_carriesLogoVariants() {
         // Given
         let mapper = createMapper()
         let logo = PrimerTheme.BaseImage(colored: UIImage(), light: nil, dark: nil)
-        let width = PrimerTheme.BaseBorderWidth(colored: 1, light: 1, dark: 2)
         let internalMethod = InternalPaymentMethod(
             id: "pm-1", type: "PAYMENT_CARD", name: "Card",
-            logoVariants: logo, borderWidthVariants: width)
+            logoVariants: logo)
 
         // When
         let result = mapper.mapToPublic(internalMethod)
 
         // Then
         XCTAssertTrue(result.logoVariants === logo)
-        XCTAssertTrue(result.borderWidthVariants === width)
+    }
+
+    func test_mapToPublic_carriesColorVariants() {
+        // Given
+        let mapper = createMapper()
+        let background = PrimerTheme.BaseColors(coloredHex: "#FFC439", lightHex: nil, darkHex: nil)
+        let text = PrimerTheme.BaseColors(coloredHex: nil, lightHex: "#000000", darkHex: "#FFFFFF")
+        let internalMethod = InternalPaymentMethod(
+            id: "pm-1", type: "PAYPAL", name: "PayPal",
+            backgroundColorVariants: background, textColorVariants: text)
+
+        // When
+        let result = mapper.mapToPublic(internalMethod)
+
+        // Then
+        XCTAssertTrue(result.backgroundColorVariants === background)
+        XCTAssertTrue(result.textColorVariants === text)
     }
 
     // MARK: - Surcharge Formatting Tests

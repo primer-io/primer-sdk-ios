@@ -61,8 +61,10 @@ public struct PrimerPaymentMethods<Header: View, Method: View, Empty: View>: Vie
         if session.state.paymentMethods.isEmpty {
           AnyView(emptyState(session))
         } else {
-          ForEach(session.state.paymentMethods) { paymentMethod in
-            AnyView(method(paymentMethod) { session.select(paymentMethod) })
+          VStack(spacing: PrimerSpacing.small(tokens: tokens)) {
+            ForEach(session.state.paymentMethods) { paymentMethod in
+              AnyView(method(paymentMethod) { session.select(paymentMethod) })
+            }
           }
         }
       }

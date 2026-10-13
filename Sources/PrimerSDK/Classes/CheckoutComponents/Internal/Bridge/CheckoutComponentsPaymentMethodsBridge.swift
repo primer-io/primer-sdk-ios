@@ -79,7 +79,8 @@ final class CheckoutComponentsPaymentMethodsBridge: GetPaymentMethodsInteractor,
         borderWidth: borderWidth,
         cornerRadius: cornerRadius,
         logoVariants: primerMethod.baseLogoImage,
-        borderWidthVariants: displayButton?.borderWidth
+        backgroundColorVariants: displayButton?.backgroundColor,
+        textColorVariants: displayButton?.textColor
       )
     }
 

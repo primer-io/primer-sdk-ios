@@ -76,9 +76,8 @@ final class GetPaymentMethodsTests: XCTestCase {
         XCTAssertEqual(methods.first?.surcharge, 100)
     }
 
-    func testGetPaymentMethods_CarriesLogoAndBorderWidthVariants() async throws {
+    func testGetPaymentMethods_CarriesLogoVariants() async throws {
         let logo = PrimerTheme.BaseImage(colored: UIImage(), light: nil, dark: UIImage())
-        let width = PrimerTheme.BaseBorderWidth(colored: 1, light: 1, dark: 2)
         let paymentMethod = PrimerPaymentMethod(
             id: "payment-card-id",
             implementationType: .nativeSdk,
@@ -90,7 +89,7 @@ final class GetPaymentMethodsTests: XCTestCase {
             displayMetadata: PrimerPaymentMethod.DisplayMetadata(
                 button: .init(
                     iconUrl: nil, backgroundColor: nil, cornerRadius: nil,
-                    borderWidth: width, borderColor: nil, text: nil, textColor: nil))
+                    borderWidth: nil, borderColor: nil, text: nil, textColor: nil))
         )
         paymentMethod.baseLogoImage = logo
         mockConfigurationService.apiConfiguration = PrimerAPIConfiguration(
@@ -108,7 +107,40 @@ final class GetPaymentMethodsTests: XCTestCase {
         let methods = try await repository.getPaymentMethods()
 
         XCTAssertTrue(methods.first?.logoVariants === logo)
-        XCTAssertTrue(methods.first?.borderWidthVariants === width)
+    }
+
+    func testGetPaymentMethods_CarriesBackgroundAndTextColorVariants() async throws {
+        let background = PrimerTheme.BaseColors(coloredHex: "#FFC439", lightHex: "#FFFFFF", darkHex: "#000000")
+        let text = PrimerTheme.BaseColors(coloredHex: nil, lightHex: "#000000", darkHex: "#FFFFFF")
+        let paymentMethod = PrimerPaymentMethod(
+            id: "paypal-id",
+            implementationType: .nativeSdk,
+            type: "PAYPAL",
+            name: "PayPal",
+            processorConfigId: "config-123",
+            surcharge: nil,
+            options: nil,
+            displayMetadata: PrimerPaymentMethod.DisplayMetadata(
+                button: .init(
+                    iconUrl: nil, backgroundColor: background, cornerRadius: nil,
+                    borderWidth: nil, borderColor: nil, text: nil, textColor: text))
+        )
+        mockConfigurationService.apiConfiguration = PrimerAPIConfiguration(
+            coreUrl: "https://api.primer.io",
+            pciUrl: "https://pci.primer.io",
+            binDataUrl: "https://bin.primer.io",
+            assetsUrl: "https://assets.primer.io",
+            clientSession: nil,
+            paymentMethods: [paymentMethod],
+            primerAccountId: "account-123",
+            keys: nil,
+            checkoutModules: nil
+        )
+
+        let methods = try await repository.getPaymentMethods()
+
+        XCTAssertTrue(methods.first?.backgroundColorVariants === background)
+        XCTAssertTrue(methods.first?.textColorVariants === text)
     }
 
     func testGetPaymentMethods_WithMultiplePaymentMethods_ReturnsAll() async throws {
