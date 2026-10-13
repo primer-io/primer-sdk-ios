@@ -6,8 +6,7 @@
 
 import SwiftUI
 
-/// Whether the fields below accept input. Set once by the form, read by every field container, so a
-/// screen does not have to thread a flag through a dozen views to lock what it already knows is busy.
+/// Set once by the screen that owns the fields, so a lock does not have to be threaded through every view.
 @available(iOS 15.0, *)
 private struct InputEnabledKey: EnvironmentKey {
   static let defaultValue = true

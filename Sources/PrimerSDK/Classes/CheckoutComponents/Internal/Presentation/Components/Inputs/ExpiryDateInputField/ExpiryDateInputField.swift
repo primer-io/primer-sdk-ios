@@ -59,7 +59,8 @@ struct ExpiryDateInputField: View, LogReporter {
           placeholder: placeholder,
           validationService: validationService,
           scope: scope,
-          tokens: tokens
+          tokens: tokens,
+          accessibility: accessibilityConfig
         )
       } else {
         // Fallback view while loading validation service
@@ -69,19 +70,23 @@ struct ExpiryDateInputField: View, LogReporter {
       }
     }
     .accessibility(
-      config: AccessibilityConfiguration(
-        identifier: AccessibilityIdentifiers.CardForm.expiryField,
-        label: CheckoutComponentsStrings.a11yExpiryLabel,
-        hint: CheckoutComponentsStrings.a11yExpiryHint,
-        value: errorMessage,
-        traits: []
-      ),
+      config: accessibilityConfig,
       combinesChildren: false
     )
     .programmaticValue(.expiryDate, from: scope, text: $expiryDate, isFocused: $isFocused)
     .onAppear {
       setupValidationService()
     }
+  }
+
+  private var accessibilityConfig: AccessibilityConfiguration {
+    AccessibilityConfiguration(
+      identifier: AccessibilityIdentifiers.CardForm.expiryField,
+      label: CheckoutComponentsStrings.a11yExpiryLabel,
+      hint: CheckoutComponentsStrings.a11yExpiryHint,
+      value: errorMessage,
+      traits: []
+    )
   }
 
   private func setupValidationService() {

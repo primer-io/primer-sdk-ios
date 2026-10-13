@@ -24,6 +24,13 @@ import SwiftUI
 @available(iOS 15.0, *)
 enum PrimerFont {
 
+  // Lowercased: family lookup is case-insensitive.
+  private nonisolated(unsafe) static var warnedFamilies: Set<String> = []
+  private static let warnedFamiliesLock = NSLock()
+
+  // `Primer.init` registered Inter, and CheckoutComponents reaches it only after its first screens draw.
+  private static let registerFontsOnce: Void = FontRegistration.registerFonts()
+
   // MARK: - Base Font Function
 
   /// Creates a UIFont with design token parameters and automatic Dynamic Type scaling.
@@ -43,6 +50,7 @@ enum PrimerFont {
     size: CGFloat?,
     isItalic: Bool = false
   ) -> UIFont {
+    _ = registerFontsOnce
     let fontFamily = family ?? "Inter"
     let fontSize = size ?? 14
     let fontWeight = weight ?? 400
@@ -53,8 +61,7 @@ enum PrimerFont {
       : customFont(family: fontFamily, weight: fontWeight, size: fontSize)
 
     if namedFont == nil {
-      PrimerLogging.shared.logger.warn(
-        message: "[Typography] Font '\(fontFamily)' is not registered in the app, using the system font instead.")
+      warnFontMissingOnce(family: fontFamily)
     }
 
     // Apply Dynamic Type scaling
@@ -198,7 +205,7 @@ enum PrimerFont {
     Font(uiFontExtraLargeIcon(tokens: tokens))
   }
 
-  /// Small badge font (10pt, weight 500) - for compact badge text
+  /// Small badge font (10pt, body small weight) - for compact badge text
   static func smallBadge(tokens: DesignTokens?) -> Font {
     Font(uiFontSmallBadge(tokens: tokens))
   }
@@ -231,6 +238,23 @@ enum PrimerFont {
   }
 
   // MARK: - Private Helpers
+
+  /// `uiFont` runs on every redraw, so warning inline repeated the same line for one missing font.
+  private static func warnFontMissingOnce(family: String) {
+    // Ours, not the merchant's. FontRegistration reports a failure to register it.
+    guard family != "Inter" else { return }
+
+    // Latch only once it can be delivered, or a merchant with logging off spends the one warning.
+    guard PrimerLogging.shared.logger.logLevel.rawValue <= LogLevel.warning.rawValue else { return }
+
+    warnedFamiliesLock.lock()
+    let isFirstTime = warnedFamilies.insert(family.lowercased()).inserted
+    warnedFamiliesLock.unlock()
+    guard isFirstTime else { return }
+
+    PrimerLogging.shared.logger.warn(
+      message: "[Typography] Font '\(family)' is not registered in the app, using the system font instead.")
+  }
 
   /// Loads Inter variable font with specified weight using font descriptor API.
   ///

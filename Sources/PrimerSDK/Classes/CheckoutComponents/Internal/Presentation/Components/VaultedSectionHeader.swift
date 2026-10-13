@@ -39,7 +39,9 @@ struct VaultedSectionHeader: View {
               .foregroundColor(CheckoutColors.iconPrimary(tokens: tokens))
           }
           .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
+          .contentShape(Rectangle())
         }
+        .buttonStyle(PlainButtonStyle())
         .accessibility(
           config: AccessibilityConfiguration(
             identifier: AccessibilityIdentifiers.PaymentSelection.showAllButton,

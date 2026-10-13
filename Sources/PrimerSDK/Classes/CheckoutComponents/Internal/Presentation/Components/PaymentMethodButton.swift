@@ -14,11 +14,14 @@ struct PaymentMethodButton: View {
   let onSelect: () -> Void
 
   @Environment(\.designTokens) private var tokens
+  @Environment(\.designTokensColorScheme) private var tokensColorScheme
   @Environment(\.colorScheme) private var colorScheme
 
   private static let klarnaWordmarkName = "klarna-logo-light"
 
-  private var isDark: Bool { colorScheme == .dark }
+  /// The tokens' scheme, so a forced `appearanceMode` inline moves the logo and backend colours with the fill.
+  private var isDark: Bool { (tokensColorScheme ?? colorScheme) == .dark }
+  private var traits: UITraitCollection { UITraitCollection(userInterfaceStyle: isDark ? .dark : .light) }
 
   var body: some View {
     switch PrimerPaymentMethodType(rawValue: method.type) {
@@ -66,7 +69,7 @@ struct PaymentMethodButton: View {
       variant.valueOrAny(colored: $0.colored, light: $0.light, dark: $0.dark, isDark: isDark)
     } ?? method.icon
     return makeButton(
-      fill: background.map(Color.init) ?? CheckoutColors.background(tokens: tokens),
+      fill: background.map(resolved) ?? CheckoutColors.background(tokens: tokens),
       label: CheckoutComponentsStrings.a11yPaymentMethodButton(method.buttonText ?? method.name)
     ) {
       if let logo {
@@ -112,6 +115,7 @@ struct PaymentMethodButton: View {
       accessibilityIdentifier: AccessibilityIdentifiers.PaymentSelection.paymentMethodItem(method.type),
       action: onSelect
     )
+    .environment(\.colorScheme, isDark ? .dark : .light)
     .frame(maxWidth: .infinity)
   }
 
@@ -150,7 +154,12 @@ struct PaymentMethodButton: View {
     let textColor = method.textColorVariants.flatMap {
       variant.valueOrAny(colored: $0.coloredHex, light: $0.lightHex, dark: $0.darkHex, isDark: isDark)?.hexToUIColor()
     } ?? method.textColor
-    return textColor.map(Color.init) ?? CheckoutColors.textPrimary(tokens: tokens)
+    return textColor.map(resolved) ?? CheckoutColors.textPrimary(tokens: tokens)
+  }
+
+  /// Backend colours are dynamic, and a plain `Color(_:)` would resolve them for the view's trait instead.
+  private func resolved(_ color: UIColor) -> Color {
+    Color(color.resolvedColor(with: traits))
   }
 }
 

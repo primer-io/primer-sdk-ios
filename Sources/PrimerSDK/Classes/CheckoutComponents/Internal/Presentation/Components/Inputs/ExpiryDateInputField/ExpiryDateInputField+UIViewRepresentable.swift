@@ -22,6 +22,7 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
   let validationService: ValidationService
   let scope: any CardFormFieldScopeInternal
   let tokens: DesignTokens?
+  let accessibility: AccessibilityConfiguration
 
   func makeUIView(context: Context) -> UITextField {
     let textField = UITextField()
@@ -52,6 +53,8 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
     if textField.text != expiryDate {
       textField.text = expiryDate
     }
+
+    textField.applyAccessibility(accessibility)
   }
 
   func makeCoordinator() -> Coordinator {

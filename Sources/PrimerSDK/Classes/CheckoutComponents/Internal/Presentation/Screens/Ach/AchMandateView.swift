@@ -65,22 +65,17 @@ struct AchMandateView: View, LogReporter {
   }
 
   private func makeDeclineButton() -> some View {
-    Button(action: scope.declineMandate) {
-      Text(CheckoutComponentsStrings.achMandateDeclineButton)
-        .primerTypography(.body, tokens: tokens)
-        .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, PrimerSpacing.large(tokens: tokens))
-        .background(
-          RoundedRectangle(cornerRadius: PrimerRadius.small(tokens: tokens))
-            .stroke(
-              CheckoutColors.borderDefault(tokens: tokens),
-              lineWidth: PrimerBorderWidth.standard(tokens: tokens))
-        )
-    }
-    .accessibilityIdentifier(AccessibilityIdentifiers.Ach.mandateDeclineButton)
-    .accessibilityLabel(CheckoutComponentsStrings.achMandateDeclineButton)
-    .accessibilityHint(CheckoutComponentsStrings.a11yAchMandateDeclineHint)
+    PrimerCheckoutButton(
+      CheckoutComponentsStrings.achMandateDeclineButton,
+      style: .outlined,
+      accessibilityConfiguration: AccessibilityConfiguration(
+        identifier: AccessibilityIdentifiers.Ach.mandateDeclineButton,
+        label: CheckoutComponentsStrings.achMandateDeclineButton,
+        hint: CheckoutComponentsStrings.a11yAchMandateDeclineHint,
+        traits: [.isButton]
+      ),
+      action: scope.declineMandate
+    )
   }
 
   private enum Layout {
