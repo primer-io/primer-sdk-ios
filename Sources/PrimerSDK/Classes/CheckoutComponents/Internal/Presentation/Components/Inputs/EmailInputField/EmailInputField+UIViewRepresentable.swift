@@ -22,6 +22,7 @@ struct EmailTextField: UIViewRepresentable, LogReporter {
   let onEmailChange: ((String) -> Void)?
   let onValidationChange: ((Bool) -> Void)?
   let tokens: DesignTokens?
+  let accessibility: AccessibilityConfiguration
 
   func makeUIView(context: Context) -> UITextField {
     let textField = UITextField()
@@ -36,13 +37,24 @@ struct EmailTextField: UIViewRepresentable, LogReporter {
       doneButtonAction: #selector(Coordinator.doneButtonTapped)
     )
 
+    context.coordinator.repainter.markApplied(tokens)
+
     return textField
   }
 
   func updateUIView(_ textField: UITextField, context: Context) {
+    context.coordinator.repainter.repaintIfNeeded(
+      textField,
+      placeholder: placeholder,
+      tokens: tokens,
+      isEnabled: context.environment.isInputEnabled
+    )
+
     if textField.text != email {
       textField.text = email
     }
+
+    textField.applyAccessibility(accessibility)
   }
 
   func makeCoordinator() -> Coordinator {
@@ -59,6 +71,7 @@ struct EmailTextField: UIViewRepresentable, LogReporter {
   }
 
   final class Coordinator: NSObject, UITextFieldDelegate, LogReporter {
+    let repainter = PrimerFieldRepainter()
     private let validationService: ValidationService
     @Binding private var email: String
     @Binding private var isValid: Bool

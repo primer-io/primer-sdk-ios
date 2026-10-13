@@ -25,8 +25,12 @@ struct OTPCodeInputField: View, LogReporter {
   @State private var isValid: Bool = false
   @State private var errorMessage: String?
   @State private var isFocused: Bool = false
+  @FocusState private var hasKeyboardFocus: Bool
   @Environment(\.designTokens) private var tokens
+  @Environment(\.isInputEnabled) private var isInputEnabled
 
+  /// `prompt` takes a `Text`, which a view modifier cannot produce, so the placeholder keeps a
+  /// plain `Font` and inherits the field's letter spacing.
   private var fieldFont: Font { PrimerFont.bodyLarge(tokens: tokens) }
 
   // MARK: - Initialization
@@ -76,11 +80,16 @@ struct OTPCodeInputField: View, LogReporter {
           .font(fieldFont)
           .foregroundColor(CheckoutColors.textPlaceholder(tokens: tokens))
       )
-      .font(fieldFont)
-      .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
+      .primerFieldTypography(.bodyLarge, tokens: tokens)
+      .foregroundColor(CheckoutColors.inputText(tokens: tokens, isEnabled: isInputEnabled))
+      .tint(CheckoutColors.borderFocus(tokens: tokens))
+      .focused($hasKeyboardFocus)
+      .onChange(of: hasKeyboardFocus) { isFocused = $0 }
+      .onChange(of: isInputEnabled) { if !$0 { hasKeyboardFocus = false } }
       .keyboardType(.numberPad)
       .textContentType(.oneTimeCode)
-      .frame(height: PrimerSize.xxlarge(tokens: tokens))
+      .frame(maxWidth: .infinity, maxHeight: .infinity)
+      .focusesFieldOnTap { hasKeyboardFocus = true }
       .onChange(of: otpCode) { newValue in
         if newValue.count > expectedLength {
           otpCode = String(newValue.prefix(expectedLength))
@@ -98,7 +107,8 @@ struct OTPCodeInputField: View, LogReporter {
       config: AccessibilityConfiguration(
         identifier: AccessibilityIdentifiers.FormRedirect.otpField,
         label: label ?? "OTP Code",
-        hint: CheckoutComponentsStrings.a11yOtpFieldHint
+        hint: CheckoutComponentsStrings.a11yOtpFieldHint,
+        value: errorMessage
       ),
       combinesChildren: false
     )

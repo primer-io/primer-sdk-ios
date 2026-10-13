@@ -94,6 +94,10 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
     vaultManager.selectedMethod
   }
 
+  var isVaultEditing: Bool {
+    vaultManager.isEditing
+  }
+
   var isInitScreenEnabled: Bool { settings.uiOptions.isInitScreenEnabled }
   var isSuccessScreenEnabled: Bool { settings.uiOptions.isSuccessScreenEnabled }
   var isErrorScreenEnabled: Bool { settings.uiOptions.isErrorScreenEnabled }
@@ -364,6 +368,7 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
   func updateNavigationState(_ newState: CheckoutNavigationState, syncToNavigator: Bool) {
     navigationState = newState
 
+    endVaultEditing(unlessShowing: newState)
     trackLifecycle(for: newState)
     announceScreenChange(for: newState)
 
@@ -710,6 +715,18 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
     _ method: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod?
   ) {
     vaultManager.setSelectedMethod(method)
+  }
+
+  func setVaultEditing(_ editing: Bool) {
+    vaultManager.setEditing(editing)
+  }
+
+  /// Edit mode outlives the list's view, so leaving the vault flow any way (a sheet swipe too) ends it here.
+  private func endVaultEditing(unlessShowing state: CheckoutNavigationState) {
+    switch state {
+    case .vaultedPaymentMethods, .deleteVaultedPaymentMethodConfirmation: break
+    default: vaultManager.setEditing(false)
+    }
   }
 
   static func validated(from checkoutScope: any PrimerCheckoutScope) throws -> (DefaultCheckoutScope, PresentationContext) {

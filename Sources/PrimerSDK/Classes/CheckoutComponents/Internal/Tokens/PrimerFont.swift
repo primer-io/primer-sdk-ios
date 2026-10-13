@@ -24,6 +24,13 @@ import SwiftUI
 @available(iOS 15.0, *)
 enum PrimerFont {
 
+  // Lowercased: family lookup is case-insensitive.
+  private nonisolated(unsafe) static var warnedFamilies: Set<String> = []
+  private static let warnedFamiliesLock = NSLock()
+
+  // `Primer.init` registered Inter, and CheckoutComponents reaches it only after its first screens draw.
+  private static let registerFontsOnce: Void = FontRegistration.registerFonts()
+
   // MARK: - Base Font Function
 
   /// Creates a UIFont with design token parameters and automatic Dynamic Type scaling.
@@ -43,29 +50,23 @@ enum PrimerFont {
     size: CGFloat?,
     isItalic: Bool = false
   ) -> UIFont {
+    _ = registerFontsOnce
     let fontFamily = family ?? "Inter"
     let fontSize = size ?? 14
     let fontWeight = weight ?? 400
 
-    let baseFont: UIFont = if fontFamily == "Inter" {
-      if let customUIFont = variableInterFont(weight: fontWeight, size: fontSize) {
-        customUIFont
-      } else {
-        // Fallback to system font
-        .systemFont(ofSize: fontSize, weight: uiFontWeightFromNumber(fontWeight))
-      }
-    } else {
-      // Attempt to load custom font family
-      if let customFont = UIFont(name: fontFamily, size: fontSize) {
-        customFont
-      } else {
-        // Fallback to system font if custom font is not available
-        .systemFont(ofSize: fontSize, weight: uiFontWeightFromNumber(fontWeight))
-      }
+    let namedFont: UIFont? =
+      fontFamily == "Inter"
+      ? variableInterFont(weight: fontWeight, size: fontSize)
+      : customFont(family: fontFamily, weight: fontWeight, size: fontSize)
+
+    if namedFont == nil {
+      warnFontMissingOnce(family: fontFamily)
     }
 
     // Apply Dynamic Type scaling
-    return UIFontMetrics.default.scaledFont(for: baseFont)
+    return UIFontMetrics.default.scaledFont(
+      for: namedFont ?? .systemFont(ofSize: fontSize, weight: uiFontWeightFromNumber(fontWeight)))
   }
 
   // MARK: - UIKit Typography Helpers
@@ -130,20 +131,33 @@ enum PrimerFont {
     )
   }
 
+  /// Field error text (12pt, weight 400) - defaults to the body small values
+  static func uiFontError(tokens: DesignTokens?) -> UIFont {
+    guard let tokens else {
+      return uiFont(family: "Inter", weight: 400, size: 12)
+    }
+    return uiFont(
+      family: tokens.primerTypographyErrorFont,
+      weight: tokens.primerTypographyErrorWeight,
+      size: tokens.primerTypographyErrorSize
+    )
+  }
+
   /// Large icon font (48pt, weight 400) - for large icon displays
-  static func uiFontLargeIcon(tokens _: DesignTokens?) -> UIFont {
-    uiFont(family: "Inter", weight: 400, size: 48)
+  static func uiFontLargeIcon(tokens: DesignTokens?) -> UIFont {
+    uiFont(family: tokens?.primerTypographyBrand, weight: 400, size: 48)
   }
 
   /// Extra large icon font (56pt, weight 400) - for extra large icon displays
   static func uiFontExtraLargeIcon(tokens: DesignTokens?) -> UIFont {
-    let size = tokens?.primerSizeXxxlarge ?? 56
-    return uiFont(family: "Inter", weight: 400, size: size)
+    uiFont(family: tokens?.primerTypographyBrand, weight: 400, size: tokens?.primerSizeXxxlarge ?? 56)
   }
 
-  /// Small badge font (10pt, weight 500) - for compact badge text
-  static func uiFontSmallBadge(tokens _: DesignTokens?) -> UIFont {
-    uiFont(family: "Inter", weight: 500, size: 10)
+  /// Small badge font (10pt) - for compact badge text.
+  /// No typography token defines a 10pt style, so the size stays fixed and the rest follows
+  /// body small.
+  static func uiFontSmallBadge(tokens: DesignTokens?) -> UIFont {
+    uiFont(family: tokens?.primerTypographyBodySmallFont, weight: tokens?.primerTypographyBodySmallWeight, size: 10)
   }
 
   // MARK: - SwiftUI Typography Helpers
@@ -176,6 +190,11 @@ enum PrimerFont {
     Font(uiFontBodySmall(tokens: tokens))
   }
 
+  /// Field error text. Styled on its own so it does not move with every body-small label.
+  static func error(tokens: DesignTokens?) -> Font {
+    Font(uiFontError(tokens: tokens))
+  }
+
   /// Large icon font (48pt, weight 400) - for large icon displays
   static func largeIcon(tokens: DesignTokens?) -> Font {
     Font(uiFontLargeIcon(tokens: tokens))
@@ -186,7 +205,7 @@ enum PrimerFont {
     Font(uiFontExtraLargeIcon(tokens: tokens))
   }
 
-  /// Small badge font (10pt, weight 500) - for compact badge text
+  /// Small badge font (10pt, body small weight) - for compact badge text
   static func smallBadge(tokens: DesignTokens?) -> Font {
     Font(uiFontSmallBadge(tokens: tokens))
   }
@@ -220,6 +239,23 @@ enum PrimerFont {
 
   // MARK: - Private Helpers
 
+  /// `uiFont` runs on every redraw, so warning inline repeated the same line for one missing font.
+  private static func warnFontMissingOnce(family: String) {
+    // Ours, not the merchant's. FontRegistration reports a failure to register it.
+    guard family != "Inter" else { return }
+
+    // Latch only once it can be delivered, or a merchant with logging off spends the one warning.
+    guard PrimerLogging.shared.logger.logLevel.rawValue <= LogLevel.warning.rawValue else { return }
+
+    warnedFamiliesLock.lock()
+    let isFirstTime = warnedFamilies.insert(family.lowercased()).inserted
+    warnedFamiliesLock.unlock()
+    guard isFirstTime else { return }
+
+    PrimerLogging.shared.logger.warn(
+      message: "[Typography] Font '\(family)' is not registered in the app, using the system font instead.")
+  }
+
   /// Loads Inter variable font with specified weight using font descriptor API.
   ///
   /// Variable fonts use font descriptors with variation axes to access different weights.
@@ -248,6 +284,29 @@ enum PrimerFont {
     }
 
     return nil
+  }
+
+  /// Resolves a merchant brand font at the requested weight.
+  ///
+  /// `UIFont(name:size:)` carries no weight, so on its own every text style resolves to the same face.
+  /// A family lookup carrying a weight trait keeps each style's weight; a PostScript face name
+  /// (e.g. "Georgia-Bold") matches no family, so it is normalised to its own family first and only
+  /// falls back to that single face when the family cannot be re-resolved.
+  private static func customFont(family: String, weight: CGFloat, size: CGFloat) -> UIFont? {
+    if let font = weightedFont(family: family, weight: weight, size: size) { return font }
+    guard let namedFace = UIFont(name: family, size: size) else { return nil }
+    return weightedFont(family: namedFace.familyName, weight: weight, size: size) ?? namedFace
+  }
+
+  /// A font from `family` at `weight`, or nil when that family is not installed. Descriptor matching
+  /// substitutes Helvetica for an unknown family, so the resolved family is compared back.
+  private static func weightedFont(family: String, weight: CGFloat, size: CGFloat) -> UIFont? {
+    let descriptor = UIFontDescriptor(fontAttributes: [
+      .family: family,
+      .traits: [UIFontDescriptor.TraitKey.weight: uiFontWeightFromNumber(weight).rawValue]
+    ])
+    let font = UIFont(descriptor: descriptor, size: size)
+    return font.familyName.caseInsensitiveCompare(family) == .orderedSame ? font : nil
   }
 
   /// Converts numeric font weight to UIFont.Weight enum.

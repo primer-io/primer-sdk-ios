@@ -18,6 +18,8 @@ struct VaultedCardCVVInput: View {
   let onCvvChange: (String) -> Void
 
   @Environment(\.designTokens) private var tokens
+  @Environment(\.isInputEnabled) private var isInputEnabled
+  @Environment(\.sizeCategory) private var sizeCategory  // Observes Dynamic Type changes
   @FocusState private var isFocused: Bool
 
   // MARK: - Computed Properties
@@ -47,7 +49,7 @@ struct VaultedCardCVVInput: View {
   // MARK: - Body
 
   var body: some View {
-    VStack(alignment: .leading, spacing: PrimerSpacing.small(tokens: tokens)) {
+    VStack(alignment: .leading, spacing: PrimerSpacing.xsmall(tokens: tokens)) {
       makeCvvInputRow()
       errorMessage.map(makeErrorLabel)
     }
@@ -68,7 +70,7 @@ struct VaultedCardCVVInput: View {
           .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
 
         Text(CheckoutComponentsStrings.cvvRecaptureInstruction)
-          .font(PrimerFont.bodySmall(tokens: tokens))
+          .primerTypography(.bodySmall, tokens: tokens)
           .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
           .lineLimit(2)
           .fixedSize(horizontal: false, vertical: true)
@@ -89,26 +91,32 @@ struct VaultedCardCVVInput: View {
   // MARK: - CVV Text Field
 
   private func makeCvvTextField() -> some View {
-    SecureField(cvvPlaceholder, text: filteredCvvBinding)
-      .keyboardType(.numberPad)
-      .focused($isFocused)
-      .multilineTextAlignment(.leading)
-      .font(PrimerFont.bodyLarge(tokens: tokens))
-      .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
-      .padding(.horizontal, PrimerSpacing.medium(tokens: tokens))
-      .frame(width: PrimerComponentWidth.cvvFieldMax, height: PrimerSize.xxlarge(tokens: tokens))
-      .background(
-        RoundedRectangle(cornerRadius: PrimerRadius.small(tokens: tokens))
-          .fill(CheckoutColors.background(tokens: tokens))
-      )
-      .overlay(
-        RoundedRectangle(cornerRadius: PrimerRadius.small(tokens: tokens))
-          .stroke(
-            cvvBorderColor,
-            lineWidth: isFocused
-              ? PrimerBorderWidth.selected(tokens: tokens) : PrimerBorderWidth.standard(tokens: tokens))
-      )
-      .accessibility(
+    HStack(spacing: PrimerSpacing.xsmall(tokens: tokens)) {
+      SecureField(cvvPlaceholder, text: filteredCvvBinding)
+        .keyboardType(.numberPad)
+        .focused($isFocused)
+        .multilineTextAlignment(.leading)
+        .primerFieldTypography(.bodyLarge, tokens: tokens)
+        .foregroundColor(CheckoutColors.inputText(tokens: tokens, isEnabled: isInputEnabled))
+        .tint(CheckoutColors.borderFocus(tokens: tokens))
+        .onChange(of: isInputEnabled) { if !$0 { isFocused = false } }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .focusesFieldOnTap { isFocused = true }
+
+      if errorMessage != nil { PrimerFieldErrorIcon() }
+    }
+    .padding(.horizontal, PrimerSpacing.medium(tokens: tokens))
+    .frame(width: PrimerComponentWidth.cvvFieldMax, height: PrimerComponentHeight.inputField(tokens: tokens))
+    .background(
+      RoundedRectangle(cornerRadius: PrimerRadius.small(tokens: tokens))
+        .fill(CheckoutColors.inputBackground(tokens: tokens, isEnabled: isInputEnabled))
+    )
+    .disabled(!isInputEnabled)
+    .overlay(
+      RoundedRectangle(cornerRadius: PrimerRadius.small(tokens: tokens))
+        .strokeBorder(cvvBorderColor, lineWidth: cvvBorderWidth)
+    )
+    .accessibility(
         config: AccessibilityConfiguration(
           identifier: AccessibilityIdentifiers.Vault.cvvField,
           label: CheckoutComponentsStrings.a11yCVCLabel,
@@ -121,14 +129,28 @@ struct VaultedCardCVVInput: View {
 
   private func makeErrorLabel(_ message: String) -> some View {
     Text(message)
-      .font(PrimerFont.bodySmall(tokens: tokens))
+      .primerTypography(.error, tokens: tokens)
       .foregroundColor(CheckoutColors.textNegative(tokens: tokens))
   }
 
   // MARK: - Helpers
 
+  private var cvvBorderWidth: CGFloat {
+    if !isInputEnabled {
+      PrimerBorderWidth.standard(tokens: tokens)
+    } else if errorMessage != nil {
+      PrimerBorderWidth.error(tokens: tokens)
+    } else if isFocused {
+      PrimerBorderWidth.focused(tokens: tokens)
+    } else {
+      PrimerBorderWidth.standard(tokens: tokens)
+    }
+  }
+
   private var cvvBorderColor: Color {
-    if errorMessage != nil {
+    if !isInputEnabled {
+      CheckoutColors.borderDisabled(tokens: tokens)
+    } else if errorMessage != nil {
       CheckoutColors.borderError(tokens: tokens)
     } else if isFocused {
       CheckoutColors.borderFocus(tokens: tokens)

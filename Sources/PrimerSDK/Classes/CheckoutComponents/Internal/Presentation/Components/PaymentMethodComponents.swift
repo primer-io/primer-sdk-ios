@@ -51,11 +51,12 @@ struct PaymentMethodPlaceholder: View {
         paymentMethodLogo
 
         Text(CheckoutComponentsStrings.paymentMethodDisplayName(displayName))
-          .font(PrimerFont.headline(tokens: tokens))
+          .primerTypography(.headline, tokens: tokens)
+          .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
 
         Text(CheckoutComponentsStrings.implementationComingSoon)
-          .font(PrimerFont.subheadline(tokens: tokens))
-          .foregroundColor(CheckoutColors.secondary(tokens: tokens))
+          .primerTypography(.subheadline, tokens: tokens)
+          .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
 
         Spacer()
       }
@@ -72,12 +73,15 @@ struct PaymentMethodPlaceholder: View {
         label: {
           HStack(spacing: PrimerSpacing.xsmall(tokens: tokens)) {
             Image(systemName: RTLIcon.backChevron)
-              .font(PrimerFont.bodyMedium(tokens: tokens))
+              .font(PrimerFont.titleLarge(tokens: tokens))
+              .foregroundColor(CheckoutColors.iconPrimary(tokens: tokens))
             Text(CheckoutComponentsStrings.backButton)
+              .primerTypography(.titleLarge, tokens: tokens)
           }
           .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
         }
       )
+      .buttonStyle(PlainButtonStyle())
       .accessibility(
         config: AccessibilityConfiguration(
           identifier: AccessibilityIdentifiers.Common.backButton,

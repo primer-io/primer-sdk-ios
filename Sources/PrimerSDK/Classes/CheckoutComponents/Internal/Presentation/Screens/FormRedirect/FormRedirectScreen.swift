@@ -104,7 +104,8 @@ struct FormRedirectScreen: View {
     }
 
     private func makeDefaultFormSection() -> some View {
-        VStack(spacing: PrimerSpacing.medium(tokens: tokens)) {
+        // Each field container pads its own bottom, as in the card form.
+        VStack(spacing: 0) {
             ForEach(currentState.fields) { field in
                 FormFieldView(
                     field: field,
@@ -115,6 +116,7 @@ struct FormRedirectScreen: View {
                 )
             }
         }
+        .environment(\.isInputEnabled, !currentState.isLoading)
     }
 
     // MARK: - Submit Button Section
@@ -129,34 +131,18 @@ struct FormRedirectScreen: View {
     }
 
     private func makeDefaultSubmitButton() -> some View {
-        Button(action: scope.submit) {
-            HStack(spacing: PrimerSpacing.small(tokens: tokens)) {
-                if currentState.isLoading {
-                    ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                }
-
-                Text(scope.submitButtonText ?? defaultSubmitButtonText)
-                    .font(PrimerFont.bodyMedium(tokens: tokens))
-            }
-            .frame(maxWidth: .infinity)
-            .frame(height: PrimerComponentHeight.button)
-            .foregroundColor(CheckoutColors.buttonTextPrimary(tokens: tokens))
-            .background(
-                RoundedRectangle(cornerRadius: PrimerRadius.medium(tokens: tokens))
-                    .fill(currentState.isSubmitEnabled && !currentState.isLoading
-                          ? CheckoutColors.buttonPrimary(tokens: tokens)
-                          : CheckoutColors.buttonDisabled(tokens: tokens))
-            )
-        }
-        .disabled(!currentState.isSubmitEnabled || currentState.isLoading)
-        .accessibility(
-            config: AccessibilityConfiguration(
+        let title = scope.submitButtonText ?? defaultSubmitButtonText
+        return PrimerCheckoutButton(
+            title,
+            isEnabled: currentState.isSubmitEnabled,
+            isLoading: currentState.isLoading,
+            accessibilityConfiguration: .submitButton(
                 identifier: AccessibilityIdentifiers.FormRedirect.submitButton,
-                label: CheckoutComponentsStrings.a11ySubmitButtonLabel,
-                hint: currentState.isSubmitEnabled ? nil : CheckoutComponentsStrings.a11ySubmitButtonHint,
-                traits: [.isButton]
-            )
+                title: title,
+                isEnabled: currentState.isSubmitEnabled,
+                isLoading: currentState.isLoading
+            ),
+            action: scope.submit
         )
     }
 }
@@ -171,75 +157,68 @@ private struct FormFieldView: View {
     let onSubmit: () -> Void
 
     @Environment(\.designTokens) private var tokens
-    @FocusState private var isFocused: Bool
+    @Environment(\.isInputEnabled) private var isInputEnabled
+    @FocusState private var hasKeyboardFocus: Bool
+    @State private var isFocused = false
 
     var body: some View {
-        VStack(alignment: .leading, spacing: PrimerSpacing.small(tokens: tokens)) {
-            Text(field.label)
-                .font(PrimerFont.caption(tokens: tokens))
-                .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
+        VStack(alignment: .leading, spacing: 0) {
+            PrimerInputFieldContainer(
+                label: field.label,
+                text: valueBinding,
+                isValid: .constant(field.errorMessage == nil),
+                errorMessage: .constant(field.errorMessage),
+                isFocused: $isFocused,
+                textFieldBuilder: makeInputField
+            )
+            .accessibility(
+                config: AccessibilityConfiguration(
+                    identifier: accessibilityIdentifier,
+                    label: accessibilityLabel,
+                    hint: accessibilityHint,
+                    value: field.errorMessage,
+                    traits: []
+                ),
+                combinesChildren: false
+            )
 
-            makeInputField()
-
-            if let errorMessage = field.errorMessage {
-                Text(errorMessage)
-                    .font(PrimerFont.caption(tokens: tokens))
-                    .foregroundColor(CheckoutColors.error(tokens: tokens))
-            } else if let helperText = field.helperText {
+            if field.errorMessage == nil, let helperText = field.helperText {
                 Text(helperText)
-                    .font(PrimerFont.caption(tokens: tokens))
+                    .primerTypography(.caption, tokens: tokens)
                     .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
             }
         }
+    }
+
+    private var valueBinding: Binding<String> {
+        Binding(get: { field.value }, set: onValueChanged)
     }
 
     private func makeInputField() -> some View {
         HStack(spacing: PrimerSpacing.small(tokens: tokens)) {
             if let prefix = field.countryCodePrefix, field.fieldType == .phoneNumber {
                 Text(prefix)
-                    .font(PrimerFont.bodyLarge(tokens: tokens))
-                    .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
+                    .primerTypography(.bodyLarge, tokens: tokens)
+                    .foregroundColor(CheckoutColors.inputText(tokens: tokens, isEnabled: isInputEnabled))
                     .accessibilityIdentifier(AccessibilityIdentifiers.FormRedirect.phonePrefix)
+                    // Lets a tap on the prefix reach the tap target behind it.
+                    .allowsHitTesting(false)
             }
 
-            TextField(field.placeholder, text: Binding(
-                get: { field.value },
-                set: { onValueChanged($0) }
-            ))
-            .font(PrimerFont.bodyLarge(tokens: tokens))
-            .keyboardType(field.keyboardType.uiKeyboardType)
-            .textContentType(field.fieldType.textContentType)
-            .focused($isFocused)
-            .onSubmit { onSubmit() }
-            .accessibility(
-                config: AccessibilityConfiguration(
-                    identifier: accessibilityIdentifier,
-                    label: accessibilityLabel,
-                    hint: accessibilityHint,
-                    traits: []
-                )
-            )
+            TextField(field.placeholder, text: valueBinding)
+                .primerFieldTypography(.bodyLarge, tokens: tokens)
+                .foregroundColor(CheckoutColors.inputText(tokens: tokens, isEnabled: isInputEnabled))
+                .tint(CheckoutColors.borderFocus(tokens: tokens))
+                .keyboardType(field.keyboardType.uiKeyboardType)
+                .textContentType(field.fieldType.textContentType)
+                .focused($hasKeyboardFocus)
+                .onSubmit(onSubmit)
+                .onChange(of: hasKeyboardFocus) { isFocused = $0 }
+                .onChange(of: isInputEnabled) { if !$0 { hasKeyboardFocus = false } }
+                .accessibilityIdentifier(AccessibilityIdentifiers.inputField(within: accessibilityIdentifier))
         }
-        .padding(.horizontal, PrimerSpacing.medium(tokens: tokens))
-        .padding(.vertical, PrimerSpacing.medium(tokens: tokens))
-        .background(
-            RoundedRectangle(cornerRadius: PrimerRadius.small(tokens: tokens))
-                .stroke(borderColor, lineWidth: PrimerBorderWidth.standard(tokens: tokens))
-                .background(
-                    RoundedRectangle(cornerRadius: PrimerRadius.small(tokens: tokens))
-                        .fill(CheckoutColors.inputBackground(tokens: tokens))
-                )
-        )
-    }
-
-    private var borderColor: Color {
-        if field.errorMessage != nil {
-            CheckoutColors.error(tokens: tokens)
-        } else if isFocused {
-            CheckoutColors.inputBorderFocused(tokens: tokens)
-        } else {
-            CheckoutColors.inputBorder(tokens: tokens)
-        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .focusesFieldOnTap { hasKeyboardFocus = true }
     }
 
     private var accessibilityIdentifier: String {
@@ -255,8 +234,10 @@ private struct FormFieldView: View {
         switch field.fieldType {
         case .otpCode:
             CheckoutComponentsStrings.a11yFormRedirectOtpLabel
+        // The label replaces the combined children, so the dialling code would go unread without it.
         case .phoneNumber:
-            CheckoutComponentsStrings.a11yFormRedirectPhoneLabel
+            [CheckoutComponentsStrings.a11yFormRedirectPhoneLabel, field.countryCodePrefix]
+                .compactMap { $0 }.joined(separator: ", ")
         }
     }
 

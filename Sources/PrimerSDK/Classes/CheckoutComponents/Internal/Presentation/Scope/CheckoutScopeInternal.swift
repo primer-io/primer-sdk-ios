@@ -24,6 +24,7 @@ protocol CheckoutScopeInternal: PrimerCheckoutScope {
   var hasAlternativeToCurrentMethod: Bool { get }
   var vaultedPaymentMethods: [PrimerHeadlessUniversalCheckout.VaultedPaymentMethod] { get }
   var selectedVaultedPaymentMethod: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod? { get }
+  var isVaultEditing: Bool { get }
 
   var isInitScreenEnabled: Bool { get }
   var isSuccessScreenEnabled: Bool { get }
@@ -32,6 +33,7 @@ protocol CheckoutScopeInternal: PrimerCheckoutScope {
   func updateNavigationState(_ newState: CheckoutNavigationState)
   func cancelActivePaymentMethod(returnToSelection: Bool)
   func setSelectedVaultedPaymentMethod(_ method: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod?)
+  func setVaultEditing(_ editing: Bool)
   /// False when the failure came before any payment attempt, so a retry has nothing to repeat.
   var canRetryPayment: Bool { get }
   func retryPayment()

@@ -16,7 +16,7 @@ struct DefaultLoadingScreen: View {
     VStack(spacing: PrimerSpacing.small(tokens: tokens)) {
       ProgressView()
         .progressViewStyle(
-          CircularProgressViewStyle(tint: CheckoutColors.borderFocus(tokens: tokens))
+          CircularProgressViewStyle(tint: CheckoutColors.loader(tokens: tokens))
         )
         .scaleEffect(PrimerScale.large)
         .accessibility(
@@ -26,7 +26,7 @@ struct DefaultLoadingScreen: View {
           ))
 
       Text(CheckoutComponentsStrings.loading)
-        .font(PrimerFont.bodyMedium(tokens: tokens))
+        .primerTypography(.bodyMedium, tokens: tokens)
         .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
     }
     .frame(height: 300)

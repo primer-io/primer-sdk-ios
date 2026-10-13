@@ -19,6 +19,7 @@ struct PrimerInputFieldContainer<Content: View, RightContent: View>: View {
   @Binding var errorMessage: String?
   @Binding var isFocused: Bool
   @Environment(\.designTokens) var tokens
+  @Environment(\.isInputEnabled) var isInputEnabled
   @Environment(\.sizeCategory) private var sizeCategory  // Observes Dynamic Type changes
 
   var hasError: Bool { errorMessage?.isEmpty == false }
@@ -58,7 +59,8 @@ struct PrimerInputFieldContainer<Content: View, RightContent: View>: View {
     Group {
       label.map(makeLabel)
       makeTextFieldContainer()
-      errorMessage.map(makeErrorMessage)
+      // An empty message would still add the stack's spacing under the box.
+      if hasError, let errorMessage { makeErrorMessage(errorMessage) }
     }
   }
 }

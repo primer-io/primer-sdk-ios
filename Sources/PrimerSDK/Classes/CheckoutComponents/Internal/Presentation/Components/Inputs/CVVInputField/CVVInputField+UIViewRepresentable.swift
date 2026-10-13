@@ -21,6 +21,7 @@ struct CVVTextField: UIViewRepresentable, LogReporter {
   let validationService: ValidationService
   let scope: any CardFormFieldScopeInternal
   let tokens: DesignTokens?
+  let accessibility: AccessibilityConfiguration
 
   func makeUIView(context: Context) -> SecureTextField {
     let textField = SecureTextField()
@@ -35,13 +36,24 @@ struct CVVTextField: UIViewRepresentable, LogReporter {
       doneButtonAction: #selector(Coordinator.doneButtonTapped)
     )
 
+    context.coordinator.repainter.markApplied(tokens)
+
     return textField
   }
 
   func updateUIView(_ textField: SecureTextField, context: Context) {
+    context.coordinator.repainter.repaintIfNeeded(
+      textField,
+      placeholder: placeholder,
+      tokens: tokens,
+      isEnabled: context.environment.isInputEnabled
+    )
+
     if textField.internalText != cvv {
       textField.internalText = cvv
     }
+
+    textField.applyAccessibility(accessibility)
   }
 
   func makeCoordinator() -> Coordinator {
@@ -57,6 +69,7 @@ struct CVVTextField: UIViewRepresentable, LogReporter {
   }
 
   final class Coordinator: NSObject, UITextFieldDelegate, LogReporter {
+    let repainter = PrimerFieldRepainter()
     private let validationService: ValidationService
     private let cardNetwork: CardNetwork
     @Binding private var cvv: String

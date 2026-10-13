@@ -40,6 +40,12 @@ private struct ConditionalAccessibilityElement: ViewModifier {
   let config: AccessibilityConfiguration
   let combinesChildren: Bool
 
+  /// Before iOS 18 the value can't be switched on and off without rebuilding the field, so it is read with the label.
+  private var label: String {
+    if #available(iOS 18.0, *) { return config.label }
+    return combinesChildren ? config.label : config.labelWithValue
+  }
+
   @ViewBuilder
   func body(content: Content) -> some View {
     if combinesChildren {
@@ -52,9 +58,9 @@ private struct ConditionalAccessibilityElement: ViewModifier {
   private func applyMetadata(to content: some View) -> some View {
     content
       .accessibilityIdentifier(config.identifier)
-      .accessibilityLabel(config.label)
+      .accessibilityLabel(label)
       .modifier(ConditionalAccessibilityHint(hint: config.hint))
-      .modifier(ConditionalAccessibilityValue(value: config.value))
+      .modifier(ConditionalAccessibilityValue(value: config.value, combinesChildren: combinesChildren))
       .accessibilityAddTraits(config.traits)
       .accessibilityHidden(config.isHidden)
       .modifier(ConditionalAccessibilitySortPriority(sortPriority: config.sortPriority))
@@ -66,7 +72,10 @@ private struct ConditionalAccessibilityHint: ViewModifier {
   let hint: String?
 
   func body(content: Content) -> some View {
-    if let hint, !hint.isEmpty {
+    // A branch that flips rebuilds the content, and a rebuilt text field loses its focus.
+    if #available(iOS 18.0, *) {
+      content.accessibilityHint(hint ?? "", isEnabled: hint?.isEmpty == false)
+    } else if let hint, !hint.isEmpty {
       content.accessibilityHint(hint)
     } else {
       content
@@ -77,11 +86,17 @@ private struct ConditionalAccessibilityHint: ViewModifier {
 @available(iOS 15.0, *)
 private struct ConditionalAccessibilityValue: ViewModifier {
   let value: String?
+  let combinesChildren: Bool
 
   func body(content: Content) -> some View {
-    if let value, !value.isEmpty {
-      content.accessibilityValue(value)
+    // An empty value would hide the field's own value, so it is switched off rather than set to "".
+    if #available(iOS 18.0, *) {
+      content.accessibilityValue(value ?? "", isEnabled: value?.isEmpty == false)
+    } else if combinesChildren {
+      // A combined element has no value of its own for "" to hide, so it is always set and never rebuilt.
+      content.accessibilityValue(value ?? "")
     } else {
+      // Only a branch could apply it here, and a field's error flips that branch on every focus, so the label reads it.
       content
     }
   }

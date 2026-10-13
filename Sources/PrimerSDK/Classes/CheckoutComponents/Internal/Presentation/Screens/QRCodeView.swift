@@ -61,12 +61,15 @@ struct QRCodeView: View, LogReporter {
             label: {
               HStack(spacing: PrimerSpacing.xsmall(tokens: tokens)) {
                 Image(systemName: RTLIcon.backChevron)
-                  .font(PrimerFont.bodyMedium(tokens: tokens))
+                  .font(PrimerFont.titleLarge(tokens: tokens))
+                  .foregroundColor(CheckoutColors.iconPrimary(tokens: tokens))
                 Text(CheckoutComponentsStrings.backButton)
+                  .primerTypography(.titleLarge, tokens: tokens)
               }
               .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
             }
           )
+          .buttonStyle(PlainButtonStyle())
           .accessibility(
             config: AccessibilityConfiguration(
               identifier: AccessibilityIdentifiers.Common.backButton,
@@ -78,17 +81,7 @@ struct QRCodeView: View, LogReporter {
         Spacer()
 
         if scope.dismissalMechanism.contains(.closeButton) {
-          Button(
-            CheckoutComponentsStrings.cancelButton,
-            action: scope.cancel
-          )
-          .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
-          .accessibility(
-            config: AccessibilityConfiguration(
-              identifier: AccessibilityIdentifiers.Common.closeButton,
-              label: CheckoutComponentsStrings.a11yCancel,
-              traits: [.isButton]
-            ))
+          CheckoutHeaderButton(config: .closeButton(action: scope.cancel))
         }
       }
     }
@@ -102,7 +95,7 @@ struct QRCodeView: View, LogReporter {
       case .loading:
         Spacer()
         ProgressView()
-          .progressViewStyle(CircularProgressViewStyle())
+          .progressViewStyle(CircularProgressViewStyle(tint: CheckoutColors.loader(tokens: tokens)))
           .scaleEffect(PrimerScale.large)
           .accessibilityIdentifier(AccessibilityIdentifiers.QRCode.loadingIndicator)
           .accessibilityLabel(CheckoutComponentsStrings.a11yLoading)
@@ -144,7 +137,7 @@ struct QRCodeView: View, LogReporter {
         let amount = configurationService.amount,
         let currency = configurationService.currency {
         Text(amount.toCurrencyString(currency: currency, locale: configurationService.locale))
-          .font(PrimerFont.titleXLarge(tokens: tokens))
+          .primerTypography(.titleXLarge, tokens: tokens)
           .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
           .frame(maxWidth: .infinity, alignment: .leading)
           .accessibilityIdentifier(AccessibilityIdentifiers.QRCode.amountLabel)
@@ -155,13 +148,13 @@ struct QRCodeView: View, LogReporter {
   private func makeTitleSection() -> some View {
     VStack(alignment: .leading, spacing: PrimerSpacing.small(tokens: tokens)) {
       Text(CheckoutComponentsStrings.qrCodeScanInstruction)
-        .font(PrimerFont.titleLarge(tokens: tokens))
+        .primerTypography(.titleLarge, tokens: tokens)
         .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
         .frame(maxWidth: .infinity, alignment: .leading)
         .accessibilityIdentifier(AccessibilityIdentifiers.QRCode.instructionTitle)
 
       Text(CheckoutComponentsStrings.qrCodeUploadInstruction)
-        .font(PrimerFont.bodyMedium(tokens: tokens))
+        .primerTypography(.bodyMedium, tokens: tokens)
         .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
         .frame(maxWidth: .infinity, alignment: .leading)
         .accessibilityIdentifier(AccessibilityIdentifiers.QRCode.instructionSubtitle)
@@ -179,7 +172,9 @@ struct QRCodeView: View, LogReporter {
           .padding(Layout.qrCodePadding)
           .overlay(
             RoundedRectangle(cornerRadius: PrimerRadius.small(tokens: tokens))
-              .stroke(Color.gray.opacity(0.5), lineWidth: PrimerBorderWidth.standard)
+              .stroke(
+                CheckoutColors.borderDefault(tokens: tokens),
+                lineWidth: PrimerBorderWidth.standard(tokens: tokens))
           )
           .frame(maxWidth: .infinity)
           .accessibilityIdentifier(AccessibilityIdentifiers.QRCode.qrCodeImage)

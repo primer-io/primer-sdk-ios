@@ -14,6 +14,8 @@ struct DeleteVaultedPaymentMethodConfirmationScreen: View, LogReporter {
   let vaultedPaymentMethod: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod
   let navigator: CheckoutNavigator
   let scope: any PaymentMethodSelectionScopeInternal
+  /// Done ends editing as well as closing the question; Back and Cancel return to the list still editing.
+  var onDone: () -> Void = {}
 
   @Environment(\.designTokens) private var tokens
 
@@ -42,7 +44,10 @@ struct DeleteVaultedPaymentMethodConfirmationScreen: View, LogReporter {
     CheckoutHeaderView(
       showBackButton: true,
       onBack: navigator.navigateBack,
-      rightButton: .doneButton(action: navigator.navigateBack)
+      rightButton: .doneButton(action: {
+        onDone()
+        navigator.navigateBack()
+      })
     )
   }
 
@@ -53,7 +58,7 @@ struct DeleteVaultedPaymentMethodConfirmationScreen: View, LogReporter {
       // Title
       HStack {
         Text(CheckoutComponentsStrings.allSavedPaymentMethods)
-          .font(PrimerFont.titleXLarge(tokens: tokens))
+          .primerTypography(.titleXLarge, tokens: tokens)
           .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
         Spacer()
       }
@@ -72,7 +77,7 @@ struct DeleteVaultedPaymentMethodConfirmationScreen: View, LogReporter {
   private func makeConfirmationSection() -> some View {
     VStack(alignment: .leading, spacing: PrimerSpacing.small(tokens: tokens)) {
       Text(CheckoutComponentsStrings.deletePaymentMethodConfirmation)
-        .font(PrimerFont.bodySmall(tokens: tokens))
+        .primerTypography(.bodySmall, tokens: tokens)
         .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
 
       HStack(spacing: PrimerSpacing.small(tokens: tokens)) {
@@ -86,63 +91,32 @@ struct DeleteVaultedPaymentMethodConfirmationScreen: View, LogReporter {
   // MARK: - Cancel Button
 
   private func makeCancelButton() -> some View {
-    Button(action: { navigator.navigateBack() }) {
-      Text(CheckoutComponentsStrings.cancelButton)
-        .font(PrimerFont.titleLarge(tokens: tokens))
-        .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
-        .frame(maxWidth: .infinity)
-        .padding(PrimerSpacing.medium(tokens: tokens))
-        .background(
-          RoundedRectangle(cornerRadius: PrimerRadius.medium(tokens: tokens))
-            .fill(CheckoutColors.background(tokens: tokens))
-        )
-        .overlay(
-          RoundedRectangle(cornerRadius: PrimerRadius.medium(tokens: tokens))
-            .stroke(
-              CheckoutColors.borderDefault(tokens: tokens),
-              lineWidth: PrimerBorderWidth.standard(tokens: tokens)
-            )
-        )
-    }
-    .buttonStyle(PlainButtonStyle())
-    .accessibility(
-      config: AccessibilityConfiguration(
+    PrimerCheckoutButton(
+      style: .outlined,
+      accessibilityConfiguration: AccessibilityConfiguration(
         identifier: AccessibilityIdentifiers.Common.cancelButton,
         label: CheckoutComponentsStrings.a11yCancel,
         traits: [.isButton]
-      ))
+      ),
+      action: navigator.navigateBack
+    ) {
+      Text(CheckoutComponentsStrings.cancelButton)
+    }
   }
 
   // MARK: - Delete Button
 
   private func makeDeleteButton() -> some View {
-    Button(action: handleDelete) {
-      Group {
-        if isDeleting {
-          ProgressView()
-            .progressViewStyle(
-              CircularProgressViewStyle(tint: CheckoutColors.background(tokens: tokens)))
-        } else {
-          Text(CheckoutComponentsStrings.deleteButton)
-            .font(PrimerFont.titleLarge(tokens: tokens))
-        }
-      }
-      .foregroundColor(CheckoutColors.background(tokens: tokens))
-      .frame(maxWidth: .infinity)
-      .padding(PrimerSpacing.medium(tokens: tokens))
-      .background(
-        RoundedRectangle(cornerRadius: PrimerRadius.medium(tokens: tokens))
-          .fill(CheckoutColors.borderFocus(tokens: tokens))
-      )
-    }
-    .buttonStyle(PlainButtonStyle())
-    .disabled(isDeleting)
-    .accessibility(
-      config: AccessibilityConfiguration(
+    PrimerCheckoutButton(
+      CheckoutComponentsStrings.deleteButton,
+      isLoading: isDeleting,
+      accessibilityConfiguration: AccessibilityConfiguration(
         identifier: AccessibilityIdentifiers.Common.deleteButton,
         label: CheckoutComponentsStrings.deleteButton,
         traits: [.isButton]
-      ))
+      ),
+      action: handleDelete
+    )
   }
 
   // MARK: - Actions

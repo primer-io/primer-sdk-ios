@@ -12,7 +12,6 @@ import SwiftUI
 struct InlineCardNetworkButton: View {
   let network: CardNetwork
   let isSelected: Bool
-  let tokens: DesignTokens?
   let onTap: () -> Void
 
   var body: some View {
@@ -23,7 +22,7 @@ struct InlineCardNetworkButton: View {
           height: PrimerCardNetworkSelector.buttonFrameHeight,
           alignment: .center
         )
-        .background(backgroundColor)
+        .contentShape(Rectangle())
     }
     .buttonStyle(PlainButtonStyle())
     .accessibilityIdentifier(
@@ -32,12 +31,6 @@ struct InlineCardNetworkButton: View {
     .accessibilityLabel(network.displayName)
     .accessibilityHint(isSelected ? "" : CheckoutComponentsStrings.a11yInlineNetworkButtonHint)
     .accessibilityAddTraits(isSelected ? [.isButton, .isSelected] : [.isButton])
-  }
-
-  private var backgroundColor: Color {
-    isSelected
-      ? CheckoutColors.gray100(tokens: tokens)
-      : CheckoutColors.background(tokens: tokens)
   }
 }
 
@@ -48,7 +41,6 @@ struct InlineCardNetworkButton: View {
       InlineCardNetworkButton(
         network: .visa,
         isSelected: true,
-        tokens: MockDesignTokens.light,
         onTap: {}
       )
     }
@@ -62,7 +54,6 @@ struct InlineCardNetworkButton: View {
       InlineCardNetworkButton(
         network: .masterCard,
         isSelected: false,
-        tokens: MockDesignTokens.light,
         onTap: {}
       )
     }
@@ -75,20 +66,20 @@ struct InlineCardNetworkButton: View {
     VStack(spacing: 20) {
       HStack(spacing: 0) {
         InlineCardNetworkButton(
-          network: .visa, isSelected: true, tokens: MockDesignTokens.light, onTap: {})
+          network: .visa, isSelected: true, onTap: {})
         InlineCardNetworkButton(
-          network: .masterCard, isSelected: false, tokens: MockDesignTokens.light, onTap: {})
+          network: .masterCard, isSelected: false, onTap: {})
         InlineCardNetworkButton(
-          network: .amex, isSelected: false, tokens: MockDesignTokens.light, onTap: {})
+          network: .amex, isSelected: false, onTap: {})
       }
 
       HStack(spacing: 0) {
         InlineCardNetworkButton(
-          network: .visa, isSelected: false, tokens: MockDesignTokens.light, onTap: {})
+          network: .visa, isSelected: false, onTap: {})
         InlineCardNetworkButton(
-          network: .masterCard, isSelected: true, tokens: MockDesignTokens.light, onTap: {})
+          network: .masterCard, isSelected: true, onTap: {})
         InlineCardNetworkButton(
-          network: .amex, isSelected: false, tokens: MockDesignTokens.light, onTap: {})
+          network: .amex, isSelected: false, onTap: {})
       }
     }
     .padding()

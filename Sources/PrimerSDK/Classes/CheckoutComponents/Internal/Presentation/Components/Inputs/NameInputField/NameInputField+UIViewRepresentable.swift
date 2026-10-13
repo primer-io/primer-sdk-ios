@@ -23,6 +23,7 @@ struct NameTextField: UIViewRepresentable, LogReporter {
   let onNameChange: ((String) -> Void)?
   let onValidationChange: ((Bool) -> Void)?
   let tokens: DesignTokens?
+  let accessibility: AccessibilityConfiguration
 
   func makeUIView(context: Context) -> UITextField {
     let textField = UITextField()
@@ -31,19 +32,30 @@ struct NameTextField: UIViewRepresentable, LogReporter {
 
     textField.configurePrimerStyle(
       placeholder: placeholder,
-      configuration: .standard,
+      configuration: inputType.fieldConfiguration,
       tokens: tokens,
       doneButtonTarget: context.coordinator,
       doneButtonAction: #selector(Coordinator.doneButtonTapped)
     )
 
+    context.coordinator.repainter.markApplied(tokens)
+
     return textField
   }
 
   func updateUIView(_ textField: UITextField, context: Context) {
+    context.coordinator.repainter.repaintIfNeeded(
+      textField,
+      placeholder: placeholder,
+      tokens: tokens,
+      isEnabled: context.environment.isInputEnabled
+    )
+
     if textField.text != name {
       textField.text = name
     }
+
+    textField.applyAccessibility(accessibility)
   }
 
   func makeCoordinator() -> Coordinator {
@@ -61,6 +73,7 @@ struct NameTextField: UIViewRepresentable, LogReporter {
   }
 
   final class Coordinator: NSObject, UITextFieldDelegate, LogReporter {
+    let repainter = PrimerFieldRepainter()
     private let validationService: ValidationService
     @Binding private var name: String
     @Binding private var isValid: Bool

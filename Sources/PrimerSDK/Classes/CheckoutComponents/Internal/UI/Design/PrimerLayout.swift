@@ -4,7 +4,7 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import CoreGraphics
+import UIKit
 @_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerCore
 
@@ -60,7 +60,7 @@ enum PrimerSize {
   }
 
   static func xxlarge(tokens: DesignTokens?) -> CGFloat {
-    tokens?.primerSizeXxlarge ?? 44
+    tokens?.primerSizeXxlarge ?? 40
   }
 
   static func xxxlarge(tokens: DesignTokens?) -> CGFloat {
@@ -95,12 +95,26 @@ enum PrimerComponentHeight {
   static let errorMessage: CGFloat = 16
   static let keyboardAccessory: CGFloat = 44
   static let paymentMethodCard: CGFloat = 44
+  /// The design's minimum tappable height, shared by every button.
+  static let interactive: CGFloat = 44
   static let vaultedPaymentMethodCard: CGFloat = 64
   static let vaultedPaymentMethodCardContentRow: CGFloat = 40
   static let progressIndicator: CGFloat = 56
   static let emptyStateMinHeight: CGFloat = 200
   static let emptyStateTopPadding: CGFloat = 100
   static let button: CGFloat = 50
+}
+
+@available(iOS 15.0, *)
+extension PrimerComponentHeight {
+  private static let bodyLargeDefaultLineHeight: CGFloat = 20
+
+  /// An input box: one body-large line between medium padding, never under the tappable minimum.
+  static func inputField(tokens: DesignTokens?) -> CGFloat {
+    let lineHeight = PrimerTextStyle.bodyLarge.lineHeight(tokens: tokens)
+      ?? UIFontMetrics.default.scaledValue(for: bodyLargeDefaultLineHeight)
+    return max(interactive, 2 * PrimerSpacing.medium(tokens: tokens) + lineHeight)
+  }
 }
 
 // MARK: - Primer Component Widths
@@ -126,19 +140,24 @@ enum PrimerBorderWidth {
   static let standard: CGFloat = 1
   static let selected: CGFloat = 2
 
-  /// Standard field/component border. Maps to the `thin` border-width token (default 1).
+  /// Resting field/component border. Maps to the `default` width token (default 1).
   static func standard(tokens: DesignTokens?) -> CGFloat {
-    tokens?.primerBorderWidthThin ?? standard
+    tokens?.primerWidthDefault ?? standard
   }
 
-  /// Emphasised border for focused/selected state. Maps to the `medium` border-width token (default 2).
+  /// Emphasised border for a focused field. Maps to the `focus` width token (default 2).
+  static func focused(tokens: DesignTokens?) -> CGFloat {
+    tokens?.primerWidthFocus ?? selected
+  }
+
+  /// Emphasised border for a chosen item, such as a saved card. Maps to the `selected` token.
   static func selected(tokens: DesignTokens?) -> CGFloat {
-    tokens?.primerBorderWidthMedium ?? selected
+    tokens?.primerWidthSelected ?? selected
   }
 
-  /// Heaviest border-width token (default 3).
-  static func thick(tokens: DesignTokens?) -> CGFloat {
-    tokens?.primerBorderWidthThick ?? 3
+  /// Emphasised border for a field in error. Maps to the `error` width token (default 2).
+  static func error(tokens: DesignTokens?) -> CGFloat {
+    tokens?.primerWidthError ?? selected
   }
 }
 
@@ -156,8 +175,6 @@ enum PrimerCardNetworkSelector {
   static let badgeHeight: CGFloat = 20
   static let buttonFrameWidth: CGFloat = 34
   static let buttonFrameHeight: CGFloat = 26
-  static let buttonTotalWidth: CGFloat = 36
-  static let selectedBorderHeight: CGFloat = 28
   static let chevronSize: CGFloat = 20
   static let chevronFontSize: CGFloat = 10
 }

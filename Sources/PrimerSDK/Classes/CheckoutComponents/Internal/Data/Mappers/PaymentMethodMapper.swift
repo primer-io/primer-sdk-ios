@@ -27,7 +27,7 @@ final class PaymentMethodMapperImpl: PaymentMethodMapper {
     let formattedSurcharge = formatSurcharge(
       internalMethod.surcharge, hasUnknownSurcharge: internalMethod.hasUnknownSurcharge)
 
-    return CheckoutPaymentMethod(
+    var method = CheckoutPaymentMethod(
       id: internalMethod.id,
       type: internalMethod.type,
       name: internalMethod.name,
@@ -42,6 +42,9 @@ final class PaymentMethodMapperImpl: PaymentMethodMapper {
       borderWidth: internalMethod.borderWidth,
       cornerRadius: internalMethod.cornerRadius
     )
+    method.logoVariants = internalMethod.logoVariants
+    method.borderWidthVariants = internalMethod.borderWidthVariants
+    return method
   }
 
   func mapToPublic(_ internalMethods: [InternalPaymentMethod]) -> [CheckoutPaymentMethod] {
