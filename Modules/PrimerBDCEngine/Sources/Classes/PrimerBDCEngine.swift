@@ -12,6 +12,7 @@ import PrimerStepResolver
 private enum EngineError: Error {
     case badUrl
     case jsonToDataFailed
+    case scriptFailed(String)
     case sha256Mismatch
 }
 
@@ -33,6 +34,7 @@ public final class PrimerBDCEngine: NSObject, BDCEngineProtocol {
     private var applyEventContinuation: Continuation?
     private var evaluateTreeContinuation: Continuation?
     private var executeActionContinuation: Continuation?
+    private var checkRequirementsContinuation: Continuation?
     
     public init(manifest: Manifest) async throws  {
         self.manifest = manifest
@@ -88,6 +90,15 @@ public extension PrimerBDCEngine {
         )
         return try await runScript(script, continuationPath: \.executeActionContinuation)
     }
+
+    func checkClientRequirements(
+        items: [PaymentMethodRequirements],
+        client: BDCClient
+    ) async throws -> ClientRequirementsVerdicts {
+        await checkIfReady()
+        let script = checkClientRequirementsScript(items: try items.literal(encoder), client: try client.literal(encoder))
+        return try await decodedResult(of: script, continuationPath: \.checkRequirementsContinuation)
+    }
 }
 
 private extension PrimerBDCEngine {
@@ -111,6 +122,7 @@ private extension PrimerBDCEngine {
         setupCallback(continuation: \.applyEventContinuation, value: "onProcessFieldResult")
         setupCallback(continuation: \.evaluateTreeContinuation, value: "onEvaluateTreeResult")
         setupCallback(continuation: \.executeActionContinuation, value: "onExecuteActionResult")
+        setupCallback(continuation: \.checkRequirementsContinuation, value: "onCheckClientRequirementsResult")
         
         let consoleLogCallback: JSStringBlock = Logger.handleJSLog
         context.setObject(consoleLogCallback, forKeyedSubscript: "consoleLog" as NSString)
@@ -166,17 +178,34 @@ private extension PrimerBDCEngine {
     }
     
     private func runScript(_ script: String, continuationPath: ContinuationPath) async throws -> AnyDict {
-        await checkIfReady()
-        let jsonString = await withCheckedContinuation { cont in
-            self[keyPath: continuationPath] = cont
-            context.evaluateScript(script)
-        }
+        let jsonString = await result(of: script, continuationPath: continuationPath)
         guard
             let data = jsonString.data(using: .utf8),
             let object = try? JSONSerialization.jsonObject(with: data, options: []) as? AnyDict
         else { throw EngineError.jsonToDataFailed }
         return object
     }
+
+    private func decodedResult<Value: Decodable>(of script: String, continuationPath: ContinuationPath) async throws -> Value {
+        let result = await result(of: script, continuationPath: continuationPath)
+        guard let data = result.data(using: .utf8) else { throw EngineError.jsonToDataFailed }
+        let reply = try JSONDecoder().decode(ScriptResult<Value>.self, from: data)
+        guard let value = reply.result else { throw EngineError.scriptFailed(reply.error ?? "No result") }
+        return value
+    }
+
+    private func result(of script: String, continuationPath: ContinuationPath) async -> String {
+        await checkIfReady()
+        return await withCheckedContinuation { cont in
+            self[keyPath: continuationPath] = cont
+            context.evaluateScript(script)
+        }
+    }
+}
+
+private struct ScriptResult<Value: Decodable>: Decodable {
+    let result: Value?
+    let error: String?
 }
 
 private extension Encodable {

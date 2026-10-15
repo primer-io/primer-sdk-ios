@@ -127,16 +127,13 @@ struct CardholderNameTextField: UIViewRepresentable, LogReporter {
       let currentText = cardholderName
 
       guard let textRange = Range(range, in: currentText) else { return false }
-      let newText = currentText.replacingCharacters(in: textRange, with: string)
 
-      // Validate allowed characters (letters, spaces, apostrophes, hyphens)
-      if !string.isEmpty {
-        let allowedCharacterSet = CharacterSet.letters.union(CharacterSet(charactersIn: " '-"))
-        let characterSet = CharacterSet(charactersIn: string)
-        if !allowedCharacterSet.isSuperset(of: characterSet) {
-          return false
-        }
+      // Paste and AutoFill hand over a whole name, so drop what a name cannot hold instead of all of it.
+      let accepted = Self.nameText(string)
+      if !string.isEmpty, accepted.isEmpty {
+        return false
       }
+      let newText = currentText.replacingCharacters(in: textRange, with: accepted)
 
       cardholderName = newText
       scope.updateCardholderName(newText)
@@ -145,7 +142,21 @@ struct CardholderNameTextField: UIViewRepresentable, LogReporter {
 
       scope.updateValidationState(\.cardholderName, isValid: isValid)
 
+      textField.applyPrimerEdit(newText, caretOffset: range.location + accepted.utf16.count)
       return false
+    }
+
+    /// Contacts and paste bring typographic spaces, dashes and apostrophes, which would otherwise join or split a name.
+    private static func nameText(_ string: String) -> String {
+      let allowed = CharacterSet.letters.union(CharacterSet(charactersIn: " '-"))
+      return string.map { character -> String in
+        if character.isWhitespace { return " " }
+        if character.unicodeScalars.first?.properties.generalCategory == .dashPunctuation { return "-" }
+        if "\u{2018}\u{2019}".contains(character) { return "'" }
+        // By its first scalar: an emoji's selector must not survive alone, and a letter's joiner must not drop it.
+        guard let base = character.unicodeScalars.first, allowed.contains(base) else { return "" }
+        return String(String.UnicodeScalarView(character.unicodeScalars.filter(allowed.contains)))
+      }.joined()
     }
 
     private func validateCardholderName() {

@@ -242,6 +242,12 @@ public protocol PrimerCheckoutPresenterDelegate: AnyObject {
         delegate?.primerCheckoutPresenterDidDismiss()
     }
 
+    /// A payment under way cannot be stopped, so the sheet stays until its outcome, as in the Drop-in.
+    var allowsInteractiveDismiss: Bool {
+        if case .processing = activeNavigator?.checkoutCoordinator.currentRoute { return false }
+        return true
+    }
+
     /// The shopper swiped the sheet away. UIKit reports this only for interactive dismissal, so the
     /// programmatic paths above never race it. A finished payment is a success; anything else is a
     /// dismiss, because a decline on the error screen already reached the delegate when it happened.
@@ -321,9 +327,10 @@ public protocol PrimerCheckoutPresenterDelegate: AnyObject {
 
             configureSheetPresentation(for: bridgeController, settings: primerSettings)
 
-            let observer = SheetDismissalObserver { [weak self] in
-                self?.handleInteractiveDismiss()
-            }
+            let observer = SheetDismissalObserver(
+                shouldDismiss: { [weak self] in self?.allowsInteractiveDismiss ?? true },
+                onDismiss: { [weak self] in self?.handleInteractiveDismiss() }
+            )
             dismissalObserver = observer
             bridgeController.presentationController?.delegate = observer
 
@@ -476,16 +483,22 @@ extension PrimerCheckoutPresenter {
 
 // MARK: - Sheet Dismissal Observer
 
-/// Forwards interactive sheet dismissal to the presenter. UIKit calls
+/// Lets the presenter refuse a swipe and forwards the dismissal to it. UIKit calls
 /// `presentationControllerDidDismiss` only when the shopper dismisses the sheet, never for
 /// programmatic `dismiss(animated:)`.
 @available(iOS 15.0, *)
 @MainActor
 private final class SheetDismissalObserver: NSObject, UIAdaptivePresentationControllerDelegate {
+    private let shouldDismiss: () -> Bool
     private let onDismiss: () -> Void
 
-    init(onDismiss: @escaping () -> Void) {
+    init(shouldDismiss: @escaping () -> Bool, onDismiss: @escaping () -> Void) {
+        self.shouldDismiss = shouldDismiss
         self.onDismiss = onDismiss
+    }
+
+    func presentationControllerShouldDismiss(_ presentationController: UIPresentationController) -> Bool {
+        shouldDismiss()
     }
 
     func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {

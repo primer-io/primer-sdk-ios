@@ -43,7 +43,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     private func handleURL(_ url: URL) {
         #if DEBUG
-        TestHelper.handle(url: url)
+            TestHelper.handle(url: url)
         #endif
         _ = Primer.shared.application(UIApplication.shared, open: url, options: [:])
     }

@@ -65,6 +65,7 @@ struct CardFormScreen: View, LogReporter {
           CheckoutHeaderButton(config: .closeButton(action: scope.cancel))
         }
       }
+      .disabled(cardFormState.isLoading)
 
       titleSection
     }

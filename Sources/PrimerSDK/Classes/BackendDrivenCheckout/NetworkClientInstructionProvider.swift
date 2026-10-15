@@ -1,7 +1,7 @@
 //
 //  NetworkClientInstructionProvider.swift
 //
-//  Copyright © 2026 Primer API Ltd. All rights reserved.
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 @_spi(PrimerInternal) import PrimerBDCCore
@@ -15,6 +15,21 @@ struct NetworkClientInstructionProvider: ClientInstructionProvider {
     func fetchPayInstruction() async throws -> ClientInstruction {
         let response: ClientSessionInstructionResponse = try await request(.pay(paymentMethod: paymentMethod))
         return response.clientInstruction.toClientInstruction(response: response)
+    }
+
+    func fetchSetupFlow() async throws -> SetupFlow {
+        let response: ClientInstructionSetupResponse = try await request(.setup(paymentMethod: paymentMethod))
+        return SetupFlow(
+            schema: response.instruction.payload.schema,
+            parameters: response.instruction.payload.parameters,
+            setupId: response.paymentMethodSetupId,
+            nextPoll: response.instruction.nextPoll
+        )
+    }
+
+    func fetchSetupState(setupId: String) async throws -> SetupState {
+        let response: ClientInstructionSetupStateResponse = try await request(.pollSetup(setupId: setupId))
+        return SetupState(instruction: try response.toSetupInstruction(), nextPoll: response.instruction.nextPoll ?? .suspend)
     }
 
     func fetchNextInstruction() async throws -> ClientInstruction {
@@ -62,4 +77,24 @@ private extension PrimerCheckoutDataPayment {
     func toPaymentInfo() -> PaymentInfo {
         PaymentInfo(id: id, orderId: orderId, status: status)
     }
+}
+
+private extension ClientInstructionSetupStateResponse {
+    func toSetupInstruction() throws -> SetupInstruction {
+        switch instruction.type {
+        case .wait:
+            return .wait
+        case .execute:
+            guard let schema = instruction.payload?.schema else { throw SetupStateError.missingScreen }
+            return .execute(screen: schema)
+        case .setupComplete:
+            guard let token = instruction.payload?.paymentInstrumentToken else { throw SetupStateError.missingToken }
+            return .setupComplete(token: token)
+        }
+    }
+}
+
+private enum SetupStateError: Error {
+    case missingScreen
+    case missingToken
 }

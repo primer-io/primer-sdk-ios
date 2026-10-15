@@ -10,7 +10,8 @@ import UIKit
 @_spi(PrimerInternal) public final class SDUIComponentRegistry {
     public static let shared = SDUIComponentRegistry()
 
-    public typealias Factory = (_ props: CodableValue?) -> UIView?
+    public typealias OnChange = @MainActor (_ id: String, _ value: CodableValue) -> Void
+    public typealias Factory = (_ props: CodableValue?, _ onChange: @escaping OnChange) -> UIView?
 
     private var factories: [String: Factory] = [:]
 
@@ -20,7 +21,7 @@ import UIKit
         factories[type] = factory
     }
 
-    func view(for type: String, props: CodableValue?) -> UIView? {
-        factories[type].flatMap { $0(props) }
+    func view(for type: String, props: CodableValue?, onChange: @escaping OnChange) -> UIView? {
+        factories[type].flatMap { $0(props, onChange) }
     }
 }

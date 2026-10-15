@@ -136,13 +136,11 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
         return false
       }
 
-      // Only allow numbers and return for non-numeric input except deletion
-      if !string.isEmpty,
-        !CharacterSet.decimalDigits.isSuperset(of: CharacterSet(charactersIn: string)) {
+      guard let digits = Self.expiryDigits(string), string.isEmpty || !digits.isEmpty else {
         return false
       }
 
-      let newText = processInput(currentText: currentText, range: range, string: string)
+      let newText = processInput(currentText: currentText, range: range, string: digits)
 
       expiryDate = newText
       textField.text = newText
@@ -162,6 +160,22 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
       return false
     }
 
+    /// A pasted date as MMYY digits, or nil when it is not one. Flattened as-is, "12/2031" and "1/31" became wrong dates.
+    private static func expiryDigits(_ string: String) -> String? {
+      let parts = string.components(separatedBy: CharacterSet.decimalDigits.inverted).filter { !$0.isEmpty }
+      switch parts.count {
+      case 0:
+        return ""
+      case 1:
+        // A month and a full year with nothing between them, as a card scan gives it.
+        return parts[0].count == 6 ? String(parts[0].prefix(2) + parts[0].suffix(2)) : parts[0]
+      case 2 where (1 ... 2).contains(parts[0].count) && [2, 4].contains(parts[1].count):
+        return String(repeating: "0", count: 2 - parts[0].count) + parts[0] + parts[1].suffix(2)
+      default:
+        return nil
+      }
+    }
+
     private func processInput(currentText: String, range: NSRange, string: String) -> String {
       if string.isEmpty {
         // If deleting the separator, also remove the character before it
@@ -177,22 +191,14 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
       }
 
       // Remove the / character temporarily for easier processing
-      let sanitizedText = currentText.replacingOccurrences(of: "/", with: "")
+      var newSanitizedText = currentText.replacingOccurrences(of: "/", with: "")
 
-      // Calculate where to insert the new text
-      var sanitizedLocation = range.location
-      if range.location > 2, currentText.count >= 3, currentText.contains("/") {
-        sanitizedLocation -= 1
-      }
-
-      var newSanitizedText = sanitizedText
-      if sanitizedLocation <= sanitizedText.count {
-        let index = newSanitizedText.index(
-          newSanitizedText.startIndex, offsetBy: min(sanitizedLocation, newSanitizedText.count))
-        newSanitizedText.insert(contentsOf: string, at: index)
-      } else {
-        newSanitizedText += string
-      }
+      // Counted in digits so the separator does not shift the range, and a selection is replaced, not kept.
+      let start = min(currentText.prefix(range.location).filter(\.isNumber).count, newSanitizedText.count)
+      let selected = currentText.dropFirst(range.location).prefix(range.length).filter(\.isNumber).count
+      let lower = newSanitizedText.index(newSanitizedText.startIndex, offsetBy: start)
+      let upper = newSanitizedText.index(lower, offsetBy: min(selected, newSanitizedText.count - start))
+      newSanitizedText.replaceSubrange(lower..<upper, with: string)
 
       // Limit to 4 digits total (MMYY format)
       newSanitizedText = String(newSanitizedText.prefix(4))

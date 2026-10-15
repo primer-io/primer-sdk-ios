@@ -230,6 +230,21 @@ final class PrimerCheckoutPresenterTests: XCTestCase {
         XCTAssertNil(sut.activeNavigator)
     }
 
+    func test_allowsInteractiveDismiss_whileProcessing_isFalse() {
+        sut.activeNavigator = makeNavigator(showing: .processing)
+
+        XCTAssertFalse(sut.allowsInteractiveDismiss)
+    }
+
+    func test_allowsInteractiveDismiss_onTheOutcomeAndBeforeAPayment_isTrue() {
+        for route in [CheckoutRoute.paymentMethodSelection, .success(PaymentResult(paymentId: "id", status: .success)),
+                      .failure(makeError())] {
+            sut.activeNavigator = makeNavigator(showing: route)
+
+            XCTAssertTrue(sut.allowsInteractiveDismiss, "\(route)")
+        }
+    }
+
     // MARK: - Failures on the error screen
 
     func test_handlePaymentFailure_onTheErrorScreen_doesNotEndThePresentation() {

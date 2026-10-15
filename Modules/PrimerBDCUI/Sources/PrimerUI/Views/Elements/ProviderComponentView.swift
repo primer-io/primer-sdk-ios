@@ -10,11 +10,15 @@ import UIKit
 
 @available(iOS 16.0, *)
 struct ProviderComponentView: UIViewRepresentable {
+    @EnvironmentObject private var viewModel: SDUIViewModel
     let type: String
     let props: CodableValue?
 
     func makeUIView(context: Context) -> UIView {
-        SDUIComponentRegistry.shared.view(for: type, props: props) ?? UIView()
+        let onChange: SDUIComponentRegistry.OnChange = { [weak viewModel] id, value in
+            viewModel?.applyEvent(.input(id: id, value: value, type: .onChange))
+        }
+        return SDUIComponentRegistry.shared.view(for: type, props: props, onChange: onChange) ?? UIView()
     }
 
     func updateUIView(_ uiView: UIView, context: Context) {}

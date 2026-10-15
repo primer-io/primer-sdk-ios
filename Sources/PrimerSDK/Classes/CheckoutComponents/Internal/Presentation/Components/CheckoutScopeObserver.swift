@@ -31,6 +31,8 @@ struct CheckoutScopeObserver: View, LogReporter {
   var body: some View {
     makeWrappedContent()
       .background(CheckoutColors.background(tokens: designTokensManager.tokens))
+      // No swipe while a payment runs, as in the Drop-in. Outside the navigation stack, which drops it.
+      .interactiveDismissDisabled(navigationState == .processing)
   }
 
   @ViewBuilder

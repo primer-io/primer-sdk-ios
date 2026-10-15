@@ -151,6 +151,19 @@ CheckoutComponents beta (iOS 15+). This is a beta release — APIs may still cha
 
 - Checkout Components
 
+## 2.53.0 (2026-10-02)
+
+### Feat
+
+- Hide BDC methods the SDK can't run (#1932)
+- Check client requirements in the BDC engine (#1929)
+- Describe the SDK to the state processor (#1926)
+
+### Fix
+
+- Prevent crash on iOS 27 when loading payment method images (ORC-8465) (#1933)
+- Correct Polish BLIK typo and drop-in copy (ESC-1105) (#1871)
+
 ## 2.52.0 (2026-08-25)
 
 ### Feat

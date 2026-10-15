@@ -67,6 +67,14 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
                 let instructionProvider = makeInstructionProvider(config)
                 await PrimerStepResolverRegistry.shared.register(HTTPRequestResolver(), for: .httpRequest)
                 
+                if config.entry.requiresSetup {
+                    return try await orchestrator?.runSetup(
+                        pciUrl: PrimerAPIConfigurationModule.apiConfiguration?.pciUrl,
+                        coreUrl: PrimerAPIConfigurationModule.apiConfiguration?.coreUrl,
+                        instructionProvider: instructionProvider
+                    )
+                }
+
                 let result = try await orchestrator?.run(
                     pciUrl: PrimerAPIConfigurationModule.apiConfiguration?.pciUrl,
                     coreUrl: PrimerAPIConfigurationModule.apiConfiguration?.coreUrl,
@@ -93,7 +101,7 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
     
     @MainActor
     private func setupOrchestrator() async throws {
-        let context = generateContext()
+        let context = SDKContext.generate(payment: SDKPayment(paymentMethodType: config.type))
         let orchestrator = try await makeOrchestrator(context)
         self.orchestrator = orchestrator
         orchestrator.onURLOpened = { [weak self] in
@@ -162,22 +170,6 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
         )
         Analytics.Service.fire(event: event)
     }
-    
-    private func generateContext() -> SDKContext {
-        let apiConfiguration = PrimerAPIConfigurationModule.apiConfiguration
-        let analyticsUrl = PrimerAPIConfigurationModule.decodedJWTToken?.analyticsUrlV2
-        let checkoutSessionId = PrimerInternal.shared.checkoutSessionId
-        
-        return SDKContext(
-            sdk: SDK(),
-            device: SDKDevice(),
-            app: SDKApp(identifier: Bundle.primerFrameworkIdentifier),
-            session: SDKSession(configuration: apiConfiguration, sessionId: checkoutSessionId),
-            payment: SDKPayment(paymentMethodType: config.type),
-            merchant: SDKMerchant(primerAccountId: apiConfiguration?.primerAccountId),
-            analytics: SDKAnalytics(url: analyticsUrl)
-        )
-    }
 }
 
 private extension PaymentInfo {
@@ -192,7 +184,8 @@ private extension Error {
 
 private extension BackendDrivenCheckoutOrchestrator {
     convenience init(context: SDKContext) async throws {
-        let engine = try await BDCEngineProvider.shared.engine(manifestProvider: NetworkSignedManifestProvider())
+        let provider = NetworkSignedManifestProvider(token: PrimerAPIConfigurationModule.decodedJWTToken)
+        let engine = try await BDCEngineProvider.shared.engine(manifestProvider: provider)
         self.init(engine: engine, context: context)
     }
 }
