@@ -42,7 +42,7 @@ final class DefaultCheckoutScopeBehaviorTests: XCTestCase {
         )
     }
 
-    /// This class registers no container, so setup fails and sets `.failure`. Waiting for it keeps the stream tests free of that race.
+    /// This class registers no container, so setup fails and sets `.failure`. Waiting for it keeps the state tests free of that race.
     private func makeSettledSut() async throws -> DefaultCheckoutScope {
         let sut = makeSut(settings: PrimerSettings(uiOptions: PrimerUIOptions(isInitScreenEnabled: false)))
         _ = try await awaitValue(sut.navigationStateStream, matching: {
@@ -85,7 +85,7 @@ final class DefaultCheckoutScopeBehaviorTests: XCTestCase {
 
     func test_handlePaymentSuccess_updatesStateToSuccess() async throws {
         // Given
-        sut = makeSut()
+        sut = try await makeSettledSut()
         let result = makePaymentResult()
 
         // When
@@ -189,7 +189,7 @@ final class DefaultCheckoutScopeBehaviorTests: XCTestCase {
 
     func test_onDismiss_setsStateToDismissed() async throws {
         // Given
-        sut = makeSut()
+        sut = try await makeSettledSut()
 
         // When
         sut.onDismiss()
