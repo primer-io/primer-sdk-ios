@@ -13,6 +13,7 @@ import Foundation
 
 protocol DownloaderModule {
     func download(files: [File]) async throws -> [File]
+    func download(file: File) async throws -> File
 }
 
 // MARK: MISSING_TESTS

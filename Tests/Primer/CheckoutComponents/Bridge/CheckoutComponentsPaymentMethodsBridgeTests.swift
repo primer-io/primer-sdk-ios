@@ -124,16 +124,15 @@ final class CheckoutComponentsPaymentMethodsBridgeTests: XCTestCase {
         XCTAssertEqual(paypal.name, "PayPal")
     }
 
-    func test_execute_carriesLogoAndBorderWidthVariants() async throws {
+    func test_execute_carriesLogoVariants() async throws {
         // Given
         let logo = PrimerTheme.BaseImage(colored: UIImage(), light: nil, dark: UIImage())
-        let width = PrimerTheme.BaseBorderWidth(colored: 1, light: 1, dark: 2)
         let method = createPaymentMethod(type: "PAYMENT_CARD", name: "Card")
         method.baseLogoImage = logo
         method.displayMetadata = PrimerPaymentMethod.DisplayMetadata(
             button: .init(
                 iconUrl: nil, backgroundColor: nil, cornerRadius: nil,
-                borderWidth: width, borderColor: nil, text: nil, textColor: nil))
+                borderWidth: nil, borderColor: nil, text: nil, textColor: nil))
         mockConfigurationService.apiConfiguration = createConfiguration(paymentMethods: [method])
 
         // When
@@ -141,7 +140,25 @@ final class CheckoutComponentsPaymentMethodsBridgeTests: XCTestCase {
 
         // Then
         XCTAssertTrue(result.first?.logoVariants === logo)
-        XCTAssertTrue(result.first?.borderWidthVariants === width)
+    }
+
+    func test_execute_carriesBackgroundAndTextColorVariants() async throws {
+        // Given
+        let background = PrimerTheme.BaseColors(coloredHex: "#FFC439", lightHex: "#FFFFFF", darkHex: "#000000")
+        let text = PrimerTheme.BaseColors(coloredHex: nil, lightHex: "#000000", darkHex: "#FFFFFF")
+        let method = createPaymentMethod(type: "PAYPAL", name: "PayPal")
+        method.displayMetadata = PrimerPaymentMethod.DisplayMetadata(
+            button: .init(
+                iconUrl: nil, backgroundColor: background, cornerRadius: nil,
+                borderWidth: nil, borderColor: nil, text: nil, textColor: text))
+        mockConfigurationService.apiConfiguration = createConfiguration(paymentMethods: [method])
+
+        // When
+        let result = try await sut.execute()
+
+        // Then
+        XCTAssertTrue(result.first?.backgroundColorVariants === background)
+        XCTAssertTrue(result.first?.textColorVariants === text)
     }
 
     // MARK: - Required Input Elements
