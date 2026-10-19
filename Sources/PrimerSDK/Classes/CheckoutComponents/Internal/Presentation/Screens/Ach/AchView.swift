@@ -15,6 +15,7 @@ struct AchView: View, LogReporter {
   @StateObject private var observer: AchStateObserver
 
   @Environment(\.designTokens) private var tokens
+  @Environment(\.sizeCategory) private var sizeCategory  // Observes Dynamic Type changes
 
   private enum Layout {
     static let spinnerSize: CGFloat = 56
@@ -67,7 +68,20 @@ struct AchView: View, LogReporter {
     }
   }
 
-  @ViewBuilder private var headerSection: some View {
+  // At accessibility text sizes the title gets its own row, as on the card form,
+  // so it no longer squeezes "Back" into a narrow column.
+  private var showsTitleOnOwnRow: Bool { sizeCategory.isAccessibilityCategory }
+
+  private var headerSection: some View {
+    VStack(alignment: .leading, spacing: PrimerSpacing.large(tokens: tokens)) {
+      makeHeaderRow()
+      if showsTitleOnOwnRow {
+        makeTitle()
+      }
+    }
+  }
+
+  private func makeHeaderRow() -> some View {
     HStack {
       if scope.presentationContext.shouldShowBackButton {
         Button(action: scope.onBack) {
@@ -91,19 +105,25 @@ struct AchView: View, LogReporter {
 
       Spacer()
 
-      Text(CheckoutComponentsStrings.achPayWithTitle)
-        .primerTypography(.titleLarge, tokens: tokens)
-        .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
+      if !showsTitleOnOwnRow {
+        makeTitle()
 
-      Spacer()
+        Spacer()
+      }
 
       if scope.dismissalMechanism.contains(.closeButton) {
         CheckoutHeaderButton(config: .closeButton(action: scope.cancel))
-      } else {
+      } else if !showsTitleOnOwnRow {
         CheckoutHeaderButton(config: .closeButton(action: {}))
           .hidden()
       }
     }
+  }
+
+  private func makeTitle() -> some View {
+    Text(CheckoutComponentsStrings.achPayWithTitle)
+      .primerTypography(.titleLarge, tokens: tokens)
+      .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
   }
 
   @ViewBuilder private var contentSection: some View {

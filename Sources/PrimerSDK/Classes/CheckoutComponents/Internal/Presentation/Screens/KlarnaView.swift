@@ -15,6 +15,7 @@ struct KlarnaView: View, LogReporter {
 
   @Environment(\.designTokens) private var tokens
   @Environment(\.bridgeController) private var bridgeController
+  @Environment(\.sizeCategory) private var sizeCategory  // Observes Dynamic Type changes
   @State private var klarnaState: PrimerKlarnaState = .init()
 
   // MARK: - Layout Constants
@@ -68,8 +69,22 @@ struct KlarnaView: View, LogReporter {
 
   // MARK: - Header Section
 
+  // At accessibility text sizes the logo gets its own row, as the card form's title does,
+  // so it no longer squeezes "Back" into a narrow column.
+  private var showsLogoOnOwnRow: Bool { sizeCategory.isAccessibilityCategory }
+
   @MainActor
   private func makeHeaderSection() -> some View {
+    VStack(alignment: .leading, spacing: PrimerSpacing.large(tokens: tokens)) {
+      makeHeaderRow()
+      if showsLogoOnOwnRow {
+        makeKlarnaLogo()
+      }
+    }
+  }
+
+  @MainActor
+  private func makeHeaderRow() -> some View {
     HStack {
       if scope.presentationContext.shouldShowBackButton {
         Button(
@@ -96,14 +111,15 @@ struct KlarnaView: View, LogReporter {
 
       Spacer()
 
-      // Klarna logo
-      makeKlarnaLogo()
+      if !showsLogoOnOwnRow {
+        makeKlarnaLogo()
 
-      Spacer()
+        Spacer()
+      }
 
       if scope.dismissalMechanism.contains(.closeButton) {
         CheckoutHeaderButton(config: .closeButton(action: scope.cancel))
-      } else {
+      } else if !showsLogoOnOwnRow {
         // Invisible spacer to keep logo centered
         CheckoutHeaderButton(config: .closeButton(action: {}))
           .hidden()
