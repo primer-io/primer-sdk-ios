@@ -18,10 +18,16 @@ actor MockTrackingAnalyticsInteractor: CheckoutComponentsAnalyticsInteractorProt
 
     var trackEventCallCount: Int { trackedEvents.count }
 
+    private(set) var recordedThreeDSOutcomes: [AnalyticsFunnelState.ThreeDSOutcome] = []
+
     // MARK: - CheckoutComponentsAnalyticsInteractorProtocol
 
     func trackEvent(_ eventType: AnalyticsEventType, metadata: AnalyticsEventMetadata?) async {
         trackedEvents.append((eventType: eventType, metadata: metadata))
+    }
+
+    func recordThreeDSOutcome(_ outcome: AnalyticsFunnelState.ThreeDSOutcome) async {
+        recordedThreeDSOutcomes.append(outcome)
     }
 
     // MARK: - Test Helpers
