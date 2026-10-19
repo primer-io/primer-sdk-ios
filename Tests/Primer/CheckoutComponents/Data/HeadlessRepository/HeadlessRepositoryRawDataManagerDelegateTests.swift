@@ -142,7 +142,7 @@ final class PaymentCompletionHandlerDecisionTests: XCTestCase {
     func test_willCreatePayment_keepsTheMerchantIdempotencyKey() {
         // Given — the scope stored the merchant's key before submit
         PrimerInternal.shared.currentIdempotencyKey = "merchant-key"
-        let sut = PaymentCompletionHandler(repository: HeadlessRepositoryImpl()) { _ in }
+        let sut = PaymentCompletionHandler { _ in }
         var decision: PrimerPaymentCreationDecision?
 
         // When

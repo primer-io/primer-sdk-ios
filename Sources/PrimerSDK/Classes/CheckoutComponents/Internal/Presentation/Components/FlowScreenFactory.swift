@@ -159,7 +159,7 @@ struct FlowScreenFactory: LogReporter {
     return {
       logger.info(message: "Error screen choose other payment method tapped")
       // Through cancel, so re-selecting the failed method starts it again.
-      scope.cancelActivePaymentMethod(returnToSelection: true)
+      scope.cancelActivePaymentMethod(returnToSelection: true, abandonsMethod: true)
     }
   }
 

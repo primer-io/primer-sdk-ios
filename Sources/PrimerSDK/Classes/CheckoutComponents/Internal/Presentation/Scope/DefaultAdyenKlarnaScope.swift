@@ -158,11 +158,6 @@ final class DefaultAdyenKlarnaScope: PrimerAdyenKlarnaScope, ObservableObject, L
 
         internalState.status = .submitting
 
-        await analyticsInteractor?.trackEvent(
-            .paymentSubmitted,
-            metadata: .payment(PaymentEvent(paymentMethod: paymentMethodType))
-        )
-
         do {
             // The merchant gate runs before any navigation: `startProcessing()` presents the processing
             // screen, and UIKit drops merchant UI raised from the callback while that transition is live.
@@ -172,10 +167,7 @@ final class DefaultAdyenKlarnaScope: PrimerAdyenKlarnaScope, ObservableObject, L
 
             checkoutScope.startProcessing(payingWith: self)
 
-            await analyticsInteractor?.trackEvent(
-                .paymentProcessingStarted,
-                metadata: .payment(PaymentEvent(paymentMethod: paymentMethodType))
-            )
+            await analyticsInteractor?.trackProcessingStarted(paymentMethodType)
 
             internalState.status = .redirecting
 
@@ -184,11 +176,6 @@ final class DefaultAdyenKlarnaScope: PrimerAdyenKlarnaScope, ObservableObject, L
             checkoutScope.startProcessing(payingWith: self)
 
             internalState.status = .polling
-
-            await analyticsInteractor?.trackEvent(
-                .paymentRedirectToThirdParty,
-                metadata: .payment(PaymentEvent(paymentMethod: paymentMethodType))
-            )
 
             internalState.status = .success
             checkoutScope.handlePaymentSuccess(result)

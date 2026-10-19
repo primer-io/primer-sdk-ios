@@ -15,6 +15,7 @@ final class MockRawDataManager: RawDataManagerProtocol {
     // MARK: - Protocol Properties
 
     weak var delegate: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate?
+    weak var requiredActionObserver: RequiredActionObserver?
     var rawData: PrimerRawData? {
         didSet {
             rawDataSetCount += 1

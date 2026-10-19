@@ -101,15 +101,13 @@ final class DefaultQRCodeScope: PrimerQRCodeScope, ObservableObject, LogReporter
   private func performPayment() async {
     internalState.status = .loading
 
-    let metadata: AnalyticsEventMetadata = .payment(PaymentEvent(paymentMethod: paymentMethodType))
-    await analyticsInteractor?.trackEvent(.paymentSubmitted, metadata: metadata)
-    await analyticsInteractor?.trackEvent(.paymentProcessingStarted, metadata: metadata)
-
     do {
       try await checkoutScope?.invokeBeforePaymentCreate(
         paymentMethodType: paymentMethodType
       )
 
+      // No SUBMITTED: the shopper pays outside the SDK, so only the outcome is seen.
+      await analyticsInteractor?.trackProcessingStarted(paymentMethodType)
       let paymentData = try await interactor.startPayment()
       internalState.qrCodeImageData = paymentData.qrCodeImageData
       internalState.status = .displaying
