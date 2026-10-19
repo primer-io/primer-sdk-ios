@@ -251,6 +251,78 @@ final class DefaultCardFormScopeTests: XCTestCase {
         }
     }
 
+    // MARK: - Network sent at payment (only the shopper's pick)
+
+    func test_submit_coBadgedDefault_sendsNoNetwork() async throws {
+        let cardData = try await submitCoBadgedCard(picks: [])
+        XCTAssertNil(cardData.selectedNetwork)
+        XCTAssertEqual(cardData.surchargeNetwork, .cartesBancaires)
+    }
+
+    func test_submit_afterPick_sendsPickedNetwork() async throws {
+        let cardData = try await submitCoBadgedCard(picks: [.visa])
+        XCTAssertEqual(cardData.selectedNetwork, .visa)
+        XCTAssertEqual(cardData.surchargeNetwork, .visa)
+    }
+
+    func test_submit_afterPickingDefaultBack_sendsIt() async throws {
+        let cardData = try await submitCoBadgedCard(picks: [.visa, .cartesBancaires])
+        XCTAssertEqual(cardData.selectedNetwork, .cartesBancaires)
+        XCTAssertEqual(cardData.surchargeNetwork, .cartesBancaires)
+    }
+
+    func test_submit_pickNoLongerShown_sendsNoNetwork() async throws {
+        let container = try await createTestContainer()
+        try await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let mockPaymentInteractor = MockProcessCardPaymentInteractor()
+            let scope = createCardFormScope(checkoutScope: checkoutScope, processCardPaymentInteractor: mockPaymentInteractor)
+
+            // A pick made before detection, then the keystroke guess shows another network
+            scope.updateSelectedCardNetwork(CardNetwork.visa.rawValue)
+            scope.updateCardNumber(TestData.CardNumbers.validMastercard)
+            scope.autoSelectDetectedNetwork(CardNetwork.masterCard.rawValue)
+            scope.updateExpiryDate("12/30")
+            await scope.performSubmit()
+
+            let cardData = try XCTUnwrap(mockPaymentInteractor.lastCardData)
+            XCTAssertNil(cardData.selectedNetwork)
+            XCTAssertEqual(cardData.surchargeNetwork, .masterCard)
+        }
+    }
+
+    /// Detects Cartes Bancaires + Visa, Cartes Bancaires shown by default after a keystroke guess of Visa,
+    /// applies the shopper's picks, then pays.
+    private func submitCoBadgedCard(picks: [CardNetwork]) async throws -> CardPaymentData {
+        let container = try await createTestContainer()
+        return try await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let mockPaymentInteractor = MockProcessCardPaymentInteractor()
+            let mockDetection = MockCardNetworkDetectionInteractor()
+            let scope = createCardFormScope(
+                checkoutScope: checkoutScope,
+                processCardPaymentInteractor: mockPaymentInteractor,
+                cardNetworkDetectionInteractor: mockDetection
+            )
+
+            scope.updateCardNumber(TestData.CardNumbers.coBadgedCartesBancairesVisa)
+            scope.autoSelectDetectedNetwork(CardNetwork.visa.rawValue)
+            mockDetection.emitNetworks([.cartesBancaires, .visa])
+            try await withTimeout(2.0) {
+                while scope.structuredState.availableNetworks.count < 2 { await Task.yield() }
+            }
+            XCTAssertEqual(scope.structuredState.selectedNetwork?.network, .cartesBancaires)
+            for pick in picks {
+                scope.updateSelectedCardNetwork(pick.rawValue)
+            }
+
+            scope.updateExpiryDate("12/30")
+            await scope.performSubmit()
+
+            return try XCTUnwrap(mockPaymentInteractor.lastCardData)
+        }
+    }
+
     func test_onSubmit_callsSubmit() async throws {
         let container = try await createTestContainer()
 

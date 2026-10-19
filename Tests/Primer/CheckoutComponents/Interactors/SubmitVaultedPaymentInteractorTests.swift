@@ -157,7 +157,8 @@ private actor SpyHeadlessRepository: HeadlessRepository {
         expiryMonth: String,
         expiryYear: String,
         cardholderName: String,
-        selectedNetwork: CardNetwork?
+        selectedNetwork: CardNetwork?,
+        surchargeNetwork: CardNetwork?
     ) async throws -> PaymentResult {
         PaymentResult(paymentId: "", status: .success)
     }

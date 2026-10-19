@@ -147,7 +147,8 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
     expiryMonth: String,
     expiryYear: String,
     cardholderName: String,
-    selectedNetwork: CardNetwork?
+    selectedNetwork: CardNetwork?,
+    surchargeNetwork: CardNetwork? = nil
   ) async throws -> PaymentResult {
     try await withCheckedThrowingContinuation { continuation in
       let oneShot = OneShotContinuation(continuation)
@@ -177,7 +178,7 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
           configureRawDataManagerAndSubmit(
             rawDataManager: rawDataManager,
             cardData: cardData,
-            selectedNetwork: selectedNetwork,
+            selectedNetwork: surchargeNetwork ?? selectedNetwork,
             oneShot: oneShot,
             paymentHandler: paymentHandler
           )
