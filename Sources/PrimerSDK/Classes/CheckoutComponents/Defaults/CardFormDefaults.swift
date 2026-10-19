@@ -228,10 +228,11 @@ public struct CardSubmitButton: View {
     }
     .disabled(!session.state.isValid || session.state.isLoading)
     .accessibility(
-      config: AccessibilityConfiguration(
+      config: .submitButton(
         identifier: AccessibilityIdentifiers.CardForm.submitButton,
-        label: CheckoutComponentsStrings.payButton,
-        traits: [.isButton]
+        title: CheckoutComponentsStrings.payButton,
+        isEnabled: session.state.isValid,
+        isLoading: session.state.isLoading
       ))
   }
 }

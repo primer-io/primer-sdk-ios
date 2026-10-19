@@ -22,6 +22,7 @@ struct EmailTextField: UIViewRepresentable, LogReporter {
   let onEmailChange: ((String) -> Void)?
   let onValidationChange: ((Bool) -> Void)?
   let tokens: DesignTokens?
+  let accessibility: AccessibilityConfiguration
 
   func makeUIView(context: Context) -> UITextField {
     let textField = UITextField()
@@ -52,6 +53,8 @@ struct EmailTextField: UIViewRepresentable, LogReporter {
     if textField.text != email {
       textField.text = email
     }
+
+    textField.applyAccessibility(accessibility)
   }
 
   func makeCoordinator() -> Coordinator {

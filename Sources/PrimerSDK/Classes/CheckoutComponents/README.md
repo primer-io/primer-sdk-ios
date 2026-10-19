@@ -92,11 +92,12 @@ struct CheckoutView: View {
 
 ### Theme Customization
 
-Visual styling is token-driven via `PrimerCheckoutTheme`:
+Visual styling is token-driven via `PrimerCheckoutTheme`. `colors` applies in light mode and `darkColors` in dark mode, which does not fall back to `colors`:
 
 ```swift
 let theme = PrimerCheckoutTheme(
     colors: ColorOverrides(primerColorBrand: .purple),
+    darkColors: ColorOverrides(primerColorBrand: .purple),
     radius: RadiusOverrides(primerRadiusSmall: 8)
 )
 

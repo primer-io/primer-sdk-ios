@@ -81,6 +81,11 @@ struct VaultedPaymentMethodCard: View {
 
   // MARK: - Delete Button
 
+  /// The field-height token is 40 by default, below the 44pt minimum tap target.
+  private var deleteTapSize: CGFloat {
+    max(PrimerSize.xxlarge(tokens: tokens), PrimerComponentHeight.interactive)
+  }
+
   private func makeDeleteButton() -> some View {
     Button(action: { onDeleteTapped?() }) {
       HStack {
@@ -90,7 +95,7 @@ struct VaultedPaymentMethodCard: View {
           .foregroundColor(CheckoutColors.iconPrimary(tokens: tokens))
           .frame(width: PrimerSize.medium(tokens: tokens), height: PrimerSize.medium(tokens: tokens))
       }
-      .frame(width: PrimerSize.xxlarge(tokens: tokens), height: PrimerSize.xxlarge(tokens: tokens))
+      .frame(width: deleteTapSize, height: deleteTapSize)
       .contentShape(Rectangle())
     }
     .buttonStyle(PlainButtonStyle())

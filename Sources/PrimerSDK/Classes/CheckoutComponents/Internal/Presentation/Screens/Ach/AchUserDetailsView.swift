@@ -24,7 +24,8 @@ struct AchUserDetailsView: View, LogReporter {
         .multilineTextAlignment(.center)
         .accessibilityIdentifier(AccessibilityIdentifiers.Ach.userDetailsTitle)
 
-      VStack(spacing: PrimerSpacing.medium(tokens: tokens)) {
+      // Each field container pads its own bottom, as in the card form.
+      VStack(spacing: 0) {
         HStack(alignment: .top, spacing: PrimerSpacing.medium(tokens: tokens)) {
           firstNameField
           lastNameField

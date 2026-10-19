@@ -65,7 +65,7 @@ struct InlineCardNetworkSelector: View {
               ? PrimerRadius.small(tokens: tokens) : 0
           )
           .strokeBorder(selectedBorderColor, lineWidth: PrimerBorderWidth.standard(tokens: tokens))
-          .frame(width: buttonWidth, height: PrimerCardNetworkSelector.selectedBorderHeight)
+          .frame(width: buttonWidth, height: PrimerCardNetworkSelector.buttonFrameHeight + 2 * borderWidth)
           .offset(x: xOffset)
         }
       }
@@ -83,8 +83,9 @@ struct InlineCardNetworkSelector: View {
     PrimerBorderWidth.standard(tokens: tokens)
   }
 
+  /// The button plus the themed border on each side, so the selected outline sits on the base one.
   private var buttonWidth: CGFloat {
-    PrimerCardNetworkSelector.buttonTotalWidth
+    PrimerCardNetworkSelector.buttonFrameWidth + 2 * borderWidth
   }
 
   private var selectedBorderColor: Color {

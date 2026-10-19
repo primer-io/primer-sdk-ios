@@ -441,7 +441,7 @@
       },
       "error": {
         "font": {
-          "type": "color",
+          "type": "string",
           "value": "{primer.typography.body.small.font}"
         },
         "weight": {

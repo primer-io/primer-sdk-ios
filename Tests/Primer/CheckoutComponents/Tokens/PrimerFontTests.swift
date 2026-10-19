@@ -5,6 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 @testable import PrimerSDK
+@_spi(PrimerInternal) @testable import PrimerFoundation
 import SwiftUI
 import UIKit
 import XCTest
@@ -94,12 +95,58 @@ final class PrimerFontTests: XCTestCase {
         XCTAssertTrue(badge.familyName.contains("Inter"), "got \(badge.familyName)")
     }
 
+    // MARK: - Missing font warning
+
+    func test_missingFont_warnsOncePerFamily_andFallsBackToTheSystemFont() {
+        let logger = installWarningSpy()
+        let family = "Missing-\(UUID().uuidString)"
+
+        let font = PrimerFont.uiFont(family: family, weight: 400, size: 16)
+        _ = PrimerFont.uiFont(family: family.uppercased(), weight: 700, size: 12)
+
+        XCTAssertEqual(font.familyName, UIFont.systemFont(ofSize: 16).familyName)
+        XCTAssertEqual(logger.warnings(mentioning: family), 1, "every redraw calls uiFont, so the warning must not repeat")
+    }
+
+    func test_missingFont_withLoggingOff_keepsTheWarningForWhenLoggingIsOn() {
+        let logger = installWarningSpy()
+        let family = "Missing-\(UUID().uuidString)"
+
+        logger.logLevel = .none
+        _ = PrimerFont.uiFont(family: family, weight: 400, size: 16)
+        logger.logLevel = .warning
+        _ = PrimerFont.uiFont(family: family, weight: 400, size: 16)
+
+        XCTAssertEqual(logger.warnings(mentioning: family), 1)
+    }
+
     // MARK: - Helpers
+
+    private func installWarningSpy() -> WarningSpy {
+        let spy = WarningSpy()
+        let previous = PrimerLogging.shared.logger
+        PrimerLogging.shared.logger = spy
+        addTeardownBlock { PrimerLogging.shared.logger = previous }
+        return spy
+    }
 
     private func loadTokens(brand: String) async throws -> DesignTokens {
         let manager = DesignTokensManager()
         manager.applyTheme(PrimerCheckoutTheme(typography: TypographyOverrides(brand: brand)))
         try await manager.fetchTokens(for: .light)
         return try XCTUnwrap(manager.tokens)
+    }
+}
+
+private final class WarningSpy: PrimerLogger {
+    var logLevel: LogLevel = .warning
+    private var messages: [String] = []
+
+    func log(level: LogLevel, message: String, userInfo: Encodable?, metadata: PrimerLogMetadata) {
+        if level == .warning { messages.append(message) }
+    }
+
+    func warnings(mentioning family: String) -> Int {
+        messages.filter { $0.localizedCaseInsensitiveContains(family) }.count
     }
 }

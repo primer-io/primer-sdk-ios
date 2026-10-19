@@ -15,7 +15,9 @@ struct SelectCountryScreen: View, LogReporter {
   let onDismiss: (() -> Void)?
 
   @Environment(\.designTokens) private var tokens
+  @Environment(\.sizeCategory) private var sizeCategory  // Observes Dynamic Type changes
   @State private var countryState: PrimerSelectCountryState = .init()
+  @FocusState private var isSearchFocused: Bool
 
   var body: some View {
     // NavigationView is deprecated but retained: NavigationStack requires iOS 16 and this module
@@ -69,6 +71,8 @@ struct SelectCountryScreen: View, LogReporter {
     HStack {
       Image(systemName: "magnifyingglass")
         .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
+        // Lets a tap on the icon reach the tap target behind it.
+        .allowsHitTesting(false)
 
       TextField(
         CheckoutComponentsStrings.searchCountriesPlaceholder,
@@ -78,6 +82,9 @@ struct SelectCountryScreen: View, LogReporter {
         )
       )
       .textFieldStyle(PlainTextFieldStyle())
+      .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
+      .tint(CheckoutColors.borderFocus(tokens: tokens))
+      .focused($isSearchFocused)
       .accessibilityIdentifier(AccessibilityIdentifiers.SelectCountry.searchField)
 
       if !countryState.searchQuery.isEmpty {
@@ -89,10 +96,13 @@ struct SelectCountryScreen: View, LogReporter {
             Image(systemName: "xmark.circle.fill")
               .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
           })
+        .buttonStyle(PlainButtonStyle())
       }
     }
     .padding(.horizontal, PrimerSpacing.medium(tokens: tokens))
-    .padding(.vertical, PrimerSpacing.small(tokens: tokens))
+    // A minimum, as the field's system font can outgrow the box at the largest text sizes.
+    .frame(minHeight: PrimerComponentHeight.inputField(tokens: tokens))
+    .focusesFieldOnTap { isSearchFocused = true }
     .background(CheckoutColors.backgroundSecondary(tokens: tokens))
     .cornerRadius(PrimerRadius.small(tokens: tokens))
     .padding(PrimerSpacing.large(tokens: tokens))

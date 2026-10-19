@@ -27,6 +27,7 @@ struct CountryInputField: View, LogReporter {
   @State private var isFocused: Bool = false
   @State private var showCountryPicker: Bool = false
   @Environment(\.designTokens) private var tokens
+  @Environment(\.isInputEnabled) private var isInputEnabled
 
   // MARK: - Computed Properties
 
@@ -34,7 +35,7 @@ struct CountryInputField: View, LogReporter {
     guard !countryName.isEmpty else {
       return CheckoutColors.textPlaceholder(tokens: tokens)
     }
-    return CheckoutColors.inputText(tokens: tokens)
+    return CheckoutColors.inputText(tokens: tokens, isEnabled: isInputEnabled)
   }
 
   private var selectedCountryFromScope: PrimerCountry? {
@@ -85,7 +86,7 @@ struct CountryInputField: View, LogReporter {
                 .frame(maxWidth: .infinity, alignment: .leading)
               Spacer(minLength: 0)
             }
-            .frame(height: PrimerSize.xxlarge(tokens: tokens))
+            .frame(maxHeight: .infinity)
             .contentShape(Rectangle())
           }
         )
@@ -101,7 +102,8 @@ struct CountryInputField: View, LogReporter {
         identifier: AccessibilityIdentifiers.CardForm.billingAddressField("country"),
         label: label ?? CheckoutComponentsStrings.a11yBillingAddressCountryLabel,
         hint: CheckoutComponentsStrings.a11yBillingAddressCountryHint,
-        value: errorMessage,
+        // The label replaces the button's own text, so the selected country is read as the value.
+        value: errorMessage ?? countryName,
         traits: []
       ),
       combinesChildren: false
@@ -128,6 +130,8 @@ struct CountryInputField: View, LogReporter {
           showCountryPicker = false
         }
       )
+      // A sheet takes the phone's scheme, not the one the checkout was forced to.
+      .sheetInterfaceStyle(tokens?.colorScheme)
     }
   }
 
