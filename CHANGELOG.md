@@ -5,6 +5,103 @@ All notable changes to `primer-sdk-ios` are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 3.0.0-beta.8 (2026-10-19)
+
+### Feat
+
+- **components**: Align checkout analytics with the event contract (ORC-8462) (#1931)
+- **components**: Add the analytics funnel and its delivery (ORC-8462) (#1939)
+- **components**: Report core pages and 3DS to an observer (ORC-8462) (#1938)
+- Present SDUI and run Klarna setup in it (#1950)
+- **components**: theme tokens and styling parity fixes (ORC-7616) (#1944)
+- Poll payment method setups to completion (#1948)
+- Hide BDC methods the SDK can't run (#1932)
+- Check client requirements in the BDC engine (#1929)
+- Describe the SDK to the state processor (#1926)
+- **components**: Turn on Apple Pay shipping from the shipping handlers (ORC-8449)
+- **debug-app**: Express Checkout shipping demo (ORC-8449)
+- **components**: Express Checkout shipping callbacks for Apple Pay (ORC-8449)
+- **components**: Expose checkoutData on the failure state (ORC-8464)
+- **components**: Let merchants toggle vaultOnSuccess from the card form (ORC-8469)
+
+### Fix
+
+- Order BIN data networks by the merchant's preference (ORC-8538) (#1945)
+- **components**: match the klarna options screen to figma (ORC-8537) (#1954)
+- Match the payment method list to the design (ORC-8543) (#1949)
+- **components**: Resolve one dependency from two tasks at once (ORC-8462) (#1935)
+- Stack the ACH and Klarna header at large text sizes (ORC-8398)
+- Send the preferred network only when the shopper picks it (ORC-8539) (#1947)
+- **components**: Warn when the payment gate goes unanswered (ORC-7616)
+- **components**: Keep the shopper on the screen while the merchant decides (ORC-7616)
+- **components**: Delete the digit after a space on a forward delete (ORC-7616)
+- **components**: Start no payment once the checkout has closed (ORC-7616)
+- **components**: Keep the sheet open while a payment runs (ORC-7616)
+- **components**: Keep the card form in place while a payment runs (ORC-7616)
+- **components**: Start only one card payment per Pay tap (ORC-7616)
+- **components**: Translate the vaulted CVV and other-ways-to-pay strings (ORC-7616)
+- **components**: Keep the card number caret after the edited digits (ORC-7616)
+- **components**: Spot an international MB Way number behind a bracket (ORC-7616)
+- **components**: Read a pasted expiry date by its month and year (ORC-7616)
+- **components**: Show each keystroke in the text fields at once (ORC-7616)
+- **components**: Keep letters that carry a joiner or modifier in a pasted cardholder name (ORC-7616)
+- **components**: Spot an international MB Way number behind a newline or direction mark (ORC-7616)
+- **components**: Replace the selected expiry digits on paste and keep a pasted separator's digits (ORC-7616)
+- **components**: Keep name parts apart and drop emoji whole in the cardholder field (ORC-7616)
+- **components**: Send the MB Way dialing code once for a pasted international number (ORC-7616)
+- **components**: Keep a pasted cardholder name that has a stray character (ORC-7616)
+- **components**: Replace the selected card number digits on paste (ORC-7616)
+- **components**: Validate the billing phone as a phone number (ORC-7616)
+- Render the state processor's render stack (#1943)
+- Pass BDC parameters at top level of state (#1942)
+- don't set a delegate on FileManager.default — crashes on iOS 27 (ORC-8465) (#1933)
+- **components**: Drop the shipping commit before asking for new options (ORC-8449)
+- **components**: Keep the Apple Pay sheet usable when shipping updates fail (ORC-8449)
+- **components**: Fail the sheet update when a shipping commit fails (ORC-8449)
+- **components**: Take the shipping callbacks path only when it can commit (ORC-8449)
+- **components**: Take the shipping handlers as the last parameters (ORC-8449)
+- **components**: Block authorization on a failed shipping commit (ORC-8449)
+- **debug-app**: accept a shipping PATCH that answers without a client token (ORC-8449)
+- **components**: cancel the shipping callback timer on every exit path (ORC-8449)
+- **components**: only take the dynamic shipping path when a handler is registered (ORC-8449)
+- **components**: close three gaps in the Apple Pay shipping flow (ORC-8449)
+- **components**: Keep the keyboard Done label readable on iOS 26
+- **components**: Let card and saved-method payments wait for the shopper (ORC-7714)
+- **components**: Show Klarna error messages without Optional (ORC-7714)
+- **components**: Keep the Klarna category identifiers visible to UI tests (ORC-7714)
+- **components**: Let the shopper take their time in Klarna's flow (ORC-7714)
+- **components**: Return to the list when the shopper cancels Klarna (ORC-7714)
+- **components**: Show the selected Klarna screen instead of its test twin (ORC-8531)
+- **components**: Run one payment at a time per payment method (ORC-7716)
+- **components**: Retry the payment method that failed (ORC-7716)
+- **components**: Start the only payment method when the checkout opens (ORC-7716)
+- **components**: Restart a payment method re-selected after the error screen (ORC-7716)
+- **components**: Keep payment data on a declined resume (ORC-8464)
+- **components**: Return to the list when the buyer cancels on the PayPal page (ORC-8595)
+- **components**: Create the payment after a PayPal approval (ORC-7715)
+- **components**: Close smaller CheckoutComponents gaps (ORC-8469)
+- **components**: Offer saved methods when one payment method is configured (ORC-8469)
+- **components**: Show shoppers readable errors and a Retry that works (ORC-8469)
+- **components**: Drop the 3DS presenter callbacks and follow the failure contract (ORC-8469)
+- **components**: Report every PrimerCheckout failure to onCompletion (ORC-8469)
+- **components**: Keep the session outcome after a failed refresh or a cancel (ORC-8469)
+- **components**: Ask the merchant gate before a saved-method payment (ORC-8469)
+- **components**: Keep the idempotency key on card payments (ORC-8469)
+- **components**: Make Retry work after a QR, ACH or Apple Pay failure (ORC-8462)
+- don't set a delegate on FileManager.default — crashes on iOS 27 (ORC-8465) (#1914)
+
+### Refactor
+
+- **components**: Remove three unused accessibility strings (ORC-7616)
+- **components**: Drop the shipping method flag from the shipping session (ORC-8449)
+- **components**: Resolve the Sonar findings on the shipping code (ORC-8449)
+- **components**: follow Android's shipping API shape (ORC-8449)
+- **components**: Remove dead screen overrides and correct state docs (ORC-8469)
+
+### Perf
+
+- **components**: Refresh only what a shipping commit needs (ORC-8449)
+
 ## 3.0.0-beta.7 (2026-09-23)
 
 ### Feat
