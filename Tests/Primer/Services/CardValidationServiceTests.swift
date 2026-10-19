@@ -583,6 +583,28 @@ final class CardValidationServiceTests: XCTestCase {
         wait(for: [binDataExpectation], timeout: TestConstants.standardTimeout)
     }
 
+    func testRemoteValidation_binData_followsMerchantNetworkOrder() throws {
+        // Given: the server lists JCB and Visa first, the merchant prefers Mastercard and doesn't allow JCB
+        sut = createCardValidationService(allowedNetworks: [.masterCard, .visa])
+        let bin = String(TestConstants.fullCardNumber.prefix(maxBinLength))
+        configureMockAPIClient(bin: bin, networks: ["JCB", "VISA", "MASTERCARD"])
+
+        let binDataExpectation = expectation(description: "BinData in the merchant's order received")
+
+        // When
+        delegate.onBinDataReceived = { _, binData in
+            guard binData.status == .complete else { return }
+            XCTAssertEqual(binData.preferred?.network, .masterCard)
+            XCTAssertEqual(binData.alternatives.map(\.network), [.visa, .jcb])
+            binDataExpectation.fulfill()
+        }
+
+        // Then
+        enterCardNumber(TestConstants.fullCardNumber)
+
+        wait(for: [binDataExpectation], timeout: TestConstants.standardTimeout)
+    }
+
     func testRemoteValidationError_deliversPartialBinData() throws {
         // Given
         sut = createCardValidationService()
