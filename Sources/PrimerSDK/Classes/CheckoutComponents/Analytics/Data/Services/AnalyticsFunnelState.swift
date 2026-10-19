@@ -32,7 +32,6 @@ enum AnalyticsContract {
 /// attempt, and deduplication. One instance lives for one checkout session.
 struct AnalyticsFunnelState {
 
-  /// Context stamped on the event.
   struct Envelope: Equatable {
     let attemptId: String?
     let paymentMethod: String?

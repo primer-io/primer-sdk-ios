@@ -101,7 +101,6 @@ actor AnalyticsEventService: CheckoutComponentsAnalyticsServiceProtocol, LogRepo
 
   // MARK: - AnalyticsServiceProtocol
 
-  /// Starts a new checkout session: the funnel rules reset, then events that arrived early are sent.
   func initialize(config: AnalyticsSessionConfig) async {
     // Events that arrive during the awaits wait too, so none uses the old session or overtakes an earlier one.
     isStarting = true
@@ -252,7 +251,6 @@ final class PathMonitorConnectivity: AnalyticsConnectivity, @unchecked Sendable 
 
   private let monitor = NWPathMonitor()
   private let lock = NSLock()
-  // Online until the first path update says otherwise, so a slow monitor never holds an event.
   private var isOnline = true
   private var waiters: [CheckedContinuation<Void, Never>] = []
 
