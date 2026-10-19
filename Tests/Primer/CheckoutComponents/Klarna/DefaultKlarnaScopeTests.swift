@@ -678,6 +678,7 @@ final class DefaultKlarnaScopeTests: XCTestCase {
         _ = try await awaitValue(scope.state, matching: { $0.step == .categorySelection })
         scope.selectPaymentCategory(KlarnaTestData.Constants.categoryPayNow)
         _ = try await awaitValue(scope.state, matching: { $0.step == .viewReady })
+        try await measurePaymentView(of: scope)
 
         scope.authorizePayment()
         await fulfillment(of: [authorized], timeout: 2.0)
