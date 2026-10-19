@@ -13,7 +13,7 @@ protocol AdyenKlarnaRepository {
     func fetchPaymentOptions(configId: String) async throws -> [AdyenKlarnaPaymentOption]
     func tokenize(
         paymentMethodType: String, sessionInfo: AdyenKlarnaSessionInfo
-    ) async throws -> (redirectUrl: URL, statusUrl: URL)
+    ) async throws -> RedirectPayment
     func openWebAuthentication(paymentMethodType: String, url: URL) async throws -> URL
     func pollForCompletion(statusUrl: URL) async throws -> String
     func resumePayment(

@@ -93,6 +93,7 @@ final class AnalyticsPayloadBuilderTests: XCTestCase {
         let metadata: AnalyticsEventMetadata = .threeDS(ThreeDSEvent(
             paymentMethod: "PAYMENT_CARD",
             provider: "Netcetera",
+            protocolVersion: "2.2.0",
             response: "authenticated"
         ))
 
@@ -105,7 +106,28 @@ final class AnalyticsPayloadBuilderTests: XCTestCase {
 
         // Then
         XCTAssertEqual(payload.threedsProvider, "Netcetera")
+        XCTAssertEqual(payload.protocolVersion, "2.2.0")
         XCTAssertEqual(payload.threedsResponse, "authenticated")
+    }
+
+    func testBuildPayload_WithThreeDSOutcomeOnTheEnvelope_EncodesTheContractKeys() throws {
+        // Given
+        let envelope = AnalyticsFunnelState.Envelope(
+            attemptId: "attempt-1",
+            paymentMethod: "PAYMENT_CARD",
+            paymentId: "pay_1",
+            lastStep: nil,
+            threeDSOutcome: AnalyticsFunnelState.ThreeDSOutcome(authenticationOutcome: "SKIPPED", skippedReasonCode: "GATEWAY_UNAVAILABLE")
+        )
+
+        // When
+        let payload = builder.buildPayload(eventType: .paymentSuccess, metadata: nil, config: makeTestConfig(), envelope: envelope)
+        let json = try XCTUnwrap(JSONSerialization.jsonObject(with: JSONEncoder().encode(payload)) as? [String: Any])
+
+        // Then
+        XCTAssertEqual(json["authenticationOutcome"] as? String, "SKIPPED")
+        XCTAssertEqual(json["skippedReasonCode"] as? String, "GATEWAY_UNAVAILABLE")
+        XCTAssertNil(json["protocolVersion"])
     }
 
     func testBuildPayload_WithVaultMetadata_IncludesAllVaultFields() {

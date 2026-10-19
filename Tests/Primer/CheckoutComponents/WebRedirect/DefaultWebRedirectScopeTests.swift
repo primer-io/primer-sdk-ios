@@ -272,8 +272,9 @@ final class DefaultWebRedirectScopeTests: XCTestCase {
         XCTAssertEqual(mockInteractor.lastPaymentMethodType, "ADYEN_SOFORT")
     }
 
+    // SUBMITTED and the redirect events come from the interactor, around the web session.
     @MainActor
-    func test_submit_tracksPaymentSubmittedAnalytics() async throws {
+    func test_submit_doesNotTrackSubmittedOrRedirectItself() async throws {
         // Given
         mockInteractor.paymentResultToReturn = PaymentResult(
             paymentId: TestData.PaymentIds.success,
@@ -287,8 +288,10 @@ final class DefaultWebRedirectScopeTests: XCTestCase {
         _ = try await awaitValue(scope.state, matching: { $0.status == .success })
 
         // Then
-        let hasTracked = await mockAnalytics.hasTracked(.paymentSubmitted)
-        XCTAssertTrue(hasTracked)
+        let hasTrackedSubmitted = await mockAnalytics.hasTracked(.paymentSubmitted)
+        let hasTrackedRedirect = await mockAnalytics.hasTracked(.paymentRedirectToThirdParty)
+        XCTAssertFalse(hasTrackedSubmitted)
+        XCTAssertFalse(hasTrackedRedirect)
     }
 
     @MainActor
@@ -307,25 +310,6 @@ final class DefaultWebRedirectScopeTests: XCTestCase {
 
         // Then
         let hasTracked = await mockAnalytics.hasTracked(.paymentProcessingStarted)
-        XCTAssertTrue(hasTracked)
-    }
-
-    @MainActor
-    func test_submit_tracksRedirectToThirdPartyAnalytics() async throws {
-        // Given
-        mockInteractor.paymentResultToReturn = PaymentResult(
-            paymentId: TestData.PaymentIds.success,
-            status: .success,
-            paymentMethodType: "ADYEN_SOFORT"
-        )
-        let scope = createScope()
-
-        // When
-        scope.submit()
-        _ = try await awaitValue(scope.state, matching: { $0.status == .success })
-
-        // Then
-        let hasTracked = await mockAnalytics.hasTracked(.paymentRedirectToThirdParty)
         XCTAssertTrue(hasTracked)
     }
 

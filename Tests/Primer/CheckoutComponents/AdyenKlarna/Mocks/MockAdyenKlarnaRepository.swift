@@ -15,10 +15,11 @@ final class MockAdyenKlarnaRepository: AdyenKlarnaRepository {
     // MARK: - Configuration
 
     var fetchPaymentOptionsResult: Result<[AdyenKlarnaPaymentOption], Error> = .success([])
-    var tokenizeResult: Result<(redirectUrl: URL, statusUrl: URL), Error> = .success(
-        (redirectUrl: URL(string: "https://klarna.com/redirect")!,
-         statusUrl: URL(string: "https://api.primer.io/status")!)
-    )
+    var tokenizeResult: Result<RedirectPayment, Error> = .success(RedirectPayment(
+        redirectUrl: URL(string: "https://klarna.com/redirect")!,
+        statusUrl: URL(string: "https://api.primer.io/status")!,
+        paymentId: "pay-123"
+    ))
     var openWebAuthResult: Result<URL, Error> = .success(URL(string: "testapp://callback")!)
     var pollResult: Result<String, Error> = .success("resume-token-123")
     var resumePaymentResult: Result<PaymentResult, Error> = .success(
@@ -43,7 +44,7 @@ final class MockAdyenKlarnaRepository: AdyenKlarnaRepository {
         return try fetchPaymentOptionsResult.get()
     }
 
-    func tokenize(paymentMethodType: String, sessionInfo: AdyenKlarnaSessionInfo) async throws -> (redirectUrl: URL, statusUrl: URL) {
+    func tokenize(paymentMethodType: String, sessionInfo: AdyenKlarnaSessionInfo) async throws -> RedirectPayment {
         tokenizeCallCount += 1
         lastTokenizeSessionInfo = sessionInfo
         return try tokenizeResult.get()

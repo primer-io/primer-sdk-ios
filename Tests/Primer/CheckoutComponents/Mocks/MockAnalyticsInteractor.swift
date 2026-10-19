@@ -13,4 +13,6 @@ import Foundation
 actor MockAnalyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol {
 
     func trackEvent(_ eventType: AnalyticsEventType, metadata: AnalyticsEventMetadata?) async {}
+
+    func recordThreeDSOutcome(_ outcome: AnalyticsFunnelState.ThreeDSOutcome) async {}
 }

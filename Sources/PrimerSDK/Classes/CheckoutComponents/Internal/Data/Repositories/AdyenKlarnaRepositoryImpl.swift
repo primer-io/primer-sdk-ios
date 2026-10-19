@@ -63,7 +63,7 @@ final class AdyenKlarnaRepositoryImpl: AdyenKlarnaRepository, LogReporter {
   func tokenize(
     paymentMethodType: String,
     sessionInfo: AdyenKlarnaSessionInfo
-  ) async throws -> (redirectUrl: URL, statusUrl: URL) {
+  ) async throws -> RedirectPayment {
     guard let paymentMethodConfig = PrimerAPIConfiguration.current?.paymentMethods?
       .first(where: { $0.type == paymentMethodType }),
       let configId = paymentMethodConfig.id
@@ -131,7 +131,7 @@ final class AdyenKlarnaRepositoryImpl: AdyenKlarnaRepository, LogReporter {
       throw error
     }
 
-    return (redirectUrl: redirectUrl, statusUrl: statusUrl)
+    return RedirectPayment(redirectUrl: redirectUrl, statusUrl: statusUrl, paymentId: paymentResponse.id)
   }
 
   func openWebAuthentication(paymentMethodType: String, url: URL) async throws -> URL {

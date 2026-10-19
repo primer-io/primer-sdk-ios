@@ -15,6 +15,11 @@ final class WeakBox<T: AnyObject> {
   init(_ inst: T) { instance = inst }
 }
 
+/// Carries a singleton that is still being built to every task waiting for it.
+struct SingletonBox: @unchecked Sendable {
+  let instance: Any
+}
+
 /// Thread-safe cache for resolved singletons, accessible without actor isolation.
 /// Prevents DispatchSemaphore deadlocks in resolveSync by serving
 /// already-resolved singletons synchronously.
@@ -152,9 +157,9 @@ actor Container: ContainerProtocol, LogReporter {
   private var factories: [TypeKey: FactoryRegistration] = [:]
   private var instances: [TypeKey: Any] = [:]
   private var weakBoxes: [TypeKey: WeakBox<AnyObject>] = [:]
-  /// O(1) circular dependency detection
-  private var resolutionStack: Set<TypeKey> = []
-  private var resolutionOrder: [TypeKey] = []
+  private var singletonsInProgress: [TypeKey: Task<SingletonBox, Error>] = [:]
+  /// Per task, so two tasks resolving the same type at once are not mistaken for a cycle.
+  @TaskLocal private static var resolutionPath: [TypeKey] = []
 
   /// Nonisolated thread-safe cache for resolved singletons.
   /// Allows resolveSync to return immediately without blocking
@@ -172,6 +177,19 @@ actor Container: ContainerProtocol, LogReporter {
 
   func getInstance(forKey key: TypeKey) -> Any? { instances[key] }
   func getWeakBox(forKey key: TypeKey) -> WeakBox<AnyObject>? { weakBoxes[key] }
+
+  /// Builds a singleton once, even when several tasks ask for it at the same time.
+  func singleton(forKey key: TypeKey, build: @escaping @Sendable () async throws -> Any) async throws -> Any {
+    if let stored = instances[key] { return stored }
+    if let building = singletonsInProgress[key] { return try await building.value.instance }
+
+    let building = Task { SingletonBox(instance: try await build()) }
+    singletonsInProgress[key] = building
+    defer { singletonsInProgress[key] = nil }
+    let instance = try await building.value.instance
+    setInstance(instance, forKey: key)
+    return instance
+  }
 
   // MARK: - Registration
 
@@ -247,33 +265,27 @@ actor Container: ContainerProtocol, LogReporter {
       throw ContainerError.dependencyNotRegistered(key)
     }
 
-    // O(1) circular dependency detection
-    if resolutionStack.contains(key) {
-      throw ContainerError.circularDependency(key, path: resolutionOrder + [key])
+    let path = Self.resolutionPath
+    if path.contains(key) {
+      throw ContainerError.circularDependency(key, path: path + [key])
     }
 
-    resolutionStack.insert(key)
-    resolutionOrder.append(key)
+    return try await Self.$resolutionPath.withValue(path + [key]) {
+      do {
+        // Delegate to the correct strategy
+        let instance = try await strategy(for: registration.policy)
+          .instance(for: key, registration: registration, in: self)
 
-    defer {
-      resolutionStack.remove(key)
-      resolutionOrder.removeLast()
-    }
+        guard let typed = instance as? T else {
+          throw ContainerError.typeCastFailed(key, expected: String(describing: T.self), actual: String(describing: Swift.type(of: instance)))
+        }
 
-    do {
-      // Delegate to the correct strategy
-      let instance = try await strategy(for: registration.policy)
-        .instance(for: key, registration: registration, in: self)
-
-      guard let typed = instance as? T else {
-        throw ContainerError.typeCastFailed(key, expected: String(describing: T.self), actual: String(describing: Swift.type(of: instance)))
+        return typed
+      } catch let containerError as ContainerError {
+        throw containerError
+      } catch {
+        throw ContainerError.factoryFailed(key, underlyingError: error)
       }
-
-      return typed
-    } catch let containerError as ContainerError {
-      throw containerError
-    } catch {
-      throw ContainerError.factoryFailed(key, underlyingError: error)
     }
   }
 
@@ -334,11 +346,6 @@ actor Container: ContainerProtocol, LogReporter {
   }
 
   /// Resolves multiple dependencies, in order.
-  ///
-  /// Resolution is sequential by design: circular-dependency detection uses the actor's shared
-  /// `resolutionStack`/`resolutionOrder`, so concurrent resolutions would interleave at await points
-  /// and corrupt that state (spurious circular-dependency errors, or singletons built twice).
-  /// Sequencing keeps each dependency's resolution chain isolated.
   func resolveBatch<T>(_ requests: [(type: T.Type, name: String?)]) async throws -> [T] {
     var results: [T] = []
     results.reserveCapacity(requests.count)
@@ -490,8 +497,8 @@ actor Container: ContainerProtocol, LogReporter {
     }
 
     // Check circular dependencies (simplified)
-    if resolutionOrder.count > 10 {
-      issues.append(.deepResolutionStack("Resolution stack depth: \(resolutionOrder.count)"))
+    if Self.resolutionPath.count > 10 {
+      issues.append(.deepResolutionStack("Resolution stack depth: \(Self.resolutionPath.count)"))
       recommendations.append("Consider breaking complex dependency chains")
     }
 

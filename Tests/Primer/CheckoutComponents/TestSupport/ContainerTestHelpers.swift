@@ -12,7 +12,10 @@ import Foundation
 @available(iOS 15.0, *)
 enum ContainerTestHelpers {
 
-    static func createTestContainer(apiConfiguration: PrimerAPIConfiguration? = nil) async throws -> Container {
+    static func createTestContainer(
+        apiConfiguration: PrimerAPIConfiguration? = nil,
+        analyticsInteractor: (any CheckoutComponentsAnalyticsInteractorProtocol)? = nil
+    ) async throws -> Container {
         let container = Container()
 
         // Register mock ConfigurationService
@@ -31,10 +34,12 @@ enum ContainerTestHelpers {
                 }
             }
 
-        // Register mock AnalyticsInteractor
+        // Register mock AnalyticsInteractor — callers that need to inspect tracked events pass
+        // their own `MockTrackingAnalyticsInteractor`; others get the no-op default.
+        let analytics = analyticsInteractor ?? MockAnalyticsInteractor()
         _ = try await container.register(CheckoutComponentsAnalyticsInteractorProtocol.self)
             .asSingleton()
-            .with { _ in MockAnalyticsInteractor() }
+            .with { _ in analytics }
 
         return container
     }

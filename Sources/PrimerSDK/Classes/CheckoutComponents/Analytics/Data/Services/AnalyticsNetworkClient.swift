@@ -8,10 +8,12 @@ import Foundation
 @_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerCore
 
-actor AnalyticsNetworkClient: LogReporter {
+protocol AnalyticsEventSending: Actor {
+  func send(payload: AnalyticsPayload, to endpoint: URL, token: String?) async throws
+}
 
-  // Some analytics events are awaited on the payment hot path, so bound the request to keep a
-  // stalled endpoint from delaying payment progression (URLSession's default is ~60s).
+actor AnalyticsNetworkClient: AnalyticsEventSending, LogReporter {
+
   private static let requestTimeout: TimeInterval = 10
 
   func send(payload: AnalyticsPayload, to endpoint: URL, token: String?) async throws {
@@ -75,7 +77,7 @@ actor AnalyticsNetworkClient: LogReporter {
       } else {
         logger.error(message: "[Analytics] Request failed with status \(httpResponse.statusCode)")
       }
-      throw AnalyticsError.requestFailed
+      throw AnalyticsError.httpStatus(httpResponse.statusCode)
     }
   }
 }

@@ -9,27 +9,18 @@ import XCTest
 @_spi(PrimerInternal) @testable import PrimerFoundation
 @_spi(PrimerInternal) @testable import PrimerCore
 
-// MARK: - Redirect Tracking Deduplication
+// MARK: - Bin Data Stream
 
 @available(iOS 15.0, *)
 @MainActor
-final class HeadlessRepositoryRedirectTrackingTests: XCTestCase {
+final class BinDataStreamTests: XCTestCase {
 
-    private var sut: HeadlessRepositoryImpl!
+    func test_getBinDataStream_returnsNonNilStream() {
+        // When
+        let stream = HeadlessRepositoryImpl().getBinDataStream()
 
-    override func setUp() {
-        super.setUp()
-        sut = HeadlessRepositoryImpl()
-    }
-
-    override func tearDown() {
-        sut = nil
-        super.tearDown()
-    }
-
-    func test_trackRedirect_withNilInfo_doesNotCrash() {
-        // When / Then — nil info handled gracefully
-        sut.trackRedirectToThirdPartyIfNeeded(from: nil, paymentMethodType: "PAYMENT_CARD")
+        // Then
+        XCTAssertNotNil(stream)
     }
 }
 
@@ -75,6 +66,31 @@ final class HeadlessRepositoryCardDataTests: XCTestCase {
         sut = nil
         PrimerHeadlessUniversalCheckout.current.delegate = nil
         super.tearDown()
+    }
+
+    func test_processCardPayment_givesTheRawDataManagerTheAnalyticsObserver() async throws {
+        // Given
+        let analytics = MockTrackingAnalyticsInteractor()
+        sut = HeadlessRepositoryImpl(rawDataManagerFactory: mockFactory, analyticsInteractor: analytics)
+        let (cardDataStream, continuation) = AsyncStream<PrimerCardData?>.makeStream()
+        mockRawDataManager.onRawDataSet = { continuation.yield($0 as? PrimerCardData) }
+
+        // When
+        let task = Task { [self] in
+            _ = try? await sut.processCardPayment(
+                cardNumber: "4242 4242 4242 4242",
+                cvv: "123",
+                expiryMonth: "12",
+                expiryYear: "25",
+                cardholderName: "Test",
+                selectedNetwork: nil
+            )
+        }
+        defer { task.cancel() }
+        _ = try await awaitValue(cardDataStream, matching: { $0 != nil })
+
+        // Then
+        XCTAssertTrue(mockRawDataManager.requiredActionObserver === analytics)
     }
 
     func test_processCardPayment_sanitizesSpacesFromCardNumber() async throws {

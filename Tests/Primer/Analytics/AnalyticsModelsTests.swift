@@ -184,7 +184,8 @@ final class AnalyticsPayloadTests: XCTestCase {
             "clientSessionId": "client_456",
             "primerAccountId": "acc_789",
             "sdkVersion": "2.46.7",
-            "userAgent": "iOS/18.0"
+            "userAgent": "iOS/18.0",
+            "contractVersion": 2
         }
         """
 
@@ -495,8 +496,8 @@ final class AnalyticsEventTypeTests: XCTestCase {
     }
 
     func testAnalyticsEventType_Count_MatchesSpec() {
-        // Then - 13 core lifecycle + 13 vault event types as per spec
-        XCTAssertEqual(AnalyticsEventType.allCases.count, 26)
+        // Then - 16 checkout contract events used on iOS + 13 vault event types
+        XCTAssertEqual(AnalyticsEventType.allCases.count, 29)
         XCTAssertEqual(AnalyticsEventType.allCases.filter(\.isVaultEvent).count, 13)
     }
 }

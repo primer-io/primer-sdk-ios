@@ -9,6 +9,8 @@ import Foundation
 @_spi(PrimerInternal) import PrimerCore
 
 /// Fire-and-forget analytics tracking via detached tasks
-protocol CheckoutComponentsAnalyticsInteractorProtocol: Actor {
+protocol CheckoutComponentsAnalyticsInteractorProtocol: Actor, RequiredActionObserver {
   func trackEvent(_ eventType: AnalyticsEventType, metadata: AnalyticsEventMetadata?) async
+  /// Not an event: the open attempt keeps it for its SUCCESS or FAILURE.
+  func recordThreeDSOutcome(_ outcome: AnalyticsFunnelState.ThreeDSOutcome) async
 }
