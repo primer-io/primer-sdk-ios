@@ -192,7 +192,8 @@ public protocol PrimerCheckoutPresenterDelegate: AnyObject {
         if #available(iOS 16.0, *) {
             let customDetent = UISheetPresentationController.Detent.custom { [weak controller] context in
                 guard let controller else { return context.maximumDetentValue }
-                let contentHeight = controller.preferredContentSize.height
+                // The fitting height already includes the bottom safe area, and the sheet adds it on top of a detent.
+                let contentHeight = controller.preferredContentSize.height - controller.view.safeAreaInsets.bottom
                 let maxHeight = context.maximumDetentValue
                 // Allow content to determine height, but cap at maximum
                 return min(
