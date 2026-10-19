@@ -203,7 +203,7 @@ struct KlarnaView: View, LogReporter {
 
   @MainActor
   private func makeCategorySelectionContent() -> some View {
-    VStack(spacing: PrimerSpacing.small(tokens: tokens)) {
+    VStack(spacing: PrimerSpacing.large(tokens: tokens)) {
       // Category cards
       VStack(spacing: PrimerSpacing.small(tokens: tokens)) {
         ForEach(klarnaState.categories, id: \.id) { category in
@@ -215,7 +215,6 @@ struct KlarnaView: View, LogReporter {
       .accessibilityIdentifier(AccessibilityIdentifiers.Klarna.categoriesContainer)
 
       makeAuthorizeButtonSection()
-        .padding(.top, PrimerSpacing.large(tokens: tokens))
     }
   }
 
