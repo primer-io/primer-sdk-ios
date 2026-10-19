@@ -153,6 +153,8 @@ final class DefaultCheckoutScopeReentryTests: XCTestCase {
         _ = try await awaitValue(scope.state) { $0.step == .categorySelection }
         scope.selectPaymentCategory(KlarnaTestData.Constants.categoryPayNow)
         _ = try await awaitValue(scope.state) { $0.step == .viewReady }
+        interactor.paymentViewHeightContinuation.yield(KlarnaTestData.Constants.paymentViewHeight)
+        _ = try await awaitValue(scope.state) { $0.isSelectedOptionReady }
         scope.submit()
         await waitForErrorScreen()
 
@@ -176,6 +178,8 @@ final class DefaultCheckoutScopeReentryTests: XCTestCase {
         _ = try await awaitValue(scope.state) { $0.step == .categorySelection }
         scope.selectPaymentCategory(KlarnaTestData.Constants.categoryPayNow)
         _ = try await awaitValue(scope.state) { $0.step == .viewReady }
+        interactor.paymentViewHeightContinuation.yield(KlarnaTestData.Constants.paymentViewHeight)
+        _ = try await awaitValue(scope.state) { $0.isSelectedOptionReady }
         scope.submit()
         await waitUntil { interactor.authorizeCallCount == 1 && self.sut.navigationState == .paymentMethodSelection }
 

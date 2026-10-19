@@ -13,6 +13,11 @@ import UIKit
 @MainActor
 final class MockKlarnaRepository: KlarnaRepository {
 
+    // MARK: - Payment View Heights
+
+    nonisolated let paymentViewHeights: AsyncStream<CGFloat>
+    nonisolated let paymentViewHeightContinuation: AsyncStream<CGFloat>.Continuation
+
     // MARK: - Configurable Return Values
 
     var sessionResultToReturn: KlarnaSessionResult?
@@ -42,6 +47,10 @@ final class MockKlarnaRepository: KlarnaRepository {
     private(set) var lastClientToken: String?
     private(set) var lastCategoryId: String?
     private(set) var lastAuthToken: String?
+
+    init() {
+        (paymentViewHeights, paymentViewHeightContinuation) = AsyncStream.makeStream(of: CGFloat.self)
+    }
 
     // MARK: - KlarnaRepository Protocol
 

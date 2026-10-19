@@ -68,7 +68,7 @@ final class KlarnaPaymentMethodTests: XCTestCase {
         let container = try await ContainerTestHelpers.createTestContainer()
         _ = try? await container.register(ProcessKlarnaPaymentInteractor.self)
             .asSingleton()
-            .with { _ in StubProcessKlarnaPaymentInteractorForTests() }
+            .with { _ in MockProcessKlarnaPaymentInteractor() }
         let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
 
         // When
@@ -128,7 +128,7 @@ final class KlarnaPaymentMethodTests: XCTestCase {
         let container = try await ContainerTestHelpers.createTestContainer()
         _ = try? await container.register(ProcessKlarnaPaymentInteractor.self)
             .asSingleton()
-            .with { _ in StubProcessKlarnaPaymentInteractorForTests() }
+            .with { _ in MockProcessKlarnaPaymentInteractor() }
         let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
 
         // When
@@ -168,7 +168,7 @@ final class KlarnaPaymentMethodTests: XCTestCase {
         let container = try await ContainerTestHelpers.createTestContainer()
         _ = try? await container.register(ProcessKlarnaPaymentInteractor.self)
             .asSingleton()
-            .with { _ in StubProcessKlarnaPaymentInteractorForTests() }
+            .with { _ in MockProcessKlarnaPaymentInteractor() }
         let invalidScope = MockNonDefaultCheckoutScopeForKlarna()
 
         // When/Then
@@ -219,7 +219,7 @@ final class KlarnaPaymentMethodTests: XCTestCase {
         let container = try await ContainerTestHelpers.createTestContainer()
         _ = try? await container.register(ProcessKlarnaPaymentInteractor.self)
             .asSingleton()
-            .with { _ in StubProcessKlarnaPaymentInteractorForTests() }
+            .with { _ in MockProcessKlarnaPaymentInteractor() }
         let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
 
         // When
@@ -238,7 +238,7 @@ final class KlarnaPaymentMethodTests: XCTestCase {
         let container = try await ContainerTestHelpers.createTestContainer()
         _ = try? await container.register(ProcessKlarnaPaymentInteractor.self)
             .asSingleton()
-            .with { _ in StubProcessKlarnaPaymentInteractorForTests() }
+            .with { _ in MockProcessKlarnaPaymentInteractor() }
 
         let navigator = CheckoutNavigator(coordinator: CheckoutCoordinator())
         let settings = PrimerSettings(
@@ -274,7 +274,7 @@ final class KlarnaPaymentMethodTests: XCTestCase {
         let container = try await ContainerTestHelpers.createTestContainer()
         _ = try? await container.register(ProcessKlarnaPaymentInteractor.self)
             .asSingleton()
-            .with { _ in StubProcessKlarnaPaymentInteractorForTests() }
+            .with { _ in MockProcessKlarnaPaymentInteractor() }
         // After the scope: its init resets the registry, and without PrimerKlarnaSDK it skips Klarna.
         let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
         registry.reset()
@@ -289,31 +289,6 @@ final class KlarnaPaymentMethodTests: XCTestCase {
 
         // Then
         XCTAssertNotNil(scope)
-    }
-}
-
-// MARK: - Stubs
-
-@available(iOS 15.0, *)
-private final class StubProcessKlarnaPaymentInteractorForTests: ProcessKlarnaPaymentInteractor {
-    func createSession() async throws -> KlarnaSessionResult {
-        fatalError("Not called in these tests")
-    }
-
-    func configureForCategory(clientToken: String, categoryId: String) async throws -> UIView? {
-        nil
-    }
-
-    func authorize() async throws -> KlarnaAuthorizationResult {
-        fatalError("Not called in these tests")
-    }
-
-    func finalize() async throws -> KlarnaAuthorizationResult {
-        fatalError("Not called in these tests")
-    }
-
-    func tokenize(authToken: String) async throws -> PaymentResult {
-        PaymentResult(paymentId: TestData.PaymentIds.success, status: .success)
     }
 }
 

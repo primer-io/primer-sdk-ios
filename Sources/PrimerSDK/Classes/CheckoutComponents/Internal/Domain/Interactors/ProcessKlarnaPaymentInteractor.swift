@@ -10,6 +10,7 @@ import UIKit
 
 @available(iOS 15.0, *)
 protocol ProcessKlarnaPaymentInteractor {
+  var paymentViewHeights: AsyncStream<CGFloat> { get }
   func createSession() async throws -> KlarnaSessionResult
   func configureForCategory(clientToken: String, categoryId: String) async throws -> UIView?
   func authorize() async throws -> KlarnaAuthorizationResult
@@ -21,6 +22,10 @@ protocol ProcessKlarnaPaymentInteractor {
 final class ProcessKlarnaPaymentInteractorImpl: ProcessKlarnaPaymentInteractor, LogReporter {
 
   private let repository: KlarnaRepository
+
+  var paymentViewHeights: AsyncStream<CGFloat> {
+    repository.paymentViewHeights
+  }
 
   init(repository: KlarnaRepository) {
     self.repository = repository

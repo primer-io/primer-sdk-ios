@@ -80,6 +80,15 @@ final class PrimerHeadlessKlarnaComponentTests: XCTestCase {
         XCTAssertNotNil(sut.createPaymentView())
     }
 
+    func test_createPaymentView_appliesAppearanceModeToTheNewView() {
+        let provider = MockKlarnaProvider()
+        sut.klarnaProvider = provider
+
+        sut.createPaymentView()
+
+        XCTAssertEqual(provider.calls, [.createPaymentView, .readPaymentView])
+    }
+
     func test_sessionCreation_error() {
         let error = PrimerError.failedToCreateSession(error: nil)
 

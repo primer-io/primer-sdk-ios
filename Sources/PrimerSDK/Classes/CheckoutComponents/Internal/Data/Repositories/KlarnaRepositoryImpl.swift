@@ -18,6 +18,9 @@ final class KlarnaRepositoryImpl: KlarnaRepository, LogReporter {
     static let viewLoadTimeout: UInt64 = 30_000_000_000
   }
 
+  nonisolated let paymentViewHeights: AsyncStream<CGFloat>
+
+  private nonisolated let paymentViewHeightContinuation: AsyncStream<CGFloat>.Continuation
   private let apiClient: PrimerAPIClientProtocol
   private let tokenizationService: TokenizationServiceProtocol
   private let createResumePaymentService: CreateResumePaymentServiceProtocol
@@ -31,6 +34,7 @@ final class KlarnaRepositoryImpl: KlarnaRepository, LogReporter {
   // Klarna SDK provider (only available when PrimerKlarnaSDK is imported)
   #if canImport(PrimerKlarnaSDK)
     var klarnaProvider: PrimerKlarnaProviding?
+    var makeKlarnaProvider: (String, String, String?) -> PrimerKlarnaProviding = PrimerKlarnaProvider.init(clientToken:paymentCategory:urlScheme:)
 
     // Continuations for delegate-to-async bridging
     private var authorizationContinuation: CheckedContinuation<KlarnaAuthorizationResult, Error>?
@@ -49,6 +53,14 @@ final class KlarnaRepositoryImpl: KlarnaRepository, LogReporter {
               paymentMethodType: PrimerPaymentMethodType.klarna.rawValue
             ))
       }
+    }
+
+    /// A replaced provider can still report a late resize into the new category.
+    private func detachProvider() {
+      klarnaProvider?.authorizationDelegate = nil
+      klarnaProvider?.finalizationDelegate = nil
+      klarnaProvider?.paymentViewDelegate = nil
+      klarnaProvider?.errorDelegate = nil
     }
   #endif
 
@@ -70,8 +82,15 @@ final class KlarnaRepositoryImpl: KlarnaRepository, LogReporter {
         paymentMethodType: PrimerPaymentMethodType.klarna.rawValue
       )
     self.settings = settings
+    (paymentViewHeights, paymentViewHeightContinuation) = AsyncStream.makeStream(
+      of: CGFloat.self, bufferingPolicy: .bufferingNewest(1)
+    )
     let klarnaOptions = settings.paymentMethodOptions.klarnaOptions
     recurringPaymentDescription = klarnaOptions?.recurringPaymentDescription
+  }
+
+  deinit {
+    paymentViewHeightContinuation.finish()
   }
 
   // MARK: - Create Session
@@ -160,12 +179,9 @@ final class KlarnaRepositoryImpl: KlarnaRepository, LogReporter {
       return try await withCheckedThrowingContinuation { continuation in
         self.cancelPendingContinuation(&self.viewLoadedContinuation)
         self.viewLoadedContinuation = continuation
+        self.detachProvider()
 
-        let provider = PrimerKlarnaProvider(
-          clientToken: clientToken,
-          paymentCategory: categoryId,
-          urlScheme: urlScheme
-        )
+        let provider = self.makeKlarnaProvider(clientToken, categoryId, urlScheme)
         self.klarnaProvider = provider
 
         provider.authorizationDelegate = self
@@ -174,6 +190,7 @@ final class KlarnaRepositoryImpl: KlarnaRepository, LogReporter {
         provider.errorDelegate = self
 
         provider.createPaymentView()
+        provider.applyAppearanceMode(self.settings.uiOptions.appearanceMode)
         provider.initializePaymentView()
       }
     #else
@@ -407,7 +424,11 @@ final class KlarnaRepositoryImpl: KlarnaRepository, LogReporter {
     }
 
     nonisolated func primerKlarnaWrapperResized(to newHeight: CGFloat) {
-      // View resized - no action needed, SwiftUI handles layout
+      Task { @MainActor in
+        // Klarna measures at the view's width, which is 0 until it is laid out.
+        guard (klarnaProvider?.paymentView?.bounds.width ?? 0) > 0 else { return }
+        paymentViewHeightContinuation.yield(newHeight)
+      }
     }
 
     nonisolated func primerKlarnaWrapperLoaded() {

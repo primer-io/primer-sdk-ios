@@ -29,6 +29,17 @@ final class ProcessKlarnaPaymentInteractorTests: XCTestCase {
         super.tearDown()
     }
 
+    func test_paymentViewHeights_reportsTheRepositoryHeights() async throws {
+        // Given
+        mockRepository.paymentViewHeightContinuation.yield(KlarnaTestData.Constants.paymentViewHeight)
+
+        // When
+        let height = try await awaitFirst(sut.paymentViewHeights)
+
+        // Then
+        XCTAssertEqual(height, KlarnaTestData.Constants.paymentViewHeight)
+    }
+
     func test_createSession_success_returnsSessionResult() async throws {
         // Given
         mockRepository.sessionResultToReturn = KlarnaTestData.defaultSessionResult

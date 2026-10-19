@@ -5,8 +5,10 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+@_spi(PrimerInternal) import PrimerCore
 @_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerNetworking
+import UIKit
 
 // KlarnaHelpers: A utility structure to facilitate various operations related to Klarna payment sessions.
 struct KlarnaHelpers {
@@ -190,6 +192,15 @@ struct KlarnaHelpers {
         )
     }
 
+    // MARK: - Appearance helpers
+    /// The key window's style, unlike the screen's, includes the app's own overrides.
+    static var isSystemDarkAppearance: Bool {
+        let scenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
+        let windowScene = scenes.first(where: { $0.activationState == .foregroundActive })
+            ?? scenes.first(where: { $0.activationState == .foregroundInactive })
+        return (windowScene?.keyWindow?.traitCollection ?? UIScreen.main.traitCollection).userInterfaceStyle == .dark
+    }
+
     // MARK: - Error helpers
     static func getInvalidTokenError() -> PrimerError {
         handled(primerError: .invalidClientToken())
@@ -211,3 +222,24 @@ struct KlarnaHelpers {
         handled(primerError: .missingSDK(paymentMethodType: PrimerPaymentMethodType.klarna.rawValue, sdkName: "KlarnaSDK"))
     }
 }
+
+extension PrimerAppearanceMode {
+    func isDarkAppearance(orSystem isSystemDarkAppearance: @autoclosure () -> Bool) -> Bool {
+        switch self {
+        case .system: isSystemDarkAppearance()
+        case .light: false
+        case .dark: true
+        }
+    }
+}
+
+#if canImport(PrimerKlarnaSDK)
+    import PrimerKlarnaSDK
+
+    extension PrimerKlarnaProviding {
+        /// Call before `initializePaymentView()`. Not `.automatic`: it follows the device only.
+        func applyAppearanceMode(_ appearanceMode: PrimerAppearanceMode) {
+            paymentView?.theme = appearanceMode.isDarkAppearance(orSystem: KlarnaHelpers.isSystemDarkAppearance) ? .dark : .light
+        }
+    }
+#endif
