@@ -25,6 +25,7 @@ private var packageTargets: [Target] {
         target(name: "PrimerBDCEngine", dependencies: ["PrimerFoundation", "PrimerStepResolver"]),
 
         target(name: "PrimerBDCCore", dependencies: ["PrimerBDCEngine", "PrimerFoundation", "PrimerStepResolver"]),
+        target(name: "PrimerBDCUI", dependencies: ["PrimerFoundation", "PrimerStepResolver"]),
         
         .target(name: "PrimerSDK", dependencies: primerSDKDependencies, path: "Sources/PrimerSDK"),
         debugAppTarget,
@@ -44,6 +45,7 @@ private var primerSDKDependencies: [Target.Dependency] {
         .product(name: "Primer3DS", package: "primer-sdk-3ds-ios"),
         "PrimerBDCCore",
         "PrimerBDCEngine",
+        "PrimerBDCUI",
         "PrimerFoundation",
         "PrimerStepResolver",
         "PrimerCore",

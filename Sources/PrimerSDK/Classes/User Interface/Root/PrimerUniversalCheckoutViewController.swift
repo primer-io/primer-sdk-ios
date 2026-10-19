@@ -28,15 +28,7 @@ final class PrimerUniversalCheckoutViewController: PrimerFormViewController {
     private var cardButtonViewModel: CardButtonViewModel?
     
     override init() {
-        let isManual = PrimerSettings.current.paymentHandling == .manual
-        let viewModels = PrimerAPIConfiguration.paymentMethodConfigViewModels
-        
-        for config in viewModels.map(\.config) where isManual && config.isBackendDriven {
-            PrimerLogging.shared.logger.info(message: "\(config.type) is not supported in manual mode")
-        }
-        
-        paymentMethodConfigViewModels = viewModels
-            .filter { !(isManual && $0.config.isBackendDriven) }
+        paymentMethodConfigViewModels = PrimerAPIConfiguration.paymentMethodConfigViewModels
         super.init()
     }
 

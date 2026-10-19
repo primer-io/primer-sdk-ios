@@ -12,6 +12,7 @@ extension SDKDevice {
     init() {
         let device = Device(uniqueDeviceIdentifier: Device.deviceIdentifier)
         self.init(
+            platform: "IOS",
             type: UIDevice.deviceTypeName,
             make: "Apple",
             model: device.modelName,

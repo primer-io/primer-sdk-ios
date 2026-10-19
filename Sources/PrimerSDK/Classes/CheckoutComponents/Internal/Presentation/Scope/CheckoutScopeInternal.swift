@@ -15,6 +15,8 @@ protocol CheckoutScopeInternal: PrimerCheckoutScope {
   var checkoutNavigator: CheckoutNavigator { get }
 
   var navigationStateStream: AsyncStream<CheckoutNavigationState> { get }
+  /// True while the merchant's `onBeforePaymentCreate` handler has not answered.
+  var isAwaitingPaymentDecisionStream: AsyncStream<Bool> { get }
   var currentNavigationState: CheckoutNavigationState { get }
   var currentState: PrimerCheckoutState { get }
 

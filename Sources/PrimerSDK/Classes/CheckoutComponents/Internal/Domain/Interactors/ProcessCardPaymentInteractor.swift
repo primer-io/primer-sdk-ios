@@ -14,7 +14,10 @@ struct CardPaymentData {
   let expiryMonth: String
   let expiryYear: String
   let cardholderName: String
+  /// The network the shopper picked, sent with the card as its preferred network.
   let selectedNetwork: CardNetwork?
+  /// The network the card form shows, the pick or the default; the surcharge follows it.
+  let surchargeNetwork: CardNetwork?
 }
 
 protocol ProcessCardPaymentInteractor {
@@ -39,7 +42,8 @@ final class ProcessCardPaymentInteractorImpl: ProcessCardPaymentInteractor, LogR
         expiryMonth: cardData.expiryMonth,
         expiryYear: cardData.expiryYear,
         cardholderName: cardData.cardholderName,
-        selectedNetwork: cardData.selectedNetwork
+        selectedNetwork: cardData.selectedNetwork,
+        surchargeNetwork: cardData.surchargeNetwork
       )
 
       let duration = (CFAbsoluteTimeGetCurrent() - startTime) * 1000

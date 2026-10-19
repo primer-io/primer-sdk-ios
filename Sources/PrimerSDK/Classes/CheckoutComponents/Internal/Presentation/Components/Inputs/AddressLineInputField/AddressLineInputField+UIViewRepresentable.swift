@@ -173,6 +173,7 @@ struct AddressLineTextField: UIViewRepresentable, LogReporter {
 
       scope?.updateValidationStateIfNeeded(for: inputType, isValid: isValid)
 
+      textField.applyPrimerEdit(newText, caretOffset: range.location + string.utf16.count)
       return false
     }
 

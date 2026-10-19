@@ -1,7 +1,7 @@
 //
 //  PrimerStepOrchestrator.swift
 //
-//  Copyright © 2026 Primer API Ltd. All rights reserved.
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
@@ -68,13 +68,18 @@ final class PrimerStepOrchestrator: StepOrchestrating {
     }
 
     private func handleResponse(_ response: StateProcessorResponse, rawSchema: String) async throws {
-        if let error = response.error {
-            throw error
-        } else if let action = response.action {
+        if let error = response.error { throw error }
+        
+        if let layer = response.renderStack?.last {
+            let result = try await registry.resolve("ui.render", data: layer.processedUI)
+            if result.outcome != .success { logger.error("Error: \(layer.stepId): \(result.outcome.rawValue)") }
+        }
+        
+        if let action = response.action {
             try await handleAction(action, rawSchema: rawSchema)
         } else if let outcome = response.terminal?.outcome {
             try handleOutcome(outcome)
-        } else {
+        } else if response.renderStack?.isEmpty != false {
             logger.info("Step settled without an action or terminal — waiting on the instruction loop.")
         }
     }

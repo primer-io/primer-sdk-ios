@@ -42,7 +42,7 @@ final class DefaultCheckoutScopeBehaviorTests: XCTestCase {
         )
     }
 
-    /// This class registers no container, so setup fails and sets `.failure`. Waiting for it keeps the stream tests free of that race.
+    /// This class registers no container, so setup fails and sets `.failure`. Waiting for it keeps the state tests free of that race.
     private func makeSettledSut() async throws -> DefaultCheckoutScope {
         let sut = makeSut(settings: PrimerSettings(uiOptions: PrimerUIOptions(isInitScreenEnabled: false)))
         _ = try await awaitValue(sut.navigationStateStream, matching: {
@@ -85,7 +85,7 @@ final class DefaultCheckoutScopeBehaviorTests: XCTestCase {
 
     func test_handlePaymentSuccess_updatesStateToSuccess() async throws {
         // Given
-        sut = makeSut()
+        sut = try await makeSettledSut()
         let result = makePaymentResult()
 
         // When
@@ -189,7 +189,7 @@ final class DefaultCheckoutScopeBehaviorTests: XCTestCase {
 
     func test_onDismiss_setsStateToDismissed() async throws {
         // Given
-        sut = makeSut()
+        sut = try await makeSettledSut()
 
         // When
         sut.onDismiss()
@@ -736,6 +736,107 @@ final class DefaultCheckoutScopeBehaviorTests: XCTestCase {
 
     // MARK: - invokeBeforePaymentCreate Tests
 
+    func test_invokeBeforePaymentCreate_reportsTheWaitUntilTheMerchantAnswers() async throws {
+        sut = makeSut()
+        var decide: ((PrimerPaymentCreationDecision) -> Void)?
+        sut.onBeforePaymentCreate = { _, decisionHandler in decide = decisionHandler }
+        var reported: [Bool] = []
+        let watcher = Task { for await isAwaiting in sut.isAwaitingPaymentDecisionStream { reported.append(isAwaiting) } }
+        defer { watcher.cancel() }
+
+        let gate = Task { try await sut.invokeBeforePaymentCreate(paymentMethodType: TestData.PaymentMethodTypes.card) }
+        try await waitUntil { decide != nil && reported.last == true }
+        XCTAssertEqual(reported.last, true)
+
+        decide?(.continuePaymentCreation())
+        try await gate.value
+        try await waitUntil { reported.last == false }
+        XCTAssertEqual(reported.last, false)
+    }
+
+    func test_invokeBeforePaymentCreate_checkoutClosedWhileTheMerchantDecides_startsNoPayment() async throws {
+        sut = makeSut()
+        var decide: ((PrimerPaymentCreationDecision) -> Void)?
+        sut.onBeforePaymentCreate = { _, decisionHandler in decide = decisionHandler }
+        let gate = Task { try await sut.invokeBeforePaymentCreate(paymentMethodType: TestData.PaymentMethodTypes.card) }
+        try await waitUntil { decide != nil }
+
+        sut.onDismiss()
+        decide?(.continuePaymentCreation())
+
+        do {
+            try await gate.value
+            XCTFail("Expected the payment not to start")
+        } catch PrimerError.cancelled {}
+    }
+
+    func test_invokeBeforePaymentCreate_merchantSlowToAnswer_logsAWarning() async throws {
+        let spy = installWarningSpy()
+        sut = makeSut()
+        sut.paymentDecisionWarningDelay = 10_000_000
+        var decide: ((PrimerPaymentCreationDecision) -> Void)?
+        sut.onBeforePaymentCreate = { _, decisionHandler in decide = decisionHandler }
+        let gate = Task { try await sut.invokeBeforePaymentCreate(paymentMethodType: TestData.PaymentMethodTypes.card) }
+
+        try await waitUntil { spy.gateWarnings == 1 }
+
+        XCTAssertEqual(spy.gateWarnings, 1)
+        decide?(.continuePaymentCreation())
+        try await gate.value
+    }
+
+    func test_invokeBeforePaymentCreate_merchantAnswersInTime_logsNoWarning() async throws {
+        let spy = installWarningSpy()
+        sut = makeSut()
+        sut.paymentDecisionWarningDelay = 100_000_000
+        sut.onBeforePaymentCreate = { _, decisionHandler in decisionHandler(.continuePaymentCreation()) }
+
+        try await sut.invokeBeforePaymentCreate(paymentMethodType: TestData.PaymentMethodTypes.card)
+        try await Task.sleep(nanoseconds: 300_000_000)
+
+        XCTAssertEqual(spy.gateWarnings, 0)
+    }
+
+    private func installWarningSpy() -> GateWarningSpy {
+        let spy = GateWarningSpy()
+        let previous = PrimerLogging.shared.logger
+        PrimerLogging.shared.logger = spy
+        addTeardownBlock { PrimerLogging.shared.logger = previous }
+        return spy
+    }
+
+    func test_cancelActivePaymentMethod_whileTheMerchantDecides_keepsTheScreen() async throws {
+        sut = makeSut()
+        var decide: ((PrimerPaymentCreationDecision) -> Void)?
+        sut.onBeforePaymentCreate = { _, decisionHandler in decide = decisionHandler }
+        sut.updateNavigationState(.failure(PrimerError.invalidValue(key: "test", value: nil, reason: nil)))
+        let gate = Task { try await sut.invokeBeforePaymentCreate(paymentMethodType: TestData.PaymentMethodTypes.card) }
+        try await waitUntil { decide != nil }
+
+        // The error screen's "Choose other payment method" during a retry's gate.
+        sut.cancelActivePaymentMethod(returnToSelection: true)
+
+        XCTAssertNotEqual(sut.navigationState, .paymentMethodSelection)
+        decide?(.abortPaymentCreation())
+        _ = try? await gate.value
+    }
+
+    func test_updateNavigationState_afterTheCheckoutClosed_keepsItClosed() {
+        sut = makeSut()
+        sut.onDismiss()
+
+        sut.updateNavigationState(.processing)
+
+        XCTAssertEqual(sut.navigationState, .dismissed)
+    }
+
+    private func waitUntil(_ condition: () -> Bool) async throws {
+        let deadline = Date().addingTimeInterval(1)
+        while !condition(), Date() < deadline {
+            try await Task.sleep(nanoseconds: 10_000_000)
+        }
+    }
+
     func test_invokeBeforePaymentCreate_noCallback_returnsImmediately() async throws {
         // Given
         sut = makeSut()
@@ -1022,5 +1123,14 @@ final class DefaultCheckoutScopeReloadTests: XCTestCase {
         defer { SDKSessionHelper.tearDown() }
 
         XCTAssertEqual(sut.navigationState, .paymentMethod(PrimerPaymentMethodType.paymentCard.rawValue))
+    }
+}
+
+private final class GateWarningSpy: PrimerLogger {
+    var logLevel: LogLevel = .warning
+    private(set) var gateWarnings = 0
+
+    func log(level: LogLevel, message: String, userInfo: Encodable?, metadata: PrimerLogMetadata) {
+        if level == .warning, message.contains("onBeforePaymentCreate") { gateWarnings += 1 }
     }
 }

@@ -237,7 +237,7 @@ extension Response.Body {
         let assetsUrl: String?
         let env: PrimerEnvironment?
         var clientSession: ClientSession.APIResponse?
-        let paymentMethods: [PrimerPaymentMethod]?
+        var paymentMethods: [PrimerPaymentMethod]?
         let primerAccountId: String?
         let keys: ThreeDS.Keys?
         var checkoutModules: [Response.Body.Configuration.CheckoutModule]?

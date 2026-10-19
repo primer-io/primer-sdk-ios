@@ -4,9 +4,9 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import UIKit
 import PrimerSDK
 import SafariServices
+import UIKit
 
 class TestHelper {
 
@@ -66,6 +66,8 @@ class TestHelper {
             return
         }
 
+        // A link that launches the app arrives before the screen has loaded its outlets.
+        vc.loadViewIfNeeded()
         vc.clientTokenTextField.text = token
     }
 }

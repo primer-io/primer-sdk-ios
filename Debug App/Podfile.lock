@@ -40,42 +40,42 @@ PODS:
   - IQTextView (1.0.5):
     - IQKeyboardToolbar/Placeholderable
   - Primer3DS (2.8.0)
-  - PrimerBDCCore (3.0.0-beta.6):
-    - PrimerBDCEngine (= 3.0.0-beta.6)
-    - PrimerFoundation (= 3.0.0-beta.6)
-    - PrimerStepResolver (= 3.0.0-beta.6)
-  - PrimerBDCEngine (3.0.0-beta.6):
-    - PrimerFoundation (= 3.0.0-beta.6)
-    - PrimerStepResolver (= 3.0.0-beta.6)
-  - PrimerCore (3.0.0-beta.6):
+  - PrimerBDCCore (3.0.0-beta.7):
+    - PrimerBDCEngine (= 3.0.0-beta.7)
+    - PrimerFoundation (= 3.0.0-beta.7)
+    - PrimerStepResolver (= 3.0.0-beta.7)
+  - PrimerBDCEngine (3.0.0-beta.7):
+    - PrimerFoundation (= 3.0.0-beta.7)
+    - PrimerStepResolver (= 3.0.0-beta.7)
+  - PrimerCore (3.0.0-beta.7):
     - Primer3DS
-    - PrimerFoundation (= 3.0.0-beta.6)
-    - PrimerResources (= 3.0.0-beta.6)
-  - PrimerFoundation (3.0.0-beta.6)
+    - PrimerFoundation (= 3.0.0-beta.7)
+    - PrimerResources (= 3.0.0-beta.7)
+  - PrimerFoundation (3.0.0-beta.7)
   - PrimerIPay88MYSDK (0.1.7)
   - PrimerKlarnaSDK (1.4.0)
-  - PrimerNetworking (3.0.0-beta.6):
-    - PrimerFoundation (= 3.0.0-beta.6)
+  - PrimerNetworking (3.0.0-beta.7):
+    - PrimerFoundation (= 3.0.0-beta.7)
   - PrimerNolPaySDK (1.0.1)
-  - PrimerResources (3.0.0-beta.6)
-  - PrimerSDK (3.0.0-beta.6):
-    - PrimerSDK/Core (= 3.0.0-beta.6)
-  - PrimerSDK/Core (3.0.0-beta.6):
-    - PrimerBDCCore (= 3.0.0-beta.6)
-    - PrimerBDCEngine (= 3.0.0-beta.6)
-    - PrimerCore (= 3.0.0-beta.6)
-    - PrimerFoundation (= 3.0.0-beta.6)
-    - PrimerNetworking (= 3.0.0-beta.6)
-    - PrimerResources (= 3.0.0-beta.6)
-    - PrimerStepResolver (= 3.0.0-beta.6)
-    - PrimerUI (= 3.0.0-beta.6)
-  - PrimerStepResolver (3.0.0-beta.6):
-    - PrimerFoundation (= 3.0.0-beta.6)
+  - PrimerResources (3.0.0-beta.7)
+  - PrimerSDK (3.0.0-beta.7):
+    - PrimerSDK/Core (= 3.0.0-beta.7)
+  - PrimerSDK/Core (3.0.0-beta.7):
+    - PrimerBDCCore (= 3.0.0-beta.7)
+    - PrimerBDCEngine (= 3.0.0-beta.7)
+    - PrimerCore (= 3.0.0-beta.7)
+    - PrimerFoundation (= 3.0.0-beta.7)
+    - PrimerNetworking (= 3.0.0-beta.7)
+    - PrimerResources (= 3.0.0-beta.7)
+    - PrimerStepResolver (= 3.0.0-beta.7)
+    - PrimerUI (= 3.0.0-beta.7)
+  - PrimerStepResolver (3.0.0-beta.7):
+    - PrimerFoundation (= 3.0.0-beta.7)
   - PrimerStripeSDK (1.0.1)
-  - PrimerUI (3.0.0-beta.6):
-    - PrimerCore (= 3.0.0-beta.6)
-    - PrimerFoundation (= 3.0.0-beta.6)
-    - PrimerResources (= 3.0.0-beta.6)
+  - PrimerUI (3.0.0-beta.7):
+    - PrimerCore (= 3.0.0-beta.7)
+    - PrimerFoundation (= 3.0.0-beta.7)
+    - PrimerResources (= 3.0.0-beta.7)
 
 DEPENDENCIES:
   - IQKeyboardManagerSwift
@@ -140,20 +140,20 @@ SPEC CHECKSUMS:
   IQTextInputViewNotification: 3b9fb27a16e7ee8958cc9092cfb07a1a9e1fd559
   IQTextView: ae13b4922f22e6f027f62c557d9f4f236b19d5c7
   Primer3DS: b8b583ef260f703180870358bc55069de74f8f51
-  PrimerBDCCore: e51f80aea1ebddc7b099817d7487f80bf92eb5b1
-  PrimerBDCEngine: 70b2007a9718f76190501ac6d2a56cab2a6a6b2f
-  PrimerCore: d7aa97c6d747019e0d420fcae5cbbb3cd297b0c0
-  PrimerFoundation: 66c3aa3489dbb0a7b9a7c2f539482fe400f2c4c8
+  PrimerBDCCore: 7c2a34f89b45547d844c2bbd0513e4b35e12ef86
+  PrimerBDCEngine: 70d918e8ee3d904c974c1c80c7628e06c5f58524
+  PrimerCore: a52670b08e78da96b473e9f2d61c7a6b1fa57ac6
+  PrimerFoundation: bea65b7b3d9f7eb9099eb14e616bec93a0fcadee
   PrimerIPay88MYSDK: 436ee0be7e2c97e4e81456ccddee20175e9e3c4d
   PrimerKlarnaSDK: 871d684b3a43d1f0f7cd5c3b19a6f3a23e581d49
-  PrimerNetworking: 17ec7745138da024acaaadad5fcd4b5562a240e3
+  PrimerNetworking: e5cd96dbf0d3873f4737477449e9a954d6922f7d
   PrimerNolPaySDK: 08b140ed39b378a0b33b4f8746544a402175c0cc
-  PrimerResources: a5becad0f2c0ea7856e2b2f255eaf6291b90d1be
-  PrimerSDK: 6bb38f4dcc7a573abbfef0a68b8bfc569c2c91ef
-  PrimerStepResolver: 9ff3a294d1f4bd0efdbeb068e759f108441fa889
+  PrimerResources: 85f908914f3fa644a4ddcb059fb392cac4ad67ae
+  PrimerSDK: eb257dde60758966f180b56e65f790f4d41f7cd3
+  PrimerStepResolver: 9e6e35130fa3fd21a6aa8b019db820dd1377764e
   PrimerStripeSDK: dce5e37d10223ee724f33d1cdeaa17235a71ddbb
-  PrimerUI: ed1bf5abf3631c6d3635b9e0295b884114fc33e5
+  PrimerUI: b8480458f7620afd2d40a172f488705efa277c00
 
-PODFILE CHECKSUM: 98d1048cba1fd1f0cc031e88ea8b9ab9519b2ae8
+PODFILE CHECKSUM: d82201fcad541a2327f8da465c34ab89132a101b
 
 COCOAPODS: 1.16.2

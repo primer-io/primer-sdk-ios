@@ -192,8 +192,21 @@ final class DefaultFormRedirectScope: PrimerFormRedirectScope, ObservableObject,
       return String(numericOnly.prefix(Constants.blikOtpLength))
 
     case .phoneNumber:
-      return numericOnly
+      return nationalNumber(from: input, digits: numericOnly)
     }
+  }
+
+  /// Submit prepends the session's dialling code, so a pasted number that carries the same one drops it here.
+  private func nationalNumber(from input: String, digits: String) -> String {
+    // Pasted text can start with a newline, an invisible direction mark or a bracket before the "+".
+    let trimmed = String(String.UnicodeScalarView(input.unicodeScalars.drop {
+      $0 != "+" && !CharacterSet.decimalDigits.contains($0)
+    }))
+    let dialDigits = (internalState.phoneField?.dialCode ?? "").filter(\.isNumber)
+    guard !dialDigits.isEmpty, trimmed.hasPrefix("+") || trimmed.hasPrefix("00") else { return digits }
+    let international = trimmed.hasPrefix("+") ? digits : String(digits.dropFirst(2))
+    guard international.hasPrefix(dialDigits), international.count > dialDigits.count else { return digits }
+    return String(international.dropFirst(dialDigits.count))
   }
 
   private func validateField(_ value: String, for fieldType: PrimerFormFieldState.FieldType) -> (isValid: Bool, error: String?) {

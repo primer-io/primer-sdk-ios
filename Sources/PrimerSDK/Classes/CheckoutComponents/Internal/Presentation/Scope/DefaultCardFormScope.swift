@@ -125,6 +125,7 @@ final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, 
           preferredNetwork = effective
           // Show the surcharge for the network actually dispatched (the user's pin, or the
           // auto-defaulted first network), so the displayed amount matches what the backend charges.
+          // Only a pin, while it is the network shown, goes out as the preferred network (prepareCardPaymentData).
           updateSurchargeAmount(for: effective)
         } else {
           structuredState.selectedNetwork = nil
@@ -345,19 +346,20 @@ final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, 
   func start() {}
 
   func submit() {
-    guard !structuredState.isLoading else { return }
     Task { [self] in
       await performSubmit()
     }
   }
 
+  // A running payment cannot be stopped, so leaving the form would only hide it, as in the Drop-in.
   func onBack() {
-    if presentationContext.shouldShowBackButton {
+    if presentationContext.shouldShowBackButton, !structuredState.isLoading {
       checkoutScope?.checkoutNavigator.navigateBack()
     }
   }
 
   func cancel() {
+    guard !structuredState.isLoading else { return }
     networkDetectionTask?.cancel()
     networkDetectionTask = nil
     binDataTask?.cancel()
@@ -402,6 +404,8 @@ final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, 
   }
 
   func performSubmit() async {
+    // Checked and set before any await, so a second tap or retry cannot start another payment.
+    guard !structuredState.isLoading else { return }
     structuredState.isLoading = true
 
     await analyticsInteractor?.trackEvent(
@@ -448,7 +452,8 @@ final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, 
       expiryMonth: expiryMonth,
       expiryYear: fullYear,
       cardholderName: structuredState.data[.cardholderName],
-      selectedNetwork: preferredNetwork
+      selectedNetwork: userSelectedNetwork == preferredNetwork ? userSelectedNetwork : nil,
+      surchargeNetwork: preferredNetwork
     )
   }
 
@@ -470,7 +475,9 @@ final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, 
   }
 
   private func processCardPayment(cardData: CardPaymentData) async throws -> PaymentResult {
-    try await processCardPaymentInteractor.execute(cardData: cardData)
+    // A checkout that went away during the merchant gate starts no payment, as in the Drop-in.
+    guard checkoutScope != nil else { throw PrimerError.cancelled(paymentMethodType: PrimerPaymentMethodType.paymentCard.rawValue) }
+    return try await processCardPaymentInteractor.execute(cardData: cardData)
   }
 
   private func handlePaymentError(_ error: Error) async {

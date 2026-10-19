@@ -138,6 +138,7 @@ struct StateTextField: UIViewRepresentable, LogReporter {
 
       scope.updateValidationState(\.state, isValid: isValid)
 
+      textField.applyPrimerEdit(newText, caretOffset: range.location + string.utf16.count)
       return false
     }
 

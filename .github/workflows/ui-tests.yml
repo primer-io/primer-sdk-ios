@@ -98,7 +98,7 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_KEY }}
 
-      - uses: ruby/setup-ruby@95ef2b042f9d7a56d8268cba8559e2842e2ad01b # zizmor: ignore[cache-poisoning] ruby gem cache for the build runner; not a published release artifact
+      - uses: ruby/setup-ruby@14594264cd68ce8a2345dd349bc3d138a4ef85c8 # zizmor: ignore[cache-poisoning] ruby gem cache for the build runner; not a published release artifact
         with:
           ruby-version: "3.2"
           bundler-cache: true

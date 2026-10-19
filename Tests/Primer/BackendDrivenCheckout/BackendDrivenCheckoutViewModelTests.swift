@@ -18,6 +18,8 @@ final class BackendDrivenCheckoutViewModelTests: XCTestCase {
     
     private let payment = PaymentInfo(id: "pay_1", orderId: "ord_1", status: "SUCCESS")
     private let failedPayment = PaymentInfo(id: "pay_1", orderId: "ord_1", status: "FAILED")
+    // A short wait times out on a stalled CI runner, and the late callback then fails the next test.
+    private static let callbackTimeout: TimeInterval = 10
     
     override func setUp() {
         super.setUp()
@@ -145,7 +147,7 @@ private extension BackendDrivenCheckoutViewModelTests {
     }
     
     func assertComplete(
-        timeout: TimeInterval = 5.0,
+        timeout: TimeInterval = callbackTimeout,
         file: StaticString = #file, line: UInt = #line,
         _ makeSUT: () -> BackendDrivenCheckoutViewModel
     ) {
@@ -156,7 +158,7 @@ private extension BackendDrivenCheckoutViewModelTests {
     }
     
     func collectFailures(
-        timeout: TimeInterval = 3.0,
+        timeout: TimeInterval = callbackTimeout,
         settle: TimeInterval = 0.5,
         _ makeSUT: () -> BackendDrivenCheckoutViewModel
     ) -> [Swift.Error] {
@@ -177,7 +179,7 @@ private extension BackendDrivenCheckoutViewModelTests {
 
     func assertDidFail(
         matching predicate: ((Swift.Error) -> Bool)? = nil,
-        timeout: TimeInterval = 3.0,
+        timeout: TimeInterval = callbackTimeout,
         file: StaticString = #file, line: UInt = #line,
         _ makeSUT: () -> BackendDrivenCheckoutViewModel
     ) {
@@ -227,6 +229,14 @@ private final class MockBDCInstructionProvider: ClientInstructionProvider {
     init(_ instructions: [ClientInstruction]) { self.instructions = instructions }
     
     func fetchPayInstruction() async throws -> ClientInstruction { try next() }
+
+    func fetchSetupState(setupId: String) async throws -> SetupState {
+        SetupState(instruction: .wait, nextPoll: .suspend)
+    }
+
+    func fetchSetupFlow() async throws -> SetupFlow {
+        SetupFlow(schema: .object([:]), parameters: .object([:]), setupId: "setup-1", nextPoll: .suspend)
+    }
     func fetchNextInstruction() async throws -> ClientInstruction { try next() }
     
     private func next() throws -> ClientInstruction {

@@ -63,6 +63,7 @@ public final class Primer {
         if #available(iOS 15.0, *) {
             FontRegistration.registerFonts()
         }
+        SDUITokenResolvers.register()
     }
 
     public func application(

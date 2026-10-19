@@ -55,6 +55,31 @@ public final class BackendDrivenCheckoutOrchestrator {
         }
     }
 
+    public func runSetup(
+        pciUrl: String?,
+        coreUrl: String?,
+        instructionProvider: ClientInstructionProvider
+    ) async throws {
+        let flow = try await instructionProvider.fetchSetupFlow()
+        let sdk = SDKUrls(pciUrl: pciUrl, coreUrl: coreUrl)
+        let object = InitialState(params: flow.parameters, sdk: sdk, currentAttempt: nil)
+        let initialState = try object.casted(to: CodableValue.self)
+        try await stepOrchestrator.start(rawSchema: flow.schema.jsonString, initialState: initialState)
+
+        var nextPoll = flow.nextPoll
+        while nextPoll == .interval {
+            try Task.checkCancellation()
+            let state = try await instructionProvider.fetchSetupState(setupId: flow.setupId)
+            switch state.instruction {
+            case .wait: break
+            case .setupComplete: return // TODO: hand the token to :pay
+            case let .execute(screen):
+                try await stepOrchestrator.start(rawSchema: screen.jsonString, initialState: initialState)
+            }
+            nextPoll = state.nextPoll
+        }
+    }
+
     private func resolveOutcome(_ outcome: CheckoutOutcome?, payment: PaymentInfo?) throws -> CheckoutResult {
         switch outcome {
         case .complete: return .success(payment: payment)
@@ -76,6 +101,23 @@ private struct InitialState: Encodable {
     let params: CodableValue
     let sdk: SDKUrls
     let currentAttempt: CurrentAttemptDataResponse?
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: Key.self)
+        if case let .object(entries) = params {
+            for (key, value) in entries { try container.encode(value, forKey: Key(key)) }
+        }
+        try container.encode(sdk, forKey: Key("sdk"))
+        try container.encodeIfPresent(currentAttempt, forKey: Key("currentAttempt"))
+    }
+
+    private struct Key: CodingKey {
+        let stringValue: String
+        var intValue: Int? { nil }
+        init(_ stringValue: String) { self.stringValue = stringValue }
+        init?(stringValue: String) { self.init(stringValue) }
+        init?(intValue: Int) { nil }
+    }
 }
 
 private struct SDKUrls: Encodable {

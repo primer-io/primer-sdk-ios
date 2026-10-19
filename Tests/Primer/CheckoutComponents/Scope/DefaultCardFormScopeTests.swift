@@ -251,6 +251,78 @@ final class DefaultCardFormScopeTests: XCTestCase {
         }
     }
 
+    // MARK: - Network sent at payment (only the shopper's pick)
+
+    func test_submit_coBadgedDefault_sendsNoNetwork() async throws {
+        let cardData = try await submitCoBadgedCard(picks: [])
+        XCTAssertNil(cardData.selectedNetwork)
+        XCTAssertEqual(cardData.surchargeNetwork, .cartesBancaires)
+    }
+
+    func test_submit_afterPick_sendsPickedNetwork() async throws {
+        let cardData = try await submitCoBadgedCard(picks: [.visa])
+        XCTAssertEqual(cardData.selectedNetwork, .visa)
+        XCTAssertEqual(cardData.surchargeNetwork, .visa)
+    }
+
+    func test_submit_afterPickingDefaultBack_sendsIt() async throws {
+        let cardData = try await submitCoBadgedCard(picks: [.visa, .cartesBancaires])
+        XCTAssertEqual(cardData.selectedNetwork, .cartesBancaires)
+        XCTAssertEqual(cardData.surchargeNetwork, .cartesBancaires)
+    }
+
+    func test_submit_pickNoLongerShown_sendsNoNetwork() async throws {
+        let container = try await createTestContainer()
+        try await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let mockPaymentInteractor = MockProcessCardPaymentInteractor()
+            let scope = createCardFormScope(checkoutScope: checkoutScope, processCardPaymentInteractor: mockPaymentInteractor)
+
+            // A pick made before detection, then the keystroke guess shows another network
+            scope.updateSelectedCardNetwork(CardNetwork.visa.rawValue)
+            scope.updateCardNumber(TestData.CardNumbers.validMastercard)
+            scope.autoSelectDetectedNetwork(CardNetwork.masterCard.rawValue)
+            scope.updateExpiryDate("12/30")
+            await scope.performSubmit()
+
+            let cardData = try XCTUnwrap(mockPaymentInteractor.lastCardData)
+            XCTAssertNil(cardData.selectedNetwork)
+            XCTAssertEqual(cardData.surchargeNetwork, .masterCard)
+        }
+    }
+
+    /// Detects Cartes Bancaires + Visa, Cartes Bancaires shown by default after a keystroke guess of Visa,
+    /// applies the shopper's picks, then pays.
+    private func submitCoBadgedCard(picks: [CardNetwork]) async throws -> CardPaymentData {
+        let container = try await createTestContainer()
+        return try await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let mockPaymentInteractor = MockProcessCardPaymentInteractor()
+            let mockDetection = MockCardNetworkDetectionInteractor()
+            let scope = createCardFormScope(
+                checkoutScope: checkoutScope,
+                processCardPaymentInteractor: mockPaymentInteractor,
+                cardNetworkDetectionInteractor: mockDetection
+            )
+
+            scope.updateCardNumber(TestData.CardNumbers.coBadgedCartesBancairesVisa)
+            scope.autoSelectDetectedNetwork(CardNetwork.visa.rawValue)
+            mockDetection.emitNetworks([.cartesBancaires, .visa])
+            try await withTimeout(2.0) {
+                while scope.structuredState.availableNetworks.count < 2 { await Task.yield() }
+            }
+            XCTAssertEqual(scope.structuredState.selectedNetwork?.network, .cartesBancaires)
+            for pick in picks {
+                scope.updateSelectedCardNetwork(pick.rawValue)
+            }
+
+            scope.updateExpiryDate("12/30")
+            await scope.performSubmit()
+
+            return try XCTUnwrap(mockPaymentInteractor.lastCardData)
+        }
+    }
+
     func test_onSubmit_callsSubmit() async throws {
         let container = try await createTestContainer()
 
@@ -996,6 +1068,27 @@ final class DefaultCardFormScopeTests: XCTestCase {
         }
     }
 
+    func test_performSubmit_againWhileTheMerchantDecides_asksTheMerchantOnce() async throws {
+        let container = try await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            var decisions: [(PrimerPaymentCreationDecision) -> Void] = []
+            checkoutScope.onBeforePaymentCreate = { _, decisionHandler in decisions.append(decisionHandler) }
+            let scope = createCardFormScope(checkoutScope: checkoutScope)
+
+            // The Pay button calls performSubmit directly, so a double tap reaches it twice.
+            let first = Task { await scope.performSubmit() }
+            let second = Task { await scope.performSubmit() }
+            for _ in 0..<20 { await Task.yield() }
+
+            XCTAssertEqual(decisions.count, 1)
+            decisions.forEach { $0(.abortPaymentCreation()) }
+            await first.value
+            await second.value
+        }
+    }
+
     // MARK: - cancel Tests
 
     func test_cancel_fromSelection_returnsToSelectionNotDismissed() async throws {
@@ -1014,7 +1107,39 @@ final class DefaultCardFormScopeTests: XCTestCase {
         }
     }
 
+    func test_cancel_whileAPaymentRuns_keepsTheForm() async throws {
+        let container = try await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createCardFormScope(checkoutScope: checkoutScope)
+            checkoutScope.updateNavigationState(.paymentMethod(PrimerPaymentMethodType.paymentCard.rawValue))
+            scope.structuredState.isLoading = true
+
+            scope.cancel()
+
+            XCTAssertEqual(checkoutScope.currentNavigationState, .paymentMethod(PrimerPaymentMethodType.paymentCard.rawValue))
+        }
+    }
+
     // MARK: - onBack Tests
+
+    func test_onBack_whileAPaymentRuns_keepsTheForm() async throws {
+        let container = try await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createCardFormScope(checkoutScope: checkoutScope)
+            let coordinator = checkoutScope.checkoutNavigator.checkoutCoordinator
+            coordinator.navigate(to: .paymentMethodSelection)
+            coordinator.navigate(to: .vaultedPaymentMethods)
+            scope.structuredState.isLoading = true
+
+            scope.onBack()
+
+            XCTAssertEqual(coordinator.navigationStack.count, 2)
+        }
+    }
 
     func test_onBack_fromPaymentSelection_navigatesBack() async throws {
         let container = try await createTestContainer()

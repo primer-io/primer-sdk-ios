@@ -225,6 +225,34 @@ final class ClientSessionUpdateBeforePaymentTests: XCTestCase {
         XCTAssertFalse(mockClientSessionActions.dispatchActionsCalls.isEmpty)
     }
 
+    func test_processCardPayment_withoutPick_chargesTheShownNetworkAndSendsNone() async {
+        // Given: no pick; the card form shows Cartes Bancaires
+        mockRawDataManager.autoTriggerValidation = true
+
+        let task = Task { [self] in
+            _ = try? await sut.processCardPayment(
+                cardNumber: TestData.CardNumbers.coBadgedCartesBancairesVisa,
+                cvv: "123",
+                expiryMonth: "12",
+                expiryYear: "30",
+                cardholderName: "Test",
+                selectedNetwork: nil,
+                surchargeNetwork: .cartesBancaires
+            )
+        }
+
+        let predicate = NSPredicate { _, _ in
+            !self.mockClientSessionActions.dispatchActionsCalls.isEmpty
+        }
+        await fulfillment(of: [expectation(for: predicate, evaluatedWith: nil)], timeout: 3.0)
+        task.cancel()
+
+        // Then: the surcharge follows the shown network, and no network goes out with the card
+        let binData = mockClientSessionActions.lastDispatchActionsCall?.first?.params?["binData"] as? [String: Any]
+        XCTAssertEqual(binData?["network"] as? String, "CARTES_BANCAIRES")
+        XCTAssertNil((mockRawDataManager.rawData as? PrimerCardData)?.cardNetwork)
+    }
+
     func test_processCardPayment_whenClientSessionUpdateFails_throwsError() async {
         // Given
         mockRawDataManager.autoTriggerValidation = true

@@ -49,6 +49,8 @@ final class PrimerUIManager: PrimerUIManaging {
         let isHeadlessCheckoutDelegateImplemented = PrimerHeadlessUniversalCheckout.current.delegate != nil
         let apiConfigurationModule = PrimerUIManager.apiConfigurationModule ?? PrimerAPIConfigurationModule()
 
+        await BDCEngineProvider.warmUp(clientToken: clientToken)
+
         try await apiConfigurationModule.setupSession(
             forClientToken: clientToken,
             requestDisplayMetadata: true,
@@ -56,7 +58,7 @@ final class PrimerUIManager: PrimerUIManaging {
             requestVaultedPaymentMethods: !isHeadlessCheckoutDelegateImplemented
         )
 
-        await BDCEngineProvider.warmUpIfNeeded()
+        await ClientRequirements.checkConfiguration()
 
         try PrimerUIManager.validatePaymentUIPresentation()
     }
