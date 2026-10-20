@@ -54,8 +54,8 @@ final class PrimerStepOrchestratorTests: XCTestCase {
         engine.startResult = [
             "newState": [:],
             "renderStack": [
-                ["stepId": "base", "presentation": "fullscreen", "processedUI": ["type": "Text"]],
-                ["stepId": "top", "presentation": "sheet", "processedUI": ["type": "Column"]],
+                ["stepId": "base", "processedUI": ["type": "Text"]],
+                ["stepId": "top", "processedUI": ["type": "Column"]],
             ]
         ]
 
@@ -69,7 +69,7 @@ final class PrimerStepOrchestratorTests: XCTestCase {
         let engine = MockBDCEngine()
         engine.startResult = [
             "newState": [:],
-            "renderStack": [["stepId": "top", "presentation": "fullscreen", "processedUI": ["type": "Text"]]]
+            "renderStack": [["stepId": "top", "processedUI": ["type": "Text"]]]
         ]
 
         let sut = PrimerStepOrchestrator(engine: engine, context: stubContext, registry: PrimerStepResolverRegistry())

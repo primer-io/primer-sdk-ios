@@ -96,6 +96,20 @@ final class BackendDrivenCheckoutSetupEndpointTests: XCTestCase {
         XCTAssertNil(body["paymentMethodType"])
     }
 
+    func testSetupPostsTheFlowAndTheConfigToStart() throws {
+        let json = """
+        { "id": "config-1", "implementationType": "BACKEND_DRIVEN", "type": "KLARNA", "name": "Klarna", "entry": "onSelect" }
+        """
+        let paymentMethod = try JSONDecoder().decode(PrimerPaymentMethod.self, from: Data(json.utf8))
+        let setup = BackendDrivenCheckoutEndpoint.setup(paymentMethod: paymentMethod)
+
+        let body = try XCTUnwrap(setup.body.flatMap { try JSONSerialization.jsonObject(with: $0) as? [String: Any] })
+        XCTAssertEqual(body["flow"] as? String, "CHECKOUT")
+        XCTAssertEqual(body["paymentMethodConfigId"] as? String, "config-1")
+        XCTAssertNotNil(body["clientInfo"])
+        XCTAssertNil(body["paymentMethodType"])
+    }
+
     func testPollTargetsTheSetupCreatedByTheCollection() throws {
         let paymentMethod = try decodePaymentMethod(entry: "\"onSelect\"")
         let setup = BackendDrivenCheckoutEndpoint.setup(paymentMethod: paymentMethod)

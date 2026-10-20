@@ -58,7 +58,11 @@ extension BackendDrivenCheckoutEndpoint: Endpoint {
         case .manifest, .expandClientSession, .pollSetup: return nil
         case let .payWithToken(paymentInstrumentTokenId):
             return try? TokenPayBody(paymentInstrumentTokenId: paymentInstrumentTokenId).data()
-        case .pay, .setup:
+        case let .setup(paymentMethod: method):
+            // TODO: Don't hardcode the flow
+            let body = SetupBody(flow: .checkout, paymentMethodConfigId: method.id)
+            return try? body.data()
+        case .pay:
             guard let paymentMethod, let options = paymentMethod.merchantOptions else { return nil }
             let body = PayBody(
                 paymentMethodConfigId: paymentMethod.id,

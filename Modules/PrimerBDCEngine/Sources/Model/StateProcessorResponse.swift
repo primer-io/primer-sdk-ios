@@ -20,7 +20,6 @@ public struct StateProcessorResponse: Decodable {
 @_spi(PrimerInternal)
 public struct RenderLayer: Decodable {
     public let stepId: String
-    public let presentation: String
     public let processedUI: CodableValue
 }
 
