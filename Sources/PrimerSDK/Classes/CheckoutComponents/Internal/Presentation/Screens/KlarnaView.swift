@@ -44,7 +44,7 @@ struct KlarnaView: View, LogReporter {
   var body: some View {
     VStack(spacing: 0) {
       makeHeaderSection()
-        .padding(.bottom, PrimerSpacing.xlarge(tokens: tokens))
+        .padding(.bottom, PrimerSpacing.xxlarge(tokens: tokens))
 
       ScrollView {
         makeContentSection()
