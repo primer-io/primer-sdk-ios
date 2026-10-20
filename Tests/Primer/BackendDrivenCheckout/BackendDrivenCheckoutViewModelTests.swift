@@ -230,6 +230,8 @@ private final class MockBDCInstructionProvider: ClientInstructionProvider {
     
     func fetchPayInstruction() async throws -> ClientInstruction { try next() }
 
+    func fetchPayInstruction(paymentInstrumentTokenId: String) async throws -> ClientInstruction { try next() }
+
     func fetchSetupState(setupId: String) async throws -> SetupState {
         SetupState(instruction: .wait, nextPoll: .suspend)
     }

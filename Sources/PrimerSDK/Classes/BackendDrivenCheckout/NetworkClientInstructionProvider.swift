@@ -13,12 +13,19 @@ struct NetworkClientInstructionProvider: ClientInstructionProvider {
     let paymentMethod: PrimerPaymentMethod
 
     func fetchPayInstruction() async throws -> ClientInstruction {
-        let response: ClientSessionInstructionResponse = try await request(.pay(paymentMethod: paymentMethod))
+        let endpoint: BackendDrivenCheckoutEndpoint = .pay(paymentMethod: paymentMethod)
+        let response: ClientSessionInstructionResponse = try await request(endpoint)
+        return response.clientInstruction.toClientInstruction(response: response)
+    }
+
+    func fetchPayInstruction(paymentInstrumentTokenId: String) async throws -> ClientInstruction {
+        let response: ClientSessionInstructionResponse = try await request(.payWithToken(paymentInstrumentTokenId: paymentInstrumentTokenId))
         return response.clientInstruction.toClientInstruction(response: response)
     }
 
     func fetchSetupFlow() async throws -> SetupFlow {
-        let response: ClientInstructionSetupResponse = try await request(.setup(paymentMethod: paymentMethod))
+        let endpoint: BackendDrivenCheckoutEndpoint = .setup(paymentMethod: paymentMethod)
+        let response: ClientInstructionSetupResponse = try await request(endpoint)
         return SetupFlow(
             schema: response.instruction.payload.schema,
             parameters: response.instruction.payload.parameters,
@@ -28,8 +35,10 @@ struct NetworkClientInstructionProvider: ClientInstructionProvider {
     }
 
     func fetchSetupState(setupId: String) async throws -> SetupState {
-        let response: ClientInstructionSetupStateResponse = try await request(.pollSetup(setupId: setupId))
-        return SetupState(instruction: try response.toSetupInstruction(), nextPoll: response.instruction.nextPoll ?? .suspend)
+        let endpoint: BackendDrivenCheckoutEndpoint = .pollSetup(setupId: setupId)
+        let response: ClientInstructionSetupStateResponse = try await request(endpoint)
+        let nextPoll = response.instruction.nextPoll ?? .suspend
+        return SetupState(instruction: try response.toSetupInstruction(), nextPoll: nextPoll)
     }
 
     func fetchNextInstruction() async throws -> ClientInstruction {
@@ -88,7 +97,7 @@ private extension ClientInstructionSetupStateResponse {
             guard let schema = instruction.payload?.schema else { throw SetupStateError.missingScreen }
             return .execute(screen: schema)
         case .setupComplete:
-            guard let token = instruction.payload?.paymentInstrumentToken else { throw SetupStateError.missingToken }
+            guard let token = instruction.payload?.paymentInstrumentToken?.token else { throw SetupStateError.missingToken }
             return .setupComplete(token: token)
         }
     }

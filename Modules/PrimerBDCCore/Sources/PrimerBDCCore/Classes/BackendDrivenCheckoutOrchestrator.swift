@@ -35,7 +35,27 @@ public final class BackendDrivenCheckoutOrchestrator {
         coreUrl: String?,
         instructionProvider: ClientInstructionProvider
     ) async throws -> CheckoutResult {
-        var instruction = try await instructionProvider.fetchPayInstruction()
+        let instruction = try await instructionProvider.fetchPayInstruction()
+        return try await follow(instruction, pciUrl: pciUrl, coreUrl: coreUrl, instructionProvider: instructionProvider)
+    }
+
+    public func pay(
+        paymentInstrumentTokenId: String,
+        pciUrl: String?,
+        coreUrl: String?,
+        instructionProvider: ClientInstructionProvider
+    ) async throws -> CheckoutResult {
+        let instruction = try await instructionProvider.fetchPayInstruction(paymentInstrumentTokenId: paymentInstrumentTokenId)
+        return try await follow(instruction, pciUrl: pciUrl, coreUrl: coreUrl, instructionProvider: instructionProvider)
+    }
+
+    private func follow(
+        _ firstInstruction: ClientInstruction,
+        pciUrl: String?,
+        coreUrl: String?,
+        instructionProvider: ClientInstructionProvider
+    ) async throws -> CheckoutResult {
+        var instruction = firstInstruction
         while true {
             try Task.checkCancellation()
             switch instruction {
@@ -55,11 +75,12 @@ public final class BackendDrivenCheckoutOrchestrator {
         }
     }
 
+    @discardableResult
     public func runSetup(
         pciUrl: String?,
         coreUrl: String?,
         instructionProvider: ClientInstructionProvider
-    ) async throws {
+    ) async throws -> String? {
         let flow = try await instructionProvider.fetchSetupFlow()
         let sdk = SDKUrls(pciUrl: pciUrl, coreUrl: coreUrl)
         let object = InitialState(params: flow.parameters, sdk: sdk, currentAttempt: nil)
@@ -72,12 +93,13 @@ public final class BackendDrivenCheckoutOrchestrator {
             let state = try await instructionProvider.fetchSetupState(setupId: flow.setupId)
             switch state.instruction {
             case .wait: break
-            case .setupComplete: return // TODO: hand the token to :pay
+            case let .setupComplete(token): return token
             case let .execute(screen):
                 try await stepOrchestrator.start(rawSchema: screen.jsonString, initialState: initialState)
             }
             nextPoll = state.nextPoll
         }
+        return nil
     }
 
     private func resolveOutcome(_ outcome: CheckoutOutcome?, payment: PaymentInfo?) throws -> CheckoutResult {

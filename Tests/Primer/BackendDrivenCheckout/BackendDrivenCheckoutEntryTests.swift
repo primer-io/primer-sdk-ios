@@ -83,6 +83,19 @@ final class BackendDrivenCheckoutSetupEndpointTests: XCTestCase {
         )
     }
 
+    func testPayWithATokenPostsTheTokenToPay() throws {
+        let paymentMethod = try decodePaymentMethod(entry: "\"onSelect\"")
+        let pay = BackendDrivenCheckoutEndpoint.pay(paymentMethod: paymentMethod)
+        let payWithToken = BackendDrivenCheckoutEndpoint.payWithToken(paymentInstrumentTokenId: "token-1")
+
+        XCTAssertEqual(payWithToken.path, pay.path)
+        XCTAssertEqual(payWithToken.method, .post)
+        let body = try XCTUnwrap(payWithToken.body.flatMap { try JSONSerialization.jsonObject(with: $0) as? [String: Any] })
+        XCTAssertEqual(body["paymentInstrumentTokenId"] as? String, "token-1")
+        XCTAssertNotNil(body["clientInfo"])
+        XCTAssertNil(body["paymentMethodType"])
+    }
+
     func testPollTargetsTheSetupCreatedByTheCollection() throws {
         let paymentMethod = try decodePaymentMethod(entry: "\"onSelect\"")
         let setup = BackendDrivenCheckoutEndpoint.setup(paymentMethod: paymentMethod)

@@ -121,6 +121,34 @@ final class BackendDrivenCheckoutOrchestratorTests: XCTestCase {
         XCTAssertEqual(mock.startCallCount, 1)
     }
 
+    func testSetupReturnsTheTokenWhenComplete() async throws {
+        let provider = MockInstructionProvider([])
+        provider.setupFlow = SetupFlow(schema: .object([:]), parameters: .object([:]), setupId: "setup-1", nextPoll: .interval)
+        provider.setupStates = [SetupState(instruction: .setupComplete(token: "token"), nextPoll: .interval)]
+
+        let token = try await BackendDrivenCheckoutOrchestrator(stepOrchestrator: MockStepOrchestrator())
+            .runSetup(pciUrl: nil, coreUrl: nil, instructionProvider: provider)
+
+        XCTAssertEqual(token, "token")
+    }
+
+    func testSetupReturnsNoTokenWhenPollingStopsFirst() async throws {
+        let token = try await BackendDrivenCheckoutOrchestrator(stepOrchestrator: MockStepOrchestrator())
+            .runSetup(pciUrl: nil, coreUrl: nil, instructionProvider: MockInstructionProvider([]))
+
+        XCTAssertNil(token)
+    }
+
+    func testPayWithATokenFollowsInstructionsToTheEnd() async throws {
+        let provider = MockInstructionProvider([.wait(delayMilliseconds: 0), .end(outcome: .complete, payment: payment)])
+
+        let result = try await BackendDrivenCheckoutOrchestrator(stepOrchestrator: MockStepOrchestrator())
+            .pay(paymentInstrumentTokenId: "token", pciUrl: nil, coreUrl: nil, instructionProvider: provider)
+
+        XCTAssertEqual(result, .success(payment: payment))
+        XCTAssertEqual(provider.paidPaymentInstrumentTokenIds, ["token"])
+    }
+
     func testSetupStartsANewScreenOnExecute() async throws {
         let provider = MockInstructionProvider([])
         provider.setupFlow = SetupFlow(schema: .object([:]), parameters: .object([:]), setupId: "setup-1", nextPoll: .interval)

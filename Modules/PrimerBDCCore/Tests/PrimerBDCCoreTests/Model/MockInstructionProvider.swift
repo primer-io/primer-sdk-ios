@@ -19,7 +19,14 @@ final class MockInstructionProvider: ClientInstructionProvider {
 
     var setupFlow = SetupFlow(schema: .object([:]), parameters: .object([:]), setupId: "setup-1", nextPoll: .suspend)
 
+    private(set) var paidPaymentInstrumentTokenIds: [String] = []
+
     func fetchPayInstruction() async throws -> ClientInstruction { try next() }
+
+    func fetchPayInstruction(paymentInstrumentTokenId: String) async throws -> ClientInstruction {
+        paidPaymentInstrumentTokenIds.append(paymentInstrumentTokenId)
+        return try next()
+    }
 
     func fetchSetupFlow() async throws -> SetupFlow {
         fetchCount += 1

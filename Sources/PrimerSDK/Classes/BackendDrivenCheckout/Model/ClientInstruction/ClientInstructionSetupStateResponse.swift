@@ -20,7 +20,23 @@ struct ClientInstructionSetupStateResponse: Decodable {
     struct Payload: Decodable {
         let schema: CodableValue?
         let parameters: CodableValue?
-        let paymentInstrumentToken: String?
+        let paymentInstrumentToken: PaymentInstrumentToken?
+    }
+
+    struct PaymentInstrumentToken: Decodable {
+        let token: String
+
+        private enum CodingKeys: String, CodingKey {
+            case token
+        }
+
+        init(from decoder: Decoder) throws {
+            if let token = try? decoder.singleValueContainer().decode(String.self) {
+                self.token = token
+            } else {
+                token = try decoder.container(keyedBy: CodingKeys.self).decode(String.self, forKey: .token)
+            }
+        }
     }
 }
 
