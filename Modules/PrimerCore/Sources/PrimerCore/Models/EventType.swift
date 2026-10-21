@@ -72,6 +72,7 @@
             case retrySuccess                       = "RETRY_SUCCESS"
             case backendDrivenCheckoutStarted       = "BDC_FLOW_START"
             case backendDrivenClientRequirementsNotMet = "BDC_CLIENT_REQUIREMENTS_NOT_MET"
+            case backendDrivenEngineLoadFailed      = "BDC_ENGINE_LOAD_FAILED"
         }
 
         public enum TimerType: String, Codable {

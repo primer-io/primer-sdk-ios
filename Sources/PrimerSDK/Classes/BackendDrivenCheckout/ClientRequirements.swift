@@ -44,7 +44,14 @@ enum ClientRequirements {
     static func check(_ methods: [PrimerPaymentMethod]) async throws -> ClientRequirementsVerdicts {
         logger.info(message: "Client requirements: waiting for the state processor to load")
         let provider = NetworkSignedManifestProvider(token: PrimerAPIConfigurationModule.decodedJWTToken)
-        let engine = try await BDCEngineProvider.shared.engine(manifestProvider: provider)
+        let engine: any BDCEngineProtocol
+        do {
+            engine = try await BDCEngineProvider.shared.engine(manifestProvider: provider)
+        } catch {
+            let message = "BDC engine failed to load: \(error)"
+            Analytics.Service.fire(event: .message(message: message, messageType: .backendDrivenEngineLoadFailed, severity: .error))
+            throw error
+        }
         let requirements = buildRequirements(from: methods)
         let client = BDCClient(capabilities: .current, context: .generate())
         logger.info(message: "Client requirements: asking the state processor about \(methods.map(\.type))")
