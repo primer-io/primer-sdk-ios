@@ -61,7 +61,7 @@ struct ErrorScreen: View {
         }
       }
       .padding(.horizontal, PrimerSpacing.large(tokens: tokens))
-      .padding(.bottom, PrimerSpacing.xxlarge(tokens: tokens))
+      .padding(.bottom, PrimerSpacing.large(tokens: tokens))
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity)
     .background(CheckoutColors.background(tokens: tokens))

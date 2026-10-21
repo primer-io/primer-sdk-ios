@@ -78,7 +78,7 @@ struct PaymentMethodSelectionScreen: View, LogReporter {
         }
       }
       .padding(.horizontal, PrimerSpacing.large(tokens: tokens))
-      .padding(.bottom, PrimerSpacing.xlarge(tokens: tokens))
+      .padding(.bottom, PrimerSpacing.large(tokens: tokens))
     }
   }
 

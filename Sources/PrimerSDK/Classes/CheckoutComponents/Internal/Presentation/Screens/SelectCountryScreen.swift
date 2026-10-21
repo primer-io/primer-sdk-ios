@@ -176,6 +176,9 @@ struct SelectCountryScreen: View, LogReporter {
     }
     .listStyle(PlainListStyle())
     .primerClearListBackground()
+    .safeAreaInset(edge: .bottom, spacing: 0) {
+      Color.clear.frame(height: PrimerSpacing.large(tokens: tokens))
+    }
   }
 
   private func selectCountry(_ country: PrimerCountry) {
