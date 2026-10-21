@@ -172,8 +172,6 @@ final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, 
       updateAddressLine1(value)
     case .addressLine2:
       updateAddressLine2(value)
-    case .phoneNumber:
-      updatePhoneNumber(value)
     case .firstName:
       updateFirstName(value)
     case .lastName:
@@ -247,10 +245,6 @@ final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, 
 
   func updateEmail(_ email: String) {
     structuredState.data[.email] = email
-  }
-
-  func updatePhoneNumber(_ phoneNumber: String) {
-    structuredState.data[.phoneNumber] = phoneNumber
   }
 
   func updateAddressLine1(_ addressLine1: String) {
@@ -594,7 +588,6 @@ final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, 
     fields.append(.postalCode)
     if options.city != false { fields.append(.city) }
     if options.state != false { fields.append(.state) }
-    if options.phoneNumber == true { fields.append(.phoneNumber) }
 
     return fields
   }

@@ -118,11 +118,6 @@ public enum CardFormDefaults {
   public static func postalCode(_ session: PrimerCardFormSession) -> CardFieldContent {
     CardFieldContent(session: session, field: .postalCode)
   }
-
-  /// Phone number field. Renders nothing unless the configuration requires it.
-  public static func phoneNumber(_ session: PrimerCardFormSession) -> CardFieldContent {
-    CardFieldContent(session: session, field: .phoneNumber)
-  }
 }
 
 // MARK: - Concrete section views

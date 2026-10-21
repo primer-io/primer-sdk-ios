@@ -41,7 +41,6 @@ final class PrimerCardFormSessionTests: XCTestCase {
     func updateState(_ value: String) {}
     func updateAddressLine1(_ value: String) {}
     func updateAddressLine2(_ value: String) {}
-    func updatePhoneNumber(_ value: String) {}
     func updateFirstName(_ value: String) {}
     func updateLastName(_ value: String) {}
     func updateRetailOutlet(_ value: String) {}
@@ -71,7 +70,6 @@ final class PrimerCardFormSessionTests: XCTestCase {
     private(set) var lastState: String?
     private(set) var lastAddressLine1: String?
     private(set) var lastAddressLine2: String?
-    private(set) var lastPhoneNumber: String?
     private(set) var lastFirstName: String?
     private(set) var lastLastName: String?
     private(set) var lastSelectedCardNetwork: String?
@@ -100,7 +98,6 @@ final class PrimerCardFormSessionTests: XCTestCase {
     func updateState(_ value: String) { lastState = value }
     func updateAddressLine1(_ value: String) { lastAddressLine1 = value }
     func updateAddressLine2(_ value: String) { lastAddressLine2 = value }
-    func updatePhoneNumber(_ value: String) { lastPhoneNumber = value }
     func updateFirstName(_ value: String) { lastFirstName = value }
     func updateLastName(_ value: String) { lastLastName = value }
     func updateSelectedCardNetwork(_ value: String) { lastSelectedCardNetwork = value }
@@ -268,12 +265,6 @@ final class PrimerCardFormSessionTests: XCTestCase {
     let scope = TrackingFieldScope()
     PrimerCardFormSession(scope: scope).updateAddressLine2("Flat 2")
     XCTAssertEqual(scope.lastAddressLine2, "Flat 2")
-  }
-
-  func test_updatePhoneNumber_forwardsValueToFieldScope() {
-    let scope = TrackingFieldScope()
-    PrimerCardFormSession(scope: scope).updatePhoneNumber("+447700900000")
-    XCTAssertEqual(scope.lastPhoneNumber, "+447700900000")
   }
 
   func test_updateFirstName_forwardsValueToFieldScope() {

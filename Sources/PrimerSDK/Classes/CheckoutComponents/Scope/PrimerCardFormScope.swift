@@ -71,7 +71,6 @@ where State == PrimerCardFormState {
   func updateState(_ state: String)
   func updateAddressLine1(_ addressLine1: String)
   func updateAddressLine2(_ addressLine2: String)
-  func updatePhoneNumber(_ phoneNumber: String)
   func updateFirstName(_ firstName: String)
   func updateLastName(_ lastName: String)
   func updateRetailOutlet(_ retailOutlet: String)
@@ -120,8 +119,6 @@ extension PrimerCardFormScope {
       updateAddressLine1(value)
     case .addressLine2:
       updateAddressLine2(value)
-    case .phoneNumber:
-      updatePhoneNumber(value)
     case .firstName:
       updateFirstName(value)
     case .lastName:
@@ -132,7 +129,7 @@ extension PrimerCardFormScope {
       updateRetailOutlet(value)
     case .otp:
       updateOtpCode(value)
-    case .unknown, .all:
+    case .phoneNumber, .unknown, .all:
       break  // Not implemented for these special cases
     }
   }

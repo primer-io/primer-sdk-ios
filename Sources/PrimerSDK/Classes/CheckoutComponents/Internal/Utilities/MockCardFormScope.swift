@@ -160,10 +160,6 @@
       log("updateAddressLine2: \(addressLine2)")
     }
 
-    public func updatePhoneNumber(_ phoneNumber: String) {
-      log("updatePhoneNumber: \(phoneNumber)")
-    }
-
     public func updateFirstName(_ firstName: String) {
       log("updateFirstName: \(firstName)")
     }

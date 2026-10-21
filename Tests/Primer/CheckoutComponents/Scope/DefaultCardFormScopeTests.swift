@@ -516,7 +516,6 @@ final class DefaultCardFormScopeTests: XCTestCase {
             scope.updateField(.state, value: "CA")
             scope.updateField(.addressLine1, value: "123 Main St")
             scope.updateField(.addressLine2, value: "Apt 4B")
-            scope.updateField(.phoneNumber, value: "+1234567890")
             scope.updateField(.firstName, value: "John")
             scope.updateField(.lastName, value: "Doe")
             scope.updateField(.email, value: "john@example.com")
@@ -529,7 +528,6 @@ final class DefaultCardFormScopeTests: XCTestCase {
             XCTAssertEqual(scope.getFieldValue(.state), "CA")
             XCTAssertEqual(scope.getFieldValue(.addressLine1), "123 Main St")
             XCTAssertEqual(scope.getFieldValue(.addressLine2), "Apt 4B")
-            XCTAssertEqual(scope.getFieldValue(.phoneNumber), "+1234567890")
             XCTAssertEqual(scope.getFieldValue(.firstName), "John")
             XCTAssertEqual(scope.getFieldValue(.lastName), "Doe")
             XCTAssertEqual(scope.getFieldValue(.email), "john@example.com")
@@ -862,7 +860,6 @@ final class DefaultCardFormScopeTests: XCTestCase {
             scope.updateValidationState(\.firstName, isValid: true)
             scope.updateValidationState(\.lastName, isValid: true)
             scope.updateValidationState(\.email, isValid: true)
-            scope.updateValidationState(\.phoneNumber, isValid: true)
             scope.updateValidationState(\.countryCode, isValid: true)
 
             XCTAssertTrue(scope.structuredState.isValid)
@@ -1577,7 +1574,6 @@ final class DefaultCardFormScopeValidationTests: XCTestCase {
             scope.updateValidationStateIfNeeded(for: .state, isValid: true)
             scope.updateValidationStateIfNeeded(for: .postalCode, isValid: true)
             scope.updateValidationStateIfNeeded(for: .countryCode, isValid: true)
-            scope.updateValidationStateIfNeeded(for: .phoneNumber, isValid: true)
 
             XCTAssertTrue(scope.fieldValidationStates.email)
             XCTAssertTrue(scope.fieldValidationStates.firstName)
@@ -1588,7 +1584,6 @@ final class DefaultCardFormScopeValidationTests: XCTestCase {
             XCTAssertTrue(scope.fieldValidationStates.state)
             XCTAssertTrue(scope.fieldValidationStates.postalCode)
             XCTAssertTrue(scope.fieldValidationStates.countryCode)
-            XCTAssertTrue(scope.fieldValidationStates.phoneNumber)
         }
     }
 
@@ -1634,7 +1629,6 @@ final class FieldValidationStatesTests: XCTestCase {
         XCTAssertFalse(states.firstName)
         XCTAssertFalse(states.lastName)
         XCTAssertFalse(states.email)
-        XCTAssertFalse(states.phoneNumber)
     }
 
     func test_equatable_sameValues_areEqual() {
