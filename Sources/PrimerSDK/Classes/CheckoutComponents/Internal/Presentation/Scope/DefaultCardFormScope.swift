@@ -580,14 +580,14 @@ final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, 
 
     var fields: [PrimerInputElementType] = []
 
-    if options.countryCode != false { fields.append(.countryCode) }
-    if options.firstName != false { fields.append(.firstName) }
-    if options.lastName != false { fields.append(.lastName) }
-    if options.addressLine1 != false { fields.append(.addressLine1) }
-    if options.addressLine2 != false { fields.append(.addressLine2) }
+    if options.countryCode == true { fields.append(.countryCode) }
+    if options.firstName == true { fields.append(.firstName) }
+    if options.lastName == true { fields.append(.lastName) }
+    if options.addressLine1 == true { fields.append(.addressLine1) }
+    if options.addressLine2 == true { fields.append(.addressLine2) }
     fields.append(.postalCode)
-    if options.city != false { fields.append(.city) }
-    if options.state != false { fields.append(.state) }
+    if options.city == true { fields.append(.city) }
+    if options.state == true { fields.append(.state) }
 
     return fields
   }

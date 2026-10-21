@@ -910,6 +910,30 @@ final class DefaultCardFormScopeTests: XCTestCase {
         }
     }
 
+    func test_getFormConfiguration_billingOptionMissing_hidesTheField() async throws {
+        let container = try await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let mockConfig = MockConfigurationService.withDefaultConfiguration()
+            mockConfig.billingAddressOptions = PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions(
+                firstName: nil,
+                lastName: nil,
+                city: true,
+                postalCode: true,
+                addressLine1: nil,
+                addressLine2: nil,
+                countryCode: nil,
+                phoneNumber: nil,
+                state: nil
+            )
+
+            let scope = createCardFormScope(checkoutScope: checkoutScope, configurationService: mockConfig)
+
+            XCTAssertEqual(scope.getFormConfiguration().billingFields, [.postalCode, .city])
+        }
+    }
+
     private func billingAddressConfiguration() -> MockConfigurationService {
         let mockConfig = MockConfigurationService.withDefaultConfiguration()
         mockConfig.billingAddressOptions = PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions(
