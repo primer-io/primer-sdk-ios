@@ -185,7 +185,14 @@ private extension Error {
 private extension BackendDrivenCheckoutOrchestrator {
     convenience init(context: SDKContext) async throws {
         let provider = NetworkSignedManifestProvider(token: PrimerAPIConfigurationModule.decodedJWTToken)
-        let engine = try await BDCEngineProvider.shared.engine(manifestProvider: provider)
+        let engine: any BDCEngineProtocol
+        do {
+            engine = try await BDCEngineProvider.shared.engine(manifestProvider: provider)
+        } catch {
+            let message = "BDC engine failed to load: \(error)"
+            Analytics.Service.fire(event: .message(message: message, messageType: .backendDrivenEngineLoadFailed, severity: .error))
+            throw error
+        }
         self.init(engine: engine, context: context)
     }
 }
