@@ -37,7 +37,7 @@
 "primer_card_form_label_city" = "Qyteti";
 "primer_card_form_label_state" = "Shteti";
 "primer_card_form_label_address1" = "Adresa linja 1";
-"primer_card_form_label_address2" = "Adresa linja 2";
+"primer_card_form_label_address2" = "Adresa linja 2 (opsionale)";
 "primer_card_form_label_phone" = "Numri i telefonit";
 "primer_card_form_label_first_name" = "Emri";
 "primer_card_form_label_last_name" = "Mbiemri";

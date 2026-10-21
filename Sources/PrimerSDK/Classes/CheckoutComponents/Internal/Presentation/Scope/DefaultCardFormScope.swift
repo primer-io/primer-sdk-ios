@@ -236,11 +236,11 @@ final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, 
   }
 
   func updateFirstName(_ firstName: String) {
-    structuredState.data[.firstName] = firstName
+    updateBillingField(.firstName, firstName)
   }
 
   func updateLastName(_ lastName: String) {
-    structuredState.data[.lastName] = lastName
+    updateBillingField(.lastName, lastName)
   }
 
   func updateEmail(_ email: String) {
@@ -248,27 +248,27 @@ final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, 
   }
 
   func updateAddressLine1(_ addressLine1: String) {
-    structuredState.data[.addressLine1] = addressLine1
+    updateBillingField(.addressLine1, addressLine1)
   }
 
   func updateAddressLine2(_ addressLine2: String) {
-    structuredState.data[.addressLine2] = addressLine2
+    updateBillingField(.addressLine2, addressLine2)
   }
 
   func updateCity(_ city: String) {
-    structuredState.data[.city] = city
+    updateBillingField(.city, city)
   }
 
   func updateState(_ state: String) {
-    structuredState.data[.state] = state
+    updateBillingField(.state, state)
   }
 
   func updatePostalCode(_ postalCode: String) {
-    structuredState.data[.postalCode] = postalCode
+    updateBillingField(.postalCode, postalCode)
   }
 
   func updateCountryCode(_ countryCode: String) {
-    structuredState.data[.countryCode] = countryCode
+    updateBillingField(.countryCode, countryCode)
 
     if let country = CountryCode.phoneNumberCountryCodes.first(where: {
       $0.code.uppercased() == countryCode.uppercased()
@@ -515,7 +515,7 @@ final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, 
     let hasValidCardholderName = cardholderName && !structuredState.data[.cardholderName].isEmpty
 
     structuredState.isValid =
-      hasValidCardNumber && hasValidCvv && hasValidExpiry && hasValidCardholderName
+      hasValidCardNumber && hasValidCvv && hasValidExpiry && hasValidCardholderName && hasValidBillingAddress
 
     if structuredState.isValid {
       structuredState.fieldErrors.removeAll()

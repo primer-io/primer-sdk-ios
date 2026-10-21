@@ -104,7 +104,7 @@
 "primer_card_form_error_state_invalid" = "الولاية أو المنطقة أو المقاطعة غير صالحة";
 "primer_card_form_error_state_required" = "الولاية أو المنطقة أو المقاطعة مطلوبة";
 "primer_card_form_label_address1" = "سطر العنوان 1";
-"primer_card_form_label_address2" = "سطر العنوان 2";
+"primer_card_form_label_address2" = "السطر 2 من العنوان (اختياري)";
 "primer_card_form_label_city" = "المدينة";
 "primer_card_form_label_country" = "الدولة";
 "primer_card_form_label_country_code" = "رمز الدولة";

@@ -104,7 +104,7 @@
 "primer_card_form_error_state_invalid" = "Kehtetu osariik, piirkond või maakond";
 "primer_card_form_error_state_required" = "Osariik, piirkond või maakond on nõutav";
 "primer_card_form_label_address1" = "Aadressirida 1";
-"primer_card_form_label_address2" = "Aadressirida 2";
+"primer_card_form_label_address2" = "Aadressirida 2 (valikuline)";
 "primer_card_form_label_city" = "Linn";
 "primer_card_form_label_country" = "Riik";
 "primer_card_form_label_country_code" = "Riigikood";

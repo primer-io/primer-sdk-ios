@@ -104,7 +104,7 @@
 "primer_card_form_error_state_invalid" = "Provinsi Tidak Valid";
 "primer_card_form_error_state_required" = "Provinsi wajib diisi";
 "primer_card_form_label_address1" = "Baris Alamat 1";
-"primer_card_form_label_address2" = "Baris Alamat 2";
+"primer_card_form_label_address2" = "Baris 2 Alamat (opsional)";
 "primer_card_form_label_city" = "Kota";
 "primer_card_form_label_country" = "Negara";
 "primer_card_form_label_country_code" = "Kode Negara";

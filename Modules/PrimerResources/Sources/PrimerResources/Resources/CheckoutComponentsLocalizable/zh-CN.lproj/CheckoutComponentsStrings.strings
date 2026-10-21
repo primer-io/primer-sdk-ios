@@ -104,7 +104,7 @@
 "primer_card_form_error_state_invalid" = "省份或地区无效";
 "primer_card_form_error_state_required" = "省份或地区为必填项";
 "primer_card_form_label_address1" = "地址行1";
-"primer_card_form_label_address2" = "地址行2";
+"primer_card_form_label_address2" = "地址行 2（可选）";
 "primer_card_form_label_city" = "城市";
 "primer_card_form_label_country" = "国家";
 "primer_card_form_label_country_code" = "国家代码";

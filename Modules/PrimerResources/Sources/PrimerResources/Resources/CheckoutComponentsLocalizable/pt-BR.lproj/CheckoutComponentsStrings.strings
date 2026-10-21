@@ -104,7 +104,7 @@
 "primer_card_form_error_state_invalid" = "Estado inválido";
 "primer_card_form_error_state_required" = "O estado é obrigatório";
 "primer_card_form_label_address1" = "Linha 1 de endereço";
-"primer_card_form_label_address2" = "Linha 2 de endereço";
+"primer_card_form_label_address2" = "Linha 2 de endereço (opcional)";
 "primer_card_form_label_city" = "Cidade";
 "primer_card_form_label_country" = "País";
 "primer_card_form_label_country_code" = "Código do país";
