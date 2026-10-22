@@ -647,14 +647,6 @@ enum CheckoutComponentsStrings {
     comment: "Email placeholder"
   )
 
-  static let phoneNumberPlaceholder = NSLocalizedString(
-    "primer_card_form_placeholder_phone",
-    tableName: tableName,
-    bundle: .primerResources,
-    value: "+1 (555) 123–4567",
-    comment: "Phone number placeholder"
-  )
-
   static let countrySelectorPlaceholder = NSLocalizedString(
     "primer_country_selector_placeholder",
     tableName: tableName,
