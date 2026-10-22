@@ -19,6 +19,7 @@ public final class PrimerCityFieldView: PrimerSimpleCardFormTextFieldView {
         super.xibSetup()
         isTextFieldAccessibilityElement = true
         textFieldaccessibilityIdentifier = "city_txt_fld"
+        textField.textContentType = .addressCity
         isEditingAnalyticsEnabled = true
         textField.delegate = self
         editingAnalyticsObjectId = .billingAddressCity

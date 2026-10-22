@@ -21,6 +21,9 @@ public final class PrimerExpiryDateFieldView: PrimerTextFieldView {
         keyboardType = .numberPad
         isTextFieldAccessibilityElement = true
         textFieldaccessibilityIdentifier = "expiry_txt_fld"
+        if #available(iOS 17.0, *) {
+            textField.textContentType = .creditCardExpiration
+        }
         textField.delegate = self
         isEditingAnalyticsEnabled = true
         editingAnalyticsObjectId = .expiry
@@ -43,6 +46,8 @@ public final class PrimerExpiryDateFieldView: PrimerTextFieldView {
             return false
         }
 
+        // AutoFill and paste can give the year in full, as MM/YYYY
+        let string = string.replacingOccurrences(of: #"^(\d{2})/?\d{2}(\d{2})$"#, with: "$1$2", options: .regularExpression)
         var newText = (currentText as NSString).replacingCharacters(in: range, with: string) as String
         newText = newText.replacingOccurrences(of: "/", with: "")
         if !(newText.isNumeric || newText.isEmpty) || (string != "" && newText.withoutWhiteSpace.count >= 5) {

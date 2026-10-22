@@ -19,6 +19,7 @@ public final class PrimerLastNameFieldView: PrimerSimpleCardFormTextFieldView {
         super.xibSetup()
         isTextFieldAccessibilityElement = true
         textFieldaccessibilityIdentifier = "last_name_txt_fld"
+        textField.textContentType = .familyName
         isEditingAnalyticsEnabled = true
         textField.delegate = self
         editingAnalyticsObjectId = .billingAddressLastName

@@ -20,6 +20,7 @@ public final class PrimerPostalCodeFieldView: PrimerTextFieldView {
         keyboardType = .namePhonePad
         isTextFieldAccessibilityElement = true
         textFieldaccessibilityIdentifier = "postal_code_txt_fld"
+        textField.textContentType = .postalCode
         textField.delegate = self
         isEditingAnalyticsEnabled = true
         isValid = { text in

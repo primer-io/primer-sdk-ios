@@ -22,6 +22,9 @@ public final class PrimerCVVFieldView: PrimerTextFieldView {
         keyboardType = .numberPad
         isTextFieldAccessibilityElement = true
         textFieldaccessibilityIdentifier = "cvc_txt_fld"
+        if #available(iOS 17.0, *) {
+            textField.textContentType = .creditCardSecurityCode
+        }
         textField.delegate = self
         isEditingAnalyticsEnabled = true
         editingAnalyticsObjectId = .cvc

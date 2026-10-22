@@ -110,4 +110,19 @@ final class PrimerExpiryDateFieldViewTests: XCTestCase {
         waitForExpectations(timeout: 2.0)
     }
 
+    func testAutoFillWithFullYear() {
+        let year = Calendar.current.component(.year, from: Date()) + 2
+        for input in ["03/\(year)", "03\(year)"] {
+            view.text = ""
+            _ = view.textField(
+                view.textField,
+                shouldChangeCharactersIn: NSRange(location: 0, length: 0),
+                replacementString: input
+            )
+
+            XCTAssertEqual(view.textField.internalText, "03/\(year % 100)", input)
+            XCTAssertTrue(view.isTextValid, input)
+        }
+    }
+
 }
