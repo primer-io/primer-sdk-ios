@@ -910,6 +910,58 @@ final class DefaultCardFormScopeTests: XCTestCase {
         }
     }
 
+    func test_isValid_requiredBillingFieldOnlySpaces_isFalse() async throws {
+        let container = try await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createCardFormScope(checkoutScope: checkoutScope, configurationService: billingAddressConfiguration())
+
+            fillBillingAddress(scope, except: .city)
+            scope.updateCity("   ")
+            fillValidCard(scope)
+
+            XCTAssertFalse(scope.structuredState.isValid)
+        }
+    }
+
+    func test_isValid_billingErrorClearedAndValueFixed_isTrue() async throws {
+        let container = try await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createCardFormScope(checkoutScope: checkoutScope, configurationService: billingAddressConfiguration())
+            fillValidCardFieldStates(scope)
+            fillBillingAddress(scope, except: .addressLine2)
+            scope.setFieldError(.postalCode, message: TestData.ErrorMessages.fieldInvalid)
+            scope.updateFieldValidationState()
+            XCTAssertFalse(scope.structuredState.isValid)
+
+            scope.clearFieldError(.postalCode)
+            scope.updatePostalCode(TestData.PostalCodes.validUK)
+
+            XCTAssertTrue(scope.structuredState.isValid)
+        }
+    }
+
+    func test_isValid_phoneNumberOptionOn_doesNotBlockPay() async throws {
+        let container = try await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createCardFormScope(
+                checkoutScope: checkoutScope,
+                configurationService: billingAddressConfiguration(phoneNumber: true)
+            )
+
+            fillBillingAddress(scope, except: .addressLine2)
+            fillValidCard(scope)
+
+            XCTAssertFalse(scope.getFormConfiguration().billingFields.contains(.phoneNumber))
+            XCTAssertTrue(scope.structuredState.isValid)
+        }
+    }
+
     func test_getFormConfiguration_billingOptionMissing_hidesTheField() async throws {
         let container = try await createTestContainer()
 
@@ -934,7 +986,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
         }
     }
 
-    private func billingAddressConfiguration() -> MockConfigurationService {
+    private func billingAddressConfiguration(phoneNumber: Bool? = nil) -> MockConfigurationService {
         let mockConfig = MockConfigurationService.withDefaultConfiguration()
         mockConfig.billingAddressOptions = PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions(
             firstName: true,
@@ -944,10 +996,21 @@ final class DefaultCardFormScopeTests: XCTestCase {
             addressLine1: true,
             addressLine2: true,
             countryCode: true,
-            phoneNumber: nil,
+            phoneNumber: phoneNumber,
             state: true
         )
         return mockConfig
+    }
+
+    private func fillValidCardFieldStates(_ scope: DefaultCardFormScope) {
+        scope.updateCardNumber(TestData.CardNumbers.validVisa)
+        scope.updateCvv("123")
+        scope.updateExpiryDate("12/30")
+        scope.updateCardholderName("John Doe")
+        scope.updateValidationState(\.cardNumber, isValid: true)
+        scope.updateValidationState(\.cvv, isValid: true)
+        scope.updateValidationState(\.expiry, isValid: true)
+        scope.updateValidationState(\.cardholderName, isValid: true)
     }
 
     private func fillBillingAddress(_ scope: DefaultCardFormScope, except skipped: PrimerInputElementType) {
