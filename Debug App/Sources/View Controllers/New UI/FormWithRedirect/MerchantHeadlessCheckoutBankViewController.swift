@@ -38,13 +38,13 @@ final class MerchantHeadlessCheckoutBankViewController: UIViewController {
 
     private func addBanksListViewController() {
         let headerView = BanksListView(paymentMethodModel: PaymentMethodModel(name: paymentMethodType, logo: nil), banksModel: banksModel, didSelectBank: { [weak self] bankId in
-            guard let self = self else { return }
-            self.showLoadingOverlay()
-            self.bankComponent?.updateCollectedData(collectableData: BanksCollectableData.bankId(bankId: bankId))
+            guard let self else { return }
+            showLoadingOverlay()
+            bankComponent?.updateCollectedData(collectableData: BanksCollectableData.bankId(bankId: bankId))
         }, didFilterByText: { [weak self] filterText in
-            guard let self = self else { return }
-            self.showLoadingOverlay()
-            self.bankComponent?.updateCollectedData(collectableData: BanksCollectableData.bankFilterText(text: filterText))
+            guard let self else { return }
+            showLoadingOverlay()
+            bankComponent?.updateCollectedData(collectableData: BanksCollectableData.bankFilterText(text: filterText))
         })
         let listViewController = UIHostingController(rootView: headerView)
         listViewController.view.translatesAutoresizingMaskIntoConstraints = false
@@ -87,20 +87,20 @@ extension MerchantHeadlessCheckoutBankViewController: PrimerHeadlessErrorableDel
                 message += (error.errorDescription ?? error.localizedDescription) + "\n"
             }
             hideLoadingOverlay()
-            self.showAlert(title: "Validation Error", message: "\(message)")
+            showAlert(title: "Validation Error", message: "\(message)")
         case let .error(error: error):
-            self.showAlert(title: "Error", message: error.errorDescription ?? error.localizedDescription)
+            showAlert(title: "Error", message: error.errorDescription ?? error.localizedDescription)
             hideLoadingOverlay()
         }
     }
 
     func didReceiveError(error: PrimerError) {
-        self.showAlert(title: "Error", message: error.errorDescription ?? error.localizedDescription)
+        showAlert(title: "Error", message: error.errorDescription ?? error.localizedDescription)
     }
 
     func didReceiveStep(step: PrimerHeadlessStep) {
         guard let step = step as? BanksStep else {
-            self.showAlert(title: "Error", message: "Received wrong step of \(step)")
+            showAlert(title: "Error", message: "Received wrong step of \(step)")
             return
         }
         switch step {

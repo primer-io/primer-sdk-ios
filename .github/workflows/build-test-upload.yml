@@ -8,6 +8,9 @@ concurrency:
   group: ${{ github.ref }}-tests
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
   unit-tests-sdk-and-debug-app:
     needs: check-optional-tests
@@ -20,6 +23,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.ref }}
+          persist-credentials: false
       - name: Run SDK and Debug App tests
         uses: ./.github/actions/sdk-tests
         with:
@@ -31,11 +35,15 @@ jobs:
           fastlane-password: ${{ secrets.FASTLANE_PASSWORD }}
           match-keychain-name: ${{ secrets.MATCH_KEYCHAIN_NAME }}
           match-keychain-password: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
+          source-branch: ${{ github.head_ref || github.ref_name }}
           fastlane-test-lane: test_sdk_and_debug_app
           sdk-name: sdk
 
   check-optional-tests:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
     outputs:
       should-run-nolpay: ${{ steps.changes.outputs.nolpay }}
       should-run-klarna: ${{ steps.changes.outputs.klarna }}
@@ -47,6 +55,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
+          persist-credentials: false
       - uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
         id: changes
         with:
@@ -108,6 +117,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.ref }}
+          persist-credentials: false
       - name: Run SDK tests
         if: ${{ !matrix.skip }}
         uses: ./.github/actions/sdk-tests
@@ -120,6 +130,7 @@ jobs:
           fastlane-password: ${{ secrets.FASTLANE_PASSWORD }}
           match-keychain-name: ${{ secrets.MATCH_KEYCHAIN_NAME }}
           match-keychain-password: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
+          source-branch: ${{ github.head_ref || github.ref_name }}
           sdk-name: ${{ matrix.name }}
           package-swift: ${{ matrix.file }}
 
@@ -133,6 +144,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.ref }}
+          persist-credentials: false
       - name: Select Xcode Version
         uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90 # v1.7.0
         with:
@@ -174,28 +186,34 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
+          persist-credentials: false
       - name: Determine coverage files
         id: coverage-files
+        env:
+          SHOULD_RUN_THREEDS: ${{ needs.check-optional-tests.outputs.should-run-threeds }}
+          SHOULD_RUN_NOLPAY: ${{ needs.check-optional-tests.outputs.should-run-nolpay }}
+          SHOULD_RUN_KLARNA: ${{ needs.check-optional-tests.outputs.should-run-klarna }}
+          SHOULD_RUN_STRIPE: ${{ needs.check-optional-tests.outputs.should-run-stripe }}
         run: |
           # Always include the main SDK coverage
           COVERAGE_FILES="sonar-coverage-sdk.xml"
-          
+
           # Add optional test coverage files if those tests ran
-          if [[ "${{ needs.check-optional-tests.outputs.should-run-threeds }}" == "true" ]]; then
+          if [[ "$SHOULD_RUN_THREEDS" == "true" ]]; then
             COVERAGE_FILES="${COVERAGE_FILES},sonar-coverage-3DS.xml"
           fi
-          if [[ "${{ needs.check-optional-tests.outputs.should-run-nolpay }}" == "true" ]]; then
+          if [[ "$SHOULD_RUN_NOLPAY" == "true" ]]; then
             COVERAGE_FILES="${COVERAGE_FILES},sonar-coverage-nol-pay.xml"
           fi
-          if [[ "${{ needs.check-optional-tests.outputs.should-run-klarna }}" == "true" ]]; then
+          if [[ "$SHOULD_RUN_KLARNA" == "true" ]]; then
             COVERAGE_FILES="${COVERAGE_FILES},sonar-coverage-klarna.xml"
           fi
-          if [[ "${{ needs.check-optional-tests.outputs.should-run-stripe }}" == "true" ]]; then
+          if [[ "$SHOULD_RUN_STRIPE" == "true" ]]; then
             COVERAGE_FILES="${COVERAGE_FILES},sonar-coverage-stripe.xml"
           fi
-          
+
           echo "Coverage files to process: ${COVERAGE_FILES}"
-          echo "files=${COVERAGE_FILES}" >> $GITHUB_OUTPUT
+          echo "files=${COVERAGE_FILES}" >> "$GITHUB_OUTPUT"
       - name: SonarCloud Scan
         uses: ./.github/actions/sonar
         with:
@@ -214,11 +232,15 @@ jobs:
     runs-on: macos-26-large
     timeout-minutes: 45
     name: "Build and upload app to Appetize"
+    permissions:
+      contents: read
+      pull-requests: write
     steps:
       - name: Git - Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.ref }}
+          persist-credentials: false
       - name: Upload preview to Appetize
         id: appetize-upload
         uses: ./.github/actions/appetize-build

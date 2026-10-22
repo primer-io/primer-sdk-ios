@@ -26,21 +26,21 @@ extension Error {
             return validationErr
         } else {
             // For unknown errors, wrap in unknown error (not underlyingErrors)
-            return PrimerError.unknown(message: self.localizedDescription)
+            return PrimerError.unknown(message: localizedDescription)
         }
     }
 
     /// Converts any error to a PrimerError, using the primerError computed property first
     /// and casting to PrimerError with a fallback to PrimerError.unknown
     var asPrimerError: PrimerError {
-        let baseError = self.normalizedForSDK
+        let baseError = normalizedForSDK
         return (baseError as? PrimerError) ?? PrimerError.unknown(message: baseError.localizedDescription)
     }
 
     /// Converts any error to a PrimerErrorProtocol, using the primerError computed property first
     /// and casting to PrimerErrorProtocol with a fallback to PrimerError.unknown
     var asPrimerErrorProtocol: any PrimerErrorProtocol {
-        let baseError = self.normalizedForSDK
+        let baseError = normalizedForSDK
         return (baseError as? PrimerErrorProtocol) ?? PrimerError.unknown(message: baseError.localizedDescription)
     }
 }

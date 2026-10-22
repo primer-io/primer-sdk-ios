@@ -92,7 +92,7 @@ final class DefaultBanksComponent: BanksComponent {
         switch nextDataStep {
         case .loading: break
         case .banksRetrieved:
-            guard let bankId = self.bankId else { return }
+            guard let bankId else { return }
             let redirectComponent = onFinished()
             redirectComponent.start()
 

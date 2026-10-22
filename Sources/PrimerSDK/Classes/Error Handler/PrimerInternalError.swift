@@ -16,6 +16,13 @@ extension InternalError: @retroactive PrimerErrorProtocol {
         default: PrimerError.unknown(diagnosticsId: diagnosticsId)
         }
     }
+
+    public var isReportable: Bool {
+        switch self {
+        case .serverError, .failedToPerform3dsAndShouldBreak: true
+        default: false
+        }
+    }
 }
 
 private extension InternalError {

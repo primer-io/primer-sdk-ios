@@ -85,6 +85,7 @@ public final class PrimerHeadlessUniversalCheckout: LogReporter {
         let start = Date().millisecondsSince1970
 
         PrimerInternal.shared.sdkIntegrationType = .headless
+        PrimerInternal.shared.sdkIntegrationProduct = .headless
         PrimerInternal.shared.intent = .checkout
 
         DependencyContainer.register(settings ?? PrimerSettings() as PrimerSettingsProtocol)

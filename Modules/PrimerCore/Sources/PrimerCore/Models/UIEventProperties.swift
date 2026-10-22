@@ -48,14 +48,14 @@
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.action = try container.decode(Analytics.Event.Property.Action.self, forKey: .action)
-        self.context = try container.decodeIfPresent(Analytics.Event.Property.Context.self, forKey: .context)
-        self.extra = try container.decodeIfPresent(String.self, forKey: .extra)
-        self.objectType = try container.decode(Analytics.Event.Property.ObjectType.self, forKey: .objectType)
-        self.objectId = try container.decodeIfPresent(Analytics.Event.Property.ObjectId.self, forKey: .objectId)
-        self.objectClass = try container.decodeIfPresent(String.self, forKey: .objectClass)
-        self.place = try container.decode(Analytics.Event.Property.Place.self, forKey: .place)
-        self.params = try container.decodeIfPresent([String: String].self, forKey: .params)
+        action = try container.decode(Analytics.Event.Property.Action.self, forKey: .action)
+        context = try container.decodeIfPresent(Analytics.Event.Property.Context.self, forKey: .context)
+        extra = try container.decodeIfPresent(String.self, forKey: .extra)
+        objectType = try container.decode(Analytics.Event.Property.ObjectType.self, forKey: .objectType)
+        objectId = try container.decodeIfPresent(Analytics.Event.Property.ObjectId.self, forKey: .objectId)
+        objectClass = try container.decodeIfPresent(String.self, forKey: .objectClass)
+        place = try container.decode(Analytics.Event.Property.Place.self, forKey: .place)
+        params = try container.decodeIfPresent([String: String].self, forKey: .params)
     }
 
     public func encode(to encoder: Encoder) throws {

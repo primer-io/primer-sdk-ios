@@ -85,7 +85,7 @@ final class ACHMandateViewControllerTests: XCTestCase {
     }
 
     func test_mandateAccept_action() {
-        let expectDidAcceptMandate = self.expectation(description: "expectDidAcceptMandate called")
+        let expectDidAcceptMandate = expectation(description: "expectDidAcceptMandate called")
         mockDelegate.didAcceptMandate = {
             expectDidAcceptMandate.fulfill()
         }
@@ -95,7 +95,7 @@ final class ACHMandateViewControllerTests: XCTestCase {
     }
 
     func test_mandateDecline_action() {
-        let expectDidDeclineMandate = self.expectation(description: "expectDidDeclineMandate called")
+        let expectDidDeclineMandate = expectation(description: "expectDidDeclineMandate called")
         mockDelegate.didDeclineMandate = {
             expectDidDeclineMandate.fulfill()
         }

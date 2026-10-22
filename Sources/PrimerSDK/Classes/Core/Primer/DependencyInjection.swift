@@ -12,7 +12,7 @@ struct Dependency<T> {
     var wrappedValue: T
 
     init() {
-        self.wrappedValue = DependencyContainer.resolve()
+        wrappedValue = DependencyContainer.resolve()
     }
 }
 
@@ -54,7 +54,7 @@ final class DependencyContainer {
             }
 
             let dependency: T? = self.createDependency(for: key)
-            if let dependency = dependency {
+            if let dependency {
                 self.dependencies[key] = dependency as AnyObject
             }
 

@@ -5,7 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import PrimerFoundation
-@testable import PrimerSDK
+@_spi(PrimerInternal) @testable import PrimerSDK
 @_spi(PrimerInternal) @testable import PrimerNetworking
 import XCTest
 
@@ -44,24 +44,24 @@ final class RawDataManagerTests: XCTestCase {
     }
 
     func testFullPaymentFlow() throws {
-        let expectDidCompleteCheckout = self.expectation(description: "Headless checkout completed")
+        let expectDidCompleteCheckout = expectation(description: "Headless checkout completed")
         headlessCheckoutDelegate.onDidCompleteCheckoutWithData = { _ in
             expectDidCompleteCheckout.fulfill()
         }
 
-        let expectWillCreatePaymentWithData = self.expectation(description: "Will create payment with data")
+        let expectWillCreatePaymentWithData = expectation(description: "Will create payment with data")
         headlessCheckoutDelegate.onWillCreatePaymentWithData = { _, decisionHandler in
             expectWillCreatePaymentWithData.fulfill()
             decisionHandler(.continuePaymentCreation())
         }
 
-        let expectOnTokenize = self.expectation(description: "On tokenization complete")
+        let expectOnTokenize = expectation(description: "On tokenization complete")
         tokenizationService.onTokenize = { _ in
             expectOnTokenize.fulfill()
             return Result.success(self.tokenizationResponseBody)
         }
 
-        let expectCreatePayment = self.expectation(description: "On create payment")
+        let expectCreatePayment = expectation(description: "On create payment")
         createResumePaymentService.onCreatePayment = { _ in
             expectCreatePayment.fulfill()
             return self.paymentResponseBody
@@ -94,36 +94,39 @@ final class RawDataManagerTests: XCTestCase {
             (PollingResponse(status: .complete, id: "4321", source: "src"), nil)
         ]
 
-        let expectDidCompleteCheckout = self.expectation(description: "Headless checkout completed")
+        let expectDidCompleteCheckout = expectation(description: "Headless checkout completed")
         headlessCheckoutDelegate.onDidCompleteCheckoutWithData = { _ in
             expectDidCompleteCheckout.fulfill()
         }
 
-        let expectWillCreatePaymentWithData = self.expectation(description: "Will create payment with data")
+        let expectWillCreatePaymentWithData = expectation(description: "Will create payment with data")
         headlessCheckoutDelegate.onWillCreatePaymentWithData = { _, decisionHandler in
             expectWillCreatePaymentWithData.fulfill()
             decisionHandler(.continuePaymentCreation())
         }
 
-        let expectOnTokenize = self.expectation(description: "On tokenization complete")
+        let expectOnTokenize = expectation(description: "On tokenization complete")
         tokenizationService.onTokenize = { _ in
             expectOnTokenize.fulfill()
             return Result.success(self.tokenizationResponseBody)
         }
 
-        let expectCreatePayment = self.expectation(description: "On create payment")
+        let expectCreatePayment = expectation(description: "On create payment")
         createResumePaymentService.onCreatePayment = { _ in
             expectCreatePayment.fulfill()
             return self.paymentResponseBodyWithRedirectAction
         }
 
-        let expectResumePayment = self.expectation(description: "On resume payment")
+        let expectResumePayment = expectation(description: "On resume payment")
         createResumePaymentService.onResumePayment = { paymentId, request in
             XCTAssertEqual(paymentId, "id")
             XCTAssertEqual(request.resumeToken, "4321")
             expectResumePayment.fulfill()
             return self.paymentResponseAfterResume
         }
+
+        let observer = RecordingRequiredActionObserver()
+        sut.requiredActionObserver = observer
 
         headlessCheckoutDelegate.onDidFail = { error in
             XCTFail("Failed with error: \(error.localizedDescription)")
@@ -139,16 +142,105 @@ final class RawDataManagerTests: XCTestCase {
         sut.submit()
 
         waitForExpectations(timeout: 45.0)
+        XCTAssertEqual(observer.calls, [
+            .redirectOpened(URL(string: "https://localhost/redirect")!, paymentId: "id"),
+            .redirectReturned(paymentId: "id")
+        ])
+    }
+
+    func testProcessor3DS_reportsTheChallengeAndNoRedirect() throws {
+        let apiClient = MockPrimerAPIClient()
+        PrimerAPIConfigurationModule.apiClient = apiClient
+        PollingModule.apiClient = apiClient
+        apiClient.fetchConfigurationWithActionsResult = (PrimerAPIConfiguration.current, nil)
+        apiClient.pollingResults = [(PollingResponse(status: .complete, id: "4321", source: "src"), nil)]
+
+        headlessCheckoutDelegate.onWillCreatePaymentWithData = { _, decisionHandler in
+            decisionHandler(.continuePaymentCreation())
+        }
+        tokenizationService.onTokenize = { _ in .success(self.tokenizationResponseBody) }
+        createResumePaymentService.onCreatePayment = { _ in
+            self.paymentResponseBody(requiredActionToken: MockAppState.mockClientTokenWithProcessor3DS)
+        }
+        createResumePaymentService.onResumePayment = { _, _ in self.paymentResponseAfterResume }
+
+        let expectDidCompleteCheckout = expectation(description: "Headless checkout completed")
+        headlessCheckoutDelegate.onDidCompleteCheckoutWithData = { _ in expectDidCompleteCheckout.fulfill() }
+        headlessCheckoutDelegate.onDidFail = { error in
+            XCTFail("Failed with error: \(error.localizedDescription)")
+        }
+        let observer = RecordingRequiredActionObserver()
+        sut.requiredActionObserver = observer
+
+        sut.rawData = PrimerCardData(
+            cardNumber: "4111 1111 1111 1111",
+            expiryDate: "03/2030",
+            cvv: "123",
+            cardholderName: "John Appleseed"
+        )
+
+        sut.submit()
+
+        waitForExpectations(timeout: 15.0)
+        XCTAssertEqual(observer.calls, [.threeDSChallengeShown(provider: "PROCESSOR", protocolVersion: nil)])
+    }
+
+    /// The test configuration has no 3DS SDK key, so 3DS goes straight to continue-auth, whose outcome the observer gets.
+    func testNative3DS_reportsTheOutcomeBeforeThePaymentResumes() throws {
+        let apiClient = MockPrimerAPIClient()
+        PrimerAPIConfigurationModule.apiClient = apiClient
+        ThreeDSService.apiClient = apiClient
+        defer { ThreeDSService.apiClient = nil }
+        apiClient.fetchConfigurationWithActionsResult = (PrimerAPIConfiguration.current, nil)
+        let authentication = try JSONDecoder().decode(ThreeDS.Authentication.self, from: Data(#"{"responseCode":"AUTH_FAILED"}"#.utf8))
+        apiClient.continue3DSAuthResult = (
+            ThreeDS.PostAuthResponse(token: Mocks.primerPaymentMethodTokenData, resumeToken: "4321", authentication: authentication),
+            nil
+        )
+
+        headlessCheckoutDelegate.onWillCreatePaymentWithData = { _, decisionHandler in
+            decisionHandler(.continuePaymentCreation())
+        }
+        tokenizationService.onTokenize = { _ in .success(self.tokenizationResponseBody) }
+        createResumePaymentService.onCreatePayment = { _ in
+            self.paymentResponseBody(requiredActionToken: MockAppState.mockClientTokenWith3DS)
+        }
+        let observer = RecordingRequiredActionObserver()
+        sut.requiredActionObserver = observer
+        let expectResumePayment = expectation(description: "On resume payment")
+        createResumePaymentService.onResumePayment = { _, request in
+            XCTAssertEqual(request.resumeToken, "4321")
+            XCTAssertEqual(observer.calls, [.threeDSCompleted(authenticationOutcome: "AUTH_FAILED", skippedReasonCode: nil)])
+            expectResumePayment.fulfill()
+            return self.paymentResponseAfterResume
+        }
+
+        let expectDidCompleteCheckout = expectation(description: "Headless checkout completed")
+        headlessCheckoutDelegate.onDidCompleteCheckoutWithData = { _ in expectDidCompleteCheckout.fulfill() }
+        headlessCheckoutDelegate.onDidFail = { error in
+            XCTFail("Failed with error: \(error.localizedDescription)")
+        }
+
+        sut.rawData = PrimerCardData(
+            cardNumber: "4111 1111 1111 1111",
+            expiryDate: "03/2030",
+            cvv: "123",
+            cardholderName: "John Appleseed"
+        )
+
+        sut.submit()
+
+        waitForExpectations(timeout: 15.0)
     }
 
     func testAbortPaymentFlow() throws {
-        let expectWillCreatePaymentWithData = self.expectation(description: "Will create payment with data")
+        let expectWillCreatePaymentWithData = expectation(description: "Will create payment with data")
         headlessCheckoutDelegate.onWillCreatePaymentWithData = { _, decisionHandler in
             expectWillCreatePaymentWithData.fulfill()
             decisionHandler(.abortPaymentCreation())
         }
 
-        let expectDidFail = self.expectation(description: "Did fail with merchant error")
+        let expectDidFail = expectation(description: "Did fail with merchant error")
         headlessCheckoutDelegate.onDidFail = { error in
             switch error {
             case PrimerError.merchantError: break
@@ -171,7 +263,7 @@ final class RawDataManagerTests: XCTestCase {
     
     func testNoRawDataSubmit() {
 
-        let expectDidFail = self.expectation(description: "Did fail")
+        let expectDidFail = expectation(description: "Did fail")
         headlessCheckoutDelegate.onDidFail = { error in
             switch error {
             case let PrimerError.invalidValue(key, value, _, _):
@@ -184,7 +276,7 @@ final class RawDataManagerTests: XCTestCase {
             expectDidFail.fulfill()
         }
 
-        let expectDidValidate = self.expectation(description: "Did validate")
+        let expectDidValidate = expectation(description: "Did validate")
         rawDataManagerDelegate.onDataIsValid = { _, isValid, errors in
             XCTAssertFalse(isValid)
             XCTAssertTrue(
@@ -202,7 +294,7 @@ final class RawDataManagerTests: XCTestCase {
 
     func testDelegateNotifiedOnValidation() {
         // Arrange
-        let expectDidValidate = self.expectation(description: "Delegate was notified")
+        let expectDidValidate = expectation(description: "Delegate was notified")
         var didCallDelegate = false
 
         rawDataManagerDelegate.onDataIsValid = { _, _, _ in
@@ -228,8 +320,8 @@ final class RawDataManagerTests: XCTestCase {
     
     func testDelegateNotifiedOnConsecutiveValidations() {
         // Arrange
-        let expectFirstValidation = self.expectation(description: "First validation notification")
-        let expectSecondValidation = self.expectation(description: "Second validation notification")
+        let expectFirstValidation = expectation(description: "First validation notification")
+        let expectSecondValidation = expectation(description: "Second validation notification")
         var validationCount = 0
         var fulfilledFirst = false
         var fulfilledSecond = false
@@ -325,6 +417,19 @@ final class RawDataManagerTests: XCTestCase {
             ),
             customerId: "customer_id",
             orderId: "order_id",
+            status: .success
+        )
+    }
+
+    func paymentResponseBody(requiredActionToken: String) -> Response.Body.Payment {
+        .init(
+            id: "id",
+            paymentId: "payment_id",
+            amount: 123,
+            currencyCode: "GBP",
+            customerId: "customer_id",
+            orderId: "order_id",
+            requiredAction: .init(clientToken: requiredActionToken, name: .checkout, description: "description"),
             status: .success
         )
     }

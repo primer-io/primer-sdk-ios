@@ -66,7 +66,7 @@ extension PrimerHeadlessUniversalCheckout {
 
     public final class RawDataManager: NSObject, LogReporter {
 
-        public var delegate: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate?
+        public weak var delegate: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate?
         public private(set) var paymentMethodType: String
         public var rawData: PrimerRawData? {
             didSet {
@@ -85,10 +85,11 @@ extension PrimerHeadlessUniversalCheckout {
             )
             Analytics.Service.fire(event: sdkEvent)
 
-            return self.rawDataTokenizationBuilder.requiredInputElementTypes
+            return rawDataTokenizationBuilder.requiredInputElementTypes
         }
         private var resumePaymentId: String?
         public private(set) var paymentCheckoutData: PrimerCheckoutData?
+        weak var requiredActionObserver: RequiredActionObserver?
 
         // MARK: validation related vars
         public private(set) var isDataValid: Bool = false
@@ -135,7 +136,7 @@ extension PrimerHeadlessUniversalCheckout {
             Analytics.Service.fire(events: [sdkEvent])
 
             self.delegate = delegate
-            self.createResumePaymentService = CreateResumePaymentService(paymentMethodType: paymentMethodType)
+            createResumePaymentService = CreateResumePaymentService(paymentMethodType: paymentMethodType)
 
             guard PrimerPaymentMethod.getPaymentMethod(withType: paymentMethodType) != nil else {
                 throw handled(primerError: .unsupportedPaymentMethod(paymentMethodType: paymentMethodType))
@@ -146,24 +147,24 @@ extension PrimerHeadlessUniversalCheckout {
             switch paymentMethodType {
 
             case PrimerPaymentMethodType.paymentCard.rawValue:
-                self.rawDataTokenizationBuilder = PrimerRawCardDataTokenizationBuilder(
+                rawDataTokenizationBuilder = PrimerRawCardDataTokenizationBuilder(
                     paymentMethodType: PrimerPaymentMethodType.paymentCard.rawValue
                 )
 
             case PrimerPaymentMethodType.adyenBancontactCard.rawValue:
-                self.rawDataTokenizationBuilder = PrimerBancontactRawCardDataRedirectTokenizationBuilder(
+                rawDataTokenizationBuilder = PrimerBancontactRawCardDataRedirectTokenizationBuilder(
                     paymentMethodType: paymentMethodType
                 )
 
             case PrimerPaymentMethodType.xenditOvo.rawValue,
                  PrimerPaymentMethodType.adyenMBWay.rawValue:
-                self.rawDataTokenizationBuilder = PrimerRawPhoneNumberDataTokenizationBuilder(paymentMethodType: paymentMethodType)
+                rawDataTokenizationBuilder = PrimerRawPhoneNumberDataTokenizationBuilder(paymentMethodType: paymentMethodType)
 
             case PrimerPaymentMethodType.xenditRetailOutlets.rawValue:
-                self.rawDataTokenizationBuilder = PrimerRawRetailerDataTokenizationBuilder(paymentMethodType: paymentMethodType)
+                rawDataTokenizationBuilder = PrimerRawRetailerDataTokenizationBuilder(paymentMethodType: paymentMethodType)
 
             case PrimerPaymentMethodType.adyenBlik.rawValue:
-                self.rawDataTokenizationBuilder = PrimerRawOTPDataTokenizationBuilder(paymentMethodType: paymentMethodType)
+                rawDataTokenizationBuilder = PrimerRawOTPDataTokenizationBuilder(paymentMethodType: paymentMethodType)
 
             default:
                 throw handled(primerError: .unsupportedPaymentMethod(paymentMethodType: paymentMethodType))
@@ -171,7 +172,7 @@ extension PrimerHeadlessUniversalCheckout {
 
             super.init()
 
-            self.rawDataTokenizationBuilder.configure(withRawDataManager: self)
+            rawDataTokenizationBuilder.configure(withRawDataManager: self)
         }
 
         /// The provided function provides additional data after initializing a Raw Data Manager.
@@ -207,7 +208,7 @@ extension PrimerHeadlessUniversalCheckout {
         }
 
         public func listRequiredInputElementTypes(for paymentMethodType: String) -> [PrimerInputElementType] {
-            self.rawDataTokenizationBuilder.requiredInputElementTypes
+            rawDataTokenizationBuilder.requiredInputElementTypes
         }
 
         public func submit() {
@@ -230,11 +231,11 @@ extension PrimerHeadlessUniversalCheckout {
                     self.delegate?.primerRawDataManager?(self, dataIsValid: self.isDataValid, errors: [err])
                 }
                 let delegate = PrimerHeadlessUniversalCheckout.current.delegate
-                delegate?.primerHeadlessUniversalCheckoutDidFail?(withError: err, checkoutData: self.paymentCheckoutData)
+                delegate?.primerHeadlessUniversalCheckoutDidFail?(withError: err, checkoutData: paymentCheckoutData)
                 return
             }
 
-            PrimerDelegateProxy.primerHeadlessUniversalCheckoutUIDidStartPreparation(for: self.paymentMethodType)
+            PrimerDelegateProxy.primerHeadlessUniversalCheckoutUIDidStartPreparation(for: paymentMethodType)
             Task {
                 defer {
                     PrimerUIManager.dismissPrimerUI(animated: true)
@@ -250,11 +251,13 @@ extension PrimerHeadlessUniversalCheckout {
                     await PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: self.paymentMethodType)
 
                     let paymentMethodTokenData = try await self.tokenizationService.tokenize(requestBody: requestBody)
+                    self.delegate = nil
+                    (self.rawData as? PrimerCardData)?.wipe()
                     self.paymentMethodTokenData = paymentMethodTokenData
 
                     let checkoutData = try await self.startPaymentFlow(withPaymentMethodTokenData: paymentMethodTokenData)
 
-                    if PrimerSettings.current.paymentHandling == .auto, let checkoutData = checkoutData {
+                    if PrimerSettings.current.paymentHandling == .auto, let checkoutData {
                         await PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
                     }
                 } catch {
@@ -292,8 +295,8 @@ extension PrimerHeadlessUniversalCheckout {
                 }
             }
 
-            try await self.rawDataTokenizationBuilder.validateRawData(data)
-            self.isDataValid = rawDataTokenizationBuilder.isDataValid
+            try await rawDataTokenizationBuilder.validateRawData(data)
+            isDataValid = rawDataTokenizationBuilder.isDataValid
         }
 
         @MainActor
@@ -318,9 +321,9 @@ extension PrimerHeadlessUniversalCheckout {
             let task = Task { @MainActor [weak self] in
                 try? await Task.sleep(nanoseconds: 5_000_000_000)
                 guard let self else { return }
-                self.logger.warn(
+                logger.warn(
                     message:
-                    """
+                        """
                     The 'decisionHandler' of 'primerHeadlessUniversalCheckoutWillCreatePaymentWithData' hasn't been called.
                     Make sure you call the decision handler otherwise the SDK will hang.
                     """
@@ -398,11 +401,10 @@ extension PrimerHeadlessUniversalCheckout {
 
                     return decodedJWTToken
                 case let .fail(message):
-                    let err: Error
-                    if let message {
-                        err = PrimerError.merchantError(message: message)
+                    let err: Error = if let message {
+                        PrimerError.merchantError(message: message)
                     } else {
-                        err = NSError.emptyDescriptionError
+                        NSError.emptyDescriptionError
                     }
                     throw err
                 }
@@ -470,7 +472,7 @@ extension PrimerHeadlessUniversalCheckout {
             _ decodedJWTToken: DecodedJWTToken,
             paymentMethodTokenData: PrimerPaymentMethodTokenData
         ) async throws -> String? {
-            try await ThreeDSService().perform3DS(
+            try await ThreeDSService(observer: requiredActionObserver).perform3DS(
                 paymentMethodTokenData: paymentMethodTokenData,
                 sdkDismissed: nil
             )
@@ -504,9 +506,10 @@ extension PrimerHeadlessUniversalCheckout {
 
             var pollingModule: PollingModule? = PollingModule(url: statusUrl)
             do {
-                try await self.presentWebRedirectViewControllerWithRedirectUrl(redirectUrl)
-                self.webViewCompletion = { _, err in
-                    if let err = err {
+                await requiredActionObserver?.threeDSChallengeShown(provider: ProcessorThreeDS.provider, protocolVersion: nil)
+                try await presentWebRedirectViewControllerWithRedirectUrl(redirectUrl)
+                webViewCompletion = { _, err in
+                    if let err {
                         pollingModule?.cancel(withError: err)
                         pollingModule = nil
                     }
@@ -541,14 +544,17 @@ extension PrimerHeadlessUniversalCheckout {
 
                 var pollingModule: PollingModule? = PollingModule(url: statusUrl)
                 do {
+                    await requiredActionObserver?.redirectOpened(redirectUrl, paymentId: resumePaymentId)
                     try await presentWebRedirectViewControllerWithRedirectUrl(redirectUrl)
-                    self.webViewCompletion = { _, err in
-                        if let err = err {
+                    webViewCompletion = { _, err in
+                        if let err {
                             pollingModule?.cancel(withError: err)
                             pollingModule = nil
                         }
                     }
-                    return try await pollingModule?.start()
+                    let resumeToken = try await pollingModule?.start()
+                    if resumeToken != nil { await requiredActionObserver?.redirectReturned(paymentId: resumePaymentId) }
+                    return resumeToken
                 } catch {
                     if let primerErr = error as? PrimerError {
                         pollingModule?.cancel(withError: primerErr)
@@ -587,9 +593,9 @@ extension PrimerHeadlessUniversalCheckout {
 
                 guard let selectedRetailer = rawData as? PrimerRetailerData,
                       let selectedRetailerName = (initializationData as? RetailOutletsList)?
-                      .result
-                      .first(where: { $0.id == selectedRetailer.id })?
-                      .name
+                        .result
+                        .first(where: { $0.id == selectedRetailer.id })?
+                        .name
                 else {
                     throw handled(primerError: .invalidValue(key: "rawData.id", value: "Invalid Retailer Identifier"))
                 }
@@ -628,18 +634,17 @@ extension PrimerHeadlessUniversalCheckout {
             if let resumeDecisionType = resumeDecision.type as? PrimerResumeDecision.DecisionType {
                 switch resumeDecisionType {
                 case let .fail(message):
-                    let err: Error
-                    if let message {
-                        err = PrimerError.merchantError(message: message)
+                    let err: Error = if let message {
+                        PrimerError.merchantError(message: message)
                     } else {
-                        err = NSError.emptyDescriptionError
+                        NSError.emptyDescriptionError
                     }
                     throw err
                 case .succeed, .continueWithNewClientToken:
                     return nil
                 }
             } else if resumeDecision.type is PrimerHeadlessUniversalCheckoutResumeDecision.DecisionType {
-                return self.paymentCheckoutData
+                return paymentCheckoutData
             } else {
                 preconditionFailure()
             }
@@ -671,7 +676,7 @@ extension PrimerHeadlessUniversalCheckout {
         private func presentWebRedirectViewControllerWithRedirectUrl(_ redirectUrl: URL) async throws {
             let safariViewController = SFSafariViewController(url: redirectUrl)
             safariViewController.delegate = self
-            self.webViewController = safariViewController
+            webViewController = safariViewController
 
             try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
                 var didResume = false
@@ -720,10 +725,10 @@ extension PrimerHeadlessUniversalCheckout.RawDataManager: SFSafariViewController
 
     public func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
         if let webViewCompletion {
-            webViewCompletion(nil, handled(primerError: .cancelled(paymentMethodType: self.paymentMethodType)))
+            webViewCompletion(nil, handled(primerError: .cancelled(paymentMethodType: paymentMethodType)))
         }
 
-        self.webViewCompletion = nil
+        webViewCompletion = nil
     }
 
     public func safariViewController(_ controller: SFSafariViewController, initialLoadDidRedirectTo URL: URL) {

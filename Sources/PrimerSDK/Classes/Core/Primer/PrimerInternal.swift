@@ -29,7 +29,17 @@ final class PrimerInternal: LogReporter {
     let sdkSessionId = UUID().uuidString
     var checkoutSessionId: String?
     var timingEventId: String?
+    /// Which internal surface routes callbacks. Internal managers rewrite it as they are built.
     var sdkIntegrationType: PrimerSDKIntegrationType?
+
+    /// The product the merchant integrated. `sdkIntegrationType` reads `.headless` for
+    /// CheckoutComponents, so analytics cannot take the merchant's integration from it.
+    var sdkIntegrationProduct: PrimerSDKIntegrationType?
+
+    /// The value analytics reports as the merchant's integration.
+    var reportedIntegrationType: PrimerSDKIntegrationType? {
+        sdkIntegrationProduct ?? sdkIntegrationType
+    }
 
     // MARK: - INITIALIZATION
 
@@ -158,11 +168,12 @@ final class PrimerInternal: LogReporter {
      */
 
     func showUniversalCheckout(clientToken: String, completion: ((Error?) -> Void)? = nil) {
-        self.sdkIntegrationType = .dropIn
-        self.intent = .checkout
-        self.selectedPaymentMethodType = nil
-        self.checkoutSessionId = UUID().uuidString
-        self.timingEventId = UUID().uuidString
+        sdkIntegrationType = .dropIn
+        sdkIntegrationProduct = .dropIn
+        intent = .checkout
+        selectedPaymentMethodType = nil
+        checkoutSessionId = UUID().uuidString
+        timingEventId = UUID().uuidString
 
         var events: [Analytics.Event] = []
 
@@ -201,12 +212,13 @@ final class PrimerInternal: LogReporter {
     }
 
     func showVaultManager(clientToken: String, completion: ((Error?) -> Void)? = nil) {
-        self.sdkIntegrationType = .dropIn
-        self.intent = .vault
-        self.selectedPaymentMethodType = nil
+        sdkIntegrationType = .dropIn
+        sdkIntegrationProduct = .dropIn
+        intent = .vault
+        selectedPaymentMethodType = nil
 
-        self.checkoutSessionId = UUID().uuidString
-        self.timingEventId = UUID().uuidString
+        checkoutSessionId = UUID().uuidString
+        timingEventId = UUID().uuidString
 
         var events: [Analytics.Event] = []
 
@@ -240,10 +252,10 @@ final class PrimerInternal: LogReporter {
 
     func showPaymentMethod(_ paymentMethodType: String, withIntent intent: PrimerSessionIntent, andClientToken clientToken: String, completion: ((Error?) -> Void)? = nil) {
         self.intent = intent
-        self.selectedPaymentMethodType = paymentMethodType
+        selectedPaymentMethodType = paymentMethodType
 
-        self.checkoutSessionId = UUID().uuidString
-        self.timingEventId = UUID().uuidString
+        checkoutSessionId = UUID().uuidString
+        timingEventId = UUID().uuidString
 
         var events: [Analytics.Event] = []
 
@@ -288,15 +300,15 @@ final class PrimerInternal: LogReporter {
 
         let timingEvent = Analytics.Event.timer(
             momentType: .end,
-            id: self.timingEventId
+            id: timingEventId
         )
 
         Analytics.Service.fire(events: [sdkEvent, timingEvent])
         Analytics.Service.drain()
 
-        self.checkoutSessionId = nil
-        self.selectedPaymentMethodType = nil
-        self.currentIdempotencyKey = nil
+        checkoutSessionId = nil
+        selectedPaymentMethodType = nil
+        currentIdempotencyKey = nil
 
         PrimerUIManager.dismissPrimerUI(animated: true) {
             PrimerDelegateProxy.primerDidDismiss(

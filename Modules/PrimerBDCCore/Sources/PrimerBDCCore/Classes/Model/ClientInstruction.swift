@@ -22,13 +22,41 @@ public struct CurrentAttemptDataResponse: Codable {
 }
 
 @_spi(PrimerInternal)
+public enum SetupInstruction {
+    case wait
+    case execute(screen: CodableValue)
+    case setupComplete(token: String)
+}
+
+@_spi(PrimerInternal)
+public struct SetupState {
+    public let instruction: SetupInstruction
+    public let nextPoll: NextPoll
+
+    public init(instruction: SetupInstruction, nextPoll: NextPoll) {
+        self.instruction = instruction
+        self.nextPoll = nextPoll
+    }
+}
+
+@_spi(PrimerInternal)
+public enum NextPoll: String, SingleValueContained {
+    case interval
+    case suspend
+}
+
+@_spi(PrimerInternal)
 public struct SetupFlow {
     public let schema: CodableValue
     public let parameters: CodableValue
+    public let setupId: String
+    public let nextPoll: NextPoll
 
-    public init(schema: CodableValue, parameters: CodableValue) {
+    public init(schema: CodableValue, parameters: CodableValue, setupId: String, nextPoll: NextPoll) {
         self.schema = schema
         self.parameters = parameters
+        self.setupId = setupId
+        self.nextPoll = nextPoll
     }
 }
 

@@ -1,0 +1,92 @@
+//
+//  PrimerInputFieldContainer+Rendering.swift
+//
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
+
+import SwiftUI
+@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerCore
+
+@available(iOS 15.0, *)
+extension PrimerInputFieldContainer {
+  func makeLabel(_ label: String) -> some View {
+    Text(label)
+      .primerTypography(.bodySmall, tokens: tokens)
+      .foregroundColor(labelForegroundColor)
+      .frame(minHeight: PrimerComponentHeight.label)
+  }
+}
+
+@available(iOS 15.0, *)
+extension PrimerInputFieldContainer {
+  func makeTextFieldContainer() -> some View {
+    HStack(spacing: PrimerSpacing.small(tokens: tokens), content: makeTextFieldContainerContent)
+      .padding(.leading, PrimerSpacing.medium(tokens: tokens))
+      .padding(.trailing, PrimerSpacing.medium(tokens: tokens))
+      // Fixed, so the bridged text field fills the box and takes a tap anywhere in it; grows with large text.
+      .frame(height: PrimerComponentHeight.inputField(tokens: tokens))
+      .background(makeTextFieldContainerBackground())
+      .disabled(!isInputEnabled)
+  }
+
+  func makeTextFieldContainerContent() -> some View {
+    Group {
+      textFieldBuilder()
+      Spacer()
+      rightComponent?()
+      if hasError { makeTextFieldContainerWarning() }
+    }
+  }
+
+  func makeTextFieldContainerBackground() -> some View {
+    RoundedRectangle(cornerRadius: fieldCornerRadius)
+      .strokeBorder(borderColor, lineWidth: textFieldContainerBackgroundLineWidth)
+      .background(makeTextFieldContainerBackgroundBackground())
+      .animation(AnimationConstants.focusAnimation, value: isFocused)
+  }
+
+  func makeTextFieldContainerBackgroundBackground() -> some View {
+    RoundedRectangle(cornerRadius: fieldCornerRadius)
+      .fill(fieldBackgroundColor)
+  }
+
+  func makeTextFieldContainerWarning() -> some View {
+    PrimerFieldErrorIcon()
+  }
+}
+
+@available(iOS 15.0, *)
+extension PrimerInputFieldContainer {
+  func makeErrorMessage(_ errorMessage: String) -> some View {
+    // No standalone .accessibility(config:) here: the container combines label + field +
+    // error into one element, so the error must fold into that element rather than compete
+    // as a separate node. announceError below handles the transient VoiceOver notification.
+    Text(errorMessage)
+      .primerTypography(.error, tokens: tokens)
+      .foregroundColor(errorMessageForegroundColor)
+      .fixedSize(horizontal: false, vertical: true)
+      .frame(minHeight: PrimerComponentHeight.errorMessage)
+      .onAppear {
+        // Announce error to VoiceOver when error appears
+        if hasError {
+          announceError(errorMessage)
+        }
+      }
+      .onChange(of: errorMessage) { newError in
+        // Announce error when it changes
+        if hasError {
+          announceError(newError)
+        }
+      }
+  }
+
+  private func announceError(_ message: String) {
+    Task { @MainActor in
+      if let container = DIContainer.currentSync,
+        let announcementService = try? container.resolveSync(AccessibilityAnnouncementService.self) {
+        announcementService.announceError(message)
+      }
+    }
+  }
+}

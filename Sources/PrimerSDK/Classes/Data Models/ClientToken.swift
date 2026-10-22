@@ -27,7 +27,7 @@ extension DecodedJWTToken {
             throw handled(primerError: .invalidClientToken(reason: "Access token is nil"))
         }
 
-        guard let expDate = expDate else {
+        guard let expDate else {
             throw handled(
                 primerError: .invalidValue(key: "expDate", reason: "Expiry date missing")
             )

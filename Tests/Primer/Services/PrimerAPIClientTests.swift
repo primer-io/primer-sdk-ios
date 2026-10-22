@@ -473,6 +473,28 @@ final class PrimerAPIClientTests: XCTestCase {
         }
     }
 
+    func test_refreshClientSession_shouldSuccess_whenValidResponse() async throws {
+        let mockedResult = MockPrimerAPIClient.Samples.mockPrimerAPIConfiguration
+        networkService.mockedResult = mockedResult
+
+        let configuration = try await sut.refreshClientSession(clientToken: Mocks.decodedJWTToken)
+
+        XCTAssertEqual(configuration.coreUrl, mockedResult.coreUrl)
+    }
+
+    func test_refreshClientSession_shouldFail_whenInvalidResponse() async {
+        networkService.mockedError = mockedError
+
+        do {
+            _ = try await sut.refreshClientSession(clientToken: Mocks.decodedJWTToken)
+            XCTFail("Expected failure, but got success")
+        } catch {
+            guard let primerError = error as? PrimerError, case .unknown = primerError else {
+                return XCTFail("Expected PrimerError.unknown, but got: \(error)")
+            }
+        }
+    }
+
     func test_createPayPalOrderSession_shouldSuccess_whenValidResponse_completion() {
         // Given
         let expectation = XCTestExpectation(description: "Callback called")

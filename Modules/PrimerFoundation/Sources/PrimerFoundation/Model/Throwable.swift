@@ -23,9 +23,9 @@ public enum Throwable<T: Decodable>: Decodable {
     public var value: T? {
         switch self {
         case .failure:
-            return nil
+            nil
         case let .success(value):
-            return value
+            value
         }
     }
 }

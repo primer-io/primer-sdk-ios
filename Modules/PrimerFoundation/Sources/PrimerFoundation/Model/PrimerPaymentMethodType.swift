@@ -6,8 +6,37 @@
 
 import Foundation
 
-@_spi(PrimerInternal)
+/// Identifies the type of payment method used for a transaction.
+///
+/// `PrimerPaymentMethodType` enumerates all payment methods supported by the Primer SDK.
+/// Each case corresponds to a specific payment provider and method combination.
+///
+/// Payment methods are organized by provider:
+/// - **Card payments**: `paymentCard`
+/// - **Digital wallets**: `applePay`, `googlePay`, `payPal`
+/// - **Buy now, pay later**: `klarna`, `atome`, `hoolah`
+/// - **Bank transfers**: `goCardless`, `stripeAch`
+/// - **Regional methods**: Various provider-specific implementations for iDEAL, BLIK, etc.
+///
+/// Use this enum when:
+/// - Accessing payment method scopes: `checkoutScope.getPaymentMethodScope(for: .paymentCard)`
+/// - Filtering or identifying payment methods
+/// - Handling payment method-specific logic
+///
+/// Example usage:
+/// ```swift
+/// // Get card form scope using enum
+/// let cardFormScope: PrimerCardFormScope? = checkoutScope.getPaymentMethodScope(for: .paymentCard)
+///
+/// // Check payment method type in results
+/// if paymentResult.paymentMethodType == PrimerPaymentMethodType.applePay.rawValue {
+///     // Handle Apple Pay specific logic
+/// }
+/// ```
+/// - Note: **v3.0 breaking change**: This enum is now `public`. All cases are part of the
+///   public API contract — no cases can be removed or renamed without a breaking change.
 public enum PrimerPaymentMethodType: String, Codable, CaseIterable, Equatable, Hashable, Sendable {
+    case adyenAffirm                    = "ADYEN_AFFIRM"
     case adyenAlipay                    = "ADYEN_ALIPAY"
     case adyenBlik                      = "ADYEN_BLIK"
     case adyenBancontactCard            = "ADYEN_BANCONTACT_CARD"
@@ -15,6 +44,7 @@ public enum PrimerPaymentMethodType: String, Codable, CaseIterable, Equatable, H
     case adyenGiropay                   = "ADYEN_GIROPAY"
     case adyenIDeal                     = "ADYEN_IDEAL"
     case adyenInterac                   = "ADYEN_INTERAC"
+    case adyenKlarna                    = "ADYEN_KLARNA"
     case adyenMobilePay                 = "ADYEN_MOBILEPAY"
     case adyenMBWay                     = "ADYEN_MBWAY"
     case adyenMultibanco                = "ADYEN_MULTIBANCO"
@@ -38,6 +68,7 @@ public enum PrimerPaymentMethodType: String, Codable, CaseIterable, Equatable, H
     case iPay88Card                     = "IPAY88_CARD"
     case klarna                         = "KLARNA"
     case mollieBankcontact              = "MOLLIE_BANCONTACT"
+    case mollieGiftcard                 = "MOLLIE_GIFTCARD"
     case mollieIdeal                    = "MOLLIE_IDEAL"
     case opennode                       = "OPENNODE"
     case payNLBancontact                = "PAY_NL_BANCONTACT"
@@ -66,13 +97,15 @@ public enum PrimerPaymentMethodType: String, Codable, CaseIterable, Equatable, H
 
     public var provider: String {
         switch self {
-        case .adyenAlipay,
+        case .adyenAffirm,
+             .adyenAlipay,
              .adyenBlik,
              .adyenBancontactCard,
              .adyenDotPay,
              .adyenGiropay,
              .adyenIDeal,
              .adyenInterac,
+             .adyenKlarna,
              .adyenMobilePay,
              .adyenMBWay,
              .adyenMultibanco,
@@ -82,7 +115,7 @@ public enum PrimerPaymentMethodType: String, Codable, CaseIterable, Equatable, H
              .adyenTrustly,
              .adyenTwint,
              .adyenVipps:
-            return "ADYEN"
+            "ADYEN"
 
         case .applePay,
              .atome,
@@ -95,56 +128,57 @@ public enum PrimerPaymentMethodType: String, Codable, CaseIterable, Equatable, H
              .paymentCard,
              .payPal,
              .twoCtwoP:
-            return rawValue
+            rawValue
 
         case .buckarooBancontact,
              .buckarooEps,
              .buckarooGiropay,
              .buckarooIdeal,
              .buckarooSofort:
-            return "BUCKAROO"
+            "BUCKAROO"
 
         case .iPay88Card:
-            return "IPAY88"
+            "IPAY88"
 
         case .mollieBankcontact,
+             .mollieGiftcard,
              .mollieIdeal:
-            return "MOLLIE"
+            "MOLLIE"
 
         case .payNLBancontact,
              .payNLGiropay,
              .payNLIdeal,
              .payNLPayconiq:
-            return "PAY_NL"
+            "PAY_NL"
 
         case .primerTestKlarna,
              .primerTestPayPal,
              .primerTestSofort:
-            return "PRIMER_TEST"
+            "PRIMER_TEST"
 
         case .rapydFast,
              .rapydGCash,
              .rapydGrabPay,
              .rapydPoli,
              .rapydPromptPay:
-            return "RAPYD"
+            "RAPYD"
 
         case .omisePromptPay:
-            return "OMISE"
+            "OMISE"
 
         case .xenditOvo,
              .xenditRetailOutlets:
-            return "XENDIT"
+            "XENDIT"
 
         case .xfersPayNow:
-            return "XFERS"
+            "XFERS"
         case .nolPay:
-            return "NOL_PAY"
+            "NOL_PAY"
         case .stripeAch:
-            return "STRIPE"
+            "STRIPE"
 
         case .fintechtureSmartTransfer, .fintechtureImmediateTransfer:
-            return "FINTECHTURE"
+            "FINTECHTURE"
         }
     }
 }

@@ -82,11 +82,13 @@ runs:
         node-version: 18.3.0
     - name: Install SMB
       shell: bash
-      run: npm install --save slack-message-builder
+      run: npm install --save slack-message-builder # zizmor: ignore[adhoc-packages] CI-only Slack report helper; no maintained lockfile
     - name: Create secrets.defaults.properties
       shell: bash
+      env:
+        STRIPE_PUBLISHABLE_KEY: ${{ inputs.stripe-publishable-key }}
       run: |
-        echo "STRIPE_PUBLISHABLE_KEY=${{ inputs.stripe-publishable-key }}" > Debug\ App/secrets.defaults.properties
+        echo "STRIPE_PUBLISHABLE_KEY=$STRIPE_PUBLISHABLE_KEY" > Debug\ App/secrets.defaults.properties
     - name: Test, Build, and Distribute app to Appetize 🚀
       shell: bash
       run: |
@@ -104,10 +106,13 @@ runs:
         GITHUB_RUN_ID: ${{ inputs.github-run-id }}
         PR_NUMBER: ${{ inputs.pr-number}}
     - name: Create Slack Success Summary Report
-      if: ${{ success()  }}
+      if: ${{ success() }}
       shell: bash
+      env:
+        SOURCE_BRANCH: ${{ inputs.source-branch }}
+        BUILD_TYPE: ${{ inputs.build_type }}
       run: |
-        node Report\ Scripts/appetize-success-report-script.js createAppetizeSummaryReport ${{ inputs.source-branch }} ${{ inputs.build_type }}
+        node Report\ Scripts/appetize-success-report-script.js createAppetizeSummaryReport "$SOURCE_BRANCH" "$BUILD_TYPE"
     - name: Slack Success Notification
       if: ${{ success() }}
       uses: slackapi/slack-github-action@6c661ce58804a1a20f6dc5fbee7f0381b469e001 #v1.25.0
@@ -119,8 +124,10 @@ runs:
     - name: Create Slack Failure Summary Report
       if: ${{ failure() }}
       shell: bash
+      env:
+        SOURCE_BRANCH: ${{ inputs.source-branch }}
       run: |
-        node Report\ Scripts/appetize-failure-report-script.js createAppetizeSummaryReport ${{ inputs.source-branch }}
+        node Report\ Scripts/appetize-failure-report-script.js createAppetizeSummaryReport "$SOURCE_BRANCH"
     - name: Slack Notification
       if: ${{ failure() }}
       uses: slackapi/slack-github-action@6c661ce58804a1a20f6dc5fbee7f0381b469e001 #v1.25.0

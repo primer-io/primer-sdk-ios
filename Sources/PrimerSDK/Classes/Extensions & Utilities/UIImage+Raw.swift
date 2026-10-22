@@ -1,7 +1,7 @@
 //
 //  UIImage+Raw.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import UIKit.UIImage
@@ -31,6 +31,7 @@ extension UIImage {
     static let cartesBancairesColored = UIImage(primerResource: "cartesbancaires-card-icon-colored")
     static let discoverColored = UIImage(primerResource: "discover-card-icon-colored")
     static let eftposColored = UIImage(primerResource: "eftpos-card-icon-colored")
+    static let klarnaBadgeColored = UIImage(primerResource: "klarna-badge-colored")
     static let klarnaColored = UIImage(primerResource: "klarna-logo-colored")
     static let masterCardColored = UIImage(primerResource: "mastercard-card-icon-colored")
     static let visaColored = UIImage(primerResource: "visa-card-icon-colored")

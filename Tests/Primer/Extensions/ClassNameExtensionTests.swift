@@ -6,12 +6,12 @@
 
 @testable import PrimerSDK
 import XCTest
-@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) @testable import PrimerFoundation
 
 final class ClassNameExtensionTests: XCTestCase {
 
     func testClassName() {
-        XCTAssertEqual(self.className, "ClassNameExtensionTests")
+        XCTAssertEqual(className, "ClassNameExtensionTests")
         XCTAssertEqual(ClassNameExtensionTests.className, "ClassNameExtensionTests")
     }
 

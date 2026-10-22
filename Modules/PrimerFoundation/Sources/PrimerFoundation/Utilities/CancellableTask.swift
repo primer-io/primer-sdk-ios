@@ -47,10 +47,10 @@ public actor CancellableTask<Success: Sendable> {
             task = Task { [weak self] in
                 guard let self else { return }
                 do {
-                    let value = try await self.operation()
-                    await self.tryResume(.success(value))
+                    let value = try await operation()
+                    await tryResume(.success(value))
                 } catch {
-                    await self.tryResume(.failure(self.cancellationError ?? error))
+                    await tryResume(.failure(cancellationError ?? error))
                 }
             }
         }

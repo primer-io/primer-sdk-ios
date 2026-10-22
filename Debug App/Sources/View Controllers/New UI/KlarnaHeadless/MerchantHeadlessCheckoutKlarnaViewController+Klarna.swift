@@ -42,10 +42,10 @@ extension MerchantHeadlessCheckoutKlarnaViewController: PrimerHeadlessErrorableD
             switch step {
             case let .paymentSessionCreated(clientToken, paymentCategories):
                 DispatchQueue.main.async { [weak self] in
-                    guard let self = self else { return }
-                    self.hideLoader()
+                    guard let self else { return }
+                    hideLoader()
                     self.clientToken = clientToken
-                    self.klarnaInitializationViewModel.updatePaymentCategories(paymentCategories)
+                    klarnaInitializationViewModel.updatePaymentCategories(paymentCategories)
                 }
 
             case let .paymentSessionAuthorized( _, checkoutData):
