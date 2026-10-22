@@ -62,30 +62,43 @@ struct VaultedCardCVVInput: View {
 
   // MARK: - CVV Input Row
 
+  // At accessibility text sizes the code outgrows the fixed-width box, so the box takes a full row.
+  private var showsFieldOnOwnRow: Bool { sizeCategory.isAccessibilityCategory }
+
+  @ViewBuilder
   private func makeCvvInputRow() -> some View {
-    HStack(spacing: PrimerSpacing.small(tokens: tokens)) {
-      HStack(spacing: PrimerSpacing.xsmall(tokens: tokens)) {
-        Image(systemName: "lock.fill")
-          .font(PrimerFont.bodySmall(tokens: tokens))
-          .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
-
-        Text(CheckoutComponentsStrings.cvvRecaptureInstruction)
-          .primerTypography(.bodySmall, tokens: tokens)
-          .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
-          .lineLimit(2)
-          .fixedSize(horizontal: false, vertical: true)
+    if showsFieldOnOwnRow {
+      VStack(alignment: .leading, spacing: PrimerSpacing.small(tokens: tokens)) {
+        makeInstruction()
+        makeCvvTextField()
       }
-      .accessibility(
-        config: AccessibilityConfiguration(
-          identifier: AccessibilityIdentifiers.Vault.cvvSecurityLabel,
-          label: CheckoutComponentsStrings.cvvRecaptureInstruction,
-          traits: []
-        ))
-
-      Spacer()
-
-      makeCvvTextField()
+    } else {
+      HStack(spacing: PrimerSpacing.small(tokens: tokens)) {
+        makeInstruction()
+        Spacer()
+        makeCvvTextField()
+      }
     }
+  }
+
+  private func makeInstruction() -> some View {
+    HStack(spacing: PrimerSpacing.xsmall(tokens: tokens)) {
+      Image(systemName: "lock.fill")
+        .font(PrimerFont.bodySmall(tokens: tokens))
+        .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
+
+      Text(CheckoutComponentsStrings.cvvRecaptureInstruction)
+        .primerTypography(.bodySmall, tokens: tokens)
+        .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
+        .lineLimit(2)
+        .fixedSize(horizontal: false, vertical: true)
+    }
+    .accessibility(
+      config: AccessibilityConfiguration(
+        identifier: AccessibilityIdentifiers.Vault.cvvSecurityLabel,
+        label: CheckoutComponentsStrings.cvvRecaptureInstruction,
+        traits: []
+      ))
   }
 
   // MARK: - CVV Text Field
@@ -106,7 +119,10 @@ struct VaultedCardCVVInput: View {
       if errorMessage != nil { PrimerFieldErrorIcon() }
     }
     .padding(.horizontal, PrimerSpacing.medium(tokens: tokens))
-    .frame(width: PrimerComponentWidth.cvvFieldMax, height: PrimerComponentHeight.inputField(tokens: tokens))
+    .frame(
+      width: showsFieldOnOwnRow ? nil : PrimerComponentWidth.cvvFieldMax,
+      height: PrimerComponentHeight.inputField(tokens: tokens)
+    )
     .background(
       RoundedRectangle(cornerRadius: PrimerRadius.small(tokens: tokens))
         .fill(CheckoutColors.inputBackground(tokens: tokens, isEnabled: isInputEnabled))
