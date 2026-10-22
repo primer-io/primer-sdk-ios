@@ -967,46 +967,43 @@ final class DefaultCardFormScopeTests: XCTestCase {
 
         await DIContainer.withContainer(container) {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
-            let mockConfig = MockConfigurationService.withDefaultConfiguration()
-            mockConfig.billingAddressOptions = PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions(
-                firstName: nil,
-                lastName: nil,
-                city: true,
-                postalCode: true,
-                addressLine1: nil,
-                addressLine2: nil,
-                countryCode: nil,
-                phoneNumber: nil,
-                state: nil
+            let scope = createCardFormScope(
+                checkoutScope: checkoutScope,
+                configurationService: billingAddressConfiguration(
+                    firstName: nil, lastName: nil, addressLine1: nil, addressLine2: nil, countryCode: nil, state: nil
+                )
             )
-
-            let scope = createCardFormScope(checkoutScope: checkoutScope, configurationService: mockConfig)
 
             XCTAssertEqual(scope.getFormConfiguration().billingFields, [.postalCode, .city])
         }
     }
 
-    private func billingAddressConfiguration(phoneNumber: Bool? = nil) -> MockConfigurationService {
+    private func billingAddressConfiguration(
+        firstName: Bool? = true,
+        lastName: Bool? = true,
+        addressLine1: Bool? = true,
+        addressLine2: Bool? = true,
+        countryCode: Bool? = true,
+        phoneNumber: Bool? = nil,
+        state: Bool? = true
+    ) -> MockConfigurationService {
         let mockConfig = MockConfigurationService.withDefaultConfiguration()
         mockConfig.billingAddressOptions = PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions(
-            firstName: true,
-            lastName: true,
+            firstName: firstName,
+            lastName: lastName,
             city: true,
             postalCode: true,
-            addressLine1: true,
-            addressLine2: true,
-            countryCode: true,
+            addressLine1: addressLine1,
+            addressLine2: addressLine2,
+            countryCode: countryCode,
             phoneNumber: phoneNumber,
-            state: true
+            state: state
         )
         return mockConfig
     }
 
     private func fillValidCardFieldStates(_ scope: DefaultCardFormScope) {
-        scope.updateCardNumber(TestData.CardNumbers.validVisa)
-        scope.updateCvv("123")
-        scope.updateExpiryDate("12/30")
-        scope.updateCardholderName("John Doe")
+        fillValidCard(scope)
         scope.updateValidationState(\.cardNumber, isValid: true)
         scope.updateValidationState(\.cvv, isValid: true)
         scope.updateValidationState(\.expiry, isValid: true)
@@ -1376,22 +1373,9 @@ final class DefaultCardFormScopeTests: XCTestCase {
 
         await DIContainer.withContainer(container) {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
-            let mockConfig = MockConfigurationService.withDefaultConfiguration()
-            mockConfig.billingAddressOptions = PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions(
-                firstName: true,
-                lastName: true,
-                city: true,
-                postalCode: true,
-                addressLine1: true,
-                addressLine2: true,
-                countryCode: true,
-                phoneNumber: nil,
-                state: true
-            )
-
             let scope = createCardFormScope(
                 checkoutScope: checkoutScope,
-                configurationService: mockConfig
+                configurationService: billingAddressConfiguration()
             )
 
             let config = scope.getFormConfiguration()
@@ -1410,22 +1394,9 @@ final class DefaultCardFormScopeTests: XCTestCase {
 
         await DIContainer.withContainer(container) {
             let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
-            let mockConfig = MockConfigurationService.withDefaultConfiguration()
-            mockConfig.billingAddressOptions = PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions(
-                firstName: true,
-                lastName: true,
-                city: true,
-                postalCode: true,
-                addressLine1: true,
-                addressLine2: true,
-                countryCode: true,
-                phoneNumber: nil,
-                state: true
-            )
-
             let scope = createCardFormScope(
                 checkoutScope: checkoutScope,
-                configurationService: mockConfig
+                configurationService: billingAddressConfiguration()
             )
 
             XCTAssertNotEqual(scope.currentState.configuration, .default)
