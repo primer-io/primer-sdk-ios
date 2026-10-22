@@ -103,6 +103,13 @@ final class ThemeOverrideMappingTests: XCTestCase {
         }
     }
 
+    func test_cardConfigurations_offerTheCardAutoFill() throws {
+        guard #available(iOS 17.0, *) else { throw XCTSkip("The card's expiry, CVV and name content types need iOS 17") }
+        XCTAssertEqual(PrimerTextFieldConfiguration.expiryDate.textContentType, .creditCardExpiration)
+        XCTAssertEqual(PrimerTextFieldConfiguration.cvv.textContentType, .creditCardSecurityCode)
+        XCTAssertEqual(UITextContentType.cardholderName, .creditCardName)
+    }
+
     func test_fieldConfiguration_givesThePhoneThePhonePad() {
         XCTAssertEqual(PrimerInputElementType.phoneNumber.fieldConfiguration.keyboardType, .phonePad)
         XCTAssertEqual(PrimerInputElementType.firstName.fieldConfiguration.keyboardType, .default)
