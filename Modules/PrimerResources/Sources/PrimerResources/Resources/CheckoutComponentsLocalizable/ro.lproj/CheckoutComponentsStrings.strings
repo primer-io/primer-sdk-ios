@@ -145,7 +145,7 @@
 "primer_card_form_title" = "Plătiți cu cardul";
 "primer_checkout_dismissing" = "Se închide...";
 "primer_checkout_error_button_other_methods" = "Alegeți alte metode de plată";
-"primer_checkout_error_subtitle" = "A apărut o problemă de rețea.";
+"primer_checkout_error_subtitle" = "Vă rugăm să încercați din nou sau să folosiți o altă metodă de plată.";
 "primer_checkout_error_title" = "Plata a eșuat";
 "primer_checkout_loading_indicator" = "Se încarcă";
 "primer_checkout_processing_subtitle" = "Vă rugăm așteptați...";

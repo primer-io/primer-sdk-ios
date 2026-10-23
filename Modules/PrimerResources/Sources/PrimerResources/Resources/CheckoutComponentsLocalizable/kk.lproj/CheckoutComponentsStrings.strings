@@ -20,7 +20,7 @@
 "primer_checkout_success_title" = "Төлем сәтті орындалды";
 "primer_checkout_success_subtitle" = "Сіз жақын арада тапсырысты растау бетіне бағытталасыз.";
 "primer_checkout_error_title" = "Төлем сәтсіз аяқталды";
-"primer_checkout_error_subtitle" = "Желі қатесі орын алды.";
+"primer_checkout_error_subtitle" = "Қайталап көріңіз немесе басқа төлем әдісін пайдаланыңыз.";
 "primer_checkout_error_button_other_methods" = "Басқа төлем әдістерін таңдау";
 "primer_checkout_processing_title" = "Төлеміңіз өңделуде";
 "primer_checkout_processing_subtitle" = "Күте тұрыңыз...";

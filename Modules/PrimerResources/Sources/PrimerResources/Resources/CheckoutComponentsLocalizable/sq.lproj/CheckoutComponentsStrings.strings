@@ -20,7 +20,7 @@
 "primer_checkout_success_title" = "Pagesa u krye me sukses";
 "primer_checkout_success_subtitle" = "Do të ridrejtoheni në faqen e konfirmimit të porosisë së shpejti.";
 "primer_checkout_error_title" = "Pagesa dështoi";
-"primer_checkout_error_subtitle" = "Pati një problem me rrjetin.";
+"primer_checkout_error_subtitle" = "Ju lutem provoni përsëri ose përdorni një metodë tjetër pagese.";
 "primer_checkout_error_button_other_methods" = "Zgjidhni metoda të tjera pagese";
 "primer_checkout_processing_title" = "Po përpunohet pagesa juaj";
 "primer_checkout_processing_subtitle" = "Ju lutem prisni...";

@@ -20,7 +20,7 @@
 "primer_checkout_success_title" = "Dayn serkeftî bû";
 "primer_checkout_success_subtitle" = "Hûn ê bi zû vegerin rûpela pejirandina fermana xwe.";
 "primer_checkout_error_title" = "Dayn têkçû";
-"primer_checkout_error_subtitle" = "Pirsgirêkek torê hebû.";
+"primer_checkout_error_subtitle" = "Ji kerema xwe dîsa biceribîne an rêbazeke din a daynê bikar bîne.";
 "primer_checkout_error_button_other_methods" = "Rêbazên din ên daynê hilbijêre";
 "primer_checkout_processing_title" = "Dayna we tê pêvekirin";
 "primer_checkout_processing_subtitle" = "Ji kerema xwe bisekine...";

@@ -145,7 +145,7 @@
 "primer_card_form_title" = "Payer par carte";
 "primer_checkout_dismissing" = "Fermeture...";
 "primer_checkout_error_button_other_methods" = "Choisir un autre moyen de paiement";
-"primer_checkout_error_subtitle" = "Un problème s'est produit avec votre connexion Internet";
+"primer_checkout_error_subtitle" = "Veuillez réessayer ou utiliser un autre moyen de paiement.";
 "primer_checkout_error_title" = "Le paiement a échoué";
 "primer_checkout_loading_indicator" = "Chargement";
 "primer_checkout_processing_subtitle" = "Veuillez patienter...";

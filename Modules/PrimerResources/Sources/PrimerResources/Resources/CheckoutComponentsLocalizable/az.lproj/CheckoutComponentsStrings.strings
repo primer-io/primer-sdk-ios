@@ -20,7 +20,7 @@
 "primer_checkout_success_title" = "Ödəniş uğurla tamamlandı";
 "primer_checkout_success_subtitle" = "Tezliklə sifariş təsdiq səhifəsinə yönləndiriləcəksiniz.";
 "primer_checkout_error_title" = "Ödəniş uğursuz oldu";
-"primer_checkout_error_subtitle" = "Şəbəkə problemi yarandı.";
+"primer_checkout_error_subtitle" = "Zəhmət olmasa, yenidən cəhd edin və ya başqa ödəniş metodundan istifadə edin.";
 "primer_checkout_error_button_other_methods" = "Digər ödəniş metodlarını seçin";
 "primer_checkout_processing_title" = "Ödənişiniz işlənir";
 "primer_checkout_processing_subtitle" = "Zəhmət olmasa gözləyin...";

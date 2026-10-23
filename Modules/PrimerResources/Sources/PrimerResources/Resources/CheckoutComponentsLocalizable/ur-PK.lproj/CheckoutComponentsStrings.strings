@@ -20,7 +20,7 @@
 "primer_checkout_success_title" = "ادائیگی کامیاب ہو گئی";
 "primer_checkout_success_subtitle" = "آپ کو جلد ہی آرڈر کی تصدیق کے صفحے پر منتقل کر دیا جائے گا۔";
 "primer_checkout_error_title" = "ادائیگی ناکام ہو گئی";
-"primer_checkout_error_subtitle" = "نیٹ ورک میں مسئلہ تھا۔";
+"primer_checkout_error_subtitle" = "براہ کرم دوبارہ کوشش کریں یا ادائیگی کا کوئی دوسرا طریقہ استعمال کریں۔";
 "primer_checkout_error_button_other_methods" = "دوسرے ادائیگی کے طریقے منتخب کریں";
 "primer_checkout_processing_title" = "آپ کی ادائیگی پر کارروائی ہو رہی ہے";
 "primer_checkout_processing_subtitle" = "براہ کرم انتظار کریں...";

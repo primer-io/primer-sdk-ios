@@ -145,7 +145,7 @@
 "primer_card_form_title" = "Maksāt ar karti";
 "primer_checkout_dismissing" = "Notiek aizvēršana...";
 "primer_checkout_error_button_other_methods" = "Izvēlēties citas maksājuma metodes";
-"primer_checkout_error_subtitle" = "Radās tīkla problēma.";
+"primer_checkout_error_subtitle" = "Lūdzu, mēģiniet vēlreiz vai izmantojiet citu maksājuma metodi.";
 "primer_checkout_error_title" = "Maksājums neizdevās";
 "primer_checkout_loading_indicator" = "Notiek ielāde";
 "primer_checkout_processing_subtitle" = "Lūdzu, uzgaidiet...";

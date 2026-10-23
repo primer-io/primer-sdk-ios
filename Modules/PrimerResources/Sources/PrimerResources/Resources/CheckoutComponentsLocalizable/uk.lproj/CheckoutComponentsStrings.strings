@@ -145,7 +145,7 @@
 "primer_card_form_title" = "Оплатити карткою";
 "primer_checkout_dismissing" = "Закриття...";
 "primer_checkout_error_button_other_methods" = "Обрати інші способи оплати";
-"primer_checkout_error_subtitle" = "Виникла проблема з мережею.";
+"primer_checkout_error_subtitle" = "Будь ласка, спробуйте ще раз або скористайтеся іншим способом оплати.";
 "primer_checkout_error_title" = "Платіж не вдався";
 "primer_checkout_loading_indicator" = "Завантаження";
 "primer_checkout_processing_subtitle" = "Будь ласка, зачекайте...";

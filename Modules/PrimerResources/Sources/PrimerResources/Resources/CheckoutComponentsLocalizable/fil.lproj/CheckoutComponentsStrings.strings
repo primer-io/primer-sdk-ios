@@ -20,7 +20,7 @@
 "primer_checkout_success_title" = "Matagumpay ang pagbabayad";
 "primer_checkout_success_subtitle" = "Mare-redirect ka sa pahina ng kumpirmasyon ng order sa lalong madaling panahon.";
 "primer_checkout_error_title" = "Nabigo ang pagbabayad";
-"primer_checkout_error_subtitle" = "May problema sa network.";
+"primer_checkout_error_subtitle" = "Mangyaring subukan muli o gumamit ng ibang paraan ng pagbabayad.";
 "primer_checkout_error_button_other_methods" = "Pumili ng ibang paraan ng pagbabayad";
 "primer_checkout_processing_title" = "Pinoproseso ang iyong pagbabayad";
 "primer_checkout_processing_subtitle" = "Mangyaring maghintay...";

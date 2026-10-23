@@ -20,7 +20,7 @@
 "primer_checkout_success_title" = "Վճարումն իրականացվել է";
 "primer_checkout_success_subtitle" = "Շուտով ուղղորդվելու եք պատվերի հաստատման էջ։";
 "primer_checkout_error_title" = "Վճարումը չհաջողվեց";
-"primer_checkout_error_subtitle" = "Ցանցային խնդիր է ծագել։";
+"primer_checkout_error_subtitle" = "Կրկին փորձեք կամ օգտագործեք վճարման այլ եղանակ։";
 "primer_checkout_error_button_other_methods" = "Ընտրել այլ վճարման եղանակներ";
 "primer_checkout_processing_title" = "Ձեր վճարումը մշակվում է";
 "primer_checkout_processing_subtitle" = "Խնդրում ենք սպասել...";

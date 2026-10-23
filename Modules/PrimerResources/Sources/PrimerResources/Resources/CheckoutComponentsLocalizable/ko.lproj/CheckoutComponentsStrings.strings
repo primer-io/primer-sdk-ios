@@ -145,7 +145,7 @@
 "primer_card_form_title" = "카드로 결제";
 "primer_checkout_dismissing" = "닫는 중...";
 "primer_checkout_error_button_other_methods" = "다른 결제 수단 선택";
-"primer_checkout_error_subtitle" = "네트워크 문제가 발생했습니다.";
+"primer_checkout_error_subtitle" = "다시 시도하거나 다른 결제 수단을 사용해 주세요.";
 "primer_checkout_error_title" = "결제 실패";
 "primer_checkout_loading_indicator" = "로딩 중";
 "primer_checkout_processing_subtitle" = "잠시만 기다려 주세요...";

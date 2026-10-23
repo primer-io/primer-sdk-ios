@@ -145,7 +145,7 @@
 "primer_card_form_title" = "Оплатить картой";
 "primer_checkout_dismissing" = "Закрытие...";
 "primer_checkout_error_button_other_methods" = "Выбрать другие способы оплаты";
-"primer_checkout_error_subtitle" = "Возникла проблема с сетью.";
+"primer_checkout_error_subtitle" = "Пожалуйста, попробуйте снова или используйте другой способ оплаты.";
 "primer_checkout_error_title" = "Платеж не выполнен";
 "primer_checkout_loading_indicator" = "Загрузка";
 "primer_checkout_processing_subtitle" = "Пожалуйста, подождите...";

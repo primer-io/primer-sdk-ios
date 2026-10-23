@@ -145,7 +145,7 @@
 "primer_card_form_title" = "Mit Karte bezahlen";
 "primer_checkout_dismissing" = "Wird geschlossen...";
 "primer_checkout_error_button_other_methods" = "Andere Zahlungsmethoden wählen";
-"primer_checkout_error_subtitle" = "Es gab ein Netzwerkproblem.";
+"primer_checkout_error_subtitle" = "Bitte versuchen Sie es erneut oder verwenden Sie eine andere Zahlungsmethode.";
 "primer_checkout_error_title" = "Zahlung fehlgeschlagen";
 "primer_checkout_loading_indicator" = "Wird geladen";
 "primer_checkout_processing_subtitle" = "Bitte warten...";

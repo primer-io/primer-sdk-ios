@@ -20,7 +20,7 @@
 "primer_checkout_success_title" = "To'lov muvaffaqiyatli amalga oshirildi";
 "primer_checkout_success_subtitle" = "Tez orada buyurtmani tasdiqlash sahifasiga yo'naltirilasiz.";
 "primer_checkout_error_title" = "To'lov amalga oshmadi";
-"primer_checkout_error_subtitle" = "Tarmoq muammosi yuz berdi.";
+"primer_checkout_error_subtitle" = "Iltimos, qayta urinib ko'ring yoki boshqa to'lov usulidan foydalaning.";
 "primer_checkout_error_button_other_methods" = "Boshqa to'lov usullarini tanlash";
 "primer_checkout_processing_title" = "To'lovingiz qayta ishlanmoqda";
 "primer_checkout_processing_subtitle" = "Iltimos, kuting...";
