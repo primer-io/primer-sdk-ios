@@ -62,6 +62,20 @@ final class PrimerInputFieldContainerLayoutTests: XCTestCase {
     XCTAssertEqual(size.height, PrimerComponentHeight.interactive)
   }
 
+  func test_savedCardCVVField_keepsItsFixedWidth_atStandardTextSizes() throws {
+    let controller = UIHostingController(rootView: makeSavedCardCVVInput().environment(\.sizeCategory, .extraExtraExtraLarge))
+
+    XCTAssertLessThanOrEqual(try XCTUnwrap(Self.textFieldFrames(in: controller).first).width, PrimerComponentWidth.cvvFieldMax)
+  }
+
+  func test_savedCardCVVField_takesAFullRow_atAccessibilityTextSizes() throws {
+    let controller = UIHostingController(
+      rootView: makeSavedCardCVVInput().environment(\.sizeCategory, .accessibilityExtraExtraExtraLarge)
+    )
+
+    XCTAssertGreaterThan(try XCTUnwrap(Self.textFieldFrames(in: controller).first).width, PrimerComponentWidth.cvvFieldMax)
+  }
+
   func test_fieldRow_withoutAnError_endsMediumSpacingAboveTheNextField() throws {
     XCTAssertEqual(try gapToTheNextField(errorMessage: nil), PrimerSpacing.medium(tokens: nil))
     XCTAssertEqual(try gapToTheNextField(errorMessage: ""), PrimerSpacing.medium(tokens: nil))
