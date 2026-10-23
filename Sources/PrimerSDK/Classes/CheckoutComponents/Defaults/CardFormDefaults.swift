@@ -4,9 +4,9 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import SwiftUI
-@_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
+import SwiftUI
 
 /// Default content for ``PrimerCardForm``'s slots, and building blocks for recomposing the form.
 ///
@@ -226,12 +226,12 @@ public struct CardSubmitButton: View {
         .frame(maxWidth: .infinity)
         .padding(PrimerSpacing.medium(tokens: tokens))
     }
-    .disabled(!session.state.isValid || session.state.isLoading)
+    .disabled(!session.state.canSubmit || session.state.isLoading)
     .accessibility(
       config: .submitButton(
         identifier: AccessibilityIdentifiers.CardForm.submitButton,
         title: CheckoutComponentsStrings.payButton,
-        isEnabled: session.state.isValid,
+        isEnabled: session.state.canSubmit,
         isLoading: session.state.isLoading
       ))
   }

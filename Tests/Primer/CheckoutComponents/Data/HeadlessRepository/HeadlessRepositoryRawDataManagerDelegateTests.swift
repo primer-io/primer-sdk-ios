@@ -4,48 +4,10 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+@_spi(PrimerInternal) @testable import PrimerCore
+@_spi(PrimerInternal) @testable import PrimerFoundation
 @testable import PrimerSDK
 import XCTest
-@_spi(PrimerInternal) @testable import PrimerFoundation
-@_spi(PrimerInternal) @testable import PrimerCore
-
-// MARK: - Update Card Number Stream Behavior
-
-@available(iOS 15.0, *)
-@MainActor
-final class UpdateCardNumberStreamTests: XCTestCase {
-
-    private var sut: HeadlessRepositoryImpl!
-
-    override func setUp() {
-        super.setUp()
-        sut = HeadlessRepositoryImpl()
-    }
-
-    override func tearDown() {
-        sut = nil
-        super.tearDown()
-    }
-
-    func test_selectCardNetwork_updatesRawCardData() async throws {
-        // Given
-        let mockClientSessionActions = MockClientSessionActionsModule()
-        let sut = HeadlessRepositoryImpl(
-            clientSessionActionsFactory: { mockClientSessionActions }
-        )
-
-        // When
-        await sut.selectCardNetwork(.visa)
-
-        // Then - network stored internally via an async select-payment-method call
-        try await withTimeout(2.0) {
-            while mockClientSessionActions.selectPaymentMethodCalls.isEmpty {
-                await Task.yield()
-            }
-        }
-        XCTAssertEqual(mockClientSessionActions.selectPaymentMethodCalls.count, 1)
-    }
-}
 
 // MARK: - Payment Completion Handler Tests
 

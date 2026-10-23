@@ -76,7 +76,8 @@ Via `PrimerPaymentMethodSelectionScope`:
 ### Surcharging
 Per-payment-method and per-card-network surcharge amounts:
 - `CheckoutPaymentMethod`: `surcharge: Int?` (minor units), `hasUnknownSurcharge`, `formattedSurcharge: String?`
-- `PrimerCardFormState`: `surchargeAmountRaw: Int?`, `surchargeAmount: String?` (updates per selected network)
+- `PrimerCardFormState`: `surchargeAmountRaw: Int?`, `surchargeAmount: String?` (per selected network, once the card lookup confirms it; the first-digits guess shows no surcharge). The card number field's chip shows this value
+- The client session gets the card network the form shows, from the card lookup (`ClientSessionCardNetworkSync`, fed by `CardValidationService`); never the keystroke guess. `PrimerCardFormState.isUpdatingClientSession` is `true` until it lands, and Pay stays disabled meanwhile. Pay sends it again only when another update has replaced the session since, and a submitted card's lookups leave it alone. Leaving the form without paying (Back, cancel, dismiss) takes the network off again, unless a payment started and has not failed
 - `PrimerPayPalState`, `PrimerWebRedirectState`, `PrimerFormRedirectState`: `surchargeAmount: String?`
 
 ### Co-Badged Cards

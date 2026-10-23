@@ -18,15 +18,18 @@ public final class PrimerBinData: NSObject {
     public let alternatives: [PrimerCardNetwork]
     public let status: PrimerBinDataStatus
     public let firstDigits: String?
+    let fallbackDigits: String?
 
     init(preferred: PrimerCardNetwork?,
          alternatives: [PrimerCardNetwork],
          status: PrimerBinDataStatus,
-         firstDigits: String?) {
+         firstDigits: String?,
+         fallbackDigits: String? = nil) {
         self.preferred = preferred
         self.alternatives = alternatives
         self.status = status
         self.firstDigits = firstDigits
+        self.fallbackDigits = fallbackDigits
     }
 
     override public var description: String {

@@ -5,8 +5,8 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
-@_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
 
 @available(iOS 15.0, *)
 @MainActor
@@ -95,7 +95,9 @@ final class CheckoutSDKInitializer {
 
   func cleanup() {
     Task {
+      let repository = try? await DIContainer.current?.resolve(HeadlessRepository.self)
       await DIContainer.clearContainer()
+      await repository?.releaseCardNetwork()
     }
   }
 

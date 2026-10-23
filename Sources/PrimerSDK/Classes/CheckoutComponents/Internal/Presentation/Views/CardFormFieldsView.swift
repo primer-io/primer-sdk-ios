@@ -8,9 +8,9 @@
 // swiftlint:disable cyclomatic_complexity
 // swiftlint:disable function_body_length
 
-import SwiftUI
-@_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
+import SwiftUI
 
 /// Reusable card form fields view that renders card input fields and billing address fields.
 /// This component is used by both `CardFormScreen` (full screen) and `PrimerCardForm` (embeddable).
@@ -155,7 +155,8 @@ struct CardFormFieldsView: View {
         placeholder: CheckoutComponentsStrings.cardNumberPlaceholder,
         scope: scope,
         selectedNetwork: getSelectedCardNetwork(),
-        availableNetworks: cardFormState.availableNetworks.map(\.network)
+        availableNetworks: cardFormState.availableNetworks.map(\.network),
+        surchargeAmount: cardFormState.surchargeAmount
       )
       .focused($focusedField, equals: .cardNumber)
       .onSubmit { moveToNextField(from: .cardNumber) }

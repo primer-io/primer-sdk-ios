@@ -4,11 +4,11 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-@testable import PrimerSDK
-@_spi(PrimerInternal) @testable import PrimerNetworking
-import XCTest
-@_spi(PrimerInternal) @testable import PrimerFoundation
 @_spi(PrimerInternal) @testable import PrimerCore
+@_spi(PrimerInternal) @testable import PrimerFoundation
+@_spi(PrimerInternal) @testable import PrimerNetworking
+@testable import PrimerSDK
+import XCTest
 
 // MARK: - DefaultPaymentMethodSelectionScope Tests
 
@@ -189,6 +189,22 @@ final class DefaultPaymentMethodSelectionScopeTests: XCTestCase {
         // Then
         let state = try await awaitValue(sut.state) { !$0.isPaymentMethodsExpanded }
         XCTAssertFalse(state.isPaymentMethodsExpanded)
+    }
+
+    func test_refreshTotalAmount_takesTheCurrentSessionTotal() async throws {
+        let container = await DIContainer.current
+        let resolved = try await container?.resolve(ConfigurationService.self)
+        let configuration = try XCTUnwrap(resolved as? MockConfigurationService)
+        sut = makeSut()
+
+        configuration.amount = 1020
+        sut.refreshTotalAmount()
+        let totalWithFee = sut.currentState.totalAmount
+        configuration.amount = 1000
+        sut.refreshTotalAmount()
+
+        XCTAssertEqual(totalWithFee, 1020)
+        XCTAssertEqual(sut.currentState.totalAmount, 1000)
     }
 
     // MARK: - showAllVaultedPaymentMethods Tests

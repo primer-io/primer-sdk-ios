@@ -4,9 +4,9 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import SwiftUI
-@_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
+import SwiftUI
 
 @available(iOS 15.0, *)
 struct CardNumberInputField: View, LogReporter {
@@ -15,16 +15,15 @@ struct CardNumberInputField: View, LogReporter {
   let scope: any CardFormFieldScopeInternal
   let selectedNetwork: CardNetwork?
   let availableNetworks: [CardNetwork]
+  let surchargeAmount: String?
 
   // MARK: - Private Properties
 
   @State private var validationService: ValidationService?
-  @State private var configurationService: ConfigurationService?
   @State private var cardNumber: String = ""
   @State private var isValid: Bool = false
   @State private var cardNetwork: CardNetwork = .unknown
   @State private var errorMessage: String?
-  @State private var surchargeAmount: String?
   @State private var isFocused: Bool = false
   @State private var localSelectedNetwork: CardNetwork = .unknown
   @State private var networkSelectorStyle: CardNetworkSelectorStyle = .dropdown
@@ -38,13 +37,15 @@ struct CardNumberInputField: View, LogReporter {
     placeholder: String,
     scope: any CardFormFieldScopeInternal,
     selectedNetwork: CardNetwork? = nil,
-    availableNetworks: [CardNetwork] = []
+    availableNetworks: [CardNetwork] = [],
+    surchargeAmount: String? = nil
   ) {
     self.label = label
     self.placeholder = placeholder
     self.scope = scope
     self.selectedNetwork = selectedNetwork
     self.availableNetworks = availableNetworks
+    self.surchargeAmount = surchargeAmount
   }
 
   private var displayNetwork: CardNetwork {
@@ -133,11 +134,7 @@ struct CardNumberInputField: View, LogReporter {
     .onChange(of: selectedNetwork) { newNetwork in
       if let newNetwork {
         localSelectedNetwork = newNetwork
-        updateSurchargeAmount(for: newNetwork)
       }
-    }
-    .onChange(of: cardNetwork) { newNetwork in
-      updateSurchargeAmount(for: newNetwork)
     }
   }
 
@@ -163,12 +160,6 @@ struct CardNumberInputField: View, LogReporter {
       logger.error(message: "Failed to resolve ValidationService: \(error)")
     }
 
-    do {
-      configurationService = try container.resolveSync(ConfigurationService.self)
-    } catch {
-      logger.error(message: "Failed to resolve ConfigurationService: \(error)")
-    }
-
     // Load network selector style from settings
     do {
       let settings = try container.resolveSync(PrimerSettings.self)
@@ -176,19 +167,6 @@ struct CardNumberInputField: View, LogReporter {
     } catch {
       logger.debug(message: "[A11Y] Using default network selector style: dropdown")
     }
-  }
-
-  private func updateSurchargeAmount(for network: CardNetwork) {
-    guard let configurationService,
-      let surcharge = network.surcharge,
-      configurationService.apiConfiguration?.clientSession?.order?.merchantAmount == nil,
-      let currency = configurationService.currency
-    else {
-      surchargeAmount = nil
-      return
-    }
-    surchargeAmount =
-      "+ \(surcharge.toCurrencyString(currency: currency, locale: configurationService.locale))"
   }
 }
 

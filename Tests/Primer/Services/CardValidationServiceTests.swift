@@ -6,7 +6,7 @@
 
 @_spi(PrimerInternal) @testable import PrimerFoundation
 @_spi(PrimerInternal) @testable import PrimerNetworking
-@testable import PrimerSDK
+@_spi(PrimerInternal) @testable import PrimerSDK
 import XCTest
 
 final class CardValidationServiceTests: XCTestCase {
@@ -17,6 +17,7 @@ final class CardValidationServiceTests: XCTestCase {
     private var apiClient: MockBINDataAPIClient!
     private var debouncer: Debouncer!
     private var sut: CardValidationService!
+    private var previousIntent: PrimerSessionIntent?
 
     // MARK: - Test Constants
 
@@ -29,6 +30,7 @@ final class CardValidationServiceTests: XCTestCase {
         static let mediumCardNumber = "5555226611"
         static let fullCardNumber = "552266117788"
         static let alternativeCardNumber = "552366117788"
+        static let coBadgedCardNumber = "4035501000000008"
         static let standardTimeout: TimeInterval = 5.0
         static let shortTimeout: TimeInterval = 2.0
     }
@@ -38,6 +40,7 @@ final class CardValidationServiceTests: XCTestCase {
     override func setUpWithError() throws {
         try super.setUpWithError()
         SDKSessionHelper.setUp()
+        previousIntent = PrimerInternal.shared.intent
 
         delegate = MockRawDataManagerDelegate()
         rawDataManager = try RawDataManager(paymentMethodType: Mocks.PaymentMethods.paymentCardPaymentMethod.type)
@@ -53,6 +56,7 @@ final class CardValidationServiceTests: XCTestCase {
         delegate = nil
         apiClient = nil
         debouncer = nil
+        PrimerInternal.shared.intent = previousIntent
 
         SDKSessionHelper.tearDown()
         try super.tearDownWithError()
@@ -654,16 +658,193 @@ final class CardValidationServiceTests: XCTestCase {
         XCTAssertNil(sut.cachedMetadata(forCardNumber: "9999999912345678"))
     }
 
+    @available(iOS 15.0, *)
+    func test_coBadgedCard_sendsTheNetworkShown_notTheKeystrokeGuess() async throws {
+        let actions = MockClientSessionActionsModule()
+        let observer = await attachCardNetworkSyncObserver()
+        sut = createCardValidationService(allowedNetworks: [.cartesBancaires, .visa], cardNetworkSync: makeCardNetworkSync(actions))
+        configureMockAPIClient(bin: coBadgedBin, networks: ["VISA", "CARTES_BANCAIRES"])
+
+        enterCardNumber(TestConstants.coBadgedCardNumber)
+        try await awaitCardNetworkSyncStates(observer, [true, false])
+
+        XCTAssertEqual(actions.selectPaymentMethodCalls.map(\.network), ["CARTES_BANCAIRES"])
+    }
+
+    @available(iOS 15.0, *)
+    func test_numberShortenedBelowTheBIN_unselectsTheNetwork() async throws {
+        let actions = MockClientSessionActionsModule()
+        let observer = await attachCardNetworkSyncObserver()
+        sut = createCardValidationService(allowedNetworks: [.cartesBancaires, .visa], cardNetworkSync: makeCardNetworkSync(actions))
+        configureMockAPIClient(bin: coBadgedBin, networks: ["CARTES_BANCAIRES", "VISA"])
+        let typed = expectation(description: "Card number typed")
+        enterCardNumber(TestConstants.coBadgedCardNumber, completion: typed.fulfill)
+        await fulfillment(of: [typed], timeout: TestConstants.standardTimeout)
+        try await awaitCardNetworkSyncStates(observer, [true, false])
+
+        sut.validateCardNetworks(withCardNumber: String(coBadgedBin.dropLast()))
+        try await awaitCardNetworkSyncStates(observer, [true, false, true, false])
+
+        XCTAssertEqual(actions.unselectPaymentMethodCallCount, 1)
+    }
+
+    @available(iOS 15.0, *)
+    func test_shortNumberResultLandingAfterTheLookupStarts_keepsPayWaitingForTheLookup() async throws {
+        let actions = MockClientSessionActionsModule()
+        let observer = await attachCardNetworkSyncObserver()
+        sut = createCardValidationService(allowedNetworks: [.cartesBancaires, .visa], cardNetworkSync: makeCardNetworkSync(actions))
+        configureMockAPIClient(bin: coBadgedBin, networks: ["CARTES_BANCAIRES", "VISA"])
+
+        sut.validateCardNetworks(withCardNumber: String(coBadgedBin.dropLast()))
+        sut.validateCardNetworks(withCardNumber: coBadgedBin)
+        try await withTimeout(TestConstants.standardTimeout) {
+            while !Task.isCancelled, actions.selectPaymentMethodCalls.isEmpty { await Task.yield() }
+        }
+        try await Task.sleep(nanoseconds: 300_000_000)
+
+        let states = await observer.states
+        XCTAssertEqual(states, [true, false])
+        XCTAssertEqual(actions.selectPaymentMethodCalls.map(\.network), ["CARTES_BANCAIRES"])
+    }
+
+    @available(iOS 15.0, *)
+    func test_failedLookup_sendsTheLocalNetwork() async throws {
+        let actions = MockClientSessionActionsModule()
+        let observer = await attachCardNetworkSyncObserver()
+        sut = createCardValidationService(allowedNetworks: [.cartesBancaires, .visa], cardNetworkSync: makeCardNetworkSync(actions))
+        apiClient.error = PrimerError.unknown()
+
+        enterCardNumber(TestConstants.coBadgedCardNumber)
+        try await awaitCardNetworkSyncStates(observer, [true, false])
+
+        XCTAssertEqual(actions.selectPaymentMethodCalls.map(\.network), ["VISA"])
+    }
+
+    @available(iOS 15.0, *)
+    func test_lookupLandingAfterSubmit_leavesTheSessionNetworkAlone() async throws {
+        let actions = MockClientSessionActionsModule()
+        sut = createCardValidationService(allowedNetworks: [.cartesBancaires, .visa], cardNetworkSync: makeCardNetworkSync(actions))
+        configureMockAPIClient(bin: coBadgedBin, networks: ["CARTES_BANCAIRES", "VISA"])
+        let remoteMetadata = expectation(description: "Remote metadata received")
+        remoteMetadata.assertForOverFulfill = false
+        delegate.onMetadataForCardValidationState = { _, networks, _ in
+            if networks.source == .remote { remoteMetadata.fulfill() }
+        }
+
+        sut.validateCardNetworks(withCardNumber: TestConstants.coBadgedCardNumber)
+        rawDataManager.submit()
+        await fulfillment(of: [remoteMetadata], timeout: TestConstants.standardTimeout)
+        sut.validateCardNetworks(withCardNumber: "")
+        try await Task.sleep(nanoseconds: 500_000_000)
+
+        XCTAssertTrue(actions.selectPaymentMethodCalls.isEmpty)
+        XCTAssertEqual(actions.unselectPaymentMethodCallCount, 0)
+    }
+
+    @available(iOS 15.0, *)
+    func test_lookupLandingAfterSubmit_stopsSyncing() async throws {
+        let actions = MockClientSessionActionsModule()
+        let observer = await attachCardNetworkSyncObserver()
+        sut = createCardValidationService(allowedNetworks: [.cartesBancaires, .visa], cardNetworkSync: makeCardNetworkSync(actions))
+        configureMockAPIClient(bin: coBadgedBin, networks: ["CARTES_BANCAIRES", "VISA"])
+
+        sut.validateCardNetworks(withCardNumber: TestConstants.coBadgedCardNumber)
+        rawDataManager.submit()
+        sut.validateCardNetworks(withCardNumber: "")
+
+        try await awaitCardNetworkSyncStates(observer, [true, false])
+        XCTAssertTrue(actions.selectPaymentMethodCalls.isEmpty)
+    }
+
+    @available(iOS 15.0, *)
+    func test_lookupLandingAfterTheNetworkIsReleased_leavesTheSessionAlone() async throws {
+        let actions = MockClientSessionActionsModule()
+        let observer = await attachCardNetworkSyncObserver()
+        let cardNetworkSync = makeCardNetworkSync(actions)
+        rawDataManager.cardNetworkSync = cardNetworkSync
+        sut = createCardValidationService(allowedNetworks: [.cartesBancaires, .visa], cardNetworkSync: cardNetworkSync)
+        configureMockAPIClient(bin: coBadgedBin, networks: ["CARTES_BANCAIRES", "VISA"])
+        let remoteMetadata = expectation(description: "Remote metadata received")
+        remoteMetadata.assertForOverFulfill = false
+        delegate.onMetadataForCardValidationState = { _, networks, _ in
+            if networks.source == .remote { remoteMetadata.fulfill() }
+        }
+
+        sut.validateCardNetworks(withCardNumber: TestConstants.coBadgedCardNumber)
+        await rawDataManager.releaseCardNetwork()
+        await fulfillment(of: [remoteMetadata], timeout: TestConstants.standardTimeout)
+
+        try await awaitCardNetworkSyncStates(observer, [true, false])
+        XCTAssertTrue(actions.selectPaymentMethodCalls.isEmpty)
+    }
+
+    @available(iOS 15.0, *)
+    func test_sessionWithoutSurcharge_sendsNothingAndNeverSyncs() async throws {
+        let actions = MockClientSessionActionsModule()
+        let observer = await attachCardNetworkSyncObserver()
+        sut = createCardValidationService(
+            allowedNetworks: [.cartesBancaires, .visa],
+            cardNetworkSync: makeCardNetworkSync(actions, isSurchargeSession: false)
+        )
+        configureMockAPIClient(bin: coBadgedBin, networks: ["CARTES_BANCAIRES", "VISA"])
+        let remoteMetadata = expectation(description: "Remote metadata received")
+        remoteMetadata.assertForOverFulfill = false
+        delegate.onMetadataForCardValidationState = { _, networks, _ in
+            if networks.source == .remote { remoteMetadata.fulfill() }
+        }
+
+        enterCardNumber(TestConstants.coBadgedCardNumber)
+        await fulfillment(of: [remoteMetadata], timeout: TestConstants.standardTimeout)
+        try await Task.sleep(nanoseconds: 500_000_000)
+
+        XCTAssertTrue(actions.selectPaymentMethodCalls.isEmpty)
+        let states = await observer.states
+        XCTAssertTrue(states.isEmpty)
+    }
+
     // MARK: - Helper Methods
 
+    private var coBadgedBin: String {
+        String(TestConstants.coBadgedCardNumber.prefix(maxBinLength))
+    }
+
     private func createCardValidationService(
-        allowedNetworks: [CardNetwork] = [CardNetwork].allowedCardNetworks
+        allowedNetworks: [CardNetwork] = [CardNetwork].allowedCardNetworks,
+        cardNetworkSync: ClientSessionCardNetworkSync = ClientSessionCardNetworkSync(isSurchargeSession: { false })
     ) -> CardValidationService {
         DefaultCardValidationService(
             rawDataManager: rawDataManager,
             allowedCardNetworks: allowedNetworks,
-            apiClient: apiClient
+            apiClient: apiClient,
+            cardNetworkSync: cardNetworkSync
         )
+    }
+
+    @available(iOS 15.0, *)
+    private func makeCardNetworkSync(
+        _ actions: MockClientSessionActionsModule,
+        isSurchargeSession: Bool = true
+    ) -> ClientSessionCardNetworkSync {
+        PrimerInternal.shared.intent = .checkout
+        return ClientSessionCardNetworkSync(actionsFactory: { actions }, isSurchargeSession: { isSurchargeSession })
+    }
+
+    @MainActor
+    private func attachCardNetworkSyncObserver() -> MockCardNetworkSyncObserver {
+        let observer = MockCardNetworkSyncObserver()
+        rawDataManager.cardNetworkSyncObserver = observer
+        return observer
+    }
+
+    @available(iOS 15.0, *)
+    private func awaitCardNetworkSyncStates(_ observer: MockCardNetworkSyncObserver, _ expected: [Bool]) async throws {
+        try await withTimeout(TestConstants.standardTimeout) {
+            while !Task.isCancelled, await observer.states != expected {
+                await Task.yield()
+            }
+        }
+        let states = await observer.states
+        XCTAssertEqual(states, expected)
     }
 
     private func configureMockAPIClient(bin: String, networks: [String], firstDigits: String? = nil) {
@@ -712,7 +893,8 @@ final class CardValidationServiceTests: XCTestCase {
 
     private func enterCardNumber(
         _ cardFragment: String,
-        _ altCardFragment: String? = nil
+        _ altCardFragment: String? = nil,
+        completion: @escaping () -> Void = {}
     ) {
         let typer = StringTyper { [weak self] string in
             self?.sut?.validateCardNetworks(withCardNumber: string)
@@ -721,11 +903,11 @@ final class CardValidationServiceTests: XCTestCase {
         if let altCardFragment {
             typer.type(cardFragment) {
                 typer.delete(cardFragment) {
-                    typer.type(altCardFragment)
+                    typer.type(altCardFragment, completion: completion)
                 }
             }
         } else {
-            typer.type(cardFragment)
+            typer.type(cardFragment, completion: completion)
         }
     }
 

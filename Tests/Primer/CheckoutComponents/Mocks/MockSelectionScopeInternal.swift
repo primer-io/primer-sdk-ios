@@ -4,9 +4,9 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-@testable import PrimerSDK
-@_spi(PrimerInternal) @testable import PrimerFoundation
 @_spi(PrimerInternal) @testable import PrimerCore
+@_spi(PrimerInternal) @testable import PrimerFoundation
+@testable import PrimerSDK
 
 /// Selection scope conforming to `PaymentMethodSelectionScopeInternal`, recording forwarded calls and
 /// letting tests seed the current state and vaulted methods used to render the selection views.
@@ -57,6 +57,8 @@ final class MockSelectionScopeInternal: PaymentMethodSelectionScopeInternal {
   func showOtherWaysToPay() { showOtherWaysCalled = true }
   func syncSelectedVaultedPaymentMethod() {}
   func collapsePaymentMethods() {}
+  private(set) var refreshTotalAmountCallCount = 0
+  func refreshTotalAmount() { refreshTotalAmountCallCount += 1 }
   func selectVaultedPaymentMethod(_ method: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod) {
     selectedVaulted = method
   }

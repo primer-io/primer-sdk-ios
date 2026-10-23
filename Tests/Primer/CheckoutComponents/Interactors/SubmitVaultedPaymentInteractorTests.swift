@@ -4,10 +4,10 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+@_spi(PrimerInternal) @testable import PrimerCore
+@_spi(PrimerInternal) @testable import PrimerFoundation
 @testable import PrimerSDK
 import XCTest
-@_spi(PrimerInternal) @testable import PrimerFoundation
-@_spi(PrimerInternal) @testable import PrimerCore
 
 @available(iOS 15.0, *)
 final class SubmitVaultedPaymentInteractorTests: XCTestCase {
@@ -170,6 +170,13 @@ private actor SpyHeadlessRepository: HeadlessRepository {
     nonisolated func getBinDataStream() -> AsyncStream<PrimerBinData> {
         AsyncStream { _ in }
     }
+
+    nonisolated func getCardNetworkSyncStream() -> AsyncStream<Bool> {
+        AsyncStream { _ in }
+    }
+
+    func releaseCardNetwork() async {}
+    func resetCardNetworkSync() async {}
 
     func updateCardNumberInRawDataManager(_ cardNumber: String) async {}
 

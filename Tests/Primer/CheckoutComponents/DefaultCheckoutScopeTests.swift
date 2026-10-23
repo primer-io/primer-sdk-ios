@@ -4,11 +4,11 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-@testable import PrimerSDK
-@_spi(PrimerInternal) @testable import PrimerNetworking
-import XCTest
-@_spi(PrimerInternal) @testable import PrimerFoundation
 @_spi(PrimerInternal) @testable import PrimerCore
+@_spi(PrimerInternal) @testable import PrimerFoundation
+@_spi(PrimerInternal) @testable import PrimerNetworking
+@testable import PrimerSDK
+import XCTest
 
 // MARK: - DefaultCheckoutScope Behavior Tests
 
@@ -204,6 +204,43 @@ final class DefaultCheckoutScopeBehaviorTests: XCTestCase {
         } else {
             XCTFail("Expected dismissed state")
         }
+    }
+
+    func test_onDismiss_releasesTheCardNetwork() async throws {
+        let repository = try await registerMockRepository()
+        sut = makeSut(settings: PrimerSettings(uiOptions: PrimerUIOptions(isInitScreenEnabled: false)))
+
+        sut.onDismiss()
+        try await waitUntil { repository.releaseCardNetworkCallCount > 0 }
+
+        XCTAssertEqual(repository.releaseCardNetworkCallCount, 1)
+    }
+
+    func test_cancelActivePaymentMethod_returningToSelection_releasesTheCardNetwork() async throws {
+        let repository = try await registerMockRepository()
+        sut = makeSut(settings: PrimerSettings(uiOptions: PrimerUIOptions(isInitScreenEnabled: false)))
+
+        sut.cancelActivePaymentMethod(returnToSelection: true)
+        try await waitUntil { repository.releaseCardNetworkCallCount > 0 }
+
+        XCTAssertEqual(repository.releaseCardNetworkCallCount, 1)
+    }
+
+    func test_setup_resetsTheCardNetworkSync() async throws {
+        let repository = try await registerMockRepository()
+
+        sut = makeSut(settings: PrimerSettings(uiOptions: PrimerUIOptions(isInitScreenEnabled: false)))
+        try await waitUntil { repository.resetCardNetworkSyncCallCount > 0 }
+
+        XCTAssertEqual(repository.resetCardNetworkSyncCallCount, 1)
+    }
+
+    private func registerMockRepository() async throws -> MockHeadlessRepository {
+        let container = try await ContainerTestHelpers.createTestContainer()
+        let repository = MockHeadlessRepository()
+        _ = try? await container.register(HeadlessRepository.self).asSingleton().with { _ in repository }
+        await DIContainer.setContainer(container)
+        return repository
     }
 
     func test_onDismiss_setsNavigationStateToDismissed() {

@@ -4,10 +4,10 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+@_spi(PrimerInternal) @testable import PrimerCore
+@_spi(PrimerInternal) @testable import PrimerFoundation
 @testable import PrimerSDK
 import XCTest
-@_spi(PrimerInternal) @testable import PrimerFoundation
-@_spi(PrimerInternal) @testable import PrimerCore
 
 @available(iOS 15.0, *)
 @MainActor
@@ -306,85 +306,6 @@ final class ProcessCardPaymentTests: XCTestCase {
 
         // Then - Spaces should be stripped
         XCTAssertEqual(capturedCardData?.cardNumber, "4242424242424242")
-    }
-}
-
-@available(iOS 15.0, *)
-@MainActor
-final class UpdateClientSessionBeforePaymentTests: XCTestCase {
-
-    private var mockClientSessionActions: MockClientSessionActionsModule!
-    private var mockRawDataManagerFactory: MockRawDataManagerFactory!
-    private var mockRawDataManager: MockRawDataManager!
-    private var repository: HeadlessRepositoryImpl!
-
-    override func setUp() {
-        super.setUp()
-        mockClientSessionActions = MockClientSessionActionsModule()
-        mockRawDataManager = MockRawDataManager()
-        mockRawDataManagerFactory = MockRawDataManagerFactory()
-        mockRawDataManagerFactory.mockRawDataManager = mockRawDataManager
-        repository = HeadlessRepositoryImpl(
-            clientSessionActionsFactory: { [self] in mockClientSessionActions },
-            rawDataManagerFactory: mockRawDataManagerFactory
-        )
-    }
-
-    override func tearDown() {
-        mockClientSessionActions = nil
-        mockRawDataManager = nil
-        mockRawDataManagerFactory = nil
-        repository = nil
-        super.tearDown()
-    }
-
-    func testSelectCardNetwork_DispatchesSelectPaymentMethodAction() async {
-        // When
-        await repository.selectCardNetwork(.visa)
-
-        // Wait for the detached Task to complete (fire-and-forget pattern)
-        let predicate = NSPredicate { _, _ in self.mockClientSessionActions.selectPaymentMethodCalls.count == 1 }
-        await fulfillment(of: [expectation(for: predicate, evaluatedWith: nil)], timeout: 2.0)
-
-        // Then
-        XCTAssertEqual(mockClientSessionActions.lastSelectPaymentMethodCall?.type, "PAYMENT_CARD")
-        XCTAssertEqual(mockClientSessionActions.lastSelectPaymentMethodCall?.network, "VISA")
-    }
-
-    func testSelectCardNetwork_WithMastercard_PassesCorrectNetwork() async {
-        // When
-        await repository.selectCardNetwork(.masterCard)
-
-        // Wait for the detached Task to complete
-        let predicate = NSPredicate { _, _ in self.mockClientSessionActions.selectPaymentMethodCalls.count == 1 }
-        await fulfillment(of: [expectation(for: predicate, evaluatedWith: nil)], timeout: 2.0)
-
-        // Then
-        XCTAssertEqual(mockClientSessionActions.lastSelectPaymentMethodCall?.network, "MASTERCARD")
-    }
-
-    func testSelectCardNetwork_WithAmex_PassesCorrectNetwork() async {
-        // When
-        await repository.selectCardNetwork(.amex)
-
-        // Wait for the detached Task to complete
-        let predicate = NSPredicate { _, _ in self.mockClientSessionActions.selectPaymentMethodCalls.count == 1 }
-        await fulfillment(of: [expectation(for: predicate, evaluatedWith: nil)], timeout: 2.0)
-
-        // Then
-        XCTAssertEqual(mockClientSessionActions.lastSelectPaymentMethodCall?.network, "AMEX")
-    }
-
-    func testSelectCardNetwork_WithDiscover_PassesCorrectNetwork() async {
-        // When
-        await repository.selectCardNetwork(.discover)
-
-        // Wait for the detached Task to complete
-        let predicate = NSPredicate { _, _ in self.mockClientSessionActions.selectPaymentMethodCalls.count == 1 }
-        await fulfillment(of: [expectation(for: predicate, evaluatedWith: nil)], timeout: 2.0)
-
-        // Then
-        XCTAssertEqual(mockClientSessionActions.lastSelectPaymentMethodCall?.network, "DISCOVER")
     }
 }
 

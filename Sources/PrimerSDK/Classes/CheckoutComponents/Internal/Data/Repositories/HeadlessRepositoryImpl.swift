@@ -5,8 +5,8 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
-@_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
 
 #if canImport(Primer3DS)
   import Primer3DS
@@ -23,11 +23,13 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
   // MARK: - Co-Badged Cards Support
 
   private lazy var rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager? = {
-    try? PrimerHeadlessUniversalCheckout.RawDataManager(
+    let manager = try? PrimerHeadlessUniversalCheckout.RawDataManager(
       paymentMethodType: "PAYMENT_CARD",
       delegate: self,
       isUsedInDropIn: false
     )
+    manager?.cardNetworkSyncObserver = self
+    return manager
   }()
 
   private var didConfigureRawDataManager = false
@@ -61,11 +63,13 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
   let (networkDetectionStream, networkDetectionContinuation) = AsyncStream<[CardNetwork]>.makeStream()
   // swiftformat:disable:next wrap
   let (binDataStream, binDataContinuation) = AsyncStream<PrimerBinData>.makeStream()
+  let (cardNetworkSyncStream, cardNetworkSyncContinuation) = AsyncStream<Bool>.makeStream()
   // Last detected networks to avoid duplicate notifications
   var lastDetectedNetworks: [CardNetwork] = []
   let analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol?
 
   private let clientSessionActionsFactory: () -> ClientSessionActionsProtocol
+  private let cardNetworkSync: ClientSessionCardNetworkSync
   private var configurationServiceFactory: (() -> ConfigurationService)?
   private let rawDataManagerFactory: RawDataManagerFactoryProtocol
   private let vaultManagerFactory: (() -> any VaultManagerProtocol)?
@@ -74,12 +78,14 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
     clientSessionActionsFactory: @escaping () -> ClientSessionActionsProtocol = {
       ClientSessionActionsModule()
     },
+    cardNetworkSync: ClientSessionCardNetworkSync = .shared,
     configurationServiceFactory: (() -> ConfigurationService)? = nil,
     rawDataManagerFactory: RawDataManagerFactoryProtocol = DefaultRawDataManagerFactory(),
     vaultManagerFactory: (() -> any VaultManagerProtocol)? = nil,
     analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol? = nil
   ) {
     self.clientSessionActionsFactory = clientSessionActionsFactory
+    self.cardNetworkSync = cardNetworkSync
     self.configurationServiceFactory = configurationServiceFactory
     self.rawDataManagerFactory = rawDataManagerFactory
     self.vaultManagerFactory = vaultManagerFactory
@@ -153,44 +159,62 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
     selectedNetwork: CardNetwork?,
     surchargeNetwork: CardNetwork? = nil
   ) async throws -> PaymentResult {
-    try await withCheckedThrowingContinuation { continuation in
-      let oneShot = OneShotContinuation(continuation)
-      Task { @MainActor [self] in
-        do {
-          let cardData = createCardData(
-            cardNumber: cardNumber,
-            cvv: cvv,
-            expiryMonth: expiryMonth,
-            expiryYear: expiryYear,
-            cardholderName: cardholderName,
-            selectedNetwork: selectedNetwork
-          )
+    await cardNetworkSync.startPayment()
+    do {
+      return try await withCheckedThrowingContinuation { continuation in
+        let oneShot = OneShotContinuation(continuation)
+        Task { @MainActor [self] in
+          do {
+            let cardData = createCardData(
+              cardNumber: cardNumber,
+              cvv: cvv,
+              expiryMonth: expiryMonth,
+              expiryYear: expiryYear,
+              cardholderName: cardholderName,
+              selectedNetwork: selectedNetwork
+            )
 
-          let paymentHandler = PaymentCompletionHandler { [weak self] result in
-            self?.cardPaymentCompletionHandler = nil
-            oneShot.resume(with: result)
+            let paymentHandler = PaymentCompletionHandler { [weak self] result in
+              self?.cardPaymentCompletionHandler = nil
+              oneShot.resume(with: result)
+            }
+            cardPaymentCompletionHandler = paymentHandler
+            PrimerHeadlessUniversalCheckout.current.delegate = paymentHandler
+
+            let rawDataManager = try rawDataManagerFactory.createRawDataManager(
+              paymentMethodType: "PAYMENT_CARD",
+              delegate: paymentHandler
+            )
+            rawDataManager.requiredActionObserver = analyticsInteractor
+
+            configureRawDataManagerAndSubmit(
+              rawDataManager: rawDataManager,
+              cardData: cardData,
+              selectedNetwork: surchargeNetwork ?? selectedNetwork,
+              oneShot: oneShot,
+              paymentHandler: paymentHandler
+            )
+          } catch {
+            oneShot.resume(throwing: error)
           }
-          cardPaymentCompletionHandler = paymentHandler
-          PrimerHeadlessUniversalCheckout.current.delegate = paymentHandler
-
-          let rawDataManager = try rawDataManagerFactory.createRawDataManager(
-            paymentMethodType: "PAYMENT_CARD",
-            delegate: paymentHandler
-          )
-          rawDataManager.requiredActionObserver = analyticsInteractor
-
-          configureRawDataManagerAndSubmit(
-            rawDataManager: rawDataManager,
-            cardData: cardData,
-            selectedNetwork: surchargeNetwork ?? selectedNetwork,
-            oneShot: oneShot,
-            paymentHandler: paymentHandler
-          )
-        } catch {
-          oneShot.resume(throwing: error)
         }
       }
+    } catch {
+      await cardNetworkSync.endPayment()
+      throw error
     }
+  }
+
+  @MainActor
+  func releaseCardNetwork() async {
+    if didConfigureRawDataManager {
+      rawDataManager?.isCardNetworkReleased = true
+    }
+    await cardNetworkSync.release()
+  }
+
+  func resetCardNetworkSync() async {
+    await cardNetworkSync.reset()
   }
 
   private func createCardData(
@@ -315,6 +339,10 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
     binDataStream
   }
 
+  nonisolated func getCardNetworkSyncStream() -> AsyncStream<Bool> {
+    cardNetworkSyncStream
+  }
+
   @MainActor
   func updateCardNumberInRawDataManager(_ cardNumber: String) async {
     if !didConfigureRawDataManager {
@@ -328,8 +356,7 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
     // If card number is too short for BIN lookup (< 8 digits) and we have cached networks, clear them
     // This ensures the picker disappears when user deletes below the BIN lookup threshold
     if sanitizedCardNumber.count < 8, !lastDetectedNetworks.isEmpty {
-      lastDetectedNetworks = []
-      networkDetectionContinuation.yield([])
+      emitDetectedNetworks([])
     }
 
     rawDataManager?.rawData = rawCardData
@@ -338,18 +365,14 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
   func selectCardNetwork(_ cardNetwork: CardNetwork) async {
     rawCardData.cardNetwork = cardNetwork
     rawDataManager?.rawData = rawCardData
+  }
 
-    // Use Client Session Actions to select payment method based on network
-    let clientSessionActionsModule = clientSessionActionsFactory()
-    Task { [self] in
-      do {
-        try await clientSessionActionsModule
-          .selectPaymentMethodIfNeeded("PAYMENT_CARD", cardNetwork: cardNetwork.rawValue)
-      } catch {
-        // Log error but don't block the flow since this is a fire-and-forget operation
-        logger.error(message: "Failed to select payment method: \(error)")
-      }
+  func emitDetectedNetworks(_ networks: [CardNetwork]) {
+    if let pick = rawCardData.cardNetwork, !networks.contains(pick) {
+      rawCardData.cardNetwork = nil
     }
+    lastDetectedNetworks = networks
+    networkDetectionContinuation.yield(networks)
   }
 
   // MARK: - Vault Methods
@@ -451,9 +474,16 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
     // Use ClientSessionActionsModule to dispatch actions (same as Drop-in)
     let clientSessionActionsModule = clientSessionActionsFactory()
 
-    Task {
+    Task { [cardNetworkSync] in
+      if let selectedNetwork, await !cardNetworkSync.needsSync(selectedNetwork) {
+        completion(nil)
+        return
+      }
       do {
         try await clientSessionActionsModule.dispatch(actions: actions)
+        if let selectedNetwork, selectedNetwork != .unknown {
+          await cardNetworkSync.markSynced(selectedNetwork)
+        }
         completion(nil)
       } catch {
         completion(error)

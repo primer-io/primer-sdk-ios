@@ -5,8 +5,8 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
-@_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
 
 @available(iOS 15.0, *)
 protocol HeadlessRepository {
@@ -22,6 +22,9 @@ protocol HeadlessRepository {
   ) async throws -> PaymentResult
   nonisolated func getNetworkDetectionStream() -> AsyncStream<[CardNetwork]>
   nonisolated func getBinDataStream() -> AsyncStream<PrimerBinData>
+  nonisolated func getCardNetworkSyncStream() -> AsyncStream<Bool>
+  func releaseCardNetwork() async
+  func resetCardNetworkSync() async
   func updateCardNumberInRawDataManager(_ cardNumber: String) async
   func selectCardNetwork(_ cardNetwork: CardNetwork) async
   func fetchVaultedPaymentMethods() async throws -> [PrimerHeadlessUniversalCheckout

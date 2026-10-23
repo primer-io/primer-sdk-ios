@@ -5,22 +5,25 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
-@testable import PrimerSDK
-@_spi(PrimerInternal) @testable import PrimerFoundation
 @_spi(PrimerInternal) @testable import PrimerCore
+@_spi(PrimerInternal) @testable import PrimerFoundation
+@testable import PrimerSDK
 
 @available(iOS 15.0, *)
 final class MockCardNetworkDetectionInteractor: CardNetworkDetectionInteractor {
 
     private(set) var detectNetworksCallCount = 0
     private(set) var selectNetworkCallCount = 0
+    private(set) var releaseNetworkCallCount = 0
     private(set) var lastSelectedNetwork: CardNetwork?
 
     private let networkStreamPair = AsyncStream<[CardNetwork]>.makeStream()
     private let binStreamPair = AsyncStream<PrimerBinData>.makeStream()
+    private let cardNetworkSyncStreamPair = AsyncStream<Bool>.makeStream()
 
     var networkDetectionStream: AsyncStream<[CardNetwork]> { networkStreamPair.stream }
     var binDataStream: AsyncStream<PrimerBinData> { binStreamPair.stream }
+    var cardNetworkSyncStream: AsyncStream<Bool> { cardNetworkSyncStreamPair.stream }
 
     /// Drives the network-detection stream so tests can simulate co-badge BIN emissions on demand.
     func emitNetworks(_ networks: [CardNetwork]) {
@@ -29,6 +32,10 @@ final class MockCardNetworkDetectionInteractor: CardNetworkDetectionInteractor {
 
     func emitBinData(_ binData: PrimerBinData) {
         binStreamPair.continuation.yield(binData)
+    }
+
+    func emitCardNetworkSync(_ isSyncing: Bool) {
+        cardNetworkSyncStreamPair.continuation.yield(isSyncing)
     }
 
     func detectNetworks(for cardNumber: String) async {
@@ -40,9 +47,14 @@ final class MockCardNetworkDetectionInteractor: CardNetworkDetectionInteractor {
         lastSelectedNetwork = network
     }
 
+    func releaseNetwork() async {
+        releaseNetworkCallCount += 1
+    }
+
     func reset() {
         detectNetworksCallCount = 0
         selectNetworkCallCount = 0
+        releaseNetworkCallCount = 0
         lastSelectedNetwork = nil
     }
 }

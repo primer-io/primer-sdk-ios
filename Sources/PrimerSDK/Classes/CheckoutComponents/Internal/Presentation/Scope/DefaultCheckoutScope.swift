@@ -4,9 +4,9 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import SwiftUI
-@_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
+import SwiftUI
 
 @available(iOS 15.0, *)
 @MainActor
@@ -102,6 +102,7 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
   var isSuccessScreenEnabled: Bool { settings.uiOptions.isSuccessScreenEnabled }
   var isErrorScreenEnabled: Bool { settings.uiOptions.isErrorScreenEnabled }
   var cardFormUIOptions: PrimerCardFormUIOptions? { settings.uiOptions.cardFormUIOptions }
+  var totalAmount: Int? { configurationService?.amount }
   var dismissalMechanism: [DismissalMechanism] { settings.uiOptions.dismissalMechanism }
   var is3DSSanityCheckEnabled: Bool { settings.debugOptions.is3DSSanityCheckEnabled }
 
@@ -227,6 +228,7 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
 
       let configService = try await container.resolve(ConfigurationService.self)
       configurationService = configService
+      await (try? await container.resolve(HeadlessRepository.self))?.resetCardNetworkSync()
       paymentMethodsInteractor = CheckoutComponentsPaymentMethodsBridge(
         configurationService: configService)
 
@@ -592,6 +594,7 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
       trackInOrder { await $0.analyticsTracker?.trackMethodLeft(nil, reason: .shopperCancel) }
     }
     if returnToSelection {
+      releaseCardNetwork()
       // Navigation-only: leaves the checkout state at `.ready` so no terminal outcome is delivered.
       // In the inline flow this closes the sheet and reveals the merchant's embedded list; in the
       // modal flow it re-renders the selection screen. Reset the cached scope's one-shot start guard
@@ -604,6 +607,7 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
   }
 
   func onDismiss() {
+    releaseCardNetwork()
     updateState(.dismissed)
     updateNavigationState(.dismissed)
 
@@ -616,6 +620,16 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
     navigationObservationTask = nil
 
     navigator.dismiss()
+  }
+
+  private func releaseCardNetwork() {
+    Task { [weak self] in
+      guard let container = await DIContainer.current,
+            let repository = try? await container.resolve(HeadlessRepository.self)
+      else { return }
+      await repository.releaseCardNetwork()
+      self?.cachedPaymentMethodSelection?.refreshTotalAmount()
+    }
   }
 
   func handlePaymentMethodSelection(_ method: InternalPaymentMethod) {

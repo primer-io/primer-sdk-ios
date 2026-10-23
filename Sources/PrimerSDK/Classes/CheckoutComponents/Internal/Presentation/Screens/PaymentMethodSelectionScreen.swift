@@ -4,9 +4,9 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import SwiftUI
-@_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
+import SwiftUI
 
 /// Default payment method selection screen for CheckoutComponents
 @available(iOS 15.0, *)
@@ -114,7 +114,7 @@ struct PaymentMethodSelectionScreen: View, LogReporter {
 
   private var formattedAmount: String? {
     guard let configurationService,
-      let amount = configurationService.amount,
+      let amount = selectionState.totalAmount,
       let currency = configurationService.currency
     else {
       return nil

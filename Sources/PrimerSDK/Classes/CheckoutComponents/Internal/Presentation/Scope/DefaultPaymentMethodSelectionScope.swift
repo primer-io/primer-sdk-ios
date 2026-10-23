@@ -4,9 +4,9 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import SwiftUI
-@_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
+import SwiftUI
 
 @available(iOS 15.0, *)
 @MainActor
@@ -102,6 +102,7 @@ final class DefaultPaymentMethodSelectionScope: PaymentMethodSelectionScopeInter
 
     for await checkoutState in checkoutScope.state {
       if case .ready = checkoutState {
+        refreshTotalAmount()
         let paymentMethods = checkoutScope.availablePaymentMethods
 
         let mapper: PaymentMethodMapper
@@ -321,6 +322,10 @@ final class DefaultPaymentMethodSelectionScope: PaymentMethodSelectionScopeInter
   func collapsePaymentMethods() {
     logger.info(message: "[PaymentSelection] Collapsing payment methods section")
     internalState.isPaymentMethodsExpanded = false
+  }
+
+  func refreshTotalAmount() {
+    internalState.totalAmount = checkoutScope?.totalAmount
   }
 
   func searchPaymentMethods(_ query: String) {

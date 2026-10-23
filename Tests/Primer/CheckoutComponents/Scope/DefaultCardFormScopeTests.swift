@@ -4,10 +4,10 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+@_spi(PrimerInternal) @testable import PrimerCore
+@_spi(PrimerInternal) @testable import PrimerFoundation
 @testable import PrimerSDK
 import XCTest
-@_spi(PrimerInternal) @testable import PrimerFoundation
-@_spi(PrimerInternal) @testable import PrimerCore
 
 // MARK: - DefaultCardFormScope Tests
 
@@ -373,6 +373,128 @@ final class DefaultCardFormScopeTests: XCTestCase {
             }
 
             XCTAssertEqual(mockNetworkDetector.detectNetworksCallCount, 1)
+        }
+    }
+
+    func test_keystrokeGuess_staysOnScreenOnly() async throws {
+        let container = try await createTestContainer()
+        try await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let mock = MockCardNetworkDetectionInteractor()
+            let scope = createCardFormScope(checkoutScope: checkoutScope, cardNetworkDetectionInteractor: mock)
+
+            scope.autoSelectDetectedNetwork(CardNetwork.visa.rawValue)
+            for _ in 0 ..< 10 { await Task.yield() }
+
+            XCTAssertEqual(scope.structuredState.selectedNetwork?.network, .visa)
+            XCTAssertEqual(mock.selectNetworkCallCount, 0)
+        }
+    }
+
+    func test_manualSelection_reachesTheRepository() async throws {
+        let container = try await createTestContainer()
+        try await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let mock = MockCardNetworkDetectionInteractor()
+            let scope = createCardFormScope(checkoutScope: checkoutScope, cardNetworkDetectionInteractor: mock)
+
+            scope.updateSelectedCardNetwork(CardNetwork.visa.rawValue)
+            try await withTimeout(2.0) {
+                while mock.selectNetworkCallCount < 1 { await Task.yield() }
+            }
+
+            XCTAssertEqual(mock.lastSelectedNetwork, .visa)
+        }
+    }
+
+    func test_cardNetworkSync_marksTheClientSessionUpdatingUntilItLands() async throws {
+        let container = try await createTestContainer()
+        try await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let mock = MockCardNetworkDetectionInteractor()
+            let scope = createCardFormScope(checkoutScope: checkoutScope, cardNetworkDetectionInteractor: mock)
+
+            mock.emitCardNetworkSync(true)
+            try await withTimeout(2.0) {
+                while !scope.structuredState.isUpdatingClientSession { await Task.yield() }
+            }
+
+            mock.emitCardNetworkSync(false)
+            try await withTimeout(2.0) {
+                while scope.structuredState.isUpdatingClientSession { await Task.yield() }
+            }
+            XCTAssertFalse(scope.structuredState.isUpdatingClientSession)
+        }
+    }
+
+    func test_surcharge_showsOnlyOnceTheLookupConfirmsTheNetwork() async throws {
+        SDKSessionHelper.setUp(paymentMethodOptions: [[
+            "type": "PAYMENT_CARD",
+            "networks": [
+                ["type": "CARTES_BANCAIRES", "surcharge": ["amount": 20]],
+                ["type": "VISA", "surcharge": ["amount": 50]]
+            ]
+        ]])
+        defer { SDKSessionHelper.tearDown() }
+
+        let container = try await createTestContainer()
+        try await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let mock = MockCardNetworkDetectionInteractor()
+            let scope = createCardFormScope(checkoutScope: checkoutScope, cardNetworkDetectionInteractor: mock)
+
+            scope.updateCardNumber(String(TestData.CardNumbers.coBadgedCartesBancairesVisa.prefix(6)))
+            scope.autoSelectDetectedNetwork(CardNetwork.visa.rawValue)
+            XCTAssertEqual(scope.structuredState.selectedNetwork?.network, .visa)
+            XCTAssertNil(scope.structuredState.surchargeAmountRaw)
+
+            scope.updateCardNumber(TestData.CardNumbers.coBadgedCartesBancairesVisa)
+            mock.emitNetworks([.cartesBancaires, .visa])
+            mock.emitBinData(PrimerBinData(
+                preferred: PrimerCardNetwork(network: .cartesBancaires),
+                alternatives: [PrimerCardNetwork(network: .visa)],
+                status: .complete,
+                firstDigits: String(TestData.CardNumbers.coBadgedCartesBancairesVisa.prefix(6))
+            ))
+            try await withTimeout(2.0) {
+                while scope.structuredState.surchargeAmountRaw == nil { await Task.yield() }
+            }
+
+            XCTAssertEqual(scope.structuredState.selectedNetwork?.network, .cartesBancaires)
+            XCTAssertEqual(scope.structuredState.surchargeAmountRaw, 20)
+        }
+    }
+
+    func test_surcharge_afterAFailedLookup_showsTheFeeOfTheNetworkSent() async throws {
+        SDKSessionHelper.setUp(paymentMethodOptions: [[
+            "type": "PAYMENT_CARD",
+            "networks": [
+                ["type": "CARTES_BANCAIRES", "surcharge": ["amount": 20]],
+                ["type": "VISA", "surcharge": ["amount": 50]]
+            ]
+        ]])
+        defer { SDKSessionHelper.tearDown() }
+
+        let container = try await createTestContainer()
+        try await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let mock = MockCardNetworkDetectionInteractor()
+            let scope = createCardFormScope(checkoutScope: checkoutScope, cardNetworkDetectionInteractor: mock)
+
+            scope.updateCardNumber(TestData.CardNumbers.coBadgedCartesBancairesVisa)
+            mock.emitNetworks([.visa])
+            mock.emitBinData(PrimerBinData(
+                preferred: PrimerCardNetwork(network: .visa),
+                alternatives: [],
+                status: .partial,
+                firstDigits: nil,
+                fallbackDigits: String(TestData.CardNumbers.coBadgedCartesBancairesVisa.prefix(8))
+            ))
+            try await withTimeout(2.0) {
+                while !Task.isCancelled, scope.structuredState.surchargeAmountRaw == nil { await Task.yield() }
+            }
+
+            XCTAssertEqual(scope.structuredState.surchargeAmountRaw, 50)
         }
     }
 
@@ -1208,6 +1330,143 @@ final class DefaultCardFormScopeTests: XCTestCase {
             // Then
             XCTAssertEqual(coordinator.navigationStack.count, 1)
             XCTAssertEqual(coordinator.currentRoute, .paymentMethodSelection)
+        }
+    }
+
+    func test_onBack_fromPaymentSelection_releasesTheCardNetwork() async throws {
+        let container = try await createTestContainer()
+        let interactor = MockCardNetworkDetectionInteractor()
+
+        try await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createCardFormScope(checkoutScope: checkoutScope, cardNetworkDetectionInteractor: interactor)
+            let coordinator = checkoutScope.checkoutNavigator.checkoutCoordinator
+            coordinator.navigate(to: .paymentMethodSelection)
+            coordinator.navigate(to: .vaultedPaymentMethods)
+
+            scope.onBack()
+            try await withTimeout(2.0) {
+                while interactor.releaseNetworkCallCount == 0 { await Task.yield() }
+            }
+
+            XCTAssertEqual(interactor.releaseNetworkCallCount, 1)
+        }
+    }
+
+    func test_onBack_refreshesTheListTotalOnceTheNetworkIsReleased() async throws {
+        let container = try await createTestContainer()
+        let interactor = MockCardNetworkDetectionInteractor()
+
+        try await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let selection = MockSelectionScopeInternal()
+            checkoutScope.cachedPaymentMethodSelection = selection
+            let scope = createCardFormScope(checkoutScope: checkoutScope, cardNetworkDetectionInteractor: interactor)
+            let coordinator = checkoutScope.checkoutNavigator.checkoutCoordinator
+            coordinator.navigate(to: .paymentMethodSelection)
+            coordinator.navigate(to: .vaultedPaymentMethods)
+
+            scope.onBack()
+            try await withTimeout(2.0) {
+                while selection.refreshTotalAmountCallCount == 0 { await Task.yield() }
+            }
+
+            XCTAssertEqual(interactor.releaseNetworkCallCount, 1)
+            XCTAssertEqual(selection.refreshTotalAmountCallCount, 1)
+        }
+    }
+
+    func test_cancel_releasesTheCardNetwork() async throws {
+        let container = try await createTestContainer()
+        let repository = MockHeadlessRepository()
+        _ = try await container.register(HeadlessRepository.self).asSingleton().with { _ in repository }
+
+        try await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createCardFormScope(checkoutScope: checkoutScope)
+
+            scope.cancel()
+            try await withTimeout(2.0) {
+                while !Task.isCancelled, repository.releaseCardNetworkCallCount == 0 { await Task.yield() }
+            }
+
+            XCTAssertEqual(repository.releaseCardNetworkCallCount, 1)
+        }
+    }
+
+    func test_cancel_returningToTheList_keepsFollowingTheCardNetworkSync() async throws {
+        let container = try await createTestContainer()
+        let interactor = MockCardNetworkDetectionInteractor()
+
+        try await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createCardFormScope(checkoutScope: checkoutScope, cardNetworkDetectionInteractor: interactor)
+
+            interactor.emitCardNetworkSync(true)
+            try await withTimeout(2.0) {
+                while !Task.isCancelled, !scope.structuredState.isUpdatingClientSession { await Task.yield() }
+            }
+
+            scope.cancel()
+            interactor.emitCardNetworkSync(false)
+            try await withTimeout(2.0) {
+                while !Task.isCancelled, scope.structuredState.isUpdatingClientSession { await Task.yield() }
+            }
+
+            XCTAssertFalse(scope.structuredState.isUpdatingClientSession)
+        }
+    }
+
+    func test_start_withACardNumberKept_detectsItsNetworkAgain() async throws {
+        let container = try await createTestContainer()
+        let interactor = MockCardNetworkDetectionInteractor()
+
+        try await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createCardFormScope(checkoutScope: checkoutScope, cardNetworkDetectionInteractor: interactor)
+            scope.updateCardNumber(TestData.CardNumbers.validVisa)
+            try await withTimeout(2.0) {
+                while interactor.detectNetworksCallCount == 0 { await Task.yield() }
+            }
+
+            scope.start()
+            try await withTimeout(2.0) {
+                while interactor.detectNetworksCallCount < 2 { await Task.yield() }
+            }
+
+            XCTAssertEqual(interactor.detectNetworksCallCount, 2)
+        }
+    }
+
+    func test_start_withoutACardNumber_detectsNothing() async throws {
+        let container = try await createTestContainer()
+        let interactor = MockCardNetworkDetectionInteractor()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createCardFormScope(checkoutScope: checkoutScope, cardNetworkDetectionInteractor: interactor)
+
+            scope.start()
+            for _ in 0..<100 { await Task.yield() }
+
+            XCTAssertEqual(interactor.detectNetworksCallCount, 0)
+        }
+    }
+
+    func test_cancel_whileAPaymentRuns_keepsTheCardNetwork() async throws {
+        let container = try await createTestContainer()
+        let interactor = MockCardNetworkDetectionInteractor()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createCardFormScope(checkoutScope: checkoutScope, cardNetworkDetectionInteractor: interactor)
+            scope.structuredState.isLoading = true
+
+            scope.cancel()
+            scope.onBack()
+            for _ in 0..<100 { await Task.yield() }
+
+            XCTAssertEqual(interactor.releaseNetworkCallCount, 0)
         }
     }
 

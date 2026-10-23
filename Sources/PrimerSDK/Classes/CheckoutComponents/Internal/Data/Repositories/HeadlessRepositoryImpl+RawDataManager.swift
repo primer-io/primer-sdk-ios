@@ -5,8 +5,8 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
-@_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
 
 @available(iOS 15.0, *)
 extension HeadlessRepositoryImpl: @preconcurrency PrimerHeadlessUniversalCheckoutRawDataManagerDelegate {
@@ -58,10 +58,7 @@ extension HeadlessRepositoryImpl: @preconcurrency PrimerHeadlessUniversalCheckou
 
     // Only emit if networks changed to avoid duplicate notifications
     if cardNetworks != lastDetectedNetworks {
-      lastDetectedNetworks = cardNetworks
-
-      // Emit networks via AsyncStream for SwiftUI consumption
-      networkDetectionContinuation.yield(cardNetworks)
+      emitDetectedNetworks(cardNetworks)
     }
   }
 
@@ -70,5 +67,12 @@ extension HeadlessRepositoryImpl: @preconcurrency PrimerHeadlessUniversalCheckou
     didReceiveBinData binData: PrimerBinData
   ) {
     binDataContinuation.yield(binData)
+  }
+}
+
+@available(iOS 15.0, *)
+extension HeadlessRepositoryImpl: CardNetworkSyncObserver {
+  func cardNetworkSyncDidChange(isSyncing: Bool) {
+    cardNetworkSyncContinuation.yield(isSyncing)
   }
 }

@@ -4,9 +4,9 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import SwiftUI
-@_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
+import SwiftUI
 
 @available(iOS 15.0, *)
 @MainActor
@@ -39,6 +39,7 @@ final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, 
 
   @Published var structuredState = PrimerCardFormState()
   var fieldValidationStates = FieldValidationStates()
+  let configurationService: ConfigurationService
 
   var currentState: PrimerCardFormState { structuredState.redactedForMerchant() }
 
@@ -47,10 +48,10 @@ final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, 
   private let validateInputInteractor: ValidateInputInteractor?
   private let cardNetworkDetectionInteractor: CardNetworkDetectionInteractor?
   private let analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol?
-  private let configurationService: ConfigurationService
   private var billingAddressSent = false
   private var networkDetectionTask: Task<Void, Never>?
   private var binDataTask: Task<Void, Never>?
+  private var cardNetworkSyncTask: Task<Void, Never>?
   private var preferredNetwork: CardNetwork?
   /// The network the user explicitly picked from the co-badge selector. Auto-detection (keystroke
   /// and BIN stream) must not overwrite it while it remains in `availableNetworks`.
@@ -88,6 +89,7 @@ final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, 
     if cardNetworkDetectionInteractor != nil {
       setupNetworkDetectionStream()
       setupBinDataStream()
+      cardNetworkSyncTask = cardNetworkDetectionInteractor.map(observeCardNetworkSync)
     }
   }
 
@@ -146,6 +148,7 @@ final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, 
       for await binData in cardNetworkDetectionInteractor.binDataStream {
         guard let self else { return }
         structuredState.binData = binData
+        updateSurchargeAmount(for: structuredState.selectedNetwork?.network)
       }
     }
   }
@@ -329,23 +332,20 @@ final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, 
 
     updateCardData()
 
-    Task {
-      await handleNetworkSelection(network)
-    }
-  }
-
-  private func handleNetworkSelection(_ networkString: String) async {
-    guard let interactor = cardNetworkDetectionInteractor,
-      let cardNetwork = CardNetwork(rawValue: networkString)
+    guard userInitiated, let interactor = cardNetworkDetectionInteractor, let cardNetwork = CardNetwork(rawValue: network)
     else { return }
-    await interactor.selectNetwork(cardNetwork)
+    Task { await interactor.selectNetwork(cardNetwork) }
   }
 
   func updateRetailOutlet(_ retailOutlet: String) {
     structuredState.data[.retailer] = retailOutlet
   }
 
-  func start() {}
+  func start() {
+    let cardNumber = structuredState.data[.cardNumber]
+    guard !cardNumber.isEmpty else { return }
+    Task { await triggerNetworkDetection(for: cardNumber) }
+  }
 
   func submit() {
     Task { [self] in
@@ -356,20 +356,33 @@ final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, 
   // A running payment cannot be stopped, so leaving the form would only hide it, as in the Drop-in.
   func onBack() {
     if presentationContext.shouldShowBackButton, !structuredState.isLoading {
+      releaseCardNetwork()
       checkoutScope?.checkoutNavigator.navigateBack()
     }
   }
 
   func cancel() {
     guard !structuredState.isLoading else { return }
-    networkDetectionTask?.cancel()
-    networkDetectionTask = nil
-    binDataTask?.cancel()
-    binDataTask = nil
-    checkoutScope?.cancelActivePaymentMethod(returnToSelection: presentationContext.shouldShowBackButton)
+    let returnsToSelection = presentationContext.shouldShowBackButton
+    if !returnsToSelection {
+      networkDetectionTask?.cancel()
+      networkDetectionTask = nil
+      binDataTask?.cancel()
+      binDataTask = nil
+      cardNetworkSyncTask?.cancel()
+      cardNetworkSyncTask = nil
+    }
+    checkoutScope?.cancelActivePaymentMethod(returnToSelection: returnsToSelection)
   }
 
   lazy var selectCountry: PrimerSelectCountryScope = DefaultSelectCountryScope(cardFormScope: self)
+
+  private func releaseCardNetwork() {
+    Task { [cardNetworkDetectionInteractor, weak checkoutScope] in
+      await cardNetworkDetectionInteractor?.releaseNetwork()
+      checkoutScope?.cachedPaymentMethodSelection?.refreshTotalAmount()
+    }
+  }
 
   private func updateCardData() {
     let cardData = PrimerCardData(
@@ -488,28 +501,6 @@ final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, 
   private func handlePaymentSuccess(_ result: PaymentResult) async {
     structuredState.isLoading = false
     checkoutScope?.handlePaymentSuccess(result)
-  }
-
-  private func updateSurchargeAmount(for network: CardNetwork?) {
-    guard let network else {
-      structuredState.surchargeAmountRaw = nil
-      structuredState.surchargeAmount = nil
-      return
-    }
-
-    guard let surcharge = network.surcharge,
-      configurationService.apiConfiguration?.clientSession?.order?.merchantAmount == nil,
-      let currency = configurationService.currency
-    else {
-      structuredState.surchargeAmountRaw = nil
-      structuredState.surchargeAmount = nil
-      return
-    }
-
-    let formattedSurcharge =
-      "+ \(surcharge.toCurrencyString(currency: currency, locale: configurationService.locale))"
-    structuredState.surchargeAmountRaw = surcharge
-    structuredState.surchargeAmount = formattedSurcharge
   }
 
   func updateValidationState(cardNumber: Bool, cvv: Bool, expiry: Bool, cardholderName: Bool) {

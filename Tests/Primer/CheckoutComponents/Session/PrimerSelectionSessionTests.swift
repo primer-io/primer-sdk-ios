@@ -4,11 +4,11 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-@testable import PrimerSDK
-@_spi(PrimerInternal) @testable import PrimerNetworking
-import XCTest
-@_spi(PrimerInternal) @testable import PrimerFoundation
 @_spi(PrimerInternal) @testable import PrimerCore
+@_spi(PrimerInternal) @testable import PrimerFoundation
+@_spi(PrimerInternal) @testable import PrimerNetworking
+@testable import PrimerSDK
+import XCTest
 
 @available(iOS 15.0, *)
 @MainActor
@@ -80,6 +80,7 @@ final class PrimerSelectionSessionTests: XCTestCase {
 
     func syncSelectedVaultedPaymentMethod() {}
     func collapsePaymentMethods() {}
+    func refreshTotalAmount() {}
     func selectVaultedPaymentMethod(_ method: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod) {
       selectedVaulted = method
     }

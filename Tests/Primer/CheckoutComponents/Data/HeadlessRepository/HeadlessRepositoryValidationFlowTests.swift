@@ -4,10 +4,10 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+@_spi(PrimerInternal) @testable import PrimerCore
+@_spi(PrimerInternal) @testable import PrimerFoundation
 @testable import PrimerSDK
 import XCTest
-@_spi(PrimerInternal) @testable import PrimerFoundation
-@_spi(PrimerInternal) @testable import PrimerCore
 
 // MARK: - Validation Failure Handling
 
@@ -166,6 +166,7 @@ final class ClientSessionUpdateBeforePaymentTests: XCTestCase {
     private var mockRawDataManager: MockRawDataManager!
     private var mockRawDataManagerFactory: MockRawDataManagerFactory!
     private var mockClientSessionActions: MockClientSessionActionsModule!
+    private var cardNetworkSync: ClientSessionCardNetworkSync!
     private var sut: HeadlessRepositoryImpl!
 
     override func setUp() {
@@ -177,9 +178,12 @@ final class ClientSessionUpdateBeforePaymentTests: XCTestCase {
         mockRawDataManager = MockRawDataManager()
         mockRawDataManagerFactory = MockRawDataManagerFactory()
         mockRawDataManagerFactory.mockRawDataManager = mockRawDataManager
-        mockClientSessionActions = MockClientSessionActionsModule()
+        let actions = MockClientSessionActionsModule()
+        mockClientSessionActions = actions
+        cardNetworkSync = ClientSessionCardNetworkSync(actionsFactory: { actions })
         sut = HeadlessRepositoryImpl(
-            clientSessionActionsFactory: { [self] in mockClientSessionActions },
+            clientSessionActionsFactory: { actions },
+            cardNetworkSync: cardNetworkSync,
             rawDataManagerFactory: mockRawDataManagerFactory
         )
     }
@@ -188,10 +192,42 @@ final class ClientSessionUpdateBeforePaymentTests: XCTestCase {
         mockRawDataManager = nil
         mockRawDataManagerFactory = nil
         mockClientSessionActions = nil
+        cardNetworkSync = nil
         sut = nil
         PrimerHeadlessUniversalCheckout.current.delegate = nil
         SDKSessionHelper.tearDown()
         super.tearDown()
+    }
+
+    func test_processCardPayment_whenCardLookupAlreadySentTheNetwork_submitsWithoutAnotherUpdate() async {
+        await cardNetworkSync.sync(.cartesBancaires)
+        mockRawDataManager.autoTriggerValidation = true
+        let submitted = expectation(description: "Submit called")
+        mockRawDataManager.onSubmit = { submitted.fulfill() }
+
+        let task = payWithCoBadgedCard(showing: .cartesBancaires)
+        await fulfillment(of: [submitted], timeout: 3.0)
+        task.cancel()
+
+        XCTAssertTrue(mockClientSessionActions.dispatchActionsCalls.isEmpty)
+    }
+
+    func test_processCardPayment_whenAnotherUpdateReplacedTheSession_sendsTheNetworkAgain() async {
+        await cardNetworkSync.sync(.cartesBancaires)
+        PrimerAPIConfigurationModule.apiConfiguration?.clientSession = ClientSession.APIResponse(
+            clientSessionId: nil, paymentMethod: nil, order: nil, customer: nil, testId: nil
+        )
+        mockRawDataManager.autoTriggerValidation = true
+
+        let task = payWithCoBadgedCard(showing: .cartesBancaires)
+        let predicate = NSPredicate { _, _ in
+            !self.mockClientSessionActions.dispatchActionsCalls.isEmpty
+        }
+        await fulfillment(of: [expectation(for: predicate, evaluatedWith: nil)], timeout: 3.0)
+        task.cancel()
+
+        let binData = mockClientSessionActions.lastDispatchActionsCall?.first?.params?["binData"] as? [String: Any]
+        XCTAssertEqual(binData?["network"] as? String, "CARTES_BANCAIRES")
     }
 
     func test_processCardPayment_whenValid_dispatchesClientSessionActions() async {
@@ -311,6 +347,20 @@ final class ClientSessionUpdateBeforePaymentTests: XCTestCase {
 
         await fulfillment(of: [submitExpectation], timeout: 5.0)
         task.cancel()
+    }
+
+    private func payWithCoBadgedCard(showing network: CardNetwork) -> Task<Void, Never> {
+        Task { [self] in
+            _ = try? await sut.processCardPayment(
+                cardNumber: TestData.CardNumbers.coBadgedCartesBancairesVisa,
+                cvv: "123",
+                expiryMonth: "12",
+                expiryYear: "30",
+                cardholderName: "Test",
+                selectedNetwork: nil,
+                surchargeNetwork: network
+            )
+        }
     }
 }
 

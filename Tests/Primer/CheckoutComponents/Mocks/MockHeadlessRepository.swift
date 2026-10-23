@@ -5,9 +5,9 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
-@testable import PrimerSDK
-@_spi(PrimerInternal) @testable import PrimerFoundation
 @_spi(PrimerInternal) @testable import PrimerCore
+@_spi(PrimerInternal) @testable import PrimerFoundation
+@testable import PrimerSDK
 
 @available(iOS 15.0, *)
 final class MockHeadlessRepository: HeadlessRepository {
@@ -33,6 +33,8 @@ final class MockHeadlessRepository: HeadlessRepository {
     private(set) var processCardPaymentCallCount = 0
     private(set) var updateCardNumberCallCount = 0
     private(set) var selectCardNetworkCallCount = 0
+    private(set) var releaseCardNetworkCallCount = 0
+    private(set) var resetCardNetworkSyncCallCount = 0
     private(set) var fetchVaultedPaymentMethodsCallCount = 0
     private(set) var processVaultedPaymentCallCount = 0
     private(set) var deleteVaultedPaymentMethodCallCount = 0
@@ -112,6 +114,18 @@ final class MockHeadlessRepository: HeadlessRepository {
         }
     }
 
+    func getCardNetworkSyncStream() -> AsyncStream<Bool> {
+        AsyncStream { _ in }
+    }
+
+    func releaseCardNetwork() async {
+        releaseCardNetworkCallCount += 1
+    }
+
+    func resetCardNetworkSync() async {
+        resetCardNetworkSyncCallCount += 1
+    }
+
     func updateCardNumberInRawDataManager(_ cardNumber: String) async {
         updateCardNumberCallCount += 1
         lastCardNumber = cardNumber
@@ -175,6 +189,8 @@ final class MockHeadlessRepository: HeadlessRepository {
         processCardPaymentCallCount = 0
         updateCardNumberCallCount = 0
         selectCardNetworkCallCount = 0
+        releaseCardNetworkCallCount = 0
+        resetCardNetworkSyncCallCount = 0
         fetchVaultedPaymentMethodsCallCount = 0
         processVaultedPaymentCallCount = 0
         deleteVaultedPaymentMethodCallCount = 0

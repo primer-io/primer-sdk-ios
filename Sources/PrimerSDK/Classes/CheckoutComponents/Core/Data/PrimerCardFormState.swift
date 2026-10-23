@@ -5,8 +5,8 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
-@_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
 
 // MARK: - Field Configuration
 
@@ -210,6 +210,10 @@ public struct PrimerCardFormState: Equatable {
 
   public internal(set) var isValid: Bool
 
+  public internal(set) var isUpdatingClientSession: Bool
+
+  var canSubmit: Bool { isValid && !isUpdatingClientSession }
+
   // MARK: - Selection States
 
   public internal(set) var selectedCountry: PrimerCountry?
@@ -240,6 +244,7 @@ public struct PrimerCardFormState: Equatable {
     fieldErrors: [FieldError] = [],
     isLoading: Bool = false,
     isValid: Bool = false,
+    isUpdatingClientSession: Bool = false,
     selectedCountry: PrimerCountry? = nil,
     selectedNetwork: PrimerCardNetwork? = nil,
     availableNetworks: [PrimerCardNetwork] = [],
@@ -252,6 +257,7 @@ public struct PrimerCardFormState: Equatable {
     self.fieldErrors = fieldErrors
     self.isLoading = isLoading
     self.isValid = isValid
+    self.isUpdatingClientSession = isUpdatingClientSession
     self.selectedCountry = selectedCountry
     self.selectedNetwork = selectedNetwork
     self.availableNetworks = availableNetworks
@@ -267,6 +273,7 @@ public struct PrimerCardFormState: Equatable {
     lhs.fieldErrors == rhs.fieldErrors &&
     lhs.isLoading == rhs.isLoading &&
     lhs.isValid == rhs.isValid &&
+    lhs.isUpdatingClientSession == rhs.isUpdatingClientSession &&
     lhs.selectedCountry == rhs.selectedCountry &&
     lhs.selectedNetwork?.network == rhs.selectedNetwork?.network &&
     lhs.availableNetworks.map(\.network) == rhs.availableNetworks.map(\.network) &&

@@ -10,10 +10,10 @@
 // swiftlint:disable type_body_length
 
 import Foundation
-@_spi(PrimerInternal) import PrimerFoundation
-import SafariServices
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerNetworking
+import SafariServices
 
 // swiftlint:disable type_name
 @objc
@@ -71,6 +71,8 @@ extension PrimerHeadlessUniversalCheckout {
         public var rawData: PrimerRawData? {
             didSet {
                 rawDataTokenizationBuilder.rawData = rawData
+                isSubmitted = false
+                isCardNetworkReleased = false
             }
         }
         public private(set) var paymentMethodTokenData: PrimerPaymentMethodTokenData?
@@ -90,6 +92,9 @@ extension PrimerHeadlessUniversalCheckout {
         private var resumePaymentId: String?
         public private(set) var paymentCheckoutData: PrimerCheckoutData?
         weak var requiredActionObserver: RequiredActionObserver?
+        @_spi(PrimerInternal) public weak var cardNetworkSyncObserver: CardNetworkSyncObserver?
+        private(set) var isSubmitted = false
+        var isCardNetworkReleased = false
 
         // MARK: validation related vars
         public private(set) var isDataValid: Bool = false
@@ -107,6 +112,8 @@ extension PrimerHeadlessUniversalCheckout {
         var tokenizationService: TokenizationServiceProtocol = TokenizationService()
 
         var createResumePaymentService: CreateResumePaymentServiceProtocol
+
+        var cardNetworkSync: ClientSessionCardNetworkSync = .shared
 
         var apiClient: PrimerAPIClientXenditProtocol = PrimerAPIConfigurationModule.apiClient ?? PrimerAPIClient()
 
@@ -221,6 +228,7 @@ extension PrimerHeadlessUniversalCheckout {
                     "selectedNetwork": (rawData as? PrimerCardData)?.cardNetwork?.rawValue ?? ""
                 ]
             ))
+            isSubmitted = true
 
             guard let rawData else {
                 let err = handled(primerError: .invalidValue(key: "rawData"))
@@ -246,6 +254,7 @@ extension PrimerHeadlessUniversalCheckout {
 
                     guard self.isDataValid else { throw PrimerError.invalidValue(key: "rawData") }
 
+                    await startCardPayment()
                     try await self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.paymentMethodType))
                     let requestBody = try await self.makeRequestBody()
                     await PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: self.paymentMethodType)
@@ -256,11 +265,13 @@ extension PrimerHeadlessUniversalCheckout {
                     self.paymentMethodTokenData = paymentMethodTokenData
 
                     let checkoutData = try await self.startPaymentFlow(withPaymentMethodTokenData: paymentMethodTokenData)
+                    await endCardPaymentIfFailed(checkoutData)
 
                     if PrimerSettings.current.paymentHandling == .auto, let checkoutData {
                         await PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
                     }
                 } catch {
+                    await endCardPayment()
                     let delegate = PrimerHeadlessUniversalCheckout.current.delegate
                     delegate?.primerHeadlessUniversalCheckoutDidFail?(
                         withError: error,
@@ -268,6 +279,12 @@ extension PrimerHeadlessUniversalCheckout {
                     )
                 }
             }
+        }
+
+        @_spi(PrimerInternal) public func releaseCardNetwork() async {
+            guard paymentMethodType == PrimerPaymentMethodType.paymentCard.rawValue else { return }
+            isCardNetworkReleased = true
+            await cardNetworkSync.release()
         }
 
         func validateRawData(_ data: PrimerRawData) async throws {
@@ -311,6 +328,22 @@ extension PrimerHeadlessUniversalCheckout {
             }
 
             return try await rawDataTokenizationBuilder.validateRawData(rawData, cardNetworksMetadata: cardNetworksMetadata)
+        }
+
+        private func startCardPayment() async {
+            guard rawData is PrimerCardData, cardNetworkSync.isEnabled else { return }
+            await cardNetworkSync.startPayment()
+            await cardNetworkSync.awaitPendingUpdate()
+        }
+
+        private func endCardPayment() async {
+            guard rawData is PrimerCardData, cardNetworkSync.isEnabled else { return }
+            await cardNetworkSync.endPayment()
+        }
+
+        func endCardPaymentIfFailed(_ checkoutData: PrimerCheckoutData?) async {
+            guard checkoutData?.payment?.status == Response.Body.Payment.Status.failed.rawValue else { return }
+            await endCardPayment()
         }
 
         private func handlePrimerWillCreatePaymentEvent(_ paymentMethodData: PrimerPaymentMethodData) async throws {

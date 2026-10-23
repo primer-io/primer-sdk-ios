@@ -4,10 +4,10 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+@_spi(PrimerInternal) @testable import PrimerCore
+@_spi(PrimerInternal) @testable import PrimerFoundation
 @testable import PrimerSDK
 import XCTest
-@_spi(PrimerInternal) @testable import PrimerFoundation
-@_spi(PrimerInternal) @testable import PrimerCore
 
 @available(iOS 15.0, *)
 @MainActor
@@ -23,135 +23,6 @@ final class NetworkDetectionStreamTests: XCTestCase {
     override func tearDown() {
         repository = nil
         super.tearDown()
-    }
-}
-
-@available(iOS 15.0, *)
-@MainActor
-final class SelectCardNetworkDelegateTests: XCTestCase {
-
-    private var mockClientSessionActions: MockClientSessionActionsModule!
-    private var repository: HeadlessRepositoryImpl!
-
-    override func setUp() {
-        super.setUp()
-        mockClientSessionActions = MockClientSessionActionsModule()
-        repository = HeadlessRepositoryImpl(
-            clientSessionActionsFactory: { [self] in mockClientSessionActions }
-        )
-    }
-
-    override func tearDown() {
-        mockClientSessionActions = nil
-        repository = nil
-        super.tearDown()
-    }
-
-    /// `selectCardNetwork` dispatches via a detached `Task`, so the recorded call lands asynchronously.
-    /// Polls the mock's recorded calls until at least `count` are observed, deterministically replacing fixed sleeps.
-    private func awaitSelectPaymentMethodCalls(
-        atLeast count: Int,
-        timeout: TimeInterval = 2.0,
-        file: StaticString = #file,
-        line: UInt = #line
-    ) async {
-        do {
-            try await withTimeout(timeout) { [self] in
-                while mockClientSessionActions.selectPaymentMethodCalls.count < count {
-                    await Task.yield()
-                }
-            }
-        } catch {
-            XCTFail(
-                "Timed out waiting for \(count) selectPaymentMethod call(s); "
-                    + "recorded \(mockClientSessionActions.selectPaymentMethodCalls.count)",
-                file: file,
-                line: line
-            )
-        }
-    }
-
-    func test_selectCardNetwork_withVisa_dispatchesCorrectAction() async {
-        // When
-        await repository.selectCardNetwork(.visa)
-        await awaitSelectPaymentMethodCalls(atLeast: 1)
-
-        // Then
-        XCTAssertEqual(mockClientSessionActions.selectPaymentMethodCalls.count, 1)
-        XCTAssertEqual(mockClientSessionActions.lastSelectPaymentMethodCall?.network, "VISA")
-    }
-
-    func test_selectCardNetwork_withMastercard_dispatchesCorrectAction() async {
-        // When
-        await repository.selectCardNetwork(.masterCard)
-        await awaitSelectPaymentMethodCalls(atLeast: 1)
-
-        // Then
-        XCTAssertEqual(mockClientSessionActions.lastSelectPaymentMethodCall?.network, "MASTERCARD")
-    }
-
-    func test_selectCardNetwork_withAmex_dispatchesCorrectAction() async {
-        // When
-        await repository.selectCardNetwork(.amex)
-        await awaitSelectPaymentMethodCalls(atLeast: 1)
-
-        // Then
-        XCTAssertEqual(mockClientSessionActions.lastSelectPaymentMethodCall?.network, "AMEX")
-    }
-
-    func test_selectCardNetwork_withDiscover_dispatchesCorrectAction() async {
-        // When
-        await repository.selectCardNetwork(.discover)
-        await awaitSelectPaymentMethodCalls(atLeast: 1)
-
-        // Then
-        XCTAssertEqual(mockClientSessionActions.lastSelectPaymentMethodCall?.network, "DISCOVER")
-    }
-
-    func test_selectCardNetwork_withJCB_dispatchesCorrectAction() async {
-        // When
-        await repository.selectCardNetwork(.jcb)
-        await awaitSelectPaymentMethodCalls(atLeast: 1)
-
-        // Then
-        XCTAssertEqual(mockClientSessionActions.lastSelectPaymentMethodCall?.network, "JCB")
-    }
-
-    func test_selectCardNetwork_withDiners_dispatchesCorrectAction() async {
-        // When
-        await repository.selectCardNetwork(.diners)
-        await awaitSelectPaymentMethodCalls(atLeast: 1)
-
-        // Then
-        XCTAssertEqual(mockClientSessionActions.lastSelectPaymentMethodCall?.network, "DINERS_CLUB")
-    }
-
-    func test_selectCardNetwork_withCartesBancaires_dispatchesCorrectAction() async {
-        // When
-        await repository.selectCardNetwork(.cartesBancaires)
-        await awaitSelectPaymentMethodCalls(atLeast: 1)
-
-        // Then
-        XCTAssertEqual(mockClientSessionActions.lastSelectPaymentMethodCall?.network, "CARTES_BANCAIRES")
-    }
-
-    func test_selectCardNetwork_multipleCalls_dispatchesAll() async {
-        // When
-        await repository.selectCardNetwork(.visa)
-        await repository.selectCardNetwork(.masterCard)
-        await awaitSelectPaymentMethodCalls(atLeast: 2)
-
-        // Then
-        XCTAssertGreaterThanOrEqual(mockClientSessionActions.selectPaymentMethodCalls.count, 2)
-    }
-
-    func test_selectCardNetwork_always_passesPaymentCard() async {
-        // When
-        await repository.selectCardNetwork(.visa)
-        await awaitSelectPaymentMethodCalls(atLeast: 1)
-
-        // Then
-        XCTAssertEqual(mockClientSessionActions.lastSelectPaymentMethodCall?.type, "PAYMENT_CARD")
     }
 }
 

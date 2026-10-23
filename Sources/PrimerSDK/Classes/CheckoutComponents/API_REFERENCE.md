@@ -324,6 +324,7 @@ public struct PrimerCardFormState: Equatable {
   var fieldErrors: [FieldError]
   var isLoading: Bool
   var isValid: Bool
+  var isUpdatingClientSession: Bool
   var selectedCountry: PrimerCountry?
   var selectedNetwork: PrimerCardNetwork?
   var availableNetworks: [PrimerCardNetwork]

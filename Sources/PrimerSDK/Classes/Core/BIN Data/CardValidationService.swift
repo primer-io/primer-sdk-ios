@@ -5,8 +5,8 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
-@_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerNetworking
 
 protocol CardValidationService {
@@ -30,7 +30,12 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
 
     private let allowedCardNetworks: [CardNetwork]
 
+    private let cardNetworkSync: ClientSessionCardNetworkSync
+
     private var mostRecentCardNumber: String?
+    @MainActor private var latestBinKey = ""
+    @MainActor private var isSyncingCardNetwork = false
+    @MainActor private var cardNetworkSyncGeneration = 0
     private var lastAnalyticsEventTime: Date?
     private var lastValidatedCardNumber: String?
 
@@ -68,12 +73,14 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
         rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
         allowedCardNetworks: [CardNetwork] = [CardNetwork].allowedCardNetworks,
         apiClient: PrimerAPIClientBINDataProtocol = PrimerAPIClient(),
-        debouncer: Debouncer = .init(delay: 0.35)
+        debouncer: Debouncer = .init(delay: 0.35),
+        cardNetworkSync: ClientSessionCardNetworkSync = .shared
     ) {
         self.rawDataManager = rawDataManager
         self.allowedCardNetworks = allowedCardNetworks
         self.apiClient = apiClient
         self.debouncer = debouncer
+        self.cardNetworkSync = cardNetworkSync
     }
 
     func cachedMetadata(forCardNumber cardNumber: String) -> PrimerCardNumberEntryMetadata? {
@@ -91,6 +98,7 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
         let cardState = PrimerCardNumberEntryState(cardNumber: sanitizedCardNumber)
 
         let bin = String(sanitizedCardNumber.prefix(Self.maximumBinLength))
+        Task { @MainActor [self] in latestBinKey = bin }
 
         if let mostRecent = mostRecentCardNumber,
            mostRecent.prefix(Self.maximumBinLength) == bin {
@@ -111,6 +119,7 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
             return
         }
 
+        startCardNetworkLookup()
         debouncer.debounce { [weak self] in
             self?.useRemoteValidation(withCardState: cardState)
         }
@@ -203,9 +212,17 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
             forState: cardState
         )
 
+        let offered = isFallback ? networks.filter(allowedCardNetworks.contains) : []
         let localNetworks = networks.map(PrimerCardNetwork.init(network:))
-        let binData = buildBinData(from: localNetworks, firstDigits: nil, status: .partial)
+        let binData = buildBinData(
+            from: localNetworks,
+            firstDigits: nil,
+            status: .partial,
+            fallbackDigits: offered.isEmpty ? nil : binKey(for: cardState.cardNumber)
+        )
         delegate?.primerRawDataManager?(rawDataManager, didReceiveBinData: binData)
+
+        syncCardNetwork(offering: offered, for: cardState)
 
         if isFallback {
             Task {
@@ -226,6 +243,8 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
             forState: cardState
         )
 
+        syncCardNetwork(offering: cardMetadata.selectableCardNetworks?.items.map(\.network) ?? [], for: cardState)
+
         guard lastValidatedCardNumber != cardState.cardNumber else {
             return
         }
@@ -236,15 +255,67 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
         }
     }
 
-    private func buildBinData(from networks: [PrimerCardNetwork], firstDigits: String?, status: PrimerBinDataStatus) -> PrimerBinData {
+    private func buildBinData(
+        from networks: [PrimerCardNetwork],
+        firstDigits: String?,
+        status: PrimerBinDataStatus,
+        fallbackDigits: String? = nil
+    ) -> PrimerBinData {
         let preferred = networks.first(where: \.allowed)
         let alternatives = networks.filter { $0 !== preferred }
         return PrimerBinData(
             preferred: preferred,
             alternatives: alternatives,
             status: status,
-            firstDigits: firstDigits
+            firstDigits: firstDigits,
+            fallbackDigits: fallbackDigits
         )
+    }
+
+    private func startCardNetworkLookup() {
+        Task { @MainActor [self] in
+            guard cardNetworkSync.isEnabled else { return }
+            startCardNetworkSync()
+        }
+    }
+
+    private func syncCardNetwork(offering networks: [CardNetwork], for cardState: PrimerCardNumberEntryState) {
+        Task { @MainActor [self] in
+            guard cardNetworkSync.isEnabled else { return }
+
+            let pick = (rawDataManager.rawData as? PrimerCardData)?.cardNetwork
+            let network = pick.flatMap { networks.contains($0) ? $0 : nil } ?? networks.first
+            let needsSync = await cardNetworkSync.needsSync(network)
+            guard !rawDataManager.isSubmitted, !rawDataManager.isCardNetworkReleased else {
+                setSyncingCardNetwork(false)
+                return
+            }
+            guard binKey(for: cardState.cardNumber) == latestBinKey, isSyncingCardNetwork || needsSync else { return }
+
+            let generation = startCardNetworkSync()
+            await cardNetworkSync.sync(network)
+            finishCardNetworkSync(generation)
+        }
+    }
+
+    @MainActor @discardableResult
+    private func startCardNetworkSync() -> Int {
+        cardNetworkSyncGeneration += 1
+        setSyncingCardNetwork(true)
+        return cardNetworkSyncGeneration
+    }
+
+    @MainActor
+    private func finishCardNetworkSync(_ generation: Int) {
+        guard generation == cardNetworkSyncGeneration else { return }
+        setSyncingCardNetwork(false)
+    }
+
+    @MainActor
+    private func setSyncingCardNetwork(_ isSyncing: Bool) {
+        guard isSyncing != isSyncingCardNetwork else { return }
+        isSyncingCardNetwork = isSyncing
+        rawDataManager.cardNetworkSyncObserver?.cardNetworkSyncDidChange(isSyncing: isSyncing)
     }
 
     // MARK: Model generation
