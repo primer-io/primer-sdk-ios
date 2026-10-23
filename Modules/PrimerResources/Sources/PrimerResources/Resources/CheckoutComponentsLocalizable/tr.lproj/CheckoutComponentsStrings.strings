@@ -145,7 +145,7 @@
 "primer_card_form_title" = "Kartla öde";
 "primer_checkout_dismissing" = "Kapatılıyor...";
 "primer_checkout_error_button_other_methods" = "Diğer ödeme yöntemlerini seçin";
-"primer_checkout_error_subtitle" = "Bir ağ sorunu oluştu.";
+"primer_checkout_error_subtitle" = "Lütfen tekrar deneyin veya başka bir ödeme yöntemi kullanın.";
 "primer_checkout_error_title" = "Ödeme başarısız";
 "primer_checkout_loading_indicator" = "Yükleniyor";
 "primer_checkout_processing_subtitle" = "Lütfen bekleyin...";

@@ -145,7 +145,7 @@
 "primer_card_form_title" = "Platite karticom";
 "primer_checkout_dismissing" = "Zatvaranje...";
 "primer_checkout_error_button_other_methods" = "Izaberite druge načine plaćanja";
-"primer_checkout_error_subtitle" = "Došlo je do problema sa mrežom.";
+"primer_checkout_error_subtitle" = "Molimo pokušajte ponovo ili koristite drugi način plaćanja.";
 "primer_checkout_error_title" = "Plaćanje neuspešno";
 "primer_checkout_loading_indicator" = "Učitavanje";
 "primer_checkout_processing_subtitle" = "Molimo sačekajte...";

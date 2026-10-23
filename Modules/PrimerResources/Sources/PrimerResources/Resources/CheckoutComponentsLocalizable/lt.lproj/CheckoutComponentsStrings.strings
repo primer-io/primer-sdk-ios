@@ -145,7 +145,7 @@
 "primer_card_form_title" = "Mokėti kortele";
 "primer_checkout_dismissing" = "Uždaroma...";
 "primer_checkout_error_button_other_methods" = "Pasirinkite kitus mokėjimo būdus";
-"primer_checkout_error_subtitle" = "Įvyko tinklo problema.";
+"primer_checkout_error_subtitle" = "Bandykite dar kartą arba naudokite kitą mokėjimo būdą.";
 "primer_checkout_error_title" = "Mokėjimas nepavyko";
 "primer_checkout_loading_indicator" = "Įkeliama";
 "primer_checkout_processing_subtitle" = "Prašome palaukti...";

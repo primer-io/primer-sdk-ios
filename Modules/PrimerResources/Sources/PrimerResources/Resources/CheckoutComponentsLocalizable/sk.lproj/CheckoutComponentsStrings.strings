@@ -145,7 +145,7 @@
 "primer_card_form_title" = "Zaplatiť kartou";
 "primer_checkout_dismissing" = "Zatvára sa...";
 "primer_checkout_error_button_other_methods" = "Vybrať iné spôsoby platby";
-"primer_checkout_error_subtitle" = "Vyskytol sa problém so sieťou.";
+"primer_checkout_error_subtitle" = "Skúste to znova alebo použite iný spôsob platby.";
 "primer_checkout_error_title" = "Platba zlyhala";
 "primer_checkout_loading_indicator" = "Načítava sa";
 "primer_checkout_processing_subtitle" = "Prosím čakajte...";

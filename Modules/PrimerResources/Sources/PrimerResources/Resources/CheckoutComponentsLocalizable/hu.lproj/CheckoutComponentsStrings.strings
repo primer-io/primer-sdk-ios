@@ -145,7 +145,7 @@
 "primer_card_form_title" = "Fizetés kártyával";
 "primer_checkout_dismissing" = "Bezárás...";
 "primer_checkout_error_button_other_methods" = "Más fizetési módok választása";
-"primer_checkout_error_subtitle" = "Hálózati probléma merült fel.";
+"primer_checkout_error_subtitle" = "Kérjük, próbálja újra, vagy használjon másik fizetési módot.";
 "primer_checkout_error_title" = "Sikertelen fizetés";
 "primer_checkout_loading_indicator" = "Betöltés";
 "primer_checkout_processing_subtitle" = "Kérjük, várjon...";

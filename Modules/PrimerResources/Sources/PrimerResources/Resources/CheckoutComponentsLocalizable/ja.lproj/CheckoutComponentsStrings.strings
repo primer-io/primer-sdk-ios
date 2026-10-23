@@ -145,7 +145,7 @@
 "primer_card_form_title" = "カードでお支払い";
 "primer_checkout_dismissing" = "閉じています...";
 "primer_checkout_error_button_other_methods" = "他のお支払い方法を選択";
-"primer_checkout_error_subtitle" = "ネットワークの問題が発生しました。";
+"primer_checkout_error_subtitle" = "もう一度お試しいただくか、別のお支払い方法をご利用ください。";
 "primer_checkout_error_title" = "お支払いに失敗しました";
 "primer_checkout_loading_indicator" = "読み込み中";
 "primer_checkout_processing_subtitle" = "お待ちください...";

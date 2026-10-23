@@ -145,7 +145,7 @@
 "primer_card_form_title" = "ชำระด้วยบัตร";
 "primer_checkout_dismissing" = "กำลังปิด...";
 "primer_checkout_error_button_other_methods" = "เลือกวิธีการชำระเงินอื่น";
-"primer_checkout_error_subtitle" = "เกิดปัญหาการเชื่อมต่อเครือข่าย";
+"primer_checkout_error_subtitle" = "กรุณาลองอีกครั้งหรือใช้วิธีการชำระเงินอื่น";
 "primer_checkout_error_title" = "การชำระเงินล้มเหลว";
 "primer_checkout_loading_indicator" = "กำลังโหลด";
 "primer_checkout_processing_subtitle" = "กรุณารอสักครู่...";

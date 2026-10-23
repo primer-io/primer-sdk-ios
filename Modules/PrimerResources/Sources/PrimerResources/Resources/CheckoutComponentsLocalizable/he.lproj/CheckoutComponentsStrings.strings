@@ -145,7 +145,7 @@
 "primer_card_form_title" = "שלם בכרטיס";
 "primer_checkout_dismissing" = "סוגר...";
 "primer_checkout_error_button_other_methods" = "בחר אמצעי תשלום אחרים";
-"primer_checkout_error_subtitle" = "אירעה בעיית רשת.";
+"primer_checkout_error_subtitle" = "אנא נסה שוב או השתמש באמצעי תשלום אחר.";
 "primer_checkout_error_title" = "התשלום נכשל";
 "primer_checkout_loading_indicator" = "טוען";
 "primer_checkout_processing_subtitle" = "אנא המתן...";

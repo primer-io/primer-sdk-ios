@@ -145,7 +145,7 @@
 "primer_card_form_title" = "Πληρωμή με κάρτα";
 "primer_checkout_dismissing" = "Κλείσιμο...";
 "primer_checkout_error_button_other_methods" = "Επιλέξτε άλλες μεθόδους πληρωμής";
-"primer_checkout_error_subtitle" = "Υπήρξε πρόβλημα δικτύου.";
+"primer_checkout_error_subtitle" = "Παρακαλώ δοκιμάστε ξανά ή χρησιμοποιήστε άλλη μέθοδο πληρωμής.";
 "primer_checkout_error_title" = "Η πληρωμή απέτυχε";
 "primer_checkout_loading_indicator" = "Φόρτωση";
 "primer_checkout_processing_subtitle" = "Παρακαλώ περιμένετε...";

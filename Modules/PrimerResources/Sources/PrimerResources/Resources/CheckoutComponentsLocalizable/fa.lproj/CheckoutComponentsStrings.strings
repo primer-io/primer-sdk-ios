@@ -20,7 +20,7 @@
 "primer_checkout_success_title" = "پرداخت موفق";
 "primer_checkout_success_subtitle" = "به زودی به صفحه تأیید سفارش هدایت خواهید شد.";
 "primer_checkout_error_title" = "پرداخت ناموفق";
-"primer_checkout_error_subtitle" = "مشکلی در اتصال به شبکه وجود دارد.";
+"primer_checkout_error_subtitle" = "لطفاً دوباره تلاش کنید یا از روش پرداخت دیگری استفاده کنید.";
 "primer_checkout_error_button_other_methods" = "انتخاب روش‌های پرداخت دیگر";
 "primer_checkout_processing_title" = "در حال پردازش پرداخت شما";
 "primer_checkout_processing_subtitle" = "لطفاً صبر کنید...";

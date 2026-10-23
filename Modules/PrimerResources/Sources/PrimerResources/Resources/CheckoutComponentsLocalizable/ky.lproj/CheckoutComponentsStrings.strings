@@ -20,7 +20,7 @@
 "primer_checkout_success_title" = "Төлөм ийгиликтүү";
 "primer_checkout_success_subtitle" = "Сиз жакында буйрутманы ырастоо баракчасына багытталасыз.";
 "primer_checkout_error_title" = "Төлөм ишке ашпады";
-"primer_checkout_error_subtitle" = "Тармак маселеси пайда болду.";
+"primer_checkout_error_subtitle" = "Кайра аракет кылыңыз же башка төлөм ыкмасын колдонуңуз.";
 "primer_checkout_error_button_other_methods" = "Башка төлөм ыкмаларын тандоо";
 "primer_checkout_processing_title" = "Төлөмүңүз иштетилүүдө";
 "primer_checkout_processing_subtitle" = "Күтө туруңуз...";

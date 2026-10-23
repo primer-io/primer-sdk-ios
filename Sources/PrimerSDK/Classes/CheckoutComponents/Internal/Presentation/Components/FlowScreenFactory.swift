@@ -135,7 +135,6 @@ struct FlowScreenFactory: LogReporter {
   private func makeFailureView(error: PrimerError, checkoutData: PrimerCheckoutData?) -> some View {
     if scope.isErrorScreenEnabled {
       ErrorScreen(
-        error: error,
         onRetry: scope.canRetryPayment
           ? {
             logger.info(message: "Error screen retry tapped")

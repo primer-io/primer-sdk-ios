@@ -145,7 +145,7 @@
 "primer_card_form_title" = "Maksa kaardiga";
 "primer_checkout_dismissing" = "Sulgemine...";
 "primer_checkout_error_button_other_methods" = "Vali muud makseviisid";
-"primer_checkout_error_subtitle" = "Tekkis võrguprobleem.";
+"primer_checkout_error_subtitle" = "Palun proovi uuesti või kasuta muud makseviisi.";
 "primer_checkout_error_title" = "Makse nurjus";
 "primer_checkout_loading_indicator" = "Laadimine";
 "primer_checkout_processing_subtitle" = "Palun oota...";

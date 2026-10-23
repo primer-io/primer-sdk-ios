@@ -145,7 +145,7 @@
 "primer_card_form_title" = "Thanh toán bằng thẻ";
 "primer_checkout_dismissing" = "Đang đóng...";
 "primer_checkout_error_button_other_methods" = "Chọn phương thức thanh toán khác";
-"primer_checkout_error_subtitle" = "Đã xảy ra sự cố mạng.";
+"primer_checkout_error_subtitle" = "Vui lòng thử lại hoặc sử dụng phương thức thanh toán khác.";
 "primer_checkout_error_title" = "Thanh toán thất bại";
 "primer_checkout_loading_indicator" = "Đang tải";
 "primer_checkout_processing_subtitle" = "Vui lòng đợi...";

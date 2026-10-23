@@ -10,18 +10,15 @@ import SwiftUI
 
 @available(iOS 15.0, *)
 struct ErrorScreen: View {
-  let error: PrimerError
   let onRetry: (() -> Void)?
   let onChooseOtherPaymentMethods: (() -> Void)?
 
   @Environment(\.designTokens) private var tokens
 
   init(
-    error: PrimerError,
     onRetry: (() -> Void)? = nil,
     onChooseOtherPaymentMethods: (() -> Void)? = nil
   ) {
-    self.error = error
     self.onRetry = onRetry
     self.onChooseOtherPaymentMethods = onChooseOtherPaymentMethods
   }
@@ -42,8 +39,8 @@ struct ErrorScreen: View {
         .accessibilityIdentifier(AccessibilityIdentifiers.Error.title)
         .accessibilityAddTraits(.isHeader)
 
-      // `errorDescription` wraps the text in the error and diagnostics ids, which mean nothing to a shopper.
-      Text(error.plainDescription ?? CheckoutComponentsStrings.unexpectedError)
+      // The error's own text is written for developers; merchants get it in the failure callback and the logs.
+      Text(CheckoutComponentsStrings.paymentFailedMessage)
         .primerTypography(.bodyMedium, tokens: tokens)
         .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
         .multilineTextAlignment(.center)
