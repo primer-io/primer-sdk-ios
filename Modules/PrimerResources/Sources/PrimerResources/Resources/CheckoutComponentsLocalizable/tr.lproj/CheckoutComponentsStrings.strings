@@ -104,7 +104,7 @@
 "primer_card_form_error_state_invalid" = "Geçersiz il, bölge veya ilçe";
 "primer_card_form_error_state_required" = "İl, bölge veya ilçe zorunludur";
 "primer_card_form_label_address1" = "Adres satırı 1";
-"primer_card_form_label_address2" = "Adres satırı 2";
+"primer_card_form_label_address2" = "Adres satırı 2 (isteğe bağlı)";
 "primer_card_form_label_city" = "Şehir";
 "primer_card_form_label_country" = "Ülke";
 "primer_card_form_label_country_code" = "Ülke kodu";

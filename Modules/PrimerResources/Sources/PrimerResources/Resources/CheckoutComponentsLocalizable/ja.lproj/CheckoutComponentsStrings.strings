@@ -104,7 +104,7 @@
 "primer_card_form_error_state_invalid" = "都道府県が無効です";
 "primer_card_form_error_state_required" = "都道府県は必須です";
 "primer_card_form_label_address1" = "住所1";
-"primer_card_form_label_address2" = "住所2";
+"primer_card_form_label_address2" = "住所行2（任意）";
 "primer_card_form_label_city" = "市区町村";
 "primer_card_form_label_country" = "国";
 "primer_card_form_label_country_code" = "国コード";

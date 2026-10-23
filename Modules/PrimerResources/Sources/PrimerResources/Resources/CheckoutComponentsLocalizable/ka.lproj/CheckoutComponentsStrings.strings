@@ -37,7 +37,7 @@
 "primer_card_form_label_city" = "ქალაქი";
 "primer_card_form_label_state" = "რეგიონი";
 "primer_card_form_label_address1" = "მისამართის ხაზი 1";
-"primer_card_form_label_address2" = "მისამართის ხაზი 2";
+"primer_card_form_label_address2" = "მისამართის ხაზი 2 (არასავალდებულო)";
 "primer_card_form_label_phone" = "ტელეფონის ნომერი";
 "primer_card_form_label_first_name" = "სახელი";
 "primer_card_form_label_last_name" = "გვარი";

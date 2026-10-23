@@ -104,7 +104,7 @@
 "primer_card_form_error_state_invalid" = "Érvénytelen megye";
 "primer_card_form_error_state_required" = "A megye megadása kötelező";
 "primer_card_form_label_address1" = "1. címsor";
-"primer_card_form_label_address2" = "2. címsor";
+"primer_card_form_label_address2" = "Címsor 2 (nem kötelező)";
 "primer_card_form_label_city" = "Város";
 "primer_card_form_label_country" = "Ország";
 "primer_card_form_label_country_code" = "Országkód";

@@ -158,7 +158,7 @@ public struct PrimerVaultedPaymentMethods: View {
 
 Pre-built slot bodies and per-field building blocks for recomposition.
 
-- **`CardFormDefaults`**: `cardDetails`, `billingAddress`, `submitButton` + 14 field building blocks: `cardNumber`, `expiryDate`, `cvv`, `cardholderName`, `cardNetwork`, `countryCode`, `firstName`, `lastName`, `addressLine1`, `addressLine2`, `city`, `state`, `postalCode`, `phoneNumber`. Each field building block self-hides unless its field is in `CardFormConfiguration.cardFields`/`billingFields`.
+- **`CardFormDefaults`**: `cardDetails`, `billingAddress`, `submitButton` + 13 field building blocks: `cardNumber`, `expiryDate`, `cvv`, `cardholderName`, `cardNetwork`, `countryCode`, `firstName`, `lastName`, `addressLine1`, `addressLine2`, `city`, `state`, `postalCode`. Each field building block self-hides unless its field is in `CardFormConfiguration.cardFields`/`billingFields`.
 - **`PaymentMethodsDefaults`**: `header`, `method`, `emptyState`.
 - **`VaultedPaymentMethodsDefaults`**: `header` (section title + "Show all"), `item`, `submitButton`.
 
@@ -233,7 +233,6 @@ public final class PrimerCardFormSession: ObservableObject {
   public func updateState(_ value: String)
   public func updateAddressLine1(_ value: String)
   public func updateAddressLine2(_ value: String)
-  public func updatePhoneNumber(_ value: String)
   public func updateFirstName(_ value: String)
   public func updateLastName(_ value: String)
   public func selectCardNetwork(_ network: PrimerCardNetwork)

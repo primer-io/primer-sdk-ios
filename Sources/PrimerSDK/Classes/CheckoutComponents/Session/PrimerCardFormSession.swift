@@ -62,7 +62,6 @@ public final class PrimerCardFormSession: ObservableObject {
   public func updateState(_ value: String) { fieldScope?.updateState(value) }
   public func updateAddressLine1(_ value: String) { fieldScope?.updateAddressLine1(value) }
   public func updateAddressLine2(_ value: String) { fieldScope?.updateAddressLine2(value) }
-  public func updatePhoneNumber(_ value: String) { fieldScope?.updatePhoneNumber(value) }
   public func updateFirstName(_ value: String) { fieldScope?.updateFirstName(value) }
   public func updateLastName(_ value: String) { fieldScope?.updateLastName(value) }
 

@@ -104,7 +104,7 @@
 "primer_card_form_error_state_invalid" = "Nevažeća županija, regija ili okrug";
 "primer_card_form_error_state_required" = "Županija, regija ili okrug je obvezan";
 "primer_card_form_label_address1" = "Adresni redak 1";
-"primer_card_form_label_address2" = "Adresni redak 2";
+"primer_card_form_label_address2" = "Adresni redak 2 (nije obavezno)";
 "primer_card_form_label_city" = "Grad";
 "primer_card_form_label_country" = "Država";
 "primer_card_form_label_country_code" = "Pozivni broj države";

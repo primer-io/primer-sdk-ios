@@ -37,7 +37,7 @@
 "primer_card_form_label_city" = "Gemeente";
 "primer_card_form_label_state" = "Provincie";
 "primer_card_form_label_address1" = "Adresregel 1";
-"primer_card_form_label_address2" = "Adresregel 2";
+"primer_card_form_label_address2" = "Adresregel 2 (optioneel)";
 "primer_card_form_label_phone" = "Telefoonnummer";
 "primer_card_form_label_first_name" = "Voornaam";
 "primer_card_form_label_last_name" = "Achternaam";

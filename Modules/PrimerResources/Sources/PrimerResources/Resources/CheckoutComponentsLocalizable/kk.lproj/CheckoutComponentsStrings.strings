@@ -37,7 +37,7 @@
 "primer_card_form_label_city" = "Қала";
 "primer_card_form_label_state" = "Облыс";
 "primer_card_form_label_address1" = "Мекенжай 1-жол";
-"primer_card_form_label_address2" = "Мекенжай 2-жол";
+"primer_card_form_label_address2" = "Мекенжай 2-жол (міндетті емес)";
 "primer_card_form_label_phone" = "Телефон нөмірі";
 "primer_card_form_label_first_name" = "Аты";
 "primer_card_form_label_last_name" = "Тегі";

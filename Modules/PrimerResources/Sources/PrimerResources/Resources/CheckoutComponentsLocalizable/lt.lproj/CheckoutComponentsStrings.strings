@@ -104,7 +104,7 @@
 "primer_card_form_error_state_invalid" = "Neteisinga valstija, rajonas arba apygarda";
 "primer_card_form_error_state_required" = "Valstija, rajonas arba apygarda yra privalomi";
 "primer_card_form_label_address1" = "1 adreso eilutė";
-"primer_card_form_label_address2" = "2 adreso eilutė";
+"primer_card_form_label_address2" = "2 adreso eilutė (pasirenkama)";
 "primer_card_form_label_city" = "Miestas";
 "primer_card_form_label_country" = "Šalis";
 "primer_card_form_label_country_code" = "Šalies kodas";

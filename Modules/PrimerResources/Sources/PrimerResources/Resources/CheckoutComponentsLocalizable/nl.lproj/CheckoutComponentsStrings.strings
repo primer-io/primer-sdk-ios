@@ -104,7 +104,7 @@
 "primer_card_form_error_state_invalid" = "Ongeldige provincie of regio";
 "primer_card_form_error_state_required" = "Provincie of regio is verplicht";
 "primer_card_form_label_address1" = "Adresregel 1";
-"primer_card_form_label_address2" = "Adresregel 2";
+"primer_card_form_label_address2" = "Adresregel 2 (optioneel)";
 "primer_card_form_label_city" = "Plaats";
 "primer_card_form_label_country" = "Land";
 "primer_card_form_label_country_code" = "Landcode";

@@ -18,7 +18,7 @@ import SwiftUI
 /// Field-level helpers (`cardNumber`, `cvv`, …) are per-field building blocks. Swift default arguments
 /// cannot reference the `session` init parameter at the default-value site, so rather than force awkward
 /// per-field closure inits we keep the no-arg `cardDetails`/`billingAddress` shared renderer as the default.
-/// Merchants get full field recomposition by composing these 14 building blocks inside the existing
+/// Merchants get full field recomposition by composing these 13 building blocks inside the existing
 /// `PrimerCardForm(cardDetails:)` / `PrimerCardForm(billingAddress:)` section slots.
 @available(iOS 15.0, *)
 public enum CardFormDefaults {
@@ -117,11 +117,6 @@ public enum CardFormDefaults {
   /// Postal code field. Renders nothing unless the configuration requires it.
   public static func postalCode(_ session: PrimerCardFormSession) -> CardFieldContent {
     CardFieldContent(session: session, field: .postalCode)
-  }
-
-  /// Phone number field. Renders nothing unless the configuration requires it.
-  public static func phoneNumber(_ session: PrimerCardFormSession) -> CardFieldContent {
-    CardFieldContent(session: session, field: .phoneNumber)
   }
 }
 

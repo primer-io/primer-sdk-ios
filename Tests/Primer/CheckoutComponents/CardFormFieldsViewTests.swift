@@ -11,12 +11,12 @@ import XCTest
 final class CardFormFieldsViewTests: XCTestCase {
     func test_billingRows_fullAddress_pairsTheNamesAndPostalCodeWithCity() {
         let rows = CardFormFieldsView.billingRows(
-            [.countryCode, .firstName, .lastName, .addressLine1, .addressLine2, .postalCode, .city, .state, .phoneNumber]
+            [.countryCode, .firstName, .lastName, .addressLine1, .addressLine2, .postalCode, .city, .state]
         )
 
         XCTAssertEqual(
             rows,
-            [[.countryCode], [.firstName, .lastName], [.addressLine1], [.addressLine2], [.postalCode, .city], [.state], [.phoneNumber]]
+            [[.countryCode], [.firstName, .lastName], [.addressLine1], [.addressLine2], [.postalCode, .city], [.state]]
         )
     }
 

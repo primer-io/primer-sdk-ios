@@ -153,8 +153,6 @@ struct NameTextField: UIViewRepresentable, LogReporter {
           scope.updateFirstName(newText)
         case .lastName:
           scope.updateLastName(newText)
-        case .phoneNumber:
-          scope.updatePhoneNumber(newText)
         default:
           break
         }
@@ -195,10 +193,7 @@ struct NameTextField: UIViewRepresentable, LogReporter {
         }
       }()
 
-      // The billing phone reuses this field, and the name rule rejects every digit.
-      let result = inputType == .phoneNumber
-        ? validationService.validateField(type: .phoneNumber, value: name)
-        : validationService.validate(input: name, with: NameRule(inputElementType: elementType))
+      let result = validationService.validate(input: name, with: NameRule(inputElementType: elementType))
 
       isValid = result.isValid
       errorMessage = result.errorMessage

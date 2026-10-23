@@ -22,7 +22,6 @@ struct FieldValidationStates: Equatable {
   var firstName: Bool = false
   var lastName: Bool = false
   var email: Bool = false
-  var phoneNumber: Bool = false
   var otp: Bool = false
 }
 

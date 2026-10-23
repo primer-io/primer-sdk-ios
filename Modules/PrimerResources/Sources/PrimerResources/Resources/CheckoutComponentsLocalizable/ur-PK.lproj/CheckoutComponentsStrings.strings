@@ -37,7 +37,7 @@
 "primer_card_form_label_city" = "شہر";
 "primer_card_form_label_state" = "صوبہ";
 "primer_card_form_label_address1" = "پتے کی لائن 1";
-"primer_card_form_label_address2" = "پتے کی لائن 2";
+"primer_card_form_label_address2" = "پتے کی لائن 2 (اختیاری)";
 "primer_card_form_label_phone" = "فون نمبر";
 "primer_card_form_label_first_name" = "پہلا نام";
 "primer_card_form_label_last_name" = "آخری نام";

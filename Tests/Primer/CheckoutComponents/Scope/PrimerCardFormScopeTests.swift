@@ -75,10 +75,6 @@ final class PrimerCardFormScopeTests: XCTestCase {
             updatedFields[.addressLine2] = addressLine2
         }
 
-        func updatePhoneNumber(_ phoneNumber: String) {
-            updatedFields[.phoneNumber] = phoneNumber
-        }
-
         func updateFirstName(_ firstName: String) {
             updatedFields[.firstName] = firstName
         }
@@ -129,7 +125,7 @@ final class PrimerCardFormScopeTests: XCTestCase {
 
         let billingFields: [PrimerInputElementType] = [
             .postalCode, .countryCode, .city, .state,
-            .addressLine1, .addressLine2, .phoneNumber,
+            .addressLine1, .addressLine2,
             .firstName, .lastName, .email,
         ]
 

@@ -248,16 +248,6 @@ struct CardFormFieldsView: View {
       .focused($focusedField, equals: .addressLine2)
       .onSubmit { moveToNextField(from: .addressLine2) }
 
-    case .phoneNumber:
-      NameInputField(
-        label: CheckoutComponentsStrings.phoneNumberLabel,
-        placeholder: CheckoutComponentsStrings.phoneNumberPlaceholder,
-        inputType: .phoneNumber,
-        scope: scope
-      )
-      .focused($focusedField, equals: .phoneNumber)
-      .onSubmit { moveToNextField(from: .phoneNumber) }
-
     case .firstName:
       NameInputField(
         label: CheckoutComponentsStrings.firstNameLabel,
@@ -302,7 +292,7 @@ struct CardFormFieldsView: View {
       .focused($focusedField, equals: .otp)
       .onSubmit { moveToNextField(from: .otp) }
 
-    case .unknown, .all:
+    case .phoneNumber, .unknown, .all:
       EmptyView()
     }
   }

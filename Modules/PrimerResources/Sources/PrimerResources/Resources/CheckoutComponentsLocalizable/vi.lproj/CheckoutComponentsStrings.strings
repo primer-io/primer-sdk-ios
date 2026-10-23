@@ -104,7 +104,7 @@
 "primer_card_form_error_state_invalid" = "Tỉnh/Thành phố không hợp lệ";
 "primer_card_form_error_state_required" = "Tỉnh/Thành phố là bắt buộc";
 "primer_card_form_label_address1" = "Dòng địa chỉ 1";
-"primer_card_form_label_address2" = "Dòng địa chỉ 2";
+"primer_card_form_label_address2" = "Dòng địa chỉ 2 (không bắt buộc)";
 "primer_card_form_label_city" = "Thành phố";
 "primer_card_form_label_country" = "Quốc gia";
 "primer_card_form_label_country_code" = "Mã quốc gia";

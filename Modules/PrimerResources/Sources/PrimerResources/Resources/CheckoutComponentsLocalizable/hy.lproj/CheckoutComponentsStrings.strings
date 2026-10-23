@@ -37,7 +37,7 @@
 "primer_card_form_label_city" = "Քաղաք";
 "primer_card_form_label_state" = "Նահանգ";
 "primer_card_form_label_address1" = "Հասցեի տող 1";
-"primer_card_form_label_address2" = "Հասցեի տող 2";
+"primer_card_form_label_address2" = "Հասցեի տող 2 (ոչ պարտադիր)";
 "primer_card_form_label_phone" = "Հեռախոսահամար";
 "primer_card_form_label_first_name" = "Անուն";
 "primer_card_form_label_last_name" = "Ազգանուն";

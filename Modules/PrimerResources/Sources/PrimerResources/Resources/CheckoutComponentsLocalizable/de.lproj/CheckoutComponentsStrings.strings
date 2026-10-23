@@ -104,7 +104,7 @@
 "primer_card_form_error_state_invalid" = "Ungültiges Bundesland, Region oder Landkreis";
 "primer_card_form_error_state_required" = "Bundesland, Region oder Landkreis ist erforderlich";
 "primer_card_form_label_address1" = "Adresszeile 1";
-"primer_card_form_label_address2" = "Adresszeile 2";
+"primer_card_form_label_address2" = "Zusatz (optional)";
 "primer_card_form_label_city" = "Stadt";
 "primer_card_form_label_country" = "Land";
 "primer_card_form_label_country_code" = "Ländercode";

@@ -37,7 +37,7 @@
 "primer_card_form_label_city" = "Şəhər";
 "primer_card_form_label_state" = "Ştat";
 "primer_card_form_label_address1" = "Ünvan Xətti 1";
-"primer_card_form_label_address2" = "Ünvan Xətti 2";
+"primer_card_form_label_address2" = "Ünvan Xətti 2 (istəyə bağlı)";
 "primer_card_form_label_phone" = "Telefon Nömrəsi";
 "primer_card_form_label_first_name" = "Ad";
 "primer_card_form_label_last_name" = "Soyad";

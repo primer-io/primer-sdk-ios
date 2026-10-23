@@ -37,7 +37,7 @@
 "primer_card_form_label_city" = "شهر";
 "primer_card_form_label_state" = "استان";
 "primer_card_form_label_address1" = "خط آدرس ۱";
-"primer_card_form_label_address2" = "خط آدرس ۲";
+"primer_card_form_label_address2" = "خط آدرس ۲ (اختیاری)";
 "primer_card_form_label_phone" = "شماره تلفن";
 "primer_card_form_label_first_name" = "نام";
 "primer_card_form_label_last_name" = "نام خانوادگی";
