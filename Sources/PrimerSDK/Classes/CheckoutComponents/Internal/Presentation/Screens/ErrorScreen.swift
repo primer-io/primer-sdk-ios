@@ -14,6 +14,9 @@ struct ErrorScreen: View {
   let onChooseOtherPaymentMethods: (() -> Void)?
 
   @Environment(\.designTokens) private var tokens
+  @Environment(\.bridgeController) private var bridgeController
+
+  private let messageVerticalPadding: CGFloat = 48
 
   init(
     onRetry: (() -> Void)? = nil,
@@ -24,31 +27,33 @@ struct ErrorScreen: View {
   }
 
   var body: some View {
-    VStack(spacing: PrimerSpacing.large(tokens: tokens)) {
-      Spacer()
+    VStack(spacing: 0) {
+      VStack(spacing: PrimerSpacing.small(tokens: tokens)) {
+        Image(systemName: "exclamationmark.triangle.fill")
+          .font(PrimerFont.extraLargeIcon(tokens: tokens))
+          .foregroundColor(CheckoutColors.iconNegative(tokens: tokens))
+          .accessibilityIdentifier(AccessibilityIdentifiers.Error.icon)
+          .accessibilityHidden(true)
 
-      Image(systemName: "exclamationmark.triangle.fill")
-        .font(PrimerFont.largeIcon(tokens: tokens))
-        .foregroundColor(CheckoutColors.iconNegative(tokens: tokens))
-        .accessibilityIdentifier(AccessibilityIdentifiers.Error.icon)
-        .accessibilityHidden(true)
+        VStack(spacing: PrimerSpacing.xsmall(tokens: tokens)) {
+          Text(CheckoutComponentsStrings.paymentFailed)
+            .primerTypography(.titleLarge, tokens: tokens)
+            .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
+            .multilineTextAlignment(.center)
+            .accessibilityIdentifier(AccessibilityIdentifiers.Error.title)
+            .accessibilityAddTraits(.isHeader)
 
-      Text(CheckoutComponentsStrings.paymentFailed)
-        .primerTypography(.titleLarge, tokens: tokens)
-        .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
-        .accessibilityIdentifier(AccessibilityIdentifiers.Error.title)
-        .accessibilityAddTraits(.isHeader)
+          Text(CheckoutComponentsStrings.paymentFailedMessage)
+            .primerTypography(.bodyMedium, tokens: tokens)
+            .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
+            .multilineTextAlignment(.center)
+            .accessibilityIdentifier(AccessibilityIdentifiers.Error.description)
+        }
+      }
+      .padding(.horizontal, PrimerSpacing.large(tokens: tokens))
+      .padding(.vertical, messageVerticalPadding)
 
-      Text(CheckoutComponentsStrings.paymentFailedMessage)
-        .primerTypography(.bodyMedium, tokens: tokens)
-        .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
-        .multilineTextAlignment(.center)
-        .padding(.horizontal, PrimerSpacing.xxlarge(tokens: tokens))
-        .accessibilityIdentifier(AccessibilityIdentifiers.Error.description)
-
-      Spacer()
-
-      VStack(spacing: PrimerSpacing.medium(tokens: tokens)) {
+      VStack(spacing: PrimerSpacing.small(tokens: tokens)) {
         if onRetry != nil {
           makeRetryButton()
         }
@@ -56,11 +61,13 @@ struct ErrorScreen: View {
           makeOtherPaymentButton()
         }
       }
-      .padding(.horizontal, PrimerSpacing.large(tokens: tokens))
-      .padding(.bottom, PrimerSpacing.large(tokens: tokens))
     }
-    .frame(maxWidth: .infinity, maxHeight: .infinity)
+    .padding(PrimerSpacing.large(tokens: tokens))
+    .frame(maxWidth: .infinity)
     .background(CheckoutColors.background(tokens: tokens))
+    .onAppear {
+      bridgeController?.invalidateContentSize()
+    }
   }
 
   private func makeRetryButton() -> some View {
