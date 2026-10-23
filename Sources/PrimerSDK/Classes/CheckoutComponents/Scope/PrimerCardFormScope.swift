@@ -130,7 +130,7 @@ extension PrimerCardFormScope {
     case .otp:
       updateOtpCode(value)
     case .phoneNumber, .unknown, .all:
-      break  // Not implemented for these special cases
+      break
     }
   }
 
