@@ -62,7 +62,6 @@ struct VaultedCardCVVInput: View {
 
   // MARK: - CVV Input Row
 
-  // At accessibility text sizes the code outgrows the fixed-width box, so the box takes a full row.
   private var showsFieldOnOwnRow: Bool { sizeCategory.isAccessibilityCategory }
 
   @ViewBuilder
