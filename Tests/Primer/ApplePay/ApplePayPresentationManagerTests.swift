@@ -400,6 +400,38 @@ final class ApplePayPresentationManagerTests: XCTestCase {
         XCTAssertEqual(request.supportedNetworks, [.visa, .masterCard, .amex, .discover])
     }
 
+    // MARK: - Supported networks
+
+    func testSupportedNetworksPutEftposFirstWhenTheSessionDoes() throws {
+        SDKSessionHelper.setUp()
+        defer { SDKSessionHelper.tearDown() }
+        SDKSessionHelper.updateAllowedCardNetworks(cardNetworks: [.eftpos, .visa, .masterCard, .amex])
+
+        let request = try sut.createRequest(for: makeApplePayRequest())
+
+        XCTAssertEqual(request.supportedNetworks, [.eftpos, .visa, .masterCard, .amex])
+    }
+
+    func testCreateRequestWarnsAboutNetworksApplePayDoesNotSupport() throws {
+        SDKSessionHelper.setUp()
+        let logger = CapturingLogger()
+        let previousLogger = PrimerLogging.shared.logger
+        PrimerLogging.shared.logger = logger
+        defer {
+            PrimerLogging.shared.logger = previousLogger
+            SDKSessionHelper.tearDown()
+        }
+        SDKSessionHelper.updateAllowedCardNetworks(cardNetworks: [.eftpos, .diners, .visa, .hipercard])
+
+        let request = try sut.createRequest(for: makeApplePayRequest())
+
+        XCTAssertEqual(request.supportedNetworks, [.eftpos, .visa])
+        XCTAssertEqual(
+            logger.warnings,
+            ["Apple Pay doesn't support these allowed card networks, so they are left out: DINERS_CLUB, HIPERCARD"]
+        )
+    }
+
     func makeApplePayRequest() -> ApplePayRequest {
         ApplePayRequest(
             currency: Currency(code: "GBP", decimalDigits: 2),
@@ -422,5 +454,14 @@ final class ApplePayPresentationManagerTests: XCTestCase {
             )
         )
         DependencyContainer.register(settings as PrimerSettingsProtocol)
+    }
+}
+
+private final class CapturingLogger: PrimerLogger {
+    var logLevel: LogLevel = .debug
+    private(set) var warnings: [String] = []
+
+    func log(level: LogLevel, message: String, userInfo: Encodable?, metadata: PrimerLogMetadata) {
+        if level == .warning { warnings.append(message) }
     }
 }

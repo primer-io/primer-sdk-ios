@@ -14,6 +14,7 @@ enum ApplePayUtils {
         .amex: .amex,
         .cartesBancaires: .cartesBancaires,
         .discover: .discover,
+        .eftpos: .eftpos,
         .elo: .elo,
         .jcb: .JCB,
         .masterCard: .masterCard,
@@ -25,6 +26,10 @@ enum ApplePayUtils {
 
     static func supportedPKPaymentNetworks(cardNetworks: [CardNetwork] = .allowedCardNetworks) -> [PKPaymentNetwork] {
         cardNetworks.compactMap { networkMap[$0] ?? nil }
+    }
+
+    static func unsupportedCardNetworks(in cardNetworks: [CardNetwork]) -> [CardNetwork] {
+        cardNetworks.filter { (networkMap[$0] ?? nil) == nil }
     }
 
     static func canMakeApplePayPayments() -> Bool {

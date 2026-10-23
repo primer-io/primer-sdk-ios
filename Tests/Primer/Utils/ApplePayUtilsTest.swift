@@ -28,6 +28,18 @@ final class ApplePayUtilsTest: XCTestCase {
         XCTAssertEqual(Set(ApplePayUtils.supportedPKPaymentNetworks(cardNetworks: [])), Set())
     }
 
+    func testApplePaySupportedPaymentNetworksKeepEftposFirst() {
+        XCTAssertEqual(
+            ApplePayUtils.supportedPKPaymentNetworks(cardNetworks: [.eftpos, .visa, .masterCard, .amex]),
+            [.eftpos, .visa, .masterCard, .amex]
+        )
+    }
+
+    func testUnsupportedCardNetworks() {
+        XCTAssertEqual(ApplePayUtils.unsupportedCardNetworks(in: [.eftpos, .diners, .visa, .hipercard]), [.diners, .hipercard])
+        XCTAssertEqual(ApplePayUtils.unsupportedCardNetworks(in: [.eftpos, .visa]), [])
+    }
+
     func testApplePaySupportedPaymentNetworksViaPrimerSettings() {
 
         // w/ CB
