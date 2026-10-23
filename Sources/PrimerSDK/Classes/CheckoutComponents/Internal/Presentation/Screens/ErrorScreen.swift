@@ -39,7 +39,6 @@ struct ErrorScreen: View {
         .accessibilityIdentifier(AccessibilityIdentifiers.Error.title)
         .accessibilityAddTraits(.isHeader)
 
-      // The error's own text is written for developers; merchants get it in the failure callback and the logs.
       Text(CheckoutComponentsStrings.paymentFailedMessage)
         .primerTypography(.bodyMedium, tokens: tokens)
         .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
