@@ -64,13 +64,7 @@ final class ApplePayPresentationManager: ApplePayPresenting, LogReporter, Sendab
         request.countryCode = applePayRequest.countryCode.rawValue
         request.merchantIdentifier = applePayRequest.merchantIdentifier
         request.merchantCapabilities = merchantCapabilities(for: applePayOptions)
-        let cardNetworks: [CardNetwork] = .allowedCardNetworks
-        let unsupportedNetworks = ApplePayUtils.unsupportedCardNetworks(in: cardNetworks)
-        if !unsupportedNetworks.isEmpty {
-            let names = unsupportedNetworks.map(\.rawValue).joined(separator: ", ")
-            logger.warn(message: "Apple Pay doesn't support these allowed card networks, so they are left out: \(names)")
-        }
-        request.supportedNetworks = ApplePayUtils.supportedPKPaymentNetworks(cardNetworks: cardNetworks)
+        request.supportedNetworks = ApplePayUtils.supportedPKPaymentNetworks(cardNetworks: .allowedCardNetworks)
         request.paymentSummaryItems = applePayRequest.items.compactMap(\.applePayItem)
 
         if let shippingMethods = applePayRequest.shippingMethods {
