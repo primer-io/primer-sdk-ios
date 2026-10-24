@@ -1,11 +1,11 @@
 //
 //  ApplePayUtilsTest.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import XCTest
 @testable import PrimerSDK
+import XCTest
 
 final class ApplePayUtilsTest: XCTestCase {
 
@@ -26,6 +26,18 @@ final class ApplePayUtilsTest: XCTestCase {
 
         // w/ none
         XCTAssertEqual(Set(ApplePayUtils.supportedPKPaymentNetworks(cardNetworks: [])), Set())
+    }
+
+    func testApplePaySupportedPaymentNetworksKeepEftposFirst() {
+        XCTAssertEqual(
+            ApplePayUtils.supportedPKPaymentNetworks(cardNetworks: [.eftpos, .visa, .masterCard, .amex]),
+            [.eftpos, .visa, .masterCard, .amex]
+        )
+    }
+
+    func testUnsupportedCardNetworks() {
+        XCTAssertEqual(ApplePayUtils.unsupportedCardNetworks(in: [.eftpos, .diners, .visa, .hipercard]), [.diners, .hipercard])
+        XCTAssertEqual(ApplePayUtils.unsupportedCardNetworks(in: [.eftpos, .visa]), [])
     }
 
     func testApplePaySupportedPaymentNetworksViaPrimerSettings() {
