@@ -5,8 +5,9 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
-@_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerStepResolver
 
 @available(iOS 15.0, *)
 final class ComposableContainer: LogReporter {
@@ -30,6 +31,7 @@ final class ComposableContainer: LogReporter {
     try await validateCriticalDependencies()
 
     await DIContainer.setContainer(container)
+    await registerBackendDrivenCheckoutResolvers()
 
     #if DEBUG
       await performHealthCheck()
@@ -344,6 +346,18 @@ extension ComposableContainer {
             payloadBuilder: try await resolver.resolve(LogPayloadBuilding.self)
           )
         }
+    }
+  }
+
+  fileprivate func registerBackendDrivenCheckoutResolvers() async {
+    _ = Analytics.Service.shared
+    let registry = PrimerStepResolverRegistry.shared
+    if let loggingService = try? await container.resolve(LoggingService.self) {
+      registry.register(ComponentsPlatformLogResolver(loggingService: loggingService), for: .platformLog)
+    }
+    if let analyticsService = try? await container.resolve(CheckoutComponentsAnalyticsServiceProtocol.self)
+      as? any RawAnalyticsEventSending {
+      registry.register(ComponentsAnalyticsEventResolver(analyticsService: analyticsService), for: .analyticsEvent)
     }
   }
 

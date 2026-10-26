@@ -14,3 +14,9 @@ extension Analytics.Service: StepResolver {
         return StepResolutionResult(outcome: .success)
     }
 }
+
+struct SkippedAnalyticsEventResolver: StepResolver {
+    func resolve(_ data: CodableValue) async throws -> StepResolutionResult {
+        StepResolutionResult(outcome: .success)
+    }
+}

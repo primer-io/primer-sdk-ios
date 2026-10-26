@@ -4,10 +4,10 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import XCTest
-@_spi(PrimerInternal) @testable import PrimerSDK
-@_spi(PrimerInternal) @testable import PrimerFoundation
 @_spi(PrimerInternal) @testable import PrimerCore
+@_spi(PrimerInternal) @testable import PrimerFoundation
+@_spi(PrimerInternal) @testable import PrimerSDK
+import XCTest
 
 @available(iOS 15.0, *)
 final class ComponentsAnalyticsLoggingBridgeTests: XCTestCase {
@@ -399,6 +399,10 @@ private final actor MockBridgeLoggingService: ComponentsLoggingServiceProtocol {
     private(set) var logErrorCalls: [ErrorCall] = []
 
     func logInfo(message: String, event: String, userInfo: [String: Any]?) async {
+        logInfoCalls.append(InfoCall(message: message, event: event, userInfo: userInfo))
+    }
+
+    func logWarning(message: String, event: String, userInfo: [String: Any]?) async {
         logInfoCalls.append(InfoCall(message: message, event: event, userInfo: userInfo))
     }
 

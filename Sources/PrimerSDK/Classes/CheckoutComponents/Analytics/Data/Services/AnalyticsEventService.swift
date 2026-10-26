@@ -5,11 +5,11 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Network
-import UIKit
-@_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
+import UIKit
 
-actor AnalyticsEventService: CheckoutComponentsAnalyticsServiceProtocol, LogReporter {
+actor AnalyticsEventService: CheckoutComponentsAnalyticsServiceProtocol, RawAnalyticsEventSending, LogReporter {
 
   private enum Delivery {
     static let maxQueuedEvents = 50
@@ -19,6 +19,7 @@ actor AnalyticsEventService: CheckoutComponentsAnalyticsServiceProtocol, LogRepo
 
   private struct QueuedEvent {
     let payload: AnalyticsPayload
+    var fields: [String: CodableValue] = [:]
     let endpoint: URL
     let token: String?
   }
@@ -132,6 +133,28 @@ actor AnalyticsEventService: CheckoutComponentsAnalyticsServiceProtocol, LogRepo
     funnel.recordThreeDSOutcome(outcome)
   }
 
+  func sendRawEvent(named eventName: String, fields: [String: CodableValue]) async {
+    guard let sessionConfig else { return }
+    guard let endpoint = environmentProvider.getEndpointURL(for: sessionConfig.environment) else {
+    let message = "[Analytics] Dropped \(eventName) - \(sessionConfig.environment.rawValue) invalid"
+      return logger.warn(message: message)
+    }
+
+    let payload = payloadBuilder.buildPayload(
+      eventName: eventName,
+      metadata: nil,
+      config: sessionConfig,
+      integrationSurface: integrationSurface
+    )
+    let event = QueuedEvent(
+        payload: payload,
+        fields: fields,
+        endpoint: endpoint,
+        token: sessionConfig.clientSessionToken
+    )
+    enqueue(event)
+  }
+
   // MARK: - Private Methods
 
   private func process(_ eventType: AnalyticsEventType, metadata: AnalyticsEventMetadata?, timestamp: Int) {
@@ -181,7 +204,12 @@ actor AnalyticsEventService: CheckoutComponentsAnalyticsServiceProtocol, LogRepo
     var sendIndex = 0
     while sendIndex < Delivery.maxSends {
       do {
-        return try await networkClient.send(payload: event.payload, to: event.endpoint, token: event.token)
+        return try await networkClient.send(
+          payload: event.payload,
+          fields: event.fields,
+          to: event.endpoint,
+          token: event.token
+        )
       } catch {
         // As on Web, a send while the device is offline costs no attempt: the event waits for the network.
         if error is URLError, connectivity.isOffline {

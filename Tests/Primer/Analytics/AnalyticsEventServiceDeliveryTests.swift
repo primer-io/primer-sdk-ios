@@ -4,6 +4,7 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+@_spi(PrimerInternal) import PrimerFoundation
 @testable import PrimerSDK
 import UIKit
 import XCTest
@@ -161,6 +162,37 @@ final class AnalyticsEventServiceDeliveryTests: XCTestCase {
         let calls = try await client.waitForCalls(count: 1)
         XCTAssertEqual(calls.first?.payload.contractVersion, 2)
         XCTAssertEqual(calls.first?.payload.integrationSurface, "swift_ui")
+    }
+
+    func test_sendRawEvent_isSentWithItsFieldsAndTheSession() async throws {
+        // Given
+        let service = makeService()
+        await service.initialize(config: makeConfig())
+        let fields: [String: CodableValue] = ["eventName": .string("paypal_cancelled"), "paymentMethod": .string("PAYPAL")]
+
+        // When
+        await service.sendRawEvent(named: "paypal_cancelled", fields: fields)
+
+        // Then
+        let calls = try await client.waitForCalls(count: 1)
+        XCTAssertEqual(calls.first?.payload.eventName, "paypal_cancelled")
+        XCTAssertEqual(calls.first?.payload.clientSessionId, makeConfig().clientSessionId)
+        XCTAssertEqual(calls.first?.fields, fields)
+    }
+
+    func test_requestBody_keepsTheSessionAndLetsTheFieldsWin() throws {
+        // Given
+        let payload = AnalyticsPayloadBuilder().buildPayload(eventName: "paypal_cancelled", metadata: nil, config: makeConfig())
+        let fields: [String: CodableValue] = ["paymentMethod": .string("PAYPAL"), "sdkVersion": .string("9.9.9")]
+
+        // When
+        let body = try AnalyticsNetworkClient.body(for: payload, fields: fields)
+
+        // Then
+        let json = try JSONDecoder().decode([String: CodableValue].self, from: body)
+        XCTAssertEqual(json["clientSessionId"], .string(makeConfig().clientSessionId))
+        XCTAssertEqual(json["paymentMethod"], .string("PAYPAL"))
+        XCTAssertEqual(json["sdkVersion"], .string("9.9.9"))
     }
 
     func test_recordThreeDSOutcome_isSentWithTheAttemptsSuccess() async throws {
@@ -493,6 +525,7 @@ private actor RecordingAnalyticsNetworkClient: AnalyticsEventSending {
 
     struct Call: Sendable {
         let payload: AnalyticsPayload
+        let fields: [String: CodableValue]
         let endpoint: URL
         let token: String?
     }
@@ -503,14 +536,14 @@ private actor RecordingAnalyticsNetworkClient: AnalyticsEventSending {
     private var shouldBlockNext = false
     private var continuation: CheckedContinuation<Void, Never>?
 
-    func send(payload: AnalyticsPayload, to endpoint: URL, token: String?) async throws {
+    func send(payload: AnalyticsPayload, fields: [String: CodableValue], to endpoint: URL, token: String?) async throws {
         if shouldBlockNext {
             shouldBlockNext = false
             isBlocking = true
             await withCheckedContinuation { self.continuation = $0 }
             isBlocking = false
         }
-        calls.append(Call(payload: payload, endpoint: endpoint, token: token))
+        calls.append(Call(payload: payload, fields: fields, endpoint: endpoint, token: token))
         if !errorQueue.isEmpty {
             throw errorQueue.removeFirst()
         }

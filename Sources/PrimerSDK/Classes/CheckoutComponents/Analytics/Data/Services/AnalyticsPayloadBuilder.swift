@@ -4,9 +4,9 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import UIKit
-@_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
+import UIKit
 
 struct AnalyticsPayloadBuilder {
 
@@ -20,13 +20,31 @@ struct AnalyticsPayloadBuilder {
     envelope: AnalyticsFunnelState.Envelope? = nil,
     integrationSurface: String? = nil
   ) -> AnalyticsPayload {
+    buildPayload(
+      eventName: eventType.rawValue,
+      metadata: metadata,
+      config: config,
+      timestamp: timestamp,
+      envelope: envelope,
+      integrationSurface: integrationSurface
+    )
+  }
+
+  func buildPayload(
+    eventName: String,
+    metadata: AnalyticsEventMetadata?,
+    config: AnalyticsSessionConfig,
+    timestamp: Int? = nil,
+    envelope: AnalyticsFunnelState.Envelope? = nil,
+    integrationSurface: String? = nil
+  ) -> AnalyticsPayload {
     let vault = metadata?.vaultEvent
     let payment = metadata?.paymentEvent
     return AnalyticsPayload(
       id: .uuid,
       timestamp: timestamp ?? Int(Date().timeIntervalSince1970),
       sdkType: Self.isReactNative ? "RN_IOS" : "IOS_NATIVE",
-      eventName: eventType.rawValue,
+      eventName: eventName,
       checkoutSessionId: config.checkoutSessionId,
       clientSessionId: config.clientSessionId,
       primerAccountId: config.primerAccountId,
