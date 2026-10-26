@@ -111,6 +111,7 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
             PrimerAPIConfigurationModule.clientToken = clientToken
             PrimerAPIConfigurationModule.apiConfiguration = apiConfiguration
             reportAllowedCardNetworks()
+            ApplePayUtils.warnAboutUnsupportedCardNetworks()
         } catch {
             PrimerAPIConfigurationModule.clientToken = nil
             PrimerAPIConfigurationModule.apiConfiguration = nil
