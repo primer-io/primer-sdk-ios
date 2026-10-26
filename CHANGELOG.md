@@ -5,6 +5,13 @@ All notable changes to `primer-sdk-ios` are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 2.53.1 (2026-10-26)
+
+### Fix
+
+- Pass EFTPOS to Apple Pay (ESC-1206) (#1968)
+- Order BIN data networks by the merchant's preference (ORC-8538) (#1945)
+
 ## 2.53.0 (2026-10-02)
 
 ### Feat
