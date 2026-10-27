@@ -9,8 +9,8 @@ import Foundation
 @_spi(PrimerInternal)
 public struct Manifest: Decodable {
     
-    public let stateProcessorContainer: URLContainer
-    public let celWrapperJSURLContainer: URLContainer
+    public let stateProcessorContainer: BrotliContainer
+    public let celWrapperJSURLContainer: BrotliContainer
     public let celWrapperWASMURLContainer: BrotliContainer
     
     public init(from decoder: Decoder) throws {
@@ -26,11 +26,6 @@ public struct SignedManifest: Decodable {
     public let manifest: Data
 }
 
-public struct URLContainer: Decodable {
-    public let sha256: String
-    public let url: String
-}
-
 public struct BrotliContainer: Decodable {
     public let sha256: String
     public let br: String
@@ -42,7 +37,7 @@ private struct InnerManifest: Decodable {
 }
 
 private struct StateProcessor: Decodable {
-    let umd: URLContainer
+    let umd: BrotliContainer
 }
 
 private struct CEL: Decodable {
@@ -50,6 +45,6 @@ private struct CEL: Decodable {
 }
 
 private struct NoModules: Decodable {
-    let js: URLContainer
+    let js: BrotliContainer
     let wasm: BrotliContainer
 }
