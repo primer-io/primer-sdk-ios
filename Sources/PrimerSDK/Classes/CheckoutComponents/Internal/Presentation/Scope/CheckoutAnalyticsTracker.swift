@@ -88,10 +88,10 @@ final class CheckoutAnalyticsTracker: LogReporter {
 
   static func failureLogFields(_ error: PrimerError, checkoutData: PrimerCheckoutData?) -> [String: Any] {
     var fields: [String: Any] = [
-      "error_code": error.datadogErrorCode,
-      "error_origin": error.analyticsOrigin.rawValue,
-      "error_message": error.localizedDescription,
-      "diagnostics_id": error.diagnosticsId
+      Constants.errorCodeKey: error.datadogErrorCode,
+      Constants.errorOriginKey: error.analyticsOrigin.rawValue,
+      Constants.errorMessageKey: error.localizedDescription,
+      Constants.diagnosticsIdKey: error.diagnosticsId
     ]
     // Web sends the outcome only once a payment exists, so failures before one stay out of the success rate.
     if checkoutData?.payment?.id != nil {
@@ -114,6 +114,10 @@ private extension CheckoutAnalyticsTracker {
     static let failureMessage = "Payment failed"
     static let successEvent = "payment-complete"
     static let checkoutOutcomeKey = "checkout_outcome"
+    static let errorCodeKey = "error_code"
+    static let errorOriginKey = "error_origin"
+    static let errorMessageKey = "error_message"
+    static let diagnosticsIdKey = "diagnostics_id"
     static let checkoutComplete = "CHECKOUT_COMPLETE"
     static let checkoutFailure = "CHECKOUT_FAILURE"
   }

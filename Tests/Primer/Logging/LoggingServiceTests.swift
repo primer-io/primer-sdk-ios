@@ -150,7 +150,12 @@ final class LoggingServiceTests: XCTestCase {
         await loggingService.logWarning(
             message: "Payment failed",
             event: "payment-failed",
-            userInfo: ["checkout_outcome": "CHECKOUT_FAILURE", "error_code": "PAYMENT_FAILED"]
+            userInfo: [
+                "checkout_outcome": "CHECKOUT_FAILURE",
+                "error_code": "PAYMENT_FAILED",
+                "error_message": "Declined",
+                "diagnostics_id": "test-id"
+            ]
         )
 
         let json = try await sentMessageJSON()
@@ -158,6 +163,8 @@ final class LoggingServiceTests: XCTestCase {
         XCTAssertEqual(json["message"] as? String, "Payment failed")
         XCTAssertEqual(json["checkout_outcome"] as? String, "CHECKOUT_FAILURE")
         XCTAssertEqual(json["error_code"] as? String, "PAYMENT_FAILED")
+        XCTAssertEqual(json["error_message"] as? String, "Declined")
+        XCTAssertEqual(json["diagnostics_id"] as? String, "test-id")
     }
 
     // MARK: - logError Tests
