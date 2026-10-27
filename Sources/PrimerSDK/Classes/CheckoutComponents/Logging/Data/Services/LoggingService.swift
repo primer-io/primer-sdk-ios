@@ -25,6 +25,8 @@ actor LoggingService: LogReporter, ComponentsLoggingServiceProtocol {
 
   func logErrorIfReportable(_ error: Error, message: String? = nil, userInfo: [String: Any]? = nil)
     async {
+    // A card decline arrives wrapped with its payment, and the wrapper alone would read as reportable.
+    let error = (error as? PaymentFailure)?.error ?? error
     guard error.shouldReportToDatadog else {
       Self.logger.debug(message: "[Logging] Skipping non-reportable error: \(error)")
       return
