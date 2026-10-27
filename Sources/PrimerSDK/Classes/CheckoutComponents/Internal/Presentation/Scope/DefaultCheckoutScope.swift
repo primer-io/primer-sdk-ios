@@ -684,6 +684,7 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
   }
 
   func handlePaymentSuccess(_ result: PaymentResult) {
+    analyticsTracker?.logPaymentSucceeded()
     updateState(.success(result))
     updateNavigationState(.success(result))
   }
@@ -692,6 +693,7 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
   func handlePaymentError(_ error: PrimerError, checkoutData: PrimerCheckoutData? = nil) {
     // The decline error carries the freshest status, so it wins over the create-time snapshot.
     let checkoutData = error.failedPaymentCheckoutData ?? checkoutData
+    analyticsTracker?.logPaymentFailed(error, checkoutData: checkoutData)
     updateState(.failure(error, checkoutData: checkoutData))
     // Note: Error callback is invoked via navigateToError in updateNavigationState
     updateNavigationState(.failure(error, checkoutData: checkoutData))
