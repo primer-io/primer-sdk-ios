@@ -241,6 +241,49 @@ final class CheckoutAnalyticsTrackerTests: XCTestCase {
         XCTAssertEqual(count, 0)
     }
 
+    // MARK: - Payment outcome log
+
+    func test_failureLogFields_withCreatedPayment_includesCheckoutFailureOutcome() {
+        // Given
+        let error = PrimerError.paymentFailed(paymentMethodType: "PAYMENT_CARD", paymentId: "pay_123", orderId: nil, status: "DECLINED")
+        let checkoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(id: "pay_123", orderId: nil, paymentFailureReason: nil, status: "DECLINED"))
+
+        // When
+        let fields = CheckoutAnalyticsTracker.failureLogFields(error, checkoutData: checkoutData)
+
+        // Then
+        XCTAssertEqual(fields["checkout_outcome"] as? String, "CHECKOUT_FAILURE")
+        XCTAssertEqual(fields["error_code"] as? String, "PAYMENT_FAILED")
+        XCTAssertEqual(fields["error_origin"] as? String, "payment")
+        XCTAssertEqual(fields["diagnostics_id"] as? String, error.diagnosticsId)
+        XCTAssertNotNil(fields["error_message"])
+    }
+
+    func test_failureLogFields_withoutPayment_omitsCheckoutOutcome() {
+        // When
+        let fields = CheckoutAnalyticsTracker.failureLogFields(.cancelled(paymentMethodType: "PAYPAL"), checkoutData: nil)
+
+        // Then
+        XCTAssertNil(fields["checkout_outcome"])
+        XCTAssertEqual(fields["error_code"] as? String, "PAYMENT_CANCELLED")
+    }
+
+    func test_datadogErrorCode_matchesWebCodesAndFallsBackToErrorId() {
+        let expected: [(PrimerError, String)] = [
+            (.paymentFailed(paymentMethodType: "PAYMENT_CARD", paymentId: "pay_123", orderId: nil, status: "DECLINED"), "PAYMENT_FAILED"),
+            (.cancelled(paymentMethodType: "PAYPAL"), "PAYMENT_CANCELLED"),
+            (.merchantError(message: "abort"), "PAYMENT_CREATION_ABORTED"),
+            (.failedToResumePayment(paymentMethodType: "PAYMENT_CARD", description: "resume"), "RESUME_FAILED"),
+            (.invalidClientToken(reason: "expired"), "INVALID_CLIENT_TOKEN"),
+            (.unknown(message: "boom"), "UNEXPECTED"),
+            (.applePayTimedOut(), "APPLE_PAY_TIMED_OUT")
+        ]
+
+        for (error, code) in expected {
+            XCTAssertEqual(error.datadogErrorCode, code, "\(error.errorId)")
+        }
+    }
+
     // MARK: - Nil interactor
 
     func test_trackStateChange_nilInteractor_doesNotCrash() async {

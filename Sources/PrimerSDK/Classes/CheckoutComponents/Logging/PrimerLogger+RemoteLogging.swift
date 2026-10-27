@@ -26,19 +26,7 @@ public extension PrimerLogger {
 
         if #available(iOS 15.0, *) {
             Task { [error, userInfo, message] in
-                guard let container = await DIContainer.current else {
-                    #if DEBUG
-                    print("📊 [Logging] DIContainer not available for remote logging")
-                    #endif
-                    return
-                }
-                guard let service = try? await container.resolve(LoggingService.self) else {
-                    #if DEBUG
-                    print("📊 [Logging] LoggingService not resolved for remote logging")
-                    #endif
-                    return
-                }
-                await service.logErrorIfReportable(error, message: message, userInfo: userInfo)
+                await remoteLoggingService()?.logErrorIfReportable(error, message: message, userInfo: userInfo)
             }
         }
     }
@@ -50,19 +38,35 @@ public extension PrimerLogger {
         userInfo: [String: Any]? = nil
     ) {
         Task { [message, event, userInfo] in
-            guard let container = await DIContainer.current else {
-                #if DEBUG
-                print("📊 [Logging] DIContainer not available for remote logging")
-                #endif
-                return
-            }
-            guard let service = try? await container.resolve(LoggingService.self) else {
-                #if DEBUG
-                print("📊 [Logging] LoggingService not resolved for remote logging")
-                #endif
-                return
-            }
-            await service.logInfo(message: message, event: event, userInfo: userInfo)
+            await remoteLoggingService()?.logInfo(message: message, event: event, userInfo: userInfo)
         }
     }
+
+    @available(iOS 15.0, *)
+    func warn(
+        message: String,
+        event: String,
+        userInfo: [String: Any]? = nil
+    ) {
+        Task { [message, event, userInfo] in
+            await remoteLoggingService()?.logWarning(message: message, event: event, userInfo: userInfo)
+        }
+    }
+}
+
+@available(iOS 15.0, *)
+private func remoteLoggingService() async -> LoggingService? {
+    guard let container = await DIContainer.current else {
+        #if DEBUG
+        print("📊 [Logging] DIContainer not available for remote logging")
+        #endif
+        return nil
+    }
+    guard let service = try? await container.resolve(LoggingService.self) else {
+        #if DEBUG
+        print("📊 [Logging] LoggingService not resolved for remote logging")
+        #endif
+        return nil
+    }
+    return service
 }
