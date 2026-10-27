@@ -62,6 +62,14 @@ final class PrimerCardholderNameFieldViewTests: XCTestCase {
         XCTAssertEqual(view.cardholderName, "ghijkl")
     }
 
+    func testContentType() throws {
+        if #available(iOS 17, *) {
+            XCTAssertEqual(view.textField.textContentType, .creditCardName)
+        } else {
+            XCTAssertEqual(view.textField.textContentType, .name)
+        }
+    }
+
     // MARK: Helpers
 
     private func setText(_ text: String?) {

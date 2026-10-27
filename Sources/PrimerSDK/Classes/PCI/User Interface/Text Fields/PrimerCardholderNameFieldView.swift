@@ -19,6 +19,7 @@ public final class PrimerCardholderNameFieldView: PrimerSimpleCardFormTextFieldV
         super.xibSetup()
         isTextFieldAccessibilityElement = true
         textFieldaccessibilityIdentifier = "card_holder_txt_fld"
+        if #available(iOS 17, *) { textContentType = .creditCardName } else { textContentType = .name }
         isEditingAnalyticsEnabled = true
         textField.delegate = self
         editingAnalyticsObjectId = .cardHolder

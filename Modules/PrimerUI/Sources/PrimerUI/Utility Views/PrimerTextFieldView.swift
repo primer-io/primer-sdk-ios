@@ -87,6 +87,9 @@ open class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
     public var keyboardType: UIKeyboardType = .default {
         didSet { textField.keyboardType = keyboardType }
     }
+    public var textContentType: UITextContentType? {
+        didSet { textField.textContentType = textContentType }
+    }
     public var isTextFieldAccessibilityElement: Bool = false {
         didSet { textField.isAccessibilityElement = isTextFieldAccessibilityElement }
     }

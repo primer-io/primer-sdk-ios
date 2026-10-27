@@ -110,4 +110,46 @@ final class PrimerExpiryDateFieldViewTests: XCTestCase {
         waitForExpectations(timeout: 2.0)
     }
 
+    func testAutofillDateFormats() throws {
+        for date in ["03/30", "03/2030", "3/30", "3/2030", "03 / 2030", "032030"] {
+            view.text = ""
+            _ = view.textField(
+                view.textField,
+                shouldChangeCharactersIn: NSRange(location: 0, length: 0),
+                replacementString: date
+            )
+            XCTAssertEqual(view.textField.internalText, "03/30", date)
+            XCTAssertEqual(view.expiryMonth, "03", date)
+            XCTAssertEqual(view.expiryYear, "30", date)
+            XCTAssertTrue(view.isTextValid, date)
+        }
+    }
+
+    func testAutofillReplacesExistingDate() throws {
+        view.text = "01/29"
+        _ = view.textField(
+            view.textField,
+            shouldChangeCharactersIn: NSRange(location: 0, length: 5),
+            replacementString: "12/2030"
+        )
+        XCTAssertEqual(view.textField.internalText, "12/30")
+    }
+
+    func testAutofillRejectsUnknownFormat() throws {
+        view.text = ""
+        _ = view.textField(
+            view.textField,
+            shouldChangeCharactersIn: NSRange(location: 0, length: 0),
+            replacementString: "12/203"
+        )
+        XCTAssertEqual(view.textField.internalText, "")
+    }
+
+    func testContentType() throws {
+        if #available(iOS 17, *) {
+            XCTAssertEqual(view.textField.textContentType, .creditCardExpiration)
+        }
+        XCTAssertEqual(view.textField.keyboardType, .numberPad)
+    }
+
 }

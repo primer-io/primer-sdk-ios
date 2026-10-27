@@ -106,4 +106,11 @@ final class PrimerCVVFieldViewTests: XCTestCase {
 
         waitForExpectations(timeout: 2.0)
     }
+
+    func testContentType() throws {
+        if #available(iOS 17, *) {
+            XCTAssertEqual(view.textField.textContentType, .creditCardSecurityCode)
+        }
+        XCTAssertEqual(view.textField.keyboardType, .numberPad)
+    }
 }

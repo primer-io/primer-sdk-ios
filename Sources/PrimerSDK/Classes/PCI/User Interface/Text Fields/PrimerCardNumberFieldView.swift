@@ -24,6 +24,7 @@ public final class PrimerCardNumberFieldView: PrimerTextFieldView {
         keyboardType = .numberPad
         isTextFieldAccessibilityElement = true
         textFieldaccessibilityIdentifier = "card_txt_fld"
+        textContentType = .creditCardNumber
         textField.delegate = self
         isEditingAnalyticsEnabled = true
         editingAnalyticsObjectId = .cardNumber
