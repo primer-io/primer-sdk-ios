@@ -5,9 +5,6 @@ inputs:
     description: The branch to run from mobile-appium-tests
     required: true
     default: develop
-  test-type:
-    description: The type of test run, one of [MOCKED|E2E]
-    required: true
   gitlab-appium-pull-key:
     description: The key used to fetch the appium repo
     required: true
@@ -25,6 +22,9 @@ inputs:
     required: true
   ui-tests-secrets-api-key:
     description: Key used to fetch secrets in E2E tests
+    required: true
+  sandbox-e2e-api-key:
+    description: Primer sandbox API key used to create client sessions
     required: true
   test-app-artifact-url:
     description: The URL of the app used for testing
@@ -67,10 +67,12 @@ runs:
       env:
         LAMBDATEST_USERNAME: ${{ inputs.lambdatest-user-name }} # secrets.LAMBDATEST_USERNAME
         LAMBDATEST_ACCESS_KEY: ${{ inputs.lambdatest-access-key }} # secrets.LAMBDATEST_ACCESS_KEY
+        SANDBOX_E2E_API_KEY: ${{ inputs.sandbox-e2e-api-key }} # secrets.APPIUM_E2E_API_KEY_SANDBOX
+        ENV: SANDBOX
       run: |
         export LAMBDATEST_APP_ID=$(cat /var/tmp/lambdatest_id.txt)
         export UI_TESTS_SECRETS_API_KEY="${{ inputs.ui-tests-secrets-api-key }}"
-        testType=${{ inputs.test-type }} npx wdio config/wdio.ios.lt.conf.js
+        npx wdio config/wdio.ios.lt.conf.js
  
     - name: Create Slack Report
       working-directory: ./tests
