@@ -400,6 +400,16 @@ final class ApplePayPresentationManagerTests: XCTestCase {
         XCTAssertEqual(request.supportedNetworks, [.visa, .masterCard, .amex, .discover])
     }
 
+    func testSupportedNetworksPutEftposFirstWhenTheSessionDoes() throws {
+        SDKSessionHelper.setUp()
+        defer { SDKSessionHelper.tearDown() }
+        SDKSessionHelper.updateAllowedCardNetworks(cardNetworks: [.eftpos, .visa, .masterCard, .amex])
+
+        let request = try sut.createRequest(for: makeApplePayRequest())
+
+        XCTAssertEqual(request.supportedNetworks, [.eftpos, .visa, .masterCard, .amex])
+    }
+
     func makeApplePayRequest() -> ApplePayRequest {
         ApplePayRequest(
             currency: Currency(code: "GBP", decimalDigits: 2),
