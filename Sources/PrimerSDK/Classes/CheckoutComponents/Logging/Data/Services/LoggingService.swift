@@ -5,8 +5,8 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
-@_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
 
 @available(iOS 15.0, *)
 actor LoggingService: LogReporter, ComponentsLoggingServiceProtocol {
@@ -48,6 +48,18 @@ actor LoggingService: LogReporter, ComponentsLoggingServiceProtocol {
       try payloadBuilder.buildInfoPayload(
         message: message,
         event: event,
+        userInfo: userInfo,
+        sessionData: sessionData
+      )
+    }
+  }
+
+  func logWarning(message: String, event: String, userInfo: [String: Any]? = nil) async {
+    await dispatch(label: "WARN") { sessionData in
+      try payloadBuilder.buildInfoPayload(
+        message: message,
+        event: event,
+        status: .warn,
         userInfo: userInfo,
         sessionData: sessionData
       )
