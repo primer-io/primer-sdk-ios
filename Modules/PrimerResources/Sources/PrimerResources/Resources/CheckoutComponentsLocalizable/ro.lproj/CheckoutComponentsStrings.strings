@@ -104,7 +104,7 @@
 "primer_card_form_error_state_invalid" = "Județ invalid";
 "primer_card_form_error_state_required" = "Județul este obligatoriu";
 "primer_card_form_label_address1" = "Adresă principală";
-"primer_card_form_label_address2" = "Adresa - partea a doua (opțională)";
+"primer_card_form_label_address2" = "Alte detalii adresă (opționale)";
 "primer_card_form_label_city" = "Oraș";
 "primer_card_form_label_country" = "Țară";
 "primer_card_form_label_country_code" = "Cod țară";

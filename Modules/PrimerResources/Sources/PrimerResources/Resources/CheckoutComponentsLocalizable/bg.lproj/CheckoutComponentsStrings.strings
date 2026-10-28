@@ -104,7 +104,7 @@
 "primer_card_form_error_state_invalid" = "Невалидна област, регион или окръг";
 "primer_card_form_error_state_required" = "Областта, регионът или окръгът е задължителен";
 "primer_card_form_label_address1" = "Адрес ред 1";
-"primer_card_form_label_address2" = "Ред 2 на адреса (по избор)";
+"primer_card_form_label_address2" = "Адрес ред 2 (по избор)";
 "primer_card_form_label_city" = "Град";
 "primer_card_form_label_country" = "Държава";
 "primer_card_form_label_country_code" = "Код на държава";

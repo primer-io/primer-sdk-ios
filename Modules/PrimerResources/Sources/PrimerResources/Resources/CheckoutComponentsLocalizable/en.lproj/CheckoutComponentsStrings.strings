@@ -109,7 +109,7 @@
 "primer_card_form_error_state_invalid" = "Invalid State, Region or County";
 "primer_card_form_error_state_required" = "State, Region or County is required";
 "primer_card_form_label_address1" = "Address Line 1";
-"primer_card_form_label_address2" = "Address line 2 (optional)";
+"primer_card_form_label_address2" = "Address Line 2 (optional)";
 "primer_card_form_label_city" = "City";
 "primer_card_form_label_country" = "Country";
 "primer_card_form_label_country_code" = "Country Code";

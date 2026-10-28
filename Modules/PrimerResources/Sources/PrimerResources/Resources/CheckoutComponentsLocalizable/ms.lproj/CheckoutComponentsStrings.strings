@@ -104,7 +104,7 @@
 "primer_card_form_error_state_invalid" = "Negeri, Wilayah atau Daerah Tidak Sah";
 "primer_card_form_error_state_required" = "Negeri, Wilayah atau Daerah diperlukan";
 "primer_card_form_label_address1" = "Baris Alamat 1";
-"primer_card_form_label_address2" = "Baris 2 alamat (pilihan)";
+"primer_card_form_label_address2" = "Baris Alamat 2 (pilihan)";
 "primer_card_form_label_city" = "Bandar";
 "primer_card_form_label_country" = "Negara";
 "primer_card_form_label_country_code" = "Kod Negara";

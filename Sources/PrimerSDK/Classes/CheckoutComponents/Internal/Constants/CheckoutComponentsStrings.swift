@@ -228,7 +228,7 @@ enum CheckoutComponentsStrings {
     "primer_card_form_label_address2",
     tableName: tableName,
     bundle: .primerResources,
-    value: "Address line 2 (optional)",
+    value: "Address Line 2 (optional)",
     comment: "Address line 2 label"
   )
 

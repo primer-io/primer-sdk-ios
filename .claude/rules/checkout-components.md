@@ -87,7 +87,7 @@ Per-payment-method and per-card-network surcharge amounts:
 ### Dynamic Billing Address
 - `CardFormConfiguration.requiresBillingAddress` — API-driven
 - Billing fields, in the order `DefaultCardFormScope.buildBillingAddressFields()` emits them: countryCode, firstName, lastName, addressLine1, addressLine2, postalCode, city, state. That list is the whole set: the backend's `BILLING_ADDRESS` module (`PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions`) also carries a `phoneNumber` flag, which the Dashboard stopped setting in 2022 (primer-dashboard#2452) and the card form ignores, so no other `PrimerInputElementType` can ever reach a card form's `billingFields`
-- A billing field shows only when its option is `true`. Pay needs every shown billing field filled and free of errors, except `addressLine2` (`optionalBillingAddressFields`), labelled "Address line 2 (optional)"
+- A billing field shows only when its option is `true`. Pay needs every shown billing field filled and free of errors, except `addressLine2` (`optionalBillingAddressFields`), labelled "Address Line 2 (optional)"
 - `CardFormDefaults.billingAddress(_:)` renders only when the configuration requires billing fields; each `CardFormDefaults.*` building block self-hides unless its field is in `CardFormConfiguration.cardFields`/`billingFields`
 
 ### 3DS

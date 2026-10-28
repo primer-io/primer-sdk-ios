@@ -104,7 +104,7 @@
 "primer_card_form_error_state_invalid" = "Région ou département invalide";
 "primer_card_form_error_state_required" = "La région ou le département est obligatoire";
 "primer_card_form_label_address1" = "Adresse";
-"primer_card_form_label_address2" = "Adresse ligne 2 (facultatif)";
+"primer_card_form_label_address2" = "Complément d'adresse (facultatif)";
 "primer_card_form_label_city" = "Ville";
 "primer_card_form_label_country" = "Pays";
 "primer_card_form_label_country_code" = "Code pays";

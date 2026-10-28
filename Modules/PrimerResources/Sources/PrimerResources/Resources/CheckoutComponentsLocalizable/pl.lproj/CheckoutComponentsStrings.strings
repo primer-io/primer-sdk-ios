@@ -104,7 +104,7 @@
 "primer_card_form_error_state_invalid" = "Nieprawidłowe województwo, region lub powiat";
 "primer_card_form_error_state_required" = "Województwo, region lub powiat jest wymagany";
 "primer_card_form_label_address1" = "Pierwsza linia adresu";
-"primer_card_form_label_address2" = "Adres — wiersz 2 (opcjonalny)";
+"primer_card_form_label_address2" = "Druga linia adresu (opcjonalna)";
 "primer_card_form_label_city" = "Miasto";
 "primer_card_form_label_country" = "Kraj";
 "primer_card_form_label_country_code" = "Kod kraju";
