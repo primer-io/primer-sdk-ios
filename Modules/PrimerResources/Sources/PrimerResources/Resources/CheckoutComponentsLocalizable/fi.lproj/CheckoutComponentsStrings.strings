@@ -104,7 +104,7 @@
 "primer_card_form_error_state_invalid" = "Virheellinen osavaltio, alue tai maakunta";
 "primer_card_form_error_state_required" = "Osavaltio, alue tai maakunta vaaditaan";
 "primer_card_form_label_address1" = "Osoiterivi 1";
-"primer_card_form_label_address2" = "Osoiterivi 2";
+"primer_card_form_label_address2" = "Osoiterivi 2 (valinnainen)";
 "primer_card_form_label_city" = "Kaupunki";
 "primer_card_form_label_country" = "Maa";
 "primer_card_form_label_country_code" = "Maakoodi";

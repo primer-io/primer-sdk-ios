@@ -104,7 +104,7 @@
 "primer_card_form_error_state_invalid" = "Невірний область чи регіон";
 "primer_card_form_error_state_required" = "Область чи регіон обов'язкові";
 "primer_card_form_label_address1" = "Адресний рядок 1";
-"primer_card_form_label_address2" = "Адресний рядок 2";
+"primer_card_form_label_address2" = "Адресний рядок 2 (необов'язково)";
 "primer_card_form_label_city" = "Місто";
 "primer_card_form_label_country" = "Країна";
 "primer_card_form_label_country_code" = "Код країни";

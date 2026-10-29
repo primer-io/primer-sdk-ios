@@ -28,6 +28,21 @@ extension DefaultCardFormScope {
     guard let keyPath = field.validationKeyPath else { return }
     updateValidationState(keyPath, isValid: isValid)
   }
+
+  private static let optionalBillingAddressFields: Set<PrimerInputElementType> = [.addressLine2]
+
+  var hasValidBillingAddress: Bool {
+    let fields = structuredState.configuration.billingFields
+    let requiredFieldsFilled = fields
+      .filter { !Self.optionalBillingAddressFields.contains($0) }
+      .allSatisfy { !structuredState.data[$0].trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
+    return requiredFieldsFilled && !fields.contains(where: structuredState.hasError(for:))
+  }
+
+  func updateBillingField(_ field: PrimerInputElementType, _ value: String) {
+    structuredState.data[field] = value
+    updateFieldValidationState()
+  }
 }
 
 // MARK: - PrimerInputElementType to FieldValidationStates KeyPath Mapping
@@ -48,9 +63,8 @@ private extension PrimerInputElementType {
     case .state: \.state
     case .postalCode: \.postalCode
     case .countryCode: \.countryCode
-    case .phoneNumber: \.phoneNumber
     case .otp: \.otp
-    case .retailer, .unknown, .all: nil
+    case .phoneNumber, .retailer, .unknown, .all: nil
     }
   }
 }

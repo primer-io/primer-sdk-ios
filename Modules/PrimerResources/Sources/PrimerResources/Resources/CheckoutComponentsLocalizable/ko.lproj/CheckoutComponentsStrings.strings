@@ -104,7 +104,7 @@
 "primer_card_form_error_state_invalid" = "유효하지 않은 도/군/구";
 "primer_card_form_error_state_required" = "도/군/구는 필수입니다";
 "primer_card_form_label_address1" = "주소 1번 줄";
-"primer_card_form_label_address2" = "주소 2번 줄";
+"primer_card_form_label_address2" = "주소 2번 줄 (선택 사항)";
 "primer_card_form_label_city" = "도시";
 "primer_card_form_label_country" = "국가";
 "primer_card_form_label_country_code" = "국가 코드";

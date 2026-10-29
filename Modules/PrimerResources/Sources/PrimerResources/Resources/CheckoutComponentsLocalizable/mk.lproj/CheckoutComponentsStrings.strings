@@ -37,7 +37,7 @@
 "primer_card_form_label_city" = "Град";
 "primer_card_form_label_state" = "Регион";
 "primer_card_form_label_address1" = "Адреса линија 1";
-"primer_card_form_label_address2" = "Адреса линија 2";
+"primer_card_form_label_address2" = "Адреса линија 2 (незадолжително)";
 "primer_card_form_label_phone" = "Телефонски број";
 "primer_card_form_label_first_name" = "Име";
 "primer_card_form_label_last_name" = "Презиме";

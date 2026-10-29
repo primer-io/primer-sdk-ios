@@ -104,7 +104,7 @@
 "primer_card_form_error_state_invalid" = "Estat, regió o comarca no vàlid";
 "primer_card_form_error_state_required" = "L'estat, regió o comarca és obligatori";
 "primer_card_form_label_address1" = "Línia d'adreça 1";
-"primer_card_form_label_address2" = "Línia d'adreça 2";
+"primer_card_form_label_address2" = "Línia d'adreça 2 (opcional)";
 "primer_card_form_label_city" = "Ciutat";
 "primer_card_form_label_country" = "País";
 "primer_card_form_label_country_code" = "Codi de país";

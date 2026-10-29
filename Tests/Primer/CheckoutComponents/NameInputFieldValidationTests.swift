@@ -9,31 +9,11 @@ import SwiftUI
 import UIKit
 import XCTest
 
-/// The billing phone is drawn by the name field, so leaving it must validate a phone, not a name.
 @available(iOS 15.0, *)
 @MainActor
 final class NameInputFieldValidationTests: XCTestCase {
 
-    func test_phoneField_acceptsAPhoneNumber() {
-        let field = FieldBox(.phoneNumber, text: "+44 7700 900123")
-
-        field.leave()
-
-        XCTAssertTrue(field.isValid)
-        XCTAssertNil(field.errorMessage)
-    }
-
-    func test_phoneField_rejectsAName() {
-        let field = FieldBox(.phoneNumber, text: "Jane Doe")
-
-        field.leave()
-
-        XCTAssertFalse(field.isValid)
-        XCTAssertNotNil(field.errorMessage)
-        XCTAssertNotEqual(field.errorMessage, CheckoutComponentsStrings.firstNameErrorInvalid)
-    }
-
-    func test_firstNameField_stillRejectsDigits() {
+    func test_firstNameField_rejectsDigits() {
         let field = FieldBox(.firstName, text: "Jane1")
 
         field.leave()

@@ -104,7 +104,7 @@
 "primer_card_form_error_state_invalid" = "Ugyldig fylke";
 "primer_card_form_error_state_required" = "Fylke er påkrevd";
 "primer_card_form_label_address1" = "Adresselinje 1";
-"primer_card_form_label_address2" = "Adresselinje 2";
+"primer_card_form_label_address2" = "Adresselinje 2 (valgfritt)";
 "primer_card_form_label_city" = "By";
 "primer_card_form_label_country" = "Land";
 "primer_card_form_label_country_code" = "Landskode";

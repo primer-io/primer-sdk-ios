@@ -104,7 +104,7 @@
 "primer_card_form_error_state_invalid" = "Nederīgs novads, reģions vai apgabals";
 "primer_card_form_error_state_required" = "Novads, reģions vai apgabals ir obligāts";
 "primer_card_form_label_address1" = "Adreses 1. rindiņa";
-"primer_card_form_label_address2" = "Adreses 2. rindiņa";
+"primer_card_form_label_address2" = "Adreses 2. rindiņa (pēc izvēles)";
 "primer_card_form_label_city" = "Pilsēta";
 "primer_card_form_label_country" = "Valsts";
 "primer_card_form_label_country_code" = "Valsts kods";

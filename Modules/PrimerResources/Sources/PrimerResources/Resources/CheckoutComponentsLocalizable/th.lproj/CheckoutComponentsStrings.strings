@@ -104,7 +104,7 @@
 "primer_card_form_error_state_invalid" = "รัฐ ภูมิภาค หรือเขตไม่ถูกต้อง";
 "primer_card_form_error_state_required" = "ต้องระบุรัฐ ภูมิภาค หรือเขต";
 "primer_card_form_label_address1" = "ที่อยู่บรรทัดที่ 1";
-"primer_card_form_label_address2" = "ที่อยู่บรรทัดที่ 2";
+"primer_card_form_label_address2" = "ที่อยู่บรรทัดที่ 2 (ไม่บังคับ)";
 "primer_card_form_label_city" = "เมือง";
 "primer_card_form_label_country" = "ประเทศ";
 "primer_card_form_label_country_code" = "รหัสประเทศ";

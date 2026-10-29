@@ -37,7 +37,7 @@
 "primer_card_form_label_city" = "Grad";
 "primer_card_form_label_state" = "Kanton";
 "primer_card_form_label_address1" = "Adresa 1";
-"primer_card_form_label_address2" = "Adresa 2";
+"primer_card_form_label_address2" = "Adresa 2 (neobavezno)";
 "primer_card_form_label_phone" = "Broj telefona";
 "primer_card_form_label_first_name" = "Ime";
 "primer_card_form_label_last_name" = "Prezime";

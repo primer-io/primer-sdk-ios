@@ -104,7 +104,7 @@
 "primer_card_form_error_state_invalid" = "Neplatný štát, región alebo kraj";
 "primer_card_form_error_state_required" = "Štát, región alebo kraj je povinný";
 "primer_card_form_label_address1" = "1. riadok adresy";
-"primer_card_form_label_address2" = "2. riadok adresy";
+"primer_card_form_label_address2" = "2. riadok adresy (voliteľné)";
 "primer_card_form_label_city" = "Mesto";
 "primer_card_form_label_country" = "Krajina";
 "primer_card_form_label_country_code" = "Kód krajiny";

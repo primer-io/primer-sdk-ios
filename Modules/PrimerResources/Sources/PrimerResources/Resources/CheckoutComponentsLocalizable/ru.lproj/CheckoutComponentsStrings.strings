@@ -104,7 +104,7 @@
 "primer_card_form_error_state_invalid" = "Неверный регион или область";
 "primer_card_form_error_state_required" = "Необходимо указать регион или область";
 "primer_card_form_label_address1" = "Адресная строка 1";
-"primer_card_form_label_address2" = "Адресная строка 2";
+"primer_card_form_label_address2" = "Адресная строка 2 (необязательно)";
 "primer_card_form_label_city" = "Город";
 "primer_card_form_label_country" = "Страна";
 "primer_card_form_label_country_code" = "Код страны";

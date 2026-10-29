@@ -104,7 +104,7 @@
 "primer_card_form_error_state_invalid" = "מדינה, אזור או מחוז לא תקינים";
 "primer_card_form_error_state_required" = "נדרשים מדינה, אזור או מחוז";
 "primer_card_form_label_address1" = "שורת כתובת 1";
-"primer_card_form_label_address2" = "שורת כתובת 2";
+"primer_card_form_label_address2" = "שורת כתובת 2 (אופציונלי)";
 "primer_card_form_label_city" = "עיר";
 "primer_card_form_label_country" = "מדינה";
 "primer_card_form_label_country_code" = "קוד מדינה";

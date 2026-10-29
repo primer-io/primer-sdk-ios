@@ -172,8 +172,6 @@ final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, 
       updateAddressLine1(value)
     case .addressLine2:
       updateAddressLine2(value)
-    case .phoneNumber:
-      updatePhoneNumber(value)
     case .firstName:
       updateFirstName(value)
     case .lastName:
@@ -238,43 +236,39 @@ final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, 
   }
 
   func updateFirstName(_ firstName: String) {
-    structuredState.data[.firstName] = firstName
+    updateBillingField(.firstName, firstName)
   }
 
   func updateLastName(_ lastName: String) {
-    structuredState.data[.lastName] = lastName
+    updateBillingField(.lastName, lastName)
   }
 
   func updateEmail(_ email: String) {
     structuredState.data[.email] = email
   }
 
-  func updatePhoneNumber(_ phoneNumber: String) {
-    structuredState.data[.phoneNumber] = phoneNumber
-  }
-
   func updateAddressLine1(_ addressLine1: String) {
-    structuredState.data[.addressLine1] = addressLine1
+    updateBillingField(.addressLine1, addressLine1)
   }
 
   func updateAddressLine2(_ addressLine2: String) {
-    structuredState.data[.addressLine2] = addressLine2
+    updateBillingField(.addressLine2, addressLine2)
   }
 
   func updateCity(_ city: String) {
-    structuredState.data[.city] = city
+    updateBillingField(.city, city)
   }
 
   func updateState(_ state: String) {
-    structuredState.data[.state] = state
+    updateBillingField(.state, state)
   }
 
   func updatePostalCode(_ postalCode: String) {
-    structuredState.data[.postalCode] = postalCode
+    updateBillingField(.postalCode, postalCode)
   }
 
   func updateCountryCode(_ countryCode: String) {
-    structuredState.data[.countryCode] = countryCode
+    updateBillingField(.countryCode, countryCode)
 
     if let country = CountryCode.phoneNumberCountryCodes.first(where: {
       $0.code.uppercased() == countryCode.uppercased()
@@ -521,7 +515,7 @@ final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, 
     let hasValidCardholderName = cardholderName && !structuredState.data[.cardholderName].isEmpty
 
     structuredState.isValid =
-      hasValidCardNumber && hasValidCvv && hasValidExpiry && hasValidCardholderName
+      hasValidCardNumber && hasValidCvv && hasValidExpiry && hasValidCardholderName && hasValidBillingAddress
 
     if structuredState.isValid {
       structuredState.fieldErrors.removeAll()
@@ -586,15 +580,14 @@ final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, 
 
     var fields: [PrimerInputElementType] = []
 
-    if options.countryCode != false { fields.append(.countryCode) }
-    if options.firstName != false { fields.append(.firstName) }
-    if options.lastName != false { fields.append(.lastName) }
-    if options.addressLine1 != false { fields.append(.addressLine1) }
-    if options.addressLine2 != false { fields.append(.addressLine2) }
+    if options.countryCode == true { fields.append(.countryCode) }
+    if options.firstName == true { fields.append(.firstName) }
+    if options.lastName == true { fields.append(.lastName) }
+    if options.addressLine1 == true { fields.append(.addressLine1) }
+    if options.addressLine2 == true { fields.append(.addressLine2) }
     fields.append(.postalCode)
-    if options.city != false { fields.append(.city) }
-    if options.state != false { fields.append(.state) }
-    if options.phoneNumber == true { fields.append(.phoneNumber) }
+    if options.city == true { fields.append(.city) }
+    if options.state == true { fields.append(.state) }
 
     return fields
   }

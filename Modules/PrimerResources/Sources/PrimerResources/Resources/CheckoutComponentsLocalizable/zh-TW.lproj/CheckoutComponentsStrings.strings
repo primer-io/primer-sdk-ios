@@ -104,7 +104,7 @@
 "primer_card_form_error_state_invalid" = "州/省/縣市無效";
 "primer_card_form_error_state_required" = "請輸入州/省/縣市";
 "primer_card_form_label_address1" = "地址第一行";
-"primer_card_form_label_address2" = "地址第二行";
+"primer_card_form_label_address2" = "地址第二行（非必填）";
 "primer_card_form_label_city" = "城市";
 "primer_card_form_label_country" = "國家";
 "primer_card_form_label_country_code" = "國家代碼";

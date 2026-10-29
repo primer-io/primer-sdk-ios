@@ -104,7 +104,7 @@
 "primer_card_form_error_state_invalid" = "अमान्य राज्य, क्षेत्र या काउंटी";
 "primer_card_form_error_state_required" = "राज्य, क्षेत्र या काउंटी आवश्यक है";
 "primer_card_form_label_address1" = "पता पंक्ति 1";
-"primer_card_form_label_address2" = "पता पंक्ति 2";
+"primer_card_form_label_address2" = "पता पंक्ति 2 (वैकल्पिक)";
 "primer_card_form_label_city" = "शहर";
 "primer_card_form_label_country" = "देश";
 "primer_card_form_label_country_code" = "देश कोड";

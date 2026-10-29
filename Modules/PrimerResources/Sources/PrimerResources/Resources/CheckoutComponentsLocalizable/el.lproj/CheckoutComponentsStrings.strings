@@ -104,7 +104,7 @@
 "primer_card_form_error_state_invalid" = "Μη έγκυρη περιφέρεια";
 "primer_card_form_error_state_required" = "Η περιφέρεια είναι απαραίτητη";
 "primer_card_form_label_address1" = "Διεύθυνση γραμμή 1";
-"primer_card_form_label_address2" = "Διεύθυνση γραμμή 2";
+"primer_card_form_label_address2" = "Διεύθυνση γραμμή 2 (προαιρετική)";
 "primer_card_form_label_city" = "Πόλη";
 "primer_card_form_label_country" = "Χώρα";
 "primer_card_form_label_country_code" = "Κωδικός χώρας";

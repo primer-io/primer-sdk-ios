@@ -104,7 +104,7 @@
 "primer_card_form_error_state_invalid" = "Ogiltigt län";
 "primer_card_form_error_state_required" = "Län krävs";
 "primer_card_form_label_address1" = "Adressrad 1";
-"primer_card_form_label_address2" = "Adressrad 2";
+"primer_card_form_label_address2" = "Adressrad 2 (valfritt)";
 "primer_card_form_label_city" = "Ort";
 "primer_card_form_label_country" = "Land";
 "primer_card_form_label_country_code" = "Landskod";

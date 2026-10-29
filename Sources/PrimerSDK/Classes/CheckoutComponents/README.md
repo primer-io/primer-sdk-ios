@@ -145,7 +145,7 @@ PrimerCardForm(submitButton: { session in
 
 ### Recomposing a Section with Building Blocks
 
-The `CardFormDefaults` namespace provides 15 per-field building blocks (`cardNumber`, `expiryDate`, `cvv`, `cardholderName`, `cardNetwork`, `countryCode`, `firstName`, `lastName`, `addressLine1`, `addressLine2`, `city`, `state`, `postalCode`, `phoneNumber`, `email`). Each self-hides unless its field is present in `CardFormConfiguration`:
+The `CardFormDefaults` namespace provides 13 per-field building blocks (`cardNumber`, `expiryDate`, `cvv`, `cardholderName`, `cardNetwork`, `countryCode`, `firstName`, `lastName`, `addressLine1`, `addressLine2`, `city`, `state`, `postalCode`). Each self-hides unless its field is present in `CardFormConfiguration`:
 
 ```swift
 PrimerCardForm(cardDetails: { session in
@@ -191,7 +191,6 @@ session.updateCvv("123")
 session.updateCardholderName("Jane Doe")
 session.updateFirstName("Jane")
 session.updateLastName("Doe")
-session.updatePhoneNumber("+1234567890")
 session.updateAddressLine1("123 Main St")
 session.updateCity("San Francisco")
 session.updateState("CA")
@@ -202,7 +201,7 @@ session.selectCardNetwork(.visa)
 
 Customizable sections via `CardFormDefaults` building blocks:
 - Card fields: `cardNumber`, `expiryDate`, `cvv`, `cardholderName`, `cardNetwork`
-- Billing fields: `firstName`, `lastName`, `email`, `phoneNumber`, `addressLine1`, `addressLine2`, `city`, `state`, `postalCode`, `countryCode`
+- Billing fields: `firstName`, `lastName`, `addressLine1`, `addressLine2`, `city`, `state`, `postalCode`, `countryCode`
 
 ## State Observation
 

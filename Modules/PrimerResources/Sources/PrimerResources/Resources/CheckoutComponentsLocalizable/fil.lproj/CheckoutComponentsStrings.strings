@@ -37,7 +37,7 @@
 "primer_card_form_label_city" = "Lungsod";
 "primer_card_form_label_state" = "Estado";
 "primer_card_form_label_address1" = "Unang linya ng address";
-"primer_card_form_label_address2" = "Pangalawang linya ng address";
+"primer_card_form_label_address2" = "Pangalawang linya ng address (opsyonal)";
 "primer_card_form_label_phone" = "Numero ng Telepono";
 "primer_card_form_label_first_name" = "Unang Pangalan";
 "primer_card_form_label_last_name" = "Apelyido";

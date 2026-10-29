@@ -37,7 +37,7 @@
 "primer_card_form_label_city" = "Шаар";
 "primer_card_form_label_state" = "Штат";
 "primer_card_form_label_address1" = "Дарек сабы 1";
-"primer_card_form_label_address2" = "Дарек сабы 2";
+"primer_card_form_label_address2" = "Дарек сабы 2 (милдеттүү эмес)";
 "primer_card_form_label_phone" = "Телефон номери";
 "primer_card_form_label_first_name" = "Аты";
 "primer_card_form_label_last_name" = "Фамилиясы";

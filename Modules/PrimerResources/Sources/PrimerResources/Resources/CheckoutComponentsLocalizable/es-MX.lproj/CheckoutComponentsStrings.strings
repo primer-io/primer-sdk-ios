@@ -104,7 +104,7 @@
 "primer_card_form_error_state_invalid" = "Estado, región o condado no válido";
 "primer_card_form_error_state_required" = "El estado, región o condado es obligatorio";
 "primer_card_form_label_address1" = "Línea de dirección 1";
-"primer_card_form_label_address2" = "Línea de dirección 2";
+"primer_card_form_label_address2" = "Línea de dirección 2 (opcional)";
 "primer_card_form_label_city" = "Ciudad";
 "primer_card_form_label_country" = "País";
 "primer_card_form_label_country_code" = "Código de país";
