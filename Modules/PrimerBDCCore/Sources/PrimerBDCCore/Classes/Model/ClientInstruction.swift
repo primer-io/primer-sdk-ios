@@ -41,8 +41,8 @@ public struct SetupState {
 
 @_spi(PrimerInternal)
 public enum NextPoll: String, SingleValueContained {
-    case interval
-    case suspend
+    case interval = "INTERVAL"
+    case suspend = "SUSPEND"
 }
 
 @_spi(PrimerInternal)

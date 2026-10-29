@@ -42,7 +42,7 @@ final class ClientInstructionDecodingTests: XCTestCase {
 final class ClientInstructionSetupResponseDecodingTests: XCTestCase {
 
     func testDecodesExecuteInstructionEnvelope() throws {
-        let json = #"{"paymentMethodSetupId": "setup-1", "instruction": {"type": "EXECUTE", "pollDelayMilliseconds": 1000, "nextPoll": "interval", "payload": {"schema": { "steps": [] }, "parameters": { "key": "value" } } } }"#
+        let json = #"{"paymentMethodSetupId": "setup-1", "instruction": {"type": "EXECUTE", "pollDelayMilliseconds": 1000, "nextPoll": "INTERVAL", "payload": {"schema": { "steps": [] }, "parameters": { "key": "value" } } } }"#
         let result = try decode(json)
         XCTAssertEqual(result.paymentMethodSetupId, "setup-1")
         XCTAssertEqual(result.instruction.nextPoll, .interval)
@@ -51,12 +51,12 @@ final class ClientInstructionSetupResponseDecodingTests: XCTestCase {
     }
 
     func testDoesNotDecodeBareSchemaAndParameters() {
-        let json = #"{"schema": { "steps": [] }, "parameters": { "key": "value" }, "paymentMethodSetupId": "setup-1", "nextPoll": "interval" }"#
+        let json = #"{"schema": { "steps": [] }, "parameters": { "key": "value" }, "paymentMethodSetupId": "setup-1", "nextPoll": "INTERVAL" }"#
         XCTAssertThrowsError(try decode(json))
     }
 
     func testThrowsWhenParametersMissing() {
-        let json = #"{"paymentMethodSetupId": "setup-1", "instruction": {"type": "EXECUTE", "nextPoll": "suspend", "payload": {"schema": { "steps": [] } } } }"#
+        let json = #"{"paymentMethodSetupId": "setup-1", "instruction": {"type": "EXECUTE", "nextPoll": "SUSPEND", "payload": {"schema": { "steps": [] } } } }"#
         XCTAssertThrowsError(try decode(json))
     }
 }
@@ -64,14 +64,14 @@ final class ClientInstructionSetupResponseDecodingTests: XCTestCase {
 final class ClientInstructionSetupStateResponseDecodingTests: XCTestCase {
 
     func testDecodesWait() throws {
-        let result = try decode(#"{"paymentMethodSetupId": "setup-1", "instruction": {"type": "WAIT", "pollDelayMilliseconds": 1000, "nextPoll": "interval"} }"#)
+        let result = try decode(#"{"paymentMethodSetupId": "setup-1", "instruction": {"type": "WAIT", "pollDelayMilliseconds": 1000, "nextPoll": "INTERVAL"} }"#)
         XCTAssertEqual(result.instruction.type, .wait)
         XCTAssertEqual(result.instruction.nextPoll, .interval)
         XCTAssertNil(result.instruction.payload)
     }
 
     func testDecodesExecute() throws {
-        let result = try decode(#"{"paymentMethodSetupId": "setup-1", "instruction": {"type": "EXECUTE", "nextPoll": "suspend", "payload": {"schema": { "steps": [] }, "parameters": {} } } }"#)
+        let result = try decode(#"{"paymentMethodSetupId": "setup-1", "instruction": {"type": "EXECUTE", "nextPoll": "SUSPEND", "payload": {"schema": { "steps": [] }, "parameters": {} } } }"#)
         XCTAssertEqual(result.instruction.type, .execute)
         XCTAssertEqual(result.instruction.payload?.schema, .object(["steps": .array([])]))
     }
