@@ -8,6 +8,7 @@
 @_spi(PrimerInternal) import PrimerBDCEngine
 @_spi(PrimerInternal) import PrimerCore
 @_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerStepResolver
 
 enum ClientRequirements {
     private static var logger: PrimerLogger { PrimerLogging.shared.logger }
@@ -55,7 +56,27 @@ enum ClientRequirements {
         let requirements = buildRequirements(from: methods)
         let client = await BDCClient(capabilities: .current(), context: .generate())
         logger.info(message: "Client requirements: asking the state processor about \(methods.map(\.type))")
-        return try await engine.checkClientRequirements(items: requirements, client: client, results: [:])
+        let probes = try await engine.probesToRun(items: requirements, client: client)
+        logger.info(message: "Client requirements: running probes \(probes.map(\.probe))")
+        let results = await runProbes(probes)
+        return try await engine.checkClientRequirements(items: requirements, client: client, results: results)
+    }
+
+    static func runProbes(_ requests: [ProbeRequest], registry: PrimerProbeRegistry = .shared) async -> [String: ProbeResult] {
+        await withTaskGroup(of: (key: String, result: ProbeResult).self) { group in
+            for request in requests {
+                group.addTask {
+                    let result = await registry.run(request.probe, params: request.params)
+                    return (request.key, result)
+                }
+            }
+
+            var results: [String: ProbeResult] = [:]
+            for await (key, result) in group {
+                results[key] = result
+            }
+            return results
+        }
     }
 
     private static func reportUnmet(_ unmet: [UnmetClientRequirement], for method: PrimerPaymentMethod) {
@@ -64,6 +85,8 @@ enum ClientRequirements {
         guard let unmetJSON else { return }
         
         let message = "Client requirements not met for \(method.type)"
+        logger.warn(message: message)
+
         let context: [String: String] = ["paymentMethodType": method.type, "unmet": unmetJSON]
         let type: Analytics.Event.Property.MessageType = .backendDrivenClientRequirementsNotMet
         let event: Analytics.Event = .message(message: message, messageType: type, severity: .warning, context: context)
