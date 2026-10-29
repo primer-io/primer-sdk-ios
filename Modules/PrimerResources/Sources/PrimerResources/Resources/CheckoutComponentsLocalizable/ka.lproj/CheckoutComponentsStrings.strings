@@ -20,7 +20,7 @@
 "primer_checkout_success_title" = "გადახდა წარმატებულია";
 "primer_checkout_success_subtitle" = "მალე გადამისამართდებით შეკვეთის დადასტურების გვერდზე.";
 "primer_checkout_error_title" = "გადახდა ვერ შესრულდა";
-"primer_checkout_error_subtitle" = "წარმოიშვა ქსელის პრობლემა.";
+"primer_checkout_error_subtitle" = "გთხოვთ, სცადოთ ხელახლა ან გამოიყენოთ გადახდის სხვა მეთოდი.";
 "primer_checkout_error_button_other_methods" = "აირჩიეთ სხვა გადახდის მეთოდი";
 "primer_checkout_processing_title" = "მუშავდება თქვენი გადახდა";
 "primer_checkout_processing_subtitle" = "გთხოვთ დაელოდოთ...";

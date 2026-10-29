@@ -20,7 +20,7 @@
 "primer_checkout_success_title" = "Плаќањето е успешно";
 "primer_checkout_success_subtitle" = "Наскоро ќе бидете пренасочени на страницата за потврда на нарачката.";
 "primer_checkout_error_title" = "Плаќањето не успеа";
-"primer_checkout_error_subtitle" = "Се појави проблем со мрежата.";
+"primer_checkout_error_subtitle" = "Ве молиме обидете се повторно или користете друг начин на плаќање.";
 "primer_checkout_error_button_other_methods" = "Избери други начини на плаќање";
 "primer_checkout_processing_title" = "Се обработува вашето плаќање";
 "primer_checkout_processing_subtitle" = "Ве молиме почекајте...";

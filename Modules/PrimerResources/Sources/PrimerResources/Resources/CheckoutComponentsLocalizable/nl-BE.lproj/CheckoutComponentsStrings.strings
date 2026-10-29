@@ -20,7 +20,7 @@
 "primer_checkout_success_title" = "Betaling geslaagd";
 "primer_checkout_success_subtitle" = "U wordt binnenkort doorgestuurd naar de bevestigingspagina van uw bestelling.";
 "primer_checkout_error_title" = "Betaling mislukt";
-"primer_checkout_error_subtitle" = "Er was een netwerkprobleem.";
+"primer_checkout_error_subtitle" = "Gelieve opnieuw te proberen of een andere betaalmethode te gebruiken.";
 "primer_checkout_error_button_other_methods" = "Kies andere betaalmethodes";
 "primer_checkout_processing_title" = "Uw betaling wordt verwerkt";
 "primer_checkout_processing_subtitle" = "Gelieve even te wachten...";

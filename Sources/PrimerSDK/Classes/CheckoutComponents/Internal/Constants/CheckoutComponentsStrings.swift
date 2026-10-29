@@ -570,6 +570,14 @@ enum CheckoutComponentsStrings {
     comment: "Error screen title for payment failures"
   )
 
+  static let paymentFailedMessage = NSLocalizedString(
+    "primer_checkout_error_subtitle",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Please try again or use another payment method.",
+    comment: "Error screen text below the title for payment failures"
+  )
+
   static func paymentMethodDisplayName(_ displayName: String) -> String {
     let format = NSLocalizedString(
       "primer_common_display_name_pay_amount",

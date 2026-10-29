@@ -145,7 +145,7 @@
 "primer_card_form_title" = "Bayar dengan kartu";
 "primer_checkout_dismissing" = "Menutup...";
 "primer_checkout_error_button_other_methods" = "Pilih metode pembayaran lain";
-"primer_checkout_error_subtitle" = "Terjadi masalah jaringan.";
+"primer_checkout_error_subtitle" = "Silakan coba lagi atau gunakan metode pembayaran lain.";
 "primer_checkout_error_title" = "Pembayaran gagal";
 "primer_checkout_loading_indicator" = "Memuat";
 "primer_checkout_processing_subtitle" = "Harap tunggu...";

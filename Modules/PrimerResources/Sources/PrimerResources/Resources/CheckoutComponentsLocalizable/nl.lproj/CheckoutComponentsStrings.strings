@@ -145,7 +145,7 @@
 "primer_card_form_title" = "Betaal met kaart";
 "primer_checkout_dismissing" = "Bezig met sluiten...";
 "primer_checkout_error_button_other_methods" = "Kies andere betaalmethoden";
-"primer_checkout_error_subtitle" = "Er was een netwerkprobleem.";
+"primer_checkout_error_subtitle" = "Probeer het opnieuw of gebruik een andere betaalmethode.";
 "primer_checkout_error_title" = "Betaling mislukt";
 "primer_checkout_loading_indicator" = "Bezig met laden";
 "primer_checkout_processing_subtitle" = "Even geduld alstublieft...";

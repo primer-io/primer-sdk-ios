@@ -145,7 +145,7 @@
 "primer_card_form_title" = "Pagar com cartão";
 "primer_checkout_dismissing" = "A fechar...";
 "primer_checkout_error_button_other_methods" = "Escolher outros métodos de pagamento";
-"primer_checkout_error_subtitle" = "Ocorreu um problema de rede.";
+"primer_checkout_error_subtitle" = "Tente novamente ou utilize outro método de pagamento.";
 "primer_checkout_error_title" = "Pagamento falhado";
 "primer_checkout_loading_indicator" = "A carregar";
 "primer_checkout_processing_subtitle" = "Aguarde...";

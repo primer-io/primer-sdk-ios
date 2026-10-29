@@ -145,7 +145,7 @@
 "primer_card_form_title" = "Paga amb targeta";
 "primer_checkout_dismissing" = "Tancant...";
 "primer_checkout_error_button_other_methods" = "Tria altres mètodes de pagament";
-"primer_checkout_error_subtitle" = "Hi ha hagut un problema de xarxa.";
+"primer_checkout_error_subtitle" = "Si us plau, torneu-ho a intentar o feu servir un altre mètode de pagament.";
 "primer_checkout_error_title" = "El pagament ha fallat";
 "primer_checkout_loading_indicator" = "Carregant";
 "primer_checkout_processing_subtitle" = "Si us plau, espereu...";

@@ -145,7 +145,7 @@
 "primer_card_form_title" = "Betala med kort";
 "primer_checkout_dismissing" = "Stänger...";
 "primer_checkout_error_button_other_methods" = "Välj andra betalningsmetoder";
-"primer_checkout_error_subtitle" = "Det uppstod ett nätverksproblem.";
+"primer_checkout_error_subtitle" = "Försök igen eller använd en annan betalningsmetod.";
 "primer_checkout_error_title" = "Betalningen misslyckades";
 "primer_checkout_loading_indicator" = "Laddar";
 "primer_checkout_processing_subtitle" = "Vänligen vänta...";

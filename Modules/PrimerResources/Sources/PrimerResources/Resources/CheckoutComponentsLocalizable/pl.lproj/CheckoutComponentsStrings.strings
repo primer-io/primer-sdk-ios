@@ -145,7 +145,7 @@
 "primer_card_form_title" = "Zapłać kartą";
 "primer_checkout_dismissing" = "Zamykanie...";
 "primer_checkout_error_button_other_methods" = "Wybierz inne metody płatności";
-"primer_checkout_error_subtitle" = "Wystąpił problem z połączeniem.";
+"primer_checkout_error_subtitle" = "Proszę spróbować ponownie lub użyć innej metody płatności.";
 "primer_checkout_error_title" = "Płatność nie powiodła się";
 "primer_checkout_loading_indicator" = "Ładowanie";
 "primer_checkout_processing_subtitle" = "Proszę czekać...";

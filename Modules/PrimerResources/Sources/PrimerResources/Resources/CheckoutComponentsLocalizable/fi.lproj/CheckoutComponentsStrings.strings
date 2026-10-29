@@ -145,7 +145,7 @@
 "primer_card_form_title" = "Maksa kortilla";
 "primer_checkout_dismissing" = "Suljetaan...";
 "primer_checkout_error_button_other_methods" = "Valitse muita maksutapoja";
-"primer_checkout_error_subtitle" = "Verkko-ongelma tapahtui.";
+"primer_checkout_error_subtitle" = "Yritä uudelleen tai käytä toista maksutapaa.";
 "primer_checkout_error_title" = "Maksu epäonnistui";
 "primer_checkout_loading_indicator" = "Ladataan";
 "primer_checkout_processing_subtitle" = "Odota hetki...";

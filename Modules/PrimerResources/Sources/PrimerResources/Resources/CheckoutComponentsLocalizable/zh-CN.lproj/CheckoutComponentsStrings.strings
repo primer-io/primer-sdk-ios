@@ -145,7 +145,7 @@
 "primer_card_form_title" = "使用银行卡支付";
 "primer_checkout_dismissing" = "正在关闭...";
 "primer_checkout_error_button_other_methods" = "选择其他支付方式";
-"primer_checkout_error_subtitle" = "出现网络问题。";
+"primer_checkout_error_subtitle" = "请重试或使用其他支付方式。";
 "primer_checkout_error_title" = "支付失败";
 "primer_checkout_loading_indicator" = "正在加载";
 "primer_checkout_processing_subtitle" = "请稍候...";

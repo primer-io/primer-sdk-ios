@@ -20,7 +20,7 @@
 "primer_checkout_success_title" = "Plaćanje uspješno";
 "primer_checkout_success_subtitle" = "Uskoro ćete biti preusmjereni na stranicu za potvrdu narudžbe.";
 "primer_checkout_error_title" = "Plaćanje nije uspjelo";
-"primer_checkout_error_subtitle" = "Došlo je do problema sa mrežom.";
+"primer_checkout_error_subtitle" = "Molimo pokušajte ponovo ili koristite drugi način plaćanja.";
 "primer_checkout_error_button_other_methods" = "Odaberite drugi način plaćanja";
 "primer_checkout_processing_title" = "Obrada vašeg plaćanja";
 "primer_checkout_processing_subtitle" = "Molimo pričekajte...";

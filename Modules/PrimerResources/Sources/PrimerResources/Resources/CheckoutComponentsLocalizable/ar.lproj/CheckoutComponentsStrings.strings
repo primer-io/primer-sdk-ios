@@ -145,7 +145,7 @@
 "primer_card_form_title" = "الدفع بالبطاقة";
 "primer_checkout_dismissing" = "جاري الإغلاق...";
 "primer_checkout_error_button_other_methods" = "اختر طرق دفع أخرى";
-"primer_checkout_error_subtitle" = "حدثت مشكلة في الشبكة.";
+"primer_checkout_error_subtitle" = "يرجى المحاولة مرة أخرى أو استخدام طريقة دفع أخرى.";
 "primer_checkout_error_title" = "فشلت عملية الدفع";
 "primer_checkout_loading_indicator" = "جاري التحميل";
 "primer_checkout_processing_subtitle" = "يرجى الانتظار...";

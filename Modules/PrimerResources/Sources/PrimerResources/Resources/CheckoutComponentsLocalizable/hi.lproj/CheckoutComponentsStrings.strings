@@ -145,7 +145,7 @@
 "primer_card_form_title" = "कार्ड से भुगतान करें";
 "primer_checkout_dismissing" = "बंद हो रहा है...";
 "primer_checkout_error_button_other_methods" = "अन्य भुगतान विधियाँ चुनें";
-"primer_checkout_error_subtitle" = "एक नेटवर्क समस्या थी।";
+"primer_checkout_error_subtitle" = "कृपया पुनः प्रयास करें या किसी अन्य भुगतान विधि का उपयोग करें।";
 "primer_checkout_error_title" = "भुगतान विफल";
 "primer_checkout_loading_indicator" = "लोड हो रहा है";
 "primer_checkout_processing_subtitle" = "कृपया प्रतीक्षा करें...";

@@ -145,7 +145,7 @@
 "primer_card_form_title" = "Плати с карта";
 "primer_checkout_dismissing" = "Затваряне...";
 "primer_checkout_error_button_other_methods" = "Изберете други методи за плащане";
-"primer_checkout_error_subtitle" = "Възникна проблем с мрежата.";
+"primer_checkout_error_subtitle" = "Моля, опитайте отново или използвайте друг метод за плащане.";
 "primer_checkout_error_title" = "Плащането не успя";
 "primer_checkout_loading_indicator" = "Зареждане";
 "primer_checkout_processing_subtitle" = "Моля, изчакайте...";
