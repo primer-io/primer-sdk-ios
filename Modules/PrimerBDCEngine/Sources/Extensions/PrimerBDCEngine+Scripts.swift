@@ -88,17 +88,39 @@ extension PrimerBDCEngine {
         """
     }
 
-    func checkClientRequirementsScript(items: String, client: String) -> String {
+    func probesToRunScript(items: String, client: String) -> String {
         setObject(items, forKey: "__items")
         setObject(client, forKey: "__client")
         
         return """
         (async () => {
             try {
+                if (typeof StateProcessor.probesToRun !== 'function') {
+                    onProbesToRunResult(JSON.stringify({ result: [] }));
+                    return;
+                }
+                const result = await StateProcessor.probesToRun(JSON.parse(__items), JSON.parse(__client));
+                onProbesToRunResult(JSON.stringify({ result }));
+            } catch (e) {
+                onProbesToRunResult(JSON.stringify({ error: e.toString() }));
+            }
+        })();
+        """
+    }
+
+    func checkClientRequirementsScript(items: String, client: String, results: String) -> String {
+        setObject(items, forKey: "__items")
+        setObject(client, forKey: "__client")
+        setObject(results, forKey: "__results")
+        
+        return """
+        (async () => {
+            try {
                 const client = JSON.parse(__client);
+                const results = JSON.parse(__results);
                 const result = {};
                 for (const item of JSON.parse(__items)) {
-                    result[item.id] = await StateProcessor.checkClientRequirements(item.clientRequirements, client);
+                    result[item.id] = await StateProcessor.checkClientRequirements(item.clientRequirements, client, results);
                 }
                 onCheckClientRequirementsResult(JSON.stringify({ result }));
             } catch (e) {

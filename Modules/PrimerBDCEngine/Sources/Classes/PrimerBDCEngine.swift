@@ -7,7 +7,7 @@
 import CryptoKit
 import JavaScriptCore
 @_spi(PrimerInternal) import PrimerFoundation
-import PrimerStepResolver
+@_spi(PrimerInternal) import PrimerStepResolver
 
 private enum EngineError: Error {
     case badUrl
@@ -36,6 +36,7 @@ public final class PrimerBDCEngine: NSObject, BDCEngineProtocol {
     private var applyEventContinuation: Continuation?
     private var evaluateTreeContinuation: Continuation?
     private var executeActionContinuation: Continuation?
+    private var probesToRunContinuation: Continuation?
     private var checkRequirementsContinuation: Continuation?
     
     public init(manifest: Manifest) async throws  {
@@ -94,12 +95,26 @@ public extension PrimerBDCEngine {
         return try await runScript(script, continuationPath: \.executeActionContinuation)
     }
 
-    func checkClientRequirements(
+    func probesToRun(
         items: [PaymentMethodRequirements],
         client: BDCClient
+    ) async throws -> [ProbeRequest] {
+        try await checkIfReady()
+        let script = probesToRunScript(items: try items.literal(encoder), client: try client.literal(encoder))
+        return try await decodedResult(of: script, continuationPath: \.probesToRunContinuation)
+    }
+
+    func checkClientRequirements(
+        items: [PaymentMethodRequirements],
+        client: BDCClient,
+        results: [String: ProbeResult]
     ) async throws -> ClientRequirementsVerdicts {
         try await checkIfReady()
-        let script = checkClientRequirementsScript(items: try items.literal(encoder), client: try client.literal(encoder))
+        let script = checkClientRequirementsScript(
+            items: try items.literal(encoder),
+            client: try client.literal(encoder),
+            results: try results.literal(encoder)
+        )
         return try await decodedResult(of: script, continuationPath: \.checkRequirementsContinuation)
     }
 }
@@ -132,6 +147,7 @@ private extension PrimerBDCEngine {
         setupCallback(continuation: \.applyEventContinuation, value: "onProcessFieldResult")
         setupCallback(continuation: \.evaluateTreeContinuation, value: "onEvaluateTreeResult")
         setupCallback(continuation: \.executeActionContinuation, value: "onExecuteActionResult")
+        setupCallback(continuation: \.probesToRunContinuation, value: "onProbesToRunResult")
         setupCallback(continuation: \.checkRequirementsContinuation, value: "onCheckClientRequirementsResult")
         
         let consoleLogCallback: JSStringBlock = Logger.handleJSLog
