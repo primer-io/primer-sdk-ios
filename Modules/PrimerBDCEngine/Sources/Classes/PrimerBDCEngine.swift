@@ -146,8 +146,8 @@ private extension PrimerBDCEngine {
     }
     
     func setupEngine() async throws  {
-        try await evaluate { try await fetch(manifest.celWrapperJSURLContainer.url, sha256: manifest.celWrapperJSURLContainer.sha256) }
-        try await evaluate { try await fetch(manifest.stateProcessorContainer.url, sha256: manifest.stateProcessorContainer.sha256) }
+        try await evaluate { try await fetch(manifest.celWrapperJSURLContainer.br, sha256: manifest.celWrapperJSURLContainer.sha256) }
+        try await evaluate { try await fetch(manifest.stateProcessorContainer.br, sha256: manifest.stateProcessorContainer.sha256) }
         
         let wasmData = try await fetch(manifest.celWrapperWASMURLContainer.br, sha256: manifest.celWrapperWASMURLContainer.sha256)
         let byteArray = [UInt8](wasmData)

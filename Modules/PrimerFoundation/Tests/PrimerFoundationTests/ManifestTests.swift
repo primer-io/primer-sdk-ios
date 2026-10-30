@@ -13,11 +13,11 @@ final class ManifestTests: XCTestCase {
         let innerManifestJSON = """
         {
             "stateProcessor": {
-                "umd": { "sha256": "abc", "url": "https://example.com/sp" }
+                "umd": { "sha256": "abc", "br": "https://example.com/sp.br" }
             },
             "cel": {
                 "noModules": {
-                    "js": { "sha256": "def", "url": "https://example.com/js" },
+                    "js": { "sha256": "def", "br": "https://example.com/js.br" },
                     "wasm": { "sha256": "ghi", "br": "https://example.com/wasm" }
                 }
             }
@@ -35,14 +35,14 @@ final class ManifestTests: XCTestCase {
             "stateProcessor": {
                 "umd": {
                     "sha256": "abc123",
-                    "url": "https://example.com/state-processor.js"
+                    "br": "https://example.com/state-processor.js.br"
                 }
             },
             "cel": {
                 "noModules": {
                     "js": {
                         "sha256": "def456",
-                        "url": "https://example.com/cel.js"
+                        "br": "https://example.com/cel.js.br"
                     },
                     "wasm": {
                         "sha256": "ghi789",
@@ -56,9 +56,9 @@ final class ManifestTests: XCTestCase {
         let manifest = try JSONDecoder().decode(Manifest.self, from: Data(json.utf8))
 
         XCTAssertEqual(manifest.stateProcessorContainer.sha256, "abc123")
-        XCTAssertEqual(manifest.stateProcessorContainer.url, "https://example.com/state-processor.js")
+        XCTAssertEqual(manifest.stateProcessorContainer.br, "https://example.com/state-processor.js.br")
         XCTAssertEqual(manifest.celWrapperJSURLContainer.sha256, "def456")
-        XCTAssertEqual(manifest.celWrapperJSURLContainer.url, "https://example.com/cel.js")
+        XCTAssertEqual(manifest.celWrapperJSURLContainer.br, "https://example.com/cel.js.br")
         XCTAssertEqual(manifest.celWrapperWASMURLContainer.sha256, "ghi789")
         XCTAssertEqual(manifest.celWrapperWASMURLContainer.br, "https://example.com/cel.wasm.br")
     }
@@ -67,7 +67,7 @@ final class ManifestTests: XCTestCase {
         let json = """
         {
             "stateProcessor": {
-                "umd": { "sha256": "abc", "url": "https://example.com" }
+                "umd": { "sha256": "abc", "br": "https://example.com" }
             }
         }
         """
