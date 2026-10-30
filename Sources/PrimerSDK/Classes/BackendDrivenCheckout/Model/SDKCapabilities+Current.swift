@@ -8,5 +8,14 @@
 @_spi(PrimerInternal) import PrimerStepResolver
 
 extension SDKCapabilities {
-    static let current = SDKCapabilities(stepTypes: StepCapability.declaredVersions)
+    static func current(
+        uiComponents: PrimerUIComponentRegistry = .shared,
+        probes: PrimerProbeRegistry = .shared
+    ) async -> SDKCapabilities {
+        await SDKCapabilities(
+            stepTypes: StepCapability.declaredVersions,
+            uiComponents: uiComponents.declaredVersions,
+            probes: probes.declaredVersions
+        )
+    }
 }
