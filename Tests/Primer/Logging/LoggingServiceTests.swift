@@ -127,6 +127,46 @@ final class LoggingServiceTests: XCTestCase {
         XCTAssertEqual(payloads.count, 0)
     }
 
+    func test_logErrorIfReportable_paymentFailureWrappingDecline_skipsIt() async {
+        let decline = PrimerError.paymentFailed(paymentMethodType: "PAYMENT_CARD", paymentId: "pay_123", orderId: nil, status: "DECLINED")
+        await loggingService.logErrorIfReportable(PaymentFailure(error: decline, checkoutData: nil))
+
+        let payloads = await mockNetworkClient.sentPayloads
+        XCTAssertEqual(payloads.count, 0)
+    }
+
+    func test_logErrorIfReportable_paymentFailureWrappingReportableError_sendsInnerErrorIds() async throws {
+        let error = PrimerError.unknown(diagnosticsId: "test-id")
+        await loggingService.logErrorIfReportable(PaymentFailure(error: error, checkoutData: nil))
+
+        let json = try await sentMessageJSON()
+        XCTAssertEqual(json["event"] as? String, "unknown")
+        XCTAssertEqual(json["diagnostics_id"] as? String, "test-id")
+    }
+
+    // MARK: - logWarning Tests
+
+    func test_logWarning_sendsWarnPayloadWithCustomFieldsAtRoot() async throws {
+        await loggingService.logWarning(
+            message: "Payment failed",
+            event: "payment-failed",
+            userInfo: [
+                "checkout_outcome": "CHECKOUT_FAILURE",
+                "error_code": "PAYMENT_FAILED",
+                "error_message": "Declined",
+                "diagnostics_id": "test-id"
+            ]
+        )
+
+        let json = try await sentMessageJSON()
+        XCTAssertEqual(json["status"] as? String, "warn")
+        XCTAssertEqual(json["message"] as? String, "Payment failed")
+        XCTAssertEqual(json["checkout_outcome"] as? String, "CHECKOUT_FAILURE")
+        XCTAssertEqual(json["error_code"] as? String, "PAYMENT_FAILED")
+        XCTAssertEqual(json["error_message"] as? String, "Declined")
+        XCTAssertEqual(json["diagnostics_id"] as? String, "test-id")
+    }
+
     // MARK: - logError Tests
 
     func test_logError_sendsErrorPayloadWithFieldsInCorrectSlots() async throws {
@@ -178,5 +218,14 @@ final class LoggingServiceTests: XCTestCase {
 
         // Fire-and-forget pattern - should not throw
         await loggingService.logErrorIfReportable(error)
+    }
+
+    // MARK: - Helpers
+
+    private func sentMessageJSON() async throws -> [String: Any] {
+        let payloads = await mockNetworkClient.sentPayloads
+        XCTAssertEqual(payloads.count, 1)
+        let messageData = try XCTUnwrap(payloads.first?.message.data(using: .utf8))
+        return try XCTUnwrap(JSONSerialization.jsonObject(with: messageData) as? [String: Any])
     }
 }

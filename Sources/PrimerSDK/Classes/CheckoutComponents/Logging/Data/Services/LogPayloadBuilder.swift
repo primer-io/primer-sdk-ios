@@ -4,10 +4,10 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import UIKit
-@_spi(PrimerInternal) import PrimerNetworking
-@_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerNetworking
+import UIKit
 
 // MARK: - Protocol
 
@@ -15,6 +15,7 @@ protocol LogPayloadBuilding {
   func buildInfoPayload(
     message: String,
     event: String,
+    status: DatadogLogStatus,
     userInfo: [String: Any]?,
     sessionData: LoggingSessionContext.SessionData
   ) throws -> LogPayload
@@ -30,6 +31,17 @@ protocol LogPayloadBuilding {
   ) throws -> LogPayload
 }
 
+extension LogPayloadBuilding {
+  func buildInfoPayload(
+    message: String,
+    event: String,
+    userInfo: [String: Any]?,
+    sessionData: LoggingSessionContext.SessionData
+  ) throws -> LogPayload {
+    try buildInfoPayload(message: message, event: event, status: .info, userInfo: userInfo, sessionData: sessionData)
+  }
+}
+
 // MARK: - Implementation
 
 struct LogPayloadBuilder: LogPayloadBuilding {
@@ -37,7 +49,6 @@ struct LogPayloadBuilder: LogPayloadBuilding {
 
   private enum Constants {
     static let unknownValue = "Unknown"
-    static let statusInfo = DatadogLogStatus.info.rawValue
     static let statusError = DatadogLogStatus.error.rawValue
     static let serviceIosSdk = "ios-sdk"
     static let sourceLambda = "lambda"
@@ -52,6 +63,7 @@ struct LogPayloadBuilder: LogPayloadBuilding {
   func buildInfoPayload(
     message: String,
     event: String,
+    status: DatadogLogStatus,
     userInfo: [String: Any]?,
     sessionData: LoggingSessionContext.SessionData
   ) throws -> LogPayload {
@@ -64,7 +76,7 @@ struct LogPayloadBuilder: LogPayloadBuilding {
 
     let logMessageObject = LogMessageObject(
       message: message,
-      status: Constants.statusInfo,
+      status: status.rawValue,
       event: event,
       primer: Self.buildPrimerIdentifiers(sessionData: sessionData),
       initDurationMs: initDurationMs,

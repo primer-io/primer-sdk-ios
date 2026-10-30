@@ -20,6 +20,7 @@ final class MockLogPayloadBuilder: LogPayloadBuilding {
     func buildInfoPayload(
         message: String,
         event: String,
+        status: DatadogLogStatus,
         userInfo: [String: Any]?,
         sessionData: LoggingSessionContext.SessionData
     ) throws -> LogPayload {
@@ -78,6 +79,19 @@ final class LogPayloadBuilderTests: XCTestCase {
     }
 
     // MARK: - Info Payload Tests
+
+    func test_buildInfoPayload_usesTheGivenStatus() throws {
+        let payload = try builder.buildInfoPayload(
+            message: "test",
+            event: "TEST",
+            status: .warn,
+            userInfo: nil,
+            sessionData: mockSessionData
+        )
+
+        let json = try parseJSON(payload.message)
+        XCTAssertEqual(json["status"] as? String, "warn")
+    }
 
     func test_buildInfoPayload_containsDeviceInfo() throws {
         let payload = try builder.buildInfoPayload(
