@@ -6,10 +6,10 @@
 
 import CryptoKit
 import Foundation
-@_spi(PrimerInternal) import PrimerCore
 @_spi(PrimerInternal) import PrimerBDCCore
 @_spi(PrimerInternal) import PrimerBDCEngine
 @_spi(PrimerInternal) import PrimerBDCUI
+@_spi(PrimerInternal) import PrimerCore
 @_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerNetworking
 @_spi(PrimerInternal) import PrimerStepResolver
@@ -196,11 +196,11 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
         if error is BackendDrivenCheckoutCancellation || error is CancellationError {
             return await handleError(PrimerError.cancelled(paymentMethodType: config.type))
         }
-        Analytics.Service.fire(event: .message(message: "BDC Failed: \(error)", messageType: .error, severity: .error))
         let primerError: PrimerErrorProtocol = (error as? PrimerErrorProtocol) ?? PrimerError.unknown(
             message: error.localizedDescription,
             diagnosticsId: error.diagnosticId
         )
+        reportFailure(error, as: primerError)
         let decision = await PrimerDelegateProxy.primerDidFailWithError(primerError, data: paymentCheckoutData)
         switch decision.type {
         case let .fail(message): handleFailureFlow(errorMessage: message)
@@ -208,13 +208,27 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
     }
     
     private func logBDCStarted() {
-        let event = Analytics.Event.message(
-            message: "BDC flow started.",
-            messageType: .backendDrivenCheckoutStarted,
+        let context: [String: Any] = [
+            "paymentMethodType": config.type,
+            "trustedKeyFingerprints": ManifestValidator.trustedPublicKeys.map(\.fingerprint)
+        ]
+        BackendDrivenCheckoutLogger.log(
+            "BDC flow started.",
+            type: .backendDrivenCheckoutStarted,
             severity: .info,
-            context: ["trustedKeyFingerprints": ManifestValidator.trustedPublicKeys.map(\.fingerprint)]
+            context: context
         )
-        Analytics.Service.fire(event: event)
+    }
+
+    private func reportFailure(_ error: Swift.Error, as primerError: PrimerErrorProtocol) {
+        if case .cancelled? = primerError as? PrimerError { return }
+        BackendDrivenCheckoutLogger.log(
+            "BDC Failed: \(error)",
+            type: .backendDrivenCheckoutFailed,
+            severity: .error,
+            diagnosticsId: primerError.diagnosticsId,
+            context: ["paymentMethodType": config.type, "errorId": primerError.errorId]
+        )
     }
 }
 

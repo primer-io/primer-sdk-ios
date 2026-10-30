@@ -56,12 +56,12 @@ enum ClientRequirements {
         let unmetJSON = data.flatMap { String(data: $0, encoding: .utf8) }
         guard let unmetJSON else { return }
         
-        let message = "Client requirements not met for \(method.type)"
-        let context: [String: String] = ["paymentMethodType": method.type, "unmet": unmetJSON]
-        let type: Analytics.Event.Property.MessageType = .backendDrivenClientRequirementsNotMet
-        let event: Analytics.Event = .message(message: message, messageType: type, severity: .warning, context: context)
-        
-        Analytics.Service.fire(event: event)
+        BackendDrivenCheckoutLogger.log(
+            "Client requirements not met for \(method.type)",
+            type: .backendDrivenClientRequirementsNotMet,
+            severity: .warning,
+            context: ["paymentMethodType": method.type, "unmet": unmetJSON]
+        )
     }
 
     private static func buildRequirements(from methods: [PrimerPaymentMethod]) -> [PaymentMethodRequirements] {

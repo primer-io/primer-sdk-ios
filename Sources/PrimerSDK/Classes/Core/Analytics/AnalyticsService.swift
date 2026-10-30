@@ -9,8 +9,8 @@
 
 import Foundation
 @_spi(PrimerInternal) import PrimerCore
-@_spi(PrimerInternal) import PrimerStepResolver
 @_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerStepResolver
 
 extension Analytics {
 
@@ -52,6 +52,7 @@ extension Analytics {
             self.storage = storage
             self.apiClient = apiClient
             PrimerStepResolverRegistry.shared.register(self, for: .platformLog)
+            PrimerStepResolverRegistry.shared.register(SkippedAnalyticsEventResolver(), for: .analyticsEvent)
         }
 
         func record(events: [any AnalyticsEvent]) async throws {

@@ -8,7 +8,7 @@
 public extension StepCapability {
     var version: String {
         switch self {
-        case .httpRequest, .urlOpen, .platformLog, .klarnaFinalize, .klarnaAuthorize, .primerComplete: "1.0.0"
+        case .httpRequest, .urlOpen, .platformLog, .analyticsEvent, .klarnaFinalize, .klarnaAuthorize, .primerComplete: "1.0.0"
         }
     }
 

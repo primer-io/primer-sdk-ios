@@ -71,6 +71,7 @@
             case retryFailed                        = "RETRY_FAILED"
             case retrySuccess                       = "RETRY_SUCCESS"
             case backendDrivenCheckoutStarted       = "BDC_FLOW_START"
+            case backendDrivenCheckoutFailed        = "BDC_FLOW_FAILED"
             case backendDrivenClientRequirementsNotMet = "BDC_CLIENT_REQUIREMENTS_NOT_MET"
         }
 
