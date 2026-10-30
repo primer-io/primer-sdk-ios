@@ -103,6 +103,20 @@ final class ThemeOverrideMappingTests: XCTestCase {
         }
     }
 
+    func test_cardConfigurations_offerTheCardAutoFill() {
+        if #available(iOS 17, *) {
+            XCTAssertEqual(PrimerTextFieldConfiguration.expiryDate.textContentType, .creditCardExpiration)
+            XCTAssertEqual(PrimerTextFieldConfiguration.cvv.textContentType, .creditCardSecurityCode)
+            XCTAssertEqual(PrimerTextFieldConfiguration.cardholderName.textContentType, .creditCardName)
+        } else {
+            XCTAssertNil(PrimerTextFieldConfiguration.expiryDate.textContentType)
+            XCTAssertNil(PrimerTextFieldConfiguration.cvv.textContentType)
+            XCTAssertEqual(PrimerTextFieldConfiguration.cardholderName.textContentType, .name)
+        }
+        XCTAssertEqual(PrimerTextFieldConfiguration.expiryDate.keyboardType, .numberPad)
+        XCTAssertEqual(PrimerTextFieldConfiguration.cvv.keyboardType, .numberPad)
+    }
+
     func test_fieldConfiguration_givesThePhoneThePhonePad() {
         XCTAssertEqual(PrimerInputElementType.phoneNumber.fieldConfiguration.keyboardType, .phonePad)
         XCTAssertEqual(PrimerInputElementType.firstName.fieldConfiguration.keyboardType, .default)
