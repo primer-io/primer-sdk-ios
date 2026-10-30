@@ -5,8 +5,8 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 @testable import PrimerSDK
-import XCTest
 @_spi(PrimerInternal) import PrimerUI
+import XCTest
 
 final class PrimerCardholderNameFieldViewTests: XCTestCase {
 
@@ -60,6 +60,14 @@ final class PrimerCardholderNameFieldViewTests: XCTestCase {
         let resultValidString = view.textField(view.textField, shouldChangeCharactersIn: range, replacementString: "ghijkl")
         XCTAssertFalse(resultValidString)
         XCTAssertEqual(view.cardholderName, "ghijkl")
+    }
+
+    func testContentType() throws {
+        if #available(iOS 17, *) {
+            XCTAssertEqual(view.textField.textContentType, .creditCardName)
+        } else {
+            XCTAssertEqual(view.textField.textContentType, .name)
+        }
     }
 
     // MARK: Helpers

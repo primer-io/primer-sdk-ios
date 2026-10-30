@@ -7,10 +7,10 @@
 // swiftlint:disable cyclomatic_complexity
 // swiftlint:disable function_body_length
 
-@_spi(PrimerInternal) import PrimerFoundation
-import UIKit
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerUI
+import UIKit
 
 public final class PrimerCardNumberFieldView: PrimerTextFieldView {
 
@@ -24,6 +24,7 @@ public final class PrimerCardNumberFieldView: PrimerTextFieldView {
         keyboardType = .numberPad
         isTextFieldAccessibilityElement = true
         textFieldaccessibilityIdentifier = "card_txt_fld"
+        textContentType = .creditCardNumber
         textField.delegate = self
         isEditingAnalyticsEnabled = true
         editingAnalyticsObjectId = .cardNumber

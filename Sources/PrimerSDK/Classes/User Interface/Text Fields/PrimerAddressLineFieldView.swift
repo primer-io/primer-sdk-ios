@@ -4,9 +4,9 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import UIKit
 @_spi(PrimerInternal) import PrimerCore
 @_spi(PrimerInternal) import PrimerUI
+import UIKit
 
 public class PrimerAddressLineFieldView: PrimerSimpleCardFormTextFieldView {
 
@@ -31,6 +31,7 @@ public final class PrimerAddressLine1FieldView: PrimerAddressLineFieldView {
     override public func xibSetup() {
         super.xibSetup()
         textFieldaccessibilityIdentifier = "address_line_1_txt_fld"
+        textContentType = .streetAddressLine1
         editingAnalyticsObjectId = .billingAddressLine1
     }
 }
@@ -44,6 +45,7 @@ public final class PrimerAddressLine2FieldView: PrimerSimpleCardFormTextFieldVie
     override public func xibSetup() {
         super.xibSetup()
         textFieldaccessibilityIdentifier = "address_line_2_txt_fld"
+        textContentType = .streetAddressLine2
         editingAnalyticsObjectId = .billingAddressLine2
         validation = .notAvailable
     }

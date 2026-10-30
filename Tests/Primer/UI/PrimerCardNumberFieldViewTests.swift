@@ -5,8 +5,8 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 @testable import PrimerSDK
-import XCTest
 @_spi(PrimerInternal) import PrimerUI
+import XCTest
 
 final class PrimerCardNumberFieldViewTests: XCTestCase {
 
@@ -147,5 +147,20 @@ final class PrimerCardNumberFieldViewTests: XCTestCase {
         }
 
         wait(for: [expectation], timeout: 0.3)
+    }
+
+    func testAutofillWithSpaces() throws {
+        view.text = ""
+        _ = view.textField(
+            view.textField,
+            shouldChangeCharactersIn: NSRange(location: 0, length: 0),
+            replacementString: "4242 4242 4242 4242"
+        )
+        XCTAssertEqual(view.cardnumber, "4242424242424242")
+    }
+
+    func testContentType() throws {
+        XCTAssertEqual(view.textField.textContentType, .creditCardNumber)
+        XCTAssertEqual(view.textField.keyboardType, .numberPad)
     }
 }

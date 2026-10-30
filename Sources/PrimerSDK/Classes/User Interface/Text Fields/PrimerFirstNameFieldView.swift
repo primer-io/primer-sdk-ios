@@ -4,10 +4,10 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-@_spi(PrimerInternal) import PrimerFoundation
-import UIKit
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerUI
+import UIKit
 
 public final class PrimerFirstNameFieldView: PrimerSimpleCardFormTextFieldView {
 
@@ -19,6 +19,7 @@ public final class PrimerFirstNameFieldView: PrimerSimpleCardFormTextFieldView {
         super.xibSetup()
         isTextFieldAccessibilityElement = true
         textFieldaccessibilityIdentifier = "first_name_txt_fld"
+        textContentType = .givenName
         isEditingAnalyticsEnabled = true
         textField.delegate = self
         editingAnalyticsObjectId = .billingAddressFirstName

@@ -4,12 +4,12 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+@_spi(PrimerInternal) import PrimerCore
 @_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerResources
 
 // swiftlint:disable function_body_length
 import UIKit
-@_spi(PrimerInternal) import PrimerCore
-@_spi(PrimerInternal) import PrimerResources
 
 open class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
 
@@ -86,6 +86,9 @@ open class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
     public var rightViewMode: UITextField.ViewMode = .never { didSet { textField.rightViewMode = rightViewMode }}
     public var keyboardType: UIKeyboardType = .default {
         didSet { textField.keyboardType = keyboardType }
+    }
+    public var textContentType: UITextContentType? {
+        didSet { textField.textContentType = textContentType }
     }
     public var isTextFieldAccessibilityElement: Bool = false {
         didSet { textField.isAccessibilityElement = isTextFieldAccessibilityElement }
