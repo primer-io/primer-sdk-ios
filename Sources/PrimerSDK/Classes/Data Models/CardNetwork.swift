@@ -8,9 +8,9 @@
 
 import Foundation
 import PassKit
+@_spi(PrimerInternal) import PrimerCore
 @_spi(PrimerInternal) import PrimerFoundation
 import UIKit
-@_spi(PrimerInternal) import PrimerCore
 
 extension CardNetwork {
 
@@ -32,17 +32,7 @@ extension CardNetwork {
     }
 
     public var icon: UIImage? {
-        switch self {
-        case .amex: .amexColored
-        case .bancontact: .bancontact
-        case .cartesBancaires: .cartesBancairesColored
-        case .discover: .discoverColored
-        case .jcb: .jcb
-        case .masterCard: .masterCardColored
-        case .visa: .visaColored
-        case .eftpos: .eftposColored
-        case .diners, .elo, .hiper, .hipercard, .maestro, .mir, .unionpay, .unknown: .genericCard
-        }
+        cardImage ?? .genericCard
     }
 
     public var traits: PrimerCardNetworkTraits? {
@@ -100,6 +90,10 @@ extension CardNetwork {
 
     var assetName: String {
         rawValue.lowercased().filter(\.isLetter)
+    }
+
+    var cardImage: UIImage? {
+        UIImage(primerResource: "\(assetName)-card-icon-colored")
     }
 
     public init(cardNetworkStr: String) {

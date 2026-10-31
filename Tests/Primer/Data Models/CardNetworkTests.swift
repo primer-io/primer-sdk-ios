@@ -122,4 +122,15 @@ final class CardNetworkTests: XCTestCase {
         let elo = try XCTUnwrap(CardNetwork.elo.traits)
         XCTAssertEqual(elo.cvvLabel, "CVE")
     }
+
+    func test_icon_networkWithLogo_isItsOwnLogo() {
+        for network in CardNetwork.allCases where network != .hipercard && network != .unknown {
+            XCTAssertNotNil(network.icon, "\(network.rawValue) expected a logo")
+            XCTAssertNotEqual(network.icon, UIImage.genericCard, "\(network.rawValue) expected its own logo")
+        }
+    }
+
+    func test_icon_hipercard_isTheGenericCard() throws {
+        XCTAssertEqual(try XCTUnwrap(CardNetwork.hipercard.icon), UIImage.genericCard)
+    }
 }
