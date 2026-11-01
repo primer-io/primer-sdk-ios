@@ -14,6 +14,8 @@ struct KlarnaView: View, LogReporter {
   let scope: any PrimerKlarnaScope
 
   @Environment(\.designTokens) private var tokens
+  @Environment(\.designTokensColorScheme) private var tokensColorScheme
+  @Environment(\.colorScheme) private var colorScheme
   @Environment(\.bridgeController) private var bridgeController
   @Environment(\.sizeCategory) private var sizeCategory  // Observes Dynamic Type changes
   @State private var klarnaState: PrimerKlarnaState = .init()
@@ -21,7 +23,7 @@ struct KlarnaView: View, LogReporter {
   // MARK: - Layout Constants
 
   private enum Layout {
-    static let logoWidth: CGFloat = 56
+    static let logoWidth: CGFloat = 48
     static let logoHeight: CGFloat = 24
     static let spinnerSize: CGFloat = 56
     static let badgeSlotHeight: CGFloat = 40
@@ -39,6 +41,10 @@ struct KlarnaView: View, LogReporter {
     case .awaitingFinalization: .finalization
     default: .loading
     }
+  }
+
+  private var klarnaLogo: UIImage? {
+    (tokensColorScheme ?? colorScheme) == .dark ? .klarnaLogoDark : .klarnaLogoLight
   }
 
   var body: some View {
@@ -130,8 +136,8 @@ struct KlarnaView: View, LogReporter {
   @MainActor
   private func makeKlarnaLogo() -> some View {
     Group {
-      if let logoImage = UIImage(named: "klarna", in: .primerResources, compatibleWith: nil) {
-        Image(uiImage: logoImage)
+      if let klarnaLogo {
+        Image(uiImage: klarnaLogo)
           .resizable()
           .aspectRatio(contentMode: .fit)
           .frame(width: Layout.logoWidth, height: Layout.logoHeight)
