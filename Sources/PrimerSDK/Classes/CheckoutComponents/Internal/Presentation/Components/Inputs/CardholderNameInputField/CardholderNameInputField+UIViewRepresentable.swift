@@ -73,6 +73,7 @@ struct CardholderNameTextField: UIViewRepresentable, LogReporter {
     @Binding private var errorMessage: String?
     @Binding private var isFocused: Bool
     private let scope: any CardFormFieldScopeInternal
+    private var hasLeftField = false
 
     init(
       validationService: ValidationService,
@@ -102,8 +103,6 @@ struct CardholderNameTextField: UIViewRepresentable, LogReporter {
     func textFieldDidBeginEditing(_ textField: UITextField) {
       DispatchQueue.main.async {
         self.isFocused = true
-        self.errorMessage = nil
-        self.scope.clearFieldError(.cardholderName)
         // Don't set isValid = false immediately - let validation happen on text change or focus loss
       }
     }
@@ -112,6 +111,7 @@ struct CardholderNameTextField: UIViewRepresentable, LogReporter {
       DispatchQueue.main.async {
         self.isFocused = false
       }
+      hasLeftField = true
       validateCardholderName()
     }
 
@@ -138,9 +138,12 @@ struct CardholderNameTextField: UIViewRepresentable, LogReporter {
       cardholderName = newText
       scope.updateCardholderName(newText)
 
-      isValid = newText.count >= 2
-
-      scope.updateValidationState(\.cardholderName, isValid: isValid)
+      if hasLeftField {
+        validateCardholderName()
+      } else {
+        isValid = newText.count >= 2
+        scope.updateValidationState(\.cardholderName, isValid: isValid)
+      }
 
       textField.applyPrimerEdit(newText, caretOffset: range.location + accepted.utf16.count)
       return false
@@ -166,6 +169,7 @@ struct CardholderNameTextField: UIViewRepresentable, LogReporter {
       if trimmedName.isEmpty {
         isValid = false  // Cardholder name is required
         errorMessage = nil  // Never show error message for empty fields
+        scope.clearFieldError(.cardholderName)
         scope.updateValidationState(\.cardholderName, isValid: false)
         return
       }
