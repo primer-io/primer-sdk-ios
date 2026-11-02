@@ -32,7 +32,7 @@ extension PrimerHeadlessUniversalCheckout {
             )
             Analytics.Service.fire(event: event)
 
-            return PrimerCardNetworkAsset(cardNetwork: cardNetwork, cardImage: cardNetwork.cardImage)
+            return PrimerCardNetworkAsset(cardNetwork: cardNetwork, cardImage: cardNetwork.icon)
         }
 
         public static func getCardNetworkTraits(cardNetworkString: String?) -> PrimerCardNetworkTraits? {

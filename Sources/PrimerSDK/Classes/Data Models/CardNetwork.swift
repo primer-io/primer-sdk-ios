@@ -32,7 +32,7 @@ extension CardNetwork {
     }
 
     public var icon: UIImage? {
-        cardImage ?? .genericCard
+        UIImage(primerResource: "\(assetName)-card-icon-colored") ?? .genericCard
     }
 
     public var traits: PrimerCardNetworkTraits? {
@@ -90,10 +90,6 @@ extension CardNetwork {
 
     var assetName: String {
         rawValue.lowercased().filter(\.isLetter)
-    }
-
-    var cardImage: UIImage? {
-        UIImage(primerResource: "\(assetName)-card-icon-colored")
     }
 
     public init(cardNetworkStr: String) {

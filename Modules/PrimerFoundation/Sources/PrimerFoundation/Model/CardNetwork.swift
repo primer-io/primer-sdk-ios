@@ -160,7 +160,7 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
 
         case .hipercard:
             CardNetworkValidation(
-                niceType: "Hiper",
+                niceType: "Hipercard",
                 patterns: [[606282]],
                 gaps: [4, 8, 12],
                 lengths: [16],

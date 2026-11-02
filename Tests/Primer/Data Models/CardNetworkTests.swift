@@ -133,4 +133,8 @@ final class CardNetworkTests: XCTestCase {
     func test_icon_hipercard_isTheGenericCard() throws {
         XCTAssertEqual(try XCTUnwrap(CardNetwork.hipercard.icon), UIImage.genericCard)
     }
+
+    func test_displayName_hipercard_isHipercard() {
+        XCTAssertEqual(CardNetwork.hipercard.displayName, "Hipercard")
+    }
 }
