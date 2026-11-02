@@ -53,7 +53,7 @@ enum ClientRequirements {
             throw error
         }
         let requirements = buildRequirements(from: methods)
-        let client = BDCClient(capabilities: .current, context: .generate())
+        let client = await BDCClient(capabilities: .current(), context: .generate())
         logger.info(message: "Client requirements: asking the state processor about \(methods.map(\.type))")
         return try await engine.checkClientRequirements(items: requirements, client: client)
     }
