@@ -4,9 +4,9 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import SwiftUI
-@_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
+import SwiftUI
 
 @available(iOS 15.0, *)
 struct CardNumberInputField: View, LogReporter {
@@ -28,6 +28,7 @@ struct CardNumberInputField: View, LogReporter {
   @State private var isFocused: Bool = false
   @State private var localSelectedNetwork: CardNetwork = .unknown
   @State private var networkSelectorStyle: CardNetworkSelectorStyle = .dropdown
+  @State private var fieldAnchor = WeakBox<UIView>()
   @Environment(\.diContainer) private var container
   @Environment(\.designTokens) private var tokens
 
@@ -121,6 +122,7 @@ struct CardNumberInputField: View, LogReporter {
         }
       }
     )
+    .environment(\.inputFieldAnchor, fieldAnchor)
     .accessibility(
       config: accessibilityConfig,
       combinesChildren: false

@@ -7,12 +7,12 @@
 // swiftlint:disable file_length
 
 import Foundation
-@_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
 
 final class WeakBox<T: AnyObject> {
   weak var instance: T?
-  init(_ inst: T) { instance = inst }
+  init(_ inst: T? = nil) { instance = inst }
 }
 
 /// Carries a singleton that is still being built to every task waiting for it.
