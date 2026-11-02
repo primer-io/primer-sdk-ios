@@ -5,8 +5,8 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 @testable import PrimerSDK
-import XCTest
 @_spi(PrimerInternal) import PrimerUI
+import XCTest
 
 final class PrimerCVVFieldViewTests: XCTestCase {
 
@@ -105,5 +105,12 @@ final class PrimerCVVFieldViewTests: XCTestCase {
         )
 
         waitForExpectations(timeout: 2.0)
+    }
+
+    func testContentType() throws {
+        if #available(iOS 17, *) {
+            XCTAssertEqual(view.textField.textContentType, .creditCardSecurityCode)
+        }
+        XCTAssertEqual(view.textField.keyboardType, .numberPad)
     }
 }

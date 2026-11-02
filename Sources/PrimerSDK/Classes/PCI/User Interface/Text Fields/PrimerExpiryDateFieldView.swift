@@ -6,10 +6,10 @@
 
 // swiftlint:disable function_body_length
 
-@_spi(PrimerInternal) import PrimerFoundation
-import UIKit
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerUI
+import UIKit
 
 public final class PrimerExpiryDateFieldView: PrimerTextFieldView {
 
@@ -21,6 +21,7 @@ public final class PrimerExpiryDateFieldView: PrimerTextFieldView {
         keyboardType = .numberPad
         isTextFieldAccessibilityElement = true
         textFieldaccessibilityIdentifier = "expiry_txt_fld"
+        if #available(iOS 17, *) { textContentType = .creditCardExpiration }
         textField.delegate = self
         isEditingAnalyticsEnabled = true
         editingAnalyticsObjectId = .expiry
@@ -43,6 +44,7 @@ public final class PrimerExpiryDateFieldView: PrimerTextFieldView {
             return false
         }
 
+        let string = string.count > 1 ? Self.expiryDigits(from: string) : string
         var newText = (currentText as NSString).replacingCharacters(in: range, with: string) as String
         newText = newText.replacingOccurrences(of: "/", with: "")
         if !(newText.isNumeric || newText.isEmpty) || (string != "" && newText.withoutWhiteSpace.count >= 5) {
@@ -91,6 +93,19 @@ public final class PrimerExpiryDateFieldView: PrimerTextFieldView {
             }
         }
         return false
+    }
+
+    /// AutoFill and card scan insert the whole date, sometimes as M/YY, MM/YYYY or MMYYYY.
+    private static func expiryDigits(from date: String) -> String {
+        let parts = date.components(separatedBy: CharacterSet.decimalDigits.inverted).filter { !$0.isEmpty }
+        switch parts.count {
+        case 1 where parts[0].count == 6:
+            return String(parts[0].prefix(2) + parts[0].suffix(2))
+        case 2 where (1 ... 2).contains(parts[0].count) && [2, 4].contains(parts[1].count):
+            return String(repeating: "0", count: 2 - parts[0].count) + parts[0] + parts[1].suffix(2)
+        default:
+            return date
+        }
     }
 }
 // swiftlint:enable function_body_length

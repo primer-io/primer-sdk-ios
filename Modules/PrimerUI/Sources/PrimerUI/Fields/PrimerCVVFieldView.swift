@@ -6,9 +6,9 @@
 
 // swiftlint:disable function_body_length
 
+@_spi(PrimerInternal) import PrimerCore
 @_spi(PrimerInternal) import PrimerFoundation
 import UIKit
-@_spi(PrimerInternal) import PrimerCore
 
 public final class PrimerCVVFieldView: PrimerTextFieldView {
 
@@ -22,6 +22,7 @@ public final class PrimerCVVFieldView: PrimerTextFieldView {
         keyboardType = .numberPad
         isTextFieldAccessibilityElement = true
         textFieldaccessibilityIdentifier = "cvc_txt_fld"
+        if #available(iOS 17, *) { textContentType = .creditCardSecurityCode }
         textField.delegate = self
         isEditingAnalyticsEnabled = true
         editingAnalyticsObjectId = .cvc
