@@ -6,6 +6,7 @@
 
 import Foundation
 @_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerStepResolver
 
 @MainActor @_spi(PrimerInternal)
 public protocol BDCEngineProtocol: AnyObject {
@@ -28,8 +29,13 @@ public protocol BDCEngineProtocol: AnyObject {
         schema: String,
         state: State
     ) async throws -> [String: Any]
-    func checkClientRequirements(
+    func probesToRun(
         items: [PaymentMethodRequirements],
         client: BDCClient
+    ) async throws -> [ProbeRequest]
+    func checkClientRequirements(
+        items: [PaymentMethodRequirements],
+        client: BDCClient,
+        results: [String: ProbeResult]
     ) async throws -> ClientRequirementsVerdicts
 }

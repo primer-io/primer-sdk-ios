@@ -55,7 +55,7 @@ enum ClientRequirements {
         let requirements = buildRequirements(from: methods)
         let client = await BDCClient(capabilities: .current(), context: .generate())
         logger.info(message: "Client requirements: asking the state processor about \(methods.map(\.type))")
-        return try await engine.checkClientRequirements(items: requirements, client: client)
+        return try await engine.checkClientRequirements(items: requirements, client: client, results: [:])
     }
 
     private static func reportUnmet(_ unmet: [UnmetClientRequirement], for method: PrimerPaymentMethod) {
