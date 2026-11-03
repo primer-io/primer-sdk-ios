@@ -16,7 +16,7 @@ final class SDKCapabilitiesTests: XCTestCase {
         let json = try XCTUnwrap(String(data: encoder.encode(capabilities), encoding: .utf8))
 
         XCTAssertEqual(json, """
-        {"dependencies":{},"stepTypes":{"http.request":"1.0.0","url.open":"1.0.0 || 2.0.0"},"uiComponents":{}}
+        {"probes":{},"stepTypes":{"http.request":"1.0.0","url.open":"1.0.0 || 2.0.0"},"uiComponents":{}}
         """)
     }
 }

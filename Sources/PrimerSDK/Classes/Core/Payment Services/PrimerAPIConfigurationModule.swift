@@ -6,9 +6,9 @@
 
 import CryptoKit
 import Foundation
-@_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerBDCCore
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerNetworking
 
 typealias JWTToken = String
@@ -112,6 +112,7 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
             PrimerAPIConfigurationModule.clientToken = clientToken
             PrimerAPIConfigurationModule.apiConfiguration = apiConfiguration
             reportAllowedCardNetworks()
+            ApplePayUtils.warnAboutUnsupportedCardNetworks()
         } catch {
             PrimerAPIConfigurationModule.clientToken = nil
             PrimerAPIConfigurationModule.apiConfiguration = nil

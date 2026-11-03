@@ -8,15 +8,15 @@
 public struct SDKCapabilities: Equatable, Sendable, Encodable {
     public let stepTypes: [String: String]
     public let uiComponents: [String: String]
-    public let dependencies: [String: String]
+    public let probes: [String: String]
 
     public init(
         stepTypes: [String: String] = [:],
         uiComponents: [String: String] = [:],
-        dependencies: [String: String] = [:]
+        probes: [String: String] = [:]
     ) {
         self.stepTypes = stepTypes
         self.uiComponents = uiComponents
-        self.dependencies = dependencies
+        self.probes = probes
     }
 }
