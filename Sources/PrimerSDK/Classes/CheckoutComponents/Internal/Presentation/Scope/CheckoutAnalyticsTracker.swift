@@ -4,8 +4,8 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-@_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
 
 /// Turns checkout state changes into the terminal and lifecycle events.
 @available(iOS 15.0, *)
