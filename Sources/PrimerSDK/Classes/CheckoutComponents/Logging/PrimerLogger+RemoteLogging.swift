@@ -5,8 +5,8 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
-@_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
 
 // NOTE: These overloads forward logs to the CheckoutComponents remote LoggingService,
 // so they must live in the PrimerSDK target where DIContainer/LoggingService are visible.
@@ -41,7 +41,9 @@ public extension PrimerLogger {
             await remoteLoggingService()?.logInfo(message: message, event: event, userInfo: userInfo)
         }
     }
+}
 
+extension PrimerLogger {
     @available(iOS 15.0, *)
     func warn(
         message: String,
