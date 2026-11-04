@@ -88,7 +88,7 @@ enum ClientRequirements {
         guard let unmetJSON else { return }
         
         let message = "Client requirements not met for \(method.type)"
-        logger.warn(message: message)
+        logger.warn(message: "\(message): \(unmetJSON)")
 
         let context: [String: String] = ["paymentMethodType": method.type, "unmet": unmetJSON]
         let type: Analytics.Event.Property.MessageType = .backendDrivenClientRequirementsNotMet
