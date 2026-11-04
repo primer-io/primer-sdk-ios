@@ -76,9 +76,6 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
                 let result: CheckoutResult?
 
                 if config.entry.requiresSetup {
-                    #if canImport(PrimerKlarnaSDK)
-                    KlarnaWidgetComponent.register()
-                    #endif
                     await presentSDUI()
                     let token = try await orchestrator?.runSetup(
                         pciUrl: pciUrl,
