@@ -17,6 +17,8 @@ extension UIImage {
     static let jcb = UIImage(primerResource: "jcb-icon")
     static let klarna = UIImage(primerResource: "klarna")
     static let klarnaCategory = UIImage(primerResource: "klarna_payment_category")
+    static let klarnaLogoDark = UIImage(primerResource: "klarna-logo-dark")
+    static let klarnaLogoLight = UIImage(primerResource: "klarna-logo-light")
     static let masterCard = UIImage(primerResource: "masterCard")
     static let multibancoLight = UIImage(primerResource: "multibanco-logo-light")
     static let payPal = UIImage(primerResource: "paypal")
