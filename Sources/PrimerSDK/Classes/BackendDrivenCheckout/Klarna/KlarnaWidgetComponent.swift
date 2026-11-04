@@ -10,8 +10,16 @@
 @_spi(PrimerInternal) import PrimerStepResolver
 
 enum KlarnaWidgetComponent {
-    static func register() {
-        SDUIComponentRegistry.shared.register("klarna.widget", factory: makeWidget)
+    private static let type = "klarna.widget"
+    private static let version = "1.0.0"
+
+    static func register(
+        uiComponents: PrimerUIComponentRegistry = .shared,
+        probes: PrimerProbeRegistry = .shared
+    ) async {
+        SDUIComponentRegistry.shared.register(type, factory: makeWidget)
+        await uiComponents.declare(type, version: version)
+        await probes.register(KlarnaSDKProbe(), for: KlarnaSDKProbe.name)
         PrimerStepResolverRegistry.shared.register(KlarnaAuthorizeResolver(), for: .klarnaAuthorize)
     }
 

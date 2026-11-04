@@ -20,6 +20,9 @@ enum ClientRequirements {
         guard let methods, methods.contains(where: \.isBackendDriven) else { return }
 
         await PrimerUIComponentRegistry.shared.declarePrimitives()
+        #if canImport(PrimerKlarnaSDK)
+        await KlarnaWidgetComponent.register()
+        #endif
 
         let verdicts: ClientRequirementsVerdicts
         
