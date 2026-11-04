@@ -4,10 +4,10 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+@_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
 import SwiftUI
 import UIKit
-@_spi(PrimerInternal) import PrimerFoundation
-@_spi(PrimerInternal) import PrimerCore
 
 /// UIViewRepresentable wrapper for expiry date input
 @available(iOS 15.0, *)
@@ -80,6 +80,7 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
     @Binding private var errorMessage: String?
     @Binding private var isFocused: Bool
     private let scope: any CardFormFieldScopeInternal
+    private var hasLeftField = false
 
     init(
       validationService: ValidationService,
@@ -113,8 +114,6 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
     func textFieldDidBeginEditing(_ textField: UITextField) {
       DispatchQueue.main.async {
         self.isFocused = true
-        self.errorMessage = nil
-        self.scope.clearFieldError(.expiryDate)
       }
     }
 
@@ -122,6 +121,7 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
       DispatchQueue.main.async {
         self.isFocused = false
       }
+      hasLeftField = true
       validateExpiryDate()
     }
 
@@ -149,8 +149,9 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
 
       scope.updateExpiryDate(newText)
 
-      // Validate silently during typing (no error messages shown)
-      if newText.count == 5 {  // MM/YY format
+      if hasLeftField {
+        validateExpiryDate()
+      } else if newText.count == 5 {  // MM/YY format
         validateExpiryDateSilently()
       } else {
         isValid = false
@@ -220,18 +221,19 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
       scope.updateExpiryYear(year)
     }
 
-    /// Validates expiry date and shows error messages (called on blur)
+    /// Validates expiry date and shows error messages (called on blur, and while typing once the field has been left)
     private func validateExpiryDate() {
       validateExpiryDateSilently(showErrors: true)
     }
 
-    /// Validates expiry date without showing error messages (called during typing)
+    /// Validates expiry date without showing error messages (called while typing before the field has been left)
     private func validateExpiryDateSilently(showErrors: Bool = false) {
       // Empty field handling - don't show errors for empty fields
       let trimmedExpiry = expiryDate.trimmingCharacters(in: .whitespacesAndNewlines)
       if trimmedExpiry.isEmpty {
         isValid = false  // Expiry date is required
         errorMessage = nil  // Never show error message for empty fields
+        scope.clearFieldError(.expiryDate)
         scope.updateValidationState(\.expiry, isValid: false)
         return
       }

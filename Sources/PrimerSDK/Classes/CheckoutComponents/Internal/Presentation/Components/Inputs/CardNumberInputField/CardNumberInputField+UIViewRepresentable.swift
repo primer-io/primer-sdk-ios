@@ -4,10 +4,10 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+@_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
 import SwiftUI
 import UIKit
-@_spi(PrimerInternal) import PrimerFoundation
-@_spi(PrimerInternal) import PrimerCore
 
 @available(iOS 15.0, *)
 struct CardNumberTextField: UIViewRepresentable, LogReporter {
@@ -81,6 +81,7 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
     private let scope: any CardFormFieldScopeInternal
     private let validationService: ValidationService
     private var validationTimer: Timer?
+    private var hasLeftField = false
 
     init(
       scope: any CardFormFieldScopeInternal,
@@ -112,13 +113,13 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
     func textFieldDidBeginEditing(_ textField: UITextField) {
       DispatchQueue.main.async {
         self.isFocused = true
-        self.scope.clearFieldError(.cardNumber)
       }
     }
 
     func textFieldDidEndEditing(_ textField: UITextField) {
       DispatchQueue.main.async {
         self.isFocused = false
+        self.hasLeftField = true
         self.validateCardNumberFully(self.cardNumber)
       }
     }
@@ -158,7 +159,11 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
         formattedText,
         caretOffset: caretOffset(afterDigits: min(digitsBeforeCaret, newCardNumber.count), in: formattedText)
       )
-      updateValidationState(newCardNumber)
+      if hasLeftField {
+        validateCardNumberFully(newCardNumber)
+      } else {
+        updateValidationState(newCardNumber)
+      }
       return false
     }
 
@@ -372,6 +377,7 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
       if trimmedNumber.isEmpty {
         isValid = false
         errorMessage = nil
+        scope.clearFieldError(.cardNumber)
         scope.updateValidationStateIfNeeded(for: .cardNumber, isValid: false)
         return
       }
