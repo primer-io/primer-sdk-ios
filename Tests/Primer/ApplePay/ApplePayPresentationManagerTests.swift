@@ -5,10 +5,10 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import PassKit
+@_spi(PrimerInternal) @testable import PrimerCore
 import PrimerFoundation
 @testable import PrimerSDK
 import XCTest
-@_spi(PrimerInternal) @testable import PrimerCore
 
 final class ApplePayPresentationManagerTests: XCTestCase {
 
@@ -415,6 +415,16 @@ final class ApplePayPresentationManagerTests: XCTestCase {
         let request = try sut.createRequest(for: applePayRequest)
 
         XCTAssertEqual(request.requiredShippingContactFields, [.name, .postalAddress])
+    }
+
+    func testSupportedNetworksPutEftposFirstWhenTheSessionDoes() throws {
+        SDKSessionHelper.setUp()
+        defer { SDKSessionHelper.tearDown() }
+        SDKSessionHelper.updateAllowedCardNetworks(cardNetworks: [.eftpos, .visa, .masterCard, .amex])
+
+        let request = try sut.createRequest(for: makeApplePayRequest())
+
+        XCTAssertEqual(request.supportedNetworks, [.eftpos, .visa, .masterCard, .amex])
     }
 
     func makeApplePayRequest() -> ApplePayRequest {

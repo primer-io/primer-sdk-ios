@@ -4,10 +4,10 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+@_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
 import SwiftUI
 import UIKit
-@_spi(PrimerInternal) import PrimerFoundation
-@_spi(PrimerInternal) import PrimerCore
 
 /// UIViewRepresentable wrapper for CVV text field
 @available(iOS 15.0, *)
@@ -77,6 +77,7 @@ struct CVVTextField: UIViewRepresentable, LogReporter {
     @Binding private var errorMessage: String?
     @Binding private var isFocused: Bool
     private let scope: any CardFormFieldScopeInternal
+    private var hasLeftField = false
 
     private var expectedCVVLength: Int {
       cardNetwork.validation?.code.length ?? 3
@@ -111,12 +112,11 @@ struct CVVTextField: UIViewRepresentable, LogReporter {
 
     @MainActor func textFieldDidBeginEditing(_ textField: UITextField) {
       isFocused = true
-      errorMessage = nil
-      scope.clearFieldError(.cvv)
     }
 
     @MainActor func textFieldDidEndEditing(_ textField: UITextField) {
       isFocused = false
+      hasLeftField = true
       validateCVV()
     }
 
@@ -142,7 +142,7 @@ struct CVVTextField: UIViewRepresentable, LogReporter {
       cvv = newText
       scope.updateCvv(newText)
 
-      if newText.count == expectedCVVLength {
+      if hasLeftField || newText.count == expectedCVVLength {
         validateCVV()
       } else {
         isValid = false
@@ -159,6 +159,7 @@ struct CVVTextField: UIViewRepresentable, LogReporter {
       if trimmedCVV.isEmpty {
         isValid = false  // CVV is required
         errorMessage = nil  // Never show error message for empty fields
+        scope.clearFieldError(.cvv)
         scope.updateValidationState(\.cvv, isValid: false)
         return
       }

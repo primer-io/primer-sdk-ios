@@ -58,12 +58,12 @@ struct PrimerTextFieldConfiguration {
     isSecureTextEntry: false
   )
 
-  /// Secure entry with number pad and no autofill
+  /// Secure entry with number pad. Card AutoFill types start at iOS 17.
   static let cvv = PrimerTextFieldConfiguration(
     keyboardType: .numberPad,
     autocapitalizationType: .none,
     autocorrectionType: .no,
-    textContentType: nil,
+    textContentType: { if #available(iOS 17, *) { .creditCardSecurityCode } else { nil } }(),
     returnKeyType: .done,
     isSecureTextEntry: true
   )
@@ -88,15 +88,16 @@ struct PrimerTextFieldConfiguration {
     isSecureTextEntry: false
   )
 
-  /// Number pad with no autofill
   static let expiryDate = PrimerTextFieldConfiguration(
     keyboardType: .numberPad,
     autocapitalizationType: .none,
     autocorrectionType: .no,
-    textContentType: .none,
+    textContentType: { if #available(iOS 17, *) { .creditCardExpiration } else { nil } }(),
     returnKeyType: .done,
     isSecureTextEntry: false
   )
+
+  static let cardholderName = standard.offering({ if #available(iOS 17, *) { .creditCardName } else { .name } }())
 
   init(
     keyboardType: UIKeyboardType = .default,

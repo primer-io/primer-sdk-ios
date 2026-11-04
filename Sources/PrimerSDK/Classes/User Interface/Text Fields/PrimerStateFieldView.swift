@@ -4,10 +4,10 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import UIKit
-@_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerUI
+import UIKit
 
 public final class PrimerStateFieldView: PrimerSimpleCardFormTextFieldView {
 
@@ -19,6 +19,7 @@ public final class PrimerStateFieldView: PrimerSimpleCardFormTextFieldView {
         super.xibSetup()
         isTextFieldAccessibilityElement = true
         textFieldaccessibilityIdentifier = "state_txt_fld"
+        textContentType = .addressState
         isEditingAnalyticsEnabled = true
         textField.delegate = self
         editingAnalyticsObjectId = .billingAddressState

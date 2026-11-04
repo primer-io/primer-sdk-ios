@@ -4,9 +4,9 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import SwiftUI
-@_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
+import SwiftUI
 
 @available(iOS 15.0, *)
 @MainActor
@@ -684,6 +684,7 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
   }
 
   func handlePaymentSuccess(_ result: PaymentResult) {
+    analyticsTracker?.logPaymentSucceeded()
     updateState(.success(result))
     updateNavigationState(.success(result))
   }
@@ -692,6 +693,7 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
   func handlePaymentError(_ error: PrimerError, checkoutData: PrimerCheckoutData? = nil) {
     // The decline error carries the freshest status, so it wins over the create-time snapshot.
     let checkoutData = error.failedPaymentCheckoutData ?? checkoutData
+    analyticsTracker?.logPaymentFailed(error, checkoutData: checkoutData)
     updateState(.failure(error, checkoutData: checkoutData))
     // Note: Error callback is invoked via navigateToError in updateNavigationState
     updateNavigationState(.failure(error, checkoutData: checkoutData))

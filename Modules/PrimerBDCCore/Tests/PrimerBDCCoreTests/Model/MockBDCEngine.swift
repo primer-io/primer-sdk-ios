@@ -7,6 +7,7 @@
 import Foundation
 @_spi(PrimerInternal) import PrimerBDCEngine
 @_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerStepResolver
 
 @MainActor
 final class MockBDCEngine: BDCEngineProtocol {
@@ -22,6 +23,9 @@ final class MockBDCEngine: BDCEngineProtocol {
     var checkClientRequirementsResult: ClientRequirementsVerdicts = [:]
     var checkClientRequirementsError: Error?
     var lastCheckedRequirements: [PaymentMethodRequirements]?
+    var lastProbeResults: [String: ProbeResult]?
+
+    var probesToRunResult: [ProbeRequest] = []
 
     func start(
         schema: String,
@@ -55,11 +59,20 @@ final class MockBDCEngine: BDCEngineProtocol {
         return applyEventResult
     }
     
-    func checkClientRequirements(
+    func probesToRun(
         items: [PaymentMethodRequirements],
         client: BDCClient
+    ) async throws -> [ProbeRequest] {
+        probesToRunResult
+    }
+
+    func checkClientRequirements(
+        items: [PaymentMethodRequirements],
+        client: BDCClient,
+        results: [String: ProbeResult]
     ) async throws -> ClientRequirementsVerdicts {
         lastCheckedRequirements = items
+        lastProbeResults = results
         if let checkClientRequirementsError { throw checkClientRequirementsError }
         return checkClientRequirementsResult
     }
