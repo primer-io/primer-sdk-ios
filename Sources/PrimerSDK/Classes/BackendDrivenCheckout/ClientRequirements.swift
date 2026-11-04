@@ -6,6 +6,7 @@
 
 @_spi(PrimerInternal) import PrimerBDCCore
 @_spi(PrimerInternal) import PrimerBDCEngine
+@_spi(PrimerInternal) import PrimerBDCUI
 @_spi(PrimerInternal) import PrimerCore
 @_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerStepResolver
@@ -17,7 +18,9 @@ enum ClientRequirements {
     static func checkConfiguration() async {
         let methods = PrimerAPIConfiguration.paymentMethodConfigs
         guard let methods, methods.contains(where: \.isBackendDriven) else { return }
-        
+
+        await PrimerUIComponentRegistry.shared.declarePrimitives()
+
         let verdicts: ClientRequirementsVerdicts
         
         do {
