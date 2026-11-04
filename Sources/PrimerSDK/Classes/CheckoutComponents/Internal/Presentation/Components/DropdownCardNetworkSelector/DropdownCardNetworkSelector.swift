@@ -4,9 +4,9 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import SwiftUI
-@_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
+import SwiftUI
 
 @available(iOS 15.0, *)
 struct DropdownCardNetworkSelector: View {
@@ -14,25 +14,14 @@ struct DropdownCardNetworkSelector: View {
   @Binding var selectedNetwork: CardNetwork
   let onNetworkSelected: ((CardNetwork) -> Void)?
 
+  @State private var triggerAnchor = WeakBox<UIView>()
+  @State private var menuController = WeakBox<CardNetworkMenuController>()
   @Environment(\.designTokens) private var tokens
+  @Environment(\.inputFieldAnchor) private var fieldAnchor
+  @Environment(\.layoutDirection) private var layoutDirection
 
   var body: some View {
-    Menu {
-      ForEach(availableNetworks, id: \.rawValue) { network in
-        Button {
-          selectedNetwork = network
-          onNetworkSelected?(network)
-        } label: {
-          Label {
-            Text(network.displayName)
-          } icon: {
-            if let icon = network.icon {
-              Image(uiImage: icon)
-            }
-          }
-        }
-      }
-    } label: {
+    Button(action: openMenu) {
       HStack(spacing: PrimerSpacing.xsmall(tokens: tokens)) {
         CardNetworkBadge(network: selectedNetwork)
 
@@ -47,9 +36,35 @@ struct DropdownCardNetworkSelector: View {
       }
       .contentShape(Rectangle())
     }
+    .buttonStyle(.plain)
+    .anchored(to: triggerAnchor)
     .accessibilityIdentifier(AccessibilityIdentifiers.CardForm.dropdownNetworkSelectorButton)
     .accessibilityLabel(CheckoutComponentsStrings.a11yDropdownNetworkSelectorLabel)
     .accessibilityHint(CheckoutComponentsStrings.a11yDropdownNetworkSelectorHint)
+    .onChange(of: availableNetworks) { _ in menuController.instance?.close() }
+    .onDisappear { menuController.instance?.close() }
+  }
+
+  private func openMenu() {
+    guard let fieldView = fieldAnchor?.instance ?? triggerAnchor.instance else { return }
+    let controller = CardNetworkMenuController(
+      menu: CardNetworkMenu(
+        networks: availableNetworks,
+        selectedNetwork: selectedNetwork,
+        tokens: tokens,
+        layoutDirection: layoutDirection,
+        onSelect: select
+      ),
+      fieldView: fieldView
+    )
+    menuController.instance = controller
+    controller.show()
+  }
+
+  private func select(_ network: CardNetwork) {
+    menuController.instance?.close()
+    selectedNetwork = network
+    onNetworkSelected?(network)
   }
 }
 

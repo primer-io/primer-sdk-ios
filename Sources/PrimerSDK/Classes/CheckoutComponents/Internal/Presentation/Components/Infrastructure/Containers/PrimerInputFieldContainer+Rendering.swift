@@ -4,9 +4,9 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import SwiftUI
-@_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
+import SwiftUI
 
 @available(iOS 15.0, *)
 extension PrimerInputFieldContainer {
@@ -27,6 +27,7 @@ extension PrimerInputFieldContainer {
       // Fixed, so the bridged text field fills the box and takes a tap anywhere in it; grows with large text.
       .frame(height: PrimerComponentHeight.inputField(tokens: tokens))
       .background(makeTextFieldContainerBackground())
+      .anchored(to: fieldAnchor)
       .disabled(!isInputEnabled)
   }
 
