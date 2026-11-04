@@ -17,12 +17,13 @@ extension View {
 private struct AnchorReader: UIViewRepresentable {
   let anchor: WeakBox<UIView>
 
-  func makeUIView(context: Context) -> UIView {
+  func makeUIView(context _: Context) -> UIView {
     let view = UIView()
     view.isUserInteractionEnabled = false
-    anchor.instance = view
     return view
   }
 
-  func updateUIView(_ uiView: UIView, context: Context) {}
+  func updateUIView(_ uiView: UIView, context _: Context) {
+    anchor.instance = uiView
+  }
 }
