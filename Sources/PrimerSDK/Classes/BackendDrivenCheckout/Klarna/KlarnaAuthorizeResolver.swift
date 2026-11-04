@@ -5,8 +5,8 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 #if canImport(PrimerKlarnaSDK)
-import PrimerKlarnaSDK
 @_spi(PrimerInternal) import PrimerFoundation
+import PrimerKlarnaSDK
 @_spi(PrimerInternal) import PrimerStepResolver
 
 final class KlarnaAuthorizeResolver: NSObject, StepResolver, LogReporter {
@@ -17,7 +17,7 @@ final class KlarnaAuthorizeResolver: NSObject, StepResolver, LogReporter {
     @MainActor
     func resolve(_ data: CodableValue) async throws -> StepResolutionResult {
         let params = try? data.casted(to: Params.self)
-        guard let provider = KlarnaProviderStore.shared.provider(for: params?.category) else {
+        guard let provider = KlarnaWidgetStore.shared.widget(for: params?.category)?.provider else {
             return StepResolutionResult(outcome: .error)
         }
         provider.authorizationDelegate = self

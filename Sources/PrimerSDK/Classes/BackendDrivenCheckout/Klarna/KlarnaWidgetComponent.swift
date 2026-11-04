@@ -20,6 +20,7 @@ enum KlarnaWidgetComponent {
         SDUIComponentRegistry.shared.register(type, factory: makeWidget)
         await uiComponents.declare(type, version: version)
         await probes.register(KlarnaSDKProbe(), for: KlarnaSDKProbe.name)
+        PrimerStepResolverRegistry.shared.register(KlarnaLoadResolver(), for: .klarnaLoad)
         PrimerStepResolverRegistry.shared.register(KlarnaAuthorizeResolver(), for: .klarnaAuthorize)
     }
 
@@ -30,7 +31,7 @@ enum KlarnaWidgetComponent {
             clientToken: params?.clientToken ?? "",
             category: params?.category ?? "",
             urlScheme: urlScheme,
-            onLoaded: { params?.readyField.map { onChange($0, .bool(true)) } }
+            onReady: { params?.readyField.map { onChange($0, .bool(true)) } }
         )
     }
 }

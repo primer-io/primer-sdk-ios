@@ -13,6 +13,7 @@ public enum StepCapability: String, CaseIterable, Sendable {
     case platformLog = "platform.log"
     case klarnaAuthorize = "klarna.authorize"
     case klarnaFinalize = "klarna.finalize"
+    case klarnaLoad = "klarna.load"
     case primerComplete = "primer.complete"
 }
 
