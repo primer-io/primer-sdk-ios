@@ -32,7 +32,7 @@ enum Component: Decodable, Hashable {
         case screens
     }
 	
-    enum ComponentType: String, Codable {
+    enum ComponentType: String, Codable, CaseIterable {
         case box = "Box"
         case button = "Button"
         case checkbox = "Checkbox"
