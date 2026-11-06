@@ -11,6 +11,11 @@ struct ClientInstructionSetupResponse: Decodable {
     let paymentMethodSetupId: String
     let instruction: Instruction
 
+    private enum CodingKeys: String, CodingKey {
+        case paymentMethodSetupId = "id"
+        case instruction
+    }
+
     struct Instruction: Decodable {
         let nextPoll: NextPoll
         let payload: Payload

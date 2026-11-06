@@ -266,7 +266,7 @@ final class PrimerPaymentMethod: Codable, LogReporter {
              surcharge,
              options,
              displayMetadata,
-             entry,
+             entry = "setupStart",
              clientRequirements
     }
 
@@ -361,9 +361,9 @@ extension PrimerPaymentMethod {
 
 extension PrimerPaymentMethod {
     enum Entry: String, Codable, CaseIterable, Equatable {
-        case pay
-        case onSelect
-        case eager
+        case pay = "PAY"
+        case onSelect = "ON_SELECT"
+        case eager = "EAGER"
 
         var requiresSetup: Bool {
             switch self {

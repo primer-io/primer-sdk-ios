@@ -5,9 +5,9 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+@_spi(PrimerInternal) import PrimerCore
 @_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerNetworking
-@_spi(PrimerInternal) import PrimerCore
 
 enum BackendDrivenCheckoutEndpoint {
     case manifest(environment: PrimerEnvironment)
@@ -30,9 +30,8 @@ extension BackendDrivenCheckoutEndpoint: Endpoint {
         switch self {
         case let .manifest(environment):"state-processor/v0/manifests/\(environment.rawValue.lowercased()).json"
         case .pay, .payWithToken: "client-session/\(PrimerAPIConfigurationModule.clientSessionId):pay"
-        case .setup: "client-session/\(PrimerAPIConfigurationModule.clientSessionId)/payment-method-setups"
-        case let .pollSetup(setupId):
-            "client-session/\(PrimerAPIConfigurationModule.clientSessionId)/payment-method-setups/\(setupId)"
+        case .setup: "/payment-method-setups"
+        case let .pollSetup(setupId): "/payment-method-setups/\(setupId)"
         case .expandClientSession: "client-session/\(PrimerAPIConfigurationModule.clientSessionId)"
         }
     }
@@ -59,9 +58,7 @@ extension BackendDrivenCheckoutEndpoint: Endpoint {
         case let .payWithToken(paymentInstrumentTokenId):
             return try? TokenPayBody(paymentInstrumentTokenId: paymentInstrumentTokenId).data()
         case let .setup(paymentMethod: method):
-            // TODO: Don't hardcode the flow
-            let body = SetupBody(flow: .checkout, paymentMethodConfigId: method.id)
-            return try? body.data()
+            return try? SetupBody(paymentMethodConfigId: method.id).data()
         case .pay:
             guard let paymentMethod, let options = paymentMethod.merchantOptions else { return nil }
             let body = PayBody(
