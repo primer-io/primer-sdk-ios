@@ -224,7 +224,7 @@ final class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
 // MARK: Drop-In
 extension StripeAchTokenizationViewModel: ACHUserDetailsDelegate {
     func restartSession() {
-        self.start()
+        start()
     }
 
     func didSubmit() {
@@ -308,11 +308,10 @@ extension StripeAchTokenizationViewModel {
             throw PrimerError.unableToPresentPaymentMethod(paymentMethodType: config.type, reason: message)
         }
 
-        let additionalInfo: ACHAdditionalInfo
-        if let viewController = stripeCollector {
-            additionalInfo = ACHBankAccountCollectorAdditionalInfo(collectorViewController: viewController)
+        let additionalInfo: ACHAdditionalInfo = if let viewController = stripeCollector {
+            ACHBankAccountCollectorAdditionalInfo(collectorViewController: viewController)
         } else {
-            additionalInfo = ACHMandateAdditionalInfo()
+            ACHMandateAdditionalInfo()
         }
 
         await PrimerDelegateProxy.primerDidReceiveAdditionalInfo(additionalInfo)

@@ -1,0 +1,192 @@
+//
+//  PaymentMethodsDefaults.swift
+//
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
+
+import SwiftUI
+@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerCore
+
+/// Default content for ``PrimerPaymentMethods``' slots. Section helpers return concrete view types
+/// so they can serve as `@ViewBuilder` default arguments.
+@available(iOS 15.0, *)
+public enum PaymentMethodsDefaults {
+
+  // `session` is accepted only to match the slot closure signature; the default header is static.
+  public static func header(_ session: PrimerSelectionSession) -> PaymentMethodsHeaderContent {
+    PaymentMethodsHeaderContent()
+  }
+
+  public static func method(
+    _ method: CheckoutPaymentMethod,
+    onSelect: @escaping () -> Void
+  ) -> PaymentMethodRowContent {
+    PaymentMethodRowContent(method: method, onSelect: onSelect)
+  }
+
+  public static func emptyState(_ session: PrimerSelectionSession) -> PaymentMethodsEmptyContent {
+    PaymentMethodsEmptyContent()
+  }
+
+  public static func unavailable() -> some View {
+    EmptyView()
+  }
+}
+
+/// Default content for ``PrimerVaultedPaymentMethods``' slots. The view AnyView-erases these slots,
+/// so the helpers return `some View` rather than concrete public types.
+@available(iOS 15.0, *)
+public enum VaultedPaymentMethodsDefaults {
+
+  /// Section title plus a "Show all" action opening the SDK's saved-methods screen, where the customer
+  /// can pick a different method or delete one. Without it an embedded list has no route to deletion.
+  public static func header(_ session: PrimerSelectionSession) -> some View {
+    VaultedDefaultHeader(session: session)
+  }
+
+  public static func item(
+    _ method: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod,
+    isSelected: Bool,
+    onSelect: @escaping () -> Void
+  ) -> some View {
+    VaultedMethodRowContent(method: method, isSelected: isSelected, onSelect: onSelect)
+  }
+
+  public static func submitButton(
+    isLoading: Bool,
+    isEnabled: Bool,
+    onSubmit: @escaping () -> Void
+  ) -> some View {
+    VaultedSubmitContent(isLoading: isLoading, isEnabled: isEnabled, onSubmit: onSubmit)
+  }
+
+  public static func unavailable() -> some View {
+    PaymentMethodsDefaults.unavailable()
+  }
+}
+
+// MARK: - Concrete default views
+
+@available(iOS 15.0, *)
+public struct PaymentMethodsHeaderContent: View {
+  @Environment(\.designTokens) private var tokens
+  public var body: some View {
+    Text(CheckoutComponentsStrings.choosePaymentMethod)
+      .primerTypography(.titleLarge, tokens: tokens)
+      .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
+      .frame(maxWidth: .infinity, alignment: .leading)
+      .accessibilityIdentifier(AccessibilityIdentifiers.PaymentSelection.header)
+      .accessibilityAddTraits(.isHeader)
+  }
+}
+
+@available(iOS 15.0, *)
+public struct PaymentMethodRowContent: View {
+  let method: CheckoutPaymentMethod
+  let onSelect: () -> Void
+  public var body: some View {
+    PaymentMethodButton(method: method, onSelect: onSelect)
+  }
+}
+
+@available(iOS 15.0, *)
+public struct PaymentMethodsEmptyContent: View {
+  @Environment(\.designTokens) private var tokens
+  public var body: some View {
+    VStack(spacing: PrimerSpacing.large(tokens: tokens)) {
+      Image(systemName: "creditcard.and.123")
+        .font(PrimerFont.largeIcon(tokens: tokens))
+        .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
+      Text(CheckoutComponentsStrings.noPaymentMethodsAvailable)
+        .primerTypography(.body, tokens: tokens)
+        .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
+    }
+    .frame(maxWidth: .infinity)
+  }
+}
+
+/// Reads `session.showAll` from a view body: the slot's default argument is a nonisolated closure and
+/// cannot touch the main-actor session directly.
+@available(iOS 15.0, *)
+private struct VaultedDefaultHeader: View {
+  let session: PrimerSelectionSession
+
+  var body: some View {
+    VaultedSectionHeader(onShowAll: session.showAll)
+  }
+}
+
+@available(iOS 15.0, *)
+private struct VaultedMethodRowContent: View {
+  let method: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod
+  let isSelected: Bool
+  let onSelect: () -> Void
+  @Environment(\.designTokens) private var tokens
+
+  // Falls back to the brand name when no masked value is available, so a row with sparse display data
+  // is never blank or unlabelled to VoiceOver.
+  private var label: String {
+    let displayData = method.displayData
+    return displayData.primaryValue ?? displayData.brandName
+  }
+
+  var body: some View {
+    Button(action: onSelect) {
+      HStack(spacing: PrimerSpacing.medium(tokens: tokens)) {
+        if let brandIcon = method.displayData.brandIcon {
+          Image(uiImage: brandIcon)
+            .resizable()
+            .scaledToFit()
+            .frame(width: PrimerSize.large(tokens: tokens), height: PrimerSize.large(tokens: tokens))
+        }
+        Text(label)
+          .primerTypography(.bodyLarge, tokens: tokens)
+          .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
+        Spacer()
+        if isSelected {
+          Image(systemName: "checkmark.circle.fill")
+            .foregroundColor(CheckoutColors.borderSelected(tokens: tokens))
+        }
+      }
+      .padding(PrimerSpacing.medium(tokens: tokens))
+      .frame(maxWidth: .infinity)
+      .overlay(
+        // The selected border, as on Android, so the selection does not rest on the checkmark alone.
+        RoundedRectangle(cornerRadius: PrimerRadius.medium(tokens: tokens))
+          .strokeBorder(
+            isSelected ? CheckoutColors.borderSelected(tokens: tokens) : CheckoutColors.borderDefault(tokens: tokens),
+            lineWidth: isSelected
+              ? PrimerBorderWidth.selected(tokens: tokens) : PrimerBorderWidth.standard(tokens: tokens))
+      )
+    }
+    .buttonStyle(PlainButtonStyle())
+    .accessibilityElement(children: .ignore)
+    .accessibilityIdentifier(
+      AccessibilityIdentifiers.PaymentSelection.vaultedPaymentMethodItem(method.id))
+    .accessibilityLabel(method.displayData.accessibilityLabel)
+    .accessibilityAddTraits(isSelected ? .isSelected : [])
+  }
+}
+
+@available(iOS 15.0, *)
+private struct VaultedSubmitContent: View {
+  let isLoading: Bool
+  let isEnabled: Bool
+  let onSubmit: () -> Void
+
+  var body: some View {
+    PrimerCheckoutButton(
+      CheckoutComponentsStrings.payButton,
+      isEnabled: isEnabled,
+      isLoading: isLoading,
+      accessibilityConfiguration: .submitButton(
+        identifier: AccessibilityIdentifiers.Vault.payButton,
+        title: CheckoutComponentsStrings.payButton,
+        isEnabled: isEnabled,
+        isLoading: isLoading
+      ),
+      action: onSubmit
+    )
+  }
+}

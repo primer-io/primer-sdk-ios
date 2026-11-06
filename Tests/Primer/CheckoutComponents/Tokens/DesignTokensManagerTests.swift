@@ -1,0 +1,1209 @@
+//
+//  DesignTokensManagerTests.swift
+//
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
+
+@testable import PrimerSDK
+import SwiftUI
+import XCTest
+@_spi(PrimerInternal) @testable import PrimerFoundation
+@_spi(PrimerInternal) @testable import PrimerCore
+
+@available(iOS 15.0, *)
+@MainActor
+final class DesignTokensManagerTests: XCTestCase {
+
+    private var sut: DesignTokensManager!
+
+    override func setUp() {
+        super.setUp()
+        sut = DesignTokensManager()
+    }
+
+    override func tearDown() {
+        sut = nil
+        super.tearDown()
+    }
+
+    // MARK: - Initial State
+
+    func test_init_tokensAreNil() {
+        XCTAssertNil(sut.tokens)
+    }
+
+    // MARK: - fetchTokens (Light Mode)
+
+    func test_fetchTokens_lightMode_loadsTokensSuccessfully() async throws {
+        // When
+        try await sut.fetchTokens(for: .light)
+
+        // Then
+        XCTAssertNotNil(sut.tokens)
+    }
+
+    func test_fetchTokens_lightMode_populatesAllTokenCategories() async throws {
+        // When
+        try await sut.fetchTokens(for: .light)
+
+        // Then
+        let tokens = try XCTUnwrap(sut.tokens)
+        XCTAssertNotNil(tokens.primerColorBackgroundPrimary)
+        XCTAssertNotNil(tokens.primerColorTextPrimary)
+        XCTAssertNotNil(tokens.primerRadiusMedium)
+        XCTAssertNotNil(tokens.primerSpaceMedium)
+        XCTAssertNotNil(tokens.primerSizeMedium)
+        XCTAssertNotNil(tokens.primerTypographyBodyMediumFont)
+        XCTAssertNotNil(tokens.primerColorBorderOutlinedDefault)
+        XCTAssertNotNil(tokens.primerColorBorderTransparentDefault)
+        XCTAssertNotNil(tokens.primerColorIconPrimary)
+        XCTAssertNotNil(tokens.primerColorGray000)
+        XCTAssertNotNil(tokens.primerColorBlue500)
+    }
+
+    // MARK: - fetchTokens (Dark Mode)
+
+    func test_fetchTokens_darkMode_loadsTokensSuccessfully() async throws {
+        // When
+        try await sut.fetchTokens(for: .dark)
+
+        // Then
+        XCTAssertNotNil(sut.tokens)
+    }
+
+    func test_fetchTokens_darkMode_populatesAllTokenCategories() async throws {
+        // When
+        try await sut.fetchTokens(for: .dark)
+
+        // Then
+        let tokens = try XCTUnwrap(sut.tokens)
+        XCTAssertNotNil(tokens.primerColorBackgroundPrimary)
+        XCTAssertNotNil(tokens.primerColorTextPrimary)
+        XCTAssertNotNil(tokens.primerRadiusMedium)
+        XCTAssertNotNil(tokens.primerSpaceMedium)
+        XCTAssertNotNil(tokens.primerSizeMedium)
+        XCTAssertNotNil(tokens.primerTypographyBodyMediumFont)
+    }
+
+    // MARK: - applyTheme
+
+    func test_applyTheme_noOverrides_tokensUnchanged() async throws {
+        // Given
+        let theme = PrimerCheckoutTheme()
+        sut.applyTheme(theme)
+
+        // When
+        try await sut.fetchTokens(for: .light)
+
+        // Then
+        let tokens = try XCTUnwrap(sut.tokens)
+        XCTAssertNotNil(tokens.primerColorBackgroundPrimary)
+        XCTAssertNotNil(tokens.primerRadiusMedium)
+        XCTAssertNotNil(tokens.primerSpaceMedium)
+        XCTAssertNotNil(tokens.primerSizeMedium)
+    }
+
+    // MARK: - Color Overrides
+
+    func test_applyTheme_brandColorOverride_appliedToTokens() async throws {
+        // Given
+        let customBrand = Color.purple
+        let theme = PrimerCheckoutTheme(
+            colors: ColorOverrides(primerColorBrand: customBrand)
+        )
+        sut.applyTheme(theme)
+
+        // When
+        try await sut.fetchTokens(for: .light)
+
+        // Then
+        let tokens = try XCTUnwrap(sut.tokens)
+        XCTAssertEqual(rgba(tokens.primerColorBrand), rgba(customBrand))
+    }
+
+    func test_applyTheme_semanticColorOverrides_appliedToTokens() async throws {
+        // Given
+        let theme = PrimerCheckoutTheme(
+            colors: ColorOverrides(
+                primerColorBackgroundPrimary: .white
+            )
+        )
+        sut.applyTheme(theme)
+
+        // When
+        try await sut.fetchTokens(for: .light)
+
+        // Then
+        let tokens = try XCTUnwrap(sut.tokens)
+        XCTAssertEqual(rgba(tokens.primerColorBackgroundPrimary), rgba(.white))
+    }
+
+    func test_applyTheme_textColorOverrides_appliedToTokens() async throws {
+        // Given
+        let customColor = Color.orange
+        let theme = PrimerCheckoutTheme(
+            colors: ColorOverrides(
+                primerColorTextPrimary: customColor,
+                primerColorTextSecondary: customColor,
+                primerColorTextPlaceholder: customColor,
+                primerColorTextDisabled: customColor,
+                primerColorTextNegative: customColor,
+                primerColorTextLink: customColor
+            )
+        )
+        sut.applyTheme(theme)
+
+        // When
+        try await sut.fetchTokens(for: .light)
+
+        // Then
+        let tokens = try XCTUnwrap(sut.tokens)
+        XCTAssertEqual(rgba(tokens.primerColorTextPrimary), rgba(customColor))
+        XCTAssertEqual(rgba(tokens.primerColorTextSecondary), rgba(customColor))
+        XCTAssertEqual(rgba(tokens.primerColorTextPlaceholder), rgba(customColor))
+        XCTAssertEqual(rgba(tokens.primerColorTextDisabled), rgba(customColor))
+        XCTAssertEqual(rgba(tokens.primerColorTextNegative), rgba(customColor))
+        XCTAssertEqual(rgba(tokens.primerColorTextLink), rgba(customColor))
+    }
+
+    func test_applyTheme_outlinedBorderColorOverrides_appliedToTokens() async throws {
+        // Given
+        let customColor = Color.cyan
+        let theme = PrimerCheckoutTheme(
+            colors: ColorOverrides(
+                primerColorBorderOutlinedDefault: customColor,
+                primerColorBorderOutlinedActive: customColor,
+                primerColorBorderOutlinedFocus: customColor,
+                primerColorBorderOutlinedDisabled: customColor,
+                primerColorBorderOutlinedError: customColor,
+                primerColorBorderOutlinedSelected: customColor,
+                primerColorBorderOutlinedLoading: customColor
+            )
+        )
+        sut.applyTheme(theme)
+
+        // When
+        try await sut.fetchTokens(for: .light)
+
+        // Then
+        let tokens = try XCTUnwrap(sut.tokens)
+        XCTAssertEqual(rgba(tokens.primerColorBorderOutlinedDefault), rgba(customColor))
+        XCTAssertEqual(rgba(tokens.primerColorBorderOutlinedActive), rgba(customColor))
+        XCTAssertEqual(rgba(tokens.primerColorBorderOutlinedFocus), rgba(customColor))
+        XCTAssertEqual(rgba(tokens.primerColorBorderOutlinedDisabled), rgba(customColor))
+        XCTAssertEqual(rgba(tokens.primerColorBorderOutlinedError), rgba(customColor))
+        XCTAssertEqual(rgba(tokens.primerColorBorderOutlinedSelected), rgba(customColor))
+        XCTAssertEqual(rgba(tokens.primerColorBorderOutlinedLoading), rgba(customColor))
+    }
+
+    func test_applyTheme_transparentBorderColorOverrides_appliedToTokens() async throws {
+        // Given
+        let customColor = Color.mint
+        let theme = PrimerCheckoutTheme(
+            colors: ColorOverrides(
+                primerColorBorderTransparentDefault: customColor,
+                primerColorBorderTransparentActive: customColor,
+                primerColorBorderTransparentFocus: customColor,
+                primerColorBorderTransparentDisabled: customColor,
+                primerColorBorderTransparentSelected: customColor
+            )
+        )
+        sut.applyTheme(theme)
+
+        // When
+        try await sut.fetchTokens(for: .light)
+
+        // Then
+        let tokens = try XCTUnwrap(sut.tokens)
+        XCTAssertEqual(rgba(tokens.primerColorBorderTransparentDefault), rgba(customColor))
+        XCTAssertEqual(rgba(tokens.primerColorBorderTransparentActive), rgba(customColor))
+        XCTAssertEqual(rgba(tokens.primerColorBorderTransparentFocus), rgba(customColor))
+        XCTAssertEqual(rgba(tokens.primerColorBorderTransparentDisabled), rgba(customColor))
+        XCTAssertEqual(rgba(tokens.primerColorBorderTransparentSelected), rgba(customColor))
+    }
+
+    func test_applyTheme_iconAndOtherColorOverrides_appliedToTokens() async throws {
+        // Given
+        let customColor = Color.yellow
+        let theme = PrimerCheckoutTheme(
+            colors: ColorOverrides(
+                primerColorIconPrimary: customColor,
+                primerColorIconDisabled: customColor,
+                primerColorIconNegative: customColor,
+                primerColorIconPositive: customColor,
+                primerColorFocus: customColor,
+                primerColorLoader: customColor
+            )
+        )
+        sut.applyTheme(theme)
+
+        // When
+        try await sut.fetchTokens(for: .light)
+
+        // Then
+        let tokens = try XCTUnwrap(sut.tokens)
+        XCTAssertEqual(rgba(tokens.primerColorIconPrimary), rgba(customColor))
+        XCTAssertEqual(rgba(tokens.primerColorIconDisabled), rgba(customColor))
+        XCTAssertEqual(rgba(tokens.primerColorIconNegative), rgba(customColor))
+        XCTAssertEqual(rgba(tokens.primerColorIconPositive), rgba(customColor))
+        XCTAssertEqual(rgba(tokens.primerColorFocus), rgba(customColor))
+        XCTAssertEqual(rgba(tokens.primerColorLoader), rgba(customColor))
+    }
+
+    // MARK: - Radius Overrides
+
+    func test_applyTheme_radiusOverrides_appliedToTokens() async throws {
+        // Given
+        let theme = PrimerCheckoutTheme(
+            radius: RadiusOverrides(
+                primerRadiusXsmall: 10,
+                primerRadiusSmall: 20,
+                primerRadiusMedium: 30,
+                primerRadiusLarge: 40
+            )
+        )
+        sut.applyTheme(theme)
+
+        // When
+        try await sut.fetchTokens(for: .light)
+
+        // Then
+        let tokens = try XCTUnwrap(sut.tokens)
+        XCTAssertEqual(tokens.primerRadiusXsmall, 10)
+        XCTAssertEqual(tokens.primerRadiusSmall, 20)
+        XCTAssertEqual(tokens.primerRadiusMedium, 30)
+        XCTAssertEqual(tokens.primerRadiusLarge, 40)
+    }
+
+    func test_applyTheme_partialRadiusOverride_onlyOverriddenTokensChanged() async throws {
+        // Given
+        let theme = PrimerCheckoutTheme(
+            radius: RadiusOverrides(primerRadiusMedium: 99)
+        )
+        sut.applyTheme(theme)
+
+        // When
+        try await sut.fetchTokens(for: .light)
+
+        // Then
+        let tokens = try XCTUnwrap(sut.tokens)
+        XCTAssertEqual(tokens.primerRadiusMedium, 99)
+        XCTAssertNotNil(tokens.primerRadiusSmall)
+        XCTAssertNotEqual(tokens.primerRadiusSmall, 99)
+    }
+
+    // MARK: - Spacing Overrides
+
+    func test_applyTheme_spacingOverrides_appliedToTokens() async throws {
+        // Given
+        let theme = PrimerCheckoutTheme(
+            spacing: SpacingOverrides(
+                primerSpaceXxsmall: 1,
+                primerSpaceXsmall: 2,
+                primerSpaceSmall: 3,
+                primerSpaceMedium: 4,
+                primerSpaceLarge: 5,
+                primerSpaceXlarge: 6,
+                primerSpaceXxlarge: 7
+            )
+        )
+        sut.applyTheme(theme)
+
+        // When
+        try await sut.fetchTokens(for: .light)
+
+        // Then
+        let tokens = try XCTUnwrap(sut.tokens)
+        XCTAssertEqual(tokens.primerSpaceXxsmall, 1)
+        XCTAssertEqual(tokens.primerSpaceXsmall, 2)
+        XCTAssertEqual(tokens.primerSpaceSmall, 3)
+        XCTAssertEqual(tokens.primerSpaceMedium, 4)
+        XCTAssertEqual(tokens.primerSpaceLarge, 5)
+        XCTAssertEqual(tokens.primerSpaceXlarge, 6)
+        XCTAssertEqual(tokens.primerSpaceXxlarge, 7)
+    }
+
+    // MARK: - Size Overrides
+
+    func test_applyTheme_sizeOverrides_appliedToTokens() async throws {
+        // Given
+        let theme = PrimerCheckoutTheme(
+            sizes: SizeOverrides(
+                primerSizeSmall: 10,
+                primerSizeMedium: 20,
+                primerSizeLarge: 30,
+                primerSizeXlarge: 40,
+                primerSizeXxlarge: 50,
+                primerSizeXxxlarge: 60
+            )
+        )
+        sut.applyTheme(theme)
+
+        // When
+        try await sut.fetchTokens(for: .light)
+
+        // Then
+        let tokens = try XCTUnwrap(sut.tokens)
+        XCTAssertEqual(tokens.primerSizeSmall, 10)
+        XCTAssertEqual(tokens.primerSizeMedium, 20)
+        XCTAssertEqual(tokens.primerSizeLarge, 30)
+        XCTAssertEqual(tokens.primerSizeXlarge, 40)
+        XCTAssertEqual(tokens.primerSizeXxlarge, 50)
+        XCTAssertEqual(tokens.primerSizeXxxlarge, 60)
+    }
+
+    // MARK: - Typography Overrides
+
+    func test_applyTheme_titleXlargeTypographyOverride_appliedToTokens() async throws {
+        // Given
+        let theme = PrimerCheckoutTheme(
+            typography: TypographyOverrides(
+                titleXlarge: .init(
+                    font: "Helvetica",
+                    letterSpacing: -1.0,
+                    weight: .bold,
+                    size: 32,
+                    lineHeight: 40
+                )
+            )
+        )
+        sut.applyTheme(theme)
+
+        // When
+        try await sut.fetchTokens(for: .light)
+
+        // Then
+        let tokens = try XCTUnwrap(sut.tokens)
+        XCTAssertEqual(tokens.primerTypographyTitleXlargeFont, "Helvetica")
+        XCTAssertEqual(tokens.primerTypographyTitleXlargeLetterSpacing, -1.0)
+        XCTAssertEqual(tokens.primerTypographyTitleXlargeWeight, 700)
+        XCTAssertEqual(tokens.primerTypographyTitleXlargeSize, 32)
+        XCTAssertEqual(tokens.primerTypographyTitleXlargeLineHeight, 40)
+    }
+
+    func test_applyTheme_titleLargeTypographyOverride_appliedToTokens() async throws {
+        // Given
+        let theme = PrimerCheckoutTheme(
+            typography: TypographyOverrides(
+                titleLarge: .init(
+                    font: "Menlo",
+                    letterSpacing: 0.5,
+                    weight: .semibold,
+                    size: 20,
+                    lineHeight: 28
+                )
+            )
+        )
+        sut.applyTheme(theme)
+
+        // When
+        try await sut.fetchTokens(for: .light)
+
+        // Then
+        let tokens = try XCTUnwrap(sut.tokens)
+        XCTAssertEqual(tokens.primerTypographyTitleLargeFont, "Menlo")
+        XCTAssertEqual(tokens.primerTypographyTitleLargeLetterSpacing, 0.5)
+        XCTAssertEqual(tokens.primerTypographyTitleLargeWeight, 600)
+        XCTAssertEqual(tokens.primerTypographyTitleLargeSize, 20)
+        XCTAssertEqual(tokens.primerTypographyTitleLargeLineHeight, 28)
+    }
+
+    func test_applyTheme_bodyLargeTypographyOverride_appliedToTokens() async throws {
+        // Given
+        let theme = PrimerCheckoutTheme(
+            typography: TypographyOverrides(
+                bodyLarge: .init(
+                    font: "Georgia",
+                    letterSpacing: 0,
+                    weight: .regular,
+                    size: 18,
+                    lineHeight: 24
+                )
+            )
+        )
+        sut.applyTheme(theme)
+
+        // When
+        try await sut.fetchTokens(for: .light)
+
+        // Then
+        let tokens = try XCTUnwrap(sut.tokens)
+        XCTAssertEqual(tokens.primerTypographyBodyLargeFont, "Georgia")
+        XCTAssertEqual(tokens.primerTypographyBodyLargeLetterSpacing, 0)
+        XCTAssertEqual(tokens.primerTypographyBodyLargeWeight, 400)
+        XCTAssertEqual(tokens.primerTypographyBodyLargeSize, 18)
+        XCTAssertEqual(tokens.primerTypographyBodyLargeLineHeight, 24)
+    }
+
+    func test_applyTheme_bodyMediumTypographyOverride_appliedToTokens() async throws {
+        // Given
+        let theme = PrimerCheckoutTheme(
+            typography: TypographyOverrides(
+                bodyMedium: .init(
+                    font: "Courier",
+                    letterSpacing: 0.2,
+                    weight: .medium,
+                    size: 15,
+                    lineHeight: 22
+                )
+            )
+        )
+        sut.applyTheme(theme)
+
+        // When
+        try await sut.fetchTokens(for: .light)
+
+        // Then
+        let tokens = try XCTUnwrap(sut.tokens)
+        XCTAssertEqual(tokens.primerTypographyBodyMediumFont, "Courier")
+        XCTAssertEqual(tokens.primerTypographyBodyMediumLetterSpacing, 0.2)
+        XCTAssertEqual(tokens.primerTypographyBodyMediumWeight, 500)
+        XCTAssertEqual(tokens.primerTypographyBodyMediumSize, 15)
+        XCTAssertEqual(tokens.primerTypographyBodyMediumLineHeight, 22)
+    }
+
+    func test_applyTheme_bodySmallTypographyOverride_appliedToTokens() async throws {
+        // Given
+        let theme = PrimerCheckoutTheme(
+            typography: TypographyOverrides(
+                bodySmall: .init(
+                    font: "Arial",
+                    letterSpacing: 0.1,
+                    weight: .light,
+                    size: 11,
+                    lineHeight: 14
+                )
+            )
+        )
+        sut.applyTheme(theme)
+
+        // When
+        try await sut.fetchTokens(for: .light)
+
+        // Then
+        let tokens = try XCTUnwrap(sut.tokens)
+        XCTAssertEqual(tokens.primerTypographyBodySmallFont, "Arial")
+        XCTAssertEqual(tokens.primerTypographyBodySmallLetterSpacing, 0.1)
+        XCTAssertEqual(tokens.primerTypographyBodySmallWeight, 300)
+        XCTAssertEqual(tokens.primerTypographyBodySmallSize, 11)
+        XCTAssertEqual(tokens.primerTypographyBodySmallLineHeight, 14)
+    }
+
+    func test_applyTheme_partialTypographyOverride_onlySpecifiedFieldsChanged() async throws {
+        // Given
+        let theme = PrimerCheckoutTheme(
+            typography: TypographyOverrides(
+                titleXlarge: .init(font: "Custom", size: 50)
+            )
+        )
+        sut.applyTheme(theme)
+
+        // When
+        try await sut.fetchTokens(for: .light)
+
+        // Then
+        let tokens = try XCTUnwrap(sut.tokens)
+        XCTAssertEqual(tokens.primerTypographyTitleXlargeFont, "Custom")
+        XCTAssertEqual(tokens.primerTypographyTitleXlargeSize, 50)
+        // Other typography fields should retain their loaded values
+        XCTAssertNotNil(tokens.primerTypographyTitleXlargeWeight)
+        XCTAssertNotNil(tokens.primerTypographyTitleXlargeLetterSpacing)
+        XCTAssertNotNil(tokens.primerTypographyTitleXlargeLineHeight)
+    }
+
+    // MARK: - Font Weight Conversion
+
+    func test_applyTheme_allFontWeights_convertedCorrectly() async throws {
+        // Given
+        let weights: [(Font.Weight, CGFloat)] = [
+            (.ultraLight, 100),
+            (.thin, 200),
+            (.light, 300),
+            (.regular, 400),
+            (.medium, 500),
+            (.semibold, 600),
+            (.bold, 700),
+            (.heavy, 800),
+            (.black, 900),
+        ]
+
+        for (weight, expectedCGFloat) in weights {
+            let manager = DesignTokensManager()
+            let theme = PrimerCheckoutTheme(
+                typography: TypographyOverrides(
+                    titleXlarge: .init(weight: weight)
+                )
+            )
+            manager.applyTheme(theme)
+
+            // When
+            try await manager.fetchTokens(for: .light)
+
+            // Then
+            let tokens = try XCTUnwrap(manager.tokens)
+            XCTAssertEqual(
+                tokens.primerTypographyTitleXlargeWeight, expectedCGFloat,
+                "Weight \(weight) should convert to \(expectedCGFloat)"
+            )
+        }
+    }
+
+    // MARK: - Brand Font
+
+    func test_applyTheme_brandFont_appliedToEveryTextStyle() async throws {
+        // Given
+        sut.applyTheme(PrimerCheckoutTheme(typography: TypographyOverrides(brand: "Georgia")))
+
+        // When
+        try await sut.fetchTokens(for: .light)
+
+        // Then
+        let tokens = try XCTUnwrap(sut.tokens)
+        XCTAssertEqual(tokens.primerTypographyBrand, "Georgia")
+        XCTAssertEqual(tokens.primerTypographyTitleXlargeFont, "Georgia")
+        XCTAssertEqual(tokens.primerTypographyTitleLargeFont, "Georgia")
+        XCTAssertEqual(tokens.primerTypographyBodyLargeFont, "Georgia")
+        XCTAssertEqual(tokens.primerTypographyBodyMediumFont, "Georgia")
+        XCTAssertEqual(tokens.primerTypographyBodySmallFont, "Georgia")
+        XCTAssertEqual(tokens.primerTypographyErrorFont, "Georgia")
+    }
+
+    func test_applyTheme_perStyleFont_winsOverBrandFont() async throws {
+        // Given
+        sut.applyTheme(PrimerCheckoutTheme(
+            typography: TypographyOverrides(brand: "Georgia", bodyMedium: .init(font: "Menlo"))
+        ))
+
+        // When
+        try await sut.fetchTokens(for: .light)
+
+        // Then
+        let tokens = try XCTUnwrap(sut.tokens)
+        XCTAssertEqual(tokens.primerTypographyBodyMediumFont, "Menlo")
+        XCTAssertEqual(tokens.primerTypographyBodyLargeFont, "Georgia")
+    }
+
+    func test_fetchTokens_noTypographyOverride_everyTextStyleStaysInter() async throws {
+        // When
+        try await sut.fetchTokens(for: .light)
+
+        // Then
+        let tokens = try XCTUnwrap(sut.tokens)
+        XCTAssertEqual(tokens.primerTypographyBrand, "Inter")
+        XCTAssertEqual(tokens.primerTypographyTitleXlargeFont, "Inter")
+        XCTAssertEqual(tokens.primerTypographyTitleLargeFont, "Inter")
+        XCTAssertEqual(tokens.primerTypographyBodyLargeFont, "Inter")
+        XCTAssertEqual(tokens.primerTypographyBodyMediumFont, "Inter")
+        XCTAssertEqual(tokens.primerTypographyBodySmallFont, "Inter")
+        XCTAssertEqual(tokens.primerTypographyErrorFont, "Inter")
+    }
+
+    func test_applyTheme_brandFontUsingTokenSyntax_isIgnoredAndEveryOtherOverrideStillApplies() async throws {
+        // A hex, a reference and an arithmetic expression are the three shapes the token passes rewrite.
+        for badValue in ["#ff0000", "{primer.size.base}", "8-2"] {
+            // Given
+            let manager = DesignTokensManager()
+            manager.applyTheme(PrimerCheckoutTheme(
+                colors: ColorOverrides(primerColorBrand: .purple),
+                radius: RadiusOverrides(primerRadiusMedium: 30),
+                typography: TypographyOverrides(brand: badValue)
+            ))
+
+            // When
+            try await manager.fetchTokens(for: .light)
+
+            // Then
+            let tokens = try XCTUnwrap(manager.tokens, "'\(badValue)' discarded the whole token set")
+            XCTAssertEqual(rgba(tokens.primerColorBrand), rgba(.purple), "'\(badValue)' discarded the color override")
+            XCTAssertEqual(tokens.primerRadiusMedium, 30, "'\(badValue)' discarded the radius override")
+            XCTAssertEqual(tokens.primerTypographyBrand, "Inter")
+            XCTAssertEqual(tokens.primerTypographyBodyMediumFont, "Inter")
+        }
+    }
+
+    // MARK: - Combined Overrides
+
+    func test_applyTheme_allOverrideCategories_appliedTogether() async throws {
+        // Given
+        let theme = PrimerCheckoutTheme(
+            colors: ColorOverrides(primerColorBrand: .red),
+            radius: RadiusOverrides(primerRadiusMedium: 16),
+            spacing: SpacingOverrides(primerSpaceLarge: 24),
+            sizes: SizeOverrides(primerSizeXlarge: 48),
+            typography: TypographyOverrides(
+                bodySmall: .init(font: "Verdana", size: 10)
+            )
+        )
+        sut.applyTheme(theme)
+
+        // When
+        try await sut.fetchTokens(for: .light)
+
+        // Then
+        let tokens = try XCTUnwrap(sut.tokens)
+        XCTAssertEqual(rgba(tokens.primerColorBrand), rgba(.red))
+        XCTAssertEqual(tokens.primerRadiusMedium, 16)
+        XCTAssertEqual(tokens.primerSpaceLarge, 24)
+        XCTAssertEqual(tokens.primerSizeXlarge, 48)
+        XCTAssertEqual(tokens.primerTypographyBodySmallFont, "Verdana")
+        XCTAssertEqual(tokens.primerTypographyBodySmallSize, 10)
+    }
+
+    // MARK: - Theme Applied Before and After Fetch
+
+    func test_applyTheme_appliedBeforeFetch_overridesApplied() async throws {
+        // Given
+        sut.applyTheme(PrimerCheckoutTheme(
+            radius: RadiusOverrides(primerRadiusLarge: 100)
+        ))
+
+        // When
+        try await sut.fetchTokens(for: .light)
+
+        // Then
+        XCTAssertEqual(sut.tokens?.primerRadiusLarge, 100)
+    }
+
+    func test_applyTheme_appliedThenFetchedMultipleTimes_overridesPersist() async throws {
+        // Given
+        sut.applyTheme(PrimerCheckoutTheme(
+            spacing: SpacingOverrides(primerSpaceSmall: 10)
+        ))
+
+        // When
+        try await sut.fetchTokens(for: .light)
+        let firstLoad = sut.tokens?.primerSpaceSmall
+
+        try await sut.fetchTokens(for: .dark)
+        let secondLoad = sut.tokens?.primerSpaceSmall
+
+        // Then
+        XCTAssertEqual(firstLoad, 10)
+        XCTAssertEqual(secondLoad, 10)
+    }
+
+    // MARK: - Theme Replacement
+
+    func test_applyTheme_calledTwice_secondThemeOverwritesFirst() async throws {
+        // Given
+        sut.applyTheme(PrimerCheckoutTheme(
+            radius: RadiusOverrides(primerRadiusMedium: 50)
+        ))
+        sut.applyTheme(PrimerCheckoutTheme(
+            radius: RadiusOverrides(primerRadiusMedium: 75)
+        ))
+
+        // When
+        try await sut.fetchTokens(for: .light)
+
+        // Then
+        XCTAssertEqual(sut.tokens?.primerRadiusMedium, 75)
+    }
+
+    // MARK: - Nil Overrides Do Not Affect Tokens
+
+    func test_applyTheme_nilColorOverrides_tokensRetainLoadedValues() async throws {
+        // Given
+        let theme = PrimerCheckoutTheme(
+            colors: ColorOverrides()
+        )
+        sut.applyTheme(theme)
+
+        // When
+        try await sut.fetchTokens(for: .light)
+
+        // Then
+        let tokens = try XCTUnwrap(sut.tokens)
+        XCTAssertNotNil(tokens.primerColorBrand)
+        XCTAssertNotNil(tokens.primerColorBackgroundPrimary)
+        XCTAssertNotNil(tokens.primerColorTextPrimary)
+    }
+
+    func test_applyTheme_nilRadiusOverrides_tokensRetainLoadedValues() async throws {
+        // Given
+        let theme = PrimerCheckoutTheme(
+            radius: RadiusOverrides()
+        )
+        sut.applyTheme(theme)
+
+        // When
+        try await sut.fetchTokens(for: .light)
+
+        // Then
+        let tokens = try XCTUnwrap(sut.tokens)
+        XCTAssertNotNil(tokens.primerRadiusMedium)
+        XCTAssertNotNil(tokens.primerRadiusSmall)
+    }
+
+    // MARK: - Dark Mode with Overrides
+
+    func test_applyTheme_darkModeWithOverrides_overridesAppliedOnDarkBase() async throws {
+        // Given a dark set, which is the only thing dark mode reads
+        let customColor = Color.pink
+        let theme = PrimerCheckoutTheme(
+            darkColors: ColorOverrides(primerColorBrand: customColor)
+        )
+        sut.applyTheme(theme)
+
+        // When
+        try await sut.fetchTokens(for: .dark)
+
+        // Then
+        let tokens = try XCTUnwrap(sut.tokens)
+        XCTAssertEqual(rgba(tokens.primerColorBrand, .dark), rgba(customColor, .dark))
+    }
+
+    // MARK: - Light and Dark Colour Sets
+
+    func test_applyTheme_lightColoursOnly_doNotReachDarkMode() async throws {
+        // Given the single colors parameter every existing integration passes
+        let shippedDarkBrand = try await tokens(for: .dark).primerColorBrand
+        sut.applyTheme(PrimerCheckoutTheme(colors: ColorOverrides(primerColorBrand: .pink)))
+
+        // When both schemes are loaded
+        try await sut.fetchTokens(for: .light)
+        let light = try XCTUnwrap(sut.tokens?.primerColorBrand)
+        try await sut.fetchTokens(for: .dark)
+        let dark = try XCTUnwrap(sut.tokens?.primerColorBrand)
+
+        // Then light takes the color and dark keeps Primer's designed default
+        XCTAssertEqual(rgba(light), rgba(.pink))
+        XCTAssertEqual(dark, shippedDarkBrand)
+    }
+
+    func test_applyTheme_darkColours_winInDarkModeAndDoNotBorrowFromLight() async throws {
+        // Given a dark set that names the brand and says nothing about the text color
+        let shippedDarkText = try await tokens(for: .dark).primerColorTextPrimary
+        sut.applyTheme(
+            PrimerCheckoutTheme(
+                colors: ColorOverrides(primerColorBrand: .pink, primerColorTextPrimary: .green),
+                darkColors: ColorOverrides(primerColorBrand: .blue)
+            )
+        )
+
+        // When both schemes are loaded
+        try await sut.fetchTokens(for: .light)
+        let lightBrand = try XCTUnwrap(sut.tokens?.primerColorBrand)
+        let lightText = try XCTUnwrap(sut.tokens?.primerColorTextPrimary)
+        try await sut.fetchTokens(for: .dark)
+        let dark = try XCTUnwrap(sut.tokens)
+
+        // Then light ignores the dark set, and dark takes what it names plus Primer's dark defaults
+        XCTAssertEqual(rgba(lightBrand), rgba(.pink))
+        XCTAssertEqual(rgba(lightText), rgba(.green))
+        XCTAssertEqual(rgba(dark.primerColorBrand, .dark), rgba(.blue, .dark))
+        XCTAssertEqual(dark.primerColorTextPrimary, shippedDarkText)
+    }
+
+    func test_applyTheme_noColourOverrides_matchesAnUnthemedLoad() async throws {
+        // Given a theme that names no colors at all
+        sut.applyTheme(PrimerCheckoutTheme())
+
+        // When
+        try await sut.fetchTokens(for: .dark)
+        let loaded = try XCTUnwrap(sut.tokens)
+        let unthemed = try DesignTokensManager.makeTokens(for: .dark)
+
+        // Then every color token equals an unthemed dark load, so the resolution costs nothing
+        let themed = colorTokens(of: loaded)
+        XCTAssertFalse(themed.isEmpty)
+        XCTAssertEqual(themed, colorTokens(of: unthemed))
+    }
+
+    func test_applyTheme_darkColoursOnly_leaveLightModeAlone() async throws {
+        // Given a dark set with no light set beside it
+        let shippedBrand = try await tokens(for: .light).primerColorBrand
+        sut.applyTheme(PrimerCheckoutTheme(darkColors: ColorOverrides(primerColorBrand: .blue)))
+
+        // When both schemes are loaded
+        try await sut.fetchTokens(for: .light)
+        let light = try XCTUnwrap(sut.tokens?.primerColorBrand)
+        try await sut.fetchTokens(for: .dark)
+        let dark = try XCTUnwrap(sut.tokens?.primerColorBrand)
+
+        // Then light keeps the shipped color and only dark moves
+        XCTAssertEqual(light, shippedBrand)
+        XCTAssertEqual(rgba(dark, .dark), rgba(.blue, .dark))
+    }
+
+    private func colorTokens(of tokens: DesignTokens) -> [String: Color] {
+        Mirror(reflecting: tokens).children.reduce(into: [String: Color]()) { result, child in
+            guard let label = child.label, label.hasPrefix("primerColor"),
+                  let color = child.value as? Color else { return }
+            result[label] = color
+        }
+    }
+
+    // MARK: - Brand Override Cascade
+
+    func test_fetchTokens_brandOverride_cascadesIntoTokensThatAliasIt() async throws {
+        // Given border.outlined.selected aliases color.brand in the token JSON
+        let baseline = try await tokens(for: .light)
+        let unthemedBorder = try XCTUnwrap(baseline.primerColorBorderOutlinedSelected)
+
+        // Components chosen to survive the getRed round-trip exactly.
+        let override = Color(red: 0.25, green: 0.5, blue: 0.75)
+        sut.applyTheme(PrimerCheckoutTheme(colors: ColorOverrides(primerColorBrand: override)))
+
+        // When
+        try await sut.fetchTokens(for: .light)
+
+        // Then the border holds the overridden value, not merely a different one.
+        let themed = try XCTUnwrap(sut.tokens)
+        XCTAssertNotEqual(themed.primerColorBorderOutlinedSelected, unthemedBorder)
+        XCTAssertEqual(
+            themed.primerColorBorderOutlinedSelected,
+            Color(red: 0.25, green: 0.5, blue: 0.75, opacity: 1))
+    }
+
+    func test_fetchTokens_aliasOverride_winsOverBrandOverride() async throws {
+        // Given both the brand color and the token that aliases it are overridden
+        sut.applyTheme(
+            PrimerCheckoutTheme(
+                colors: ColorOverrides(
+                    primerColorBrand: .pink,
+                    primerColorBorderOutlinedSelected: .green
+                )
+            )
+        )
+
+        // When
+        try await sut.fetchTokens(for: .light)
+
+        // Then
+        let tokens = try XCTUnwrap(sut.tokens)
+        XCTAssertEqual(rgba(tokens.primerColorBorderOutlinedSelected), rgba(.green))
+        XCTAssertEqual(rgba(tokens.primerColorBrand), rgba(.pink))
+    }
+
+    func test_fetchTokens_noOverrides_brandInjectionIsANoOp() async throws {
+        // Given
+        let withoutTheme = try await tokens(for: .light)
+
+        // When
+        sut.applyTheme(PrimerCheckoutTheme())
+        try await sut.fetchTokens(for: .light)
+
+        // Then
+        let withEmptyTheme = try XCTUnwrap(sut.tokens)
+        XCTAssertEqual(withEmptyTheme.primerColorBorderOutlinedSelected, withoutTheme.primerColorBorderOutlinedSelected)
+        XCTAssertEqual(withEmptyTheme.primerColorBackgroundPrimary, withoutTheme.primerColorBackgroundPrimary)
+        XCTAssertEqual(withEmptyTheme.primerColorBrand, withoutTheme.primerColorBrand)
+    }
+
+    func test_fetchTokens_brandOverride_cascadesInDarkMode() async throws {
+        // Given a dark set, since dark mode no longer borrows from the light one
+        let baseline = try await tokens(for: .dark)
+        let unthemedBorder = try XCTUnwrap(baseline.primerColorBorderOutlinedSelected)
+
+        let override = Color(red: 0.25, green: 0.5, blue: 0.75)
+        sut.applyTheme(PrimerCheckoutTheme(darkColors: ColorOverrides(primerColorBrand: override)))
+
+        // When
+        try await sut.fetchTokens(for: .dark)
+
+        // Then
+        let themed = try XCTUnwrap(sut.tokens)
+        XCTAssertNotEqual(themed.primerColorBorderOutlinedSelected, unthemedBorder)
+        XCTAssertEqual(
+            themed.primerColorBorderOutlinedSelected,
+            Color(red: 0.25, green: 0.5, blue: 0.75, opacity: 1))
+    }
+
+    // MARK: - Width overrides
+
+    func test_applyTheme_widthOverrides_appliedToTokens() async throws {
+        // Given
+        let theme = PrimerCheckoutTheme(
+            width: WidthOverrides(
+                primerWidthDefault: 3,
+                primerWidthFocus: 5,
+                primerWidthError: 7
+            )
+        )
+        sut.applyTheme(theme)
+
+        // When
+        try await sut.fetchTokens(for: .light)
+
+        // Then
+        let tokens = try XCTUnwrap(sut.tokens)
+        XCTAssertEqual(tokens.primerWidthDefault, 3)
+        XCTAssertEqual(tokens.primerWidthFocus, 5)
+        XCTAssertEqual(tokens.primerWidthError, 7)
+    }
+
+    func test_widthTokens_defaultToDesignValues() async throws {
+        // When no override is applied
+        let tokens = try await tokens(for: .light)
+
+        // Then the values match the design tokens: 1 at rest, 2 for focus and error
+        XCTAssertEqual(tokens.primerWidthDefault, 1)
+        XCTAssertEqual(tokens.primerWidthFocus, 2)
+        XCTAssertEqual(tokens.primerWidthSelected, 2)
+        XCTAssertEqual(tokens.primerWidthError, 2)
+    }
+
+    func test_borderWidthHelper_readsTheMatchingToken() async throws {
+        // Given each width token is overridden with a distinct value
+        sut.applyTheme(
+            PrimerCheckoutTheme(
+                width: WidthOverrides(
+                    primerWidthDefault: 3,
+                    primerWidthFocus: 5,
+                    primerWidthError: 7,
+                    primerWidthSelected: 9)))
+
+        // When
+        try await sut.fetchTokens(for: .light)
+
+        // Then the helper each renderer calls resolves to its own token
+        let tokens = try XCTUnwrap(sut.tokens)
+        XCTAssertEqual(PrimerBorderWidth.standard(tokens: tokens), 3)
+        XCTAssertEqual(PrimerBorderWidth.focused(tokens: tokens), 5)
+        XCTAssertEqual(PrimerBorderWidth.error(tokens: tokens), 7)
+        XCTAssertEqual(PrimerBorderWidth.selected(tokens: tokens), 9)
+    }
+
+    // MARK: - Error typography
+
+    func test_applyTheme_errorTypographyOverride_doesNotMoveBodySmall() async throws {
+        // Given only the error style is overridden
+        sut.applyTheme(
+            PrimerCheckoutTheme(
+                typography: TypographyOverrides(error: .init(size: 20))))
+
+        // When
+        try await sut.fetchTokens(for: .light)
+
+        // Then error moves and the body-small label it used to share stays put
+        let tokens = try XCTUnwrap(sut.tokens)
+        XCTAssertEqual(tokens.primerTypographyErrorSize, 20)
+        XCTAssertEqual(tokens.primerTypographyBodySmallSize, 12)
+    }
+
+    func test_errorTypography_defaultsToBodySmall() async throws {
+        // When nothing is overridden
+        let tokens = try await tokens(for: .light)
+
+        // Then error carries the body-small values, so nothing looks different out of the box
+        XCTAssertEqual(tokens.primerTypographyErrorSize, tokens.primerTypographyBodySmallSize)
+        XCTAssertEqual(tokens.primerTypographyErrorWeight, tokens.primerTypographyBodySmallWeight)
+        XCTAssertEqual(tokens.primerTypographyErrorLineHeight, tokens.primerTypographyBodySmallLineHeight)
+    }
+
+    func test_applyTheme_bodySmallOverride_carriesOntoErrorText() async throws {
+        // Given only body small is overridden
+        sut.applyTheme(
+            PrimerCheckoutTheme(
+                typography: TypographyOverrides(bodySmall: .init(size: 14, lineHeight: 18))))
+
+        // When
+        try await sut.fetchTokens(for: .light)
+
+        // Then the error line under the field grows with the label above it
+        let tokens = try XCTUnwrap(sut.tokens)
+        XCTAssertEqual(tokens.primerTypographyBodySmallSize, 14)
+        XCTAssertEqual(tokens.primerTypographyErrorSize, 14)
+        XCTAssertEqual(tokens.primerTypographyErrorLineHeight, 18)
+    }
+
+    func test_applyTheme_errorOverride_winsOverTheBodySmallItInherits() async throws {
+        // Given both are overridden
+        sut.applyTheme(
+            PrimerCheckoutTheme(
+                typography: TypographyOverrides(
+                    bodySmall: .init(size: 14, lineHeight: 18),
+                    error: .init(size: 10))))
+
+        // When
+        try await sut.fetchTokens(for: .light)
+
+        // Then error takes what it names and inherits the rest, so the link is one way
+        let tokens = try XCTUnwrap(sut.tokens)
+        XCTAssertEqual(tokens.primerTypographyErrorSize, 10)
+        XCTAssertEqual(tokens.primerTypographyErrorLineHeight, 18)
+    }
+
+    func test_applyTheme_bodySmallFontOverride_carriesOntoErrorText() async throws {
+        // Given body small names its own typeface
+        sut.applyTheme(
+            PrimerCheckoutTheme(typography: TypographyOverrides(bodySmall: .init(font: "Georgia"))))
+
+        // When
+        try await sut.fetchTokens(for: .light)
+
+        // Then the error text follows it
+        let tokens = try XCTUnwrap(sut.tokens)
+        XCTAssertEqual(tokens.primerTypographyBodySmallFont, "Georgia")
+        XCTAssertEqual(tokens.primerTypographyErrorFont, "Georgia")
+    }
+
+    // MARK: - Token file coverage
+
+    func test_baseTokenFile_everyColourLeafHasAMatchingTokenProperty() throws {
+        // Given the shipped light token file, loaded the way production loads it
+        let dict = try DesignTokensManager.loadJSON(named: "base")
+
+        // When it is flattened the way production does
+        let flat = DesignTokensProcessor.flattenTokenDictionary(
+            DesignTokensProcessor.convertHexColors(in: dict))
+
+        // Then every color leaf has somewhere to land, so none is silently dropped
+        let declared = Set(Mirror(reflecting: DesignTokens()).children.compactMap(\.label))
+        let missing = flat.keys.filter { $0.hasPrefix("primerColor") && !declared.contains($0) }.sorted()
+        XCTAssertTrue(missing.isEmpty, "base.json color tokens with no DesignTokens property: \(missing)")
+    }
+
+    private func tokens(for colorScheme: ColorScheme) async throws -> DesignTokens {
+        let manager = DesignTokensManager()
+        try await manager.fetchTokens(for: colorScheme)
+        return try XCTUnwrap(manager.tokens)
+    }
+
+    // MARK: - Input Token Inheritance
+
+    func test_applyTheme_backgroundOverrideAlone_carriesIntoTheInputFill() async throws {
+        // Given only the sheet color is overridden
+        sut.applyTheme(PrimerCheckoutTheme(colors: ColorOverrides(primerColorBackgroundPrimary: .pink)))
+
+        // When
+        try await sut.fetchTokens(for: .light)
+
+        // Then the input fill follows it, as it did before the tokens were split
+        let tokens = try XCTUnwrap(sut.tokens)
+        XCTAssertEqual(rgba(tokens.primerColorBackgroundPrimary), rgba(.pink))
+        XCTAssertEqual(rgba(tokens.primerColorBackgroundOutlinedDefault), rgba(.pink))
+    }
+
+    func test_applyTheme_textOverrideAlone_carriesIntoTheInputText() async throws {
+        // Given
+        sut.applyTheme(PrimerCheckoutTheme(colors: ColorOverrides(primerColorTextPrimary: .pink)))
+
+        // When
+        try await sut.fetchTokens(for: .light)
+
+        // Then
+        let tokens = try XCTUnwrap(sut.tokens)
+        XCTAssertEqual(rgba(tokens.primerColorTextOutlinedDefault), rgba(.pink))
+    }
+
+    func test_applyTheme_explicitInputColour_winsOverTheInheritedOne() async throws {
+        // Given both are named
+        sut.applyTheme(
+            PrimerCheckoutTheme(
+                colors: ColorOverrides(
+                    primerColorBackgroundPrimary: .pink,
+                    primerColorBackgroundOutlinedDefault: .green
+                )
+            )
+        )
+
+        // When
+        try await sut.fetchTokens(for: .light)
+
+        // Then
+        let tokens = try XCTUnwrap(sut.tokens)
+        XCTAssertEqual(rgba(tokens.primerColorBackgroundPrimary), rgba(.pink))
+        XCTAssertEqual(rgba(tokens.primerColorBackgroundOutlinedDefault), rgba(.green))
+    }
+
+    // MARK: - On-brand label
+
+    func test_onBrand_unset_followsTheSheetColourPerMode() async throws {
+        // Given no theme
+        let light = try await tokens(for: .light)
+        let dark = try await tokens(for: .dark)
+
+        // Then the label on a brand-filled button takes the sheet colour of each mode
+        XCTAssertEqual(CheckoutColors.onBrand(tokens: light), light.primerColorBackgroundPrimary)
+        XCTAssertEqual(CheckoutColors.onBrand(tokens: dark), dark.primerColorBackgroundPrimary)
+    }
+
+    func test_onBrand_backgroundOverrideAlone_movesTheLabel() async throws {
+        // Given only the sheet color is overridden
+        sut.applyTheme(PrimerCheckoutTheme(colors: ColorOverrides(primerColorBackgroundPrimary: .pink)))
+
+        // When
+        try await sut.fetchTokens(for: .light)
+
+        // Then the label follows it
+        let tokens = try XCTUnwrap(sut.tokens)
+        XCTAssertEqual(rgba(CheckoutColors.onBrand(tokens: tokens)), rgba(.pink))
+    }
+
+    func test_onBrand_explicitOverride_winsOverTheSheetColour() async throws {
+        // Given both are named
+        sut.applyTheme(
+            PrimerCheckoutTheme(colors: ColorOverrides(primerColorOnBrand: .black, primerColorBackgroundPrimary: .pink)))
+
+        // When
+        try await sut.fetchTokens(for: .light)
+
+        // Then
+        let tokens = try XCTUnwrap(sut.tokens)
+        XCTAssertEqual(rgba(tokens.primerColorOnBrand), rgba(.black))
+        XCTAssertEqual(rgba(CheckoutColors.onBrand(tokens: tokens)), rgba(.black))
+    }
+
+    func test_onBrand_lightOverride_leavesDarkOnItsOwnSheetColour() async throws {
+        // Given a light-only on-brand color
+        sut.applyTheme(PrimerCheckoutTheme(colors: ColorOverrides(primerColorOnBrand: .black)))
+
+        // When
+        try await sut.fetchTokens(for: .dark)
+
+        // Then dark keeps its own sheet color
+        let tokens = try XCTUnwrap(sut.tokens)
+        XCTAssertEqual(CheckoutColors.onBrand(tokens: tokens), tokens.primerColorBackgroundPrimary)
+    }
+
+    func test_onBrand_disabled_takesTextDisabled() async throws {
+        // Given an on-brand color
+        sut.applyTheme(PrimerCheckoutTheme(colors: ColorOverrides(primerColorOnBrand: .black)))
+
+        // When
+        try await sut.fetchTokens(for: .light)
+
+        // Then a disabled button, which loses the brand fill, still takes the disabled text color
+        let tokens = try XCTUnwrap(sut.tokens)
+        XCTAssertEqual(CheckoutColors.onBrand(tokens: tokens, isEnabled: false), tokens.primerColorTextDisabled)
+    }
+
+    // MARK: - Icon color
+
+    func test_iconPrimary_followsTheIconToken_notTheTextToken() async throws {
+        // Given icon and text colors that differ
+        sut.applyTheme(
+            PrimerCheckoutTheme(colors: ColorOverrides(primerColorTextPrimary: .purple, primerColorIconPrimary: .blue)))
+
+        // When
+        try await sut.fetchTokens(for: .light)
+
+        // Then an icon next to a text takes the icon color
+        let tokens = try XCTUnwrap(sut.tokens)
+        XCTAssertEqual(rgba(CheckoutColors.iconPrimary(tokens: tokens)), rgba(.blue))
+        XCTAssertEqual(rgba(CheckoutColors.textPrimary(tokens: tokens)), rgba(.purple))
+    }
+
+    func test_iconPrimary_withoutTokens_fallsBackToPrimary() {
+        XCTAssertEqual(CheckoutColors.iconPrimary(tokens: nil), .primary)
+    }
+
+    // MARK: - ObservableObject Conformance
+
+    func test_tokensProperty_isPublished() async throws {
+        // Given
+        let expectation = XCTestExpectation(description: "tokens published")
+        let cancellable = sut.$tokens
+            .dropFirst()
+            .sink { _ in expectation.fulfill() }
+
+        // When
+        try await sut.fetchTokens(for: .light)
+
+        // Then
+        await fulfillment(of: [expectation], timeout: 2.0)
+        cancellable.cancel()
+    }
+}

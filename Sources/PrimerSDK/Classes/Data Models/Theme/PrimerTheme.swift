@@ -65,4 +65,14 @@ public final class PrimerTheme {
     }
 }
 
+// MARK: - Equatable Conformance
+
+extension PrimerTheme: Equatable {
+    /// Compare themes for equality
+    /// - Note: Uses identity comparison since PrimerTheme is a reference type.
+    ///         Two themes are considered equal if they reference the same instance.
+    public static func == (lhs: PrimerTheme, rhs: PrimerTheme) -> Bool {
+        lhs === rhs
+    }
+}
 @_spi(PrimerInternal) extension PrimerTheme: PrimerThemeProtocol {}

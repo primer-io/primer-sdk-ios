@@ -138,56 +138,56 @@
         
         public init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
-            self.analyticsUrl = try container.decodeIfPresent(String.self, forKey: .analyticsUrl)
-            self.appIdentifier = try container.decodeIfPresent(String.self, forKey: .appIdentifier)
-            self.checkoutSessionId = try container.decodeIfPresent(String.self, forKey: .checkoutSessionId)
-            self.clientSessionId = try container.decodeIfPresent(String.self, forKey: .clientSessionId)
-            self.createdAt = try container.decode(Int.self, forKey: .createdAt)
-            self.customerId = try container.decodeIfPresent(String.self, forKey: .customerId)
-            self.device = try container.decode(Device.self, forKey: .device)
-            self.eventType = try container.decode(Analytics.Event.EventType.self, forKey: .eventType)
-            self.localId = try container.decode(String.self, forKey: .localId)
-            self.primerAccountId = try container.decodeIfPresent(String.self, forKey: .primerAccountId)
-            self.sdkSessionId = try container.decode(String.self, forKey: .sdkSessionId)
-            self.sdkType = try container.decode(String.self, forKey: .sdkType)
-            self.sdkVersion = try container.decode(String.self, forKey: .sdkVersion)
-            self.integrationType = try container.decode(String.self, forKey: .integrationType)
-            self.minDeploymentTarget = try container.decode(String.self, forKey: .minDeploymentTarget)
+            analyticsUrl = try container.decodeIfPresent(String.self, forKey: .analyticsUrl)
+            appIdentifier = try container.decodeIfPresent(String.self, forKey: .appIdentifier)
+            checkoutSessionId = try container.decodeIfPresent(String.self, forKey: .checkoutSessionId)
+            clientSessionId = try container.decodeIfPresent(String.self, forKey: .clientSessionId)
+            createdAt = try container.decode(Int.self, forKey: .createdAt)
+            customerId = try container.decodeIfPresent(String.self, forKey: .customerId)
+            device = try container.decode(Device.self, forKey: .device)
+            eventType = try container.decode(Analytics.Event.EventType.self, forKey: .eventType)
+            localId = try container.decode(String.self, forKey: .localId)
+            primerAccountId = try container.decodeIfPresent(String.self, forKey: .primerAccountId)
+            sdkSessionId = try container.decode(String.self, forKey: .sdkSessionId)
+            sdkType = try container.decode(String.self, forKey: .sdkType)
+            sdkVersion = try container.decode(String.self, forKey: .sdkVersion)
+            integrationType = try container.decode(String.self, forKey: .integrationType)
+            minDeploymentTarget = try container.decode(String.self, forKey: .minDeploymentTarget)
             
             if let sdkIntegrationTypeStr = try? container.decode(String.self, forKey: .sdkIntegrationType) {
-                self.sdkIntegrationType = PrimerSDKIntegrationType(rawValue: sdkIntegrationTypeStr)
+                sdkIntegrationType = PrimerSDKIntegrationType(rawValue: sdkIntegrationTypeStr)
             } else {
-                self.sdkIntegrationType = nil
+                sdkIntegrationType = nil
             }
             
             if let sdkPaymentHandlingStr = try? container.decode(String.self, forKey: .sdkPaymentHandling) {
                 if sdkPaymentHandlingStr == "AUTO" {
-                    self.sdkPaymentHandling = .auto
+                    sdkPaymentHandling = .auto
                 } else if sdkPaymentHandlingStr == "MANUAL" {
-                    self.sdkPaymentHandling = .manual
+                    sdkPaymentHandling = .manual
                 } else {
-                    self.sdkPaymentHandling = nil
+                    sdkPaymentHandling = nil
                 }
             } else {
-                self.sdkPaymentHandling = nil
+                sdkPaymentHandling = nil
             }
             
             if let messageEventProperties = (try? container.decode(MessageEventProperties?.self, forKey: .properties)) {
-                self.properties = messageEventProperties
+                properties = messageEventProperties
             } else if let networkCallEventProperties = (try? container.decode(NetworkCallEventProperties?.self, forKey: .properties)) {
-                self.properties = networkCallEventProperties
+                properties = networkCallEventProperties
             } else if let networkConnectivityEventProperties = (try? container.decode(NetworkConnectivityEventProperties?.self, forKey: .properties)) {
-                self.properties = networkConnectivityEventProperties
+                properties = networkConnectivityEventProperties
             } else if let sdkEventProperties = (try? container.decode(SDKEventProperties?.self, forKey: .properties)) {
-                self.properties = sdkEventProperties
+                properties = sdkEventProperties
             } else if let appLifecycleEventProperties = (try? container.decode(AppLifecycleEventProperties?.self, forKey: .properties)) {
-                self.properties = appLifecycleEventProperties
+                properties = appLifecycleEventProperties
             } else if let timerEventProperties = (try? container.decode(TimerEventProperties?.self, forKey: .properties)) {
-                self.properties = timerEventProperties
+                properties = timerEventProperties
             } else if let uiEventProperties = (try? container.decode(UIEventProperties?.self, forKey: .properties)) {
-                self.properties = uiEventProperties
+                properties = uiEventProperties
             } else {
-                self.properties = try? container.decode(RawEventProperties.self, forKey: .properties)
+                properties = try? container.decode(RawEventProperties.self, forKey: .properties)
             }
         }
     }

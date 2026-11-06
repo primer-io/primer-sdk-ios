@@ -6,7 +6,7 @@
 
 @testable import PrimerSDK
 import XCTest
-@_spi(PrimerInternal) import PrimerNetworking
+@_spi(PrimerInternal) @testable import PrimerNetworking
 
 class PrimerAPIConfigurationModuleTests: XCTestCase {
     override func setUp() {
@@ -77,6 +77,28 @@ class PrimerAPIConfigurationModuleTests: XCTestCase {
             XCTFail("Unexpected error: \(error.localizedDescription)")
             asyncExpectation.fulfill()
         }
+    }
+
+    func test_refreshSession_replacesTheClientSessionAndClearsTheCache() async throws {
+        let mockApiClient = MockPrimerAPIClient(responseHeaders: [ConfigurationCachedData.CacheHeaderKey: "3600"])
+        mockApiClient.validateClientTokenResult = (SuccessResponse(), nil)
+        mockApiClient.fetchConfigurationResult = (Mocks.createMockAPIConfiguration(clientSession: nil, paymentMethods: []), nil)
+        PrimerAPIConfigurationModule.apiClient = mockApiClient
+        let sut = PrimerAPIConfigurationModule()
+        try await sut.setupSession(forClientToken: MockAppState.mockClientToken)
+        let coreUrl = PrimerAPIConfigurationModule.apiConfiguration?.coreUrl
+
+        let refreshed = ClientSession.APIResponse(
+            clientSessionId: "refreshed_session", paymentMethod: nil, order: nil, customer: nil, testId: nil
+        )
+        mockApiClient.fetchConfigurationResult = (
+            Mocks.createMockAPIConfiguration(clientSession: refreshed, paymentMethods: []), nil
+        )
+        try await sut.refreshSession()
+
+        XCTAssertEqual(PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.clientSessionId, "refreshed_session")
+        XCTAssertEqual(PrimerAPIConfigurationModule.apiConfiguration?.coreUrl, coreUrl)
+        XCTAssertNil(ConfigurationCache.shared.data(forKey: try XCTUnwrap(PrimerAPIConfigurationModule.cacheKey)))
     }
 
     /// Tests that `setupSession` fails when the configuration fetch returns an error.
@@ -445,7 +467,7 @@ extension MockPrimerAPIClient {
     convenience init(responseHeaders: [String: String]) {
         self.init()
         self.responseHeaders = responseHeaders
-        self.mockedNetworkDelay = 0
+        mockedNetworkDelay = 0
     }
 }
 

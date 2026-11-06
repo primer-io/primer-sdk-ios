@@ -1,0 +1,249 @@
+//
+//  AnalyticsEventMetadata.swift
+//
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
+
+import Foundation
+@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerCore
+
+/// Optional metadata that can be attached to analytics events.
+/// Not all events require all metadata fields - include only relevant fields per event type.
+/// Analytics event metadata using discriminated unions for type safety.
+/// Each metadata case carries only the fields relevant to its event family; vault events share
+/// one struct whose fields are populated per event.
+public enum AnalyticsEventMetadata: Sendable {
+  case general(GeneralEvent = GeneralEvent())
+  case payment(PaymentEvent)
+  case threeDS(ThreeDSEvent)
+  case redirect(RedirectEvent)
+  case vault(VaultEvent)
+}
+
+// MARK: - Event Types
+
+/// Metadata for general analytics events (checkout flow, SDK lifecycle)
+public struct GeneralEvent: Sendable {
+  public let locale: String
+  public let availablePaymentMethods: [String]?
+
+  public init(locale: String = Self.formattedCurrentLocale, availablePaymentMethods: [String]? = nil) {
+    self.locale = locale
+    self.availablePaymentMethods = availablePaymentMethods
+  }
+
+  public static var formattedCurrentLocale: String {
+    let locale = Locale.current
+    if #available(iOS 16.0, *) {
+      guard let languageCode = locale.language.languageCode?.identifier else { return "en-US" }
+      return locale.region.map { "\(languageCode)-\($0.identifier)" } ?? languageCode
+    } else {
+      guard let languageCode = locale.languageCode else { return "en-US" }
+      return locale.regionCode.map { "\(languageCode)-\($0)" } ?? languageCode
+    }
+  }
+}
+
+/// Metadata for payment-related analytics events
+public struct PaymentEvent: Sendable {
+  public let locale: String
+  public let paymentMethod: String
+  public let paymentId: String?
+  /// `shopper_cancel` or `merchant_abort`, on PAYMENT_METHOD_UNSELECTED
+  public let reason: String?
+  public let errorCode: String?
+  /// `payment`, `primer` or `integration`
+  public let errorOrigin: String?
+  /// `failed` or `unknown`, on PAYMENT_FAILURE
+  public let outcome: String?
+  public let previousPaymentMethod: String?
+
+  public init(
+    locale: String = GeneralEvent.formattedCurrentLocale,
+    paymentMethod: String,
+    paymentId: String? = nil,
+    reason: String? = nil,
+    errorCode: String? = nil,
+    errorOrigin: String? = nil,
+    outcome: String? = nil,
+    previousPaymentMethod: String? = nil
+  ) {
+    self.locale = locale
+    self.paymentMethod = paymentMethod
+    self.paymentId = paymentId
+    self.reason = reason
+    self.errorCode = errorCode
+    self.errorOrigin = errorOrigin
+    self.outcome = outcome
+    self.previousPaymentMethod = previousPaymentMethod
+  }
+}
+
+/// Metadata for 3D Secure authentication events
+public struct ThreeDSEvent: Sendable {
+  public let locale: String
+  public let paymentMethod: String
+  public let provider: String
+  public let protocolVersion: String?
+  public let response: String?
+
+  public init(
+    locale: String = GeneralEvent.formattedCurrentLocale,
+    paymentMethod: String,
+    provider: String,
+    protocolVersion: String? = nil,
+    response: String? = nil
+  ) {
+    self.locale = locale
+    self.paymentMethod = paymentMethod
+    self.provider = provider
+    self.protocolVersion = protocolVersion
+    self.response = response
+  }
+}
+
+/// Metadata for vault-management and CVV-recapture events.
+/// Ids are opaque Primer vault tokens; `expectedCvvLength` is a digit count, never a CVV value.
+/// All fields optional: one shared shape for the 13 vault events; required-ness is enforced by
+/// the upstream emitters.
+public struct VaultEvent: Sendable {
+  public let locale: String
+  public let vaultedMethodId: String?
+  public let previousVaultedMethodId: String?
+  public let promotedVaultedMethodId: String?
+  public let isActive: Bool?
+  public let vaultedMethodCount: Int?
+  public let exitedFromConfirmation: Bool?
+  public let network: String?
+  public let expectedCvvLength: Int?
+  public let errorId: String?
+
+  public init(
+    locale: String = GeneralEvent.formattedCurrentLocale,
+    vaultedMethodId: String? = nil,
+    previousVaultedMethodId: String? = nil,
+    promotedVaultedMethodId: String? = nil,
+    isActive: Bool? = nil,
+    vaultedMethodCount: Int? = nil,
+    exitedFromConfirmation: Bool? = nil,
+    network: String? = nil,
+    expectedCvvLength: Int? = nil,
+    errorId: String? = nil
+  ) {
+    self.locale = locale
+    self.vaultedMethodId = vaultedMethodId
+    self.previousVaultedMethodId = previousVaultedMethodId
+    self.promotedVaultedMethodId = promotedVaultedMethodId
+    self.isActive = isActive
+    self.vaultedMethodCount = vaultedMethodCount
+    self.exitedFromConfirmation = exitedFromConfirmation
+    self.network = network
+    self.expectedCvvLength = expectedCvvLength
+    self.errorId = errorId
+  }
+}
+
+/// Metadata for third-party redirect events
+public struct RedirectEvent: Sendable {
+  public let locale: String
+  public let paymentMethod: String
+  public let destinationUrl: String
+  public let paymentId: String?
+
+  public init(
+    locale: String = GeneralEvent.formattedCurrentLocale,
+    paymentMethod: String,
+    destinationUrl: String,
+    paymentId: String? = nil
+  ) {
+    self.locale = locale
+    self.paymentMethod = paymentMethod
+    self.destinationUrl = destinationUrl
+    self.paymentId = paymentId
+  }
+}
+
+// MARK: - Convenience Accessors
+
+extension AnalyticsEventMetadata {
+  /// User locale in ISO format (e.g., "en-GB")
+  var locale: String {
+    switch self {
+    case let .general(event): event.locale
+    case let .payment(event): event.locale
+    case let .threeDS(event): event.locale
+    case let .redirect(event): event.locale
+    case let .vault(event): event.locale
+    }
+  }
+
+  /// Vault context when this is a `.vault` metadata case
+  var vaultEvent: VaultEvent? {
+    switch self {
+    case let .vault(event): event
+    default: nil
+    }
+  }
+
+  /// Empty means unknown, so the attempt's method fills it in.
+  var paymentMethod: String? {
+    let method: String? = switch self {
+    case let .payment(event): event.paymentMethod
+    case let .threeDS(event): event.paymentMethod
+    case let .redirect(event): event.paymentMethod
+    default: nil
+    }
+    return method?.isEmpty == false ? method : nil
+  }
+
+  var paymentId: String? {
+    switch self {
+    case let .payment(event): event.paymentId
+    case let .redirect(event): event.paymentId
+    default: nil
+    }
+  }
+
+  var paymentEvent: PaymentEvent? {
+    switch self {
+    case let .payment(event): event
+    default: nil
+    }
+  }
+
+  var availablePaymentMethods: [String]? {
+    switch self {
+    case let .general(event): event.availablePaymentMethods
+    default: nil
+    }
+  }
+
+  var threedsProvider: String? {
+    switch self {
+    case let .threeDS(event): event.provider
+    default: nil
+    }
+  }
+
+  var threedsProtocolVersion: String? {
+    switch self {
+    case let .threeDS(event): event.protocolVersion
+    default: nil
+    }
+  }
+
+  var threedsResponse: String? {
+    switch self {
+    case let .threeDS(event): event.response
+    default: nil
+    }
+  }
+
+  var redirectDestinationUrl: String? {
+    switch self {
+    case let .redirect(event): event.destinationUrl
+    default: nil
+    }
+  }
+}

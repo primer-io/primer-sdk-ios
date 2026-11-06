@@ -4,7 +4,7 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-@_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) @testable import PrimerCore
 @_spi(PrimerInternal) @testable import PrimerSDK
 import XCTest
 @_spi(PrimerInternal) @testable import PrimerCore
@@ -35,7 +35,7 @@ final class AnalyticsServiceTests: XCTestCase {
     }
 
     func testSimpleMessageEventBatchSend() async throws {
-        let expectation = self.expectation(description: "Batch of five events is sent")
+        let expectation = expectation(description: "Batch of five events is sent")
 
         apiClient.onSendAnalyticsEvent = { events in
             XCTAssertNotNil(events, "Expected events to be non-nil")
@@ -63,7 +63,7 @@ final class AnalyticsServiceTests: XCTestCase {
     }
 
     func testSimpleSDKEventBatchSend() async throws {
-        let expectation = self.expectation(description: "Batch of five SDK events is sent")
+        let expectation = expectation(description: "Batch of five SDK events is sent")
 
         PrimerAPIConfigurationModule.clientToken = MockAppState.mockClientToken
 
@@ -93,7 +93,7 @@ final class AnalyticsServiceTests: XCTestCase {
     }
 
     func testComplexMultiBatchFastSend() async throws {
-        let expectation = self.expectation(description: "Expected number of batches sent")
+        let expectation = expectation(description: "Expected number of batches sent")
         expectation.expectedFulfillmentCount = 5
 
         apiClient.onSendAnalyticsEvent = { _ in
@@ -122,7 +122,7 @@ final class AnalyticsServiceTests: XCTestCase {
     }
 
     func testComplexMultiBatchSlowSend() async throws {
-        let expectation = self.expectation(description: "Events sent to API client expected number of times")
+        let expectation = expectation(description: "Events sent to API client expected number of times")
         expectation.expectedFulfillmentCount = 3
 
         apiClient.onSendAnalyticsEvent = { _ in
@@ -160,7 +160,7 @@ final class AnalyticsServiceTests: XCTestCase {
     }
 
     func testFlush() async throws {
-        let expectation = self.expectation(description: "All events flushed")
+        let expectation = expectation(description: "All events flushed")
 
         Task {
             do {
@@ -185,7 +185,7 @@ final class AnalyticsServiceTests: XCTestCase {
 
         apiClient.shouldSucceed = false
 
-        let expectation = self.expectation(description: "Wait for all events to be sent")
+        let expectation = expectation(description: "Wait for all events to be sent")
         Task {
             try? await sendEvents(numberOfEvents: 4, eventType: .sdkEvent)
             expectation.fulfill()
@@ -216,7 +216,7 @@ final class AnalyticsServiceTests: XCTestCase {
 
         apiClient.shouldSucceed = false
 
-        let expectation = self.expectation(description: "Full event purge triggered")
+        let expectation = expectation(description: "Full event purge triggered")
         storage.onDeleteAnalyticsFile = {
             expectation.fulfill()
         }
@@ -256,6 +256,9 @@ final class AnalyticsServiceTests: XCTestCase {
 
         for event in events {
             if let delay {
+                // why: this delay is the scenario input, not a wait-for-state — it paces
+                // event recording so concurrent batching produces a deterministic batch count.
+                // The tests assert on the API-client send callback (a real signal), not on this sleep.
                 try await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
             }
             try await sut.record(event: event)

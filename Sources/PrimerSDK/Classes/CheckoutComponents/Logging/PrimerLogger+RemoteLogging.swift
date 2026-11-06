@@ -1,0 +1,74 @@
+//
+//  PrimerLogger+RemoteLogging.swift
+//
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
+
+import Foundation
+@_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
+
+// NOTE: These overloads forward logs to the CheckoutComponents remote LoggingService,
+// so they must live in the PrimerSDK target where DIContainer/LoggingService are visible.
+public extension PrimerLogger {
+    // NOTE: During CC payment flows, RawDataManager overwrites sdkIntegrationType to .headless.
+    // This means DIContainer.current may be nil when called from the headless payment path.
+    // The guard-and-return pattern below handles this gracefully.
+    func error(
+        message: String,
+        error: Error,
+        userInfo: [String: Any]? = nil,
+        file: String = #file,
+        line: Int = #line,
+        function: String = #function
+    ) {
+        self.error(message: message, userInfo: nil, file: file, line: line, function: function)
+
+        if #available(iOS 15.0, *) {
+            Task { [error, userInfo, message] in
+                await remoteLoggingService()?.logErrorIfReportable(error, message: message, userInfo: userInfo)
+            }
+        }
+    }
+
+    @available(iOS 15.0, *)
+    func info(
+        message: String,
+        event: String,
+        userInfo: [String: Any]? = nil
+    ) {
+        Task { [message, event, userInfo] in
+            await remoteLoggingService()?.logInfo(message: message, event: event, userInfo: userInfo)
+        }
+    }
+}
+
+extension PrimerLogger {
+    @available(iOS 15.0, *)
+    func warn(
+        message: String,
+        event: String,
+        userInfo: [String: Any]? = nil
+    ) {
+        Task { [message, event, userInfo] in
+            await remoteLoggingService()?.logWarning(message: message, event: event, userInfo: userInfo)
+        }
+    }
+}
+
+@available(iOS 15.0, *)
+private func remoteLoggingService() async -> LoggingService? {
+    guard let container = await DIContainer.current else {
+        #if DEBUG
+        print("📊 [Logging] DIContainer not available for remote logging")
+        #endif
+        return nil
+    }
+    guard let service = try? await container.resolve(LoggingService.self) else {
+        #if DEBUG
+        print("📊 [Logging] LoggingService not resolved for remote logging")
+        #endif
+        return nil
+    }
+    return service
+}

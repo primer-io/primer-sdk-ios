@@ -4,10 +4,10 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) @testable import PrimerFoundation
 @_spi(PrimerInternal) @testable import PrimerSDK
 @_spi(PrimerInternal) import PrimerStepResolver
-@_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) @testable import PrimerCore
 import XCTest
 
 final class AnalyticsServiceBDCTests: XCTestCase {
@@ -46,7 +46,7 @@ final class AnalyticsServiceBDCTests: XCTestCase {
     }
 
     func testRegistersAsPlatformLogResolver() async throws {
-        let result = try await PrimerStepResolverRegistry.shared.resolve("platform.log", params: .null)
+        let result = try await PrimerStepResolverRegistry.shared.resolve("platform.log", data: .null)
         XCTAssertEqual(result.outcome, .success)
     }
 }

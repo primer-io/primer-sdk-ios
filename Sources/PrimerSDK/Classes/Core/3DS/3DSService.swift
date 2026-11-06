@@ -38,6 +38,7 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
     private var threeDSSDKWindow: UIWindow?
     private var initProtocolVersion: ThreeDS.ProtocolVersion?
     private var resumePaymentToken: String?
+    private let observerReport: ThreeDSObserverReport
 
     #if canImport(Primer3DS)
         private var primer3DS: Primer3DS!
@@ -45,6 +46,10 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
     #endif
 
     private var paymentMethodType: String?
+
+    init(observer: RequiredActionObserver? = nil) {
+        observerReport = ThreeDSObserverReport(observer: observer)
+    }
 
     func perform3DS(
         paymentMethodTokenData: PrimerPaymentMethodTokenData,
@@ -102,7 +107,7 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
 
         @MainActor
         private func showProgressDialog(_ progressDialog: Primer3DSProgressDialogProtocol?) {
-            guard let progressDialog = progressDialog else { return }
+            guard let progressDialog else { return }
 
             // Drop-In mode: Primer owns primerWindow, so proper z-ordering is guaranteed
             // by lowering the window level before Netcetera creates its progress dialog window.
@@ -195,6 +200,7 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
         private func handleAuthenticationError(paymentMethodTokenData: PrimerPaymentMethodTokenData, error: Error) async throws -> String {
             var continueInfo: ThreeDS.ContinueInfo?
             if case InternalError.noNeedToPerform3ds = error {
+                await observerReport.noChallengeNeeded()
                 guard let resumePaymentToken else { throw handled(primerError: .invalidValue(key: "resumeToken")) }
                 return resumePaymentToken
             } else if case let InternalError.failedToPerform3dsAndShouldBreak(primerErr) = error {
@@ -280,9 +286,9 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
                 } else {
                     let message =
                         """
-                        threeDsAppRequestorUrl is not in a valid format (\"https://applink\"). \
-                        In case you want to support redirecting back during the OOB flows, \
-                        please set correct threeDsAppRequestorUrl in PrimerThreeDsOptions during SDK initialization.
+                        No usable threeDsAppRequestorUrl is set, so an out-of-band 3DS challenge \
+                        cannot redirect back to the app. Set one starting with https in \
+                        PrimerThreeDsOptions during SDK initialization, for example https://applink.
                         """
                     logger.warn(message: message)
                 }
@@ -307,6 +313,7 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
                 ) { result in
                     switch result {
                     case let .success(beginAuthResponse):
+                        self.observerReport.beginAuthResponded(with: beginAuthResponse.authentication)
                         switch beginAuthResponse.authentication.responseCode {
                         case .authSuccess,
                              .authFailed,
@@ -350,12 +357,11 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
             }
 
             let rootViewController = ClearViewController()
-            let window: UIWindow
-            if let windowScene = UIApplication.shared.connectedScenes
+            let window: UIWindow = if let windowScene = UIApplication.shared.connectedScenes
                 .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene {
-                window = UIWindow(windowScene: windowScene)
+                UIWindow(windowScene: windowScene)
             } else {
-                window = UIWindow(frame: UIScreen.main.bounds)
+                UIWindow(frame: UIScreen.main.bounds)
             }
 
             window.rootViewController = rootViewController
@@ -376,6 +382,7 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
             )
 
             Analytics.Service.fire(events: [present3DSUIEvent])
+            await observerReport.challengeShown(provider: Primer3DS.threeDsSdkProvider)
 
             return try await withCheckedThrowingContinuation { continuation in
                 primer3DS.performChallenge(
@@ -464,6 +471,7 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
                 threeDSTokenId: paymentMethodToken,
                 continueInfo: continueInfo
             )
+            await observerReport.continued(with: response.authentication)
             return response
         } catch {
             throw InternalError.failedToPerform3dsAndShouldBreak(error: error.normalizedForSDK)
@@ -542,8 +550,8 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
 
         private func createPrimer3DSError(from primer3DSError: Primer3DSError) -> Primer3DSErrorContainer {
             Primer3DSErrorContainer.primer3DSSdkError(
-                paymentMethodType: self.paymentMethodType,
-                initProtocolVersion: self.initProtocolVersion?.rawValue,
+                paymentMethodType: paymentMethodType,
+                initProtocolVersion: initProtocolVersion?.rawValue,
                 errorInfo: Primer3DSErrorInfo(primer3DSError)
             )
         }

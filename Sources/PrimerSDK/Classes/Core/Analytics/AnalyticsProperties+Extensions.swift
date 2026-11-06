@@ -158,10 +158,9 @@ extension SDKProperties {
         }
         
         self.init(
-            clientToken: AppState.current.clientToken,
             integrationType: integrationType,
             paymentMethodType: PrimerInternal.shared.selectedPaymentMethodType,
-            sdkIntegrationType: PrimerInternal.shared.sdkIntegrationType,
+            sdkIntegrationType: PrimerInternal.shared.reportedIntegrationType,
             sdkIntent: PrimerInternal.shared.intent,
             sdkPaymentHandling: PrimerSettings.current.paymentHandling,
             sdkSessionId: PrimerInternal.shared.checkoutSessionId,

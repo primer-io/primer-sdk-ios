@@ -4,9 +4,9 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import UIKit
 @_spi(PrimerInternal) import PrimerCore
 @_spi(PrimerInternal) import PrimerFoundation
+import UIKit
 
 extension PrimerHeadlessUniversalCheckout {
 
@@ -25,9 +25,6 @@ extension PrimerHeadlessUniversalCheckout {
         }
 
         public static func getCardNetworkAsset(for cardNetwork: CardNetwork) -> PrimerCardNetworkAsset? {
-            let assetName = "\(cardNetwork.assetName.lowercased())-card-icon-colored"
-            let cardImage = UIImage(primerResource: assetName)
-
             let event = Analytics.Event.message(
                 message: "Providing single asset for card network: \(cardNetwork.rawValue)",
                 messageType: .other,
@@ -35,7 +32,7 @@ extension PrimerHeadlessUniversalCheckout {
             )
             Analytics.Service.fire(event: event)
 
-            return PrimerCardNetworkAsset(cardNetwork: cardNetwork, cardImage: cardImage)
+            return PrimerCardNetworkAsset(cardNetwork: cardNetwork, cardImage: cardNetwork.icon)
         }
 
         public static func getCardNetworkTraits(cardNetworkString: String?) -> PrimerCardNetworkTraits? {
@@ -232,16 +229,16 @@ public final class PrimerPaymentMethodBackgroundColor {
             return nil
         }
 
-        if let coloredStr = coloredStr {
-            self.colored = PrimerColor(hex: coloredStr)
+        if let coloredStr {
+            colored = PrimerColor(hex: coloredStr)
         }
 
-        if let lightStr = lightStr {
-            self.light = PrimerColor(hex: lightStr)
+        if let lightStr {
+            light = PrimerColor(hex: lightStr)
         }
 
-        if let darkStr = darkStr {
-            self.dark = PrimerColor(hex: darkStr)
+        if let darkStr {
+            dark = PrimerColor(hex: darkStr)
         }
     }
 

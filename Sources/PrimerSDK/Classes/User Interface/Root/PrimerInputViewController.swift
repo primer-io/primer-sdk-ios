@@ -18,7 +18,7 @@ final class PrimerInputViewController: PrimerFormViewController {
     ) {
         self.formPaymentMethodTokenizationViewModel = formPaymentMethodTokenizationViewModel
         super.init()
-        self.titleImage = navigationBarLogo
+        titleImage = navigationBarLogo
 
     }
 
@@ -31,7 +31,7 @@ final class PrimerInputViewController: PrimerFormViewController {
             verticalStackView.addArrangedSubview(inputStackView)
         }
 
-        guard let submitButton = self.formPaymentMethodTokenizationViewModel.uiModule.submitButton else { return }
+        guard let submitButton = formPaymentMethodTokenizationViewModel.uiModule.submitButton else { return }
         verticalStackView.addArrangedSubview(submitButton)
     }
 

@@ -4,7 +4,7 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) @testable import PrimerFoundation
 @testable import PrimerSDK
 import XCTest
 
@@ -121,5 +121,20 @@ final class CardNetworkTests: XCTestCase {
         XCTAssertEqual(mir.cvvLabel, "CVP2")
         let elo = try XCTUnwrap(CardNetwork.elo.traits)
         XCTAssertEqual(elo.cvvLabel, "CVE")
+    }
+
+    func test_icon_networkWithLogo_isItsOwnLogo() {
+        for network in CardNetwork.allCases where network != .hipercard && network != .unknown {
+            XCTAssertNotNil(network.icon, "\(network.rawValue) expected a logo")
+            XCTAssertNotEqual(network.icon, UIImage.genericCard, "\(network.rawValue) expected its own logo")
+        }
+    }
+
+    func test_icon_hipercard_isTheGenericCard() throws {
+        XCTAssertEqual(try XCTUnwrap(CardNetwork.hipercard.icon), UIImage.genericCard)
+    }
+
+    func test_displayName_hipercard_isHipercard() {
+        XCTAssertEqual(CardNetwork.hipercard.displayName, "Hipercard")
     }
 }

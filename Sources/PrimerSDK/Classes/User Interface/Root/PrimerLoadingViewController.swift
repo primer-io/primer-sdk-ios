@@ -40,9 +40,9 @@ final class PrimerLoadingViewController: PrimerViewController {
 
         resultView = PrimerResultComponentView(
             frame: .zero,
-            imageView: self.imageView,
-            message: self.message,
-            loadingIndicator: self.activityIndicatorView
+            imageView: imageView,
+            message: message,
+            loadingIndicator: activityIndicatorView
         )
         view.addSubview(resultView)
         resultView.translatesAutoresizingMaskIntoConstraints = false

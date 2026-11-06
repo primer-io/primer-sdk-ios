@@ -4,7 +4,7 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) @testable import PrimerFoundation
 @testable import PrimerSDK
 import XCTest
 @_spi(PrimerInternal) @testable import PrimerNetworking
@@ -101,14 +101,14 @@ final class PayPalTokenizationViewModelTests: XCTestCase {
         let uiDelegate = MockPrimerHeadlessUniversalCheckoutUIDelegate()
         PrimerHeadlessUniversalCheckout.current.uiDelegate = uiDelegate
 
-        let expectWillCreatePaymentWithData = self.expectation(description: "Will create payment with data")
+        let expectWillCreatePaymentWithData = expectation(description: "Will create payment with data")
         delegate.onWillCreatePaymentWithData = { data, decision in
             XCTAssertEqual(data.paymentMethodType.type, PrimerPaymentMethodType.payPal.rawValue)
             decision(.abortPaymentCreation())
             expectWillCreatePaymentWithData.fulfill()
         }
 
-        let expectDidFail = self.expectation(description: "Payment flow fails")
+        let expectDidFail = expectation(description: "Payment flow fails")
         delegate.onDidFail = { error in
             switch error {
             case PrimerError.merchantError:
@@ -163,31 +163,31 @@ final class PayPalTokenizationViewModelTests: XCTestCase {
             URL(string: "https://webauthsvc.app/")!
         }
 
-        let expectWillCreatePaymentWithData = self.expectation(description: "Will create payment with data")
+        let expectWillCreatePaymentWithData = expectation(description: "Will create payment with data")
         delegate.onWillCreatePaymentWithData = { data, decision in
             XCTAssertEqual(data.paymentMethodType.type, PrimerPaymentMethodType.payPal.rawValue)
             decision(.continuePaymentCreation())
             expectWillCreatePaymentWithData.fulfill()
         }
 
-        let expectDidShowPaymentMethod = self.expectation(description: "UI shows payment method")
+        let expectDidShowPaymentMethod = expectation(description: "UI shows payment method")
         uiDelegate.onUIDidShowPaymentMethod = { _ in
             expectDidShowPaymentMethod.fulfill()
         }
 
-        let expectDidTokenize = self.expectation(description: "Payment method tokenizes")
+        let expectDidTokenize = expectation(description: "Payment method tokenizes")
         tokenizationService.onTokenize = { _ in
             expectDidTokenize.fulfill()
             return .success(self.tokenizationResponseBody)
         }
 
-        let expectDidCreatePayment = self.expectation(description: "Payment gets created")
+        let expectDidCreatePayment = expectation(description: "Payment gets created")
         createResumePaymentService.onCreatePayment = { _ in
             expectDidCreatePayment.fulfill()
             return self.paymentResponseBody
         }
 
-        let expectDidCompleteCheckout = self.expectation(description: "Checkout completes successfully")
+        let expectDidCompleteCheckout = expectation(description: "Checkout completes successfully")
         delegate.onDidCompleteCheckoutWithData = { data in
             XCTAssertEqual(data.payment?.id, "id")
             XCTAssertEqual(data.payment?.orderId, "order_id")

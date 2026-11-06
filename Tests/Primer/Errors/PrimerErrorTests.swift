@@ -4,7 +4,7 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) @testable import PrimerFoundation
 @testable import PrimerSDK
 import XCTest
 
@@ -143,6 +143,20 @@ final class PrimerErrorTests: XCTestCase {
         XCTAssertEqual(context[AnalyticsContextKeys.paymentMethodType] as? String, PrimerPaymentMethodType.applePay.rawValue)
     }
     
+    // MARK: - Klarna Error Tests
+
+    func testKlarnaErrorWithMessage() {
+        let error = PrimerError.klarnaError(message: "Klarna could not load the payment view")
+
+        XCTAssertEqual(error.plainDescription, "Klarna wrapper SDK encountered an error: Klarna could not load the payment view")
+    }
+
+    func testKlarnaErrorWithoutMessage() {
+        let error = PrimerError.klarnaError(message: nil)
+
+        XCTAssertEqual(error.plainDescription, "Klarna wrapper SDK encountered an error: unknown error")
+    }
+
     // MARK: - Error Info Tests
 
     // MARK: - Exposed Error Tests

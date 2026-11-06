@@ -30,13 +30,13 @@ final class ACHUserDetailsViewController: PrimerViewController {
     var didReceiveStepCompletion: ((_ step: PrimerSDK.ACHUserDetailsStep) -> Void)?
 
     init(tokenizationViewModel: StripeAchTokenizationViewModel, delegate: ACHUserDetailsDelegate) {
-        self.stripeAchComponent = StripeAchHeadlessComponent(tokenizationViewModel: tokenizationViewModel)
+        stripeAchComponent = StripeAchHeadlessComponent(tokenizationViewModel: tokenizationViewModel)
         self.delegate = delegate
         super.init()
 
-        self.stripeAchComponent?.errorDelegate = self
-        self.stripeAchComponent?.stepDelegate = self
-        self.stripeAchComponent?.validationDelegate = self
+        stripeAchComponent?.errorDelegate = self
+        stripeAchComponent?.stepDelegate = self
+        stripeAchComponent?.validationDelegate = self
     }
 
     override func viewDidLoad() {
@@ -50,7 +50,7 @@ final class ACHUserDetailsViewController: PrimerViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        if let parentVC = self.parent as? PrimerContainerViewController {
+        if let parentVC = parent as? PrimerContainerViewController {
             parentVC.mockedNavigationBar.hidesBackButton = true
         }
     }
@@ -65,7 +65,7 @@ final class ACHUserDetailsViewController: PrimerViewController {
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        if let parentVC = self.parent as? PrimerContainerViewController {
+        if let parentVC = parent as? PrimerContainerViewController {
             parentVC.mockedNavigationBar.hidesBackButton = false
         }
     }

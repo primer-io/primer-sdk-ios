@@ -1,0 +1,84 @@
+//
+//  AchMandateView.swift
+//
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
+
+import SwiftUI
+@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerCore
+
+@available(iOS 15.0, *)
+struct AchMandateView: View, LogReporter {
+  let scope: any PrimerAchScope
+  let achState: PrimerAchState
+
+  @Environment(\.designTokens) private var tokens
+
+  var body: some View {
+    VStack(spacing: PrimerSpacing.large(tokens: tokens)) {
+      Text(CheckoutComponentsStrings.achMandateTitle)
+        .primerTypography(.titleLarge, tokens: tokens)
+        .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
+        .multilineTextAlignment(.center)
+        .accessibilityIdentifier(AccessibilityIdentifiers.Ach.mandateTitle)
+
+      ScrollView {
+        Text(achState.mandateText ?? "")
+          .primerTypography(.bodyMedium, tokens: tokens)
+          .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
+          .multilineTextAlignment(.leading)
+          .padding(PrimerSpacing.medium(tokens: tokens))
+          .frame(maxWidth: .infinity, alignment: .leading)
+          .background(
+            RoundedRectangle(cornerRadius: PrimerRadius.small(tokens: tokens))
+              .fill(CheckoutColors.backgroundSecondary(tokens: tokens))
+          )
+      }
+      .frame(maxHeight: Layout.mandateTextMaxHeight)
+      .accessibilityIdentifier(AccessibilityIdentifiers.Ach.mandateTextContainer)
+      .accessibilityLabel(achState.mandateText ?? "")
+
+      Spacer()
+        .frame(height: PrimerSpacing.medium(tokens: tokens))
+
+      VStack(spacing: PrimerSpacing.small(tokens: tokens)) {
+        makeAcceptButton()
+        makeDeclineButton()
+      }
+    }
+    .padding(.top, PrimerSpacing.large(tokens: tokens))
+    .accessibilityIdentifier(AccessibilityIdentifiers.Ach.mandateContainer)
+  }
+
+  private func makeAcceptButton() -> some View {
+    PrimerCheckoutButton(
+      CheckoutComponentsStrings.achMandateAcceptButton,
+      accessibilityConfiguration: AccessibilityConfiguration(
+        identifier: AccessibilityIdentifiers.Ach.mandateAcceptButton,
+        label: CheckoutComponentsStrings.achMandateAcceptButton,
+        hint: CheckoutComponentsStrings.a11yAchMandateAcceptHint,
+        traits: [.isButton]
+      ),
+      action: scope.acceptMandate
+    )
+  }
+
+  private func makeDeclineButton() -> some View {
+    PrimerCheckoutButton(
+      CheckoutComponentsStrings.achMandateDeclineButton,
+      style: .outlined,
+      accessibilityConfiguration: AccessibilityConfiguration(
+        identifier: AccessibilityIdentifiers.Ach.mandateDeclineButton,
+        label: CheckoutComponentsStrings.achMandateDeclineButton,
+        hint: CheckoutComponentsStrings.a11yAchMandateDeclineHint,
+        traits: [.isButton]
+      ),
+      action: scope.declineMandate
+    )
+  }
+
+  private enum Layout {
+    static let mandateTextMaxHeight: CGFloat = 300
+  }
+}

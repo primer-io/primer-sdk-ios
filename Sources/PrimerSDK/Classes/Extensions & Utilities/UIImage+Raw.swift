@@ -1,7 +1,7 @@
 //
 //  UIImage+Raw.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import UIKit.UIImage
@@ -12,11 +12,11 @@ extension UIImage {
     static let apple = UIImage(primerResource: "appleIcon")
     static let amex = UIImage(primerResource: "amex")
     static let blikLight = UIImage(primerResource: "blik-logo-light")
-    static let bancontact = UIImage(primerResource: "bancontact-icon")
     static let discover = UIImage(primerResource: "discover")
-    static let jcb = UIImage(primerResource: "jcb-icon")
     static let klarna = UIImage(primerResource: "klarna")
     static let klarnaCategory = UIImage(primerResource: "klarna_payment_category")
+    static let klarnaLogoDark = UIImage(primerResource: "klarna-logo-dark")
+    static let klarnaLogoLight = UIImage(primerResource: "klarna-logo-light")
     static let masterCard = UIImage(primerResource: "masterCard")
     static let multibancoLight = UIImage(primerResource: "multibanco-logo-light")
     static let payPal = UIImage(primerResource: "paypal")
@@ -27,13 +27,8 @@ extension UIImage {
 // MARK: Brand Colored
 
 extension UIImage {
-    static let amexColored = UIImage(primerResource: "amex-card-icon-colored")
-    static let cartesBancairesColored = UIImage(primerResource: "cartesbancaires-card-icon-colored")
-    static let discoverColored = UIImage(primerResource: "discover-card-icon-colored")
-    static let eftposColored = UIImage(primerResource: "eftpos-card-icon-colored")
+    static let klarnaBadgeColored = UIImage(primerResource: "klarna-badge-colored")
     static let klarnaColored = UIImage(primerResource: "klarna-logo-colored")
-    static let masterCardColored = UIImage(primerResource: "mastercard-card-icon-colored")
-    static let visaColored = UIImage(primerResource: "visa-card-icon-colored")
 }
 
 // MARK: Generic
@@ -51,7 +46,7 @@ extension UIImage {
     static let delete = UIImage(primerResource: "delete")
     static let error = UIImage(primerResource: "error")
     static let forwardDark = UIImage(primerResource: "forwardDark")
-    static let genericCard = UIImage(primerResource: "generic_card")
+    static let genericCard = UIImage(primerResource: "genericCard")
     static let lock = UIImage(primerResource: "lock")
     static let mobile = UIImage(primerResource: "mobile")
     static let rightArrow = UIImage(primerResource: "rightArrow")

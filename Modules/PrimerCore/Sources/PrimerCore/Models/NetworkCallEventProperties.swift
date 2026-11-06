@@ -51,14 +51,14 @@ import Foundation
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.callType = try container.decode(Analytics.Event.Property.NetworkCallType.self, forKey: .callType)
-        self.id = try container.decode(String.self, forKey: .id)
-        self.url = try container.decode(String.self, forKey: .url)
-        self.method = try container.decode(String.self, forKey: .method)
-        self.errorBody = try container.decodeIfPresent(String.self, forKey: .errorBody)
-        self.responseCode = try container.decodeIfPresent(Int.self, forKey: .responseCode)
-        self.params = try container.decodeIfPresent([String: AnyCodable].self, forKey: .params)
-        self.duration = try container.decodeIfPresent(TimeInterval.self, forKey: .duration)
+        callType = try container.decode(Analytics.Event.Property.NetworkCallType.self, forKey: .callType)
+        id = try container.decode(String.self, forKey: .id)
+        url = try container.decode(String.self, forKey: .url)
+        method = try container.decode(String.self, forKey: .method)
+        errorBody = try container.decodeIfPresent(String.self, forKey: .errorBody)
+        responseCode = try container.decodeIfPresent(Int.self, forKey: .responseCode)
+        params = try container.decodeIfPresent([String: AnyCodable].self, forKey: .params)
+        duration = try container.decodeIfPresent(TimeInterval.self, forKey: .duration)
     }
 
     public func encode(to encoder: Encoder) throws {

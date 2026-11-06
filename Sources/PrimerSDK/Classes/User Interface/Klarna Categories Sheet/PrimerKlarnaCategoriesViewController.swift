@@ -35,7 +35,7 @@ import UIKit
         }
 
         init(tokenizationComponent: KlarnaTokenizationComponentProtocol, delegate: PrimerKlarnaCategoriesDelegate) {
-            self.klarnaComponent = PrimerHeadlessKlarnaComponent(tokenizationComponent: tokenizationComponent)
+            klarnaComponent = PrimerHeadlessKlarnaComponent(tokenizationComponent: tokenizationComponent)
             self.delegate = delegate
             super.init(nibName: nil, bundle: nil)
         }
@@ -60,7 +60,7 @@ import UIKit
             klarnaCategoriesView = PrimerKlarnaCategoriesView(viewModel: klarnaCategoriesVM, sharedWrapper: sharedWrapper) {
                 self.navigationController?.popViewController(animated: false)
             } onInitializePressed: { paymentCategory in
-                guard let paymentCategory = paymentCategory else { return }
+                guard let paymentCategory else { return }
                 let klarnaCollectableData = KlarnaCollectableData.paymentCategory(paymentCategory, clientToken: self.clientToken)
                 self.klarnaComponent.updateCollectedData(collectableData: klarnaCollectableData)
             } onContinuePressed: {
@@ -90,14 +90,14 @@ import UIKit
         override func viewWillAppear(_ animated: Bool) {
             super.viewWillAppear(animated)
 
-            if let parentVC = self.parent as? PrimerContainerViewController {
+            if let parentVC = parent as? PrimerContainerViewController {
                 parentVC.mockedNavigationBar.hidesBackButton = true
             }
         }
 
         override func viewWillDisappear(_ animated: Bool) {
             super.viewWillDisappear(animated)
-            if let parentVC = self.parent as? PrimerContainerViewController {
+            if let parentVC = parent as? PrimerContainerViewController {
                 parentVC.mockedNavigationBar.hidesBackButton = false
             }
         }

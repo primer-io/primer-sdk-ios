@@ -200,7 +200,7 @@ final class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 savedPaymentMethodStackView.addArrangedSubview(paymentMethodStackView)
             }
 
-            if let index = index {
+            if let index {
                 verticalStackView.insertArrangedSubview(savedPaymentMethodStackView, at: index)
             } else {
                 verticalStackView.addArrangedSubview(savedPaymentMethodStackView)
@@ -209,7 +209,7 @@ final class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             removeSavedCardsView()
         }
 
-        (self.parent as? PrimerContainerViewController)?.layoutContainerViewControllerIfNeeded {
+        (parent as? PrimerContainerViewController)?.layoutContainerViewControllerIfNeeded {
             self.verticalStackView.layoutIfNeeded()
         }
 
@@ -240,13 +240,13 @@ final class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         let vpivc = VaultedPaymentInstrumentsViewController()
         vpivc.delegate = self
         vpivc.view.translatesAutoresizingMaskIntoConstraints = false
-        vpivc.view.heightAnchor.constraint(equalToConstant: self.parent!.view.bounds.height).isActive = true
+        vpivc.view.heightAnchor.constraint(equalToConstant: parent!.view.bounds.height).isActive = true
         PrimerUIManager.primerRootViewController?.show(viewController: vpivc)
     }
 
     @objc
     func payButtonTapped() {
-        guard let selectedPaymentMethod = selectedPaymentMethod else { return }
+        guard let selectedPaymentMethod else { return }
         guard let selectedPaymentMethodType = selectedPaymentMethod.paymentMethodType else { return }
         guard let config = PrimerAPIConfiguration.paymentMethodConfigs?.filter({ $0.type == selectedPaymentMethodType }).first else {
             return

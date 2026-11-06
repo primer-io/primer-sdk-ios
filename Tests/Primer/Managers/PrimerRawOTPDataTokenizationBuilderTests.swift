@@ -7,7 +7,7 @@
 import PrimerFoundation
 @testable import PrimerSDK
 import XCTest
-@_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) @testable import PrimerCore
 
 class PrimerRawOTPDataTokenizationBuilderTests: XCTestCase {
 

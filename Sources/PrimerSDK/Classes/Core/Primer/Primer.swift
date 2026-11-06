@@ -58,6 +58,12 @@ public final class Primer {
 
     fileprivate init() {
         ErrorHandler.fire = { Analytics.Service.fire(event: Analytics.event(for: $0)) }
+
+        // Register custom fonts for CheckoutComponents
+        if #available(iOS 15.0, *) {
+            FontRegistration.registerFonts()
+        }
+        SDUITokenResolvers.register()
     }
 
     public func application(
@@ -117,6 +123,7 @@ public final class Primer {
         completion: ((Error?) -> Void)? = nil
     ) {
         PrimerInternal.shared.sdkIntegrationType = .dropIn
+        PrimerInternal.shared.sdkIntegrationProduct = .dropIn
         PrimerInternal.shared.showPaymentMethod(
             paymentMethodType,
             withIntent: intent,

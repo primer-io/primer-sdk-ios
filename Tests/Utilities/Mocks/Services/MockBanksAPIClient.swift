@@ -6,7 +6,7 @@
 
 import PrimerFoundation
 @testable import PrimerSDK
-@_spi(PrimerInternal) import PrimerNetworking
+@_spi(PrimerInternal) @testable import PrimerNetworking
 
 final class MockBanksAPIClient: PrimerAPIClientBanksProtocol {
 
@@ -15,9 +15,9 @@ final class MockBanksAPIClient: PrimerAPIClientBanksProtocol {
     var error: Error?
 
     func listAdyenBanks(clientToken: DecodedJWTToken, request: Request.Body.Adyen.BanksList, completion: @escaping PrimerSDK.APICompletion<BanksListSessionResponse>) {
-        if let error = error {
+        if let error {
             completion(.failure(error))
-        } else if let result = result {
+        } else if let result {
             completion(.success(result))
         }
     }

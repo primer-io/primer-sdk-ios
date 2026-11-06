@@ -1,0 +1,362 @@
+//
+//  DefaultKlarnaScope.swift
+//
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
+
+import SwiftUI
+@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerCore
+
+@available(iOS 15.0, *)
+@MainActor
+final class DefaultKlarnaScope: PrimerKlarnaScope, ObservableObject, LogReporter {
+
+  nonisolated static let paymentViewHeightTimeout: UInt64 = 1_500_000_000
+  static let fallbackPaymentViewHeight: CGFloat = 200
+
+  private(set) var presentationContext: PresentationContext
+
+  var dismissalMechanism: [DismissalMechanism] {
+    checkoutScope?.dismissalMechanism ?? []
+  }
+
+  private(set) var paymentView: UIView?
+
+  var state: AsyncStream<PrimerKlarnaState> {
+    AsyncStream { continuation in
+      let task = Task { @MainActor in
+        for await _ in $internalState.values {
+          continuation.yield(internalState)
+        }
+        continuation.finish()
+      }
+
+      continuation.onTermination = { _ in
+        task.cancel()
+      }
+    }
+  }
+
+  var screen: KlarnaScreenComponent?
+  var authorizeButton: KlarnaButtonComponent?
+  var finalizeButton: KlarnaButtonComponent?
+
+  private weak var checkoutScope: DefaultCheckoutScope?
+  private let processKlarnaInteractor: ProcessKlarnaPaymentInteractor
+  private let analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol?
+  private let waitForPaymentViewHeight: () async -> Void
+
+  @Published private var internalState = PrimerKlarnaState()
+
+  private var klarnaClientToken: String?
+
+  private var authorizationToken: String?
+
+  private var sessionTask: Task<Void, Never>?
+  private var paymentViewHeightTask: Task<Void, Never>?
+  private var paymentViewHeightFallbackTask: Task<Void, Never>?
+  private var hasStarted = false
+
+  init(
+    checkoutScope: DefaultCheckoutScope,
+    presentationContext: PresentationContext = .fromPaymentSelection,
+    processKlarnaInteractor: ProcessKlarnaPaymentInteractor,
+    analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol? = nil,
+    waitForPaymentViewHeight: @escaping () async -> Void = {
+      try? await Task.sleep(nanoseconds: DefaultKlarnaScope.paymentViewHeightTimeout)
+    }
+  ) {
+    self.checkoutScope = checkoutScope
+    self.presentationContext = presentationContext
+    self.processKlarnaInteractor = processKlarnaInteractor
+    self.analyticsInteractor = analyticsInteractor
+    self.waitForPaymentViewHeight = waitForPaymentViewHeight
+    observePaymentViewHeights()
+  }
+
+  deinit {
+    paymentViewHeightTask?.cancel()
+    paymentViewHeightFallbackTask?.cancel()
+  }
+
+  func start() {
+    guard !hasStarted, sessionTask == nil else { return }
+    hasStarted = true
+    logger.debug(message: "Klarna scope started")
+    sessionTask = Task { [self] in
+      await createSession()
+      sessionTask = nil
+    }
+  }
+
+  func prepareForReentry() {
+    hasStarted = false
+  }
+
+  func submit() {
+    authorizePayment()
+  }
+
+  func cancel() {
+    logger.debug(message: "Klarna payment cancelled")
+    guard let checkoutScope else {
+      logger.warn(message: "Klarna checkout scope was deallocated during cancel")
+      return
+    }
+    checkoutScope.cancelActivePaymentMethod(returnToSelection: presentationContext.shouldShowBackButton)
+  }
+
+  func selectPaymentCategory(_ categoryId: String) {
+    guard internalState.categories.contains(where: { $0.id == categoryId }) else {
+      logger.warn(message: "Invalid category ID: \(categoryId)")
+      return
+    }
+
+    internalState = PrimerKlarnaState(
+      step: .categorySelection,
+      categories: internalState.categories,
+      selectedCategoryId: categoryId
+    )
+    paymentView = nil
+    paymentViewHeightFallbackTask?.cancel()
+
+    Task { [self] in
+      await loadPaymentView(for: categoryId)
+    }
+  }
+
+  func authorizePayment() {
+    guard internalState.isSelectedOptionReady else {
+      logger.warn(message: "Cannot authorize before the selected option is ready, step: \(internalState.step)")
+      return
+    }
+    paymentViewHeightFallbackTask?.cancel()
+
+    internalState = PrimerKlarnaState(
+      step: .authorizationStarted,
+      categories: internalState.categories,
+      selectedCategoryId: internalState.selectedCategoryId
+    )
+
+    Task { [self] in
+      await performAuthorization()
+    }
+  }
+
+  func finalizePayment() {
+    guard internalState.step == .awaitingFinalization else {
+      logger.warn(message: "Cannot finalize in current step: \(internalState.step)")
+      return
+    }
+
+    Task { [self] in
+      await performFinalization()
+    }
+  }
+
+  func onBack() {
+    guard presentationContext.shouldShowBackButton else { return }
+    guard let checkoutScope else {
+      logger.warn(message: "Klarna checkout scope was deallocated during navigation back")
+      return
+    }
+    checkoutScope.checkoutNavigator.navigateBack()
+  }
+
+  private func observePaymentViewHeights() {
+    let heights = processKlarnaInteractor.paymentViewHeights
+    paymentViewHeightTask = Task { [weak self] in
+      for await height in heights {
+        guard let self else { return }
+        updatePaymentViewHeight(height)
+      }
+    }
+  }
+
+  private func updatePaymentViewHeight(_ height: CGFloat) {
+    guard internalState.step == .viewReady, height != internalState.paymentViewHeight else { return }
+    internalState.paymentViewHeight = height
+    guard height > 0 else { return }
+    paymentViewHeightFallbackTask?.cancel()
+    internalState.isSelectedOptionReady = true
+  }
+
+  private func startPaymentViewHeightFallback() {
+    paymentViewHeightFallbackTask = Task { [weak self, waitForPaymentViewHeight] in
+      await waitForPaymentViewHeight()
+      guard let self, !Task.isCancelled, internalState.step == .viewReady, !internalState.isSelectedOptionReady
+      else { return }
+      logger.warn(message: "Klarna reported no payment view height, showing the fallback height")
+      internalState.paymentViewHeight = Self.fallbackPaymentViewHeight
+      internalState.isSelectedOptionReady = true
+    }
+  }
+
+  private func handleError(_ error: Error, context: String) {
+    logger.error(message: "Klarna \(context) failed: \(error.localizedDescription)")
+    let primerError =
+      error as? PrimerError ?? PrimerError.unknown(message: error.localizedDescription)
+    guard let checkoutScope else {
+      logger.error(message: "Klarna checkout scope was deallocated during \(context)")
+      return
+    }
+    checkoutScope.handlePaymentError(primerError)
+  }
+
+  private func createSession() async {
+    internalState = PrimerKlarnaState(step: .loading)
+
+    do {
+      let sessionResult = try await processKlarnaInteractor.createSession()
+      klarnaClientToken = sessionResult.clientToken
+
+      internalState = PrimerKlarnaState(
+        step: .categorySelection,
+        categories: sessionResult.categories
+      )
+
+      logger.debug(
+        message: "Klarna session created with \(sessionResult.categories.count) categories")
+    } catch {
+      handleError(error, context: "session creation")
+    }
+  }
+
+  private func loadPaymentView(for categoryId: String) async {
+    guard let klarnaClientToken else {
+      logger.error(message: "Klarna client token not available")
+      handleError(
+        PrimerError.klarnaError(
+          message: "Payment session not properly initialized",
+          diagnosticsId: UUID().uuidString
+        ),
+        context: "view loading"
+      )
+      return
+    }
+
+    do {
+      let view = try await processKlarnaInteractor.configureForCategory(
+        clientToken: klarnaClientToken,
+        categoryId: categoryId
+      )
+
+      // Guard against race condition: user may have switched categories while loading
+      guard internalState.selectedCategoryId == categoryId else { return }
+
+      paymentView = view
+      internalState = PrimerKlarnaState(
+        step: .viewReady,
+        categories: internalState.categories,
+        selectedCategoryId: internalState.selectedCategoryId,
+        isSelectedOptionReady: view == nil
+      )
+      if view != nil {
+        startPaymentViewHeightFallback()
+      }
+    } catch {
+      logger.error(message: "Failed to load Klarna payment view: \(error.localizedDescription)")
+      guard internalState.selectedCategoryId == categoryId else { return }
+      handleError(error, context: "view loading")
+    }
+  }
+
+  private func performAuthorization() async {
+    guard let checkoutScope else {
+      logger.warn(message: "Klarna checkout scope was deallocated before authorization")
+      return
+    }
+
+    do {
+      try await checkoutScope.invokeBeforePaymentCreate(
+        paymentMethodType: PrimerPaymentMethodType.klarna.rawValue
+      )
+    } catch {
+      handleError(error, context: "before payment create")
+      return
+    }
+
+    // Not `startProcessing`: authorization cannot run twice, so a retry opens a new session.
+    checkoutScope.updateNavigationState(.processing)
+
+    await analyticsInteractor?.trackProcessingStarted(PrimerPaymentMethodType.klarna.rawValue)
+
+    do {
+      let result = try await processKlarnaInteractor.authorize()
+
+      switch result {
+      case let .approved(authToken):
+        authorizationToken = authToken
+        await processPayment(authToken: authToken)
+
+      case let .finalizationRequired(authToken):
+        authorizationToken = authToken
+        internalState = PrimerKlarnaState(
+          step: .awaitingFinalization,
+          categories: internalState.categories,
+          selectedCategoryId: internalState.selectedCategoryId
+        )
+
+      // Klarna reports a closed consent alert or sheet as approved:false, so this is a cancel, as in PayPal.
+      case .declined:
+        cancel()
+      }
+    } catch {
+      handleError(error, context: "authorization")
+    }
+  }
+
+  private func performFinalization() async {
+    guard let checkoutScope else {
+      logger.warn(message: "Klarna checkout scope was deallocated before finalization")
+      return
+    }
+    // Not `startProcessing`, for the same reason as in `performAuthorization`.
+    checkoutScope.updateNavigationState(.processing)
+
+    do {
+      let result = try await processKlarnaInteractor.finalize()
+
+      switch result {
+      case let .approved(authToken):
+        authorizationToken = authToken
+        await processPayment(authToken: authToken)
+
+      case .finalizationRequired:
+        logger.error(message: "Unexpected finalizationRequired after finalize()")
+        guard let authToken = authorizationToken else {
+          handleError(
+            PrimerError.klarnaError(
+              message: "Authorization token not available after finalization",
+              diagnosticsId: UUID().uuidString
+            ),
+            context: "finalization"
+          )
+          return
+        }
+        await processPayment(authToken: authToken)
+
+      case .declined:
+        cancel()
+      }
+    } catch {
+      handleError(error, context: "finalization")
+    }
+  }
+
+  /// Klarna approved, so the shopper's part is done.
+  private func processPayment(authToken: String) async {
+    await analyticsInteractor?.trackSubmitted(PrimerPaymentMethodType.klarna.rawValue)
+    do {
+      let result = try await processKlarnaInteractor.tokenize(authToken: authToken)
+      guard let checkoutScope else {
+        logger.error(message: "Klarna checkout scope was deallocated during payment processing")
+        return
+      }
+      checkoutScope.handlePaymentSuccess(result)
+    } catch {
+      handleError(error, context: "payment processing")
+    }
+  }
+}

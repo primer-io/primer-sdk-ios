@@ -35,6 +35,8 @@ protocol PrimerAPIClientProtocol:
         requestParameters: Request.URLParameters.Configuration?
     ) async throws -> (PrimerAPIConfiguration, [String: String]?)
 
+    func refreshClientSession(clientToken: DecodedJWTToken) async throws -> PrimerAPIConfiguration
+
     func validateClientToken(
         request: Request.Body.ClientTokenValidation,
         completion: @escaping APICompletion<SuccessResponse>
@@ -54,6 +56,13 @@ protocol PrimerAPIClientProtocol:
         clientToken: DecodedJWTToken,
         request: ClientSessionUpdateRequest
     ) async throws -> (PrimerAPIConfiguration, [String: String]?)
+
+    // MARK: Adyen Klarna
+
+    func listAdyenKlarnaPaymentTypes(
+        clientToken: DecodedJWTToken,
+        paymentMethodConfigId: String
+    ) async throws -> AdyenKlarnaPaymentOptionsResponse
 
     // MARK: Klarna
 

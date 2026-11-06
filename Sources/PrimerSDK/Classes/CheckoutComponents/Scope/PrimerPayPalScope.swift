@@ -1,0 +1,35 @@
+//
+//  PrimerPayPalScope.swift
+//
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
+
+import SwiftUI
+@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerCore
+
+/// Type alias for PayPal screen customization component.
+@available(iOS 15.0, *)
+typealias PayPalScreenComponent = (any PrimerPayPalScope) -> any View
+
+/// Type alias for PayPal button customization component.
+@available(iOS 15.0, *)
+typealias PayPalButtonComponent = (any PrimerPayPalScope) -> any View
+
+/// Scope protocol for PayPal payment method.
+/// Provides state observation and UI customization for redirect-based PayPal payments.
+@available(iOS 15.0, *)
+@MainActor
+protocol PrimerPayPalScope: PrimerPaymentMethodScope where State == PrimerPayPalState {
+
+  // MARK: - Screen-Level Customization
+
+  /// Custom screen component to replace the entire PayPal screen.
+  var screen: PayPalScreenComponent? { get set }
+
+  /// Custom button component to replace the PayPal submit button.
+  var payButton: PayPalButtonComponent? { get set }
+
+  /// Custom text for the submit button (default: "Continue with PayPal").
+  var submitButtonText: String? { get set }
+}

@@ -67,14 +67,14 @@ final class ImageFile: File {
     }
 
     var cachedImage: UIImage? {
-        guard let data = self.data, let image = UIImage(data: data, scale: 2.0) else { return nil }
+        guard let data, let image = UIImage(data: data, scale: 2.0) else { return nil }
         return image
     }
 
     var bundledImage: UIImage? {
-        let paymentMethodType = ImageFile.getPaymentMethodType(fromFileName: self.fileName) ?? self.fileName
+        let paymentMethodType = ImageFile.getPaymentMethodType(fromFileName: fileName) ?? fileName
 
-        if self.fileName.contains("dark") == true {
+        if fileName.contains("dark") == true {
             if let paymentMethodLogoFileName = ImageFile.getBundledImageFileName(
                 forPaymentMethodType: paymentMethodType,
                 themeMode: .dark,
@@ -85,7 +85,7 @@ final class ImageFile: File {
             } else if let image = UIImage(primerResource: fileName) {
                 return image
             }
-        } else if self.fileName.contains("light") == true {
+        } else if fileName.contains("light") == true {
             if let paymentMethodLogoFileName = ImageFile.getBundledImageFileName(
                 forPaymentMethodType: paymentMethodType,
                 themeMode: .light,
@@ -96,7 +96,7 @@ final class ImageFile: File {
             } else if let image = UIImage(primerResource: fileName) {
                 return image
             }
-        } else if self.fileName.contains("colored") == true {
+        } else if fileName.contains("colored") == true {
             if let paymentMethodLogoFileName = ImageFile.getBundledImageFileName(
                 forPaymentMethodType: paymentMethodType,
                 themeMode: .colored,
@@ -117,8 +117,13 @@ final class ImageFile: File {
     }
 }
 
-// MARK: MISSING_TESTS
 final class ImageManager: LogReporter {
+    private let downloader: DownloaderModule
+
+    init(downloader: DownloaderModule = Downloader()) {
+        self.downloader = downloader
+    }
+
     func getImages(for imageFiles: [ImageFile]) async throws -> [ImageFile] {
         guard !imageFiles.isEmpty else { return [] }
 
@@ -156,8 +161,8 @@ final class ImageManager: LogReporter {
     }
 
     func getImage(file: ImageFile) async throws -> ImageFile {
-        // Check if image already exists (cached or bundled)
-        guard file.image == nil else {
+        // A bundled copy is only the fallback for a failed download (catch below)
+        guard file.cachedImage == nil else {
             return file
         }
 
@@ -166,7 +171,6 @@ final class ImageManager: LogReporter {
             return file
         }
 
-        let download = Downloader()
         let timingEventId = UUID().uuidString
         let timingEventStart = Analytics.Event.allImagesLoading(
             momentType: .start,
@@ -186,7 +190,7 @@ final class ImageManager: LogReporter {
         // If the image download fails, check for a bundled image with the filename,
         // if it exists continue.
         do {
-            let file = try await download.download(file: file)
+            let file = try await downloader.download(file: file)
 
             if let imageFile = file as? ImageFile, imageFile.cachedImage != nil {
                 return imageFile

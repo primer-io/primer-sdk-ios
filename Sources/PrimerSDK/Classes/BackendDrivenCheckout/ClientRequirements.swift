@@ -6,6 +6,7 @@
 
 @_spi(PrimerInternal) import PrimerBDCCore
 @_spi(PrimerInternal) import PrimerBDCEngine
+@_spi(PrimerInternal) import PrimerBDCUI
 @_spi(PrimerInternal) import PrimerCore
 @_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerStepResolver
@@ -17,7 +18,12 @@ enum ClientRequirements {
     static func checkConfiguration() async {
         let methods = PrimerAPIConfiguration.paymentMethodConfigs
         guard let methods, methods.contains(where: \.isBackendDriven) else { return }
-        
+
+        await PrimerUIComponentRegistry.shared.declarePrimitives()
+        #if canImport(PrimerKlarnaSDK)
+        await KlarnaWidgetComponent.register()
+        #endif
+
         let verdicts: ClientRequirementsVerdicts
         
         do {
@@ -85,7 +91,7 @@ enum ClientRequirements {
         guard let unmetJSON else { return }
         
         let message = "Client requirements not met for \(method.type)"
-        logger.warn(message: message)
+        logger.warn(message: "\(message): \(unmetJSON)")
 
         let context: [String: String] = ["paymentMethodType": method.type, "unmet": unmetJSON]
         let type: Analytics.Event.Property.MessageType = .backendDrivenClientRequirementsNotMet
