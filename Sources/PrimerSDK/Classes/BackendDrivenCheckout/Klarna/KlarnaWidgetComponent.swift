@@ -7,6 +7,7 @@
 #if canImport(PrimerKlarnaSDK)
 @_spi(PrimerInternal) import PrimerBDCUI
 @_spi(PrimerInternal) import PrimerFoundation
+import PrimerKlarnaSDK
 @_spi(PrimerInternal) import PrimerStepResolver
 
 enum KlarnaWidgetComponent {
@@ -34,7 +35,10 @@ enum KlarnaWidgetComponent {
             clientToken: params?.clientToken ?? "",
             category: params?.category ?? "",
             urlScheme: urlScheme,
-            onLoaded: { params?.readyField.map { onChange($0, .bool(true)) } }
+            onReady: { params?.readyField.map { onChange($0, .bool(true)) } },
+            onFailed: { error in
+                onEvent("failed", ["name": .string(error.errorId), "message": .string(error.localizedDescription)])
+            }
         )
     }
 }
