@@ -84,7 +84,7 @@ private extension ComponentView {
             case let .text(props): makeTextView(props: props)
             case let .textField(props): makeTextFieldView(props: props)
             case .spacer: Spacer()
-            case let .custom(type, props): ProviderComponentView(type: type, props: props).id(props)
+            case let .custom(type, props): ProviderComponentView(type: type, id: componentArgs.fieldID, props: props).id(props)
             default: content()
             }
         }
