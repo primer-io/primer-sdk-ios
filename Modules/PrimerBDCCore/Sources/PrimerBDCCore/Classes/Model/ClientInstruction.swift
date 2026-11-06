@@ -32,10 +32,12 @@ public enum SetupInstruction {
 public struct SetupState {
     public let instruction: SetupInstruction
     public let nextPoll: NextPoll
+    public let pollDelayMilliseconds: Int
 
-    public init(instruction: SetupInstruction, nextPoll: NextPoll) {
+    public init(instruction: SetupInstruction, nextPoll: NextPoll, pollDelayMilliseconds: Int = 0) {
         self.instruction = instruction
         self.nextPoll = nextPoll
+        self.pollDelayMilliseconds = pollDelayMilliseconds
     }
 }
 
@@ -51,12 +53,20 @@ public struct SetupFlow {
     public let parameters: CodableValue
     public let setupId: String
     public let nextPoll: NextPoll
+    public let pollDelayMilliseconds: Int
 
-    public init(schema: CodableValue, parameters: CodableValue, setupId: String, nextPoll: NextPoll) {
+    public init(
+        schema: CodableValue,
+        parameters: CodableValue,
+        setupId: String,
+        nextPoll: NextPoll,
+        pollDelayMilliseconds: Int = 0
+    ) {
         self.schema = schema
         self.parameters = parameters
         self.setupId = setupId
         self.nextPoll = nextPoll
+        self.pollDelayMilliseconds = pollDelayMilliseconds
     }
 }
 

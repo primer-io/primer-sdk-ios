@@ -94,15 +94,36 @@ final class BackendDrivenCheckoutOrchestratorTests: XCTestCase {
         XCTAssertNil(state["params"])
     }
 
-    func testSetupDoesNotPollUnderSuspend() async throws {
+    func testSetupWaitsForTheShopperUnderSuspend() async {
         let provider = MockInstructionProvider([])
         let mock = MockStepOrchestrator()
 
-        try await BackendDrivenCheckoutOrchestrator(stepOrchestrator: mock)
-            .runSetup(pciUrl: nil, coreUrl: nil, instructionProvider: provider)
+        do {
+            try await BackendDrivenCheckoutOrchestrator(stepOrchestrator: mock)
+                .runSetup(pciUrl: nil, coreUrl: nil, instructionProvider: provider)
+            XCTFail("Expected the setup to end when the shopper leaves")
+        } catch {
+            XCTAssertTrue(error is CancellationError)
+        }
 
         XCTAssertEqual(provider.fetchCount, 1)
-        XCTAssertEqual(mock.startCallCount, 1)
+        XCTAssertEqual(mock.pollWaits, [30000])
+    }
+
+    func testSetupWaitsAsEachAnswerSays() async throws {
+        let provider = MockInstructionProvider([])
+        provider.setupStates = [
+            SetupState(instruction: .wait, nextPoll: .interval, pollDelayMilliseconds: 1000),
+            SetupState(instruction: .setupComplete(token: "token"), nextPoll: .interval),
+        ]
+        let mock = MockStepOrchestrator()
+        mock.pollWakes = 2
+
+        let token = try await BackendDrivenCheckoutOrchestrator(stepOrchestrator: mock)
+            .runSetup(pciUrl: nil, coreUrl: nil, instructionProvider: provider)
+
+        XCTAssertEqual(token, "token")
+        XCTAssertEqual(mock.pollWaits, [30000, 1000])
     }
 
     func testSetupPollsUnderIntervalUntilComplete() async throws {
@@ -113,6 +134,7 @@ final class BackendDrivenCheckoutOrchestratorTests: XCTestCase {
             SetupState(instruction: .setupComplete(token: "token"), nextPoll: .interval),
         ]
         let mock = MockStepOrchestrator()
+        mock.pollWakes = 2
 
         try await BackendDrivenCheckoutOrchestrator(stepOrchestrator: mock)
             .runSetup(pciUrl: nil, coreUrl: nil, instructionProvider: provider)
@@ -125,18 +147,13 @@ final class BackendDrivenCheckoutOrchestratorTests: XCTestCase {
         let provider = MockInstructionProvider([])
         provider.setupFlow = SetupFlow(schema: .object([:]), parameters: .object([:]), setupId: "setup-1", nextPoll: .interval)
         provider.setupStates = [SetupState(instruction: .setupComplete(token: "token"), nextPoll: .interval)]
+        let mock = MockStepOrchestrator()
+        mock.pollWakes = 1
 
-        let token = try await BackendDrivenCheckoutOrchestrator(stepOrchestrator: MockStepOrchestrator())
+        let token = try await BackendDrivenCheckoutOrchestrator(stepOrchestrator: mock)
             .runSetup(pciUrl: nil, coreUrl: nil, instructionProvider: provider)
 
         XCTAssertEqual(token, "token")
-    }
-
-    func testSetupReturnsNoTokenWhenPollingStopsFirst() async throws {
-        let token = try await BackendDrivenCheckoutOrchestrator(stepOrchestrator: MockStepOrchestrator())
-            .runSetup(pciUrl: nil, coreUrl: nil, instructionProvider: MockInstructionProvider([]))
-
-        XCTAssertNil(token)
     }
 
     func testPayWithATokenFollowsInstructionsToTheEnd() async throws {
@@ -152,8 +169,12 @@ final class BackendDrivenCheckoutOrchestratorTests: XCTestCase {
     func testSetupStartsANewScreenOnExecute() async throws {
         let provider = MockInstructionProvider([])
         provider.setupFlow = SetupFlow(schema: .object([:]), parameters: .object([:]), setupId: "setup-1", nextPoll: .interval)
-        provider.setupStates = [SetupState(instruction: .execute(screen: .object([:])), nextPoll: .suspend)]
+        provider.setupStates = [
+            SetupState(instruction: .execute(screen: .object([:])), nextPoll: .interval),
+            SetupState(instruction: .setupComplete(token: "token"), nextPoll: .interval),
+        ]
         let mock = MockStepOrchestrator()
+        mock.pollWakes = 2
 
         try await BackendDrivenCheckoutOrchestrator(stepOrchestrator: mock)
             .runSetup(pciUrl: nil, coreUrl: nil, instructionProvider: provider)

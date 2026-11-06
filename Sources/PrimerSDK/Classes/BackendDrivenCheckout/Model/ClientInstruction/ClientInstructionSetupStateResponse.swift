@@ -19,6 +19,7 @@ struct ClientInstructionSetupStateResponse: Decodable {
     struct Instruction: Decodable {
         let type: SetupInstructionType
         let nextPoll: NextPoll?
+        let pollDelayMilliseconds: Int?
         let payload: Payload?
     }
 

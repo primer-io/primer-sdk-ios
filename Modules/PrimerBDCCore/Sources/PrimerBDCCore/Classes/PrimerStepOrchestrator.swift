@@ -14,6 +14,7 @@ protocol StepOrchestrating: AnyObject {
     var onURLOpen: (() -> Void)? { get set }
     func start(rawSchema: String, initialState: CodableValue) async throws
     func applyEvent(_ value: CodableValue) async throws
+    func waitToPoll(milliseconds: Int) async throws
 }
 
 @MainActor
@@ -30,6 +31,7 @@ final class PrimerStepOrchestrator: StepOrchestrating {
     private var rawSchema: String!
     private let harness = SFSafariViewControllerHarness()
     private var state: CodableState = [:]
+    private let pollWaker = SetupPollWaker()
 
     init(
         engine: any BDCEngineProtocol,
@@ -89,9 +91,14 @@ final class PrimerStepOrchestrator: StepOrchestrating {
         try await decodeResult(result, rawSchema: rawSchema)
     }
 
+    func waitToPoll(milliseconds: Int) async throws {
+        try await pollWaker.wait(milliseconds: milliseconds)
+    }
+
     private func handleAction(_ action: WorkflowStep, rawSchema: String) async throws {
         try await sleep(forMilliseconds: action.delayMs)
         let resolution = try await registry.resolve(action.type, data: action.params)
+        if action.type == StepCapability.httpRequest.rawValue { pollWaker.wake() }
         try await applyResult(resolution, actionId: action.id, rawSchema: rawSchema)
     }
 
@@ -103,12 +110,15 @@ final class PrimerStepOrchestrator: StepOrchestrating {
     }
 
     private func handleOutcome(_ outcome: TerminalOutcome) throws {
-        switch outcome {
-        case .cancelled: throw BackendDrivenCheckoutCancellation()
-        case .error: throw PrimerStepOrchestratorError.checkoutTerminalError
-        case .unsupported: throw PrimerStepOrchestratorError.receivedUnexpectedTerminalOutcome(outcome: outcome)
-        case .success: break // Allow polling to update us
+        let error: Error? = switch outcome {
+        case .cancelled: BackendDrivenCheckoutCancellation()
+        case .error: PrimerStepOrchestratorError.checkoutTerminalError
+        case .unsupported: PrimerStepOrchestratorError.receivedUnexpectedTerminalOutcome(outcome: outcome)
+        case .success: nil
         }
+        guard let error else { return pollWaker.wake() }
+        pollWaker.fail(error)
+        throw error
     }
 
     private func applyResult(_ resolution: StepResolutionResult, actionId: String, rawSchema: String) async throws {

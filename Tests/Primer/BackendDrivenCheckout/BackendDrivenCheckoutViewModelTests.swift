@@ -216,7 +216,10 @@ private final class MockBDCStepOrchestrator: StepOrchestrating {
     func applyEvent(_ value: PrimerFoundation.CodableValue) async throws {
         
     }
-    
+
+    func waitToPoll(milliseconds: Int) async throws {
+        throw CancellationError()
+    }
 }
 
 private final class MockBDCInstructionProvider: ClientInstructionProvider {
