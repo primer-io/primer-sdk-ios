@@ -26,6 +26,7 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
     private var orchestrator: BackendDrivenCheckoutOrchestrator?
     private var checkoutTask: Task<Void, Never>?
     private var sduiController: UIViewController?
+    private var vaultedPaymentInstrumentTokenId: String?
 
     convenience init(
         config: PrimerPaymentMethod,
@@ -57,6 +58,12 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
         )
     }
     
+    func start(paymentInstrumentTokenId: String) async {
+        vaultedPaymentInstrumentTokenId = paymentInstrumentTokenId
+        start()
+        await checkoutTask?.value
+    }
+
     override func start() {
         checkoutTask = Task { @MainActor in
             defer { config.tokenizationViewModel = nil }
@@ -75,7 +82,14 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
                 let coreUrl = PrimerAPIConfigurationModule.apiConfiguration?.coreUrl
                 let result: CheckoutResult?
 
-                if config.entry.requiresSetup {
+                if let vaultedPaymentInstrumentTokenId {
+                    result = try await orchestrator?.pay(
+                        paymentInstrumentTokenId: vaultedPaymentInstrumentTokenId,
+                        pciUrl: pciUrl,
+                        coreUrl: coreUrl,
+                        instructionProvider: instructionProvider
+                    )
+                } else if config.entry.requiresSetup {
                     await presentSDUI()
                     let token = try await orchestrator?.runSetup(
                         pciUrl: pciUrl,
@@ -97,7 +111,7 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
                         instructionProvider: instructionProvider
                     )
                 }
-                
+
                 switch result {
                 case let .success(payment): await handleSuccess(payment)
                 case let .failure(payment): await handleFailure(payment, diagnosticsId: .uuid)
