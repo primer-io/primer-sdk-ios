@@ -23,7 +23,11 @@ enum KlarnaWidgetComponent {
         PrimerStepResolverRegistry.shared.register(KlarnaAuthorizeResolver(), for: .klarnaAuthorize)
     }
 
-    private static func makeWidget(props: CodableValue?, onChange: @escaping SDUIComponentRegistry.OnChange) -> KlarnaWidgetContainerView {
+    private static func makeWidget(
+        props: CodableValue?,
+        onChange: @escaping SDUIComponentRegistry.OnChange,
+        onEvent: @escaping SDUIComponentRegistry.OnEvent
+    ) -> KlarnaWidgetContainerView {
         let params = try? props?.casted(to: Params.self)
         let urlScheme = (try? PrimerSettings.current.paymentMethodOptions.validUrlForUrlScheme())?.absoluteString
         return KlarnaWidgetContainerView(

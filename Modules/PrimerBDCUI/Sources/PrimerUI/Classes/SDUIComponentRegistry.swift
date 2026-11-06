@@ -4,14 +4,15 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import UIKit
 @_spi(PrimerInternal) import PrimerFoundation
+import UIKit
 
 @_spi(PrimerInternal) public final class SDUIComponentRegistry {
     public static let shared = SDUIComponentRegistry()
 
     public typealias OnChange = @MainActor (_ id: String, _ value: CodableValue) -> Void
-    public typealias Factory = (_ props: CodableValue?, _ onChange: @escaping OnChange) -> UIView?
+    public typealias OnEvent = @MainActor (_ type: String, _ data: [String: CodableValue]) -> Void
+    public typealias Factory = (_ props: CodableValue?, _ onChange: @escaping OnChange, _ onEvent: @escaping OnEvent) -> UIView?
 
     private var factories: [String: Factory] = [:]
 
@@ -21,7 +22,7 @@ import UIKit
         factories[type] = factory
     }
 
-    func view(for type: String, props: CodableValue?, onChange: @escaping OnChange) -> UIView? {
-        factories[type].flatMap { $0(props, onChange) }
+    func view(for type: String, props: CodableValue?, onChange: @escaping OnChange, onEvent: @escaping OnEvent) -> UIView? {
+        factories[type].flatMap { $0(props, onChange, onEvent) }
     }
 }

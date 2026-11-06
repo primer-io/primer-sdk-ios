@@ -9,6 +9,7 @@
 enum Event {
     case input(id: String, value: CodableValue, type: InputEventType)
     case click(id: String)
+    case provider(type: String, id: String?, data: [String: CodableValue])
 
     func callAsFunction() -> CodableValue {
         switch self {
@@ -16,6 +17,8 @@ enum Event {
             .object(["type": .string(type.rawValue), "id": .string(id), "value": value])
         case let .click(id):
             .object(["type": .string("click"), "id": .string(id)])
+        case let .provider(type, id, data):
+            .object(data.merging(["type": .string(type), "id": id.map(CodableValue.string)].compactMapValues { $0 }) { $1 })
         }
     }
 }
