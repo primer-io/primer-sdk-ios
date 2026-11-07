@@ -314,4 +314,19 @@ final class PrimerCardFormSessionTests: XCTestCase {
     session.selectCardNetwork(PrimerCardNetwork(network: .visa))
     XCTAssertEqual(session.state, PrimerCardFormState())
   }
+
+  func test_payButtonTitle_withoutOptions_isPay() {
+    XCTAssertEqual(PrimerCardFormSession(scope: TrackingFieldScope()).payButtonTitle, CheckoutComponentsStrings.payButton)
+  }
+
+  func test_payButtonTitle_withCustomText_usesIt() {
+    let scope = TrackingFieldScope()
+    scope.cardFormUIOptions = PrimerCardFormUIOptions(payButtonText: "Complete order", payButtonAmountVisible: true)
+
+    XCTAssertEqual(PrimerCardFormSession(scope: scope).payButtonTitle, "Complete order")
+  }
+
+  func test_payButtonTitle_whenScopeIsNotInternal_isPay() {
+    XCTAssertEqual(PrimerCardFormSession(scope: StubCardFormScope()).payButtonTitle, CheckoutComponentsStrings.payButton)
+  }
 }
