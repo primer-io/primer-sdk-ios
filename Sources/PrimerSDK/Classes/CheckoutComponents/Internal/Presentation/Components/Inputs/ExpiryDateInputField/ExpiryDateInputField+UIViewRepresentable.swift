@@ -240,21 +240,8 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
 
       // Parse MM/YY format for non-empty fields
       let components = expiryDate.components(separatedBy: "/")
-
-      guard components.count == 2 else {
-        isValid = false
-        if showErrors {
-          errorMessage = CheckoutComponentsStrings.enterValidExpiryDate
-          scope.setFieldError(
-            .expiryDate, message: CheckoutComponentsStrings.enterValidExpiryDate,
-            errorCode: "invalid_format")
-        }
-        scope.updateValidationState(\.expiry, isValid: false)
-        return
-      }
-
       let month = components[0].trimmingCharacters(in: .whitespacesAndNewlines)
-      let year = components[1].trimmingCharacters(in: .whitespacesAndNewlines)
+      let year = (components.dropFirst().first ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
 
       let expiryInput = ExpiryDateInput(month: month, year: year)
       let result = validationService.validate(

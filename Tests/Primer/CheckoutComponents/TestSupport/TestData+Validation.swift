@@ -5,9 +5,9 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
-@testable import PrimerSDK
-@_spi(PrimerInternal) @testable import PrimerFoundation
 @_spi(PrimerInternal) @testable import PrimerCore
+@_spi(PrimerInternal) @testable import PrimerFoundation
+@testable import PrimerSDK
 
 @available(iOS 15.0, *)
 extension TestData {
@@ -53,6 +53,10 @@ extension TestData {
         static let postalCodeRequired = "checkout_components_postal_code_required"
         static let phoneNumberRequired = "checkout_components_phone_number_required"
         static let retailOutletRequired = "checkout_components_retail_outlet_required"
+        static let cardNumberRequired = "checkout_components_card_number_required"
+        static let cvvRequired = "checkout_components_cvv_required"
+        static let expiryDateRequired = "checkout_components_expiry_date_required"
+        static let cardholderNameRequired = "checkout_components_cardholder_name_required"
 
         // Invalid field keys
         static let genericInvalid = "form_error_invalid"

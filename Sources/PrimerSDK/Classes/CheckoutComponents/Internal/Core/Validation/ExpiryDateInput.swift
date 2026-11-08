@@ -5,8 +5,8 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
-@_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
 
 struct ExpiryDateInput {
   let month: String
@@ -19,18 +19,18 @@ final class ExpiryDateRule: ValidationRule {
     let month = input.month.trimmingCharacters(in: .whitespacesAndNewlines)
     let year = input.year.trimmingCharacters(in: .whitespacesAndNewlines)
 
-    if month.isEmpty || year.isEmpty {
+    if month.isEmpty, year.isEmpty {
       let error = ErrorMessageResolver.createRequiredFieldError(for: .expiryDate)
       return .invalid(error: error)
     }
 
-    guard let monthInt = Int(month), let yearInt = Int(year) else {
-      let error = ErrorMessageResolver.createInvalidFieldError(for: .expiryDate)
+    guard let monthInt = Int(month), (1...12).contains(monthInt) else {
+      let error = ErrorMessageResolver.createInvalidFieldError(for: .expiryDate, reason: "expiry_month_invalid")
       return .invalid(error: error)
     }
 
-    if monthInt < 1 || monthInt > 12 {
-      let error = ErrorMessageResolver.createInvalidFieldError(for: .expiryDate)
+    guard year.count == 2 || year.count == 4, let yearInt = Int(year) else {
+      let error = ErrorMessageResolver.createInvalidFieldError(for: .expiryDate, reason: "expiry_year_invalid")
       return .invalid(error: error)
     }
 
