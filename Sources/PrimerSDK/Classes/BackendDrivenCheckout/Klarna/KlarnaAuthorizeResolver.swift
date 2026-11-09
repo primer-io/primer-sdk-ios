@@ -5,8 +5,8 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 #if canImport(PrimerKlarnaSDK)
-import PrimerKlarnaSDK
 @_spi(PrimerInternal) import PrimerFoundation
+import PrimerKlarnaSDK
 @_spi(PrimerInternal) import PrimerStepResolver
 
 final class KlarnaAuthorizeResolver: NSObject, StepResolver, LogReporter {
@@ -33,9 +33,11 @@ final class KlarnaAuthorizeResolver: NSObject, StepResolver, LogReporter {
 }
 
 extension KlarnaAuthorizeResolver: PrimerKlarnaProviderAuthorizationDelegate {
-    func primerKlarnaWrapperAuthorized(approved: Bool, authToken: String?, finalizeRequired _: Bool) {
-        guard approved, let authToken else { return resume(.error) }
-        resume(.success, data: .object(["authorization_token": .string(authToken)]))
+    func primerKlarnaWrapperAuthorized(approved: Bool, authToken: String?, finalizeRequired: Bool) {
+        var answer: [String: CodableValue] = ["approved": .bool(approved), "show_form": .bool(true)]
+        if approved, let authToken { answer["authorization_token"] = .string(authToken) }
+        if approved, finalizeRequired { answer["finalize_required"] = .bool(true) }
+        resume(.success, data: .object(answer))
     }
 
     func primerKlarnaWrapperReauthorized(approved _: Bool, authToken _: String?) {
@@ -53,7 +55,11 @@ extension KlarnaAuthorizeResolver: PrimerKlarnaProviderAuthorizationDelegate {
 extension KlarnaAuthorizeResolver: PrimerKlarnaProviderErrorDelegate {
     func primerKlarnaWrapperFailed(with error: PrimerKlarnaError) {
         logger.error(message: "klarna.authorize failed: \(error.localizedDescription)")
-        resume(.error)
+        resume(.success, data: .object([
+            "approved": .bool(false),
+            "show_form": .bool(true),
+            "error": .object(["name": .string(error.errorId), "message": .string(error.localizedDescription)])
+        ]))
     }
 }
 
