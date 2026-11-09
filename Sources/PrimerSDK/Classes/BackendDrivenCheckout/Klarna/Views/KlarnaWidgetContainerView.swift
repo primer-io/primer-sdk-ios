@@ -11,7 +11,8 @@ import UIKit
 
 final class KlarnaWidgetContainerView: UIView, LogReporter {
     private var provider: PrimerKlarnaProviding?
-    private let onLoaded: @MainActor () -> Void
+    private let onReady: @MainActor () -> Void
+    private let onFailed: @MainActor (PrimerKlarnaError) -> Void
     private var reportedHeight: CGFloat = 0
     private let placeholderHeight: CGFloat = 88
 
@@ -19,8 +20,15 @@ final class KlarnaWidgetContainerView: UIView, LogReporter {
         CGSize(width: UIView.noIntrinsicMetric, height: reportedHeight > 0 ? reportedHeight : placeholderHeight)
     }
 
-    init(clientToken: String, category: String, urlScheme: String?, onLoaded: @escaping @MainActor () -> Void) {
-        self.onLoaded = onLoaded
+    init(
+        clientToken: String,
+        category: String,
+        urlScheme: String?,
+        onReady: @escaping @MainActor () -> Void,
+        onFailed: @escaping @MainActor (PrimerKlarnaError) -> Void
+    ) {
+        self.onReady = onReady
+        self.onFailed = onFailed
         super.init(frame: .zero)
 
         let provider = PrimerKlarnaProvider(clientToken: clientToken, paymentCategory: category, urlScheme: urlScheme)
@@ -52,12 +60,13 @@ final class KlarnaWidgetContainerView: UIView, LogReporter {
 
 extension KlarnaWidgetContainerView: PrimerKlarnaProviderPaymentViewDelegate, PrimerKlarnaProviderErrorDelegate {
     func primerKlarnaWrapperInitialized() { provider?.loadPaymentView(jsonData: nil) }
-    func primerKlarnaWrapperLoaded() { Task { @MainActor in onLoaded() } }
+    func primerKlarnaWrapperLoaded() { Task { @MainActor in onReady() } }
     func primerKlarnaWrapperReviewLoaded() {
         // The widget only shows the payment view, never Klarna's review screen
     }
     func primerKlarnaWrapperFailed(with error: PrimerKlarnaError) {
         logger.error(message: "klarna.widget failed: \(error.localizedDescription)")
+        Task { @MainActor in onFailed(error) }
     }
 
     func primerKlarnaWrapperResized(to newHeight: CGFloat) {
