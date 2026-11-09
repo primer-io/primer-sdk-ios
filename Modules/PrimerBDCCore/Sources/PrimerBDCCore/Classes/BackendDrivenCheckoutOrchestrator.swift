@@ -10,7 +10,9 @@ import Foundation
 
 @MainActor @_spi(PrimerInternal)
 public final class BackendDrivenCheckoutOrchestrator {
-        
+
+    private static let suspendedPollFloorMilliseconds = 30000
+
     public var onURLOpened: (() -> Void)? {
         get { stepOrchestrator.onURLOpen }
         set { stepOrchestrator.onURLOpen = newValue }
@@ -80,16 +82,17 @@ public final class BackendDrivenCheckoutOrchestrator {
         pciUrl: String?,
         coreUrl: String?,
         instructionProvider: ClientInstructionProvider
-    ) async throws -> String? {
+    ) async throws -> String {
         let flow = try await instructionProvider.fetchSetupFlow()
         let sdk = SDKUrls(pciUrl: pciUrl, coreUrl: coreUrl)
         let object = InitialState(params: flow.parameters, sdk: sdk, currentAttempt: nil)
         let initialState = try object.casted(to: CodableValue.self)
         try await stepOrchestrator.start(rawSchema: flow.schema.jsonString, initialState: initialState)
 
-        var nextPoll = flow.nextPoll
-        while nextPoll == .interval {
+        var wait = pollWait(flow.nextPoll, delay: flow.pollDelayMilliseconds)
+        while true {
             try Task.checkCancellation()
+            try await stepOrchestrator.waitToPoll(milliseconds: wait)
             let state = try await instructionProvider.fetchSetupState(setupId: flow.setupId)
             switch state.instruction {
             case .wait: break
@@ -97,15 +100,18 @@ public final class BackendDrivenCheckoutOrchestrator {
             case let .execute(screen):
                 try await stepOrchestrator.start(rawSchema: screen.jsonString, initialState: initialState)
             }
-            nextPoll = state.nextPoll
+            wait = pollWait(state.nextPoll, delay: state.pollDelayMilliseconds)
         }
-        return nil
+    }
+
+    private func pollWait(_ nextPoll: NextPoll, delay: Int) -> Int {
+        nextPoll == .suspend ? Self.suspendedPollFloorMilliseconds : delay
     }
 
     private func resolveOutcome(_ outcome: CheckoutOutcome?, payment: PaymentInfo?) throws -> CheckoutResult {
         switch outcome {
-        case .complete: return .success(payment: payment)
-        case .failure: return .failure(payment: payment)
+        case .complete: .success(payment: payment)
+        case .failure: .failure(payment: payment)
         case .none: throw Error.missingCheckoutOutcome
         case .determineFromPaymentStatus: throw Error.unexpectedOutcome
         }

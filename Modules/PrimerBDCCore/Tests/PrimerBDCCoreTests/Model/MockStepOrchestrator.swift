@@ -12,6 +12,8 @@ final class MockStepOrchestrator: StepOrchestrating {
     var startCallCount = 0
     var startError: Swift.Error?
     var startedInitialStates: [CodableValue] = []
+    var pollWakes = 0
+    private(set) var pollWaits: [Int] = []
 
     func start(rawSchema: String, initialState: CodableValue) async throws {
         startCallCount += 1
@@ -20,5 +22,10 @@ final class MockStepOrchestrator: StepOrchestrating {
     }
     
     func applyEvent(_ value: PrimerFoundation.CodableValue) async throws {}
+
+    func waitToPoll(milliseconds: Int) async throws {
+        pollWaits.append(milliseconds)
+        guard pollWaits.count <= pollWakes else { throw CancellationError() }
+    }
 
 }

@@ -12,6 +12,8 @@ struct NetworkClientInstructionProvider: ClientInstructionProvider {
 
     let paymentMethod: PrimerPaymentMethod
 
+    private static let defaultPollDelayMilliseconds = 1000
+
     func fetchPayInstruction() async throws -> ClientInstruction {
         let endpoint: BackendDrivenCheckoutEndpoint = .pay(paymentMethod: paymentMethod)
         let response: ClientSessionInstructionResponse = try await request(endpoint)
@@ -30,15 +32,19 @@ struct NetworkClientInstructionProvider: ClientInstructionProvider {
             schema: response.instruction.payload.schema,
             parameters: response.instruction.payload.parameters,
             setupId: response.paymentMethodSetupId,
-            nextPoll: response.instruction.nextPoll
+            nextPoll: response.instruction.nextPoll,
+            pollDelayMilliseconds: response.instruction.pollDelayMilliseconds ?? Self.defaultPollDelayMilliseconds
         )
     }
 
     func fetchSetupState(setupId: String) async throws -> SetupState {
         let endpoint: BackendDrivenCheckoutEndpoint = .pollSetup(setupId: setupId)
         let response: ClientInstructionSetupStateResponse = try await request(endpoint)
-        let nextPoll = response.instruction.nextPoll ?? .suspend
-        return SetupState(instruction: try response.toSetupInstruction(), nextPoll: nextPoll)
+        return SetupState(
+            instruction: try response.toSetupInstruction(),
+            nextPoll: response.instruction.nextPoll ?? .suspend,
+            pollDelayMilliseconds: response.instruction.pollDelayMilliseconds ?? Self.defaultPollDelayMilliseconds
+        )
     }
 
     func fetchNextInstruction() async throws -> ClientInstruction {
