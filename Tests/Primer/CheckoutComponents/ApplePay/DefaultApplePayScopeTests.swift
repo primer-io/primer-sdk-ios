@@ -605,6 +605,41 @@ final class DefaultApplePayScopeFactoryTests: XCTestCase {
         XCTAssertFalse(sut.structuredState.isLoading)
     }
 
+    // MARK: - performPayment: Express Checkout log flag
+
+    func test_performPayment_startsWithoutTheFlagOfAnEarlierAttempt() async throws {
+        // Given
+        RemoteLogContext.shared[ExpressCheckoutShippingLog.contextKey] = true
+        var flagWhenRequestWasBuilt: Any?
+        let sut = createScope(applePayRequestFactory: {
+            flagWhenRequestWasBuilt = RemoteLogContext.shared[ExpressCheckoutShippingLog.contextKey]
+            throw PrimerError.invalidClientSessionValue(name: "order.countryCode")
+        })
+
+        // When
+        sut.submit()
+
+        // Then
+        try await XCTUnwrap(sut.paymentTask).value
+        XCTAssertNil(flagWhenRequestWasBuilt)
+    }
+
+    func test_performPayment_cancelledSheet_clearsTheFlagItsShippingStepsSet() async throws {
+        // Given — a shipping step flags the attempt while the sheet is open, then the shopper cancels
+        mockPresentationManager.onPresent = { _, _ in
+            RemoteLogContext.shared[ExpressCheckoutShippingLog.contextKey] = true
+            return .failure(PrimerError.cancelled(paymentMethodType: PrimerPaymentMethodType.applePay.rawValue))
+        }
+        let sut = createScope()
+
+        // When
+        sut.submit()
+
+        // Then
+        try await XCTUnwrap(sut.paymentTask).value
+        XCTAssertNil(RemoteLogContext.shared[ExpressCheckoutShippingLog.contextKey])
+    }
+
     // MARK: - Helper
 
     private func createScope(

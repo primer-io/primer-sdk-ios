@@ -135,6 +135,9 @@ final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
   }
 
   private func performPayment() async {
+    // The payment log goes out synchronously before this returns, so it still carries the attempt's shipping flag.
+    ExpressCheckoutShippingLog.clearContext()
+    defer { ExpressCheckoutShippingLog.clearContext() }
     structuredState.isLoading = true
 
     do {
