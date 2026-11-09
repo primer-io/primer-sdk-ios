@@ -85,6 +85,9 @@ Danger runs on every PR (`Dangerfile.swift`) and is the main gate:
 - **SwiftFormat** — CI-enforced, config `BuildTools/.swiftformat` (`--swift-version 5.9`).
 - **Unit tests** green.
 - **SonarCloud** — coverage / quality gate enforced server-side (no threshold in the repo).
+- **Translations** — `check-translations.yml` runs `Scripts/check_translations.py`: every key the
+  PR adds or changes must be in every locale file of its catalog, non-empty, with the English
+  placeholders, and in Latin script for Serbian. Old gaps on untouched keys are ignored.
 
 Run quality checks on changed files before committing:
 
@@ -92,6 +95,7 @@ Run quality checks on changed files before committing:
 swiftformat <file.swift> --config BuildTools/.swiftformat
 swiftlint lint --fix --config "Debug App/.swiftlint.yml"
 swiftlint lint --config "Debug App/.swiftlint.yml"
+python3 Scripts/check_translations.py --base "$(git merge-base origin/bn/feature/checkout-components HEAD)"
 ```
 
 ## Conventions & guardrails
@@ -104,7 +108,9 @@ swiftlint lint --config "Debug App/.swiftlint.yml"
   For internal API that must cross module boundaries, use `@_spi(PrimerInternal) public` and
   consume it with `@_spi(PrimerInternal) import PrimerFoundation` (etc.) — not plain `public`.
 - Prefer the shortest, clearest code; omit unneeded keywords.
-- **Localization**: when adding a new string, add it to all supported languages and translate it.
+- **Localization**: add or change strings with the `translate` skill (plugin `primer-core` from the
+  primer-claude marketplace). A new or changed string ships translated into every language of its
+  catalog in the same PR. The repo is the source of truth for translations; there is no Phrase step.
 
 ## CheckoutComponents
 
