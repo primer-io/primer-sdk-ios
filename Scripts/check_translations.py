@@ -7,6 +7,12 @@ Catalogs are found by layout, anywhere in the repo:
   iOS           <dir>/<lang>.lproj/<Table>.strings   English: en.lproj, else Base.lproj
   Android       <res>/values[-<locale>]/strings.xml  English: values/
   Web and RN    <dir>/<locale>.json next to en.json  English: en.json
+Other Android qualifiers (values-night, values-v28, values-sw600dp) are not locales.
+
+--exclude GLOB (repeatable) leaves out every file whose repo-relative path matches the
+glob. Matching is fnmatch, so * and ** also match "/": "Debug App/**" is the whole folder.
+A catalog whose English file or every locale file is excluded is listed as excluded and
+never read.
 
 Diff mode (the default) checks only the keys a change touches: keys that are new
 in English, keys whose English value changed, and keys whose value changed in any
@@ -18,6 +24,7 @@ Exit codes: 0 clean, 1 problems found, 2 usage or parse error.
 """
 
 import argparse
+import fnmatch
 import json
 import os
 import re
@@ -30,7 +37,9 @@ SKIP_DIRS = {".git", "node_modules", "Pods", "Carthage", "DerivedData", ".build"
 
 LPROJ_RE = re.compile(r"^(?P<dir>(?:.*/)?)(?P<lang>[^/]+)\.lproj/(?P<table>[^/]+\.strings)$")
 ANDROID_RE = re.compile(r"^(?P<res>(?:.*/)?res)/values(?:-(?P<qual>[^/]+))?/strings\.xml$")
-ANDROID_LOCALE_RE = re.compile(r"^(?:[a-z]{2,3}(?:-r(?:[A-Za-z]{2}|[0-9]{3}))?|b\+[A-Za-z0-9+]+)$")
+# xx, xxx, xx-rYY or b+...; car (UI mode) and hdr (color mode) are qualifiers, not languages.
+ANDROID_LOCALE_RE = re.compile(r"^(?:(?!car$|hdr$)[a-z]{2,3}(?:-r(?:[A-Za-z]{2}|[0-9]{3}))?"
+                               r"|b\+[A-Za-z0-9+]+)$")
 JSON_RE = re.compile(r"^(?P<dir>(?:.*/)?)(?P<stem>[^/]+)\.json$")
 JSON_LOCALE_RE = re.compile(r"^[a-z]{2,3}(?:[-_][A-Za-z0-9]{2,8})*$")
 
@@ -55,11 +64,12 @@ class UsageError(Exception):
 
 
 class Catalog(object):
-    def __init__(self, kind, label):
-        self.kind = kind      # "ios", "android" or "json"
-        self.label = label    # display name, for example "Foo/<lang>.lproj/Bar.strings"
-        self.english = None   # repo-relative path of the English file
-        self.locales = {}     # locale code -> repo-relative path
+    def __init__(self, kind, label, english, locales):
+        self.kind = kind          # "ios", "android" or "json"
+        self.label = label        # display name, for example "Foo/<lang>.lproj/Bar.strings"
+        self.english = english    # repo-relative path of the English file, or None
+        self.locales = locales    # locale code -> repo-relative path
+        self.excluded = False     # matched --exclude: listed, not checked
 
 
 # ---------------------------------------------------------------- locale codes
@@ -388,7 +398,7 @@ def read_file(repo, path):
         return f.read()
 
 
-def discover(repo, files, warnings):
+def discover(repo, files, excluded, warnings):
     ios, android, json_dirs = {}, {}, {}
     for p in files:
         m = LPROJ_RE.match(p)
@@ -397,7 +407,9 @@ def discover(repo, files, warnings):
             continue
         m = ANDROID_RE.match(p)
         if m:
-            android.setdefault(m.group("res"), {})[m.group("qual") or ""] = p
+            q = m.group("qual") or ""
+            if not q or ANDROID_LOCALE_RE.match(q):
+                android.setdefault(m.group("res"), {})[q] = p
             continue
         m = JSON_RE.match(p)
         if m and JSON_LOCALE_RE.match(m.group("stem")):
@@ -405,48 +417,43 @@ def discover(repo, files, warnings):
 
     catalogs = []
     for (d, table), langs in sorted(ios.items()):
-        cat = Catalog("ios", "%s<lang>.lproj/%s" % (d, table))
         src = "en" if "en" in langs else ("Base" if "Base" in langs else None)
-        cat.english = langs.get(src) if src else None
-        cat.locales = dict((k, v) for k, v in langs.items() if k not in (src, "Base"))
-        catalogs.append(cat)
+        catalogs.append(Catalog("ios", "%s<lang>.lproj/%s" % (d, table), langs.get(src),
+                                dict((k, v) for k, v in langs.items() if k not in (src, "Base"))))
 
     for res, quals in sorted(android.items()):
-        cat = Catalog("android", "%s/values-<locale>/strings.xml" % res)
-        cat.english = quals.get("")
-        for q, p in quals.items():
-            if not q:
-                continue
-            if ANDROID_LOCALE_RE.match(q):
-                cat.locales[q] = p
-            else:
-                warnings.append("ignored %s: values-%s is not a locale qualifier" % (p, q))
-        catalogs.append(cat)
+        catalogs.append(Catalog("android", "%s/values-<locale>/strings.xml" % res, quals.get(""),
+                                dict((q, p) for q, p in quals.items() if q)))
 
     for d, stems in sorted(json_dirs.items()):
         if "en" not in stems or len(stems) < 2:
             continue
-        cat = Catalog("json", "%s<locale>.json" % d)
-        cat.english = stems["en"]
-        en_keys = set(parse_json(read_file(repo, cat.english), cat.english)[0])
-        for stem, p in stems.items():
-            if stem == "en":
-                continue
-            # A config file such as app.json can sit next to en.json; a locale file
-            # shares keys with English (or is still empty).
-            keys = set(parse_json(read_file(repo, p), p)[0])
-            if not keys or keys & en_keys:
-                cat.locales[stem] = p
-            else:
-                warnings.append("ignored %s: no keys in common with %s" % (p, cat.english))
+        cat = Catalog("json", "%s<locale>.json" % d, stems["en"],
+                      dict((s, p) for s, p in stems.items() if s != "en"))
+        todo = [s for s, p in cat.locales.items() if not excluded(p)]
+        if todo and not excluded(cat.english):
+            en_keys = set(parse_json(read_file(repo, cat.english), cat.english)[0])
+            for stem in todo:
+                # A config file such as app.json can sit next to en.json; a locale file
+                # shares keys with English (or is still empty).
+                p = cat.locales[stem]
+                keys = set(parse_json(read_file(repo, p), p)[0])
+                if keys and not keys & en_keys:
+                    warnings.append("ignored %s: no keys in common with %s" % (p, cat.english))
+                    del cat.locales[stem]
         if cat.locales:
             catalogs.append(cat)
+
+    for cat in catalogs:
+        kept = dict((c, p) for c, p in cat.locales.items() if not excluded(p))
+        cat.excluded = bool(cat.english and excluded(cat.english) or cat.locales and not kept)
+        cat.locales = kept
     return catalogs
 
 
 # ------------------------------------------------------------------- checking
 
-def check(repo, base, check_all, skip):
+def check(repo, base, check_all, skip, excludes=()):
     if not os.path.isdir(repo):
         raise UsageError("--repo %s is not a directory" % repo)
     in_git = git(repo, "rev-parse", "--is-inside-work-tree").returncode == 0
@@ -456,11 +463,17 @@ def check(repo, base, check_all, skip):
         if git(repo, "rev-parse", "--verify", "--quiet", base + "^{commit}").returncode != 0:
             raise UsageError("--base %s is not a commit in %s (fetch it first)" % (base, repo))
 
+    def excluded(path):
+        return any(fnmatch.fnmatchcase(path, g) for g in excludes)
+
     warnings, problems, summary = [], [], []
-    catalogs = discover(repo, list_files(repo, in_git), warnings)
+    catalogs = discover(repo, list_files(repo, in_git), excluded, warnings)
     reader = None if check_all else BaseReader(repo, base)
     try:
         for cat in catalogs:
+            if cat.excluded:
+                summary.append("  excluded %s" % cat.label)
+                continue
             if not cat.english:
                 summary.append("  skipped  %s: no English file" % cat.label)
                 continue
@@ -519,6 +532,9 @@ def main(argv=None):
     ap.add_argument("--base", help="git ref to diff against; in a merge request pass the merge base")
     ap.add_argument("--skip-locale", action="append", default=[], metavar="CODE",
                     help="locale code to skip, for example zf (repeatable)")
+    ap.add_argument("--exclude", action="append", default=[], metavar="GLOB",
+                    help="leave out files whose repo-relative path matches GLOB, for example "
+                         "'Debug App/**' (fnmatch: * and ** also match /; repeatable)")
     ap.add_argument("--all", action="store_true", help="check every key, not only changed ones")
     args = ap.parse_args(argv)
     if not args.all and not args.base:
@@ -526,7 +542,7 @@ def main(argv=None):
 
     try:
         problems, summary, warnings = check(os.path.abspath(args.repo), args.base, args.all,
-                                            set(norm_locale(c) for c in args.skip_locale))
+                                            set(norm_locale(c) for c in args.skip_locale), args.exclude)
     except (ParseError, UsageError) as e:
         print("error: %s" % e, file=sys.stderr)
         return 2

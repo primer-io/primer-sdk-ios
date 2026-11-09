@@ -7,8 +7,9 @@ paths:
 
 Add, change or fix strings with the `translate` skill (plugin `primer-core` from the primer-claude
 marketplace). It covers the language list, placeholders, brand names, Serbian Latin script and
-back-translating legal text. CI runs `Scripts/check_translations.py` on every PR; run it locally
-before committing (command in the root `CLAUDE.md`).
+back-translating legal text. CI runs `Scripts/check_translations.py` on pull requests to `master`
+and `bn/feature/checkout-components`; run it locally before committing (command in the root
+`CLAUDE.md`).
 
 Catalogs:
 

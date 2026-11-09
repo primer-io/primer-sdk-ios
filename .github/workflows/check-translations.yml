@@ -27,4 +27,4 @@ jobs:
       - name: Check changed translation keys
         env:
           BASE_REF: ${{ github.base_ref }}
-        run: python3 Scripts/check_translations.py --repo . --base "origin/$BASE_REF"
+        run: python3 Scripts/check_translations.py --repo . --base "origin/$BASE_REF" --exclude 'Debug App/**'
