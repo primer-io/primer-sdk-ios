@@ -5,10 +5,10 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import PassKit
+@_spi(PrimerInternal) @testable import PrimerCore
+@_spi(PrimerInternal) @testable import PrimerFoundation
 @testable import PrimerSDK
 import XCTest
-@_spi(PrimerInternal) @testable import PrimerFoundation
-@_spi(PrimerInternal) @testable import PrimerCore
 
 @available(iOS 15.0, *)
 final class DefaultApplePayScopeTests: XCTestCase {
@@ -603,6 +603,41 @@ final class DefaultApplePayScopeFactoryTests: XCTestCase {
         XCTAssertTrue(wasLoadingWhenFactoryRan)
         XCTAssertFalse(presentWasCalled)
         XCTAssertFalse(sut.structuredState.isLoading)
+    }
+
+    // MARK: - performPayment: Express Checkout log flag
+
+    func test_performPayment_startsWithoutTheFlagOfAnEarlierAttempt() async throws {
+        // Given
+        RemoteLogContext.shared[ExpressCheckoutShippingLog.contextKey] = true
+        var flagWhenRequestWasBuilt: Any?
+        let sut = createScope(applePayRequestFactory: {
+            flagWhenRequestWasBuilt = RemoteLogContext.shared[ExpressCheckoutShippingLog.contextKey]
+            throw PrimerError.invalidClientSessionValue(name: "order.countryCode")
+        })
+
+        // When
+        sut.submit()
+
+        // Then
+        try await XCTUnwrap(sut.paymentTask).value
+        XCTAssertNil(flagWhenRequestWasBuilt)
+    }
+
+    func test_performPayment_cancelledSheet_clearsTheFlagItsShippingStepsSet() async throws {
+        // Given — a shipping step flags the attempt while the sheet is open, then the shopper cancels
+        mockPresentationManager.onPresent = { _, _ in
+            RemoteLogContext.shared[ExpressCheckoutShippingLog.contextKey] = true
+            return .failure(PrimerError.cancelled(paymentMethodType: PrimerPaymentMethodType.applePay.rawValue))
+        }
+        let sut = createScope()
+
+        // When
+        sut.submit()
+
+        // Then
+        try await XCTUnwrap(sut.paymentTask).value
+        XCTAssertNil(RemoteLogContext.shared[ExpressCheckoutShippingLog.contextKey])
     }
 
     // MARK: - Helper

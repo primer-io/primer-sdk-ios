@@ -5,9 +5,9 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 @preconcurrency import PassKit
-import SwiftUI
-@_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
+import SwiftUI
 
 @available(iOS 15.0, *)
 @MainActor
@@ -135,6 +135,9 @@ final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
   }
 
   private func performPayment() async {
+    // The payment log goes out synchronously before this returns, so it still carries the attempt's shipping flag.
+    ExpressCheckoutShippingLog.clearContext()
+    defer { ExpressCheckoutShippingLog.clearContext() }
     structuredState.isLoading = true
 
     do {

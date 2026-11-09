@@ -25,6 +25,7 @@ public extension PrimerLogger {
         self.error(message: message, userInfo: nil, file: file, line: line, function: function)
 
         if #available(iOS 15.0, *) {
+            let userInfo = RemoteLogContext.shared.merged(into: userInfo)
             Task { [error, userInfo, message] in
                 await remoteLoggingService()?.logErrorIfReportable(error, message: message, userInfo: userInfo)
             }
@@ -37,6 +38,7 @@ public extension PrimerLogger {
         event: String,
         userInfo: [String: Any]? = nil
     ) {
+        let userInfo = RemoteLogContext.shared.merged(into: userInfo)
         Task { [message, event, userInfo] in
             await remoteLoggingService()?.logInfo(message: message, event: event, userInfo: userInfo)
         }
@@ -50,6 +52,7 @@ extension PrimerLogger {
         event: String,
         userInfo: [String: Any]? = nil
     ) {
+        let userInfo = RemoteLogContext.shared.merged(into: userInfo)
         Task { [message, event, userInfo] in
             await remoteLoggingService()?.logWarning(message: message, event: event, userInfo: userInfo)
         }
