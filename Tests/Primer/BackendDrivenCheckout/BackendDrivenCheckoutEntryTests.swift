@@ -4,8 +4,8 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-@testable import PrimerSDK
 @_spi(PrimerInternal) import PrimerNetworking
+@testable import PrimerSDK
 import XCTest
 
 final class PrimerPaymentMethodEntryDecodingTests: XCTestCase {
@@ -33,9 +33,9 @@ final class PrimerPaymentMethodEntryDecodingTests: XCTestCase {
     }
 
     func testEntryRawValuesMatchTheServedContract() {
-        XCTAssertEqual(PrimerPaymentMethod.Entry.pay.rawValue, "pay")
-        XCTAssertEqual(PrimerPaymentMethod.Entry.onSelect.rawValue, "onSelect")
-        XCTAssertEqual(PrimerPaymentMethod.Entry.eager.rawValue, "eager")
+        XCTAssertEqual(PrimerPaymentMethod.Entry.pay.rawValue, "PAY")
+        XCTAssertEqual(PrimerPaymentMethod.Entry.onSelect.rawValue, "ON_SELECT")
+        XCTAssertEqual(PrimerPaymentMethod.Entry.eager.rawValue, "EAGER")
     }
 }
 
@@ -61,7 +61,7 @@ final class PrimerPaymentMethodEntryRoutingTests: XCTestCase {
 final class BackendDrivenCheckoutSetupEndpointTests: XCTestCase {
 
     func testSetupPostsToThePaymentMethodSetupsCollection() throws {
-        let paymentMethod = try decodePaymentMethod(entry: "\"onSelect\"")
+        let paymentMethod = try decodePaymentMethod(entry: "\"ON_SELECT\"")
         let setup = BackendDrivenCheckoutEndpoint.setup(paymentMethod: paymentMethod)
 
         XCTAssertTrue(
@@ -72,19 +72,18 @@ final class BackendDrivenCheckoutSetupEndpointTests: XCTestCase {
         XCTAssertNil(setup.queryParameters)
     }
 
-    func testSetupTargetsTheSameClientSessionAsPay() throws {
-        let paymentMethod = try decodePaymentMethod(entry: "\"onSelect\"")
+    func testSetupIsNotScopedToTheClientSessionUnlikePay() throws {
+        let paymentMethod = try decodePaymentMethod(entry: "\"ON_SELECT\"")
         let setup = BackendDrivenCheckoutEndpoint.setup(paymentMethod: paymentMethod)
         let pay = BackendDrivenCheckoutEndpoint.pay(paymentMethod: paymentMethod)
 
-        XCTAssertEqual(
-            setup.path.replacingOccurrences(of: "/payment-method-setups", with: ""),
-            pay.path.replacingOccurrences(of: ":pay", with: "")
-        )
+        XCTAssertFalse(setup.path.contains("client-session"), "Setups are a top-level collection, got \(setup.path)")
+        XCTAssertTrue(pay.path.contains("client-session"), "Pay stays on the client session, got \(pay.path)")
+        XCTAssertEqual(setup.baseURL, pay.baseURL)
     }
 
     func testPayWithATokenPostsTheTokenToPay() throws {
-        let paymentMethod = try decodePaymentMethod(entry: "\"onSelect\"")
+        let paymentMethod = try decodePaymentMethod(entry: "\"ON_SELECT\"")
         let pay = BackendDrivenCheckoutEndpoint.pay(paymentMethod: paymentMethod)
         let payWithToken = BackendDrivenCheckoutEndpoint.payWithToken(paymentInstrumentTokenId: "token-1")
 
@@ -96,22 +95,22 @@ final class BackendDrivenCheckoutSetupEndpointTests: XCTestCase {
         XCTAssertNil(body["paymentMethodType"])
     }
 
-    func testSetupPostsTheFlowAndTheConfigToStart() throws {
+    func testSetupPostsTheConfigToStart() throws {
         let json = """
-        { "id": "config-1", "implementationType": "BACKEND_DRIVEN", "type": "KLARNA", "name": "Klarna", "entry": "onSelect" }
+        { "id": "config-1", "implementationType": "BACKEND_DRIVEN", "type": "KLARNA", "name": "Klarna", "setupStart": "ON_SELECT" }
         """
         let paymentMethod = try JSONDecoder().decode(PrimerPaymentMethod.self, from: Data(json.utf8))
         let setup = BackendDrivenCheckoutEndpoint.setup(paymentMethod: paymentMethod)
 
         let body = try XCTUnwrap(setup.body.flatMap { try JSONSerialization.jsonObject(with: $0) as? [String: Any] })
-        XCTAssertEqual(body["flow"] as? String, "CHECKOUT")
+        XCTAssertNil(body["flow"])
         XCTAssertEqual(body["paymentMethodConfigId"] as? String, "config-1")
         XCTAssertNotNil(body["clientInfo"])
         XCTAssertNil(body["paymentMethodType"])
     }
 
     func testPollTargetsTheSetupCreatedByTheCollection() throws {
-        let paymentMethod = try decodePaymentMethod(entry: "\"onSelect\"")
+        let paymentMethod = try decodePaymentMethod(entry: "\"ON_SELECT\"")
         let setup = BackendDrivenCheckoutEndpoint.setup(paymentMethod: paymentMethod)
         let poll = BackendDrivenCheckoutEndpoint.pollSetup(setupId: "setup-1")
 
@@ -122,7 +121,7 @@ final class BackendDrivenCheckoutSetupEndpointTests: XCTestCase {
 
 private extension XCTestCase {
     func decodePaymentMethod(entry: String?) throws -> PrimerPaymentMethod {
-        let entryField = entry.map { ", \"entry\": \($0)" } ?? ""
+        let entryField = entry.map { ", \"setupStart\": \($0)" } ?? ""
         let json = """
         { "implementationType": "BACKEND_DRIVEN", "type": "KLARNA", "name": "Klarna"\(entryField) }
         """

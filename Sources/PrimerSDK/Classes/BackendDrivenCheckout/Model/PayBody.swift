@@ -30,7 +30,6 @@ struct TokenPayBody: Encodable {
 }
 
 struct SetupBody: Encodable {
-    let flow: PrimerSessionIntent
     let paymentMethodConfigId: String?
 
     private let clientInfo = ClientInfo(
