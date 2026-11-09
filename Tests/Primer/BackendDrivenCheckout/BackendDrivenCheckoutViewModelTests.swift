@@ -48,6 +48,19 @@ final class BackendDrivenCheckoutViewModelTests: XCTestCase {
         }
     }
     
+    func testVaultedTokenPaysWithoutSetup() {
+        let provider = MockBDCInstructionProvider([.end(outcome: .complete, payment: payment)])
+        let exp = expectation(description: "complete")
+        delegate.onDidCompleteCheckoutWithData = { _ in exp.fulfill() }
+
+        let sut = makeSUT(makeInstructionProvider: { _ in provider })
+        Task { await sut.start(paymentInstrumentTokenId: "tok_1") }
+
+        wait(for: [exp], timeout: Self.callbackTimeout)
+        XCTAssertEqual(provider.paidWithTokenIds, ["tok_1"])
+        XCTAssertEqual(provider.setupFlowFetches, 0)
+    }
+
     func testExecuteThenEndCompletes() {
         assertComplete {
             makeSUT(instructions: [
@@ -226,21 +239,27 @@ private final class MockBDCInstructionProvider: ClientInstructionProvider {
     var error: Error?
     var errorAfterFirstFetch: Swift.Error?
     private(set) var fetchCount = 0
+    private(set) var paidWithTokenIds: [String] = []
+    private(set) var setupFlowFetches = 0
     private var instructions: [ClientInstruction]
     private var index = 0
-    
+
     init(_ instructions: [ClientInstruction]) { self.instructions = instructions }
-    
+
     func fetchPayInstruction() async throws -> ClientInstruction { try next() }
 
-    func fetchPayInstruction(paymentInstrumentTokenId: String) async throws -> ClientInstruction { try next() }
+    func fetchPayInstruction(paymentInstrumentTokenId: String) async throws -> ClientInstruction {
+        paidWithTokenIds.append(paymentInstrumentTokenId)
+        return try next()
+    }
 
     func fetchSetupState(setupId: String) async throws -> SetupState {
         SetupState(instruction: .wait, nextPoll: .suspend)
     }
 
     func fetchSetupFlow() async throws -> SetupFlow {
-        SetupFlow(schema: .object([:]), parameters: .object([:]), setupId: "setup-1", nextPoll: .suspend)
+        setupFlowFetches += 1
+        return SetupFlow(schema: .object([:]), parameters: .object([:]), setupId: "setup-1", nextPoll: .suspend)
     }
     func fetchNextInstruction() async throws -> ClientInstruction { try next() }
     

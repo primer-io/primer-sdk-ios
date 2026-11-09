@@ -9,11 +9,11 @@
 // swiftlint:disable function_body_length
 // swiftlint:disable type_body_length
 
+@_spi(PrimerInternal) import PrimerCore
 @_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerNetworking
 import SafariServices
 import UIKit
-@_spi(PrimerInternal) import PrimerCore
-@_spi(PrimerInternal) import PrimerNetworking
 
 extension PrimerHeadlessUniversalCheckout {
 
@@ -165,6 +165,10 @@ extension PrimerHeadlessUniversalCheckout {
                         }
 
                         throw error ?? PrimerError.underlyingErrors(errors: errors)
+                    }
+
+                    if let config = vaultedPaymentMethod.backendDrivenConfig {
+                        return await BackendDrivenCheckoutViewModel(config: config).start(paymentInstrumentTokenId: vaultedPaymentMethod.id)
                     }
 
                     await PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: vaultedPaymentMethod.paymentMethodType)
@@ -330,13 +334,13 @@ extension PrimerHeadlessUniversalCheckout {
             paymentMethodTokenData: PrimerPaymentMethodTokenData
         ) async throws -> String? {
             if decodedJWTToken.intent?.contains("STRIPE_ACH") == true {
-                return try await handleStripeACHForDecodedClientToken(decodedJWTToken)
+                try await handleStripeACHForDecodedClientToken(decodedJWTToken)
             } else if decodedJWTToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
-                return try await handle3DSAuthenticationForDecodedClientToken(decodedJWTToken, paymentMethodTokenData: paymentMethodTokenData)
+                try await handle3DSAuthenticationForDecodedClientToken(decodedJWTToken, paymentMethodTokenData: paymentMethodTokenData)
             } else if decodedJWTToken.intent == RequiredActionName.processor3DS.rawValue {
-                return try await handleProcessor3DSForDecodedClientToken(decodedJWTToken)
+                try await handleProcessor3DSForDecodedClientToken(decodedJWTToken)
             } else if decodedJWTToken.intent?.contains("_REDIRECTION") == true {
-                return try await handleRedirectionForDecodedClientToken(decodedJWTToken)
+                try await handleRedirectionForDecodedClientToken(decodedJWTToken)
             } else {
                 throw handled(primerError: .invalidValue(key: "resumeToken"))
             }
@@ -664,6 +668,13 @@ extension PrimerPaymentMethodTokenData {
             paymentInstrumentData: paymentInstrumentData,
             analyticsId: analyticsId
         )
+    }
+}
+
+private extension PrimerHeadlessUniversalCheckout.VaultedPaymentMethod {
+    var backendDrivenConfig: PrimerPaymentMethod? {
+        PrimerAPIConfigurationModule.apiConfiguration?.paymentMethods?
+            .first { $0.type == paymentMethodType && $0.isBackendDriven }
     }
 }
 
