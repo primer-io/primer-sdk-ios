@@ -117,7 +117,7 @@
 "primer_vault_default_bank" = "საბანკო ანგარიში";
 "primer_vault_format_masked" = "•••• %1$@";
 "primer_vault_format_expires" = "ვადის თარიღი %1$@/%2$@";
-"primer_vault_format_card_details" = "%1$@ რომელიც მთავრდება %2$@";
+"primer_vault_format_card_details" = "%1$@, ბოლო ციფრები %2$@";
 "primer_vault_selected_button_other" = "სხვა გადახდის მეთოდების ნახვა";
 "primer_vault_manage_title" = "ყველა შენახული გადახდის მეთოდი";
 "primer_vault_manage_button_edit" = "რედაქტირება";
@@ -246,8 +246,8 @@
 "accessibility_web_redirect_submit_button" = "გადაიხადეთ %@-ით";
 "accessibility_web_redirect_loading" = "გადახდის დამუშავება";
 "accessibility_web_redirect_redirecting" = "გადახდის გვერდის გახსნა";
-"accessibility_web_redirect_polling" = "გადახდის დადასტურების მოლოდინე";
-"accessibility_web_redirect_success" = "გადახდა წარმატებით";
+"accessibility_web_redirect_polling" = "გადახდის დადასტურების მოლოდინი";
+"accessibility_web_redirect_success" = "გადახდა წარმატებულია";
 "accessibility_web_redirect_failure" = "გადახდა წარუმატებელია: %@";
 "accessibility_form_redirect_otp_hint" = "შეიყვანეთ 6-ნიშნა კოდი თქვენი საბანკო აპლიკაციიდან";
 "accessibility_form_redirect_otp_label" = "6-ნიშნა BLIK კოდი, სავალდებულო";
@@ -268,7 +268,7 @@
 "primer_qr_code_upload_instruction" = "ატვირთეთ ეკრანის სურათი თქვენს საბანკო აპლიკაციაში";
 "accessibility_qr_code_image" = "QR კოდი გადახდისთვის";
 "accessibility_qr_code_scan_hint" = "გადაიღეთ ეკრანის სურათი QR კოდის შესანახად";
-"accessibility_qr_code_success_icon" = "გადახდა წარმატებით";
+"accessibility_qr_code_success_icon" = "გადახდა წარმატებულია";
 "accessibility_qr_code_failure_icon" = "გადახდა წარუმატებელია";
 
 /* Apple Pay */

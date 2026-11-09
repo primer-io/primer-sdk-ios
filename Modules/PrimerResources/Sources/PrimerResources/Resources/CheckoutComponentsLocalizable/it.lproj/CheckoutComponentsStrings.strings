@@ -77,10 +77,10 @@
 "accessibility_vaulted_paypal_email" = "PayPal, %@";
 "primer_card_form_add_card" = "Aggiungi carta";
 "primer_card_form_billing_address_title" = "Indirizzo di fatturazione";
-"primer_card_form_error_address1_invalid" = "Riga 1 dell'indirizzo non valida";
-"primer_card_form_error_address1_required" = "Riga 1 dell'indirizzo è obbligatoria";
-"primer_card_form_error_address2_invalid" = "La riga 2 dell'indirizzo non valida";
-"primer_card_form_error_address2_required" = "La riga 2 dell'indirizzo è obbligatoria";
+"primer_card_form_error_address1_invalid" = "Indirizzo riga 1 non valido";
+"primer_card_form_error_address1_required" = "L'indirizzo riga 1 è obbligatorio";
+"primer_card_form_error_address2_invalid" = "Indirizzo riga 2 non valido";
+"primer_card_form_error_address2_required" = "L'indirizzo riga 2 è obbligatorio";
 "primer_card_form_error_card_expired" = "La carta è scaduta";
 "primer_card_form_error_card_type_unsupported" = "Tipo di carta non supportato";
 "primer_card_form_error_city_invalid" = "Città non valida";

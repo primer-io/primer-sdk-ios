@@ -159,8 +159,8 @@
 "accessibility_card_form_card_number_error_empty" = "شماره کارت الزامی است.";
 "accessibility_card_form_expiry_error_invalid" = "تاریخ انقضا نامعتبر است.";
 "accessibility_card_form_cvc_error_invalid" = "کد امنیتی نامعتبر است.";
-"accessibility_card_form_cvv_icon" = "آیکون کد امنیتی";
-"accessibility_card_form_expiry_icon" = "آیکون تاریخ انقضا";
+"accessibility_card_form_cvv_icon" = "کد امنیتی CVV";
+"accessibility_card_form_expiry_icon" = "تاریخ انقضای کارت";
 "accessibility_card_form_billing_section" = "بخش آدرس صورتحساب";
 "accessibility_common_required" = "الزامی";
 "accessibility_common_optional" = "اختیاری";
@@ -184,12 +184,12 @@
 "accessibility_payment_selection_coming_soon" = "به زودی";
 "accessibility_country_selection_item" = "%1$@، کشور";
 "accessibility_country_selection_search" = "جستجوی کشورها";
-"accessibility_country_selection_search_icon" = "آیکون جستجو";
+"accessibility_country_selection_search_icon" = "جستجو";
 "accessibility_country_selection_clear" = "پاک کردن جستجو";
 "accessibility_action_delete" = "حذف روش پرداخت";
 "accessibility_action_edit" = "ویرایش جزئیات کارت";
-"accessibility_checkout_success_icon" = "آیکون موفقیت";
-"accessibility_checkout_error_icon" = "آیکون خطا";
+"accessibility_checkout_success_icon" = "پرداخت موفق";
+"accessibility_checkout_error_icon" = "خطا";
 "accessibility_error_generic" = "خطایی رخ داد. لطفاً دوباره تلاش کنید.";
 "accessibility_error_multiple_errors" = "%d خطا یافت شد";
 "accessibility_paypal_logo" = "PayPal";

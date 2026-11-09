@@ -230,7 +230,7 @@
 "primer_ach_mandate_title" = "Yetkilendirme";
 "primer_ach_mandate_button_accept" = "Kabul Ediyorum";
 "primer_ach_mandate_button_decline" = "İptal";
-"primer_ach_mandate_template" = "\"Kabul Ediyorum\"a tıklayarak, %1$@ hizmetlerini kullanmanızdan ve/veya %1$@'den ürün satın almanızdan kaynaklanan ücretler için borçlu olunan herhangi bir tutarı, %1$@'nin web sitesi ve koşullarına uygun olarak, bu yetki iptal edilene kadar yukarıda belirtilen banka hesabından çekmesi için %1$@'ye yetki verirsiniz. Bu yetkiyi istediğiniz zaman %1$@'ye 30 (otuz) gün önceden bildirimde bulunarak değiştirebilir veya iptal edebilirsiniz.";
+"primer_ach_mandate_template" = "\"Kabul Ediyorum\"a tıklayarak, %1$@ hizmetlerini kullanımınızdan ve/veya %1$@'den ürün satın almanızdan kaynaklanan ücretler için borçlu olunan herhangi bir tutarı, %1$@'nin web sitesi ve koşullarına uygun olarak, bu yetki iptal edilene kadar yukarıda belirtilen banka hesabından çekmesi için %1$@'ye yetki verirsiniz. Bu yetkiyi istediğiniz zaman %1$@'ye 30 (otuz) gün önceden bildirimde bulunarak değiştirebilir veya iptal edebilirsiniz.";
 "accessibility_ach_continue_hint" = "Banka hesabı seçimine devam edin";
 "accessibility_ach_mandate_accept_hint" = "Yetkilendirmeyi kabul edin ve ödemeyi tamamlayın";
 "accessibility_ach_mandate_decline_hint" = "Reddedin ve ödemeyi iptal edin";

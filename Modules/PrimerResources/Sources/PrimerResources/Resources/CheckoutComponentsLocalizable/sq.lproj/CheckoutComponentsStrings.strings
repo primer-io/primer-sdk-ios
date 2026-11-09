@@ -125,7 +125,7 @@
 "primer_vault_cvv_title" = "Vendosni CVV";
 "primer_vault_cvv_hint" = "Vendosni CVV e kartës për një pagesë të sigurt.";
 "primer_vault_cvv_error_invalid" = "Ju lutem vendosni një CVV të vlefshëm.";
-"primer_vault_cvv_error_generic" = "Dicka shkoi gabim. Provoni përsëri.";
+"primer_vault_cvv_error_generic" = "Diçka shkoi gabim. Provoni përsëri.";
 "primer_vault_delete_message" = "Jeni të sigurt që dëshironi të fshini këtë metodë pagese?";
 "primer_vault_delete_button_confirm" = "Fshi";
 "primer_vault_delete_button_cancel" = "Anulo";
@@ -244,10 +244,10 @@
 "primer_web_redirect_button_continue" = "Vazhdo me %@";
 "primer_web_redirect_description" = "Do të ridrejtoheni për të përfunduar pagesën";
 "accessibility_web_redirect_submit_button" = "Paguaj me %@";
-"accessibility_web_redirect_loading" = "Pagesës duke u përpunuar";
+"accessibility_web_redirect_loading" = "Po përpunohet pagesa";
 "accessibility_web_redirect_redirecting" = "Hapje e faqes së pagesës";
 "accessibility_web_redirect_polling" = "Duke pritur konfirmimin e pagesës";
-"accessibility_web_redirect_success" = "Pagesa e sucsesshme";
+"accessibility_web_redirect_success" = "Pagesa e suksesshme";
 "accessibility_web_redirect_failure" = "Pagesa dështoi: %@";
 "accessibility_form_redirect_otp_hint" = "Shkruani kodin 6-shifror nga aplikacioni juaj bankar";
 "accessibility_form_redirect_otp_label" = "Kodi BLIK 6-shifror, i detyrueshëm";
@@ -268,7 +268,7 @@
 "primer_qr_code_upload_instruction" = "Ngarkoni pamjen e ekranit në aplikacionin tuaj bankar";
 "accessibility_qr_code_image" = "Kodi QR për pagesën";
 "accessibility_qr_code_scan_hint" = "Bëni një pamje të ekranit për të ruajtur kodin QR";
-"accessibility_qr_code_success_icon" = "Pagesa e sucsesshme";
+"accessibility_qr_code_success_icon" = "Pagesa e suksesshme";
 "accessibility_qr_code_failure_icon" = "Pagesa dështoi";
 
 /* Apple Pay */

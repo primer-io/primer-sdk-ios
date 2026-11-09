@@ -80,7 +80,7 @@
 "primer_card_form_error_name_invalid" = "Սխալ քարտապանի անուն";
 "primer_card_form_error_name_length" = "Անունը պետք է պարունակի 2-ից 45 նիշ";
 "primer_card_form_error_name_required" = "Քարտին գրված անունը պարտադիր է";
-"primer_card_form_error_card_type_unsupported" = "Քարտի տեսակն անառատչելի չէ";
+"primer_card_form_error_card_type_unsupported" = "Քարտի տեսակը չի աջակցվում";
 "primer_card_form_error_card_expired" = "Քարտի ժամկետն անցել է";
 "primer_card_form_error_first_name_required" = "Անունը պարտադիր է";
 "primer_card_form_error_first_name_invalid" = "Սխալ անուն";
@@ -105,7 +105,7 @@
 "primer_country_title" = "Ընտրեք երկիր";
 "primer_country_placeholder_search" = "Որոնել";
 "primer_country_selector_placeholder" = "Երկրի ընտրություն";
-"primer_country_no_results" = "Երկիրներ չեն գտնվել";
+"primer_country_no_results" = "Երկրներ չեն գտնվել";
 "primer_paypal_title" = "PayPal";
 "primer_paypal_button_continue" = "Շարունակել PayPal-ով";
 "primer_paypal_redirect_description" = "Դուք կուղղորդվեք PayPal՝ անվտանգ ավարտելու ձեր վճարումը։";
@@ -171,7 +171,7 @@
 "accessibility_common_back" = "Վերադառնալ";
 "accessibility_common_dismiss" = "Հեռացնել";
 "accessibility_common_selected" = "Ընտրված";
-"accessibility_common_show_all" = "Ձույց տալ բոլոր պահպանված վճարման եղանակները";
+"accessibility_common_show_all" = "Ցույց տալ բոլոր պահպանված վճարման եղանակները";
 "accessibility_screen_success" = "Վճարումն իրականացվել է";
 "accessibility_screen_error" = "Վճարման սխալ է տեղի ունեցել";
 "accessibility_screen_country_selection" = "Ընտրեք երկիր";
@@ -242,11 +242,11 @@
 "accessibility_card_form_otp_hint" = "Մուտքագրեք մեկանգամյա գաղտնաբառ";
 
 "primer_web_redirect_button_continue" = "Շարունակել %@-ով";
-"primer_web_redirect_description" = "Դուք կվերահղորդվեք վճարումն ավարտելու համար";
+"primer_web_redirect_description" = "Դուք կուղղորդվեք վճարումն ավարտելու համար";
 "accessibility_web_redirect_submit_button" = "Վճարել %@-ով";
 "accessibility_web_redirect_loading" = "Վճարումը մշակվում է";
 "accessibility_web_redirect_redirecting" = "Վճարման էջը բացվում է";
-"accessibility_web_redirect_polling" = "Սպասվում ենք վճարման հաստատման";
+"accessibility_web_redirect_polling" = "Սպասում ենք վճարման հաստատմանը";
 "accessibility_web_redirect_success" = "Վճարումն իրականացվել է";
 "accessibility_web_redirect_failure" = "Վճարումը ձախողվեց՝ %@";
 "accessibility_form_redirect_otp_hint" = "Մուտքագրեք 6 նիշանոց կոդը ձեր բանկային հավելվածից";

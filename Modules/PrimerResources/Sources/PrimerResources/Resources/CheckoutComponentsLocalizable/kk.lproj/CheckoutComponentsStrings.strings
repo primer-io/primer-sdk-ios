@@ -136,7 +136,7 @@
 "accessibility_card_form_card_number_hint" = "Карта нөміріңізді енгізіңіз";
 "accessibility_card_form_expiry_hint" = "Қолдану мерзімін АА/ЖЖ форматында енгізіңіз";
 "accessibility_card_form_cvc_hint" = "Қауіпсіздік коды, 3 немесе 4 сан";
-"accessibility_card_form_cardholder_name_hint" = "Картада көрсетілгендей аты-жөніні енгізіңіз";
+"accessibility_card_form_cardholder_name_hint" = "Картада көрсетілгендей аты-жөнін енгізіңіз";
 "accessibility_card_form_billing_address_first_name_label" = "Аты, міндетті";
 "accessibility_card_form_billing_address_last_name_label" = "Тегі, міндетті";
 "accessibility_card_form_billing_address_address_line_1_label" = "Мекенжай 1-жол, міндетті";

@@ -150,7 +150,7 @@
 "primer_card_form_placeholder_postal" = "1012 AB";
 "primer_card_form_placeholder_retail" = "Selecteer verkooppunt";
 "primer_card_form_placeholder_state" = "Noord-Holland";
-"primer_card_form_retail_not_implemented" = "Selectie verkooppunt nog niet geïmplementeerd.";
+"primer_card_form_retail_not_implemented" = "Selectie verkooppunt nog niet geïmplementeerd";
 "primer_card_form_title" = "Betaal met kaart";
 "primer_checkout_dismissing" = "Bezig met sluiten...";
 "primer_checkout_error_button_other_methods" = "Kies andere betaalmethoden";

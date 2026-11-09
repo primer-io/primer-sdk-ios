@@ -94,7 +94,7 @@
 "primer_card_form_error_email_invalid" = "Neteisingas el. paštas";
 "primer_card_form_error_email_required" = "El. paštas yra privalomas";
 "primer_card_form_error_expiry_invalid" = "Neteisinga data";
-"primer_card_form_error_expiry_month_invalid" = "Galioji datos  mėnuo neteisinga";
+"primer_card_form_error_expiry_month_invalid" = "Galiojimo datos mėnuo neteisingas";
 "primer_card_form_error_expiry_required" = "Galiojimo data yra privaloma";
 "primer_card_form_error_expiry_year_invalid" = "Galiojimo datos metai neteisingi";
 "primer_card_form_error_first_name_invalid" = "Neteisingas vardas";

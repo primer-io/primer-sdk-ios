@@ -117,7 +117,7 @@
 "primer_vault_default_bank" = "Bank hisobi";
 "primer_vault_format_masked" = "•••• %1$@";
 "primer_vault_format_expires" = "Amal qilish muddati %1$@/%2$@";
-"primer_vault_format_card_details" = "%1$@ bilan tugagan %2$@";
+"primer_vault_format_card_details" = "%1$@, oxiri %2$@";
 "primer_vault_selected_button_other" = "Boshqa to'lov usullarini ko'rsatish";
 "primer_vault_manage_title" = "Barcha saqlangan to'lov usullari";
 "primer_vault_manage_button_edit" = "Tahrirlash";
@@ -156,7 +156,7 @@
 "accessibility_card_form_submit_loading" = "To'lov qayta ishlanmoqda, iltimos, kuting";
 "accessibility_card_form_submit_disabled" = "Tugma o'chirilgan. To'lovni yoqish uchun barcha majburiy maydonlarni to'ldiring";
 "accessibility_card_form_card_number_error_invalid" = "Karta raqami noto'g'ri. Iltimos, tekshirib qayta urinib ko'ring.";
-"accessibility_card_form_card_number_error_empty" = "Karta raqami kiritish shart.";
+"accessibility_card_form_card_number_error_empty" = "Karta raqamini kiritish shart.";
 "accessibility_card_form_expiry_error_invalid" = "Amal qilish muddati noto'g'ri.";
 "accessibility_card_form_cvc_error_invalid" = "Xavfsizlik kodi noto'g'ri.";
 "accessibility_card_form_cvv_icon" = "CVV xavfsizlik kodi";
