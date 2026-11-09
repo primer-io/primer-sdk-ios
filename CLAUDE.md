@@ -89,7 +89,7 @@ Run quality checks on changed files before committing:
 swiftformat <file.swift> --config BuildTools/.swiftformat
 swiftlint lint --fix --config "Debug App/.swiftlint.yml"
 swiftlint lint --config "Debug App/.swiftlint.yml"
-python3 Scripts/check_translations.py --base "$(git merge-base origin/master HEAD)"
+python3 Scripts/check_translations.py --base "$(git merge-base origin/master HEAD)" --exclude 'Debug App/**'
 ```
 
 ## Conventions & guardrails
@@ -103,7 +103,7 @@ python3 Scripts/check_translations.py --base "$(git merge-base origin/master HEA
 - Prefer the shortest, clearest code; omit unneeded keywords.
 - **Localization**: add or change strings with the `translate` skill (plugin `primer-core` from the
   primer-claude marketplace). A new or changed string ships translated into every language of its
-  catalog in the same PR. The repo is the source of truth for translations; there is no Phrase step.
+  catalog in the same PR. The repo is the source of truth for translations.
 
 ## Where to find more
 
