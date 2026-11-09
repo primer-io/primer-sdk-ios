@@ -4,9 +4,9 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import SwiftUI
-@_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
+import SwiftUI
 
 @available(iOS 15.0, *)
 struct AchUserDetailsView: View, LogReporter {
@@ -41,7 +41,7 @@ struct AchUserDetailsView: View, LogReporter {
   private var firstNameField: some View {
     NameInputField(
       label: CheckoutComponentsStrings.firstNameLabel,
-      placeholder: CheckoutComponentsStrings.firstNamePlaceholder,
+      placeholder: "",
       inputType: .firstName,
       initialValue: achState.userDetails.firstName,
       onNameChange: scope.updateFirstName
@@ -54,7 +54,7 @@ struct AchUserDetailsView: View, LogReporter {
   private var lastNameField: some View {
     NameInputField(
       label: CheckoutComponentsStrings.lastNameLabel,
-      placeholder: CheckoutComponentsStrings.lastNamePlaceholder,
+      placeholder: "",
       inputType: .lastName,
       initialValue: achState.userDetails.lastName,
       onNameChange: scope.updateLastName

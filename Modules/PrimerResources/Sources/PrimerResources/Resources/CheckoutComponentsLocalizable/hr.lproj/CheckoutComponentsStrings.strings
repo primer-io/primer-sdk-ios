@@ -131,9 +131,8 @@
 "primer_card_form_label_retail" = "Prodajno mjesto";
 "primer_card_form_label_state" = "Županija";
 "primer_card_form_network_selector_title" = "Odaberite mrežu";
-"primer_card_form_placeholder_address1" = "Ilica 123";
-"primer_card_form_placeholder_address2" = "Stan 4B";
-"primer_card_form_placeholder_city" = "Zagreb";
+"primer_card_form_placeholder_address1" = "Ulica i kućni broj";
+"primer_card_form_placeholder_address2" = "Stan, ured, kat";
 "primer_card_form_placeholder_country_code" = "Odaberite državu";
 "primer_card_form_placeholder_cvv" = "123";
 "primer_card_form_placeholder_cvv_amex" = "1234";
@@ -141,15 +140,11 @@
 "primer_card_form_placeholder_email" = "ivan.horvat@primjer.hr";
 "primer_card_form_placeholder_expiry" = "MM/GG";
 "primer_card_form_placeholder_expiry_alt" = "12/25";
-"primer_card_form_placeholder_first_name" = "Ivan";
-"primer_card_form_placeholder_last_name" = "Horvat";
 "primer_card_form_placeholder_name" = "Puno ime";
 "primer_card_form_placeholder_number" = "1234 1234 1234 1234";
 "primer_card_form_placeholder_otp" = "123456";
 "primer_card_form_placeholder_phone" = "+385 1 123 4567";
-"primer_card_form_placeholder_postal" = "10000";
 "primer_card_form_placeholder_retail" = "Odaberite prodajno mjesto";
-"primer_card_form_placeholder_state" = "Grad Zagreb";
 "primer_card_form_retail_not_implemented" = "Odabir prodajnog mjesta još nije implementiran";
 "primer_card_form_title" = "Plati karticom";
 "primer_checkout_dismissing" = "Zatvaranje...";

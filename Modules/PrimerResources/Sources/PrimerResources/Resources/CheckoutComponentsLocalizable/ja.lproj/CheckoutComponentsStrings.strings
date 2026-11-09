@@ -131,9 +131,8 @@
 "primer_card_form_label_retail" = "店舗";
 "primer_card_form_label_state" = "都道府県";
 "primer_card_form_network_selector_title" = "カードネットワークを選択";
-"primer_card_form_placeholder_address1" = "東京都渋谷区1-2-3";
-"primer_card_form_placeholder_address2" = "マンション4B";
-"primer_card_form_placeholder_city" = "東京";
+"primer_card_form_placeholder_address1" = "町名・番地";
+"primer_card_form_placeholder_address2" = "建物名・部屋番号・階";
 "primer_card_form_placeholder_country_code" = "国を選択";
 "primer_card_form_placeholder_cvv" = "123";
 "primer_card_form_placeholder_cvv_amex" = "1234";
@@ -141,15 +140,11 @@
 "primer_card_form_placeholder_email" = "tanaka.taro@example.com";
 "primer_card_form_placeholder_expiry" = "MM/YY";
 "primer_card_form_placeholder_expiry_alt" = "12/25";
-"primer_card_form_placeholder_first_name" = "太郎";
-"primer_card_form_placeholder_last_name" = "田中";
 "primer_card_form_placeholder_name" = "氏名";
 "primer_card_form_placeholder_number" = "1234 1234 1234 1234";
 "primer_card_form_placeholder_otp" = "123456";
 "primer_card_form_placeholder_phone" = "+81 3-1234-5678";
-"primer_card_form_placeholder_postal" = "100-0001";
 "primer_card_form_placeholder_retail" = "店舗を選択";
-"primer_card_form_placeholder_state" = "東京都";
 "primer_card_form_retail_not_implemented" = "店舗選択は未実装です";
 "primer_card_form_title" = "カードでお支払い";
 "primer_checkout_dismissing" = "閉じています...";

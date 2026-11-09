@@ -131,9 +131,8 @@
 "primer_card_form_label_retail" = "Predajňa";
 "primer_card_form_label_state" = "Štát";
 "primer_card_form_network_selector_title" = "Vybrať sieť";
-"primer_card_form_placeholder_address1" = "Hlavná ulica 123";
-"primer_card_form_placeholder_address2" = "Byt 4B";
-"primer_card_form_placeholder_city" = "Bratislava";
+"primer_card_form_placeholder_address1" = "Ulica a číslo domu";
+"primer_card_form_placeholder_address2" = "Byt, kancelária, poschodie";
 "primer_card_form_placeholder_country_code" = "Vybrať krajinu";
 "primer_card_form_placeholder_cvv" = "123";
 "primer_card_form_placeholder_cvv_amex" = "1234";
@@ -141,15 +140,11 @@
 "primer_card_form_placeholder_email" = "jan.novak@priklad.sk";
 "primer_card_form_placeholder_expiry" = "MM/RR";
 "primer_card_form_placeholder_expiry_alt" = "12/25";
-"primer_card_form_placeholder_first_name" = "Ján";
-"primer_card_form_placeholder_last_name" = "Novák";
 "primer_card_form_placeholder_name" = "Celé meno";
 "primer_card_form_placeholder_number" = "1234 1234 1234 1234";
 "primer_card_form_placeholder_otp" = "123456";
 "primer_card_form_placeholder_phone" = "+421 2 1234 5678";
-"primer_card_form_placeholder_postal" = "811 01";
 "primer_card_form_placeholder_retail" = "Vybrať predajňu";
-"primer_card_form_placeholder_state" = "Bratislavský";
 "primer_card_form_retail_not_implemented" = "Výber predajne zatiaľ nie je implementovaný";
 "primer_card_form_title" = "Zaplatiť kartou";
 "primer_checkout_dismissing" = "Zatvára sa...";

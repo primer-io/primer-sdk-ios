@@ -55,14 +55,9 @@
 "primer_card_form_placeholder_cvv_amex" = "1234";
 "primer_card_form_placeholder_cvv_standard" = "123";
 "primer_card_form_placeholder_country_code" = "Selecteer land";
-"primer_card_form_placeholder_postal" = "1000";
-"primer_card_form_placeholder_city" = "Brussel";
-"primer_card_form_placeholder_state" = "Vlaams-Brabant";
-"primer_card_form_placeholder_address1" = "Koningsstraat 123";
-"primer_card_form_placeholder_address2" = "Bus 4B";
+"primer_card_form_placeholder_address1" = "Straat en huisnummer";
+"primer_card_form_placeholder_address2" = "Appartement, bus, verdieping";
 "primer_card_form_placeholder_phone" = "+32 2 123 45 67";
-"primer_card_form_placeholder_first_name" = "Jan";
-"primer_card_form_placeholder_last_name" = "Peeters";
 "primer_card_form_placeholder_email" = "jan.peeters@voorbeeld.be";
 "primer_card_form_placeholder_retail" = "Selecteer verkooppunt";
 "primer_card_form_placeholder_otp" = "123456";

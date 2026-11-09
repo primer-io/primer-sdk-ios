@@ -131,9 +131,8 @@
 "primer_card_form_label_retail" = "रिटेल आउटलेट";
 "primer_card_form_label_state" = "राज्य";
 "primer_card_form_network_selector_title" = "नेटवर्क चुनें";
-"primer_card_form_placeholder_address1" = "123 मुख्य मार्ग";
-"primer_card_form_placeholder_address2" = "अपार्टमेंट 4B";
-"primer_card_form_placeholder_city" = "मुंबई";
+"primer_card_form_placeholder_address1" = "सड़क और मकान नंबर";
+"primer_card_form_placeholder_address2" = "फ़्लैट, सुइट, मंज़िल";
 "primer_card_form_placeholder_country_code" = "देश चुनें";
 "primer_card_form_placeholder_cvv" = "123";
 "primer_card_form_placeholder_cvv_amex" = "1234";
@@ -141,15 +140,11 @@
 "primer_card_form_placeholder_email" = "rahul.sharma@example.com";
 "primer_card_form_placeholder_expiry" = "MM/YY";
 "primer_card_form_placeholder_expiry_alt" = "12/25";
-"primer_card_form_placeholder_first_name" = "राहुल";
-"primer_card_form_placeholder_last_name" = "शर्मा";
 "primer_card_form_placeholder_name" = "पूरा नाम";
 "primer_card_form_placeholder_number" = "1234 1234 1234 1234";
 "primer_card_form_placeholder_otp" = "123456";
 "primer_card_form_placeholder_phone" = "+91 11 1234 5678";
-"primer_card_form_placeholder_postal" = "110001";
 "primer_card_form_placeholder_retail" = "आउटलेट चुनें";
-"primer_card_form_placeholder_state" = "दिल्ली";
 "primer_card_form_retail_not_implemented" = "रिटेल आउटलेट चयन अभी तक लागू नहीं किया गया है";
 "primer_card_form_title" = "कार्ड से भुगतान करें";
 "primer_checkout_dismissing" = "बंद हो रहा है...";

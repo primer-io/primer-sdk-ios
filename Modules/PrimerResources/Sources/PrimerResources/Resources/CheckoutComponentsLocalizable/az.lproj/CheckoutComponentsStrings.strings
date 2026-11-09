@@ -55,14 +55,9 @@
 "primer_card_form_placeholder_cvv_amex" = "1234";
 "primer_card_form_placeholder_cvv_standard" = "123";
 "primer_card_form_placeholder_country_code" = "Ölkə seçin";
-"primer_card_form_placeholder_postal" = "12345";
-"primer_card_form_placeholder_city" = "Bakı";
-"primer_card_form_placeholder_state" = "AZ";
-"primer_card_form_placeholder_address1" = "Nizami küçəsi 123";
-"primer_card_form_placeholder_address2" = "Mənzil 4B";
+"primer_card_form_placeholder_address1" = "Küçə və ev nömrəsi";
+"primer_card_form_placeholder_address2" = "Mənzil, ofis, mərtəbə";
 "primer_card_form_placeholder_phone" = "+994 (55) 123-45-67";
-"primer_card_form_placeholder_first_name" = "Əli";
-"primer_card_form_placeholder_last_name" = "Əliyev";
 "primer_card_form_placeholder_email" = "ali.aliyev@example.com";
 "primer_card_form_placeholder_retail" = "Satış nöqtəsini seçin";
 "primer_card_form_placeholder_otp" = "123456";

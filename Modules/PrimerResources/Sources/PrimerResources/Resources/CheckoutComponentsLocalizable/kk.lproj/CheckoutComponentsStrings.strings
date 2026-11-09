@@ -55,14 +55,9 @@
 "primer_card_form_placeholder_cvv_amex" = "1234";
 "primer_card_form_placeholder_cvv_standard" = "123";
 "primer_card_form_placeholder_country_code" = "Мемлекетті таңдау";
-"primer_card_form_placeholder_postal" = "050000";
-"primer_card_form_placeholder_city" = "Алматы";
-"primer_card_form_placeholder_state" = "Алматы облысы";
-"primer_card_form_placeholder_address1" = "Абай даңғылы 123";
-"primer_card_form_placeholder_address2" = "4Б пәтер";
+"primer_card_form_placeholder_address1" = "Көше және үй нөмірі";
+"primer_card_form_placeholder_address2" = "Пәтер, кеңсе, қабат";
 "primer_card_form_placeholder_phone" = "+7 (701) 123-4567";
-"primer_card_form_placeholder_first_name" = "Нұрлан";
-"primer_card_form_placeholder_last_name" = "Қасымов";
 "primer_card_form_placeholder_email" = "nurlan.kassymov@example.com";
 "primer_card_form_placeholder_retail" = "Нүктені таңдау";
 "primer_card_form_placeholder_otp" = "123456";

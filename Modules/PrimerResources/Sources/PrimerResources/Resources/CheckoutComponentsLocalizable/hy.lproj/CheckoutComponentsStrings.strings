@@ -55,14 +55,9 @@
 "primer_card_form_placeholder_cvv_amex" = "1234";
 "primer_card_form_placeholder_cvv_standard" = "123";
 "primer_card_form_placeholder_country_code" = "Ընտրեք երկիր";
-"primer_card_form_placeholder_postal" = "12345";
-"primer_card_form_placeholder_city" = "Երևան";
-"primer_card_form_placeholder_state" = "Կ. Երևան";
-"primer_card_form_placeholder_address1" = "Աբովյան 123";
-"primer_card_form_placeholder_address2" = "Բն. 4Բ";
+"primer_card_form_placeholder_address1" = "Փողոց և տան համար";
+"primer_card_form_placeholder_address2" = "Բնակարան, գրասենյակ, հարկ";
 "primer_card_form_placeholder_phone" = "+374 (55) 123-456";
-"primer_card_form_placeholder_first_name" = "Արման";
-"primer_card_form_placeholder_last_name" = "Հակոբյան";
 "primer_card_form_placeholder_email" = "arman.hakobyan@example.com";
 "primer_card_form_placeholder_retail" = "Ընտրեք կետ";
 "primer_card_form_placeholder_otp" = "123456";

@@ -131,9 +131,8 @@
 "primer_card_form_label_retail" = "零售據點";
 "primer_card_form_label_state" = "州/省";
 "primer_card_form_network_selector_title" = "選擇卡片網路";
-"primer_card_form_placeholder_address1" = "中山北路一段123號";
-"primer_card_form_placeholder_address2" = "4樓B室";
-"primer_card_form_placeholder_city" = "台北";
+"primer_card_form_placeholder_address1" = "街道和門牌號碼";
+"primer_card_form_placeholder_address2" = "公寓、單位、樓層";
 "primer_card_form_placeholder_country_code" = "選擇國家";
 "primer_card_form_placeholder_cvv" = "123";
 "primer_card_form_placeholder_cvv_amex" = "1234";
@@ -141,15 +140,11 @@
 "primer_card_form_placeholder_email" = "wang.daming@example.com";
 "primer_card_form_placeholder_expiry" = "MM/YY";
 "primer_card_form_placeholder_expiry_alt" = "12/25";
-"primer_card_form_placeholder_first_name" = "大明";
-"primer_card_form_placeholder_last_name" = "王";
 "primer_card_form_placeholder_name" = "全名";
 "primer_card_form_placeholder_number" = "1234 1234 1234 1234";
 "primer_card_form_placeholder_otp" = "123456";
 "primer_card_form_placeholder_phone" = "+886 2 1234 5678";
-"primer_card_form_placeholder_postal" = "100";
 "primer_card_form_placeholder_retail" = "選擇據點";
-"primer_card_form_placeholder_state" = "台北市";
 "primer_card_form_retail_not_implemented" = "零售據點選擇功能尚未實作";
 "primer_card_form_title" = "使用卡片付款";
 "primer_checkout_dismissing" = "關閉中...";

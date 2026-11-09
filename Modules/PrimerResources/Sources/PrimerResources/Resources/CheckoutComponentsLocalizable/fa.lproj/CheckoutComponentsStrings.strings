@@ -55,14 +55,9 @@
 "primer_card_form_placeholder_cvv_amex" = "۱۲۳۴";
 "primer_card_form_placeholder_cvv_standard" = "123";
 "primer_card_form_placeholder_country_code" = "انتخاب کشور";
-"primer_card_form_placeholder_postal" = "۱۲۳۴۵";
-"primer_card_form_placeholder_city" = "تهران";
-"primer_card_form_placeholder_state" = "تهران";
-"primer_card_form_placeholder_address1" = "خیابان ولیعصر ۱۲۳";
-"primer_card_form_placeholder_address2" = "واحد ۴";
+"primer_card_form_placeholder_address1" = "خیابان و پلاک";
+"primer_card_form_placeholder_address2" = "آپارتمان، واحد، طبقه";
 "primer_card_form_placeholder_phone" = "۰۹۱۲ ۳۴۵ ۶۷۸۹";
-"primer_card_form_placeholder_first_name" = "علی";
-"primer_card_form_placeholder_last_name" = "احمدی";
 "primer_card_form_placeholder_email" = "ali.ahmadi@example.com";
 "primer_card_form_placeholder_retail" = "انتخاب فروشگاه";
 "primer_card_form_placeholder_otp" = "۱۲۳۴۵۶";

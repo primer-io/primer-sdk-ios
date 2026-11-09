@@ -131,9 +131,8 @@
 "primer_card_form_label_retail" = "Σημείο λιανικής";
 "primer_card_form_label_state" = "Περιφέρεια";
 "primer_card_form_network_selector_title" = "Επιλογή δικτύου";
-"primer_card_form_placeholder_address1" = "Ακαδημίας 123";
-"primer_card_form_placeholder_address2" = "Διαμέρισμα 4Β";
-"primer_card_form_placeholder_city" = "Αθήνα";
+"primer_card_form_placeholder_address1" = "Οδός και αριθμός";
+"primer_card_form_placeholder_address2" = "Διαμέρισμα, γραφείο, όροφος";
 "primer_card_form_placeholder_country_code" = "Επιλέξτε χώρα";
 "primer_card_form_placeholder_cvv" = "123";
 "primer_card_form_placeholder_cvv_amex" = "1234";
@@ -141,15 +140,11 @@
 "primer_card_form_placeholder_email" = "giannis.papadopoulos@example.com";
 "primer_card_form_placeholder_expiry" = "ΜΜ/ΕΕ";
 "primer_card_form_placeholder_expiry_alt" = "12/25";
-"primer_card_form_placeholder_first_name" = "Γιάννης";
-"primer_card_form_placeholder_last_name" = "Παπαδόπουλος";
 "primer_card_form_placeholder_name" = "Πλήρες όνομα";
 "primer_card_form_placeholder_number" = "1234 1234 1234 1234";
 "primer_card_form_placeholder_otp" = "123456";
 "primer_card_form_placeholder_phone" = "+30 21 0123 4567";
-"primer_card_form_placeholder_postal" = "105 57";
 "primer_card_form_placeholder_retail" = "Επιλέξτε σημείο";
-"primer_card_form_placeholder_state" = "Αττική";
 "primer_card_form_retail_not_implemented" = "Η επιλογή σημείου λιανικής δεν έχει υλοποιηθεί ακόμα";
 "primer_card_form_title" = "Πληρωμή με κάρτα";
 "primer_checkout_dismissing" = "Κλείσιμο...";

@@ -4,9 +4,9 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import SwiftUI
-@_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
+import SwiftUI
 
 @available(iOS 15.0, *)
 struct BillingAddressRedirectScreen: View {
@@ -120,7 +120,7 @@ struct BillingAddressRedirectScreen: View {
       HStack(alignment: .top, spacing: PrimerSpacing.medium(tokens: tokens)) {
         makeTextField(
           label: CheckoutComponentsStrings.postalCodeLabel,
-          placeholder: CheckoutComponentsStrings.postalCodePlaceholder,
+          placeholder: "",
           text: $postalCode,
           fieldType: .postalCode,
           identifier: AccessibilityIdentifiers.BillingAddressRedirect.postalCodeField,
@@ -128,7 +128,7 @@ struct BillingAddressRedirectScreen: View {
         )
         makeTextField(
           label: CheckoutComponentsStrings.cityLabel,
-          placeholder: CheckoutComponentsStrings.cityPlaceholder,
+          placeholder: "",
           text: $city,
           fieldType: .city,
           identifier: AccessibilityIdentifiers.BillingAddressRedirect.cityField,
@@ -137,7 +137,7 @@ struct BillingAddressRedirectScreen: View {
       }
       makeTextField(
         label: CheckoutComponentsStrings.stateLabel,
-        placeholder: CheckoutComponentsStrings.statePlaceholder,
+        placeholder: "",
         text: $state,
         fieldType: .state,
         identifier: AccessibilityIdentifiers.BillingAddressRedirect.stateField,

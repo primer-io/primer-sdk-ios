@@ -131,9 +131,8 @@
 "primer_card_form_label_retail" = "Point de vente";
 "primer_card_form_label_state" = "Région";
 "primer_card_form_network_selector_title" = "Sélectionner le type de carte";
-"primer_card_form_placeholder_address1" = "123 Rue Principale";
-"primer_card_form_placeholder_address2" = "Apt 4B";
-"primer_card_form_placeholder_city" = "Paris";
+"primer_card_form_placeholder_address1" = "Numéro et nom de rue";
+"primer_card_form_placeholder_address2" = "Appartement, bureau, étage";
 "primer_card_form_placeholder_country_code" = "Choisir votre pays";
 "primer_card_form_placeholder_cvv" = "123";
 "primer_card_form_placeholder_cvv_amex" = "1234";
@@ -141,15 +140,11 @@
 "primer_card_form_placeholder_email" = "jean.dupont@exemple.fr";
 "primer_card_form_placeholder_expiry" = "MM/AA";
 "primer_card_form_placeholder_expiry_alt" = "12/28";
-"primer_card_form_placeholder_first_name" = "Jean";
-"primer_card_form_placeholder_last_name" = "Dupont";
 "primer_card_form_placeholder_name" = "Nom complet";
 "primer_card_form_placeholder_number" = "1234 1234 1234 1234";
 "primer_card_form_placeholder_otp" = "123456";
 "primer_card_form_placeholder_phone" = "+33 1 23 45 67 89";
-"primer_card_form_placeholder_postal" = "75001";
 "primer_card_form_placeholder_retail" = "Sélectionner le point de vente";
-"primer_card_form_placeholder_state" = "Ile-de-France";
 "primer_card_form_retail_not_implemented" = "Sélection du point de vente non disponible";
 "primer_card_form_title" = "Payer par carte";
 "primer_checkout_dismissing" = "Fermeture...";

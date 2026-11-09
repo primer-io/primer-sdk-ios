@@ -55,14 +55,9 @@
 "primer_card_form_placeholder_cvv_amex" = "1234";
 "primer_card_form_placeholder_cvv_standard" = "123";
 "primer_card_form_placeholder_country_code" = "Zgjidhni vendin";
-"primer_card_form_placeholder_postal" = "12345";
-"primer_card_form_placeholder_city" = "Tiranë";
-"primer_card_form_placeholder_state" = "TR";
-"primer_card_form_placeholder_address1" = "Rruga Dëshmorët e Kombit 123";
-"primer_card_form_placeholder_address2" = "Ap 4B";
+"primer_card_form_placeholder_address1" = "Rruga dhe numri";
+"primer_card_form_placeholder_address2" = "Apartamenti, zyra, kati";
 "primer_card_form_placeholder_phone" = "+355 69 123 4567";
-"primer_card_form_placeholder_first_name" = "Arben";
-"primer_card_form_placeholder_last_name" = "Hoxha";
 "primer_card_form_placeholder_email" = "arben.hoxha@shembull.com";
 "primer_card_form_placeholder_retail" = "Zgjidhni pikën";
 "primer_card_form_placeholder_otp" = "123456";
