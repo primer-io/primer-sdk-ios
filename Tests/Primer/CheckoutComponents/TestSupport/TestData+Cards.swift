@@ -5,9 +5,9 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
-@testable import PrimerSDK
-@_spi(PrimerInternal) @testable import PrimerFoundation
 @_spi(PrimerInternal) @testable import PrimerCore
+@_spi(PrimerInternal) @testable import PrimerFoundation
+@testable import PrimerSDK
 
 @available(iOS 15.0, *)
 extension TestData {
@@ -32,6 +32,8 @@ extension TestData {
         static let invalidLuhn = "4242424242424241"
         static let invalidLuhnVisa = "4111111111111112"
         static let tooShort = "424242"
+        static let incompleteVisa = "424242424242424"
+        static let tooLongAmex = "3782822463100051"
         static let tooLong = "42424242424242424242"
         static let empty = ""
         static let nonNumeric = "4242abcd42424242"
@@ -87,6 +89,7 @@ extension TestData {
         static let year25 = "25"
         static let year30 = "30"
         static let lettersYear = "XY"
+        static let oneDigitYear = "2"
 
         // Invalid formats
         static let invalidMonth = ("13", "25")

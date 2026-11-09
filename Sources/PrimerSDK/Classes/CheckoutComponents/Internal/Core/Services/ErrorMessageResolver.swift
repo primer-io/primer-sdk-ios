@@ -5,9 +5,9 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
-@_spi(PrimerInternal) import PrimerResources
-@_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerResources
 
 final class ErrorMessageResolver {
 
@@ -63,6 +63,16 @@ final class ErrorMessageResolver {
       CheckoutComponentsStrings.formErrorCardHolderNameLength
     case "form_error_card_expired":
       CheckoutComponentsStrings.formErrorCardExpired
+    case "form_error_card_number_incomplete":
+      CheckoutComponentsStrings.cardNumberIncomplete
+    case "form_error_expiry_month_invalid":
+      CheckoutComponentsStrings.expiryMonthInvalid
+    case "form_error_expiry_year_invalid":
+      CheckoutComponentsStrings.expiryYearInvalid
+    case "form_error_cvv_length_3":
+      CheckoutComponentsStrings.cvvThreeDigits
+    case "form_error_cvv_length_4":
+      CheckoutComponentsStrings.cvvFourDigits
     default:
       nil
     }
@@ -70,6 +80,14 @@ final class ErrorMessageResolver {
 
   private static func getRequiredFieldError(for key: String) -> String? {
     switch key {
+    case "checkout_components_card_number_required":
+      CheckoutComponentsStrings.cardNumberRequired
+    case "checkout_components_cvv_required":
+      CheckoutComponentsStrings.cvvRequired
+    case "checkout_components_expiry_date_required":
+      CheckoutComponentsStrings.expiryDateRequired
+    case "checkout_components_cardholder_name_required":
+      CheckoutComponentsStrings.cardholderNameRequired
     case "checkout_components_first_name_required":
       CheckoutComponentsStrings.firstNameErrorRequired
     case "checkout_components_last_name_required":
@@ -253,10 +271,12 @@ extension ErrorMessageResolver {
     )
   }
 
-  static func createInvalidFieldError(for inputElementType: ValidationError.InputElementType)
-    -> ValidationError {
-    let errorMessageKey = invalidErrorMessageKey(for: inputElementType)
-    let errorId = "\(inputElementType.rawValue.lowercased())_invalid"
+  static func createInvalidFieldError(
+    for inputElementType: ValidationError.InputElementType,
+    reason: String? = nil
+  ) -> ValidationError {
+    let errorMessageKey = reason.map { "form_error_\($0)" } ?? invalidErrorMessageKey(for: inputElementType)
+    let errorId = reason ?? "\(inputElementType.rawValue.lowercased())_invalid"
 
     return ValidationError(
       inputElementType: inputElementType,
@@ -273,15 +293,14 @@ extension ErrorMessageResolver {
     for inputElementType: ValidationError.InputElementType
   ) -> String {
     switch inputElementType {
-    // Card fields have no dedicated required-message; reuse their "enter valid …" message.
     case .cardNumber:
-      "checkout_components_card_number_invalid"
+      "checkout_components_card_number_required"
     case .cvv:
-      "checkout_components_cvv_invalid"
+      "checkout_components_cvv_required"
     case .expiryDate:
-      "checkout_components_expiry_date_invalid"
+      "checkout_components_expiry_date_required"
     case .cardholderName:
-      "checkout_components_cardholder_name_invalid"
+      "checkout_components_cardholder_name_required"
     case .firstName:
       "checkout_components_first_name_required"
     case .lastName:

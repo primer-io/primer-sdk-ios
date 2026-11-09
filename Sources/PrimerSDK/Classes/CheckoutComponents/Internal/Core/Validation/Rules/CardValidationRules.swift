@@ -5,8 +5,8 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
-@_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
 
 final class CardNumberRule: ValidationRule {
 
@@ -29,40 +29,35 @@ final class CardNumberRule: ValidationRule {
       return .invalid(error: error)
     }
 
-    if cleanedNumber.count < 13 || cleanedNumber.count > 19 {
+    if cleanedNumber.count > 19 {
       let error = ErrorMessageResolver.createInvalidFieldError(for: .cardNumber)
       return .invalid(error: error)
     }
 
-    if !isValidLuhn(cleanedNumber) {
+    let detectedNetwork = CardNetwork(cardNumber: cleanedNumber)
+    let networkLengths = detectedNetwork.validation?.lengths ?? []
+    let fitsNetwork = networkLengths.isEmpty || networkLengths.contains(cleanedNumber.count)
+    if cleanedNumber.count < 13 || (!fitsNetwork && cleanedNumber.count < networkLengths.max() ?? 0) {
+      let error = ErrorMessageResolver.createInvalidFieldError(for: .cardNumber, reason: "card_number_incomplete")
+      return .invalid(error: error)
+    }
+
+    if !fitsNetwork || !isValidLuhn(cleanedNumber) {
       let error = ErrorMessageResolver.createInvalidFieldError(for: .cardNumber)
       return .invalid(error: error)
     }
 
-    // Only validate network for complete card numbers (13+ digits). An empty allowed-network set
-    // means no client-session restriction is configured — allow every network rather than
-    // rejecting all of them (Luhn and length checks above still apply).
-    if cleanedNumber.count >= 13, !allowedCardNetworks.isEmpty {
-      let detectedNetwork = CardNetwork(cardNumber: cleanedNumber)
-      if !allowedCardNetworks.contains(detectedNetwork) {
-        let error = ValidationError(
-          inputElementType: .cardNumber,
-          errorId: "unsupported_card_type",
-          fieldNameKey: "card_number_field",
-          errorMessageKey: "form_error_card_type_not_supported",
-          errorFormatKey: nil,
-          code: "unsupported-card-type",
-          message: CheckoutComponentsStrings.formErrorCardTypeNotSupported
-        )
-        return .invalid(error: error)
-      }
-
-      if detectedNetwork != .unknown,
-        let validation = detectedNetwork.validation,
-        !validation.lengths.contains(cleanedNumber.count) {
-        let error = ErrorMessageResolver.createInvalidFieldError(for: .cardNumber)
-        return .invalid(error: error)
-      }
+    if !allowedCardNetworks.isEmpty, !allowedCardNetworks.contains(detectedNetwork) {
+      let error = ValidationError(
+        inputElementType: .cardNumber,
+        errorId: "unsupported_card_type",
+        fieldNameKey: "card_number_field",
+        errorMessageKey: "form_error_card_type_not_supported",
+        errorFormatKey: nil,
+        code: "unsupported-card-type",
+        message: CheckoutComponentsStrings.formErrorCardTypeNotSupported
+      )
+      return .invalid(error: error)
     }
 
     return .valid
@@ -106,14 +101,9 @@ final class CVVRule: ValidationRule {
       return .invalid(error: error)
     }
 
-    if !value.allSatisfy(\.isNumber) {
-      let error = ErrorMessageResolver.createInvalidFieldError(for: .cvv)
-      return .invalid(error: error)
-    }
-
     let expectedLength = cardNetwork == .amex ? 4 : 3
-    if value.count != expectedLength {
-      let error = ErrorMessageResolver.createInvalidFieldError(for: .cvv)
+    if !value.allSatisfy(\.isNumber) || value.count != expectedLength {
+      let error = ErrorMessageResolver.createInvalidFieldError(for: .cvv, reason: "cvv_length_\(expectedLength)")
       return .invalid(error: error)
     }
 

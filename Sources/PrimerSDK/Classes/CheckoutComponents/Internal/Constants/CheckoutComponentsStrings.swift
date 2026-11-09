@@ -7,9 +7,9 @@
 // swiftlint:disable file_length
 
 import Foundation
-@_spi(PrimerInternal) import PrimerResources
-@_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerResources
 
 /// Centralized strings for CheckoutComponents to make localization easier
 /// Keys use underscore_case format for cross-platform consistency
@@ -354,7 +354,7 @@ enum CheckoutComponentsStrings {
     "primer_card_form_error_number_invalid",
     tableName: tableName,
     bundle: .primerResources,
-    value: "Invalid card number",
+    value: "Card number is invalid",
     comment: "Card number validation error message"
   )
 
@@ -380,6 +380,78 @@ enum CheckoutComponentsStrings {
     bundle: .primerResources,
     value: "Invalid Cardholder name",
     comment: "Cardholder name validation error message"
+  )
+
+  static let cardNumberRequired = NSLocalizedString(
+    "primer_card_form_error_number_required",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Card number is required",
+    comment: "Card number empty validation error"
+  )
+
+  static let cardNumberIncomplete = NSLocalizedString(
+    "primer_card_form_error_number_incomplete",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Card number is incomplete",
+    comment: "Card number too short validation error"
+  )
+
+  static let expiryDateRequired = NSLocalizedString(
+    "primer_card_form_error_expiry_required",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Expiry date is required",
+    comment: "Expiry date empty validation error"
+  )
+
+  static let expiryMonthInvalid = NSLocalizedString(
+    "primer_card_form_error_expiry_month_invalid",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Expiry date month is invalid",
+    comment: "Expiry date month validation error"
+  )
+
+  static let expiryYearInvalid = NSLocalizedString(
+    "primer_card_form_error_expiry_year_invalid",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Expiry date year is invalid",
+    comment: "Expiry date year validation error"
+  )
+
+  static let cvvRequired = NSLocalizedString(
+    "primer_card_form_error_cvv_required",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "CVV number is required",
+    comment: "CVV empty validation error"
+  )
+
+  static let cvvThreeDigits = NSLocalizedString(
+    "primer_card_form_error_cvv_length_3",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "CVV must be 3 digits",
+    comment: "CVV length validation error for a 3 digit CVV"
+  )
+
+  static let cvvFourDigits = NSLocalizedString(
+    "primer_card_form_error_cvv_length_4",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "CVV must be 4 digits",
+    comment: "CVV length validation error for a 4 digit CVV"
+  )
+
+  static let cardholderNameRequired = NSLocalizedString(
+    "primer_card_form_error_name_required",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Name on card is required",
+    comment: "Cardholder name empty validation error"
   )
 
   // MARK: - Validation Errors - Form Specific

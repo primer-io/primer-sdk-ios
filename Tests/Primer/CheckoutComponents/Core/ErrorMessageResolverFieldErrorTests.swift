@@ -4,10 +4,10 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+@_spi(PrimerInternal) @testable import PrimerCore
+@_spi(PrimerInternal) @testable import PrimerFoundation
 @testable import PrimerSDK
 import XCTest
-@_spi(PrimerInternal) @testable import PrimerFoundation
-@_spi(PrimerInternal) @testable import PrimerCore
 
 @available(iOS 15.0, *)
 final class ErrorMessageResolverFieldErrorTests: XCTestCase {
@@ -15,6 +15,10 @@ final class ErrorMessageResolverFieldErrorTests: XCTestCase {
     // MARK: - Test Data
 
     private let requiredErrorMessageKeys: [ValidationError.InputElementType: String] = [
+        .cardNumber: TestData.ErrorMessageKeys.cardNumberRequired,
+        .cvv: TestData.ErrorMessageKeys.cvvRequired,
+        .expiryDate: TestData.ErrorMessageKeys.expiryDateRequired,
+        .cardholderName: TestData.ErrorMessageKeys.cardholderNameRequired,
         .firstName: TestData.ErrorMessageKeys.firstNameRequired,
         .lastName: TestData.ErrorMessageKeys.lastNameRequired,
         .email: TestData.ErrorMessageKeys.emailRequired,
@@ -139,10 +143,7 @@ final class ErrorMessageResolverFieldErrorTests: XCTestCase {
     // MARK: - All Input Element Types Coverage
 
     func test_allInputElementTypes_haveRequiredErrorKeys() {
-        // Test all cases except those that don't support required errors (card-related types and otpCode)
-        let unsupportedTypes: Set<ValidationError.InputElementType> = [
-            .cardNumber, .cvv, .expiryDate, .cardholderName, .otpCode, .unknown
-        ]
+        let unsupportedTypes: Set<ValidationError.InputElementType> = [.otpCode, .unknown]
 
         for type in ValidationError.InputElementType.allCases where !unsupportedTypes.contains(type) {
             let error = ErrorMessageResolver.createRequiredFieldError(for: type)

@@ -53,6 +53,7 @@ struct CVVTextField: UIViewRepresentable, LogReporter {
       textField.internalText = cvv
     }
 
+    context.coordinator.cardNetwork = cardNetwork
     textField.applyAccessibility(accessibility)
   }
 
@@ -70,8 +71,8 @@ struct CVVTextField: UIViewRepresentable, LogReporter {
 
   final class Coordinator: NSObject, UITextFieldDelegate, LogReporter {
     let repainter = PrimerFieldRepainter()
+    var cardNetwork: CardNetwork
     private let validationService: ValidationService
-    private let cardNetwork: CardNetwork
     @Binding private var cvv: String
     @Binding private var isValid: Bool
     @Binding private var errorMessage: String?
