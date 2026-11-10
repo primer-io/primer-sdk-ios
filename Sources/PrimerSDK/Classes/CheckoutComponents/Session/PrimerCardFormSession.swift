@@ -54,8 +54,7 @@ public final class PrimerCardFormSession: ObservableObject {
     PrimerCardFormUIOptions.payButtonTitle(
       scope.cardFormUIOptions,
       formattedAmount: fieldScope?.formattedPayAmount(surchargeAmount: state.surchargeAmountRaw),
-      defaultTitle: CheckoutComponentsStrings.payButton,
-      defaultTitleWithAmount: CheckoutComponentsStrings.paymentAmountTitle
+      defaultTitle: CheckoutComponentsStrings.payButton
     )
   }
 

@@ -97,22 +97,22 @@ struct CardFormScreen: View, LogReporter {
     return PrimerCardFormUIOptions.payButtonTitle(
       scope.cardFormUIOptions,
       formattedAmount: addsCard ? nil : scope.formattedPayAmount(surchargeAmount: cardFormState.surchargeAmountRaw),
-      defaultTitle: addsCard ? CheckoutComponentsStrings.addCardButton : CheckoutComponentsStrings.payButton,
-      defaultTitleWithAmount: CheckoutComponentsStrings.paymentAmountTitle
+      defaultTitle: addsCard ? CheckoutComponentsStrings.addCardButton : CheckoutComponentsStrings.payButton
     )
   }
 
   @MainActor
   private var submitButtonSection: some View {
     let isEnabled = cardFormState.isValid && !cardFormState.isLoading
+    let title = payTitle
 
     return PrimerCheckoutButton(
-      payTitle,
+      title,
       isEnabled: isEnabled,
       isLoading: cardFormState.isLoading,
       accessibilityConfiguration: .submitButton(
         identifier: AccessibilityIdentifiers.CardForm.submitButton,
-        title: payTitle,
+        title: title,
         isEnabled: isEnabled,
         isLoading: cardFormState.isLoading
       ),
