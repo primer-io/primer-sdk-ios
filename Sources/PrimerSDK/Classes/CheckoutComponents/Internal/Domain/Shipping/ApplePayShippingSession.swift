@@ -121,7 +121,7 @@ final class ApplePayShippingSession: LogReporter {
     moveToFront(currentShipping()?.methodId)
 
     if let first = options.first {
-      try await commit(first, trigger: .default)
+      try await commit(first, trigger: .defaultOption)
     }
   }
 
@@ -129,7 +129,7 @@ final class ApplePayShippingSession: LogReporter {
   func handleShippingOptionChange(optionId: String?) async throws {
     guard mode == .callbacks else { return }
     // Apple also reports the pre-selected first option when the sheet opens, so only another one is the shopper's.
-    let trigger: ExpressCheckoutShippingLog.Trigger = options.first?.id == optionId ? .default : .shopper
+    let trigger: ExpressCheckoutShippingLog.Trigger = options.first?.id == optionId ? .defaultOption : .shopper
     guard let selected = moveToFront(optionId) else { return }
     do {
       try await commit(selected, trigger: trigger)

@@ -44,7 +44,7 @@ final class ExpressCheckoutShippingLogTests: XCTestCase {
     }
 
     func test_rawValues_matchTheWebContract() {
-        XCTAssertEqual(Log.Trigger.default.rawValue, "default")
+        XCTAssertEqual(Log.Trigger.defaultOption.rawValue, "default")
         XCTAssertEqual(Log.Trigger.addressEdit.rawValue, "address_edit")
         XCTAssertEqual(Log.Outcome.noHandler.rawValue, "no_handler")
         XCTAssertEqual(Log.Outcome.refreshFailed.rawValue, "refresh_failed")
@@ -61,20 +61,20 @@ final class ExpressCheckoutShippingLogTests: XCTestCase {
         ]
 
         for (event, outcome) in warnings {
-            XCTAssertTrue(Log(event: event, trigger: .default, outcome: outcome).isWarning, "\(event) \(outcome)")
+            XCTAssertTrue(Log(event: event, trigger: .defaultOption, outcome: outcome).isWarning, "\(event) \(outcome)")
         }
         for (event, outcome) in infos {
-            XCTAssertFalse(Log(event: event, trigger: .default, outcome: outcome).isWarning, "\(event) \(outcome)")
+            XCTAssertFalse(Log(event: event, trigger: .defaultOption, outcome: outcome).isWarning, "\(event) \(outcome)")
         }
     }
 
     func test_send_flagsLaterLogsOnlyWhenMerchantCodeRan() {
         for outcome in [Log.Outcome.noHandler, .committed, .mismatch, .refreshFailed] {
-            Log.send(Log(event: .commit, trigger: .default, outcome: outcome))
+            Log.send(Log(event: .commit, trigger: .defaultOption, outcome: outcome))
             XCTAssertNil(RemoteLogContext.shared[Log.contextKey], "\(outcome)")
         }
         for outcome in [Log.Outcome.answered, .timeout, .failed] {
-            Log.send(Log(event: .optionChange, trigger: .default, outcome: outcome))
+            Log.send(Log(event: .optionChange, trigger: .defaultOption, outcome: outcome))
             XCTAssertEqual(RemoteLogContext.shared[Log.contextKey] as? Bool, true, "\(outcome)")
             Log.clearContext()
         }

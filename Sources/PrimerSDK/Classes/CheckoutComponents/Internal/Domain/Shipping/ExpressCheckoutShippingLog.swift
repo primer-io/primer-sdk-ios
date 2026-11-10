@@ -21,7 +21,7 @@ struct ExpressCheckoutShippingLog: Equatable {
   enum Trigger: String {
     case sheetOpen = "sheet_open"
     case addressEdit = "address_edit"
-    case `default`
+    case defaultOption = "default"
     case shopper
   }
 
