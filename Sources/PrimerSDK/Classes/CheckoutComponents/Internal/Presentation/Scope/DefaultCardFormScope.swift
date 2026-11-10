@@ -4,9 +4,9 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-@_spi(PrimerInternal) import PrimerCore
-@_spi(PrimerInternal) import PrimerFoundation
 import SwiftUI
+@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerCore
 
 @available(iOS 15.0, *)
 @MainActor
@@ -550,14 +550,6 @@ final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, 
 
   func fieldDisplayValue(_ fieldType: PrimerInputElementType) -> String {
     structuredState.data[fieldType]
-  }
-
-  func formattedPayAmount(surchargeAmount: Int?) -> String? {
-    guard let amount = configurationService.amount, let currency = configurationService.currency else { return nil }
-    let order = configurationService.apiConfiguration?.clientSession?.order
-    let sessionSurcharge = order?.fees?.filter { $0.type == .surcharge }.reduce(0) { $0 + $1.amount } ?? 0
-    let total = order?.merchantAmount == nil ? amount - sessionSurcharge + (surchargeAmount ?? 0) : amount
-    return total.toCurrencyString(currency: currency, locale: configurationService.locale)
   }
 
   func setFieldError(

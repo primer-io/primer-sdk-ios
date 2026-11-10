@@ -4,9 +4,9 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-@_spi(PrimerInternal) import PrimerCore
-@_spi(PrimerInternal) import PrimerFoundation
 import SwiftUI
+@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerCore
 
 /// The SDK's default modal card screen: header + the shared `CardFormFieldsView` (the single,
 /// config-aware field renderer, also used by the public `CardFormDefaults`) + the submit button.
@@ -92,14 +92,10 @@ struct CardFormScreen: View, LogReporter {
       .accessibilityAddTraits(.isHeader)
   }
 
+  // Plain "Pay" like Android, RN, Web and Figma.
   private var payTitle: String {
-    let addsCard = scope.cardFormUIOptions?.payButtonAddNewCard == true
-    return PrimerCardFormUIOptions.payButtonTitle(
-      scope.cardFormUIOptions,
-      formattedAmount: addsCard ? nil : scope.formattedPayAmount(surchargeAmount: cardFormState.surchargeAmountRaw),
-      defaultTitle: addsCard ? CheckoutComponentsStrings.addCardButton : CheckoutComponentsStrings.payButton,
-      defaultTitleWithAmount: CheckoutComponentsStrings.paymentAmountTitle
-    )
+    scope.cardFormUIOptions?.payButtonAddNewCard == true
+      ? CheckoutComponentsStrings.addCardButton : CheckoutComponentsStrings.payButton
   }
 
   @MainActor

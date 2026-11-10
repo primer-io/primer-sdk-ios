@@ -4,11 +4,11 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-@_spi(PrimerInternal) @testable import PrimerCore
-@_spi(PrimerInternal) @testable import PrimerFoundation
 @testable import PrimerSDK
 import SwiftUI
 import XCTest
+@_spi(PrimerInternal) @testable import PrimerFoundation
+@_spi(PrimerInternal) @testable import PrimerCore
 
 @available(iOS 15.0, *)
 @MainActor
@@ -313,20 +313,5 @@ final class PrimerCardFormSessionTests: XCTestCase {
     session.updateCardNumber("4111111111111111")
     session.selectCardNetwork(PrimerCardNetwork(network: .visa))
     XCTAssertEqual(session.state, PrimerCardFormState())
-  }
-
-  func test_payButtonTitle_withoutOptions_isPay() {
-    XCTAssertEqual(PrimerCardFormSession(scope: TrackingFieldScope()).payButtonTitle, CheckoutComponentsStrings.payButton)
-  }
-
-  func test_payButtonTitle_withCustomText_usesIt() {
-    let scope = TrackingFieldScope()
-    scope.cardFormUIOptions = PrimerCardFormUIOptions(payButtonText: "Complete order", payButtonAmountVisible: true)
-
-    XCTAssertEqual(PrimerCardFormSession(scope: scope).payButtonTitle, "Complete order")
-  }
-
-  func test_payButtonTitle_whenScopeIsNotInternal_isPay() {
-    XCTAssertEqual(PrimerCardFormSession(scope: StubCardFormScope()).payButtonTitle, CheckoutComponentsStrings.payButton)
   }
 }
