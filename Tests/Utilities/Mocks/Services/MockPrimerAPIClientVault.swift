@@ -5,8 +5,8 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import PrimerFoundation
-@testable import PrimerSDK
 @_spi(PrimerInternal) @testable import PrimerNetworking
+@testable import PrimerSDK
 
 final class MockPrimerAPIClientVault: PrimerAPIClientVaultProtocol {
 
@@ -23,7 +23,7 @@ final class MockPrimerAPIClientVault: PrimerAPIClientVaultProtocol {
 
     func fetchVaultedPaymentMethods(clientToken: DecodedJWTToken) async throws -> Response.Body.VaultedPaymentMethods {
         if let result = onFetchVaultedPaymentMethods?(clientToken) {
-            return result
+            result
         } else {
             throw PrimerError.unknown()
         }

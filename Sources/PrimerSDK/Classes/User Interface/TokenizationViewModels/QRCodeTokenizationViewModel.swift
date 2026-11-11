@@ -8,11 +8,11 @@
 // swiftlint:disable file_length
 // swiftlint:disable orphaned_doc_comment
 
+@_spi(PrimerInternal) import PrimerCore
 @_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerNetworking
 import SafariServices
 import UIKit
-@_spi(PrimerInternal) import PrimerNetworking
-@_spi(PrimerInternal) import PrimerCore
 
 final class QRCodeTokenizationViewModel: WebRedirectPaymentMethodTokenizationViewModel {
 

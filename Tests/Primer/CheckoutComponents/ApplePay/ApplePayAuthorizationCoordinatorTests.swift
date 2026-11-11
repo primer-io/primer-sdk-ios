@@ -6,10 +6,10 @@
 
 import Contacts
 import PassKit
+@_spi(PrimerInternal) @testable import PrimerCore
+@_spi(PrimerInternal) @testable import PrimerFoundation
 @testable import PrimerSDK
 import XCTest
-@_spi(PrimerInternal) @testable import PrimerFoundation
-@_spi(PrimerInternal) @testable import PrimerCore
 
 @available(iOS 15.0, *)
 @MainActor

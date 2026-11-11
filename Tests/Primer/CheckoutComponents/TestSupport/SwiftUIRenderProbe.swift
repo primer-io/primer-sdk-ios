@@ -4,10 +4,10 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+@_spi(PrimerInternal) @testable import PrimerCore
+@_spi(PrimerInternal) @testable import PrimerFoundation
 import SwiftUI
 import UIKit
-@_spi(PrimerInternal) @testable import PrimerFoundation
-@_spi(PrimerInternal) @testable import PrimerCore
 
 /// Hosts a SwiftUI view offscreen and forces a layout pass so its `body` — and the bodies of its
 /// children — execute, exercising view code that is otherwise only reachable through rendering.

@@ -35,9 +35,9 @@ extension Analytics.Event {
             sdkPaymentHandling: PrimerSettings.current.paymentHandling,
             integrationType: {
                 #if COCOAPODS
-                    return "COCOAPODS"
+                    "COCOAPODS"
                 #else
-                    return "SPM"
+                    "SPM"
                 #endif
             }(),
             minDeploymentTarget: Bundle.main.minimumOSVersion ?? "Unknown"

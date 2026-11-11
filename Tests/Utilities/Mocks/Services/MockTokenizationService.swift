@@ -5,10 +5,10 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+@_spi(PrimerInternal) import PrimerCore
 import PrimerFoundation
 @_spi(PrimerInternal) @testable import PrimerNetworking
 @testable import PrimerSDK
-@_spi(PrimerInternal) import PrimerCore
 
 final class MockTokenizationService: TokenizationServiceProtocol {
 
@@ -37,7 +37,7 @@ final class MockTokenizationService: TokenizationServiceProtocol {
         vaultedPaymentMethodAdditionalData: (any PrimerVaultedPaymentMethodAdditionalData)?
     ) async throws -> PrimerPaymentMethodTokenData {
         switch onExchangePaymentMethodToken?(paymentMethodTokenId, vaultedPaymentMethodAdditionalData) {
-        case let .success(result): return result
+        case let .success(result): result
         case let .failure(error): throw error
         case nil: throw PrimerError.unknown()
         }

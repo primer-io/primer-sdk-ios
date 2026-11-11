@@ -6,9 +6,9 @@
 
 #if canImport(PrimerNolPaySDK)
     import PrimerFoundation
+    @_spi(PrimerInternal) @testable import PrimerNetworking
     import PrimerNolPaySDK
     @testable import PrimerSDK
-    @_spi(PrimerInternal) @testable import PrimerNetworking
     import XCTest
 
     class NolPayPaymentComponentTests: XCTestCase {

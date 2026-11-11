@@ -8,8 +8,8 @@
 // swiftlint:disable function_body_length
 
 import Foundation
-@_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
 
 protocol DownloaderModule {
     func download(files: [File]) async throws -> [File]

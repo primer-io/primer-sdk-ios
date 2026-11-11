@@ -10,10 +10,10 @@
 
 import Foundation
 import PassKit
-@_spi(PrimerInternal) import PrimerFoundation
-import UIKit
-@_spi(PrimerInternal) import PrimerNetworking
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerNetworking
+import UIKit
 
 extension PKPaymentMethodType {
     var primerValue: String? {

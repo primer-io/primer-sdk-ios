@@ -8,11 +8,11 @@
 // swiftlint:disable type_body_length
 // swiftlint:disable file_length
 
-@_spi(PrimerInternal) import PrimerFoundation
-import UIKit
 @_spi(PrimerInternal) import PrimerBDCCore
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerNetworking
+import UIKit
 
 // MARK: MISSING_TESTS
 public final class PrimerHeadlessUniversalCheckout: LogReporter {

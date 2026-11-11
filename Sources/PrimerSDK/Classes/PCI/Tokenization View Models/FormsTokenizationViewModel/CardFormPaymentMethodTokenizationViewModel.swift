@@ -9,12 +9,12 @@
 // swiftlint:disable type_body_length
 
 import Foundation
-@_spi(PrimerInternal) import PrimerFoundation
-import SafariServices
-import UIKit
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerNetworking
 @_spi(PrimerInternal) import PrimerUI
+import SafariServices
+import UIKit
 
 // swiftlint:disable:next type_name
 final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel,
@@ -498,11 +498,11 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
     ) async throws -> String?
     {
         if decodedJWTToken.intent?.contains("_REDIRECTION") == true {
-            return try await handleRedirectionForDecodedClientToken(decodedJWTToken)
+            try await handleRedirectionForDecodedClientToken(decodedJWTToken)
         } else if decodedJWTToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
-            return try await handle3DSAuthenticationForDecodedClientToken(decodedJWTToken, paymentMethodTokenData: paymentMethodTokenData)
+            try await handle3DSAuthenticationForDecodedClientToken(decodedJWTToken, paymentMethodTokenData: paymentMethodTokenData)
         } else if decodedJWTToken.intent == RequiredActionName.processor3DS.rawValue {
-            return try await handleProcessor3DSForDecodedClientToken(decodedJWTToken)
+            try await handleProcessor3DSForDecodedClientToken(decodedJWTToken)
         } else {
             throw handled(primerError: .invalidValue(key: "resumeToken"))
         }

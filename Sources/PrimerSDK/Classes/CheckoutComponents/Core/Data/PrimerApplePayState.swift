@@ -6,8 +6,8 @@
 
 import Foundation
 import PassKit
-@_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
 
 @available(iOS 15.0, *)
 struct PrimerApplePayState: Equatable, Sendable {

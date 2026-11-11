@@ -7,11 +7,11 @@
 // swiftlint:disable type_body_length
 // swiftlint:disable file_length
 
+@_spi(PrimerInternal) import PrimerCore
 @_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerNetworking
-import UIKit
-@_spi(PrimerInternal) import PrimerCore
 @_spi(PrimerInternal) import PrimerUI
+import UIKit
 #if canImport(PrimerStripeSDK)
     import PrimerStripeSDK
 #endif

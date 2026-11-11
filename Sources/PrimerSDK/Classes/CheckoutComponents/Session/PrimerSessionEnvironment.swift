@@ -4,9 +4,9 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import SwiftUI
-@_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
+import SwiftUI
 
 // Environment keys carrying the observable session objects. Distinct from the scope-carrying keys in
 // `PrimerScopeEnvironmentKeys.swift`: those expose raw scopes for ad-hoc access, these expose the

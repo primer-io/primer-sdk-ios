@@ -7,8 +7,8 @@
 import Foundation
 import PrimerCore
 import PrimerFoundation
-import PrimerSDK
 @_spi(PrimerInternal) import PrimerNetworking
+import PrimerSDK
 
 enum APIVersion: String {
     case v2_4 = "2.4"
