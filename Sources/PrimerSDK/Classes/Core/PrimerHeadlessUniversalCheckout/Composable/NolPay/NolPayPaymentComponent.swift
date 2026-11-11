@@ -7,10 +7,10 @@
 // swiftlint:disable cyclomatic_complexity
 // swiftlint:disable function_body_length
 
-@_spi(PrimerInternal) import PrimerFoundation
-import UIKit
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerNetworking
+import UIKit
 #if canImport(PrimerNolPaySDK)
     import PrimerNolPaySDK
 #endif

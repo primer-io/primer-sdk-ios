@@ -4,9 +4,10 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+@_spi(PrimerInternal) import PrimerUI
+
 // swiftlint:disable type_body_length
 import UIKit
-@_spi(PrimerInternal) import PrimerUI
 
 public final class PrimerThemeData {
     public var colors: ColorSwatch

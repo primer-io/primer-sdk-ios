@@ -9,11 +9,11 @@
 // swiftlint:disable type_body_length
 
 import Foundation
+@_spi(PrimerInternal) import PrimerCore
 @_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerNetworking
 import SafariServices
 import UIKit
-@_spi(PrimerInternal) import PrimerCore
-@_spi(PrimerInternal) import PrimerNetworking
 
 final class BanksTokenizationComponent: NSObject, LogReporter {
 

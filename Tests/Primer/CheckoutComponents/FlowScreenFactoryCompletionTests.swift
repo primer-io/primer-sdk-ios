@@ -4,12 +4,12 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+@_spi(PrimerInternal) @testable import PrimerCore
+@_spi(PrimerInternal) @testable import PrimerFoundation
 @testable import PrimerSDK
 import SwiftUI
 import UIKit
 import XCTest
-@_spi(PrimerInternal) @testable import PrimerFoundation
-@_spi(PrimerInternal) @testable import PrimerCore
 
 /// When the merchant disables the SDK success or error screen, the terminal state must still reach
 /// `onCompletion`. The disabled branch renders no SDK UI, so the completion has to fire from a view

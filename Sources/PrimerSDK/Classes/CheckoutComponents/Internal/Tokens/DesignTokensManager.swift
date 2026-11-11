@@ -6,10 +6,10 @@
 
 // swiftlint:disable cyclomatic_complexity
 
-import SwiftUI
-@_spi(PrimerInternal) import PrimerResources
-@_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerResources
+import SwiftUI
 
 @available(iOS 15.0, *)
 @MainActor

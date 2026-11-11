@@ -6,8 +6,8 @@
 
 import Foundation
 @_spi(PrimerInternal) @testable import PrimerFoundation
-@testable import PrimerSDK
 @_spi(PrimerInternal) @testable import PrimerNetworking
+@testable import PrimerSDK
 
 final class MockBINDataAPIClient: PrimerAPIClientBINDataProtocol {
 

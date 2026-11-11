@@ -4,11 +4,11 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+@_spi(PrimerInternal) @testable import PrimerCore
+@_spi(PrimerInternal) @testable import PrimerFoundation
 @testable import PrimerSDK
 import SwiftUI
 import XCTest
-@_spi(PrimerInternal) @testable import PrimerFoundation
-@_spi(PrimerInternal) @testable import PrimerCore
 
 /// A programmatic write — `PrimerCardFormSession.updateCardholderName(_:)` and its siblings — has to
 /// reach the text field the customer reads, not only the form data behind it.

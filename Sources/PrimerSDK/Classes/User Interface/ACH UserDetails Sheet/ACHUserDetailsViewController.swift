@@ -6,9 +6,9 @@
 
 import Combine
 import PrimerFoundation
+@_spi(PrimerInternal) import PrimerUI
 import SwiftUI
 import UIKit
-@_spi(PrimerInternal) import PrimerUI
 
 protocol ACHUserDetailsDelegate: AnyObject {
     func restartSession()

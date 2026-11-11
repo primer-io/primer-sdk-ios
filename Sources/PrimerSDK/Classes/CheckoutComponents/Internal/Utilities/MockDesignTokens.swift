@@ -6,8 +6,8 @@
 
 // swiftlint:disable all
 
-@_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
 
 #if DEBUG
   import SwiftUI

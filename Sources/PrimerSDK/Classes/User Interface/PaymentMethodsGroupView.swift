@@ -4,8 +4,8 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import UIKit
 @_spi(PrimerInternal) import PrimerUI
+import UIKit
 
 protocol PaymentMethodsGroupViewDelegate: AnyObject {
     func paymentMethodsGroupView(_ paymentMethodsGroupView: PaymentMethodsGroupView, paymentMethodTapped paymentMethodTokenizationViewModels: PaymentMethodTokenizationViewModelProtocol)

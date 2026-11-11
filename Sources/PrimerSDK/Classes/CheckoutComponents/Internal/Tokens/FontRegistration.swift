@@ -5,10 +5,10 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import CoreText
-import UIKit
+@_spi(PrimerInternal) import PrimerCore
 @_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerResources
-@_spi(PrimerInternal) import PrimerCore
+import UIKit
 
 enum FontRegistration: LogReporter {
 

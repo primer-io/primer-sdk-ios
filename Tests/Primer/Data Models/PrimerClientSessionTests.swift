@@ -4,9 +4,9 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+@_spi(PrimerInternal) @testable import PrimerFoundation
 @testable import PrimerSDK
 import XCTest
-@_spi(PrimerInternal) @testable import PrimerFoundation
 
 /// Covers the wire-to-merchant mapping in `PrimerClientSession.init(from:)`, the read model
 /// CheckoutComponents delivers on `.ready` and Drop-In / Headless deliver via

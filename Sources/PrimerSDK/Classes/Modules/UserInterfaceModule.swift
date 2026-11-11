@@ -9,6 +9,7 @@
 
 @_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerUI
+import UIKit
 
 protocol UserInterfaceModuleProtocol {
 
@@ -25,8 +26,6 @@ protocol UserInterfaceModuleProtocol {
     @MainActor
     func makeIconImageView(withDimension dimension: CGFloat) -> UIImageView?
 }
-
-import UIKit
 
 final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
 

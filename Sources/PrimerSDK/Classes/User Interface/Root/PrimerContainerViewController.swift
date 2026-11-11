@@ -4,8 +4,8 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import UIKit
 @_spi(PrimerInternal) import PrimerUI
+import UIKit
 
 /// PrimerContainerViewController gets a view controller as input. The input view controller must use autolayout.
 /// It then sets this view controller as its child, wraps it within a scrollview and sets the constraints needed.

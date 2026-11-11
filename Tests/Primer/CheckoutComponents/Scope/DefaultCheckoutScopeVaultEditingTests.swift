@@ -4,9 +4,9 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-@testable import PrimerSDK
 @_spi(PrimerInternal) @testable import PrimerCore
 @_spi(PrimerInternal) @testable import PrimerFoundation
+@testable import PrimerSDK
 import XCTest
 
 /// Edit mode lives in the scope, not in the list's view, so only navigation can end it when the list goes away.

@@ -9,11 +9,11 @@
 // swiftlint:disable type_body_length
 // swiftlint:disable large_tuple
 
-@_spi(PrimerInternal) import PrimerFoundation
-import UIKit
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerNetworking
 @_spi(PrimerInternal) import PrimerUI
+import UIKit
 
 @objc
 protocol InternalCardComponentsManagerDelegate {

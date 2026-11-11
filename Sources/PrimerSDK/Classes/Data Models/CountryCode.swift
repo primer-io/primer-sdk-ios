@@ -8,8 +8,8 @@
 // swiftlint:disable type_body_length
 
 import Foundation
-@_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
 import UIKit
 
 // inspired by https://gist.github.com/proxpero/f7ddfd721a0d0d6159589916185d9dc9
