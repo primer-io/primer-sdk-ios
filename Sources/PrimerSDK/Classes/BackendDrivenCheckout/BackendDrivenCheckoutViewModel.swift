@@ -26,6 +26,7 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
     private var orchestrator: BackendDrivenCheckoutOrchestrator?
     private var checkoutTask: Task<Void, Never>?
     private var sduiController: UIViewController?
+    private var sduiPresenter: SDUIPresentingResolver?
     private var vaultedPaymentInstrumentTokenId: String?
 
     convenience init(
@@ -74,6 +75,7 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
                 
                 try await setupOrchestrator()
                 logBDCStarted()
+                sduiPresenter = SDUIPresentingResolver { [weak self] in await self?.presentSDUI() ?? false }
 
                 let instructionProvider = makeInstructionProvider(config)
                 await PrimerStepResolverRegistry.shared.register(HTTPRequestResolver(), for: .httpRequest)
@@ -111,6 +113,7 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
                         instructionProvider: instructionProvider
                     )
                 }
+                await dismissSDUI()
 
                 switch result {
                 case let .success(payment): await handleSuccess(payment)
@@ -142,10 +145,11 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
         }
     }
     
+    @discardableResult
     @MainActor
-    private func presentSDUI() async {
+    private func presentSDUI() async -> Bool {
         guard #available(iOS 16.0, *), let orchestrator, sduiController == nil,
-              let root = PrimerUIManager.primerRootViewController else { return }
+              let root = PrimerUIManager.primerRootViewController else { return false }
         let controller = UIHostingController(rootView: SDUIView(
             onEvent: orchestrator.applyEvent,
             onClose: { [weak self] in self?.checkoutTask?.cancel() },
@@ -156,6 +160,7 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
         await withCheckedContinuation { continuation in
             root.present(controller, animated: true) { continuation.resume() }
         }
+        return true
     }
 
     @MainActor
