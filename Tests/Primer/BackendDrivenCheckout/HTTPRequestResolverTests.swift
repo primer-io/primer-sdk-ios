@@ -12,6 +12,32 @@ import XCTest
 
 final class HTTPRequestResolverTests: XCTestCase {
 
+    // MARK: - Headers
+
+    func testSendsPrimerHeadersToAPrimerHost() async throws {
+        let dispatcher = ScriptedRequestDispatcher(statuses: [200])
+        let sut = HTTPRequestResolver(dispatcher: dispatcher, primerHosts: { ["https://example.com/sdk"] })
+        _ = try await sut.resolve(step())
+        XCTAssertNotNil(dispatcher.lastRequest?.value(forHTTPHeaderField: "Primer-SDK-Version"))
+    }
+
+    func testSendsNoPrimerHeadersToAnotherHost() async throws {
+        let dispatcher = ScriptedRequestDispatcher(statuses: [200])
+        let sut = HTTPRequestResolver(dispatcher: dispatcher, primerHosts: { ["https://api.primer.io"] })
+        _ = try await sut.resolve(step())
+        XCTAssertNil(dispatcher.lastRequest?.value(forHTTPHeaderField: "Primer-SDK-Version"))
+        XCTAssertNil(dispatcher.lastRequest?.value(forHTTPHeaderField: "Primer-Client-Token"))
+    }
+
+    func testSchemaHeadersStillReachAnotherHost() async throws {
+        let dispatcher = ScriptedRequestDispatcher(statuses: [200])
+        let sut = HTTPRequestResolver(dispatcher: dispatcher, primerHosts: { [] })
+        var params: [String: CodableValue] = ["url": .string("https://example.com/pay"), "method": .string("POST")]
+        params["headers"] = .object(["X-Schema": .string("yes")])
+        _ = try await sut.resolve(.object(params))
+        XCTAssertEqual(dispatcher.lastRequest?.value(forHTTPHeaderField: "X-Schema"), "yes")
+    }
+
     // MARK: - Attempts
 
     func testSingleAttemptWhenNoRetryPolicy() async throws {
@@ -164,6 +190,7 @@ private extension HTTPRequestResolverTests {
 private final class ScriptedRequestDispatcher: RequestDispatcher, @unchecked Sendable {
 
     private(set) var dispatchCount = 0
+    private(set) var lastRequest: URLRequest?
     private var statuses: [Int]
 
     init(statuses: [Int]) {
@@ -172,6 +199,7 @@ private final class ScriptedRequestDispatcher: RequestDispatcher, @unchecked Sen
 
     func dispatch(request: URLRequest) async throws -> DispatcherResponse {
         dispatchCount += 1
+        lastRequest = request
         guard !statuses.isEmpty else {
             XCTFail("Dispatched more times than the test scripted responses for")
             return response(status: 500)
