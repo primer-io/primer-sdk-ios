@@ -2,9 +2,6 @@ name: Translation check
 
 on:
   pull_request:
-    branches:
-      - master
-      - bn/feature/checkout-components
 
 concurrency:
   group: ${{ github.ref }}-translations
@@ -23,8 +20,8 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
-      # HEAD is the PR merge commit, so diffing against the target tip covers exactly this PR's changes.
+      # The merge base stays fixed when the target branch moves, so a re-run checks the same keys.
       - name: Check changed translation keys
         env:
           BASE_REF: ${{ github.base_ref }}
-        run: python3 Scripts/check_translations.py --repo . --base "origin/$BASE_REF" --exclude 'Debug App/**'
+        run: python3 Scripts/check_translations.py --repo . --base "$(git merge-base "origin/$BASE_REF" HEAD)" --exclude 'Debug App/**'
