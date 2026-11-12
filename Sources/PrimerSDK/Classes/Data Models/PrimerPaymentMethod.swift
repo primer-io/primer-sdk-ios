@@ -68,18 +68,13 @@ final class PrimerPaymentMethod: Codable, LogReporter {
     var hasUnknownSurcharge: Bool = false
     lazy var tokenizationViewModel: PaymentMethodTokenizationViewModelProtocol? = {
         let apiClient = PrimerAPIConfigurationModule.apiClient ?? PrimerAPIClient()
-        let isBackendDriven = capabilities?.contains(.backendDriven)
-        if implementationType == .webRedirect {
-            if isBackendDriven == true {
-                return BackendDrivenCheckoutViewModel(config: self, apiClient: apiClient)
-            } else {
-                return WebRedirectPaymentMethodTokenizationViewModel(config: self, apiClient: apiClient)
-            }
-
+        let isBackendDriven = capabilities?.contains(.backendDriven) == true || implementationType == .backendDriven
+        if isBackendDriven {
+            return BackendDrivenCheckoutViewModel(config: self, apiClient: apiClient)
+        } else if implementationType == .webRedirect {
+            return WebRedirectPaymentMethodTokenizationViewModel(config: self, apiClient: apiClient)
         } else if implementationType == .iPay88Sdk {
             return IPay88TokenizationViewModel(config: self, apiClient: apiClient)
-        } else if implementationType == .backendDriven {
-            return BackendDrivenCheckoutViewModel(config: self, apiClient: apiClient)
         } else if let internalPaymentMethodType {
             switch internalPaymentMethodType {
             case PrimerPaymentMethodType.adyenBlik,
