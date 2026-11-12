@@ -250,12 +250,10 @@ extension PrimerHeadlessUniversalCheckout {
 
                     guard self.isDataValid else { throw PrimerError.invalidValue(key: "rawData") }
 
-                    if selectsPaymentMethodBeforeTokenizing,
-                       let cardBuilder = rawDataTokenizationBuilder as? PrimerRawCardDataTokenizationBuilder,
-                       let cardData = rawData as? PrimerCardData {
+                    if selectsPaymentMethodBeforeTokenizing {
                         try await clientSessionActionsModule.selectPaymentMethodIfNeeded(
                             paymentMethodType,
-                            cardNetwork: cardBuilder.effectiveNetwork(for: cardData).rawValue
+                            cardNetwork: cardNetworkToSelect(for: rawData)
                         )
                     }
 
@@ -324,6 +322,13 @@ extension PrimerHeadlessUniversalCheckout {
             }
 
             return try await rawDataTokenizationBuilder.validateRawData(rawData, cardNetworksMetadata: cardNetworksMetadata)
+        }
+
+        private func cardNetworkToSelect(for rawData: PrimerRawData) -> String? {
+            guard let cardBuilder = rawDataTokenizationBuilder as? PrimerRawCardDataTokenizationBuilder,
+                  let cardData = rawData as? PrimerCardData
+            else { return nil }
+            return cardBuilder.effectiveNetwork(for: cardData).rawValue
         }
 
         private func handlePrimerWillCreatePaymentEvent(_ paymentMethodData: PrimerPaymentMethodData) async throws {
