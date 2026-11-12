@@ -290,7 +290,75 @@ final class VaultManagerTests: XCTestCase {
         ], timeout: 20.0, enforceOrder: true)
     }
 
+    func test_startPaymentFlow_savedCard_selectsCardNetworkBeforeExchange() {
+        let selectCalls = selectCallsAtExchange(for: savedMethod(type: "PAYMENT_CARD", instrumentType: .paymentCard))
+
+        XCTAssertEqual(selectCalls.map(\.type), ["PAYMENT_CARD"])
+        XCTAssertEqual(selectCalls.map(\.network), ["AMEX"])
+    }
+
+    func test_startPaymentFlow_savedNonCard_selectsTypeWithoutNetwork() {
+        let selectCalls = selectCallsAtExchange(for: savedMethod(type: "PAYPAL", instrumentType: .payPalBillingAgreement))
+
+        XCTAssertEqual(selectCalls.map(\.type), ["PAYPAL"])
+        XCTAssertEqual(selectCalls.map(\.network), [nil])
+    }
+
+    func test_startPaymentFlow_selectFails_failsWithoutExchange() {
+        let clientSessionActions = MockClientSessionActionsModule()
+        clientSessionActions.selectPaymentMethodError = PrimerError.unknown()
+        sut.clientSessionActionsModule = clientSessionActions
+        sut.vaultedPaymentMethods = [savedMethod(type: "PAYMENT_CARD", instrumentType: .paymentCard)]
+
+        var exchangeCallCount = 0
+        tokenizationService.onExchangePaymentMethodToken = { _, _ in
+            exchangeCallCount += 1
+            return .success(Mocks.primerPaymentMethodTokenData)
+        }
+        let expectDidFail = expectation(description: "Payment failed")
+        headlessCheckoutDelegate.onDidFail = { _ in expectDidFail.fulfill() }
+
+        sut.startPaymentFlow(vaultedPaymentMethodId: "saved-id")
+
+        waitForExpectations(timeout: 2.0)
+        XCTAssertEqual(exchangeCallCount, 0)
+    }
+
     // MARK: Helpers
+
+    private func selectCallsAtExchange(
+        for savedMethod: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod
+    ) -> [(type: String, network: String?)] {
+        let clientSessionActions = MockClientSessionActionsModule()
+        sut.clientSessionActionsModule = clientSessionActions
+        sut.vaultedPaymentMethods = [savedMethod]
+
+        var selectCalls: [(type: String, network: String?)] = []
+        tokenizationService.onExchangePaymentMethodToken = { _, _ in
+            selectCalls = clientSessionActions.selectPaymentMethodCalls
+            return .failure(PrimerError.unknown())
+        }
+        let expectDidFail = expectation(description: "Payment stopped after the exchange")
+        headlessCheckoutDelegate.onDidFail = { _ in expectDidFail.fulfill() }
+
+        sut.startPaymentFlow(vaultedPaymentMethodId: savedMethod.id)
+
+        waitForExpectations(timeout: 2.0)
+        return selectCalls
+    }
+
+    private func savedMethod(
+        type: String,
+        instrumentType: PaymentInstrumentType
+    ) -> PrimerHeadlessUniversalCheckout.VaultedPaymentMethod {
+        PrimerHeadlessUniversalCheckout.VaultedPaymentMethod(
+            id: "saved-id",
+            paymentMethodType: type,
+            paymentInstrumentType: instrumentType,
+            paymentInstrumentData: Mocks.primerPaymentMethodInstrumentationData,
+            analyticsId: "analytics-id"
+        )
+    }
 
     var tokenizationResponseBody: Response.Body.Tokenization {
         .init(
