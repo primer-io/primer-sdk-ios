@@ -131,7 +131,8 @@ extension CheckoutComponentsAnalyticsInteractorProtocol {
 extension PrimerError {
   var analyticsOrigin: AnalyticsContract.ErrorOrigin {
     switch self {
-    case .paymentFailed, .failedToCreatePayment, .failedToResumePayment, .klarnaUserNotApproved, .applePayTimedOut:
+    case .paymentFailed, .failedToCreatePayment, .failedToResumePayment, .klarnaUserNotApproved, .applePayTimedOut,
+         .paymentMethodSetupEnded:
       .payment
     case .uninitializedSDKSession, .invalidClientToken, .missingPrimerConfiguration, .misconfiguredPaymentMethods,
          .missingPrimerInputElement, .invalidUrl, .invalidArchitecture, .invalidClientSessionValue,

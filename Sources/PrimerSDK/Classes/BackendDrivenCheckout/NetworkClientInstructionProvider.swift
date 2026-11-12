@@ -5,7 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 @_spi(PrimerInternal) import PrimerBDCCore
-import PrimerFoundation
+@_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerNetworking
 
 struct NetworkClientInstructionProvider: ClientInstructionProvider {
@@ -13,6 +13,9 @@ struct NetworkClientInstructionProvider: ClientInstructionProvider {
     let paymentMethod: PrimerPaymentMethod
 
     private static let defaultPollDelayMilliseconds = 1000
+    private static let startAttempts = 3
+    private static let pollAttempts = 4
+    private static let retryDelayMilliseconds = 250
 
     func fetchPayInstruction() async throws -> ClientInstruction {
         let endpoint: BackendDrivenCheckoutEndpoint = .pay(paymentMethod: paymentMethod)
@@ -27,24 +30,38 @@ struct NetworkClientInstructionProvider: ClientInstructionProvider {
 
     func fetchSetupFlow() async throws -> SetupFlow {
         let endpoint: BackendDrivenCheckoutEndpoint = .setup(paymentMethod: paymentMethod)
-        let response: ClientInstructionSetupResponse = try await request(endpoint)
-        return SetupFlow(
-            schema: response.instruction.payload.schema,
-            parameters: response.instruction.payload.parameters,
-            setupId: response.paymentMethodSetupId,
-            nextPoll: response.instruction.nextPoll,
-            pollDelayMilliseconds: response.instruction.pollDelayMilliseconds ?? Self.defaultPollDelayMilliseconds
-        )
+        switch try await request(endpoint, attempts: Self.startAttempts) as SetupStartResponse {
+        case let .ended(ended):
+            throw SetupEnded(reason: ended.reason)
+        case let .started(response):
+            return SetupFlow(
+                schema: response.instruction.payload.schema,
+                parameters: response.instruction.payload.parameters,
+                setupId: response.paymentMethodSetupId,
+                nextPoll: response.instruction.nextPoll,
+                pollDelayMilliseconds: response.instruction.pollDelayMilliseconds ?? Self.defaultPollDelayMilliseconds
+            )
+        }
     }
 
     func fetchSetupState(setupId: String) async throws -> SetupState {
         let endpoint: BackendDrivenCheckoutEndpoint = .pollSetup(setupId: setupId)
-        let response: ClientInstructionSetupStateResponse = try await request(endpoint)
-        return SetupState(
-            instruction: try response.toSetupInstruction(),
-            nextPoll: response.instruction.nextPoll ?? .suspend,
-            pollDelayMilliseconds: response.instruction.pollDelayMilliseconds ?? Self.defaultPollDelayMilliseconds
-        )
+        let response: SetupStateResponse
+        do {
+            response = try await request(endpoint, attempts: Self.pollAttempts)
+        } catch where Self.isTransient(error) {
+            throw SetupEnded(reason: .failed)
+        }
+        switch response {
+        case let .ended(ended):
+            return SetupState(instruction: .ended(reason: ended.reason), nextPoll: .suspend)
+        case let .state(response):
+            return SetupState(
+                instruction: try response.toSetupInstruction(),
+                nextPoll: response.instruction.nextPoll ?? .suspend,
+                pollDelayMilliseconds: response.instruction.pollDelayMilliseconds ?? Self.defaultPollDelayMilliseconds
+            )
+        }
     }
 
     func fetchNextInstruction() async throws -> ClientInstruction {
@@ -52,8 +69,22 @@ struct NetworkClientInstructionProvider: ClientInstructionProvider {
         return response.clientInstruction.toClientInstruction(response: response)
     }
 
-    private func request<T: Decodable>(_ endpoint: BackendDrivenCheckoutEndpoint) async throws -> T {
-        try await defaultNetworkService.request(endpoint)
+    private func request<T: Decodable>(_ endpoint: BackendDrivenCheckoutEndpoint, attempts: Int = 1) async throws -> T {
+        var attempt = 1
+        while true {
+            do {
+                return try await defaultNetworkService.request(endpoint)
+            } catch where attempt < attempts && Self.isTransient(error) {
+                attempt += 1
+                try await Task.sleep(nanoseconds: UInt64(Self.retryDelayMilliseconds) * 1_000_000)
+            }
+        }
+    }
+
+    private static func isTransient(_ error: Error) -> Bool {
+        if error.isNetworkError { return true }
+        if case let InternalError.serverError(status, _, _) = error { return (500...599).contains(status) }
+        return false
     }
 }
 

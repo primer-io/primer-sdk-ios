@@ -212,6 +212,9 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
         if error is BackendDrivenCheckoutCancellation || error is CancellationError {
             return await handleError(PrimerError.cancelled(paymentMethodType: config.type))
         }
+        if let ended = error as? SetupEnded {
+            return await handleError(PrimerError.paymentMethodSetupEnded(paymentMethodType: config.type, reason: ended.reason.rawValue))
+        }
         Analytics.Service.fire(event: .message(message: "BDC Failed: \(error)", messageType: .error, severity: .error))
         let primerError: PrimerErrorProtocol = (error as? PrimerErrorProtocol) ?? PrimerError.unknown(
             message: error.localizedDescription,
