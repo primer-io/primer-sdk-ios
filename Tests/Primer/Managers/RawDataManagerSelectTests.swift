@@ -113,6 +113,27 @@ final class RawDataManagerSelectTests: XCTestCase {
         XCTAssertTrue(clientSessionActions.selectPaymentMethodCalls.isEmpty)
     }
 
+    func test_submit_blik_selectsTheMethodWithoutNetworkBeforeThePayment() throws {
+        SDKSessionHelper.setUp(withPaymentMethods: [Mocks.PaymentMethods.adyenBlikPaymentMethod])
+        let blikManager = try RawDataManager(paymentMethodType: "ADYEN_BLIK")
+        blikManager.tokenizationService = tokenizationService
+        blikManager.clientSessionActionsModule = clientSessionActions
+        var selectCalls: [(type: String, network: String?)] = []
+        headlessCheckoutDelegate.onWillCreatePaymentWithData = { _, decisionHandler in
+            selectCalls = self.clientSessionActions.selectPaymentMethodCalls
+            decisionHandler(.abortPaymentCreation())
+        }
+        let expectDidFail = expectation(description: "Payment stopped before it was created")
+        headlessCheckoutDelegate.onDidFail = { _ in expectDidFail.fulfill() }
+
+        blikManager.rawData = PrimerOTPData(otp: "123456")
+        blikManager.submit()
+
+        waitForExpectations(timeout: 5.0)
+        XCTAssertEqual(selectCalls.map(\.type), ["ADYEN_BLIK"])
+        XCTAssertEqual(selectCalls.map(\.network), [nil])
+    }
+
     private func selectCallsAtTokenize(
         of card: PrimerCardData,
         lookupNetworks: [CardNetwork]?,

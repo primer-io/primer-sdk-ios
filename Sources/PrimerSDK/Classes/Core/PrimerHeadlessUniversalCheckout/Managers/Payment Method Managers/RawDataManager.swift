@@ -250,7 +250,7 @@ extension PrimerHeadlessUniversalCheckout {
 
                     guard self.isDataValid else { throw PrimerError.invalidValue(key: "rawData") }
 
-                    if selectsPaymentMethodBeforeTokenizing, rawDataTokenizationBuilder is PrimerRawCardDataTokenizationBuilder {
+                    if selectsPaymentMethodBeforeTokenizing {
                         try await clientSessionActionsModule.selectPaymentMethodIfNeeded(
                             paymentMethodType,
                             cardNetwork: cardNetworkToSelect(for: rawData)
