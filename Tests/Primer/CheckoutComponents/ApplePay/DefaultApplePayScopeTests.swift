@@ -640,11 +640,31 @@ final class DefaultApplePayScopeFactoryTests: XCTestCase {
         XCTAssertNil(RemoteLogContext.shared[ExpressCheckoutShippingLog.contextKey])
     }
 
+    func test_performPayment_cancelledSheet_finishesTheShippingSession() async throws {
+        // Given
+        mockPresentationManager.onPresent = { _, _ in
+            .failure(PrimerError.cancelled(paymentMethodType: PrimerPaymentMethodType.applePay.rawValue))
+        }
+        var session: ApplePayShippingSession?
+        let sut = createScope(authorizationCoordinatorFactory: {
+            session = $0
+            return ApplePayAuthorizationCoordinator(shippingSession: $0)
+        })
+
+        // When
+        sut.submit()
+
+        // Then — a handler still running after the sheet closed can no longer log or flag
+        try await XCTUnwrap(sut.paymentTask).value
+        XCTAssertEqual(session?.isFinished, true)
+    }
+
     // MARK: - Helper
 
     private func createScope(
         presentationContext: PresentationContext = .fromPaymentSelection,
-        applePayRequestFactory: (() throws -> ApplePayRequest)? = nil
+        applePayRequestFactory: (() throws -> ApplePayRequest)? = nil,
+        authorizationCoordinatorFactory: (@MainActor (ApplePayShippingSession) -> ApplePayAuthorizationCoordinator)? = nil
     ) -> DefaultApplePayScope {
         let checkoutScope = DefaultCheckoutScope(
             clientToken: TestData.Tokens.valid,
@@ -666,7 +686,8 @@ final class DefaultApplePayScopeFactoryTests: XCTestCase {
             presentationContext: presentationContext,
             applePayPresentationManager: mockPresentationManager,
             clientSessionActionsFactory: { [unowned self] in mockClientSessionActions },
-            applePayRequestFactory: { _ in try requestFactory() }
+            applePayRequestFactory: { _ in try requestFactory() },
+            authorizationCoordinatorFactory: authorizationCoordinatorFactory ?? { ApplePayAuthorizationCoordinator(shippingSession: $0) }
         )
         createdScopes.append(scope)
         return scope

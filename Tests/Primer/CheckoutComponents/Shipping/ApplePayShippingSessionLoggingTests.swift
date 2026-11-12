@@ -185,6 +185,41 @@ final class ApplePayShippingSessionLoggingTests: XCTestCase {
         XCTAssertTrue(logs.value.isEmpty)
     }
 
+    // MARK: - Finished attempt
+
+    func test_finishedAttempt_handlerThatAnswersLater_logsNothing() async {
+        let release = Box<CheckedContinuation<Void, Never>?>(nil)
+        let sut = makeSession(onAddressChange: { [release] _ in
+            await withCheckedContinuation { release.value = $0 }
+            return [Self.standard]
+        })
+
+        let attempt = Task { try await sut.handleShippingAddressChange(address) }
+        try? await Task.sleep(nanoseconds: 50_000_000)
+        sut.finish()
+        release.value?.resume()
+        _ = await attempt.result
+
+        XCTAssertTrue(logs.value.isEmpty)
+    }
+
+    func test_finishedAttempt_handlerThatTimesOutLater_logsNothing() async {
+        let sut = makeSession(
+            onAddressChange: { _ in
+                try await Task.sleep(nanoseconds: 5_000_000_000)
+                return []
+            },
+            timeout: 0.2
+        )
+
+        let attempt = Task { try await sut.handleShippingAddressChange(address) }
+        try? await Task.sleep(nanoseconds: 50_000_000)
+        sut.finish()
+        _ = await attempt.result
+
+        XCTAssertTrue(logs.value.isEmpty)
+    }
+
     // MARK: - Commit verification
 
     func test_commitMismatch_logsMismatch() async {
