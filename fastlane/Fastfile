@@ -421,7 +421,13 @@ platform :ios do
     auth = Base64.strict_encode64("x-access-token:#{token}")
     system('git', 'config', '--global', "http.https://github.com/primer-io/#{spec_repo_name}.git.extraheader",
            "AUTHORIZATION: basic #{auth}", exception: true)
-    system('pod', 'repo', 'add', spec_repo_name, "https://github.com/primer-io/#{spec_repo_name}.git", exception: true)
+    # pod repo push commits into the spec repo, so the job needs a git identity (the person who starts it).
+    %w[NAME EMAIL].each do |key|
+      value = ENV["GITLAB_USER_#{key}"].to_s
+      system('git', 'config', '--global', "user.#{key.downcase}", value, exception: true) unless value.empty?
+    end
+    system('pod', 'repo', 'add', spec_repo_name, "https://github.com/primer-io/#{spec_repo_name}.git", '--allow-root',
+           exception: true)
   end
 
   def push_to_spec_repo(pod, version)
