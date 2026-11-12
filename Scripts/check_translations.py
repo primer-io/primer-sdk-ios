@@ -17,6 +17,7 @@ never read.
 Diff mode (the default) checks only the keys a change touches: keys that are new
 in English, keys whose English value changed, and keys whose value changed in any
 locale. A locale file that is new since --base is checked for every English key.
+A locale file deleted since --base is a problem, unless its English file is deleted too.
 Old gaps on keys nobody touched are ignored, so CI can run this on every merge
 request. --all checks every key, for reporting.
 
@@ -226,6 +227,9 @@ def android_text(raw):
 
 def parse_android(data, path):
     """Android strings.xml: <string>, <string-array>, <plurals>, CDATA, <xliff:g>."""
+    # DTD entities can expand without limit. Dropping NULs catches UTF-16 files too.
+    if re.search(b"<!(?:DOCTYPE|ENTITY)", data.replace(b"\0", b"")):
+        raise ParseError("%s: <!DOCTYPE> and <!ENTITY> are not allowed" % path)
     # Some files use the xliff: or tools: prefix without declaring it; expat rejects that.
     for prefix, uri in ANDROID_NS.items():
         if prefix + b":" in data and b"xmlns:" + prefix not in data:
@@ -309,14 +313,12 @@ def placeholders(value):
 
 
 def printf_ok(en, tr):
+    # Same (position, kind) pairs: every argument used as often as in English, with its kind.
     if Counter(en) == Counter(tr):
         return True
-    # English "%@ %d" may become "%2$d %1$@": same kinds, same count, and each
-    # numbered token keeps the kind of the English argument it points at.
-    if en and all(p is None for p, _ in en) and all(p is not None for p, _ in tr):
-        if len(tr) != len(en) or Counter(k for _, k in tr) != Counter(k for _, k in en):
-            return False
-        return all(p <= len(en) and en[p - 1][1] == k for p, k in tr)
+    # English "%@ %d" may become "%2$d %1$@": number the English arguments, same rule.
+    if all(p is None for p, _ in en) and all(p is not None for p, _ in tr):
+        return Counter(tr) == Counter((i, k) for i, (_, k) in enumerate(en, 1))
     return False
 
 
@@ -398,7 +400,8 @@ def read_file(repo, path):
         return f.read()
 
 
-def discover(repo, files, excluded, warnings):
+def group(files):
+    """Catalogs by path layout alone, so a JSON config file next to en.json still counts."""
     ios, android, json_dirs = {}, {}, {}
     for p in files:
         m = LPROJ_RE.match(p)
@@ -426,23 +429,30 @@ def discover(repo, files, excluded, warnings):
                                 dict((q, p) for q, p in quals.items() if q)))
 
     for d, stems in sorted(json_dirs.items()):
-        if "en" not in stems or len(stems) < 2:
-            continue
-        cat = Catalog("json", "%s<locale>.json" % d, stems["en"],
-                      dict((s, p) for s, p in stems.items() if s != "en"))
-        todo = [s for s, p in cat.locales.items() if not excluded(p)]
-        if todo and not excluded(cat.english):
-            en_keys = set(parse_json(read_file(repo, cat.english), cat.english)[0])
-            for stem in todo:
-                # A config file such as app.json can sit next to en.json; a locale file
-                # shares keys with English (or is still empty).
-                p = cat.locales[stem]
-                keys = set(parse_json(read_file(repo, p), p)[0])
-                if keys and not keys & en_keys:
-                    warnings.append("ignored %s: no keys in common with %s" % (p, cat.english))
-                    del cat.locales[stem]
-        if cat.locales:
-            catalogs.append(cat)
+        if "en" in stems and len(stems) > 1:
+            catalogs.append(Catalog("json", "%s<locale>.json" % d, stems["en"],
+                                    dict((s, p) for s, p in stems.items() if s != "en")))
+    return catalogs
+
+
+def discover(repo, files, excluded, warnings):
+    catalogs = []
+    for cat in group(files):
+        if cat.kind == "json":
+            todo = [s for s, p in cat.locales.items() if not excluded(p)]
+            if todo and not excluded(cat.english):
+                en_keys = set(parse_json(read_file(repo, cat.english), cat.english)[0])
+                for stem in todo:
+                    # A config file such as app.json can sit next to en.json; a locale file
+                    # shares keys with English (or is still empty).
+                    p = cat.locales[stem]
+                    keys = set(parse_json(read_file(repo, p), p)[0])
+                    if keys and not keys & en_keys:
+                        warnings.append("ignored %s: no keys in common with %s" % (p, cat.english))
+                        del cat.locales[stem]
+            if not cat.locales:
+                continue
+        catalogs.append(cat)
 
     for cat in catalogs:
         kept = dict((c, p) for c, p in cat.locales.items() if not excluded(p))
@@ -467,9 +477,12 @@ def check(repo, base, check_all, skip, excludes=()):
         return any(fnmatch.fnmatchcase(path, g) for g in excludes)
 
     warnings, problems, summary = [], [], []
-    catalogs = discover(repo, list_files(repo, in_git), excluded, warnings)
+    files = list_files(repo, in_git)
+    catalogs = discover(repo, files, excluded, warnings)
     reader = None if check_all else BaseReader(repo, base)
     try:
+        if reader:
+            problems += removed_locale_files(repo, reader, set(files), excluded, skip)
         for cat in catalogs:
             if cat.excluded:
                 summary.append("  excluded %s" % cat.label)
@@ -513,6 +526,36 @@ def check(repo, base, check_all, skip, excludes=()):
     return problems, summary, warnings
 
 
+def removed_locale_files(repo, reader, head_files, excluded, skip):
+    """Locale files deleted since the base ref; a catalog deleted with its English file is fine."""
+    r = git(repo, "ls-tree", "-r", "-z", "--name-only", reader.base)
+    if r.returncode != 0:
+        raise UsageError("git ls-tree %s failed in %s: %s" % (reader.base, repo, r.stderr.decode().strip()))
+    base_files = [p for p in r.stdout.decode("utf-8").split("\0")
+                  if p and not SKIP_DIRS.intersection(p.split("/")[:-1])]
+    found = []
+    for cat in group(base_files):
+        if cat.english not in head_files or excluded(cat.english):
+            continue
+        for code, p in cat.locales.items():
+            if p in head_files or excluded(p) or norm_locale(code) in skip:
+                continue
+            if cat.kind == "json":
+                keys, en_keys = base_json_keys(reader, p), base_json_keys(reader, cat.english)
+                if keys and en_keys is not None and not keys & en_keys:
+                    continue                  # a config file such as app.json
+            found.append((p, "", "removed", "locale file removed"))
+    return found
+
+
+def base_json_keys(reader, path):
+    data = reader.read(path)
+    try:
+        return None if data is None else set(parse_json(data, path)[0])
+    except ParseError:
+        return None
+
+
 def base_values(reader, parse, path, warnings):
     data = reader.read(path)
     if data is None:
@@ -550,7 +593,7 @@ def main(argv=None):
     for w in warnings:
         print("warning: %s" % w, file=sys.stderr)
     for path, key, _, message in sorted(problems):
-        print("%s: %s: %s" % (path, key, message))
+        print("%s: %s: %s" % (path, key, message) if key else "%s: %s" % (path, message))
     if problems:
         print("")
     mode = "all keys" if args.all else "keys changed since %s" % args.base
