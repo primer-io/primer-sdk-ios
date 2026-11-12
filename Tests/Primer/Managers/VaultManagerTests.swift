@@ -304,9 +304,10 @@ final class VaultManagerTests: XCTestCase {
         XCTAssertEqual(selectCalls.map(\.network), [nil])
     }
 
-    func test_startPaymentFlow_selectFails_failsWithoutExchange() {
+    func test_startPaymentFlow_selectFails_failsWithTheSelectErrorWithoutExchange() {
+        let selectError = PrimerError.unknown(message: "Select failed")
         let clientSessionActions = MockClientSessionActionsModule()
-        clientSessionActions.selectPaymentMethodError = PrimerError.unknown()
+        clientSessionActions.selectPaymentMethodError = selectError
         sut.clientSessionActionsModule = clientSessionActions
         sut.vaultedPaymentMethods = [savedMethod(type: "PAYMENT_CARD", instrumentType: .paymentCard)]
 
@@ -315,12 +316,17 @@ final class VaultManagerTests: XCTestCase {
             exchangeCallCount += 1
             return .success(Mocks.primerPaymentMethodTokenData)
         }
+        var reportedError: Error?
         let expectDidFail = expectation(description: "Payment failed")
-        headlessCheckoutDelegate.onDidFail = { _ in expectDidFail.fulfill() }
+        headlessCheckoutDelegate.onDidFail = { error in
+            reportedError = error
+            expectDidFail.fulfill()
+        }
 
         sut.startPaymentFlow(vaultedPaymentMethodId: "saved-id")
 
         waitForExpectations(timeout: 2.0)
+        XCTAssertEqual((reportedError as? PrimerError)?.diagnosticsId, selectError.diagnosticsId)
         XCTAssertEqual(exchangeCallCount, 0)
     }
 

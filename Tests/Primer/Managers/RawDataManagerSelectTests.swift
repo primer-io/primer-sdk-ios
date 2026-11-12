@@ -72,20 +72,26 @@ final class RawDataManagerSelectTests: XCTestCase {
         XCTAssertEqual(selectCalls.map(\.network), [nil])
     }
 
-    func test_submit_card_selectFails_failsWithoutTokenizing() {
-        clientSessionActions.selectPaymentMethodError = PrimerError.unknown()
+    func test_submit_card_selectFails_failsWithTheSelectErrorWithoutTokenizing() {
+        let selectError = PrimerError.unknown(message: "Select failed")
+        clientSessionActions.selectPaymentMethodError = selectError
         var tokenizeCallCount = 0
         tokenizationService.onTokenize = { _ in
             tokenizeCallCount += 1
             return .failure(PrimerError.unknown())
         }
+        var reportedError: Error?
         let expectDidFail = expectation(description: "Payment failed")
-        headlessCheckoutDelegate.onDidFail = { _ in expectDidFail.fulfill() }
+        headlessCheckoutDelegate.onDidFail = { error in
+            reportedError = error
+            expectDidFail.fulfill()
+        }
 
         sut.rawData = visaCard()
         sut.submit()
 
         waitForExpectations(timeout: 5.0)
+        XCTAssertEqual((reportedError as? PrimerError)?.diagnosticsId, selectError.diagnosticsId)
         XCTAssertEqual(tokenizeCallCount, 0)
     }
 
