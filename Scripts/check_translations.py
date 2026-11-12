@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# check_translations.py 1.0.0 -- vendored from primer-claude plugins/primer-core/skills/translate/check_translations.py. Do not edit here, update the source and re-vendor.
+# check_translations.py 1.1.0 -- vendored from primer-claude plugins/primer-core/skills/translate/check_translations.py. Do not edit here, update the source and re-vendor.
 """Check that every locale file of every translation catalog in a repo has the
 English keys, non-empty, with the same placeholders as English.
 
@@ -14,12 +14,17 @@ glob. Matching is fnmatch, so * and ** also match "/": "Debug App/**" is the who
 A catalog whose English file or every locale file is excluded is listed as excluded and
 never read.
 
+A locale file without keys is not a language yet, so it is skipped.
+
 Diff mode (the default) checks only the keys a change touches: keys that are new
 in English, keys whose English value changed, and keys whose value changed in any
-locale. A locale file that is new since --base is checked for every English key.
-A locale file deleted since --base is a problem, unless its English file is deleted too.
-Old gaps on keys nobody touched are ignored, so CI can run this on every merge
-request. --all checks every key, for reporting.
+locale. A locale file that is new since --base, or had no keys there, is checked for
+every English key. A locale file deleted since --base is a problem, unless its English
+file is deleted too or it had no keys. A locale file that lost every key is a problem.
+When an English value changes, a translation that stays the same is a problem, unless
+a commit since --base has a line "Translation-unchanged: <key>, <key>" (for a typo fix
+that keeps the meaning). Old gaps on keys nobody touched are ignored, so CI can run
+this on every merge request. --all checks every key, for reporting.
 
 Exit codes: 0 clean, 1 problems found, 2 usage or parse error.
 """
@@ -54,6 +59,7 @@ TOKEN_RE = re.compile(
     r"(?P<len>hh|h|ll|l|q|z|t|j|L)?(?P<conv>[@dDiuUxXoOfFeEgGcCsSpaA])"
 )
 CYRILLIC_RE = re.compile(u"[Ѐ-ӿ]")
+UNCHANGED_RE = re.compile(r"^translation-unchanged:[ \t]*(.*)$", re.I | re.M)
 
 
 class ParseError(Exception):
@@ -491,6 +497,7 @@ def check(repo, base, check_all, skip, excludes=()):
     files = list_files(repo, in_git)
     catalogs = discover(repo, files, excluded, warnings)
     reader = None if check_all else BaseReader(repo, base)
+    same_meaning = set() if check_all else unchanged_keys(repo, base)
     try:
         if reader:
             problems += removed_locale_files(repo, reader, set(files), excluded, skip)
@@ -506,7 +513,10 @@ def check(repo, base, check_all, skip, excludes=()):
             en_keys = [k for k in en if k not in fixed]
             locales = dict((c, p) for c, p in cat.locales.items() if norm_locale(c) not in skip)
             heads = dict((c, parse(read_file(repo, p), p)[0]) for c, p in locales.items())
+            empty = sorted(c for c, v in heads.items() if not v)
+            heads = dict((c, v) for c, v in heads.items() if v)
 
+            olds, english_changed = {}, set()
             if check_all:
                 todo = dict((c, set(en_keys)) for c in heads)
             else:
@@ -515,22 +525,29 @@ def check(repo, base, check_all, skip, excludes=()):
                     todo = dict((c, set(en_keys)) for c in heads)
                 else:
                     touched = set(k for k in en_keys if en_base.get(k) != en[k])
-                    new_locales = set()
-                    for c, p in locales.items():
-                        old = base_values(reader, parse, p, warnings)
-                        if old is None:
-                            new_locales.add(c)
-                        else:
+                    english_changed = set(k for k in touched if k in en_base) - same_meaning
+                    for c in heads:
+                        old = base_values(reader, parse, locales[c], warnings)
+                        if old:                          # else new, or no keys at the base
+                            olds[c] = old
                             touched |= set(k for k in en_keys if heads[c].get(k) != old.get(k))
-                    todo = dict((c, set(en_keys) if c in new_locales else touched) for c in heads)
+                    for c in empty:
+                        if base_values(reader, parse, locales[c], warnings):
+                            problems.append((locales[c], "", "removed", "every key removed from the locale file"))
+                    todo = dict((c, touched if c in olds else set(en_keys)) for c in heads)
 
             n_checked = len(set().union(*todo.values())) if todo else 0
             for c in sorted(heads):
                 for k in sorted(todo[c]):
-                    for category, message in problems_for(en[k], heads[c].get(k), c):
+                    found = problems_for(en[k], heads[c].get(k), c)
+                    if not found and k in english_changed and c in olds and heads[c].get(k) == olds[c].get(k):
+                        found = [("stale", "English changed, this translation did not; if the meaning "
+                                           "is the same, add 'Translation-unchanged: %s' to a commit message" % k)]
+                    for category, message in found:
                         problems.append((locales[c], k, category, message))
-            summary.append("  %-8s %s: %d locales, %d keys, %d checked"
-                           % (cat.kind, cat.label, len(heads), len(en_keys), n_checked))
+            summary.append("  %-8s %s: %d locales, %d keys, %d checked%s"
+                           % (cat.kind, cat.label, len(heads), len(en_keys), n_checked,
+                              ", %d empty locale file(s) skipped" % len(empty) if empty else ""))
     finally:
         if reader:
             reader.close()
@@ -551,20 +568,30 @@ def removed_locale_files(repo, reader, head_files, excluded, skip):
         for code, p in cat.locales.items():
             if p in head_files or excluded(p) or norm_locale(code) in skip:
                 continue
+            keys = base_keys(reader, cat.kind, p)
+            if keys is not None and not keys:
+                continue                      # a file without keys was not a language
             if cat.kind == "json":
-                keys, en_keys = base_json_keys(reader, p), base_json_keys(reader, cat.english)
+                en_keys = base_keys(reader, "json", cat.english)
                 if keys and en_keys is not None and not keys & en_keys:
                     continue                  # a config file such as app.json
             found.append((p, "", "removed", "locale file removed"))
     return found
 
 
-def base_json_keys(reader, path):
+def base_keys(reader, kind, path):
     data = reader.read(path)
     try:
-        return None if data is None else set(parse_json(data, path)[0])
+        return None if data is None else set(PARSERS[kind](data, path)[0])
     except ParseError:
         return None
+
+
+def unchanged_keys(repo, base):
+    """Keys named on 'Translation-unchanged: <key>, <key>' lines of the commits since base."""
+    r = git(repo, "log", "--format=%B", base + "..HEAD")
+    text = r.stdout.decode("utf-8", "replace") if r.returncode == 0 else ""
+    return set(k.strip() for line in UNCHANGED_RE.findall(text) for k in line.split(",") if k.strip())
 
 
 def base_values(reader, parse, path, warnings):
