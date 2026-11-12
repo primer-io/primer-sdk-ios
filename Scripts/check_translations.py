@@ -312,12 +312,19 @@ def placeholders(value):
     return named, printf
 
 
+def unnumbered(printf):
+    return all(p is None for p, _ in printf)
+
+
 def printf_ok(en, tr):
+    # Unnumbered arguments are read in order, so "%d hat %@" for "%@ has %d" reads the string as %d.
+    if unnumbered(en) and unnumbered(tr):
+        return en == tr
     # Same (position, kind) pairs: every argument used as often as in English, with its kind.
     if Counter(en) == Counter(tr):
         return True
     # English "%@ %d" may become "%2$d %1$@": number the English arguments, same rule.
-    if all(p is None for p, _ in en) and all(p is not None for p, _ in tr):
+    if unnumbered(en) and all(p is not None for p, _ in tr):
         return Counter(tr) == Counter((i, k) for i, (_, k) in enumerate(en, 1))
     return False
 
@@ -338,7 +345,11 @@ def problems_for(en_value, value, code):
     found = []
     en_named, en_printf = placeholders(en_value)
     tr_named, tr_printf = placeholders(value)
-    if en_named != tr_named or not printf_ok(en_printf, tr_printf):
+    if en_named == tr_named and Counter(en_printf) == Counter(tr_printf) and not printf_ok(en_printf, tr_printf):
+        found.append(("placeholders", "placeholders in a different order from English: English has %s, "
+                      "this has %s; number them to reorder"
+                      % tuple(" ".join("%" + k for _, k in t) for t in (en_printf, tr_printf))))
+    elif en_named != tr_named or not printf_ok(en_printf, tr_printf):
         found.append(("placeholders", "placeholders differ from English: English has %s, this has %s"
                       % (describe(en_named, en_printf), describe(tr_named, tr_printf))))
     if is_serbian_latin_locale(code) and CYRILLIC_RE.search(value):
