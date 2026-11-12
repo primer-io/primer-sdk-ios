@@ -131,9 +131,8 @@
 "primer_card_form_label_retail" = "零售网点";
 "primer_card_form_label_state" = "省份";
 "primer_card_form_network_selector_title" = "选择卡组织";
-"primer_card_form_placeholder_address1" = "朝阳路123号";
-"primer_card_form_placeholder_address2" = "4B单元";
-"primer_card_form_placeholder_city" = "北京";
+"primer_card_form_placeholder_address1" = "街道和门牌号";
+"primer_card_form_placeholder_address2" = "公寓、单元、楼层";
 "primer_card_form_placeholder_country_code" = "选择国家";
 "primer_card_form_placeholder_cvv" = "123";
 "primer_card_form_placeholder_cvv_amex" = "1234";
@@ -141,15 +140,11 @@
 "primer_card_form_placeholder_email" = "zhangsan@example.com";
 "primer_card_form_placeholder_expiry" = "MM/YY";
 "primer_card_form_placeholder_expiry_alt" = "12/25";
-"primer_card_form_placeholder_first_name" = "伟";
-"primer_card_form_placeholder_last_name" = "张";
 "primer_card_form_placeholder_name" = "姓名全称";
 "primer_card_form_placeholder_number" = "1234 1234 1234 1234";
 "primer_card_form_placeholder_otp" = "123456";
 "primer_card_form_placeholder_phone" = "+86 10 1234 5678";
-"primer_card_form_placeholder_postal" = "100000";
 "primer_card_form_placeholder_retail" = "选择网点";
-"primer_card_form_placeholder_state" = "北京";
 "primer_card_form_retail_not_implemented" = "零售网点选择尚未实现";
 "primer_card_form_title" = "使用银行卡支付";
 "primer_checkout_dismissing" = "正在关闭...";

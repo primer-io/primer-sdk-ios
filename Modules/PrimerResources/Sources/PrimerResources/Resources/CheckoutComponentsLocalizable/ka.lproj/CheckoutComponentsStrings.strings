@@ -55,14 +55,9 @@
 "primer_card_form_placeholder_cvv_amex" = "1234";
 "primer_card_form_placeholder_cvv_standard" = "123";
 "primer_card_form_placeholder_country_code" = "აირჩიეთ ქვეყანა";
-"primer_card_form_placeholder_postal" = "0100";
-"primer_card_form_placeholder_city" = "თბილისი";
-"primer_card_form_placeholder_state" = "თბილისი";
-"primer_card_form_placeholder_address1" = "რუსთაველის გამზირი 123";
-"primer_card_form_placeholder_address2" = "ბინა 4B";
+"primer_card_form_placeholder_address1" = "ქუჩა და სახლის ნომერი";
+"primer_card_form_placeholder_address2" = "ბინა, ოფისი, სართული";
 "primer_card_form_placeholder_phone" = "+995 555 123 456";
-"primer_card_form_placeholder_first_name" = "გიორგი";
-"primer_card_form_placeholder_last_name" = "ბერიძე";
 "primer_card_form_placeholder_email" = "giorgi.beridze@example.com";
 "primer_card_form_placeholder_retail" = "აირჩიეთ პუნქტი";
 "primer_card_form_placeholder_otp" = "123456";

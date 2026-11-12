@@ -131,9 +131,8 @@
 "primer_card_form_label_retail" = "Cửa hàng bán lẻ";
 "primer_card_form_label_state" = "Tỉnh/Thành phố";
 "primer_card_form_network_selector_title" = "Chọn mạng lưới";
-"primer_card_form_placeholder_address1" = "123 Đường Lê Lợi";
-"primer_card_form_placeholder_address2" = "Căn hộ 4B";
-"primer_card_form_placeholder_city" = "TP. Hồ Chí Minh";
+"primer_card_form_placeholder_address1" = "Tên đường và số nhà";
+"primer_card_form_placeholder_address2" = "Căn hộ, văn phòng, tầng";
 "primer_card_form_placeholder_country_code" = "Chọn quốc gia";
 "primer_card_form_placeholder_cvv" = "123";
 "primer_card_form_placeholder_cvv_amex" = "1234";
@@ -141,15 +140,11 @@
 "primer_card_form_placeholder_email" = "nguyen.van.a@example.com";
 "primer_card_form_placeholder_expiry" = "MM/YY";
 "primer_card_form_placeholder_expiry_alt" = "12/25";
-"primer_card_form_placeholder_first_name" = "Văn A";
-"primer_card_form_placeholder_last_name" = "Nguyễn";
 "primer_card_form_placeholder_name" = "Họ và tên đầy đủ";
 "primer_card_form_placeholder_number" = "1234 1234 1234 1234";
 "primer_card_form_placeholder_otp" = "123456";
 "primer_card_form_placeholder_phone" = "+84 28 1234 5678";
-"primer_card_form_placeholder_postal" = "700000";
 "primer_card_form_placeholder_retail" = "Chọn cửa hàng";
-"primer_card_form_placeholder_state" = "TP. HCM";
 "primer_card_form_retail_not_implemented" = "Tính năng chọn cửa hàng bán lẻ chưa được triển khai";
 "primer_card_form_title" = "Thanh toán bằng thẻ";
 "primer_checkout_dismissing" = "Đang đóng...";

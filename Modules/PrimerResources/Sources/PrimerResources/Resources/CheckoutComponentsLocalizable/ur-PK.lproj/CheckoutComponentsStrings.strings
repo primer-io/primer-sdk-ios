@@ -55,14 +55,9 @@
 "primer_card_form_placeholder_cvv_amex" = "1234";
 "primer_card_form_placeholder_cvv_standard" = "123";
 "primer_card_form_placeholder_country_code" = "ملک منتخب کریں";
-"primer_card_form_placeholder_postal" = "12345";
-"primer_card_form_placeholder_city" = "کراچی";
-"primer_card_form_placeholder_state" = "سندھ";
-"primer_card_form_placeholder_address1" = "شاہراہ فیصل 123";
-"primer_card_form_placeholder_address2" = "اپارٹمنٹ 4B";
+"primer_card_form_placeholder_address1" = "گلی اور مکان نمبر";
+"primer_card_form_placeholder_address2" = "اپارٹمنٹ، دفتر، منزل";
 "primer_card_form_placeholder_phone" = "+92 (300) 123-4567";
-"primer_card_form_placeholder_first_name" = "علی";
-"primer_card_form_placeholder_last_name" = "احمد";
 "primer_card_form_placeholder_email" = "ali.ahmad@example.com";
 "primer_card_form_placeholder_retail" = "آؤٹ لیٹ منتخب کریں";
 "primer_card_form_placeholder_otp" = "123456";

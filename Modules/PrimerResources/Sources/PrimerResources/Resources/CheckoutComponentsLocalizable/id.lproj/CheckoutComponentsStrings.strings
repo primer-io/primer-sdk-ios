@@ -131,9 +131,8 @@
 "primer_card_form_label_retail" = "Outlet Ritel";
 "primer_card_form_label_state" = "Provinsi";
 "primer_card_form_network_selector_title" = "Pilih Jaringan";
-"primer_card_form_placeholder_address1" = "Jl. Sudirman No. 123";
-"primer_card_form_placeholder_address2" = "Apartemen 4B";
-"primer_card_form_placeholder_city" = "Jakarta";
+"primer_card_form_placeholder_address1" = "Nama jalan dan nomor";
+"primer_card_form_placeholder_address2" = "Apartemen, unit, lantai";
 "primer_card_form_placeholder_country_code" = "Pilih negara";
 "primer_card_form_placeholder_cvv" = "123";
 "primer_card_form_placeholder_cvv_amex" = "1234";
@@ -141,15 +140,11 @@
 "primer_card_form_placeholder_email" = "budi.santoso@example.com";
 "primer_card_form_placeholder_expiry" = "MM/YY";
 "primer_card_form_placeholder_expiry_alt" = "12/25";
-"primer_card_form_placeholder_first_name" = "Budi";
-"primer_card_form_placeholder_last_name" = "Santoso";
 "primer_card_form_placeholder_name" = "Nama lengkap";
 "primer_card_form_placeholder_number" = "1234 1234 1234 1234";
 "primer_card_form_placeholder_otp" = "123456";
 "primer_card_form_placeholder_phone" = "+62 21 1234 5678";
-"primer_card_form_placeholder_postal" = "10110";
 "primer_card_form_placeholder_retail" = "Pilih outlet";
-"primer_card_form_placeholder_state" = "DKI Jakarta";
 "primer_card_form_retail_not_implemented" = "Pemilihan outlet ritel belum tersedia";
 "primer_card_form_title" = "Bayar dengan kartu";
 "primer_checkout_dismissing" = "Menutup...";

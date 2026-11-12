@@ -120,7 +120,7 @@ struct BillingAddressRedirectScreen: View {
       HStack(alignment: .top, spacing: PrimerSpacing.medium(tokens: tokens)) {
         makeTextField(
           label: CheckoutComponentsStrings.postalCodeLabel,
-          placeholder: CheckoutComponentsStrings.postalCodePlaceholder,
+          placeholder: "",
           text: $postalCode,
           fieldType: .postalCode,
           identifier: AccessibilityIdentifiers.BillingAddressRedirect.postalCodeField,
@@ -128,7 +128,7 @@ struct BillingAddressRedirectScreen: View {
         )
         makeTextField(
           label: CheckoutComponentsStrings.cityLabel,
-          placeholder: CheckoutComponentsStrings.cityPlaceholder,
+          placeholder: "",
           text: $city,
           fieldType: .city,
           identifier: AccessibilityIdentifiers.BillingAddressRedirect.cityField,
@@ -137,7 +137,7 @@ struct BillingAddressRedirectScreen: View {
       }
       makeTextField(
         label: CheckoutComponentsStrings.stateLabel,
-        placeholder: CheckoutComponentsStrings.statePlaceholder,
+        placeholder: "",
         text: $state,
         fieldType: .state,
         identifier: AccessibilityIdentifiers.BillingAddressRedirect.stateField,

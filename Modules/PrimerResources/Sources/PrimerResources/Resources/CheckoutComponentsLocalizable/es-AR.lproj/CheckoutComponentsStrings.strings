@@ -131,9 +131,8 @@
 "primer_card_form_label_retail" = "Punto de venta";
 "primer_card_form_label_state" = "Provincia";
 "primer_card_form_network_selector_title" = "Seleccionar red";
-"primer_card_form_placeholder_address1" = "Av. 9 de Julio 123";
-"primer_card_form_placeholder_address2" = "Piso 4 Dpto. B";
-"primer_card_form_placeholder_city" = "Buenos Aires";
+"primer_card_form_placeholder_address1" = "Calle y número";
+"primer_card_form_placeholder_address2" = "Departamento, oficina, piso";
 "primer_card_form_placeholder_country_code" = "Seleccioná un país";
 "primer_card_form_placeholder_cvv" = "123";
 "primer_card_form_placeholder_cvv_amex" = "1234";
@@ -141,15 +140,11 @@
 "primer_card_form_placeholder_email" = "juan.perez@ejemplo.com";
 "primer_card_form_placeholder_expiry" = "MM/AA";
 "primer_card_form_placeholder_expiry_alt" = "12/25";
-"primer_card_form_placeholder_first_name" = "Juan";
-"primer_card_form_placeholder_last_name" = "Pérez";
 "primer_card_form_placeholder_name" = "Nombre completo";
 "primer_card_form_placeholder_number" = "1234 1234 1234 1234";
 "primer_card_form_placeholder_otp" = "123456";
 "primer_card_form_placeholder_phone" = "+54 11 1234-5678";
-"primer_card_form_placeholder_postal" = "C1001";
 "primer_card_form_placeholder_retail" = "Seleccioná un punto de venta";
-"primer_card_form_placeholder_state" = "CABA";
 "primer_card_form_retail_not_implemented" = "Selección de punto de venta aún no implementada";
 "primer_card_form_title" = "Pagar con tarjeta";
 "primer_checkout_dismissing" = "Cerrando...";

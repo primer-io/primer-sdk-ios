@@ -41,7 +41,7 @@ struct AchUserDetailsView: View, LogReporter {
   private var firstNameField: some View {
     NameInputField(
       label: CheckoutComponentsStrings.firstNameLabel,
-      placeholder: CheckoutComponentsStrings.firstNamePlaceholder,
+      placeholder: "",
       inputType: .firstName,
       initialValue: achState.userDetails.firstName,
       onNameChange: scope.updateFirstName
@@ -54,7 +54,7 @@ struct AchUserDetailsView: View, LogReporter {
   private var lastNameField: some View {
     NameInputField(
       label: CheckoutComponentsStrings.lastNameLabel,
-      placeholder: CheckoutComponentsStrings.lastNamePlaceholder,
+      placeholder: "",
       inputType: .lastName,
       initialValue: achState.userDetails.lastName,
       onNameChange: scope.updateLastName

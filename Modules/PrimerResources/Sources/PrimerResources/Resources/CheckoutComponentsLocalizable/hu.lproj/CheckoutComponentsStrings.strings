@@ -131,9 +131,8 @@
 "primer_card_form_label_retail" = "Üzlet";
 "primer_card_form_label_state" = "Megye";
 "primer_card_form_network_selector_title" = "Hálózat kiválasztása";
-"primer_card_form_placeholder_address1" = "Fő utca 123";
-"primer_card_form_placeholder_address2" = "4. emelet 2. ajtó";
-"primer_card_form_placeholder_city" = "Budapest";
+"primer_card_form_placeholder_address1" = "Utca és házszám";
+"primer_card_form_placeholder_address2" = "Lakás, iroda, emelet";
 "primer_card_form_placeholder_country_code" = "Ország kiválasztása";
 "primer_card_form_placeholder_cvv" = "123";
 "primer_card_form_placeholder_cvv_amex" = "1234";
@@ -141,15 +140,11 @@
 "primer_card_form_placeholder_email" = "kovacs.janos@pelda.hu";
 "primer_card_form_placeholder_expiry" = "HH/ÉÉ";
 "primer_card_form_placeholder_expiry_alt" = "12/25";
-"primer_card_form_placeholder_first_name" = "János";
-"primer_card_form_placeholder_last_name" = "Kovács";
 "primer_card_form_placeholder_name" = "Teljes név";
 "primer_card_form_placeholder_number" = "1234 1234 1234 1234";
 "primer_card_form_placeholder_otp" = "123456";
 "primer_card_form_placeholder_phone" = "+36 1 123 4567";
-"primer_card_form_placeholder_postal" = "1011";
 "primer_card_form_placeholder_retail" = "Üzlet kiválasztása";
-"primer_card_form_placeholder_state" = "Pest";
 "primer_card_form_retail_not_implemented" = "Üzlet kiválasztása még nem elérhető";
 "primer_card_form_title" = "Fizetés kártyával";
 "primer_checkout_dismissing" = "Bezárás...";

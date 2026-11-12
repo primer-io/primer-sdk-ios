@@ -131,9 +131,8 @@
 "primer_card_form_label_retail" = "Myyntipiste";
 "primer_card_form_label_state" = "Osavaltio";
 "primer_card_form_network_selector_title" = "Valitse verkko";
-"primer_card_form_placeholder_address1" = "Mannerheimintie 123";
-"primer_card_form_placeholder_address2" = "As 4B";
-"primer_card_form_placeholder_city" = "Helsinki";
+"primer_card_form_placeholder_address1" = "Katu ja talonumero";
+"primer_card_form_placeholder_address2" = "Asunto, toimisto, kerros";
 "primer_card_form_placeholder_country_code" = "Valitse maa";
 "primer_card_form_placeholder_cvv" = "123";
 "primer_card_form_placeholder_cvv_amex" = "1234";
@@ -141,15 +140,11 @@
 "primer_card_form_placeholder_email" = "matti.virtanen@esimerkki.fi";
 "primer_card_form_placeholder_expiry" = "KK/VV";
 "primer_card_form_placeholder_expiry_alt" = "12/25";
-"primer_card_form_placeholder_first_name" = "Matti";
-"primer_card_form_placeholder_last_name" = "Virtanen";
 "primer_card_form_placeholder_name" = "Koko nimi";
 "primer_card_form_placeholder_number" = "1234 1234 1234 1234";
 "primer_card_form_placeholder_otp" = "123456";
 "primer_card_form_placeholder_phone" = "+358 9 123 4567";
-"primer_card_form_placeholder_postal" = "00100";
 "primer_card_form_placeholder_retail" = "Valitse myyntipiste";
-"primer_card_form_placeholder_state" = "Uusimaa";
 "primer_card_form_retail_not_implemented" = "Myyntipisteen valinta ei ole vielä toteutettu";
 "primer_card_form_title" = "Maksa kortilla";
 "primer_checkout_dismissing" = "Suljetaan...";

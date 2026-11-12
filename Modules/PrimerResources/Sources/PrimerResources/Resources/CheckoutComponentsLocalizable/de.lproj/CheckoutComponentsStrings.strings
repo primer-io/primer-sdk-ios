@@ -131,9 +131,8 @@
 "primer_card_form_label_retail" = "Einzelhandelsfiliale";
 "primer_card_form_label_state" = "Bundesland";
 "primer_card_form_network_selector_title" = "Netzwerk auswählen";
-"primer_card_form_placeholder_address1" = "Hauptstraße 123";
-"primer_card_form_placeholder_address2" = "Wohnung 4B";
-"primer_card_form_placeholder_city" = "Berlin";
+"primer_card_form_placeholder_address1" = "Straße und Hausnummer";
+"primer_card_form_placeholder_address2" = "Wohnung, Büro, Etage";
 "primer_card_form_placeholder_country_code" = "Land auswählen";
 "primer_card_form_placeholder_cvv" = "123";
 "primer_card_form_placeholder_cvv_amex" = "1234";
@@ -141,15 +140,11 @@
 "primer_card_form_placeholder_email" = "max.mustermann@beispiel.de";
 "primer_card_form_placeholder_expiry" = "MM/JJ";
 "primer_card_form_placeholder_expiry_alt" = "12/25";
-"primer_card_form_placeholder_first_name" = "Max";
-"primer_card_form_placeholder_last_name" = "Mustermann";
 "primer_card_form_placeholder_name" = "Vollständiger Name";
 "primer_card_form_placeholder_number" = "1234 1234 1234 1234";
 "primer_card_form_placeholder_otp" = "123456";
 "primer_card_form_placeholder_phone" = "+49 30 12345678";
-"primer_card_form_placeholder_postal" = "10115";
 "primer_card_form_placeholder_retail" = "Filiale auswählen";
-"primer_card_form_placeholder_state" = "BE";
 "primer_card_form_retail_not_implemented" = "Filialauswahl noch nicht implementiert";
 "primer_card_form_title" = "Mit Karte bezahlen";
 "primer_checkout_dismissing" = "Wird geschlossen...";

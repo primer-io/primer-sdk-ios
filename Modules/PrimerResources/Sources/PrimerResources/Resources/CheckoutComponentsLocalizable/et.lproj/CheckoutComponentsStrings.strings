@@ -131,9 +131,8 @@
 "primer_card_form_label_retail" = "Jaemüügipunkt";
 "primer_card_form_label_state" = "Osariik";
 "primer_card_form_network_selector_title" = "Vali võrk";
-"primer_card_form_placeholder_address1" = "Vabaduse väljak 123";
-"primer_card_form_placeholder_address2" = "Korter 4B";
-"primer_card_form_placeholder_city" = "Tallinn";
+"primer_card_form_placeholder_address1" = "Tänav ja majanumber";
+"primer_card_form_placeholder_address2" = "Korter, büroo, korrus";
 "primer_card_form_placeholder_country_code" = "Vali riik";
 "primer_card_form_placeholder_cvv" = "123";
 "primer_card_form_placeholder_cvv_amex" = "1234";
@@ -141,15 +140,11 @@
 "primer_card_form_placeholder_email" = "jaan.tamm@näide.ee";
 "primer_card_form_placeholder_expiry" = "KK/AA";
 "primer_card_form_placeholder_expiry_alt" = "12/25";
-"primer_card_form_placeholder_first_name" = "Jaan";
-"primer_card_form_placeholder_last_name" = "Tamm";
 "primer_card_form_placeholder_name" = "Täisnimi";
 "primer_card_form_placeholder_number" = "1234 1234 1234 1234";
 "primer_card_form_placeholder_otp" = "123456";
 "primer_card_form_placeholder_phone" = "+372 5123 4567";
-"primer_card_form_placeholder_postal" = "10111";
 "primer_card_form_placeholder_retail" = "Vali müügipunkt";
-"primer_card_form_placeholder_state" = "Harjumaa";
 "primer_card_form_retail_not_implemented" = "Jaemüügipunkti valimine pole veel rakendatud";
 "primer_card_form_title" = "Maksa kaardiga";
 "primer_checkout_dismissing" = "Sulgemine...";

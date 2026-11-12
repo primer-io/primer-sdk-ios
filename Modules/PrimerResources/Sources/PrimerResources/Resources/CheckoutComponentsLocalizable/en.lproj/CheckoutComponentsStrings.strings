@@ -136,9 +136,8 @@
 "primer_card_form_label_retail" = "Retail Outlet";
 "primer_card_form_label_state" = "State";
 "primer_card_form_network_selector_title" = "Select Network";
-"primer_card_form_placeholder_address1" = "123 Main Street";
-"primer_card_form_placeholder_address2" = "Apt 4B";
-"primer_card_form_placeholder_city" = "New York";
+"primer_card_form_placeholder_address1" = "Street and number";
+"primer_card_form_placeholder_address2" = "Apartment, suite, floor";
 "primer_card_form_placeholder_country_code" = "Select country";
 "primer_card_form_placeholder_cvv" = "123";
 "primer_card_form_placeholder_cvv_amex" = "1234";
@@ -146,15 +145,11 @@
 "primer_card_form_placeholder_email" = "john.doe@example.com";
 "primer_card_form_placeholder_expiry" = "MM/YY";
 "primer_card_form_placeholder_expiry_alt" = "12/25";
-"primer_card_form_placeholder_first_name" = "John";
-"primer_card_form_placeholder_last_name" = "Doe";
 "primer_card_form_placeholder_name" = "Full name";
 "primer_card_form_placeholder_number" = "1234 1234 1234 1234";
 "primer_card_form_placeholder_otp" = "123456";
 "primer_card_form_placeholder_phone" = "+1 (555) 123–4567";
-"primer_card_form_placeholder_postal" = "12345";
 "primer_card_form_placeholder_retail" = "Select outlet";
-"primer_card_form_placeholder_state" = "NY";
 "primer_card_form_error_retail_outlet_required" = "Retail outlet is required";
 "primer_card_form_error_retail_outlet_invalid" = "Invalid retail outlet";
 "primer_card_form_retail_not_implemented" = "Retail outlet selection not yet implemented";

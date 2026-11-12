@@ -193,7 +193,7 @@ struct CardFormFieldsView: View {
     case .postalCode:
       PostalCodeInputField(
         label: CheckoutComponentsStrings.postalCodeLabel,
-        placeholder: CheckoutComponentsStrings.postalCodePlaceholder,
+        placeholder: "",
         scope: scope
       )
       .focused($focusedField, equals: .postalCode)
@@ -211,7 +211,7 @@ struct CardFormFieldsView: View {
     case .city:
       CityInputField(
         label: CheckoutComponentsStrings.cityLabel,
-        placeholder: CheckoutComponentsStrings.cityPlaceholder,
+        placeholder: "",
         scope: scope
       )
       .focused($focusedField, equals: .city)
@@ -220,7 +220,7 @@ struct CardFormFieldsView: View {
     case .state:
       StateInputField(
         label: CheckoutComponentsStrings.stateLabel,
-        placeholder: CheckoutComponentsStrings.statePlaceholder,
+        placeholder: "",
         scope: scope
       )
       .focused($focusedField, equals: .state)
@@ -251,7 +251,7 @@ struct CardFormFieldsView: View {
     case .firstName:
       NameInputField(
         label: CheckoutComponentsStrings.firstNameLabel,
-        placeholder: CheckoutComponentsStrings.firstNamePlaceholder,
+        placeholder: "",
         inputType: .firstName,
         scope: scope
       )
@@ -261,7 +261,7 @@ struct CardFormFieldsView: View {
     case .lastName:
       NameInputField(
         label: CheckoutComponentsStrings.lastNameLabel,
-        placeholder: CheckoutComponentsStrings.lastNamePlaceholder,
+        placeholder: "",
         inputType: .lastName,
         scope: scope
       )

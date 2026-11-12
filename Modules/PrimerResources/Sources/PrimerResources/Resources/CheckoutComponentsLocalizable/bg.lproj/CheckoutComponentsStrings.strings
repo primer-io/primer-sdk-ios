@@ -131,9 +131,8 @@
 "primer_card_form_label_retail" = "Търговски обект";
 "primer_card_form_label_state" = "Област";
 "primer_card_form_network_selector_title" = "Изберете мрежа";
-"primer_card_form_placeholder_address1" = "бул. Витоша 123";
-"primer_card_form_placeholder_address2" = "Ап. 4Б";
-"primer_card_form_placeholder_city" = "София";
+"primer_card_form_placeholder_address1" = "Улица и номер";
+"primer_card_form_placeholder_address2" = "Апартамент, офис, етаж";
 "primer_card_form_placeholder_country_code" = "Изберете държава";
 "primer_card_form_placeholder_cvv" = "123";
 "primer_card_form_placeholder_cvv_amex" = "1234";
@@ -141,15 +140,11 @@
 "primer_card_form_placeholder_email" = "ivan.ivanov@example.com";
 "primer_card_form_placeholder_expiry" = "ММ/ГГ";
 "primer_card_form_placeholder_expiry_alt" = "12/25";
-"primer_card_form_placeholder_first_name" = "Иван";
-"primer_card_form_placeholder_last_name" = "Иванов";
 "primer_card_form_placeholder_name" = "Пълно име";
 "primer_card_form_placeholder_number" = "1234 1234 1234 1234";
 "primer_card_form_placeholder_otp" = "123456";
 "primer_card_form_placeholder_phone" = "+359 2 123 4567";
-"primer_card_form_placeholder_postal" = "1000";
 "primer_card_form_placeholder_retail" = "Изберете обект";
-"primer_card_form_placeholder_state" = "София";
 "primer_card_form_retail_not_implemented" = "Изборът на търговски обект все още не е внедрен";
 "primer_card_form_title" = "Плати с карта";
 "primer_checkout_dismissing" = "Затваряне...";

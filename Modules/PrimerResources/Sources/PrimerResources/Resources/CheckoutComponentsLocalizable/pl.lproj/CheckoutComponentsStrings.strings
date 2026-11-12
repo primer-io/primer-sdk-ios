@@ -131,9 +131,8 @@
 "primer_card_form_label_retail" = "Punkt sprzedaży";
 "primer_card_form_label_state" = "Województwo";
 "primer_card_form_network_selector_title" = "Wybierz sieć";
-"primer_card_form_placeholder_address1" = "ul. Marszałkowska 123";
-"primer_card_form_placeholder_address2" = "Mieszkanie 4B";
-"primer_card_form_placeholder_city" = "Warszawa";
+"primer_card_form_placeholder_address1" = "Ulica i numer domu";
+"primer_card_form_placeholder_address2" = "Mieszkanie, lokal, piętro";
 "primer_card_form_placeholder_country_code" = "Wybierz kraj";
 "primer_card_form_placeholder_cvv" = "123";
 "primer_card_form_placeholder_cvv_amex" = "1234";
@@ -141,15 +140,11 @@
 "primer_card_form_placeholder_email" = "jan.kowalski@przyklad.pl";
 "primer_card_form_placeholder_expiry" = "MM/RR";
 "primer_card_form_placeholder_expiry_alt" = "12/25";
-"primer_card_form_placeholder_first_name" = "Jan";
-"primer_card_form_placeholder_last_name" = "Kowalski";
 "primer_card_form_placeholder_name" = "Imię i nazwisko";
 "primer_card_form_placeholder_number" = "1234 1234 1234 1234";
 "primer_card_form_placeholder_otp" = "123456";
 "primer_card_form_placeholder_phone" = "+48 22 123 45 67";
-"primer_card_form_placeholder_postal" = "00-001";
 "primer_card_form_placeholder_retail" = "Wybierz punkt";
-"primer_card_form_placeholder_state" = "Mazowieckie";
 "primer_card_form_retail_not_implemented" = "Wybór punktu sprzedaży nie został jeszcze zaimplementowany";
 "primer_card_form_title" = "Zapłać kartą";
 "primer_checkout_dismissing" = "Zamykanie...";

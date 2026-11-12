@@ -131,9 +131,8 @@
 "primer_card_form_label_retail" = "Торгова точка";
 "primer_card_form_label_state" = "Область";
 "primer_card_form_network_selector_title" = "Виберіть платіжну систему";
-"primer_card_form_placeholder_address1" = "вул. Хрещатик, 1";
-"primer_card_form_placeholder_address2" = "кв. 4";
-"primer_card_form_placeholder_city" = "Київ";
+"primer_card_form_placeholder_address1" = "Вулиця та номер будинку";
+"primer_card_form_placeholder_address2" = "Квартира, офіс, поверх";
 "primer_card_form_placeholder_country_code" = "Оберіть країну";
 "primer_card_form_placeholder_cvv" = "123";
 "primer_card_form_placeholder_cvv_amex" = "1234";
@@ -141,15 +140,11 @@
 "primer_card_form_placeholder_email" = "ivan.petrenko@example.com";
 "primer_card_form_placeholder_expiry" = "ММ/РР";
 "primer_card_form_placeholder_expiry_alt" = "12/25";
-"primer_card_form_placeholder_first_name" = "Іван";
-"primer_card_form_placeholder_last_name" = "Петренко";
 "primer_card_form_placeholder_name" = "Повне ім'я";
 "primer_card_form_placeholder_number" = "1234 1234 1234 1234";
 "primer_card_form_placeholder_otp" = "123456";
 "primer_card_form_placeholder_phone" = "+380 44 123 4567";
-"primer_card_form_placeholder_postal" = "01001";
 "primer_card_form_placeholder_retail" = "Оберіть торгову точку";
-"primer_card_form_placeholder_state" = "Київська обл.";
 "primer_card_form_retail_not_implemented" = "Вибір торгової точки ще не реалізовано";
 "primer_card_form_title" = "Оплатити карткою";
 "primer_checkout_dismissing" = "Закриття...";

@@ -131,9 +131,8 @@
 "primer_card_form_label_retail" = "Satış noktası";
 "primer_card_form_label_state" = "İl";
 "primer_card_form_network_selector_title" = "Ağ seçin";
-"primer_card_form_placeholder_address1" = "Atatürk Caddesi No: 123";
-"primer_card_form_placeholder_address2" = "Daire 4B";
-"primer_card_form_placeholder_city" = "İstanbul";
+"primer_card_form_placeholder_address1" = "Sokak ve kapı numarası";
+"primer_card_form_placeholder_address2" = "Daire, ofis, kat";
 "primer_card_form_placeholder_country_code" = "Ülke seçin";
 "primer_card_form_placeholder_cvv" = "123";
 "primer_card_form_placeholder_cvv_amex" = "1234";
@@ -141,15 +140,11 @@
 "primer_card_form_placeholder_email" = "mehmet.yilmaz@example.com";
 "primer_card_form_placeholder_expiry" = "AA/YY";
 "primer_card_form_placeholder_expiry_alt" = "12/25";
-"primer_card_form_placeholder_first_name" = "Mehmet";
-"primer_card_form_placeholder_last_name" = "Yılmaz";
 "primer_card_form_placeholder_name" = "Ad soyad";
 "primer_card_form_placeholder_number" = "1234 1234 1234 1234";
 "primer_card_form_placeholder_otp" = "123456";
 "primer_card_form_placeholder_phone" = "+90 212 123 45 67";
-"primer_card_form_placeholder_postal" = "34000";
 "primer_card_form_placeholder_retail" = "Satış noktası seçin";
-"primer_card_form_placeholder_state" = "İstanbul";
 "primer_card_form_retail_not_implemented" = "Satış noktası seçimi henüz uygulanmadı";
 "primer_card_form_title" = "Kartla öde";
 "primer_checkout_dismissing" = "Kapatılıyor...";

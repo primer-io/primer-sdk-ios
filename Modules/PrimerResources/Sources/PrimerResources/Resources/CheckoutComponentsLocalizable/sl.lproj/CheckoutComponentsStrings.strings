@@ -131,9 +131,8 @@
 "primer_card_form_label_retail" = "Prodajno mesto";
 "primer_card_form_label_state" = "Pokrajina";
 "primer_card_form_network_selector_title" = "Izberi omrežje";
-"primer_card_form_placeholder_address1" = "Slovenska cesta 123";
-"primer_card_form_placeholder_address2" = "Stanovanje 4B";
-"primer_card_form_placeholder_city" = "Ljubljana";
+"primer_card_form_placeholder_address1" = "Ulica in hišna številka";
+"primer_card_form_placeholder_address2" = "Stanovanje, pisarna, nadstropje";
 "primer_card_form_placeholder_country_code" = "Izberite državo";
 "primer_card_form_placeholder_cvv" = "123";
 "primer_card_form_placeholder_cvv_amex" = "1234";
@@ -141,15 +140,11 @@
 "primer_card_form_placeholder_email" = "janez.novak@primer.si";
 "primer_card_form_placeholder_expiry" = "MM/LL";
 "primer_card_form_placeholder_expiry_alt" = "12/25";
-"primer_card_form_placeholder_first_name" = "Janez";
-"primer_card_form_placeholder_last_name" = "Novak";
 "primer_card_form_placeholder_name" = "Polno ime";
 "primer_card_form_placeholder_number" = "1234 1234 1234 1234";
 "primer_card_form_placeholder_otp" = "123456";
 "primer_card_form_placeholder_phone" = "+386 1 234 5678";
-"primer_card_form_placeholder_postal" = "1000";
 "primer_card_form_placeholder_retail" = "Izberite prodajno mesto";
-"primer_card_form_placeholder_state" = "Osrednjeslovenska";
 "primer_card_form_retail_not_implemented" = "Izbira prodajnega mesta še ni implementirana";
 "primer_card_form_title" = "Plačaj s kartico";
 "primer_checkout_dismissing" = "Zapiranje...";

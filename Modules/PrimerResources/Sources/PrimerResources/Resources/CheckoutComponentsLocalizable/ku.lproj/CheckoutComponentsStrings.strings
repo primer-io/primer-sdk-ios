@@ -55,14 +55,9 @@
 "primer_card_form_placeholder_cvv_amex" = "1234";
 "primer_card_form_placeholder_cvv_standard" = "123";
 "primer_card_form_placeholder_country_code" = "Welatê hilbijêre";
-"primer_card_form_placeholder_postal" = "12345";
-"primer_card_form_placeholder_city" = "Hewlêr";
-"primer_card_form_placeholder_state" = "KR";
-"primer_card_form_placeholder_address1" = "Kolana Sereke 123";
-"primer_card_form_placeholder_address2" = "Apartman 4B";
+"primer_card_form_placeholder_address1" = "Kolan û hejmara xaniyê";
+"primer_card_form_placeholder_address2" = "Apartman, ofîs, qat";
 "primer_card_form_placeholder_phone" = "+964 750 123 4567";
-"primer_card_form_placeholder_first_name" = "Ahmed";
-"primer_card_form_placeholder_last_name" = "Kurdi";
 "primer_card_form_placeholder_email" = "ahmed.kurdi@example.com";
 "primer_card_form_placeholder_retail" = "Cih hilbijêre";
 "primer_card_form_placeholder_otp" = "123456";

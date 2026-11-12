@@ -131,9 +131,8 @@
 "primer_card_form_label_retail" = "Prodejna";
 "primer_card_form_label_state" = "Kraj";
 "primer_card_form_network_selector_title" = "Vybrat síť";
-"primer_card_form_placeholder_address1" = "Václavské náměstí 123";
-"primer_card_form_placeholder_address2" = "Budova A, 4. patro";
-"primer_card_form_placeholder_city" = "Praha";
+"primer_card_form_placeholder_address1" = "Ulice a číslo popisné";
+"primer_card_form_placeholder_address2" = "Byt, kancelář, patro";
 "primer_card_form_placeholder_country_code" = "Vybrat zemi";
 "primer_card_form_placeholder_cvv" = "123";
 "primer_card_form_placeholder_cvv_amex" = "1234";
@@ -141,15 +140,11 @@
 "primer_card_form_placeholder_email" = "jan.novak@priklad.cz";
 "primer_card_form_placeholder_expiry" = "MM/RR";
 "primer_card_form_placeholder_expiry_alt" = "12/25";
-"primer_card_form_placeholder_first_name" = "Jan";
-"primer_card_form_placeholder_last_name" = "Novák";
 "primer_card_form_placeholder_name" = "Celé jméno";
 "primer_card_form_placeholder_number" = "1234 1234 1234 1234";
 "primer_card_form_placeholder_otp" = "123456";
 "primer_card_form_placeholder_phone" = "+420 222 123 456";
-"primer_card_form_placeholder_postal" = "110 00";
 "primer_card_form_placeholder_retail" = "Vybrat prodejnu";
-"primer_card_form_placeholder_state" = "Hlavní město Praha";
 "primer_card_form_retail_not_implemented" = "Výběr prodejny zatím není implementován";
 "primer_card_form_title" = "Zaplatit kartou";
 "primer_checkout_dismissing" = "Zavírá se...";

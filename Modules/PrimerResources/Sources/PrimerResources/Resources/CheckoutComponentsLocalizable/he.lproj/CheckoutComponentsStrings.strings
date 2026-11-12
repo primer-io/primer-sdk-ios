@@ -131,9 +131,8 @@
 "primer_card_form_label_retail" = "נקודת מכירה";
 "primer_card_form_label_state" = "מדינה/אזור";
 "primer_card_form_network_selector_title" = "בחר רשת";
-"primer_card_form_placeholder_address1" = "רחוב רוטשילד 123";
-"primer_card_form_placeholder_address2" = "דירה 4ב";
-"primer_card_form_placeholder_city" = "תל אביב";
+"primer_card_form_placeholder_address1" = "רחוב ומספר בית";
+"primer_card_form_placeholder_address2" = "דירה, משרד, קומה";
 "primer_card_form_placeholder_country_code" = "בחר מדינה";
 "primer_card_form_placeholder_cvv" = "123";
 "primer_card_form_placeholder_cvv_amex" = "1234";
@@ -141,15 +140,11 @@
 "primer_card_form_placeholder_email" = "david.cohen@example.com";
 "primer_card_form_placeholder_expiry" = "MM/YY";
 "primer_card_form_placeholder_expiry_alt" = "12/25";
-"primer_card_form_placeholder_first_name" = "דוד";
-"primer_card_form_placeholder_last_name" = "כהן";
 "primer_card_form_placeholder_name" = "שם מלא";
 "primer_card_form_placeholder_number" = "1234 1234 1234 1234";
 "primer_card_form_placeholder_otp" = "123456";
 "primer_card_form_placeholder_phone" = "+972 3 123 4567";
-"primer_card_form_placeholder_postal" = "6100001";
 "primer_card_form_placeholder_retail" = "בחר נקודת מכירה";
-"primer_card_form_placeholder_state" = "תל אביב";
 "primer_card_form_retail_not_implemented" = "בחירת נקודת מכירה טרם יושמה";
 "primer_card_form_title" = "שלם בכרטיס";
 "primer_checkout_dismissing" = "סוגר...";
