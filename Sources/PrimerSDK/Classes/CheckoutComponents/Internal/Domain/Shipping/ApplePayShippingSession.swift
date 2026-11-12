@@ -46,6 +46,8 @@ final class ApplePayShippingSession: LogReporter {
   private let report: (ExpressCheckoutShippingLog) -> Void
   /// Apple sends the first shipping contact when the sheet opens.
   private var addressSeen = false
+  /// A handler can still finish after the sheet closed, and it must not flag a later payment.
+  private(set) var isFinished = false
 
   init(
     mode: Mode,
@@ -155,6 +157,11 @@ final class ApplePayShippingSession: LogReporter {
     mode == .callbacks && options.isEmpty
   }
 
+  /// Ends the attempt. Steps that settle later log nothing.
+  func finish() {
+    isFinished = true
+  }
+
   // MARK: - Internals
 
   private func requestOptions(
@@ -166,7 +173,7 @@ final class ApplePayShippingSession: LogReporter {
         message: "Shipping address changed for APPLE_PAY but no onShippingAddressChange handler is "
           + "registered — no shipping options will be shown."
       )
-      report(ExpressCheckoutShippingLog(event: .addressChange, trigger: trigger, outcome: .noHandler))
+      record(ExpressCheckoutShippingLog(event: .addressChange, trigger: trigger, outcome: .noHandler))
       return []
     }
 
@@ -195,19 +202,19 @@ final class ApplePayShippingSession: LogReporter {
         message: "Shipping option selected for APPLE_PAY but no onShippingOptionChange handler is "
           + "registered — the order's shipping amount will not be committed."
       )
-      report(ExpressCheckoutShippingLog(event: .optionChange, trigger: trigger, outcome: .noHandler))
+      record(ExpressCheckoutShippingLog(event: .optionChange, trigger: trigger, outcome: .noHandler))
     }
 
     do {
       try await refresh()
     } catch {
-      report(ExpressCheckoutShippingLog(event: .commit, trigger: trigger, outcome: .refreshFailed))
+      record(ExpressCheckoutShippingLog(event: .commit, trigger: trigger, outcome: .refreshFailed))
       throw error
     }
 
     let shipping = currentShipping()
     guard shipping?.methodId == option.id, shipping?.amount == option.amount else {
-      report(ExpressCheckoutShippingLog(event: .commit, trigger: trigger, outcome: .mismatch))
+      record(ExpressCheckoutShippingLog(event: .commit, trigger: trigger, outcome: .mismatch))
       throw handled(primerError: .merchantError(
         message: "The merchant's shipping commit did not update order.shipping to match the selected "
           + "option (expected methodId \"\(option.id)\" / amount \(option.amount), got methodId "
@@ -217,7 +224,12 @@ final class ApplePayShippingSession: LogReporter {
       ))
     }
     verifiedCommit = option
-    report(ExpressCheckoutShippingLog(event: .commit, trigger: trigger, outcome: .committed, shippingMethodId: option.id))
+    record(ExpressCheckoutShippingLog(event: .commit, trigger: trigger, outcome: .committed, shippingMethodId: option.id))
+  }
+
+  private func record(_ log: ExpressCheckoutShippingLog) {
+    guard !isFinished else { return }
+    report(log)
   }
 
   private func refresh() async throws {
@@ -263,7 +275,7 @@ final class ApplePayShippingSession: LogReporter {
     let start = Date()
     do {
       let result = try await withCallbackTimeout(timeoutError: timeoutError, operation)
-      report(ExpressCheckoutShippingLog(
+      record(ExpressCheckoutShippingLog(
         event: event,
         trigger: trigger,
         outcome: .answered,
@@ -274,7 +286,7 @@ final class ApplePayShippingSession: LogReporter {
     } catch {
       guard !Task.isCancelled, !(error is CancellationError) else { throw error }
       let timedOut = (error as? PrimerError)?.diagnosticsId == timeoutError.diagnosticsId
-      report(ExpressCheckoutShippingLog(
+      record(ExpressCheckoutShippingLog(
         event: event,
         trigger: trigger,
         outcome: timedOut ? .timeout : .failed,

@@ -135,9 +135,13 @@ final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
   }
 
   private func performPayment() async {
-    // The payment log goes out synchronously before this returns, so it still carries the attempt's shipping flag.
+    var shippingSession: ApplePayShippingSession?
     ExpressCheckoutShippingLog.clearContext()
-    defer { ExpressCheckoutShippingLog.clearContext() }
+    // Runs after the payment log, which is sent synchronously and so still carries the attempt's flag.
+    defer {
+      shippingSession?.finish()
+      ExpressCheckoutShippingLog.clearContext()
+    }
     structuredState.isLoading = true
 
     do {
@@ -152,10 +156,11 @@ final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
       )
 
       // Built per attempt: the option list, the commit and the gate must not survive a retry.
-      let shippingSession = makeShippingSession()
-      let applePayRequest = try applePayRequestFactory(shippingSession.mode)
+      let session = makeShippingSession()
+      shippingSession = session
+      let applePayRequest = try applePayRequestFactory(session.mode)
 
-      let coordinator = authorizationCoordinatorFactory(shippingSession)
+      let coordinator = authorizationCoordinatorFactory(session)
       authorizationCoordinator = coordinator
 
       let payment = try await coordinator.authorize(
