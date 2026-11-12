@@ -20,14 +20,21 @@ final class ProcessQRCodePaymentInteractorImpl: ProcessQRCodePaymentInteractor, 
 
   private let repository: QRCodeRepository
   private let paymentMethodType: String
+  private let clientSessionActionsFactory: () -> ClientSessionActionsProtocol
 
-  init(repository: QRCodeRepository, paymentMethodType: String) {
+  init(
+    repository: QRCodeRepository,
+    paymentMethodType: String,
+    clientSessionActionsFactory: @escaping () -> ClientSessionActionsProtocol = { ClientSessionActionsModule() }
+  ) {
     self.repository = repository
     self.paymentMethodType = paymentMethodType
+    self.clientSessionActionsFactory = clientSessionActionsFactory
   }
 
   func startPayment() async throws -> QRCodePaymentData {
     do {
+      try await clientSessionActionsFactory().selectPaymentMethodIfNeeded(paymentMethodType, cardNetwork: nil)
       return try await repository.startPayment(paymentMethodType: paymentMethodType)
     } catch {
       logger.error(message: "QR code start payment failed: \(error)", error: error)

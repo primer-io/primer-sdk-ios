@@ -78,10 +78,6 @@ final class DefaultFormRedirectScope: PrimerFormRedirectScope, ObservableObject,
     guard !hasStarted else { return }
     hasStarted = true
     logger.debug(message: "Form redirect scope started for \(paymentMethodType)")
-
-    Task {
-      try? await ClientSessionActionsModule().selectPaymentMethodIfNeeded(paymentMethodType, cardNetwork: nil)
-    }
   }
 
   func prepareForReentry() {
