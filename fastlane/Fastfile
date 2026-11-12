@@ -263,12 +263,15 @@ platform :ios do
 
   end
 
-  desc 'Publish all Primer pods to CocoaPods trunk in dependency-ordered waves'
+  desc 'Publish all Primer pods to the Primer spec repo (and to CocoaPods trunk until it is read-only) in dependency-ordered waves'
   lane :release_pods do
     version = get_sdk_version
     UI.message("Releasing Primer pods @ #{version}")
+    add_spec_repo
     pod_release_waves.each do |wave|
       UI.message("── wave: #{wave.join(', ')}")
+      wave.each { |pod| push_to_spec_repo(pod, version) }
+      next unless trunk_open?
       wave.each { |pod| push_pod(pod, version) }
       wave.each { |pod| wait_for_cdn(pod, version) }
     end
@@ -402,6 +405,40 @@ platform :ios do
 
   def podspec(pod)
     File.expand_path("../#{pod}.podspec", __dir__)
+  end
+
+  def spec_repo_name
+    'primer-sdk-ios-specs'
+  end
+
+  def spec_repo_dir
+    File.expand_path("~/.cocoapods/repos/#{spec_repo_name}")
+  end
+
+  # CocoaPods trunk accepts no new pods or versions from 2 Dec 2026.
+  def trunk_open?
+    require 'date'
+    Date.today < Date.new(2026, 12, 2)
+  end
+
+  # The token goes into a git header, so it never shows up in a clone URL or the job log.
+  def add_spec_repo
+    return if Dir.exist?(spec_repo_dir)
+    require 'base64'
+    token = ENV['SPEC_REPO_TOKEN'].to_s
+    UI.user_error!('SPEC_REPO_TOKEN is not set') if token.empty?
+    auth = Base64.strict_encode64("x-access-token:#{token}")
+    system('git', 'config', '--global', "http.https://github.com/primer-io/#{spec_repo_name}.git.extraheader",
+           "AUTHORIZATION: basic #{auth}", exception: true)
+    system('pod', 'repo', 'add', spec_repo_name, "https://github.com/primer-io/#{spec_repo_name}.git", exception: true)
+  end
+
+  def push_to_spec_repo(pod, version)
+    return UI.message("⏭  #{pod} #{version} already in #{spec_repo_name}") if Dir.exist?(File.join(spec_repo_dir, pod, version))
+    UI.message("⬆️  pushing #{pod} #{version} to #{spec_repo_name}")
+    system('pod', 'repo', 'push', spec_repo_name, podspec(pod), '--allow-root', '--allow-warnings', '--use-json',
+           "--sources=#{spec_repo_name},https://cdn.cocoapods.org/", exception: true)
+    notify_slack("✅ #{pod} #{version} pushed to #{spec_repo_name}")
   end
 
   # Trunk can report an error on push even when the upload succeeded — so we verify here.
