@@ -86,12 +86,12 @@ final class SDKSessionHelper {
         try await completion(tearDown)
     }
 
-    static func updateAllowedCardNetworks(cardNetworks: [CardNetwork]) {
+    static func updateAllowedCardNetworks(cardNetworks: [CardNetwork], paymentMethodOptions: [[String: Any]]? = nil) {
         PrimerAPIConfigurationModule.apiConfiguration?.clientSession = .init(
             clientSessionId: "",
             paymentMethod: .init(
                 vaultOnSuccess: false,
-                options: nil,
+                options: paymentMethodOptions,
                 orderedAllowedCardNetworks: cardNetworks.map(\.rawValue),
                 descriptor: nil
             ),

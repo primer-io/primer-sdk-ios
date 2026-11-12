@@ -16,6 +16,11 @@ import Foundation
 
 final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProtocol {
 
+    private enum Constants {
+        static let lookupWaitLimit: TimeInterval = 2
+        static let lookupPollInterval: UInt64 = 50_000_000
+    }
+
     var rawData: PrimerRawData? {
         didSet {
             if let rawCardData = rawData as? PrimerCardData {
@@ -218,24 +223,34 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
         notifyDelegateOfValidationResult(isValid: true, errors: nil)
     }
 
-    func effectiveNetwork(for rawData: PrimerCardData) -> CardNetwork {
-        effectiveNetwork(for: rawData, cardNetworksMetadata: cardValidationService?.cachedMetadata(forCardNumber: rawData.cardNumber))
+    func effectiveNetwork(for rawData: PrimerCardData) async -> CardNetwork {
+        await effectiveNetwork(for: rawData, cardNetworksMetadata: remoteLookupMetadata(forCardNumber: rawData.cardNumber))
     }
 
     func effectiveNetwork(for rawData: PrimerCardData, cardNetworksMetadata: PrimerCardNumberEntryMetadata?) -> CardNetwork {
-        var cardNetwork = rawData.cardNetwork ?? CardNetwork(cardNumber: rawData.cardNumber)
+        let firstDigitsNetwork = CardNetwork(cardNumber: rawData.cardNumber)
+        let detected = cardNetworksMetadata?.detectedCardNetworks
+        let cardNetworks = cardNetworksMetadata?.source == .remote ? detected?.items.map(\.network) ?? [] : [firstDigitsNetwork]
 
-        if rawData.cardNetwork == nil, let metadata = cardNetworksMetadata {
-            let detected = metadata.detectedCardNetworks
-            let didDetectNetwork = !detected.items.isEmpty && detected.items.map(\.network) != [.unknown]
-            if didDetectNetwork {
-                cardNetwork = detected.preferred?.network
-                    ?? detected.items.first?.network
-                    ?? cardNetwork
-            }
+        if let pickedNetwork = rawData.cardNetwork, cardNetworks.contains(pickedNetwork) {
+            return pickedNetwork
         }
 
-        return cardNetwork
+        guard let detected, !detected.items.isEmpty, detected.items.map(\.network) != [.unknown] else {
+            return firstDigitsNetwork
+        }
+        return detected.preferred?.network ?? detected.items.first?.network ?? firstDigitsNetwork
+    }
+
+    private func remoteLookupMetadata(forCardNumber cardNumber: String) async -> PrimerCardNumberEntryMetadata? {
+        guard let cardValidationService else { return nil }
+        let deadline = Date().addingTimeInterval(Constants.lookupWaitLimit)
+        var metadata = cardValidationService.cachedMetadata(forCardNumber: cardNumber)
+        while metadata?.source != .remote, Date() < deadline, !Task.isCancelled {
+            try? await Task.sleep(nanoseconds: Constants.lookupPollInterval)
+            metadata = cardValidationService.cachedMetadata(forCardNumber: cardNumber)
+        }
+        return metadata
     }
 
     private func notifyDelegateOfValidationResult(isValid: Bool, errors: [Error]?) {
