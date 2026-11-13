@@ -78,19 +78,14 @@ private extension LayoutView {
         }
         .environment(\.flexAxis, .row)
         .environment(\.flexCrossAxisStretch, props.alignItems == .stretch)
-        .padding(props.padding?.string.map(resolveSpacing) ?? .zero)
-        .background(props.backgroundColor.map(resolveColor))
-        .cornerRadius(props.borderRadius ?? 0)
-        .overlay(
-            RoundedRectangle(cornerRadius: props.borderRadius ?? 0)
-                .strokeBorder(props.borderColor.map(resolveColor) ?? .clear, lineWidth: props.borderWidth ?? 0)
-        )
+        .decorated(by: props)
     }
     
     func makeRowStack(children: [UIDefinition], props: RowProps) -> some View {
-        HStack(spacing: props.spacing?.string.map(resolveSpacing)) {
+        HStack(spacing: props.spacing.flatMap(Spacing.value)) {
             makeStackContent(children: children, props: props)
         }
+        .frame(minHeight: props.minHeight?(resolveSize))
         .frame(
             maxWidth: props.width(),
             maxHeight: props.height(),
@@ -104,19 +99,14 @@ private extension LayoutView {
         }
         .environment(\.flexCrossAxisStretch, props.alignItems == .stretch)
         .environment(\.flexAxis, .column)
-        .padding(props.padding?.string.map(resolveSpacing) ?? .zero)
-        .background(props.backgroundColor.map(resolveColor))
-        .cornerRadius(props.borderRadius ?? 0)
-        .overlay(
-            RoundedRectangle(cornerRadius: props.borderRadius ?? 0)
-                .strokeBorder(props.borderColor.map(resolveColor) ?? .clear, lineWidth: props.borderWidth ?? 0)
-        )
+        .decorated(by: props)
     }
     
     func makeColumnStack(children: [UIDefinition], props: ColumnProps) -> some View {
-        VStack(spacing: props.spacing?.string.map(resolveSpacing)) {
+        VStack(spacing: props.spacing.flatMap(Spacing.value)) {
             makeStackContent(children: children, props: props)
         }
+        .frame(minHeight: props.minHeight?(resolveSize))
         .frame(
             maxWidth: props.width(),
             maxHeight: props.height(),
