@@ -29,6 +29,7 @@ enum Component: Decodable, Hashable {
         case type
         case props
         case content
+        case children
         case screens
     }
 	
@@ -85,6 +86,11 @@ enum Component: Decodable, Hashable {
 
 private extension KeyedDecodingContainer<Component.CodingKeys> {
     func decodeProps<T>(_ type: T.Type) throws -> T where T: Decodable { try decode(T.self, forKey: .props) }
-    func decodeContent() throws -> Content { try decode(Content.self, forKey: .content) }
+    func decodeContent() throws -> Content {
+        if let children = try decodeIfPresent([UIDefinition].self, forKey: .children) {
+            return Content(children: children)
+        }
+        return try decodeIfPresent(Content.self, forKey: .content) ?? Content(children: [])
+    }
     func decodeScreens() throws -> [UIDefinition] { try decode([UIDefinition].self, forKey: .screens) }
 }
