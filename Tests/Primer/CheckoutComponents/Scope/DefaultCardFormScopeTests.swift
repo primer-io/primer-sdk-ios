@@ -509,6 +509,28 @@ final class DefaultCardFormScopeTests: XCTestCase {
         }
     }
 
+    func test_onBack_lookupReturnsSentNetwork_sendsItAgain() async throws {
+        let container = try await createTestContainer()
+        try await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let mock = MockCardNetworkDetectionInteractor()
+            let scope = createCardFormScope(checkoutScope: checkoutScope, cardNetworkDetectionInteractor: mock)
+
+            mock.emitNetworks([.cartesBancaires, .visa])
+            try await withTimeout(2.0) {
+                while mock.selectNetworkCallCount < 1 { await Task.yield() }
+            }
+
+            scope.onBack()
+            mock.emitNetworks([])
+            mock.emitNetworks([.cartesBancaires, .visa])
+            try await withTimeout(2.0) {
+                while mock.selectNetworkCallCount < 2 { await Task.yield() }
+            }
+            XCTAssertEqual(mock.lastSelectedNetwork, .cartesBancaires)
+        }
+    }
+
     func test_lookupDuringPayment_showsNetworkAndSendsNothing() async throws {
         let container = try await createTestContainer()
         try await DIContainer.withContainer(container) {
