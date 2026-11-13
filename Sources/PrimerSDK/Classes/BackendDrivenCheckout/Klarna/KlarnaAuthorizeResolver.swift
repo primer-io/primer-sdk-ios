@@ -17,7 +17,7 @@ final class KlarnaAuthorizeResolver: NSObject, StepResolver, LogReporter {
     @MainActor
     func resolve(_ data: CodableValue) async throws -> StepResolutionResult {
         let params = try? data.casted(to: Params.self)
-        guard let provider = KlarnaProviderStore.shared.provider(for: params?.category) else {
+        guard let provider = KlarnaProviderStore.shared.provider(for: params?.instanceId ?? params?.category) else {
             return StepResolutionResult(outcome: .error)
         }
         provider.authorizationDelegate = self
@@ -58,13 +58,14 @@ extension KlarnaAuthorizeResolver: PrimerKlarnaProviderErrorDelegate {
         resume(.success, data: .object([
             "approved": .bool(false),
             "show_form": .bool(true),
-            "error": .object(["name": .string(error.errorId), "message": .string(error.localizedDescription)])
+            "error": .object(["code": .string(error.errorId), "message": .string(error.localizedDescription)])
         ]))
     }
 }
 
 private extension KlarnaAuthorizeResolver {
     struct Params: Decodable {
+        let instanceId: String?
         let category: String?
     }
 }
