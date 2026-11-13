@@ -58,7 +58,7 @@ public extension KeyedEncodingContainer {
         forKey key: KeyedEncodingContainer<K>.Key,
         mapNilToUndefined: Bool = false
     ) throws {
-        guard let dictionary = dictionary else {
+        guard let dictionary else {
             if !mapNilToUndefined {
                 try encodeNil(forKey: key)
             }
@@ -107,7 +107,7 @@ public extension KeyedEncodingContainer {
 public extension KeyedDecodingContainer {
 
     func decode(_ type: Dictionary<String, Any>.Type, forKey key: K) throws -> [String: Any] {
-        let container = try self.nestedContainer(keyedBy: JSONCodingKeys.self, forKey: key)
+        let container = try nestedContainer(keyedBy: JSONCodingKeys.self, forKey: key)
         return try container.decode()
     }
 
@@ -122,7 +122,7 @@ public extension KeyedDecodingContainer {
     }
 
     func decode(forKey key: K) throws -> [Any] {
-        var container = try self.nestedUnkeyedContainer(forKey: key)
+        var container = try nestedUnkeyedContainer(forKey: key)
         return try container.decode()
     }
 
@@ -174,7 +174,7 @@ extension UnkeyedDecodingContainer {
     }
 
     mutating func decode(_ type: Dictionary<String, Any>.Type) throws -> [String: Any] {
-        let nestedContainer = try self.nestedContainer(keyedBy: JSONCodingKeys.self)
+        let nestedContainer = try nestedContainer(keyedBy: JSONCodingKeys.self)
         return try nestedContainer.decode()
     }
 }

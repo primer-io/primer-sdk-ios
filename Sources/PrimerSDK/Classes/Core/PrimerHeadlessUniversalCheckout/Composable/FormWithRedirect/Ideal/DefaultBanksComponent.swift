@@ -5,8 +5,8 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
-@_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
 
 final class DefaultBanksComponent: BanksComponent {
 
@@ -92,7 +92,7 @@ final class DefaultBanksComponent: BanksComponent {
         switch nextDataStep {
         case .loading: break
         case .banksRetrieved:
-            guard let bankId = self.bankId else { return }
+            guard let bankId else { return }
             let redirectComponent = onFinished()
             redirectComponent.start()
 

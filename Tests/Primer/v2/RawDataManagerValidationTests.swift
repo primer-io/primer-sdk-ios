@@ -5,6 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import PrimerFoundation
+@_spi(PrimerInternal) @testable import PrimerNetworking
 @testable import PrimerSDK
 import XCTest
 
@@ -611,9 +612,9 @@ extension RawDataManagerValidationTests {
     private func startHeadlessUniversalCheckout(clientToken: String) async throws -> [PrimerHeadlessUniversalCheckout.PaymentMethod] {
         try await withCheckedThrowingContinuation { continuation in
             PrimerHeadlessUniversalCheckout.current.start(withClientToken: clientToken) { paymentMethods, error in
-                if let error = error {
+                if let error {
                     continuation.resume(throwing: error)
-                } else if let paymentMethods = paymentMethods {
+                } else if let paymentMethods {
                     continuation.resume(returning: paymentMethods)
                 }
             }

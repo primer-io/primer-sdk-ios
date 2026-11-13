@@ -5,10 +5,10 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+@_spi(PrimerInternal) @testable import PrimerCore
 @_spi(PrimerInternal) import PrimerFoundation
 @testable import PrimerSDK
 import XCTest
-@_spi(PrimerInternal) @testable import PrimerCore
 
 final class ACHTokenizationServiceTests: XCTestCase {
 
@@ -186,10 +186,8 @@ extension ACHTokenizationServiceTests {
 
         DependencyContainer.register(settings as PrimerSettingsProtocol)
 
-        var clientSession: ClientSession.APIResponse?
-
-        if isClientSessionEmpty {
-            clientSession = ACHMocks.getEmptyClientSession(
+        var clientSession: ClientSession.APIResponse? = if isClientSessionEmpty {
+            ACHMocks.getEmptyClientSession(
                 emptyMerchantAmmount: emptyMerchantAmmount,
                 emptyTotalOrderAmmount: emptyTotalOrderAmmount,
                 emptyLineItems: emptyLineItems,
@@ -197,7 +195,7 @@ extension ACHTokenizationServiceTests {
                 emptyCurrencyCode: emptyCurrencyCode
             )
         } else {
-            clientSession = ACHMocks.getClientSession()
+            ACHMocks.getClientSession()
         }
 
         PrimerInternal.shared.sdkIntegrationType = .headless

@@ -5,8 +5,8 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 @testable import PrimerSDK
-import XCTest
 @_spi(PrimerInternal) import PrimerUI
+import XCTest
 
 final class PrimerFormViewTests: XCTestCase {
 
@@ -34,7 +34,7 @@ extension UILabel {
     convenience init(text: String) {
         self.init(frame: .zero)
         self.text = text
-        self.layoutIfNeeded()
+        layoutIfNeeded()
     }
 
 }

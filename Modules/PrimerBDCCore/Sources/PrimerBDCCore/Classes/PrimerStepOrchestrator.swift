@@ -14,15 +14,16 @@ protocol StepOrchestrating: AnyObject {
     var onURLOpen: (() -> Void)? { get set }
     func start(rawSchema: String, initialState: CodableValue) async throws
     func applyEvent(_ value: CodableValue) async throws
+    func waitToPoll(milliseconds: Int) async throws
 }
 
 @MainActor
 final class PrimerStepOrchestrator: StepOrchestrating {
-    
+
     var onURLOpen: (() -> Void)? {
         didSet { harness.onURLOpen = onURLOpen }
     }
-    
+
     private let logger = Logger()
     private let engine: any BDCEngineProtocol
     private let context: SDKContext
@@ -30,6 +31,7 @@ final class PrimerStepOrchestrator: StepOrchestrating {
     private var rawSchema: String!
     private let harness = SFSafariViewControllerHarness()
     private var state: CodableState = [:]
+    private let pollWaker = SetupPollWaker()
 
     init(
         engine: any BDCEngineProtocol,
@@ -43,7 +45,7 @@ final class PrimerStepOrchestrator: StepOrchestrating {
 
     func start(rawSchema: String, initialState: CodableValue) async throws {
         self.rawSchema = rawSchema
-        await registry.register(harness, for: .urlOpen)
+        registry.register(harness, for: .urlOpen)
         do {
             let result = try await engine.start(schema: rawSchema, context: context, state: initialState)
             try await decodeResult(result, rawSchema: rawSchema)
@@ -66,29 +68,39 @@ final class PrimerStepOrchestrator: StepOrchestrating {
         state = response.newState
         try await handleResponse(response, rawSchema: rawSchema)
     }
-    
+
     private func handleResponse(_ response: StateProcessorResponse, rawSchema: String) async throws {
-        if let error = response.error {
-            throw error
-        } else if let action = response.action {
+        if let error = response.error { throw error }
+        
+        if let layer = response.renderStack?.last {
+            let result = try await registry.resolve("ui.render", data: layer.processedUI)
+            if result.outcome != .success { logger.error("Error: \(layer.stepId): \(result.outcome.rawValue)") }
+        }
+        
+        if let action = response.action {
             try await handleAction(action, rawSchema: rawSchema)
         } else if let outcome = response.terminal?.outcome {
             try handleOutcome(outcome)
-        } else {
+        } else if response.renderStack?.isEmpty != false {
             logger.info("Step settled without an action or terminal — waiting on the instruction loop.")
         }
     }
-    
+
     func applyEvent(_ value: CodableValue) async throws {
         let result = try await engine.applyEvent(value, context: context, schema: rawSchema, state: state)
         try await decodeResult(result, rawSchema: rawSchema)
     }
-    
+
+    func waitToPoll(milliseconds: Int) async throws {
+        try await pollWaker.wait(milliseconds: milliseconds)
+    }
+
     private func handleAction(_ action: WorkflowStep, rawSchema: String) async throws {
         try await sleep(forMilliseconds: action.delayMs)
-        let result = try await registry.resolve(action.type, params: action.params)
-        try await applyResult(result, actionId: action.id, rawSchema: rawSchema)
-    }   
+        let resolution = try await registry.resolve(action.type, data: action.params)
+        if action.type == StepCapability.httpRequest.rawValue { pollWaker.wake() }
+        try await applyResult(resolution, actionId: action.id, rawSchema: rawSchema)
+    }
 
     private func sleep(forMilliseconds delayMs: Double?) async throws {
         guard let delayMs, delayMs.isFinite, delayMs > 0 else { return }
@@ -96,14 +108,17 @@ final class PrimerStepOrchestrator: StepOrchestrating {
         guard nanoseconds < Double(UInt64.max) else { return }
         try await Task.sleep(nanoseconds: UInt64(nanoseconds))
     }
-    
+
     private func handleOutcome(_ outcome: TerminalOutcome) throws {
-        switch outcome {
-        case .cancelled: throw BackendDrivenCheckoutCancellation()
-        case .error: throw PrimerStepOrchestratorError.checkoutTerminalError
-        case .unsupported: throw PrimerStepOrchestratorError.receivedUnexpectedTerminalOutcome(outcome: outcome)
-        case .success: break // Allow polling to update us
+        let error: Error? = switch outcome {
+        case .cancelled: BackendDrivenCheckoutCancellation()
+        case .error: PrimerStepOrchestratorError.checkoutTerminalError
+        case .unsupported: PrimerStepOrchestratorError.receivedUnexpectedTerminalOutcome(outcome: outcome)
+        case .success: nil
         }
+        guard let error else { return pollWaker.wake() }
+        pollWaker.fail(error)
+        throw error
     }
 
     private func applyResult(_ resolution: StepResolutionResult, actionId: String, rawSchema: String) async throws {

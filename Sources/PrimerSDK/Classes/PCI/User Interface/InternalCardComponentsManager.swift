@@ -9,11 +9,11 @@
 // swiftlint:disable type_body_length
 // swiftlint:disable large_tuple
 
-@_spi(PrimerInternal) import PrimerFoundation
-import UIKit
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerNetworking
 @_spi(PrimerInternal) import PrimerUI
+import UIKit
 
 @objc
 protocol InternalCardComponentsManagerDelegate {
@@ -117,15 +117,15 @@ final class InternalCardComponentsManager: NSObject, InternalCardComponentsManag
         self.cardnumberField = cardnumberField
         self.expiryDateField = expiryDateField
         self.cvvField = cvvField
-        self.cardholderField = cardholderNameField
+        cardholderField = cardholderNameField
         self.billingAddressFieldViews = billingAddressFieldViews
-        if let paymentMethodType = paymentMethodType,
+        if let paymentMethodType,
            let primerPaymentMethodType = PrimerPaymentMethodType(rawValue: paymentMethodType) {
             self.primerPaymentMethodType = primerPaymentMethodType
             self.paymentMethodType = primerPaymentMethodType.rawValue
         } else {
-            self.primerPaymentMethodType = .paymentCard
-            self.paymentMethodType = self.primerPaymentMethodType.rawValue
+            primerPaymentMethodType = .paymentCard
+            self.paymentMethodType = primerPaymentMethodType.rawValue
         }
         self.isRequiringCVVInput = isRequiringCVVInput
 
@@ -145,7 +145,7 @@ final class InternalCardComponentsManager: NSObject, InternalCardComponentsManag
     private func fetchClientToken() async throws -> DecodedJWTToken {
         try await withCheckedThrowingContinuation { continuation in
             delegate.cardComponentsManager?(self, clientTokenCallback: { clientToken, error in
-                guard error == nil, let clientToken = clientToken else {
+                guard error == nil, let clientToken else {
                     return continuation.resume(throwing: error!)
                 }
 
@@ -234,14 +234,14 @@ final class InternalCardComponentsManager: NSObject, InternalCardComponentsManag
     /// current year = "2022"
     /// first two digits = "20"
     private var cardExpirationYear: String? {
-        guard let expiryYear = self.expiryDateField.expiryYear else { return nil }
+        guard let expiryYear = expiryDateField.expiryYear else { return nil }
         return expiryYear.normalizedFourDigitYear()
     }
 
     private var tokenizationPaymentInstrument: TokenizationRequestBodyPaymentInstrument? {
 
-        guard let cardExpirationYear = cardExpirationYear,
-              let expiryMonth = self.expiryDateField.expiryMonth else {
+        guard let cardExpirationYear,
+              let expiryMonth = expiryDateField.expiryMonth else {
             return nil
         }
 
@@ -334,6 +334,10 @@ final class InternalCardComponentsManager: NSObject, InternalCardComponentsManag
 
                 do {
                     let paymentMethodTokenData = try await tokenizationService.tokenize(requestBody: requestBody)
+                    await cardnumberField.textField.wipe()
+                    await expiryDateField.textField.wipe()
+                    await cvvField.textField.wipe()
+                    await cardholderField?.textField.wipe()
                     self.delegate.cardComponentsManager(self, onTokenizeSuccess: paymentMethodTokenData)
                 } catch {
                     throw handled(primerError: error.asPrimerError)

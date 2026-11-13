@@ -4,8 +4,8 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import UIKit
 @_spi(PrimerInternal) import PrimerUI
+import UIKit
 
 /**
  Struct that customizes Primer's drop-in User Interface
@@ -65,4 +65,14 @@ public final class PrimerTheme {
     }
 }
 
+// MARK: - Equatable Conformance
+
+extension PrimerTheme: Equatable {
+    /// Compare themes for equality
+    /// - Note: Uses identity comparison since PrimerTheme is a reference type.
+    ///         Two themes are considered equal if they reference the same instance.
+    public static func == (lhs: PrimerTheme, rhs: PrimerTheme) -> Bool {
+        lhs === rhs
+    }
+}
 @_spi(PrimerInternal) extension PrimerTheme: PrimerThemeProtocol {}

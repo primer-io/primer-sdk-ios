@@ -4,9 +4,9 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-@_spi(PrimerInternal) import PrimerFoundation
-@_spi(PrimerInternal) @testable import PrimerSDK
+@_spi(PrimerInternal) @testable import PrimerFoundation
 @_spi(PrimerInternal) @testable import PrimerNetworking
+@_spi(PrimerInternal) @testable import PrimerSDK
 import XCTest
 
 final class NetworkRequestFactoryTests: XCTestCase {
@@ -26,7 +26,7 @@ final class NetworkRequestFactoryTests: XCTestCase {
         if isPost {
             headers["Content-Type"] = "application/json"
         }
-        if let jwt = jwt {
+        if let jwt {
             headers["Primer-Client-Token"] = jwt
         }
         return headers

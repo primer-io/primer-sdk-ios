@@ -5,8 +5,8 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import PrimerFoundation
+@_spi(PrimerInternal) @testable import PrimerNetworking
 @testable import PrimerSDK
-@_spi(PrimerInternal) import PrimerNetworking
 import XCTest
 
 final class MockCreateResumeAPIClient: PrimerAPIClientCreateResumePaymentProtocol {

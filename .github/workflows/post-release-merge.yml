@@ -4,12 +4,17 @@ on:
   pull_request:
     types: [ closed ]
 
+permissions:
+  contents: read
+
 jobs:
   release_merge:
     if: github.head_ref == 'release/next' && github.event.pull_request.merged == true
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
-      - name: Git - Checkout
+      - name: Git - Checkout # zizmor: ignore[artipacked] persisted RELEASE_ACCESS_TOKEN is required to push the release tag
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.event.pull_request.head.sha }}
@@ -19,15 +24,15 @@ jobs:
         run: pip install --user -U Commitizen
       - name: Record release version
         run: |
-          echo "RELEASE_VERSION=$(cz version --project)" >> $GITHUB_ENV
+          echo "RELEASE_VERSION=$(cz version --project)" >> "$GITHUB_ENV"
       - name: Tag release
         run: |
-          git tag $RELEASE_VERSION
-          git push origin $RELEASE_VERSION
+          git tag "$RELEASE_VERSION"
+          git push origin "$RELEASE_VERSION"
       - name: Extract changelog for current release
         run: awk '/^## /{if(n++)exit}1' CHANGELOG.md > release.md
       - name: Create release
-        uses: ncipollo/release-action@339a81892b84b4eeb0f6e744e4574d79d0d9b8dd #v1.21.0
+        uses: ncipollo/release-action@339a81892b84b4eeb0f6e744e4574d79d0d9b8dd # zizmor: ignore[superfluous-actions] pinned release-action retained intentionally over gh release
         with:
           name: "Release ${{ env.RELEASE_VERSION }}"
           tag: ${{ env.RELEASE_VERSION }}
@@ -37,6 +42,9 @@ jobs:
     runs-on: macos-26
     timeout-minutes: 20
     name: "Build and upload app to Appetize"
+    permissions:
+      contents: read
+      actions: write
     steps:
       - name: Cancel previous jobs
         uses: styfle/cancel-workflow-action@d07a454dad7609a92316b57b23c9ccfd4f59af66 # v0.13.1
@@ -46,6 +54,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.ref }}
+          persist-credentials: false
       - name: Upload preview to Appetize
         id: appetize-upload
         uses: ./.github/actions/appetize-build
@@ -66,4 +75,4 @@ jobs:
           slack-channel: ${{ secrets.SLACK_MOBILE_SDK_CHANNEL }}
           slack-reporter-token: ${{ secrets.SLACK_REPORTER_BOT_TOKEN }}
           github-run-id: ${{ github.run_id }}
-
+          stripe-publishable-key: ${{ secrets.STRIPE_PUBLISHABLE_KEY }}

@@ -5,8 +5,8 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
-@_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerNetworking
 
 final class DefaultNetworkService: NetworkServiceProtocol, LogReporter {
@@ -29,9 +29,9 @@ final class DefaultNetworkService: NetworkServiceProtocol, LogReporter {
         withUrlSession urlSession: URLSession = .shared,
         analyticsService: Analytics.Service = .shared
     ) {
-        self.requestFactory = DefaultNetworkRequestFactory()
-        self.requestDispatcher = DefaultRequestDispatcher(urlSession: urlSession)
-        self.reportingService = DefaultNetworkReportingService(analyticsService: analyticsService)
+        requestFactory = DefaultNetworkRequestFactory()
+        requestDispatcher = DefaultRequestDispatcher(urlSession: urlSession)
+        reportingService = DefaultNetworkReportingService(analyticsService: analyticsService)
     }
 
     @discardableResult
@@ -120,14 +120,14 @@ final class DefaultNetworkService: NetworkServiceProtocol, LogReporter {
 
     private func createDispatchFunction(retryConfig: RetryConfig?) -> (URLRequest, @escaping DispatcherCompletion) -> PrimerCancellable? {
         { request, completion in
-            if let retryConfig = retryConfig, retryConfig.enabled {
-                return (self.requestDispatcher as? DefaultRequestDispatcher)?.dispatchWithRetry(
+            if let retryConfig, retryConfig.enabled {
+                (self.requestDispatcher as? DefaultRequestDispatcher)?.dispatchWithRetry(
                     request: request,
                     retryConfig: retryConfig,
                     completion: completion
                 )
             } else {
-                return self.requestDispatcher.dispatch(request: request, completion: completion)
+                self.requestDispatcher.dispatch(request: request, completion: completion)
             }
         }
     }
@@ -177,7 +177,7 @@ final class DefaultNetworkService: NetworkServiceProtocol, LogReporter {
             return completion(.failure(InternalError.underlyingErrors(errors: [error])))
         }
 
-        self.logger.debug(message: response.metadata.description)
+        logger.debug(message: response.metadata.description)
         guard let data = response.data else {
             return completion(.failure(InternalError.noData()))
         }
@@ -207,7 +207,7 @@ final class DefaultNetworkService: NetworkServiceProtocol, LogReporter {
             return completion(.failure(InternalError.underlyingErrors(errors: [error])), nil)
         }
 
-        self.logger.debug(message: response.metadata.description)
+        logger.debug(message: response.metadata.description)
         guard let data = response.data else { return completion(.failure(InternalError.noData()), nil) }
 
         do {

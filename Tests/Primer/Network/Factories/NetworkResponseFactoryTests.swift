@@ -4,8 +4,8 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-@_spi(PrimerInternal) import PrimerFoundation
-@_spi(PrimerInternal) import PrimerNetworking
+@_spi(PrimerInternal) @testable import PrimerFoundation
+@_spi(PrimerInternal) @testable import PrimerNetworking
 @testable import PrimerSDK
 import XCTest
 
@@ -121,6 +121,27 @@ final class NetworkResponseFactoryTests: XCTestCase {
         }
     }
 
+    func testResponseCreation_optedInStatus_DecodesTheBody() throws {
+        let jsonNetworkResponseFactory = JSONNetworkResponseFactory()
+        let metadata = ResponseMetadataModel(responseUrl: "a_url", statusCode: 410, headers: nil)
+        let body = Data(#"{"reason": "FAILED"}"#.utf8)
+        let model: GoneBody = try jsonNetworkResponseFactory.model(for: body, forMetadata: metadata)
+        XCTAssertEqual(model.reason, "FAILED")
+    }
+
+    func testResponseCreation_optedInType_StillFailsOnOtherStatuses() {
+        let jsonNetworkResponseFactory = JSONNetworkResponseFactory()
+        let metadata = ResponseMetadataModel(responseUrl: "a_url", statusCode: 400, headers: nil)
+        do {
+            let _: GoneBody = try jsonNetworkResponseFactory.model(for: Data(#"{"reason": "FAILED"}"#.utf8), forMetadata: metadata)
+            XCTFail()
+        } catch let error as InternalError {
+            XCTAssertEqual(error.errorId, "server-error")
+        } catch {
+            XCTFail()
+        }
+    }
+
     func testResponseCreation_unknownStatus_Failure() throws {
         let jsonNetworkResponseFactory = JSONNetworkResponseFactory()
         let metadata = ResponseMetadataModel(responseUrl: "a_url", statusCode: 0, headers: nil)
@@ -133,4 +154,9 @@ final class NetworkResponseFactoryTests: XCTestCase {
             XCTFail() // should be failed-to-decode only
         }
     }
+}
+
+private struct GoneBody: Decodable, NonSuccessDecodable {
+    let reason: String
+    static let decodableStatusCodes: Set<Int> = [410]
 }

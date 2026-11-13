@@ -47,7 +47,7 @@ extension Response.Body.Adyen {
         public let name: String
         public let iconUrlStr: String?
         public lazy var iconUrl: URL? = {
-            guard let iconUrlStr = iconUrlStr else { return nil }
+            guard let iconUrlStr else { return nil }
             return URL(string: iconUrlStr)
         }()
         public let disabled: Bool

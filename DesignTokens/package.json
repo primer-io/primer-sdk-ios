@@ -1,0 +1,13 @@
+{  
+  "name": "@primer-io/design-tokens-ios",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "build": "yarn run build-light",
+    "build-light": "style-dictionary build --config ./config-light.js"
+  },
+  "devDependencies": {
+    "style-dictionary": "^4.3.3"
+  }
+}

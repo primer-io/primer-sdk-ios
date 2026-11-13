@@ -6,9 +6,9 @@
 
 // swiftlint:disable function_body_length
 
-import UIKit
 @_spi(PrimerInternal) import PrimerCore
 @_spi(PrimerInternal) import PrimerUI
+import UIKit
 
 final class VaultedPaymentInstrumentCell: UITableViewCell {
 
@@ -178,7 +178,7 @@ final class VaultedPaymentInstrumentsViewController: PrimerViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.title = Strings.VaultPaymentMethodViewContent.savedPaymentMethodsTitle
+        title = Strings.VaultPaymentMethodViewContent.savedPaymentMethodsTitle
         postUIEvent(.view, type: .view, in: .paymentMethodsList)
 
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()

@@ -9,11 +9,11 @@
 // swiftlint:disable function_body_length
 
 import AuthenticationServices
+@_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerNetworking
 import SafariServices
 import UIKit
-@_spi(PrimerInternal) import PrimerCore
-@_spi(PrimerInternal) import PrimerNetworking
-@_spi(PrimerInternal) import PrimerFoundation
 
 final class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
 
@@ -124,7 +124,7 @@ final class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
             guard let url = URL(string: res.approvalUrl) else {
                 throw handled(primerError: .invalidValue(key: "res.approvalUrl", value: res.approvalUrl))
             }
-            self.orderId = res.orderId
+            orderId = res.orderId
             return url
         case .vault:
             let urlStr = try await payPalService.startBillingAgreementSession()

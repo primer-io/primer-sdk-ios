@@ -4,14 +4,14 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+@_spi(PrimerInternal) @testable import PrimerFoundation
 @testable import PrimerSDK
 import XCTest
-@_spi(PrimerInternal) import PrimerFoundation
 
 class DebouncerTests: XCTestCase {
 
     func testDebounce() {
-        let expectation = self.expectation(description: "Debouncer should debounce multiple calls and only execute the last one")
+        let expectation = expectation(description: "Debouncer should debounce multiple calls and only execute the last one")
         let debouncer = Debouncer(delay: 0.2)
         var executedActions = [String]()
 
@@ -32,7 +32,7 @@ class DebouncerTests: XCTestCase {
     }
 
     func testCancel() {
-        let expectation = self.expectation(description: "Debouncer should cancel the action")
+        let expectation = expectation(description: "Debouncer should cancel the action")
         let debouncer = Debouncer(delay: 0.2)
         var executedActions = [String]()
 
@@ -53,7 +53,7 @@ class DebouncerTests: XCTestCase {
     }
 
     func testExecuteAfterDelay() {
-        let expectation = self.expectation(description: "Debouncer should execute the action after the specified delay")
+        let expectation = expectation(description: "Debouncer should execute the action after the specified delay")
         let debouncer = Debouncer(delay: 0.2)
         var executedActions = [String]()
 

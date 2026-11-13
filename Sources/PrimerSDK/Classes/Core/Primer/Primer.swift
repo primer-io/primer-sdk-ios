@@ -4,11 +4,11 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-@_exported @_spi(PrimerInternal) import PrimerFoundation
-import UIKit
 @_exported @_spi(PrimerInternal) import PrimerCore
+@_exported @_spi(PrimerInternal) import PrimerFoundation
 @_exported @_spi(PrimerInternal) import PrimerNetworking
 @_exported @_spi(PrimerInternal) import PrimerUI
+import UIKit
 
 // swiftlint:disable identifier_name
 #if DEBUG
@@ -58,6 +58,12 @@ public final class Primer {
 
     fileprivate init() {
         ErrorHandler.fire = { Analytics.Service.fire(event: Analytics.event(for: $0)) }
+
+        // Register custom fonts for CheckoutComponents
+        if #available(iOS 15.0, *) {
+            FontRegistration.registerFonts()
+        }
+        SDUITokenResolvers.register()
     }
 
     public func application(
@@ -117,6 +123,7 @@ public final class Primer {
         completion: ((Error?) -> Void)? = nil
     ) {
         PrimerInternal.shared.sdkIntegrationType = .dropIn
+        PrimerInternal.shared.sdkIntegrationProduct = .dropIn
         PrimerInternal.shared.showPaymentMethod(
             paymentMethodType,
             withIntent: intent,

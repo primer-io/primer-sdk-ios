@@ -35,6 +35,16 @@ final class AssetsManagerTests: XCTestCase {
 
     }
 
+    func test_getCardNetworkAsset_everyNetwork_isItsIcon() {
+        for network in CardNetwork.allCases {
+            XCTAssertEqual(AssetsManager.getCardNetworkAsset(for: network)?.cardImage, network.icon, network.rawValue)
+        }
+    }
+
+    func test_getCardNetworkAsset_hipercard_isTheGenericCard() throws {
+        XCTAssertEqual(try XCTUnwrap(AssetsManager.getCardNetworkAsset(for: .hipercard)?.cardImage), UIImage.genericCard)
+    }
+
     func testGetNetworkAssetForString() throws {
         XCTAssertEqual(AssetsManager.getCardNetworkAsset(cardNetworkString: "VISA")?.cardNetwork, .visa)
         XCTAssertNotNil(AssetsManager.getCardNetworkAsset(cardNetworkString: "VISA")?.cardImage)

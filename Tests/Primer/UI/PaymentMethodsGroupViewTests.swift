@@ -5,8 +5,8 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import PrimerFoundation
+@_spi(PrimerInternal) @testable import PrimerNetworking
 @testable import PrimerSDK
-@_spi(PrimerInternal) import PrimerNetworking
 @_spi(PrimerInternal) import PrimerUI
 import XCTest
 
@@ -25,7 +25,7 @@ final class PaymentMethodsGroupViewTests: XCTestCase {
         XCTAssertNotNil(paymentMethodButton)
         XCTAssertEqual(paymentMethodButton?.title(for: .normal), "Pay with card")
 
-        let expectStart = self.expectation(description: "Tokenization is started")
+        let expectStart = expectation(description: "Tokenization is started")
         viewModel.onStart = {
             expectStart.fulfill()
         }

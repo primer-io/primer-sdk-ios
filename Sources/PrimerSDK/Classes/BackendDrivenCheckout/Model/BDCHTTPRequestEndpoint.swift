@@ -16,13 +16,14 @@ struct BDCHTTPRequestEndpoint: Endpoint {
 
     private let url: String
     private let schemaHeaders: [String: String]?
+    private let primerHost: Bool
     
     var baseURL: String? { url }
     var path: String { "" }
     var queryParameters: [String: String]? { nil }
     
     var headers: [String: String]? {
-        var merged = PrimerRuntimeHeaders.default
+        var merged = primerHost ? PrimerRuntimeHeaders.default : ["Content-Type": "application/json"]
         schemaHeaders?.forEach { merged[$0.key] = $0.value }
         return merged
     }
@@ -32,12 +33,14 @@ struct BDCHTTPRequestEndpoint: Endpoint {
         method: HTTPMethod,
         schemaHeaders: [String: String]?,
         body: Data?,
-        timeout: TimeInterval?
+        timeout: TimeInterval?,
+        primerHost: Bool
     ) {
         self.url = url
         self.method = method
         self.schemaHeaders = schemaHeaders
         self.body = body
         self.timeout = timeout
+        self.primerHost = primerHost
     }
 }

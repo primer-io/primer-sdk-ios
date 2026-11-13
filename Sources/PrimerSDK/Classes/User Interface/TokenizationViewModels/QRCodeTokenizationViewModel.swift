@@ -8,11 +8,11 @@
 // swiftlint:disable file_length
 // swiftlint:disable orphaned_doc_comment
 
+@_spi(PrimerInternal) import PrimerCore
 @_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerNetworking
 import SafariServices
 import UIKit
-@_spi(PrimerInternal) import PrimerNetworking
-@_spi(PrimerInternal) import PrimerCore
 
 final class QRCodeTokenizationViewModel: WebRedirectPaymentMethodTokenizationViewModel {
 
@@ -114,7 +114,7 @@ final class QRCodeTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
         }
 
         self.statusUrl = statusUrl
-        self.qrCode = decodedJWTToken.qrCode
+        qrCode = decodedJWTToken.qrCode
 
         try await evaluateFireDidReceiveAdditionalInfoEvent()
         try await evaluatePresentUserInterface()
@@ -206,7 +206,7 @@ extension QRCodeTokenizationViewModel {
             }
         default:
             logger.info(message: "UNHANDLED PAYMENT METHOD RESULT")
-            logger.info(message: self.config.type)
+            logger.info(message: config.type)
         }
 
         guard let additionalInfo else {

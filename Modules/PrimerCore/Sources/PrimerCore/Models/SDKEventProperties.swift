@@ -18,13 +18,13 @@
     
     public init(name: String, parameters: [String: AnyCodable]? = nil) {
         self.name = name
-        self.params = parameters
+        params = parameters
     }
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.name = try container.decode(String.self, forKey: .name)
-        self.params = try container.decodeIfPresent([String: AnyCodable].self, forKey: .params)
+        name = try container.decode(String.self, forKey: .name)
+        params = try container.decodeIfPresent([String: AnyCodable].self, forKey: .params)
     }
 
     public func encode(to encoder: Encoder) throws {

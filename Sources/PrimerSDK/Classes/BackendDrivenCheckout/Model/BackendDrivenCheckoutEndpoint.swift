@@ -5,21 +5,23 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+@_spi(PrimerInternal) import PrimerCore
 @_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerNetworking
-@_spi(PrimerInternal) import PrimerCore
 
 enum BackendDrivenCheckoutEndpoint {
     case manifest(environment: PrimerEnvironment)
     case pay(paymentMethod: PrimerPaymentMethod)
+    case payWithToken(paymentInstrumentTokenId: String)
     case setup(paymentMethod: PrimerPaymentMethod)
+    case pollSetup(setupId: String)
     case expandClientSession
 }
 
 extension BackendDrivenCheckoutEndpoint: Endpoint {
     var baseURL: String? {
         switch self {
-        case .expandClientSession, .pay, .setup: PrimerAPIConfiguration.current?.pciUrl
+        case .expandClientSession, .pay, .payWithToken, .setup, .pollSetup: PrimerAPIConfiguration.current?.pciUrl
         case .manifest: "https://sdk.primer.io/"
         }
     }
@@ -27,32 +29,42 @@ extension BackendDrivenCheckoutEndpoint: Endpoint {
     var path: String {
         switch self {
         case let .manifest(environment):"state-processor/v0/manifests/\(environment.rawValue.lowercased()).json"
-        case .pay: "client-session/\(PrimerAPIConfigurationModule.clientSessionId):pay"
-        case .setup: "client-session/\(PrimerAPIConfigurationModule.clientSessionId):setup"
+        case .pay, .payWithToken: "client-session/\(PrimerAPIConfigurationModule.clientSessionId):pay"
+        case .setup: "/payment-method-setups"
+        case let .pollSetup(setupId): "/payment-method-setups/\(setupId)"
         case .expandClientSession: "client-session/\(PrimerAPIConfigurationModule.clientSessionId)"
         }
     }
     
     var method: HTTPMethod {
         switch self {
-        case .pay, .setup: .post
-        case .expandClientSession, .manifest: .get
+        case .pay, .payWithToken, .setup: .post
+        case .expandClientSession, .manifest, .pollSetup: .get
         }
     }
     
-    var headers: [String : String]? { PrimerRuntimeHeaders.default }
+    var headers: [String : String]? {
+        switch self {
+        case .setup, .pay, .payWithToken: PrimerRuntimeHeaders.idempotent
+        case .manifest, .pollSetup, .expandClientSession: PrimerRuntimeHeaders.default
+        }
+    }
     
     var queryParameters: [String : String]? {
         switch self {
-        case .manifest, .pay, .setup: nil
+        case .manifest, .pay, .payWithToken, .setup, .pollSetup: nil
         case .expandClientSession: ["expand" : "clientInstruction"]
         }
     }
     
     var body: Data? {
         switch self {
-        case .manifest, .expandClientSession: return nil
-        case .pay, .setup:
+        case .manifest, .expandClientSession, .pollSetup: return nil
+        case let .payWithToken(paymentInstrumentTokenId):
+            return try? TokenPayBody(paymentInstrumentTokenId: paymentInstrumentTokenId).data()
+        case let .setup(paymentMethod: method):
+            return try? SetupBody(paymentMethodConfigId: method.id).data()
+        case .pay:
             guard let paymentMethod, let options = paymentMethod.merchantOptions else { return nil }
             let body = PayBody(
                 paymentMethodConfigId: paymentMethod.id,
@@ -65,7 +77,7 @@ extension BackendDrivenCheckoutEndpoint: Endpoint {
     
     var paymentMethod: PrimerPaymentMethod? {
         switch self {
-        case .manifest, .expandClientSession: nil
+        case .manifest, .expandClientSession, .pollSetup, .payWithToken: nil
         case let .pay(paymentMethod), let .setup(paymentMethod):
             PrimerAPIConfigurationModule.paymentMethods?.first(where: { $0.type == paymentMethod.type })
         }

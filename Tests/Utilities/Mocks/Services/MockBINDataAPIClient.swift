@@ -5,9 +5,9 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
-@_spi(PrimerInternal) import PrimerFoundation
-@testable import PrimerSDK
+@_spi(PrimerInternal) @testable import PrimerFoundation
 @_spi(PrimerInternal) @testable import PrimerNetworking
+@testable import PrimerSDK
 
 final class MockBINDataAPIClient: PrimerAPIClientBINDataProtocol {
 
