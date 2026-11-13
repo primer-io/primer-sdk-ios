@@ -23,11 +23,13 @@ final class HeadlessRepositoryImpl: @preconcurrency HeadlessRepository, LogRepor
   // MARK: - Co-Badged Cards Support
 
   private lazy var rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager? = {
-    try? PrimerHeadlessUniversalCheckout.RawDataManager(
+    let manager = try? PrimerHeadlessUniversalCheckout.RawDataManager(
       paymentMethodType: "PAYMENT_CARD",
       delegate: self,
       isUsedInDropIn: false
     )
+    manager?.selectsPaymentMethodBeforeTokenizing = false
+    return manager
   }()
 
   private var didConfigureRawDataManager = false

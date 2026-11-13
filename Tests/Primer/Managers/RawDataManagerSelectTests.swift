@@ -141,6 +141,132 @@ final class RawDataManagerSelectTests: XCTestCase {
         XCTAssertEqual(selectCalls.map(\.network), [nil])
     }
 
+    func test_typing_networkChangesInQuickSuccession_sendOneSelectWithTheLastNetwork() async throws {
+        let gate = prepareForTyping(sut)
+
+        sut.rawData = visaCard()
+        sut.rawData = coBadgedCard(pickedNetwork: nil)
+        await MainActor.run {}
+        cardLookup.stubbedMetadata = .remoteLookup([.cartesBancaires, .masterCard])
+        _ = try? await sut.validateRawData(withCardNetworksMetadata: cardLookup.stubbedMetadata)
+        try await releaseSelections(afterHolding: 3, on: gate)
+        try await waitForSelectCalls(1)
+
+        XCTAssertEqual(clientSessionActions.selectPaymentMethodCalls.map(\.type), ["PAYMENT_CARD"])
+        XCTAssertEqual(clientSessionActions.selectPaymentMethodCalls.map(\.network), ["CARTES_BANCAIRES"])
+    }
+
+    func test_typing_unchangedNetwork_sendsNoSecondSelect() async throws {
+        let gate = prepareForTyping(sut)
+
+        sut.rawData = visaCard()
+        try await releaseSelections(afterHolding: 1, on: gate)
+        try await waitForSelectCalls(1)
+        sut.rawData = visaCard()
+        await MainActor.run {}
+
+        let heldCount = await gate.heldCount
+        XCTAssertEqual(heldCount, 0)
+        XCTAssertEqual(clientSessionActions.selectPaymentMethodCalls.map(\.network), ["VISA"])
+    }
+
+    func test_failedSubmit_typingTheEarlierNetworkAgain_sendsIt() async throws {
+        let gate = prepareForTyping(sut)
+        headlessCheckoutDelegate.onWillCreatePaymentWithData = { _, decisionHandler in
+            decisionHandler(.continuePaymentCreation())
+        }
+        tokenizationService.onTokenize = { _ in .failure(PrimerError.unknown()) }
+        let expectDidFail = expectation(description: "Payment failed")
+        headlessCheckoutDelegate.onDidFail = { _ in expectDidFail.fulfill() }
+
+        sut.rawData = visaCard()
+        try await releaseSelections(afterHolding: 1, on: gate)
+        try await waitForSelectCalls(1)
+        sut.rawData = masterCard()
+        try await waitForHeldSelections(1, on: gate)
+        sut.submit()
+        await fulfillment(of: [expectDidFail], timeout: 5.0)
+        await gate.release()
+        sut.rawData = visaCard()
+        try await releaseSelections(afterHolding: 1, on: gate)
+        try await waitForSelectCalls(3)
+
+        XCTAssertEqual(clientSessionActions.selectPaymentMethodCalls.map(\.network), ["VISA", "MASTERCARD", "VISA"])
+    }
+
+    func test_typing_unchangedUpdateWhileTheSelectRuns_sendsItAgainWhenThatSelectFails() async throws {
+        let gate = prepareForTyping(sut)
+        let request = NetworkSelectionGate()
+        failFirstSelect(holdingItOn: request)
+
+        sut.rawData = visaCard()
+        try await releaseSelections(afterHolding: 1, on: gate)
+        try await waitForHeldSelections(1, on: request)
+        sut.rawData = visaCard()
+        try await waitForHeldSelections(1, on: gate)
+        await request.release()
+        await gate.release()
+        try await waitForSelectCalls(2)
+
+        XCTAssertEqual(clientSessionActions.selectPaymentMethodCalls.map(\.network), ["VISA", "VISA"])
+    }
+
+    func test_typing_rawDataClearedWhileASelectWaits_dropsIt() async throws {
+        let gate = prepareForTyping(sut)
+
+        sut.rawData = visaCard()
+        try await waitForHeldSelections(1, on: gate)
+        sut.rawData = nil
+        await MainActor.run {}
+        await gate.release()
+        sut.rawData = masterCard()
+        try await releaseSelections(afterHolding: 1, on: gate)
+        try await waitForSelectCalls(1)
+
+        XCTAssertEqual(clientSessionActions.selectPaymentMethodCalls.map(\.network), ["MASTERCARD"])
+    }
+
+    private func failFirstSelect(holdingItOn request: NetworkSelectionGate) {
+        clientSessionActions.onSelectPaymentMethod = { [weak actions = clientSessionActions] in
+            guard actions?.selectPaymentMethodCalls.count == 1 else { return }
+            await request.wait()
+            throw PrimerError.unknown(message: "Select failed")
+        }
+    }
+
+    func test_typing_inDropIn_sendsNoSelect() async throws {
+        addTeardownBlock { PrimerInternal.shared.sdkIntegrationType = nil }
+        let rawDataManager = try RawDataManager(paymentMethodType: "PAYMENT_CARD", isUsedInDropIn: true)
+        let gate = prepareForTyping(rawDataManager)
+
+        rawDataManager.rawData = visaCard()
+        _ = try? await rawDataManager.validateRawData(withCardNetworksMetadata: .remoteLookup([.visa]))
+        await MainActor.run {}
+
+        let heldCount = await gate.heldCount
+        XCTAssertEqual(heldCount, 0)
+        XCTAssertTrue(clientSessionActions.selectPaymentMethodCalls.isEmpty)
+    }
+
+    private func prepareForTyping(_ rawDataManager: RawDataManager) -> NetworkSelectionGate {
+        SDKSessionHelper.updateAllowedCardNetworks(
+            cardNetworks: [.cartesBancaires, .masterCard, .visa],
+            paymentMethodOptions: [["type": "PAYMENT_CARD", "networks": [["type": "CARTES_BANCAIRES", "surcharge": 50]]]]
+        )
+        (rawDataManager.rawDataTokenizationBuilder as? PrimerRawCardDataTokenizationBuilder)?.cardValidationService = cardLookup
+        rawDataManager.clientSessionActionsModule = clientSessionActions
+        let gate = NetworkSelectionGate()
+        rawDataManager.waitForNetworkSelection = gate.wait
+        return gate
+    }
+
+    private func waitForSelectCalls(_ count: Int) async throws {
+        try await withTimeout(2.0) {
+            while self.clientSessionActions.selectPaymentMethodCalls.count < count { await Task.yield() }
+        }
+        await MainActor.run {}
+    }
+
     private func selectCallsAtTokenize(
         of card: PrimerCardData,
         lookupNetworks: [CardNetwork]?,
@@ -188,5 +314,9 @@ final class RawDataManagerSelectTests: XCTestCase {
             cvv: "123",
             cardholderName: "John Appleseed"
         )
+    }
+
+    private func masterCard() -> PrimerCardData {
+        PrimerCardData(cardNumber: "5555 5555 5555 4444", expiryDate: "03/2030", cvv: "123", cardholderName: "John Appleseed")
     }
 }

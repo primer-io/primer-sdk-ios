@@ -12,8 +12,6 @@ import SwiftUI
 @MainActor
 final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, LogReporter {
 
-  nonisolated static let networkSelectionDebounce: UInt64 = 275_000_000
-
   private(set) var presentationContext: PresentationContext = .fromPaymentSelection
 
   var cardFormUIOptions: PrimerCardFormUIOptions? {
@@ -42,7 +40,7 @@ final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, 
   @Published var structuredState = PrimerCardFormState()
   var fieldValidationStates = FieldValidationStates()
   var waitForNetworkSelection: () async -> Void = {
-    try? await Task.sleep(nanoseconds: DefaultCardFormScope.networkSelectionDebounce)
+    try? await Task.sleep(nanoseconds: PrimerHeadlessUniversalCheckout.RawDataManager.networkSelectionDebounce)
   }
 
   var currentState: PrimerCardFormState { structuredState.redactedForMerchant() }
