@@ -45,6 +45,11 @@ xcodebuild -workspace PrimerSDK.xcworkspace \
   build
 ```
 
+The Debug App has two projects. `Debug App` (CocoaPods) includes all five wrappers (3DS, Klarna, NolPay,
+Stripe, iPay88) and is the build for QA, Appetize and wrapper flows. `Debug App SPM` builds without
+`pod install` but has only 3DS: on SPM, PrimerSDK includes a wrapper only when its `Package.swift` declares
+it. Klarna, NolPay and Stripe on SPM are covered by the `Package.<Wrapper>.swift` CI builds; iPay88 has none yet.
+
 For UI changes: build the Debug App, boot a simulator, launch the app, navigate to the affected screen, and verify with screenshots.
 
 ## Tests
