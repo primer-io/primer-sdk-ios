@@ -48,6 +48,9 @@ final class PrimerRawCardDataTokenizationBuilderTests: XCTestCase {
         SDKSessionHelper.updateAllowedCardNetworks(cardNetworks: [.visa, .eftpos])
         PrimerInternal.shared.sdkIntegrationType = .headless
         let sut = PrimerRawCardDataTokenizationBuilder(paymentMethodType: "PAYMENT_CARD")
+        let lookup = StubCardValidationService()
+        lookup.stubbedMetadata = .remoteLookup([.visa, .eftpos])
+        sut.cardValidationService = lookup
 
         let cardData = PrimerCardData(
             cardNumber: "4242424242424242",
@@ -66,6 +69,9 @@ final class PrimerRawCardDataTokenizationBuilderTests: XCTestCase {
         SDKSessionHelper.updateAllowedCardNetworks(cardNetworks: [.visa, .cartesBancaires])
         PrimerInternal.shared.sdkIntegrationType = .headless
         let sut = PrimerRawCardDataTokenizationBuilder(paymentMethodType: "PAYMENT_CARD")
+        let lookup = StubCardValidationService()
+        lookup.stubbedMetadata = .remoteLookup([.visa, .cartesBancaires])
+        sut.cardValidationService = lookup
 
         let cardData = PrimerCardData(
             cardNumber: "4242424242424242",

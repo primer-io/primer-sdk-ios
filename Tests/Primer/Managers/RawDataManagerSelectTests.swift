@@ -15,6 +15,7 @@ final class RawDataManagerSelectTests: XCTestCase {
     private var tokenizationService: MockTokenizationService!
     private var clientSessionActions: MockClientSessionActionsModule!
     private var cardLookup: StubCardValidationService!
+    private var tokenizedCard: CardPaymentInstrument?
     private var sut: RawDataManager!
 
     override func setUpWithError() throws {
@@ -45,6 +46,17 @@ final class RawDataManagerSelectTests: XCTestCase {
 
         XCTAssertEqual(selectCalls.map(\.type), ["PAYMENT_CARD"])
         XCTAssertEqual(selectCalls.map(\.network), ["CARTES_BANCAIRES"])
+    }
+
+    func test_submit_card_pickTheCardDoesNotOffer_reachesNeitherTheSelectNorTheToken() {
+        PrimerInternal.shared.sdkIntegrationType = .headless
+        addTeardownBlock { PrimerInternal.shared.sdkIntegrationType = nil }
+
+        let selectCalls = selectCallsAtTokenize(of: coBadgedCard(pickedNetwork: .visa), lookupNetworks: [.cartesBancaires, .masterCard])
+
+        XCTAssertEqual(selectCalls.map(\.network), ["CARTES_BANCAIRES"])
+        XCTAssertNotNil(tokenizedCard)
+        XCTAssertNil(tokenizedCard?.preferredNetwork)
     }
 
     func test_submit_card_lookupFails_selectsTheFirstDigitsNetwork() {
@@ -144,8 +156,9 @@ final class RawDataManagerSelectTests: XCTestCase {
             decisionHandler(.continuePaymentCreation())
         }
         var selectCalls: [(type: String, network: String?)] = []
-        tokenizationService.onTokenize = { _ in
+        tokenizationService.onTokenize = { requestBody in
             selectCalls = self.clientSessionActions.selectPaymentMethodCalls
+            self.tokenizedCard = requestBody.paymentInstrument as? CardPaymentInstrument
             return .failure(PrimerError.unknown())
         }
         let expectDidFail = expectation(description: "Payment stopped after tokenizing")
