@@ -206,7 +206,7 @@ final class ProgrammaticFieldValueTests: XCTestCase {
 /// window down as soon as the first layout pass finishes.
 @available(iOS 15.0, *)
 @MainActor
-private final class FieldHost<Content: View> {
+final class FieldHost<Content: View> {
     private let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 390, height: 844))
     private let controller: UIHostingController<Content>
 
@@ -222,6 +222,10 @@ private final class FieldHost<Content: View> {
     /// `SecureTextField` masks its `text`, so the value it really holds has to be read separately.
     var secureText: String {
         (Self.textFields(in: controller.view).first as? SecureTextField)?.internalText ?? text
+    }
+
+    var secureTextField: SecureTextField? {
+        Self.textFields(in: controller.view).first as? SecureTextField
     }
 
     init(_ view: Content) {
