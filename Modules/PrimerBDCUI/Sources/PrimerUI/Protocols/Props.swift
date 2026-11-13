@@ -8,7 +8,13 @@
 import SwiftUI
 
 protocol Props: UI {
+    var padding: CodableValue? { get }
     var spacing: CodableValue? { get }
+    var minHeight: Length? { get }
+    var backgroundColor: String? { get }
+    var borderRadius: Length? { get }
+    var borderColor: String? { get }
+    var borderWidth: Double? { get }
     var justifyContent: JustifyContent { get }
     var width: Size { get }
     var height: Size { get }

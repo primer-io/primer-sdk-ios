@@ -9,5 +9,5 @@ struct ContainerProps: UI {
     let spacing: Double
     let padding: Double
     let backgroundColor: String?
-    let borderRadius: Double?
+    let borderRadius: Length?
 }

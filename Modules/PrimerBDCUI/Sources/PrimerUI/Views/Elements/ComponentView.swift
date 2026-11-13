@@ -91,14 +91,22 @@ private extension ComponentView {
     }
     
     func makeButtonView(props: ButtonProps) -> some View {
-        Button(action: applyClick) {
+        let styling = props.styling
+        let radius = styling.borderRadius(resolveRadius) ?? 0
+        return Button(action: applyClick) {
             content()
                 .frame(maxWidth: props.width())
-                .padding(props.padding?.string.map(resolveSpacing) ?? .zero)
+                .padding(props.padding.flatMap(Spacing.value) ?? .zero)
         }
         .frame(maxWidth: props.width(), maxHeight: props.height())
-        .background(props.backgroundColor.map(resolveColor))
-        .cornerRadius(props.borderRadius ?? 0)
+        .foregroundColor(styling.foregroundColor.map(resolveColor))
+        .background(styling.backgroundColor.map(resolveColor))
+        .cornerRadius(radius)
+        .overlay(
+            RoundedRectangle(cornerRadius: radius)
+                .strokeBorder(styling.borderColor.map(resolveColor) ?? .clear, lineWidth: styling.borderColor == nil ? 0 : 1)
+        )
+        .opacity(props.enabled ? 1 : 0.5)
         .disabled(!props.enabled)
         .buttonStyle(.plain)
     }
@@ -116,7 +124,7 @@ private extension ComponentView {
         VStack(content: content)
             .padding(props.padding)
             .background(props.backgroundColor.map(resolveColor))
-            .cornerRadius(props.borderRadius ?? 0)
+            .cornerRadius(props.borderRadius?(resolveRadius) ?? 0)
     }
 	
     @ViewBuilder

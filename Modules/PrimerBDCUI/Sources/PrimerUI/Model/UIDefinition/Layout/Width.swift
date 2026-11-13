@@ -11,12 +11,14 @@ enum Size: UI {
     case fill
     case wrap
     case literal(CGFloat)
+    case token(String)
     
     func callAsFunction() -> CGFloat? {
         switch self {
         case .fill: .infinity
         case .wrap: nil
         case let .literal(value): value
+        case let .token(name): resolveSize(name)
         }
     }
 	
@@ -24,7 +26,7 @@ enum Size: UI {
         switch codableValue {
         case .string("fill"): self = .fill
         case .string("wrap"): self = .wrap
-        case let .string(string): self = Int(string).map { Size.literal(CGFloat($0)) } ?? .wrap
+        case let .string(string): self = Double(string).map { Size.literal($0) } ?? .token(string)
         case let .int(int): self = .literal(CGFloat(int))
         case let .double(double): self = .literal(double)
         default: self = .wrap

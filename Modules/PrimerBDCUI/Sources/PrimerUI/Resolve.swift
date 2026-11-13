@@ -9,6 +9,8 @@ import SwiftUI
 
 public nonisolated(unsafe) var resolveColor: (String) -> Color = { unregistered("resolveColor", token: $0, fallback: .clear) }
 public nonisolated(unsafe) var resolveSpacing: (String) -> CGFloat = { unregistered("resolveSpacing", token: $0, fallback: 0) }
+public nonisolated(unsafe) var resolveRadius: (String) -> CGFloat = { unregistered("resolveRadius", token: $0, fallback: 0) }
+public nonisolated(unsafe) var resolveSize: (String) -> CGFloat? = { unregistered("resolveSize", token: $0, fallback: nil) }
 public nonisolated(unsafe) var resolveFont: (String) -> Font = { unregistered("resolveFont", token: $0, fallback: .body) }
 
 private func unregistered<T>(_ resolver: String, token: String, fallback: T) -> T {
