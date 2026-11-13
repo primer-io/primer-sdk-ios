@@ -106,6 +106,10 @@ extension PrimerHeadlessUniversalCheckout {
 
         var tokenizationService: TokenizationServiceProtocol = TokenizationService()
 
+        var clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
+
+        var selectsPaymentMethodBeforeTokenizing = true
+
         var createResumePaymentService: CreateResumePaymentServiceProtocol
 
         var apiClient: PrimerAPIClientXenditProtocol = PrimerAPIConfigurationModule.apiClient ?? PrimerAPIClient()
@@ -246,6 +250,13 @@ extension PrimerHeadlessUniversalCheckout {
 
                     guard self.isDataValid else { throw PrimerError.invalidValue(key: "rawData") }
 
+                    if selectsPaymentMethodBeforeTokenizing {
+                        try await clientSessionActionsModule.selectPaymentMethodIfNeeded(
+                            paymentMethodType,
+                            cardNetwork: cardNetworkToSelect(for: rawData)
+                        )
+                    }
+
                     try await self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.paymentMethodType))
                     let requestBody = try await self.makeRequestBody()
                     await PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: self.paymentMethodType)
@@ -311,6 +322,13 @@ extension PrimerHeadlessUniversalCheckout {
             }
 
             return try await rawDataTokenizationBuilder.validateRawData(rawData, cardNetworksMetadata: cardNetworksMetadata)
+        }
+
+        private func cardNetworkToSelect(for rawData: PrimerRawData) -> String? {
+            guard let cardBuilder = rawDataTokenizationBuilder as? PrimerRawCardDataTokenizationBuilder,
+                  let cardData = rawData as? PrimerCardData
+            else { return nil }
+            return cardBuilder.effectiveNetwork(for: cardData).rawValue
         }
 
         private func handlePrimerWillCreatePaymentEvent(_ paymentMethodData: PrimerPaymentMethodData) async throws {

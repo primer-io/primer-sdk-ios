@@ -365,7 +365,111 @@ final class RawDataManagerTests: XCTestCase {
         XCTAssertTrue(validationCount > 1, "Delegate should be notified at least twice")
     }
     
+    func test_submit_card_selectsTheEffectiveNetworkBeforeTokenizing() {
+        let clientSessionActions = MockClientSessionActionsModule()
+        sut.clientSessionActionsModule = clientSessionActions
+        headlessCheckoutDelegate.onWillCreatePaymentWithData = { _, decisionHandler in
+            decisionHandler(.continuePaymentCreation())
+        }
+        var selectCallsAtTokenize: [(type: String, network: String?)] = []
+        tokenizationService.onTokenize = { _ in
+            selectCallsAtTokenize = clientSessionActions.selectPaymentMethodCalls
+            return .failure(PrimerError.unknown())
+        }
+        let expectDidFail = expectation(description: "Payment stopped after tokenizing")
+        headlessCheckoutDelegate.onDidFail = { _ in expectDidFail.fulfill() }
+
+        sut.rawData = cardData(pickedNetwork: .cartesBancaires)
+        sut.submit()
+
+        waitForExpectations(timeout: 5.0)
+        XCTAssertEqual(selectCallsAtTokenize.map(\.type), ["PAYMENT_CARD"])
+        XCTAssertEqual(selectCallsAtTokenize.map(\.network), ["CARTES_BANCAIRES"])
+    }
+
+    func test_submit_card_selectFails_failsWithTheSelectErrorWithoutTokenizing() {
+        let selectError = PrimerError.unknown(message: "Select failed")
+        let clientSessionActions = MockClientSessionActionsModule()
+        clientSessionActions.selectPaymentMethodError = selectError
+        sut.clientSessionActionsModule = clientSessionActions
+        var tokenizeCallCount = 0
+        tokenizationService.onTokenize = { _ in
+            tokenizeCallCount += 1
+            return .success(self.tokenizationResponseBody)
+        }
+        var reportedError: Error?
+        let expectDidFail = expectation(description: "Payment failed")
+        headlessCheckoutDelegate.onDidFail = { error in
+            reportedError = error
+            expectDidFail.fulfill()
+        }
+
+        sut.rawData = cardData(pickedNetwork: nil)
+        sut.submit()
+
+        waitForExpectations(timeout: 5.0)
+        XCTAssertEqual((reportedError as? PrimerError)?.diagnosticsId, selectError.diagnosticsId)
+        XCTAssertEqual(tokenizeCallCount, 0)
+    }
+
+    func test_submit_card_fromCheckoutComponentsFactory_sendsNoSelect() throws {
+        let rawDataManager = try XCTUnwrap(
+            DefaultRawDataManagerFactory().createRawDataManager(paymentMethodType: "PAYMENT_CARD", delegate: nil) as? RawDataManager
+        )
+        let clientSessionActions = MockClientSessionActionsModule()
+        rawDataManager.tokenizationService = tokenizationService
+        rawDataManager.clientSessionActionsModule = clientSessionActions
+        headlessCheckoutDelegate.onWillCreatePaymentWithData = { _, decisionHandler in
+            decisionHandler(.continuePaymentCreation())
+        }
+        let expectTokenize = expectation(description: "Card tokenized")
+        tokenizationService.onTokenize = { _ in
+            expectTokenize.fulfill()
+            return .failure(PrimerError.unknown())
+        }
+        let expectDidFail = expectation(description: "Payment stopped after tokenizing")
+        headlessCheckoutDelegate.onDidFail = { _ in expectDidFail.fulfill() }
+
+        rawDataManager.rawData = cardData(pickedNetwork: nil)
+        rawDataManager.submit()
+
+        waitForExpectations(timeout: 5.0)
+        XCTAssertTrue(clientSessionActions.selectPaymentMethodCalls.isEmpty)
+    }
+
+    func test_submit_blik_selectsTheMethodWithoutNetworkBeforeThePayment() throws {
+        SDKSessionHelper.setUp(withPaymentMethods: [Mocks.PaymentMethods.adyenBlikPaymentMethod])
+        let blikManager = try RawDataManager(paymentMethodType: "ADYEN_BLIK")
+        let clientSessionActions = MockClientSessionActionsModule()
+        blikManager.tokenizationService = tokenizationService
+        blikManager.clientSessionActionsModule = clientSessionActions
+        var selectCalls: [(type: String, network: String?)] = []
+        headlessCheckoutDelegate.onWillCreatePaymentWithData = { _, decisionHandler in
+            selectCalls = clientSessionActions.selectPaymentMethodCalls
+            decisionHandler(.abortPaymentCreation())
+        }
+        let expectDidFail = expectation(description: "Payment stopped before it was created")
+        headlessCheckoutDelegate.onDidFail = { _ in expectDidFail.fulfill() }
+
+        blikManager.rawData = PrimerOTPData(otp: "123456")
+        blikManager.submit()
+
+        waitForExpectations(timeout: 5.0)
+        XCTAssertEqual(selectCalls.map(\.type), ["ADYEN_BLIK"])
+        XCTAssertEqual(selectCalls.map(\.network), [nil])
+    }
+
     // MARK: Helpers
+
+    private func cardData(pickedNetwork: CardNetwork?) -> PrimerCardData {
+        PrimerCardData(
+            cardNumber: "4111 1111 1111 1111",
+            expiryDate: "03/2030",
+            cvv: "123",
+            cardholderName: "John Appleseed",
+            cardNetwork: pickedNetwork
+        )
+    }
 
     var tokenizationResponseBody: Response.Body.Tokenization {
         .init(
