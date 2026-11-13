@@ -47,8 +47,8 @@ final class PrimerStepOrchestrator: StepOrchestrating {
         self.rawSchema = rawSchema
         registry.register(harness, for: .urlOpen)
         do {
-            let result = try await engine.start(schema: rawSchema, context: context, state: initialState)
-            try await decodeResult(result, rawSchema: rawSchema)
+            let result = try await engine.startFlow(schema: rawSchema, context: context, state: initialState)
+            try await decodeStep(result, rawSchema: rawSchema)
         } catch is CancellationError {
             throw CancellationError()
         } catch is BackendDrivenCheckoutCancellation {
@@ -58,37 +58,44 @@ final class PrimerStepOrchestrator: StepOrchestrating {
         }
     }
 
-    private func decodeResult(_ result: AnyDict, rawSchema: String) async throws {
-        let response: StateProcessorResponse
+    private func decodeStep(_ result: AnyDict, rawSchema: String) async throws {
+        let step: FlowStep
         do {
-            response = try JSONDecoder().decode(StateProcessorResponse.self, from: try result.data())
+            step = try JSONDecoder().decode(FlowStep.self, from: try result.data())
         } catch {
             throw PrimerStepOrchestratorError.decodeResultFailed(error: error)
         }
-        state = response.newState
-        try await handleResponse(response, rawSchema: rawSchema)
+        try await handleStep(step, rawSchema: rawSchema)
     }
 
-    private func handleResponse(_ response: StateProcessorResponse, rawSchema: String) async throws {
-        if let error = response.error { throw error }
-        
-        if let layer = response.renderStack?.last {
-            let result = try await registry.resolve("ui.render", data: layer.processedUI)
-            if result.outcome != .success { logger.error("Error: \(layer.stepId): \(result.outcome.rawValue)") }
-        }
-        
-        if let action = response.action {
+    private func handleStep(_ step: FlowStep, rawSchema: String) async throws {
+        if case let .failed(message) = step.reply { logger.error("Event handler failed: \(message)") }
+
+        switch step {
+        case let .runAction(newState, layers, action, _):
+            state = newState
+            try await render(layers)
             try await handleAction(action, rawSchema: rawSchema)
-        } else if let outcome = response.terminal?.outcome {
+        case let .awaitInput(newState, layers, _):
+            state = newState
+            try await render(layers)
+            if layers.isEmpty { logger.info("Step settled without an action or terminal — waiting on the instruction loop.") }
+        case let .finished(outcome, _):
             try handleOutcome(outcome)
-        } else if response.renderStack?.isEmpty != false {
-            logger.info("Step settled without an action or terminal — waiting on the instruction loop.")
+        case let .failed(error, _):
+            throw error
         }
+    }
+
+    private func render(_ layers: [RenderLayer]) async throws {
+        guard let layer = layers.last else { return }
+        let result = try await registry.resolve("ui.render", data: layer.processedUI)
+        if result.outcome != .success { logger.error("Error: \(layer.stepId): \(result.outcome.rawValue)") }
     }
 
     func applyEvent(_ value: CodableValue) async throws {
-        let result = try await engine.applyEvent(value, context: context, schema: rawSchema, state: state)
-        try await decodeResult(result, rawSchema: rawSchema)
+        let result = try await engine.handleEvent(value, context: context, schema: rawSchema, state: state)
+        try await decodeStep(result, rawSchema: rawSchema)
     }
 
     func waitToPoll(milliseconds: Int) async throws {
@@ -124,7 +131,7 @@ final class PrimerStepOrchestrator: StepOrchestrating {
     private func applyResult(_ resolution: StepResolutionResult, actionId: String, rawSchema: String) async throws {
         do {
             let data = try resolution.data?.data()
-            let result = try await engine.applyResult(
+            let result = try await engine.handleActionResult(
                 schema: rawSchema,
                 context: context,
                 actionId: actionId,
@@ -132,7 +139,7 @@ final class PrimerStepOrchestrator: StepOrchestrating {
                 outcome: resolution.outcome.rawValue,
                 data: data
             )
-            try await decodeResult(result, rawSchema: rawSchema)
+            try await decodeStep(result, rawSchema: rawSchema)
         } catch is CancellationError {
             throw CancellationError()
         } catch is BackendDrivenCheckoutCancellation {
