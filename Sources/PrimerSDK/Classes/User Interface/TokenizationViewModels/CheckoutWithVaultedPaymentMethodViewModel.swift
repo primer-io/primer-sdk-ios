@@ -11,8 +11,8 @@
 // swiftlint:disable type_body_length
 
 import Foundation
-@_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerNetworking
 
 final class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
@@ -296,9 +296,9 @@ final class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
         paymentMethodTokenData: PrimerPaymentMethodTokenData
     ) async throws -> String? {
         if decodedJWTToken.intent?.contains("STRIPE_ACH") == true {
-            return try await handleStripeACHForDecodedClientToken(decodedJWTToken)
+            try await handleStripeACHForDecodedClientToken(decodedJWTToken)
         } else if decodedJWTToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
-            return try await handle3DSAuthenticationForDecodedClientToken(decodedJWTToken, paymentMethodTokenData: paymentMethodTokenData)
+            try await handle3DSAuthenticationForDecodedClientToken(decodedJWTToken, paymentMethodTokenData: paymentMethodTokenData)
         } else {
             throw handled(primerError: .invalidValue(key: "resumeToken"))
         }

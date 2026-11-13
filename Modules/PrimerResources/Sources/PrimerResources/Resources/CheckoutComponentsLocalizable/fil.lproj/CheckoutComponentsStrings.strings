@@ -55,14 +55,9 @@
 "primer_card_form_placeholder_cvv_amex" = "1234";
 "primer_card_form_placeholder_cvv_standard" = "123";
 "primer_card_form_placeholder_country_code" = "Pumili ng bansa";
-"primer_card_form_placeholder_postal" = "1000";
-"primer_card_form_placeholder_city" = "Maynila";
-"primer_card_form_placeholder_state" = "Metro Manila";
-"primer_card_form_placeholder_address1" = "123 Rizal Avenue";
-"primer_card_form_placeholder_address2" = "Unit 4B";
+"primer_card_form_placeholder_address1" = "Kalye at numero";
+"primer_card_form_placeholder_address2" = "Apartment, unit, palapag";
 "primer_card_form_placeholder_phone" = "+63 917 123 4567";
-"primer_card_form_placeholder_first_name" = "Juan";
-"primer_card_form_placeholder_last_name" = "dela Cruz";
 "primer_card_form_placeholder_email" = "juan.delacruz@example.com";
 "primer_card_form_placeholder_retail" = "Pumili ng outlet";
 "primer_card_form_placeholder_otp" = "123456";

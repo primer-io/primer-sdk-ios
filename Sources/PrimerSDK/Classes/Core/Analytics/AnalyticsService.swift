@@ -9,8 +9,8 @@
 
 import Foundation
 @_spi(PrimerInternal) import PrimerCore
-@_spi(PrimerInternal) import PrimerStepResolver
 @_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerStepResolver
 
 extension Analytics {
 

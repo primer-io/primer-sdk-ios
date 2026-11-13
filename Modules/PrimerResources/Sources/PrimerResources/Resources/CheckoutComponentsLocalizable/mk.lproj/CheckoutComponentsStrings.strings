@@ -55,14 +55,9 @@
 "primer_card_form_placeholder_cvv_amex" = "1234";
 "primer_card_form_placeholder_cvv_standard" = "123";
 "primer_card_form_placeholder_country_code" = "Избери држава";
-"primer_card_form_placeholder_postal" = "1000";
-"primer_card_form_placeholder_city" = "Скопје";
-"primer_card_form_placeholder_state" = "Скопје";
-"primer_card_form_placeholder_address1" = "Македонија бр. 123";
-"primer_card_form_placeholder_address2" = "Стан 4Б";
+"primer_card_form_placeholder_address1" = "Улица и број";
+"primer_card_form_placeholder_address2" = "Стан, канцеларија, кат";
 "primer_card_form_placeholder_phone" = "+389 70 123 456";
-"primer_card_form_placeholder_first_name" = "Марко";
-"primer_card_form_placeholder_last_name" = "Петровски";
 "primer_card_form_placeholder_email" = "marko.petrovski@primer.mk";
 "primer_card_form_placeholder_retail" = "Избери продажно место";
 "primer_card_form_placeholder_otp" = "123456";

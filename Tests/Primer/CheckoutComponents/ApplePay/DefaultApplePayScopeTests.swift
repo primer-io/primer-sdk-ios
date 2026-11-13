@@ -5,10 +5,10 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import PassKit
+@_spi(PrimerInternal) @testable import PrimerCore
+@_spi(PrimerInternal) @testable import PrimerFoundation
 @testable import PrimerSDK
 import XCTest
-@_spi(PrimerInternal) @testable import PrimerFoundation
-@_spi(PrimerInternal) @testable import PrimerCore
 
 @available(iOS 15.0, *)
 final class DefaultApplePayScopeTests: XCTestCase {
@@ -605,11 +605,66 @@ final class DefaultApplePayScopeFactoryTests: XCTestCase {
         XCTAssertFalse(sut.structuredState.isLoading)
     }
 
+    // MARK: - performPayment: Express Checkout log flag
+
+    func test_performPayment_startsWithoutTheFlagOfAnEarlierAttempt() async throws {
+        // Given
+        RemoteLogContext.shared[ExpressCheckoutShippingLog.contextKey] = true
+        var flagWhenRequestWasBuilt: Any?
+        let sut = createScope(applePayRequestFactory: {
+            flagWhenRequestWasBuilt = RemoteLogContext.shared[ExpressCheckoutShippingLog.contextKey]
+            throw PrimerError.invalidClientSessionValue(name: "order.countryCode")
+        })
+
+        // When
+        sut.submit()
+
+        // Then
+        try await XCTUnwrap(sut.paymentTask).value
+        XCTAssertNil(flagWhenRequestWasBuilt)
+    }
+
+    func test_performPayment_cancelledSheet_clearsTheFlagItsShippingStepsSet() async throws {
+        // Given — a shipping step flags the attempt while the sheet is open, then the shopper cancels
+        mockPresentationManager.onPresent = { _, _ in
+            RemoteLogContext.shared[ExpressCheckoutShippingLog.contextKey] = true
+            return .failure(PrimerError.cancelled(paymentMethodType: PrimerPaymentMethodType.applePay.rawValue))
+        }
+        let sut = createScope()
+
+        // When
+        sut.submit()
+
+        // Then
+        try await XCTUnwrap(sut.paymentTask).value
+        XCTAssertNil(RemoteLogContext.shared[ExpressCheckoutShippingLog.contextKey])
+    }
+
+    func test_performPayment_cancelledSheet_finishesTheShippingSession() async throws {
+        // Given
+        mockPresentationManager.onPresent = { _, _ in
+            .failure(PrimerError.cancelled(paymentMethodType: PrimerPaymentMethodType.applePay.rawValue))
+        }
+        var session: ApplePayShippingSession?
+        let sut = createScope(authorizationCoordinatorFactory: {
+            session = $0
+            return ApplePayAuthorizationCoordinator(shippingSession: $0)
+        })
+
+        // When
+        sut.submit()
+
+        // Then — a handler still running after the sheet closed can no longer log or flag
+        try await XCTUnwrap(sut.paymentTask).value
+        XCTAssertEqual(session?.isFinished, true)
+    }
+
     // MARK: - Helper
 
     private func createScope(
         presentationContext: PresentationContext = .fromPaymentSelection,
-        applePayRequestFactory: (() throws -> ApplePayRequest)? = nil
+        applePayRequestFactory: (() throws -> ApplePayRequest)? = nil,
+        authorizationCoordinatorFactory: (@MainActor (ApplePayShippingSession) -> ApplePayAuthorizationCoordinator)? = nil
     ) -> DefaultApplePayScope {
         let checkoutScope = DefaultCheckoutScope(
             clientToken: TestData.Tokens.valid,
@@ -631,7 +686,8 @@ final class DefaultApplePayScopeFactoryTests: XCTestCase {
             presentationContext: presentationContext,
             applePayPresentationManager: mockPresentationManager,
             clientSessionActionsFactory: { [unowned self] in mockClientSessionActions },
-            applePayRequestFactory: { _ in try requestFactory() }
+            applePayRequestFactory: { _ in try requestFactory() },
+            authorizationCoordinatorFactory: authorizationCoordinatorFactory ?? { ApplePayAuthorizationCoordinator(shippingSession: $0) }
         )
         createdScopes.append(scope)
         return scope

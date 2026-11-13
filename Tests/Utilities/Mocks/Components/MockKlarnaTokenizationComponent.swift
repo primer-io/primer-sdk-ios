@@ -4,10 +4,10 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+@_spi(PrimerInternal) @testable import PrimerCore
 import PrimerFoundation
 @_spi(PrimerInternal) @testable import PrimerNetworking
 @testable import PrimerSDK
-@_spi(PrimerInternal) @testable import PrimerCore
 
 class MockKlarnaTokenizationComponent: KlarnaTokenizationComponentProtocol {
     var validateResult: Result<Void, Error>?
@@ -29,7 +29,7 @@ class MockKlarnaTokenizationComponent: KlarnaTokenizationComponentProtocol {
 
     func createPaymentSession() async throws -> PrimerSDK.Response.Body.Klarna.PaymentSession {
         switch createPaymentSessionResult {
-        case let .success(paymentSession): return paymentSession
+        case let .success(paymentSession): paymentSession
         case let .failure(error): throw error
         case nil: throw PrimerError.unknown()
         }
@@ -63,7 +63,7 @@ class MockKlarnaTokenizationComponent: KlarnaTokenizationComponentProtocol {
         offSessionAuthorizationId: String?
     ) async throws -> PrimerSDK.PrimerPaymentMethodTokenData {
         switch tokenizeDropInResult {
-        case let .success(paymentMethodToken): return paymentMethodToken
+        case let .success(paymentMethodToken): paymentMethodToken
         case let .failure(error): throw error
         case nil: throw PrimerError.unknown()
         }

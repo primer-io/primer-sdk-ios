@@ -43,6 +43,11 @@ final class ApplePayShippingSession: LogReporter {
   private let refreshConfiguration: () async throws -> Void
   private let currentShipping: () -> ClientSession.Order.ShippingMethod?
   private let timeout: TimeInterval
+  private let report: (ExpressCheckoutShippingLog) -> Void
+  /// Apple sends the first shipping contact when the sheet opens.
+  private var addressSeen = false
+  /// A handler can still finish after the sheet closed, and it must not flag a later payment.
+  private(set) var isFinished = false
 
   init(
     mode: Mode,
@@ -54,7 +59,8 @@ final class ApplePayShippingSession: LogReporter {
     currentShipping: @escaping () -> ClientSession.Order.ShippingMethod? = {
       PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.shippingMethod
     },
-    timeout: TimeInterval = ApplePayShippingSession.callbackTimeout
+    timeout: TimeInterval = ApplePayShippingSession.callbackTimeout,
+    report: @escaping (ExpressCheckoutShippingLog) -> Void = ExpressCheckoutShippingLog.send
   ) {
     self.mode = mode
     self.addressChangeProvider = addressChangeProvider
@@ -62,6 +68,7 @@ final class ApplePayShippingSession: LogReporter {
     self.refreshConfiguration = refreshConfiguration
     self.currentShipping = currentShipping
     self.timeout = timeout
+    self.report = report
   }
 
   /// Resolves the mode from the client session and the registered handlers. A legacy SHIPPING module
@@ -105,8 +112,10 @@ final class ApplePayShippingSession: LogReporter {
     guard mode != .legacy else { return }
     // A fresh address makes any prior commit stale, even when the handler then fails.
     verifiedCommit = nil
+    let trigger: ExpressCheckoutShippingLog.Trigger = addressSeen ? .addressEdit : .sheetOpen
+    addressSeen = true
 
-    let received = try await requestOptions(for: address)
+    let received = try await requestOptions(for: address, trigger: trigger)
     // The merchant may have patched the session for this address, so only the total is re-read.
     guard mode == .callbacks else { return try await refresh() }
 
@@ -114,15 +123,18 @@ final class ApplePayShippingSession: LogReporter {
     moveToFront(currentShipping()?.methodId)
 
     if let first = options.first {
-      try await commit(first)
+      try await commit(first, trigger: .defaultOption)
     }
   }
 
   /// Commits the option the shopper picked, and falls back to the held option when that fails.
   func handleShippingOptionChange(optionId: String?) async throws {
-    guard mode == .callbacks, let selected = moveToFront(optionId) else { return }
+    guard mode == .callbacks else { return }
+    // Apple also reports the pre-selected first option when the sheet opens, so only another one is the shopper's.
+    let trigger: ExpressCheckoutShippingLog.Trigger = options.first?.id == optionId ? .defaultOption : .shopper
+    guard let selected = moveToFront(optionId) else { return }
     do {
-      try await commit(selected)
+      try await commit(selected, trigger: trigger)
     } catch {
       await restoreHeldOption()
       throw error
@@ -145,18 +157,27 @@ final class ApplePayShippingSession: LogReporter {
     mode == .callbacks && options.isEmpty
   }
 
+  /// Ends the attempt. Steps that settle later log nothing.
+  func finish() {
+    isFinished = true
+  }
+
   // MARK: - Internals
 
-  private func requestOptions(for address: PrimerAddress) async throws -> [PrimerShippingOption] {
+  private func requestOptions(
+    for address: PrimerAddress,
+    trigger: ExpressCheckoutShippingLog.Trigger
+  ) async throws -> [PrimerShippingOption] {
     guard let handler = addressChangeProvider() else {
       logger.warn(
         message: "Shipping address changed for APPLE_PAY but no onShippingAddressChange handler is "
           + "registered — no shipping options will be shown."
       )
+      record(ExpressCheckoutShippingLog(event: .addressChange, trigger: trigger, outcome: .noHandler))
       return []
     }
 
-    return try await withCallbackTimeout(named: "onShippingAddressChange") {
+    return try await runHandler(named: "onShippingAddressChange", event: .addressChange, trigger: trigger) {
       try await handler(PrimerShippingAddressChange(
         paymentMethodType: PrimerPaymentMethodType.applePay.rawValue,
         shippingAddress: address
@@ -164,13 +185,13 @@ final class ApplePayShippingSession: LogReporter {
     }
   }
 
-  private func commit(_ option: PrimerShippingOption) async throws {
+  private func commit(_ option: PrimerShippingOption, trigger: ExpressCheckoutShippingLog.Trigger) async throws {
     // Dropped up front, not on the way out: from here until the new commit verifies, nothing the
     // session holds describes the amount Apple would charge.
     verifiedCommit = nil
 
     if let handler = optionChangeProvider() {
-      try await withCallbackTimeout(named: "onShippingOptionChange") {
+      try await runHandler(named: "onShippingOptionChange", event: .optionChange, trigger: trigger) {
         try await handler(PrimerShippingOptionChange(
           paymentMethodType: PrimerPaymentMethodType.applePay.rawValue,
           selectedShippingOption: option
@@ -181,12 +202,19 @@ final class ApplePayShippingSession: LogReporter {
         message: "Shipping option selected for APPLE_PAY but no onShippingOptionChange handler is "
           + "registered — the order's shipping amount will not be committed."
       )
+      record(ExpressCheckoutShippingLog(event: .optionChange, trigger: trigger, outcome: .noHandler))
     }
 
-    try await refresh()
+    do {
+      try await refresh()
+    } catch {
+      record(ExpressCheckoutShippingLog(event: .commit, trigger: trigger, outcome: .refreshFailed))
+      throw error
+    }
 
     let shipping = currentShipping()
     guard shipping?.methodId == option.id, shipping?.amount == option.amount else {
+      record(ExpressCheckoutShippingLog(event: .commit, trigger: trigger, outcome: .mismatch))
       throw handled(primerError: .merchantError(
         message: "The merchant's shipping commit did not update order.shipping to match the selected "
           + "option (expected methodId \"\(option.id)\" / amount \(option.amount), got methodId "
@@ -196,6 +224,12 @@ final class ApplePayShippingSession: LogReporter {
       ))
     }
     verifiedCommit = option
+    record(ExpressCheckoutShippingLog(event: .commit, trigger: trigger, outcome: .committed, shippingMethodId: option.id))
+  }
+
+  private func record(_ log: ExpressCheckoutShippingLog) {
+    guard !isFinished else { return }
+    report(log)
   }
 
   private func refresh() async throws {
@@ -227,8 +261,43 @@ final class ApplePayShippingSession: LogReporter {
     return options[0]
   }
 
-  private func withCallbackTimeout<T: Sendable>(
+  /// Runs a merchant handler under the timeout and reports how it settled. A cancelled attempt reports nothing.
+  private func runHandler<T: Sendable>(
     named name: String,
+    event: ExpressCheckoutShippingLog.Event,
+    trigger: ExpressCheckoutShippingLog.Trigger,
+    _ operation: @escaping @Sendable () async throws -> T
+  ) async throws -> T {
+    let timeoutError = PrimerError.merchantError(
+      message: "The \(name) handler did not return within \(Int(timeout))s. Return from it once "
+        + "your backend has responded, or the payment attempt fails with nothing charged."
+    )
+    let start = Date()
+    do {
+      let result = try await withCallbackTimeout(timeoutError: timeoutError, operation)
+      record(ExpressCheckoutShippingLog(
+        event: event,
+        trigger: trigger,
+        outcome: .answered,
+        durationMs: start.elapsedMilliseconds,
+        optionsCount: (result as? [PrimerShippingOption])?.count
+      ))
+      return result
+    } catch {
+      guard !Task.isCancelled, !(error is CancellationError) else { throw error }
+      let timedOut = (error as? PrimerError)?.diagnosticsId == timeoutError.diagnosticsId
+      record(ExpressCheckoutShippingLog(
+        event: event,
+        trigger: trigger,
+        outcome: timedOut ? .timeout : .failed,
+        durationMs: start.elapsedMilliseconds
+      ))
+      throw error
+    }
+  }
+
+  private func withCallbackTimeout<T: Sendable>(
+    timeoutError: PrimerError,
     _ operation: @escaping @Sendable () async throws -> T
   ) async throws -> T {
     // A task group waits for its children on exit, so it would wait out a handler that ignores cancellation.
@@ -238,10 +307,6 @@ final class ApplePayShippingSession: LogReporter {
       work.cancel()
       timer.cancel()
     }
-    let timeoutError = PrimerError.merchantError(
-      message: "The \(name) handler did not return within \(Int(timeout))s. Return from it once "
-        + "your backend has responded, or the payment attempt fails with nothing charged."
-    )
 
     return try await withTaskCancellationHandler {
       try await withCheckedThrowingContinuation { continuation in
@@ -265,4 +330,8 @@ final class ApplePayShippingSession: LogReporter {
       oneShot.resume(throwing: timeoutError)
     }
   }
+}
+
+private extension Date {
+  var elapsedMilliseconds: Int { Int(Date().timeIntervalSince(self) * 1000) }
 }

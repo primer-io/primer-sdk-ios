@@ -131,9 +131,8 @@
 "primer_card_form_label_retail" = "소매점";
 "primer_card_form_label_state" = "도/군/구";
 "primer_card_form_network_selector_title" = "네트워크 선택";
-"primer_card_form_placeholder_address1" = "서울특별시 강남구 테헤란로 123";
-"primer_card_form_placeholder_address2" = "456호";
-"primer_card_form_placeholder_city" = "서울";
+"primer_card_form_placeholder_address1" = "도로명 및 건물번호";
+"primer_card_form_placeholder_address2" = "아파트, 호수, 층";
 "primer_card_form_placeholder_country_code" = "국가 선택";
 "primer_card_form_placeholder_cvv" = "123";
 "primer_card_form_placeholder_cvv_amex" = "1234";
@@ -141,15 +140,11 @@
 "primer_card_form_placeholder_email" = "gildong.hong@example.com";
 "primer_card_form_placeholder_expiry" = "MM/YY";
 "primer_card_form_placeholder_expiry_alt" = "12/25";
-"primer_card_form_placeholder_first_name" = "길동";
-"primer_card_form_placeholder_last_name" = "홍";
 "primer_card_form_placeholder_name" = "전체 이름";
 "primer_card_form_placeholder_number" = "1234 1234 1234 1234";
 "primer_card_form_placeholder_otp" = "123456";
 "primer_card_form_placeholder_phone" = "+82 2 1234 5678";
-"primer_card_form_placeholder_postal" = "04524";
 "primer_card_form_placeholder_retail" = "매장 선택";
-"primer_card_form_placeholder_state" = "서울특별시";
 "primer_card_form_retail_not_implemented" = "소매점 선택 기능이 아직 구현되지 않았습니다";
 "primer_card_form_title" = "카드로 결제";
 "primer_checkout_dismissing" = "닫는 중...";

@@ -8,12 +8,12 @@
 // swiftlint:disable type_body_length
 // swiftlint:disable file_length
 
+@_spi(PrimerInternal) import PrimerCore
 @_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerNetworking
+@_spi(PrimerInternal) import PrimerUI
 import SafariServices
 import UIKit
-@_spi(PrimerInternal) import PrimerNetworking
-@_spi(PrimerInternal) import PrimerCore
-@_spi(PrimerInternal) import PrimerUI
 
 final class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationViewModel {
     private(set) var banks: [AdyenBank] = []

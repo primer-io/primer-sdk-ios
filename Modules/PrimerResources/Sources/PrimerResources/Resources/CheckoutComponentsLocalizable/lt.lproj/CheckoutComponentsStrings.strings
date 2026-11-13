@@ -131,9 +131,8 @@
 "primer_card_form_label_retail" = "Prekybos taškas";
 "primer_card_form_label_state" = "Valstija";
 "primer_card_form_network_selector_title" = "Pasirinkite tinklą";
-"primer_card_form_placeholder_address1" = "Gedimino pr. 123";
-"primer_card_form_placeholder_address2" = "Bt. 4B";
-"primer_card_form_placeholder_city" = "Vilnius";
+"primer_card_form_placeholder_address1" = "Gatvė ir namo numeris";
+"primer_card_form_placeholder_address2" = "Butas, biuras, aukštas";
 "primer_card_form_placeholder_country_code" = "Pasirinkite šalį";
 "primer_card_form_placeholder_cvv" = "123";
 "primer_card_form_placeholder_cvv_amex" = "1234";
@@ -141,15 +140,11 @@
 "primer_card_form_placeholder_email" = "jonas.jonaitis@example.com";
 "primer_card_form_placeholder_expiry" = "MM/MM";
 "primer_card_form_placeholder_expiry_alt" = "12/25";
-"primer_card_form_placeholder_first_name" = "Jonas";
-"primer_card_form_placeholder_last_name" = "Jonaitis";
 "primer_card_form_placeholder_name" = "Pilnas vardas";
 "primer_card_form_placeholder_number" = "1234 1234 1234 1234";
 "primer_card_form_placeholder_otp" = "123456";
 "primer_card_form_placeholder_phone" = "+370 612 34567";
-"primer_card_form_placeholder_postal" = "12345";
 "primer_card_form_placeholder_retail" = "Pasirinkite prekybos tašką";
-"primer_card_form_placeholder_state" = "Vilniaus apskritis";
 "primer_card_form_retail_not_implemented" = "Prekybos taško pasirinkimas dar neįgyvendintas";
 "primer_card_form_title" = "Mokėti kortele";
 "primer_checkout_dismissing" = "Uždaroma...";

@@ -109,6 +109,14 @@ final class BackendDrivenCheckoutSetupEndpointTests: XCTestCase {
         XCTAssertNil(body["paymentMethodType"])
     }
 
+    func testOnlyTheCallsThatCreateCarryAnIdempotencyKey() throws {
+        let paymentMethod = try decodePaymentMethod(entry: "\"ON_SELECT\"")
+        XCTAssertNotNil(BackendDrivenCheckoutEndpoint.setup(paymentMethod: paymentMethod).headers?["X-Idempotency-Key"])
+        XCTAssertNotNil(BackendDrivenCheckoutEndpoint.payWithToken(paymentInstrumentTokenId: "t").headers?["X-Idempotency-Key"])
+        XCTAssertNil(BackendDrivenCheckoutEndpoint.pollSetup(setupId: "setup-1").headers?["X-Idempotency-Key"])
+        XCTAssertNil(BackendDrivenCheckoutEndpoint.expandClientSession.headers?["X-Idempotency-Key"])
+    }
+
     func testPollTargetsTheSetupCreatedByTheCollection() throws {
         let paymentMethod = try decodePaymentMethod(entry: "\"ON_SELECT\"")
         let setup = BackendDrivenCheckoutEndpoint.setup(paymentMethod: paymentMethod)

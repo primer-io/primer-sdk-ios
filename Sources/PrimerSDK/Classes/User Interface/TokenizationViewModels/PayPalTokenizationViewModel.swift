@@ -9,11 +9,11 @@
 // swiftlint:disable function_body_length
 
 import AuthenticationServices
+@_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerNetworking
 import SafariServices
 import UIKit
-@_spi(PrimerInternal) import PrimerCore
-@_spi(PrimerInternal) import PrimerNetworking
-@_spi(PrimerInternal) import PrimerFoundation
 
 final class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
 

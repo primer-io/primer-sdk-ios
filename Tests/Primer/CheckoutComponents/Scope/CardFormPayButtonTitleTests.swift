@@ -32,30 +32,44 @@ final class CardFormPayButtonTitleTests: XCTestCase {
         XCTAssertEqual(title(PrimerCardFormUIOptions(), amount: "£10.00"), "Pay")
     }
 
-    func test_payButtonTitle_withCustomText_returnsCustomText() {
+    func test_payButtonTitle_withPlainText_returnsTextAsIs() {
         XCTAssertEqual(title(PrimerCardFormUIOptions(payButtonText: "Complete order"), amount: "£10.00"), "Complete order")
     }
 
-    func test_payButtonTitle_withBlankCustomText_returnsDefaultTitle() {
-        XCTAssertEqual(title(PrimerCardFormUIOptions(payButtonText: "  "), amount: "£10.00"), "Pay")
+    func test_payButtonTitle_withBlankText_returnsDefaultTitle() {
+        XCTAssertEqual(title(PrimerCardFormUIOptions(payButtonText: "  \n"), amount: "£10.00"), "Pay")
     }
 
-    func test_payButtonTitle_withPaddedCustomText_trimsIt() {
-        let options = PrimerCardFormUIOptions(payButtonText: " Buy now ", payButtonAmountVisible: true)
-        XCTAssertEqual(title(options, amount: "£10.00"), "Buy now £10.00")
+    func test_payButtonTitle_withPaddedText_trimsIt() {
+        XCTAssertEqual(title(PrimerCardFormUIOptions(payButtonText: " Buy now "), amount: "£10.00"), "Buy now")
     }
 
-    func test_payButtonTitle_withAmountVisibleAndNoCustomText_usesTranslatedPayWithAmountText() {
-        XCTAssertEqual(title(PrimerCardFormUIOptions(payButtonAmountVisible: true), amount: "10,00 €"), "10,00 € bezahlen")
+    func test_payButtonTitle_withTokenAtStart_replacesIt() {
+        XCTAssertEqual(title(PrimerCardFormUIOptions(payButtonText: "{amount} bezahlen"), amount: "10,00 €"), "10,00 € bezahlen")
     }
 
-    func test_payButtonTitle_withCustomTextAndAmountVisible_appendsAmountToCustomText() {
-        let options = PrimerCardFormUIOptions(payButtonText: "Complete order", payButtonAmountVisible: true)
-        XCTAssertEqual(title(options, amount: "£10.00"), "Complete order £10.00")
+    func test_payButtonTitle_withTokenInMiddle_replacesIt() {
+        XCTAssertEqual(title(PrimerCardFormUIOptions(payButtonText: "Pay {amount} now"), amount: "£10.00"), "Pay £10.00 now")
     }
 
-    func test_payButtonTitle_withAmountVisibleAndNoAmount_returnsTitleAlone() {
-        XCTAssertEqual(title(PrimerCardFormUIOptions(payButtonAmountVisible: true), amount: nil), "Pay")
+    func test_payButtonTitle_withTokenAtEnd_replacesIt() {
+        XCTAssertEqual(title(PrimerCardFormUIOptions(payButtonText: "Complete order {amount}"), amount: "£10.00"), "Complete order £10.00")
+    }
+
+    func test_payButtonTitle_withTwoTokens_replacesBoth() {
+        XCTAssertEqual(title(PrimerCardFormUIOptions(payButtonText: "{amount} or {amount}"), amount: "£10.00"), "£10.00 or £10.00")
+    }
+
+    func test_payButtonTitle_withTokenAndNoAmount_dropsTokenAndCollapsesSpaces() {
+        XCTAssertEqual(title(PrimerCardFormUIOptions(payButtonText: "Pay {amount} now"), amount: nil), "Pay now")
+    }
+
+    func test_payButtonTitle_withOnlyTokenAndNoAmount_returnsDefaultTitle() {
+        XCTAssertEqual(title(PrimerCardFormUIOptions(payButtonText: "{amount}"), amount: nil), "Pay")
+    }
+
+    func test_payButtonTitle_withTextWithoutTokenAndNoAmount_returnsTextAsIs() {
+        XCTAssertEqual(title(PrimerCardFormUIOptions(payButtonText: "Buy now"), amount: nil), "Buy now")
     }
 
     func test_decoding_withoutPayButtonKeys_usesDefaults() throws {
@@ -63,16 +77,14 @@ final class CardFormPayButtonTitleTests: XCTestCase {
 
         XCTAssertFalse(options.payButtonAddNewCard)
         XCTAssertNil(options.payButtonText)
-        XCTAssertFalse(options.payButtonAmountVisible)
     }
 
     func test_decoding_withPayButtonKeys_readsThem() throws {
-        let json = #"{"payButtonAddNewCard":true,"payButtonText":"Complete order","payButtonAmountVisible":true}"#
+        let json = #"{"payButtonAddNewCard":true,"payButtonText":"Complete order {amount}"}"#
         let options = try JSONDecoder().decode(PrimerCardFormUIOptions.self, from: Data(json.utf8))
 
         XCTAssertTrue(options.payButtonAddNewCard)
-        XCTAssertEqual(options.payButtonText, "Complete order")
-        XCTAssertTrue(options.payButtonAmountVisible)
+        XCTAssertEqual(options.payButtonText, "Complete order {amount}")
     }
 
     func test_formattedPayAmount_withoutSurcharge_returnsSessionAmount() async {
@@ -109,8 +121,7 @@ final class CardFormPayButtonTitleTests: XCTestCase {
         PrimerCardFormUIOptions.payButtonTitle(
             options,
             formattedAmount: amount,
-            defaultTitle: "Pay",
-            defaultTitleWithAmount: { "\($0) bezahlen" }
+            defaultTitle: "Pay"
         )
     }
 

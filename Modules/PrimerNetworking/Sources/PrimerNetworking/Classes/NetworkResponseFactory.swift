@@ -31,6 +31,10 @@ import Foundation
     public func model<T>(for response: Data, forMetadata metadata: ResponseMetadata) throws -> T where T: Decodable {
         log(data: response, metadata: metadata)
 
+        if let type = T.self as? NonSuccessDecodable.Type, type.decodableStatusCodes.contains(metadata.statusCode) {
+            return try decoder.decode(T.self, from: response)
+        }
+
         switch metadata.statusCode {
         case 200...299:
             do {
@@ -79,4 +83,8 @@ import Foundation
         \(body)
         """)
     }
+}
+
+@_spi(PrimerInternal) public protocol NonSuccessDecodable {
+    static var decodableStatusCodes: Set<Int> { get }
 }

@@ -274,22 +274,6 @@ enum CheckoutComponentsStrings {
 
   // MARK: - Billing Address Placeholders
 
-  static let firstNamePlaceholder = NSLocalizedString(
-    "primer_card_form_placeholder_first_name",
-    tableName: tableName,
-    bundle: .primerResources,
-    value: "John",
-    comment: "First name placeholder"
-  )
-
-  static let lastNamePlaceholder = NSLocalizedString(
-    "primer_card_form_placeholder_last_name",
-    tableName: tableName,
-    bundle: .primerResources,
-    value: "Doe",
-    comment: "Last name placeholder"
-  )
-
   static let selectCountryPlaceholder = NSLocalizedString(
     "primer_card_form_placeholder_country_code",
     tableName: tableName,
@@ -302,7 +286,7 @@ enum CheckoutComponentsStrings {
     "primer_card_form_placeholder_address1",
     tableName: tableName,
     bundle: .primerResources,
-    value: "123 Main Street",
+    value: "Street and number",
     comment: "Address line 1 placeholder"
   )
 
@@ -310,32 +294,8 @@ enum CheckoutComponentsStrings {
     "primer_card_form_placeholder_address2",
     tableName: tableName,
     bundle: .primerResources,
-    value: "Apt 4B",
+    value: "Apartment, suite, floor",
     comment: "Address line 2 placeholder"
-  )
-
-  static let cityPlaceholder = NSLocalizedString(
-    "primer_card_form_placeholder_city",
-    tableName: tableName,
-    bundle: .primerResources,
-    value: "New York",
-    comment: "City placeholder"
-  )
-
-  static let statePlaceholder = NSLocalizedString(
-    "primer_card_form_placeholder_state",
-    tableName: tableName,
-    bundle: .primerResources,
-    value: "NY",
-    comment: "State placeholder"
-  )
-
-  static let postalCodePlaceholder = NSLocalizedString(
-    "primer_card_form_placeholder_postal",
-    tableName: tableName,
-    bundle: .primerResources,
-    value: "12345",
-    comment: "Postal code placeholder"
   )
 
   // MARK: - Specialized Placeholders

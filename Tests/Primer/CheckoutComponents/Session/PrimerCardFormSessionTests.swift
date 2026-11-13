@@ -321,7 +321,7 @@ final class PrimerCardFormSessionTests: XCTestCase {
 
   func test_payButtonTitle_withCustomText_usesIt() {
     let scope = TrackingFieldScope()
-    scope.cardFormUIOptions = PrimerCardFormUIOptions(payButtonText: "Complete order", payButtonAmountVisible: true)
+    scope.cardFormUIOptions = PrimerCardFormUIOptions(payButtonText: "Complete order")
 
     XCTAssertEqual(PrimerCardFormSession(scope: scope).payButtonTitle, "Complete order")
   }

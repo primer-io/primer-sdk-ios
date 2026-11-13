@@ -10,10 +10,10 @@
 // swiftlint:disable type_body_length
 
 import Foundation
-@_spi(PrimerInternal) import PrimerFoundation
-import UIKit
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerNetworking
+import UIKit
 
 #if canImport(PrimerIPay88MYSDK)
     import PrimerIPay88MYSDK

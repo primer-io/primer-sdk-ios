@@ -131,9 +131,8 @@
 "primer_card_form_label_retail" = "Tirdzniecības vieta";
 "primer_card_form_label_state" = "Novads/reģions";
 "primer_card_form_network_selector_title" = "Izvēlēties tīklu";
-"primer_card_form_placeholder_address1" = "Brīvības iela 123";
-"primer_card_form_placeholder_address2" = "Dzīvoklis 4B";
-"primer_card_form_placeholder_city" = "Rīga";
+"primer_card_form_placeholder_address1" = "Iela un mājas numurs";
+"primer_card_form_placeholder_address2" = "Dzīvoklis, birojs, stāvs";
 "primer_card_form_placeholder_country_code" = "Izvēlieties valsti";
 "primer_card_form_placeholder_cvv" = "123";
 "primer_card_form_placeholder_cvv_amex" = "1234";
@@ -141,15 +140,11 @@
 "primer_card_form_placeholder_email" = "janis.berzins@piemers.lv";
 "primer_card_form_placeholder_expiry" = "MM/GG";
 "primer_card_form_placeholder_expiry_alt" = "12/25";
-"primer_card_form_placeholder_first_name" = "Jānis";
-"primer_card_form_placeholder_last_name" = "Bērziņš";
 "primer_card_form_placeholder_name" = "Pilns vārds";
 "primer_card_form_placeholder_number" = "1234 1234 1234 1234";
 "primer_card_form_placeholder_otp" = "123456";
 "primer_card_form_placeholder_phone" = "+371 2012 3456";
-"primer_card_form_placeholder_postal" = "LV-1010";
 "primer_card_form_placeholder_retail" = "Izvēlēties vietu";
-"primer_card_form_placeholder_state" = "Rīga";
 "primer_card_form_retail_not_implemented" = "Tirdzniecības vietas izvēle vēl nav ieviesta";
 "primer_card_form_title" = "Maksāt ar karti";
 "primer_checkout_dismissing" = "Notiek aizvēršana...";

@@ -11,11 +11,11 @@
 // swiftlint:disable type_body_length
 
 import Foundation
-@_spi(PrimerInternal) import PrimerFoundation
-import UIKit
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerNetworking
 @_spi(PrimerInternal) import PrimerUI
+import UIKit
 
 class Input {
     var name: String?
@@ -549,9 +549,9 @@ final class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
         paymentMethodTokenData: PrimerPaymentMethodTokenData
     ) async throws -> String? {
         if decodedJWTToken.intent?.contains("_REDIRECTION") == true {
-            return try await handleRedirectionForDecodedClientToken(decodedJWTToken)
+            try await handleRedirectionForDecodedClientToken(decodedJWTToken)
         } else if decodedJWTToken.intent == RequiredActionName.paymentMethodVoucher.rawValue {
-            return try await handlePaymentMethodVoucherForDecodedClientToken(decodedJWTToken)
+            try await handlePaymentMethodVoucherForDecodedClientToken(decodedJWTToken)
         } else {
             throw handled(primerError: .invalidValue(key: "resumeToken"))
         }

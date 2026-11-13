@@ -131,9 +131,8 @@
 "primer_card_form_label_retail" = "Premis runcit";
 "primer_card_form_label_state" = "Negeri";
 "primer_card_form_network_selector_title" = "Pilih Rangkaian";
-"primer_card_form_placeholder_address1" = "No. 123 Jalan Utama";
-"primer_card_form_placeholder_address2" = "Pangsapuri 4B";
-"primer_card_form_placeholder_city" = "Kuala Lumpur";
+"primer_card_form_placeholder_address1" = "Nama jalan dan nombor";
+"primer_card_form_placeholder_address2" = "Pangsapuri, unit, tingkat";
 "primer_card_form_placeholder_country_code" = "Pilih negara";
 "primer_card_form_placeholder_cvv" = "123";
 "primer_card_form_placeholder_cvv_amex" = "1234";
@@ -141,15 +140,11 @@
 "primer_card_form_placeholder_email" = "ahmad.abdullah@contoh.com";
 "primer_card_form_placeholder_expiry" = "BB/TT";
 "primer_card_form_placeholder_expiry_alt" = "12/25";
-"primer_card_form_placeholder_first_name" = "Ahmad";
-"primer_card_form_placeholder_last_name" = "Abdullah";
 "primer_card_form_placeholder_name" = "Nama penuh";
 "primer_card_form_placeholder_number" = "1234 1234 1234 1234";
 "primer_card_form_placeholder_otp" = "123456";
 "primer_card_form_placeholder_phone" = "+60 3 1234 5678";
-"primer_card_form_placeholder_postal" = "50000";
 "primer_card_form_placeholder_retail" = "Pilih premis";
-"primer_card_form_placeholder_state" = "Selangor";
 "primer_card_form_retail_not_implemented" = "Pemilihan premis runcit belum dilaksanakan";
 "primer_card_form_title" = "Bayar dengan kad";
 "primer_checkout_dismissing" = "Menutup...";

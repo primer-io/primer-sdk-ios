@@ -131,9 +131,8 @@
 "primer_card_form_label_retail" = "Verkooppunt";
 "primer_card_form_label_state" = "Provincie";
 "primer_card_form_network_selector_title" = "Selecteer netwerk";
-"primer_card_form_placeholder_address1" = "Damstraat 123";
-"primer_card_form_placeholder_address2" = "Appartement 4B";
-"primer_card_form_placeholder_city" = "Amsterdam";
+"primer_card_form_placeholder_address1" = "Straat en huisnummer";
+"primer_card_form_placeholder_address2" = "Appartement, unit, verdieping";
 "primer_card_form_placeholder_country_code" = "Selecteer land";
 "primer_card_form_placeholder_cvv" = "123";
 "primer_card_form_placeholder_cvv_amex" = "1234";
@@ -141,15 +140,11 @@
 "primer_card_form_placeholder_email" = "jan.devries@voorbeeld.nl";
 "primer_card_form_placeholder_expiry" = "MM/JJ";
 "primer_card_form_placeholder_expiry_alt" = "12/25";
-"primer_card_form_placeholder_first_name" = "Jan";
-"primer_card_form_placeholder_last_name" = "de Vries";
 "primer_card_form_placeholder_name" = "Volledige naam";
 "primer_card_form_placeholder_number" = "1234 1234 1234 1234";
 "primer_card_form_placeholder_otp" = "123456";
 "primer_card_form_placeholder_phone" = "+31 20 123 4567";
-"primer_card_form_placeholder_postal" = "1012 AB";
 "primer_card_form_placeholder_retail" = "Selecteer verkooppunt";
-"primer_card_form_placeholder_state" = "Noord-Holland";
 "primer_card_form_retail_not_implemented" = "Selectie verkooppunt nog niet geïmplementeerd";
 "primer_card_form_title" = "Betaal met kaart";
 "primer_checkout_dismissing" = "Bezig met sluiten...";

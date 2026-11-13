@@ -131,9 +131,8 @@
 "primer_card_form_label_retail" = "ร้านค้าปลีก";
 "primer_card_form_label_state" = "รัฐ";
 "primer_card_form_network_selector_title" = "เลือกเครือข่าย";
-"primer_card_form_placeholder_address1" = "123 ถนนสุขุมวิท";
-"primer_card_form_placeholder_address2" = "ห้อง 4B";
-"primer_card_form_placeholder_city" = "กรุงเทพฯ";
+"primer_card_form_placeholder_address1" = "ถนนและบ้านเลขที่";
+"primer_card_form_placeholder_address2" = "อพาร์ตเมนต์, ห้อง, ชั้น";
 "primer_card_form_placeholder_country_code" = "เลือกประเทศ";
 "primer_card_form_placeholder_cvv" = "123";
 "primer_card_form_placeholder_cvv_amex" = "1234";
@@ -141,15 +140,11 @@
 "primer_card_form_placeholder_email" = "somchai.jaidee@example.com";
 "primer_card_form_placeholder_expiry" = "MM/YY";
 "primer_card_form_placeholder_expiry_alt" = "12/25";
-"primer_card_form_placeholder_first_name" = "สมชาย";
-"primer_card_form_placeholder_last_name" = "ใจดี";
 "primer_card_form_placeholder_name" = "ชื่อ-นามสกุล";
 "primer_card_form_placeholder_number" = "1234 1234 1234 1234";
 "primer_card_form_placeholder_otp" = "123456";
 "primer_card_form_placeholder_phone" = "+66 2 123 4567";
-"primer_card_form_placeholder_postal" = "10100";
 "primer_card_form_placeholder_retail" = "เลือกร้านค้า";
-"primer_card_form_placeholder_state" = "กรุงเทพฯ";
 "primer_card_form_retail_not_implemented" = "ยังไม่รองรับการเลือกร้านค้าปลีก";
 "primer_card_form_title" = "ชำระด้วยบัตร";
 "primer_checkout_dismissing" = "กำลังปิด...";

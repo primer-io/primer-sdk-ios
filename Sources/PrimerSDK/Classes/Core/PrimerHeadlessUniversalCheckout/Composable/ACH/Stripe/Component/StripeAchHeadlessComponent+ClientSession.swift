@@ -4,9 +4,9 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+@_spi(PrimerInternal) import PrimerCore
 import PrimerFoundation
 import UIKit
-@_spi(PrimerInternal) import PrimerCore
 
 // MARK: - Client session methods
 extension StripeAchHeadlessComponent {

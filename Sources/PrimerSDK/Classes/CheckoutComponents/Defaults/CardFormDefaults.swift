@@ -216,8 +216,9 @@ public struct CardSubmitButton: View {
   @Environment(\.designTokens) private var tokens
 
   public var body: some View {
-    Button(action: session.submit) {
-      Text(session.payButtonTitle)
+    let title = session.payButtonTitle
+    return Button(action: session.submit) {
+      Text(title)
         .frame(maxWidth: .infinity)
         .padding(PrimerSpacing.medium(tokens: tokens))
     }
@@ -225,7 +226,7 @@ public struct CardSubmitButton: View {
     .accessibility(
       config: .submitButton(
         identifier: AccessibilityIdentifiers.CardForm.submitButton,
-        title: session.payButtonTitle,
+        title: title,
         isEnabled: session.state.isValid,
         isLoading: session.state.isLoading
       ))

@@ -55,14 +55,9 @@
 "primer_card_form_placeholder_cvv_amex" = "1234";
 "primer_card_form_placeholder_cvv_standard" = "123";
 "primer_card_form_placeholder_country_code" = "Mamlakatni tanlang";
-"primer_card_form_placeholder_postal" = "100000";
-"primer_card_form_placeholder_city" = "Toshkent";
-"primer_card_form_placeholder_state" = "Toshkent viloyati";
-"primer_card_form_placeholder_address1" = "Amir Temur ko'chasi 123";
-"primer_card_form_placeholder_address2" = "Kvartira 4B";
+"primer_card_form_placeholder_address1" = "Ko'cha va uy raqami";
+"primer_card_form_placeholder_address2" = "Kvartira, ofis, qavat";
 "primer_card_form_placeholder_phone" = "+998 90 123 45 67";
-"primer_card_form_placeholder_first_name" = "Aziz";
-"primer_card_form_placeholder_last_name" = "Karimov";
 "primer_card_form_placeholder_email" = "aziz.karimov@example.com";
 "primer_card_form_placeholder_retail" = "Nuqtani tanlang";
 "primer_card_form_placeholder_otp" = "123456";

@@ -6,11 +6,11 @@
 
 // swiftlint:disable file_length
 
-@_spi(PrimerInternal) import PrimerFoundation
-import UIKit
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerNetworking
 @_spi(PrimerInternal) import PrimerUI
+import UIKit
 
 extension FormPaymentMethodTokenizationViewModel {
 

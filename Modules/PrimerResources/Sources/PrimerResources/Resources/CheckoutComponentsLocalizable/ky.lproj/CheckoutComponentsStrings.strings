@@ -55,14 +55,9 @@
 "primer_card_form_placeholder_cvv_amex" = "1234";
 "primer_card_form_placeholder_cvv_standard" = "123";
 "primer_card_form_placeholder_country_code" = "Өлкөнү тандаңыз";
-"primer_card_form_placeholder_postal" = "720000";
-"primer_card_form_placeholder_city" = "Бишкек";
-"primer_card_form_placeholder_state" = "Чүй";
-"primer_card_form_placeholder_address1" = "Чүй проспекти 123";
-"primer_card_form_placeholder_address2" = "Кв. 4Б";
+"primer_card_form_placeholder_address1" = "Көчө жана үй номери";
+"primer_card_form_placeholder_address2" = "Батир, кеңсе, кабат";
 "primer_card_form_placeholder_phone" = "+996 (555) 123-456";
-"primer_card_form_placeholder_first_name" = "Азамат";
-"primer_card_form_placeholder_last_name" = "Асанов";
 "primer_card_form_placeholder_email" = "azamat.asanov@example.com";
 "primer_card_form_placeholder_retail" = "Чекитти тандаңыз";
 "primer_card_form_placeholder_otp" = "123456";

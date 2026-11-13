@@ -5,9 +5,9 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 @preconcurrency import PassKit
-import SwiftUI
-@_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
+import SwiftUI
 
 @available(iOS 15.0, *)
 @MainActor
@@ -135,6 +135,13 @@ final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
   }
 
   private func performPayment() async {
+    var shippingSession: ApplePayShippingSession?
+    ExpressCheckoutShippingLog.clearContext()
+    // Runs after the payment log, which is sent synchronously and so still carries the attempt's flag.
+    defer {
+      shippingSession?.finish()
+      ExpressCheckoutShippingLog.clearContext()
+    }
     structuredState.isLoading = true
 
     do {
@@ -149,10 +156,11 @@ final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
       )
 
       // Built per attempt: the option list, the commit and the gate must not survive a retry.
-      let shippingSession = makeShippingSession()
-      let applePayRequest = try applePayRequestFactory(shippingSession.mode)
+      let session = makeShippingSession()
+      shippingSession = session
+      let applePayRequest = try applePayRequestFactory(session.mode)
 
-      let coordinator = authorizationCoordinatorFactory(shippingSession)
+      let coordinator = authorizationCoordinatorFactory(session)
       authorizationCoordinator = coordinator
 
       let payment = try await coordinator.authorize(

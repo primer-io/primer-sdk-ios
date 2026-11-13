@@ -131,9 +131,8 @@
 "primer_card_form_label_retail" = "Utsalgssted";
 "primer_card_form_label_state" = "Fylke";
 "primer_card_form_network_selector_title" = "Velg nettverk";
-"primer_card_form_placeholder_address1" = "Storgata 123";
-"primer_card_form_placeholder_address2" = "Leil. 4B";
-"primer_card_form_placeholder_city" = "Oslo";
+"primer_card_form_placeholder_address1" = "Gatenavn og husnummer";
+"primer_card_form_placeholder_address2" = "Leilighet, kontor, etasje";
 "primer_card_form_placeholder_country_code" = "Velg land";
 "primer_card_form_placeholder_cvv" = "123";
 "primer_card_form_placeholder_cvv_amex" = "1234";
@@ -141,15 +140,11 @@
 "primer_card_form_placeholder_email" = "ole.hansen@eksempel.no";
 "primer_card_form_placeholder_expiry" = "MM/ÅÅ";
 "primer_card_form_placeholder_expiry_alt" = "12/25";
-"primer_card_form_placeholder_first_name" = "Ole";
-"primer_card_form_placeholder_last_name" = "Hansen";
 "primer_card_form_placeholder_name" = "Fullt navn";
 "primer_card_form_placeholder_number" = "1234 1234 1234 1234";
 "primer_card_form_placeholder_otp" = "123456";
 "primer_card_form_placeholder_phone" = "+47 22 12 34 56";
-"primer_card_form_placeholder_postal" = "0150";
 "primer_card_form_placeholder_retail" = "Velg utsalgssted";
-"primer_card_form_placeholder_state" = "Oslo";
 "primer_card_form_retail_not_implemented" = "Valg av utsalgssted er ikke implementert ennå";
 "primer_card_form_title" = "Betal med kort";
 "primer_checkout_dismissing" = "Lukker...";

@@ -131,9 +131,8 @@
 "primer_card_form_label_retail" = "Ponto de venda";
 "primer_card_form_label_state" = "Região";
 "primer_card_form_network_selector_title" = "Selecionar rede";
-"primer_card_form_placeholder_address1" = "Rua da Prata 123";
-"primer_card_form_placeholder_address2" = "Apto 4B";
-"primer_card_form_placeholder_city" = "Lisboa";
+"primer_card_form_placeholder_address1" = "Rua e número";
+"primer_card_form_placeholder_address2" = "Apartamento, escritório, andar";
 "primer_card_form_placeholder_country_code" = "Selecione o país";
 "primer_card_form_placeholder_cvv" = "123";
 "primer_card_form_placeholder_cvv_amex" = "1234";
@@ -141,15 +140,11 @@
 "primer_card_form_placeholder_email" = "joao.silva@exemplo.com";
 "primer_card_form_placeholder_expiry" = "MM/AA";
 "primer_card_form_placeholder_expiry_alt" = "12/25";
-"primer_card_form_placeholder_first_name" = "João";
-"primer_card_form_placeholder_last_name" = "Silva";
 "primer_card_form_placeholder_name" = "Nome completo";
 "primer_card_form_placeholder_number" = "1234 1234 1234 1234";
 "primer_card_form_placeholder_otp" = "123456";
 "primer_card_form_placeholder_phone" = "+351 21 123 4567";
-"primer_card_form_placeholder_postal" = "1000-001";
 "primer_card_form_placeholder_retail" = "Selecione o ponto de venda";
-"primer_card_form_placeholder_state" = "Lisboa";
 "primer_card_form_retail_not_implemented" = "Seleção de ponto de venda ainda não implementada";
 "primer_card_form_title" = "Pagar com cartão";
 "primer_checkout_dismissing" = "A fechar...";

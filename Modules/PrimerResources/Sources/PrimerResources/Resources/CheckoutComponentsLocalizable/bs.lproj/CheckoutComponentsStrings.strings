@@ -55,14 +55,9 @@
 "primer_card_form_placeholder_cvv_amex" = "1234";
 "primer_card_form_placeholder_cvv_standard" = "123";
 "primer_card_form_placeholder_country_code" = "Odaberi državu";
-"primer_card_form_placeholder_postal" = "71000";
-"primer_card_form_placeholder_city" = "Sarajevo";
-"primer_card_form_placeholder_state" = "Kanton Sarajevo";
-"primer_card_form_placeholder_address1" = "Maršala Tita 123";
-"primer_card_form_placeholder_address2" = "Stan 4B";
+"primer_card_form_placeholder_address1" = "Ulica i broj";
+"primer_card_form_placeholder_address2" = "Stan, ured, sprat";
 "primer_card_form_placeholder_phone" = "+387 (33) 123–456";
-"primer_card_form_placeholder_first_name" = "Emir";
-"primer_card_form_placeholder_last_name" = "Hodžić";
 "primer_card_form_placeholder_email" = "emir.hodzic@primer.ba";
 "primer_card_form_placeholder_retail" = "Odaberi prodajno mjesto";
 "primer_card_form_placeholder_otp" = "123456";
