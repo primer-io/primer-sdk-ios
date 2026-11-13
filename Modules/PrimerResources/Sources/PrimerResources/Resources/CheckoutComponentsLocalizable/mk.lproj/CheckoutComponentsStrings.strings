@@ -237,7 +237,7 @@
 "accessibility_card_form_otp_hint" = "Внесете еднократна лозинка";
 
 "primer_web_redirect_button_continue" = "Продолжете со %@";
-"primer_web_redirect_description" = "Ще бидете пренасочени за да го завршите плаќањето";
+"primer_web_redirect_description" = "Ќе бидете пренасочени за да го завршите плаќањето";
 "accessibility_web_redirect_submit_button" = "Платете со %@";
 "accessibility_web_redirect_loading" = "Обработка на плаќањето";
 "accessibility_web_redirect_redirecting" = "Отворање на страницата за плаќање";

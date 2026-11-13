@@ -32,7 +32,7 @@
 "accessibility_card_form_submit_disabled" = "Nupp keelatud. Makse lubamiseks täida kõik nõutavad väljad";
 "accessibility_card_form_submit_hint" = "Esita makse";
 "accessibility_card_form_submit_label" = "Esita makse";
-"accessibility_card_form_submit_loading" = "Maksed töödeldakse, palun oota";
+"accessibility_card_form_submit_loading" = "Makse töötlemine, palun oota";
 "accessibility_checkout_error_icon" = "Viga";
 "accessibility_checkout_success_icon" = "Makse õnnestus";
 "accessibility_common_back" = "Mine tagasi";
@@ -259,10 +259,10 @@
 "primer_form_redirect_otp_code_required" = "OTP kood on kohustuslik";
 "primer_form_redirect_pending_message" = "Lõpetage makse rakenduses";
 "primer_form_redirect_pending_title" = "Lõpetage makse";
-"primer_qr_code_scan_instruction" = "Skannige maksmiseks või tehke kuuatõmmis";
-"primer_qr_code_upload_instruction" = "Laadige kuuatõmmis oma pangarakendusse üles";
+"primer_qr_code_scan_instruction" = "Skannige maksmiseks või tehke kuvatõmmis";
+"primer_qr_code_upload_instruction" = "Laadige kuvatõmmis oma pangarakendusse üles";
 "accessibility_qr_code_image" = "QR-kood maksmiseks";
-"accessibility_qr_code_scan_hint" = "Tehke kuuatõmmis QR-koodi salvestamiseks";
+"accessibility_qr_code_scan_hint" = "Tehke kuvatõmmis QR-koodi salvestamiseks";
 "accessibility_qr_code_success_icon" = "Makse õnnestus";
 "accessibility_qr_code_failure_icon" = "Makse ebaõnnestus";
 

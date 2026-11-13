@@ -245,9 +245,9 @@
 "accessibility_web_redirect_success" = "Төлөм ийгиликтүү";
 "accessibility_web_redirect_failure" = "Төлөм ийгиликсиз: %@";
 "accessibility_form_redirect_otp_hint" = "Банк колдонмоңуздан 6 сандык кодду киргизиңиз";
-"accessibility_form_redirect_otp_label" = "6 сандык BLIK коду, миндеттүү";
+"accessibility_form_redirect_otp_label" = "6 сандык BLIK коду, милдеттүү";
 "accessibility_form_redirect_phone_hint" = "MBWay-де катталган телефон номериңизди киргизиңиз";
-"accessibility_form_redirect_phone_label" = "Телефон номери, миндеттүү";
+"accessibility_form_redirect_phone_label" = "Телефон номери, милдеттүү";
 "primer_form_redirect_blik_otp_helper" = "Банк колдонмоңузду ачып, BLIK кодун түзүңүз.";
 "primer_form_redirect_blik_otp_label" = "6 сандык код";
 "primer_form_redirect_blik_otp_placeholder" = "000000";
@@ -256,7 +256,7 @@
 "primer_form_redirect_mbway_pending_message" = "Төлөмдү MB WAY колдонмосунда аяктаңыз";
 "primer_form_redirect_mbway_submit_button" = "MB WAY менен төлөө";
 "primer_form_redirect_otp_code_invalid" = "Жарамдуу 6 сандык кодду киргизиңиз";
-"primer_form_redirect_otp_code_required" = "OTP коду миндеттүү";
+"primer_form_redirect_otp_code_required" = "OTP коду милдеттүү";
 "primer_form_redirect_pending_message" = "Төлөмдү колдонмодо аяктаңыз";
 "primer_form_redirect_pending_title" = "Төлөмдү аяктаңыз";
 "primer_qr_code_scan_instruction" = "Төлөө үчүн сканерлеңиз же скриншот тартыңыз";

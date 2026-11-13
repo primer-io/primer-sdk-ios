@@ -29,7 +29,7 @@
 "accessibility_card_form_network_selector_hint" = "Sélectionner un autre type de carte";
 "accessibility_card_form_network_selector_inline_hint" = "Sélectionner ce type de carte";
 "accessibility_card_form_network_selector_label" = "Choisir le type de carte";
-"accessibility_card_form_submit_disabled" = "Remplissez tous les champs obligatoires avant de payer";
+"accessibility_card_form_submit_disabled" = "Bouton désactivé. Remplissez tous les champs obligatoires pour activer le paiement";
 "accessibility_card_form_submit_hint" = "Soumettre le paiement";
 "accessibility_card_form_submit_label" = "Payer";
 "accessibility_card_form_submit_loading" = "Paiement en cours, veuillez patienter";
@@ -139,7 +139,7 @@
 "primer_card_form_placeholder_cvv_standard" = "123";
 "primer_card_form_placeholder_email" = "jean.dupont@exemple.fr";
 "primer_card_form_placeholder_expiry" = "MM/AA";
-"primer_card_form_placeholder_expiry_alt" = "12/28";
+"primer_card_form_placeholder_expiry_alt" = "12/25";
 "primer_card_form_placeholder_name" = "Nom complet";
 "primer_card_form_placeholder_number" = "1234 1234 1234 1234";
 "primer_card_form_placeholder_otp" = "123456";
@@ -168,7 +168,7 @@
 "primer_common_button_retry" = "Réessayer";
 "primer_common_display_name_pay_amount" = "Payer avec %1$@";
 "primer_common_error_generic" = "Une erreur inconnue s'est produite.";
-"primer_common_error_unexpected" = "Une erreur s'est produite.";
+"primer_common_error_unexpected" = "Une erreur inattendue s'est produite.";
 "primer_country_no_results" = "Aucun pays trouvé";
 "primer_country_placeholder_search" = "Rechercher";
 "primer_country_selector_placeholder" = "Sélectionner un pays";
