@@ -297,6 +297,16 @@ final class VaultManagerTests: XCTestCase {
         XCTAssertEqual(selectCalls.map(\.network), ["AMEX"])
     }
 
+    func test_startPaymentFlow_savedCardWithoutAKnownNetwork_selectsOther() throws {
+        let noNetwork = try instrumentData(json: "{}")
+        let unknownNetwork = try instrumentData(json: #"{"binData":{"network":"UNKNOWN"}}"#)
+
+        for data in [noNetwork, unknownNetwork] {
+            let selectCalls = selectCallsAtExchange(for: savedMethod(type: "PAYMENT_CARD", instrumentType: .paymentCard, instrumentData: data))
+            XCTAssertEqual(selectCalls.map(\.network), ["OTHER"])
+        }
+    }
+
     func test_startPaymentFlow_savedNonCard_selectsTypeWithoutNetwork() {
         let selectCalls = selectCallsAtExchange(for: savedMethod(type: "PAYPAL", instrumentType: .payPalBillingAgreement))
 
@@ -355,15 +365,20 @@ final class VaultManagerTests: XCTestCase {
 
     private func savedMethod(
         type: String,
-        instrumentType: PaymentInstrumentType
+        instrumentType: PaymentInstrumentType,
+        instrumentData: Response.Body.Tokenization.PaymentInstrumentData = Mocks.primerPaymentMethodInstrumentationData
     ) -> PrimerHeadlessUniversalCheckout.VaultedPaymentMethod {
         PrimerHeadlessUniversalCheckout.VaultedPaymentMethod(
             id: "saved-id",
             paymentMethodType: type,
             paymentInstrumentType: instrumentType,
-            paymentInstrumentData: Mocks.primerPaymentMethodInstrumentationData,
+            paymentInstrumentData: instrumentData,
             analyticsId: "analytics-id"
         )
+    }
+
+    private func instrumentData(json: String) throws -> Response.Body.Tokenization.PaymentInstrumentData {
+        try JSONDecoder().decode(Response.Body.Tokenization.PaymentInstrumentData.self, from: Data(json.utf8))
     }
 
     var tokenizationResponseBody: Response.Body.Tokenization {

@@ -174,9 +174,11 @@ extension PrimerHeadlessUniversalCheckout {
                     }
 
                     let isCard = vaultedPaymentMethod.paymentMethodType == PrimerPaymentMethodType.paymentCard.rawValue
+                    let savedCardNetwork = vaultedPaymentMethod.paymentInstrumentData.binData?.network?.uppercased()
+                    let cardNetwork = [nil, "UNKNOWN"].contains(savedCardNetwork) ? "OTHER" : savedCardNetwork
                     try await clientSessionActionsModule.selectPaymentMethodIfNeeded(
                         vaultedPaymentMethod.paymentMethodType,
-                        cardNetwork: isCard ? vaultedPaymentMethod.paymentInstrumentData.binData?.network : nil
+                        cardNetwork: isCard ? cardNetwork : nil
                     )
 
                     await PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: vaultedPaymentMethod.paymentMethodType)
