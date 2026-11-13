@@ -341,15 +341,20 @@ extension PrimerCardNumberEntryMetadata {
 
 final class StubCardValidationService: CardValidationService {
     var stubbedMetadata: PrimerCardNumberEntryMetadata?
-    var metadataDelay: TimeInterval = 0
     private let lock = NSLock()
-    private var firstLookupDate: Date?
     private var recordedLookupRequests: [String] = []
+    private var recordedRemoteMetadataRequests: [String] = []
 
     var lookupRequests: [String] {
         lock.lock()
         defer { lock.unlock() }
         return recordedLookupRequests
+    }
+
+    var remoteMetadataRequests: [String] {
+        lock.lock()
+        defer { lock.unlock() }
+        return recordedRemoteMetadataRequests
     }
 
     func validateCardNetworks(withCardNumber cardNumber: String) {}
@@ -369,8 +374,13 @@ final class StubCardValidationService: CardValidationService {
         lock.lock()
         defer { lock.unlock() }
         recordedLookupRequests.append(cardNumber)
-        let firstLookupDate = firstLookupDate ?? Date()
-        self.firstLookupDate = firstLookupDate
-        return Date().timeIntervalSince(firstLookupDate) >= metadataDelay ? stubbedMetadata : nil
+        return stubbedMetadata
+    }
+
+    func remoteMetadata(forCardNumber cardNumber: String) -> PrimerCardNumberEntryMetadata? {
+        lock.lock()
+        defer { lock.unlock() }
+        recordedRemoteMetadataRequests.append(cardNumber)
+        return stubbedMetadata
     }
 }

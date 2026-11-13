@@ -5,14 +5,15 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
-@_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerNetworking
 
 protocol CardValidationService {
     func validateCardNetworks(withCardNumber cardNumber: String)
     func createValidationMetadata(networks: [CardNetwork], source: PrimerCardValidationSource) -> PrimerCardNumberEntryMetadata
     func cachedMetadata(forCardNumber cardNumber: String) -> PrimerCardNumberEntryMetadata?
+    func remoteMetadata(forCardNumber cardNumber: String) async -> PrimerCardNumberEntryMetadata?
 }
 
 final class DefaultCardValidationService: CardValidationService, LogReporter {
@@ -80,6 +81,23 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
         getCachedMetadata(for: binKey(for: cardNumber.withoutWhiteSpace))
     }
 
+    func remoteMetadata(forCardNumber cardNumber: String) async -> PrimerCardNumberEntryMetadata? {
+        let bin = binKey(for: cardNumber.withoutWhiteSpace)
+        if let cached = getCachedMetadata(for: bin) {
+            return cached
+        }
+
+        guard let token = PrimerAPIConfigurationModule.decodedJWTToken,
+              let response = try? await apiClient.fetchBinData(clientToken: token, bin: bin),
+              !response.binData.isEmpty
+        else { return nil }
+
+        let (metadata, binData) = remoteResult(from: response)
+        setCachedMetadata(metadata, for: bin)
+        setCachedBinData(binData, for: bin)
+        return metadata
+    }
+
     private func binKey(for cardNumber: String) -> String {
         String(cardNumber.prefix(Self.maximumBinLength))
     }
@@ -139,32 +157,10 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
                     return
                 }
 
-                let enrichedNetworks = result.binData.compactMap { item -> PrimerCardNetwork? in
-                    guard let networkStr = item.network else { return nil }
-                    let cardNetwork = CardNetwork(cardNetworkStr: networkStr)
-                    return PrimerCardNetwork(
-                        displayName: item.displayName ?? cardNetwork.displayName,
-                        network: cardNetwork,
-                        issuerCountryCode: item.issuerCountryCode,
-                        issuerName: item.issuerName,
-                        accountFundingType: item.accountFundingType,
-                        prepaidReloadableIndicator: item.prepaidReloadableIndicator,
-                        productUsageType: item.productUsageType,
-                        productCode: item.productCode,
-                        productName: item.productName,
-                        issuerCurrencyCode: item.issuerCurrencyCode,
-                        regionalRestriction: item.regionalRestriction,
-                        accountNumberType: item.accountNumberType
-                    )
-                }
-
-                let networks = enrichedNetworks.map(\.network)
-                let metadata = createValidationMetadata(networks: networks, source: .remote, enrichedNetworks: enrichedNetworks)
+                let (metadata, binData) = remoteResult(from: result)
 
                 handle(cardMetadata: metadata, forCardState: cardState)
 
-                // The metadata's order is the merchant's, whatever order the server sent
-                let binData = buildBinData(from: metadata.detectedCardNetworks.items, firstDigits: result.firstDigits, status: .complete)
                 setCachedBinData(binData, for: binKey(for: cardState.cardNumber))
                 delegate?.primerRawDataManager?(rawDataManager, didReceiveBinData: binData)
             } catch {
@@ -234,6 +230,34 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
         Task {
             try? await self.rawDataManager.validateRawData(withCardNetworksMetadata: cardMetadata)
         }
+    }
+
+    private func remoteResult(from response: Response.Body.Bin.Data) -> (metadata: PrimerCardNumberEntryMetadata, binData: PrimerBinData) {
+        let enrichedNetworks = response.binData.compactMap { item -> PrimerCardNetwork? in
+            guard let networkStr = item.network else { return nil }
+            let cardNetwork = CardNetwork(cardNetworkStr: networkStr)
+            return PrimerCardNetwork(
+                displayName: item.displayName ?? cardNetwork.displayName,
+                network: cardNetwork,
+                issuerCountryCode: item.issuerCountryCode,
+                issuerName: item.issuerName,
+                accountFundingType: item.accountFundingType,
+                prepaidReloadableIndicator: item.prepaidReloadableIndicator,
+                productUsageType: item.productUsageType,
+                productCode: item.productCode,
+                productName: item.productName,
+                issuerCurrencyCode: item.issuerCurrencyCode,
+                regionalRestriction: item.regionalRestriction,
+                accountNumberType: item.accountNumberType
+            )
+        }
+
+        let networks = enrichedNetworks.map(\.network)
+        let metadata = createValidationMetadata(networks: networks, source: .remote, enrichedNetworks: enrichedNetworks)
+
+        // The metadata's order is the merchant's, whatever order the server sent
+        let binData = buildBinData(from: metadata.detectedCardNetworks.items, firstDigits: response.firstDigits, status: .complete)
+        return (metadata, binData)
     }
 
     private func buildBinData(from networks: [PrimerCardNetwork], firstDigits: String?, status: PrimerBinDataStatus) -> PrimerBinData {

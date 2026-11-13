@@ -14,6 +14,7 @@ final class RawDataManagerSelectTests: XCTestCase {
     private var headlessCheckoutDelegate: MockPrimerHeadlessUniversalCheckoutDelegate!
     private var tokenizationService: MockTokenizationService!
     private var clientSessionActions: MockClientSessionActionsModule!
+    private var cardLookup: StubCardValidationService!
     private var sut: RawDataManager!
 
     override func setUpWithError() throws {
@@ -21,6 +22,7 @@ final class RawDataManagerSelectTests: XCTestCase {
         headlessCheckoutDelegate = MockPrimerHeadlessUniversalCheckoutDelegate()
         tokenizationService = MockTokenizationService()
         clientSessionActions = MockClientSessionActionsModule()
+        cardLookup = StubCardValidationService()
 
         sut = try RawDataManager(paymentMethodType: "PAYMENT_CARD")
         sut.tokenizationService = tokenizationService
@@ -31,6 +33,7 @@ final class RawDataManagerSelectTests: XCTestCase {
 
     override func tearDownWithError() throws {
         sut = nil
+        cardLookup = nil
         clientSessionActions = nil
         tokenizationService = nil
         headlessCheckoutDelegate = nil
@@ -44,31 +47,17 @@ final class RawDataManagerSelectTests: XCTestCase {
         XCTAssertEqual(selectCalls.map(\.network), ["CARTES_BANCAIRES"])
     }
 
-    func test_submit_card_lookupStillRunning_waitsForItsNetwork() {
-        let selectCalls = selectCallsAtTokenize(
-            of: coBadgedCard(pickedNetwork: nil),
-            lookupNetworks: [.cartesBancaires, .masterCard],
-            lookupDelay: 0.5
-        )
-
-        XCTAssertEqual(selectCalls.map(\.network), ["CARTES_BANCAIRES"])
-    }
-
-    func test_submit_card_noLookupResult_waitsThenSelectsTheFirstDigitsNetwork() {
-        let submitted = Date()
-
+    func test_submit_card_lookupFails_selectsTheFirstDigitsNetwork() {
         let selectCalls = selectCallsAtTokenize(of: coBadgedCard(pickedNetwork: nil), lookupNetworks: nil)
 
-        XCTAssertGreaterThanOrEqual(Date().timeIntervalSince(submitted), 2)
+        XCTAssertEqual(cardLookup.remoteMetadataRequests, ["5017679210000700"])
         XCTAssertEqual(selectCalls.map(\.network), ["MAESTRO"])
     }
 
-    func test_submit_card_noSurcharge_selectsWithoutWaitingForANetwork() {
-        let submitted = Date()
-
+    func test_submit_card_noSurcharge_selectsWithoutANetworkOrALookup() {
         let selectCalls = selectCallsAtTokenize(of: coBadgedCard(pickedNetwork: nil), lookupNetworks: nil, surcharged: false)
 
-        XCTAssertLessThan(Date().timeIntervalSince(submitted), 2)
+        XCTAssertTrue(cardLookup.remoteMetadataRequests.isEmpty)
         XCTAssertEqual(selectCalls.map(\.network), [nil])
     }
 
@@ -143,17 +132,14 @@ final class RawDataManagerSelectTests: XCTestCase {
     private func selectCallsAtTokenize(
         of card: PrimerCardData,
         lookupNetworks: [CardNetwork]?,
-        lookupDelay: TimeInterval = 0,
         surcharged: Bool = true
     ) -> [(type: String, network: String?)] {
         SDKSessionHelper.updateAllowedCardNetworks(
             cardNetworks: [.cartesBancaires, .masterCard, .visa],
             paymentMethodOptions: surcharged ? [["type": "PAYMENT_CARD", "networks": [["type": "CARTES_BANCAIRES", "surcharge": 50]]]] : nil
         )
-        let lookup = StubCardValidationService()
-        lookup.stubbedMetadata = lookupNetworks.map(PrimerCardNumberEntryMetadata.remoteLookup)
-        lookup.metadataDelay = lookupDelay
-        (sut.rawDataTokenizationBuilder as? PrimerRawCardDataTokenizationBuilder)?.cardValidationService = lookup
+        cardLookup.stubbedMetadata = lookupNetworks.map(PrimerCardNumberEntryMetadata.remoteLookup)
+        (sut.rawDataTokenizationBuilder as? PrimerRawCardDataTokenizationBuilder)?.cardValidationService = cardLookup
         headlessCheckoutDelegate.onWillCreatePaymentWithData = { _, decisionHandler in
             decisionHandler(.continuePaymentCreation())
         }
