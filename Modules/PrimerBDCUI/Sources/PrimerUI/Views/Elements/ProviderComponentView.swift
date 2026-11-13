@@ -22,7 +22,7 @@ struct ProviderComponentView: UIViewRepresentable {
         let onEvent: SDUIComponentRegistry.OnEvent = { [weak viewModel, id] type, data in
             viewModel?.applyEvent(.provider(type: type, id: id, data: data))
         }
-        return SDUIComponentRegistry.shared.view(for: type, props: props, onChange: onChange, onEvent: onEvent) ?? UIView()
+        return SDUIComponentRegistry.shared.view(for: type, id: id, props: props, onChange: onChange, onEvent: onEvent) ?? UIView()
     }
 
     func updateUIView(_ uiView: UIView, context: Context) {}
