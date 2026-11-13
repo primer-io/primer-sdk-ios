@@ -13,19 +13,24 @@ import XCTest
 final class ProcessQRCodePaymentInteractorTests: XCTestCase {
 
     private var mockRepository: MockQRCodeRepository!
+    private var mockClientSessionActions: MockClientSessionActionsModule!
     private var sut: ProcessQRCodePaymentInteractorImpl!
 
     override func setUp() {
         super.setUp()
         mockRepository = MockQRCodeRepository()
+        let clientSessionActions = MockClientSessionActionsModule()
+        mockClientSessionActions = clientSessionActions
         sut = ProcessQRCodePaymentInteractorImpl(
             repository: mockRepository,
-            paymentMethodType: QRCodeTestData.Constants.paymentMethodType
+            paymentMethodType: QRCodeTestData.Constants.paymentMethodType,
+            clientSessionActionsFactory: { clientSessionActions }
         )
     }
 
     override func tearDown() {
         sut = nil
+        mockClientSessionActions = nil
         mockRepository = nil
         super.tearDown()
     }
@@ -53,6 +58,28 @@ final class ProcessQRCodePaymentInteractorTests: XCTestCase {
             XCTFail("Expected error to be thrown")
         } catch {
             XCTAssertTrue(error is PrimerError)
+        }
+    }
+
+    func test_startPayment_selectsMethodWithoutNetwork() async throws {
+        mockRepository.startPaymentResult = .success(QRCodeTestData.defaultPaymentData)
+
+        _ = try await sut.startPayment()
+
+        XCTAssertEqual(mockClientSessionActions.selectPaymentMethodCalls.map(\.type), [QRCodeTestData.Constants.paymentMethodType])
+        XCTAssertEqual(mockClientSessionActions.selectPaymentMethodCalls.map(\.network), [nil])
+    }
+
+    func test_startPayment_selectFails_doesNotCreateThePayment() async {
+        mockRepository.startPaymentResult = .success(QRCodeTestData.defaultPaymentData)
+        mockClientSessionActions.selectPaymentMethodError = TestError.networkFailure
+
+        do {
+            _ = try await sut.startPayment()
+            XCTFail("Expected error to be thrown")
+        } catch {
+            XCTAssertEqual(error as? TestError, .networkFailure)
+            XCTAssertEqual(mockRepository.startPaymentCallCount, 0)
         }
     }
 

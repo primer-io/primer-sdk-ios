@@ -17,10 +17,16 @@ protocol ProcessPayPalPaymentInteractor {
 final class ProcessPayPalPaymentInteractorImpl: ProcessPayPalPaymentInteractor, LogReporter {
 
   private let repository: PayPalRepository
+  private let clientSessionActionsFactory: () -> ClientSessionActionsProtocol
   private let analytics: CheckoutComponentsAnalyticsInteractorProtocol?
 
-  init(repository: PayPalRepository, analytics: CheckoutComponentsAnalyticsInteractorProtocol? = nil) {
+  init(
+    repository: PayPalRepository,
+    clientSessionActionsFactory: @escaping () -> ClientSessionActionsProtocol = { ClientSessionActionsModule() },
+    analytics: CheckoutComponentsAnalyticsInteractorProtocol? = nil
+  ) {
     self.repository = repository
+    self.clientSessionActionsFactory = clientSessionActionsFactory
     self.analytics = analytics
   }
 
@@ -50,6 +56,8 @@ final class ProcessPayPalPaymentInteractorImpl: ProcessPayPalPaymentInteractor, 
     logger.debug(message: "Executing PayPal checkout (order) flow")
 
     do {
+      try await clientSessionActionsFactory().selectPaymentMethodIfNeeded(PrimerPaymentMethodType.payPal.rawValue, cardNetwork: nil)
+
       // 1. Start order session
       let (orderId, approvalUrl) = try await repository.startOrderSession()
       logger.debug(message: "PayPal order session started with orderId: \(orderId)")

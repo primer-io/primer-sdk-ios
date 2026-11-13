@@ -16,17 +16,24 @@ final class ProcessFormRedirectPaymentInteractorTests: XCTestCase {
 
     private var sut: ProcessFormRedirectPaymentInteractorImpl!
     private var mockRepository: MockFormRedirectRepository!
+    private var mockClientSessionActions: MockClientSessionActionsModule!
 
     // MARK: - Setup / Teardown
 
     override func setUp() {
         super.setUp()
         mockRepository = MockFormRedirectRepository()
-        sut = ProcessFormRedirectPaymentInteractorImpl(formRedirectRepository: mockRepository)
+        let clientSessionActions = MockClientSessionActionsModule()
+        mockClientSessionActions = clientSessionActions
+        sut = ProcessFormRedirectPaymentInteractorImpl(
+            formRedirectRepository: mockRepository,
+            clientSessionActionsFactory: { clientSessionActions }
+        )
     }
 
     override func tearDown() {
         sut = nil
+        mockClientSessionActions = nil
         mockRepository = nil
         super.tearDown()
     }
@@ -394,6 +401,35 @@ final class ProcessFormRedirectPaymentInteractorTests: XCTestCase {
         }
 
         XCTAssertEqual(mockRepository.createPaymentCallCount, 0)
+    }
+
+    func test_execute_selectsMethodWithoutNetwork() async throws {
+        _ = try await sut.execute(
+            paymentMethodType: FormRedirectTestData.Constants.blikPaymentMethodType,
+            sessionInfo: FormRedirectTestData.blikSessionInfo
+        )
+
+        XCTAssertEqual(
+            mockClientSessionActions.selectPaymentMethodCalls.map(\.type),
+            [FormRedirectTestData.Constants.blikPaymentMethodType]
+        )
+        XCTAssertEqual(mockClientSessionActions.selectPaymentMethodCalls.map(\.network), [nil])
+    }
+
+    func test_execute_selectFails_doesNotTokenizeOrCreateThePayment() async {
+        mockClientSessionActions.selectPaymentMethodError = TestError.networkFailure
+
+        do {
+            _ = try await sut.execute(
+                paymentMethodType: FormRedirectTestData.Constants.blikPaymentMethodType,
+                sessionInfo: FormRedirectTestData.blikSessionInfo
+            )
+            XCTFail("Expected error to be thrown")
+        } catch {
+            XCTAssertEqual(error as? TestError, .networkFailure)
+            XCTAssertEqual(mockRepository.tokenizeCallCount, 0)
+            XCTAssertEqual(mockRepository.createPaymentCallCount, 0)
+        }
     }
 
     // MARK: - Cancel Polling Tests
