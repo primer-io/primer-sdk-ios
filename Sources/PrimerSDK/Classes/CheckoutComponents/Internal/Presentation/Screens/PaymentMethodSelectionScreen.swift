@@ -41,7 +41,7 @@ struct PaymentMethodSelectionScreen: View, LogReporter {
 
   private func makeHeader() -> some View {
     HStack {
-      if let formattedAmount {
+      if let formattedAmount = configurationService?.formattedOrderAmount() {
         Text(CheckoutComponentsStrings.paymentAmountTitle(formattedAmount))
           .primerTypography(.titleXLarge, tokens: tokens)
           .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
@@ -111,16 +111,6 @@ struct PaymentMethodSelectionScreen: View, LogReporter {
   }
 
   // MARK: - Helpers
-
-  private var formattedAmount: String? {
-    guard let configurationService,
-      let amount = configurationService.amount,
-      let currency = configurationService.currency
-    else {
-      return nil
-    }
-    return amount.toCurrencyString(currency: currency, locale: configurationService.locale)
-  }
 
   private func resolveConfigurationService() {
     guard let container else { return }

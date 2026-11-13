@@ -559,11 +559,7 @@ final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, 
   }
 
   func formattedPayAmount(surchargeAmount: Int?) -> String? {
-    guard let amount = configurationService.amount, let currency = configurationService.currency else { return nil }
-    let order = configurationService.apiConfiguration?.clientSession?.order
-    let sessionSurcharge = order?.fees?.filter { $0.type == .surcharge }.reduce(0) { $0 + $1.amount } ?? 0
-    let total = order?.merchantAmount == nil ? amount - sessionSurcharge + (surchargeAmount ?? 0) : amount
-    return total.toCurrencyString(currency: currency, locale: configurationService.locale)
+    configurationService.formattedOrderAmount(surcharge: surchargeAmount)
   }
 
   func setFieldError(

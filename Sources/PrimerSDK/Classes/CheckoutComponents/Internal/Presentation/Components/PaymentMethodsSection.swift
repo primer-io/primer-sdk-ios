@@ -71,11 +71,13 @@ struct PaymentMethodsSection: View {
 
   private func makePaymentMethodsList() -> some View {
     LazyVStack(spacing: PrimerSpacing.small(tokens: tokens)) {
-      ForEach(state.paymentMethods, id: \.id) { method in
-        PaymentMethodButton(
-          method: method,
-          onSelect: { scope.onPaymentMethodSelected(paymentMethod: method) }
-        )
+      ForEach(SurchargeGroup.groups(of: state.paymentMethods), id: \.title) { group in
+        SurchargeGroupCard(group: group) { method in
+          PaymentMethodButton(
+            method: method,
+            onSelect: { scope.onPaymentMethodSelected(paymentMethod: method) }
+          )
+        }
       }
     }
   }

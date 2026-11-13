@@ -24,16 +24,16 @@ final class PaymentMethodMapperImpl: PaymentMethodMapper {
   }
 
   func mapToPublic(_ internalMethod: InternalPaymentMethod) -> CheckoutPaymentMethod {
-    let formattedSurcharge = formatSurcharge(
-      internalMethod.surcharge, hasUnknownSurcharge: internalMethod.hasUnknownSurcharge)
+    let (surcharge, hasUnknownSurcharge) = resolveSurcharge(of: internalMethod)
+    let formattedSurcharge = formatSurcharge(surcharge, hasUnknownSurcharge: hasUnknownSurcharge)
 
     var method = CheckoutPaymentMethod(
       id: internalMethod.id,
       type: internalMethod.type,
       name: internalMethod.name,
       icon: internalMethod.icon,
-      surcharge: internalMethod.surcharge,
-      hasUnknownSurcharge: internalMethod.hasUnknownSurcharge,
+      surcharge: surcharge,
+      hasUnknownSurcharge: hasUnknownSurcharge,
       formattedSurcharge: formattedSurcharge,
       backgroundColor: internalMethod.backgroundColor,
       buttonText: internalMethod.buttonText,
@@ -50,6 +50,14 @@ final class PaymentMethodMapperImpl: PaymentMethodMapper {
 
   func mapToPublic(_ internalMethods: [InternalPaymentMethod]) -> [CheckoutPaymentMethod] {
     internalMethods.map { mapToPublic($0) }
+  }
+
+  private func resolveSurcharge(of method: InternalPaymentMethod) -> (surcharge: Int?, hasUnknownSurcharge: Bool) {
+    guard let networkSurcharges = method.networkSurcharges else { return (method.surcharge, method.hasUnknownSurcharge) }
+    let allowedNetworks = configurationService.apiConfiguration?.clientSession?.paymentMethod?.orderedAllowedCardNetworks ?? []
+    let fees = Set(allowedNetworks.map { networkSurcharges[$0] ?? 0 })
+    guard fees.count == 1, let fee = fees.first else { return (nil, true) }
+    return (fee > 0 ? fee : nil, false)
   }
 
   private func formatSurcharge(_ surcharge: Int?, hasUnknownSurcharge: Bool) -> String? {
