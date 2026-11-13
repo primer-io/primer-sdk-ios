@@ -140,7 +140,7 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
                 expirationMonth: expiryMonth,
                 expirationYear: expiryYear,
                 cardholderName: rawData.cardholderName,
-                preferredNetwork: Self.preferredNetwork(from: rawData.cardNetwork)
+                preferredNetwork: Self.preferredNetwork(from: pickToSend(for: rawData))
             )
         )
     }
@@ -162,7 +162,6 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
             throw err
         }
 
-        // Used for CVV length. Precedence: user pick → BIN metadata → local IIN.
         let cardNetwork = effectiveNetwork(for: rawData, cardNetworksMetadata: cardNetworksMetadata)
 
         // Always trigger network validation (even for partial/invalid cards)
@@ -218,24 +217,35 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
         notifyDelegateOfValidationResult(isValid: true, errors: nil)
     }
 
-    func effectiveNetwork(for rawData: PrimerCardData) -> CardNetwork {
-        effectiveNetwork(for: rawData, cardNetworksMetadata: cardValidationService?.cachedMetadata(forCardNumber: rawData.cardNumber))
+    func networkToSelect(for rawData: PrimerCardData) async -> CardNetwork {
+        await effectiveNetwork(for: rawData, cardNetworksMetadata: cardValidationService?.remoteMetadata(forCardNumber: rawData.cardNumber))
     }
 
     func effectiveNetwork(for rawData: PrimerCardData, cardNetworksMetadata: PrimerCardNumberEntryMetadata?) -> CardNetwork {
-        var cardNetwork = rawData.cardNetwork ?? CardNetwork(cardNumber: rawData.cardNumber)
+        let firstDigitsNetwork = CardNetwork(cardNumber: rawData.cardNumber)
+        let detected = cardNetworksMetadata?.detectedCardNetworks
 
-        if rawData.cardNetwork == nil, let metadata = cardNetworksMetadata {
-            let detected = metadata.detectedCardNetworks
-            let didDetectNetwork = !detected.items.isEmpty && detected.items.map(\.network) != [.unknown]
-            if didDetectNetwork {
-                cardNetwork = detected.preferred?.network
-                    ?? detected.items.first?.network
-                    ?? cardNetwork
-            }
+        if let pickedNetwork = offeredPick(for: rawData, cardNetworksMetadata: cardNetworksMetadata) {
+            return pickedNetwork
         }
 
-        return cardNetwork
+        guard let detected, !detected.items.isEmpty, detected.items.map(\.network) != [.unknown] else {
+            return firstDigitsNetwork
+        }
+        return detected.preferred?.network ?? detected.items.first?.network ?? firstDigitsNetwork
+    }
+
+    private func offeredPick(for rawData: PrimerCardData, cardNetworksMetadata: PrimerCardNumberEntryMetadata?) -> CardNetwork? {
+        guard let pickedNetwork = rawData.cardNetwork else { return nil }
+        let offeredNetworks = cardNetworksMetadata?.source == .remote
+            ? cardNetworksMetadata?.detectedCardNetworks.items.map(\.network) ?? []
+            : [CardNetwork(cardNumber: rawData.cardNumber)]
+        return offeredNetworks.contains(pickedNetwork) ? pickedNetwork : nil
+    }
+
+    private func pickToSend(for rawData: PrimerCardData) -> CardNetwork? {
+        guard PrimerInternal.shared.sdkIntegrationType == .headless else { return rawData.cardNetwork }
+        return offeredPick(for: rawData, cardNetworksMetadata: cardValidationService?.cachedMetadata(forCardNumber: rawData.cardNumber))
     }
 
     private func notifyDelegateOfValidationResult(isValid: Bool, errors: [Error]?) {
