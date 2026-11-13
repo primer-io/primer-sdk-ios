@@ -1,12 +1,11 @@
 name: Create SPM Variant Tags
 
 # SPM cannot make a wrapper optional, so each wrapper gets a tag whose Package.swift adds it (X.Y.Z-3ds-<variant>).
+# Plain X.Y.Z only: in SemVer 3.0.0-beta.9-3ds-stripe outranks 3.0.0-beta.10, so SPM ranges on a beta would resolve to the variant.
 on:
   push:
     tags:
       - '[0-9]+.[0-9]+.[0-9]+'
-      - '[0-9]+.[0-9]+.[0-9]+-beta.[0-9]+'
-      - '[0-9]+.[0-9]+.[0-9]+-rc.[0-9]+'
   workflow_dispatch:
     inputs:
       tag:
@@ -39,6 +38,10 @@ jobs:
             TAG="$INPUT_TAG"
           else
             TAG="${GITHUB_REF_NAME}"
+          fi
+          if ! [[ "$TAG" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::$TAG is not a plain X.Y.Z release, so it gets no SPM variant tags."
+            exit 1
           fi
           echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
 
