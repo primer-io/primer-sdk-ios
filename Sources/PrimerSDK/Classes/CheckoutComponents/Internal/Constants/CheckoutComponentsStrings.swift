@@ -912,12 +912,12 @@ enum CheckoutComponentsStrings {
 
   // MARK: - Vaulted Payment Method Brand Names
 
-  static let paypalBrandName = NSLocalizedString(
-    "primer_vault_default_paypal",
+  static let unknownCardNetworkName = NSLocalizedString(
+    "primer_vault_default_card",
     tableName: tableName,
     bundle: .primerResources,
-    value: "PayPal account",
-    comment: "PayPal brand name for vaulted payment methods"
+    value: "Card",
+    comment: "Name shown for a saved card whose network is unknown"
   )
 
   static let achSuffix = NSLocalizedString(

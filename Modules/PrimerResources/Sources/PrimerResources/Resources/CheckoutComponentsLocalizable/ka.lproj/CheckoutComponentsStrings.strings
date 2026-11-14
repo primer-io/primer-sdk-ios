@@ -108,7 +108,7 @@
 "primer_vault_section_title" = "შენახული გადახდის მეთოდები";
 "primer_vault_button_show_all" = "ყველას ნახვა";
 "primer_vault_default_cardholder" = "ბარათის მფლობელი";
-"primer_vault_default_paypal" = "PayPal ანგარიში";
+"primer_vault_default_card" = "ბარათი";
 "primer_vault_default_bank" = "საბანკო ანგარიში";
 "primer_vault_format_masked" = "•••• %1$@";
 "primer_vault_format_expires" = "ვადის თარიღი %1$@/%2$@";

@@ -108,7 +108,7 @@
 "primer_vault_section_title" = "Պահպանված վճարման եղանակներ";
 "primer_vault_button_show_all" = "Ցույց տալ բոլորը";
 "primer_vault_default_cardholder" = "Քարտապան";
-"primer_vault_default_paypal" = "PayPal հաշիվ";
+"primer_vault_default_card" = "Քարտ";
 "primer_vault_default_bank" = "Բանկային հաշիվ";
 "primer_vault_format_masked" = "•••• %1$@";
 "primer_vault_format_expires" = "Ժամկետ %1$@/%2$@";

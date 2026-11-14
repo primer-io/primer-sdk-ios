@@ -13,6 +13,12 @@ import UIKit
 @available(iOS 15.0, *)
 extension PrimerHeadlessUniversalCheckout.VaultedPaymentMethod {
 
+  private static let idealTypeSuffix = "_IDEAL"
+  private static let idealName = "iDEAL | Wero"
+  private static let paypalName = "PayPal"
+  private static let emailVisibleEdge = 2
+  private static let emailMinLengthForSuffix = 6
+
   /// Extracts normalized display data based on payment instrument type.
   /// This computed property handles the polymorphic nature of vaulted payment methods,
   /// returning a unified display model regardless of the underlying payment type.
@@ -43,6 +49,12 @@ extension PrimerHeadlessUniversalCheckout.VaultedPaymentMethod {
     return CardNetwork(rawValue: network.uppercased()) ?? .unknown
   }
 
+  private var savedMethodName: String {
+    if paymentMethodType.hasSuffix(Self.idealTypeSuffix) { return Self.idealName }
+    if let name = PrimerPaymentMethod.getPaymentMethod(withType: paymentMethodType)?.name, !name.isEmpty { return name }
+    return paymentMethodType.replacingOccurrences(of: "_", with: " ").capitalized
+  }
+
   // MARK: - Card Display Data
 
   private func cardDisplayData(from data: Response.Body.Tokenization.PaymentInstrumentData)
@@ -50,6 +62,7 @@ extension PrimerHeadlessUniversalCheckout.VaultedPaymentMethod {
     let network = data.network ?? data.binData?.network ?? "Card"
     let cardNetwork = CardNetwork(rawValue: network.uppercased()) ?? .unknown
     let brandIcon = cardNetwork.icon ?? ImageName.creditCard.image
+    let brandName = cardNetwork == .unknown ? CheckoutComponentsStrings.unknownCardNetworkName : cardNetwork.displayName
 
     let last4 = data.last4Digits
     let primaryValue = last4.map { CheckoutComponentsStrings.maskedCardNumberFormatted($0) }
@@ -61,7 +74,7 @@ extension PrimerHeadlessUniversalCheckout.VaultedPaymentMethod {
     }
 
     let accessibilityLabel = CheckoutComponentsStrings.a11yVaultedCard(
-      network: cardNetwork.displayName,
+      network: brandName,
       last4: last4 ?? "****",
       expiry: secondaryValue ?? "",
       name: data.cardholderName
@@ -70,7 +83,7 @@ extension PrimerHeadlessUniversalCheckout.VaultedPaymentMethod {
     return VaultedPaymentMethodDisplayData(
       name: data.cardholderName,
       brandIcon: brandIcon,
-      brandName: cardNetwork.displayName,
+      brandName: brandName,
       primaryValue: primaryValue,
       secondaryValue: secondaryValue,
       accessibilityLabel: accessibilityLabel
@@ -94,7 +107,7 @@ extension PrimerHeadlessUniversalCheckout.VaultedPaymentMethod {
     return VaultedPaymentMethodDisplayData(
       name: name,
       brandIcon: UIImage(primerResource: "paypal-icon-colored"),
-      brandName: CheckoutComponentsStrings.paypalBrandName,
+      brandName: Self.paypalName,
       primaryValue: maskedEmail,
       secondaryValue: nil,
       accessibilityLabel: accessibilityLabel
@@ -218,14 +231,15 @@ extension PrimerHeadlessUniversalCheckout.VaultedPaymentMethod {
   private func genericDisplayData() -> VaultedPaymentMethodDisplayData {
     let icon =
       PrimerPaymentMethodType(rawValue: paymentMethodType)?.icon ?? ImageName.genericCard.image
+    let name = savedMethodName
 
     return VaultedPaymentMethodDisplayData(
       name: nil,
       brandIcon: icon,
-      brandName: paymentMethodType,
+      brandName: name,
       primaryValue: nil,
       secondaryValue: nil,
-      accessibilityLabel: CheckoutComponentsStrings.a11yVaultedPaymentMethod(paymentMethodType)
+      accessibilityLabel: CheckoutComponentsStrings.a11yVaultedPaymentMethod(name)
     )
   }
 
@@ -236,14 +250,8 @@ extension PrimerHeadlessUniversalCheckout.VaultedPaymentMethod {
       return email
     }
 
-    let localPart = String(email[..<atIndex])
-    let domain = String(email[atIndex...])
-
-    if localPart.count <= 2 {
-      return "\(localPart)••••\(domain)"
-    }
-
-    let visiblePrefix = String(localPart.prefix(2))
-    return "\(visiblePrefix)••••\(domain)"
+    let localPart = email[..<atIndex]
+    let suffix = localPart.count >= Self.emailMinLengthForSuffix ? localPart.suffix(Self.emailVisibleEdge) : ""
+    return "\(localPart.prefix(Self.emailVisibleEdge))••••\(suffix)\(email[atIndex...])"
   }
 }

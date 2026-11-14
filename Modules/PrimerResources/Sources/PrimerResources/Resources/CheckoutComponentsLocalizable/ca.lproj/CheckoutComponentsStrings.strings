@@ -189,7 +189,7 @@
 "primer_vault_cvv_title" = "Introduïu el CVV";
 "primer_vault_default_bank" = "Compte bancari";
 "primer_vault_default_cardholder" = "Titular de la targeta";
-"primer_vault_default_paypal" = "Compte de PayPal";
+"primer_vault_default_card" = "Targeta";
 "primer_vault_delete_button_cancel" = "Cancel·la";
 "primer_vault_delete_button_confirm" = "Suprimeix";
 "primer_vault_delete_message" = "Esteu segur que voleu suprimir aquest mètode de pagament?";

@@ -54,6 +54,10 @@ final class VaultedPaymentMethodDisplayDataTests: XCTestCase {
         )
     }
 
+    private func makeOffSessionMethod(_ type: String) -> PrimerHeadlessUniversalCheckout.VaultedPaymentMethod {
+        makeVaultedPaymentMethod(paymentMethodType: type, paymentInstrumentType: .offSession, paymentInstrumentData: makePaymentInstrumentData())
+    }
+
     // MARK: - Card Display Data
 
     func test_cardDisplayData_withAllFields() {
@@ -194,7 +198,7 @@ final class VaultedPaymentMethodDisplayDataTests: XCTestCase {
 
         // Then
         XCTAssertEqual(displayData.name, "John Appleseed")
-        XCTAssertEqual(displayData.brandName, "PayPal account")
+        XCTAssertEqual(displayData.brandName, "PayPal")
         XCTAssertNotNil(displayData.primaryValue)
         XCTAssertTrue(displayData.primaryValue?.contains("jo") ?? false)
         XCTAssertTrue(displayData.primaryValue?.contains("@gmail.com") ?? false)
@@ -243,7 +247,7 @@ final class VaultedPaymentMethodDisplayDataTests: XCTestCase {
         // Then
         XCTAssertNil(displayData.name)
         XCTAssertNil(displayData.primaryValue)
-        XCTAssertEqual(displayData.brandName, "PayPal account")
+        XCTAssertEqual(displayData.brandName, "PayPal")
     }
 
     // MARK: - Klarna Display Data
@@ -378,8 +382,32 @@ final class VaultedPaymentMethodDisplayDataTests: XCTestCase {
 
         // Then
         XCTAssertNil(displayData.name)
-        XCTAssertEqual(displayData.brandName, "UNKNOWN_TYPE")
+        XCTAssertEqual(displayData.brandName, "Unknown Type")
         XCTAssertNotNil(displayData.brandIcon)
+    }
+
+    func test_cardDisplayData_unknownNetwork_isCard() {
+        let data = makePaymentInstrumentData(last4Digits: "4242", network: "OTHER")
+        let card = makeVaultedPaymentMethod(paymentMethodType: "PAYMENT_CARD", paymentInstrumentType: .paymentCard, paymentInstrumentData: data)
+        XCTAssertEqual(card.displayData.brandName, "Card")
+    }
+
+    func test_genericDisplayData_ideal_ignoresSessionName() throws {
+        let ideal = PrimerPaymentMethod(id: "ideal_config_id", implementationType: .webRedirect, type: "ADYEN_IDEAL", name: "iDeal | Wero",
+                                        processorConfigId: nil, surcharge: nil, options: nil, displayMetadata: nil)
+        try SDKSessionHelper.test(withPaymentMethods: [ideal]) {
+            for type in ["ADYEN_IDEAL", "BUCKAROO_IDEAL", "PAY_NL_IDEAL"] {
+                XCTAssertEqual(makeOffSessionMethod(type).displayData.brandName, "iDEAL | Wero")
+            }
+        }
+    }
+
+    func test_genericDisplayData_usesSessionName() throws {
+        let sofort = PrimerPaymentMethod(id: "sofort_config_id", implementationType: .webRedirect, type: "ADYEN_SOFORT", name: "Sofort",
+                                         processorConfigId: nil, surcharge: nil, options: nil, displayMetadata: nil)
+        try SDKSessionHelper.test(withPaymentMethods: [sofort]) {
+            XCTAssertEqual(makeOffSessionMethod("ADYEN_SOFORT").displayData.brandName, "Sofort")
+        }
     }
 
     // MARK: - Accessibility Label
@@ -447,19 +475,17 @@ final class EmailMaskingTests: XCTestCase {
     }
 
     func test_emailMasking_standardEmail() {
-        XCTAssertEqual(getMaskedEmail("john.appleseed@gmail.com"), "jo••••@gmail.com")
+        XCTAssertEqual(getMaskedEmail("john.appleseed@gmail.com"), "jo••••ed@gmail.com")
     }
 
-    func test_emailMasking_shortLocalPart_twoChars() {
+    func test_emailMasking_shortLocalPart() {
         XCTAssertEqual(getMaskedEmail("jo@example.com"), "jo••••@example.com")
-    }
-
-    func test_emailMasking_shortLocalPart_oneChar() {
         XCTAssertEqual(getMaskedEmail("j@example.com"), "j••••@example.com")
+        XCTAssertEqual(getMaskedEmail("jonny@example.com"), "jo••••@example.com")
     }
 
     func test_emailMasking_longLocalPart() {
-        XCTAssertEqual(getMaskedEmail("verylongemail@domain.org"), "ve••••@domain.org")
+        XCTAssertEqual(getMaskedEmail("verylongemail@domain.org"), "ve••••il@domain.org")
     }
 
     func test_emailMasking_withSubdomain() {
@@ -467,10 +493,10 @@ final class EmailMaskingTests: XCTestCase {
     }
 
     func test_emailMasking_withPlusSign() {
-        XCTAssertEqual(getMaskedEmail("user+tag@gmail.com"), "us••••@gmail.com")
+        XCTAssertEqual(getMaskedEmail("user+tag@gmail.com"), "us••••ag@gmail.com")
     }
 
     func test_emailMasking_withNumbers() {
-        XCTAssertEqual(getMaskedEmail("user123@test.com"), "us••••@test.com")
+        XCTAssertEqual(getMaskedEmail("user123@test.com"), "us••••23@test.com")
     }
 }
