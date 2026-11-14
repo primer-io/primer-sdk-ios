@@ -167,6 +167,35 @@ final class ProgrammaticFieldValueTests: XCTestCase {
         }
     }
 
+    func test_editAfterReopeningTheForm_keepsTheNetworkTheLookupGave() async throws {
+        let container = try await makeContainer()
+        let networkDetection = MockCardNetworkDetectionInteractor()
+
+        try await DIContainer.withContainer(container) {
+            let scope = await makeCardFormScope(cardNetworkDetectionInteractor: networkDetection)
+            scope.updateCardNumber("4035501000000008")
+            networkDetection.emitNetworks([.cartesBancaires, .visa])
+
+            let host = FieldHost(
+                CardNumberInputField(label: "Card number", placeholder: "4242 4242 4242 4242", scope: scope)
+                    .environment(\.diContainer, container)
+            )
+            defer { host.dismantle() }
+            await host.settle()
+            XCTAssertEqual(host.secureText, "4035 5010 0000 0008")
+            XCTAssertEqual(scope.structuredState.selectedNetwork?.network, .cartesBancaires)
+
+            let field = try XCTUnwrap(host.secureTextField)
+            let coordinator = try XCTUnwrap(field.delegate)
+            _ = coordinator.textField?(field, shouldChangeCharactersIn: NSRange(location: 18, length: 1), replacementString: "")
+            _ = coordinator.textField?(field, shouldChangeCharactersIn: NSRange(location: 18, length: 0), replacementString: "8")
+            await host.settle()
+
+            XCTAssertEqual(host.secureText, "4035 5010 0000 0008")
+            XCTAssertEqual(scope.structuredState.selectedNetwork?.network, .cartesBancaires)
+        }
+    }
+
     // MARK: - Helpers
 
     private func makeContainer() async throws -> Container {
@@ -177,13 +206,15 @@ final class ProgrammaticFieldValueTests: XCTestCase {
         return container
     }
 
-    private func makeCardFormScope() async -> DefaultCardFormScope {
+    private func makeCardFormScope(
+        cardNetworkDetectionInteractor: CardNetworkDetectionInteractor = MockCardNetworkDetectionInteractor()
+    ) async -> DefaultCardFormScope {
         DefaultCardFormScope(
             checkoutScope: await ContainerTestHelpers.createMockCheckoutScope(),
             presentationContext: .fromPaymentSelection,
             processCardPaymentInteractor: MockProcessCardPaymentInteractor(),
             validateInputInteractor: MockValidateInputInteractor(),
-            cardNetworkDetectionInteractor: MockCardNetworkDetectionInteractor(),
+            cardNetworkDetectionInteractor: cardNetworkDetectionInteractor,
             analyticsInteractor: MockAnalyticsInteractor(),
             configurationService: MockConfigurationService.withDefaultConfiguration()
         )
@@ -206,7 +237,7 @@ final class ProgrammaticFieldValueTests: XCTestCase {
 /// window down as soon as the first layout pass finishes.
 @available(iOS 15.0, *)
 @MainActor
-final class FieldHost<Content: View> {
+private final class FieldHost<Content: View> {
     private let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 390, height: 844))
     private let controller: UIHostingController<Content>
 
@@ -221,7 +252,7 @@ final class FieldHost<Content: View> {
 
     /// `SecureTextField` masks its `text`, so the value it really holds has to be read separately.
     var secureText: String {
-        (Self.textFields(in: controller.view).first as? SecureTextField)?.internalText ?? text
+        secureTextField?.internalText ?? text
     }
 
     var secureTextField: SecureTextField? {
