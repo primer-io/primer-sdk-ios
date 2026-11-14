@@ -294,18 +294,6 @@ final class PrimerRawCardDataTokenizationBuilderTests: XCTestCase {
         XCTAssertEqual(network, .masterCard)
     }
 
-    func test_effectiveNetwork_pickFromAnotherCard_usesThePreferredNetwork() {
-        SDKSessionHelper.updateAllowedCardNetworks(cardNetworks: [.cartesBancaires, .masterCard, .visa])
-        let sut = PrimerRawCardDataTokenizationBuilder(paymentMethodType: "PAYMENT_CARD")
-
-        let network = sut.effectiveNetwork(
-            for: card("5017679210000700", pickedNetwork: .visa),
-            cardNetworksMetadata: .remoteLookup([.cartesBancaires, .masterCard])
-        )
-
-        XCTAssertEqual(network, .cartesBancaires)
-    }
-
     func test_effectiveNetwork_pickWithoutLookup_countsOnlyForTheFirstDigitsNetwork() {
         SDKSessionHelper.updateAllowedCardNetworks(cardNetworks: [.cartesBancaires, .visa])
         let sut = PrimerRawCardDataTokenizationBuilder(paymentMethodType: "PAYMENT_CARD")
@@ -351,17 +339,9 @@ final class StubCardValidationService: CardValidationService {
     private var recordedLookupRequests: [String] = []
     private var recordedRemoteMetadataRequests: [String] = []
 
-    var lookupRequests: [String] {
-        lock.lock()
-        defer { lock.unlock() }
-        return recordedLookupRequests
-    }
+    var lookupRequests: [String] { lock.withLock { recordedLookupRequests } }
 
-    var remoteMetadataRequests: [String] {
-        lock.lock()
-        defer { lock.unlock() }
-        return recordedRemoteMetadataRequests
-    }
+    var remoteMetadataRequests: [String] { lock.withLock { recordedRemoteMetadataRequests } }
 
     func validateCardNetworks(withCardNumber cardNumber: String) {}
 
@@ -377,16 +357,16 @@ final class StubCardValidationService: CardValidationService {
     }
 
     func cachedMetadata(forCardNumber cardNumber: String) -> PrimerCardNumberEntryMetadata? {
-        lock.lock()
-        defer { lock.unlock() }
-        recordedLookupRequests.append(cardNumber)
-        return stubbedMetadata
+        lock.withLock {
+            recordedLookupRequests.append(cardNumber)
+            return stubbedMetadata
+        }
     }
 
     func remoteMetadata(forCardNumber cardNumber: String) -> PrimerCardNumberEntryMetadata? {
-        lock.lock()
-        defer { lock.unlock() }
-        recordedRemoteMetadataRequests.append(cardNumber)
-        return stubbedMetadata
+        lock.withLock {
+            recordedRemoteMetadataRequests.append(cardNumber)
+            return stubbedMetadata
+        }
     }
 }

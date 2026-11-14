@@ -329,7 +329,10 @@ extension PrimerHeadlessUniversalCheckout {
                   let cardBuilder = rawDataTokenizationBuilder as? PrimerRawCardDataTokenizationBuilder,
                   let cardData = rawData as? PrimerCardData
             else { return nil }
-            return await cardBuilder.networkToSelect(for: cardData).rawValue
+            return await cardBuilder.effectiveNetwork(
+                for: cardData,
+                cardNetworksMetadata: cardBuilder.cardValidationService?.remoteMetadata(forCardNumber: cardData.cardNumber)
+            ).rawValue
         }
 
         private func handlePrimerWillCreatePaymentEvent(_ paymentMethodData: PrimerPaymentMethodData) async throws {

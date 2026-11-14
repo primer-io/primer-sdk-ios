@@ -217,10 +217,6 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
         notifyDelegateOfValidationResult(isValid: true, errors: nil)
     }
 
-    func networkToSelect(for rawData: PrimerCardData) async -> CardNetwork {
-        await effectiveNetwork(for: rawData, cardNetworksMetadata: cardValidationService?.remoteMetadata(forCardNumber: rawData.cardNumber))
-    }
-
     func effectiveNetwork(for rawData: PrimerCardData, cardNetworksMetadata: PrimerCardNumberEntryMetadata?) -> CardNetwork {
         let firstDigitsNetwork = CardNetwork(cardNumber: rawData.cardNumber)
         let detected = cardNetworksMetadata?.detectedCardNetworks

@@ -654,25 +654,6 @@ final class CardValidationServiceTests: XCTestCase {
         XCTAssertNil(sut.cachedMetadata(forCardNumber: "9999999912345678"))
     }
 
-    func test_remoteMetadata_cachedRemoteResult_returnsItWithoutFetching() async {
-        sut = createCardValidationService(allowedNetworks: [.visa, .masterCard])
-        let bin = String(TestConstants.fullCardNumber.prefix(maxBinLength))
-        configureMockAPIClient(bin: bin, networks: ["VISA", "MASTERCARD"])
-        let metadataExpectation = expectation(description: "Remote metadata cached")
-        delegate.onMetadataForCardValidationState = { _, networks, _ in
-            if networks.source == .remote {
-                metadataExpectation.fulfill()
-            }
-        }
-        enterCardNumber(TestConstants.fullCardNumber)
-        await fulfillment(of: [metadataExpectation], timeout: TestConstants.standardTimeout)
-
-        let metadata = await sut.remoteMetadata(forCardNumber: TestConstants.fullCardNumber)
-
-        XCTAssertEqual(metadata?.detectedCardNetworks.items.map(\.network), [.visa, .masterCard])
-        XCTAssertEqual(apiClient.fetchBinDataRequests, [bin])
-    }
-
     func test_remoteMetadata_noCachedResult_fetchesAndCachesItWithoutNotifyingTheDelegate() async {
         sut = createCardValidationService(allowedNetworks: [.visa, .masterCard])
         let bin = String(TestConstants.fullCardNumber.prefix(maxBinLength))
@@ -682,9 +663,11 @@ final class CardValidationServiceTests: XCTestCase {
         }
 
         let metadata = await sut.remoteMetadata(forCardNumber: TestConstants.fullCardNumber)
+        let cachedMetadata = await sut.remoteMetadata(forCardNumber: TestConstants.fullCardNumber)
 
         XCTAssertEqual(metadata?.source, .remote)
         XCTAssertEqual(metadata?.detectedCardNetworks.items.map(\.network), [.visa, .masterCard])
+        XCTAssertEqual(cachedMetadata?.detectedCardNetworks.items.map(\.network), [.visa, .masterCard])
         XCTAssertEqual(apiClient.fetchBinDataRequests, [bin])
         XCTAssertEqual(sut.cachedMetadata(forCardNumber: TestConstants.fullCardNumber)?.source, .remote)
     }
