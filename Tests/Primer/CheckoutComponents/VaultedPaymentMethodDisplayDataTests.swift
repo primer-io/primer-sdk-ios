@@ -233,7 +233,7 @@ final class VaultedPaymentMethodDisplayDataTests: XCTestCase {
         XCTAssertEqual(vaultedMethod.displayData.name, "Appleseed")
     }
 
-    func test_payPalDisplayData_withoutPayerInfo() {
+    func test_payPalDisplayData_withoutPayerInfo() throws {
         // Given
         let vaultedMethod = makeVaultedPaymentMethod(
             paymentMethodType: PrimerPaymentMethodType.payPal.rawValue,
@@ -248,11 +248,12 @@ final class VaultedPaymentMethodDisplayDataTests: XCTestCase {
         XCTAssertNil(displayData.name)
         XCTAssertNil(displayData.primaryValue)
         XCTAssertEqual(displayData.brandName, "PayPal")
+        XCTAssertEqual(displayData.brandIcon?.pngData(), try XCTUnwrap(UIImage(primerResource: "paypal-card-icon-colored")).pngData())
     }
 
     // MARK: - Klarna Display Data
 
-    func test_klarnaDisplayData() {
+    func test_klarnaDisplayData() throws {
         // Given
         let vaultedMethod = makeVaultedPaymentMethod(
             paymentMethodType: PrimerPaymentMethodType.klarna.rawValue,
@@ -266,7 +267,7 @@ final class VaultedPaymentMethodDisplayDataTests: XCTestCase {
         // Then
         XCTAssertNil(displayData.name)
         XCTAssertEqual(displayData.brandName, "Klarna")
-        XCTAssertNotNil(displayData.brandIcon)
+        XCTAssertEqual(displayData.brandIcon?.pngData(), try XCTUnwrap(UIImage(primerResource: "klarna-card-icon-colored")).pngData())
     }
 
     // MARK: - ACH Display Data
@@ -386,18 +387,23 @@ final class VaultedPaymentMethodDisplayDataTests: XCTestCase {
         XCTAssertNotNil(displayData.brandIcon)
     }
 
-    func test_cardDisplayData_unknownNetwork_isCard() {
+    func test_cardDisplayData_unknownNetwork_isCard() throws {
         let data = makePaymentInstrumentData(last4Digits: "4242", network: "OTHER")
         let card = makeVaultedPaymentMethod(paymentMethodType: "PAYMENT_CARD", paymentInstrumentType: .paymentCard, paymentInstrumentData: data)
+        let expectedIcon = try XCTUnwrap(UIImage(primerResource: "payment-card-icon-colored"))
         XCTAssertEqual(card.displayData.brandName, "Card")
+        XCTAssertEqual(card.displayData.brandIcon?.pngData(), expectedIcon.pngData())
     }
 
     func test_genericDisplayData_ideal_ignoresSessionName() throws {
+        let expectedIcon = try XCTUnwrap(UIImage(primerResource: "ideal-card-icon-colored"))
         let ideal = PrimerPaymentMethod(id: "ideal_config_id", implementationType: .webRedirect, type: "ADYEN_IDEAL", name: "iDeal | Wero",
                                         processorConfigId: nil, surcharge: nil, options: nil, displayMetadata: nil)
         try SDKSessionHelper.test(withPaymentMethods: [ideal]) {
             for type in ["ADYEN_IDEAL", "BUCKAROO_IDEAL", "PAY_NL_IDEAL"] {
-                XCTAssertEqual(makeOffSessionMethod(type).displayData.brandName, "iDEAL | Wero")
+                let displayData = makeOffSessionMethod(type).displayData
+                XCTAssertEqual(displayData.brandName, "iDEAL | Wero")
+                XCTAssertEqual(displayData.brandIcon?.pngData(), expectedIcon.pngData())
             }
         }
     }

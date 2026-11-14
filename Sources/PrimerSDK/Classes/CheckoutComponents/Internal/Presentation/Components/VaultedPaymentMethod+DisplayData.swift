@@ -16,6 +16,10 @@ extension PrimerHeadlessUniversalCheckout.VaultedPaymentMethod {
   private static let idealTypeSuffix = "_IDEAL"
   private static let idealName = "iDEAL | Wero"
   private static let paypalName = "PayPal"
+  private static let paypalIconName = "paypal-card-icon-colored"
+  private static let klarnaIconName = "klarna-card-icon-colored"
+  private static let idealIconName = "ideal-card-icon-colored"
+  private static let unknownCardIconName = "payment-card-icon-colored"
   private static let emailVisibleEdge = 2
   private static let emailMinLengthForSuffix = 6
 
@@ -61,7 +65,9 @@ extension PrimerHeadlessUniversalCheckout.VaultedPaymentMethod {
     -> VaultedPaymentMethodDisplayData {
     let network = data.network ?? data.binData?.network ?? "Card"
     let cardNetwork = CardNetwork(rawValue: network.uppercased()) ?? .unknown
-    let brandIcon = cardNetwork.icon ?? ImageName.creditCard.image
+    let brandIcon = cardNetwork == .unknown
+      ? UIImage(primerResource: Self.unknownCardIconName)
+      : cardNetwork.icon ?? ImageName.creditCard.image
     let brandName = cardNetwork == .unknown ? CheckoutComponentsStrings.unknownCardNetworkName : cardNetwork.displayName
 
     let last4 = data.last4Digits
@@ -106,7 +112,7 @@ extension PrimerHeadlessUniversalCheckout.VaultedPaymentMethod {
 
     return VaultedPaymentMethodDisplayData(
       name: name,
-      brandIcon: UIImage(primerResource: "paypal-icon-colored"),
+      brandIcon: UIImage(primerResource: Self.paypalIconName),
       brandName: Self.paypalName,
       primaryValue: maskedEmail,
       secondaryValue: nil,
@@ -142,7 +148,7 @@ extension PrimerHeadlessUniversalCheckout.VaultedPaymentMethod {
 
     return VaultedPaymentMethodDisplayData(
       name: nil,
-      brandIcon: UIImage(primerResource: "klarna-icon-colored"),
+      brandIcon: UIImage(primerResource: Self.klarnaIconName),
       brandName: CheckoutComponentsStrings.klarnaBrandName,
       primaryValue: maskedEmail,
       secondaryValue: nil,
@@ -230,7 +236,9 @@ extension PrimerHeadlessUniversalCheckout.VaultedPaymentMethod {
 
   private func genericDisplayData() -> VaultedPaymentMethodDisplayData {
     let icon =
-      PrimerPaymentMethodType(rawValue: paymentMethodType)?.icon ?? ImageName.genericCard.image
+      paymentMethodType.hasSuffix(Self.idealTypeSuffix)
+      ? UIImage(primerResource: Self.idealIconName)
+      : PrimerPaymentMethodType(rawValue: paymentMethodType)?.icon ?? ImageName.genericCard.image
     let name = savedMethodName
 
     return VaultedPaymentMethodDisplayData(
