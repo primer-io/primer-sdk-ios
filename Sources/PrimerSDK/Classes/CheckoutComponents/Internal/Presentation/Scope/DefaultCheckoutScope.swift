@@ -730,8 +730,7 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
     case let .resubmit(scope):
       scope.submit()
     case .vaulted:
-      // Goes through the full entry point, so a card that needs its CVV asks for it again.
-      Task { await paymentMethodSelectionInternal.payWithVaultedPaymentMethod() }
+      updateNavigationState(.paymentMethodSelection)
     }
   }
 

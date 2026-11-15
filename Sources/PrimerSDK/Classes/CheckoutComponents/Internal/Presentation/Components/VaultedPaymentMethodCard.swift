@@ -15,6 +15,7 @@ struct VaultedPaymentMethodCard: View {
   let isEditMode: Bool
   let onTap: (() -> Void)?
   let onDeleteTapped: (() -> Void)?
+  let cvvInput: VaultedCardCVVInput?
 
   @Environment(\.designTokens) private var tokens
 
@@ -25,20 +26,27 @@ struct VaultedPaymentMethodCard: View {
     isSelected: Bool = false,
     isEditMode: Bool = false,
     onTap: (() -> Void)? = nil,
-    onDeleteTapped: (() -> Void)? = nil
+    onDeleteTapped: (() -> Void)? = nil,
+    cvvInput: VaultedCardCVVInput? = nil
   ) {
     self.vaultedPaymentMethod = vaultedPaymentMethod
     self.isSelected = isSelected
     self.isEditMode = isEditMode
     self.onTap = onTap
     self.onDeleteTapped = onDeleteTapped
+    self.cvvInput = cvvInput
   }
 
   // MARK: - Body
 
   var body: some View {
     HStack(spacing: 0) {
-      makeCardContent()
+      VStack(spacing: 0) {
+        makeCardContent()
+        cvvInput?.padding([.horizontal, .bottom], PrimerSpacing.medium(tokens: tokens))
+      }
+      .background(makeCardBackground())
+      .overlay(makeCardBorder())
       if isEditMode {
         makeDeleteButton()
       }
@@ -52,8 +60,7 @@ struct VaultedPaymentMethodCard: View {
       makeMainCardRow()
         .padding(PrimerSpacing.medium(tokens: tokens))
         .frame(height: PrimerComponentHeight.vaultedPaymentMethodCard)
-        .background(makeCardBackground())
-        .overlay(makeCardBorder())
+        .contentShape(Rectangle())
     }
     .buttonStyle(PlainButtonStyle())
     .accessibility(
