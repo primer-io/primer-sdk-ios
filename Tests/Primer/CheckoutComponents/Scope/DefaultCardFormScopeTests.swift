@@ -674,6 +674,8 @@ final class DefaultCardFormScopeTests: XCTestCase {
             XCTAssertEqual(scope.getFieldValue(.countryCode), "US")
             XCTAssertNotNil(scope.structuredState.selectedCountry)
             XCTAssertEqual(scope.structuredState.selectedCountry?.code, "US")
+            XCTAssertEqual(scope.structuredState.selectedCountry?.name, "United States of America")
+            XCTAssertEqual(scope.structuredState.selectedCountry?.dialCode, "+1")
         }
     }
 
