@@ -111,11 +111,7 @@ struct FlowScreenFactory: LogReporter {
   }
 
   private func makeProcessingView() -> some View {
-    DefaultLoadingScreen(
-      title: CheckoutComponentsStrings.processingPayment,
-      subtitle: CheckoutComponentsStrings.processingPleaseWait,
-      accessibilityLabel: CheckoutComponentsStrings.a11yProcessingPayment
-    )
+    ProcessingScreen()
   }
 
   @ViewBuilder
