@@ -10,6 +10,9 @@ import SwiftUI
 
 @available(iOS 15.0, *)
 struct DefaultLoadingScreen: View {
+  var title = CheckoutComponentsStrings.loading
+  var subtitle: String?
+  var accessibilityLabel = CheckoutComponentsStrings.a11yLoading
   @Environment(\.designTokens) private var tokens
 
   var body: some View {
@@ -22,16 +25,33 @@ struct DefaultLoadingScreen: View {
         .accessibility(
           config: AccessibilityConfiguration(
             identifier: AccessibilityIdentifiers.Common.loadingIndicator,
-            label: CheckoutComponentsStrings.a11yLoading
+            label: accessibilityLabel
           ))
 
-      Text(CheckoutComponentsStrings.loading)
+      makeText()
+    }
+    .frame(maxWidth: .infinity, minHeight: 300)
+    .background(CheckoutColors.background(tokens: tokens))
+    .accessibilityIdentifier(AccessibilityIdentifiers.Common.loadingIndicator)
+  }
+
+  @ViewBuilder
+  private func makeText() -> some View {
+    if let subtitle {
+      VStack(spacing: PrimerSpacing.xsmall(tokens: tokens)) {
+        Text(title)
+          .primerTypography(.bodyLarge, tokens: tokens)
+          .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
+        Text(subtitle)
+          .primerTypography(.bodyMedium, tokens: tokens)
+          .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
+      }
+      .multilineTextAlignment(.center)
+      .padding(.horizontal, PrimerSpacing.xxlarge(tokens: tokens))
+    } else {
+      Text(title)
         .primerTypography(.bodyMedium, tokens: tokens)
         .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
     }
-    .frame(height: 300)
-    .frame(maxWidth: .infinity)
-    .background(CheckoutColors.background(tokens: tokens))
-    .accessibilityIdentifier(AccessibilityIdentifiers.Common.loadingIndicator)
   }
 }
