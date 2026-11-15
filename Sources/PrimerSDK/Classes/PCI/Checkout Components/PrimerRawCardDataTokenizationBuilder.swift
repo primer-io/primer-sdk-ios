@@ -140,7 +140,7 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
                 expirationMonth: expiryMonth,
                 expirationYear: expiryYear,
                 cardholderName: rawData.cardholderName,
-                preferredNetwork: Self.preferredNetwork(from: pickToSend(for: rawData))
+                preferredNetwork: Self.preferredNetwork(from: await pickToSend(for: rawData))
             )
         )
     }
@@ -239,9 +239,9 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
         return offeredNetworks.contains(pickedNetwork) ? pickedNetwork : nil
     }
 
-    private func pickToSend(for rawData: PrimerCardData) -> CardNetwork? {
-        guard PrimerInternal.shared.sdkIntegrationType == .headless else { return rawData.cardNetwork }
-        return offeredPick(for: rawData, cardNetworksMetadata: cardValidationService?.cachedMetadata(forCardNumber: rawData.cardNumber))
+    private func pickToSend(for rawData: PrimerCardData) async -> CardNetwork? {
+        guard PrimerInternal.shared.sdkIntegrationType == .headless, rawData.cardNetwork != nil else { return rawData.cardNetwork }
+        return await offeredPick(for: rawData, cardNetworksMetadata: cardValidationService?.remoteMetadata(forCardNumber: rawData.cardNumber))
     }
 
     private func notifyDelegateOfValidationResult(isValid: Bool, errors: [Error]?) {

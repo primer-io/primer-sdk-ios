@@ -71,6 +71,7 @@ final class PrimerRawCardDataTokenizationBuilderTests: XCTestCase {
         let sut = PrimerRawCardDataTokenizationBuilder(paymentMethodType: "PAYMENT_CARD")
         let lookup = StubCardValidationService()
         lookup.stubbedMetadata = .remoteLookup([.visa, .cartesBancaires])
+        lookup.lookupStillRunning = true
         sut.cardValidationService = lookup
 
         let cardData = PrimerCardData(
@@ -335,6 +336,7 @@ extension PrimerCardNumberEntryMetadata {
 
 final class StubCardValidationService: CardValidationService {
     var stubbedMetadata: PrimerCardNumberEntryMetadata?
+    var lookupStillRunning = false
     private let lock = NSLock()
     private var recordedLookupRequests: [String] = []
     private var recordedRemoteMetadataRequests: [String] = []
@@ -359,7 +361,7 @@ final class StubCardValidationService: CardValidationService {
     func cachedMetadata(forCardNumber cardNumber: String) -> PrimerCardNumberEntryMetadata? {
         lock.withLock {
             recordedLookupRequests.append(cardNumber)
-            return stubbedMetadata
+            return lookupStillRunning ? nil : stubbedMetadata
         }
     }
 
