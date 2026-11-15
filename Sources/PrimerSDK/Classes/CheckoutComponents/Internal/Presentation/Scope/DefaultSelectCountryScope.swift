@@ -83,19 +83,18 @@ final class DefaultSelectCountryScope: PrimerSelectCountryScope, LogReporter {
     let localizedName = countryCode.country
     let flagEmoji = countryCode.flag
 
-    let dialCode = CountryCode.phoneNumberCountryCodes
-      .first { $0.code.uppercased() == code.uppercased() }?
-      .dialCode
+    let phoneCode = CountryCode.phoneNumberCountryCodes
+      .first { $0.code == code }
 
-    guard localizedName != "N/A", !localizedName.isEmpty else {
+    guard let name = localizedName == "N/A" ? phoneCode?.name : localizedName else {
       return nil
     }
 
     return PrimerCountry(
       code: code,
-      name: localizedName,
+      name: name,
       flag: flagEmoji,
-      dialCode: dialCode
+      dialCode: phoneCode?.dialCode
     )
   }
 
