@@ -71,14 +71,14 @@ final class DefaultSelectCountryScope: PrimerSelectCountryScope, LogReporter {
 
   private func loadAvailableCountries() {
     let allCountries = CountryCode.allCases.compactMap { countryCode in
-      convertCountryCodeToPrimerCountry(countryCode)
-    }.sorted { $0.name < $1.name }
+      Self.convertCountryCodeToPrimerCountry(countryCode)
+    }.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
 
     internalState.countries = allCountries
     internalState.filteredCountries = allCountries
   }
 
-  private func convertCountryCodeToPrimerCountry(_ countryCode: CountryCode) -> PrimerCountry? {
+  static func convertCountryCodeToPrimerCountry(_ countryCode: CountryCode) -> PrimerCountry? {
     let code = countryCode.rawValue
     let localizedName = countryCode.country
     let flagEmoji = countryCode.flag

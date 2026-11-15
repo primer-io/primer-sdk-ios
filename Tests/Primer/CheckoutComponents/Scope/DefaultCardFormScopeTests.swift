@@ -677,6 +677,19 @@ final class DefaultCardFormScopeTests: XCTestCase {
         }
     }
 
+    func test_updateCountryCode_withoutDialCode_setsSelectedCountry() async throws {
+        let container = try await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createCardFormScope(checkoutScope: checkoutScope)
+
+            scope.updateCountryCode("CW")
+
+            XCTAssertEqual(scope.structuredState.selectedCountry, PrimerCountry(code: "CW", name: "Curaçao", flag: "🇨🇼"))
+        }
+    }
+
     func test_updateCountryCode_withLowercase_normalizesCorrectly() async throws {
         let container = try await createTestContainer()
 

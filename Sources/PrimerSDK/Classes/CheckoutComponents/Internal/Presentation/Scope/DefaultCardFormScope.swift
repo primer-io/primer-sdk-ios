@@ -270,16 +270,9 @@ final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, 
   func updateCountryCode(_ countryCode: String) {
     updateBillingField(.countryCode, countryCode)
 
-    if let country = CountryCode.phoneNumberCountryCodes.first(where: {
-      $0.code.uppercased() == countryCode.uppercased()
-    }),
-      let countryCodeEnum = CountryCode(rawValue: country.code) {
-      structuredState.selectedCountry = PrimerCountry(
-        code: country.code,
-        name: country.name,
-        flag: countryCodeEnum.flag,
-        dialCode: country.dialCode
-      )
+    if let code = CountryCode(rawValue: countryCode.uppercased()),
+       let country = DefaultSelectCountryScope.convertCountryCodeToPrimerCountry(code) {
+      structuredState.selectedCountry = country
     }
   }
 
