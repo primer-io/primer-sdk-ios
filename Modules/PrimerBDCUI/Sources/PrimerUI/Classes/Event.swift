@@ -18,7 +18,11 @@ enum Event {
         case let .click(id):
             .object(["type": .string("click"), "id": .string(id)])
         case let .provider(type, id, data):
-            .object(data.merging(["type": .string(type), "id": id.map(CodableValue.string)].compactMapValues { $0 }) { $1 })
+            .object([
+                "type": .string(type),
+                "id": id.map(CodableValue.string),
+                "data": data.isEmpty ? nil : .object(data)
+            ].compactMapValues { $0 })
         }
     }
 }
