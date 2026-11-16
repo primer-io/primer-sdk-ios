@@ -1,0 +1,27 @@
+name: Translation check
+
+on:
+  pull_request:
+
+concurrency:
+  group: ${{ github.ref }}-translations
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  check-translations:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    name: "Check translations"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      # The merge base stays fixed when the target branch moves, so a re-run checks the same keys.
+      - name: Check changed translation keys
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: python3 Scripts/check_translations.py --repo . --base "$(git merge-base "origin/$BASE_REF" HEAD)" --exclude 'Debug App/**'
