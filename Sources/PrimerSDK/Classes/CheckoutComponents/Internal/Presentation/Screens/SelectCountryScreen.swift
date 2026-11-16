@@ -70,7 +70,7 @@ struct SelectCountryScreen: View, LogReporter {
   private var defaultSearchBar: some View {
     HStack {
       Image(systemName: "magnifyingglass")
-        .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
+        .foregroundColor(CheckoutColors.iconPrimary(tokens: tokens))
         // Lets a tap on the icon reach the tap target behind it.
         .allowsHitTesting(false)
 
@@ -79,9 +79,13 @@ struct SelectCountryScreen: View, LogReporter {
         text: Binding(
           get: { countryState.searchQuery },
           set: { scope.onSearch(query: $0) }
-        )
+        ),
+        prompt: Text(CheckoutComponentsStrings.searchCountriesPlaceholder)
+          .font(PrimerFont.bodyLarge(tokens: tokens))
+          .foregroundColor(CheckoutColors.textPlaceholder(tokens: tokens))
       )
       .textFieldStyle(PlainTextFieldStyle())
+      .primerFieldTypography(.bodyLarge, tokens: tokens)
       .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
       .tint(CheckoutColors.borderFocus(tokens: tokens))
       .focused($isSearchFocused)
@@ -93,18 +97,25 @@ struct SelectCountryScreen: View, LogReporter {
             scope.onSearch(query: "")
           },
           label: {
-            Image(systemName: "xmark.circle.fill")
-              .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
+            Image(systemName: "xmark")
+              .foregroundColor(CheckoutColors.iconPrimary(tokens: tokens))
           })
         .buttonStyle(PlainButtonStyle())
       }
     }
     .padding(.horizontal, PrimerSpacing.medium(tokens: tokens))
-    // A minimum, as the field's system font can outgrow the box at the largest text sizes.
+    // A minimum, as the field's font can outgrow the box at the largest text sizes.
     .frame(minHeight: PrimerComponentHeight.inputField(tokens: tokens))
     .focusesFieldOnTap { isSearchFocused = true }
-    .background(CheckoutColors.backgroundSecondary(tokens: tokens))
+    .background(CheckoutColors.inputBackground(tokens: tokens))
     .cornerRadius(PrimerRadius.small(tokens: tokens))
+    .overlay(
+      RoundedRectangle(cornerRadius: PrimerRadius.small(tokens: tokens))
+        .strokeBorder(
+          isSearchFocused ? CheckoutColors.borderFocus(tokens: tokens) : CheckoutColors.borderDefault(tokens: tokens),
+          lineWidth: isSearchFocused ? PrimerBorderWidth.focused(tokens: tokens) : PrimerBorderWidth.standard(tokens: tokens)
+        )
+    )
     .padding(PrimerSpacing.large(tokens: tokens))
   }
 
