@@ -343,6 +343,8 @@ extension ApplePayTokenizationViewModel {
                             taxAmount: nil
                         )
                         orderItems.append(feeItem)
+                    default:
+                        break
                     }
                 }
             }

@@ -107,6 +107,13 @@ final class CardFormPayButtonTitleTests: XCTestCase {
         XCTAssertEqual(sut.formattedPayAmount(surchargeAmount: nil), "£10.00")
     }
 
+    func test_formattedPayAmount_whenDecodedSessionHasServiceFee_countsSurchargeOnce() async throws {
+        let json = #"{"totalOrderAmount":1050,"fees":[{"type":"SURCHARGE","amount":20},{"type":"SERVICE_FEE","amount":30}]}"#
+        let order = try JSONDecoder().decode(ClientSession.Order.self, from: Data(json.utf8))
+        let sut = await makeScope(amount: 1050, order: order)
+        XCTAssertEqual(sut.formattedPayAmount(surchargeAmount: 20), "£10.50")
+    }
+
     func test_formattedPayAmount_withMerchantAmount_ignoresSurcharge() async {
         let sut = await makeScope(amount: 1000, order: makeOrder(merchantAmount: 1000, totalOrderAmount: 1000))
         XCTAssertEqual(sut.formattedPayAmount(surchargeAmount: 150), "£10.00")

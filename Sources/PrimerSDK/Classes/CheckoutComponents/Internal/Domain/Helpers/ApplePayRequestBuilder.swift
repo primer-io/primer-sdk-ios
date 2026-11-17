@@ -112,6 +112,8 @@ struct ApplePayRequestBuilder {
               discountAmount: nil,
               taxAmount: nil
             ))
+          default:
+            break
           }
         }
       }
