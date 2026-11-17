@@ -46,6 +46,7 @@ struct CardNumberInputField: View, LogReporter {
     self.scope = scope
     self.selectedNetwork = selectedNetwork
     self.availableNetworks = availableNetworks
+    _cardNetwork = State(initialValue: CardNetwork(cardNumber: scope.fieldDisplayValue(.cardNumber)))
   }
 
   private var displayNetwork: CardNetwork {

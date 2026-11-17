@@ -12,7 +12,12 @@ import UIKit
 
     public typealias OnChange = @MainActor (_ id: String, _ value: CodableValue) -> Void
     public typealias OnEvent = @MainActor (_ type: String, _ data: [String: CodableValue]) -> Void
-    public typealias Factory = (_ props: CodableValue?, _ onChange: @escaping OnChange, _ onEvent: @escaping OnEvent) -> UIView?
+    public typealias Factory = (
+        _ id: String?,
+        _ props: CodableValue?,
+        _ onChange: @escaping OnChange,
+        _ onEvent: @escaping OnEvent
+    ) -> UIView?
 
     private var factories: [String: Factory] = [:]
 
@@ -22,7 +27,13 @@ import UIKit
         factories[type] = factory
     }
 
-    func view(for type: String, props: CodableValue?, onChange: @escaping OnChange, onEvent: @escaping OnEvent) -> UIView? {
-        factories[type].flatMap { $0(props, onChange, onEvent) }
+    func view(
+        for type: String,
+        id: String?,
+        props: CodableValue?,
+        onChange: @escaping OnChange,
+        onEvent: @escaping OnEvent
+    ) -> UIView? {
+        factories[type].flatMap { $0(id, props, onChange, onEvent) }
     }
 }

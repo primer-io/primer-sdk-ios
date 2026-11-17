@@ -13,13 +13,18 @@ struct HTTPRequestResolver: StepResolver, LogReporter {
 
     private let requestFactory: NetworkRequestFactory
     private let dispatcher: any RequestDispatcher
+    private let primerHosts: () -> [String]
 
     init(
         requestFactory: NetworkRequestFactory = DefaultNetworkRequestFactory(),
-        dispatcher: any RequestDispatcher = DefaultRequestDispatcher()
+        dispatcher: any RequestDispatcher = DefaultRequestDispatcher(),
+        primerHosts: @escaping () -> [String] = {
+            [PrimerAPIConfiguration.current?.pciUrl, PrimerAPIConfiguration.current?.coreUrl].compactMap { $0 }
+        }
     ) {
         self.requestFactory = requestFactory
         self.dispatcher = dispatcher
+        self.primerHosts = primerHosts
     }
 
     func resolve(_ step: CodableValue) async throws -> StepResolutionResult {
@@ -34,7 +39,8 @@ struct HTTPRequestResolver: StepResolver, LogReporter {
             method: method,
             schemaHeaders: params.headers,
             body: params.body.flatMap { try? JSONEncoder().encode($0) },
-            timeout: params.timeoutMs.map { TimeInterval($0) / 1000 }
+            timeout: params.timeoutMs.map { TimeInterval($0) / 1000 },
+            primerHost: isPrimerHost(params.url)
         )
 
         do {
@@ -58,6 +64,18 @@ struct HTTPRequestResolver: StepResolver, LogReporter {
         }
     }
     
+    private func isPrimerHost(_ url: String) -> Bool {
+        guard let origin = Self.origin(of: url) else { return false }
+        return primerHosts().compactMap(Self.origin(of:)).contains(origin)
+    }
+
+    private static func origin(of url: String) -> String? {
+        guard let components = URLComponents(string: url), let scheme = components.scheme, let host = components.host else {
+            return nil
+        }
+        return "\(scheme.lowercased())://\(host.lowercased()):\(components.port.map(String.init) ?? "")"
+    }
+
     private func result(from response: DispatcherResponse) -> StepResolutionResult {
         let status = response.metadata.statusCode
         let ok = (200..<300).contains(status)

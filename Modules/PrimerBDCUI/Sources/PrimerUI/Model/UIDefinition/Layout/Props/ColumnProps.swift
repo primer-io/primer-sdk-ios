@@ -15,7 +15,8 @@ struct ColumnProps: Props {
     let width: Size
     let height: Size
     let backgroundColor: String?
-    let borderRadius: Double?
+    let minHeight: Length?
+    let borderRadius: Length?
     let borderColor: String?
     let borderWidth: Double?
 
@@ -30,7 +31,8 @@ struct ColumnProps: Props {
         self.width = Size(codableValue: width)
         self.height = Size(codableValue: height)
         backgroundColor = try container.decodeIfPresent(String.self, forKey: .backgroundColor)
-        borderRadius = try container.decodeIfPresent(Double.self, forKey: .borderRadius)
+        minHeight = try container.decodeIfPresent(Length.self, forKey: .minHeight)
+        borderRadius = try container.decodeIfPresent(Length.self, forKey: .borderRadius)
         borderColor = try container.decodeIfPresent(String.self, forKey: .borderColor)
         borderWidth = try container.decodeIfPresent(Double.self, forKey: .borderWidth)
     }

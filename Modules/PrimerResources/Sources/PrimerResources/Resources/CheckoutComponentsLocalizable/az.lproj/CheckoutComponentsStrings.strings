@@ -244,7 +244,7 @@
 "accessibility_web_redirect_polling" = "Ödəniş təsdiqi gözlənilir";
 "accessibility_web_redirect_success" = "Ödəniş uğurlu oldu";
 "accessibility_web_redirect_failure" = "Ödəniş uğursuz oldu: %@";
-"accessibility_form_redirect_otp_hint" = "Bank tətbiqiňizdən 6 rəqəmli kodu daxil edin";
+"accessibility_form_redirect_otp_hint" = "Bank tətbiqinizdən 6 rəqəmli kodu daxil edin";
 "accessibility_form_redirect_otp_label" = "6 rəqəmli BLIK kodu, məcburidir";
 "accessibility_form_redirect_phone_hint" = "MBWay-də qeydiyyatdan keçmiş telefon nömrənizi daxil edin";
 "accessibility_form_redirect_phone_label" = "Telefon nömrəsi, məcburidir";
@@ -255,7 +255,7 @@
 "primer_form_redirect_blik_submit_button" = "BLIK ilə ödəyin";
 "primer_form_redirect_mbway_pending_message" = "Ödənişi MB WAY tətbiqində tamamlayın";
 "primer_form_redirect_mbway_submit_button" = "MB WAY ilə ödəyin";
-"primer_form_redirect_otp_code_invalid" = "Etibərli 6 rəqəmli kod daxil edin";
+"primer_form_redirect_otp_code_invalid" = "Düzgün 6 rəqəmli kod daxil edin";
 "primer_form_redirect_otp_code_required" = "OTP kodu məcburidir";
 "primer_form_redirect_pending_message" = "Ödənişi tətbiqdə tamamlayın";
 "primer_form_redirect_pending_title" = "Ödənişi tamamlayın";

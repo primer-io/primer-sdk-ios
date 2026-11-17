@@ -14,8 +14,11 @@ enum PrimerRuntimeHeaders {
             "Primer-SDK-Checkout-Session-ID": PrimerInternal.shared.checkoutSessionId,
             "Primer-SDK-Client": PrimerSource.defaultSourceType,
             "Content-Type": "application/json",
-            "Primer-SDK-Version": VersionUtils.releaseVersionNumber,
-            "X-Idempotency-Key": UUID().uuidString
+            "Primer-SDK-Version": VersionUtils.releaseVersionNumber
         ].compactMapValues(\.self)
+    }
+
+    static var idempotent: [String: String] {
+        `default`.merging(["X-Idempotency-Key": UUID().uuidString]) { $1 }
     }
 }

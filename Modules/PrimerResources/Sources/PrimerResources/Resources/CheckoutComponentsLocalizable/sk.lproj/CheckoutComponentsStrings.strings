@@ -259,10 +259,10 @@
 "primer_form_redirect_otp_code_required" = "OTP kód je povinný";
 "primer_form_redirect_pending_message" = "Dokončite platbu v aplikácii";
 "primer_form_redirect_pending_title" = "Dokončite platbu";
-"primer_qr_code_scan_instruction" = "Naskenujte na zaplatenie alebo urobiť snímku obrazovky";
+"primer_qr_code_scan_instruction" = "Naskenujte na zaplatenie alebo urobte snímku obrazovky";
 "primer_qr_code_upload_instruction" = "Nahrajte snímku obrazovky do svojej bankovej aplikácie";
 "accessibility_qr_code_image" = "QR kód na platbu";
-"accessibility_qr_code_scan_hint" = "Urobiť snímku obrazovky na uloženie QR kódu";
+"accessibility_qr_code_scan_hint" = "Urobte snímku obrazovky na uloženie QR kódu";
 "accessibility_qr_code_success_icon" = "Platba úspešná";
 "accessibility_qr_code_failure_icon" = "Platba zlyhala";
 

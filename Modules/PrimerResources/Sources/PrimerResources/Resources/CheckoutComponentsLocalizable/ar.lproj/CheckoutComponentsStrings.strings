@@ -11,7 +11,7 @@
 "accessibility_card_form_billing_address_postal_code_label" = "الرمز البريدي، مطلوب";
 "accessibility_card_form_billing_address_state_label" = "الولاية/المنطقة، مطلوبة";
 "accessibility_card_form_billing_section" = "عنوان الفواتير";
-"accessibility_card_form_card_number_error_empty" = "رقم البطاقة، مطلوب";
+"accessibility_card_form_card_number_error_empty" = "رقم البطاقة مطلوب.";
 "accessibility_card_form_card_number_error_invalid" = "رقم البطاقة غير صالح. يرجى التحقق والمحاولة مرة أخرى.";
 "accessibility_card_form_card_number_hint" = "أدخل رقم بطاقتك";
 "accessibility_card_form_card_number_label" = "رقم البطاقة، مطلوب";

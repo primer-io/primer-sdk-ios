@@ -25,9 +25,14 @@ protocol ProcessFormRedirectPaymentInteractor {
 final class ProcessFormRedirectPaymentInteractorImpl: ProcessFormRedirectPaymentInteractor, LogReporter {
 
   private let formRedirectRepository: FormRedirectRepository
+  private let clientSessionActionsFactory: () -> ClientSessionActionsProtocol
 
-  init(formRedirectRepository: FormRedirectRepository) {
+  init(
+    formRedirectRepository: FormRedirectRepository,
+    clientSessionActionsFactory: @escaping () -> ClientSessionActionsProtocol = { ClientSessionActionsModule() }
+  ) {
     self.formRedirectRepository = formRedirectRepository
+    self.clientSessionActionsFactory = clientSessionActionsFactory
   }
 
   func execute(
@@ -36,6 +41,8 @@ final class ProcessFormRedirectPaymentInteractorImpl: ProcessFormRedirectPayment
     onPollingStarted: (() -> Void)? = nil
   ) async throws -> PaymentResult {
     logger.debug(message: "Executing form redirect payment for \(paymentMethodType)")
+
+    try await clientSessionActionsFactory().selectPaymentMethodIfNeeded(paymentMethodType, cardNetwork: nil)
 
     let tokenizationResponse = try await formRedirectRepository.tokenize(
       paymentMethodType: paymentMethodType,

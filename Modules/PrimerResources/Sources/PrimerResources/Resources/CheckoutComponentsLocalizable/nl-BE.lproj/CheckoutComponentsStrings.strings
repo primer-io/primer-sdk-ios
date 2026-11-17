@@ -16,7 +16,7 @@
 "primer_payment_selection_empty" = "Geen betaalmethodes beschikbaar";
 "primer_checkout_splash_title" = "Uw beveiligde afrekening wordt geladen";
 "primer_checkout_splash_subtitle" = "Nog even geduld";
-"primer_checkout_loading_indicator" = "Aaan het laden";
+"primer_checkout_loading_indicator" = "Aan het laden";
 "primer_checkout_success_title" = "Betaling geslaagd";
 "primer_checkout_success_subtitle" = "U wordt binnenkort doorgestuurd naar de bevestigingspagina van uw bestelling.";
 "primer_checkout_error_title" = "Betaling mislukt";
@@ -96,7 +96,7 @@
 "primer_card_form_error_email_required" = "E-mailadres is verplicht";
 "primer_card_form_error_email_invalid" = "Ongeldig e-mailadres";
 "primer_card_form_error_phone_invalid" = "Gelieve een geldig telefoonnummer in te voeren";
-"primer_card_form_retail_not_implemented" = "Selectie verkooppunt nog niet geïmplementeerd.";
+"primer_card_form_retail_not_implemented" = "Selectie verkooppunt nog niet geïmplementeerd";
 "primer_country_title" = "Selecteer land";
 "primer_country_placeholder_search" = "Zoeken";
 "primer_country_selector_placeholder" = "Landkiezer";

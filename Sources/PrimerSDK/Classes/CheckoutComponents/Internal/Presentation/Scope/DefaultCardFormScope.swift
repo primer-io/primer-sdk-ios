@@ -52,6 +52,7 @@ final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, 
   private var networkDetectionTask: Task<Void, Never>?
   private var binDataTask: Task<Void, Never>?
   private var preferredNetwork: CardNetwork?
+  private var lastSentNetwork: CardNetwork?
   /// The network the user explicitly picked from the co-badge selector. Auto-detection (keystroke
   /// and BIN stream) must not overwrite it while it remains in `availableNetworks`.
   private var userSelectedNetwork: CardNetwork?
@@ -129,6 +130,9 @@ final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, 
           // auto-defaulted first network), so the displayed amount matches what the backend charges.
           // Only a pin, while it is the network shown, goes out as the preferred network (prepareCardPaymentData).
           updateSurchargeAmount(for: effective)
+          if effective != lastSentNetwork, !structuredState.isLoading {
+            await handleNetworkSelection(effective.rawValue)
+          }
         } else {
           structuredState.selectedNetwork = nil
           preferredNetwork = nil
@@ -332,6 +336,7 @@ final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, 
     guard let interactor = cardNetworkDetectionInteractor,
       let cardNetwork = CardNetwork(rawValue: networkString)
     else { return }
+    lastSentNetwork = cardNetwork
     await interactor.selectNetwork(cardNetwork)
   }
 
@@ -350,6 +355,7 @@ final class DefaultCardFormScope: CardFormFieldScopeInternal, ObservableObject, 
   // A running payment cannot be stopped, so leaving the form would only hide it, as in the Drop-in.
   func onBack() {
     if presentationContext.shouldShowBackButton, !structuredState.isLoading {
+      lastSentNetwork = nil
       checkoutScope?.checkoutNavigator.navigateBack()
     }
   }

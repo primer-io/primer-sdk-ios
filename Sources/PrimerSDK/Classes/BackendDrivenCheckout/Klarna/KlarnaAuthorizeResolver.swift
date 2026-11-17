@@ -16,8 +16,8 @@ final class KlarnaAuthorizeResolver: NSObject, StepResolver, LogReporter {
 
     @MainActor
     func resolve(_ data: CodableValue) async throws -> StepResolutionResult {
-        let params = try? data.casted(to: Params.self)
-        guard let provider = KlarnaProviderStore.shared.provider(for: params?.category) else {
+        let params = (try? data.casted(to: KlarnaAuthorizeParams.self)) ?? KlarnaAuthorizeParams()
+        guard let provider = KlarnaProviderStore.shared.provider(for: params.instanceId ?? params.category) else {
             return StepResolutionResult(outcome: .error)
         }
         provider.authorizationDelegate = self
@@ -27,7 +27,7 @@ final class KlarnaAuthorizeResolver: NSObject, StepResolver, LogReporter {
 
         return await withCheckedContinuation { continuation in
             self.continuation = continuation
-            provider.authorize(autoFinalize: true, jsonData: nil)
+            provider.authorize(autoFinalize: params.autoFinalize, jsonData: params.sessionData)
         }
     }
 }
@@ -58,14 +58,46 @@ extension KlarnaAuthorizeResolver: PrimerKlarnaProviderErrorDelegate {
         resume(.success, data: .object([
             "approved": .bool(false),
             "show_form": .bool(true),
-            "error": .object(["name": .string(error.errorId), "message": .string(error.localizedDescription)])
+            "error": .object(["code": .string(error.errorId), "message": .string(error.localizedDescription)])
         ]))
     }
 }
 
-private extension KlarnaAuthorizeResolver {
-    struct Params: Decodable {
-        let category: String?
+struct KlarnaAuthorizeParams: Decodable {
+    let instanceId: String?
+    let category: String?
+    let sessionData: String?
+    let autoFinalize: Bool
+
+    init() {
+        instanceId = nil
+        category = nil
+        sessionData = nil
+        autoFinalize = true
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case instanceId, category, data, options
+    }
+
+    private struct Options: Decodable {
+        let autoFinalize: Bool?
+
+        private enum CodingKeys: String, CodingKey {
+            case autoFinalize = "auto_finalize"
+        }
+    }
+
+    init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        instanceId = try container.decodeIfPresent(String.self, forKey: .instanceId).flatMap { $0.isEmpty ? nil : $0 }
+        category = try container.decodeIfPresent(String.self, forKey: .category).flatMap { $0.isEmpty ? nil : $0 }
+        if case let .object(fields) = try container.decodeIfPresent(CodableValue.self, forKey: .data), !fields.isEmpty {
+            sessionData = try CodableValue.object(fields).jsonString
+        } else {
+            sessionData = nil
+        }
+        autoFinalize = try container.decodeIfPresent(Options.self, forKey: .options)?.autoFinalize ?? true
     }
 }
 #endif

@@ -110,7 +110,7 @@
 "primer_card_form_error_phone_invalid" = "Введіть дійсний номер телефону";
 "primer_card_form_error_postal_invalid" = "Невірний поштовий індекс";
 "primer_card_form_error_postal_required" = "Поштовий індекс обов'язковий";
-"primer_card_form_error_state_invalid" = "Невірний область чи регіон";
+"primer_card_form_error_state_invalid" = "Невірна область чи регіон";
 "primer_card_form_error_state_required" = "Область чи регіон обов'язкові";
 "primer_card_form_label_address1" = "Адресний рядок 1";
 "primer_card_form_label_address2" = "Адресний рядок 2 (необов'язково)";

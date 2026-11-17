@@ -9,7 +9,7 @@
 "accessibility_card_form_billing_address_last_name_label" = "Uzvārds, obligāti";
 "accessibility_card_form_billing_address_postal_code_hint" = "Ievadiet pasta indeksu";
 "accessibility_card_form_billing_address_postal_code_label" = "Pasta indekss, obligāti";
-"accessibility_card_form_billing_address_state_label" = "Valsts/reģions, obligāti";
+"accessibility_card_form_billing_address_state_label" = "Novads/reģions, obligāti";
 "accessibility_card_form_billing_section" = "Norēķinu adrese";
 "accessibility_card_form_card_number_error_empty" = "Kartes numurs ir obligāts.";
 "accessibility_card_form_card_number_error_invalid" = "Nederīgs kartes numurs. Lūdzu, pārbaudiet un mēģiniet vēlreiz.";
@@ -259,10 +259,10 @@
 "primer_form_redirect_otp_code_required" = "OTP kods ir obligāts";
 "primer_form_redirect_pending_message" = "Pabeidziet maksājumu lietotnē";
 "primer_form_redirect_pending_title" = "Pabeidziet maksājumu";
-"primer_qr_code_scan_instruction" = "Skenējiet, lai samaksātu, vai uznemiet ekrānuznēmumu";
-"primer_qr_code_upload_instruction" = "Augšupielādējiet ekrānuznēmumu savā bankas lietotnē";
+"primer_qr_code_scan_instruction" = "Skenējiet, lai samaksātu, vai uzņemiet ekrānuzņēmumu";
+"primer_qr_code_upload_instruction" = "Augšupielādējiet ekrānuzņēmumu savā bankas lietotnē";
 "accessibility_qr_code_image" = "QR kods maksājumam";
-"accessibility_qr_code_scan_hint" = "Uznemiet ekrānuznēmumu, lai saglabātu QR kodu";
+"accessibility_qr_code_scan_hint" = "Uzņemiet ekrānuzņēmumu, lai saglabātu QR kodu";
 "accessibility_qr_code_success_icon" = "Maksājums veiksmīgs";
 "accessibility_qr_code_failure_icon" = "Maksājums neizdevās";
 

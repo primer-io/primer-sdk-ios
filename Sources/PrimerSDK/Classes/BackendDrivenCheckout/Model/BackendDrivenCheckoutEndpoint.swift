@@ -43,7 +43,12 @@ extension BackendDrivenCheckoutEndpoint: Endpoint {
         }
     }
     
-    var headers: [String : String]? { PrimerRuntimeHeaders.default }
+    var headers: [String : String]? {
+        switch self {
+        case .setup, .pay, .payWithToken: PrimerRuntimeHeaders.idempotent
+        case .manifest, .pollSetup, .expandClientSession: PrimerRuntimeHeaders.default
+        }
+    }
     
     var queryParameters: [String : String]? {
         switch self {
