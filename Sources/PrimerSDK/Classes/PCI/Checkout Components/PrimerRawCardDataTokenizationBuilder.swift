@@ -163,17 +163,7 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
         }
 
         // Used for CVV length. Precedence: user pick → BIN metadata → local IIN.
-        var cardNetwork = rawData.cardNetwork ?? CardNetwork(cardNumber: rawData.cardNumber)
-
-        if rawData.cardNetwork == nil, let metadata = cardNetworksMetadata {
-            let detected = metadata.detectedCardNetworks
-            let didDetectNetwork = !detected.items.isEmpty && detected.items.map(\.network) != [.unknown]
-            if didDetectNetwork {
-                cardNetwork = detected.preferred?.network
-                    ?? detected.items.first?.network
-                    ?? cardNetwork
-            }
-        }
+        let cardNetwork = effectiveNetwork(for: rawData, cardNetworksMetadata: cardNetworksMetadata)
 
         // Always trigger network validation (even for partial/invalid cards)
         // CardValidationService handles:
@@ -226,6 +216,26 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
         }
 
         notifyDelegateOfValidationResult(isValid: true, errors: nil)
+    }
+
+    func effectiveNetwork(for rawData: PrimerCardData) -> CardNetwork {
+        effectiveNetwork(for: rawData, cardNetworksMetadata: cardValidationService?.cachedMetadata(forCardNumber: rawData.cardNumber))
+    }
+
+    func effectiveNetwork(for rawData: PrimerCardData, cardNetworksMetadata: PrimerCardNumberEntryMetadata?) -> CardNetwork {
+        var cardNetwork = rawData.cardNetwork ?? CardNetwork(cardNumber: rawData.cardNumber)
+
+        if rawData.cardNetwork == nil, let metadata = cardNetworksMetadata {
+            let detected = metadata.detectedCardNetworks
+            let didDetectNetwork = !detected.items.isEmpty && detected.items.map(\.network) != [.unknown]
+            if didDetectNetwork {
+                cardNetwork = detected.preferred?.network
+                    ?? detected.items.first?.network
+                    ?? cardNetwork
+            }
+        }
+
+        return cardNetwork
     }
 
     private func notifyDelegateOfValidationResult(isValid: Bool, errors: [Error]?) {

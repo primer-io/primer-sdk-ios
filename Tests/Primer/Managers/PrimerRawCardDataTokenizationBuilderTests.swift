@@ -275,6 +275,51 @@ final class PrimerRawCardDataTokenizationBuilderTests: XCTestCase {
         XCTAssertTrue(sut.isDataValid)
         XCTAssertEqual(stub.lookupRequests, ["5017679210000700"])
     }
+
+    func test_effectiveNetwork_shopperPick_winsOverTheLookup() {
+        SDKSessionHelper.updateAllowedCardNetworks(cardNetworks: [.visa, .cartesBancaires])
+        let sut = makeBuilder(lookupNetworks: [.visa, .cartesBancaires])
+
+        XCTAssertEqual(sut.effectiveNetwork(for: visaCard(pickedNetwork: .cartesBancaires)), .cartesBancaires)
+    }
+
+    func test_effectiveNetwork_noPick_usesTheLookupPreferredNetwork() {
+        SDKSessionHelper.updateAllowedCardNetworks(cardNetworks: [.cartesBancaires, .visa])
+        let sut = makeBuilder(lookupNetworks: [.visa, .cartesBancaires])
+
+        XCTAssertEqual(sut.effectiveNetwork(for: visaCard(pickedNetwork: nil)), .cartesBancaires)
+    }
+
+    func test_effectiveNetwork_noPickNoLookup_usesTheFirstDigitsNetwork() {
+        SDKSessionHelper.updateAllowedCardNetworks(cardNetworks: [.cartesBancaires, .visa])
+        let sut = makeBuilder(lookupNetworks: nil)
+
+        XCTAssertEqual(sut.effectiveNetwork(for: visaCard(pickedNetwork: nil)), .visa)
+    }
+
+    private func makeBuilder(lookupNetworks: [CardNetwork]?) -> PrimerRawCardDataTokenizationBuilder {
+        let sut = PrimerRawCardDataTokenizationBuilder(paymentMethodType: "PAYMENT_CARD")
+        let stub = StubCardValidationService()
+        stub.stubbedMetadata = lookupNetworks.map { networks in
+            PrimerCardNumberEntryMetadata(
+                source: .remote,
+                selectableCardNetworks: networks.map(PrimerCardNetwork.init(network:)),
+                detectedCardNetworks: networks.map(PrimerCardNetwork.init(network:))
+            )
+        }
+        sut.cardValidationService = stub
+        return sut
+    }
+
+    private func visaCard(pickedNetwork: CardNetwork?) -> PrimerCardData {
+        PrimerCardData(
+            cardNumber: "4111111111111111",
+            expiryDate: "03/2030",
+            cvv: "123",
+            cardholderName: "John Smith",
+            cardNetwork: pickedNetwork
+        )
+    }
 }
 
 // MARK: - Test stubs
