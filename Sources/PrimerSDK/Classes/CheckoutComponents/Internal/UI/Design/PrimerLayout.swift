@@ -133,6 +133,8 @@ enum PrimerIconSize {
   static let paymentMethodHeight: CGFloat = 40
   static let paymentMethodLargeWidth: CGFloat = 80
   static let paymentMethodLargeHeight: CGFloat = 50
+  static let vaultedBrandWidth: CGFloat = 22.4
+  static let vaultedBrandHeight: CGFloat = 16
 }
 
 // MARK: - Primer Border Widths

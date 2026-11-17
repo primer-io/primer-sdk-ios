@@ -189,7 +189,7 @@
 "primer_vault_cvv_title" = "CVVを入力";
 "primer_vault_default_bank" = "銀行口座";
 "primer_vault_default_cardholder" = "カード名義人";
-"primer_vault_default_paypal" = "PayPalアカウント";
+"primer_vault_default_card" = "カード";
 "primer_vault_delete_button_cancel" = "キャンセル";
 "primer_vault_delete_button_confirm" = "削除";
 "primer_vault_delete_message" = "このお支払い方法を削除してもよろしいですか？";

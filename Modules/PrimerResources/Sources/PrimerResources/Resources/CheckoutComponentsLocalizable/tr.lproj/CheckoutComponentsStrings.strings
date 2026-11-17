@@ -189,7 +189,7 @@
 "primer_vault_cvv_title" = "CVV girin";
 "primer_vault_default_bank" = "Banka hesabı";
 "primer_vault_default_cardholder" = "Kart sahibi";
-"primer_vault_default_paypal" = "PayPal hesabı";
+"primer_vault_default_card" = "Kart";
 "primer_vault_delete_button_cancel" = "İptal";
 "primer_vault_delete_button_confirm" = "Sil";
 "primer_vault_delete_message" = "Bu ödeme yöntemini silmek istediğinizden emin misiniz?";

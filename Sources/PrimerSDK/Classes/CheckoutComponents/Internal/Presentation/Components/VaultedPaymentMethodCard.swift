@@ -141,8 +141,8 @@ struct VaultedPaymentMethodCard: View {
           .resizable()
           .aspectRatio(contentMode: .fill)
           .frame(
-            width: PrimerCardNetworkSelector.badgeWidth,
-            height: PrimerCardNetworkSelector.badgeHeight
+            width: PrimerIconSize.vaultedBrandWidth,
+            height: PrimerIconSize.vaultedBrandHeight
           )
           .clipped()
           .cornerRadius(PrimerRadius.xsmall(tokens: tokens))
@@ -152,8 +152,8 @@ struct VaultedPaymentMethodCard: View {
           .font(PrimerFont.smallBadge(tokens: tokens))
           .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
           .frame(
-            width: PrimerCardNetworkSelector.badgeWidth,
-            height: PrimerCardNetworkSelector.badgeHeight
+            width: PrimerIconSize.vaultedBrandWidth,
+            height: PrimerIconSize.vaultedBrandHeight
           )
           .background(CheckoutColors.backgroundSecondary(tokens: tokens))
           .cornerRadius(PrimerRadius.xsmall(tokens: tokens))

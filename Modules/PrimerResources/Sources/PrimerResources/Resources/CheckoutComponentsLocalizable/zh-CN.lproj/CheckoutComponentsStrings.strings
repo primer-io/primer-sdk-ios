@@ -189,7 +189,7 @@
 "primer_vault_cvv_title" = "输入CVV";
 "primer_vault_default_bank" = "银行账户";
 "primer_vault_default_cardholder" = "持卡人";
-"primer_vault_default_paypal" = "PayPal账户";
+"primer_vault_default_card" = "卡片";
 "primer_vault_delete_button_cancel" = "取消";
 "primer_vault_delete_button_confirm" = "删除";
 "primer_vault_delete_message" = "您确定要删除此支付方式吗？";

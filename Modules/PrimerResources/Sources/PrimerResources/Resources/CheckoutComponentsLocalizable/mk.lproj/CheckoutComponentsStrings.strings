@@ -108,7 +108,7 @@
 "primer_vault_section_title" = "Зачувани начини на плаќање";
 "primer_vault_button_show_all" = "Прикажи сè";
 "primer_vault_default_cardholder" = "Картичар";
-"primer_vault_default_paypal" = "PayPal сметка";
+"primer_vault_default_card" = "Картичка";
 "primer_vault_default_bank" = "Банкарска сметка";
 "primer_vault_format_masked" = "•••• %1$@";
 "primer_vault_format_expires" = "Истекува %1$@/%2$@";

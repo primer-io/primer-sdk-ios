@@ -108,7 +108,7 @@
 "primer_vault_section_title" = "Sačuvani načini plaćanja";
 "primer_vault_button_show_all" = "Prikaži sve";
 "primer_vault_default_cardholder" = "Vlasnik kartice";
-"primer_vault_default_paypal" = "PayPal račun";
+"primer_vault_default_card" = "Kartica";
 "primer_vault_default_bank" = "Bankovni račun";
 "primer_vault_format_masked" = "•••• %1$@";
 "primer_vault_format_expires" = "Ističe %1$@/%2$@";

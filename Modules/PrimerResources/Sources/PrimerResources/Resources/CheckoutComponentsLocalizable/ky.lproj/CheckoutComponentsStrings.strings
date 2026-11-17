@@ -108,7 +108,7 @@
 "primer_vault_section_title" = "Сакталган төлөм ыкмалары";
 "primer_vault_button_show_all" = "Баарын көрсөтүү";
 "primer_vault_default_cardholder" = "Картанын ээси";
-"primer_vault_default_paypal" = "PayPal аккаунту";
+"primer_vault_default_card" = "Карта";
 "primer_vault_default_bank" = "Банк аккаунту";
 "primer_vault_format_masked" = "•••• %1$@";
 "primer_vault_format_expires" = "Мөөнөтү %1$@/%2$@";

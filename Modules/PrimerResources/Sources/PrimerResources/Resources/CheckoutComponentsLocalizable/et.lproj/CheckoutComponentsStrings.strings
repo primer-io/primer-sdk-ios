@@ -189,7 +189,7 @@
 "primer_vault_cvv_title" = "Sisesta CVV";
 "primer_vault_default_bank" = "Pangakonto";
 "primer_vault_default_cardholder" = "Kaardiomanik";
-"primer_vault_default_paypal" = "PayPal konto";
+"primer_vault_default_card" = "Kaart";
 "primer_vault_delete_button_cancel" = "Tühista";
 "primer_vault_delete_button_confirm" = "Kustuta";
 "primer_vault_delete_message" = "Kas oled kindel, et soovid selle makseviisi kustutada?";

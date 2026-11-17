@@ -189,7 +189,7 @@
 "primer_vault_cvv_title" = "Zadejte CVV";
 "primer_vault_default_bank" = "Bankovní účet";
 "primer_vault_default_cardholder" = "Držitel karty";
-"primer_vault_default_paypal" = "PayPal účet";
+"primer_vault_default_card" = "Karta";
 "primer_vault_delete_button_cancel" = "Zrušit";
 "primer_vault_delete_button_confirm" = "Odstranit";
 "primer_vault_delete_message" = "Opravdu chcete odstranit tuto platební metodu?";

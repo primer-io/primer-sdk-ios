@@ -189,7 +189,7 @@
 "primer_vault_cvv_title" = "Syötä CVV";
 "primer_vault_default_bank" = "Pankkitili";
 "primer_vault_default_cardholder" = "Kortinhaltija";
-"primer_vault_default_paypal" = "PayPal-tili";
+"primer_vault_default_card" = "Kortti";
 "primer_vault_delete_button_cancel" = "Peruuta";
 "primer_vault_delete_button_confirm" = "Poista";
 "primer_vault_delete_message" = "Haluatko varmasti poistaa tämän maksutavan?";

@@ -189,7 +189,7 @@
 "primer_vault_cvv_title" = "Ievadīt CVV";
 "primer_vault_default_bank" = "Bankas konts";
 "primer_vault_default_cardholder" = "Kartes īpašnieks";
-"primer_vault_default_paypal" = "PayPal konts";
+"primer_vault_default_card" = "Karte";
 "primer_vault_delete_button_cancel" = "Atcelt";
 "primer_vault_delete_button_confirm" = "Dzēst";
 "primer_vault_delete_message" = "Vai tiešām vēlaties dzēst šo maksājuma metodi?";

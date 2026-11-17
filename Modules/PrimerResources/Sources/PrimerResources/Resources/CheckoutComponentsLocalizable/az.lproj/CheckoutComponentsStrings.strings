@@ -108,7 +108,7 @@
 "primer_vault_section_title" = "Saxlanılmış ödəniş metodları";
 "primer_vault_button_show_all" = "Hamısını göstər";
 "primer_vault_default_cardholder" = "Kart sahibi";
-"primer_vault_default_paypal" = "PayPal hesabı";
+"primer_vault_default_card" = "Kart";
 "primer_vault_default_bank" = "Bank hesabı";
 "primer_vault_format_masked" = "•••• %1$@";
 "primer_vault_format_expires" = "Bitmə %1$@/%2$@";

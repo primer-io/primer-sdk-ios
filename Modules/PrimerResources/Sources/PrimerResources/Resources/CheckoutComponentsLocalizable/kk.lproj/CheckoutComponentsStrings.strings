@@ -108,7 +108,7 @@
 "primer_vault_section_title" = "Сақталған төлем әдістері";
 "primer_vault_button_show_all" = "Барлығын көрсету";
 "primer_vault_default_cardholder" = "Карта иесі";
-"primer_vault_default_paypal" = "PayPal тіркелгісі";
+"primer_vault_default_card" = "Карта";
 "primer_vault_default_bank" = "Банк тіркелгісі";
 "primer_vault_format_masked" = "•••• %1$@";
 "primer_vault_format_expires" = "Мерзімі %1$@/%2$@";
