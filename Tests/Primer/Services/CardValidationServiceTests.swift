@@ -654,6 +654,35 @@ final class CardValidationServiceTests: XCTestCase {
         XCTAssertNil(sut.cachedMetadata(forCardNumber: "9999999912345678"))
     }
 
+    func test_remoteMetadata_noCachedResult_fetchesAndCachesItWithoutNotifyingTheDelegate() async {
+        sut = createCardValidationService(allowedNetworks: [.visa, .masterCard])
+        let bin = String(TestConstants.fullCardNumber.prefix(maxBinLength))
+        configureMockAPIClient(bin: bin, networks: ["VISA", "MASTERCARD"])
+        delegate.onMetadataForCardValidationState = { _, _, _ in
+            XCTFail("The submit lookup should not notify the delegate")
+        }
+
+        let metadata = await sut.remoteMetadata(forCardNumber: TestConstants.fullCardNumber)
+        let cachedMetadata = await sut.remoteMetadata(forCardNumber: TestConstants.fullCardNumber)
+
+        XCTAssertEqual(metadata?.source, .remote)
+        XCTAssertEqual(metadata?.detectedCardNetworks.items.map(\.network), [.visa, .masterCard])
+        XCTAssertEqual(cachedMetadata?.detectedCardNetworks.items.map(\.network), [.visa, .masterCard])
+        XCTAssertEqual(apiClient.fetchBinDataRequests, [bin])
+        XCTAssertEqual(sut.cachedMetadata(forCardNumber: TestConstants.fullCardNumber)?.source, .remote)
+    }
+
+    func test_remoteMetadata_fetchFails_returnsNilAndCachesNothing() async {
+        sut = createCardValidationService()
+        apiClient.error = PrimerError.unknown()
+
+        let metadata = await sut.remoteMetadata(forCardNumber: TestConstants.fullCardNumber)
+
+        XCTAssertNil(metadata)
+        XCTAssertEqual(apiClient.fetchBinDataRequests, [String(TestConstants.fullCardNumber.prefix(maxBinLength))])
+        XCTAssertNil(sut.cachedMetadata(forCardNumber: TestConstants.fullCardNumber))
+    }
+
     // MARK: - Helper Methods
 
     private func createCardValidationService(
