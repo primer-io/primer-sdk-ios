@@ -46,7 +46,7 @@ final class DefaultSelectCountryScopeTests: XCTestCase {
 
         // Then
         let names = state.countries.map(\.name)
-        XCTAssertEqual(names, names.sorted())
+        XCTAssertEqual(names, names.sorted { $0.localizedCaseInsensitiveCompare($1) == .orderedAscending })
     }
 
     func test_init_searchQueryIsEmpty() async throws {

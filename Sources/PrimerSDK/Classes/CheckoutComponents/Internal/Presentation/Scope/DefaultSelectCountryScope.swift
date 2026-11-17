@@ -71,31 +71,30 @@ final class DefaultSelectCountryScope: PrimerSelectCountryScope, LogReporter {
 
   private func loadAvailableCountries() {
     let allCountries = CountryCode.allCases.compactMap { countryCode in
-      convertCountryCodeToPrimerCountry(countryCode)
-    }.sorted { $0.name < $1.name }
+      Self.convertCountryCodeToPrimerCountry(countryCode)
+    }.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
 
     internalState.countries = allCountries
     internalState.filteredCountries = allCountries
   }
 
-  private func convertCountryCodeToPrimerCountry(_ countryCode: CountryCode) -> PrimerCountry? {
+  static func convertCountryCodeToPrimerCountry(_ countryCode: CountryCode) -> PrimerCountry? {
     let code = countryCode.rawValue
     let localizedName = countryCode.country
     let flagEmoji = countryCode.flag
 
-    let dialCode = CountryCode.phoneNumberCountryCodes
-      .first { $0.code.uppercased() == code.uppercased() }?
-      .dialCode
+    let phoneCode = CountryCode.phoneNumberCountryCodes
+      .first { $0.code == code }
 
-    guard localizedName != "N/A", !localizedName.isEmpty else {
+    guard let name = localizedName == "N/A" ? phoneCode?.name : localizedName else {
       return nil
     }
 
     return PrimerCountry(
       code: code,
-      name: localizedName,
+      name: name,
       flag: flagEmoji,
-      dialCode: dialCode
+      dialCode: phoneCode?.dialCode
     )
   }
 
