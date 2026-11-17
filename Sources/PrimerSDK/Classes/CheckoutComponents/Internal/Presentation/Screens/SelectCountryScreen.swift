@@ -116,7 +116,8 @@ struct SelectCountryScreen: View, LogReporter {
           lineWidth: isSearchFocused ? PrimerBorderWidth.focused(tokens: tokens) : PrimerBorderWidth.standard(tokens: tokens)
         )
     )
-    .padding(PrimerSpacing.large(tokens: tokens))
+    .padding(.horizontal, PrimerSpacing.large(tokens: tokens))
+    .padding(.vertical, PrimerSpacing.xxlarge(tokens: tokens))
   }
 
   private var countryListSection: some View {
@@ -183,9 +184,12 @@ struct SelectCountryScreen: View, LogReporter {
           }
         }
         .listRowBackground(Color.clear)
+        .listRowInsets(EdgeInsets(top: 0, leading: PrimerSpacing.large(tokens: tokens), bottom: 0, trailing: PrimerSpacing.large(tokens: tokens)))
+        .listRowSeparator(.hidden)
       }
     }
     .listStyle(PlainListStyle())
+    .environment(\.defaultMinListRowHeight, PrimerComponentHeight.interactive)
     .primerClearListBackground()
     .safeAreaInset(edge: .bottom, spacing: 0) {
       Color.clear.frame(height: PrimerSpacing.large(tokens: tokens))
@@ -210,7 +214,7 @@ private struct CountryItemView: View {
 
   var body: some View {
     Button(action: onTap) {
-      HStack {
+      HStack(spacing: PrimerSpacing.small(tokens: tokens)) {
         // Flag
         if let flag = country.flag {
           Text(flag)
@@ -218,32 +222,22 @@ private struct CountryItemView: View {
         }
 
         // Country name
-        VStack(alignment: .leading, spacing: PrimerSpacing.xxsmall(tokens: tokens)) {
-          Text(country.name)
-            .primerTypography(.body, tokens: tokens)
-            .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
-
-          if let dialCode = country.dialCode {
-            Text("\(country.code) • \(dialCode)")
-              .primerTypography(.caption, tokens: tokens)
-              .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
-          } else {
-            Text(country.code)
-              .primerTypography(.caption, tokens: tokens)
-              .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
-          }
-        }
+        Text(country.name)
+          .primerTypography(.bodyLarge, tokens: tokens)
+          .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
 
         Spacer()
 
         // Selection indicator
         if isSelected {
           Image(systemName: "checkmark")
-            .foregroundColor(CheckoutColors.borderSelected(tokens: tokens))
+            .foregroundColor(CheckoutColors.iconPrimary(tokens: tokens))
         }
       }
-      .padding(.vertical, PrimerSpacing.small(tokens: tokens))
-      .frame(maxWidth: .infinity, alignment: .leading)
+      .padding(.horizontal, PrimerSpacing.medium(tokens: tokens))
+      .frame(maxWidth: .infinity, minHeight: PrimerComponentHeight.interactive, alignment: .leading)
+      .background(isSelected ? CheckoutColors.backgroundSecondary(tokens: tokens) : .clear)
+      .cornerRadius(PrimerRadius.small(tokens: tokens))
       .contentShape(Rectangle())
     }
     .buttonStyle(PlainButtonStyle())

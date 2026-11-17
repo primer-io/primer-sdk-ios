@@ -73,6 +73,20 @@ final class DefaultSelectCountryScopeTests: XCTestCase {
         XCTAssertNil(state.selectedCountry)
     }
 
+    func test_state_selectedCountryIsTheCardFormCountry() async throws {
+        let cardFormScope = DefaultCardFormScope(
+            checkoutScope: await ContainerTestHelpers.createMockCheckoutScope(),
+            processCardPaymentInteractor: MockProcessCardPaymentInteractor(),
+            configurationService: MockConfigurationService.withDefaultConfiguration()
+        )
+        cardFormScope.updateCountryCode("GB")
+        sut = DefaultSelectCountryScope(cardFormScope: cardFormScope)
+
+        let state = try await awaitFirst(sut.state)
+
+        XCTAssertEqual(state.selectedCountry?.code, "GB")
+    }
+
     func test_init_countriesHaveValidCodes() async throws {
         // Given / When
         let state = try await awaitFirst(sut.state)

@@ -20,7 +20,8 @@ final class DefaultSelectCountryScope: PrimerSelectCountryScope, LogReporter {
   var state: AsyncStream<PrimerSelectCountryState> {
     AsyncStream { continuation in
       let task = Task { @MainActor in
-        for await value in $internalState.values {
+        for await var value in $internalState.values {
+          value.selectedCountry = cardFormScope?.structuredState.selectedCountry
           continuation.yield(value)
         }
         continuation.finish()
