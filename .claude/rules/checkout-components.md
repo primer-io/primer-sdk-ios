@@ -66,11 +66,12 @@ All payment method scopes extend `PrimerPaymentMethodScope` (base protocol with 
 
 ### Vaulting (Saved Payment Methods)
 Via `PrimerPaymentMethodSelectionScope`:
-- `payWithVaultedPaymentMethod()` — pay with the selected saved method; routes to the CVV recapture screen first when the client session asks for it
-- `payWithVaultedPaymentMethodAndCvv(_ cvv:)` — pay with a recaptured CVV; called by `VaultedCardCvvRecaptureScreen`
-- `validateCvv(_ cvv:)` — validate against the selected card's scheme; the screen owns the text, the scope owns the rule
+- `requiresCvvInput` — whether the selected saved method needs its CVV again; `VaultSection` then opens the CVV field inside the saved card on the payment list
+- `payWithVaultedPaymentMethod()` — pay with the selected saved method; routes to the CVV recapture screen first when the client session asks for it (the merchant path, `selectVaulted(_:)`)
+- `payWithVaultedPaymentMethodAndCvv(_ cvv:)` — pay with a recaptured CVV; called by `VaultSection` and `VaultedCardCvvRecaptureScreen`
+- `validateCvv(_ cvv:)` — validate against the selected card's scheme; the view owns the text, the scope owns the rule
 - `showAllVaultedPaymentMethods()` — navigate to the saved-cards list; works inline and in the modal (all three vault states are in `presentsInlineFlowSheet`). It is the only route to deleting a saved method from the SDK's own UI, so `VaultedPaymentMethodsDefaults.header` wires it in by default
-- State: `selectedVaultedPaymentMethod`, `isVaultPaymentLoading`. **No CVV state.** The code lives in the recapture screen's own `@State` for as long as that screen does, so it is never readable from outside and cannot outlive the payment
+- State: `selectedVaultedPaymentMethod`, `isVaultPaymentLoading`. **No CVV state.** The code lives in the view's own `@State` (`VaultSection` or the recapture screen) for as long as that view does, so it is never readable from outside and cannot outlive the payment
 - Public pay verb: `PrimerSelectionSession.selectVaulted(_:)`, which marks then charges, matching Android's `PrimerVaultedPaymentMethodsController.select(method)`. Merchants keep their own highlight
 
 ### Surcharging

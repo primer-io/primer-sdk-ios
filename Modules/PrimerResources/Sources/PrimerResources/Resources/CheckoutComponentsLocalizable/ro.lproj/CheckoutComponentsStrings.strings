@@ -189,7 +189,7 @@
 "primer_vault_cvv_title" = "Introduceți CVV";
 "primer_vault_default_bank" = "Cont bancar";
 "primer_vault_default_cardholder" = "Titular card";
-"primer_vault_default_paypal" = "Cont PayPal";
+"primer_vault_default_card" = "Card";
 "primer_vault_delete_button_cancel" = "Anulați";
 "primer_vault_delete_button_confirm" = "Ștergeți";
 "primer_vault_delete_message" = "Sunteți sigur că doriți să ștergeți această metodă de plată?";

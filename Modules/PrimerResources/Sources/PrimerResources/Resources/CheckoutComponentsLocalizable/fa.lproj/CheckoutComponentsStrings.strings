@@ -108,7 +108,7 @@
 "primer_vault_section_title" = "روش‌های پرداخت ذخیره‌شده";
 "primer_vault_button_show_all" = "نمایش همه";
 "primer_vault_default_cardholder" = "دارنده کارت";
-"primer_vault_default_paypal" = "حساب PayPal";
+"primer_vault_default_card" = "کارت";
 "primer_vault_default_bank" = "حساب بانکی";
 "primer_vault_format_masked" = "•••• %1$@";
 "primer_vault_format_expires" = "انقضا %1$@/%2$@";

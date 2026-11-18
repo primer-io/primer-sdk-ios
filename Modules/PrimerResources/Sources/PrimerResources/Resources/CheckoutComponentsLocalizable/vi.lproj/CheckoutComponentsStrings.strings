@@ -189,7 +189,7 @@
 "primer_vault_cvv_title" = "Nhập CVV";
 "primer_vault_default_bank" = "Tài khoản ngân hàng";
 "primer_vault_default_cardholder" = "Chủ thẻ";
-"primer_vault_default_paypal" = "Tài khoản PayPal";
+"primer_vault_default_card" = "Thẻ";
 "primer_vault_delete_button_cancel" = "Hủy";
 "primer_vault_delete_button_confirm" = "Xóa";
 "primer_vault_delete_message" = "Bạn có chắc chắn muốn xóa phương thức thanh toán này không?";

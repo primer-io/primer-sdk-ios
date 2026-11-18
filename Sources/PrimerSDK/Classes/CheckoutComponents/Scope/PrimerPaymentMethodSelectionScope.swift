@@ -19,6 +19,8 @@ protocol PrimerPaymentMethodSelectionScope: AnyObject {
   /// Controls how users can dismiss the checkout modal.
   var dismissalMechanism: [DismissalMechanism] { get }
 
+  var requiresCvvInput: Bool { get }
+
   // MARK: - Navigation Methods
 
   /// Called when a payment method is selected by the user.
@@ -33,8 +35,7 @@ protocol PrimerPaymentMethodSelectionScope: AnyObject {
   /// recapture screen first when the client session asks for it.
   func payWithVaultedPaymentMethod() async
 
-  /// Pays with the currently selected vaulted payment method and a recaptured CVV. Called by the
-  /// CVV recapture screen.
+  /// Pays with the currently selected vaulted payment method and a recaptured CVV.
   /// - Parameter cvv: The CVV entered by the user
   func payWithVaultedPaymentMethodAndCvv(_ cvv: String) async
 

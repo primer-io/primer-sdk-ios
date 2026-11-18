@@ -108,7 +108,7 @@
 "primer_vault_section_title" = "Naka-save na paraan ng pagbabayad";
 "primer_vault_button_show_all" = "Ipakita lahat";
 "primer_vault_default_cardholder" = "May-ari ng kard";
-"primer_vault_default_paypal" = "PayPal account";
+"primer_vault_default_card" = "Kard";
 "primer_vault_default_bank" = "Bank account";
 "primer_vault_format_masked" = "•••• %1$@";
 "primer_vault_format_expires" = "Mag-eexpire %1$@/%2$@";

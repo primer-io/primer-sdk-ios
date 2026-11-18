@@ -189,7 +189,7 @@
 "primer_vault_cvv_title" = "Introducir CVV";
 "primer_vault_default_bank" = "Cuenta bancaria";
 "primer_vault_default_cardholder" = "Titular";
-"primer_vault_default_paypal" = "Cuenta PayPal";
+"primer_vault_default_card" = "Tarjeta";
 "primer_vault_delete_button_cancel" = "Cancelar";
 "primer_vault_delete_button_confirm" = "Eliminar";
 "primer_vault_delete_message" = "¿Está seguro de que desea eliminar este método de pago?";

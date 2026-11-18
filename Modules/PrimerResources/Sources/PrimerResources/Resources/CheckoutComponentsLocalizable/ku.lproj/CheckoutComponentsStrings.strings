@@ -108,7 +108,7 @@
 "primer_vault_section_title" = "Rêbazên daynê yên hilanîn";
 "primer_vault_button_show_all" = "Hemûyan nîşan bide";
 "primer_vault_default_cardholder" = "Xwediyê kartê";
-"primer_vault_default_paypal" = "Ajimêra PayPal";
+"primer_vault_default_card" = "Kart";
 "primer_vault_default_bank" = "Ajimêra bankê";
 "primer_vault_format_masked" = "•••• %1$@";
 "primer_vault_format_expires" = "Diqede %1$@/%2$@";

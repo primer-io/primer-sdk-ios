@@ -189,7 +189,7 @@
 "primer_vault_cvv_title" = "Entrer le code de sécurité";
 "primer_vault_default_bank" = "Compte bancaire";
 "primer_vault_default_cardholder" = "Titulaire de la carte";
-"primer_vault_default_paypal" = "Compte PayPal";
+"primer_vault_default_card" = "Carte";
 "primer_vault_delete_button_cancel" = "Annuler";
 "primer_vault_delete_button_confirm" = "Supprimer";
 "primer_vault_delete_message" = "Êtes-vous sûr de vouloir supprimer ce moyen de paiement ?";

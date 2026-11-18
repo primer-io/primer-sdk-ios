@@ -13,19 +13,27 @@ import XCTest
 final class ProcessPayPalPaymentInteractorTests: XCTestCase {
 
     private var mockRepository: MockPayPalRepository!
+    private var mockClientSessionActions: MockClientSessionActionsModule!
     private var mockAnalytics: MockTrackingAnalyticsInteractor!
     private var sut: ProcessPayPalPaymentInteractorImpl!
 
     override func setUp() async throws {
         try await super.setUp()
         mockRepository = MockPayPalRepository()
+        let clientSessionActions = MockClientSessionActionsModule()
+        mockClientSessionActions = clientSessionActions
         mockAnalytics = MockTrackingAnalyticsInteractor()
-        sut = ProcessPayPalPaymentInteractorImpl(repository: mockRepository, analytics: mockAnalytics)
+        sut = ProcessPayPalPaymentInteractorImpl(
+            repository: mockRepository,
+            clientSessionActionsFactory: { clientSessionActions },
+            analytics: mockAnalytics
+        )
     }
 
     override func tearDown() async throws {
         PrimerInternal.shared.intent = nil
         mockRepository = nil
+        mockClientSessionActions = nil
         mockAnalytics = nil
         sut = nil
         try await super.tearDown()
@@ -192,6 +200,29 @@ final class ProcessPayPalPaymentInteractorTests: XCTestCase {
         XCTAssertEqual(orderId, "order-456")
         XCTAssertEqual(payerInfo?.email, "user@test.com")
         XCTAssertEqual(payerInfo?.firstName, "Jane")
+    }
+
+    func test_execute_checkoutFlow_selectsPayPalWithoutNetwork() async throws {
+        PrimerInternal.shared.intent = .checkout
+
+        _ = try await sut.execute()
+
+        XCTAssertEqual(mockClientSessionActions.selectPaymentMethodCalls.map(\.type), ["PAYPAL"])
+        XCTAssertEqual(mockClientSessionActions.selectPaymentMethodCalls.map(\.network), [nil])
+    }
+
+    func test_execute_checkoutFlow_selectFails_stopsBeforeTheOrderAndPayment() async {
+        PrimerInternal.shared.intent = .checkout
+        mockClientSessionActions.selectPaymentMethodError = TestError.networkFailure
+
+        do {
+            _ = try await sut.execute()
+            XCTFail("Expected error to be thrown")
+        } catch {
+            XCTAssertEqual(error as? TestError, .networkFailure)
+            XCTAssertFalse(mockRepository.startOrderSessionCalled)
+            XCTAssertNil(mockRepository.createPaymentToken)
+        }
     }
 
     // MARK: - Vault Flow Tests

@@ -53,20 +53,20 @@ public final class PrimerBDCEngine: NSObject, BDCEngineProtocol {
 }
 
 public extension PrimerBDCEngine {
-    func start(schema: String, context: SDKContext, state: CodableValue) async throws -> [String: Any] {
+    func startFlow(schema: String, context: SDKContext, state: CodableValue) async throws -> [String: Any] {
         try await checkIfReady()
-        let script = initialize(schema: schema, context: try context.literal(encoder), state: try state.literal(encoder))
+        let script = startFlowScript(schema: schema, context: try context.literal(encoder), state: try state.literal(encoder))
         return try await runScript(script, continuationPath: \.initializeContinuation)
     }
     
-    func applyEvent<State: Encodable>(
+    func handleEvent<State: Encodable>(
         _ event: CodableValue,
         context: SDKContext,
         schema: String,
         state: State
     ) async throws -> [String: Any]  {
         try await checkIfReady()
-        let script = eventScript(
+        let script = handleEventScript(
             schema: schema,
             context: try context.literal(encoder),
             state: try state.literal(encoder),
@@ -75,7 +75,7 @@ public extension PrimerBDCEngine {
         return try await runScript(script, continuationPath: \.applyEventContinuation)
     }
     
-    func applyResult(
+    func handleActionResult(
         schema: String,
         context: SDKContext,
         actionId: String,
@@ -84,7 +84,7 @@ public extension PrimerBDCEngine {
         data: Data?
     ) async throws  -> [String: Any] {
         try await checkIfReady()
-        let script = resultScript(
+        let script = handleActionResultScript(
             schema: schema,
             context: try context.literal(encoder),
             actionId: actionId,

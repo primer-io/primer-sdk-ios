@@ -155,7 +155,8 @@ struct CardFormFieldsView: View {
         placeholder: CheckoutComponentsStrings.cardNumberPlaceholder,
         scope: scope,
         selectedNetwork: getSelectedCardNetwork(),
-        availableNetworks: cardFormState.availableNetworks.map(\.network)
+        availableNetworks: cardFormState.availableNetworks.map(\.network),
+        surchargeAmount: cardFormState.surchargeAmount
       )
       .focused($focusedField, equals: .cardNumber)
       .onSubmit { moveToNextField(from: .cardNumber) }

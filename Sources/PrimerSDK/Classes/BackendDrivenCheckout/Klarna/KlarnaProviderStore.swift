@@ -10,19 +10,19 @@ import PrimerKlarnaSDK
 final class KlarnaProviderStore {
     static let shared = KlarnaProviderStore()
     private var providers: [String: PrimerKlarnaProviding] = [:]
-    private var latestCategory: String?
+    private var latestKey: String?
 
     private init() {
         // Use the shared instance
     }
 
-    func set(_ provider: PrimerKlarnaProviding, for category: String) {
-        providers[category] = provider
-        latestCategory = category
+    func set(_ provider: PrimerKlarnaProviding, for keys: [String]) {
+        keys.forEach { providers[$0] = provider }
+        latestKey = keys.first
     }
 
-    func provider(for category: String?) -> PrimerKlarnaProviding? {
-        (category ?? latestCategory).flatMap { providers[$0] }
+    func provider(for key: String?) -> PrimerKlarnaProviding? {
+        (key ?? latestKey).flatMap { providers[$0] }
     }
 }
 #endif

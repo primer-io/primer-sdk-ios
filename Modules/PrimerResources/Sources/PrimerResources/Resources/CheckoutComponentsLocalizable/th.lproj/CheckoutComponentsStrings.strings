@@ -189,7 +189,7 @@
 "primer_vault_cvv_title" = "กรอก CVV";
 "primer_vault_default_bank" = "บัญชีธนาคาร";
 "primer_vault_default_cardholder" = "ผู้ถือบัตร";
-"primer_vault_default_paypal" = "บัญชี PayPal";
+"primer_vault_default_card" = "บัตร";
 "primer_vault_delete_button_cancel" = "ยกเลิก";
 "primer_vault_delete_button_confirm" = "ลบ";
 "primer_vault_delete_message" = "คุณแน่ใจหรือไม่ว่าต้องการลบวิธีการชำระเงินนี้";

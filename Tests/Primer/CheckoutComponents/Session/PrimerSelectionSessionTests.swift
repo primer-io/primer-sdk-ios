@@ -23,6 +23,7 @@ final class PrimerSelectionSessionTests: XCTestCase {
     var state: AsyncStream<PrimerPaymentMethodSelectionState> { stateStream }
 
     var dismissalMechanism: [DismissalMechanism] = []
+    var requiresCvvInput = false
 
     func onPaymentMethodSelected(paymentMethod: CheckoutPaymentMethod) {
       selectedPaymentMethod = paymentMethod
@@ -54,6 +55,7 @@ final class PrimerSelectionSessionTests: XCTestCase {
     var state: AsyncStream<PrimerPaymentMethodSelectionState> { stateStream }
 
     var dismissalMechanism: [DismissalMechanism] = []
+    var requiresCvvInput = false
 
     var currentState: PrimerPaymentMethodSelectionState { stubbedCurrentState }
 

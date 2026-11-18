@@ -111,7 +111,7 @@ struct FlowScreenFactory: LogReporter {
   }
 
   private func makeProcessingView() -> some View {
-    DefaultLoadingScreen()
+    ProcessingScreen()
   }
 
   @ViewBuilder

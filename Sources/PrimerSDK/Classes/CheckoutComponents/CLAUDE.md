@@ -69,7 +69,7 @@ Dynamic payment method registration system:
 **PrimerCheckout**: Managed modal — renders SDK defaults with no customization slots.
 **PrimerCheckoutSession** + `.primerCheckoutSession(_:theme:onCompletion:)`: Composable/inline — embed `PrimerCardForm`, `PrimerPaymentMethods`, `PrimerVaultedPaymentMethods` in your own layout. The modifier's `theme` is optional and overrides the session's own on every change. `formatAmount(_:)` prints an amount the way the SDK's own screens do.
 
-Paying with a saved method is `PrimerSelectionSession.selectVaulted(_:)`, which marks then charges, matching Android's `PrimerVaultedPaymentMethodsController.select(method)`. It is the pay verb, so it belongs on a pay button rather than a row tap, and merchants keep their own highlight. CVV recapture is the SDK's own screen (`CheckoutNavigationState.cvvRecapture`), never an inline field.
+Paying with a saved method is `PrimerSelectionSession.selectVaulted(_:)`, which marks then charges, matching Android's `PrimerVaultedPaymentMethodsController.select(method)`. It is the pay verb, so it belongs on a pay button rather than a row tap, and merchants keep their own highlight. On the SDK's own payment list, the CVV field opens inside the saved card (`VaultSection`). `selectVaulted(_:)` raises the SDK's own CVV screen (`CheckoutNavigationState.cvvRecapture`), since a merchant's own list has nowhere to put the field.
 
 ### Delegation, works only with UIKit Integration
 **PrimerCheckoutPresenterDelegate** protocol (PrimerCheckoutPresenter.swift:11):

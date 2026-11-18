@@ -189,7 +189,7 @@
 "primer_vault_cvv_title" = "CVV दर्ज करें";
 "primer_vault_default_bank" = "बैंक खाता";
 "primer_vault_default_cardholder" = "कार्डधारक";
-"primer_vault_default_paypal" = "PayPal खाता";
+"primer_vault_default_card" = "कार्ड";
 "primer_vault_delete_button_cancel" = "रद्द करें";
 "primer_vault_delete_button_confirm" = "हटाएं";
 "primer_vault_delete_message" = "क्या आप वाकई इस भुगतान विधि को हटाना चाहते हैं?";

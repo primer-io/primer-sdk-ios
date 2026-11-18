@@ -111,6 +111,14 @@ enum CheckoutComponentsStrings {
     comment: "Message shown when a surcharge might be applied"
   )
 
+  static let surchargeFee = NSLocalizedString(
+    "primer_payment_selection_surcharge_label",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Surcharge fee",
+    comment: "Title of a payment method group whose methods carry the same surcharge"
+  )
+
   static func paymentAmountTitle(_ amount: String) -> String {
     let format = NSLocalizedString(
       "primer_common_button_pay_amount",
@@ -912,12 +920,12 @@ enum CheckoutComponentsStrings {
 
   // MARK: - Vaulted Payment Method Brand Names
 
-  static let paypalBrandName = NSLocalizedString(
-    "primer_vault_default_paypal",
+  static let unknownCardNetworkName = NSLocalizedString(
+    "primer_vault_default_card",
     tableName: tableName,
     bundle: .primerResources,
-    value: "PayPal account",
-    comment: "PayPal brand name for vaulted payment methods"
+    value: "Card",
+    comment: "Name shown for a saved card whose network is unknown"
   )
 
   static let achSuffix = NSLocalizedString(

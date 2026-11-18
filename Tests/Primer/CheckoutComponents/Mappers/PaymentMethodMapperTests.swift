@@ -26,7 +26,8 @@ final class PaymentMethodMapperTests: XCTestCase {
         type: String = "PAYMENT_CARD",
         name: String = "Credit Card",
         surcharge: Int? = nil,
-        hasUnknownSurcharge: Bool = false
+        hasUnknownSurcharge: Bool = false,
+        networkSurcharges: [String: Int]? = nil
     ) -> InternalPaymentMethod {
         InternalPaymentMethod(
             id: id,
@@ -34,7 +35,19 @@ final class PaymentMethodMapperTests: XCTestCase {
             name: name,
             isEnabled: true,
             surcharge: surcharge,
-            hasUnknownSurcharge: hasUnknownSurcharge
+            hasUnknownSurcharge: hasUnknownSurcharge,
+            networkSurcharges: networkSurcharges
+        )
+    }
+
+    private func mapCard(allowedNetworks: [CardNetwork], networkSurcharges: [String: Int]) -> CheckoutPaymentMethod {
+        SDKSessionHelper.setUp()
+        defer { SDKSessionHelper.tearDown() }
+        SDKSessionHelper.updateAllowedCardNetworks(cardNetworks: allowedNetworks)
+        let configService = MockConfigurationService.withDefaultConfiguration()
+        configService.apiConfiguration = PrimerAPIConfigurationModule.apiConfiguration
+        return PaymentMethodMapperImpl(configurationService: configService).mapToPublic(
+            createInternalPaymentMethod(hasUnknownSurcharge: true, networkSurcharges: networkSurcharges)
         )
     }
 
@@ -171,6 +184,35 @@ final class PaymentMethodMapperTests: XCTestCase {
 
         // Then
         XCTAssertTrue(result.hasUnknownSurcharge)
+    }
+
+    func test_mapToPublic_cardWithSameFeeOnEveryAllowedNetwork_hasThatFee() {
+        let result = mapCard(allowedNetworks: [.visa, .masterCard], networkSurcharges: ["VISA": 100, "MASTERCARD": 100])
+
+        XCTAssertEqual(result.surcharge, 100)
+        XCTAssertFalse(result.hasUnknownSurcharge)
+    }
+
+    func test_mapToPublic_cardWithoutOneFeeOnEveryAllowedNetwork_mayApply() {
+        let cases: [(allowedNetworks: [CardNetwork], networkSurcharges: [String: Int])] = [
+            ([.visa, .masterCard], ["VISA": 100]),
+            ([.visa, .masterCard], ["VISA": 100, "MASTERCARD": 200]),
+            ([], ["VISA": 100])
+        ]
+
+        for (allowedNetworks, networkSurcharges) in cases {
+            let result = mapCard(allowedNetworks: allowedNetworks, networkSurcharges: networkSurcharges)
+
+            XCTAssertNil(result.surcharge)
+            XCTAssertTrue(result.hasUnknownSurcharge)
+        }
+    }
+
+    func test_mapToPublic_cardWithFeeOnlyOnNetworkNotAllowed_hasNoFee() {
+        let result = mapCard(allowedNetworks: [.visa], networkSurcharges: ["AMEX": 100])
+
+        XCTAssertNil(result.surcharge)
+        XCTAssertFalse(result.hasUnknownSurcharge)
     }
 
     // MARK: - Array Mapping Tests

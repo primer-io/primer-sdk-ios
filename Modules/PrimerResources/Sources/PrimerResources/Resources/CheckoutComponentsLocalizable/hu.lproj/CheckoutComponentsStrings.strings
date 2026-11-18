@@ -189,7 +189,7 @@
 "primer_vault_cvv_title" = "CVV megadása";
 "primer_vault_default_bank" = "Bankszámla";
 "primer_vault_default_cardholder" = "Kártyabirtokos";
-"primer_vault_default_paypal" = "PayPal fiók";
+"primer_vault_default_card" = "Kártya";
 "primer_vault_delete_button_cancel" = "Mégsem";
 "primer_vault_delete_button_confirm" = "Törlés";
 "primer_vault_delete_message" = "Biztosan törölni szeretné ezt a fizetési módot?";

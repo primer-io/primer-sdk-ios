@@ -35,6 +35,8 @@ extension PrimerHeadlessUniversalCheckout {
 
         var tokenizationService: TokenizationServiceProtocol = TokenizationService()
 
+        var clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
+
         // MARK: Public functions
 
         override public init() {
@@ -170,6 +172,14 @@ extension PrimerHeadlessUniversalCheckout {
                     if let config = vaultedPaymentMethod.backendDrivenConfig {
                         return await BackendDrivenCheckoutViewModel(config: config).start(paymentInstrumentTokenId: vaultedPaymentMethod.id)
                     }
+
+                    let isCard = vaultedPaymentMethod.paymentMethodType == PrimerPaymentMethodType.paymentCard.rawValue
+                    let savedCardNetwork = vaultedPaymentMethod.paymentInstrumentData.binData?.network?.uppercased()
+                    let cardNetwork = [nil, "UNKNOWN"].contains(savedCardNetwork) ? "OTHER" : savedCardNetwork
+                    try await clientSessionActionsModule.selectPaymentMethodIfNeeded(
+                        vaultedPaymentMethod.paymentMethodType,
+                        cardNetwork: isCard ? cardNetwork : nil
+                    )
 
                     await PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: vaultedPaymentMethod.paymentMethodType)
 
