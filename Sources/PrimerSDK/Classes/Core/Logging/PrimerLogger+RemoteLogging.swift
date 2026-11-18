@@ -8,12 +8,7 @@ import Foundation
 @_spi(PrimerInternal) import PrimerCore
 @_spi(PrimerInternal) import PrimerFoundation
 
-// NOTE: These overloads forward logs to the CheckoutComponents remote LoggingService,
-// so they must live in the PrimerSDK target where DIContainer/LoggingService are visible.
 public extension PrimerLogger {
-    // NOTE: During CC payment flows, RawDataManager overwrites sdkIntegrationType to .headless.
-    // This means DIContainer.current may be nil when called from the headless payment path.
-    // The guard-and-return pattern below handles this gracefully.
     func error(
         message: String,
         error: Error,
@@ -27,7 +22,7 @@ public extension PrimerLogger {
         if #available(iOS 15.0, *) {
             let userInfo = RemoteLogContext.shared.merged(into: userInfo)
             Task { [error, userInfo, message] in
-                await remoteLoggingService()?.logErrorIfReportable(error, message: message, userInfo: userInfo)
+                await LoggingService.shared.logErrorIfReportable(error, message: message, userInfo: userInfo)
             }
         }
     }
@@ -40,7 +35,7 @@ public extension PrimerLogger {
     ) {
         let userInfo = RemoteLogContext.shared.merged(into: userInfo)
         Task { [message, event, userInfo] in
-            await remoteLoggingService()?.logInfo(message: message, event: event, userInfo: userInfo)
+            await LoggingService.shared.logInfo(message: message, event: event, userInfo: userInfo)
         }
     }
 }
@@ -54,24 +49,7 @@ extension PrimerLogger {
     ) {
         let userInfo = RemoteLogContext.shared.merged(into: userInfo)
         Task { [message, event, userInfo] in
-            await remoteLoggingService()?.logWarning(message: message, event: event, userInfo: userInfo)
+            await LoggingService.shared.logWarning(message: message, event: event, userInfo: userInfo)
         }
     }
-}
-
-@available(iOS 15.0, *)
-private func remoteLoggingService() async -> LoggingService? {
-    guard let container = await DIContainer.current else {
-        #if DEBUG
-        print("📊 [Logging] DIContainer not available for remote logging")
-        #endif
-        return nil
-    }
-    guard let service = try? await container.resolve(LoggingService.self) else {
-        #if DEBUG
-        print("📊 [Logging] LoggingService not resolved for remote logging")
-        #endif
-        return nil
-    }
-    return service
 }
