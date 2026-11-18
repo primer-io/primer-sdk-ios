@@ -643,7 +643,7 @@ enum CheckoutComponentsStrings {
     "primer_country_title",
     tableName: tableName,
     bundle: .primerResources,
-    value: "Select Country",
+    value: "Select country",
     comment: "Country selection screen title"
   )
 
