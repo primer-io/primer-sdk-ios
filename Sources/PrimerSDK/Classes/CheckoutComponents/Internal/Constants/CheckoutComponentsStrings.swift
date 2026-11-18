@@ -111,6 +111,14 @@ enum CheckoutComponentsStrings {
     comment: "Message shown when a surcharge might be applied"
   )
 
+  static let surchargeFee = NSLocalizedString(
+    "primer_payment_selection_surcharge_label",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Surcharge fee",
+    comment: "Title of a payment method group whose methods carry the same surcharge"
+  )
+
   static func paymentAmountTitle(_ amount: String) -> String {
     let format = NSLocalizedString(
       "primer_common_button_pay_amount",
