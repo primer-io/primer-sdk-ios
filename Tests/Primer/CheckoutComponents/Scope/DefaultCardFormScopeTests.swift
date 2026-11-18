@@ -27,9 +27,10 @@ final class DefaultCardFormScopeTests: XCTestCase {
         validateInputInteractor: ValidateInputInteractor? = nil,
         cardNetworkDetectionInteractor: CardNetworkDetectionInteractor? = nil,
         configurationService: ConfigurationService? = nil,
-        analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol = MockAnalyticsInteractor()
+        analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol = MockAnalyticsInteractor(),
+        waitForNetworkSelection: @escaping () async -> Void = {}
     ) -> DefaultCardFormScope {
-        DefaultCardFormScope(
+        let scope = DefaultCardFormScope(
             checkoutScope: checkoutScope,
             presentationContext: .fromPaymentSelection,
             processCardPaymentInteractor: processCardPaymentInteractor ?? MockProcessCardPaymentInteractor(),
@@ -38,6 +39,8 @@ final class DefaultCardFormScopeTests: XCTestCase {
             analyticsInteractor: analyticsInteractor,
             configurationService: configurationService ?? MockConfigurationService.withDefaultConfiguration()
         )
+        scope.waitForNetworkSelection = waitForNetworkSelection
+        return scope
     }
 
     // MARK: - currentState Tests
@@ -570,6 +573,158 @@ final class DefaultCardFormScopeTests: XCTestCase {
                 while scope.structuredState.availableNetworks.count != 1 { await Task.yield() }
             }
             XCTAssertEqual(scope.structuredState.selectedNetwork?.network, .visa)
+        }
+    }
+
+    func test_networkChangesWhileTyping_sendOneSelectWithTheLastNetwork() async throws {
+        let container = try await createTestContainer()
+        try await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let mock = MockCardNetworkDetectionInteractor()
+            let gate = NetworkSelectionGate()
+            let scope = createCardFormScope(
+                checkoutScope: checkoutScope,
+                cardNetworkDetectionInteractor: mock,
+                waitForNetworkSelection: gate.wait
+            )
+
+            scope.autoSelectDetectedNetwork(CardNetwork.visa.rawValue)
+            scope.autoSelectDetectedNetwork(CardNetwork.masterCard.rawValue)
+            mock.emitNetworks([.cartesBancaires, .visa])
+            try await releaseSelections(afterHolding: 3, on: gate)
+            try await withTimeout(2.0) {
+                while mock.selectNetworkCallCount < 1 { await Task.yield() }
+            }
+
+            XCTAssertEqual(mock.lastSelectedNetwork, .cartesBancaires)
+            XCTAssertEqual(mock.selectNetworkCallCount, 1)
+        }
+    }
+
+    func test_unchangedNetwork_sendsNoSelect() async throws {
+        let container = try await createTestContainer()
+        try await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let mock = MockCardNetworkDetectionInteractor()
+            let gate = NetworkSelectionGate()
+            let scope = createCardFormScope(
+                checkoutScope: checkoutScope,
+                cardNetworkDetectionInteractor: mock,
+                waitForNetworkSelection: gate.wait
+            )
+
+            scope.autoSelectDetectedNetwork(CardNetwork.visa.rawValue)
+            try await releaseSelections(afterHolding: 1, on: gate)
+            try await withTimeout(2.0) {
+                while mock.selectNetworkCallCount < 1 { await Task.yield() }
+            }
+
+            scope.updateSelectedCardNetwork(CardNetwork.visa.rawValue)
+            mock.emitNetworks([.visa, .cartesBancaires])
+            try await withTimeout(2.0) {
+                while scope.structuredState.availableNetworks.count < 2 { await Task.yield() }
+            }
+
+            XCTAssertEqual(gate.heldCount, 0)
+            XCTAssertEqual(mock.selectNetworkCallCount, 1)
+        }
+    }
+
+    func test_submit_dropsThePendingNetworkSelect() async throws {
+        try await assertPendingNetworkSelectDropped { scope, _ in
+            fillValidCard(scope)
+            await scope.performSubmit()
+        }
+    }
+
+    func test_failedSubmit_pickingTheSentNetworkAgain_sendsIt() async throws {
+        let container = try await createTestContainer()
+        try await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let mockPaymentInteractor = MockProcessCardPaymentInteractor()
+            mockPaymentInteractor.errorToThrow = PrimerError.unknown(message: "Payment failed")
+            let mock = MockCardNetworkDetectionInteractor()
+            let gate = NetworkSelectionGate()
+            let scope = createCardFormScope(
+                checkoutScope: checkoutScope,
+                processCardPaymentInteractor: mockPaymentInteractor,
+                cardNetworkDetectionInteractor: mock,
+                waitForNetworkSelection: gate.wait
+            )
+
+            fillValidCard(scope)
+            mock.emitNetworks([.cartesBancaires, .visa])
+            try await releaseSelections(afterHolding: 1, on: gate)
+            try await withTimeout(2.0) {
+                while mock.selectNetworkCallCount < 1 { await Task.yield() }
+            }
+
+            scope.updateSelectedCardNetwork(CardNetwork.visa.rawValue)
+            try await waitForHeldSelections(1, on: gate)
+            await scope.performSubmit()
+            gate.release()
+
+            scope.updateSelectedCardNetwork(CardNetwork.cartesBancaires.rawValue)
+            try await releaseSelections(afterHolding: 1, on: gate)
+            try await withTimeout(2.0) {
+                while mock.selectNetworkCallCount < 2 { await Task.yield() }
+            }
+
+            XCTAssertEqual(mockPaymentInteractor.lastCardData?.surchargeNetwork, .visa)
+            XCTAssertEqual(mock.lastSelectedNetwork, .cartesBancaires)
+            XCTAssertEqual(mock.selectNetworkCallCount, 2)
+        }
+    }
+
+    func test_onBack_dropsThePendingNetworkSelect() async throws {
+        try await assertPendingNetworkSelectDropped { scope, _ in
+            scope.onBack()
+        }
+    }
+
+    func test_cancel_dropsThePendingNetworkSelect() async throws {
+        try await assertPendingNetworkSelectDropped { scope, _ in
+            scope.cancel()
+        }
+    }
+
+    func test_clearedNetworks_dropThePendingNetworkSelect() async throws {
+        try await assertPendingNetworkSelectDropped { scope, mock in
+            mock.emitNetworks([])
+            try await withTimeout(2.0) {
+                while scope.structuredState.selectedNetwork != nil { await Task.yield() }
+            }
+        }
+    }
+
+    private func assertPendingNetworkSelectDropped(
+        by drop: (DefaultCardFormScope, MockCardNetworkDetectionInteractor) async throws -> Void
+    ) async throws {
+        let container = try await createTestContainer()
+        try await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let mock = MockCardNetworkDetectionInteractor()
+            let gate = NetworkSelectionGate()
+            let scope = createCardFormScope(
+                checkoutScope: checkoutScope,
+                cardNetworkDetectionInteractor: mock,
+                waitForNetworkSelection: gate.wait
+            )
+
+            scope.autoSelectDetectedNetwork(CardNetwork.visa.rawValue)
+            try await waitForHeldSelections(1, on: gate)
+            try await drop(scope, mock)
+            gate.release()
+            await Task.yield()
+
+            scope.autoSelectDetectedNetwork(CardNetwork.masterCard.rawValue)
+            try await releaseSelections(afterHolding: 1, on: gate)
+            try await withTimeout(2.0) {
+                while mock.selectNetworkCallCount < 1 { await Task.yield() }
+            }
+
+            XCTAssertEqual(mock.lastSelectedNetwork, .masterCard)
+            XCTAssertEqual(mock.selectNetworkCallCount, 1)
         }
     }
 
