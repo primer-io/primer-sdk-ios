@@ -89,7 +89,6 @@ struct VaultedCardCVVInput: View {
       Text(CheckoutComponentsStrings.cvvRecaptureInstruction)
         .primerTypography(.bodySmall, tokens: tokens)
         .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
-        .lineLimit(2)
         .fixedSize(horizontal: false, vertical: true)
     }
     .accessibility(

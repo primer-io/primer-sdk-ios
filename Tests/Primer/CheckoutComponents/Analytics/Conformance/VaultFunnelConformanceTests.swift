@@ -91,6 +91,7 @@ final class VaultFunnelConformanceTests: XCTestCase {
         repository.processVaultedPaymentError = nil
         repository.paymentResultToReturn = PaymentResult(paymentId: "pay_2", status: .success, paymentMethodType: card)
         sut.retryPayment()
+        try await selectSavedCard().payWithVaultedPaymentMethod()
 
         try await funnel.waitFor(.paymentSuccess)
         try await funnel.settle()

@@ -37,6 +37,10 @@ final class DefaultPaymentMethodSelectionScope: PaymentMethodSelectionScopeInter
     checkoutScope?.dismissalMechanism ?? []
   }
 
+  var requiresCvvInput: Bool {
+    internalState.selectedVaultedPaymentMethod.map(shouldRequireCvvInput) ?? false
+  }
+
   // MARK: - Private Properties
 
   private weak var checkoutScope: DefaultCheckoutScope?
