@@ -28,6 +28,8 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
     private var sduiController: UIViewController?
     private var sduiPresenter: SDUIPresentingResolver?
     private var vaultedPaymentInstrumentTokenId: String?
+    private var flowStarted = false
+    private var flowEnded = false
 
     convenience init(
         config: PrimerPaymentMethod,
@@ -186,6 +188,7 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
     
     @MainActor
     private func handleSuccess(_ payment: PaymentInfo?) async {
+        logBDCEnded(outcome: "success")
         if PrimerSettings.current.paymentHandling == .auto {
             let checkoutData = PrimerCheckoutData(payment: payment?.toPrimerPayment())
             await PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
@@ -215,11 +218,19 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
         if let ended = error as? SetupEnded {
             return await handleError(PrimerError.paymentMethodSetupEnded(paymentMethodType: config.type, reason: ended.reason.rawValue))
         }
-        Analytics.Service.fire(event: .message(message: "BDC Failed: \(error)", messageType: .error, severity: .error))
         let primerError: PrimerErrorProtocol = (error as? PrimerErrorProtocol) ?? PrimerError.unknown(
             message: error.localizedDescription,
             diagnosticsId: error.diagnosticId
         )
+        let cancelled: Bool = if case .cancelled = error as? PrimerError { true } else { false }
+        logBDCEnded(outcome: cancelled ? "cancelled" : "error", error: primerError)
+        Analytics.Service.fire(event: .message(
+            message: "BDC Failed: \(error)",
+            messageType: .error,
+            severity: .error,
+            diagnosticsId: primerError.diagnosticsId,
+            context: ["paymentMethodType": config.type, "errorId": primerError.errorId]
+        ))
         let decision = await PrimerDelegateProxy.primerDidFailWithError(primerError, data: paymentCheckoutData)
         switch decision.type {
         case let .fail(message): handleFailureFlow(errorMessage: message)
@@ -227,11 +238,31 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
     }
     
     private func logBDCStarted() {
+        flowStarted = true
         let event = Analytics.Event.message(
             message: "BDC flow started.",
             messageType: .backendDrivenCheckoutStarted,
             severity: .info,
-            context: ["trustedKeyFingerprints": ManifestValidator.trustedPublicKeys.map(\.fingerprint)]
+            context: [
+                "paymentMethodType": config.type,
+                "entry": config.entry.rawValue,
+                "trustedKeyFingerprints": ManifestValidator.trustedPublicKeys.map(\.fingerprint)
+            ]
+        )
+        Analytics.Service.fire(event: event)
+    }
+
+    private func logBDCEnded(outcome: String, error: PrimerErrorProtocol? = nil) {
+        guard flowStarted, !flowEnded else { return }
+        flowEnded = true
+        var context: [String: Any] = ["paymentMethodType": config.type, "entry": config.entry.rawValue, "outcome": outcome]
+        if let error { context["errorId"] = error.errorId }
+        let event = Analytics.Event.message(
+            message: "BDC flow ended: \(outcome).",
+            messageType: .backendDrivenCheckoutEnded,
+            severity: outcome == "error" ? .error : .info,
+            diagnosticsId: error?.diagnosticsId,
+            context: context
         )
         Analytics.Service.fire(event: event)
     }
