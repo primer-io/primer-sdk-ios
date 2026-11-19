@@ -271,9 +271,16 @@ final class PrimerCardFormStateTests: XCTestCase {
         XCTAssertEqual(PrimerCardFormState.maskedPAN(""), "")
     }
 
-    func test_maskedPAN_shortInput_dropsBinToProtectDigits() {
-        // Fewer than 11 digits: no BIN is shown so it can never overlap the last 4.
-        XCTAssertEqual(PrimerCardFormState.maskedPAN("411111"), "••1111")
+    func test_maskedPAN_invalidLuhn_returnsEmpty() {
+        XCTAssertEqual(PrimerCardFormState.maskedPAN(TestData.CardNumbers.invalidLuhn), "")
+    }
+
+    func test_maskedPAN_19DigitPAN_masksOnlyWhenComplete() {
+        let pan = "4242424242424240000"
+        for length in 1 ..< pan.count {
+            XCTAssertEqual(PrimerCardFormState.maskedPAN(String(pan.prefix(length))), "", "length \(length)")
+        }
+        XCTAssertEqual(PrimerCardFormState.maskedPAN(pan), "424242•••••••••0000")
     }
 
     func test_redactedForMerchant_masksPANAndClearsCVV_preservingOtherFields() {
