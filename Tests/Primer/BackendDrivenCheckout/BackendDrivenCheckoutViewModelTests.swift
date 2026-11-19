@@ -5,8 +5,9 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 @testable @_spi(PrimerInternal) import PrimerBDCCore
+@_spi(PrimerInternal) @testable import PrimerCore
 @_spi(PrimerInternal) @testable import PrimerFoundation
-@testable import PrimerSDK
+@_spi(PrimerInternal) @testable import PrimerSDK
 import XCTest
 
 @MainActor
@@ -15,6 +16,8 @@ final class BackendDrivenCheckoutViewModelTests: XCTestCase {
     private var uiManager: MockPrimerUIManager!
     private var delegate: MockPrimerHeadlessUniversalCheckoutDelegate!
     private var mockOrchestrator: MockBDCStepOrchestrator!
+    private var analyticsStorage: MockAnalyticsStorage!
+    private var analyticsService: Analytics.Service!
     
     private let payment = PaymentInfo(id: "pay_1", orderId: "ord_1", status: "SUCCESS")
     private let failedPayment = PaymentInfo(id: "pay_1", orderId: "ord_1", status: "FAILED")
@@ -34,9 +37,18 @@ final class BackendDrivenCheckoutViewModelTests: XCTestCase {
         uiManager = MockPrimerUIManager()
         uiManager.primerRootViewController = MockPrimerRootViewController()
         mockOrchestrator = MockBDCStepOrchestrator()
+        analyticsStorage = MockAnalyticsStorage()
+        analyticsService = Analytics.Service.shared
+        Analytics.Service.shared = Analytics.Service(
+            sdkLogsUrl: URL(string: "http://localhost/")!,
+            batchSize: 1000,
+            storage: analyticsStorage,
+            apiClient: MockPrimerAPIAnalyticsClient()
+        )
     }
     
     override func tearDown() {
+        Analytics.Service.shared = analyticsService
         PrimerHeadlessUniversalCheckout.current.delegate = nil
         SDKSessionHelper.tearDown()
         super.tearDown()
@@ -109,6 +121,50 @@ final class BackendDrivenCheckoutViewModelTests: XCTestCase {
         }
     }
 
+    func testAStartedFlowReportsItsStartAndASuccessfulEnd() {
+        assertComplete {
+            makeSUT(instructions: [.end(outcome: .complete, payment: payment)])
+        }
+
+        let events = bdcEvents(count: 2)
+        XCTAssertEqual(events.map(\.messageType), [.backendDrivenCheckoutStarted, .backendDrivenCheckoutEnded])
+        XCTAssertEqual(events.first?.context?["paymentMethodType"] as? String, stubConfig.type)
+        XCTAssertEqual(events.first?.context?["entry"] as? String, stubConfig.entry.rawValue)
+        XCTAssertEqual(events.last?.context?["outcome"] as? String, "success")
+        XCTAssertNil(events.last?.context?["errorId"])
+    }
+
+    func testAFailedFlowEndsWithTheErrorId() {
+        let errors = collectFailures {
+            makeSUT(instructions: [.end(outcome: .failure, payment: failedPayment)])
+        }
+
+        let end = bdcEvents(count: 2).last
+        XCTAssertEqual(end?.messageType, .backendDrivenCheckoutEnded)
+        XCTAssertEqual(end?.context?["outcome"] as? String, "error")
+        XCTAssertEqual(end?.context?["errorId"] as? String, (errors.first as? PrimerErrorProtocol)?.errorId)
+        XCTAssertEqual(end?.severity, .error)
+    }
+
+    func testACancelledFlowEndsAsCancelledExactlyOnce() {
+        mockOrchestrator.startError = BackendDrivenCheckoutCancellation()
+        _ = collectFailures {
+            makeSUT(instructions: [
+                .execute(delayMilliseconds: 0, schema: .object([:]), parameters: .object([:]), currentAttempt: nil)
+            ])
+        }
+
+        let ends = bdcEvents(count: 2).filter { $0.messageType == .backendDrivenCheckoutEnded }
+        XCTAssertEqual(ends.count, 1)
+        XCTAssertEqual(ends.first?.context?["outcome"] as? String, "cancelled")
+    }
+
+    func testAFlowThatNeverStartedReportsNoEnd() {
+        assertDidFail { makeSUT(makeOrchestrator: { _ in throw Error.orchestratorFailed }) }
+
+        XCTAssertTrue(bdcEvents(count: 0).isEmpty)
+    }
+
     func testCancelledStopsLoopBeforeNextFetch() {
         mockOrchestrator.startError = BackendDrivenCheckoutCancellation()
 
@@ -131,7 +187,21 @@ final class BackendDrivenCheckoutViewModelTests: XCTestCase {
 }
 
 private extension BackendDrivenCheckoutViewModelTests {
-    
+    func bdcEvents(count: Int, timeout: TimeInterval = 2) -> [MessageEventProperties] {
+        let flowTypes: Set<Analytics.Event.Property.MessageType> = [.backendDrivenCheckoutStarted, .backendDrivenCheckoutEnded]
+        let read: () -> [MessageEventProperties] = { [analyticsStorage] in
+            (analyticsStorage?.loadEvents() ?? []).partitioned().sdk
+                .sorted { $0.createdAt < $1.createdAt }
+                .compactMap { $0.properties as? MessageEventProperties }
+                .filter { flowTypes.contains($0.messageType) }
+        }
+        let deadline = Date().addingTimeInterval(timeout)
+        while read().count < count, Date() < deadline {
+            RunLoop.current.run(until: Date().addingTimeInterval(0.05))
+        }
+        return read()
+    }
+
     var stubConfig: PrimerPaymentMethod {
         PrimerPaymentMethod(
             id: "mock_bdc_id", implementationType: .nativeSdk,
