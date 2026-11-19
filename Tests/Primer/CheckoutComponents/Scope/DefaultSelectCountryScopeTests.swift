@@ -46,7 +46,7 @@ final class DefaultSelectCountryScopeTests: XCTestCase {
 
         // Then
         let names = state.countries.map(\.name)
-        XCTAssertEqual(names, names.sorted())
+        XCTAssertEqual(names, names.sorted { $0.localizedCaseInsensitiveCompare($1) == .orderedAscending })
     }
 
     func test_init_searchQueryIsEmpty() async throws {
@@ -71,6 +71,20 @@ final class DefaultSelectCountryScopeTests: XCTestCase {
 
         // Then
         XCTAssertNil(state.selectedCountry)
+    }
+
+    func test_state_selectedCountryIsTheCardFormCountry() async throws {
+        let cardFormScope = DefaultCardFormScope(
+            checkoutScope: await ContainerTestHelpers.createMockCheckoutScope(),
+            processCardPaymentInteractor: MockProcessCardPaymentInteractor(),
+            configurationService: MockConfigurationService.withDefaultConfiguration()
+        )
+        cardFormScope.updateCountryCode("GB")
+        sut = DefaultSelectCountryScope(cardFormScope: cardFormScope)
+
+        let state = try await awaitFirst(sut.state)
+
+        XCTAssertEqual(state.selectedCountry?.code, "GB")
     }
 
     func test_init_countriesHaveValidCodes() async throws {

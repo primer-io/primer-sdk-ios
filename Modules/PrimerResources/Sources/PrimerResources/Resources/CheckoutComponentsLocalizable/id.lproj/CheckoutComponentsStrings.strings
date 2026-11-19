@@ -189,7 +189,7 @@
 "primer_vault_cvv_title" = "Masukkan CVV";
 "primer_vault_default_bank" = "Rekening bank";
 "primer_vault_default_cardholder" = "Pemegang kartu";
-"primer_vault_default_paypal" = "Akun PayPal";
+"primer_vault_default_card" = "Kartu";
 "primer_vault_delete_button_cancel" = "Batal";
 "primer_vault_delete_button_confirm" = "Hapus";
 "primer_vault_delete_message" = "Apakah Anda yakin ingin menghapus metode pembayaran ini?";

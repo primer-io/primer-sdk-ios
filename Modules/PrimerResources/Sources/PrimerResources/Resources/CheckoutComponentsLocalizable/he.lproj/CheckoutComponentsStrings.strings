@@ -189,7 +189,7 @@
 "primer_vault_cvv_title" = "הזן CVV";
 "primer_vault_default_bank" = "חשבון בנק";
 "primer_vault_default_cardholder" = "בעל כרטיס";
-"primer_vault_default_paypal" = "חשבון PayPal";
+"primer_vault_default_card" = "כרטיס";
 "primer_vault_delete_button_cancel" = "בטל";
 "primer_vault_delete_button_confirm" = "מחק";
 "primer_vault_delete_message" = "האם אתה בטוח שברצונך למחוק אמצעי תשלום זה?";

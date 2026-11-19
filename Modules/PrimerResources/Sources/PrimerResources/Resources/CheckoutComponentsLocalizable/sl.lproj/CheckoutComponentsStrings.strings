@@ -189,7 +189,7 @@
 "primer_vault_cvv_title" = "Vnesite CVV";
 "primer_vault_default_bank" = "Bančni račun";
 "primer_vault_default_cardholder" = "Imetnik kartice";
-"primer_vault_default_paypal" = "Račun PayPal";
+"primer_vault_default_card" = "Kartica";
 "primer_vault_delete_button_cancel" = "Prekliči";
 "primer_vault_delete_button_confirm" = "Izbriši";
 "primer_vault_delete_message" = "Ali ste prepričani, da želite izbrisati ta način plačila?";

@@ -189,7 +189,7 @@
 "primer_vault_cvv_title" = "Voer CVV in";
 "primer_vault_default_bank" = "Bankrekening";
 "primer_vault_default_cardholder" = "Kaarthouder";
-"primer_vault_default_paypal" = "PayPal-account";
+"primer_vault_default_card" = "Kaart";
 "primer_vault_delete_button_cancel" = "Annuleren";
 "primer_vault_delete_button_confirm" = "Verwijderen";
 "primer_vault_delete_message" = "Weet u zeker dat u deze betaalmethode wilt verwijderen?";

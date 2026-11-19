@@ -108,7 +108,7 @@
 "primer_vault_section_title" = "محفوظ شدہ ادائیگی کے طریقے";
 "primer_vault_button_show_all" = "سب دکھائیں";
 "primer_vault_default_cardholder" = "کارڈ ہولڈر";
-"primer_vault_default_paypal" = "PayPal اکاؤنٹ";
+"primer_vault_default_card" = "کارڈ";
 "primer_vault_default_bank" = "بینک اکاؤنٹ";
 "primer_vault_format_masked" = "•••• %1$@";
 "primer_vault_format_expires" = "میعاد ختم ہوتی ہے %1$@/%2$@";

@@ -189,7 +189,7 @@
 "primer_vault_cvv_title" = "Εισαγωγή CVV";
 "primer_vault_default_bank" = "Τραπεζικός λογαριασμός";
 "primer_vault_default_cardholder" = "Κάτοχος κάρτας";
-"primer_vault_default_paypal" = "Λογαριασμός PayPal";
+"primer_vault_default_card" = "Κάρτα";
 "primer_vault_delete_button_cancel" = "Ακύρωση";
 "primer_vault_delete_button_confirm" = "Διαγραφή";
 "primer_vault_delete_message" = "Είστε βέβαιοι ότι θέλετε να διαγράψετε αυτή τη μέθοδο πληρωμής;";

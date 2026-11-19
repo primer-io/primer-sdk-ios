@@ -189,7 +189,7 @@
 "primer_vault_cvv_title" = "CVV 입력";
 "primer_vault_default_bank" = "은행 계좌";
 "primer_vault_default_cardholder" = "카드 소유자";
-"primer_vault_default_paypal" = "PayPal 계정";
+"primer_vault_default_card" = "카드";
 "primer_vault_delete_button_cancel" = "취소";
 "primer_vault_delete_button_confirm" = "삭제";
 "primer_vault_delete_message" = "이 결제 수단을 삭제하시겠습니까?";

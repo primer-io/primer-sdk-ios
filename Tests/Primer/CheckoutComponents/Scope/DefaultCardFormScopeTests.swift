@@ -901,6 +901,21 @@ final class DefaultCardFormScopeTests: XCTestCase {
             XCTAssertEqual(scope.getFieldValue(.countryCode), "US")
             XCTAssertNotNil(scope.structuredState.selectedCountry)
             XCTAssertEqual(scope.structuredState.selectedCountry?.code, "US")
+            XCTAssertEqual(scope.structuredState.selectedCountry?.name, "United States of America")
+            XCTAssertEqual(scope.structuredState.selectedCountry?.dialCode, "+1")
+        }
+    }
+
+    func test_updateCountryCode_withoutDialCode_setsSelectedCountry() async throws {
+        let container = try await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createCardFormScope(checkoutScope: checkoutScope)
+
+            scope.updateCountryCode("CW")
+
+            XCTAssertEqual(scope.structuredState.selectedCountry, PrimerCountry(code: "CW", name: "Curaçao", flag: "🇨🇼"))
         }
     }
 
