@@ -71,6 +71,7 @@ extension PrimerHeadlessUniversalCheckout {
         public var rawData: PrimerRawData? {
             didSet {
                 rawDataTokenizationBuilder.rawData = rawData
+                Task { @MainActor [weak self] in self?.selectCardNetworkWhileTyping() }
             }
         }
         public private(set) var paymentMethodTokenData: PrimerPaymentMethodTokenData?
@@ -110,6 +111,15 @@ extension PrimerHeadlessUniversalCheckout {
 
         var selectsPaymentMethodBeforeTokenizing = true
 
+        var waitForNetworkSelection: () async -> Void = {
+            try? await Task.sleep(nanoseconds: RawDataManager.networkSelectionDebounce)
+        }
+
+        static let networkSelectionDebounce: UInt64 = 275_000_000
+        private var networkSelectionTask: Task<Void, Never>?
+        private var lastSentNetwork: CardNetwork = .unknown
+        private var isSubmitting = false
+
         var createResumePaymentService: CreateResumePaymentServiceProtocol
 
         var apiClient: PrimerAPIClientXenditProtocol = PrimerAPIConfigurationModule.apiClient ?? PrimerAPIClient()
@@ -125,6 +135,7 @@ extension PrimerHeadlessUniversalCheckout {
         ) throws {
             if isUsedInDropIn {
                 PrimerInternal.shared.sdkIntegrationType = .dropIn
+                selectsPaymentMethodBeforeTokenizing = false
             } else {
                 PrimerInternal.shared.sdkIntegrationType = .headless
             }
@@ -244,6 +255,11 @@ extension PrimerHeadlessUniversalCheckout {
                 defer {
                     PrimerUIManager.dismissPrimerUI(animated: true)
                 }
+                await MainActor.run {
+                    isSubmitting = true
+                    networkSelectionTask?.cancel()
+                    lastSentNetwork = .unknown
+                }
                 do {
                     try await PrimerHeadlessUniversalCheckout.current.validateSession()
                     try await validateRawData(rawData)
@@ -272,6 +288,7 @@ extension PrimerHeadlessUniversalCheckout {
                         await PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
                     }
                 } catch {
+                    await MainActor.run { isSubmitting = false }
                     let delegate = PrimerHeadlessUniversalCheckout.current.delegate
                     delegate?.primerHeadlessUniversalCheckoutDidFail?(
                         withError: error,
@@ -312,6 +329,7 @@ extension PrimerHeadlessUniversalCheckout {
 
         @MainActor
         func validateRawData(withCardNetworksMetadata cardNetworksMetadata: PrimerCardNumberEntryMetadata?) async throws -> Void? {
+            selectCardNetworkWhileTyping()
             guard let rawData else {
                 logger.warn(message: "Unable to validate with card networks metadata as `rawData` was nil")
                 return nil
@@ -333,6 +351,31 @@ extension PrimerHeadlessUniversalCheckout {
                 for: cardData,
                 cardNetworksMetadata: cardBuilder.cardValidationService?.remoteMetadata(forCardNumber: cardData.cardNumber)
             ).rawValue
+        }
+
+        @MainActor
+        private func selectCardNetworkWhileTyping() {
+            networkSelectionTask?.cancel()
+            guard selectsPaymentMethodBeforeTokenizing, !isSubmitting,
+                  PrimerAPIConfigurationModule.apiConfiguration?.hasSurchargeEnabled == true,
+                  let cardBuilder = rawDataTokenizationBuilder as? PrimerRawCardDataTokenizationBuilder,
+                  let cardData = rawData as? PrimerCardData
+            else { return }
+            let network = cardBuilder.effectiveNetwork(
+                for: cardData,
+                cardNetworksMetadata: cardBuilder.cardValidationService?.cachedMetadata(forCardNumber: cardData.cardNumber)
+            )
+            guard network != lastSentNetwork else { return }
+            networkSelectionTask = Task { [weak self, waitForNetworkSelection] in
+                await waitForNetworkSelection()
+                guard let self, !Task.isCancelled, network != lastSentNetwork else { return }
+                do {
+                    try await clientSessionActionsModule.selectPaymentMethodIfNeeded(paymentMethodType, cardNetwork: network.rawValue)
+                    lastSentNetwork = network
+                } catch {
+                    lastSentNetwork = .unknown
+                }
+            }
         }
 
         private func handlePrimerWillCreatePaymentEvent(_ paymentMethodData: PrimerPaymentMethodData) async throws {

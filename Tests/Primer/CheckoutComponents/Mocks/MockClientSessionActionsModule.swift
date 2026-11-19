@@ -20,10 +20,16 @@ final class MockClientSessionActionsModule: ClientSessionActionsProtocol {
     private var _selectPaymentMethodCalls: [(type: String, network: String?)] = []
     private var _unselectPaymentMethodCallCount = 0
     private var _dispatchActionsCalls: [[ClientSession.Action]] = []
+    private var _onSelectPaymentMethod: (() async throws -> Void)?
 
     var selectPaymentMethodError: Error? {
         get { synchronized { _selectPaymentMethodError } }
         set { synchronized { _selectPaymentMethodError = newValue } }
+    }
+
+    var onSelectPaymentMethod: (() async throws -> Void)? {
+        get { synchronized { _onSelectPaymentMethod } }
+        set { synchronized { _onSelectPaymentMethod = newValue } }
     }
 
     var unselectPaymentMethodError: Error? {
@@ -64,11 +70,13 @@ final class MockClientSessionActionsModule: ClientSessionActionsProtocol {
             _selectPaymentMethodError = nil
             _unselectPaymentMethodError = nil
             _dispatchActionsError = nil
+            _onSelectPaymentMethod = nil
         }
     }
 
     func selectPaymentMethodIfNeeded(_ paymentMethodType: String, cardNetwork: String?) async throws {
         synchronized { _selectPaymentMethodCalls.append((paymentMethodType, cardNetwork)) }
+        try await onSelectPaymentMethod?()
         if let selectPaymentMethodError {
             throw selectPaymentMethodError
         }
