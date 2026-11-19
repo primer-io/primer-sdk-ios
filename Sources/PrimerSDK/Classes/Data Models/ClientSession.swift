@@ -308,8 +308,9 @@ final class ClientSession {
                 case type, amount
             }
             // swiftlint:disable:next nesting
-            enum FeeType: String, Codable {
-                case surcharge = "SURCHARGE"
+            struct FeeType: RawRepresentable, Codable, Equatable {
+                static let surcharge = FeeType(rawValue: "SURCHARGE")
+                let rawValue: String
             }
         }
 
