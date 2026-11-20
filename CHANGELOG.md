@@ -5,6 +5,79 @@ All notable changes to `primer-sdk-ios` are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 3.0.0-beta.9 (2026-11-20)
+
+### Feat
+
+- **components**: fees and a select while typing for React Native (ORC-9433) (#2041)
+- **components**: group payment methods by surcharge (ORC-9433) (#2039)
+- report the Klarna widget's node status (#2022)
+- resolve the schema's design token names (#2030)
+- Drive the flow on the engine's flow steps (#2029)
+- drive the flow on the engine's flow steps
+- **components**: Log Apple Pay shipping steps to Datadog (ORC-9040)
+- Present the SDUI sheet when a schema renders (#2001)
+- **components**: pay button text with an {amount} token (ORC-8704) (#2006)
+- **components**: let merchants set the card form pay button text (ORC-8704) (#1992)
+- Declare primitive UI components (#1987)
+- **components**: Emit checkout outcome and error code in Datadog logs (ORC-8876)
+- Add a warn level to CC Datadog logs
+- Run probes before checking client requirements (#1985)
+- Ask the state processor which probes to run (#1984)
+- Advertise probes and UI components as capabilities (#1978)
+- Add probe and UI component registries (#1977)
+- Pay with the token a completed setup returns (#1959)
+
+### Fix
+
+- **components**: hide the card number until it is complete (ORC-9220) (#2047)
+- **components**: match the country title and arrow to the design (ORC-8691) (#2046)
+- **components**: keep fees of other types (ORC-9433) (#2043)
+- **components**: match the country rows to the design (ORC-8691) (#2042)
+- **components**: Open the saved card CVV inside the card (ORC-8601) (#2038)
+- **components**: outline the country search box (ORC-8691) (#2037)
+- **components**: sort the country list and keep its names (ORC-8691) (#2035)
+- **components**: use the same saved method rows on every SDK (ORC-8675) (#2033)
+- **components**: wait for the card lookup before selecting (ORC-8730) (#2028)
+- **components**: select the payment method in headless submit (ORC-8730) (#2027)
+- **components**: say Processing your payment while paying (ORC-8672) (#2034)
+- **components**: keep the card network shown after reopening the form (ORC-8730) (#2032)
+- **components**: select PayPal, QR and form methods first (ORC-8730) (#2026)
+- **components**: select saved methods before paying (ORC-8730) (#2025)
+- **components**: send the card network the card form shows (ORC-8730) (#2024)
+- hand Klarna the authorize step's data
+- pick the BDC view model by capability (#2021)
+- Add a translation check and fix CheckoutComponents translations (ORC-9162) (#2004)
+- Send runtime headers only when necessary (#2023)
+- send runtime headers only where they belong
+- draw Button and List children (#2018)
+- **components**: Drop shipping logs that settle after the attempt (ORC-9040)
+- **components**: drop billing placeholders that repeat the label (ORC-8555) (#2007)
+- Load Klarna in the widget itself (#1995)
+- **components**: use Web's card field error texts (ORC-8668) (#1993)
+- **components**: show the real logo for every card network (ORC-8692) (#1982)
+- **components**: open a custom card network dropdown below the field (ORC-9219) (#1983)
+- **components**: show the klarna logo as the klarna screen title (ORC-8707) (#1979)
+- **components**: keep card field errors until the value is valid (ORC-8703) (#1980)
+- **components**: Keep the remote warn log out of the public API
+- **components**: Stop reporting card declines as Datadog errors
+- Offer card AutoFill on the Drop-in card fields (ORC-8771) (#1973)
+- Pass EFTPOS to Apple Pay (ESC-1206) (#1968)
+- **components**: Offer card AutoFill on expiry, CVV and cardholder (ORC-8771) (#1974)
+- **components**: require shown billing fields, make address line 2 optional (ORC-8667) (#1966)
+- **components**: show a friendly message when a payment fails (ORC-8702) (#1965)
+- **components**: give the saved card cvv box a full row at large text (ORC-8444) (#1964)
+- **components**: end every sheet on spacing.large above the home bar
+- **components**: put 24 under the klarna header (ORC-8537)
+- Use SetupBody instead of PayBody
+- Use 16pt between the Klarna options and Continue
+- Count the bottom safe area once in the sheet height
+
+### Refactor
+
+- **components**: Rename the default shipping trigger case (ORC-9040)
+- **components**: Keep failure log keys in constants
+
 ## 3.0.0-beta.8 (2026-10-19)
 
 ### Feat
