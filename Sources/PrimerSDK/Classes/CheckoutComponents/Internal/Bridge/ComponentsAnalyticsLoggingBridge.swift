@@ -29,10 +29,7 @@ public final class ComponentsAnalyticsLoggingBridge: LogReporter {
         )
         self.analyticsService = analyticsService
         analyticsInteractor = DefaultAnalyticsInteractor(eventService: analyticsService)
-        loggingService = LoggingService(
-            networkClient: LogNetworkClient(),
-            payloadBuilder: LogPayloadBuilder()
-        )
+        loggingService = LoggingService.shared
         configurationModule = PrimerAPIConfigurationModule()
     }
 

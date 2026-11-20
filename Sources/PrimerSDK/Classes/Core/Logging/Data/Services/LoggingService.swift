@@ -10,6 +10,8 @@ import Foundation
 
 @available(iOS 15.0, *)
 actor LoggingService: LogReporter, ComponentsLoggingServiceProtocol {
+  static let shared = LoggingService(networkClient: LogNetworkClient(), payloadBuilder: LogPayloadBuilder())
+
   private let networkClient: any LogNetworkClientProtocol
   private let payloadBuilder: any LogPayloadBuilding
 
@@ -25,8 +27,7 @@ actor LoggingService: LogReporter, ComponentsLoggingServiceProtocol {
 
   func logErrorIfReportable(_ error: Error, message: String? = nil, userInfo: [String: Any]? = nil)
     async {
-    // A card decline arrives wrapped with its payment, and the wrapper alone would read as reportable.
-    let error = (error as? PaymentFailure)?.error ?? error
+    let error = (error as? RemoteLogErrorWrapping)?.wrappedError ?? error
     guard error.shouldReportToDatadog else {
       Self.logger.debug(message: "[Logging] Skipping non-reportable error: \(error)")
       return
@@ -123,6 +124,12 @@ actor LoggingService: LogReporter, ComponentsLoggingServiceProtocol {
   private static func extractDiagnosticsId(from error: Error) -> String? {
     (error as? PrimerError)?.diagnosticsId ?? (error as? InternalError)?.diagnosticsId
   }
+}
+
+// MARK: - Error Wrapping
+
+protocol RemoteLogErrorWrapping {
+  var wrappedError: Error { get }
 }
 
 // MARK: - Error Extension
