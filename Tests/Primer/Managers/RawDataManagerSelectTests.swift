@@ -170,6 +170,18 @@ final class RawDataManagerSelectTests: XCTestCase {
         XCTAssertEqual(clientSessionActions.selectPaymentMethodCalls.map(\.network), ["VISA"])
     }
 
+    func test_surcharge_everyFeeZero_isOff() {
+        SDKSessionHelper.updateAllowedCardNetworks(
+            cardNetworks: [.visa],
+            paymentMethodOptions: [
+                ["type": "APPLE_PAY", "surcharge": 0],
+                ["type": "PAYMENT_CARD", "networks": [["type": "VISA", "surcharge": 0]]]
+            ]
+        )
+
+        XCTAssertEqual(PrimerAPIConfigurationModule.apiConfiguration?.hasSurchargeEnabled, false)
+    }
+
     func test_failedSubmit_typingTheEarlierNetworkAgain_sendsIt() async throws {
         let gate = prepareForTyping(sut)
         headlessCheckoutDelegate.onWillCreatePaymentWithData = { _, decisionHandler in
