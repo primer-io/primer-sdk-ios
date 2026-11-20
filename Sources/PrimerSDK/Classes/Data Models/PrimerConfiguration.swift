@@ -8,8 +8,8 @@
 
 import Foundation
 import PassKit
-@_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerNetworking
 
 typealias PrimerAPIConfiguration = Response.Body.Configuration
@@ -128,8 +128,8 @@ extension Response.Body {
                     let message =
                         """
                         Klarna configuration has been found but module 'PrimerKlarnaSDK' is missing. \
-                        Add `PrimerKlarnaSDK' in your project by adding \"pod 'PrimerKlarnaSDK'\" in your Podfile, \
-                        or by adding \"primer-klarna-sdk-ios\" in your Swift Package Manager.
+                        Add \"pod 'PrimerKlarnaSDK'\" to your Podfile, or with Swift Package Manager \
+                        use the PrimerSDK version that ends in -3ds-klarna.
                         """
                     logger.warn(message: message)
 
@@ -147,8 +147,9 @@ extension Response.Body {
                     viewModels.remove(at: iPay88ViewModelIndex)
                     let message =
                         """
-                        iPay88 configuration has been found but module 'PrimerIPay88SDK' is missing. \
-                        Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in your Podfile.
+                        iPay88 configuration has been found but module 'PrimerIPay88MYSDK' is missing. \
+                        Add \"pod 'PrimerIPay88MYSDK'\" to your Podfile, or with Swift Package Manager \
+                        use the PrimerSDK version that ends in -3ds-ipay88.
                         """
                     logger.warn(message: message)
 
