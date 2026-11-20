@@ -57,9 +57,11 @@ public actor LoggingSessionContext {
 
     // MARK: - Public Methods
 
-    public func initialize(clientToken: String, integrationType: CheckoutComponentsIntegrationType) {
+    public func initialize(clientToken: String, integrationType: CheckoutComponentsIntegrationType? = nil) {
         clientSessionToken = clientToken
-        self.integrationType = integrationType
+        if let integrationType {
+            self.integrationType = integrationType
+        }
 
         // Parse JWT client token to extract environment
         let components = clientToken.components(separatedBy: ".")

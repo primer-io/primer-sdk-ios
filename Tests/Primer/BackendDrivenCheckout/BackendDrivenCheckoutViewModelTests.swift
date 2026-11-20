@@ -17,6 +17,7 @@ final class BackendDrivenCheckoutViewModelTests: XCTestCase {
     private var delegate: MockPrimerHeadlessUniversalCheckoutDelegate!
     private var mockOrchestrator: MockBDCStepOrchestrator!
     private var analyticsStorage: MockAnalyticsStorage!
+    private var remoteLogService: MockRemoteLoggingService!
     private var analyticsService: Analytics.Service!
     
     private let payment = PaymentInfo(id: "pay_1", orderId: "ord_1", status: "SUCCESS")
@@ -38,6 +39,7 @@ final class BackendDrivenCheckoutViewModelTests: XCTestCase {
         uiManager.primerRootViewController = MockPrimerRootViewController()
         mockOrchestrator = MockBDCStepOrchestrator()
         analyticsStorage = MockAnalyticsStorage()
+        remoteLogService = MockRemoteLoggingService()
         analyticsService = Analytics.Service.shared
         Analytics.Service.shared = Analytics.Service(
             sdkLogsUrl: URL(string: "http://localhost/")!,
@@ -159,6 +161,29 @@ final class BackendDrivenCheckoutViewModelTests: XCTestCase {
         XCTAssertEqual(ends.first?.context?["outcome"] as? String, "cancelled")
     }
 
+    func testAStartedFlowReportsItsStartAndEndToDatadog() {
+        assertComplete {
+            makeSUT(instructions: [.end(outcome: .complete, payment: payment)])
+        }
+
+        let entries = remoteEntries()
+        XCTAssertEqual(entries.map(\.event), ["bdc-flow-started", "bdc-flow-ended"])
+        XCTAssertEqual(entries.first?.userInfo?["payment_method_type"] as? String, stubConfig.type)
+        XCTAssertEqual(entries.last?.userInfo?["outcome"] as? String, "success")
+    }
+
+    func testAFailedFlowReportsTheErrorIdToDatadog() {
+        let errors = collectFailures {
+            makeSUT(instructions: [.end(outcome: .failure, payment: failedPayment)])
+        }
+
+        let end = remoteEntries().last
+        XCTAssertEqual(end?.event, "bdc-flow-ended")
+        XCTAssertEqual(end?.status, "warn")
+        XCTAssertEqual(end?.userInfo?["outcome"] as? String, "error")
+        XCTAssertEqual(end?.userInfo?["error_id"] as? String, (errors.first as? PrimerErrorProtocol)?.errorId)
+    }
+
     func testAFlowThatNeverStartedReportsNoEnd() {
         assertDidFail { makeSUT(makeOrchestrator: { _ in throw Error.orchestratorFailed }) }
 
@@ -187,6 +212,17 @@ final class BackendDrivenCheckoutViewModelTests: XCTestCase {
 }
 
 private extension BackendDrivenCheckoutViewModelTests {
+    func remoteEntries() -> [MockRemoteLoggingService.Entry] {
+        let read = expectation(description: "remote log entries")
+        var entries: [MockRemoteLoggingService.Entry] = []
+        Task.detached { [remoteLogService] in
+            entries = await remoteLogService?.entries ?? []
+            read.fulfill()
+        }
+        wait(for: [read], timeout: 2)
+        return entries
+    }
+
     func bdcEvents(count: Int, timeout: TimeInterval = 2) -> [MessageEventProperties] {
         let flowTypes: Set<Analytics.Event.Property.MessageType> = [.backendDrivenCheckoutStarted, .backendDrivenCheckoutEnded]
         let read: () -> [MessageEventProperties] = { [analyticsStorage] in
@@ -225,7 +261,8 @@ private extension BackendDrivenCheckoutViewModelTests {
             },
             makeInstructionProvider: makeInstructionProvider ?? { _ in
                 MockBDCInstructionProvider(instructions)
-            }
+            },
+            remoteLog: BDCRemoteLog(service: remoteLogService, clientToken: { nil })
         )
     }
     

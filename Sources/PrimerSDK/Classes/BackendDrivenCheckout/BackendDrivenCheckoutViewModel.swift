@@ -23,6 +23,7 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
 
     private let makeOrchestrator: OrchestratorFactory
     private let makeInstructionProvider: InstructionProviderFactory
+    private let remoteLog: BDCRemoteLog
     private var orchestrator: BackendDrivenCheckoutOrchestrator?
     private var checkoutTask: Task<Void, Never>?
     private var sduiController: UIViewController?
@@ -49,10 +50,12 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
         tokenizationService: TokenizationServiceProtocol,
         paymentService: CreateResumePaymentServiceProtocol,
         makeOrchestrator: @escaping OrchestratorFactory = BackendDrivenCheckoutOrchestrator.init,
-        makeInstructionProvider: @escaping InstructionProviderFactory = NetworkClientInstructionProvider.init
+        makeInstructionProvider: @escaping InstructionProviderFactory = NetworkClientInstructionProvider.init,
+        remoteLog: BDCRemoteLog = BDCRemoteLog()
     ) {
         self.makeOrchestrator = makeOrchestrator
         self.makeInstructionProvider = makeInstructionProvider
+        self.remoteLog = remoteLog
         super.init(
             config: config,
             uiManager: uiManager,
@@ -76,7 +79,7 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
                 try await checkWillCreatePaymentDecision()
                 
                 try await setupOrchestrator()
-                logBDCStarted()
+                await logBDCStarted()
                 sduiPresenter = SDUIPresentingResolver { [weak self] in await self?.presentSDUI() ?? false }
 
                 let instructionProvider = makeInstructionProvider(config)
@@ -188,7 +191,7 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
     
     @MainActor
     private func handleSuccess(_ payment: PaymentInfo?) async {
-        logBDCEnded(outcome: "success")
+        await logBDCEnded(outcome: BDCRemoteLog.Outcome.success)
         if PrimerSettings.current.paymentHandling == .auto {
             let checkoutData = PrimerCheckoutData(payment: payment?.toPrimerPayment())
             await PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
@@ -223,7 +226,7 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
             diagnosticsId: error.diagnosticId
         )
         let cancelled: Bool = if case .cancelled = error as? PrimerError { true } else { false }
-        logBDCEnded(outcome: cancelled ? "cancelled" : "error", error: primerError)
+        await logBDCEnded(outcome: cancelled ? BDCRemoteLog.Outcome.cancelled : BDCRemoteLog.Outcome.error, error: primerError)
         Analytics.Service.fire(event: .message(
             message: "BDC Failed: \(error)",
             messageType: .error,
@@ -237,8 +240,9 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
         }
     }
     
-    private func logBDCStarted() {
+    private func logBDCStarted() async {
         flowStarted = true
+        let fingerprints = ManifestValidator.trustedPublicKeys.compactMap(\.fingerprint)
         let event = Analytics.Event.message(
             message: "BDC flow started.",
             messageType: .backendDrivenCheckoutStarted,
@@ -246,15 +250,17 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
             context: [
                 "paymentMethodType": config.type,
                 "entry": config.entry.rawValue,
-                "trustedKeyFingerprints": ManifestValidator.trustedPublicKeys.map(\.fingerprint)
+                "trustedKeyFingerprints": fingerprints
             ]
         )
         Analytics.Service.fire(event: event)
+        await remoteLog.flowStarted(config, trustedKeyFingerprints: fingerprints)
     }
 
-    private func logBDCEnded(outcome: String, error: PrimerErrorProtocol? = nil) {
+    private func logBDCEnded(outcome: String, error: PrimerErrorProtocol? = nil) async {
         guard flowStarted, !flowEnded else { return }
         flowEnded = true
+        await remoteLog.flowEnded(config, outcome: outcome, error: error)
         var context: [String: Any] = ["paymentMethodType": config.type, "entry": config.entry.rawValue, "outcome": outcome]
         if let error { context["errorId"] = error.errorId }
         let event = Analytics.Event.message(
@@ -287,6 +293,7 @@ private extension BackendDrivenCheckoutOrchestrator {
         } catch {
             let message = "BDC engine failed to load: \(error)"
             Analytics.Service.fire(event: .message(message: message, messageType: .backendDrivenEngineLoadFailed, severity: .error))
+            await BDCRemoteLog().engineLoadFailed(error)
             throw error
         }
         self.init(engine: engine, context: context)
