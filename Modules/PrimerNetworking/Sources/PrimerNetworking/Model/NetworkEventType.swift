@@ -16,7 +16,7 @@ import Foundation
         case let .requestStart(_, endpoint, _),
              let .requestEnd(_, endpoint, _, _),
              let .networkConnectivity(endpoint):
-            return endpoint
+            endpoint
         }
     }
 }

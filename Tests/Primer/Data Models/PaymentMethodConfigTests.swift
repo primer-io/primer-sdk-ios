@@ -1,17 +1,17 @@
 //
 //  PaymentMethodConfigTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import XCTest
 @testable import PrimerSDK
+import XCTest
 
 class PaymentMethodConfigTests: XCTestCase {
 
     var json: [String: Any] = [:]
     var jsonStr: String {
-        return """
+        """
             {
                 "pciUrl": "\(pciUrl)",
                 "coreUrl": "\(coreUrl)",
@@ -21,40 +21,40 @@ class PaymentMethodConfigTests: XCTestCase {
             """
     }
     var jsonData: Data? {
-        return jsonStr.data(using: .utf8)
+        jsonStr.data(using: .utf8)
     }
 
     var coreUrl = ""
     var pciUrl = ""
     var paymentMethodsArr: [String] = []
     var paymentMethods: String {
-        return PaymentMethodConfigTests.buildPaymentMethodsArrayStr(paymentMethodsStr: paymentMethodsArr)
+        PaymentMethodConfigTests.buildPaymentMethodsArrayStr(paymentMethodsStr: paymentMethodsArr)
     }
 
     static func buildPaymentMethodStr(id: Any?, implementationType: Any?, type: Any?, name: Any?, processorConfigId: Any?, options: Any?) -> String {
         var str = "{"
 
-        if let id = id {
+        if let id {
             str += "\"id\": \((id as? String != nil) ? "\"\(id)\"" : id),"
         }
 
-        if let type = type {
+        if let type {
             str += "\"type\": \((type as? String != nil) ? "\"\(type)\"" : type),"
         }
 
-        if let implementationType = implementationType {
+        if let implementationType {
             str += "\"implementationType\": \((implementationType as? String != nil) ? "\"\(implementationType)\"" : implementationType),"
         }
 
-        if let name = name {
+        if let name {
             str += "\"name\": \((name as? String != nil) ? "\"\(name)\"" : name),"
         }
 
-        if let processorConfigId = processorConfigId {
+        if let processorConfigId {
             str += "\"processorConfigId\": \((processorConfigId as? String != nil) ? "\"\(processorConfigId)\"" : processorConfigId),"
         }
 
-        if let options = options {
+        if let options {
             str += "\"options\": \(options)"
         }
 
@@ -247,4 +247,34 @@ class PaymentMethodConfigTests: XCTestCase {
         }
     }
 
+    // Regression: the last network decided, so VISA 100 then MASTERCARD 0 read as no fee.
+    func test_decode_cardSurchargeOnAnyNetwork_marksTheFeeUnknown() throws {
+        let json = """
+        {
+          "coreUrl": "core_url",
+          "pciUrl": "pci_url",
+          "binDataUrl": "bindata_url",
+          "assetsUrl": "assets_url",
+          "checkoutModules": [],
+          "paymentMethods": [
+            {"id": "pm_card", "implementationType": "NATIVE_SDK", "type": "PAYMENT_CARD", "name": "Payment Card"}
+          ],
+          "clientSession": {
+            "clientSessionId": "cs_1",
+            "paymentMethod": {
+              "options": [
+                {"type": "PAYMENT_CARD", "networks": [
+                  {"type": "VISA", "surcharge": 100},
+                  {"type": "MASTERCARD", "surcharge": 0}
+                ]}
+              ]
+            }
+          }
+        }
+        """
+        let config = try JSONDecoder().decode(PrimerAPIConfiguration.self, from: Data(json.utf8))
+
+        let card = try XCTUnwrap(config.paymentMethods?.first { $0.type == "PAYMENT_CARD" })
+        XCTAssertTrue(card.hasUnknownSurcharge)
+    }
 }

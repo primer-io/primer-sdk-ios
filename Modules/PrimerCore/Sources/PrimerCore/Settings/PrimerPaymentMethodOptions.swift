@@ -18,7 +18,7 @@ public final class PrimerPaymentMethodOptions: Codable {
         
     // Was producing warning: Immutable property will not be decoded because it is declared with an initial value which cannot be overwritten
     // Was it intentional?
-    var cardPaymentOptions: PrimerCardPaymentOptions = PrimerCardPaymentOptions()
+    @_spi(PrimerInternal) public var cardPaymentOptions: PrimerCardPaymentOptions = PrimerCardPaymentOptions()
 
     public init(
         urlScheme: String? = nil,
@@ -28,7 +28,7 @@ public final class PrimerPaymentMethodOptions: Codable {
         stripeOptions: PrimerStripeOptions? = nil
     ) {
         self.urlScheme = urlScheme
-        if let urlScheme = urlScheme, URL(string: urlScheme) == nil {
+        if let urlScheme, URL(string: urlScheme) == nil {
             PrimerLogging.shared.logger.warn(message: """
             The provided url scheme '\(urlScheme)' is not a valid URL. Please ensure that a valid url scheme is provided of the form 'myurlscheme://myapp'
             """)

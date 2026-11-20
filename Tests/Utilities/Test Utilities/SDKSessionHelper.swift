@@ -1,10 +1,11 @@
 //
 //  SDKSessionHelper.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+@_spi(PrimerInternal) import PrimerFoundation
 @testable import PrimerSDK
 
 final class SDKSessionHelper {
@@ -85,13 +86,12 @@ final class SDKSessionHelper {
         try await completion(tearDown)
     }
 
-
-    static func updateAllowedCardNetworks(cardNetworks: [CardNetwork]) {
+    static func updateAllowedCardNetworks(cardNetworks: [CardNetwork], paymentMethodOptions: [[String: Any]]? = nil) {
         PrimerAPIConfigurationModule.apiConfiguration?.clientSession = .init(
             clientSessionId: "",
             paymentMethod: .init(
                 vaultOnSuccess: false,
-                options: nil,
+                options: paymentMethodOptions,
                 orderedAllowedCardNetworks: cardNetworks.map(\.rawValue),
                 descriptor: nil
             ),

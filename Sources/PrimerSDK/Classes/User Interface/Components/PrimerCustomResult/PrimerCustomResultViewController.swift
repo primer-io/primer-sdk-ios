@@ -4,11 +4,11 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+@_spi(PrimerInternal) import PrimerCore
 @_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerUI
 import SwiftUI
 import UIKit
-@_spi(PrimerInternal) import PrimerCore
-@_spi(PrimerInternal) import PrimerUI
 
 final class PrimerCustomResultViewController: PrimerViewController {
 
@@ -22,7 +22,7 @@ final class PrimerCustomResultViewController: PrimerViewController {
 
     init(paymentMethodType: PrimerPaymentMethodType, error: PrimerError?) {
         self.paymentMethodType = paymentMethodType
-        self.paymentStatusViewModel = PrimerResultPaymentStatusViewModel(paymentMethodType: paymentMethodType, error: error)
+        paymentStatusViewModel = PrimerResultPaymentStatusViewModel(paymentMethodType: paymentMethodType, error: error)
         super.init()
     }
 
@@ -35,14 +35,14 @@ final class PrimerCustomResultViewController: PrimerViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        if let parentVC = self.parent as? PrimerContainerViewController {
+        if let parentVC = parent as? PrimerContainerViewController {
             parentVC.mockedNavigationBar.hidesBackButton = true
         }
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        if let parentVC = self.parent as? PrimerContainerViewController {
+        if let parentVC = parent as? PrimerContainerViewController {
             parentVC.mockedNavigationBar.hidesBackButton = false
         }
     }
@@ -71,9 +71,9 @@ final class PrimerCustomResultViewController: PrimerViewController {
     private func getOriginPaymentMethodScreenType() -> PrimerViewController.Type {
         switch paymentMethodType {
         case .stripeAch:
-            return ACHUserDetailsViewController.self
+            ACHUserDetailsViewController.self
         default:
-            return PrimerViewController.self
+            PrimerViewController.self
         }
     }
 }

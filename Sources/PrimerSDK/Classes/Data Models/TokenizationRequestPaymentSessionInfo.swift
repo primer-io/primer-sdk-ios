@@ -60,6 +60,13 @@ struct WebRedirectSessionInfo: OffSessionPaymentSessionInfo {
     var redirectionUrl: String? = urlScheme()
 }
 
+struct AdyenKlarnaSessionInfo: OffSessionPaymentSessionInfo {
+    var locale: String
+    var platform: String = "IOS"
+    var redirectionUrl: String? = urlScheme()
+    var paymentMethodType: String
+}
+
 struct IPay88SessionInfo: OffSessionPaymentSessionInfo {
     var refNo: String
     var locale: String

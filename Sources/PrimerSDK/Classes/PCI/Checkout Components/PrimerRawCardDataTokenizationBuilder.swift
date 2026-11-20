@@ -18,14 +18,14 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
 
     var rawData: PrimerRawData? {
         didSet {
-            if let rawCardData = self.rawData as? PrimerCardData {
+            if let rawCardData = rawData as? PrimerCardData {
                 rawCardData.onDataDidChange = { [weak self] in
                     guard let self else { return }
                     Task { try? await self.validateRawData(rawCardData) }
 
                     let newCardNetwork = CardNetwork(cardNumber: rawCardData.cardNumber)
-                    if newCardNetwork != self.cardNetwork {
-                        self.cardNetwork = newCardNetwork
+                    if newCardNetwork != cardNetwork {
+                        cardNetwork = newCardNetwork
                     }
                 }
 
@@ -35,12 +35,12 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
                 rawCardData.onDataDidChange?()
 
                 let newCardNetwork = CardNetwork(cardNumber: rawCardData.cardNumber)
-                if newCardNetwork != self.cardNetwork {
-                    self.cardNetwork = newCardNetwork
+                if newCardNetwork != cardNetwork {
+                    cardNetwork = newCardNetwork
                 }
             } else {
-                if self.cardNetwork != .unknown {
-                    self.cardNetwork = .unknown
+                if cardNetwork != .unknown {
+                    cardNetwork = .unknown
                 }
             }
         }
@@ -56,11 +56,19 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
     public private(set) var cardNetwork: CardNetwork = .unknown {
         didSet {
             guard let rawDataManager else { return }
-
+            let cardNumber = (rawData as? PrimerCardData)?.cardNumber ?? ""
+            let state = PrimerCardNumberEntryState(cardNumber: cardNumber)
+            let network = PrimerCardNetwork(network: cardNetwork)
+            let metadata = PrimerCardNumberEntryMetadata(
+                source: .local,
+                selectableCardNetworks: nil,
+                detectedCardNetworks: [network]
+            )
             DispatchQueue.main.async {
                 rawDataManager.delegate?.primerRawDataManager?(
                     rawDataManager,
-                    metadataDidChange: ["cardNetwork": self.cardNetwork.rawValue]
+                    didReceiveMetadata: metadata,
+                    forState: state
                 )
             }
         }
@@ -103,7 +111,7 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
 
     func configure(withRawDataManager rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager) {
         self.rawDataManager = rawDataManager
-        self.cardValidationService = DefaultCardValidationService(rawDataManager: rawDataManager)
+        cardValidationService = DefaultCardValidationService(rawDataManager: rawDataManager)
     }
 
     func makeRequestBodyWithRawData(_ data: PrimerRawData) async throws -> Request.Body.Tokenization {
@@ -132,7 +140,7 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
                 expirationMonth: expiryMonth,
                 expirationYear: expiryYear,
                 cardholderName: rawData.cardholderName,
-                preferredNetwork: Self.preferredNetwork(from: rawData.cardNetwork)
+                preferredNetwork: Self.preferredNetwork(from: await pickToSend(for: rawData))
             )
         )
     }
@@ -154,18 +162,7 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
             throw err
         }
 
-        // Used for CVV length. Precedence: user pick → BIN metadata → local IIN.
-        var cardNetwork = rawData.cardNetwork ?? CardNetwork(cardNumber: rawData.cardNumber)
-
-        if rawData.cardNetwork == nil, let metadata = cardNetworksMetadata {
-            let detected = metadata.detectedCardNetworks
-            let didDetectNetwork = !detected.items.isEmpty && detected.items.map(\.network) != [.unknown]
-            if didDetectNetwork {
-                cardNetwork = detected.preferred?.network
-                    ?? detected.items.first?.network
-                    ?? cardNetwork
-            }
-        }
+        let cardNetwork = effectiveNetwork(for: rawData, cardNetworksMetadata: cardNetworksMetadata)
 
         // Always trigger network validation (even for partial/invalid cards)
         // CardValidationService handles:
@@ -173,7 +170,7 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
         // - >= 8 digits: remote BIN lookup
         // - Empty: local validation with empty networks
         // This ensures picker appears as user types, not just when card is fully valid
-        self.cardValidationService?.validateCardNetworks(withCardNumber: rawData.cardNumber)
+        cardValidationService?.validateCardNetworks(withCardNumber: rawData.cardNumber)
 
         // Enforce the allowed-network list only with BIN-or-fallback metadata (not partial local detection).
         let detectedItems = (cardNetworksMetadata?.source != .local ? cardNetworksMetadata : nil)?
@@ -204,7 +201,7 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
             errors.append(PrimerValidationError.invalidCvv(message: "CVV is not valid."))
         }
 
-        if self.requiredInputElementTypes.contains(PrimerInputElementType.cardholderName) {
+        if requiredInputElementTypes.contains(PrimerInputElementType.cardholderName) {
             if (rawData.cardholderName ?? "").isEmpty {
                 errors.append(PrimerValidationError.invalidCardholderName(message: "Cardholder name cannot be blank."))
             } else if !(rawData.cardholderName ?? "").isValidNonDecimalString {
@@ -218,6 +215,33 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
         }
 
         notifyDelegateOfValidationResult(isValid: true, errors: nil)
+    }
+
+    func effectiveNetwork(for rawData: PrimerCardData, cardNetworksMetadata: PrimerCardNumberEntryMetadata?) -> CardNetwork {
+        let firstDigitsNetwork = CardNetwork(cardNumber: rawData.cardNumber)
+        let detected = cardNetworksMetadata?.detectedCardNetworks
+
+        if let pickedNetwork = offeredPick(for: rawData, cardNetworksMetadata: cardNetworksMetadata) {
+            return pickedNetwork
+        }
+
+        guard let detected, !detected.items.isEmpty, detected.items.map(\.network) != [.unknown] else {
+            return firstDigitsNetwork
+        }
+        return detected.preferred?.network ?? detected.items.first?.network ?? firstDigitsNetwork
+    }
+
+    private func offeredPick(for rawData: PrimerCardData, cardNetworksMetadata: PrimerCardNumberEntryMetadata?) -> CardNetwork? {
+        guard let pickedNetwork = rawData.cardNetwork else { return nil }
+        let offeredNetworks = cardNetworksMetadata?.source == .remote
+            ? cardNetworksMetadata?.detectedCardNetworks.items.map(\.network) ?? []
+            : [CardNetwork(cardNumber: rawData.cardNumber)]
+        return offeredNetworks.contains(pickedNetwork) ? pickedNetwork : nil
+    }
+
+    private func pickToSend(for rawData: PrimerCardData) async -> CardNetwork? {
+        guard PrimerInternal.shared.sdkIntegrationType == .headless, rawData.cardNetwork != nil else { return rawData.cardNetwork }
+        return await offeredPick(for: rawData, cardNetworksMetadata: cardValidationService?.remoteMetadata(forCardNumber: rawData.cardNumber))
     }
 
     private func notifyDelegateOfValidationResult(isValid: Bool, errors: [Error]?) {

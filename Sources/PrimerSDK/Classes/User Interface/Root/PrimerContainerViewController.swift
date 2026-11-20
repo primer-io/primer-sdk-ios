@@ -4,8 +4,8 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import UIKit
 @_spi(PrimerInternal) import PrimerUI
+import UIKit
 
 /// PrimerContainerViewController gets a view controller as input. The input view controller must use autolayout.
 /// It then sets this view controller as its child, wraps it within a scrollview and sets the constraints needed.
@@ -30,7 +30,7 @@ final class PrimerContainerViewController: PrimerViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.view.accessibilityIdentifier = "checkout_sheet_content"
+        view.accessibilityIdentifier = "checkout_sheet_content"
         scrollView.accessibilityIdentifier = "primer_container_scroll_view"
 
         view.addSubview(mockedNavigationBar)
@@ -71,16 +71,16 @@ final class PrimerContainerViewController: PrimerViewController {
 
     func layoutContainerViewControllerIfNeeded(block: (() -> Void)?) {
         // This is very important, we need to disable any height constraints before layout.
-        self.childViewHeightConstraint?.isActive = false
-        self.childViewHeightConstraint = nil
+        childViewHeightConstraint?.isActive = false
+        childViewHeightConstraint = nil
 
         // Run the code block
         block?()
 
         // This is very important, the view must layout in order to have correct height before reseting the constraints.
-        self.view.layoutIfNeeded()
-        self.childViewHeightConstraint?.isActive = false
-        self.childViewHeightConstraint = nil
+        view.layoutIfNeeded()
+        childViewHeightConstraint?.isActive = false
+        childViewHeightConstraint = nil
         childViewHeightConstraint = childView.heightAnchor.constraint(equalToConstant: childViewController.view.bounds.size.height)
         childViewHeightConstraint?.isActive = true
         PrimerUIManager.primerRootViewController?.resetConstraint(for: childViewController)

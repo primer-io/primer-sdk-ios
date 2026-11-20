@@ -1,0 +1,268 @@
+//
+//  PaymentMethodMapperTests.swift
+//
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
+
+@_spi(PrimerInternal) @testable import PrimerCore
+@_spi(PrimerInternal) @testable import PrimerFoundation
+@testable import PrimerSDK
+import UIKit
+import XCTest
+
+@available(iOS 15.0, *)
+final class PaymentMethodMapperTests: XCTestCase {
+
+    // MARK: - Test Helpers
+
+    private func createMapper(currency: Currency? = Currency(code: "USD", decimalDigits: 2)) -> PaymentMethodMapperImpl {
+        let configService = MockConfigurationService.withDefaultConfiguration()
+        configService.currency = currency
+        return PaymentMethodMapperImpl(configurationService: configService)
+    }
+
+    private func createInternalPaymentMethod(
+        id: String = "test-id",
+        type: String = "PAYMENT_CARD",
+        name: String = "Credit Card",
+        surcharge: Int? = nil,
+        hasUnknownSurcharge: Bool = false,
+        networkSurcharges: [String: Int]? = nil
+    ) -> InternalPaymentMethod {
+        InternalPaymentMethod(
+            id: id,
+            type: type,
+            name: name,
+            isEnabled: true,
+            surcharge: surcharge,
+            hasUnknownSurcharge: hasUnknownSurcharge,
+            networkSurcharges: networkSurcharges
+        )
+    }
+
+    private func mapCard(allowedNetworks: [CardNetwork], networkSurcharges: [String: Int]) -> CheckoutPaymentMethod {
+        SDKSessionHelper.setUp()
+        defer { SDKSessionHelper.tearDown() }
+        SDKSessionHelper.updateAllowedCardNetworks(cardNetworks: allowedNetworks)
+        let configService = MockConfigurationService.withDefaultConfiguration()
+        configService.apiConfiguration = PrimerAPIConfigurationModule.apiConfiguration
+        return PaymentMethodMapperImpl(configurationService: configService).mapToPublic(
+            createInternalPaymentMethod(hasUnknownSurcharge: true, networkSurcharges: networkSurcharges)
+        )
+    }
+
+    // MARK: - Scheme Variants
+
+    func test_mapToPublic_carriesLogoVariants() {
+        // Given
+        let mapper = createMapper()
+        let logo = PrimerTheme.BaseImage(colored: UIImage(), light: nil, dark: nil)
+        let internalMethod = InternalPaymentMethod(
+            id: "pm-1", type: "PAYMENT_CARD", name: "Card",
+            logoVariants: logo)
+
+        // When
+        let result = mapper.mapToPublic(internalMethod)
+
+        // Then
+        XCTAssertTrue(result.logoVariants === logo)
+    }
+
+    func test_mapToPublic_carriesColorVariants() {
+        // Given
+        let mapper = createMapper()
+        let background = PrimerTheme.BaseColors(coloredHex: "#FFC439", lightHex: nil, darkHex: nil)
+        let text = PrimerTheme.BaseColors(coloredHex: nil, lightHex: "#000000", darkHex: "#FFFFFF")
+        let internalMethod = InternalPaymentMethod(
+            id: "pm-1", type: "PAYPAL", name: "PayPal",
+            backgroundColorVariants: background, textColorVariants: text)
+
+        // When
+        let result = mapper.mapToPublic(internalMethod)
+
+        // Then
+        XCTAssertTrue(result.backgroundColorVariants === background)
+        XCTAssertTrue(result.textColorVariants === text)
+    }
+
+    // MARK: - Surcharge Formatting Tests
+
+    func test_mapToPublic_noSurcharge_returnsNoAdditionalFee() {
+        // Given
+        let mapper = createMapper()
+        let internalMethod = createInternalPaymentMethod(surcharge: nil, hasUnknownSurcharge: false)
+
+        // When
+        let result = mapper.mapToPublic(internalMethod)
+
+        // Then
+        XCTAssertEqual(result.formattedSurcharge, CheckoutComponentsStrings.noAdditionalFee)
+    }
+
+    func test_mapToPublic_zeroSurcharge_returnsNoAdditionalFee() {
+        // Given
+        let mapper = createMapper()
+        let internalMethod = createInternalPaymentMethod(surcharge: 0, hasUnknownSurcharge: false)
+
+        // When
+        let result = mapper.mapToPublic(internalMethod)
+
+        // Then
+        XCTAssertEqual(result.formattedSurcharge, CheckoutComponentsStrings.noAdditionalFee)
+    }
+
+    func test_mapToPublic_hasUnknownSurcharge_returnsAdditionalFeeMayApply() {
+        // Given
+        let mapper = createMapper()
+        let internalMethod = createInternalPaymentMethod(surcharge: 100, hasUnknownSurcharge: true)
+
+        // When
+        let result = mapper.mapToPublic(internalMethod)
+
+        // Then
+        XCTAssertEqual(result.formattedSurcharge, CheckoutComponentsStrings.additionalFeeMayApply)
+    }
+
+    func test_mapToPublic_withSurcharge_formatsWithPlusPrefix() {
+        // Given
+        let mapper = createMapper(currency: Currency(code: "USD", decimalDigits: 2))
+        let internalMethod = createInternalPaymentMethod(surcharge: 150, hasUnknownSurcharge: false)
+
+        // When
+        let result = mapper.mapToPublic(internalMethod)
+
+        // Then
+        XCTAssertNotNil(result.formattedSurcharge)
+        XCTAssertTrue(result.formattedSurcharge?.hasPrefix("+") == true)
+    }
+
+    func test_mapToPublic_noCurrency_returnsNoAdditionalFee() {
+        // Given
+        let mapper = createMapper(currency: nil)
+        let internalMethod = createInternalPaymentMethod(surcharge: 100, hasUnknownSurcharge: false)
+
+        // When
+        let result = mapper.mapToPublic(internalMethod)
+
+        // Then
+        XCTAssertEqual(result.formattedSurcharge, CheckoutComponentsStrings.noAdditionalFee)
+    }
+
+    func test_mapToPublic_unknownSurcharge_takesPrecedenceOverActualSurcharge() {
+        // Given - Both surcharge and hasUnknownSurcharge set
+        let mapper = createMapper()
+        let internalMethod = createInternalPaymentMethod(surcharge: 500, hasUnknownSurcharge: true)
+
+        // When
+        let result = mapper.mapToPublic(internalMethod)
+
+        // Then - Unknown surcharge message takes precedence
+        XCTAssertEqual(result.formattedSurcharge, CheckoutComponentsStrings.additionalFeeMayApply)
+    }
+
+    // MARK: - Raw Surcharge Value Tests
+
+    func test_mapToPublic_preservesRawSurchargeValue() {
+        // Given
+        let mapper = createMapper()
+        let internalMethod = createInternalPaymentMethod(surcharge: 250)
+
+        // When
+        let result = mapper.mapToPublic(internalMethod)
+
+        // Then
+        XCTAssertEqual(result.surcharge, 250)
+    }
+
+    func test_mapToPublic_preservesHasUnknownSurchargeFlag() {
+        // Given
+        let mapper = createMapper()
+        let internalMethod = createInternalPaymentMethod(hasUnknownSurcharge: true)
+
+        // When
+        let result = mapper.mapToPublic(internalMethod)
+
+        // Then
+        XCTAssertTrue(result.hasUnknownSurcharge)
+    }
+
+    func test_mapToPublic_cardWithSameFeeOnEveryAllowedNetwork_hasThatFee() {
+        let result = mapCard(allowedNetworks: [.visa, .masterCard], networkSurcharges: ["VISA": 100, "MASTERCARD": 100])
+
+        XCTAssertEqual(result.surcharge, 100)
+        XCTAssertFalse(result.hasUnknownSurcharge)
+    }
+
+    func test_mapToPublic_cardWithoutOneFeeOnEveryAllowedNetwork_mayApply() {
+        let cases: [(allowedNetworks: [CardNetwork], networkSurcharges: [String: Int])] = [
+            ([.visa, .masterCard], ["VISA": 100]),
+            ([.visa, .masterCard], ["VISA": 100, "MASTERCARD": 200]),
+            ([], ["VISA": 100])
+        ]
+
+        for (allowedNetworks, networkSurcharges) in cases {
+            let result = mapCard(allowedNetworks: allowedNetworks, networkSurcharges: networkSurcharges)
+
+            XCTAssertNil(result.surcharge)
+            XCTAssertTrue(result.hasUnknownSurcharge)
+        }
+    }
+
+    func test_mapToPublic_cardWithFeeOnlyOnNetworkNotAllowed_hasNoFee() {
+        let result = mapCard(allowedNetworks: [.visa], networkSurcharges: ["AMEX": 100])
+
+        XCTAssertNil(result.surcharge)
+        XCTAssertFalse(result.hasUnknownSurcharge)
+    }
+
+    // MARK: - Array Mapping Tests
+
+    func test_mapToPublicArray_mapsAllElements() {
+        // Given
+        let mapper = createMapper()
+        let methods = [
+            createInternalPaymentMethod(id: "1", type: "PAYMENT_CARD"),
+            createInternalPaymentMethod(id: "2", type: "PAYPAL"),
+            createInternalPaymentMethod(id: "3", type: "APPLE_PAY")
+        ]
+
+        // When
+        let results = mapper.mapToPublic(methods)
+
+        // Then
+        XCTAssertEqual(results.count, 3)
+        XCTAssertEqual(results[0].id, "1")
+        XCTAssertEqual(results[1].id, "2")
+        XCTAssertEqual(results[2].id, "3")
+    }
+
+    func test_mapToPublicArray_emptyArray_returnsEmptyArray() {
+        // Given
+        let mapper = createMapper()
+        let methods: [InternalPaymentMethod] = []
+
+        // When
+        let results = mapper.mapToPublic(methods)
+
+        // Then
+        XCTAssertTrue(results.isEmpty)
+    }
+
+    func test_mapToPublicArray_preservesOrder() {
+        // Given
+        let mapper = createMapper()
+        let methods = [
+            createInternalPaymentMethod(name: "First"),
+            createInternalPaymentMethod(name: "Second"),
+            createInternalPaymentMethod(name: "Third")
+        ]
+
+        // When
+        let results = mapper.mapToPublic(methods)
+
+        // Then
+        XCTAssertEqual(results[0].name, "First")
+        XCTAssertEqual(results[1].name, "Second")
+        XCTAssertEqual(results[2].name, "Third")
+    }
+}

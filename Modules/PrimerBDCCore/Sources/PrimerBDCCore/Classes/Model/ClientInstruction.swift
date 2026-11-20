@@ -22,13 +22,72 @@ public struct CurrentAttemptDataResponse: Codable {
 }
 
 @_spi(PrimerInternal)
+public enum SetupInstruction {
+    case wait
+    case execute(screen: CodableValue)
+    case setupComplete(token: String)
+    case ended(reason: SetupEndedReason)
+}
+
+@_spi(PrimerInternal)
+public enum SetupEndedReason: String, Sendable {
+    case deadline = "DEADLINE"
+    case failed = "FAILED"
+    case outdated = "OUTDATED"
+
+    public var startsAgain: Bool {
+        switch self {
+        case .deadline, .outdated: true
+        case .failed: false
+        }
+    }
+}
+
+@_spi(PrimerInternal)
+public struct SetupEnded: Error, Equatable {
+    public let reason: SetupEndedReason
+    public init(reason: SetupEndedReason) { self.reason = reason }
+}
+
+@_spi(PrimerInternal)
+public struct SetupState {
+    public let instruction: SetupInstruction
+    public let nextPoll: NextPoll
+    public let pollDelayMilliseconds: Int
+
+    public init(instruction: SetupInstruction, nextPoll: NextPoll, pollDelayMilliseconds: Int = 0) {
+        self.instruction = instruction
+        self.nextPoll = nextPoll
+        self.pollDelayMilliseconds = pollDelayMilliseconds
+    }
+}
+
+@_spi(PrimerInternal)
+public enum NextPoll: String, SingleValueContained {
+    case interval = "INTERVAL"
+    case suspend = "SUSPEND"
+}
+
+@_spi(PrimerInternal)
 public struct SetupFlow {
     public let schema: CodableValue
     public let parameters: CodableValue
+    public let setupId: String
+    public let nextPoll: NextPoll
+    public let pollDelayMilliseconds: Int
 
-    public init(schema: CodableValue, parameters: CodableValue) {
+    public init(
+        schema: CodableValue,
+        parameters: CodableValue,
+        setupId: String,
+        nextPoll: NextPoll,
+        pollDelayMilliseconds: Int = 0
+    ) {
         self.schema = schema
         self.parameters = parameters
+        self.setupId = setupId
+        self.nextPoll = nextPoll
+        self.pollDelayMilliseconds = pollDelayMilliseconds
     }
 }
 

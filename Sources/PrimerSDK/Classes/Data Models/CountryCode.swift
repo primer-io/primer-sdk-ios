@@ -8,8 +8,8 @@
 // swiftlint:disable type_body_length
 
 import Foundation
-@_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
 import UIKit
 
 // inspired by https://gist.github.com/proxpero/f7ddfd721a0d0d6159589916185d9dc9
@@ -44,8 +44,8 @@ extension CountryCode {
 
         init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
-            self.locale = try container.decode(String.self, forKey: .locale)
-            self.countries = [:]
+            locale = try container.decode(String.self, forKey: .locale)
+            countries = [:]
 
             if let countriesWithMultipleOptionNames = try container.decodeIfPresent(
                 [CountryCode.RawValue: AnyCodable].self,
@@ -59,7 +59,7 @@ extension CountryCode {
                         updatedCountries[$0.key] = countryName
                     }
                 }
-                self.countries = updatedCountries
+                countries = updatedCountries
             }
         }
     }
@@ -83,7 +83,7 @@ extension CountryCode {
 
 extension CountryCode {
 
-    struct PhoneNumberCountryCode: Codable {
+    struct PhoneNumberCountryCode: Codable, Equatable {
         let name: String
         let dialCode: String
         let code: String

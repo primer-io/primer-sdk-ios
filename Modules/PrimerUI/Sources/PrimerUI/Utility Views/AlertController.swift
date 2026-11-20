@@ -9,14 +9,13 @@ import UIKit
 @_spi(PrimerInternal) public final class AlertController: UIAlertController {
 
     private lazy var alertWindow: UIWindow = {
-        var window: UIWindow!
-        if let windowScene = UIApplication.shared.connectedScenes
+        var window: UIWindow! = if let windowScene = UIApplication.shared.connectedScenes
             .filter({ $0.activationState == .foregroundActive })
             .first as? UIWindowScene {
-            window = UIWindow(windowScene: windowScene)
+            UIWindow(windowScene: windowScene)
         } else {
             // Not opted-in in UISceneDelegate
-            window = UIWindow(frame: UIScreen.main.bounds)
+            UIWindow(frame: UIScreen.main.bounds)
         }
 
         window.rootViewController = ClearViewController()

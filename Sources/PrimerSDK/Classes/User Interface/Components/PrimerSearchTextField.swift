@@ -4,8 +4,8 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import UIKit
 @_spi(PrimerInternal) import PrimerUI
+import UIKit
 
 final class PrimerSearchTextField: UITextField, UITextFieldDelegate {
     enum Padding {
@@ -80,7 +80,7 @@ final class PrimerSearchTextField: UITextField, UITextFieldDelegate {
     }
 
     override func editingRect(forBounds bounds: CGRect) -> CGRect {
-        self.textRect(forBounds: bounds)
+        textRect(forBounds: bounds)
     }
 
     override func rightViewRect(forBounds bounds: CGRect) -> CGRect {
@@ -95,12 +95,10 @@ final class PrimerSearchTextField: UITextField, UITextFieldDelegate {
     }
 
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        var query: String
-
-        if string.isEmpty {
-            query = String((textField.text ?? "").dropLast())
+        var query: String = if string.isEmpty {
+            String((textField.text ?? "").dropLast())
         } else {
-            query = (textField.text ?? "") + string
+            (textField.text ?? "") + string
         }
 
         rightImageView.image = query.isEmpty ? searchImage : clearImage
@@ -110,7 +108,7 @@ final class PrimerSearchTextField: UITextField, UITextFieldDelegate {
 
     @objc
     func clear() {
-        self.text = nil
+        text = nil
         rightImageView.image = searchImage
         _ = _delegate?.textFieldShouldClear?(self)
     }

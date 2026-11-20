@@ -5,8 +5,8 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 @testable import PrimerSDK
-import XCTest
 @_spi(PrimerInternal) import PrimerUI
+import XCTest
 
 final class PrimerCityFieldViewTests: XCTestCase {
 
@@ -28,7 +28,7 @@ final class PrimerCityFieldViewTests: XCTestCase {
     func testValidationValidCity() throws {
         view.text = ""
 
-        let expectation = self.expectation(description: "onIsValid is called")
+        let expectation = expectation(description: "onIsValid is called")
         delegate.onIsValid = { isValid in
             XCTAssertNotNil(isValid)
             XCTAssertTrue(isValid!)
@@ -53,7 +53,7 @@ final class PrimerCityFieldViewTests: XCTestCase {
     func testValidationInvalidCity() throws {
         view.text = ""
 
-        let expectation = self.expectation(description: "onIsValid is called")
+        let expectation = expectation(description: "onIsValid is called")
         delegate.onIsValid = { isValid in
             XCTAssertNil(isValid)
             switch self.view.validation {

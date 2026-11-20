@@ -23,7 +23,23 @@ extension PrimerBDCEngine {
         """
     }
     
-    func initialize(schema: String, context: String, state: String) -> String {
+    private var flowStepOf: String {
+        """
+        const flowStepOf = (result) => {
+            const answer = result.answer;
+            const reply = !answer ? {} : {
+                reply: answer.handled ? { kind: 'handled', value: answer.reply } : { kind: 'unhandled' },
+            };
+            if (result.error) return { kind: 'failed', error: result.error, ...reply };
+            if (result.terminal) return { kind: 'finished', outcome: result.terminal.outcome, ...reply };
+            const shown = { state: result.newState, layers: result.renderStack };
+            if (result.action) return { kind: 'runAction', ...shown, action: result.action, ...reply };
+            return { kind: 'awaitInput', ...shown, ...reply };
+        };
+        """
+    }
+
+    func startFlowScript(schema: String, context: String, state: String) -> String {
         setObject(schema, forKey: "__schema")
         setObject(state, forKey: "__state")
         setObject(context, forKey: "__context")
@@ -31,9 +47,13 @@ extension PrimerBDCEngine {
         return """
         (async () => {
             try {
+                \(flowStepOf)
                 const processor = await StateProcessor.createStateProcessor(__schema, JSON.parse(__context));
-                const result = await processor.initialize(JSON.parse(__state));
-                onInitializeResult(JSON.stringify(result));
+                const state = JSON.parse(__state);
+                const step = typeof processor.startFlow === 'function'
+                    ? await processor.startFlow(state)
+                    : flowStepOf(await processor.initialize(state));
+                onInitializeResult(JSON.stringify(step));
             } catch (e) {
                 onInitializeResult(JSON.stringify({ error: e.toString() }));
             }
@@ -41,7 +61,7 @@ extension PrimerBDCEngine {
         """
     }
     
-    func eventScript(schema: String, context: String, state: String, event: String) -> String {
+    func handleEventScript(schema: String, context: String, state: String, event: String) -> String {
         setObject(schema, forKey: "__schema")
         setObject(state, forKey: "__state")
         setObject(event, forKey: "__event")
@@ -50,9 +70,14 @@ extension PrimerBDCEngine {
         return """
         (async () => {
             try {
+                \(flowStepOf)
                 const processor = await StateProcessor.createStateProcessor(__schema, JSON.parse(__context));
-                const result = await processor.applyEvent(JSON.parse(__state), JSON.parse(__event));
-                onProcessFieldResult(JSON.stringify(result));
+                const state = JSON.parse(__state);
+                const event = JSON.parse(__event);
+                const step = typeof processor.handleEvent === 'function'
+                    ? await processor.handleEvent(state, event)
+                    : flowStepOf(await processor.applyEvent(state, event));
+                onProcessFieldResult(JSON.stringify(step));
             } catch (e) {
                 onProcessFieldResult(JSON.stringify({ error: e.toString() }));
             }
@@ -60,7 +85,7 @@ extension PrimerBDCEngine {
         """
     }
     
-    func resultScript(
+    func handleActionResultScript(
         schema: String,
         context: String,
         actionId: String,
@@ -78,9 +103,14 @@ extension PrimerBDCEngine {
         return """
         (async () => {
             try {
+                \(flowStepOf)
                 const processor = await StateProcessor.createStateProcessor(__schema, JSON.parse(__context));
-                const result = await processor.applyResult(JSON.parse(__state), __actionId, __outcome, JSON.parse(__data));
-                onExecuteActionResult(JSON.stringify(result));
+                const state = JSON.parse(__state);
+                const data = JSON.parse(__data);
+                const step = typeof processor.handleActionResult === 'function'
+                    ? await processor.handleActionResult(state, { actionId: __actionId, outcome: __outcome, data })
+                    : flowStepOf(await processor.applyResult(state, __actionId, __outcome, data));
+                onExecuteActionResult(JSON.stringify(step));
             } catch (e) {
                 onExecuteActionResult(JSON.stringify({ error: e.toString() }));
             }

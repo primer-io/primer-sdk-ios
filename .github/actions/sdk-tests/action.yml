@@ -22,7 +22,7 @@ inputs:
   fastlane-test-lane:
     description: The fastlane test lane to run
     required: false
-    default: test_sdk 
+    default: test_sdk
   match-keychain-name:
     description: Match keychain name
     required: true
@@ -62,14 +62,17 @@ runs:
     - name: Setup Package.swift
       shell: bash
       if: ${{ inputs.package-swift != '' }}
+      env:
+        PACKAGE_SWIFT: ${{ inputs.package-swift }}
       run: |
         mv Package.swift Package.swift.orig
-        cp "${{ inputs.package-swift }}" Package.swift
+        cp "$PACKAGE_SWIFT" Package.swift
     - name: Build SPM App
       shell: bash
       run: |
-        bundle exec fastlane ${{ inputs.fastlane-test-lane }}
+        bundle exec fastlane "$FASTLANE_TEST_LANE"
       env:
+        FASTLANE_TEST_LANE: ${{ inputs.fastlane-test-lane }}
         MATCH_PASSWORD: ${{ inputs.match-password }}
         MATCH_GIT_PRIVATE_KEY: ${{ inputs.ssh-private-key }}
         FASTLANE_PASSWORD: ${{ inputs.fastlane-password }}
@@ -80,9 +83,11 @@ runs:
     - name: Prepare coverage reports
       shell: bash
       if: ${{ inputs.sdk-name != '' }}
+      env:
+        SDK_NAME: ${{ inputs.sdk-name }}
       run: |
         bash Scripts/xccov-to-sonarqube-generic.sh fastlane/test_output/PrimerSDKTests.xcresult/ > coverage.xml
-        sed "s#$PWD/##g" coverage.xml > sonar-coverage-${{ inputs.sdk-name }}.xml
+        sed "s#$PWD/##g" coverage.xml > "sonar-coverage-${SDK_NAME}.xml"
     - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
       with:
         name: coverage-file-${{ inputs.sdk-name }}

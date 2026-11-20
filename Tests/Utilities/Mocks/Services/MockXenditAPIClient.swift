@@ -5,15 +5,15 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import PrimerFoundation
+@_spi(PrimerInternal) @testable import PrimerNetworking
 @testable import PrimerSDK
-@_spi(PrimerInternal) import PrimerNetworking
 
 final class MockXenditAPIClient: PrimerAPIClientXenditProtocol {
 
     var onListRetailOutlets: ((DecodedJWTToken, String) -> RetailOutletsList)?
 
     func listRetailOutlets(clientToken: DecodedJWTToken, paymentMethodId: String, completion: @escaping PrimerSDK.APICompletion<PrimerSDK.RetailOutletsList>) {
-        if let onListRetailOutlets = onListRetailOutlets {
+        if let onListRetailOutlets {
             completion(.success(onListRetailOutlets(clientToken, paymentMethodId)))
         } else {
             completion(.failure(PrimerError.unknown()))
@@ -21,8 +21,8 @@ final class MockXenditAPIClient: PrimerAPIClientXenditProtocol {
     }
 
     func listRetailOutlets(clientToken: DecodedJWTToken, paymentMethodId: String) async throws -> RetailOutletsList {
-        if let onListRetailOutlets = onListRetailOutlets {
-            return onListRetailOutlets(clientToken, paymentMethodId)
+        if let onListRetailOutlets {
+            onListRetailOutlets(clientToken, paymentMethodId)
         } else {
             throw PrimerError.unknown()
         }
