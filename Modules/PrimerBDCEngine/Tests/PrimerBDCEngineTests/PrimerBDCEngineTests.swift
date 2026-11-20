@@ -12,6 +12,10 @@ import XCTest
 @MainActor
 final class PrimerBDCEngineTests: XCTestCase {
 
+    func testTheSimulatorJSContextCanRunWebAssembly() {
+        XCTAssertTrue(PrimerBDCEngine.canRunWebAssembly)
+    }
+
     func testStartRunsTheStateProcessorOnTheInstantiatedModule() async throws {
         let sut = try await PrimerBDCEngine(files: .stub())
 

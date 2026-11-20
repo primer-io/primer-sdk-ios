@@ -52,6 +52,9 @@ public final class BDCEngineProvider {
 
     static func makeEngine(manifestProvider: SignedManifestProvider) async throws -> any BDCEngineProtocol {
         let manifest = try await ManifestRepository(provider: manifestProvider).fetchManifest()
+        if #available(iOS 15.0, *), !PrimerBDCEngine.canRunWebAssembly {
+            return try await PrimerBDCWebViewEngine(manifest: manifest)
+        }
         return try await PrimerBDCEngine(manifest: manifest)
     }
 }
