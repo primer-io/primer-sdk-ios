@@ -223,6 +223,25 @@ final class RawDataManagerSelectTests: XCTestCase {
         XCTAssertEqual(clientSessionActions.selectPaymentMethodCalls.map(\.network), ["VISA", "VISA"])
     }
 
+    func test_typing_unchangedUpdateWhileTheSelectRuns_sendsNoSecondSelect() async throws {
+        let gate = prepareForTyping(sut)
+        let request = NetworkSelectionGate()
+        clientSessionActions.onSelectPaymentMethod = { await request.wait() }
+
+        sut.rawData = visaCard()
+        try await releaseSelections(afterHolding: 1, on: gate)
+        try await waitForHeldSelections(1, on: request)
+        sut.rawData = visaCard()
+        try await releaseSelections(afterHolding: 1, on: gate)
+        await request.release()
+        try await waitForSelectCalls(1)
+        await MainActor.run {}
+
+        let heldCount = await request.heldCount
+        XCTAssertEqual(heldCount, 0)
+        XCTAssertEqual(clientSessionActions.selectPaymentMethodCalls.map(\.network), ["VISA"])
+    }
+
     func test_typing_rawDataClearedWhileASelectWaits_dropsIt() async throws {
         let gate = prepareForTyping(sut)
 

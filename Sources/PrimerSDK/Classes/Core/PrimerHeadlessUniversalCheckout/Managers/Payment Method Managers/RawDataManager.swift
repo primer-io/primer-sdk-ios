@@ -366,8 +366,9 @@ extension PrimerHeadlessUniversalCheckout {
                 cardNetworksMetadata: cardBuilder.cardValidationService?.cachedMetadata(forCardNumber: cardData.cardNumber)
             )
             guard network != lastSentNetwork else { return }
-            networkSelectionTask = Task { [weak self, waitForNetworkSelection] in
+            networkSelectionTask = Task { [weak self, waitForNetworkSelection, previousSelection = networkSelectionTask] in
                 await waitForNetworkSelection()
+                await previousSelection?.value
                 guard let self, !Task.isCancelled, network != lastSentNetwork else { return }
                 do {
                     try await clientSessionActionsModule.selectPaymentMethodIfNeeded(paymentMethodType, cardNetwork: network.rawValue)
