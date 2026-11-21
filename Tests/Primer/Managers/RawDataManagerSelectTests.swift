@@ -170,6 +170,18 @@ final class RawDataManagerSelectTests: XCTestCase {
         XCTAssertEqual(clientSessionActions.selectPaymentMethodCalls.map(\.network), ["VISA"])
     }
 
+    func test_surcharge_everyFeeZero_isOff() {
+        SDKSessionHelper.updateAllowedCardNetworks(
+            cardNetworks: [.visa],
+            paymentMethodOptions: [
+                ["type": "APPLE_PAY", "surcharge": 0],
+                ["type": "PAYMENT_CARD", "networks": [["type": "VISA", "surcharge": 0]]]
+            ]
+        )
+
+        XCTAssertEqual(PrimerAPIConfigurationModule.apiConfiguration?.hasSurchargeEnabled, false)
+    }
+
     func test_failedSubmit_typingTheEarlierNetworkAgain_sendsIt() async throws {
         let gate = prepareForTyping(sut)
         headlessCheckoutDelegate.onWillCreatePaymentWithData = { _, decisionHandler in
@@ -185,13 +197,57 @@ final class RawDataManagerSelectTests: XCTestCase {
         sut.rawData = masterCard()
         try await waitForHeldSelections(1, on: gate)
         sut.submit()
-        await fulfillment(of: [expectDidFail], timeout: 5.0)
         await gate.release()
+        await fulfillment(of: [expectDidFail], timeout: 5.0)
         sut.rawData = visaCard()
         try await releaseSelections(afterHolding: 1, on: gate)
         try await waitForSelectCalls(3)
 
         XCTAssertEqual(clientSessionActions.selectPaymentMethodCalls.map(\.network), ["VISA", "MASTERCARD", "VISA"])
+    }
+
+    func test_submit_card_networkSentWhileTyping_sendsNoSecondSelect() async throws {
+        let gate = prepareForTyping(sut)
+        let request = NetworkSelectionGate()
+        clientSessionActions.onSelectPaymentMethod = { await request.wait() }
+        headlessCheckoutDelegate.onWillCreatePaymentWithData = { _, decisionHandler in
+            decisionHandler(.continuePaymentCreation())
+        }
+        tokenizationService.onTokenize = { _ in .failure(PrimerError.unknown()) }
+        let expectDidFail = expectation(description: "Payment stopped after tokenizing")
+        headlessCheckoutDelegate.onDidFail = { _ in expectDidFail.fulfill() }
+
+        sut.rawData = visaCard()
+        try await releaseSelections(afterHolding: 1, on: gate)
+        try await waitForHeldSelections(1, on: request)
+        sut.submit()
+        try await Task.sleep(nanoseconds: 300_000_000)
+        await request.release()
+        await fulfillment(of: [expectDidFail], timeout: 5.0)
+
+        XCTAssertEqual(clientSessionActions.selectPaymentMethodCalls.map(\.network), ["VISA"])
+    }
+
+    func test_submit_card_sessionUpdatedElsewhereAfterTheTypingSelect_selectsAgain() async throws {
+        let gate = prepareForTyping(sut)
+        headlessCheckoutDelegate.onWillCreatePaymentWithData = { _, decisionHandler in
+            decisionHandler(.continuePaymentCreation())
+        }
+        tokenizationService.onTokenize = { _ in .failure(PrimerError.unknown()) }
+        let expectDidFail = expectation(description: "Payment stopped after tokenizing")
+        headlessCheckoutDelegate.onDidFail = { _ in expectDidFail.fulfill() }
+
+        sut.rawData = visaCard()
+        try await releaseSelections(afterHolding: 1, on: gate)
+        try await waitForSelectCalls(1)
+        SDKSessionHelper.updateAllowedCardNetworks(
+            cardNetworks: [.cartesBancaires, .masterCard, .visa],
+            paymentMethodOptions: [["type": "PAYMENT_CARD", "networks": [["type": "CARTES_BANCAIRES", "surcharge": 50]]]]
+        )
+        sut.submit()
+        await fulfillment(of: [expectDidFail], timeout: 5.0)
+
+        XCTAssertEqual(clientSessionActions.selectPaymentMethodCalls.map(\.network), ["VISA", "VISA"])
     }
 
     func test_typing_unchangedUpdateWhileTheSelectRuns_sendsItAgainWhenThatSelectFails() async throws {
@@ -209,6 +265,22 @@ final class RawDataManagerSelectTests: XCTestCase {
         try await waitForSelectCalls(2)
 
         XCTAssertEqual(clientSessionActions.selectPaymentMethodCalls.map(\.network), ["VISA", "VISA"])
+    }
+
+    func test_typing_unchangedUpdateWhileTheSelectRuns_sendsNoSecondSelect() async throws {
+        let gate = prepareForTyping(sut)
+        let request = NetworkSelectionGate()
+        clientSessionActions.onSelectPaymentMethod = { await request.wait() }
+
+        sut.rawData = visaCard()
+        try await releaseSelections(afterHolding: 1, on: gate)
+        try await waitForHeldSelections(1, on: request)
+        sut.rawData = visaCard()
+        try await releaseSelections(afterHolding: 1, on: gate)
+        await request.release()
+        try await waitForSelectCalls(1)
+
+        XCTAssertEqual(clientSessionActions.selectPaymentMethodCalls.map(\.network), ["VISA"])
     }
 
     func test_typing_rawDataClearedWhileASelectWaits_dropsIt() async throws {
