@@ -90,6 +90,47 @@ final class ClientInstructionSetupStateResponseDecodingTests: XCTestCase {
     }
 }
 
+final class ClientInstructionSetupEndedResponseDecodingTests: XCTestCase {
+
+    func testAStartThatEndedDecodesTheReason() throws {
+        let json = #"{"id": "setup-1", "paymentMethodConfigId": "config-1", "clientSessionId": "cs-1", "status": "ENDED", "reason": "FAILED"}"#
+        guard case let .ended(ended) = try JSONDecoder().decode(SetupStartResponse.self, from: Data(json.utf8)) else {
+            return XCTFail("Expected an ended start")
+        }
+        XCTAssertEqual(ended.paymentMethodSetupId, "setup-1")
+        XCTAssertEqual(ended.reason, .failed)
+    }
+
+    func testAPollThatEndedDecodesTheReason() throws {
+        let json = #"{"id": "setup-1", "status": "ENDED", "reason": "DEADLINE"}"#
+        guard case let .ended(ended) = try JSONDecoder().decode(SetupStateResponse.self, from: Data(json.utf8)) else {
+            return XCTFail("Expected an ended poll")
+        }
+        XCTAssertEqual(ended.reason, .deadline)
+    }
+
+    func testAnUnknownReasonReadsAsFailed() throws {
+        let json = #"{"id": "setup-1", "status": "ENDED", "reason": "SOMETHING_NEW"}"#
+        guard case let .ended(ended) = try JSONDecoder().decode(SetupStateResponse.self, from: Data(json.utf8)) else {
+            return XCTFail("Expected an ended poll")
+        }
+        XCTAssertEqual(ended.reason, .failed)
+    }
+
+    func testAStartedSetupStillDecodesAsStarted() throws {
+        let json = #"{"id": "setup-1", "status": "STARTED", "instruction": {"type": "EXECUTE", "nextPoll": "SUSPEND", "payload": {"schema": {}, "parameters": {}}}}"#
+        guard case let .started(started) = try JSONDecoder().decode(SetupStartResponse.self, from: Data(json.utf8)) else {
+            return XCTFail("Expected a started setup")
+        }
+        XCTAssertEqual(started.paymentMethodSetupId, "setup-1")
+    }
+
+    func testTheEndedBodyIsDecodedOnA410() {
+        XCTAssertEqual(SetupStartResponse.decodableStatusCodes, [410])
+        XCTAssertEqual(SetupStateResponse.decodableStatusCodes, [410])
+    }
+}
+
 private extension ClientInstructionSetupStateResponseDecodingTests {
     func decode(_ json: String) throws -> ClientInstructionSetupStateResponse {
         try JSONDecoder().decode(ClientInstructionSetupStateResponse.self, from: Data(json.utf8))

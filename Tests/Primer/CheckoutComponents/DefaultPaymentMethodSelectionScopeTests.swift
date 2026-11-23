@@ -315,7 +315,8 @@ final class DefaultPaymentMethodSelectionScopeTests: XCTestCase {
         // When
         await sut.payWithVaultedPaymentMethod()
 
-        // Then — the field has no inline home any more, so the SDK raises its own screen
+        // Then
+        XCTAssertTrue(sut.requiresCvvInput)
         XCTAssertEqual(mockCheckoutScope.navigationState, .cvvRecapture)
     }
 
@@ -347,6 +348,7 @@ final class DefaultPaymentMethodSelectionScopeTests: XCTestCase {
         await sut.payWithVaultedPaymentMethod()
 
         // Then
+        XCTAssertFalse(sut.requiresCvvInput)
         XCTAssertNotEqual(mockCheckoutScope.navigationState, .cvvRecapture)
     }
 

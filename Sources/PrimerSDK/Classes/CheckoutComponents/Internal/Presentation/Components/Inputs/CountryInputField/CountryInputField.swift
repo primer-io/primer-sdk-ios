@@ -94,7 +94,7 @@ struct CountryInputField: View, LogReporter {
       },
       rightComponent: {
         Image(systemName: RTLIcon.forwardChevron)
-          .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
+          .foregroundColor(CheckoutColors.iconPrimary(tokens: tokens))
       }
     )
     .accessibility(

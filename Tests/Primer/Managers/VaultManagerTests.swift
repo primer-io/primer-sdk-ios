@@ -290,7 +290,96 @@ final class VaultManagerTests: XCTestCase {
         ], timeout: 20.0, enforceOrder: true)
     }
 
+    func test_startPaymentFlow_savedCard_selectsCardNetworkBeforeExchange() {
+        let selectCalls = selectCallsAtExchange(for: savedMethod(type: "PAYMENT_CARD", instrumentType: .paymentCard))
+
+        XCTAssertEqual(selectCalls.map(\.type), ["PAYMENT_CARD"])
+        XCTAssertEqual(selectCalls.map(\.network), ["AMEX"])
+    }
+
+    func test_startPaymentFlow_savedCardWithoutAKnownNetwork_selectsOther() throws {
+        let noNetwork = try instrumentData(json: "{}")
+        let unknownNetwork = try instrumentData(json: #"{"binData":{"network":"UNKNOWN"}}"#)
+
+        for data in [noNetwork, unknownNetwork] {
+            let selectCalls = selectCallsAtExchange(for: savedMethod(type: "PAYMENT_CARD", instrumentType: .paymentCard, instrumentData: data))
+            XCTAssertEqual(selectCalls.map(\.network), ["OTHER"])
+        }
+    }
+
+    func test_startPaymentFlow_savedNonCard_selectsTypeWithoutNetwork() {
+        let selectCalls = selectCallsAtExchange(for: savedMethod(type: "PAYPAL", instrumentType: .payPalBillingAgreement))
+
+        XCTAssertEqual(selectCalls.map(\.type), ["PAYPAL"])
+        XCTAssertEqual(selectCalls.map(\.network), [nil])
+    }
+
+    func test_startPaymentFlow_selectFails_failsWithTheSelectErrorWithoutExchange() {
+        let selectError = PrimerError.unknown(message: "Select failed")
+        let clientSessionActions = MockClientSessionActionsModule()
+        clientSessionActions.selectPaymentMethodError = selectError
+        sut.clientSessionActionsModule = clientSessionActions
+        sut.vaultedPaymentMethods = [savedMethod(type: "PAYMENT_CARD", instrumentType: .paymentCard)]
+
+        var exchangeCallCount = 0
+        tokenizationService.onExchangePaymentMethodToken = { _, _ in
+            exchangeCallCount += 1
+            return .success(Mocks.primerPaymentMethodTokenData)
+        }
+        var reportedError: Error?
+        let expectDidFail = expectation(description: "Payment failed")
+        headlessCheckoutDelegate.onDidFail = { error in
+            reportedError = error
+            expectDidFail.fulfill()
+        }
+
+        sut.startPaymentFlow(vaultedPaymentMethodId: "saved-id")
+
+        waitForExpectations(timeout: 2.0)
+        XCTAssertEqual((reportedError as? PrimerError)?.diagnosticsId, selectError.diagnosticsId)
+        XCTAssertEqual(exchangeCallCount, 0)
+    }
+
     // MARK: Helpers
+
+    private func selectCallsAtExchange(
+        for savedMethod: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod
+    ) -> [(type: String, network: String?)] {
+        let clientSessionActions = MockClientSessionActionsModule()
+        sut.clientSessionActionsModule = clientSessionActions
+        sut.vaultedPaymentMethods = [savedMethod]
+
+        var selectCalls: [(type: String, network: String?)] = []
+        tokenizationService.onExchangePaymentMethodToken = { _, _ in
+            selectCalls = clientSessionActions.selectPaymentMethodCalls
+            return .failure(PrimerError.unknown())
+        }
+        let expectDidFail = expectation(description: "Payment stopped after the exchange")
+        headlessCheckoutDelegate.onDidFail = { _ in expectDidFail.fulfill() }
+
+        sut.startPaymentFlow(vaultedPaymentMethodId: savedMethod.id)
+
+        waitForExpectations(timeout: 2.0)
+        return selectCalls
+    }
+
+    private func savedMethod(
+        type: String,
+        instrumentType: PaymentInstrumentType,
+        instrumentData: Response.Body.Tokenization.PaymentInstrumentData = Mocks.primerPaymentMethodInstrumentationData
+    ) -> PrimerHeadlessUniversalCheckout.VaultedPaymentMethod {
+        PrimerHeadlessUniversalCheckout.VaultedPaymentMethod(
+            id: "saved-id",
+            paymentMethodType: type,
+            paymentInstrumentType: instrumentType,
+            paymentInstrumentData: instrumentData,
+            analyticsId: "analytics-id"
+        )
+    }
+
+    private func instrumentData(json: String) throws -> Response.Body.Tokenization.PaymentInstrumentData {
+        try JSONDecoder().decode(Response.Body.Tokenization.PaymentInstrumentData.self, from: Data(json.utf8))
+    }
 
     var tokenizationResponseBody: Response.Body.Tokenization {
         .init(

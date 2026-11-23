@@ -131,7 +131,58 @@ final class ComponentsClientSessionBridgeTests: XCTestCase {
         XCTAssertNil(modules?.first?.options)
     }
 
+    func test_getPaymentMethodOptions_returnsNil_whenConfigurationMissing() {
+        XCTAssertNil(sut.getPaymentMethodOptions())
+    }
+
+    func test_getPaymentMethodOptions_returnsTheFeeOfEachMethod() {
+        configuration = makeConfiguration(paymentMethodOptions: [
+            ["type": "PAYPAL", "surcharge": 50],
+            ["type": "APPLE_PAY", "surcharge": 0],
+            ["type": "KLARNA"]
+        ])
+
+        let options = sut.getPaymentMethodOptions()
+
+        XCTAssertEqual(options?.map(\.type), ["PAYPAL", "APPLE_PAY", "KLARNA"])
+        XCTAssertEqual(options?.map(\.surcharge), [50, 0, nil])
+        XCTAssertEqual(options?.map(\.networks.isEmpty), [true, true, true])
+    }
+
+    func test_getPaymentMethodOptions_returnsTheFeeOfEachCardNetwork_zeroIncluded() {
+        configuration = makeConfiguration(paymentMethodOptions: [[
+            "type": "PAYMENT_CARD",
+            "networks": [
+                ["type": "VISA", "surcharge": 100],
+                ["type": "CARTES_BANCAIRES", "surcharge": 0],
+                ["type": "MASTERCARD"]
+            ]
+        ]])
+
+        let card = sut.getPaymentMethodOptions()?.first
+
+        XCTAssertEqual(card?.type, "PAYMENT_CARD")
+        XCTAssertNil(card?.surcharge)
+        XCTAssertEqual(card?.networks.map(\.type), ["VISA", "CARTES_BANCAIRES", "MASTERCARD"])
+        XCTAssertEqual(card?.networks.map(\.surcharge), [100, 0, nil])
+    }
+
     // MARK: - Helpers
+
+    private func makeConfiguration(paymentMethodOptions: [[String: Any]]) -> PrimerAPIConfiguration {
+        makeConfiguration(clientSession: ClientSession.APIResponse(
+            clientSessionId: "client-session-id",
+            paymentMethod: ClientSession.PaymentMethod(
+                vaultOnSuccess: false,
+                options: paymentMethodOptions,
+                orderedAllowedCardNetworks: nil,
+                descriptor: nil
+            ),
+            order: nil,
+            customer: nil,
+            testId: nil
+        ))
+    }
 
     private func makeConfiguration(
         clientSession: ClientSession.APIResponse? = nil,

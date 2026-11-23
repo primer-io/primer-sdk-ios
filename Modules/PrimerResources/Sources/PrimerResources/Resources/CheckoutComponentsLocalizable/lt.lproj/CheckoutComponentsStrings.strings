@@ -94,7 +94,7 @@
 "primer_card_form_error_email_invalid" = "Neteisingas el. paštas";
 "primer_card_form_error_email_required" = "El. paštas yra privalomas";
 "primer_card_form_error_expiry_invalid" = "Neteisinga data";
-"primer_card_form_error_expiry_month_invalid" = "Galioji datos  mėnuo neteisinga";
+"primer_card_form_error_expiry_month_invalid" = "Galiojimo datos mėnuo neteisingas";
 "primer_card_form_error_expiry_required" = "Galiojimo data yra privaloma";
 "primer_card_form_error_expiry_year_invalid" = "Galiojimo datos metai neteisingi";
 "primer_card_form_error_first_name_invalid" = "Neteisingas vardas";
@@ -189,7 +189,7 @@
 "primer_vault_cvv_title" = "Įveskite CVV";
 "primer_vault_default_bank" = "Banko sąskaita";
 "primer_vault_default_cardholder" = "Kortelės turėtojas";
-"primer_vault_default_paypal" = "PayPal paskyra";
+"primer_vault_default_card" = "Kortelė";
 "primer_vault_delete_button_cancel" = "Atšaukti";
 "primer_vault_delete_button_confirm" = "Ištrinti";
 "primer_vault_delete_message" = "Ar tikrai norite ištrinti šį mokėjimo būdą?";

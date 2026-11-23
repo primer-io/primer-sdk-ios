@@ -147,6 +147,9 @@ public enum PrimerError: PrimerErrorProtocol {
     /// The user is not approved for Klarna payments.
     case klarnaUserNotApproved(diagnosticsId: String = .uuid)
 
+    /// A backend-driven payment method setup ended before it produced a token.
+    case paymentMethodSetupEnded(paymentMethodType: String, reason: String, diagnosticsId: String = .uuid)
+
     /// An error from the Stripe SDK.
     case stripeError(key: String, message: String?, diagnosticsId: String = .uuid)
 
@@ -203,6 +206,7 @@ public enum PrimerError: PrimerErrorProtocol {
         case .nolSdkInitError: "nol-pay-sdk-init-error"
         case .klarnaError: "klarna-sdk-error"
         case .klarnaUserNotApproved: "klarna-user-not-approved"
+        case .paymentMethodSetupEnded: "payment-method-setup-ended"
         case let .stripeError(key, _, _): key
         case .unableToPresentApplePay: "unable-to-present-apple-pay"
         case .applePayNoCardsInWallet: "apple-pay-no-cards-in-wallet"
@@ -261,6 +265,7 @@ public enum PrimerError: PrimerErrorProtocol {
              let .nolSdkInitError(id),
              let .klarnaError(_, id),
              let .klarnaUserNotApproved(id),
+             let .paymentMethodSetupEnded(_, _, id),
              let .stripeError(_, _, id),
              let .unknown(_, id):
             id
@@ -332,6 +337,8 @@ public enum PrimerError: PrimerErrorProtocol {
             return "Klarna wrapper SDK encountered an error: \(message ?? "unknown error")"
         case .klarnaUserNotApproved:
             return "User is not approved to perform Klarna payments"
+        case let .paymentMethodSetupEnded(paymentMethodType, reason, _):
+            return "The \(paymentMethodType) payment method setup ended: \(reason)"
         case let .stripeError(_, message, _):
             return "Stripe wrapper SDK encountered an error: \(String(describing: message))"
         case .unableToPresentApplePay:
@@ -447,6 +454,8 @@ public enum PrimerError: PrimerErrorProtocol {
             return nil
         case .klarnaUserNotApproved:
             return nil
+        case .paymentMethodSetupEnded:
+            return "Start the payment method again. A DEADLINE reason means the shopper took too long; OUTDATED means the client session changed."
         case .stripeError:
             return nil
         case .unableToPresentApplePay:

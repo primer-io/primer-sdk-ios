@@ -52,8 +52,9 @@ final class PrimerStepOrchestratorTests: XCTestCase {
         let registry = PrimerStepResolverRegistry()
         registry.register(resolver, for: "ui.render")
         engine.startResult = [
-            "newState": [:],
-            "renderStack": [
+            "kind": "awaitInput",
+            "state": [:],
+            "layers": [
                 ["stepId": "base", "processedUI": ["type": "Text"]],
                 ["stepId": "top", "processedUI": ["type": "Column"]],
             ]
@@ -68,8 +69,9 @@ final class PrimerStepOrchestratorTests: XCTestCase {
     func testRenderStackWithoutARendererDoesNotFailTheStep() async throws {
         let engine = MockBDCEngine()
         engine.startResult = [
-            "newState": [:],
-            "renderStack": [["stepId": "top", "processedUI": ["type": "Text"]]]
+            "kind": "awaitInput",
+            "state": [:],
+            "layers": [["stepId": "top", "processedUI": ["type": "Text"]]]
         ]
 
         let sut = PrimerStepOrchestrator(engine: engine, context: stubContext, registry: PrimerStepResolverRegistry())
@@ -110,7 +112,7 @@ final class PrimerStepOrchestratorTests: XCTestCase {
     func testApplyEventThreadsStateBetweenCalls() async throws {
         let engine = MockBDCEngine()
         let sut = try await startedSUT(engine: engine)
-        engine.applyEventResult = ["newState": ["order": "o-1"]]
+        engine.applyEventResult = ["kind": "awaitInput", "state": ["order": "o-1"]]
 
         try await sut.applyEvent(.object([:]))
         try await sut.applyEvent(.object([:]))
@@ -137,9 +139,50 @@ final class PrimerStepOrchestratorTests: XCTestCase {
     func testApplyEventSettlesWhenOutcomeUnmapped() async throws {
         let engine = MockBDCEngine()
         let sut = try await startedSUT(engine: engine)
-        engine.applyEventResult = ["newState": [:]]
+        engine.applyEventResult = ["kind": "awaitInput", "state": [:]]
 
         try await sut.applyEvent(.object([:]))
+    }
+
+    func testAFailedStepThrowsTheEnginesError() async throws {
+        let engine = MockBDCEngine()
+        let sut = try await startedSUT(engine: engine)
+        engine.applyEventResult = [
+            "kind": "failed",
+            "error": ["code": "STEP_NOT_FOUND", "message": "no step 'pay'", "diagnosticsId": "d-1"]
+        ]
+
+        do {
+            try await sut.applyEvent(.object([:]))
+            XCTFail("Expected the engine's error")
+        } catch let error as StateProcessorError {
+            XCTAssertEqual(error.code, "STEP_NOT_FOUND")
+        } catch {
+            XCTFail("Expected StateProcessorError, got \(error)")
+        }
+    }
+
+    func testAFailedReplyDoesNotFailTheStep() async throws {
+        let engine = MockBDCEngine()
+        let sut = try await startedSUT(engine: engine)
+        engine.applyEventResult = [
+            "kind": "awaitInput",
+            "state": ["order": "o-2"],
+            "reply": ["kind": "failed", "error": ["message": "resolveWith could not be evaluated"]]
+        ]
+
+        try await sut.applyEvent(.object([:]))
+        try await sut.applyEvent(.object([:]))
+
+        XCTAssertEqual(engine.lastEventState, #"{"order":"o-2"}"#)
+    }
+
+    func testAnUnknownStepKindFails() async throws {
+        let engine = MockBDCEngine()
+        let sut = try await startedSUT(engine: engine)
+        engine.applyEventResult = ["kind": "someday"]
+
+        await XCTAssertThrowsErrorAsync { try await sut.applyEvent(.object([:])) }
     }
 
     func testApplyEventTerminalErrorThrows() async throws {
@@ -216,17 +259,16 @@ private extension PrimerStepOrchestratorTests {
     }
 
     func terminal(_ outcome: String) -> [String: Any] {
-        [
-            "newState": [:],
-            "terminal": ["outcome": outcome]
-        ]
+        ["kind": "finished", "outcome": outcome]
     }
 
     func action(id: String = "a1", type: String, params: [String: Any] = [:], delayMs: Double? = nil) -> [String: Any] {
         var action: [String: Any] = ["id": id, "type": type, "params": params]
         action["delayMs"] = delayMs
         return [
-            "newState": [:],
+            "kind": "runAction",
+            "state": [:],
+            "layers": [],
             "action": action
         ]
     }

@@ -93,7 +93,7 @@ extension Response.Body {
 
         var hasSurchargeEnabled: Bool {
             let pmSurcharge = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.paymentMethod?.options?
-                .first(where: { $0["surcharge"] as? Int != nil })
+                .first(where: { ($0["surcharge"] as? Int ?? 0) > 0 })
 
             let options = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.paymentMethod?.options
             let cardSurcharge = options?
@@ -101,7 +101,7 @@ extension Response.Body {
                     (
                         ($0["networks"] as? [[String: Any]])?
                             .first(where: {
-                                $0["surcharge"] as? Int != nil
+                                ($0["surcharge"] as? Int ?? 0) > 0
                             })
                     ) != nil
                 })

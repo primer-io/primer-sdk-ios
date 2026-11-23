@@ -33,10 +33,12 @@ final class DefaultRawDataManagerFactory: RawDataManagerFactoryProtocol {
     paymentMethodType: String,
     delegate: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate?
   ) throws -> RawDataManagerProtocol {
-    try PrimerHeadlessUniversalCheckout.RawDataManager(
+    let rawDataManager = try PrimerHeadlessUniversalCheckout.RawDataManager(
       paymentMethodType: paymentMethodType,
       delegate: delegate
     )
+    rawDataManager.selectsPaymentMethodBeforeTokenizing = false
+    return rawDataManager
   }
 }
 

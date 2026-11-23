@@ -35,6 +35,7 @@ private var packageTargets: [Target] {
         
         testTarget(name: "PrimerBDCCore", dependencies: ["PrimerBDCCore", "PrimerFoundation", "PrimerStepResolver", "PrimerBDCEngine"]),
         testTarget(name: "PrimerBDCEngine", dependencies: ["PrimerBDCEngine"]),
+        testTarget(name: "PrimerBDCUI", dependencies: ["PrimerBDCUI", "PrimerFoundation"]),
         testTarget(name: "PrimerFoundation", dependencies: ["PrimerFoundation"]),
         testTarget(name: "PrimerStepResolver", dependencies: ["PrimerStepResolver"]),
     ]

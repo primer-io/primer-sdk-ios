@@ -12,6 +12,7 @@ import Foundation
 public final class BackendDrivenCheckoutOrchestrator {
 
     private static let suspendedPollFloorMilliseconds = 30000
+    private static let maxDeadlineRestarts = 2
 
     public var onURLOpened: (() -> Void)? {
         get { stepOrchestrator.onURLOpen }
@@ -83,12 +84,28 @@ public final class BackendDrivenCheckoutOrchestrator {
         coreUrl: String?,
         instructionProvider: ClientInstructionProvider
     ) async throws -> String {
+        var restarts = 0
+        while true {
+            do {
+                return try await runSetupOnce(pciUrl: pciUrl, coreUrl: coreUrl, instructionProvider: instructionProvider)
+            } catch let ended as SetupEnded where ended.reason.startsAgain && restarts < Self.maxDeadlineRestarts {
+                restarts += 1
+            }
+        }
+    }
+
+    private func runSetupOnce(
+        pciUrl: String?,
+        coreUrl: String?,
+        instructionProvider: ClientInstructionProvider
+    ) async throws -> String {
         let flow = try await instructionProvider.fetchSetupFlow()
         let sdk = SDKUrls(pciUrl: pciUrl, coreUrl: coreUrl)
         let object = InitialState(params: flow.parameters, sdk: sdk, currentAttempt: nil)
         let initialState = try object.casted(to: CodableValue.self)
         try await stepOrchestrator.start(rawSchema: flow.schema.jsonString, initialState: initialState)
 
+        var screen = flow.schema
         var wait = pollWait(flow.nextPoll, delay: flow.pollDelayMilliseconds)
         while true {
             try Task.checkCancellation()
@@ -97,8 +114,13 @@ public final class BackendDrivenCheckoutOrchestrator {
             switch state.instruction {
             case .wait: break
             case let .setupComplete(token): return token
-            case let .execute(screen):
-                try await stepOrchestrator.start(rawSchema: screen.jsonString, initialState: initialState)
+            case let .execute(next) where next != screen:
+                try await stepOrchestrator.start(rawSchema: next.jsonString, initialState: initialState)
+                screen = next
+            case .execute:
+                break
+            case let .ended(reason):
+                throw SetupEnded(reason: reason)
             }
             wait = pollWait(state.nextPoll, delay: state.pollDelayMilliseconds)
         }

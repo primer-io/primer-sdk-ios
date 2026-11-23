@@ -81,41 +81,25 @@ final class DefaultCheckoutScopeRetryTests: XCTestCase {
         XCTAssertFalse(selection.paidWithVaulted)
     }
 
-    func test_retryPayment_afterASavedCardPayment_paysWithTheSavedCardAgain() async {
+    func test_retryPayment_afterASavedCardPayment_returnsToThePaymentList() {
         sut.startProcessing(payingWith: nil)
 
         sut.retryPayment()
-        await Task.yield()
 
-        XCTAssertTrue(selection.paidWithVaulted)
-        XCTAssertEqual(cardScope.submitCallCount, 0)
+        XCTAssertEqual(sut.navigationState, .paymentMethodSelection)
     }
 
     // Regression: the retry target used to be read from the scope of the last payment-method screen
     // opened, which is never cleared on the way back to selection. A saved-card payment that failed
     // then re-submitted the card form, and with a filled form charged a different card.
-    func test_retryPayment_afterBrowsingTheCardFormThenPayingWithASavedCard_doesNotResubmitTheForm() async {
+    func test_retryPayment_afterBrowsingTheCardFormThenPayingWithASavedCard_doesNotResubmitTheForm() {
         sut.updateNavigationState(.paymentMethod(TestData.PaymentMethodTypes.card))
         sut.updateNavigationState(.paymentMethodSelection)
         sut.startProcessing(payingWith: nil)
 
         sut.retryPayment()
-        await Task.yield()
 
         XCTAssertEqual(cardScope.submitCallCount, 0)
-        XCTAssertTrue(selection.paidWithVaulted)
-    }
-
-    // The CVV screen pays through the same vault entry point, so a retry asks for the code again
-    // rather than reusing one the SDK would have had to keep.
-    func test_retryPayment_afterCvvRecapture_paysWithTheSavedCardAgain() async {
-        sut.updateNavigationState(.cvvRecapture)
-        sut.startProcessing(payingWith: nil)
-
-        sut.retryPayment()
-        await Task.yield()
-
-        XCTAssertTrue(selection.paidWithVaulted)
     }
 
     func test_retryPayment_afterSuccess_doesNothing() {

@@ -32,6 +32,7 @@ final class MockSelectionScopeInternal: PaymentMethodSelectionScopeInternal {
   var state: AsyncStream<PrimerPaymentMethodSelectionState> { stateStream }
 
   var dismissalMechanism: [DismissalMechanism] = []
+  var requiresCvvInput = false
 
   var currentState: PrimerPaymentMethodSelectionState { stubbedCurrentState }
   var vaultedPaymentMethods: [PrimerHeadlessUniversalCheckout.VaultedPaymentMethod] { stubbedVaultedPaymentMethods }

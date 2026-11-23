@@ -19,6 +19,7 @@ struct PaymentMethodSelectionScreen: View, LogReporter {
   @State private var selectionState: PrimerPaymentMethodSelectionState = .init()
   @State private var configurationService: ConfigurationService?
   @State private var observationTask: Task<Void, Never>?
+  @State private var showsCvvInput = false
 
   var body: some View {
     VStack(spacing: PrimerSpacing.medium(tokens: tokens)) {
@@ -41,7 +42,7 @@ struct PaymentMethodSelectionScreen: View, LogReporter {
 
   private func makeHeader() -> some View {
     HStack {
-      if let formattedAmount {
+      if let formattedAmount = configurationService?.formattedOrderAmount() {
         Text(CheckoutComponentsStrings.paymentAmountTitle(formattedAmount))
           .primerTypography(.titleXLarge, tokens: tokens)
           .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
@@ -67,7 +68,8 @@ struct PaymentMethodSelectionScreen: View, LogReporter {
           VaultSection(
             vaultedPaymentMethod: vaultedPaymentMethod,
             scope: scope,
-            isLoading: selectionState.isVaultPaymentLoading
+            isLoading: selectionState.isVaultPaymentLoading,
+            showsCvvInput: $showsCvvInput
           )
         }
 
@@ -83,11 +85,14 @@ struct PaymentMethodSelectionScreen: View, LogReporter {
   }
 
   private var shouldShowCollapsedView: Bool {
-    !selectionState.isPaymentMethodsExpanded
+    showsCvvInput || !selectionState.isPaymentMethodsExpanded
   }
 
   private func makeShowOtherWaysToPayButton() -> some View {
-    Button(action: scope.showOtherWaysToPay) {
+    Button {
+      showsCvvInput = false
+      scope.showOtherWaysToPay()
+    } label: {
       Text(CheckoutComponentsStrings.showOtherWaysToPay)
         .primerTypography(.titleLarge, tokens: tokens)
         .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
@@ -111,16 +116,6 @@ struct PaymentMethodSelectionScreen: View, LogReporter {
   }
 
   // MARK: - Helpers
-
-  private var formattedAmount: String? {
-    guard let configurationService,
-      let amount = configurationService.amount,
-      let currency = configurationService.currency
-    else {
-      return nil
-    }
-    return amount.toCurrencyString(currency: currency, locale: configurationService.locale)
-  }
 
   private func resolveConfigurationService() {
     guard let container else { return }

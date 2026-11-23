@@ -11,7 +11,7 @@
 "accessibility_card_form_billing_address_postal_code_label" = "الرمز البريدي، مطلوب";
 "accessibility_card_form_billing_address_state_label" = "الولاية/المنطقة، مطلوبة";
 "accessibility_card_form_billing_section" = "عنوان الفواتير";
-"accessibility_card_form_card_number_error_empty" = "رقم البطاقة، مطلوب";
+"accessibility_card_form_card_number_error_empty" = "رقم البطاقة مطلوب.";
 "accessibility_card_form_card_number_error_invalid" = "رقم البطاقة غير صالح. يرجى التحقق والمحاولة مرة أخرى.";
 "accessibility_card_form_card_number_hint" = "أدخل رقم بطاقتك";
 "accessibility_card_form_card_number_label" = "رقم البطاقة، مطلوب";
@@ -189,7 +189,7 @@
 "primer_vault_cvv_title" = "أدخل رمز CVV";
 "primer_vault_default_bank" = "حساب مصرفي";
 "primer_vault_default_cardholder" = "حامل البطاقة";
-"primer_vault_default_paypal" = "حساب PayPal";
+"primer_vault_default_card" = "بطاقة";
 "primer_vault_delete_button_cancel" = "إلغاء";
 "primer_vault_delete_button_confirm" = "حذف";
 "primer_vault_delete_message" = "هل أنت متأكد من حذف طريقة الدفع هذه؟";

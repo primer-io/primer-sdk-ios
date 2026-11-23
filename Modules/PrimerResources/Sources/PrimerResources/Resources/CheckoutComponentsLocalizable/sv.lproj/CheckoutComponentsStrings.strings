@@ -189,7 +189,7 @@
 "primer_vault_cvv_title" = "Ange CVV";
 "primer_vault_default_bank" = "Bankkonto";
 "primer_vault_default_cardholder" = "Kortinnehavare";
-"primer_vault_default_paypal" = "PayPal-konto";
+"primer_vault_default_card" = "Kort";
 "primer_vault_delete_button_cancel" = "Avbryt";
 "primer_vault_delete_button_confirm" = "Ta bort";
 "primer_vault_delete_message" = "Är du säker på att du vill ta bort denna betalningsmetod?";

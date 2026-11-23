@@ -51,6 +51,15 @@ public final class ComponentsClientSessionBridge {
         return modules.map(ComponentsCheckoutModule.init(module:))
     }
 
+    public func getPaymentMethodOptions() -> [ComponentsPaymentMethodOption]? {
+        Analytics.Service.fire(event: Analytics.Event.sdk(
+            name: "\(Self.self).\(#function)",
+            params: ["category": "CLIENT_SESSION"]
+        ))
+
+        return configurationProvider()?.clientSession?.paymentMethod?.options?.compactMap(ComponentsPaymentMethodOption.init(option:))
+    }
+
     public func getCaptureVaultedCardCvv() -> Bool {
         Analytics.Service.fire(event: Analytics.Event.sdk(
             name: "\(Self.self).\(#function)",
@@ -60,6 +69,17 @@ public final class ComponentsClientSessionBridge {
         let cardPaymentMethod = configurationProvider()?.paymentMethods?
             .first { $0.type == PrimerPaymentMethodType.paymentCard.rawValue }
         return (cardPaymentMethod?.options as? CardOptions)?.captureVaultedCardCvv == true
+    }
+}
+
+@available(iOS 15.0, *)
+private extension ComponentsPaymentMethodOption {
+    init?(option: [String: Any]) {
+        guard let type = option["type"] as? String else { return nil }
+        let networks = (option["networks"] as? [[String: Any]] ?? []).compactMap { network in
+            (network["type"] as? String).map { Network(type: $0, surcharge: network["surcharge"] as? Int) }
+        }
+        self.init(type: type, surcharge: option["surcharge"] as? Int, networks: networks)
     }
 }
 

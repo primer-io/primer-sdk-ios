@@ -319,13 +319,10 @@ extension PrimerCardFormState {
   }
 
   /// Masks a PAN to the PCI-permitted BIN + last 4 (e.g. `424242••••••4242`).
-  /// Below 11 digits the BIN is dropped so it can never overlap the last 4.
   static func maskedPAN(_ pan: String) -> String {
     let digits = pan.filter(\.isNumber)
-    guard !digits.isEmpty else { return "" }
-    let last4 = String(digits.suffix(4))
-    let bin = digits.count > 10 ? String(digits.prefix(6)) : ""
-    let maskedCount = max(0, digits.count - bin.count - last4.count)
-    return bin + String(repeating: "•", count: maskedCount) + last4
+    let lengths = CardNetwork(cardNumber: digits).validation?.lengths ?? Array(13...19)
+    guard lengths.contains(digits.count), digits.isValidLuhn else { return "" }
+    return digits.prefix(6) + String(repeating: "•", count: digits.count - 10) + digits.suffix(4)
   }
 }

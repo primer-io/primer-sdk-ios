@@ -10,12 +10,12 @@ import Foundation
 
 @MainActor @_spi(PrimerInternal)
 public protocol BDCEngineProtocol: AnyObject {
-    func start(
+    func startFlow(
         schema: String,
         context: SDKContext,
         state: CodableValue
     ) async throws -> AnyDict
-    func applyResult(
+    func handleActionResult(
         schema: String,
         context: SDKContext,
         actionId: String,
@@ -23,7 +23,7 @@ public protocol BDCEngineProtocol: AnyObject {
         outcome: String,
         data: Data?
     ) async throws -> AnyDict
-    func applyEvent<State: Encodable>(
+    func handleEvent<State: Encodable>(
         _ event: CodableValue,
         context: SDKContext,
         schema: String,

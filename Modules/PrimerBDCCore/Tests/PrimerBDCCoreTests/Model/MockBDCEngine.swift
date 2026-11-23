@@ -17,7 +17,7 @@ final class MockBDCEngine: BDCEngineProtocol {
     var applyResultCallCount = 0
     var lastApplyOutcome: String?
 
-    var applyEventResult: [String: Any] = ["newState": [:]]
+    var applyEventResult: [String: Any] = ["kind": "awaitInput", "state": [:]]
     var lastEventState: String?
 
     var checkClientRequirementsResult: ClientRequirementsVerdicts = [:]
@@ -27,7 +27,7 @@ final class MockBDCEngine: BDCEngineProtocol {
 
     var probesToRunResult: [ProbeRequest] = []
 
-    func start(
+    func startFlow(
         schema: String,
         context: SDKContext,
         state: CodableValue
@@ -36,7 +36,7 @@ final class MockBDCEngine: BDCEngineProtocol {
         return startResult
     }
 
-    func applyResult(
+    func handleActionResult(
         schema: String,
         context: SDKContext,
         actionId: String,
@@ -49,7 +49,7 @@ final class MockBDCEngine: BDCEngineProtocol {
         return applyResultResult
     }
     
-    func applyEvent<State>(
+    func handleEvent<State>(
         _ event: PrimerFoundation.CodableValue,
         context: PrimerFoundation.SDKContext,
         schema: String,

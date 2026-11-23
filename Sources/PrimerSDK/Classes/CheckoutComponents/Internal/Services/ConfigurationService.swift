@@ -29,6 +29,17 @@ extension ConfigurationService {
   var clientSession: PrimerClientSession? {
     apiConfiguration.map(PrimerClientSession.init(from:))
   }
+
+  func formattedAmount(_ amount: Int) -> String? {
+    currency.map { amount.toCurrencyString(currency: $0, locale: locale) }
+  }
+
+  func formattedOrderAmount(surcharge: Int? = nil) -> String? {
+    guard let amount else { return nil }
+    let order = apiConfiguration?.clientSession?.order
+    let sessionSurcharge = order?.fees?.filter { $0.type == .surcharge }.reduce(0) { $0 + $1.amount } ?? 0
+    return formattedAmount(order?.merchantAmount == nil ? amount - sessionSurcharge + (surcharge ?? 0) : amount)
+  }
 }
 
 @available(iOS 15.0, *)

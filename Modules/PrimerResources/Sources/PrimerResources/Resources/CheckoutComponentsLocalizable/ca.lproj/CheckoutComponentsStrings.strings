@@ -9,7 +9,7 @@
 "accessibility_card_form_billing_address_last_name_label" = "Cognom, obligatori";
 "accessibility_card_form_billing_address_postal_code_hint" = "Introduïu el codi postal";
 "accessibility_card_form_billing_address_postal_code_label" = "Codi postal, obligatori";
-"accessibility_card_form_billing_address_state_label" = "Estat, regió o comarca, obligatori";
+"accessibility_card_form_billing_address_state_label" = "Estat, obligatori";
 "accessibility_card_form_billing_section" = "Adreça de facturació";
 "accessibility_card_form_card_number_error_empty" = "El número de targeta és obligatori.";
 "accessibility_card_form_card_number_error_invalid" = "Número de targeta no vàlid. Si us plau, comproveu-lo i torneu-ho a intentar.";
@@ -189,7 +189,7 @@
 "primer_vault_cvv_title" = "Introduïu el CVV";
 "primer_vault_default_bank" = "Compte bancari";
 "primer_vault_default_cardholder" = "Titular de la targeta";
-"primer_vault_default_paypal" = "Compte de PayPal";
+"primer_vault_default_card" = "Targeta";
 "primer_vault_delete_button_cancel" = "Cancel·la";
 "primer_vault_delete_button_confirm" = "Suprimeix";
 "primer_vault_delete_message" = "Esteu segur que voleu suprimir aquest mètode de pagament?";

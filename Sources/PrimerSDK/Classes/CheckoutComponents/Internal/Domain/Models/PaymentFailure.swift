@@ -15,6 +15,10 @@ struct PaymentFailure: LocalizedError {
   var errorDescription: String? { error.errorDescription }
 }
 
+extension PaymentFailure: RemoteLogErrorWrapping {
+  var wrappedError: Error { error }
+}
+
 extension PaymentFailure {
   /// Splits a thrown error into the `PrimerError` and any payment carried alongside it.
   init(unwrapping error: Error) {

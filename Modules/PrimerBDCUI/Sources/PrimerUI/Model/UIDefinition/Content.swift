@@ -9,6 +9,10 @@ struct Content: Hashable, Decodable {
 
     private enum CodingKeys: String, CodingKey { case children }
 
+    init(children: [UIDefinition]) {
+        self.children = children
+    }
+
     init(from decoder: Decoder) throws {
         if let keyed = try? decoder.container(keyedBy: CodingKeys.self), keyed.contains(.children) {
             children = try keyed.decode([UIDefinition].self, forKey: .children)

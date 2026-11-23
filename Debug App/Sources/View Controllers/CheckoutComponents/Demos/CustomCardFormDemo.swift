@@ -71,6 +71,8 @@ private struct CustomCardFormContent: View {
 @available(iOS 15.0, *)
 private struct CustomCardFields: View {
     @ObservedObject var cardForm: PrimerCardFormSession
+    @State private var cardNumberInput = ""
+    @State private var cvvInput = ""
 
     var body: some View {
         let state = cardForm.state
@@ -115,15 +117,21 @@ private struct CustomCardFields: View {
 
     private var cardNumber: Binding<String> {
         Binding(
-            get: { cardForm.state.data[.cardNumber] },
-            set: { cardForm.updateCardNumber(String($0.filter(\.isNumber).prefix(19))) }
+            get: { cardNumberInput },
+            set: {
+                cardNumberInput = String($0.filter(\.isNumber).prefix(19))
+                cardForm.updateCardNumber(cardNumberInput)
+            }
         )
     }
 
     private var cvv: Binding<String> {
         Binding(
-            get: { cardForm.state.data[.cvv] },
-            set: { cardForm.updateCvv(String($0.filter(\.isNumber).prefix(4))) }
+            get: { cvvInput },
+            set: {
+                cvvInput = String($0.filter(\.isNumber).prefix(4))
+                cardForm.updateCvv(cvvInput)
+            }
         )
     }
 

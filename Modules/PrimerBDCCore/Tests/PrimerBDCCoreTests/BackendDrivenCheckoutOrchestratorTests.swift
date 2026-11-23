@@ -156,6 +156,96 @@ final class BackendDrivenCheckoutOrchestratorTests: XCTestCase {
         XCTAssertEqual(token, "token")
     }
 
+    func testSetupStartsAgainWhenItEndsAtTheDeadline() async throws {
+        let provider = MockInstructionProvider([])
+        provider.setupFlow = SetupFlow(schema: .object([:]), parameters: .object([:]), setupId: "setup-1", nextPoll: .interval)
+        provider.setupStates = [
+            SetupState(instruction: .ended(reason: .deadline), nextPoll: .interval),
+            SetupState(instruction: .setupComplete(token: "token"), nextPoll: .interval),
+        ]
+        let mock = MockStepOrchestrator()
+        mock.pollWakes = 2
+
+        let token = try await BackendDrivenCheckoutOrchestrator(stepOrchestrator: mock)
+            .runSetup(pciUrl: nil, coreUrl: nil, instructionProvider: provider)
+
+        XCTAssertEqual(token, "token")
+        XCTAssertEqual(mock.startCallCount, 2)
+        XCTAssertEqual(provider.fetchCount, 4)
+    }
+
+    func testSetupStartsAgainWhenItIsOutdated() async throws {
+        let provider = MockInstructionProvider([])
+        provider.setupFlow = SetupFlow(schema: .object([:]), parameters: .object([:]), setupId: "setup-1", nextPoll: .interval)
+        provider.setupStates = [
+            SetupState(instruction: .ended(reason: .outdated), nextPoll: .interval),
+            SetupState(instruction: .setupComplete(token: "token"), nextPoll: .interval),
+        ]
+        let mock = MockStepOrchestrator()
+        mock.pollWakes = 2
+
+        let token = try await BackendDrivenCheckoutOrchestrator(stepOrchestrator: mock)
+            .runSetup(pciUrl: nil, coreUrl: nil, instructionProvider: provider)
+
+        XCTAssertEqual(token, "token")
+        XCTAssertEqual(mock.startCallCount, 2)
+    }
+
+    func testSetupKeepsAnIdenticalScreenOnScreen() async throws {
+        let provider = MockInstructionProvider([])
+        provider.setupFlow = SetupFlow(schema: .object(["id": .string("a")]), parameters: .object([:]), setupId: "setup-1", nextPoll: .interval)
+        provider.setupStates = [
+            SetupState(instruction: .execute(screen: .object(["id": .string("a")])), nextPoll: .interval),
+            SetupState(instruction: .execute(screen: .object(["id": .string("b")])), nextPoll: .interval),
+            SetupState(instruction: .setupComplete(token: "token"), nextPoll: .interval),
+        ]
+        let mock = MockStepOrchestrator()
+        mock.pollWakes = 3
+
+        try await BackendDrivenCheckoutOrchestrator(stepOrchestrator: mock)
+            .runSetup(pciUrl: nil, coreUrl: nil, instructionProvider: provider)
+
+        XCTAssertEqual(mock.startCallCount, 2)
+    }
+
+    func testSetupFailsWithTheReasonWhenItEnds() async {
+        let provider = MockInstructionProvider([])
+        provider.setupFlow = SetupFlow(schema: .object([:]), parameters: .object([:]), setupId: "setup-1", nextPoll: .interval)
+        provider.setupStates = [SetupState(instruction: .ended(reason: .failed), nextPoll: .interval)]
+        let mock = MockStepOrchestrator()
+        mock.pollWakes = 1
+
+        do {
+            try await BackendDrivenCheckoutOrchestrator(stepOrchestrator: mock)
+                .runSetup(pciUrl: nil, coreUrl: nil, instructionProvider: provider)
+            XCTFail("Expected the setup to fail")
+        } catch let ended as SetupEnded {
+            XCTAssertEqual(ended.reason, .failed)
+        } catch {
+            XCTFail("Expected SetupEnded, got \(error)")
+        }
+        XCTAssertEqual(provider.fetchCount, 2)
+    }
+
+    func testSetupStopsStartingAgainAfterRepeatedDeadlines() async {
+        let provider = MockInstructionProvider([])
+        provider.setupFlow = SetupFlow(schema: .object([:]), parameters: .object([:]), setupId: "setup-1", nextPoll: .interval)
+        provider.setupStates = Array(repeating: SetupState(instruction: .ended(reason: .deadline), nextPoll: .interval), count: 3)
+        let mock = MockStepOrchestrator()
+        mock.pollWakes = 3
+
+        do {
+            try await BackendDrivenCheckoutOrchestrator(stepOrchestrator: mock)
+                .runSetup(pciUrl: nil, coreUrl: nil, instructionProvider: provider)
+            XCTFail("Expected the setup to give up")
+        } catch let ended as SetupEnded {
+            XCTAssertEqual(ended.reason, .deadline)
+        } catch {
+            XCTFail("Expected SetupEnded, got \(error)")
+        }
+        XCTAssertEqual(mock.startCallCount, 3)
+    }
+
     func testPayWithATokenFollowsInstructionsToTheEnd() async throws {
         let provider = MockInstructionProvider([.wait(delayMilliseconds: 0), .end(outcome: .complete, payment: payment)])
 
@@ -170,7 +260,7 @@ final class BackendDrivenCheckoutOrchestratorTests: XCTestCase {
         let provider = MockInstructionProvider([])
         provider.setupFlow = SetupFlow(schema: .object([:]), parameters: .object([:]), setupId: "setup-1", nextPoll: .interval)
         provider.setupStates = [
-            SetupState(instruction: .execute(screen: .object([:])), nextPoll: .interval),
+            SetupState(instruction: .execute(screen: .object(["id": .string("next")])), nextPoll: .interval),
             SetupState(instruction: .setupComplete(token: "token"), nextPoll: .interval),
         ]
         let mock = MockStepOrchestrator()

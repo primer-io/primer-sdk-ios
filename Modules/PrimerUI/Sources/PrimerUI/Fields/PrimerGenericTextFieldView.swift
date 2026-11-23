@@ -38,7 +38,7 @@ public final class PrimerGenericFieldView: PrimerTextFieldView {
         guard let primerTextField = textField as? PrimerTextField else { return true }
         let currentText = primerTextField.internalText ?? ""
 
-        if maxCharactersAllowed != nil && !string.isEmpty && currentText.count >= maxCharactersAllowed! {
+        if maxCharactersAllowed != nil, !string.isEmpty, currentText.count >= maxCharactersAllowed! {
             return false
         }
 

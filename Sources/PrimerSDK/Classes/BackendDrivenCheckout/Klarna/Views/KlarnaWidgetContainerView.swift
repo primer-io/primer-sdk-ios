@@ -11,8 +11,8 @@ import UIKit
 
 final class KlarnaWidgetContainerView: UIView, LogReporter {
     private var provider: PrimerKlarnaProviding?
-    private let onReady: @MainActor () -> Void
-    private let onFailed: @MainActor (PrimerKlarnaError) -> Void
+    private let formKey: String
+    private let onStatus: @MainActor (KlarnaWidgetStatus) -> Void
     private var reportedHeight: CGFloat = 0
     private let placeholderHeight: CGFloat = 88
 
@@ -23,12 +23,12 @@ final class KlarnaWidgetContainerView: UIView, LogReporter {
     init(
         clientToken: String,
         category: String,
+        formKey: String,
         urlScheme: String?,
-        onReady: @escaping @MainActor () -> Void,
-        onFailed: @escaping @MainActor (PrimerKlarnaError) -> Void
+        onStatus: @escaping @MainActor (KlarnaWidgetStatus) -> Void
     ) {
-        self.onReady = onReady
-        self.onFailed = onFailed
+        self.formKey = formKey
+        self.onStatus = onStatus
         super.init(frame: .zero)
 
         let provider = PrimerKlarnaProvider(clientToken: clientToken, paymentCategory: category, urlScheme: urlScheme)
@@ -36,7 +36,7 @@ final class KlarnaWidgetContainerView: UIView, LogReporter {
         provider.errorDelegate = self
 
         self.provider = provider
-        KlarnaProviderStore.shared.set(provider, for: category)
+        KlarnaProviderStore.shared.set(provider, for: [formKey, category])
 
         provider.createPaymentView()
         provider.paymentView.map(embed(_:))
@@ -56,17 +56,21 @@ final class KlarnaWidgetContainerView: UIView, LogReporter {
             view.trailingAnchor.constraint(equalTo: trailingAnchor)
         ])
     }
+
+    private func report(_ status: KlarnaWidgetStatus) {
+        Task { @MainActor in onStatus(status) }
+    }
 }
 
 extension KlarnaWidgetContainerView: PrimerKlarnaProviderPaymentViewDelegate, PrimerKlarnaProviderErrorDelegate {
     func primerKlarnaWrapperInitialized() { provider?.loadPaymentView(jsonData: nil) }
-    func primerKlarnaWrapperLoaded() { Task { @MainActor in onReady() } }
+    func primerKlarnaWrapperLoaded() { report(.ready(instanceId: formKey)) }
     func primerKlarnaWrapperReviewLoaded() {
         // The widget only shows the payment view, never Klarna's review screen
     }
     func primerKlarnaWrapperFailed(with error: PrimerKlarnaError) {
         logger.error(message: "klarna.widget failed: \(error.localizedDescription)")
-        Task { @MainActor in onFailed(error) }
+        report(.failed(KlarnaWidgetError(code: error.errorId, message: error.localizedDescription)))
     }
 
     func primerKlarnaWrapperResized(to newHeight: CGFloat) {
