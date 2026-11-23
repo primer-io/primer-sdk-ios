@@ -4,9 +4,9 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+@_spi(PrimerInternal) import PrimerCore
 @testable import PrimerSDK
 import XCTest
-@_spi(PrimerInternal) import PrimerCore
 
 final class PrimerRawCardDataTokenizationBuilderTests: XCTestCase {
 
@@ -47,6 +47,9 @@ final class PrimerRawCardDataTokenizationBuilderTests: XCTestCase {
         SDKSessionHelper.updateAllowedCardNetworks(cardNetworks: [.visa, .eftpos])
         PrimerInternal.shared.sdkIntegrationType = .headless
         let sut = PrimerRawCardDataTokenizationBuilder(paymentMethodType: "PAYMENT_CARD")
+        let lookup = StubCardValidationService()
+        lookup.stubbedMetadata = .remoteLookup([.visa, .eftpos])
+        sut.cardValidationService = lookup
 
         let cardData = PrimerCardData(
             cardNumber: "4242424242424242",
@@ -65,6 +68,9 @@ final class PrimerRawCardDataTokenizationBuilderTests: XCTestCase {
         SDKSessionHelper.updateAllowedCardNetworks(cardNetworks: [.visa, .cartesBancaires])
         PrimerInternal.shared.sdkIntegrationType = .headless
         let sut = PrimerRawCardDataTokenizationBuilder(paymentMethodType: "PAYMENT_CARD")
+        let lookup = StubCardValidationService()
+        lookup.stubbedMetadata = .remoteLookup([.visa, .cartesBancaires])
+        sut.cardValidationService = lookup
 
         let cardData = PrimerCardData(
             cardNumber: "4242424242424242",
@@ -274,13 +280,59 @@ final class PrimerRawCardDataTokenizationBuilderTests: XCTestCase {
         XCTAssertTrue(sut.isDataValid)
         XCTAssertEqual(stub.lookupRequests, ["5017679210000700"])
     }
+
+    func test_effectiveNetwork_pickTheLookupOffers_winsOverThePreferredNetwork() {
+        SDKSessionHelper.updateAllowedCardNetworks(cardNetworks: [.cartesBancaires, .masterCard])
+        let sut = PrimerRawCardDataTokenizationBuilder(paymentMethodType: "PAYMENT_CARD")
+
+        let network = sut.effectiveNetwork(
+            for: card("5017679210000700", pickedNetwork: .masterCard),
+            cardNetworksMetadata: .remoteLookup([.cartesBancaires, .masterCard])
+        )
+
+        XCTAssertEqual(network, .masterCard)
+    }
+
+    func test_effectiveNetwork_pickWithoutLookup_countsOnlyForTheFirstDigitsNetwork() {
+        SDKSessionHelper.updateAllowedCardNetworks(cardNetworks: [.cartesBancaires, .visa])
+        let sut = PrimerRawCardDataTokenizationBuilder(paymentMethodType: "PAYMENT_CARD")
+
+        XCTAssertEqual(sut.effectiveNetwork(for: card("4111111111111111", pickedNetwork: .cartesBancaires), cardNetworksMetadata: nil), .visa)
+        XCTAssertEqual(sut.effectiveNetwork(for: card("4111111111111111", pickedNetwork: .visa), cardNetworksMetadata: nil), .visa)
+    }
+
+    private func card(_ number: String, pickedNetwork: CardNetwork?) -> PrimerCardData {
+        PrimerCardData(
+            cardNumber: number,
+            expiryDate: "03/2030",
+            cvv: "123",
+            cardholderName: "John Smith",
+            cardNetwork: pickedNetwork
+        )
+    }
+}
+
+extension PrimerCardNumberEntryMetadata {
+    static func remoteLookup(_ networks: [CardNetwork]) -> PrimerCardNumberEntryMetadata {
+        PrimerCardNumberEntryMetadata(
+            source: .remote,
+            selectableCardNetworks: networks.map(PrimerCardNetwork.init(network:)),
+            detectedCardNetworks: networks.map(PrimerCardNetwork.init(network:))
+        )
+    }
 }
 
 // MARK: - Test stubs
 
-private final class StubCardValidationService: CardValidationService {
+final class StubCardValidationService: CardValidationService {
     var stubbedMetadata: PrimerCardNumberEntryMetadata?
-    private(set) var lookupRequests: [String] = []
+    private let lock = NSLock()
+    private var recordedLookupRequests: [String] = []
+    private var recordedRemoteMetadataRequests: [String] = []
+
+    var lookupRequests: [String] { lock.withLock { recordedLookupRequests } }
+
+    var remoteMetadataRequests: [String] { lock.withLock { recordedRemoteMetadataRequests } }
 
     func validateCardNetworks(withCardNumber cardNumber: String) {}
 
@@ -296,7 +348,16 @@ private final class StubCardValidationService: CardValidationService {
     }
 
     func cachedMetadata(forCardNumber cardNumber: String) -> PrimerCardNumberEntryMetadata? {
-        lookupRequests.append(cardNumber)
-        return stubbedMetadata
+        lock.withLock {
+            recordedLookupRequests.append(cardNumber)
+            return stubbedMetadata
+        }
+    }
+
+    func remoteMetadata(forCardNumber cardNumber: String) -> PrimerCardNumberEntryMetadata? {
+        lock.withLock {
+            recordedRemoteMetadataRequests.append(cardNumber)
+            return stubbedMetadata
+        }
     }
 }
