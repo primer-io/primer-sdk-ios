@@ -135,7 +135,6 @@
 		1253E6BFB1BFBE0B7CA08632 /* VaultManagementDemo.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VaultManagementDemo.swift; sourceTree = "<group>"; };
 		13FA89917603E4BA5BB66AFC /* da */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = da; path = da.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		1D05E65C196E6715D7D8B0C6 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/Main.strings; sourceTree = "<group>"; };
-		1F23211288F9B61390C0BF8D /* Pods_Debug_App_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Debug_App_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		229849A3DBE0858EE90673B9 /* CreateClientToken.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateClientToken.swift; sourceTree = "<group>"; };
 		28946B4727879D28DB6F2D88 /* AccountFundingDemo.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AccountFundingDemo.swift; sourceTree = "<group>"; };
 		2A328E38DA586FFE0ED2894B /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Main.strings; sourceTree = "<group>"; };
@@ -227,7 +226,6 @@
 		E1C3EF0BA039C0A50EDE13A5 /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/Main.strings; sourceTree = "<group>"; };
 		E7640DB186F9638C2F556F77 /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/Main.strings; sourceTree = "<group>"; };
 		E8DE1E4FB055B60582977315 /* Networking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Networking.swift; sourceTree = "<group>"; };
-		EB6C18F747AEC20B8C63164C /* Pods_Debug_App.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Debug_App.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F00C661E2ACC67FA00187028 /* Debug App SPM.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Debug App SPM.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F04510DE2ACD4EA500A0A48C /* primer-sdk-ios */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = "primer-sdk-ios"; path = ..; sourceTree = "<group>"; };
 		F04DFC6A2DAE4F130006AEDC /* AppLinkConfigProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppLinkConfigProvider.swift; path = Sources/Utilities/AppLinkConfigProvider.swift; sourceTree = "<group>"; };
@@ -370,8 +368,6 @@
 		5FC43BEC92F0ADB9085F0668 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				EB6C18F747AEC20B8C63164C /* Pods_Debug_App.framework */,
-				1F23211288F9B61390C0BF8D /* Pods_Debug_App_Tests.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
