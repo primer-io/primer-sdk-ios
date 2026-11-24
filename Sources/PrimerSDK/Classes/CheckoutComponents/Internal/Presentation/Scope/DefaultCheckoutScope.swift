@@ -217,6 +217,14 @@ final class DefaultCheckoutScope: CheckoutScopeInternal, ObservableObject, LogRe
       .filter { $0.implementationType == .webRedirect }
       .map(\.type) ?? []
     WebRedirectPaymentMethod.register(types: webRedirectTypes)
+
+    if #available(iOS 16.0, *) {
+      let backendDrivenTypes = PrimerAPIConfigurationModule.apiConfiguration?
+        .paymentMethods?
+        .filter(\.isBackendDriven)
+        .map(\.type) ?? []
+      BackendDrivenPaymentMethod.register(types: backendDrivenTypes)
+    }
   }
 
   private func setupInteractors() async -> Bool {

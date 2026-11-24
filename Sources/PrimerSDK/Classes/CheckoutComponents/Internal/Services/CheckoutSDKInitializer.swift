@@ -113,6 +113,7 @@ final class CheckoutSDKInitializer {
       requestClientTokenValidation: false,
       requestVaultedPaymentMethods: false
     )
+    await ClientRequirements.checkConfiguration()
   }
 
   private func createCheckoutScope() -> DefaultCheckoutScope {

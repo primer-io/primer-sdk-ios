@@ -286,7 +286,7 @@ private extension BackendDrivenCheckoutViewModelTests {
 }
 
 @MainActor
-private final class MockBDCStepOrchestrator: StepOrchestrating {
+final class MockBDCStepOrchestrator: StepOrchestrating {
     var onURLOpen: (() -> Void)?
     var startCallCount = 0
     var startError: Error?
@@ -305,7 +305,7 @@ private final class MockBDCStepOrchestrator: StepOrchestrating {
     }
 }
 
-private final class MockBDCInstructionProvider: ClientInstructionProvider {
+final class MockBDCInstructionProvider: ClientInstructionProvider {
     var error: Error?
     var errorAfterFirstFetch: Swift.Error?
     private(set) var fetchCount = 0
