@@ -195,6 +195,17 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
             throw handled(primerError: .invalidClientToken())
         }
 
+        let tokenUrls = [
+            currentDecodedToken.configurationUrl,
+            currentDecodedToken.coreUrl,
+            currentDecodedToken.pciUrl,
+            currentDecodedToken.analyticsUrl,
+            currentDecodedToken.analyticsUrlV2
+        ].compactMap { $0 }.filter { !$0.isEmpty }
+        guard tokenUrls.allSatisfy(\.isPrimerURL) else {
+            throw handled(primerError: .invalidClientToken(reason: "The client token contains a URL that is not on primer.io"))
+        }
+
         let previousDecodedToken = PrimerAPIConfigurationModule.decodedJWTToken
 
         if currentDecodedToken.env == nil {

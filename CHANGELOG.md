@@ -325,6 +325,23 @@ CheckoutComponents beta (iOS 15+). This is a beta release — APIs may still cha
 
 - Checkout Components
 
+## 2.54.0 (2026-11-24)
+
+### Feat
+
+- Run probes before checking client requirements (#1985)
+- Ask the state processor which probes to run (#1984)
+- Advertise probes and UI components as capabilities (#1978)
+- Add probe and UI component registries (#1977)
+
+### Fix
+
+- Reject client tokens with URLs outside primer.io (ORC-6829) (#2061)
+- Name the right pod and SPM version in wrapper warnings (ORC-7739) (#2012)
+- Name the right pod and SPM version in wrapper warnings
+- Send the card network before Headless card payments (ORC-8730) (#2053)
+- Offer card AutoFill on the Drop-in card fields (ORC-8771) (#1973)
+
 ## 2.53.1 (2026-10-26)
 
 ### Fix

@@ -91,6 +91,13 @@ extension String {
         return !(rangeOfCharacter(from: set.inverted) != nil)
     }
 
+    /// The client token signature can't be verified on device, so token URLs must at least point at Primer.
+    var isPrimerURL: Bool {
+        guard let url = URL(string: self), url.scheme?.lowercased() == "https",
+              let host = url.host?.lowercased() else { return false }
+        return host == "primer.io" || host.hasSuffix(".primer.io")
+    }
+
     var decodedJWTToken: DecodedJWTToken? {
         let components = split(separator: ".")
         if components.count < 2 { return nil }
