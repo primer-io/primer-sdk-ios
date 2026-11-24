@@ -17,6 +17,7 @@ struct ComponentView<C: View>: View {
     @EnvironmentObject private var viewModel: SDUIViewModel
     @Environment(\.flexCrossAxisStretch) private var stretch
     @Environment(\.flexAxis) private var axis
+    @Environment(\.sduiTokens) private var tokens
     
     private let focusedFieldID: FocusState<String?>.Binding
     private let componentArgs: UIComponentArgs
@@ -92,19 +93,19 @@ private extension ComponentView {
     
     func makeButtonView(props: ButtonProps) -> some View {
         let styling = props.styling
-        let radius = styling.borderRadius(resolveRadius) ?? 0
+        let radius = styling.borderRadius(tokens.radius) ?? 0
         return Button(action: applyClick) {
             content()
-                .frame(maxWidth: props.width())
-                .padding(props.padding.flatMap(Spacing.value) ?? .zero)
+                .frame(maxWidth: props.width(tokens.size))
+                .padding(props.padding.flatMap { Spacing.value(of: $0, resolve: tokens.spacing) } ?? .zero)
         }
-        .frame(maxWidth: props.width(), maxHeight: props.height())
-        .foregroundColor(styling.foregroundColor.map(resolveColor))
-        .background(styling.backgroundColor.map(resolveColor))
+        .frame(maxWidth: props.width(tokens.size), maxHeight: props.height(tokens.size))
+        .foregroundColor(styling.foregroundColor.map(tokens.color))
+        .background(styling.backgroundColor.map(tokens.color))
         .cornerRadius(radius)
         .overlay(
             RoundedRectangle(cornerRadius: radius)
-                .strokeBorder(styling.borderColor.map(resolveColor) ?? .clear, lineWidth: styling.borderColor == nil ? 0 : 1)
+                .strokeBorder(styling.borderColor.map(tokens.color) ?? .clear, lineWidth: styling.borderColor == nil ? 0 : 1)
         )
         .opacity(props.enabled ? 1 : 0.5)
         .disabled(!props.enabled)
@@ -117,14 +118,14 @@ private extension ComponentView {
                 maxWidth: (stretch && axis == .column) ? .infinity : nil,
                 maxHeight: (stretch && axis == .row) ? .infinity : nil
             )
-            .background(props.backgroundColor.map(resolveColor))
+            .background(props.backgroundColor.map(tokens.color))
     }
     
     func makeContainer(props: ContainerProps) -> some View {
         VStack(content: content)
             .padding(props.padding)
-            .background(props.backgroundColor.map(resolveColor))
-            .cornerRadius(props.borderRadius?(resolveRadius) ?? 0)
+            .background(props.backgroundColor.map(tokens.color))
+            .cornerRadius(props.borderRadius?(tokens.radius) ?? 0)
     }
 	
     @ViewBuilder
@@ -153,7 +154,7 @@ private extension ComponentView {
             } else {
                 image.resizable()
             }
-        }.frame(width: props.width(), height: props.height())
+        }.frame(width: props.width(tokens.size), height: props.height(tokens.size))
     }
     
     func makeTextFieldView(props: TextFieldProps) -> some View {
@@ -181,8 +182,8 @@ private extension ComponentView {
     
     func makeTextView(props: TextProps) -> some View {
         TextView(text: props.text)
-            .font(props.textStyle.map(resolveFont))
-            .foregroundColor(props.color.map(resolveColor))
+            .font(props.textStyle.map(tokens.font))
+            .foregroundColor(props.color.map(tokens.color))
             .multilineTextAlignment(props.textAlign())
     }
 	
@@ -191,7 +192,11 @@ private extension ComponentView {
     }
 	
     func makeRadioButtonView(props: RadioButtonProps) -> some View {
-        RadioButtonCircle(isSelected: props.selected ?? false, color: .primary) // TODO: Color
+        let isSelected = props.selected ?? false
+        return RadioButtonCircle(
+            isSelected: isSelected,
+            color: tokens.color(isSelected ? "border-outlined-selected" : "border-outlined-default")
+        )
     }
 	
     func makeProgressView(props: ProgressIndicatorProps) -> some View {

@@ -38,10 +38,10 @@ final class LengthTests: XCTestCase {
     }
 
     func testSpacingReadsNumbersAndNames() {
-        resolveSpacing = { $0 == "medium" ? 12 : 0 }
-        XCTAssertEqual(Spacing.value(of: .int(10)), 10)
-        XCTAssertEqual(Spacing.value(of: .string("medium")), 12)
-        XCTAssertEqual(Spacing.value(of: .string("4")), 4)
+        let resolve: (String) -> CGFloat = { $0 == "medium" ? 12 : 0 }
+        XCTAssertEqual(Spacing.value(of: .int(10), resolve: resolve), 10)
+        XCTAssertEqual(Spacing.value(of: .string("medium"), resolve: resolve), 12)
+        XCTAssertEqual(Spacing.value(of: .string("4"), resolve: resolve), 4)
     }
 
     private func decode(_ json: String) throws -> Length {

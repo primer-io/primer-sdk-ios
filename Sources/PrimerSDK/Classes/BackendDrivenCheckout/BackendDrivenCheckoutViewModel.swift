@@ -156,7 +156,7 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
             onEvent: orchestrator.applyEvent,
             onClose: { [weak self] in self?.checkoutTask?.cancel() },
             titleImage: config.logo
-        ))
+        ).modifier(SDUIDesignTokens()))
         controller.modalPresentationStyle = .pageSheet
         sduiController = controller
         await withCheckedContinuation { continuation in
