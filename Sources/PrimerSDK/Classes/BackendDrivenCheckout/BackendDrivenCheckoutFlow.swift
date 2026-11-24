@@ -20,7 +20,6 @@ final class BackendDrivenCheckoutFlow {
 
     enum Outcome {
         case paid(PaymentInfo?)
-        case setupOnly
         case failed(PrimerErrorProtocol)
     }
 
@@ -71,11 +70,8 @@ final class BackendDrivenCheckoutFlow {
 
     func run(paymentInstrumentTokenId: String? = nil, host: Host) async -> Outcome {
         do {
-            try await host.willCreatePayment()
             let session = try await start(host: host)
-            guard let result = try await pay(paymentInstrumentTokenId: paymentInstrumentTokenId, in: session, host: host) else {
-                return .setupOnly
-            }
+            let result = try await pay(paymentInstrumentTokenId: paymentInstrumentTokenId, in: session, host: host)
             await host.dismissUI()
             return outcome(of: result)
         } catch {
@@ -100,15 +96,15 @@ final class BackendDrivenCheckoutFlow {
         )
     }
 
-    private func pay(paymentInstrumentTokenId: String?, in session: Session, host: Host) async throws -> CheckoutResult? {
+    private func pay(paymentInstrumentTokenId: String?, in session: Session, host: Host) async throws -> CheckoutResult {
         if let paymentInstrumentTokenId {
-            return try await pay(withToken: paymentInstrumentTokenId, in: session)
+            return try await pay(withToken: paymentInstrumentTokenId, in: session, host: host)
         }
         if config.entry.requiresSetup {
             let token = try await runSetup(in: session, host: host)
-            guard PrimerSettings.current.paymentHandling == .auto else { return nil }
-            return try await pay(withToken: token, in: session)
+            return try await pay(withToken: token, in: session, host: host)
         }
+        try await host.willCreatePayment()
         return try await session.orchestrator.run(
             pciUrl: session.pciUrl,
             coreUrl: session.coreUrl,
@@ -127,8 +123,9 @@ final class BackendDrivenCheckoutFlow {
         return token
     }
 
-    private func pay(withToken token: String, in session: Session) async throws -> CheckoutResult {
-        try await session.orchestrator.pay(
+    private func pay(withToken token: String, in session: Session, host: Host) async throws -> CheckoutResult {
+        try await host.willCreatePayment()
+        return try await session.orchestrator.pay(
             paymentInstrumentTokenId: token,
             pciUrl: session.pciUrl,
             coreUrl: session.coreUrl,

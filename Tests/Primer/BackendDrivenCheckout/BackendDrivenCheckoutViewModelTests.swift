@@ -290,6 +290,7 @@ final class MockBDCStepOrchestrator: StepOrchestrating {
     var onURLOpen: (() -> Void)?
     var startCallCount = 0
     var startError: Error?
+    var pollsReturn = false
     
     func start(rawSchema: String, initialState: CodableValue) async throws {
         startCallCount += 1
@@ -303,13 +304,14 @@ final class MockBDCStepOrchestrator: StepOrchestrating {
     func leave() async -> Bool { true }
 
     func waitToPoll(milliseconds: Int) async throws {
-        throw CancellationError()
+        guard pollsReturn else { throw CancellationError() }
     }
 }
 
 final class MockBDCInstructionProvider: ClientInstructionProvider {
     var error: Error?
     var errorAfterFirstFetch: Swift.Error?
+    var setupCompleteToken: String?
     private(set) var fetchCount = 0
     private(set) var paidWithTokenIds: [String] = []
     private(set) var setupFlowFetches = 0
@@ -326,7 +328,7 @@ final class MockBDCInstructionProvider: ClientInstructionProvider {
     }
 
     func fetchSetupState(setupId: String) async throws -> SetupState {
-        SetupState(instruction: .wait, nextPoll: .suspend)
+        SetupState(instruction: setupCompleteToken.map { .setupComplete(token: $0) } ?? .wait, nextPoll: .suspend)
     }
 
     func fetchSetupFlow() async throws -> SetupFlow {

@@ -137,8 +137,6 @@ final class DefaultBackendDrivenScope: PrimerPaymentMethodScope, ObservableObjec
                 status: .success,
                 paymentMethodType: paymentMethodType
             ))
-        case .setupOnly:
-            returnToSelection()
         case let .failed(error):
             if case .cancelled = error as? PrimerError { return returnToSelection() }
             checkoutScope.handlePaymentError(error as? PrimerError ?? PrimerError.unknown(message: error.localizedDescription))

@@ -5,6 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+@_spi(PrimerInternal) import PrimerBDCCore
 @_spi(PrimerInternal) import PrimerCore
 @_spi(PrimerInternal) import PrimerFoundation
 
@@ -107,6 +108,7 @@ final class CheckoutSDKInitializer {
   }
 
   private func initializeAPIConfiguration() async throws {
+    BDCEngineProvider.warmUp(clientToken: clientToken)
     try await configurationModule.setupSession(
       forClientToken: clientToken,
       requestDisplayMetadata: true,
