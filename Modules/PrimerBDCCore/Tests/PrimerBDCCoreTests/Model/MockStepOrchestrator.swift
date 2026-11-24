@@ -23,6 +23,8 @@ final class MockStepOrchestrator: StepOrchestrating {
     
     func applyEvent(_ value: PrimerFoundation.CodableValue) async throws {}
 
+    func leave() async -> Bool { true }
+
     func waitToPoll(milliseconds: Int) async throws {
         pollWaits.append(milliseconds)
         guard pollWaits.count <= pollWakes else { throw CancellationError() }
