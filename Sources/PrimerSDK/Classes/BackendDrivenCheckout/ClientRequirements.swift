@@ -35,7 +35,7 @@ enum ClientRequirements {
         
         for method in methods {
             guard let verdict = method.id.flatMap({ verdicts[$0] }), !verdict.satisfied else { continue }
-            reportUnmet(verdict.unmet, for: method)
+            await reportUnmet(verdict.unmet, for: method)
         }
         
         let available = methods.filter { method in
@@ -57,6 +57,7 @@ enum ClientRequirements {
         } catch {
             let message = "BDC engine failed to load: \(error)"
             Analytics.Service.fire(event: .message(message: message, messageType: .backendDrivenEngineLoadFailed, severity: .error))
+            await BDCRemoteLog().engineLoadFailed(error)
             throw error
         }
         let requirements = buildRequirements(from: methods)
@@ -85,7 +86,7 @@ enum ClientRequirements {
         }
     }
 
-    private static func reportUnmet(_ unmet: [UnmetClientRequirement], for method: PrimerPaymentMethod) {
+    private static func reportUnmet(_ unmet: [UnmetClientRequirement], for method: PrimerPaymentMethod) async {
         let data = try? unmet.data()
         let unmetJSON = data.flatMap { String(data: $0, encoding: .utf8) }
         guard let unmetJSON else { return }
@@ -98,6 +99,7 @@ enum ClientRequirements {
         let event: Analytics.Event = .message(message: message, messageType: type, severity: .warning, context: context)
         
         Analytics.Service.fire(event: event)
+        await BDCRemoteLog().requirementsNotMet(method, unmet: unmet)
     }
 
     private static func buildRequirements(from methods: [PrimerPaymentMethod]) -> [PaymentMethodRequirements] {
