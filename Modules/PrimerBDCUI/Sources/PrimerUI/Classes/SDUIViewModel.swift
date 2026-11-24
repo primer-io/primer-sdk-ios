@@ -23,6 +23,7 @@ final class SDUIViewModel: ObservableObject, StepResolver {
     private var uiTree: UIDefinition?
     private var onEvent: (CodableValue) async throws -> Void
     private var onError: ((Error) async -> Void)?
+    private var eventsInFlight: Set<String> = []
 
     init(
         registry: PrimerStepResolverRegistry = .shared,
@@ -44,7 +45,10 @@ final class SDUIViewModel: ObservableObject, StepResolver {
     }
 
     func applyEvent(_ event: Event) {
+        let key = event.inFlightKey
+        if let key, !eventsInFlight.insert(key).inserted { return }
         Task {
+            defer { key.map { _ = eventsInFlight.remove($0) } }
             do {
                 try await onEvent(event())
             } catch {

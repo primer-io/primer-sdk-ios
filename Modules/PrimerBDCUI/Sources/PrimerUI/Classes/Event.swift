@@ -27,6 +27,16 @@ enum Event {
     }
 }
 
+extension Event {
+    var inFlightKey: String? {
+        switch self {
+        case .input: nil
+        case let .click(id): "click/\(id)"
+        case let .provider(type, id, _): "\(type)/\(id ?? "")"
+        }
+    }
+}
+
 enum InputEventType: String {
     case onChange = "change"
 }
