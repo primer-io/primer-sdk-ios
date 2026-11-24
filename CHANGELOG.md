@@ -5,6 +5,326 @@ All notable changes to `primer-sdk-ios` are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 3.0.0-beta.9 (2026-11-23)
+
+### Feat
+
+- **components**: fees and a select while typing for React Native (ORC-9433) (#2041)
+- **components**: group payment methods by surcharge (ORC-9433) (#2039)
+- report the Klarna widget's node status (#2022)
+- resolve the schema's design token names (#2030)
+- Drive the flow on the engine's flow steps (#2029)
+- drive the flow on the engine's flow steps
+- **components**: Log Apple Pay shipping steps to Datadog (ORC-9040)
+- Present the SDUI sheet when a schema renders (#2001)
+- **components**: pay button text with an {amount} token (ORC-8704) (#2006)
+- **components**: let merchants set the card form pay button text (ORC-8704) (#1992)
+- Declare primitive UI components (#1987)
+- **components**: Emit checkout outcome and error code in Datadog logs (ORC-8876)
+- Add a warn level to CC Datadog logs
+- Run probes before checking client requirements (#1985)
+- Ask the state processor which probes to run (#1984)
+- Advertise probes and UI components as capabilities (#1978)
+- Add probe and UI component registries (#1977)
+- Pay with the token a completed setup returns (#1959)
+
+### Fix
+
+- **components**: add the two missing Croatian texts (#2048)
+- Send the card network before Headless card payments (ORC-8730) (#2053)
+- **components**: hide the card number until it is complete (ORC-9220) (#2047)
+- **components**: match the country title and arrow to the design (ORC-8691) (#2046)
+- **components**: keep fees of other types (ORC-9433) (#2043)
+- **components**: match the country rows to the design (ORC-8691) (#2042)
+- **components**: Open the saved card CVV inside the card (ORC-8601) (#2038)
+- **components**: outline the country search box (ORC-8691) (#2037)
+- **components**: sort the country list and keep its names (ORC-8691) (#2035)
+- **components**: use the same saved method rows on every SDK (ORC-8675) (#2033)
+- **components**: wait for the card lookup before selecting (ORC-8730) (#2028)
+- **components**: select the payment method in headless submit (ORC-8730) (#2027)
+- **components**: say Processing your payment while paying (ORC-8672) (#2034)
+- **components**: keep the card network shown after reopening the form (ORC-8730) (#2032)
+- **components**: select PayPal, QR and form methods first (ORC-8730) (#2026)
+- **components**: select saved methods before paying (ORC-8730) (#2025)
+- **components**: send the card network the card form shows (ORC-8730) (#2024)
+- hand Klarna the authorize step's data
+- pick the BDC view model by capability (#2021)
+- Add a translation check and fix CheckoutComponents translations (ORC-9162) (#2004)
+- Send runtime headers only when necessary (#2023)
+- send runtime headers only where they belong
+- draw Button and List children (#2018)
+- **components**: Drop shipping logs that settle after the attempt (ORC-9040)
+- **components**: drop billing placeholders that repeat the label (ORC-8555) (#2007)
+- Load Klarna in the widget itself (#1995)
+- **components**: use Web's card field error texts (ORC-8668) (#1993)
+- **components**: show the real logo for every card network (ORC-8692) (#1982)
+- **components**: open a custom card network dropdown below the field (ORC-9219) (#1983)
+- **components**: show the klarna logo as the klarna screen title (ORC-8707) (#1979)
+- **components**: keep card field errors until the value is valid (ORC-8703) (#1980)
+- **components**: Keep the remote warn log out of the public API
+- **components**: Stop reporting card declines as Datadog errors
+- Offer card AutoFill on the Drop-in card fields (ORC-8771) (#1973)
+- Pass EFTPOS to Apple Pay (ESC-1206) (#1968)
+- **components**: Offer card AutoFill on expiry, CVV and cardholder (ORC-8771) (#1974)
+- **components**: require shown billing fields, make address line 2 optional (ORC-8667) (#1966)
+- **components**: show a friendly message when a payment fails (ORC-8702) (#1965)
+- **components**: give the saved card cvv box a full row at large text (ORC-8444) (#1964)
+- **components**: end every sheet on spacing.large above the home bar
+- **components**: put 24 under the klarna header (ORC-8537)
+- Use SetupBody instead of PayBody
+- Use 16pt between the Klarna options and Continue
+- Count the bottom safe area once in the sheet height
+
+### Refactor
+
+- share remote logger outside Checkout Components (#2045)
+- share the remote logger outside Checkout Components
+- **components**: Rename the default shipping trigger case (ORC-9040)
+- **components**: Keep failure log keys in constants
+
+## 3.0.0-beta.8 (2026-10-19)
+
+### Feat
+
+- **components**: Align checkout analytics with the event contract (ORC-8462) (#1931)
+- **components**: Add the analytics funnel and its delivery (ORC-8462) (#1939)
+- **components**: Report core pages and 3DS to an observer (ORC-8462) (#1938)
+- Present SDUI and run Klarna setup in it (#1950)
+- **components**: theme tokens and styling parity fixes (ORC-7616) (#1944)
+- Poll payment method setups to completion (#1948)
+- Hide BDC methods the SDK can't run (#1932)
+- Check client requirements in the BDC engine (#1929)
+- Describe the SDK to the state processor (#1926)
+- **components**: Turn on Apple Pay shipping from the shipping handlers (ORC-8449)
+- **debug-app**: Express Checkout shipping demo (ORC-8449)
+- **components**: Express Checkout shipping callbacks for Apple Pay (ORC-8449)
+- **components**: Expose checkoutData on the failure state (ORC-8464)
+- **components**: Let merchants toggle vaultOnSuccess from the card form (ORC-8469)
+
+### Fix
+
+- Order BIN data networks by the merchant's preference (ORC-8538) (#1945)
+- **components**: match the klarna options screen to figma (ORC-8537) (#1954)
+- Match the payment method list to the design (ORC-8543) (#1949)
+- **components**: Resolve one dependency from two tasks at once (ORC-8462) (#1935)
+- Stack the ACH and Klarna header at large text sizes (ORC-8398)
+- Send the preferred network only when the shopper picks it (ORC-8539) (#1947)
+- **components**: Warn when the payment gate goes unanswered (ORC-7616)
+- **components**: Keep the shopper on the screen while the merchant decides (ORC-7616)
+- **components**: Delete the digit after a space on a forward delete (ORC-7616)
+- **components**: Start no payment once the checkout has closed (ORC-7616)
+- **components**: Keep the sheet open while a payment runs (ORC-7616)
+- **components**: Keep the card form in place while a payment runs (ORC-7616)
+- **components**: Start only one card payment per Pay tap (ORC-7616)
+- **components**: Translate the vaulted CVV and other-ways-to-pay strings (ORC-7616)
+- **components**: Keep the card number caret after the edited digits (ORC-7616)
+- **components**: Spot an international MB Way number behind a bracket (ORC-7616)
+- **components**: Read a pasted expiry date by its month and year (ORC-7616)
+- **components**: Show each keystroke in the text fields at once (ORC-7616)
+- **components**: Keep letters that carry a joiner or modifier in a pasted cardholder name (ORC-7616)
+- **components**: Spot an international MB Way number behind a newline or direction mark (ORC-7616)
+- **components**: Replace the selected expiry digits on paste and keep a pasted separator's digits (ORC-7616)
+- **components**: Keep name parts apart and drop emoji whole in the cardholder field (ORC-7616)
+- **components**: Send the MB Way dialing code once for a pasted international number (ORC-7616)
+- **components**: Keep a pasted cardholder name that has a stray character (ORC-7616)
+- **components**: Replace the selected card number digits on paste (ORC-7616)
+- **components**: Validate the billing phone as a phone number (ORC-7616)
+- Render the state processor's render stack (#1943)
+- Pass BDC parameters at top level of state (#1942)
+- don't set a delegate on FileManager.default — crashes on iOS 27 (ORC-8465) (#1933)
+- **components**: Drop the shipping commit before asking for new options (ORC-8449)
+- **components**: Keep the Apple Pay sheet usable when shipping updates fail (ORC-8449)
+- **components**: Fail the sheet update when a shipping commit fails (ORC-8449)
+- **components**: Take the shipping callbacks path only when it can commit (ORC-8449)
+- **components**: Take the shipping handlers as the last parameters (ORC-8449)
+- **components**: Block authorization on a failed shipping commit (ORC-8449)
+- **debug-app**: accept a shipping PATCH that answers without a client token (ORC-8449)
+- **components**: cancel the shipping callback timer on every exit path (ORC-8449)
+- **components**: only take the dynamic shipping path when a handler is registered (ORC-8449)
+- **components**: close three gaps in the Apple Pay shipping flow (ORC-8449)
+- **components**: Keep the keyboard Done label readable on iOS 26
+- **components**: Let card and saved-method payments wait for the shopper (ORC-7714)
+- **components**: Show Klarna error messages without Optional (ORC-7714)
+- **components**: Keep the Klarna category identifiers visible to UI tests (ORC-7714)
+- **components**: Let the shopper take their time in Klarna's flow (ORC-7714)
+- **components**: Return to the list when the shopper cancels Klarna (ORC-7714)
+- **components**: Show the selected Klarna screen instead of its test twin (ORC-8531)
+- **components**: Run one payment at a time per payment method (ORC-7716)
+- **components**: Retry the payment method that failed (ORC-7716)
+- **components**: Start the only payment method when the checkout opens (ORC-7716)
+- **components**: Restart a payment method re-selected after the error screen (ORC-7716)
+- **components**: Keep payment data on a declined resume (ORC-8464)
+- **components**: Return to the list when the buyer cancels on the PayPal page (ORC-8595)
+- **components**: Create the payment after a PayPal approval (ORC-7715)
+- **components**: Close smaller CheckoutComponents gaps (ORC-8469)
+- **components**: Offer saved methods when one payment method is configured (ORC-8469)
+- **components**: Show shoppers readable errors and a Retry that works (ORC-8469)
+- **components**: Drop the 3DS presenter callbacks and follow the failure contract (ORC-8469)
+- **components**: Report every PrimerCheckout failure to onCompletion (ORC-8469)
+- **components**: Keep the session outcome after a failed refresh or a cancel (ORC-8469)
+- **components**: Ask the merchant gate before a saved-method payment (ORC-8469)
+- **components**: Keep the idempotency key on card payments (ORC-8469)
+- **components**: Make Retry work after a QR, ACH or Apple Pay failure (ORC-8462)
+- don't set a delegate on FileManager.default — crashes on iOS 27 (ORC-8465) (#1914)
+
+### Refactor
+
+- **components**: Remove three unused accessibility strings (ORC-7616)
+- **components**: Drop the shipping method flag from the shipping session (ORC-8449)
+- **components**: Resolve the Sonar findings on the shipping code (ORC-8449)
+- **components**: follow Android's shipping API shape (ORC-8449)
+- **components**: Remove dead screen overrides and correct state docs (ORC-8469)
+
+### Perf
+
+- **components**: Refresh only what a shipping commit needs (ORC-8449)
+
+## 3.0.0-beta.7 (2026-09-23)
+
+### Feat
+
+- **components**: Close the CheckoutComponents gaps the account funding demo exposed (ORC-8477)
+
+### Fix
+
+- Report the integrated product in analytics, not the routing surface (ORC-8477)
+
+## 3.0.0-beta.6 (2026-09-16)
+
+### Feat
+
+- Open a CheckoutComponents demo straight from a deep link (ORC-7710) (#1890)
+- Stable accessibility identifiers for CC surfaces (ORC-7709) (#1886)
+
+### Fix
+
+- **components**: repaint payment method tiles on a colour-scheme change (ORC-8363) (#1896)
+- Correct Polish BLIK typo and drop-in copy (ESC-1105) (#1871)
+- Fire willCreatePayment after Apple Pay authorization (ORC-8210) (#1866)
+
+### Refactor
+
+- **components**: make the raw palette colours internal (ORC-8396) (#1900)
+
+## 3.0.0-beta.5 (2026-09-03)
+
+### Feat
+
+- **components**: add a brand font and separate dark colours (ORC-8268) (#1883)
+- **components**: colour input fields separately from the sheet (ORC-8118) (#1877)
+- **components**: give error text its own typography token (ORC-8264) (#1876)
+- Handle cancelled BDC flows via applyEvent (#1854)
+- Implement `http.request` step resolver (#1848)
+
+### Fix
+
+- **components**: let the card network badge follow the brand font (ORC-8277) (#1885)
+- **components**: repaint bridged fields on a colour-scheme change (ORC-8178) (#1884)
+- **components**: let the co-badge chips inherit the field (ORC-8267) (#1882)
+- **components**: paint spinners from the loader colour (ORC-8266) (#1881)
+- **components**: draw borders at the width the state calls for (ORC-8178) (#1880)
+- **components**: keep the pay button brand-filled while paying (ORC-8265)
+- **components**: drop the duplicate inputText colour helper
+- **components**: give brand-filled buttons an on-brand label (ORC-8179) (#1878)
+- **components**: take the grey ramp and xxlarge size from the design file (ORC-8263) (#1875)
+- **components**: paint the remaining colours from the theme (ORC-8114) (#1874)
+- Reject manual payment handling before the checkout starts (ORC-8313) (#1892)
+- Deliver checkout completion when the SDK result screen is disabled (ORC-8312) (#1891)
+- Report interactive sheet dismissal to the UIKit presenter delegate (#1889)
+- Mirror every card-form setter into its visible field (ORC-7506)
+- Align the strings left over from the Polish review
+- Apply Polish review feedback (ESC-1105)
+- Localize the payment method headline and CVV placeholder
+- Localize the card form's full name placeholder
+- Repair the CheckoutComponents translation workflow
+- Correct Polish CheckoutComponents copy (ESC-1105)
+- Correct Polish BLIK typo and drop-in copy (ESC-1105)
+- Fix potential memory leak of SDUIViewModel (#1860)
+- Show programmatic card-field writes in the field
+- Present vault management inline (ORC-7506)
+- Map line-item tax from the line item (ORC-7506)
+- Invoke payment gate before navigation (ORC-7506)
+- Type allowed card networks as CardNetwork (ORC-7506)
+- Close CheckoutComponents parity gaps (ORC-7506)
+- Move SDK file cache into Library/Caches/primer (#1852)
+- Resolve flaky unit tests and their root causes (#1851)
+- Bancontact raw-data tokenization (ORC-7697) (#1853)
+- Allow metadata textfield to accept raw json (#1856)
+
+### Refactor
+
+- **components**: rename the theme tokens to the shared vocabulary (ORC-8229) (#1873)
+- Drop the card form's email building block
+
+## 3.0.0-beta.4 (2026-07-31)
+
+### Feat
+
+- Add Apple Pay card type and network filtering [ORC-7503] (#1817)
+
+### Fix
+
+- Convert Apple Pay amounts by currency decimalDigits (#1816)
+- **headless**: validate cobadged cards via BIN cache (iOS↔Android parity) (#1722)
+- **apple-pay**: remove allowedCardNetworks option, rely on client session [ORC-7503] (#1822)
+
+## 3.0.0-beta.3 (2026-07-30)
+
+### Feat
+
+- Complete BDCUI (#1846)
+- Introduce PrimerBDCUI non-ui Objects (#1838)
+
+### Fix
+
+- Validate phone numbers via lookup service (ORC-7907) (#1847)
+
+### Refactor
+
+- Update StepResolver API (#1845)
+
+## 3.0.0-beta.2 (2026-07-02)
+
+### Feat
+
+- Add vault analytics events and error logging (CheckoutComponents) (#1825)
+
+### Fix
+
+- Convert Apple Pay amounts by currency decimalDigits (CheckoutComponents) (#1821)
+- Prevent script injection in CI workflows (VULN-158) (#1809)
+- Redact PCI fields in CheckoutComponents scope API (VULN-156) (#1810)
+- Apply merchant theme to inline CheckoutComponents [ORC-7505] (#1820)
+- Apply merchant theme to inline CheckoutComponents
+
+## 3.0.0-beta.1 (2026-06-24)
+
+CheckoutComponents beta (iOS 15+). This is a beta release — APIs may still change before the 3.0 GA.
+
+### Feat
+
+- CheckoutComponents: customize the checkout UI with the new composable components — `PrimerCardForm`, `PrimerPaymentMethods`, and `PrimerVaultedPaymentMethods` — each with section slots you can override, plus the `CardFormDefaults` / `PaymentMethodsDefaults` / `VaultedPaymentMethodsDefaults` building blocks for recomposing individual fields.
+- Redirect and Apple Pay payment methods now launch automatically on selection, matching Android.
+
+### Fix
+
+- Validate the web-redirect URL scheme before tokenization.
+- More reliable inline sheet presentation and dismissal in CheckoutComponents.
+- Apply `PrimerSettings` correctly in CheckoutComponents.
+
+### BREAKING CHANGE
+
+- CheckoutComponents customization now goes through the composable components above. The previous scope/closure-based customization surface has been removed — including the `scope:` parameter on `PrimerCheckout` / `presentCheckout`, custom screen closures, and per-field configuration/styling types. Migrate by embedding the composable components under `.primerCheckoutSession(_:)` and overriding their slots.
+- The payment result no longer includes the unused `metadata` field.
+- Payment status values are simplified to `pending`, `success`, and `failed`.
+- Removed the static delegate on `PrimerCheckoutPresenter`; use the presenter instance's delegate instead.
+
+## 3.0.0-b0 (2026-03-12)
+
+### Feat
+
+- Checkout Components
+
 ## 2.54.0 (2026-11-24)
 
 ### Feat

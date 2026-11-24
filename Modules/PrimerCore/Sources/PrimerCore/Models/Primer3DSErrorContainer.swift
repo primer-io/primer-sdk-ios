@@ -57,7 +57,7 @@ public enum Primer3DSErrorContainer {
              let .missing3DSConfiguration(diagnosticsId, _),
              let .primer3DSSdkError(_, diagnosticsId, _, _),
              let .underlyingError(diagnosticsId, _):
-            return diagnosticsId
+            diagnosticsId
         }
     }
 
@@ -111,9 +111,9 @@ public enum Primer3DSErrorContainer {
              .invalid3DSSdkVersion,
              .missing3DSConfiguration,
              .underlyingError:
-            return nil
+            nil
         case let .primer3DSSdkError(_, _, initProtocolVersion, _):
-            return initProtocolVersion
+            initProtocolVersion
         }
     }
 
@@ -136,54 +136,54 @@ public enum Primer3DSErrorContainer {
     @_spi(PrimerInternal) public var threeDsErrorCode: Int? {
         switch self {
         case let .primer3DSSdkError(_, _, _, errorInfo):
-            return errorInfo.threeDsErrorCode
+            errorInfo.threeDsErrorCode
         default:
-            return nil
+            nil
         }
     }
 
     @_spi(PrimerInternal) public var threeDsErrorType: String? {
         switch self {
         case let .primer3DSSdkError(_, _, _, errorInfo):
-            return errorInfo.threeDsErrorType
+            errorInfo.threeDsErrorType
         default:
-            return nil
+            nil
         }
     }
 
     @_spi(PrimerInternal) public var threeDsErrorComponent: String? {
         switch self {
         case let .primer3DSSdkError(_, _, _, errorInfo):
-            return errorInfo.threeDsErrorComponent
+            errorInfo.threeDsErrorComponent
         default:
-            return nil
+            nil
         }
     }
 
     @_spi(PrimerInternal) public var threeDsSdkTranscationId: String? {
         switch self {
         case let .primer3DSSdkError(_, _, _, errorInfo):
-            return errorInfo.threeDsSdkTranscationId
+            errorInfo.threeDsSdkTranscationId
         default:
-            return nil
+            nil
         }
     }
 
     @_spi(PrimerInternal) public var threeDsSErrorVersion: String? {
         switch self {
         case let .primer3DSSdkError(_, _, _, errorInfo):
-            return errorInfo.threeDsSErrorVersion
+            errorInfo.threeDsSErrorVersion
         default:
-            return nil
+            nil
         }
     }
 
     @_spi(PrimerInternal) public var threeDsErrorDetail: String? {
         switch self {
         case let .primer3DSSdkError(_, _, _, errorInfo):
-            return errorInfo.threeDsErrorDetail
+            errorInfo.threeDsErrorDetail
         default:
-            return nil
+            nil
         }
     }
 }

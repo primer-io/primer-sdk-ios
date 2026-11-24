@@ -31,13 +31,13 @@ extension Analytics.Event {
             sdkSessionId: PrimerInternal.shared.sdkSessionId,
             sdkType: Primer.shared.integrationOptions?.reactNativeVersion == nil ? "IOS_NATIVE" : "RN_IOS",
             sdkVersion: VersionUtils.releaseVersionNumber,
-            sdkIntegrationType: PrimerInternal.shared.sdkIntegrationType,
+            sdkIntegrationType: PrimerInternal.shared.reportedIntegrationType,
             sdkPaymentHandling: PrimerSettings.current.paymentHandling,
             integrationType: {
                 #if COCOAPODS
-                    return "COCOAPODS"
+                    "COCOAPODS"
                 #else
-                    return "SPM"
+                    "SPM"
                 #endif
             }(),
             minDeploymentTarget: Bundle.main.minimumOSVersion ?? "Unknown"
@@ -280,9 +280,9 @@ extension Analytics {
         switch error {
         case .applePayNoCardsInWallet,
              .applePayDeviceNotSupported:
-            return .warning
+            .warning
         default:
-            return .error
+            .error
         }
     }
 }

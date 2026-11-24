@@ -1,0 +1,121 @@
+//
+//  DefaultSelectCountryScope.swift
+//
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
+
+@_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
+import SwiftUI
+
+/// NOTE: Currently card-specific - holds reference to DefaultCardFormScope for billing address.
+/// If other payment methods require country selection in the future, this should be refactored
+/// to accept a generic payment method context instead of being tied to card payments.
+@available(iOS 15.0, *)
+@MainActor
+final class DefaultSelectCountryScope: PrimerSelectCountryScope, LogReporter {
+
+  // MARK: - Properties
+
+  var state: AsyncStream<PrimerSelectCountryState> {
+    AsyncStream { continuation in
+      let task = Task { @MainActor in
+        for await var value in $internalState.values {
+          value.selectedCountry = cardFormScope?.structuredState.selectedCountry
+          continuation.yield(value)
+        }
+        continuation.finish()
+      }
+
+      continuation.onTermination = { _ in
+        task.cancel()
+      }
+    }
+  }
+
+  // MARK: - UI Customization Properties
+
+  var screen: SelectCountryScreenComponent?
+  var searchBar: SearchBarComponent?
+  var countryItem: CountryItemComponent?
+
+  // MARK: - Private Properties
+
+  @Published private var internalState = PrimerSelectCountryState()
+  private weak var cardFormScope: DefaultCardFormScope?
+
+  // MARK: - Initialization
+
+  init(cardFormScope: DefaultCardFormScope?) {
+    self.cardFormScope = cardFormScope
+    loadAvailableCountries()
+  }
+
+  // MARK: - Selection Methods
+
+  func onCountrySelected(countryCode: String, countryName: String) {
+    // Update the card form with the selected country code
+    // Navigation is handled by the local sheet in CountryInputField
+    cardFormScope?.updateCountryCode(countryCode)
+  }
+
+  func cancel() {
+    // No-op: Navigation is handled by the local sheet dismissal in CountryInputField
+  }
+
+  func onSearch(query: String) {
+    internalState.searchQuery = query
+    filterCountries(with: query)
+  }
+
+  // MARK: - Private Methods
+
+  private func loadAvailableCountries() {
+    let allCountries = CountryCode.allCases.compactMap { countryCode in
+      Self.convertCountryCodeToPrimerCountry(countryCode)
+    }.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+
+    internalState.countries = allCountries
+    internalState.filteredCountries = allCountries
+  }
+
+  static func convertCountryCodeToPrimerCountry(_ countryCode: CountryCode) -> PrimerCountry? {
+    let code = countryCode.rawValue
+    let localizedName = countryCode.country
+    let flagEmoji = countryCode.flag
+
+    let phoneCode = CountryCode.phoneNumberCountryCodes
+      .first { $0.code == code }
+
+    guard let name = localizedName == "N/A" ? phoneCode?.name : localizedName else {
+      return nil
+    }
+
+    return PrimerCountry(
+      code: code,
+      name: name,
+      flag: flagEmoji,
+      dialCode: phoneCode?.dialCode
+    )
+  }
+
+  private func filterCountries(with query: String) {
+    if query.isEmpty {
+      internalState.filteredCountries = internalState.countries
+    } else {
+      let normalizedQuery = query.folding(
+        options: [.diacriticInsensitive, .caseInsensitive], locale: nil)
+
+      internalState.filteredCountries = internalState.countries.filter { country in
+        let normalizedCountryName = country.name.folding(
+          options: [.diacriticInsensitive, .caseInsensitive], locale: nil)
+        let normalizedCountryCode = country.code.folding(
+          options: [.diacriticInsensitive, .caseInsensitive], locale: nil)
+
+        return normalizedCountryName.contains(normalizedQuery)
+          || normalizedCountryCode.contains(normalizedQuery)
+          || (country.dialCode?.contains(query) ?? false)
+      }
+    }
+  }
+}

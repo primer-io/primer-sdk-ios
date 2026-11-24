@@ -4,8 +4,8 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-@_spi(PrimerInternal) import PrimerFoundation
-@_spi(PrimerInternal) import PrimerNetworking
+@_spi(PrimerInternal) @testable import PrimerFoundation
+@_spi(PrimerInternal) @testable import PrimerNetworking
 @testable import PrimerSDK
 import XCTest
 
@@ -16,14 +16,14 @@ class MockRequestDispatcher: RequestDispatcher {
     var responseModel: DispatcherResponse!
 
     func dispatch(request: URLRequest) async throws -> any DispatcherResponse {
-        if let error = error {
+        if let error {
             throw error
         }
         return responseModel
     }
 
     func dispatch(request: URLRequest, completion: @escaping PrimerSDK.DispatcherCompletion) -> (any PrimerCancellable)? {
-        if let error = error {
+        if let error {
             completion(.failure(error))
         } else {
             completion(.success(responseModel))
@@ -32,7 +32,7 @@ class MockRequestDispatcher: RequestDispatcher {
     }
 
     func dispatchWithRetry(request: URLRequest, retryConfig: PrimerSDK.RetryConfig, completion: @escaping PrimerSDK.DispatcherCompletion) -> (any PrimerCancellable)? {
-        if let error = error {
+        if let error {
             completion(.failure(error))
         } else {
             completion(.success(responseModel))
@@ -63,7 +63,7 @@ final class DefaultNetworkServiceTests: XCTestCase {
 
     func testBasicRequest_jsonDecodingSuccess_completion() throws {
 
-        let expectation = self.expectation(description: "Successful response")
+        let expectation = expectation(description: "Successful response")
 
         let responseModel = PrimerAPIConfiguration(
             coreUrl: "https://core_url",
@@ -139,7 +139,7 @@ final class DefaultNetworkServiceTests: XCTestCase {
 
     func testBasicRequest_jsonDecodingFailure_completion() throws {
 
-        let expectation = self.expectation(description: "Fails with decoding error")
+        let expectation = expectation(description: "Fails with decoding error")
 
         let metadata = ResponseMetadataModel(responseUrl: "https://response_url", statusCode: 200, headers: ["X-Test-Key": "X-Test-Value"])
         let data = try JSONEncoder().encode("invalid")
@@ -187,7 +187,7 @@ final class DefaultNetworkServiceTests: XCTestCase {
     }
 
     func testRedirectRequest_successWithEmptyResponse_completion() {
-        let expectation = self.expectation(description: "Fails with decoding error")
+        let expectation = expectation(description: "Fails with decoding error")
 
         let metadata = ResponseMetadataModel(responseUrl: "https://response_url", statusCode: 200, headers: ["X-Test-Key": "X-Test-Value"])
         let data = Data()
@@ -219,7 +219,7 @@ final class DefaultNetworkServiceTests: XCTestCase {
     }
 
     func testRedirectRequest_successWithNonJsonResponse_completion() {
-        let expectation = self.expectation(description: "Fails with decoding error")
+        let expectation = expectation(description: "Fails with decoding error")
 
         let metadata = ResponseMetadataModel(responseUrl: "https://response_url", statusCode: 200, headers: ["X-Test-Key": "X-Test-Value"])
         let data = "<html><head></head><body><a>test</a></body></html>".data(using: .utf8)
@@ -252,7 +252,7 @@ final class DefaultNetworkServiceTests: XCTestCase {
     }
 
     func testRequest_failsDueToNetworkError_completion() {
-        let expectation = self.expectation(description: "Fails with network error")
+        let expectation = expectation(description: "Fails with network error")
 
         requestDispatcher.error = NSError(domain: NSURLErrorDomain, code: NSURLErrorNotConnectedToInternet, userInfo: nil)
 
@@ -286,7 +286,7 @@ final class DefaultNetworkServiceTests: XCTestCase {
     }
 
     func testRequest_withHeaders_success_completion() {
-        let expectation = self.expectation(description: "Successful response with headers")
+        let expectation = expectation(description: "Successful response with headers")
 
         let responseModel = PrimerAPIConfiguration(
             coreUrl: "https://core_url",

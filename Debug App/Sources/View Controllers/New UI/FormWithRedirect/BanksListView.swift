@@ -1,11 +1,11 @@
 //
 //  BanksListView.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import SwiftUI
 import PrimerSDK
+import SwiftUI
 
 struct PaymentMethodModel {
     let name: String
@@ -110,7 +110,7 @@ extension BanksListView {
 
 extension Binding {
     func didSet(execute: @escaping (Value) -> Void) -> Binding {
-        return Binding(
+        Binding(
             get: { self.wrappedValue },
             set: {
                 self.wrappedValue = $0
@@ -134,12 +134,12 @@ extension BanksListView {
                     .padding(.horizontal, metrics.hPadding)
                     .addAccessibilityIdentifier(identifier: AccessibilityIdentifier.BanksComponent.searchBar.rawValue)
                     .onTapGesture {
-                        self.isEditing = true
+                        isEditing = true
                     }
                 if isEditing {
                     Button(action: {
-                        self.isEditing = false
-                        self.text = ""
+                        isEditing = false
+                        text = ""
                     }) {
                         Text("Cancel")
                     }
@@ -156,12 +156,6 @@ extension BanksListView.SearchBar {
     private struct Metrics {
         let textLeftPadding: CGFloat = 0
         let hPadding: CGFloat = 25
-    }
-}
-
-struct BanksListView_Previews: PreviewProvider {
-    static var previews: some View {
-        BanksListView(paymentMethodModel: PaymentMethodModel(name: "ideal", logo: nil), banksModel: BanksListModel(), didSelectBank: { _ in }, didFilterByText: { _ in })
     }
 }
 

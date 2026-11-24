@@ -4,12 +4,10 @@ import PackageDescription
 
 // swift-tools-version:5.3
 
-import PackageDescription
-
 let package = Package(
     name: "PrimerSDK",
     defaultLocalization: "en",
-    platforms: [.iOS("13.1")],
+    platforms: [.iOS("15.0")],
     products: [.library(name: "PrimerSDK", targets: ["PrimerSDK"])],
     dependencies: [.package(url: "https://github.com/primer-io/primer-nol-pay-sdk-ios", from: "1.0.2")],
     targets: packageTargets,
@@ -31,6 +29,7 @@ private var packageTargets: [Target] {
         target(name: "PrimerBDCEngine", dependencies: ["PrimerFoundation", "PrimerStepResolver"]),
         
         target(name: "PrimerBDCCore", dependencies: ["PrimerBDCEngine", "PrimerFoundation", "PrimerStepResolver"]),
+        target(name: "PrimerBDCUI", dependencies: ["PrimerFoundation", "PrimerStepResolver"]),
         
         sdkTestsTarget,
         
@@ -46,6 +45,7 @@ private var primerSDKDependencies: [Target.Dependency] {
         .product(name: "PrimerNolPaySDK", package: "primer-nol-pay-sdk-ios"),
         "PrimerBDCCore",
         "PrimerBDCEngine",
+        "PrimerBDCUI",
         "PrimerFoundation",
         "PrimerStepResolver",
         "PrimerCore",

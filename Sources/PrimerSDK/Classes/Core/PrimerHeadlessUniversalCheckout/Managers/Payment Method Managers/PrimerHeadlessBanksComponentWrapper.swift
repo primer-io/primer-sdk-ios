@@ -91,10 +91,10 @@ extension PrimerHeadlessBanksComponentWrapper: PrimerHeadlessErrorableDelegate,
 private extension PrimerValidationStatus {
     var toValidStatus: ValidStatus {
         switch self {
-        case .valid: return .valid
-        case .validating: return .validating
-        case .error: return .error
-        case .invalid: return .invalid
+        case .valid: .valid
+        case .validating: .validating
+        case .error: .error
+        case .invalid: .invalid
         }
     }
 }

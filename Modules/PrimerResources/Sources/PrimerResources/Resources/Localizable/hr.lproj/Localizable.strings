@@ -100,6 +100,9 @@
 /* Pay with card - Payment Method Type (Card Not Vaulted */
 "payment-method-type-card-not-vaulted" = "Plati karticom";
 
+/* The message copy that tells the user how to transfer funds given a displayed account code */
+"pleaseTransferFunds" = "Uplatite sredstva na navedeni bankovni račun u banci DBS sa svog bankovnog računa u Singapuru putem sustava FAST (preporučeno), MEPS ili GIRO.";
+
 /* An error message displayed when the postal code field is not correct */
 "postalCodeErrorInvalid" = "Nevažeći poštanski broj";
 
@@ -133,6 +136,9 @@
 /* Cardholder name */
 "primer-card-form-name" = "Ime";
 
+/* Billing address section title - Card Form */
+"primer-card-form-billing-address" = "Billing address";
+
 /* Pay - Card Form (Checkout submit button text) */
 "primer-card-form-pay" = "Plati";
 
@@ -150,6 +156,9 @@
 
 /* Confirm SEPA Direct Debit - Confirm Mandate (Main title text) */
 "primer-confirm-mandate-confirm-sepa-direct-debit" = "Potvrdi SEPA Direct Debit";
+
+/* CVV- CVV recapture explanation label */
+"primer-cvv-recapture-explanation" = "Za sigurno plaćanje unesite %d-znamenkasti sigurnosni kod sa svoje kartice.";
 
 /* Do you want to delete this payment method? - Delete alert title */
 "primer-delete-alert-title" = "Želite li izbrisati ovaj način plaćanja?";
@@ -282,4 +291,6 @@
 
 /* Upload the screenshot in your banking app. - QR code screen subtitle label */
 "uploadScreenshot" = "Prenesite snimku zaslona u svoju bankovnu aplikaciju";
+
+
 

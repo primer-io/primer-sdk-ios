@@ -4,6 +4,7 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+import Foundation
 @_spi(PrimerInternal) import PrimerNetworking
 
 enum PrimerRuntimeHeaders {
@@ -15,5 +16,9 @@ enum PrimerRuntimeHeaders {
             "Content-Type": "application/json",
             "Primer-SDK-Version": VersionUtils.releaseVersionNumber
         ].compactMapValues(\.self)
+    }
+
+    static var idempotent: [String: String] {
+        `default`.merging(["X-Idempotency-Key": UUID().uuidString]) { $1 }
     }
 }

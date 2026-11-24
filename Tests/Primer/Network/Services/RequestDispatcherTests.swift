@@ -4,8 +4,8 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-@_spi(PrimerInternal) import PrimerFoundation
-@_spi(PrimerInternal) import PrimerNetworking
+@_spi(PrimerInternal) @testable import PrimerFoundation
+@_spi(PrimerInternal) @testable import PrimerNetworking
 @testable import PrimerSDK
 import XCTest
 
@@ -47,7 +47,7 @@ final class RequestDispatcherTests: XCTestCase {
 
     func testSuccessfulResponse_completion() throws {
 
-        let expectation = self.expectation(description: "Successful response received")
+        let expectation = expectation(description: "Successful response received")
 
         let urlString = "https://a_url"
         let url = URL(string: urlString)!
@@ -73,7 +73,7 @@ final class RequestDispatcherTests: XCTestCase {
 
     func testHTTPFailureResponse_completion() throws {
 
-        let expectation = self.expectation(description: "Successful response received")
+        let expectation = expectation(description: "Successful response received")
 
         let urlString = "https://a_url"
         let url = URL(string: urlString)!
@@ -98,7 +98,7 @@ final class RequestDispatcherTests: XCTestCase {
     }
 
     func testFailedDispatchResponse_completion() throws {
-        let expectation = self.expectation(description: "Successful response received")
+        let expectation = expectation(description: "Successful response received")
 
         let urlString = "https://a_url"
         let url = URL(string: urlString)!
@@ -137,7 +137,7 @@ final class RequestDispatcherTests: XCTestCase {
 
         XCTAssertEqual(response.metadata.responseUrl, "https://a_url")
         XCTAssertEqual(response.metadata.statusCode, 200)
-        XCTAssertEqual(response.data, self.session.data)
+        XCTAssertEqual(response.data, session.data)
     }
 
     func testHTTPFailureResponse_async() async throws {
@@ -153,7 +153,7 @@ final class RequestDispatcherTests: XCTestCase {
 
         XCTAssertEqual(response.metadata.responseUrl, "https://a_url")
         XCTAssertEqual(response.metadata.statusCode, 500)
-        XCTAssertEqual(response.data, self.session.data)
+        XCTAssertEqual(response.data, session.data)
     }
 
     func testFailedDispatchResponse_async() async throws {
@@ -176,7 +176,7 @@ final class RequestDispatcherTests: XCTestCase {
     }
 
     func testRetryOnNetworkError() throws {
-        let expectation = self.expectation(description: "Retry on network error")
+        let expectation = expectation(description: "Retry on network error")
 
         let urlString = "https://a_url"
         let url = URL(string: urlString)!
@@ -200,7 +200,7 @@ final class RequestDispatcherTests: XCTestCase {
     }
 
     func testRetryOn500Error() throws {
-        let expectation = self.expectation(description: "Retry on 500 error")
+        let expectation = expectation(description: "Retry on 500 error")
 
         let urlString = "https://a_url"
         let url = URL(string: urlString)!
@@ -225,7 +225,7 @@ final class RequestDispatcherTests: XCTestCase {
     }
 
     func testNoRetryOnSuccess() throws {
-        let expectation = self.expectation(description: "No retry on success")
+        let expectation = expectation(description: "No retry on success")
 
         let urlString = "https://a_url"
         let url = URL(string: urlString)!

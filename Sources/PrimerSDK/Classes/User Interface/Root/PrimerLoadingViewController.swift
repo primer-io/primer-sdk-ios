@@ -4,9 +4,9 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import UIKit
 @_spi(PrimerInternal) import PrimerCore
 @_spi(PrimerInternal) import PrimerUI
+import UIKit
 
 /// PrimerLoadingViewController is a loading view controller, with variable height.
 final class PrimerLoadingViewController: PrimerViewController {
@@ -40,9 +40,9 @@ final class PrimerLoadingViewController: PrimerViewController {
 
         resultView = PrimerResultComponentView(
             frame: .zero,
-            imageView: self.imageView,
-            message: self.message,
-            loadingIndicator: self.activityIndicatorView
+            imageView: imageView,
+            message: message,
+            loadingIndicator: activityIndicatorView
         )
         view.addSubview(resultView)
         resultView.translatesAutoresizingMaskIntoConstraints = false

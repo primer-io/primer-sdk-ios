@@ -5,9 +5,9 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import PrimerFoundation
+@_spi(PrimerInternal) @testable import PrimerNetworking
 @testable import PrimerSDK
 import XCTest
-@_spi(PrimerInternal) @testable import PrimerNetworking
 
 final class CreateResumePaymentServiceTests: XCTestCase {
     var sut: CreateResumePaymentService!
@@ -305,6 +305,42 @@ final class CreateResumePaymentServiceTests: XCTestCase {
             XCTFail("Expected failure but got success")
         } catch {
             // Expected error
+        }
+    }
+
+    func test_resumePayment_failedStatus_throwsPaymentFailedWithPaymentData() async throws {
+        // Given
+        apiClient.resumeResponse = .success(.failedStatus)
+        AppState.current.clientToken = MockAppState.mockClientToken
+        let resumeRequest = Request.Body.Payment.Resume(token: "")
+
+        // When
+        do {
+            _ = try await sut.resumePaymentWithPaymentId("", paymentResumeRequest: resumeRequest)
+            XCTFail("Expected failure but got success")
+        } catch let PrimerError.paymentFailed(paymentMethodType, paymentId, _, status, _) {
+            // Then
+            XCTAssertEqual(paymentMethodType, "PAYMENT_CARD")
+            XCTAssertEqual(paymentId, "id")
+            XCTAssertEqual(status, "FAILED")
+        } catch {
+            XCTFail("Expected paymentFailed, got \(error)")
+        }
+    }
+
+    func test_resumePayment_responseError_throwsFailedToResumePayment() async throws {
+        // Given
+        apiClient.resumeResponse = .failure(PrimerError.unknown())
+        AppState.current.clientToken = MockAppState.mockClientToken
+        let resumeRequest = Request.Body.Payment.Resume(token: "")
+
+        // When
+        do {
+            _ = try await sut.resumePaymentWithPaymentId("", paymentResumeRequest: resumeRequest)
+            XCTFail("Expected failure but got success")
+        } catch {
+            // Then
+            XCTAssertEqual((error as? PrimerError)?.errorId, "failed-to-resume-payment")
         }
     }
 

@@ -10,7 +10,10 @@ import Foundation
 
 @MainActor @_spi(PrimerInternal)
 public final class BackendDrivenCheckoutOrchestrator {
-        
+
+    private static let suspendedPollFloorMilliseconds = 30000
+    private static let maxDeadlineRestarts = 2
+
     public var onURLOpened: (() -> Void)? {
         get { stepOrchestrator.onURLOpen }
         set { stepOrchestrator.onURLOpen = newValue }
@@ -35,7 +38,27 @@ public final class BackendDrivenCheckoutOrchestrator {
         coreUrl: String?,
         instructionProvider: ClientInstructionProvider
     ) async throws -> CheckoutResult {
-        var instruction = try await instructionProvider.fetchPayInstruction()
+        let instruction = try await instructionProvider.fetchPayInstruction()
+        return try await follow(instruction, pciUrl: pciUrl, coreUrl: coreUrl, instructionProvider: instructionProvider)
+    }
+
+    public func pay(
+        paymentInstrumentTokenId: String,
+        pciUrl: String?,
+        coreUrl: String?,
+        instructionProvider: ClientInstructionProvider
+    ) async throws -> CheckoutResult {
+        let instruction = try await instructionProvider.fetchPayInstruction(paymentInstrumentTokenId: paymentInstrumentTokenId)
+        return try await follow(instruction, pciUrl: pciUrl, coreUrl: coreUrl, instructionProvider: instructionProvider)
+    }
+
+    private func follow(
+        _ firstInstruction: ClientInstruction,
+        pciUrl: String?,
+        coreUrl: String?,
+        instructionProvider: ClientInstructionProvider
+    ) async throws -> CheckoutResult {
+        var instruction = firstInstruction
         while true {
             try Task.checkCancellation()
             switch instruction {
@@ -55,22 +78,62 @@ public final class BackendDrivenCheckoutOrchestrator {
         }
     }
 
+    @discardableResult
     public func runSetup(
         pciUrl: String?,
         coreUrl: String?,
         instructionProvider: ClientInstructionProvider
-    ) async throws {
+    ) async throws -> String {
+        var restarts = 0
+        while true {
+            do {
+                return try await runSetupOnce(pciUrl: pciUrl, coreUrl: coreUrl, instructionProvider: instructionProvider)
+            } catch let ended as SetupEnded where ended.reason.startsAgain && restarts < Self.maxDeadlineRestarts {
+                restarts += 1
+            }
+        }
+    }
+
+    private func runSetupOnce(
+        pciUrl: String?,
+        coreUrl: String?,
+        instructionProvider: ClientInstructionProvider
+    ) async throws -> String {
         let flow = try await instructionProvider.fetchSetupFlow()
         let sdk = SDKUrls(pciUrl: pciUrl, coreUrl: coreUrl)
         let object = InitialState(params: flow.parameters, sdk: sdk, currentAttempt: nil)
         let initialState = try object.casted(to: CodableValue.self)
         try await stepOrchestrator.start(rawSchema: flow.schema.jsonString, initialState: initialState)
+
+        var screen = flow.schema
+        var wait = pollWait(flow.nextPoll, delay: flow.pollDelayMilliseconds)
+        while true {
+            try Task.checkCancellation()
+            try await stepOrchestrator.waitToPoll(milliseconds: wait)
+            let state = try await instructionProvider.fetchSetupState(setupId: flow.setupId)
+            switch state.instruction {
+            case .wait: break
+            case let .setupComplete(token): return token
+            case let .execute(next) where next != screen:
+                try await stepOrchestrator.start(rawSchema: next.jsonString, initialState: initialState)
+                screen = next
+            case .execute:
+                break
+            case let .ended(reason):
+                throw SetupEnded(reason: reason)
+            }
+            wait = pollWait(state.nextPoll, delay: state.pollDelayMilliseconds)
+        }
+    }
+
+    private func pollWait(_ nextPoll: NextPoll, delay: Int) -> Int {
+        nextPoll == .suspend ? Self.suspendedPollFloorMilliseconds : delay
     }
 
     private func resolveOutcome(_ outcome: CheckoutOutcome?, payment: PaymentInfo?) throws -> CheckoutResult {
         switch outcome {
-        case .complete: return .success(payment: payment)
-        case .failure: return .failure(payment: payment)
+        case .complete: .success(payment: payment)
+        case .failure: .failure(payment: payment)
         case .none: throw Error.missingCheckoutOutcome
         case .determineFromPaymentStatus: throw Error.unexpectedOutcome
         }
@@ -88,6 +151,23 @@ private struct InitialState: Encodable {
     let params: CodableValue
     let sdk: SDKUrls
     let currentAttempt: CurrentAttemptDataResponse?
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: Key.self)
+        if case let .object(entries) = params {
+            for (key, value) in entries { try container.encode(value, forKey: Key(key)) }
+        }
+        try container.encode(sdk, forKey: Key("sdk"))
+        try container.encodeIfPresent(currentAttempt, forKey: Key("currentAttempt"))
+    }
+
+    private struct Key: CodingKey {
+        let stringValue: String
+        var intValue: Int? { nil }
+        init(_ stringValue: String) { self.stringValue = stringValue }
+        init?(stringValue: String) { self.init(stringValue) }
+        init?(intValue: Int) { nil }
+    }
 }
 
 private struct SDKUrls: Encodable {

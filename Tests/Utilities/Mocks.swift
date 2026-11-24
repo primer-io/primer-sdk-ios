@@ -4,13 +4,12 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import PrimerFoundation
-@testable import PrimerSDK
-import PrimerUI
-import XCTest
 @_spi(PrimerInternal) @testable import PrimerCore
+import PrimerFoundation
 @_spi(PrimerInternal) @testable import PrimerNetworking
+@testable import PrimerSDK
 @_spi(PrimerInternal) import PrimerUI
+import XCTest
 
 var mockClientToken = DecodedJWTToken(accessToken: "bla", expDate: Date(timeIntervalSince1970: 2000000000), configurationUrl: "https://primer.io", paymentFlow: "bla", threeDSecureInitUrl: "https://primer.io", threeDSecureToken: "bla", supportedThreeDsProtocolVersions: nil, coreUrl: "https://primer.io", pciUrl: "https://primer.io", env: "bla", intent: "bla", statusUrl: "https://primer.io", redirectUrl: "https://primer.io", qrCode: nil, accountNumber: nil, backendCallbackUrl: nil, primerTransactionId: nil, iPay88PaymentMethodId: nil, iPay88ActionType: nil, supportedCurrencyCode: nil, supportedCountry: nil, nolPayTransactionNo: nil, stripeClientSecret: nil, sdkCompleteUrl: "https://primer.io")
 
@@ -412,6 +411,30 @@ extension MockAppState {
             "intent": "TEST_REDIRECTION",
             "redirectUrl": "https://localhost/redirect",
             "statusUrl": "https://localhost/status"
+        ]) { _, new in new })
+    }
+
+    static var mockClientTokenWithProcessor3DS: String {
+        try! jwtFactory.create(payload: mockSandboxPayload.merging([
+            "intent": "PROCESSOR_3DS",
+            "redirectUrl": "https://localhost/processor-3ds",
+            "statusUrl": "https://localhost/status"
+        ]) { _, new in new })
+    }
+
+    static var mockClientTokenWith3DS: String {
+        try! jwtFactory.create(payload: mockSandboxPayload.merging([
+            "intent": "3DS_AUTHENTICATION"
+        ]) { _, new in new })
+    }
+
+    static var mockClientTokenWithQRCode: String {
+        // swiftlint:disable:next line_length
+        let minimalPNGBase64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
+        return try! jwtFactory.create(payload: mockSandboxPayload.merging([
+            "intent": "QR_CODE",
+            "statusUrl": "https://localhost/status",
+            "qrCode": minimalPNGBase64
         ]) { _, new in new })
     }
 

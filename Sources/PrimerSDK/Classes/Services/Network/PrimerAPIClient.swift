@@ -155,6 +155,26 @@ final class PrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
 
+    func refreshClientSession(clientToken: DecodedJWTToken) async throws -> PrimerAPIConfiguration {
+        do {
+            // Runs inside the Apple Pay sheet, so it skips display metadata and keeps retries short.
+            let (configuration, _): (PrimerAPIConfiguration, [String: String]?) = try await networkService.request(
+                .fetchConfiguration(
+                    clientToken: clientToken,
+                    requestParameters: Request.URLParameters.Configuration(
+                        skipPaymentMethodTypes: [],
+                        requestDisplayMetadata: false
+                    )
+                ),
+                retryConfig: RetryConfig(enabled: true, maxRetries: 2)
+            )
+            return configuration
+        } catch {
+            ErrorHandler.shared.handle(error: error)
+            throw error
+        }
+    }
+
     func createPayPalOrderSession(
         clientToken: DecodedJWTToken,
         payPalCreateOrderRequest: Request.Body.PayPal.CreateOrder,
@@ -334,6 +354,18 @@ final class PrimerAPIClient: PrimerAPIClientProtocol {
             .listRetailOutlets(
                 clientToken: clientToken,
                 paymentMethodId: paymentMethodId
+            )
+        )
+    }
+
+    func listAdyenKlarnaPaymentTypes(
+        clientToken: DecodedJWTToken,
+        paymentMethodConfigId: String
+    ) async throws -> AdyenKlarnaPaymentOptionsResponse {
+        try await networkService.request(
+            .listAdyenKlarnaPaymentTypes(
+                clientToken: clientToken,
+                paymentMethodConfigId: paymentMethodConfigId
             )
         )
     }
@@ -575,9 +607,10 @@ final class PrimerAPIClient: PrimerAPIClientProtocol {
         completion: @escaping APICompletion<Response.Body.Bin.Networks>
     ) -> PrimerCancellable? {
         let endpoint = PrimerAPI.listCardNetworks(clientToken: clientToken, bin: bin)
-        return execute(endpoint) { (result: Result<Response.Body.Bin.Data, Error>) in
+        let wrappedCompletion: APICompletion<Response.Body.Bin.Data> = { result in
             completion(result.map { Response.Body.Bin.Networks(from: $0) })
         }
+        return execute(endpoint, completion: wrappedCompletion)
     }
 
     func listCardNetworks(

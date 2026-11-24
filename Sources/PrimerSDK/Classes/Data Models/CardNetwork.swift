@@ -8,14 +8,14 @@
 
 import Foundation
 import PassKit
+@_spi(PrimerInternal) import PrimerCore
 @_spi(PrimerInternal) import PrimerFoundation
 import UIKit
-@_spi(PrimerInternal) import PrimerCore
 
 extension CardNetwork {
 
     public var displayName: String {
-        if let displayName = self.validation?.niceType {
+        if let displayName = validation?.niceType {
             return displayName
         }
 
@@ -32,17 +32,7 @@ extension CardNetwork {
     }
 
     public var icon: UIImage? {
-        switch self {
-        case .amex: .amexColored
-        case .bancontact: .bancontact
-        case .cartesBancaires: .cartesBancairesColored
-        case .discover: .discoverColored
-        case .jcb: .jcb
-        case .masterCard: .masterCardColored
-        case .visa: .visaColored
-        case .eftpos: .eftposColored
-        case .diners, .elo, .hiper, .hipercard, .maestro, .mir, .unionpay, .unknown: .genericCard
-        }
+        UIImage(primerResource: "\(assetName)-card-icon-colored") ?? .genericCard
     }
 
     public var traits: PrimerCardNetworkTraits? {
@@ -74,9 +64,19 @@ extension CardNetwork {
                 .filter({ $0["type"] as? String == self.rawValue.uppercased() })
                 .first
             else { continue }
-            guard let surcharge = tmpNetwork["surcharge"] as? Int else { continue }
-            guard surcharge > 0 else { continue }
-            return surcharge
+
+            // Handle nested surcharge structure: surcharge.amount
+            if let surchargeData = tmpNetwork["surcharge"] as? [String: Any],
+               let surchargeAmount = surchargeData["amount"] as? Int,
+               surchargeAmount > 0 {
+                return surchargeAmount
+            }
+
+            // Fallback: handle direct surcharge integer format
+            if let surcharge = tmpNetwork["surcharge"] as? Int,
+               surcharge > 0 {
+                return surcharge
+            }
         }
 
         return nil

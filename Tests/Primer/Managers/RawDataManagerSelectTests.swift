@@ -49,6 +49,9 @@ final class RawDataManagerSelectTests: XCTestCase {
     }
 
     func test_submit_card_pickTheCardDoesNotOffer_reachesNeitherTheSelectNorTheToken() {
+        PrimerInternal.shared.sdkIntegrationType = .headless
+        addTeardownBlock { PrimerInternal.shared.sdkIntegrationType = nil }
+
         let selectCalls = selectCallsAtTokenize(of: coBadgedCard(pickedNetwork: .visa), lookupNetworks: [.cartesBancaires, .masterCard])
 
         XCTAssertEqual(selectCalls.map(\.network), ["CARTES_BANCAIRES"])
@@ -91,6 +94,30 @@ final class RawDataManagerSelectTests: XCTestCase {
         waitForExpectations(timeout: 5.0)
         XCTAssertEqual((reportedError as? PrimerError)?.diagnosticsId, selectError.diagnosticsId)
         XCTAssertEqual(tokenizeCallCount, 0)
+    }
+
+    func test_submit_card_fromCheckoutComponentsFactory_sendsNoSelect() throws {
+        let rawDataManager = try XCTUnwrap(
+            DefaultRawDataManagerFactory().createRawDataManager(paymentMethodType: "PAYMENT_CARD", delegate: nil) as? RawDataManager
+        )
+        rawDataManager.tokenizationService = tokenizationService
+        rawDataManager.clientSessionActionsModule = clientSessionActions
+        headlessCheckoutDelegate.onWillCreatePaymentWithData = { _, decisionHandler in
+            decisionHandler(.continuePaymentCreation())
+        }
+        let expectTokenize = expectation(description: "Card tokenized")
+        tokenizationService.onTokenize = { _ in
+            expectTokenize.fulfill()
+            return .failure(PrimerError.unknown())
+        }
+        let expectDidFail = expectation(description: "Payment stopped after tokenizing")
+        headlessCheckoutDelegate.onDidFail = { _ in expectDidFail.fulfill() }
+
+        rawDataManager.rawData = visaCard()
+        rawDataManager.submit()
+
+        waitForExpectations(timeout: 5.0)
+        XCTAssertTrue(clientSessionActions.selectPaymentMethodCalls.isEmpty)
     }
 
     func test_submit_blik_selectsTheMethodWithoutNetworkBeforeThePayment() throws {
@@ -150,10 +177,13 @@ final class RawDataManagerSelectTests: XCTestCase {
     }
 
     func test_surcharge_everyFeeZero_isOff() {
-        setSession(paymentMethodOptions: [
-            ["type": "APPLE_PAY", "surcharge": 0],
-            ["type": "PAYMENT_CARD", "networks": [["type": "VISA", "surcharge": 0]]]
-        ])
+        SDKSessionHelper.updateAllowedCardNetworks(
+            cardNetworks: [.visa],
+            paymentMethodOptions: [
+                ["type": "APPLE_PAY", "surcharge": 0],
+                ["type": "PAYMENT_CARD", "networks": [["type": "VISA", "surcharge": 0]]]
+            ]
+        )
 
         XCTAssertEqual(PrimerAPIConfigurationModule.apiConfiguration?.hasSurchargeEnabled, false)
     }
@@ -216,7 +246,10 @@ final class RawDataManagerSelectTests: XCTestCase {
         sut.rawData = visaCard()
         try await releaseSelections(afterHolding: 1, on: gate)
         try await waitForSelectCalls(1)
-        setSession(paymentMethodOptions: [["type": "PAYMENT_CARD", "networks": [["type": "CARTES_BANCAIRES", "surcharge": 50]]]])
+        SDKSessionHelper.updateAllowedCardNetworks(
+            cardNetworks: [.cartesBancaires, .masterCard, .visa],
+            paymentMethodOptions: [["type": "PAYMENT_CARD", "networks": [["type": "CARTES_BANCAIRES", "surcharge": 50]]]]
+        )
         sut.submit()
         await fulfillment(of: [expectDidFail], timeout: 5.0)
 
@@ -294,7 +327,10 @@ final class RawDataManagerSelectTests: XCTestCase {
     }
 
     private func prepareForTyping(_ rawDataManager: RawDataManager) -> NetworkSelectionGate {
-        setSession(paymentMethodOptions: [["type": "PAYMENT_CARD", "networks": [["type": "CARTES_BANCAIRES", "surcharge": 50]]]])
+        SDKSessionHelper.updateAllowedCardNetworks(
+            cardNetworks: [.cartesBancaires, .masterCard, .visa],
+            paymentMethodOptions: [["type": "PAYMENT_CARD", "networks": [["type": "CARTES_BANCAIRES", "surcharge": 50]]]]
+        )
         (rawDataManager.rawDataTokenizationBuilder as? PrimerRawCardDataTokenizationBuilder)?.cardValidationService = cardLookup
         rawDataManager.clientSessionActionsModule = clientSessionActions
         let gate = NetworkSelectionGate()
@@ -302,41 +338,11 @@ final class RawDataManagerSelectTests: XCTestCase {
         return gate
     }
 
-    private func setSession(paymentMethodOptions: [[String: Any]]?) {
-        PrimerAPIConfigurationModule.apiConfiguration?.clientSession = .init(
-            clientSessionId: "",
-            paymentMethod: .init(
-                vaultOnSuccess: false,
-                options: paymentMethodOptions,
-                orderedAllowedCardNetworks: ["CARTES_BANCAIRES", "MASTERCARD", "VISA"],
-                descriptor: nil
-            ),
-            order: nil,
-            customer: nil,
-            testId: nil
-        )
-    }
-
-    private func waitUntil(_ condition: () async -> Bool) async throws {
-        var waits = 0
-        while await !condition(), waits < 2000 {
-            try await Task.sleep(nanoseconds: 1_000_000)
-            waits += 1
-        }
-    }
-
     private func waitForSelectCalls(_ count: Int) async throws {
-        try await waitUntil { clientSessionActions.selectPaymentMethodCalls.count >= count }
+        try await withTimeout(2.0) {
+            while self.clientSessionActions.selectPaymentMethodCalls.count < count { await Task.yield() }
+        }
         await MainActor.run {}
-    }
-
-    private func waitForHeldSelections(_ count: Int, on gate: NetworkSelectionGate) async throws {
-        try await waitUntil { await gate.heldCount >= count }
-    }
-
-    private func releaseSelections(afterHolding count: Int, on gate: NetworkSelectionGate) async throws {
-        try await waitForHeldSelections(count, on: gate)
-        await gate.release()
     }
 
     private func selectCallsAtTokenize(
@@ -344,7 +350,10 @@ final class RawDataManagerSelectTests: XCTestCase {
         lookupNetworks: [CardNetwork]?,
         surcharged: Bool = true
     ) -> [(type: String, network: String?)] {
-        setSession(paymentMethodOptions: surcharged ? [["type": "PAYMENT_CARD", "networks": [["type": "CARTES_BANCAIRES", "surcharge": 50]]]] : nil)
+        SDKSessionHelper.updateAllowedCardNetworks(
+            cardNetworks: [.cartesBancaires, .masterCard, .visa],
+            paymentMethodOptions: surcharged ? [["type": "PAYMENT_CARD", "networks": [["type": "CARTES_BANCAIRES", "surcharge": 50]]]] : nil
+        )
         cardLookup.stubbedMetadata = lookupNetworks.map(PrimerCardNumberEntryMetadata.remoteLookup)
         (sut.rawDataTokenizationBuilder as? PrimerRawCardDataTokenizationBuilder)?.cardValidationService = cardLookup
         headlessCheckoutDelegate.onWillCreatePaymentWithData = { _, decisionHandler in
@@ -387,23 +396,5 @@ final class RawDataManagerSelectTests: XCTestCase {
 
     private func masterCard() -> PrimerCardData {
         PrimerCardData(cardNumber: "5555 5555 5555 4444", expiryDate: "03/2030", cvv: "123", cardholderName: "John Appleseed")
-    }
-}
-
-private final class NetworkSelectionGate {
-
-    private var heldSelections: [CheckedContinuation<Void, Never>] = []
-
-    @MainActor var heldCount: Int { heldSelections.count }
-
-    @MainActor
-    func wait() async {
-        await withCheckedContinuation { heldSelections.append($0) }
-    }
-
-    @MainActor
-    func release() {
-        heldSelections.forEach { $0.resume() }
-        heldSelections = []
     }
 }

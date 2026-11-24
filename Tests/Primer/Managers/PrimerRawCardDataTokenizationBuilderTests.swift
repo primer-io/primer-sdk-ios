@@ -4,7 +4,8 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-@_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) @testable import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
 @testable import PrimerSDK
 import XCTest
 
@@ -70,6 +71,7 @@ final class PrimerRawCardDataTokenizationBuilderTests: XCTestCase {
         let sut = PrimerRawCardDataTokenizationBuilder(paymentMethodType: "PAYMENT_CARD")
         let lookup = StubCardValidationService()
         lookup.stubbedMetadata = .remoteLookup([.visa, .cartesBancaires])
+        lookup.lookupStillRunning = true
         sut.cardValidationService = lookup
 
         let cardData = PrimerCardData(
@@ -301,6 +303,14 @@ final class PrimerRawCardDataTokenizationBuilderTests: XCTestCase {
         XCTAssertEqual(sut.effectiveNetwork(for: card("4111111111111111", pickedNetwork: .visa), cardNetworksMetadata: nil), .visa)
     }
 
+    func test_effectiveNetwork_unrecognizedCard_isOther() {
+        let sut = PrimerRawCardDataTokenizationBuilder(paymentMethodType: "PAYMENT_CARD")
+
+        let network = sut.effectiveNetwork(for: card("9999999999999995", pickedNetwork: nil), cardNetworksMetadata: nil)
+
+        XCTAssertEqual(network.rawValue, "OTHER")
+    }
+
     private func card(_ number: String, pickedNetwork: CardNetwork?) -> PrimerCardData {
         PrimerCardData(
             cardNumber: number,
@@ -326,6 +336,7 @@ extension PrimerCardNumberEntryMetadata {
 
 final class StubCardValidationService: CardValidationService {
     var stubbedMetadata: PrimerCardNumberEntryMetadata?
+    var lookupStillRunning = false
     private let lock = NSLock()
     private var recordedLookupRequests: [String] = []
     private var recordedRemoteMetadataRequests: [String] = []
@@ -350,7 +361,7 @@ final class StubCardValidationService: CardValidationService {
     func cachedMetadata(forCardNumber cardNumber: String) -> PrimerCardNumberEntryMetadata? {
         lock.withLock {
             recordedLookupRequests.append(cardNumber)
-            return stubbedMetadata
+            return lookupStillRunning ? nil : stubbedMetadata
         }
     }
 

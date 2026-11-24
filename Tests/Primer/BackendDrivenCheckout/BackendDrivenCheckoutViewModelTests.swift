@@ -6,7 +6,7 @@
 
 @testable @_spi(PrimerInternal) import PrimerBDCCore
 @_spi(PrimerInternal) @testable import PrimerCore
-@_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) @testable import PrimerFoundation
 @_spi(PrimerInternal) @testable import PrimerSDK
 import XCTest
 
@@ -21,6 +21,8 @@ final class BackendDrivenCheckoutViewModelTests: XCTestCase {
     
     private let payment = PaymentInfo(id: "pay_1", orderId: "ord_1", status: "SUCCESS")
     private let failedPayment = PaymentInfo(id: "pay_1", orderId: "ord_1", status: "FAILED")
+    // A short wait times out on a stalled CI runner, and the late callback then fails the next test.
+    private static let callbackTimeout: TimeInterval = 10
     
     override func setUp() {
         super.setUp()
@@ -58,6 +60,19 @@ final class BackendDrivenCheckoutViewModelTests: XCTestCase {
         }
     }
     
+    func testVaultedTokenPaysWithoutSetup() {
+        let provider = MockBDCInstructionProvider([.end(outcome: .complete, payment: payment)])
+        let exp = expectation(description: "complete")
+        delegate.onDidCompleteCheckoutWithData = { _ in exp.fulfill() }
+
+        let sut = makeSUT(makeInstructionProvider: { _ in provider })
+        Task { await sut.start(paymentInstrumentTokenId: "tok_1") }
+
+        wait(for: [exp], timeout: Self.callbackTimeout)
+        XCTAssertEqual(provider.paidWithTokenIds, ["tok_1"])
+        XCTAssertEqual(provider.setupFlowFetches, 0)
+    }
+
     func testExecuteThenEndCompletes() {
         assertComplete {
             makeSUT(instructions: [
@@ -215,7 +230,7 @@ private extension BackendDrivenCheckoutViewModelTests {
     }
     
     func assertComplete(
-        timeout: TimeInterval = 5.0,
+        timeout: TimeInterval = callbackTimeout,
         file: StaticString = #file, line: UInt = #line,
         _ makeSUT: () -> BackendDrivenCheckoutViewModel
     ) {
@@ -226,7 +241,7 @@ private extension BackendDrivenCheckoutViewModelTests {
     }
     
     func collectFailures(
-        timeout: TimeInterval = 3.0,
+        timeout: TimeInterval = callbackTimeout,
         settle: TimeInterval = 0.5,
         _ makeSUT: () -> BackendDrivenCheckoutViewModel
     ) -> [Swift.Error] {
@@ -247,7 +262,7 @@ private extension BackendDrivenCheckoutViewModelTests {
 
     func assertDidFail(
         matching predicate: ((Swift.Error) -> Bool)? = nil,
-        timeout: TimeInterval = 3.0,
+        timeout: TimeInterval = callbackTimeout,
         file: StaticString = #file, line: UInt = #line,
         _ makeSUT: () -> BackendDrivenCheckoutViewModel
     ) {
@@ -271,7 +286,7 @@ private extension BackendDrivenCheckoutViewModelTests {
 }
 
 @MainActor
-private final class MockBDCStepOrchestrator: StepOrchestrating {
+final class MockBDCStepOrchestrator: StepOrchestrating {
     var onURLOpen: (() -> Void)?
     var startCallCount = 0
     var startError: Error?
@@ -284,22 +299,37 @@ private final class MockBDCStepOrchestrator: StepOrchestrating {
     func applyEvent(_ value: PrimerFoundation.CodableValue) async throws {
         
     }
-    
+
+    func waitToPoll(milliseconds: Int) async throws {
+        throw CancellationError()
+    }
 }
 
-private final class MockBDCInstructionProvider: ClientInstructionProvider {
+final class MockBDCInstructionProvider: ClientInstructionProvider {
     var error: Error?
     var errorAfterFirstFetch: Swift.Error?
     private(set) var fetchCount = 0
+    private(set) var paidWithTokenIds: [String] = []
+    private(set) var setupFlowFetches = 0
     private var instructions: [ClientInstruction]
     private var index = 0
-    
+
     init(_ instructions: [ClientInstruction]) { self.instructions = instructions }
-    
+
     func fetchPayInstruction() async throws -> ClientInstruction { try next() }
 
+    func fetchPayInstruction(paymentInstrumentTokenId: String) async throws -> ClientInstruction {
+        paidWithTokenIds.append(paymentInstrumentTokenId)
+        return try next()
+    }
+
+    func fetchSetupState(setupId: String) async throws -> SetupState {
+        SetupState(instruction: .wait, nextPoll: .suspend)
+    }
+
     func fetchSetupFlow() async throws -> SetupFlow {
-        SetupFlow(schema: .object([:]), parameters: .object([:]))
+        setupFlowFetches += 1
+        return SetupFlow(schema: .object([:]), parameters: .object([:]), setupId: "setup-1", nextPoll: .suspend)
     }
     func fetchNextInstruction() async throws -> ClientInstruction { try next() }
     

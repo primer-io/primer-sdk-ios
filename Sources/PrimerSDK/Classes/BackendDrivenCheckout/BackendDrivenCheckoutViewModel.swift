@@ -4,26 +4,24 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import CryptoKit
 import Foundation
 @_spi(PrimerInternal) import PrimerBDCCore
-@_spi(PrimerInternal) import PrimerBDCEngine
+@_spi(PrimerInternal) import PrimerBDCUI
 @_spi(PrimerInternal) import PrimerCore
 @_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerNetworking
-@_spi(PrimerInternal) import PrimerStepResolver
+import SwiftUI
 import UIKit
 
 final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
 
-    typealias OrchestratorFactory = (SDKContext) async throws -> BackendDrivenCheckoutOrchestrator
-    typealias InstructionProviderFactory = (PrimerPaymentMethod) -> ClientInstructionProvider
+    typealias OrchestratorFactory = BackendDrivenCheckoutFlow.OrchestratorFactory
+    typealias InstructionProviderFactory = BackendDrivenCheckoutFlow.InstructionProviderFactory
 
-    private let makeOrchestrator: OrchestratorFactory
-    private let makeInstructionProvider: InstructionProviderFactory
-    private var orchestrator: BackendDrivenCheckoutOrchestrator?
-    private var flowStarted = false
-    private var flowEnded = false
+    private let flow: BackendDrivenCheckoutFlow
+    private var checkoutTask: Task<Void, Never>?
+    private var sduiController: UIViewController?
+    private var vaultedPaymentInstrumentTokenId: String?
 
     convenience init(
         config: PrimerPaymentMethod,
@@ -45,8 +43,11 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
         makeOrchestrator: @escaping OrchestratorFactory = BackendDrivenCheckoutOrchestrator.init,
         makeInstructionProvider: @escaping InstructionProviderFactory = NetworkClientInstructionProvider.init
     ) {
-        self.makeOrchestrator = makeOrchestrator
-        self.makeInstructionProvider = makeInstructionProvider
+        flow = BackendDrivenCheckoutFlow(
+            config: config,
+            makeOrchestrator: makeOrchestrator,
+            makeInstructionProvider: makeInstructionProvider
+        )
         super.init(
             config: config,
             uiManager: uiManager,
@@ -55,42 +56,31 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
         )
     }
     
+    func start(paymentInstrumentTokenId: String) async {
+        vaultedPaymentInstrumentTokenId = paymentInstrumentTokenId
+        start()
+        await checkoutTask?.value
+    }
+
     override func start() {
-        Task { @MainActor in
+        checkoutTask = Task { @MainActor in
             defer { config.tokenizationViewModel = nil }
-            do {
-                PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: nil, message: nil)
-                
-                try await checkWillCreatePaymentDecision()
-                
-                try await setupOrchestrator()
-                logBDCStarted()
+            PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: nil, message: nil)
 
-                let instructionProvider = makeInstructionProvider(config)
-                await PrimerStepResolverRegistry.shared.register(HTTPRequestResolver(), for: .httpRequest)
-                
-                if config.entry.requiresSetup {
-                    return try await orchestrator?.runSetup(
-                        pciUrl: PrimerAPIConfigurationModule.apiConfiguration?.pciUrl,
-                        coreUrl: PrimerAPIConfigurationModule.apiConfiguration?.coreUrl,
-                        instructionProvider: instructionProvider
-                    )
+            let host = BackendDrivenCheckoutFlow.Host(
+                willCreatePayment: { [weak self] in try await self?.checkWillCreatePaymentDecision() },
+                presentUI: { [weak self] in await self?.presentSDUI() ?? false },
+                dismissUI: { [weak self] in await self?.dismissSDUI() },
+                onURLOpened: { [weak self] in
+                    guard let self else { return }
+                    PrimerDelegateProxy.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for: paymentMethodType)
                 }
+            )
 
-                let result = try await orchestrator?.run(
-                    pciUrl: PrimerAPIConfigurationModule.apiConfiguration?.pciUrl,
-                    coreUrl: PrimerAPIConfigurationModule.apiConfiguration?.coreUrl,
-                    instructionProvider: instructionProvider
-                )
-                
-                switch result {
-                case let .success(payment): await handleSuccess(payment)
-                case let .failure(payment): await handleFailure(payment, diagnosticsId: .uuid)
-                case .none: await handleError(PrimerError.unknown())
-                }
-                
-            } catch {
-                await handleError(error)
+            switch await flow.run(paymentInstrumentTokenId: vaultedPaymentInstrumentTokenId, host: host) {
+            case let .paid(payment): await handleSuccess(payment)
+            case .setupOnly: break
+            case let .failed(error): await handleFailure(error)
             }
         }
     }
@@ -101,17 +91,33 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
         }
     }
     
+    @discardableResult
     @MainActor
-    private func setupOrchestrator() async throws {
-        let context = SDKContext.generate(payment: SDKPayment(paymentMethodType: config.type))
-        let orchestrator = try await makeOrchestrator(context)
-        self.orchestrator = orchestrator
-        orchestrator.onURLOpened = { [weak self] in
-            guard let self else { return }
-            PrimerDelegateProxy.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for: paymentMethodType)
+    private func presentSDUI() async -> Bool {
+        guard #available(iOS 16.0, *), sduiController == nil,
+              let root = PrimerUIManager.primerRootViewController else { return false }
+        let controller = UIHostingController(rootView: SDUIView(
+            onEvent: { [flow] in try await flow.applyEvent($0) },
+            onClose: { [weak self] in self?.checkoutTask?.cancel() },
+            titleImage: config.logo
+        ))
+        controller.modalPresentationStyle = .pageSheet
+        sduiController = controller
+        await withCheckedContinuation { continuation in
+            root.present(controller, animated: true) { continuation.resume() }
+        }
+        return true
+    }
+
+    @MainActor
+    private func dismissSDUI() async {
+        guard let controller = sduiController else { return }
+        sduiController = nil
+        await withCheckedContinuation { continuation in
+            controller.dismiss(animated: true) { continuation.resume() }
         }
     }
-    
+
     private func checkWillCreatePaymentDecision() async throws {
         let checkoutPaymentMethodType = PrimerCheckoutPaymentMethodType(type: paymentMethodType)
         let data = PrimerCheckoutPaymentMethodData(type: checkoutPaymentMethodType)
@@ -126,7 +132,6 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
     
     @MainActor
     private func handleSuccess(_ payment: PaymentInfo?) async {
-        logBDCEnded(outcome: "success")
         if PrimerSettings.current.paymentHandling == .auto {
             let checkoutData = PrimerCheckoutData(payment: payment?.toPrimerPayment())
             await PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
@@ -135,104 +140,17 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
         uiManager.dismissOrShowResultScreen(type: .success, paymentMethodManagerCategories: categories, withMessage: nil)
     }
     
-    private func handleFailure(_ payment: PaymentInfo?, diagnosticsId: String) async {
-        guard let payment, let paymentId = payment.id else {
-            return await handleError(PrimerError.unknown(message: "Payment or paymentId was nil"))
-        }
-        await handleError(PrimerError.paymentFailed(
-            paymentMethodType: config.type,
-            paymentId: paymentId,
-            orderId: payment.orderId,
-            status: payment.status,
-            diagnosticsId: diagnosticsId
-        ))
-    }
-    
     @MainActor
-    private func handleError(_ error: Swift.Error) async {
-        if error is BackendDrivenCheckoutCancellation {
-            return await handleError(PrimerError.cancelled(paymentMethodType: config.type))
-        }
-        let primerError: PrimerErrorProtocol = (error as? PrimerErrorProtocol) ?? PrimerError.unknown(
-            message: error.localizedDescription,
-            diagnosticsId: error.diagnosticId
-        )
-        let cancelled: Bool = if case .cancelled = error as? PrimerError { true } else { false }
-        logBDCEnded(outcome: cancelled ? "cancelled" : "error", error: primerError)
-        Analytics.Service.fire(event: .message(
-            message: "BDC Failed: \(error)",
-            messageType: .error,
-            severity: .error,
-            diagnosticsId: primerError.diagnosticsId,
-            context: ["paymentMethodType": config.type, "errorId": primerError.errorId]
-        ))
-        let decision = await PrimerDelegateProxy.primerDidFailWithError(primerError, data: paymentCheckoutData)
+    private func handleFailure(_ error: PrimerErrorProtocol) async {
+        let decision = await PrimerDelegateProxy.primerDidFailWithError(error, data: paymentCheckoutData)
         switch decision.type {
         case let .fail(message): handleFailureFlow(errorMessage: message)
         }
-    }
-    
-    private func logBDCStarted() {
-        flowStarted = true
-        let event = Analytics.Event.message(
-            message: "BDC flow started.",
-            messageType: .backendDrivenCheckoutStarted,
-            severity: .info,
-            context: [
-                "paymentMethodType": config.type,
-                "entry": config.entry.rawValue,
-                "trustedKeyFingerprints": ManifestValidator.trustedPublicKeys.map(\.fingerprint)
-            ]
-        )
-        Analytics.Service.fire(event: event)
-    }
-
-    private func logBDCEnded(outcome: String, error: PrimerErrorProtocol? = nil) {
-        guard flowStarted, !flowEnded else { return }
-        flowEnded = true
-        var context: [String: Any] = ["paymentMethodType": config.type, "entry": config.entry.rawValue, "outcome": outcome]
-        if let error { context["errorId"] = error.errorId }
-        let event = Analytics.Event.message(
-            message: "BDC flow ended: \(outcome).",
-            messageType: .backendDrivenCheckoutEnded,
-            severity: outcome == "error" ? .error : .info,
-            diagnosticsId: error?.diagnosticsId,
-            context: context
-        )
-        Analytics.Service.fire(event: event)
     }
 }
 
 private extension PaymentInfo {
     func toPrimerPayment() -> PrimerCheckoutDataPayment {
         PrimerCheckoutDataPayment(id: id, orderId: orderId, paymentFailureReason: nil, status: status)
-    }
-}
-
-private extension Error {
-    var diagnosticId: String { (self as? StateProcessorError)?.diagnosticsId ?? .uuid }
-}
-
-private extension BackendDrivenCheckoutOrchestrator {
-    convenience init(context: SDKContext) async throws {
-        let provider = NetworkSignedManifestProvider(token: PrimerAPIConfigurationModule.decodedJWTToken)
-        let engine: any BDCEngineProtocol
-        do {
-            engine = try await BDCEngineProvider.shared.engine(manifestProvider: provider)
-        } catch {
-            let message = "BDC engine failed to load: \(error)"
-            Analytics.Service.fire(event: .message(message: message, messageType: .backendDrivenEngineLoadFailed, severity: .error))
-            throw error
-        }
-        self.init(engine: engine, context: context)
-    }
-}
-
-private extension String {
-    var fingerprint: String? {
-        guard let keyBytes = Data(base64Encoded: self) else { return nil }
-        return SHA256.hash(data: keyBytes)
-            .map { String(format: "%02x", $0) }
-            .joined(separator: "")
     }
 }

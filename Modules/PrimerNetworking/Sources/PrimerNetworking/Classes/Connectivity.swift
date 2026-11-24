@@ -9,9 +9,9 @@ import SystemConfiguration
 @_spi(PrimerInternal) public final class Connectivity {
 
     public enum NetworkType: String, Codable {
-        case wifi = "WIFI"
-        case cellular = "CELLULAR"
-        case none = "NONE"
+        case wifi
+        case cellular
+        case none
     }
 
     public static var networkType: Connectivity.NetworkType {
