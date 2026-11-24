@@ -5,8 +5,8 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
-@_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerNetworking
 
 extension String {
@@ -89,6 +89,13 @@ extension String {
         if count < 1 { return false }
         let set = CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLKMNOPQRSTUVWXYZ '`~.-1234567890")
         return !(self.rangeOfCharacter(from: set.inverted) != nil)
+    }
+
+    /// The client token signature can't be verified on device, so token URLs must at least point at Primer.
+    var isPrimerURL: Bool {
+        guard let url = URL(string: self), url.scheme?.lowercased() == "https",
+              let host = url.host?.lowercased() else { return false }
+        return host == "primer.io" || host.hasSuffix(".primer.io")
     }
 
     var decodedJWTToken: DecodedJWTToken? {
