@@ -176,11 +176,10 @@ extension Analytics {
         }
 
         private func sendSdkAnalyticsEvents(events: [StoredEvent]) async throws {
-            let urlEvents = events.filter { $0.analyticsUrl != nil }
-            let events = urlEvents.filter { $0.analyticsUrl?.isPrimerURL == true }
             // Events stored from a forged client token must never reach its host.
-            let foreignEvents = urlEvents.filter { $0.analyticsUrl?.isPrimerURL != true }
+            let foreignEvents = events.filter { $0.analyticsUrl?.isPrimerURL == false }
             if !foreignEvents.isEmpty { storage.delete(foreignEvents) }
+            let events = events.filter { $0.analyticsUrl?.isPrimerURL == true }
             let urls = Set(events.compactMap(\.analyticsUrl).compactMap(URL.init))
             let eventSets = urls.map { url in
                 (url: url, events: events.filter { $0.analyticsUrl == url.absoluteString })
