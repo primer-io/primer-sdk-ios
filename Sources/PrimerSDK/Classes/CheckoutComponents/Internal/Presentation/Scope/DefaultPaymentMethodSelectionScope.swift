@@ -254,6 +254,13 @@ final class DefaultPaymentMethodSelectionScope: PaymentMethodSelectionScopeInter
 
     logger.info(message: "[Vault] Starting payment with vaulted method: \(vaultedMethod.id)")
 
+    if #available(iOS 16.0, *), let checkoutScope,
+       let scope: DefaultBackendDrivenScope = checkoutScope.getPaymentMethodScope(for: vaultedMethod.paymentMethodType) {
+      scope.prepareForReentry()
+      scope.start(paymentInstrumentTokenId: vaultedMethod.id)
+      return checkoutScope.updateNavigationState(.paymentMethod(vaultedMethod.paymentMethodType))
+    }
+
     internalState.isVaultPaymentLoading = true
 
     let paymentMethod = vaultedMethod.paymentMethodType
