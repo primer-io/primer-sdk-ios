@@ -5,9 +5,9 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
-@_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerBDCCore
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerNetworking
 
 typealias JWTToken = String
@@ -174,20 +174,18 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
             throw handled(primerError: .invalidClientToken())
         }
 
-        let previousDecodedToken = PrimerAPIConfigurationModule.decodedJWTToken
+        let tokenUrls = [
+            currentDecodedToken.configurationUrl,
+            currentDecodedToken.coreUrl,
+            currentDecodedToken.pciUrl,
+            currentDecodedToken.analyticsUrl,
+            currentDecodedToken.analyticsUrlV2
+        ].compactMap { $0 }.filter { !$0.isEmpty }
+        guard tokenUrls.allSatisfy(\.isPrimerURL) else {
+            throw handled(primerError: .invalidClientToken(reason: "The client token contains a URL that is not on primer.io"))
+        }
 
-        currentDecodedToken.configurationUrl = currentDecodedToken.configurationUrl?.replacingOccurrences(
-            of: "10.0.2.2:8080",
-            with: "localhost:8080"
-        )
-        currentDecodedToken.coreUrl = currentDecodedToken.coreUrl?.replacingOccurrences(
-            of: "10.0.2.2:8080",
-            with: "localhost:8080"
-        )
-        currentDecodedToken.pciUrl = currentDecodedToken.pciUrl?.replacingOccurrences(
-            of: "10.0.2.2:8080",
-            with: "localhost:8080"
-        )
+        let previousDecodedToken = PrimerAPIConfigurationModule.decodedJWTToken
 
         if currentDecodedToken.env == nil {
             currentDecodedToken.env = previousDecodedToken?.env

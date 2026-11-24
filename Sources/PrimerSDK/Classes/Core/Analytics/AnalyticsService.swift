@@ -9,8 +9,8 @@
 
 import Foundation
 @_spi(PrimerInternal) import PrimerCore
-@_spi(PrimerInternal) import PrimerStepResolver
 @_spi(PrimerInternal) import PrimerFoundation
+@_spi(PrimerInternal) import PrimerStepResolver
 
 extension Analytics {
 
@@ -176,7 +176,10 @@ extension Analytics {
         }
 
         private func sendSdkAnalyticsEvents(events: [StoredEvent]) async throws {
-            let events = events.filter { $0.analyticsUrl != nil }
+            // Events stored from a forged client token must never reach its host.
+            let foreignEvents = events.filter { $0.analyticsUrl?.isPrimerURL == false }
+            if !foreignEvents.isEmpty { storage.delete(foreignEvents) }
+            let events = events.filter { $0.analyticsUrl?.isPrimerURL == true }
             let urls = Set(events.compactMap(\.analyticsUrl).compactMap(URL.init))
             let eventSets = urls.map { url in
                 (url: url, events: events.filter { $0.analyticsUrl == url.absoluteString })
