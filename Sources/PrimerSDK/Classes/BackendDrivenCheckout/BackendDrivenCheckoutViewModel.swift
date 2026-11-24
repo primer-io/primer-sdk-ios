@@ -278,7 +278,7 @@ private extension Error {
     var diagnosticId: String { (self as? StateProcessorError)?.diagnosticsId ?? .uuid }
 }
 
-private extension BackendDrivenCheckoutOrchestrator {
+extension BackendDrivenCheckoutOrchestrator {
     convenience init(context: SDKContext) async throws {
         let provider = NetworkSignedManifestProvider(token: PrimerAPIConfigurationModule.decodedJWTToken)
         let engine: any BDCEngineProtocol
