@@ -13,8 +13,6 @@ enum BackendDrivenPaymentMethod {
   @MainActor
   static func register(types: [String]) {
     let types = types.filter { $0 != CardPaymentMethod.paymentMethodType }
-    guard !types.isEmpty else { return }
-    SDUITokenResolvers.register()
     for type in types {
       PaymentMethodRegistry.shared.register(
         paymentMethodType: type,
