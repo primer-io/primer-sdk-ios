@@ -22,115 +22,14 @@ extension PrimerBDCEngine {
         })();
         """
     }
-    
-    func initialize(schema: String, context: String, state: String) -> String {
-        setObject(schema, forKey: "__schema")
-        setObject(state, forKey: "__state")
-        setObject(context, forKey: "__context")
-        
-        return """
-        (async () => {
-            try {
-                const processor = await StateProcessor.createStateProcessor(__schema, JSON.parse(__context));
-                const result = await processor.initialize(JSON.parse(__state));
-                onInitializeResult(JSON.stringify(result));
-            } catch (e) {
-                onInitializeResult(JSON.stringify({ error: e.toString() }));
-            }
-        })();
-        """
-    }
-    
-    func eventScript(schema: String, context: String, state: String, event: String) -> String {
-        setObject(schema, forKey: "__schema")
-        setObject(state, forKey: "__state")
-        setObject(event, forKey: "__event")
-        setObject(context, forKey: "__context")
-        
-        return """
-        (async () => {
-            try {
-                const processor = await StateProcessor.createStateProcessor(__schema, JSON.parse(__context));
-                const result = await processor.applyEvent(JSON.parse(__state), JSON.parse(__event));
-                onProcessFieldResult(JSON.stringify(result));
-            } catch (e) {
-                onProcessFieldResult(JSON.stringify({ error: e.toString() }));
-            }
-        })();
-        """
-    }
-    
-    func resultScript(
-        schema: String,
-        context: String,
-        actionId: String,
-        state: String,
-        outcome: String,
-        data: String?
-    ) -> String {
-        setObject(schema, forKey: "__schema")
-        setObject(context, forKey: "__context")
-        setObject(state, forKey: "__state")
-        setObject(outcome, forKey: "__outcome")
-        setObject(data ?? "{}", forKey: "__data")
-        setObject(actionId, forKey: "__actionId")
-        
-        return """
-        (async () => {
-            try {
-                const processor = await StateProcessor.createStateProcessor(__schema, JSON.parse(__context));
-                const result = await processor.applyResult(JSON.parse(__state), __actionId, __outcome, JSON.parse(__data));
-                onExecuteActionResult(JSON.stringify(result));
-            } catch (e) {
-                onExecuteActionResult(JSON.stringify({ error: e.toString() }));
-            }
-        })();
-        """
-    }
 
-    func probesToRunScript(items: String, client: String) -> String {
-        setObject(items, forKey: "__items")
-        setObject(client, forKey: "__client")
-        
+    func call(_ script: EngineScript, id: Int) -> String {
+        let reply = "(reply) => onScriptReply(\(id), reply)"
+        let failure = "(e) => onScriptReply(\(id), JSON.stringify({ error: String(e) }))"
         return """
-        (async () => {
-            try {
-                if (typeof StateProcessor.probesToRun !== 'function') {
-                    onProbesToRunResult(JSON.stringify({ result: [] }));
-                    return;
-                }
-                const result = await StateProcessor.probesToRun(JSON.parse(__items), JSON.parse(__client));
-                onProbesToRunResult(JSON.stringify({ result }));
-            } catch (e) {
-                onProbesToRunResult(JSON.stringify({ error: e.toString() }));
-            }
-        })();
+        (async ({ \(script.arguments.keys.sorted().joined(separator: ", ")) }) => {
+        \(script.body)
+        })(__arguments).then(\(reply), \(failure));
         """
-    }
-
-    func checkClientRequirementsScript(items: String, client: String, results: String) -> String {
-        setObject(items, forKey: "__items")
-        setObject(client, forKey: "__client")
-        setObject(results, forKey: "__results")
-        
-        return """
-        (async () => {
-            try {
-                const client = JSON.parse(__client);
-                const results = JSON.parse(__results);
-                const result = {};
-                for (const item of JSON.parse(__items)) {
-                    result[item.id] = await StateProcessor.checkClientRequirements(item.clientRequirements, client, results);
-                }
-                onCheckClientRequirementsResult(JSON.stringify({ result }));
-            } catch (e) {
-                onCheckClientRequirementsResult(JSON.stringify({ error: e.toString() }));
-            }
-        })();
-        """
-    }
-
-    private func setObject(_ value: Any, forKey key: String) {
-        context.setObject(value, forKeyedSubscript: key as NSString)
     }
 }

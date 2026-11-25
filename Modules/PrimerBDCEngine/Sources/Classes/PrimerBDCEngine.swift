@@ -18,22 +18,16 @@ enum EngineError: Error {
 public final class PrimerBDCEngine: NSObject, BDCEngineProtocol {
     let context: JSContext
 
-    private typealias Continuation = CheckedContinuation<String, Never>
-    private typealias ContinuationPath = ReferenceWritableKeyPath<PrimerBDCEngine, Continuation?>
     private typealias JSStringBlock = @convention(block) (String) -> Void
     private typealias JSVoidBlock = @convention(block) () -> Void
-    
-    private let encoder = JSONEncoder()
+    private typealias JSReplyBlock = @convention(block) (Int, String) -> Void
+
     private var isReady = false
     private var loadError: String?
     private var loadingContinuations: [CheckedContinuation<Void, Error>] = []
-    private var initializeContinuation: Continuation?
-    private var applyEventContinuation: Continuation?
-    private var evaluateTreeContinuation: Continuation?
-    private var executeActionContinuation: Continuation?
-    private var probesToRunContinuation: Continuation?
-    private var checkRequirementsContinuation: Continuation?
-    
+    private var continuations: [Int: CheckedContinuation<String, Never>] = [:]
+    private var lastContinuationId = 0
+
     public convenience init(manifest: Manifest) async throws {
         try await self.init(files: EngineFilesDownloader().download(manifest))
     }
@@ -45,31 +39,34 @@ public final class PrimerBDCEngine: NSObject, BDCEngineProtocol {
         setupEngine(with: files)
         try await checkIfReady()
     }
+
+    func run(_ script: EngineScript) async throws -> Data {
+        try await checkIfReady()
+        lastContinuationId += 1
+        let continuationId = lastContinuationId
+        let json = await withCheckedContinuation { continuation in
+            continuations[continuationId] = continuation
+            context.setObject(script.arguments, forKeyedSubscript: "__arguments" as NSString)
+            context.evaluateScript(call(script, id: continuationId))
+        }
+        return Data(json.utf8)
+    }
 }
 
 public extension PrimerBDCEngine {
-    func start(schema: String, context: SDKContext, state: CodableValue) async throws -> [String: Any] {
-        try await checkIfReady()
-        let script = initialize(schema: schema, context: try context.literal(encoder), state: try state.literal(encoder))
-        return try await runScript(script, continuationPath: \.initializeContinuation)
+    func start(schema: String, context: SDKContext, state: CodableValue) async throws -> AnyDict {
+        try await dictionary(from: .start(schema: schema, context: context, state: state))
     }
-    
+
     func applyEvent<State: Encodable>(
         _ event: CodableValue,
         context: SDKContext,
         schema: String,
         state: State
-    ) async throws -> [String: Any]  {
-        try await checkIfReady()
-        let script = eventScript(
-            schema: schema,
-            context: try context.literal(encoder),
-            state: try state.literal(encoder),
-            event: try event.jsonString
-        )
-        return try await runScript(script, continuationPath: \.applyEventContinuation)
+    ) async throws -> [String: Any] {
+        try await dictionary(from: .applyEvent(event, context: context, schema: schema, state: state))
     }
-    
+
     func applyResult(
         schema: String,
         context: SDKContext,
@@ -77,26 +74,19 @@ public extension PrimerBDCEngine {
         state: CodableState,
         outcome: String,
         data: Data?
-    ) async throws  -> [String: Any] {
-        try await checkIfReady()
-        let script = resultScript(
+    ) async throws -> AnyDict {
+        try await dictionary(from: .applyResult(
             schema: schema,
-            context: try context.literal(encoder),
+            context: context,
             actionId: actionId,
-            state: try state.literal(encoder),
+            state: state,
             outcome: outcome,
-            data: data.flatMap { String(data: $0, encoding: .utf8) }
-        )
-        return try await runScript(script, continuationPath: \.executeActionContinuation)
+            data: data
+        ))
     }
 
-    func probesToRun(
-        items: [PaymentMethodRequirements],
-        client: BDCClient
-    ) async throws -> [ProbeRequest] {
-        try await checkIfReady()
-        let script = probesToRunScript(items: try items.literal(encoder), client: try client.literal(encoder))
-        return try await decodedResult(of: script, continuationPath: \.probesToRunContinuation)
+    func probesToRun(items: [PaymentMethodRequirements], client: BDCClient) async throws -> [ProbeRequest] {
+        try await decoded(from: .probesToRun(items: items, client: client))
     }
 
     func checkClientRequirements(
@@ -104,13 +94,22 @@ public extension PrimerBDCEngine {
         client: BDCClient,
         results: [String: ProbeResult]
     ) async throws -> ClientRequirementsVerdicts {
-        try await checkIfReady()
-        let script = checkClientRequirementsScript(
-            items: try items.literal(encoder),
-            client: try client.literal(encoder),
-            results: try results.literal(encoder)
-        )
-        return try await decodedResult(of: script, continuationPath: \.checkRequirementsContinuation)
+        try await decoded(from: .checkClientRequirements(items: items, client: client, results: results))
+    }
+}
+
+private extension PrimerBDCEngine {
+    func dictionary(from script: EngineScript) async throws -> AnyDict {
+        let json = try await run(script)
+        guard let object = try? JSONSerialization.jsonObject(with: json) as? AnyDict else { throw EngineError.jsonToDataFailed }
+        return object
+    }
+
+    func decoded<Value: Decodable>(from script: EngineScript) async throws -> Value {
+        let json = try await run(script)
+        let reply = try JSONDecoder().decode(ScriptResult<Value>.self, from: json)
+        guard let value = reply.result else { throw EngineError.scriptFailed(reply.error ?? "No result") }
+        return value
     }
 }
 
@@ -120,7 +119,7 @@ private extension PrimerBDCEngine {
         context.exceptionHandler = { _, exception in Logger.handleJSErr(exception?.toString() ?? "Unknown exception") }
         context.evaluateScript(context.textCodecPolyfill)
         context.evaluateScript(context.consolePolyfill)
-        
+
         let onReady: JSVoidBlock = { [weak self] in
             guard let self else { return }
             Logger.info(
@@ -130,99 +129,43 @@ private extension PrimerBDCEngine {
             isReady = true
             loadingContinuations.forEach { $0.resume() }
         }
-        
+
         let onLoadFailed: JSStringBlock = { [weak self] message in
             Logger.handleJSErr(message)
             guard let self else { return }
             loadError = message
             loadingContinuations.forEach { $0.resume(throwing: EngineError.loadFailed(message)) }
         }
-        
-        setupCallback(continuation: \.initializeContinuation, value: "onInitializeResult")
-        setupCallback(continuation: \.applyEventContinuation, value: "onProcessFieldResult")
-        setupCallback(continuation: \.evaluateTreeContinuation, value: "onEvaluateTreeResult")
-        setupCallback(continuation: \.executeActionContinuation, value: "onExecuteActionResult")
-        setupCallback(continuation: \.probesToRunContinuation, value: "onProbesToRunResult")
-        setupCallback(continuation: \.checkRequirementsContinuation, value: "onCheckClientRequirementsResult")
-        
+
+        let onScriptReply: JSReplyBlock = { [weak self] continuationId, json in
+            self?.continuations.removeValue(forKey: continuationId)?.resume(returning: json)
+        }
+        context.setObject(onScriptReply, forKeyedSubscript: "onScriptReply" as NSString)
+
         let consoleLogCallback: JSStringBlock = Logger.handleJSLog
         context.setObject(consoleLogCallback, forKeyedSubscript: "consoleLog" as NSString)
-        
+
         let consoleErrorCallback: JSStringBlock = Logger.handleJSErr
         context.setObject(consoleErrorCallback, forKeyedSubscript: "consoleError" as NSString)
 
         context.setObject(onLoadFailed, forKeyedSubscript: "onLoadFailed" as NSString)
-        
+
         context.setObject(onReady, forKeyedSubscript: "onWASMReady" as NSString)
     }
-    
+
     func setupEngine(with files: EngineFiles) {
         context.evaluateScript(files.celWrapperJS)
         context.evaluateScript(files.stateProcessorJS)
 
         let byteArray = [UInt8](files.celWrapperWASM)
         let jsByteArray = JSValue(object: byteArray, in: context)
-        
+
         context.setObject(jsByteArray, forKeyedSubscript: "wasmBytes" as NSString)
         context.evaluateScript(instantiate)
     }
-    
-    private func setupCallback(continuation: ContinuationPath, value: String) {
-        let callback: JSStringBlock = { [weak self] json in
-            guard let self else { return }
-            let continuation = self[keyPath: continuation]
-            continuation?.resume(returning: json)
-        }
-        context.setObject(callback, forKeyedSubscript: value as NSString)
-    }
-}
 
-private extension PrimerBDCEngine {
     func checkIfReady() async throws {
         if let loadError { throw EngineError.loadFailed(loadError) }
         if !isReady { try await withCheckedThrowingContinuation { loadingContinuations.append($0) } }
     }
-    
-    private func runScript(_ script: String, continuationPath: ContinuationPath) async throws -> AnyDict {
-        let jsonString = try await result(of: script, continuationPath: continuationPath)
-        guard
-            let data = jsonString.data(using: .utf8),
-            let object = try? JSONSerialization.jsonObject(with: data, options: []) as? AnyDict
-        else { throw EngineError.jsonToDataFailed }
-        return object
-    }
-
-    private func decodedResult<Value: Decodable>(of script: String, continuationPath: ContinuationPath) async throws -> Value {
-        let result = try await result(of: script, continuationPath: continuationPath)
-        guard let data = result.data(using: .utf8) else { throw EngineError.jsonToDataFailed }
-        let reply = try JSONDecoder().decode(ScriptResult<Value>.self, from: data)
-        guard let value = reply.result else { throw EngineError.scriptFailed(reply.error ?? "No result") }
-        return value
-    }
-
-    private func result(of script: String, continuationPath: ContinuationPath) async throws -> String {
-        try await checkIfReady()
-        return await withCheckedContinuation { cont in
-            self[keyPath: continuationPath] = cont
-            context.evaluateScript(script)
-        }
-    }
-}
-
-private struct ScriptResult<Value: Decodable>: Decodable {
-    let result: Value?
-    let error: String?
-}
-
-private extension Encodable {
-    func literal(_ encoder: JSONEncoder) throws -> String {
-        guard let literal = String(data: try encoder.encode(self), encoding: .utf8) else {
-            throw EncodableError.literalEncodingFailed
-        }
-        return literal
-    }
-}
-
-enum EncodableError: Error {
-    case literalEncodingFailed
 }
