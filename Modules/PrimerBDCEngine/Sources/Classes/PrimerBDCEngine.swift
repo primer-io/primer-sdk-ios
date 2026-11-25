@@ -8,7 +8,7 @@ import JavaScriptCore
 @_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerStepResolver
 
-private enum EngineError: Error {
+enum EngineError: Error {
     case jsonToDataFailed
     case loadFailed(String)
     case scriptFailed(String)
@@ -34,11 +34,15 @@ public final class PrimerBDCEngine: NSObject, BDCEngineProtocol {
     private var probesToRunContinuation: Continuation?
     private var checkRequirementsContinuation: Continuation?
     
-    public init(manifest: Manifest) async throws  {
+    public convenience init(manifest: Manifest) async throws {
+        try await self.init(files: EngineFilesDownloader().download(manifest))
+    }
+
+    init(files: EngineFiles) async throws {
         context = JSContext()
         super.init()
         setupContext()
-        setupEngine(with: try await EngineFilesDownloader().download(manifest))
+        setupEngine(with: files)
         try await checkIfReady()
     }
 }
