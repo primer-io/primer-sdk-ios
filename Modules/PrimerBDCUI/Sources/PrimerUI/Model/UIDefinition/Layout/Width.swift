@@ -13,12 +13,12 @@ enum Size: UI {
     case literal(CGFloat)
     case token(String)
     
-    func callAsFunction() -> CGFloat? {
+    func callAsFunction(_ resolve: (String) -> CGFloat?) -> CGFloat? {
         switch self {
         case .fill: .infinity
         case .wrap: nil
         case let .literal(value): value
-        case let .token(name): resolveSize(name)
+        case let .token(name): resolve(name)
         }
     }
 	

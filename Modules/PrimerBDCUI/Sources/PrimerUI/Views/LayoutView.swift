@@ -13,6 +13,7 @@ struct LayoutView: View {
     let uiDefinition: UIDefinition
 
     @EnvironmentObject private var viewModel: SDUIViewModel
+    @Environment(\.sduiTokens) private var tokens
     
     var body: some View {
         ComponentView(
@@ -82,13 +83,13 @@ private extension LayoutView {
     }
     
     func makeRowStack(children: [UIDefinition], props: RowProps) -> some View {
-        HStack(spacing: props.spacing.flatMap(Spacing.value)) {
+        HStack(spacing: props.spacing.flatMap { Spacing.value(of: $0, resolve: tokens.spacing) }) {
             makeStackContent(children: children, props: props)
         }
-        .frame(minHeight: props.minHeight?(resolveSize))
+        .frame(minHeight: props.minHeight?(tokens.size))
         .frame(
-            maxWidth: props.width(),
-            maxHeight: props.height(),
+            maxWidth: props.width(tokens.size),
+            maxHeight: props.height(tokens.size),
             alignment: props.frameAlignment
         )
     }
@@ -103,13 +104,13 @@ private extension LayoutView {
     }
     
     func makeColumnStack(children: [UIDefinition], props: ColumnProps) -> some View {
-        VStack(spacing: props.spacing.flatMap(Spacing.value)) {
+        VStack(spacing: props.spacing.flatMap { Spacing.value(of: $0, resolve: tokens.spacing) }) {
             makeStackContent(children: children, props: props)
         }
-        .frame(minHeight: props.minHeight?(resolveSize))
+        .frame(minHeight: props.minHeight?(tokens.size))
         .frame(
-            maxWidth: props.width(),
-            maxHeight: props.height(),
+            maxWidth: props.width(tokens.size),
+            maxHeight: props.height(tokens.size),
             alignment: props.frameAlignment
         )
     }

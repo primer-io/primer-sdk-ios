@@ -9,13 +9,24 @@ import SwiftUI
 
 extension View {
     func decorated(by props: some Props) -> some View {
-        let radius = props.borderRadius?(resolveRadius) ?? 0
-        return padding(props.padding.flatMap(Spacing.value) ?? .zero)
-            .background(props.backgroundColor.map(resolveColor))
+        Decorated(props: props, content: self)
+    }
+}
+
+private struct Decorated<P: Props, V: View>: View {
+    @Environment(\.sduiTokens) private var tokens
+    let props: P
+    let content: V
+
+    var body: some View {
+        let radius = props.borderRadius?(tokens.radius) ?? 0
+        return content
+            .padding(props.padding.flatMap { Spacing.value(of: $0, resolve: tokens.spacing) } ?? .zero)
+            .background(props.backgroundColor.map(tokens.color))
             .cornerRadius(radius)
             .overlay(
                 RoundedRectangle(cornerRadius: radius)
-                    .strokeBorder(props.borderColor.map(resolveColor) ?? .clear, lineWidth: props.strokeWidth)
+                    .strokeBorder(props.borderColor.map(tokens.color) ?? .clear, lineWidth: props.strokeWidth)
             )
     }
 }
@@ -27,9 +38,9 @@ extension Props {
 }
 
 enum Spacing {
-    static func value(of codableValue: CodableValue) -> CGFloat? {
+    static func value(of codableValue: CodableValue, resolve: (String) -> CGFloat) -> CGFloat? {
         switch codableValue {
-        case let .string(name): Double(name) ?? resolveSpacing(name)
+        case let .string(name): Double(name) ?? resolve(name)
         case let .int(value): CGFloat(value)
         case let .double(value): value
         default: nil
