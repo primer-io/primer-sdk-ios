@@ -12,7 +12,7 @@ Pod::Spec.new do |s|
     s.ios.deployment_target = '13.0'
 
     s.ios.source_files = "Modules/PrimerBDCEngine/Sources/**/*.{swift}"
-    s.ios.frameworks   = "JavaScriptCore", "CryptoKit"
+    s.ios.frameworks   = "JavaScriptCore", "CryptoKit", "WebKit"
 
     s.dependency "PrimerFoundation", "= #{s.version}"
     s.dependency "PrimerStepResolver", "= #{s.version}"
