@@ -28,6 +28,10 @@ public final class PrimerBDCEngine: NSObject, EngineScriptRunning {
     private var continuations: [Int: CheckedContinuation<String, Never>] = [:]
     private var lastContinuationId = 0
 
+    public static var canRunWebAssembly: Bool {
+        JSContext()?.evaluateScript("typeof WebAssembly === 'object'")?.toBool() ?? false
+    }
+
     public convenience init(manifest: Manifest) async throws {
         try await self.init(files: EngineFilesDownloader().download(manifest))
     }
