@@ -98,7 +98,7 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
               let root = PrimerUIManager.primerRootViewController else { return false }
         let controller = UIHostingController(rootView: SDUIView(
             onEvent: { [flow] in try await flow.applyEvent($0) },
-            onClose: { [weak self] in self?.checkoutTask?.cancel() },
+            onClose: { [weak self] in self?.leave() },
             titleImage: config.logo
         ).modifier(SDUIDesignTokens()))
         controller.modalPresentationStyle = .pageSheet
@@ -107,6 +107,13 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
             root.present(controller, animated: true) { continuation.resume() }
         }
         return true
+    }
+
+    private func leave() {
+        Task { @MainActor [weak self, flow] in
+            guard await flow.leave() else { return }
+            self?.checkoutTask?.cancel()
+        }
     }
 
     @MainActor

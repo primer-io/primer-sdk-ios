@@ -78,6 +78,47 @@ final class PrimerStepOrchestratorTests: XCTestCase {
         try await sut.start(rawSchema: "{}", initialState: .object([:]))
     }
 
+    func testLeavingAsksTheFlowToCancelWhenNoStepIsRunning() async throws {
+        let engine = MockBDCEngine()
+        engine.startResult = ["kind": "awaitInput", "state": [:]]
+        let sut = PrimerStepOrchestrator(engine: engine, context: stubContext, registry: PrimerStepResolverRegistry())
+        try await sut.start(rawSchema: "{}", initialState: .object([:]))
+
+        let left = await sut.leave()
+
+        XCTAssertTrue(left)
+        XCTAssertEqual(engine.handledEvents, [.object(["type": .string("globalCancel")])])
+    }
+
+    func testLeavingIsRefusedWhileAStepRuns() async throws {
+        let engine = MockBDCEngine()
+        let resolver = HeldStepResolver()
+        let registry = PrimerStepResolverRegistry()
+        registry.register(resolver, for: "http.request")
+        engine.startResult = action(type: "http.request")
+        engine.applyResultResult = terminal("success")
+        let sut = PrimerStepOrchestrator(engine: engine, context: stubContext, registry: registry)
+
+        let flow = Task { try await sut.start(rawSchema: "{}", initialState: .object([:])) }
+        while !resolver.isHolding { await Task.yield() }
+        let left = await sut.leave()
+        resolver.release()
+        try await flow.value
+
+        XCTAssertFalse(left)
+        XCTAssertEqual(engine.handledEvents, [])
+    }
+
+    func testLeavingBeforeAFlowStartsSendsNoEvent() async {
+        let engine = MockBDCEngine()
+        let sut = PrimerStepOrchestrator(engine: engine, context: stubContext, registry: PrimerStepResolverRegistry())
+
+        let left = await sut.leave()
+
+        XCTAssertTrue(left)
+        XCTAssertEqual(engine.handledEvents, [])
+    }
+
     func testNoResolverSendsUnsupported() async throws {
         let engine = MockBDCEngine()
         engine.startResult = action(type: "http.request")
@@ -353,5 +394,24 @@ private extension PrimerStepOrchestratorTests {
 private extension PrimerStepOrchestratorTests {
     enum Error: Swift.Error {
         case failed
+    }
+}
+
+@MainActor
+private final class HeldStepResolver: StepResolver {
+    private var continuation: CheckedContinuation<Void, Never>?
+    private(set) var isHolding = false
+
+    func resolve(_ data: CodableValue) async throws -> StepResolutionResult {
+        await withCheckedContinuation { continuation in
+            self.continuation = continuation
+            isHolding = true
+        }
+        return StepResolutionResult(outcome: .success)
+    }
+
+    func release() {
+        continuation?.resume()
+        continuation = nil
     }
 }

@@ -33,6 +33,10 @@ public final class BackendDrivenCheckoutOrchestrator {
         try await stepOrchestrator.applyEvent(value)
     }
 
+    public func leave() async -> Bool {
+        await stepOrchestrator.leave()
+    }
+
     public func run(
         pciUrl: String?,
         coreUrl: String?,

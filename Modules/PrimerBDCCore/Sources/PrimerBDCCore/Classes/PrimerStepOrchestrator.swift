@@ -14,6 +14,7 @@ protocol StepOrchestrating: AnyObject {
     var onURLOpen: (() -> Void)? { get set }
     func start(rawSchema: String, initialState: CodableValue) async throws
     func applyEvent(_ value: CodableValue) async throws
+    func leave() async -> Bool
     func waitToPoll(milliseconds: Int) async throws
 }
 
@@ -32,6 +33,7 @@ final class PrimerStepOrchestrator: StepOrchestrating {
     private let harness = SFSafariViewControllerHarness()
     private var state: CodableState = [:]
     private let pollWaker = SetupPollWaker()
+    private var runningActions = 0
 
     init(
         engine: any BDCEngineProtocol,
@@ -98,11 +100,21 @@ final class PrimerStepOrchestrator: StepOrchestrating {
         try await decodeStep(result, rawSchema: rawSchema)
     }
 
+    func leave() async -> Bool {
+        guard runningActions == 0 else { return false }
+        if rawSchema != nil {
+            try? await applyEvent(.object(["type": .string("globalCancel")]))
+        }
+        return true
+    }
+
     func waitToPoll(milliseconds: Int) async throws {
         try await pollWaker.wait(milliseconds: milliseconds)
     }
 
     private func handleAction(_ action: WorkflowStep, rawSchema: String) async throws {
+        runningActions += 1
+        defer { runningActions -= 1 }
         try await sleep(forMilliseconds: action.delayMs)
         let resolution = try await registry.resolve(action.type, data: action.params)
         if action.type == StepCapability.httpRequest.rawValue { pollWaker.wake() }

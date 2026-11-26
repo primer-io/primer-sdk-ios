@@ -19,6 +19,7 @@ final class MockBDCEngine: BDCEngineProtocol {
 
     var applyEventResult: [String: Any] = ["kind": "awaitInput", "state": [:]]
     var lastEventState: String?
+    var handledEvents: [CodableValue] = []
 
     var checkClientRequirementsResult: ClientRequirementsVerdicts = [:]
     var checkClientRequirementsError: Error?
@@ -55,6 +56,7 @@ final class MockBDCEngine: BDCEngineProtocol {
         schema: String,
         state: State
     ) async throws -> [String: Any] where State: Encodable {
+        handledEvents.append(event)
         lastEventState = (try? JSONEncoder().encode(state)).flatMap { String(data: $0, encoding: .utf8) }
         return applyEventResult
     }

@@ -45,6 +45,7 @@ final class BackendDrivenCheckoutFlow {
     private var presenter: SDUIPresentingResolver?
     private var flowStarted = false
     private var flowEnded = false
+    private var isLeaving = false
 
     nonisolated init(
         config: PrimerPaymentMethod,
@@ -58,6 +59,14 @@ final class BackendDrivenCheckoutFlow {
 
     func applyEvent(_ event: CodableValue) async throws {
         try await orchestrator?.applyEvent(event)
+    }
+
+    func leave() async -> Bool {
+        guard !isLeaving else { return false }
+        isLeaving = true
+        defer { isLeaving = false }
+        guard let orchestrator else { return true }
+        return await orchestrator.leave()
     }
 
     func run(paymentInstrumentTokenId: String? = nil, host: Host) async -> Outcome {

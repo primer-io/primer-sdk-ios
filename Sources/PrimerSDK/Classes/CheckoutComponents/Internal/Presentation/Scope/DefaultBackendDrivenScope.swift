@@ -86,8 +86,11 @@ final class DefaultBackendDrivenScope: PrimerPaymentMethodScope, ObservableObjec
 
     func cancel() {
         guard let flowTask else { return returnToSelection() }
-        flowTask.cancel()
-        resumeSchemaWaiter()
+        Task {
+            guard await flow?.leave() ?? true else { return }
+            flowTask.cancel()
+            resumeSchemaWaiter()
+        }
     }
 
     func applyEvent(_ event: CodableValue) async throws {

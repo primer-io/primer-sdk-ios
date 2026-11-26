@@ -300,6 +300,8 @@ final class MockBDCStepOrchestrator: StepOrchestrating {
         
     }
 
+    func leave() async -> Bool { true }
+
     func waitToPoll(milliseconds: Int) async throws {
         throw CancellationError()
     }
