@@ -8,10 +8,10 @@
 // swiftlint:disable function_body_length
 // swiftlint:disable type_body_length
 
-@_spi(PrimerInternal) import PrimerFoundation
-import UIKit
 @_spi(PrimerInternal) import PrimerCore
+@_spi(PrimerInternal) import PrimerFoundation
 @_spi(PrimerInternal) import PrimerUI
+import UIKit
 
 final class PrimerUniversalCheckoutViewController: PrimerFormViewController {
 
@@ -52,19 +52,7 @@ final class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 try await vaultService.fetchVaultedPaymentMethods()
                 renderSelectedPaymentInstrument(insertAt: 1)
             } catch {
-                let primerErr = handled(primerError: error.asPrimerError)
-                PrimerDelegateProxy.primerDidFailWithError(primerErr, data: nil) { errorDecision in
-                    switch errorDecision.type {
-                    case let .fail(message):
-                        DispatchQueue.main.async {
-                            PrimerUIManager.dismissOrShowResultScreen(
-                                type: .failure,
-                                paymentMethodManagerCategories: [],
-                                withMessage: message
-                            )
-                        }
-                    }
-                }
+                _ = handled(primerError: error.asPrimerError)
             }
         }
     }

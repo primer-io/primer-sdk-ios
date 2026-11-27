@@ -4,9 +4,9 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+@_spi(PrimerInternal) import PrimerNetworking
 @testable import PrimerSDK
 import XCTest
-@_spi(PrimerInternal) import PrimerNetworking
 
 class PrimerAPIConfigurationModuleTests: XCTestCase {
     override func setUp() {
@@ -77,6 +77,33 @@ class PrimerAPIConfigurationModuleTests: XCTestCase {
             XCTFail("Unexpected error: \(error.localizedDescription)")
             asyncExpectation.fulfill()
         }
+    }
+
+    func test_setupSession_succeedsWhenVaultedPaymentMethodsFailToLoad() async throws {
+        let config = PrimerAPIConfiguration(
+            coreUrl: "https://core.primer.io",
+            pciUrl: "https://pci.primer.io",
+            binDataUrl: "https://bindata.primer.io",
+            assetsUrl: "https://assets.staging.core.primer.io",
+            clientSession: nil,
+            paymentMethods: [],
+            primerAccountId: nil,
+            keys: nil,
+            checkoutModules: nil
+        )
+        let mockApiClient = MockPrimerAPIClient(responseHeaders: [ConfigurationCachedData.CacheHeaderKey: "3600"])
+        mockApiClient.validateClientTokenResult = (SuccessResponse(), nil)
+        mockApiClient.fetchConfigurationResult = (config, nil)
+        mockApiClient.fetchVaultedPaymentMethodsResult = (nil, NSError(domain: "payment-instruments", code: 500))
+        PrimerAPIConfigurationModule.apiClient = mockApiClient
+
+        try await PrimerAPIConfigurationModule().setupSession(
+            forClientToken: MockAppState.mockClientToken,
+            requestVaultedPaymentMethods: true
+        )
+
+        XCTAssertEqual(PrimerAPIConfigurationModule.clientToken, MockAppState.mockClientToken)
+        XCTAssertEqual(PrimerAPIConfigurationModule.apiConfiguration?.coreUrl, config.coreUrl)
     }
 
     /// Tests that `setupSession` fails when the configuration fetch returns an error.

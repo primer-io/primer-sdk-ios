@@ -304,11 +304,19 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
         requestVaultedPaymentMethods: Bool
     ) async throws -> PrimerAPIConfiguration {
         if requestVaultedPaymentMethods {
-            let vaultService: VaultServiceProtocol = VaultService(apiClient: PrimerAPIClient())
-            try await vaultService.fetchVaultedPaymentMethods()
+            await fetchVaultedPaymentMethods()
             return try await fetchConfiguration(requestDisplayMetadata: true)
         } else {
             return try await fetchConfiguration(requestDisplayMetadata: requestDisplayMetadata)
+        }
+    }
+
+    private func fetchVaultedPaymentMethods() async {
+        let apiClient: PrimerAPIClientProtocol = PrimerAPIConfigurationModule.apiClient ?? PrimerAPIClient()
+        do {
+            try await VaultService(apiClient: apiClient).fetchVaultedPaymentMethods()
+        } catch {
+            _ = handled(error: error)
         }
     }
 
