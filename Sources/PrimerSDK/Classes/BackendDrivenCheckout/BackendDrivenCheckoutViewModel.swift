@@ -79,7 +79,6 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
 
             switch await flow.run(paymentInstrumentTokenId: vaultedPaymentInstrumentTokenId, host: host) {
             case let .paid(payment): await handleSuccess(payment)
-            case .setupOnly: break
             case let .failed(error): await handleFailure(error)
             }
         }
@@ -139,10 +138,8 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
     
     @MainActor
     private func handleSuccess(_ payment: PaymentInfo?) async {
-        if PrimerSettings.current.paymentHandling == .auto {
-            let checkoutData = PrimerCheckoutData(payment: payment?.toPrimerPayment())
-            await PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
-        }
+        let checkoutData = PrimerCheckoutData(payment: payment?.toPrimerPayment())
+        await PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
         let categories = config.paymentMethodManagerCategories ?? []
         uiManager.dismissOrShowResultScreen(type: .success, paymentMethodManagerCategories: categories, withMessage: nil)
     }
