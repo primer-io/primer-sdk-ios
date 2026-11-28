@@ -1,0 +1,94 @@
+name: Create SPM Variant Tags
+
+# SPM cannot make a wrapper optional, so each wrapper gets a tag whose Package.swift adds it (X.Y.Z-3ds-<variant>).
+# Plain X.Y.Z only: in SemVer 3.0.0-beta.9-3ds-stripe outranks 3.0.0-beta.10, so SPM ranges on a beta would resolve to the variant.
+on:
+  push:
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag to create the SPM variant tags for (e.g. 2.47.0)'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  create-variant-tag:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { variant: klarna, repo: primer-klarna-sdk-ios, product: PrimerKlarnaSDK, tests: Klarna }
+          - { variant: nolpay, repo: primer-nol-pay-sdk-ios, product: PrimerNolPaySDK, tests: NolPay }
+          - { variant: stripe, repo: primer-stripe-sdk-ios, product: PrimerStripeSDK, tests: Stripe }
+          - { variant: ipay88, repo: primer-ipay88-sdk-ios, product: PrimerIPay88MYSDK, tests: '' }
+    steps:
+      - name: Resolve release tag
+        id: resolve
+        env:
+          INPUT_TAG: ${{ inputs.tag }}
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            TAG="$INPUT_TAG"
+          else
+            TAG="${GITHUB_REF_NAME}"
+          fi
+          if ! [[ "$TAG" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::$TAG is not a plain X.Y.Z release, so it gets no SPM variant tags."
+            exit 1
+          fi
+          echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # zizmor: ignore[artipacked] persisted RELEASE_ACCESS_TOKEN is required to push the variant tag
+        with:
+          ref: ${{ steps.resolve.outputs.tag }}
+          token: ${{ secrets.RELEASE_ACCESS_TOKEN }}
+
+      # Release tags cut before this workflow existed lack its scripts, so they come from the workflow's own ref.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          path: .variant-scripts
+          persist-credentials: false
+          sparse-checkout: .github/scripts
+
+      - name: Get latest wrapper version
+        id: wrapper
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ matrix.repo }}
+        run: |
+          VERSION=$(gh api "repos/primer-io/$REPO/tags" --paginate --jq '.[].name' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -n 1)
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          if gh api "repos/primer-io/$REPO/contents/Package.swift?ref=$VERSION" --silent; then
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::$REPO $VERSION has no Package.swift, so no variant tag."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Add wrapper dependency and tag
+        if: steps.wrapper.outputs.skip == 'false'
+        env:
+          VARIANT_TAG: ${{ steps.resolve.outputs.tag }}-3ds-${{ matrix.variant }}
+          REPO: ${{ matrix.repo }}
+          PRODUCT: ${{ matrix.product }}
+          VERSION: ${{ steps.wrapper.outputs.version }}
+          TESTS: ${{ matrix.tests }}
+        run: |
+          if git ls-remote --exit-code --tags origin "refs/tags/$VARIANT_TAG" > /dev/null; then
+            echo "::notice::$VARIANT_TAG already exists."
+            exit 0
+          fi
+          swift .variant-scripts/.github/scripts/add-wrapper-dependency.swift "$REPO" "$PRODUCT" "$VERSION" "$TESTS"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add Package.swift
+          git commit -m "Add $PRODUCT dependency"
+          git tag "$VARIANT_TAG"
+          git push origin "$VARIANT_TAG"
